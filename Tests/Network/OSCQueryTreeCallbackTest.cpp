@@ -30,11 +30,13 @@ static std::vector<std::string> removed_params;
 static std::vector<std::string> created_nodes;
 static std::vector<std::string> removed_nodes;
 
+static std::vector<std::string> created_names;
+static std::vector<std::string> removed_names;
+
 static std::vector<std::string> add_params;
 static std::vector<std::string> rm_params;
 static std::vector<std::string> add_nodes;
 static std::vector<std::string> rm_nodes;
-static int count{0};
 
 #define LOOP_DELAY 500ms
 
@@ -44,11 +46,12 @@ void reset()
   removed_nodes.clear();
   created_params.clear();
   removed_params.clear();
-  count=0;
 }
 
 void check(opp::oscquery_mirror& client)
 {
+  int i = 0;
+  int count = 0;
   reset();
   while(count++<10)
   {
@@ -63,30 +66,52 @@ void check(opp::oscquery_mirror& client)
       break;
   }
 
+  std::cout << "check add_nodes" << std::endl;
   CHECK(created_nodes.size() == add_nodes.size());
-  CHECK(removed_nodes.size() == rm_nodes.size());
-  CHECK(created_params.size() == add_params.size());
-  CHECK(removed_params.size() == rm_params.size());
-
+  i=0;
   for(auto& n : add_nodes)
-    CHECK(client.get_root_node().find_children(n).size() == 1);
-
-  for(auto& n : add_params)
   {
-    auto children = client.get_root_node().find_children(n);
-    CHECK(children.size() == 1);
-    if(!children.empty())
-      CHECK(children[0].has_parameter());
+    std::cout << "\t" << n << std::endl;
+    CHECK(created_nodes[i] == add_nodes[i]);
+    CHECK(client.get_root_node().find_children(n).size() == 1);
+    i++;
   }
 
+  std::cout << "check rm_nodes" << std::endl;
+  CHECK(removed_nodes.size() == rm_nodes.size());
+  i=0;
   for(auto& n : rm_nodes)
+  {
+    std::cout << "\t" << n << std::endl;
+    CHECK(removed_nodes[i] == rm_nodes[i]);
     CHECK(client.get_root_node().find_children(n).size() == 0);
+    i++;
+  }
 
+  std::cout << "check add_params" << std::endl;
+  CHECK(created_params.size() == add_params.size());
+  i=0;
+  for(auto& n : add_params)
+  {
+    std::cout << "\t" << n << std::endl;
+    CHECK(created_params[i] == add_params[i]);
+    auto children = client.get_root_node().find_children(n);
+    if(!children.empty())
+      CHECK(children[0].has_parameter());
+    i++;
+  }
+
+  std::cout << "check rm_params" << std::endl;
+  CHECK(removed_params.size() == rm_params.size());
+  i=0;
   for(auto& n : rm_params)
   {
+    std::cout << "\t" << n << std::endl;
+    CHECK(removed_params[i] == rm_params[i]);
     auto children = client.get_root_node().find_children(n);
     if(!children.empty())
       CHECK(!children[0].has_parameter());
+    i++;
   }
 
   add_params.clear();
@@ -100,8 +125,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
-  std::vector<std::string> created_names;
-  std::vector<std::string> removed_names;
+  int step = 0;
 
   opp::oscquery_mirror client("B");
   client.refresh();
@@ -145,7 +169,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::this_thread::sleep_for(100ms);
   }
 
-  std::cout << "step 1" << std::endl;
+  std::cout << "step " << step++ << std::endl;
 
   serv.create_child("foo")->create_parameter(ossia::val_type::BOOL);
 
@@ -154,23 +178,49 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   check(client);
 
-  std::cout << "step 2" << std::endl;
+  std::cout << "step " << step++ << std::endl;
 
   auto node = serv.create_child("bar");
   add_nodes.push_back("bar");
 
-  node->create_parameter(ossia::val_type::STRING);
-  add_params.push_back("bar");
+  check(client);
+
+  std::cout << "step " << step++ << std::endl;
+
+  auto first = serv.create_child("first");
+  add_nodes.push_back("first");
+  auto second = serv.create_child("second");
+  add_nodes.push_back("second");
+  second->create_parameter(ossia::val_type::FLOAT);
+  add_params.push_back("second");
+  first->create_parameter(ossia::val_type::FLOAT);
+  add_params.push_back("first");
+
+  check(client);
+
+  std::cout << "step " << step++ << std::endl;
 
   auto nested = node->create_child("nested");
   add_nodes.push_back("bar/nested");
+
+  check(client);
+
+  std::cout << "step " << step++ << std::endl;
 
   nested->create_parameter(ossia::val_type::INT);
   add_params.push_back("bar/nested");
 
   check(client);
 
-  std::cout << "step 3" << std::endl;
+  std::cout << "step " << step++ << std::endl;
+
+  node->create_parameter(ossia::val_type::STRING);
+  add_params.push_back("bar");
+
+  check(client);
+
+  std::cout << "step " << step++ << std::endl;
+
   CHECK(serv.remove_child("bar"));
 
   rm_nodes.push_back("bar");
@@ -209,6 +259,8 @@ void param_removing_cb(const ossia::net::parameter_base& p)
 
 void check2(ossia::net::generic_device& client)
 {
+  int count=0;
+  int i=0;
   reset();
   while(count++<10)
   {
@@ -226,44 +278,55 @@ void check2(ossia::net::generic_device& client)
       break;
   }
 
-  CHECK(created_nodes.size() == add_nodes.size());
-  CHECK(removed_nodes.size() == rm_nodes.size());
-  CHECK(created_params.size() == add_params.size());
-  CHECK(removed_params.size() == rm_params.size());
-
   std::cout << "check add_nodes" << std::endl;
+  CHECK(created_nodes.size() == add_nodes.size());
+  i=0;
   for(auto& n : add_nodes)
   {
     std::cout << "\t" << n << std::endl;
+    CHECK(created_nodes[i] == add_nodes[i]);
     auto nodes = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(nodes.size() == 1);
+    i++;
   }
 
   std::cout << "check add_params" << std::endl;
+  CHECK(created_params.size() == add_params.size());
+  i=0;
   for(auto& n : add_params)
   {
     std::cout << "\t" << n << std::endl;
+    CHECK(created_params[i] == add_params[i]);
     auto children = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(children.size() == 1);
     if(!children.empty())
       CHECK(children[0]->get_parameter() != nullptr);
+    i++;
   }
 
   std::cout << "check rm_nodes" << std::endl;
+  CHECK(removed_nodes.size() == rm_nodes.size());
+  i=0;
   for(auto& n : rm_nodes)
   {
     std::cout << "\t" << n << std::endl;
+    CHECK(removed_nodes[i] == rm_nodes[i]);
     auto nodes = ossia::net::find_nodes(client.get_root_node(), n);
     CHECK(nodes.size() == 0);
+    i++;
   }
 
   std::cout << "check rm_params" << std::endl;
+  CHECK(removed_params.size() == rm_params.size());
+  i=0;
   for(auto& n : rm_params)
   {
     std::cout << "\t" << n << std::endl;
+    CHECK(removed_params[i] == rm_params[i]);
     auto children = ossia::net::find_nodes(client.get_root_node(), n);
     if(!children.empty())
       CHECK(children[0]->get_parameter() == nullptr);
+    i++;
   }
 
   add_params.clear();
@@ -280,9 +343,6 @@ TEST_CASE ("test_fast_fast_simple_node_creation_cb", "test_fast_fast_simple_node
             << "\n===========\n";
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-
-  std::vector<std::string> created_names;
-  std::vector<std::string> removed_names;
 
   auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 1234);
   ws_proto->set_zombie_on_remove(false);
