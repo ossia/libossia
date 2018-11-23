@@ -21,8 +21,6 @@ class time_interval;
  */
 class OSSIA_EXPORT time_process
 {
-  friend class time_interval;
-
 public:
   std::shared_ptr<ossia::graph_node> node;
   /*! destructor */
