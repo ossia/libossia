@@ -1,7 +1,11 @@
 #include "joystick_protocol.hpp"
 #include <ossia/network/common/device_parameter.hpp>
 
+#if __has_include(<SDL2/SDL.h>)
 #include <SDL2/SDL.h>
+#else
+#include <SDL.h>
+#endif
 
 #include <thread>
 

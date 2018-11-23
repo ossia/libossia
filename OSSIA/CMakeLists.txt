@@ -118,6 +118,7 @@ function(ossia_link_jack)
     HINTS
       ${CMAKE_CURRENT_SOURCE_DIR}
       /opt/cross-pi-gcc/usr/include/
+      "${OSSIA_SDK}/jack/include"
       )
   if(Jack_INCLUDE_DIR)
     target_include_directories(ossia PUBLIC
@@ -224,10 +225,13 @@ endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
   find_package(SDL2)
-  if(SDL2_FOUND)
+  if(TARGET SDL2::SDL2-static)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${SDL2_INCLUDE_DIRS}>)
-    target_link_libraries(ossia PRIVATE SDL2)
+    target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
+    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
+  elseif(TARGET SDL2::SDL2)
+    target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
+    target_link_libraries(ossia PRIVATE SDL2::SDL2)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
   else()
     set(OSSIA_PROTOCOL_JOYSTICK FALSE)
@@ -305,8 +309,8 @@ if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
   ossia_link_jack()
-  if(TARGET PortAudio)
-    target_link_libraries(ossia PUBLIC PortAudio)
+  if(TARGET portaudio)
+    target_link_libraries(ossia PUBLIC portaudio)
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)

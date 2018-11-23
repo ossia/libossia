@@ -1,6 +1,15 @@
 set(CMAKE_MODULE_PATH
+  "${CMAKE_CURRENT_SOURCE_DIR}/CMake"
   "${CMAKE_MODULE_PATH}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/CMake")
+)
+
+set(CMAKE_PREFIX_PATH
+    "${OSSIA_SDK}/SDL2/cmake"
+    "${OSSIA_SDK}/portaudio/lib/cmake"
+    "${CMAKE_PREFIX_PATH}"
+
+    CACHE INTERNAL ""
+)
 
 if(APPLE AND EXISTS /usr/local/opt/qt5)
   list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5")
