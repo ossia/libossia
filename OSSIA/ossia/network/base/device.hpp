@@ -84,14 +84,14 @@ public:
     return get_root_node().get_name();
   }
 
-  Nano::Signal<void(const node_base&)>
+  Nano::Signal<void(node_base&)>
       on_node_created; // The node being created
-  Nano::Signal<void(const node_base&)>
+  Nano::Signal<void(node_base&)>
       on_node_removing; // The node being removed
-  Nano::Signal<void(const node_base&, std::string)>
+  Nano::Signal<void(node_base&, std::string)>
       on_node_renamed; // Node has the new name, second argument is the old
                        // name
-  Nano::Signal<void(const node_base&, ossia::string_view)>
+  Nano::Signal<void(node_base&, ossia::string_view)>
       on_attribute_modified; // Second argument is an identifier
   Nano::Signal<void(const parameter_base&)>
       on_parameter_created; // The parameter being created
