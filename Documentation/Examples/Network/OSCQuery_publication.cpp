@@ -97,9 +97,14 @@ int main()
     node.set(bounding_mode_attribute{}, bounding_mode::FOLD);
     node.set(domain_attribute{}, make_domain(2, 14));
     node.set(description_attribute{}, "an integral value");
+    node.set(default_value_attribute{}, 10);
+    node.set(tags_attribute{}, net::tags{"foo", "bar"});
+    node.set(refresh_rate_attribute{}, net::refresh_rate{5});
+    node.set(value_step_size_attribute{}, net::value_step_size{2});
+    node.set(priority_attribute{}, net::priority{100});
 
     address->add_callback(printValueCallback);
-    address->push_value(5678);
+    address->push_value(4);
   }
 
   {

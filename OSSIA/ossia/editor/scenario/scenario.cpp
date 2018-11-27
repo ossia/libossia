@@ -162,7 +162,7 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
   if (!contains(m_intervals, itv))
   {
     m_sg.add_edge(itv.get());
-    if(bool b = node->muted())
+    if(node->muted())
       itv->mute(true);
     m_intervals.push_back(std::move(itv));
   }
@@ -187,7 +187,7 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   if (!contains(m_nodes, timeSync))
   {
     m_sg.add_vertice(timeSync.get());
-    if(bool b = node->muted())
+    if(node->muted())
       timeSync->mute(true);
     m_nodes.push_back(std::move(timeSync));
   }

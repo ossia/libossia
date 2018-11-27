@@ -36,7 +36,7 @@ void time_event::add_time_process(std::shared_ptr<time_process> timeProcess)
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
-    if(bool b = m_timesync.muted())
+    if(m_timesync.muted())
       timeProcess->mute(true);
     m_processes.push_back(std::move(timeProcess));
   }
