@@ -239,8 +239,6 @@ if(OSSIA_PROTOCOL_JOYSTICK)
 endif()
 
 if(OSSIA_PROTOCOL_WIIMOTE)
-  set(WIIUSE_DIR "${OSSIA_3RDPARTY_FOLDER}/wiiuse")
-  add_subdirectory("${WIIUSE_DIR}" wiiuse)
   target_sources(ossia PRIVATE ${OSSIA_WIIMOTE_SRCS} ${OSSIA_WIIMOTE_HEADERS})
   target_include_directories(ossia PRIVATE "${WIIUSE_DIR}/src")
   target_link_libraries(ossia PRIVATE wiiuse)
@@ -311,6 +309,15 @@ if(OSSIA_DATAFLOW)
   ossia_link_jack()
   if(TARGET portaudio)
     target_link_libraries(ossia PUBLIC portaudio)
+  else()
+    find_library(PORTAUDIO_LIBRARY
+      NAMES
+        libportaudio.a portaudio
+      PATHS
+        /usr/local/lib)
+    if(PORTAUDIO_LIBRARY)
+      target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
+    endif()
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
