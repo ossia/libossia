@@ -231,13 +231,13 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   check(client);
 }
 
-void node_created_cb(const ossia::net::node_base& n)
+void node_created_cb(ossia::net::node_base& n)
 {
   std::cout << "create node : " << n.get_name() << std::endl;
   created_nodes.push_back(n.get_name());
 }
 
-void node_removing_cb(const ossia::net::node_base& n)
+void node_removing_cb(ossia::net::node_base& n)
 {
   std::cout << "removing node : " << n.get_name() << std::endl;
   removed_nodes.push_back(n.get_name());
