@@ -312,7 +312,7 @@ if(OSSIA_DATAFLOW)
   else()
     find_library(PORTAUDIO_LIBRARY
       NAMES
-        libportaudio.a portaudio
+        portaudio_static libportaudio_static.a libportaudio.a portaudio
       PATHS
         /usr/local/lib)
     if(PORTAUDIO_LIBRARY)
