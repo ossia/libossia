@@ -424,6 +424,7 @@ class OSSIA_EXPORT value
 #endif
   private:
     friend class node;
+    friend class oscquery_mirror; // needed to build an opp::value from a const ossia::value& in oscquery_mirror::on_unhandled_message_callback()
     value(const ossia::value& v);
     template<typename T>
     value(const T* v);
@@ -449,6 +450,18 @@ typedef void (*parameter_callback)(void*, const opp::node&);
 /** @brief container for a node creation/deletion callback
  */
 typedef void (*node_callback)(void*, const opp::node&);
+/** @brief container for a node renamed callback
+ */
+typedef void (*node_rn_callback)(void*, const opp::node&, std::string);
+/** @brief container for a message callback
+ */
+typedef void (*message_callback)(void*, const opp::node&);
+/** @brief container for an unhandled message callback
+ */
+typedef void (*unhandled_message_callback)(void*, std::string_view, const opp::value&);
+/** @brief container for an attribute modified callback
+ */
+typedef void (*attribute_modified_callback)(void*, const opp::node&, std::string_view);
 
 /**
  * @ingroup CPP98API
@@ -1776,6 +1789,50 @@ class OSSIA_EXPORT oscquery_mirror
     void remove_node_removed_callback();
 
     /**
+     * @brief set a callback to be called when a node is renamed
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_node_renamed_callback(node_rn_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_node_renamed_callback();
+
+    /**
+     * @brief set a callback to be called when a message is received
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_message_callback(message_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_message_callback();
+
+    /**
+     * @brief set a callback to be called when an unhandled message is received
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_unhandled_message_callback(unhandled_message_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_unhandled_message_callback();
+
+    /**
+     * @brief set a callback to be called when an attribute is modified
+     * @param c the parameter_callback
+     * @param ctx the callback context as a void*
+     */
+    void set_attribute_modified_callback(attribute_modified_callback c, void* ctx);
+    /**
+     * @brief remove the previously set node_callback
+     */
+    void remove_attribute_modified_callback();
+
+    /**
      * @brief Set on removed behavior
      * @param mode : delete node when removed if false, mark it as zombie instead (default)
      */
@@ -1791,8 +1848,13 @@ class OSSIA_EXPORT oscquery_mirror
     void on_parameter_created(const ossia::net::parameter_base&);
     void on_parameter_removed(const ossia::net::parameter_base&);
 
-    void on_node_created(const ossia::net::node_base&);
-    void on_node_removed(const ossia::net::node_base&);
+    void on_node_created(ossia::net::node_base&);
+    void on_node_removed(ossia::net::node_base&);
+    void on_node_renamed(ossia::net::node_base&, std::string);
+
+    void on_message(const ossia::net::parameter_base&);
+    void on_unhandled_message(std::string_view, const ossia::value&);
+    void on_attribute_modified(ossia::net::node_base&, std::string_view);
 
     ossia::net::device_base* m_dev;
     parameter_callback m_param_cb;
@@ -1806,6 +1868,18 @@ class OSSIA_EXPORT oscquery_mirror
 
     node_callback m_rm_node_cb;
     void* m_rm_node_ctx;
+
+    node_rn_callback m_rn_node_cb;
+    void* m_rn_node_ctx;
+
+    message_callback m_message_cb;
+    void* m_message_ctx;
+
+    unhandled_message_callback m_unhandled_message_cb;
+    void* m_unhandled_message_ctx;
+
+    attribute_modified_callback m_attribute_modified_cb;
+    void* m_attribute_modified_ctx;
 
     std::string m_name;
     std::string m_host;

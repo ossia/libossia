@@ -353,7 +353,6 @@ node::node(node&& other)
 
 }
 
-
 node::node(ossia::net::node_base* b)
   : node{b, (b ? b->get_parameter() : nullptr)}
 {
@@ -1959,6 +1958,10 @@ oscquery_mirror::oscquery_mirror(std::string name, std::string host)
     m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
     m_dev->on_node_created.connect<&oscquery_mirror::on_node_created>(*this);
     m_dev->on_node_removing.connect<&oscquery_mirror::on_node_removed>(*this);
+    m_dev->on_node_renamed.connect<&oscquery_mirror::on_node_renamed>(*this);
+    m_dev->on_attribute_modified.connect<&oscquery_mirror::on_attribute_modified>(*this);
+    m_dev->on_message.connect<&oscquery_mirror::on_message>(*this);
+    m_dev->on_unhandled_message.connect<&oscquery_mirror::on_unhandled_message>(*this);
   }
   catch (const std::exception& e)
   {
@@ -1974,6 +1977,11 @@ oscquery_mirror::~oscquery_mirror()
     m_dev->on_parameter_removing.disconnect<&oscquery_mirror::on_parameter_removed>(*this);
     m_dev->on_node_created.disconnect<&oscquery_mirror::on_node_created>(*this);
     m_dev->on_node_removing.disconnect<&oscquery_mirror::on_node_removed>(*this);
+    m_dev->on_node_renamed.disconnect<&oscquery_mirror::on_node_renamed>(*this);
+    m_dev->on_attribute_modified.disconnect<&oscquery_mirror::on_attribute_modified>(*this);
+    m_dev->on_message.disconnect<&oscquery_mirror::on_message>(*this);
+    m_dev->on_unhandled_message.disconnect<&oscquery_mirror::on_unhandled_message>(*this);
+
     delete m_dev;
   }
 }
@@ -2022,6 +2030,10 @@ void oscquery_mirror::reconnect(std::string name, std::string host)
     m_dev->on_parameter_removing.connect<&oscquery_mirror::on_parameter_removed>(*this);
     m_dev->on_node_created.connect<&oscquery_mirror::on_node_created>(*this);
     m_dev->on_node_removing.connect<&oscquery_mirror::on_node_removed>(*this);
+    m_dev->on_node_renamed.connect<&oscquery_mirror::on_node_renamed>(*this);
+    m_dev->on_attribute_modified.connect<&oscquery_mirror::on_attribute_modified>(*this);
+    m_dev->on_message.connect<&oscquery_mirror::on_message>(*this);
+    m_dev->on_unhandled_message.connect<&oscquery_mirror::on_unhandled_message>(*this);
   }
   catch (const std::exception& e)
   {
@@ -2078,11 +2090,11 @@ void oscquery_mirror::remove_node_created_callback()
   set_node_created_callback(nullptr, nullptr);
 }
 
-void oscquery_mirror::on_node_created(const ossia::net::node_base& n)
+void oscquery_mirror::on_node_created(ossia::net::node_base& n)
 {
   if(m_node_cb)
   {
-    m_node_cb(m_node_ctx, opp::node{n.get_parent()->find_child(n.get_name())});
+    m_node_cb(m_node_ctx, &n);
   }
 }
 
@@ -2097,11 +2109,87 @@ void oscquery_mirror::remove_node_removed_callback()
   set_node_removed_callback(nullptr, nullptr);
 }
 
-void oscquery_mirror::on_node_removed(const ossia::net::node_base& n)
+void oscquery_mirror::on_node_removed(ossia::net::node_base& n)
 {
   if(m_rm_node_cb)
   {
-    m_rm_node_cb(m_rm_node_ctx, opp::node{n.get_parent()->find_child(n.get_name())});
+    m_rm_node_cb(m_rm_node_ctx, &n);
+  }
+}
+
+void oscquery_mirror::set_node_renamed_callback(node_rn_callback c, void* ctx)
+{
+  m_rn_node_cb= c;
+  m_rn_node_ctx = ctx;
+}
+
+void oscquery_mirror::remove_node_renamed_callback()
+{
+  set_node_renamed_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_node_renamed(ossia::net::node_base& n, std::string name)
+{
+  if(m_rn_node_cb)
+  {
+    m_rn_node_cb(m_rn_node_ctx, &n, name);
+  }
+}
+
+void oscquery_mirror::set_message_callback(message_callback c, void* ctx)
+{
+  m_message_cb= c;
+  m_message_ctx = ctx;
+}
+
+void oscquery_mirror::remove_message_callback()
+{
+  set_message_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_message(const ossia::net::parameter_base& p)
+{
+  if(m_message_cb)
+  {
+    m_message_cb(m_message_ctx, &p.get_node());
+  }
+}
+
+void oscquery_mirror::set_unhandled_message_callback(unhandled_message_callback c, void* ctx)
+{
+  m_unhandled_message_cb = c;
+  m_unhandled_message_ctx = ctx;
+}
+
+void oscquery_mirror::remove_unhandled_message_callback()
+{
+  set_unhandled_message_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_unhandled_message(std::string_view s, const ossia::value& v)
+{
+  if(m_unhandled_message_cb)
+  {
+    m_unhandled_message_cb(m_unhandled_message_ctx, s, v);
+  }
+}
+
+void oscquery_mirror::set_attribute_modified_callback(attribute_modified_callback c, void* ctx)
+{
+  m_attribute_modified_cb = c;
+  m_attribute_modified_ctx= ctx;
+}
+
+void oscquery_mirror::remove_attribute_modified_callback()
+{
+  set_attribute_modified_callback(nullptr, nullptr);
+}
+
+void oscquery_mirror::on_attribute_modified(ossia::net::node_base& n, std::string_view s)
+{
+  if(m_attribute_modified_cb)
+  {
+    m_attribute_modified_cb(m_attribute_modified_ctx, &n, s);
   }
 }
 
