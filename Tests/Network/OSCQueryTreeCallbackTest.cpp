@@ -229,6 +229,30 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   rm_params.push_back("bar/nested");
 
   check(client);
+
+  std::cout << "*********** check for renaming node ***********" << std::endl;
+  serv.create_child("weird_name");
+  add_nodes.push_back("weird_name");
+
+  check(client);
+
+  auto weird_node = client.get_root_node().find_child("weird_name");
+  weird_node.set_name("another_name");
+
+  int count=0;
+  bool flag = false;
+  while(count++<10)
+  {
+    std::cout << "server up" << std::endl;
+    serv_proto->update(serv.get_root_node());
+    std::this_thread::sleep_for(LOOP_DELAY);
+
+    if( auto node = serv.find_child("another_name"))
+    {
+      flag = true;
+    }
+  }
+  CHECK(flag);
 }
 
 void node_created_cb(ossia::net::node_base& n)
