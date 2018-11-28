@@ -46,26 +46,26 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
 endif(OSSIA_SUBMODULE_AUTOUPDATE)
 
-# Download SDL2
-if(OSSIA_PROTOCOL_JOYSTICK)
-  if(WIN32)
-    message(STATUS "Downloading audio sdk to ${OSSIA_3RDPARTY_FOLDER}/win-audio-sdk.zip")
+# Download various dependencies
+if(WIN32)
+  message(STATUS "Downloading audio sdk to ${OSSIA_3RDPARTY_FOLDER}/win-audio-sdk.zip")
+  if("${OSSIA_SDK}" STREQUAL "")
+    set(OSSIA_SDK "ossia-sdk" CACHE INTERNAL "")
+  endif()
 
-    if ( NOT EXISTS "${OSSIA_SDK}")
-      file(MAKE_DIRECTORY ${OSSIA_SDK})
-      file(DOWNLOAD
-        https://github.com/OSSIA/sdk/releases/download/sdk10/win-audio-sdk.zip
-        ${OSSIA_SDK}/win-audio-sdk.zip)
+  if (NOT EXISTS "${OSSIA_SDK}")
+    file(MAKE_DIRECTORY ${OSSIA_SDK})
+    file(DOWNLOAD
+      https://github.com/OSSIA/sdk/releases/download/sdk10/win-audio-sdk.zip
+      ${OSSIA_SDK}/win-audio-sdk.zip)
 
-      execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
-        WORKING_DIRECTORY ${OSSIA_SDK})
-    endif()
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
+      WORKING_DIRECTORY ${OSSIA_SDK})
+  endif()
+endif()
 
-  endif(WIN32)
-endif(OSSIA_PROTOCOL_JOYSTICK)
-
-set(BOOST_MINOR 67)
+set(BOOST_MINOR 68)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
