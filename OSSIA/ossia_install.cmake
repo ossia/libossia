@@ -150,8 +150,8 @@ install(FILES
 # Install used libraries headers
 if(NOT OSSIA_CPP_ONLY)
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/RtMidi17/rtmidi17
-  DESTINATION include/
-  COMPONENT Devel)
+        DESTINATION include
+        COMPONENT Devel)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
         DESTINATION include
@@ -253,10 +253,12 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
 
 install(SCRIPT InstallBoost.cmake)
 
-install(DIRECTORY ${CMAKE_BINARY_DIR}/boost
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER)
+if(EXISTS "${CMAKE_BINARY_DIR}/boost")
+  install(DIRECTORY "${CMAKE_BINARY_DIR}/boost"
+          DESTINATION include
+          COMPONENT Devel
+          MESSAGE_NEVER)
+endif()
 endif()
 
 include(CMakePackageConfigHelpers)
