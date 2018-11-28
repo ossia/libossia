@@ -155,47 +155,58 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/RtMidi17/rtmidi17
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/variant/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/flat/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/multi_index/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/spdlog/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/asio/asio/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include/
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/fmt/include/fmt
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/websocketpp/websocketpp
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.hpp
         DESTINATION include/
@@ -207,11 +218,13 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/flat/include/flat
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include/tsl
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(FILES
      ${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectdefs.h
@@ -235,13 +248,15 @@ install(
 
 install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 
 install(SCRIPT InstallBoost.cmake)
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/boost
         DESTINATION include
-        COMPONENT Devel)
+        COMPONENT Devel
+        MESSAGE_NEVER)
 endif()
 
 include(CMakePackageConfigHelpers)
