@@ -67,7 +67,7 @@ set(OSSIA_SUBMODULES
     SmallFunction
     Servus
     bitset2
-    concurrentqueue
+    concurrentqueue tbb
     exprtk
     flat_hash_map
     multi_index
@@ -91,8 +91,16 @@ if(OSSIA_PROTOCOL_ARTNET)
                     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 endif()
 
+message(" -> ${PROJECT_SOURCE_DIR}/CMake/cmake-modules")
 execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
                 WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
+if(OSSIA_PROTOCOL_WIIMOTE)
+  message(" -> ${OSSIA_3RDPARTY_FOLDER}/wiiuse")
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/wiiuse
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+endif()
+
 message(STATUS "...done")
 set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
 endif()
