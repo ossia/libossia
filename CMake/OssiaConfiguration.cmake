@@ -57,6 +57,15 @@ option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
 option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/CMake/cmake-modules;")
 
+if(NOT OSSIA_SDK)
+  set(OSSIA_SDK ${OSSIA_3RDPARTY_FOLDER}/win_audio_sdk)
+endif()
+
+set(CMAKE_PREFIX_PATH
+  "${OSSIA_SDK}/SDL2/cmake"
+  "${OSSIA_SDK}/portaudio/lib/cmake"
+  "${CMAKE_PREFIX_PATH}"
+)
 
 if(OSSIA_CPP_ONLY)
   set(OSSIA_DATAFLOW 0)
@@ -204,7 +213,6 @@ if(OSSIA_QML_ONLY)
   set(OSSIA_DNSSD 1)
 endif()
 
-
 if(OSSIA_UNITY3D_ONLY)
   set(OSSIA_NO_INSTALL 0)
   set(OSSIA_STATIC 0)
@@ -269,54 +277,6 @@ if(OSSIA_NO_QT)
 endif()
 if(OSSIA_OSX_RETROCOMPATIBILITY)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
-endif()
-
-if(OSSIA_SUBMODULE_AUTOUPDATE)
-message(STATUS "Update general OSSIA dependencies :")
-set(OSSIA_SUBMODULES
-    GSL chobo-shl hopscotch-map
-    nano-signal-slot brigand whereami
-    rapidjson readerwriterqueue websocketpp
-    asio variant spdlog fmt
-    SmallFunction
-    Servus
-    bitset2
-    concurrentqueue tbb
-    exprtk
-    flat_hash_map
-    multi_index
-    frozen
-    weakjack
-    verdigris
-    flat
-    )
-
-execute_process(COMMAND git submodule sync --recursive
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-foreach(submodule ${OSSIA_SUBMODULES})
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endforeach()
-
-if(OSSIA_PROTOCOL_ARTNET)
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/libartnet")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/libartnet
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif()
-
-message(" -> ${PROJECT_SOURCE_DIR}/CMake/cmake-modules")
-execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
-                WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-
-if(OSSIA_PROTOCOL_WIIMOTE)
-  message(" -> ${OSSIA_3RDPARTY_FOLDER}/wiiuse")
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/wiiuse
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-endif()
-
-message(STATUS "...done")
-set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
 endif()
 
 include(Sanitize)

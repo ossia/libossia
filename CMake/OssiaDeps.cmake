@@ -1,3 +1,70 @@
+if(OSSIA_SUBMODULE_AUTOUPDATE)
+  message(STATUS "Update general OSSIA dependencies :")
+  set(OSSIA_SUBMODULES
+      GSL chobo-shl hopscotch-map
+      nano-signal-slot brigand whereami
+      rapidjson readerwriterqueue websocketpp
+      asio variant spdlog fmt
+      SmallFunction
+      Servus
+      bitset2
+      concurrentqueue tbb
+      exprtk
+      flat_hash_map
+      multi_index
+      frozen
+      weakjack
+      verdigris
+      flat
+      )
+
+  execute_process(COMMAND git submodule sync --recursive
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+  foreach(submodule ${OSSIA_SUBMODULES})
+      message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
+      execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+  endforeach()
+
+  if(OSSIA_PROTOCOL_ARTNET)
+      message(" -> ${OSSIA_3RDPARTY_FOLDER}/libartnet")
+      execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/libartnet
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+  endif()
+
+  message(" -> ${PROJECT_SOURCE_DIR}/CMake/cmake-modules")
+  execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
+  if(OSSIA_PROTOCOL_WIIMOTE)
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/wiiuse")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/wiiuse
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+  endif()
+
+  message(STATUS "...done")
+  set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
+endif(OSSIA_SUBMODULE_AUTOUPDATE)
+
+# Download SDL2
+if(OSSIA_PROTOCOL_JOYSTICK)
+  if(WIN32)
+    message(STATUS "Downloading audio sdk to ${OSSIA_3RDPARTY_FOLDER}/win-audio-sdk.zip")
+
+    if ( NOT EXISTS "${OSSIA_SDK}")
+      file(MAKE_DIRECTORY ${OSSIA_SDK})
+      file(DOWNLOAD
+        https://github.com/OSSIA/sdk/releases/download/sdk10/win-audio-sdk.zip
+        ${OSSIA_SDK})
+
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
+        WORKING_DIRECTORY ${OSSIA_SDK})
+    endif()
+
+  endif(WIN32)
+endif(OSSIA_PROTOCOL_JOYSTICK)
+
 set(BOOST_MINOR 67)
 if(ANDROID)
   set(Boost_FOUND True)
