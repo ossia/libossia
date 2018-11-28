@@ -46,3 +46,4 @@ OSSIA/ossia-python/pyossia.egg-info*
 3rdparty/boost*
 OSSIA/ossia-node/build
 OSSIA/ossia-node/node_modules
+3rdparty/*sdk*
