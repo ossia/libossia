@@ -251,7 +251,7 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         COMPONENT Devel
         MESSAGE_NEVER)
 
-install(SCRIPT InstallBoost.cmake)
+# install(SCRIPT InstallBoost.cmake)
 
 install(DIRECTORY ${CMAKE_BINARY_DIR}/boost
         DESTINATION include
