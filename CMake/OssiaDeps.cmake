@@ -55,7 +55,7 @@ if(OSSIA_PROTOCOL_JOYSTICK)
       file(MAKE_DIRECTORY ${OSSIA_SDK})
       file(DOWNLOAD
         https://github.com/OSSIA/sdk/releases/download/sdk10/win-audio-sdk.zip
-        ${OSSIA_SDK})
+        ${OSSIA_SDK}/win-audio-sdk.zip)
 
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
