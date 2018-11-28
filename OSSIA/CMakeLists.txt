@@ -307,7 +307,9 @@ if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
   ossia_link_jack()
-  if(TARGET portaudio)
+  if(TARGET portaudio_static)
+    target_link_libraries(ossia PUBLIC portaudio_static)
+  elseif(TARGET portaudio)
     target_link_libraries(ossia PUBLIC portaudio)
   else()
     # Needed because in Ubuntu the static package isn't built with -fPIC
