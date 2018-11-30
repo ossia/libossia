@@ -33,7 +33,11 @@ cmake_policy(SET CMP0069 NEW)
 include(CMake/OssiaDeps.cmake)
 
 # Main library
-find_package(PortAudio)
+set(CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} /opt/score-sdk/portaudio/lib/cmake/portaudio)
+find_package(PortAudio QUIET)
+if(NOT PortAudio_FOUND)
+  find_package(portaudio QUIET)
+endif()
 add_definitions(-DFMT_HEADER_ONLY=1)
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
