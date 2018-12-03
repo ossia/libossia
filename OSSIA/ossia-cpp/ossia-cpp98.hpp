@@ -1718,7 +1718,7 @@ class OSSIA_EXPORT oscquery_server
     void on_connection(const std::string&);
     void on_disconnection(const std::string&);
     void on_add_node_request(const std::string& parent, const ossia::net::parameter_data& param);
-    void on_remove_node_request(const std::string& node_to_delete);
+    void on_remove_node_request(const std::string& parent, const std::string& node);
     void on_rename_node_request(const std::string& node_to_rename, const std::string& new_name);
     ossia::net::device_base* m_dev;
 

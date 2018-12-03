@@ -1816,6 +1816,9 @@ oscquery_server::~oscquery_server()
       {
         proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
         proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
+        m_dev->on_add_node_requested.disconnect<&oscquery_server::on_add_node_request>(*this);
+        m_dev->on_remove_node_requested.disconnect<&oscquery_server::on_remove_node_request>(*this);
+        m_dev->on_rename_node_requested.disconnect<&oscquery_server::on_rename_node_request>(*this);
       }
 
       delete m_dev;
@@ -1838,6 +1841,9 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
       {
         proto->onClientConnected.disconnect<&oscquery_server::on_connection>(*this);
         proto->onClientDisconnected.disconnect<&oscquery_server::on_disconnection>(*this);
+        m_dev->on_add_node_requested.disconnect<&oscquery_server::on_add_node_request>(*this);
+        m_dev->on_remove_node_requested.disconnect<&oscquery_server::on_remove_node_request>(*this);
+        m_dev->on_rename_node_requested.disconnect<&oscquery_server::on_rename_node_request>(*this);
       }
 
       delete m_dev;
@@ -1850,6 +1856,9 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
     {
       proto->onClientConnected.connect<&oscquery_server::on_connection>(*this);
       proto->onClientDisconnected.connect<&oscquery_server::on_disconnection>(*this);
+      m_dev->on_add_node_requested.connect<&oscquery_server::on_add_node_request>(*this);
+      m_dev->on_remove_node_requested.connect<&oscquery_server::on_remove_node_request>(*this);
+      m_dev->on_rename_node_requested.connect<&oscquery_server::on_rename_node_request>(*this);
     }
   }
   catch(const std::exception& e)
@@ -1977,7 +1986,7 @@ void oscquery_server::remove_remove_node_callback()
   set_remove_node_callback(nullptr, nullptr);
 }
 
-void oscquery_server::on_remove_node_request(const std::string& parent)
+void oscquery_server::on_remove_node_request(const std::string& parent, const std::string& name)
 {
   if(m_remove_node_cb)
   {
@@ -1986,7 +1995,7 @@ void oscquery_server::on_remove_node_request(const std::string& parent)
       auto nodes = ossia::net::find_nodes(m_dev->get_root_node(), parent);
       for(auto n : nodes)
       {
-        n->get_parent()->remove_child(*n);
+        n->remove_child(name);
       }
     }
   }
