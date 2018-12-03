@@ -1939,6 +1939,85 @@ void oscquery_server::on_disconnection(const std::string& str)
   }
 }
 
+void oscquery_server::set_add_node_callback(add_node_callback c, void* ctx)
+{
+  m_add_node_cb = c;
+  m_add_node_ctx = ctx;
+}
+
+void oscquery_server::remove_add_node_callback()
+{
+  set_add_node_callback(nullptr, nullptr);
+}
+
+void oscquery_server::on_add_node_request(const std::string& parent, const ossia::net::parameter_data& param)
+{
+  if(m_add_node_cb)
+  {
+    if(m_add_node_cb(m_add_node_ctx, parent, param.name))
+    {
+      auto nodes = ossia::net::find_nodes(m_dev->get_root_node(), parent);
+      for(auto n : nodes)
+      {
+        auto& node = ossia::net::find_or_create_node(*n, param.name);
+        node.set_parameter(std::make_unique<ossia::net::generic_parameter>(param,node));
+      }
+    }
+  }
+}
+
+void oscquery_server::set_remove_node_callback(remove_node_callback c, void* ctx)
+{
+  m_remove_node_cb = c;
+  m_remove_node_ctx = ctx;
+}
+
+void oscquery_server::remove_remove_node_callback()
+{
+  set_remove_node_callback(nullptr, nullptr);
+}
+
+void oscquery_server::on_remove_node_request(const std::string& parent)
+{
+  if(m_remove_node_cb)
+  {
+    if(m_remove_node_cb(m_add_node_ctx, parent))
+    {
+      auto nodes = ossia::net::find_nodes(m_dev->get_root_node(), parent);
+      for(auto n : nodes)
+      {
+        n->get_parent()->remove_child(*n);
+      }
+    }
+  }
+}
+
+void oscquery_server::set_rename_node_callback(rename_node_callback c, void* ctx)
+{
+  m_rename_node_cb = c;
+  m_rename_node_ctx = ctx;
+}
+
+void oscquery_server::remove_rename_node_callback()
+{
+  set_rename_node_callback(nullptr, nullptr);
+}
+
+void oscquery_server::on_rename_node_request(const std::string& node, const std::string& new_name)
+{
+  if(m_rename_node_cb)
+  {
+    if(m_rename_node_cb(m_rename_node_ctx, node, new_name))
+    {
+      auto nodes = ossia::net::find_nodes(m_dev->get_root_node(), node);
+      for(auto n : nodes)
+      {
+        n->set_name(new_name);
+      }
+    }
+  }
+}
+
 oscquery_mirror::oscquery_mirror(std::string name, std::string host)
   : m_dev{}
   , m_param_cb{}
@@ -2172,7 +2251,7 @@ void oscquery_mirror::on_unhandled_message(std::string_view s, const ossia::valu
 {
   if(m_unhandled_message_cb)
   {
-    m_unhandled_message_cb(m_unhandled_message_ctx, s, v);
+    m_unhandled_message_cb(m_unhandled_message_ctx, std::string(s), v);
   }
 }
 
@@ -2191,7 +2270,7 @@ void oscquery_mirror::on_attribute_modified(ossia::net::node_base& n, std::strin
 {
   if(m_attribute_modified_cb)
   {
-    m_attribute_modified_cb(m_attribute_modified_ctx, &n, s);
+    m_attribute_modified_cb(m_attribute_modified_ctx, &n, std::string(s));
   }
 }
 

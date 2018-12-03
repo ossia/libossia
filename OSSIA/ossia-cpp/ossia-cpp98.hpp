@@ -17,6 +17,7 @@ namespace net
 class node_base;
 class parameter_base;
 class device_base;
+struct parameter_data;
 }
 }
 /**
@@ -458,10 +459,22 @@ typedef void (*node_rn_callback)(void*, const opp::node&, std::string);
 typedef void (*message_callback)(void*, const opp::node&);
 /** @brief container for an unhandled message callback
  */
-typedef void (*unhandled_message_callback)(void*, std::string_view, const opp::value&);
+typedef void (*unhandled_message_callback)(void*, const std::string&, const opp::value&);
 /** @brief container for an attribute modified callback
  */
-typedef void (*attribute_modified_callback)(void*, const opp::node&, std::string_view);
+typedef void (*attribute_modified_callback)(void*, const opp::node&, const std::string&);
+/** @brief container for a node rename request callback
+ * should return true if node could be renamed
+ */
+typedef bool (*rename_node_callback)(void*, const std::string&, const std::string&);
+/** @brief container for a node remove request callback
+ * sould return true if node could be remove
+ */
+typedef bool (*remove_node_callback)(void*, const std::string&);
+/** @brief container for a node creation request callback
+ *  should return true if node could be created
+ */
+typedef bool (*add_node_callback)(void*, const std::string&, const std::string&);
 
 /**
  * @ingroup CPP98API
@@ -1674,17 +1687,55 @@ class OSSIA_EXPORT oscquery_server
     void remove_disconnection_callback();
 
     /**
+     * @brief set a callback to be called when a client request a node creation
+     * @param c the node removing callback
+     * @param ctx the callback context as void*
+     */
+    void set_add_node_callback(add_node_callback c, void* ctx);
+    void remove_add_node_callback();
+
+    /**
+     * @brief set a callback to be called when a client request a node deletion
+     * @param c the node creation callback
+     * @param ctx the callback context as void*
+     */
+    void set_remove_node_callback(remove_node_callback c, void* ctx);
+    void remove_remove_node_callback();
+
+    /**
+     * @brief set a callback to be called when a client request a node renaming
+     * @param c the node renaming callback
+     * @param ctx the callback context as void*
+     */
+    void set_rename_node_callback(rename_node_callback c, void* ctx);
+    void remove_rename_node_callback();
+
+    /**
      * @brief Returns true if the server is connected
      */
     bool connected() const;
   private:
     void on_connection(const std::string&);
     void on_disconnection(const std::string&);
+    void on_add_node_request(const std::string& parent, const ossia::net::parameter_data& param);
+    void on_remove_node_request(const std::string& node_to_delete);
+    void on_rename_node_request(const std::string& node_to_rename, const std::string& new_name);
     ossia::net::device_base* m_dev;
+
     connection_callback m_con;
     void* m_con_ctx;
+
     disconnection_callback m_discon;
     void* m_discon_ctx;
+
+    add_node_callback m_add_node_cb;
+    void* m_add_node_ctx;
+
+    remove_node_callback m_remove_node_cb;
+    void* m_remove_node_ctx;
+
+    rename_node_callback m_rename_node_cb;
+    void* m_rename_node_ctx;
 };
 
 /**
