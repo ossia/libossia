@@ -228,7 +228,7 @@ generic_parameter::set_value_type(ossia::val_type type)
       convert_compatible_domain(m_domain, m_valueType);
     }
   }
-  m_node.get_device().on_attribute_modified(m_node, text_value_type());
+  m_node.get_device().on_attribute_modified(m_node, std::string(text_value_type()));
   return *this;
 }
 
@@ -243,7 +243,7 @@ generic_parameter::set_access(ossia::access_mode accessMode)
   if (m_accessMode != accessMode)
   {
     m_accessMode = accessMode;
-    m_node.get_device().on_attribute_modified(m_node, text_access_mode());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_access_mode()));
   }
   return *this;
 }
@@ -261,7 +261,7 @@ generic_parameter::set_domain(const ossia::domain& domain)
     m_domain = domain;
     convert_compatible_domain(m_domain, m_valueType);
 
-    m_node.get_device().on_attribute_modified(m_node, text_domain());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_domain()));
   }
   return *this;
 }
@@ -277,7 +277,7 @@ generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
   if (m_boundingMode != boundingMode && m_valueType != ossia::val_type::BOOL)
   {
     m_boundingMode = boundingMode;
-    m_node.get_device().on_attribute_modified(m_node, text_bounding_mode());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_bounding_mode()));
   }
   return *this;
 }
@@ -320,7 +320,7 @@ generic_parameter& generic_parameter::set_unit(const unit_t& v)
       }
     }
   }
-  m_node.get_device().on_attribute_modified(m_node, text_unit());
+  m_node.get_device().on_attribute_modified(m_node, std::string(text_unit()));
   return *this;
 }
 }

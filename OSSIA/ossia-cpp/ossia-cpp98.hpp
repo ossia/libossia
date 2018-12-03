@@ -1924,8 +1924,8 @@ class OSSIA_EXPORT oscquery_mirror
     void on_node_renamed(ossia::net::node_base&, std::string);
 
     void on_message(const ossia::net::parameter_base&);
-    void on_unhandled_message(std::string_view, const ossia::value&);
-    void on_attribute_modified(ossia::net::node_base&, std::string_view);
+    void on_unhandled_message(const std::string&, const ossia::value&);
+    void on_attribute_modified(ossia::net::node_base&, const std::string&);
 
     ossia::net::device_base* m_dev;
     parameter_callback m_param_cb;

@@ -961,7 +961,7 @@ void json_parser::parse_parameter_value(
       }
     }
 
-    dev.on_unhandled_message(path, detail::ReadValue(it->value));
+    dev.on_unhandled_message(std::string(path), detail::ReadValue(it->value));
   }
 }
 

@@ -195,7 +195,7 @@ ossia::net::parameter_base& parameter_base::set_repetition_filter(
   {
     m_repetitionFilter = repetitionFilter;
     m_node.get_device().on_attribute_modified(
-        m_node, text_repetition_filter());
+        m_node, std::string(text_repetition_filter()));
   }
   return *this;
 }
@@ -205,7 +205,7 @@ parameter_base& parameter_base::set_unit(const unit_t& u)
   if (m_unit != u)
   {
     m_unit = u;
-    m_node.get_device().on_attribute_modified(m_node, text_unit());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_unit()));
   }
   return *this;
 }
@@ -220,7 +220,7 @@ parameter_base& parameter_base::set_disabled(bool v)
   if (m_disabled != v)
   {
     m_disabled = v;
-    m_node.get_device().on_attribute_modified(m_node, text_disabled());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_disabled()));
   }
   return *this;
 }
@@ -235,7 +235,7 @@ parameter_base& parameter_base::set_muted(bool v)
   if (m_muted != v)
   {
     m_muted = v;
-    m_node.get_device().on_attribute_modified(m_node, text_muted());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_muted()));
   }
   return *this;
 }
@@ -250,7 +250,7 @@ parameter_base& parameter_base::set_critical(bool v)
   if (m_critical != v)
   {
     m_critical = v;
-    m_node.get_device().on_attribute_modified(m_node, text_critical());
+    m_node.get_device().on_attribute_modified(m_node, std::string(text_critical()));
   }
   return *this;
 }

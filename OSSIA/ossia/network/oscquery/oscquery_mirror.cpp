@@ -726,7 +726,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
               }
 
               m_device->on_unhandled_message(
-                  path, detail::ReadValue(it->value));
+                  std::string(path), detail::ReadValue(it->value));
             }
           }
 

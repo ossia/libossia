@@ -59,7 +59,7 @@ void node_base::set(string_view str, bool value)
     else
       ossia::unset_attribute((extended_attributes&)*this, str);
 
-    get_device().on_attribute_modified(*this, str);
+    get_device().on_attribute_modified(*this, std::string(str));
   }
 }
 

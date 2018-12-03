@@ -2247,7 +2247,7 @@ void oscquery_mirror::remove_unhandled_message_callback()
   set_unhandled_message_callback(nullptr, nullptr);
 }
 
-void oscquery_mirror::on_unhandled_message(std::string_view s, const ossia::value& v)
+void oscquery_mirror::on_unhandled_message(const std::string& s, const ossia::value& v)
 {
   if(m_unhandled_message_cb)
   {
@@ -2266,7 +2266,7 @@ void oscquery_mirror::remove_attribute_modified_callback()
   set_attribute_modified_callback(nullptr, nullptr);
 }
 
-void oscquery_mirror::on_attribute_modified(ossia::net::node_base& n, std::string_view s)
+void oscquery_mirror::on_attribute_modified(ossia::net::node_base& n, const std::string& s)
 {
   if(m_attribute_modified_cb)
   {

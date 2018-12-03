@@ -91,14 +91,14 @@ public:
   Nano::Signal<void(node_base&, std::string)>
       on_node_renamed; // Node has the new name, second argument is the old
                        // name
-  Nano::Signal<void(node_base&, ossia::string_view)>
+  Nano::Signal<void(node_base&, const std::string&)>
       on_attribute_modified; // Second argument is an identifier
   Nano::Signal<void(const parameter_base&)>
       on_parameter_created; // The parameter being created
   Nano::Signal<void(const parameter_base&)>
       on_parameter_removing; // The node whose parameter was removed
   Nano::Signal<void(const parameter_base&)> on_message; // A received value
-  Nano::Signal<void(ossia::string_view, const ossia::value& val)>
+  Nano::Signal<void(const std::string, const ossia::value& val)>
       on_unhandled_message; // A received value on a non-existing address
 
   //! Called when a network client requests the creation of an instance.
@@ -127,7 +127,7 @@ void node_base::set(ossia::string_view str, const T& value)
   if ((opt && *opt != value) || !opt)
   {
     ossia::set_attribute((extended_attributes&)*this, str, value);
-    get_device().on_attribute_modified(*this, str);
+    get_device().on_attribute_modified(*this, std::string(str));
   }
 }
 
@@ -139,7 +139,7 @@ void node_base::set(ossia::string_view str, T&& value)
   if ((opt && *opt != value) || !opt)
   {
     ossia::set_attribute((extended_attributes&)*this, str, std::move(value));
-    get_device().on_attribute_modified(*this, str);
+    get_device().on_attribute_modified(*this, std::string(str));
   }
 }
 
@@ -151,7 +151,7 @@ void node_base::set(ossia::string_view str, const optional<T>& value)
   if (opt != value)
   {
     ossia::set_optional_attribute((extended_attributes&)*this, str, value);
-    get_device().on_attribute_modified(*this, str);
+    get_device().on_attribute_modified(*this, std::string(str));
   }
 }
 
@@ -164,7 +164,7 @@ void node_base::set(ossia::string_view str, optional<T>&& value)
   {
     ossia::set_optional_attribute(
         (extended_attributes&)*this, str, std::move(value));
-    get_device().on_attribute_modified(*this, str);
+    get_device().on_attribute_modified(*this, std::string(str));
   }
 }
 
