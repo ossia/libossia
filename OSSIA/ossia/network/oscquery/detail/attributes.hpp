@@ -183,6 +183,10 @@ constexpr auto remove_node()
 {
   constexpr_return(ossia::make_string_view("REMOVE_NODE"));
 }
+constexpr auto rename_node()
+{
+  constexpr_return(ossia::make_string_view("RENAME_NODE"));
+}
 constexpr auto node_name()
 {
   constexpr_return(ossia::make_string_view("NAME"));

@@ -9,6 +9,8 @@
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/base/parameter_data.hpp>
+
 #include <ossia/preset/preset.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 #include<array>
@@ -2208,5 +2210,40 @@ bool oscquery_mirror::get_zombie_on_remove() const
         m_dev->get_protocol()).get_zombie_on_remove();
 
   return f;
+}
+
+void oscquery_mirror::request_add_node(node parent, const std::string& name)
+{
+  if(m_dev)
+  {
+    auto& proto = static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+                   m_dev->get_protocol());
+
+    ossia::net::parameter_data data;
+    data.name = name;
+    proto.request_add_node(*parent.m_node,data);
+  }
+}
+
+void oscquery_mirror::request_remove_node(node node_to_be_removed)
+{
+  if(m_dev && node_to_be_removed)
+  {
+    auto& proto = static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+                   m_dev->get_protocol());
+
+    proto.request_remove_node(*node_to_be_removed.m_node);
+  }
+}
+
+void oscquery_mirror::request_rename_node(node node, std::string new_name)
+{
+  if(m_dev)
+  {
+    auto& proto = static_cast<ossia::oscquery::oscquery_mirror_protocol&>(
+                   m_dev->get_protocol());
+
+    proto.request_rename_node(*node.m_node,new_name);
+  }
 }
 }

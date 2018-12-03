@@ -473,6 +473,19 @@ void oscquery_mirror_protocol::request_remove_node(net::node_base& self)
   }
 }
 
+void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const std::string& new_name)
+{
+  std::string req;
+  req.reserve(64);
+  req = node.osc_address();
+  req += '?';
+  req += detail::rename_node();
+  req += '=';
+  req += new_name;
+
+  http_send_message(std::move(req));
+}
+
 void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
 {
   m_websocketClient->onClose = std::move(f);

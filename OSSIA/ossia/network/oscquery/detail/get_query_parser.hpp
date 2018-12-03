@@ -126,6 +126,15 @@ public:
             return {};
           }
 
+          // RENAME_NODE
+          auto rn_instance_it = parameters.find(detail::rename_node());
+          if (rn_instance_it != parameters.end())
+          {
+            // Value is the child to remove
+            proto.rename_node(path, rn_instance_it.value());
+            return {};
+          }
+
           // All the value-less parameters
           ossia::small_vector<std::string, 5> attributes;
           for (const auto& elt : parameters)

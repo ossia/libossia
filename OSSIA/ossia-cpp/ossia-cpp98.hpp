@@ -1844,6 +1844,26 @@ class OSSIA_EXPORT oscquery_mirror
      */
     bool get_zombie_on_remove() const;
 
+    /**
+     * @brief request adding a node under the parent on the server with the given name
+     * @param parent
+     * @param name
+     */
+    void request_add_node(node parent, const std::string& name);
+
+    /**
+     * @brief request removing the given node
+     * @param node to be removed
+     */
+    void request_remove_node(node node_to_be_removed);
+
+    /**
+     * @brief request renaming of given node
+     * @param node to be renamed
+     * @param new name
+     */
+    void request_rename_node(node node, std::string new_name);
+
   private:
     void on_parameter_created(const ossia::net::parameter_base&);
     void on_parameter_removed(const ossia::net::parameter_base&);

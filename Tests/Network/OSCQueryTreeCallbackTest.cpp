@@ -9,6 +9,7 @@
 
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 #include "TestUtils.hpp"
 
@@ -30,13 +31,13 @@ static std::vector<std::string> removed_params;
 static std::vector<std::string> created_nodes;
 static std::vector<std::string> removed_nodes;
 
-static std::vector<std::string> created_names;
-static std::vector<std::string> removed_names;
+static std::vector<std::pair<std::string, std::string>> renamed_nodes;
 
 static std::vector<std::string> add_params;
 static std::vector<std::string> rm_params;
 static std::vector<std::string> add_nodes;
 static std::vector<std::string> rm_nodes;
+static std::vector<std::pair<std::string, std::string>> rn_nodes;
 
 #define LOOP_DELAY 500ms
 
@@ -120,10 +121,61 @@ void check(opp::oscquery_mirror& client)
   rm_nodes.clear();
 }
 
+class server_callback_handler
+{
+  public:
+    server_callback_handler(generic_device& dev) : m_dev(dev)
+    {
+      m_dev.on_rename_node_requested.connect<&server_callback_handler::rename_cb>(*this);
+      m_dev.on_remove_node_requested.connect<&server_callback_handler::remove_cb>(*this);
+      m_dev.on_add_node_requested.connect<&server_callback_handler::add_cb>(*this);
+    }
+
+    void rename_cb(std::string node_str, std::string new_name)
+    {
+      std::cout << "rename_cb" << std::endl;
+      auto nodes = ossia::net::find_nodes(m_dev.get_root_node(),node_str);
+      for(auto n : nodes)
+      {
+        n->set_name(new_name);
+      }
+    }
+
+    void remove_cb(std::string parent, std::string name)
+    {
+      std::cout << "remove_cb" << std::endl;
+      auto nodes = ossia::net::find_nodes(m_dev.get_root_node(), parent);
+      for(auto node : nodes)
+      {
+        if(!node->remove_child(name))
+        {
+          std::cerr << "can't remove node: " << name << std::endl;
+        }
+      }
+    }
+
+    void add_cb(std::string parent, const parameter_data& param)
+    {
+      std::cout << "add_cb" << std::endl;
+      auto nodes = ossia::net::find_nodes(m_dev.get_root_node(), parent);
+
+      for(auto n : nodes)
+      {
+        auto& node = ossia::net::find_or_create_node(m_dev.get_root_node(), param.name);
+        node.set_parameter(std::make_unique<generic_parameter>(param,node));
+      }
+    }
+  private:
+    generic_device& m_dev;
+
+};
+
 TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_creation_cb")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
+  server_callback_handler sch(serv);
 
   int step = 0;
 
@@ -162,12 +214,23 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     vec->push_back(n.get_name());
   }, &removed_nodes);
 
+  client.set_node_renamed_callback(
+        [](void* context, const opp::node& n, std::string s)
+  {
+    auto vec = static_cast<std::vector<std::pair<std::string, std::string>>*>(context);
+    vec->push_back({s, n.get_name()});
+    auto pair = vec->back();
+    std::cout << "renamed callback: " << pair.first << " becomes " << pair.second << std::endl;
+
+  }, &renamed_nodes);
+
   while(!client.is_connected())
   {
     std::cerr << "damned ! les connexions ne font pas !" << std::endl;
     client.reconnect();
     std::this_thread::sleep_for(100ms);
   }
+
 
   std::cout << "step " << step++ << std::endl;
 
@@ -230,29 +293,113 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   check(client);
 
-  std::cout << "*********** check for renaming node ***********" << std::endl;
-  serv.create_child("weird_name");
-  add_nodes.push_back("weird_name");
-
-  check(client);
-
-  auto weird_node = client.get_root_node().find_child("weird_name");
-  weird_node.set_name("another_name");
-
-  int count=0;
-  bool flag = false;
-  while(count++<10)
   {
-    std::cout << "server up" << std::endl;
-    serv_proto->update(serv.get_root_node());
-    std::this_thread::sleep_for(LOOP_DELAY);
+    reset();
+    std::cout << "request_add_node" << std::endl;
+    std::string name = "new_node";
+    client.request_add_node(client.get_root_node(), name);
 
-    if( auto node = serv.find_child("another_name"))
+    int count=0;
+    bool flag = false;
+    while(count++<10)
     {
-      flag = true;
+      std::cout << "server up" << std::endl;
+      serv_proto->update(serv.get_root_node());
+      std::this_thread::sleep_for(LOOP_DELAY);
+
+      auto nodes = ossia::net::find_nodes(serv.get_root_node(), name);
+
+      flag = nodes.size() > 0;
+      if(flag)
+      {
+        add_nodes.push_back(name);
+        add_params.push_back(name);
+        check(client);
+        break;
+      }
     }
+    CHECK(flag);
+    check(client);
+
   }
-  CHECK(flag);
+
+  {
+    reset();
+    std::cout << "check request_rename" << std::endl;
+    std::string name = "weird_name";
+    serv.create_child(name);
+    add_nodes.push_back(name);
+
+    check(client);
+
+    auto weird_node = client.get_root_node().find_child(name);
+    std::string new_name = "another_cool_name";
+    client.request_rename_node(weird_node, new_name);
+
+    int count=0;
+    bool flag = false;
+    while(count++<10)
+    {
+      std::cout << "server up" << std::endl;
+      serv_proto->update(serv.get_root_node());
+      std::this_thread::sleep_for(LOOP_DELAY);
+
+      auto nodes = ossia::net::find_nodes(serv.get_root_node(), new_name);
+
+      flag = nodes.size() > 0;
+      if(flag)
+        break;
+    }
+    CHECK(flag);
+  }
+
+  {
+    reset();
+    std::cout << "check request_remove_node" << std::endl;
+    std::string name = "node_to_be_deleted";
+    serv.create_child(name);
+    add_nodes.push_back(name);
+
+    check(client);
+
+    auto node = client.get_root_node().find_child(name);
+    client.request_remove_node(node);
+
+    int count = 0;
+    bool flag = false;
+    while(count++<10)
+    {
+      std::cout << "server up" << std::endl;
+      serv_proto->update(serv.get_root_node());
+      std::this_thread::sleep_for(LOOP_DELAY);
+
+      auto nodes = ossia::net::find_nodes(serv.get_root_node(), name);
+
+      flag = nodes.size() == 0;
+      if(flag)
+      {
+        rm_nodes.push_back(name);
+        check(client);
+        break;
+      }
+    }
+    CHECK(flag);
+  }
+
+  {
+    std::cout << "*********** check for renaming node ***********" << std::endl;
+    auto cool_node = serv.create_child("cool");
+    add_nodes.push_back("cool");
+    cool_node->create_parameter(ossia::val_type::LIST);
+    add_params.push_back("cool");
+
+    check(client);
+
+    cool_node->set_name("super");
+    rn_nodes.push_back({"cool","super"});
+
+    check(client);
+  }
 }
 
 void node_created_cb(ossia::net::node_base& n)

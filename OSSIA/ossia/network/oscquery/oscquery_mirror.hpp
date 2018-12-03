@@ -99,6 +99,12 @@ public:
   void request_remove_node(net::node_base&);
 
   /**
+   * @brief Request a node renaming from the server
+   * @param Node to be removed and new name
+   */
+  void request_rename_node(net::node_base& node, const std::string& new_name);
+
+  /**
    * @brief Define behavior when a node is removed : mark it as zombie if true (default), remove it otherwise.
    * @param zombie_on_removed
    */

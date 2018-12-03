@@ -413,6 +413,12 @@ void oscquery_server_protocol::remove_node(
   m_device->on_remove_node_requested(std::string(path), node);
 }
 
+void oscquery_server_protocol::rename_node(
+    ossia::string_view path, const std::string& new_name)
+{
+  m_device->on_rename_node_requested(std::string(path), new_name);
+}
+
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, oscpack::IpEndpointName ip) try
 {

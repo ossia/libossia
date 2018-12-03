@@ -109,6 +109,11 @@ public:
   //! Argument is the path of the parent and the node to remove.
   Nano::Signal<void(std::string, std::string)> on_remove_node_requested;
 
+  //! Called when a network client requests the renaming of a node
+  //! Argument is the node to rename and the new name
+  Nano::Signal<void(std::string, std::string)> on_rename_node_requested;
+
+
 protected:
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
   device_capabilities m_capabilities;

@@ -89,6 +89,7 @@ private:
   void
   add_node(ossia::string_view path, const string_map<std::string>& parameters);
   void remove_node(ossia::string_view path, const std::string& node);
+  void rename_node(ossia::string_view node, const std::string& new_name);
 
   // OSC callback
   void
