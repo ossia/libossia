@@ -470,8 +470,8 @@ bool node::has_parameter() const
 
 std::string node::get_address() const
 {
-  if(m_param)
-    return ossia::net::osc_parameter_string(*m_param);
+  if(m_node)
+    return ossia::net::osc_parameter_string(*m_node);
   return "";
 }
 
