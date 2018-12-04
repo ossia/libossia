@@ -1801,6 +1801,14 @@ oscquery_server::oscquery_server(std::string name, int oscPort, int wsPort)
   , m_con_ctx{}
   , m_discon{}
   , m_discon_ctx{}
+  , m_add_node_cb{}
+  , m_add_node_ctx{}
+
+  , m_remove_node_cb{}
+  , m_remove_node_ctx{}
+
+  , m_rename_node_cb{}
+  , m_rename_node_ctx{}
 {
   setup(std::move(name), oscPort, wsPort);
 }
@@ -2037,6 +2045,14 @@ oscquery_mirror::oscquery_mirror(std::string name, std::string host)
   , m_node_ctx{}
   , m_rm_node_cb{}
   , m_rm_node_ctx{}
+  , m_rn_node_cb{}
+  , m_rn_node_ctx{}
+  , m_message_cb{}
+  , m_message_ctx{}
+  , m_unhandled_message_cb{}
+  , m_unhandled_message_ctx{}
+  , m_attribute_modified_cb{}
+  , m_attribute_modified_ctx{}
   , m_name{name}
   , m_host{host}
 {
