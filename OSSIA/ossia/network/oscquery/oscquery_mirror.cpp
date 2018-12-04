@@ -743,31 +743,9 @@ bool oscquery_mirror_protocol::on_WSMessage(
             {
               std::string full_path{dat.GetString(), dat.GetStringLength()};
 
-              m_functionQueue.enqueue([this, f = std::move(full_path)] {
-                auto on_result = [this, f](auto& req, const auto& res) {
-                  auto data = json_parser::parse(res);
-                  if (data->IsNull())
-                  {
-                    if (m_logger.inbound_logger)
-                      m_logger.inbound_logger->warn(
-                          "Invalid WS message received: {}", res);
-                    return;
-                  }
-
-                  m_functionQueue.enqueue([this, f, data] {
-                    json_parser::parse_path_added(
-                        get_device().get_root_node(), f, *data);
-                  });
-                  if (m_commandCallback)
-                    m_commandCallback();
-
-                  req.close();
-                };
-
-                auto hrq = std::make_shared<
-                    http_get_request<decltype(on_result), http_error>>(
-                    on_result, http_error{}, m_http->context, m_httpHost, f);
-                hrq->resolve(m_httpHost, m_queryPort);
+              m_functionQueue.enqueue([this, f = std::move(full_path), doc = std::move(data)] {
+                json_parser::parse_path_added(
+                    m_device->get_root_node(), f, *doc);
               });
             }
           }

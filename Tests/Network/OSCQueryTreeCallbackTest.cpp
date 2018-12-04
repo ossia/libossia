@@ -243,7 +243,6 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::this_thread::sleep_for(100ms);
   }
 
-
   std::cout << "step " << step++ << std::endl;
 
   serv.create_child("foo")->create_parameter(ossia::val_type::BOOL);

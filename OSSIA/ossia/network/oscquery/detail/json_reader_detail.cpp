@@ -991,7 +991,8 @@ void json_parser::parse_path_added(
 
   if (auto parent = ossia::net::find_node(root, s.first))
   {
-    if (auto cld = parent->find_child(s.second); !cld)
+    auto cld = parent->find_child(s.second);
+    if (!cld)
     {
       // The node does not exist
       auto c = parent->create_child(s.second);
