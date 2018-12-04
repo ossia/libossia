@@ -274,7 +274,6 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
   }
   m_device = &dev;
 
-  // TODO renamed, etc
   dev.on_node_created.connect<&oscquery_server_protocol::on_nodeCreated>(this);
   dev.on_node_removing.connect<&oscquery_server_protocol::on_nodeRemoved>(
       this);

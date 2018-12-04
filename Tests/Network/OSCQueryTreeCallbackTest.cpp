@@ -73,7 +73,10 @@ void check(opp::oscquery_mirror& client)
   for(auto& n : add_nodes)
   {
     std::cout << "\t" << n << std::endl;
-    CHECK(created_nodes[i] == add_nodes[i]);
+    if (i<created_nodes.size() && i<add_nodes.size())
+    {
+      CHECK(created_nodes[i] == add_nodes[i]);
+    }
     CHECK(client.get_root_node().find_children(n).size() == 1);
     i++;
   }
@@ -84,7 +87,10 @@ void check(opp::oscquery_mirror& client)
   for(auto& n : rm_nodes)
   {
     std::cout << "\t" << n << std::endl;
-    CHECK(removed_nodes[i] == rm_nodes[i]);
+    if (i<removed_nodes.size() && i<rm_nodes.size())
+    {
+      CHECK(removed_nodes[i] == rm_nodes[i]);
+    }
     CHECK(client.get_root_node().find_children(n).size() == 0);
     i++;
   }
@@ -95,7 +101,10 @@ void check(opp::oscquery_mirror& client)
   for(auto& n : add_params)
   {
     std::cout << "\t" << n << std::endl;
-    CHECK(created_params[i] == add_params[i]);
+    if(i<created_params.size() && i<add_params.size())
+    {
+      CHECK(created_params[i] == add_params[i]);
+    }
     auto children = client.get_root_node().find_children(n);
     if(!children.empty())
       CHECK(children[0].has_parameter());
@@ -108,7 +117,10 @@ void check(opp::oscquery_mirror& client)
   for(auto& n : rm_params)
   {
     std::cout << "\t" << n << std::endl;
-    CHECK(removed_params[i] == rm_params[i]);
+    if(i<removed_params.size() && i<rm_params.size())
+    {
+      CHECK(removed_params[i] == rm_params[i]);
+    }
     auto children = client.get_root_node().find_children(n);
     if(!children.empty())
       CHECK(!children[0].has_parameter());
