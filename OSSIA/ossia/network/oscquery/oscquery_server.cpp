@@ -91,6 +91,10 @@ oscquery_server_protocol::~oscquery_server_protocol()
         this);
     dev.on_node_removing.disconnect<&oscquery_server_protocol::on_nodeRemoved>(
         this);
+    dev.on_parameter_created
+        .disconnect<&oscquery_server_protocol::on_parameterCreated>(this);
+    dev.on_parameter_removing
+        .disconnect<&oscquery_server_protocol::on_parameterRemoved>(this);
     dev.on_attribute_modified
         .disconnect<&oscquery_server_protocol::on_attributeChanged>(this);
     dev.on_node_renamed.disconnect<&oscquery_server_protocol::on_nodeRenamed>(
@@ -268,14 +272,18 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
   if (m_device)
   {
     auto& old = *m_device;
-    old.on_node_created.disconnect<&oscquery_server_protocol::on_nodeCreated>(
-        this);
-    old.on_node_removing.disconnect<&oscquery_server_protocol::on_nodeRemoved>(
-        this);
+    old.on_node_created
+        .disconnect<&oscquery_server_protocol::on_nodeCreated>(this);
+    old.on_node_removing
+        .disconnect<&oscquery_server_protocol::on_nodeRemoved>(this);
+    dev.on_parameter_created
+        .disconnect<&oscquery_server_protocol::on_parameterCreated>(this);
+    dev.on_parameter_removing
+        .disconnect<&oscquery_server_protocol::on_parameterRemoved>(this);
     old.on_attribute_modified
         .disconnect<&oscquery_server_protocol::on_attributeChanged>(this);
-    old.on_node_renamed.disconnect<&oscquery_server_protocol::on_nodeRenamed>(
-        this);
+    old.on_node_renamed
+        .disconnect<&oscquery_server_protocol::on_nodeRenamed>(this);
 
     ossia::net::visit_parameters(
         old.get_root_node(),
@@ -286,12 +294,18 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
   }
   m_device = &dev;
 
-  dev.on_node_created.connect<&oscquery_server_protocol::on_nodeCreated>(this);
-  dev.on_node_removing.connect<&oscquery_server_protocol::on_nodeRemoved>(
-      this);
+  dev.on_node_created
+      .connect<&oscquery_server_protocol::on_nodeCreated>(this);
+  dev.on_node_removing
+      .connect<&oscquery_server_protocol::on_nodeRemoved>(this);
+  dev.on_parameter_created
+      .connect<&oscquery_server_protocol::on_parameterCreated>(this);
+  dev.on_parameter_removing
+      .connect<&oscquery_server_protocol::on_parameterRemoved>(this);
   dev.on_attribute_modified
       .connect<&oscquery_server_protocol::on_attributeChanged>(this);
-  dev.on_node_renamed.connect<&oscquery_server_protocol::on_nodeRenamed>(this);
+  dev.on_node_renamed
+      .connect<&oscquery_server_protocol::on_nodeRenamed>(this);
 
   update_zeroconf();
 
@@ -547,6 +561,16 @@ catch (const std::exception& e)
 catch (...)
 {
   logger().error("oscquery_server_protocol::on_nodeRemoved: error.");
+}
+
+void oscquery_server_protocol::on_parameterCreated(const ossia::net::parameter_base& p)
+{
+  on_attributeChanged(p.get_node(), ossia::net::text_value_type());
+}
+
+void oscquery_server_protocol::on_parameterRemoved(const ossia::net::parameter_base& p)
+{
+  on_attributeChanged(p.get_node(), ossia::net::text_value_type());
 }
 
 void oscquery_server_protocol::on_attributeChanged(

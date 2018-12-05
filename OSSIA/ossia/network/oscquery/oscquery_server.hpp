@@ -104,6 +104,8 @@ private:
   // Local device callback
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
+  void on_parameterCreated(const ossia::net::parameter_base&);
+  void on_parameterRemoved(const ossia::net::parameter_base&);
   void
   on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
