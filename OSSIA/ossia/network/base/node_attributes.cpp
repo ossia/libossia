@@ -134,6 +134,8 @@ void set_extended_type(extended_attributes& n, optional<extended_type> i)
 }
 void set_extended_type(ossia::net::node_base& n, optional<extended_type> i)
 {
+  if(!n.get_parameter())
+    n.create_parameter();
   n.set(text_extended_type(), std::move(i));
 }
 
@@ -294,6 +296,8 @@ void set_value_type(ossia::net::node_base& n, val_type v)
 {
   if (auto addr = n.get_parameter())
     addr->set_value_type(std::move(v));
+  else
+    n.create_parameter(std::move(v));
 }
 
 ossia::string_view text_domain()
