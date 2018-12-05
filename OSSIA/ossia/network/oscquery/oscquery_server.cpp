@@ -251,6 +251,18 @@ bool oscquery_server_protocol::update(net::node_base&)
   return false;
 }
 
+void oscquery_server_protocol::run_commands()
+{
+  bool ok = false;
+  std::function<void()> cmd;
+  do
+  {
+    ok = m_functionQueue.try_dequeue(cmd);
+    if (ok && cmd)
+      cmd();
+  } while (ok);
+}
+
 void oscquery_server_protocol::set_device(net::device_base& dev)
 {
   if (m_device)
@@ -402,20 +414,26 @@ void oscquery_server_protocol::add_node(
     }
   }
 
-  m_device->on_add_node_requested(
-      std::string(parent_path), std::move(address));
+  m_functionQueue.enqueue([this, parent_path_str = std::string(parent_path), addr = std::move(address)]{
+    m_device->on_add_node_requested(
+      parent_path_str, addr );
+  });
 }
 
 void oscquery_server_protocol::remove_node(
     ossia::string_view path, const std::string& node)
 {
-  m_device->on_remove_node_requested(std::string(path), node);
+  m_functionQueue.enqueue([this, path_str = std::string(path), node_cp = node]{
+    m_device->on_remove_node_requested(path_str, node_cp);
+  });
 }
 
 void oscquery_server_protocol::rename_node(
     ossia::string_view path, const std::string& new_name)
 {
-  m_device->on_rename_node_requested(std::string(path), new_name);
+  m_functionQueue.enqueue([this, path_str = std::string(path), name = new_name]{
+    m_device->on_rename_node_requested(path_str, name);
+  });
 }
 
 void oscquery_server_protocol::on_OSCMessage(

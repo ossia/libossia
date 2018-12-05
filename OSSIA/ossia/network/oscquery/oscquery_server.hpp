@@ -8,6 +8,7 @@
 
 #include <tsl/hopscotch_map.h>
 #include <nano_signal_slot.hpp>
+#include <readerwriterqueue.h>
 
 #include <atomic>
 namespace osc
@@ -67,6 +68,7 @@ public:
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
+  void run_commands();
   void set_device(net::device_base& dev) override;
   void stop() override;
   ossia::net::device_base& get_device() const
@@ -142,6 +144,14 @@ private:
   uint16_t m_wsPort{};
 
   bool m_echo{};
+
+  // TODO could we make an intermediate base class for oscquery_{server,mirror}
+  // that hold that function queue and other shared members/methods ?
+
+  // function queue to hold ws callback
+  // and avoid tree to be modified on another thread
+  moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+
 };
 }
 
