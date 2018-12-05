@@ -893,6 +893,16 @@ void node::set_bpm()
   }
 
 }
+
+node node::create_void(std::string addr)
+{
+  if(m_node)
+  {
+    auto n = &ossia::net::create_node(*m_node, addr);
+    return node{n,nullptr};
+  }
+  return {};
+}
 node node::create_impulse(std::string addr)
 {
   if (m_node)

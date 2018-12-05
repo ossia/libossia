@@ -802,6 +802,13 @@ class OSSIA_EXPORT node
     //************************************//
 
     /**
+     * Void: no value, no message.
+     * @brief creates a child node with the name, and without parameter
+     * @param addr: the name of the created node
+     * @return the created opp::node object
+     */
+    node create_void(std::string addr);
+    /**
      * Impulse: no value; just a message.
      * @brief creates a child node with tne given name, and an impulse parameter
      * @param addr: the name of the created node
