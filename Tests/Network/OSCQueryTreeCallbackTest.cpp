@@ -169,7 +169,7 @@ class server_callback_handler
 
     void add_cb(std::string parent, const parameter_data& param)
     {
-      std::cout << "add_cb, parent: " << parent << std::endl;
+      std::cout << "add_cb, parent: " << parent << "\tparam name: " << param.name << std::endl;
       auto nodes = ossia::net::find_nodes(m_dev.get_root_node(), parent);
 
       for(auto n : nodes)
@@ -251,7 +251,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   }
 
   std::cout << "step " << step++ << std::endl;
-  std::cout << "Check node with parameter creation callback" << std::endl;
+  std::cout << "-> Check node with parameter creation callback" << std::endl;
 
   serv.create_child("foo")->create_parameter(ossia::val_type::BOOL);
 
@@ -261,7 +261,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   check(client);
 
   std::cout << "step " << step++ << std::endl;
-  std::cout << "Check node without parameter creation callback" << std::endl;
+  std::cout << "-> Check node without parameter creation callback" << std::endl;
 
   auto node = serv.create_child("bar");
   add_nodes.push_back("/bar");
@@ -283,12 +283,14 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   std::cout << "step " << step++ << std::endl;
 
+  std::cout << "-> Check the callback when a nested node is created" << std::endl;
   auto nested = node->create_child("nested");
   add_nodes.push_back("/bar/nested");
 
   check(client);
 
   std::cout << "step " << step++ << std::endl;
+  std::cout << "-> Check the callback when a parameter is added to a nested node" << std::endl;
 
   nested->create_parameter(ossia::val_type::INT);
   add_params.push_back("/bar/nested");
@@ -296,6 +298,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   check(client);
 
   std::cout << "step " << step++ << std::endl;
+  std::cout << "-> Check the callback when a parameter is added to a root node" << std::endl;
 
   node->create_parameter(ossia::val_type::STRING);
   add_params.push_back("/bar");
@@ -303,6 +306,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   check(client);
 
   std::cout << "step " << step++ << std::endl;
+  std::cout << "-> Check the callback when a node with child and parameter is delete" << std::endl;
 
   CHECK(serv.remove_child("bar"));
 
@@ -311,12 +315,11 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
   rm_nodes.push_back("/bar");
   rm_params.push_back("/bar");
 
-
   check(client);
 
   {
     reset();
-    std::cout << "Check tree modification request from client" << std::endl;
+    std::cout << "-> Check tree modification request from client" << std::endl;
     std::string name = "new_node";
     client.request_add_node(client.get_root_node(), name);
 
@@ -324,14 +327,20 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
     // wait 10 * LOOP_DELAY for server's network thread
     // to process request and client to update
+    bool flag = false;
     while(count++<10)
     {
       std::cout << "server up" << std::endl;
-      serv_proto->update(serv.get_root_node());
+      serv_proto->run_commands();
       std::this_thread::sleep_for(LOOP_DELAY);
+
+      auto nodes = ossia::net::find_nodes(serv.get_root_node(), name);
+
+      flag = nodes.size() > 0;
+      if(flag)
+        break;
     }
-    auto nodes = ossia::net::find_nodes(serv.get_root_node(), name);
-    CHECK(nodes.size() > 0);
+    CHECK(flag);
 
     add_nodes.push_back("/" + name);
     add_params.push_back("/" + name);
@@ -341,11 +350,9 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::cout << "/new_node has a parameter ? " << node.has_parameter() << std::endl;
   }
 
-  exit(0);
-
   {
     reset();
-    std::cout << "check request_rename" << std::endl;
+    std::cout << "-> Check renaming request from client" << std::endl;
     std::string name = "weird_name";
     serv.create_child(name);
     add_nodes.push_back("/" + name);
@@ -361,7 +368,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     while(count++<10)
     {
       std::cout << "server up" << std::endl;
-      serv_proto->update(serv.get_root_node());
+      serv_proto->run_commands();
       std::this_thread::sleep_for(LOOP_DELAY);
 
       auto nodes = ossia::net::find_nodes(serv.get_root_node(), new_name);
@@ -375,7 +382,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   {
     reset();
-    std::cout << "check request_remove_node" << std::endl;
+    std::cout << "-> Check node removing request from node" << std::endl;
     std::string name = "node_to_be_deleted";
     serv.create_child(name);
     add_nodes.push_back("/" + name);
@@ -390,7 +397,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     while(count++<10)
     {
       std::cout << "server up" << std::endl;
-      serv_proto->update(serv.get_root_node());
+      serv_proto->run_commands();
       std::this_thread::sleep_for(LOOP_DELAY);
 
       auto nodes = ossia::net::find_nodes(serv.get_root_node(), name);
@@ -398,16 +405,15 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
       flag = nodes.size() == 0;
       if(flag)
       {
-        rm_nodes.push_back(name);
+        rm_nodes.push_back("/" + name);
         check(client);
         break;
       }
     }
     CHECK(flag);
   }
-
   {
-    std::cout << "*********** check for renaming node ***********" << std::endl;
+    std::cout << "-> Check for renaming node callback" << std::endl;
     auto cool_node = serv.create_child("cool");
     add_nodes.push_back("/cool");
     cool_node->create_parameter(ossia::val_type::LIST);
@@ -420,6 +426,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
     check(client);
   }
+  exit(0);
 }
 
 void node_created_cb(ossia::net::node_base& n)
