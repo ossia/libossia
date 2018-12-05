@@ -250,6 +250,8 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     std::this_thread::sleep_for(100ms);
   }
 
+/*
+
   std::cout << "step " << step++ << std::endl;
   std::cout << "-> Check node with parameter creation callback" << std::endl;
 
@@ -412,11 +414,12 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     }
     CHECK(flag);
   }
+
   {
     std::cout << "-> Check for renaming node callback" << std::endl;
     auto cool_node = serv.create_child("cool");
     add_nodes.push_back("/cool");
-    cool_node->create_parameter(ossia::val_type::LIST);
+    cool_node->create_parameter(ossia::val_type::FLOAT);
     add_params.push_back("/cool");
 
     check(client);
@@ -426,33 +429,78 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
     check(client);
   }
-  exit(0);
+*/
+  {
+    std::cout << "-> Check parameter creation callback for each type" << std::endl;
+
+    serv.create_child("my_bool")->create_parameter(ossia::val_type::BOOL);
+    serv.create_child("my_char")->create_parameter(ossia::val_type::CHAR);
+    serv.create_child("my_float")->create_parameter(ossia::val_type::FLOAT);
+    serv.create_child("my_impulse")->create_parameter(ossia::val_type::IMPULSE);
+    serv.create_child("m_int")->create_parameter(ossia::val_type::INT);
+    serv.create_child("my_list")->create_parameter(ossia::val_type::LIST);
+    serv.create_child("my_none"); //->create_parameter(ossia::val_type::NONE);
+    serv.create_child("my_string")->create_parameter(ossia::val_type::STRING);
+    serv.create_child("my_vec2f")->create_parameter(ossia::val_type::VEC2F);
+    serv.create_child("my_vec3f")->create_parameter(ossia::val_type::VEC3F);
+    serv.create_child("my_vec4f")->create_parameter(ossia::val_type::VEC4F);
+
+    add_nodes.push_back("/my_bool");
+    add_nodes.push_back("/my_char");
+    add_nodes.push_back("/my_float");
+    add_nodes.push_back("/my_impulse");
+    add_nodes.push_back("/m_int");
+    add_nodes.push_back("/my_list");
+    add_nodes.push_back("/my_none");
+    add_nodes.push_back("/my_string");
+    add_nodes.push_back("/my_vec2f");
+    add_nodes.push_back("/my_vec3f");
+    add_nodes.push_back("/my_vec4f");
+
+    add_params.push_back("/my_bool");
+    add_params.push_back("/my_char");
+    add_params.push_back("/my_float");
+    add_params.push_back("/my_impulse");
+    add_params.push_back("/m_int");
+    add_params.push_back("/my_list");
+    // add_params.push_back("/my_none");
+    add_params.push_back("/my_string");
+    add_params.push_back("/my_vec2f");
+    add_params.push_back("/my_vec3f");
+    add_params.push_back("/my_vec4f");
+
+    check(client);
+  }
 }
 
 void node_created_cb(ossia::net::node_base& n)
 {
-  std::cout << "create node : " << n.get_name() << std::endl;
-  created_nodes.push_back(n.get_name());
+  auto addr = ossia::net::osc_parameter_string(n);
+  std::cout << "create node : " << addr << std::endl;
+  created_nodes.push_back(addr);
 }
 
 void node_removing_cb(ossia::net::node_base& n)
 {
-  std::cout << "removing node : " << n.get_name() << std::endl;
-  removed_nodes.push_back(n.get_name());
+  auto addr = ossia::net::osc_parameter_string(n);
+  std::cout << "removing node : " << addr << std::endl;
+  removed_nodes.push_back(addr);
 }
 
 void param_created_cb(const ossia::net::parameter_base& p)
 {
   auto& n = p.get_node();
-  std::cout << "create param: " << n.get_name() << std::endl;
-  created_params.push_back(n.get_name());
+  auto addr = ossia::net::osc_parameter_string(n);
+  std::cout << "create param: " << addr << std::endl;
+  created_params.push_back(addr);
 }
 
 void param_removing_cb(const ossia::net::parameter_base& p)
 {
   auto& n = p.get_node();
-  std::cout << "removing param : " << n.get_name() << std::endl;
-  removed_params.push_back(n.get_name());
+  auto addr = ossia::net::osc_parameter_string(n);
+  std::cout << "removing param : " << addr << std::endl;
+  removed_params.push_back(addr);
 }
 
 void check2(ossia::net::generic_device& client)
@@ -561,34 +609,34 @@ TEST_CASE ("test_fast_fast_simple_node_creation_cb", "test_fast_fast_simple_node
 
   serv.create_child("foo")->create_parameter(ossia::val_type::BOOL);
 
-  add_nodes.push_back("foo");
-  add_params.push_back("foo");
+  add_nodes.push_back("/foo");
+  add_params.push_back("/foo");
 
   check2(*ws_clt);
 
   std::cout << "step 2" << std::endl;
 
   auto node = serv.create_child("bar");
-  add_nodes.push_back("bar");
+  add_nodes.push_back("/bar");
 
   node->create_parameter(ossia::val_type::STRING);
-  add_params.push_back("bar");
+  add_params.push_back("/bar");
 
   auto nested = node->create_child("nested");
-  add_nodes.push_back("bar/nested");
+  add_nodes.push_back("/bar/nested");
 
   nested->create_parameter(ossia::val_type::INT);
-  add_params.push_back("bar/nested");
+  add_params.push_back("/bar/nested");
 
   check2(*ws_clt);
 
   std::cout << "step 3" << std::endl;
   CHECK(serv.remove_child("bar"));
 
-  rm_nodes.push_back("bar");
-  rm_params.push_back("bar");
-  rm_nodes.push_back("bar/nested");
-  rm_params.push_back("bar/nested");
+  rm_nodes.push_back("/bar/nested");
+  rm_params.push_back("/bar/nested");
+  rm_nodes.push_back("/bar");
+  rm_params.push_back("/bar");
 
   check2(*ws_clt);
 }
