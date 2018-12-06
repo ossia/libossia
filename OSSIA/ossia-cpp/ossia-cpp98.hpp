@@ -423,6 +423,7 @@ class OSSIA_EXPORT value
     value(value&& v);
     value& operator=(value&& v);
 #endif
+
   private:
     friend class node;
     friend class oscquery_mirror; // needed to build an opp::value from a const ossia::value& in oscquery_mirror::on_unhandled_message_callback()
@@ -1595,6 +1596,14 @@ class OSSIA_EXPORT node
     node& operator=(node&&);
 #endif
 
+    /**
+     * @brief Get the raw node pointer
+     * @details Be careful, this gives you great power and with great power comes...
+     * It's useful to make use of ossia feature that are not available
+     * in opp:: namespace (but requires some more computer skill)
+     */
+    ossia::net::node_base* get_raw_node_pointer(){return m_node;}
+
   private:
     friend class oscquery_mirror;
     friend class oscquery_server;
@@ -1721,6 +1730,16 @@ class OSSIA_EXPORT oscquery_server
      * @brief Returns true if the server is connected
      */
     bool connected() const;
+
+    /**
+     * @brief Get the raw device pointer
+     * @details Be careful, this gives you great power and with great power comes...
+     * It's useful to make use of ossia feature that are not available
+     * in opp:: namespace (but requires some more computer skill)
+     * @return ossia::net::device_base*
+     */
+    ossia::net::device_base* get_raw_device_pointer(){return m_dev;}
+
   private:
     void on_connection(const std::string&);
     void on_disconnection(const std::string&);
@@ -1921,6 +1940,15 @@ class OSSIA_EXPORT oscquery_mirror
      * @param new name
      */
     void request_rename_node(node node, std::string new_name);
+
+    /**
+     * @brief Get the raw device pointer
+     * @details Be careful, this gives you great power and with great power comes...
+     * It's useful to make use of ossia feature that are not available
+     * in opp:: namespace (but requires some more computer skill)
+     * @return
+     */
+    ossia::net::device_base* get_raw_device_pointer(){return m_dev;}
 
   private:
     void on_parameter_created(const ossia::net::parameter_base&);
