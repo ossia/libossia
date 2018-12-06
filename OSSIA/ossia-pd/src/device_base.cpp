@@ -32,7 +32,7 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
-void device_base::on_attribute_modified_callback(const ossia::net::node_base& node, ossia::string_view attribute)
+void device_base::on_attribute_modified_callback(ossia::net::node_base& node, const std::string& attribute)
 {
   if (node.get_parameter())
   {
