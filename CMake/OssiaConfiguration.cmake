@@ -25,7 +25,7 @@ set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
 option(OSSIA_PD "Build PureData externals" OFF)
-option(OSSIA_PD "Build and install only PureData externals" OFF)
+option(OSSIA_PD_ONLY "Build and install only PureData externals" OFF)
 option(OSSIA_MAX "Build Max/MSP externals" OFF)
 option(OSSIA_MAX_ONLY "Build and install only Max/MSP externals" OFF)
 option(OSSIA_PYTHON "Build Python bindings" OFF)
