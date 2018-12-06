@@ -328,11 +328,6 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
     ossia::for_each_tagged(
         base_attributes{}, node_attribute_writer{n, *addr, *this});
   }
-  else
-  {
-    writeKey(detail::attribute_accessmode());
-    writer.Int(0);
-  }
 
   ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
     using Attr = typename decltype(attr)::type;
