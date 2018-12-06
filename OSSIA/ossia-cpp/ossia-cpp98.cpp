@@ -1844,6 +1844,7 @@ oscquery_server::~oscquery_server()
   }
   catch(const std::exception& e)
   {
+    std::cerr << "Error while closing oscquery_server: " << e.what() << std::endl;
   }
 }
 
@@ -1881,6 +1882,7 @@ void oscquery_server::setup(std::string name, int oscPort, int wsPort)
   }
   catch(const std::exception& e)
   {
+    std::cerr << "Error while creating oscquery_server: " << e.what() << std::endl;
   }
 }
 
@@ -1908,6 +1910,7 @@ void oscquery_server::set_echo(bool echo)
   }
   catch(const std::exception& e)
   {
+    std::cerr << "Error while setting oscquery protocol 'echo' attribute: " << e.what() << std::endl;
   }
 }
 
@@ -1924,6 +1927,7 @@ bool oscquery_server::get_echo()
   }
   catch(const std::exception& e)
   {
+    std::cerr << "Error while getting oscquery protocol 'echo' attribute: " << e.what() << std::endl;
   }
   return false;
 }
