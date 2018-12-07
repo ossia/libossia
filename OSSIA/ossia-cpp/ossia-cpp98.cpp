@@ -465,23 +465,32 @@ void node::set_name(std::string s)
 
 bool node::has_parameter() const
 {
-    return(m_param);
+  return(m_param);
 }
 
 std::string node::get_address() const
 {
   if(m_node)
     return ossia::net::osc_parameter_string(*m_node);
+  else
+    std::cerr << "can't get address on a null node" << std::endl;
   return "";
 }
 
 std::vector<node> node::get_namespace() const
 {
   std::vector<node> res;
-  auto list = ossia::net::list_all_child(m_node);
-  for (auto child : list)
+  if(m_node)
   {
-    res.push_back(child);
+    auto list = ossia::net::list_all_child(m_node);
+    for (auto child : list)
+    {
+      res.push_back(child);
+    }
+  }
+  else
+  {
+    std::cerr << "can't get namespace on a null node" << std::endl;
   }
   return res;
 }
@@ -489,10 +498,17 @@ std::vector<node> node::get_namespace() const
 std::vector<node> node::get_children() const
 {
   std::vector<node> res;
-  auto copy = m_node->children_copy();
-  for (auto node : copy)
+  if(m_node)
   {
-    res.push_back(node);
+    auto copy = m_node->children_copy();
+    for (auto node : copy)
+    {
+      res.push_back(node);
+    }
+  }
+  else
+  {
+    std::cerr << "can't get children of a null node" << std::endl;
   }
   return res;
 }
