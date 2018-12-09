@@ -424,14 +424,13 @@ void node::cleanup_parameter(const ossia::net::parameter_base&)
   m_param = nullptr;
 }
 
-
 node::~node()
 {
   if (m_node)
   {
     m_node->about_to_be_deleted.disconnect<&node::cleanup>(*this);
     m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
-}
+  }
 }
 
 node node::parent() const
@@ -446,6 +445,72 @@ node node::parent() const
 
   return node{};
 }
+
+void node::request_add_child(const std::string& name)
+{
+  if(m_node)
+  {
+    opp::node node;
+    if(auto proto = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(
+                   &m_node->get_device().get_protocol()))
+
+    {
+      ossia::net::parameter_data data;
+      data.name = name;
+      proto->request_add_node(*m_node,data);
+    }
+    else
+    {
+      std::cerr << "You request adding a child on a node that doesn't belong to a mirror device.";
+      std::cerr << "\nUse node.create_child() instead." << std::endl;
+    }
+  }
+}
+
+void node::request_remove_child(const std::string& name)
+{
+  if(m_node)
+  {
+    auto node_to_remove = m_node->find_child(name);
+    if(node_to_remove)
+    {
+      if(auto proto = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(
+                     &m_node->get_device().get_protocol()))
+
+      {
+        proto->request_remove_node(*node_to_remove);
+      }
+      else
+      {
+        std::cerr << "You request removing a child on a node that doesn't belong to a mirror device.";
+        std::cerr << "\nUse node.remove_child() instead." << std::endl;
+      }
+    }
+  }
+}
+
+void node::request_rename_child(const std::string& old_name, const std::string& new_name)
+{
+  if(m_node)
+  {
+    auto node_to_rename = m_node->find_child(old_name);
+    if(node_to_rename)
+    {
+      if(auto proto = dynamic_cast<ossia::oscquery::oscquery_mirror_protocol*>(
+                     &m_node->get_device().get_protocol()))
+
+      {
+        proto->request_rename_node(*node_to_rename, new_name);
+      }
+      else
+      {
+        std::cerr << "You request renaming a child on a node that doesn't belong to a mirror device.";
+        std::cerr << "\nUse node.set_name() instead." << std::endl;
+      }
+    }
+  }
+}
+
 
 node::operator bool() const
 {

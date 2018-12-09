@@ -550,6 +550,24 @@ class OSSIA_EXPORT node
     node parent() const;
 
     /**
+     * @brief Send to the device a request to add a node
+     * @details This is only relevant on node that belongs to a mirrored device
+     */
+    void request_add_child(const std::string&);
+
+    /**
+     * @brief Send to the device a request to remove a node
+     * @details This is only relevant on node that belongs to a mirrored device
+     */
+    void request_remove_child(const std::string&);
+
+    /**
+     * @brief Send to the device a request to rename a node
+     * @details This is only relevant on node that belongs to a mirrored device
+     */
+    void request_rename_child(const std::string&, const std::string&);
+
+    /**
      * @brief get a node's name
      * @return a string with the node's name
      */
@@ -1904,6 +1922,7 @@ class OSSIA_EXPORT oscquery_mirror
      * @param ctx the callback context as a void*
      */
     void set_attribute_modified_callback(attribute_modified_callback c, void* ctx);
+
     /**
      * @brief remove the previously set node_callback
      */
