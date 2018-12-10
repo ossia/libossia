@@ -407,6 +407,26 @@ void json_writer::path_removed_impl(
   wr.EndObject();
 }
 
+void json_writer::path_renamed_impl(
+    json_writer::writer_t& wr, const std::string& old_path, const std::string& new_path)
+{
+  wr.StartObject();
+
+  write_json_key(wr, detail::command());
+  write_json(wr, detail::path_renamed());
+
+  write_json_key(wr, detail::data());
+
+  wr.StartObject();
+  write_json_key(wr, "OLD");
+  write_json(wr, old_path);
+  write_json_key(wr, "NEW");
+  write_json(wr, new_path);
+  wr.EndObject();
+
+  wr.EndObject();
+}
+
 void json_writer::attribute_changed_impl(
     detail::json_writer_impl& p, const net::node_base& n,
     ossia::string_view attr)
@@ -652,6 +672,16 @@ json_writer::string_t json_writer::path_removed(const std::string& path)
   writer_t wr(buf);
 
   path_removed_impl(wr, path);
+
+  return buf;
+}
+
+json_writer::string_t json_writer::path_renamed(const std::string& old_path, const std::string& new_path)
+{
+  string_t buf;
+  writer_t wr(buf);
+
+  path_renamed_impl(wr, old_path, new_path);
 
   return buf;
 }

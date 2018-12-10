@@ -615,14 +615,12 @@ void oscquery_server_protocol::on_nodeRenamed(
       }
     }
   }
-  /* TODO
-  const auto mess = json_writer::attributes_changed(n, attr);
+  const auto mess = json_writer::path_renamed(old_addr, n.osc_address());
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
     m_websocketServer->send_message(client.connection, mess);
   }
-  */
 }
 catch (const std::exception& e)
 {

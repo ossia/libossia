@@ -73,6 +73,9 @@ public:
   //! Sent when a node is being removed
   static string_t path_removed(const std::string& path);
 
+  //! Sent when a node is renamed
+  static string_t path_renamed(const std::string& old_path, const std::string& new_path);
+
   static string_t attributes_changed(
       const ossia::net::node_base& n, ossia::string_view attribute);
 
@@ -99,6 +102,8 @@ private:
   static void path_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void path_removed_impl(writer_t& wr, const std::string& path);
+  static void path_renamed_impl(
+      json_writer::writer_t& wr, const std::string& path, const std::string& old);
   static void attribute_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n,
       ossia::string_view attribute);
