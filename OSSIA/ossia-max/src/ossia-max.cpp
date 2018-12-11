@@ -16,39 +16,13 @@
 using namespace ossia::max;
 
 // ossia-max library constructor
-struct max_msp_log_sink final :
-        public spdlog::sinks::sink
-{
-    void log(const spdlog::details::log_msg& msg) override
-    {
-      std::string s(msg.raw.data(), msg.raw.size());
-      switch(msg.level)
-      {
-      case spdlog::level::warn:
-      case spdlog::level::err:
-      {
-        error("%s", s.c_str());
-        break;
-      }
-
-      default:
-        post("%s", s.c_str());
-        break;
-      }
-    }
-
-    void flush() override
-    {
-    }
-
-    void set_pattern(const std::string &pattern) override { }
-    void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
-};
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
-    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"}
+    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"},
+    m_log_sink{std::make_shared<max_msp_log_sink>()}
 {
-  ossia::context c{{std::make_shared<max_msp_log_sink>()}};
+  m_log_sink.get()->set_level(spdlog::level::err);
+  ossia::context c{{m_log_sink}};
   common_symbols_init();
 
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();

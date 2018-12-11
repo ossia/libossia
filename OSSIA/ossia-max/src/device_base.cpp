@@ -107,7 +107,7 @@ void device_base::disconnect_slots()
     m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(this);
     // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
     m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
-    // TODO add callback for message
+    // TODO add callback for message, unhandled message, and command request
   }
 }
 

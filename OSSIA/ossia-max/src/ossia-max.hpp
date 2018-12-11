@@ -44,6 +44,36 @@ namespace max
 #pragma mark -
 #pragma mark Library
 
+struct max_msp_log_sink final :
+        public spdlog::sinks::sink
+{
+    void log(const spdlog::details::log_msg& msg) override
+    {
+        std::string s(msg.raw.data(), msg.raw.size());
+        switch(msg.level)
+        {
+          case spdlog::level::warn:
+          case spdlog::level::err:
+          {
+            error("%s", s.c_str());
+            break;
+          }
+
+          default:
+            post("%s", s.c_str());
+            break;
+          }
+      }
+
+    void flush() override
+    {
+    }
+
+    void set_pattern(const std::string &pattern) override { }
+    void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
+
+};
+
 class ossia_max
 {
 public:
@@ -67,6 +97,22 @@ public:
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     return nullptr;
+  }
+
+  void set_log_level(t_symbol* log_sym)
+  {
+    std::vector<std::string> vec = SPDLOG_LEVEL_NAMES;
+    auto it = std::find(vec.begin(), vec.end(), log_sym->s_name);
+    if(it != vec.end())
+    {
+      int level = it - vec.begin();
+      m_log_sink.get()->set_level(
+                  static_cast<spdlog::level::level_enum>(level));
+    }
+    else
+    {
+      error("Unknown log level : %s", log_sym->s_name);
+    }
   }
 
   t_class* ossia_client_class{};
@@ -116,6 +162,7 @@ private:
   ossia::net::local_protocol* m_localProtocol{};
   ossia::net::generic_device m_device;
   string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
+  std::shared_ptr<max_msp_log_sink> m_log_sink;
 };
 
 #pragma mark -
