@@ -102,9 +102,16 @@ void scenario::start()
         && endStatus == time_event::status::NONE)
     {
     }
+    else if (
+        startStatus == time_event::status::DISPOSED
+        && endStatus == time_event::status::DISPOSED)
+    {
+        // the interval is started by a false condition
+    }
     // error
     else
     {
+      std::cerr << "scenario_impl::start:  start: " << (int)startStatus << " ; end: " << (int)endStatus << std::endl;
       throw execution_error(
           "scenario_impl::start: "
           "TimeEvent's status configuration of the "
