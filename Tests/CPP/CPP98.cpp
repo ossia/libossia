@@ -246,6 +246,15 @@ TEST_CASE ("various", "[various]")
   val.push_back(my_vec2f);
   n5.set_value(val);
 
+  {
+    REQUIRE(n5.get_value().is_list());
+    auto my_list = n5.get_value().to_list();
+    REQUIRE(my_list.size() == 1);
+    REQUIRE(my_list[0].is_vec2f());
+    auto my_remote_vec = my_list[0].to_vec2f();
+    CHECK(my_remote_vec[0] == 0.1f);
+    CHECK(my_remote_vec[1] == 0.2f);
+  }
 
   ////////////////////////////////////////////////////////////////////////
   //// Step 2. Creating another device to connect with the first one. ////
@@ -281,10 +290,22 @@ TEST_CASE ("various", "[various]")
   REQUIRE(remote_n5.get_value().is_list());
   auto my_list = remote_n5.get_value().to_list();
   REQUIRE(my_list.size() == 1);
-  REQUIRE(my_list[0].is_vec2f());
-  auto my_remote_vec = my_list[0].to_vec2f();
-  CHECK(my_remote_vec[0] == 0.1f);
-  CHECK(my_remote_vec[2] == 0.2f);
+  bool flag = (my_list[0].is_vec2f() || (my_list[0].is_list() && my_list[0].to_list().size() == 2));
+  CHECK(flag);
+  if(my_list[0].is_vec2f())
+  {
+    auto my_remote_vec = my_list[0].to_vec2f();
+    CHECK(my_remote_vec[0] == 0.1f);
+    CHECK(my_remote_vec[1] == 0.2f);
+  }
+  // this is a limitation (or should I say a bug ??) of oscquery specs
+  // list element are not typed, so a list of vec2f look the same as a list of list of float
+  else if ( my_list[0].is_list() )
+  {
+    auto my_remote_nested_list = my_list[0].to_list();
+    CHECK(my_remote_nested_list[0].to_float() == 0.1f);
+    CHECK(my_remote_nested_list[1].to_float() == 0.2f);
+  }
   //////////////////////////////////////////////////////
   //// Step 3. Receiving changes through callbacks. ////
   //////////////////////////////////////////////////////
