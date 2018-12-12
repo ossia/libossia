@@ -498,14 +498,6 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
     check(client);
   }
-
-  std::cout << "delete server" << std::endl;
-  serv.~generic_device();
-
-  std::cout << "delete client" << std::endl;
-  client.~oscquery_mirror();
-
-  delete serv_proto;
   std::cout << "done" << std::endl;
 }
 
