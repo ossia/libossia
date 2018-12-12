@@ -744,3 +744,44 @@ TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
   REQUIRE(a->value().get<float>() == 4.5f);
 
 }
+
+TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
+{
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  TestDeviceRef dev{serv}; (void) dev;
+  ossia::net::parameter_base* a{};
+  {
+    auto& n = find_or_create_node(serv, "/main");
+    a = n.create_parameter(ossia::val_type::LIST);
+  }
+
+  // WS client
+  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  ws_proto->update(ws_clt->get_root_node());
+  auto node = find_node(ws_clt->get_root_node(), "/main");
+  REQUIRE(node);
+  auto param = node->get_parameter();
+  REQUIRE(param);
+  REQUIRE(param->value().get<std::vector<ossia::value>>() == std::vector<ossia::value>{});
+
+  std::vector<ossia::value> val;
+  val.push_back(4.5f);
+  val.push_back(1);
+  val.push_back(false);
+  val.push_back(std::vector<ossia::value>{"reg","fruh", "tot"});
+
+  {
+    param->push_value(val); // This will god through the WS port
+  }
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  std::cout << "new value : " << a->value() << " expecting " << 4.5f << std::endl;
+  // should use QCOMPARE after device cleaning to avoid hang
+  REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
+
+}
