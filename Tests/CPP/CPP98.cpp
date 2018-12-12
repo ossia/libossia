@@ -238,6 +238,14 @@ TEST_CASE ("various", "[various]")
   // Add an unit to the parameter:
   n3.set_unit("gain.db");
 
+  opp::node n4 = root.create_list("empty_list");
+
+  opp::node n5 = root.create_list("list");
+  std::vector<opp::value> val;
+  opp::value::vec2f my_vec2f{0.1f,0.2f};
+  val.push_back(my_vec2f);
+  n5.set_value(val);
+
 
   ////////////////////////////////////////////////////////////////////////
   //// Step 2. Creating another device to connect with the first one. ////
@@ -260,6 +268,23 @@ TEST_CASE ("various", "[various]")
   // the result will be argb(0.5, 0.2, 0.5, 0.9).
   remote_n2.set_value(0.8);
 
+
+  opp::node remote_n4 = remote_dev.get_root_node().find_child("/empty_list");
+  REQUIRE(remote_n4);
+
+  REQUIRE(remote_n4.get_value().is_list());
+  REQUIRE(remote_n4.get_value().to_list().empty());
+
+  opp::node remote_n5 = remote_dev.get_root_node().find_child("/list");
+  REQUIRE(remote_n5);
+
+  REQUIRE(remote_n5.get_value().is_list());
+  auto my_list = remote_n5.get_value().to_list();
+  REQUIRE(my_list.size() == 1);
+  REQUIRE(my_list[0].is_vec2f());
+  auto my_remote_vec = my_list[0].to_vec2f();
+  CHECK(my_remote_vec[0] == 0.1f);
+  CHECK(my_remote_vec[2] == 0.2f);
   //////////////////////////////////////////////////////
   //// Step 3. Receiving changes through callbacks. ////
   //////////////////////////////////////////////////////
