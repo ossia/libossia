@@ -17,6 +17,7 @@ namespace net
 class node_base;
 class parameter_base;
 class device_base;
+class value;
 struct parameter_data;
 }
 }
@@ -436,6 +437,14 @@ class OSSIA_EXPORT value
     value(value&& v);
     value& operator=(value&& v);
 #endif
+
+    /**
+     * @brief Get the raw value pointer
+     * @details Be careful, this gives you great power and with great power comes...
+     * It's useful to make use of ossia feature that are not available
+     * in opp:: namespace (but requires some more computer skill)
+     */
+    ossia::value* get_raw_value_pointer(){return m_val;}
 
   private:
     friend class node;
