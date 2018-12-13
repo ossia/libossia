@@ -88,7 +88,6 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
 
     switch (val.get_type())
     {
-      case ossia::val_type::LIST:
       case ossia::val_type::VEC2F:
       case ossia::val_type::VEC3F:
       case ossia::val_type::VEC4F:
@@ -96,6 +95,7 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
         s.pop_back();
         s.erase(0, 1);
         break;
+      case ossia::val_type::LIST:
       default:
         break;
     }

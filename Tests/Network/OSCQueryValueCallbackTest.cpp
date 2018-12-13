@@ -30,6 +30,14 @@ static std::vector<std::string> type_string = {
 static ossia::value expected_value;
 static std::atomic_bool busy_flag=false;
 
+void wait()
+{
+  int count = 0;
+  while(busy_flag && count++<500)
+  {
+    std::this_thread::sleep_for(10ms);
+  }
+}
 TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_creation_cb")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
@@ -75,7 +83,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
       param->add_callback(param_cb);
     }
     {
-      auto param = serv.create_child("m_int")     ->create_parameter(ossia::val_type::INT);
+      auto param = serv.create_child("my_int")     ->create_parameter(ossia::val_type::INT);
       param->add_callback(param_cb);
     }
     {
@@ -90,7 +98,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
       busy_flag = true;
       expected_value = val;
       param->push_value(val);
-      while(busy_flag){}
+      wait();
     }
     {
       auto param = serv.create_child("my_string") ->create_parameter(ossia::val_type::STRING);
@@ -117,11 +125,12 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   {
     auto node = client.get_root_node().find_child("my_bool");
+    CHECK(node.get_value().is_bool());
     opp::value val{true};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){}
+    wait();
   }
 
   {
@@ -130,51 +139,57 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){}
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_float");
+    CHECK(node.get_value().is_float());
     opp::value val{3.4};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_impulse");
+    CHECK(node.get_value().is_impulse());
     opp::value val{opp::value::impulse{}};
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_int");
+    CHECK(node.get_value().is_int());
     opp::value val{33};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_list");
+    CHECK(node.get_value().is_list());
     std::vector<opp::value> data;
     for (int i = 0; i<10; i++)
     {
-      data.push_back(i);
+      data.push_back(i*5);
     }
     opp::value val(data);
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     // Check list of list
     auto node = client.get_root_node().find_child("my_list");
+    CHECK(node.get_value().is_list());
     std::vector<opp::value> data;
     for (int i = 0; i<3; i++)
     {
@@ -185,43 +200,47 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_string");
+    CHECK(node.get_value().is_string());
     opp::value val("C'est Noël !");
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_vec2f");
+    CHECK(node.get_value().is_vec2f());
     opp::value val{opp::value::vec2f{1,2}};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_vec3f");
+    CHECK(node.get_value().is_vec3f());
     opp::value val{opp::value::vec3f{1,2,3}};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   {
     auto node = client.get_root_node().find_child("my_vec4f");
+    CHECK(node.get_value().is_vec4f());
     opp::value val{opp::value::vec4f{1,2,3,4}};
     busy_flag = true;
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
-    while(busy_flag){};
+    wait();
   }
 
   std::cout << "done" << std::endl;

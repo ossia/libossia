@@ -566,7 +566,6 @@ catch (...)
 void oscquery_server_protocol::on_parameterChanged(const ossia::net::parameter_base& p)
 {
   on_attributeChanged(p.get_node(), ossia::net::text_value_type());
-  on_attributeChanged(p.get_node(), ossia::net::text_extended_type());
 }
 
 void oscquery_server_protocol::on_attributeChanged(

@@ -450,6 +450,13 @@ void json_writer::attribute_changed_impl(
     {
       write_json_key(wr, it.value());
       p.writeAttribute(n, it.value());
+
+      if(it.value() == detail::attribute_typetag())
+      {
+        const auto key = detail::attribute_extended_type();
+        write_json_key(wr, key);
+        p.writeAttribute(n, key);
+      }
     }
 
     wr.EndObject();
