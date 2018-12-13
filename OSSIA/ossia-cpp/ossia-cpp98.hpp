@@ -370,6 +370,19 @@ class OSSIA_EXPORT value
     value& operator=(std::string v);
 
     /**
+     * @brief operator == compare two opp::value
+     * @param v : another opp::value
+     * @return bool if both are same type and equal (or each member pair is equal)
+     */
+    bool operator==(const opp::value& v) const;
+
+    /**
+     * @brief operator != compare two opp::value
+     * @param v : another opp::value
+     * @return bool if both are same type and equal (or each member pair is equal)
+     */
+    bool operator!=(const opp::value& v) const;
+    /**
      * @brief sets the value as an impulse (a value-less signal)
      */
     void set_impulse();

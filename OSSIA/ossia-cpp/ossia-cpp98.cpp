@@ -230,6 +230,23 @@ value& value::operator=(std::string v)
   *m_val = v;
   return *this;
 }
+
+bool value::operator==(const opp::value& v) const
+{
+  if(m_val && v.m_val)
+  {
+    return *m_val == *v.m_val;
+  } else if ( !m_val && !v.m_val)
+    return true;
+  else
+    return false;
+}
+
+bool value::operator!=(const opp::value& v) const
+{
+  return !(*this == v);
+}
+
 void value::set_impulse()
 {
   *m_val = ossia::impulse{};
