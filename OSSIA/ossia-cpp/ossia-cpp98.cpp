@@ -164,6 +164,7 @@ std::vector<value> value::to_list() const
 {
   std::vector<opp::value> res;
   auto vec = ossia::convert<std::vector<ossia::value>>(*m_val);
+  res.reserve(vec.size());
   for (auto v : vec)
   {
     res.push_back(std::move(v));
