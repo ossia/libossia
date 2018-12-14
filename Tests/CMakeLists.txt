@@ -22,7 +22,7 @@ endFunction()
 
 
 ### Tests ###
-ossia_add_test(ValueTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/Test.cpp")
+ossia_add_test(NetworkValueTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/Test.cpp")
 
 ossia_add_test(PresetTest   "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
 ossia_add_test(AddressTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
