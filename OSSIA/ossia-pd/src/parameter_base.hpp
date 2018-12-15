@@ -17,6 +17,7 @@ public:
   // attribute setting method
   void set_access_mode();
   void set_repetition_filter();
+  void set_critical();
   void set_enable();
   void set_mute();
   void set_minmax();
@@ -43,6 +44,7 @@ public:
   static void get_priority(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_critical(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
 
@@ -55,6 +57,7 @@ public:
   t_symbol* m_bounding_mode{};
   t_symbol* m_access_mode{};
   t_float m_repetitions{1};
+  t_float m_critical{0};
   t_symbol* m_unit{};
   int m_mute{0};
   int m_enable{1};

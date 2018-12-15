@@ -36,6 +36,8 @@ void parameter_base::update_attribute(parameter_base* x, ossia::string_view attr
     get_enable(x, matchers);
   } else if ( attribute == ossia::net::text_repetition_filter() ){
     get_repetition_filter(x, matchers);
+  } else if ( attribute == ossia::net::text_critical() ){
+    get_critical(x, matchers);
   } else if ( attribute == ossia::net::text_default_value() ) {
     get_default(x, matchers);
   }  else if ( attribute == ossia::net::text_extended_type() ){
@@ -61,6 +63,8 @@ t_max_err parameter_base::notify(parameter_base *x, t_symbol *s, t_symbol *msg, 
       x->set_access_mode();
     else if ( attrname == gensym("repetitions") )
       x->set_repetition_filter();
+    else if ( attrname == gensym("critical") )
+      x->set_critical();
     else if ( attrname == gensym("enable") )
       x->set_enable();
     else if ( attrname == gensym("type") )
@@ -110,6 +114,19 @@ void parameter_base::set_repetition_filter()
       param->set_repetition_filter(
             m_repetitions ? ossia::repetition_filter::OFF
                           : ossia::repetition_filter::ON);
+    }
+  }
+}
+
+void parameter_base::set_critical()
+{
+  for (auto m : m_node_selection)
+  {
+    if(!m->is_zombie())
+    {
+      ossia::net::node_base* node = m->get_node();
+      auto param = node->get_parameter();
+      param->set_critical(m_critical);
     }
   }
 }
@@ -478,8 +495,10 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_access_mode(x,x->m_node_selection);
   else if ( s == gensym("repetitions") )
     parameter_base::get_repetition_filter(x,x->m_node_selection);
+  else if ( s == gensym("critical") )
+    parameter_base::get_critical(x, x->m_node_selection);
   else if ( s == gensym("mute") )
-    parameter_base::get_mute(x,x->m_node_selection);
+    parameter_base::get_mute(x, x->m_node_selection);
   else if ( s == gensym("unit") )
     parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
@@ -595,6 +614,23 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
     outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
   }
   lock_and_touch(x, gensym("mode"));
+}
+
+void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> nodes)
+{
+  for (auto m : nodes)
+  {
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+
+    ossia::net::parameter_base* param = m->get_node()->get_parameter();
+
+    x->m_critical = param->get_critical();
+
+    t_atom a;
+    A_SETLONG(&a, x->m_critical);
+    outlet_anything(x->m_dumpout, gensym("critical"), 1, &a);
+  }
+  lock_and_touch(x, gensym("critical"));
 }
 
 void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
@@ -1149,6 +1185,12 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_STYLE(
         c, "invisible", 0, "onoff");
   CLASS_ATTR_LABEL(c, "invisible", 0, "Hide Parameter");
+
+  CLASS_ATTR_LONG(
+        c, "critical", 0, parameter_base, m_critical);
+  CLASS_ATTR_STYLE(
+        c, "critical", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "critical", 0, "Critical");
 }
 
 parameter_base::parameter_base()

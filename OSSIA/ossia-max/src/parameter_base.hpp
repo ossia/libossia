@@ -17,6 +17,7 @@ public:
   // attribute setting method
   void set_access_mode();
   void set_repetition_filter();
+  void set_critical();
   void set_enable();
   void set_minmax();
   void set_range();
@@ -41,6 +42,7 @@ public:
   static void get_type(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_critical(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
 
@@ -55,6 +57,7 @@ public:
   long m_repetitions{1};
   long m_mute{0};
   long m_enable{1};
+  long m_critical{0};
   t_symbol* m_unit{};
   ossia::optional<ossia::unit_t> m_ounit;
 
