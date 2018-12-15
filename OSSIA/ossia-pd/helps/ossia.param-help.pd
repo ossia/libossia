@@ -1,4 +1,4 @@
-#N canvas 166 98 1166 778 10;
+#N canvas 4 129 1166 755 10;
 #X text 649 26 Attributes :;
 #X text 668 99 int : integer value;
 #X text 669 159 vec2f : list of 2 float values \, useful for 2d coordinates
@@ -22,17 +22,17 @@ comes first, f 66;
 ;
 #X obj 368 420 print bar-dumpout;
 #X obj 53 415 unpack 0 0 0 0, f 22;
-#X floatatom 53 439 5 0 0 0 - - -, f 5;
-#X floatatom 96 438 5 0 0 0 - - -, f 5;
-#X floatatom 139 438 5 0 0 0 - - -, f 5;
-#X floatatom 182 439 5 0 0 0 - - -, f 5;
+#X floatatom 53 439 5 0 0 0 - - -;
+#X floatatom 96 438 5 0 0 0 - - -;
+#X floatatom 139 438 5 0 0 0 - - -;
+#X floatatom 182 439 5 0 0 0 - - -;
 #X msg 81 306 dump;
 #N canvas 0 151 450 300 set 0;
 #X obj 161 163 pack 0 0 0 0;
-#X floatatom 161 105 5 0 0 0 - - -, f 5;
-#X floatatom 201 105 5 0 0 0 - - -, f 5;
-#X floatatom 241 105 5 0 0 0 - - -, f 5;
-#X floatatom 281 105 5 0 0 0 - - -, f 5;
+#X floatatom 161 105 5 0 0 0 - - -;
+#X floatatom 201 105 5 0 0 0 - - -;
+#X floatatom 241 105 5 0 0 0 - - -;
+#X floatatom 281 105 5 0 0 0 - - -;
 #X obj 281 133 t b f;
 #X obj 241 133 t b f;
 #X obj 201 133 t b f;
@@ -56,12 +56,12 @@ comes first, f 66;
 #X text 52 192 this is the simplest form of creating an ossia parameter
 in Pd., f 66;
 #X text 240 642 see also :;
-#X floatatom 199 687 5 0 0 0 - - -, f 5;
+#X floatatom 199 687 5 0 0 0 - - -;
 #X text 652 607 @hidden <float> enable/disable hidden attribute \,
 could be 0 or 1, f 65;
 #X obj 236 663 ossia.model param-help;
-#X floatatom 115 166 5 0 0 0 - - -, f 5;
-#X floatatom 115 124 5 0 0 0 - - -, f 5;
+#X floatatom 115 166 5 0 0 0 - - -;
+#X floatatom 115 124 5 0 0 0 - - -;
 #X obj 115 144 ossia.param foo;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
@@ -96,7 +96,7 @@ time for all elements for list or vector type;
 #X obj 93 234 list prepend set;
 #X obj 93 255 list trim;
 #X msg 93 276 10 10 10 -10 2;
-#X floatatom 93 83 5 0 0 0 - - -, f 5;
+#X floatatom 93 83 5 0 0 0 - - -;
 #X obj 126 558 list prepend set;
 #X obj 126 579 list trim;
 #X obj 603 588 print;
@@ -112,7 +112,7 @@ time for all elements for list or vector type;
 #X obj 98 822 list prepend set;
 #X obj 98 843 list trim;
 #X msg 98 864 6 16 16 16;
-#X floatatom 98 691 5 0 0 0 - - -, f 5;
+#X floatatom 98 691 5 0 0 0 - - -;
 #X msg 214 744 dump;
 #X obj 524 858 print;
 #X obj 449 829 route address;
@@ -176,7 +176,7 @@ float-list minimum and maximum.;
 #X connect 39 0 33 0;
 #X connect 40 0 23 0;
 #X restore 54 492 pd more_about_range_and_minmax;
-#N canvas 543 365 677 647 attributes_get/set 0;
+#N canvas 543 131 677 647 attributes_get/set 1;
 #X obj 30 148 s \$0-param_bar;
 #X obj 30 451 r \$0-param_bar;
 #X obj 150 148 s \$0-param_bar;
@@ -197,10 +197,10 @@ float-list minimum and maximum.;
 #X msg 175 123 getmin;
 #N canvas 0 151 450 300 set 0;
 #X obj 161 163 pack 0 0 0 0;
-#X floatatom 161 105 5 0 0 0 - - -, f 5;
-#X floatatom 201 105 5 0 0 0 - - -, f 5;
-#X floatatom 241 105 5 0 0 0 - - -, f 5;
-#X floatatom 281 105 5 0 0 0 - - -, f 5;
+#X floatatom 161 105 5 0 0 0 - - -;
+#X floatatom 201 105 5 0 0 0 - - -;
+#X floatatom 241 105 5 0 0 0 - - -;
+#X floatatom 281 105 5 0 0 0 - - -;
 #X obj 281 133 t b f;
 #X obj 241 133 t b f;
 #X obj 201 133 t b f;
@@ -219,10 +219,10 @@ float-list minimum and maximum.;
 #X coords 0 -1 1 1 220 25 1 100 100;
 #X restore 43 481 pd set;
 #X obj 30 572 unpack 0 0 0 0, f 22;
-#X floatatom 30 596 5 0 0 0 - - -, f 5;
-#X floatatom 80 595 5 0 0 0 - - -, f 5;
-#X floatatom 130 595 5 0 0 0 - - -, f 5;
-#X floatatom 181 595 5 0 0 0 - - -, f 5;
+#X floatatom 30 596 5 0 0 0 - - -;
+#X floatatom 80 595 5 0 0 0 - - -;
+#X floatatom 130 595 5 0 0 0 - - -;
+#X floatatom 181 595 5 0 0 0 - - -;
 #X msg 270 79 max 1 2 3 4;
 #X msg 280 99 max 10;
 #X msg 295 123 getmax;
@@ -238,8 +238,8 @@ float-list minimum and maximum.;
 1;
 #X msg 539 215 priority \$1;
 #X msg 564 239 getpriority;
-#X floatatom 539 193 5 0 0 0 - - -, f 5;
-#X obj 30 310 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X floatatom 539 193 5 0 0 0 - - -;
+#X obj 30 310 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 1
 1;
 #X msg 235 353 gettags;
 #X msg 210 331 tags graphic core;
@@ -267,7 +267,7 @@ patcher.;
 #X obj 530 539 s \$0-param_bar;
 #X msg 554 514 getrate;
 #X msg 530 489 rate \$1;
-#X floatatom 530 466 5 0 0 0 - - -, f 5;
+#X floatatom 530 466 5 0 0 0 - - -;
 #X obj 504 149 s \$0-param_bar;
 #X msg 427 112 getclip;
 #X msg 534 113 gettype;
@@ -276,6 +276,11 @@ patcher.;
 #X msg 389 49 clip both;
 #X msg 400 70 clip low;
 #X msg 415 91 clip free;
+#X obj 329 404 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+1;
+#X msg 329 423 critical \$1;
+#X obj 329 462 s \$0-param_bar;
+#X msg 338 443 getcritical;
 #X connect 1 0 48 0;
 #X connect 12 0 0 0;
 #X connect 13 0 0 0;
@@ -329,17 +334,20 @@ patcher.;
 #X connect 67 0 4 0;
 #X connect 68 0 4 0;
 #X connect 69 0 4 0;
+#X connect 70 0 71 0;
+#X connect 71 0 72 0;
+#X connect 73 0 72 0;
 #X restore 55 536 pd attributes_get/set;
 #X msg 253 335 reset;
 #X text 120 305 send attribute values and parameter state through rightmost
 output, f 66;
-#N canvas 777 353 649 398 declaring_multiple_parameters_in_1_object
+#N canvas 631 353 649 398 declaring_multiple_parameters_in_1_object
 1;
-#X floatatom 50 150 5 0 0 0 - - -, f 5;
-#X floatatom 50 97 5 0 0 0 - - -, f 5;
+#X floatatom 50 150 5 0 0 0 - - -;
+#X floatatom 50 97 5 0 0 0 - - -;
 #X obj 425 156 route address;
 #X obj 425 178 symbol;
-#X symbolatom 425 200 25 0 0 0 - - -, f 25;
+#X symbolatom 425 200 25 0 0 0 - - -;
 #X obj 50 117 ø.param test.[0-5]/bar.[1-3]/b[a-c]r.[0-1] @type float
 @default 12 @clip both;
 #X text 43 32 Several parameters can be created in a row in one ossia.param
@@ -390,10 +398,10 @@ could be 0 or 1 - default: 1 when none specified;
 #X connect 2 0 3 0;
 #X connect 3 0 1 0;
 #X restore 236 290 pd;
-#X msg 266 291 rate 10;
+#X msg 266 291 repetitions 1;
 #X obj 41 541 ossia.param aGain @unit db;
-#X floatatom 41 569 5 0 0 0 - - -, f 5;
-#X floatatom 40 483 5 0 0 0 - - -, f 5;
+#X floatatom 41 569 5 0 0 0 - - -;
+#X floatatom 40 483 5 0 0 0 - - -;
 #X obj 87 482 ossia.remote aGain @unit linear;
 #X text 31 27 Units can be specified \, with the @unit argument \,
 by providing their full names \, i.e. by using the syntax "category.unit"
@@ -415,7 +423,7 @@ names being unique), f 50;
 #X text 30 422 Remotes can be specified a unit belonging to the same
 category as the parameter's unit and they will automatically convert
 parameter values to/from this unit, f 57;
-#X floatatom 41 517 5 0 0 0 - - -, f 5;
+#X floatatom 41 517 5 0 0 0 - - -;
 #X text 37 235 As the type is deduced from the unit \, we can omit
 it.;
 #X text 35 322 Or even provide the unit directly under the @type attribute:
@@ -449,6 +457,8 @@ range \, could be one of : FREE (default) \, BOTH \, WRAP \, FOLD \,
 LOW \, HIGH, f 68;
 #X text 668 119 bool : boolean value \, 0 or 1;
 #X text 668 139 string (or symbol) : string value;
+#X text 653 748 @critical<0|1> un-mark the parameter as critical \,
+default: 0;
 #X connect 13 0 14 0;
 #X connect 13 1 15 0;
 #X connect 13 2 16 0;

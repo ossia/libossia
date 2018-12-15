@@ -225,6 +225,17 @@
 			<description>
 				The <at>enable</at> attribute allows to enable (default: 1) or disable a node
 			</description>
+		</attribute>
+
+		<attribute name="critical" get="1" set="1" type="int" size="1">
+			<digest>
+				Mark parameter as critical
+			</digest>
+			<description>
+				The <at>critical</at> attribute allows to use a sending method that ensure data is received.
+				Not all protocol support this feature.
+				With OSCQuery, for example, a critical parameter value will be send through websocket (so with TCP/IP delivery check) instead of OSC (which transit over UDP that doesn't have such a verification mechanism).
+			</description>
 		</attribute>  
 
 		<attribute name="invisible" get="1" set="1" type="symbol" size="1">

@@ -894,6 +894,10 @@ void parameter_base::class_setup(t_eclass* c)
   // TODO use those to tweak attributes
   // CLASS_ATTR_FILTER_CLIP
   // CLASS_ATTR_STEP
+  // CLASS_ATTR_STYLE
+
+  // TODO
+  // modify eclass.c to trig a callback when sending [getATTRNAME( from patcher
 }
 
 } // namespace pd
