@@ -173,7 +173,17 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   {
     auto node = client.get_root_node().find_child("my_list");
-    CHECK(node.get_value().is_list());
+    {
+      auto curr = node.get_value();
+      CHECK(curr.is_list());
+      std::vector<opp::value> data;
+      for(int i=0; i<10; i++)
+      {
+        data.push_back(i);
+      }
+      opp::value expected(data);
+      CHECK(curr == expected);
+    }
     std::vector<opp::value> data;
     for (int i = 0; i<10; i++)
     {
@@ -185,7 +195,6 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     node.set_value(val);
     wait();
   }
-
   {
     // Check list of list
     auto node = client.get_root_node().find_child("my_list");
