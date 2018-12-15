@@ -49,29 +49,6 @@ if(ANDROID)
   return()
 endif()
 
-# Bindings
-if(OSSIA_PD)
-  add_subdirectory(OSSIA/ossia-pd)
-endif()
-
-if(OSSIA_MAX)
-  add_subdirectory(OSSIA/ossia-max)
-endif()
-
-if(OSSIA_JAVA)
-  add_subdirectory(OSSIA/ossia-java)
-endif()
-
-if(OSSIA_NODEJS)
-  add_subdirectory(OSSIA/ossia-node)
-endif()
-
-if(NOT WIN32)
-if(OSSIA_PYTHON)
-    add_subdirectory(OSSIA/ossia-python OSSIA/ossia-python/pyossia)
-endif()
-endif()
-
 # Examples & tests
 if(OSSIA_EXAMPLES)
     add_subdirectory(Documentation/Examples)

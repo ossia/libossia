@@ -134,6 +134,8 @@ foreach(ossiaExt ${OSSIA_EXT_LIST})
     string(APPEND OSSIA_MAX_SYMBOLS "_${ossia_lib_name}_setup\n")
 endforeach()
 
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/package-info.json.in" "${CMAKE_CURRENT_BINARY_DIR}/package-info.json" @ONLY)
+
 # We only export the Max required symbols.
 # This is of utmost importance for support in Max4Live : ossia and Ableton Live both use 
 # boost.asio, which leads to conflicts at runtime
@@ -168,7 +170,7 @@ install(
 
 install(
     FILES
-        "${CMAKE_CURRENT_SOURCE_DIR}/package-info.json"
+        "${CMAKE_CURRENT_BINARY_DIR}/package-info.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/icon.png"
     DESTINATION
         ${OSSIA_MAX_INSTALL_FOLDER}
