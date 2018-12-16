@@ -215,6 +215,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
          && protocol_name != "minuit"
          && protocol_name != "osc")
     {
+      // Connect with device name
       ossia::string_view name;
 
       if ( x->m_looking_for )
@@ -319,7 +320,8 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
     {
       argc--;
       argv++;
-      std::string wsurl = "ws://127.0.0.1:5678";
+      std::string wsurl = "ws://" + oscq_settings.host + ":"
+                          + std::to_string(oscq_settings.port);
       if (argc == 1
           && argv[0].a_type == A_SYM)
       {
