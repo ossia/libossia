@@ -42,6 +42,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
   opp::oscquery_mirror client("B");
 
   client.refresh();
@@ -53,7 +54,6 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     client.reconnect();
     std::this_thread::sleep_for(100ms);
   }
-
   {
     std::cout << "-> Create a parameter for each type" << std::endl;
     auto param_cb = [&](const ossia::value& v) {
@@ -68,15 +68,30 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     {
       auto param = serv.create_child("my_bool")->create_parameter(ossia::val_type::BOOL);
       param->add_callback(param_cb);
+      ossia::value val = false;
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
 
     {
       auto param = serv.create_child("my_char")   ->create_parameter(ossia::val_type::CHAR);
       param->add_callback(param_cb);
+      ossia::value val = 'f';
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_float")  ->create_parameter(ossia::val_type::FLOAT);
       param->add_callback(param_cb);
+      ossia::value val = 789.25;
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_impulse")->create_parameter(ossia::val_type::IMPULSE);
@@ -85,6 +100,11 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     {
       auto param = serv.create_child("my_int")     ->create_parameter(ossia::val_type::INT);
       param->add_callback(param_cb);
+      ossia::value val = 456;
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_list")   ->create_parameter(ossia::val_type::LIST);
@@ -101,20 +121,60 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
       wait();
     }
     {
+      auto param = serv.create_child("my_complex_list")   ->create_parameter(ossia::val_type::LIST);
+      param->add_callback(param_cb);
+      std::vector<ossia::value> data;
+      data.push_back(ossia::value(true));
+      data.push_back('a');
+      data.push_back(34);
+      data.push_back(49.3f);
+      data.push_back("C'est Noël !");
+      data.push_back(ossia::vec2f{0.1f,0.2f});
+      data.push_back(ossia::vec3f{1.1f,1.2f,1.3f});
+      data.push_back(ossia::vec4f{2.1f,2.2f,2.3f,2.4f});
+      data.push_back(data); // finally embedded the complex list into itself
+
+      ossia::value val(data);
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
+    }
+    {
       auto param = serv.create_child("my_string") ->create_parameter(ossia::val_type::STRING);
       param->add_callback(param_cb);
+      ossia::value val = "pqhnef lskdfi ezif ßđĸß→«€µø¶ « ßðđ";
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_vec2f")  ->create_parameter(ossia::val_type::VEC2F);
       param->add_callback(param_cb);
+      ossia::value val = ossia::vec2f{0.2,0.6};
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_vec3f")  ->create_parameter(ossia::val_type::VEC3F);
       param->add_callback(param_cb);
+      ossia::value val = ossia::vec3f{0.2,0.6,34};
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
     {
       auto param = serv.create_child("my_vec4f")  ->create_parameter(ossia::val_type::VEC4F);
       param->add_callback(param_cb);
+      ossia::value val = ossia::vec4f{0.2,0.6,9846,.3216};
+      busy_flag = true;
+      expected_value = val;
+      param->push_value(val);
+      wait();
     }
   }
 
@@ -176,6 +236,12 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     {
       auto curr = node.get_value();
       CHECK(curr.is_list());
+      auto curr_list = curr.to_list();
+      std::cout << "current list :" << std::endl;
+      for (auto v : curr_list)
+      {
+        std::cout << v.to_int() << std::endl;
+      }
       std::vector<opp::value> data;
       for(int i=0; i<10; i++)
       {

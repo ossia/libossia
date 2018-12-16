@@ -30,16 +30,7 @@ namespace detail
 void json_writer_impl::writeValue(
     const value& val, const ossia::unit_t& unit) const
 {
-  const auto array = is_array(val);
-  if (!array)
-  {
-    writer.StartArray();
-  }
   val.apply(value_to_json{writer, unit});
-  if (!array)
-  {
-    writer.EndArray();
-  }
 }
 
 void json_writer_impl::writeValue(bounding_mode b) const
