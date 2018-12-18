@@ -89,7 +89,7 @@ serial_protocol::serial_protocol(
                   qDebug() << "Applied value"
                            << QString::fromStdString(value_to_pretty_string(
                                   qt::value_from_js(addr->value(), v)));
-                  addr->push_value(qt::value_from_js(addr->value(), v));
+                  addr->set_value(qt::value_from_js(addr->value(), v));
                 }
               }
             });
