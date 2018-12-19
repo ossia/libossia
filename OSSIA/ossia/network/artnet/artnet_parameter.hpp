@@ -25,6 +25,8 @@ private:
 
   dmx_buffer& m_buffer;
   const unsigned int m_channel;
+
+  friend struct artnet_visitor;
 };
 }
 }

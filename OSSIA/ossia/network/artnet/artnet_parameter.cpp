@@ -21,11 +21,35 @@ artnet_parameter::~artnet_parameter()
 {
 }
 
+struct artnet_visitor
+{
+  artnet_parameter::dmx_buffer& buf;
+  const unsigned int channel;
+  void operator()(int v) const noexcept
+  {
+    buf.data[channel] = v;
+    buf.dirty = true;
+  }
+  void operator()(float v) const noexcept
+  {
+    buf.data[channel] = v;
+    buf.dirty = true;
+  }
+  void operator()(char v) const noexcept
+  {
+    buf.data[channel] = v;
+    buf.dirty = true;
+  }
+  template<typename... Args>
+  void operator()(Args&&...) const noexcept
+  {
+
+  }
+};
+
 void artnet_parameter::device_update_value()
 {
-  const int v = value().get<int>();
-  m_buffer.data[m_channel] = v;
-  m_buffer.dirty = true;
+  value().apply(artnet_visitor{m_buffer, m_channel});
 }
 }
 }
