@@ -34,20 +34,20 @@ void midi_parameter::pull_value()
 parameter_base& midi_parameter::push_value(const ossia::value& val)
 {
   m_value = val;
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
   return *this;
 }
 
 parameter_base& midi_parameter::push_value(ossia::value&& val)
 {
   m_value = std::move(val);
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
   return *this;
 }
 
 parameter_base& midi_parameter::push_value()
 {
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
   return *this;
 }
 

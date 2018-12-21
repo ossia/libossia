@@ -379,10 +379,10 @@ inline ossia::value filter_value(
 }
 
 template <typename Addr_T>
-inline ossia::value filter_value(const Addr_T& addr)
+inline ossia::value filter_value(const Addr_T& addr, const ossia::value& v)
 {
   auto val
-      = filter_value(addr.get_domain(), addr.value(), addr.get_bounding());
+      = filter_value(addr.get_domain(), v, addr.get_bounding());
   auto filtered = addr.filter_value(val);
   if (!filtered)
     return val;

@@ -116,7 +116,7 @@ public:
   ~serial_protocol() override;
 
   bool pull(ossia::net::parameter_base&) override;
-  bool push(const ossia::net::parameter_base&) override;
+  bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;

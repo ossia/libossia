@@ -246,12 +246,12 @@ void oscquery_mirror_protocol::request(net::parameter_base& address)
   http_send_message(text);
 }
 
-bool oscquery_mirror_protocol::push(const net::parameter_base& addr)
+bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia::value& v)
 {
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
 
-  auto val = net::filter_value(addr);
+  auto val = net::filter_value(addr, v);
   if (val.valid())
   {
     // Push to server
@@ -278,7 +278,7 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   if (addr.get_access() == ossia::access_mode::GET)
     return false;
 
-  auto val = net::filter_value(addr);
+  auto val = net::filter_value(addr, addr.value());
   if (val.valid())
   {
     // Push to server

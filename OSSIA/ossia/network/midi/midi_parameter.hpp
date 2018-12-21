@@ -4,6 +4,10 @@
 #include <ossia/network/midi/detail/channel.hpp>
 
 #include <boost/lexical_cast.hpp>
+namespace ossia::net
+{
+class protocol_base;
+}
 namespace ossia::net::midi
 {
 class midi_protocol;
@@ -125,7 +129,7 @@ struct address_info
 class midi_parameter : public ossia::net::parameter_base
 {
   address_info m_info;
-  midi_protocol& m_protocol;
+  ossia::net::protocol_base& m_protocol;
   ossia::domain m_domain;
 
   ossia::val_type m_type = ossia::val_type::INT;
@@ -133,7 +137,7 @@ class midi_parameter : public ossia::net::parameter_base
 
 public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
-  midi_protocol& get_protocol() const
+  ossia::net::protocol_base& get_protocol() const
   {
     return m_protocol;
   }

@@ -11,8 +11,7 @@
 
 namespace ossia
 {
-class state;
-
+class value;
 namespace net
 {
 class parameter_base;
@@ -56,7 +55,8 @@ public:
   /**
    * @brief Send a value to the network.
    */
-  virtual bool push(const parameter_base&) = 0;
+  virtual bool push(const parameter_base&, const ossia::value& v) = 0;
+  bool push(const parameter_base& p);
 
   /**
    * @brief Send many values in one go if the protocol supports it

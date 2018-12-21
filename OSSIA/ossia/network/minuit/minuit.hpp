@@ -67,7 +67,7 @@ public:
   std::future<void> pull_async(parameter_base&) override;
   void request(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::parameter_base& parameter_base) override;
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
 
   bool
   observe(ossia::net::parameter_base& parameter_base, bool enable) override;

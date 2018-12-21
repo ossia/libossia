@@ -121,9 +121,9 @@ void oscquery_server_protocol::request(net::parameter_base&)
 }
 
 template <typename T>
-bool oscquery_server_protocol::push_impl(const T& addr)
+bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
 {
-  auto val = net::filter_value(addr);
+  auto val = net::filter_value(addr, v);
   if (val.valid())
   {
     // Push to all clients
@@ -161,14 +161,14 @@ bool oscquery_server_protocol::push_impl(const T& addr)
   return false;
 }
 
-bool oscquery_server_protocol::push(const net::parameter_base& addr)
+bool oscquery_server_protocol::push(const net::parameter_base& addr, const ossia::value& v)
 {
-  return push_impl(addr);
+  return push_impl(addr, v);
 }
 
 bool oscquery_server_protocol::push_raw(const net::full_parameter_data& addr)
 {
-  return push_impl(addr);
+  return push_impl(addr, addr.value());
 }
 
 bool oscquery_server_protocol::push_bundle(

@@ -61,7 +61,7 @@ public:
   void advance_tick(std::size_t count);
 
   bool pull(ossia::net::parameter_base&) override;
-  bool push(const ossia::net::parameter_base&) override;
+  bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
   bool
   push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw(const ossia::net::full_parameter_data&) override;

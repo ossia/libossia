@@ -55,7 +55,7 @@ public:
 
   bool pull(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::parameter_base& parameter_base) override;
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
   bool
   push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   bool

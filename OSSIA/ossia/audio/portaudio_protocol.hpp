@@ -4,10 +4,6 @@
 
 #include <portaudio.h>
 
-#if __has_include(<pa_jack.h>) && !defined(_MSC_VER)
-#include <pa_jack.h>
-#endif
-
 #define OSSIA_AUDIO_PORTAUDIO 1
 
 namespace ossia
@@ -23,9 +19,6 @@ public:
     if (Pa_Initialize() != paNoError)
       throw std::runtime_error("Audio error");
 
-#if __has_include(<pa_jack.h>) && !defined(_MSC_VER)
-    PaJack_SetClientName(name.c_str());
-#endif
     int card_in_idx = paNoDevice;
     int card_out_idx = paNoDevice;
 

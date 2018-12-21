@@ -135,6 +135,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/color.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/gain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/time.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/rate_limiting_protocol.hpp"
     )
 
 set(SRCS
@@ -170,6 +172,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/rate_limiting_protocol.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.cpp"

@@ -99,7 +99,7 @@ public:
 
   bool pull(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::parameter_base& parameter_base) override;
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
@@ -111,10 +111,10 @@ public:
     return js;
   }
 public:
-  void sig_push(const ws_generic_client_parameter* arg_1) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1);
+  void sig_push(const ws_generic_client_parameter* arg_1, const ossia::value& v) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v);
 
 private:
-  void slot_push(const ws_generic_client_parameter*); W_SLOT(slot_push);
+  void slot_push(const ws_generic_client_parameter*, const ossia::value& v); W_SLOT(slot_push);
 
 private:
   void apply_reply(QJSValue);

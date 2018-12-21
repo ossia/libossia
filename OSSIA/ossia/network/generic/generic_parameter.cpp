@@ -64,7 +64,7 @@ generic_parameter::push_value(const ossia::value& value)
 {
   set_value(value);
 
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
 
   return *this;
 }
@@ -74,14 +74,14 @@ generic_parameter::push_value(ossia::value&& value)
 {
   set_value(std::move(value));
 
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
 
   return *this;
 }
 
 ossia::net::generic_parameter& generic_parameter::push_value()
 {
-  m_protocol.push(*this);
+  m_protocol.push(*this, m_value);
 
   return *this;
 }

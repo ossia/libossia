@@ -35,7 +35,7 @@ public:
   void set_device(ossia::net::device_base& dev) override;
 
   bool pull(ossia::net::parameter_base& param) override;
-  bool push(const ossia::net::parameter_base& param) override;
+  bool push(const ossia::net::parameter_base& param, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data&) override;
   bool observe(ossia::net::parameter_base& param, bool enable) override;
 

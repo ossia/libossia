@@ -273,7 +273,7 @@ bool midi_protocol::pull(parameter_base& address)
 #endif
 }
 
-bool midi_protocol::push(const parameter_base& address)
+bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
 {
 #if !defined(__EMSCRIPTEN__)
   try
@@ -288,13 +288,13 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::NoteOn_N:
       {
         m_output->send_message(rtmidi::message::note_on(
-            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
 
       case address_info::Type::NoteOn:
       {
-        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(rtmidi::message::note_on(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
@@ -303,13 +303,13 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::NoteOff_N:
       {
         m_output->send_message(rtmidi::message::note_off(
-            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
 
       case address_info::Type::NoteOff:
       {
-        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(rtmidi::message::note_off(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
@@ -318,13 +318,13 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::CC_N:
       {
         m_output->send_message(rtmidi::message::control_change(
-            adrinfo.channel, adrinfo.note, adrs.getValue().get<int32_t>()));
+            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
 
       case address_info::Type::CC:
       {
-        auto& val = adrs.getValue().get<std::vector<ossia::value>>();
+        auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(rtmidi::message::control_change(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
@@ -333,7 +333,7 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::PC:
       {
         m_output->send_message(rtmidi::message::program_change(
-            adrinfo.channel, adrs.getValue().get<int32_t>()));
+            adrinfo.channel, v.get<int32_t>()));
         return true;
       }
 
@@ -347,17 +347,17 @@ bool midi_protocol::push(const parameter_base& address)
       case address_info::Type::PB:
       {
         m_output->send_message(rtmidi::message::pitch_bend(
-            adrinfo.channel, adrs.getValue().get<int32_t>()));
+            adrinfo.channel, v.get<int32_t>()));
         return true;
       }
 
       case address_info::Type::Any:
       {
-        if (auto v = adrs.getValue().target<std::vector<ossia::value>>())
+        if (auto vec = v.target<std::vector<ossia::value>>())
         {
           rtmidi::message m;
-          m.bytes.reserve(v->size());
-          for (const auto& val : *v)
+          m.bytes.reserve(vec->size());
+          for (const auto& val : *vec)
           {
             m.bytes.push_back(ossia::convert<int32_t>(val));
           }

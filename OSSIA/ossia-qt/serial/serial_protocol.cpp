@@ -111,20 +111,20 @@ bool serial_protocol::pull(parameter_base&)
   return false;
 }
 
-bool serial_protocol::push(const ossia::net::parameter_base& addr)
+bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
   auto str = ad.data().request;
   switch (addr.get_value_type())
   {
     case ossia::val_type::FLOAT:
-      str.replace("$val", QString::number(ad.getValue().get<float>(), 'g', 4));
+      str.replace("$val", QString::number(v.get<float>(), 'g', 4));
       break;
     case ossia::val_type::INT:
-      str.replace("$val", QString::number(ad.getValue().get<int32_t>()));
+      str.replace("$val", QString::number(v.get<int32_t>()));
       break;
     case ossia::val_type::STRING:
-      str.replace("$val", QString::fromStdString(ad.getValue().get<std::string>()));
+      str.replace("$val", QString::fromStdString(v.get<std::string>()));
       break;
     case ossia::val_type::IMPULSE:
       break;

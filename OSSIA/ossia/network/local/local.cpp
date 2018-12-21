@@ -21,11 +21,11 @@ bool multiplex_protocol::pull(ossia::net::parameter_base& address)
   return false;
 }
 
-bool multiplex_protocol::push(const ossia::net::parameter_base& address)
+bool multiplex_protocol::push(const ossia::net::parameter_base& address, const ossia::value& v)
 {
   bool b = true;
   for (auto& proto : m_protocols)
-    b &= proto->push(address);
+    b &= proto->push(address, v);
 
   return b;
 }

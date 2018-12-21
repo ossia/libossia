@@ -226,7 +226,7 @@ bool audio_protocol::pull(ossia::net::parameter_base&)
   return false;
 }
 
-bool audio_protocol::push(const ossia::net::parameter_base&)
+bool audio_protocol::push(const ossia::net::parameter_base&, const ossia::value& v)
 {
   return false;
 }
