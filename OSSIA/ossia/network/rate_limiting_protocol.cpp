@@ -13,26 +13,81 @@ rate_limiting_protocol::rate_limiting_protocol(
   , m_protocol{std::move(arg)}
 
 {
+  m_userMessages.container.reserve(4096);
+  m_buffer.container.reserve(4096);
+  m_threadMessages.container.reserve(4096);
+  m_lastTime = clock::now();
   m_thread = std::thread{[this] {
+    using namespace std::literals;
+    const auto duration = m_duration.load();
+    thread_local auto time_to_sleep = duration;
     while(m_running)
     {
-      std::this_thread::sleep_for(m_duration);
-      received_value v;
-      while(m_queue.try_dequeue(v))
-      {
-        m_messages[v.address].first = v.value;
-      }
+      try {
+        auto prev_time = clock::now();
+        if(time_to_sleep > 1ms)
+          std::this_thread::sleep_for(time_to_sleep);
 
-      // TODO this is unsafe
-      const ossia::net::parameter_base* p{};
-      while(m_removedQueue.try_dequeue(p))
-      {
-        m_messages.erase(p);
-      }
+        // TODO find safe way to handle if a parameter is removed
+        // TODO instead we should do the value filtering in the parameter ...
+        // but still have to handle cases that can be optimized, such as midi
+        {
+          std::lock_guard lock{m_msgMutex};
+          std::swap(m_buffer, m_userMessages);
+        }
 
-      for(auto& v : m_messages)
-      {
-        m_protocol->push(*v.first, v.second.first);
+        // Copy newest messages in local map
+        for(auto& msg : m_buffer.container)
+        {
+          if(msg.second.first.valid())
+          {
+            m_threadMessages[msg.first] = std::move(msg.second);
+            msg.second.first = ossia::value{};
+          }
+        }
+
+        // Push the actual messages
+        for(auto& v : m_threadMessages.container)
+        {
+          auto val = v.second.first;
+          if(val.valid())
+          {
+            m_protocol->push(*v.first, v.second.first);
+          }
+        }
+
+        // Clear both containers (while keeping memory allocated for sent messages
+        // so that it stays fast)
+        for(auto& v : m_buffer.container)
+        {
+          if(v.second.first.valid())
+          {
+            v.second.first = ossia::value{};
+          }
+        }
+
+        for(auto& v : m_threadMessages.container)
+        {
+          if(v.second.first.valid())
+          {
+            v.second.first = ossia::value{};
+          }
+        }
+        auto new_time = clock::now();
+        auto observed_duration = std::chrono::duration_cast<std::chrono::milliseconds>(new_time - prev_time);
+        if(observed_duration > duration)
+        {
+          if(observed_duration >= 2 * duration)
+            time_to_sleep = 0ms;
+          else
+            time_to_sleep = 2 * duration - observed_duration ;
+        }
+        else
+        {
+          time_to_sleep = duration;
+        }
+      } catch(...) {
+
       }
     }
   }};
@@ -41,16 +96,24 @@ rate_limiting_protocol::rate_limiting_protocol(
 
 rate_limiting_protocol::~rate_limiting_protocol()
 {
+  m_running = false;
+  m_thread.join();
+}
+
+void rate_limiting_protocol::set_duration(rate_limiting_protocol::duration d)
+{
+  m_duration = d;
 }
 
 bool rate_limiting_protocol::pull(ossia::net::parameter_base& address)
 {
-  return false;
+  return m_protocol->pull(address);
 }
 
 bool rate_limiting_protocol::push(const ossia::net::parameter_base& address, const ossia::value& v)
 {
-  m_queue.enqueue(received_value{const_cast<ossia::net::parameter_base*>(&address), v});
+  std::lock_guard lock{m_msgMutex};
+  m_userMessages[&address] = {v, {}};
   return true;
 }
 
@@ -79,11 +142,6 @@ void rate_limiting_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
   m_protocol->set_device(dev);
-}
-
-void rate_limiting_protocol::parameter_removed(const parameter_base& b)
-{
-  m_removedQueue.enqueue(&b);
 }
 
 }
