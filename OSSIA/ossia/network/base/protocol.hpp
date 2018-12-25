@@ -114,11 +114,11 @@ public:
   }
 
   //! Replace the loggers used
-  void set_logger(const network_logger& l)
+  virtual void set_logger(const network_logger& l)
   {
     m_logger = l;
   }
-  const network_logger& get_logger() const
+  virtual const network_logger& get_logger() const
   {
     return m_logger;
   }

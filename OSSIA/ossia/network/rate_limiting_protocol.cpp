@@ -133,6 +133,16 @@ bool rate_limiting_protocol::update(ossia::net::node_base& node)
   return m_protocol->update(node);
 }
 
+void rate_limiting_protocol::set_logger(const network_logger& l)
+{
+  m_protocol->set_logger(l);
+}
+
+const network_logger&rate_limiting_protocol::get_logger() const
+{
+  return m_protocol->get_logger();
+}
+
 void rate_limiting_protocol::stop()
 {
   return m_protocol->stop();
