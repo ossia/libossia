@@ -111,9 +111,10 @@ bool serial_protocol::pull(parameter_base&)
   return false;
 }
 
-bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+bool serial_protocol::push(const ossia::net::parameter_base& addr)
 {
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
+  const ossia::value& v = ad.value();
   auto str = ad.data().request;
   switch (addr.get_value_type())
   {
