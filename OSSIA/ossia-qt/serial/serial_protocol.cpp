@@ -115,7 +115,6 @@ void serial_protocol::on_read(const QByteArray& a)
 bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
-  const ossia::value& v = ad.value();
   auto str = ad.data().request;
   switch (addr.get_value_type())
   {
