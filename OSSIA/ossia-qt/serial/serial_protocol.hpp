@@ -129,6 +129,7 @@ public:
   }
 
 private:
+  void on_read(const QByteArray&);
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
 

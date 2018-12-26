@@ -53,46 +53,7 @@ serial_protocol::serial_protocol(
                 *m_device, ret.value<QJSValue>());
 
             connect(&m_serialPort, &serial_wrapper::read,
-                    this, [&] (const QByteArray& a) {
-
-              QVariant ret;
-              QMetaObject::invokeMethod(
-                           m_object, "onMessage",
-                           Q_RETURN_ARG(QVariant, ret),
-                           Q_ARG(QVariant, QString::fromUtf8(a)));
-
-              auto arr = ret.value<QJSValue>();
-              // should be an array of { address, value } objects
-              if (!arr.isArray())
-                return;
-
-              QJSValueIterator it(arr);
-              while (it.hasNext())
-              {
-                it.next();
-                auto val = it.value();
-                auto addr = val.property("address");
-                if (!addr.isString())
-                  continue;
-
-                auto addr_txt = addr.toString().toStdString();
-                auto n = find_node(m_device->get_root_node(), addr_txt);
-                if (!n)
-                  continue;
-
-                auto v = val.property("value");
-                if (v.isNull())
-                  continue;
-
-                if (auto addr = n->get_parameter())
-                {
-                  qDebug() << "Applied value"
-                           << QString::fromStdString(value_to_pretty_string(
-                                  qt::value_from_js(addr->value(), v)));
-                  addr->set_value(qt::value_from_js(addr->value(), v));
-                }
-              }
-            });
+                    this, &serial_protocol::on_read);
             return;
           }
           case QQmlComponent::Status::Loading:
@@ -111,6 +72,46 @@ bool serial_protocol::pull(parameter_base&)
   return false;
 }
 
+void serial_protocol::on_read(const QByteArray& a)
+{
+  QVariant ret;
+  QMetaObject::invokeMethod(
+        m_object, "onMessage",
+        Q_RETURN_ARG(QVariant, ret),
+        Q_ARG(QVariant, a));
+
+  auto arr = ret.value<QJSValue>();
+  // should be an array of { address, value } objects
+  if (!arr.isArray())
+    return;
+
+  QJSValueIterator it(arr);
+  while (it.hasNext())
+  {
+    it.next();
+    auto val = it.value();
+    auto addr = val.property("address");
+    if (!addr.isString())
+      continue;
+
+    auto addr_txt = addr.toString().toStdString();
+    auto n = find_node(m_device->get_root_node(), addr_txt);
+    if (!n)
+      continue;
+
+    auto v = val.property("value");
+    if (v.isNull())
+      continue;
+
+    if (auto addr = n->get_parameter())
+    {
+      qDebug() << "Applied value"
+               << QString::fromStdString(value_to_pretty_string(
+                                           qt::value_from_js(addr->value(), v)));
+      addr->set_value(qt::value_from_js(addr->value(), v));
+    }
+  }
+}
 bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
@@ -126,7 +127,35 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
     case ossia::val_type::STRING:
       str.replace("$val", QString::fromStdString(v.get<std::string>()));
       break;
+    case ossia::val_type::BOOL:
+      str.replace("$val", v.get<bool>() ? "1" : "0");
+      break;
+    case ossia::val_type::CHAR:
+      str.replace("$val", QString{v.get<char>()});
+      break;
+    case ossia::val_type::VEC2F:
+    {
+      auto& vec = v.get<ossia::vec2f>();
+      str.replace("$val", QString{"%1 %2"}.arg(vec[0]).arg(vec[1]));
+      break;
+    }
+    case ossia::val_type::VEC3F:
+    {
+      auto& vec = v.get<ossia::vec3f>();
+      str.replace("$val", QString{"%1 %2 %3"}.arg(vec[0]).arg(vec[1]).arg(vec[2]));
+      break;
+    }
+    case ossia::val_type::VEC4F:
+    {
+      auto& vec = v.get<ossia::vec3f>();
+      str.replace("$val", QString{"%1 %2 %3 %4"}.arg(vec[0]).arg(vec[1]).arg(vec[2]).arg(vec[3]));
+      break;
+    }
+    case ossia::val_type::LIST:
+      str.replace("$val", "TODO");
+      break;
     case ossia::val_type::IMPULSE:
+      str.replace("$val", "TODO");
       break;
     default:
       throw std::runtime_error("serial_protocol::push: bad type");
