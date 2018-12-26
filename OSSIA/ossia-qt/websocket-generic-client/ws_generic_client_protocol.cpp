@@ -95,13 +95,13 @@ bool ws_generic_client_protocol::pull(ossia::net::parameter_base& parameter_base
 }
 
 bool ws_generic_client_protocol::push(
-    const ossia::net::parameter_base& parameter_base)
+    const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
   auto& addr = static_cast<const ws_generic_client_parameter&>(parameter_base);
 
   if (!addr.data().request.isNull())
   {
-    sig_push(&addr);
+    sig_push(&addr, v);
     return true;
   }
 
@@ -137,13 +137,13 @@ void ws_generic_client_protocol::set_device(device_base& dev)
 }
 
 void ws_generic_client_protocol::slot_push(
-    const ws_generic_client_parameter* addr_p)
+    const ws_generic_client_parameter* addr_p, const ossia::value& v)
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
   if (dat.isCallable())
   {
-    auto res = dat.call({qt::value_to_js_value(addr.value(), *m_engine)});
+    auto res = dat.call({qt::value_to_js_value(v, *m_engine)});
     m_websocket->sendBinaryMessage(res.toVariant().toByteArray());
   }
   else

@@ -11,8 +11,7 @@
 
 namespace ossia
 {
-class state;
-
+class value;
 namespace net
 {
 class parameter_base;
@@ -56,7 +55,8 @@ public:
   /**
    * @brief Send a value to the network.
    */
-  virtual bool push(const parameter_base&) = 0;
+  virtual bool push(const parameter_base&, const ossia::value& v) = 0;
+  bool push(const parameter_base& p);
 
   /**
    * @brief Send many values in one go if the protocol supports it
@@ -114,11 +114,11 @@ public:
   }
 
   //! Replace the loggers used
-  void set_logger(const network_logger& l)
+  virtual void set_logger(const network_logger& l)
   {
     m_logger = l;
   }
-  const network_logger& get_logger() const
+  virtual const network_logger& get_logger() const
   {
     return m_logger;
   }

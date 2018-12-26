@@ -53,46 +53,7 @@ serial_protocol::serial_protocol(
                 *m_device, ret.value<QJSValue>());
 
             connect(&m_serialPort, &serial_wrapper::read,
-                    this, [&] (const QByteArray& a) {
-
-              QVariant ret;
-              QMetaObject::invokeMethod(
-                           m_object, "onMessage",
-                           Q_RETURN_ARG(QVariant, ret),
-                           Q_ARG(QVariant, QString::fromUtf8(a)));
-
-              auto arr = ret.value<QJSValue>();
-              // should be an array of { address, value } objects
-              if (!arr.isArray())
-                return;
-
-              QJSValueIterator it(arr);
-              while (it.hasNext())
-              {
-                it.next();
-                auto val = it.value();
-                auto addr = val.property("address");
-                if (!addr.isString())
-                  continue;
-
-                auto addr_txt = addr.toString().toStdString();
-                auto n = find_node(m_device->get_root_node(), addr_txt);
-                if (!n)
-                  continue;
-
-                auto v = val.property("value");
-                if (v.isNull())
-                  continue;
-
-                if (auto addr = n->get_parameter())
-                {
-                  qDebug() << "Applied value"
-                           << QString::fromStdString(value_to_pretty_string(
-                                  qt::value_from_js(addr->value(), v)));
-                  addr->set_value(qt::value_from_js(addr->value(), v));
-                }
-              }
-            });
+                    this, &serial_protocol::on_read);
             return;
           }
           case QQmlComponent::Status::Loading:
@@ -111,7 +72,47 @@ bool serial_protocol::pull(parameter_base&)
   return false;
 }
 
-bool serial_protocol::push(const ossia::net::parameter_base& addr)
+void serial_protocol::on_read(const QByteArray& a)
+{
+  QVariant ret;
+  QMetaObject::invokeMethod(
+        m_object, "onMessage",
+        Q_RETURN_ARG(QVariant, ret),
+        Q_ARG(QVariant, a));
+
+  auto arr = ret.value<QJSValue>();
+  // should be an array of { address, value } objects
+  if (!arr.isArray())
+    return;
+
+  QJSValueIterator it(arr);
+  while (it.hasNext())
+  {
+    it.next();
+    auto val = it.value();
+    auto addr = val.property("address");
+    if (!addr.isString())
+      continue;
+
+    auto addr_txt = addr.toString().toStdString();
+    auto n = find_node(m_device->get_root_node(), addr_txt);
+    if (!n)
+      continue;
+
+    auto v = val.property("value");
+    if (v.isNull())
+      continue;
+
+    if (auto addr = n->get_parameter())
+    {
+      qDebug() << "Applied value"
+               << QString::fromStdString(value_to_pretty_string(
+                                           qt::value_from_js(addr->value(), v)));
+      addr->set_value(qt::value_from_js(addr->value(), v));
+    }
+  }
+}
+bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
   const ossia::value& v = ad.value();

@@ -80,7 +80,7 @@ bool artnet_protocol::pull(net::parameter_base& param)
   return true;
 }
 
-bool artnet_protocol::push(const net::parameter_base& param)
+bool artnet_protocol::push(const net::parameter_base& param, const ossia::value& v)
 {
   return true;
 }

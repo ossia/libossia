@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/network_logger.hpp>
@@ -14,6 +15,11 @@ network_logger::~network_logger() = default;
 
 void protocol_base::request(parameter_base&)
 {
+}
+
+bool protocol_base::push(const parameter_base& p)
+{
+  return push(p, p.value());
 }
 
 bool protocol_base::push_bundle(

@@ -89,13 +89,13 @@ bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
   return true;
 }
 
-bool http_protocol::push(const ossia::net::parameter_base& parameter_base)
+bool http_protocol::push(const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
   auto& addr = static_cast<const http_parameter&>(parameter_base);
 
   if (!addr.data().request.isEmpty())
   {
-    sig_push(&addr);
+    sig_push(&addr, v);
     return true;
   }
 
@@ -116,12 +116,12 @@ void http_protocol::set_device(device_base& dev)
   m_component->setData(m_code, QUrl{});
 }
 
-void http_protocol::slot_push(const http_parameter* addr_p)
+void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& v)
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
   auto rep = m_access->get(QNetworkRequest(
-      dat.replace("$val", qt::value_to_js_string(addr.value()))));
+      dat.replace("$val", qt::value_to_js_string(v))));
 
   m_replies[rep] = &addr;
 }
