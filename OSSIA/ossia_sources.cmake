@@ -599,3 +599,12 @@ set(OSSIA_DATAFLOW_SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.cpp"
 )
+
+
+set(OSSIA_GFX_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/gfx/texture_parameter.hpp"
+)
+
+set(OSSIA_GFX_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/gfx/texture_parameter.cpp"
+)

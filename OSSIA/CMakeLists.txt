@@ -359,6 +359,10 @@ if(OSSIA_DATAFLOW)
   endif()
 endif()
 
+if(OSSIA_GFX)
+  target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
+endif()
+
 if(OSSIA_EDITOR)
   target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 endif()

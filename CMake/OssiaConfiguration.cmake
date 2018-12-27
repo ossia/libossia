@@ -16,6 +16,7 @@ option(OSSIA_USE_FAST_LINKER "Use a faster linker (GNU gold or LLVM lld). Fails 
 option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
 option(OSSIA_DATAFLOW "Dataflow features" ON)
 option(OSSIA_EDITOR "Editor features" ON)
+option(OSSIA_GFX "Graphics features" ON)
 option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 option(OSSIA_HIDE_ALL_SYMBOLS "Hide all symbols from the ossia lib" OFF)

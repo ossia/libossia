@@ -425,10 +425,6 @@ audio_parameter::~audio_parameter()
 {
 }
 
-texture_generic_parameter::~texture_generic_parameter()
-{
-}
-
 graph::~graph()
 {
   clear();
