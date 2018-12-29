@@ -78,7 +78,9 @@ install(TARGETS ossia
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib/static
     RUNTIME DESTINATION bin
-    INCLUDES DESTINATION include)
+    INCLUDES
+      DESTINATION include
+      COMPONENT Devel)
 
 # Install headers
 function(install_headers_rec theHeaders)
@@ -252,7 +254,8 @@ install(DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl
         MESSAGE_NEVER)
 
 if(NOT WIN32)
-  install(SCRIPT InstallBoost.cmake)
+  install(SCRIPT InstallBoost.cmake
+          COMPONENT Devel)
 
   install(DIRECTORY ${CMAKE_BINARY_DIR}/boost
           DESTINATION include
@@ -282,11 +285,13 @@ install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake
     ${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfigVersion.cmake
     DESTINATION lib/cmake/ossia
+    COMPONENT Devel
 )
 
 
 set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
         DESTINATION "${ConfigPackageLocation}"
-        NAMESPACE ossia::)
+        NAMESPACE ossia::
+        COMPONENT Devel)
 endif()
