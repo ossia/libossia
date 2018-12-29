@@ -164,7 +164,6 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
       throw std::runtime_error("serial_protocol::push: bad type");
   }
 
-  str += '\n';
   qDebug() << str;
   m_serialPort.write(str.toUtf8());
   return false;
