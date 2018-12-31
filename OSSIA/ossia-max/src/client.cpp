@@ -397,6 +397,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
   if(x->m_device)
   {
     x->connect_slots();
+    ossia_max::instance().start_timers();
     client::update(x);
   }
 }
@@ -545,6 +546,7 @@ void client::disconnect(client* x)
     delete x->m_device;
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
+    ossia_max::instance().stop_timers();
   }
 }
 

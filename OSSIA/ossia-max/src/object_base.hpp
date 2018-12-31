@@ -13,7 +13,6 @@
 
 #include <concurrentqueue.h>
 
-
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
 
 namespace ossia
@@ -116,7 +115,6 @@ public:
   object_class m_otype{};
 
   void* m_clock{};
-  void* m_poll_clock{}; // value or message polling clock
   void* m_reg_clock{}; // registration clock that should be init in constructor
                        // and canceled by loadbang method
 

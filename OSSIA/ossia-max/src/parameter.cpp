@@ -59,7 +59,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     x->m_bounding_mode = gensym("free");
 
     x->m_clock = clock_new(x, (method)parameter_base::push_default_value);
-    x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::param;
 
@@ -118,7 +117,6 @@ void parameter::destroy(parameter* x)
   object_dequarantining<parameter>(x);
   ossia_max::instance().parameters.remove_all(x);
   object_free(x->m_clock);
-  object_free(x->m_poll_clock);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
   x->~parameter();
@@ -178,8 +176,6 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
     {
       ossia_register(remote);
     }
-
-    clock_delay(m_poll_clock,1);
   }
   else
     object_quarantining<parameter>(this);
@@ -246,7 +242,6 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
 bool parameter::unregister()
 {
   clock_unset(m_clock);
-  clock_unset(m_poll_clock);
 
   m_node_selection.clear();
   m_matchers.clear();

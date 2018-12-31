@@ -48,6 +48,7 @@ public:
   std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
 
   std::thread* m_async_thread;
+  void* m_poll_clock;
 
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 

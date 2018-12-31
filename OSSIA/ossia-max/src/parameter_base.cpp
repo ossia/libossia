@@ -1057,8 +1057,6 @@ void parameter_base::output_value(parameter_base* x)
     return m->is_zombie();
   });
   x->m_matchers.erase(it, x->m_matchers.end());
-
-  clock_delay(x->m_poll_clock, x->m_rate);
 }
 
 void parameter_base::in_float(parameter_base* x, double f)

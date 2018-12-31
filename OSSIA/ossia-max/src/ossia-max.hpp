@@ -83,7 +83,10 @@ public:
     return &instance().m_device;
   }
 
-  static void register_nodes(void* x);
+  static void start_timers();
+  static void stop_timers();
+  static void register_nodes(ossia_max* x);
+  static void poll_all_queues(ossia_max* x);
 
   template<typename T>
   t_class* get_class() {
@@ -154,6 +157,9 @@ public:
 
   RootMap root_patcher;
   void* m_reg_clock{};
+  void* m_timer_clock{};
+
+  unsigned long long m_clock_count{0};
 
 private:
   ossia_max();

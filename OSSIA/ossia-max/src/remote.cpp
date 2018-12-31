@@ -65,7 +65,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     x->m_set_out  = outlet_new(x, NULL);
 
     x->m_dev = nullptr;
-    x->m_poll_clock = clock_new(x, (method) parameter_base::output_value);
 
     x->m_otype = object_class::remote;
 
@@ -108,11 +107,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
 void remote::destroy(remote* x)
 {
-  if (x->m_poll_clock)
-  {
-    clock_free((t_object*)x->m_poll_clock);
-    x->m_poll_clock = nullptr;
-  }
   x->m_dead = true;
   x->unregister();
 
@@ -282,7 +276,6 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
   if (res)
   {
     object_dequarantining<remote>(this);
-    clock_delay(m_poll_clock,1);
   }
   else
     object_quarantining<remote>(this);
