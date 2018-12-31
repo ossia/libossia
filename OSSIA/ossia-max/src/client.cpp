@@ -139,11 +139,7 @@ void client::destroy(client* x)
   // are connected to node.about_to_be_deleted
   // x->unregister_children();
 
-  object_free((t_object*)x->m_poll_clock);
-
-  if (x->m_device)
-    delete (x->m_device);
-  x->m_device = nullptr;
+  disconnect(x);
   outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
 #if OSSIA_MAX_AUTOREGISTER
@@ -524,9 +520,6 @@ void client::unregister_children()
 
 void client::update(client* x)
 {
-  // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
-  // for OSC Query
-
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
