@@ -365,6 +365,8 @@ else()
       check_cxx_linker_flag("-fuse-ld=lld -Wl,--threads" LINKER_THREADS_SUPPORTED)
       check_cxx_linker_flag("-fuse-ld=lld -Wl,--gdb-index" GDB_INDEX_SUPPORTED)
     endif()
+  else()
+    check_cxx_linker_flag("-Wl,--gdb-index" GDB_INDEX_SUPPORTED)
   endif()
 endif()
 
@@ -502,13 +504,13 @@ else()
       set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
         -Wl,-Bsymbolic-functions
       )
+    endif()
 
-      if(GDB_INDEX_SUPPORTED AND NOT OSSIA_SANITIZE)
-        set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-            ${DEBUG_SPLIT_FLAG}
-            -Wl,--gdb-index
-        )
-      endif()
+    if(GDB_INDEX_SUPPORTED AND NOT OSSIA_SANITIZE)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
+          ${DEBUG_SPLIT_FLAG}
+          -Wl,--gdb-index
+      )
     endif()
   endif()
 
