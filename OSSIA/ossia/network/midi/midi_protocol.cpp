@@ -2,7 +2,8 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
-#include <ossia/network/midi/midi.hpp>
+#include <ossia/network/midi/midi_device.hpp>
+#include <ossia/network/midi/midi_protocol.hpp>
 
 #include <rtmidi17/message.hpp>
 #if !defined(__EMSCRIPTEN__)
@@ -514,7 +515,29 @@ public:
 
     m_parameter.reset(this);
   }
+
+  ~generic_node()
+  {
+    m_children.clear();
+
+    about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
+    m_parameter.release();
+  }
 };
+
+template<typename T, typename... Args>
+midi_node* find_or_create (ossia::string_view name, midi_device& dev, midi_node& parent, Args&&... args)
+{
+  auto n = parent.find_child(name);
+  if(!n)
+    return parent.add_midi_node(std::make_unique<T>(std::forward<Args>(args)..., dev, parent));
+
+  return dynamic_cast<midi_node*>(n);
+}
 
 void midi_protocol::on_learn(const rtmidi::message& mess)
 {
@@ -522,58 +545,49 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
   if (chan == 0)
     return;
 
-  const auto& chan_name = midi_node_name(chan);
-  auto channel_node = m_dev->find_child(chan_name);
-  if(!channel_node)
-  {
-    channel_node = m_dev->add_child(std::make_unique<ossia::net::midi::channel_node>(
-                       false, chan, *m_dev, *m_dev));
-  }
+  auto channel_node = find_or_create<ossia::net::midi::channel_node>(midi_node_name(chan), *m_dev, *m_dev, false, chan);
 
   switch (mess.get_message_type())
   {
     case rtmidi::message_type::NOTE_ON:
     {
-      auto n_on_node = channel_node->find_child("on");
-      if(!n_on_node)
-      {
-        n_on_node = channel_node->add_child(std::make_unique<generic_node>(
-                                  address_info{chan, address_info::Type::NoteOn, 0},
-                                  *m_dev, *channel_node));
-      }
+      auto node = find_or_create<generic_node>("on", *m_dev, *channel_node, address_info{chan, address_info::Type::NoteOn, 0});
 
       auto n = mess.bytes[1];
-      const auto& n_name = midi_node_name(n);
-      auto node = n_on_node->find_child(n_name);
-      if(!node)
-      {
-        n_on_node->add_child(std::make_unique<generic_node>(
-                               address_info{chan, address_info::Type::NoteOn_N, 0},
-                               *m_dev, *n_on_node));
-      }
+      find_or_create<generic_node>(midi_node_name(n), *m_dev, *node, address_info{chan, address_info::Type::NoteOn_N, n});
       break;
     }
 
     case rtmidi::message_type::NOTE_OFF:
     {
+      auto node = find_or_create<generic_node>("off", *m_dev, *channel_node, address_info{chan, address_info::Type::NoteOff, 0});
+
       auto n = mess.bytes[1];
+      find_or_create<generic_node>(midi_node_name(n), *m_dev, *node, address_info{chan, address_info::Type::NoteOff_N, n});
       break;
     }
 
     case rtmidi::message_type::CONTROL_CHANGE:
     {
+      auto node = find_or_create<generic_node>("control", *m_dev, *channel_node, address_info{chan, address_info::Type::CC, 0});
+
       auto n = mess.bytes[1];
+      find_or_create<generic_node>(midi_node_name(n), *m_dev, *node, address_info{chan, address_info::Type::CC_N, n});
       break;
     }
 
     case rtmidi::message_type::PROGRAM_CHANGE:
     {
+      auto node = find_or_create<generic_node>("program", *m_dev, *channel_node, address_info{chan, address_info::Type::PC, 0});
+
       auto n = mess.bytes[1];
+      find_or_create<generic_node>(midi_node_name(n), *m_dev, *node, address_info{chan, address_info::Type::PC_N, n});
       break;
     }
 
     case rtmidi::message_type::PITCH_BEND:
     {
+      find_or_create<generic_node>("pitchbend", *m_dev, *channel_node, address_info{chan, address_info::Type::PB, 0});
       break;
     }
     default:

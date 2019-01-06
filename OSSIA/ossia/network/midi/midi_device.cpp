@@ -14,6 +14,13 @@ midi_device::midi_device(std::unique_ptr<protocol_base> prot)
   m_protocol->set_device(*this);
 }
 
+midi_device::~midi_device()
+{
+  m_children.clear();
+
+  about_to_be_deleted(*this);
+}
+
 node_base& midi_device::set_name(std::string n)
 {
   m_name = n;

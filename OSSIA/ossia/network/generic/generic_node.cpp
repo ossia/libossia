@@ -135,8 +135,7 @@ bool generic_node::remove_parameter()
     // notify observers
     auto addr = std::move(m_parameter);
     m_device.on_parameter_removing(*addr);
-    auto& device = get_device();
-    device.get_protocol().observe(*addr, false);
+    m_device.get_protocol().observe(*addr, false);
 
     addr.reset();
 

@@ -5,6 +5,7 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
 #include <ossia/network/midi/midi_parameter.hpp>
+#include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/network/value/value.hpp>
 
 #include <iostream>
@@ -33,7 +34,13 @@ public:
 
   ~note_on_N_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -54,7 +61,13 @@ public:
 
   ~note_off_N_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -75,7 +88,13 @@ public:
 
   ~control_N_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -96,7 +115,13 @@ public:
 
   ~program_N_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -123,7 +148,13 @@ public:
 
   ~program_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -151,7 +182,13 @@ public:
 
   ~note_on_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -181,7 +218,13 @@ public:
 
   ~note_off_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -209,7 +252,13 @@ public:
 
   ~control_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -230,7 +279,13 @@ public:
 
   ~pitch_bend_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
+
+    m_device.on_parameter_removing(*this);
+    m_device.get_protocol().observe(*this, false);
+
     m_parameter.release();
   }
 };
@@ -271,6 +326,8 @@ public:
 
   ~channel_node()
   {
+    m_children.clear();
+
     about_to_be_deleted(*this);
   }
 

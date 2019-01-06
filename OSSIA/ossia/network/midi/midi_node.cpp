@@ -3,14 +3,10 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_node.hpp>
 #include <ossia/network/midi/midi_parameter.hpp>
+#include <ossia/network/midi/midi_protocol.hpp>
 
-namespace ossia
+namespace ossia::net::midi
 {
-namespace net
-{
-namespace midi
-{
-
 struct midi_name_table
 {
   midi_name_table()
@@ -79,6 +75,17 @@ std::unique_ptr<node_base> midi_node::make_child(const std::string& name)
 void midi_node::removing_child(node_base& node)
 {
 }
+
+midi_node* midi_node::add_midi_node(std::unique_ptr<midi_node> n)
+{
+  assert(n);
+  auto ptr = n.get();
+  {
+    write_lock_t lock{m_mutex};
+    m_children.push_back(std::move(n));
+  }
+  m_device.on_node_created(*ptr);
+  return ptr;
 }
-}
+
 }
