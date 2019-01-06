@@ -241,27 +241,32 @@ class channel_node final : public midi_node
 
 public:
   channel_node(
-      midi_size_t channel, midi_device& aDevice,
+      bool init,
+      midi_size_t channel,
+      midi_device& aDevice,
       ossia::net::node_base& aParent)
       : midi_node(aDevice, aParent), m_channel{channel}
   {
     m_name = midi_node_name(channel);
-    m_children.reserve(4);
+    m_children.reserve(5);
 
-    m_children.push_back(
-        std::make_unique<note_on_node>(m_channel, m_device, *this));
+    if(init)
+    {
+      m_children.push_back(
+          std::make_unique<note_on_node>(m_channel, m_device, *this));
 
-    m_children.push_back(
-        std::make_unique<note_off_node>(m_channel, m_device, *this));
+      m_children.push_back(
+          std::make_unique<note_off_node>(m_channel, m_device, *this));
 
-    m_children.push_back(
-        std::make_unique<control_node>(m_channel, m_device, *this));
+      m_children.push_back(
+          std::make_unique<control_node>(m_channel, m_device, *this));
 
-    m_children.push_back(
-        std::make_unique<program_node>(m_channel, m_device, *this));
+      m_children.push_back(
+          std::make_unique<program_node>(m_channel, m_device, *this));
 
-    m_children.push_back(
-        std::make_unique<pitch_bend_node>(m_channel, m_device, *this));
+      m_children.push_back(
+          std::make_unique<pitch_bend_node>(m_channel, m_device, *this));
+    }
   }
 
   ~channel_node()

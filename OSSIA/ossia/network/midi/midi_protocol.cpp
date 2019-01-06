@@ -80,89 +80,7 @@ bool midi_protocol::set_info(midi_info m)
       else
         m_input->open_port(m_info.port, "libossia MIDI input");
 
-      m_input->set_callback([this](rtmidi::message mess) {
-        const auto chan = mess.get_channel();
-        if (chan == 0)
-          return;
-
-        if (m_registers)
-        {
-          messages.enqueue(mess);
-        }
-
-        midi_channel& c = m_channels[chan - 1];
-        switch (mess.get_message_type())
-        {
-          case rtmidi::message_type::NOTE_ON:
-            c.note_on.first = mess.bytes[1];
-            c.note_on.second = mess.bytes[2];
-            c.note_on_N[c.note_on.first] = c.note_on.second;
-            if (auto ptr = c.callback_note_on)
-            {
-              std::vector<ossia::value> t{int32_t{c.note_on.first},
-                                          int32_t{c.note_on.second}};
-              value_callback(*ptr, t);
-            }
-            if (auto ptr = c.callback_note_on_N[c.note_on.first])
-            {
-              int32_t val{c.note_on_N[c.note_on.first]};
-              value_callback(*ptr, val);
-            }
-            break;
-          case rtmidi::message_type::NOTE_OFF:
-            c.note_off.first = mess.bytes[1];
-            c.note_off.second = mess.bytes[2];
-            c.note_off_N[c.note_off.first] = c.note_off.second;
-            if (auto ptr = c.callback_note_off)
-            {
-              std::vector<ossia::value> t{int32_t{c.note_off.first},
-                                          int32_t{c.note_off.second}};
-              value_callback(*ptr, t);
-            }
-            if (auto ptr = c.callback_note_off_N[c.note_off.first])
-            {
-              int32_t val{c.note_off_N[c.note_off.first]};
-              value_callback(*ptr, val);
-            }
-            break;
-          case rtmidi::message_type::CONTROL_CHANGE:
-            c.cc.first = mess.bytes[1];
-            c.cc.second = mess.bytes[2];
-            c.cc_N[c.cc.first] = c.cc.second;
-            if (auto ptr = c.callback_cc)
-            {
-              std::vector<ossia::value> t{int32_t{c.cc.first},
-                                          int32_t{c.cc.second}};
-              value_callback(*ptr, t);
-            }
-            if (auto ptr = c.callback_cc_N[c.cc.first])
-            {
-              int32_t val{c.cc_N[c.cc.first]};
-              value_callback(*ptr, val);
-            }
-            break;
-          case rtmidi::message_type::PROGRAM_CHANGE:
-            c.pc = mess.bytes[1];
-            if (auto ptr = c.callback_pc)
-            {
-              value_callback(*ptr, int32_t{c.pc});
-            }
-            if (auto ptr = c.callback_pc_N[c.pc])
-            {
-              value_callback(*ptr, ossia::impulse{});
-            }
-            break;
-          case rtmidi::message_type::PITCH_BEND:
-            c.pb = mess.bytes[2] * 128 + mess.bytes[1];
-            if (auto ptr = c.callback_pb)
-            {
-              value_callback(*ptr, int32_t{c.pb});
-            }
-            break;
-          default:
-            break;
-        }
-      });
+      m_input->set_callback([&] (const auto& m) { midi_callback(m); });
     }
     else if (m_info.type == midi_info::Type::RemoteInput)
     {
@@ -460,6 +378,210 @@ void midi_protocol::value_callback(parameter_base& param, const value& val)
   m_dev->on_message(param);
 }
 
+void midi_protocol::midi_callback(const rtmidi::message& mess)
+{
+  if(m_learning)
+  {
+    on_learn(mess);
+    return;
+  }
+
+  const auto chan = mess.get_channel();
+  if (chan == 0)
+    return;
+
+  if (m_registers)
+    messages.enqueue(mess);
+
+  midi_channel& c = m_channels[chan - 1];
+  switch (mess.get_message_type())
+  {
+    case rtmidi::message_type::NOTE_ON:
+      c.note_on.first = mess.bytes[1];
+      c.note_on.second = mess.bytes[2];
+      c.note_on_N[c.note_on.first] = c.note_on.second;
+      if (auto ptr = c.callback_note_on)
+      {
+        std::vector<ossia::value> t{int32_t{c.note_on.first},
+                                    int32_t{c.note_on.second}};
+        value_callback(*ptr, t);
+      }
+      if (auto ptr = c.callback_note_on_N[c.note_on.first])
+      {
+        int32_t val{c.note_on_N[c.note_on.first]};
+        value_callback(*ptr, val);
+      }
+      break;
+    case rtmidi::message_type::NOTE_OFF:
+      c.note_off.first = mess.bytes[1];
+      c.note_off.second = mess.bytes[2];
+      c.note_off_N[c.note_off.first] = c.note_off.second;
+      if (auto ptr = c.callback_note_off)
+      {
+        std::vector<ossia::value> t{int32_t{c.note_off.first},
+                                    int32_t{c.note_off.second}};
+        value_callback(*ptr, t);
+      }
+      if (auto ptr = c.callback_note_off_N[c.note_off.first])
+      {
+        int32_t val{c.note_off_N[c.note_off.first]};
+        value_callback(*ptr, val);
+      }
+      break;
+    case rtmidi::message_type::CONTROL_CHANGE:
+      c.cc.first = mess.bytes[1];
+      c.cc.second = mess.bytes[2];
+      c.cc_N[c.cc.first] = c.cc.second;
+      if (auto ptr = c.callback_cc)
+      {
+        std::vector<ossia::value> t{int32_t{c.cc.first},
+                                    int32_t{c.cc.second}};
+        value_callback(*ptr, t);
+      }
+      if (auto ptr = c.callback_cc_N[c.cc.first])
+      {
+        int32_t val{c.cc_N[c.cc.first]};
+        value_callback(*ptr, val);
+      }
+      break;
+    case rtmidi::message_type::PROGRAM_CHANGE:
+      c.pc = mess.bytes[1];
+      if (auto ptr = c.callback_pc)
+      {
+        value_callback(*ptr, int32_t{c.pc});
+      }
+      if (auto ptr = c.callback_pc_N[c.pc])
+      {
+        value_callback(*ptr, ossia::impulse{});
+      }
+      break;
+    case rtmidi::message_type::PITCH_BEND:
+      c.pb = mess.bytes[2] * 128 + mess.bytes[1];
+      if (auto ptr = c.callback_pb)
+      {
+        value_callback(*ptr, int32_t{c.pb});
+      }
+      break;
+    default:
+      break;
+  }
+
+}
+
+class generic_node final : public midi_node, public midi_parameter
+{
+public:
+  generic_node(address_info addr, midi_device& dev, ossia::net::node_base& p)
+    : midi_node{dev, p}
+    , midi_parameter{addr, *this}
+  {
+    using namespace std::literals;
+    switch(addr.type)
+    {
+      case address_info::Type::NoteOn:
+        m_name = "on"s;
+        break;
+      case address_info::Type::NoteOn_N:
+        m_name = midi_node_name(addr.note);
+        break;
+      case address_info::Type::NoteOff:
+        m_name = "off"s;
+        break;
+      case address_info::Type::NoteOff_N:
+        m_name = midi_node_name(addr.note);
+        break;
+      case address_info::Type::CC:
+        m_name = "control"s;
+        break;
+      case address_info::Type::CC_N:
+        m_name = midi_node_name(addr.note);
+        break;
+      case address_info::Type::PC:
+        m_name = "program"s;
+        break;
+      case address_info::Type::PC_N:
+        m_name = midi_node_name(addr.note);
+        break;
+      case address_info::Type::PB:
+        m_name = "pitchbend"s;
+        break;
+      case address_info::Type::Any:
+        m_name = "TODO"s;
+        break;
+      default:
+        break;
+    }
+
+    m_parameter.reset(this);
+  }
+};
+
+void midi_protocol::on_learn(const rtmidi::message& mess)
+{
+  const midi_size_t chan = mess.get_channel();
+  if (chan == 0)
+    return;
+
+  const auto& chan_name = midi_node_name(chan);
+  auto channel_node = m_dev->find_child(chan_name);
+  if(!channel_node)
+  {
+    channel_node = m_dev->add_child(std::make_unique<ossia::net::midi::channel_node>(
+                       false, chan, *m_dev, *m_dev));
+  }
+
+  switch (mess.get_message_type())
+  {
+    case rtmidi::message_type::NOTE_ON:
+    {
+      auto n_on_node = channel_node->find_child("on");
+      if(!n_on_node)
+      {
+        n_on_node = channel_node->add_child(std::make_unique<generic_node>(
+                                  address_info{chan, address_info::Type::NoteOn, 0},
+                                  *m_dev, *channel_node));
+      }
+
+      auto n = mess.bytes[1];
+      const auto& n_name = midi_node_name(n);
+      auto node = n_on_node->find_child(n_name);
+      if(!node)
+      {
+        n_on_node->add_child(std::make_unique<generic_node>(
+                               address_info{chan, address_info::Type::NoteOn_N, 0},
+                               *m_dev, *n_on_node));
+      }
+      break;
+    }
+
+    case rtmidi::message_type::NOTE_OFF:
+    {
+      auto n = mess.bytes[1];
+      break;
+    }
+
+    case rtmidi::message_type::CONTROL_CHANGE:
+    {
+      auto n = mess.bytes[1];
+      break;
+    }
+
+    case rtmidi::message_type::PROGRAM_CHANGE:
+    {
+      auto n = mess.bytes[1];
+      break;
+    }
+
+    case rtmidi::message_type::PITCH_BEND:
+    {
+      break;
+    }
+    default:
+      break;
+
+  }
+}
+
 std::vector<midi_info> midi_protocol::scan()
 {
   std::vector<midi_info> vec;
@@ -498,6 +620,16 @@ void midi_protocol::push_value(const rtmidi::message& m)
 void midi_protocol::enable_registration()
 {
   m_registers = true;
+}
+
+bool midi_protocol::learning() const
+{
+  return m_learning;
+}
+
+void midi_protocol::set_learning(bool newLearn)
+{
+  m_learning = newLearn;
 }
 }
 }

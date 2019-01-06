@@ -20,6 +20,7 @@ struct message;
 }
 namespace ossia::net::midi
 {
+class midi_device;
 struct OSSIA_EXPORT midi_info
 {
   enum class Type
@@ -65,6 +66,9 @@ public:
 
   void enable_registration();
 
+  bool learning() const;
+  void set_learning(bool);
+
 private:
   moodycamel::ReaderWriterQueue<rtmidi::message> messages;
   std::unique_ptr<rtmidi::midi_in> m_input;
@@ -72,9 +76,10 @@ private:
 
   std::array<midi_channel, 16> m_channels;
 
-  midi_info m_info;
+  midi_info m_info{};
   midi_device* m_dev{};
   bool m_registers{};
+  std::atomic_bool m_learning{};
 
   friend class midi_device;
   friend class midi_parameter;
@@ -88,5 +93,8 @@ private:
 
   void
   value_callback(ossia::net::parameter_base& param, const ossia::value& val);
+
+  void midi_callback(const rtmidi::message&);
+  void on_learn(const rtmidi::message& m);
 };
 }
