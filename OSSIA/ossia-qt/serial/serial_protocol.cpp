@@ -147,7 +147,7 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
     }
     case ossia::val_type::VEC4F:
     {
-      auto& vec = v.get<ossia::vec3f>();
+      auto& vec = v.get<ossia::vec4f>();
       str.replace("$val", QString{"%1 %2 %3 %4"}.arg(vec[0]).arg(vec[1]).arg(vec[2]).arg(vec[3]));
       break;
     }
