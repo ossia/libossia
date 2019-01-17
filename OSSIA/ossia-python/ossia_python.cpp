@@ -493,7 +493,7 @@ public:
     m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
   {
       m_device.set_name(name);
-      m_device.update_namespace();
+      m_device.create_full_tree();
   }
 
   operator ossia::net::midi::midi_device&() { return m_device; }
