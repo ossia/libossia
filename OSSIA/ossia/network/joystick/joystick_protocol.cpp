@@ -324,7 +324,7 @@ bool joystick_protocol::pull(net::parameter_base& param)
   return true;
 }
 
-bool joystick_protocol::push(const net::parameter_base& param)
+bool joystick_protocol::push(const net::parameter_base& param, const ossia::value& v)
 {
   return true;
 }

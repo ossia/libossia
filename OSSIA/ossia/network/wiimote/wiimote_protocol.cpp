@@ -69,7 +69,7 @@ bool wiimote_protocol::pull(net::parameter_base& param)
   return true;
 }
 
-bool wiimote_protocol::push(const net::parameter_base& param)
+bool wiimote_protocol::push(const net::parameter_base& param, const ossia::value& v)
 {
   return true;
 }

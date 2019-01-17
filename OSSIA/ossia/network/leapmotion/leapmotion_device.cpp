@@ -241,7 +241,7 @@ bool ossia::leapmotion_protocol::pull(ossia::net::parameter_base&)
   return false;
 }
 
-bool ossia::leapmotion_protocol::push(const ossia::net::parameter_base&)
+bool ossia::leapmotion_protocol::push(const ossia::net::parameter_base&, const ossia::value& v)
 {
   return false;
 }
