@@ -35,6 +35,7 @@ add_jar(ossia-java
   io/ossia/Vec4F.java
   io/ossia/Type.java
   io/ossia/SizeT.java
+  io/ossia/SizeTByReference.java
 
 )
 

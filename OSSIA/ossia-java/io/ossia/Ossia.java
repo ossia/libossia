@@ -97,8 +97,8 @@ public interface Ossia extends Library
      void ossia_node_find_pattern(
       Pointer root,
       String pattern,
-      Pointer data,
-      Pointer size);
+      PointerByReference data,
+      SizeTByReference size);
 
      Pointer ossia_node_create(
       Pointer root,
@@ -106,8 +106,8 @@ public interface Ossia extends Library
      void ossia_node_create_pattern(
       Pointer root,
       String pattern,
-      Pointer data,
-      Pointer size);
+      PointerByReference data,
+      SizeTByReference size);
 
      Pointer ossia_node_add_child (
       Pointer node,
@@ -175,8 +175,8 @@ public interface Ossia extends Library
         SizeT sz);
      void ossia_node_get_tags(
         Pointer node,
-        Pointer tags,
-        Pointer sz);
+        PointerByReference tags,
+        SizeTByReference sz);
      void ossia_tags_free(
         Pointer tags,
         SizeT sz);
@@ -366,8 +366,8 @@ public interface Ossia extends Library
 
      void ossia_domain_get_values(
       Pointer domain,
-      Pointer values,
-      Pointer sz);
+      PointerByReference values,
+      SizeTByReference sz);
 
      void ossia_domain_set_values(
       Pointer domain,
@@ -398,9 +398,9 @@ public interface Ossia extends Library
      Pointer ossia_value_create_string (String value);
      Pointer ossia_value_create_byte_array (Pointer value, SizeT sz);
 
-     Pointer ossia_value_create_list (Pointer values, Pointer size);
-     Pointer ossia_value_create_fn (Pointer values, Pointer size);
-     Pointer ossia_value_create_in (Pointer values, Pointer size);
+     Pointer ossia_value_create_list (Pointer values, SizeT size);
+     Pointer ossia_value_create_fn (Pointer values, SizeT size);
+     Pointer ossia_value_create_in (Pointer values, SizeT size);
 
 
      void ossia_value_free (Pointer value);
@@ -414,28 +414,29 @@ public interface Ossia extends Library
      Vec4F.ByValue ossia_value_to_4f (Pointer val);
      boolean ossia_value_to_bool (Pointer val);
      byte ossia_value_to_char (Pointer val);
+     Pointer ossia_value_to_string (Pointer val);
 
     void ossia_value_to_byte_array (
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
+      PointerByReference val_out,
+      SizeTByReference size);
 
      void ossia_value_to_list (
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
-     void ossia_value_free_list (Pointer[] tpl);
+      PointerByReference val_out,
+      SizeTByReference size);
+     void ossia_value_free_list (Pointer tpl);
 
      void ossia_value_to_fn(
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
+      PointerByReference val_out,
+      SizeTByReference size);
      void ossia_value_free_fn (Pointer tpl);
 
      void ossia_value_to_in(
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
+      PointerByReference val_out,
+      SizeTByReference size);
      void ossia_value_free_in (Pointer tpl);
 
 
@@ -446,13 +447,13 @@ public interface Ossia extends Library
 
      String ossia_value_convert_byte_array (
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
+      PointerByReference val_out,
+      SizeTByReference size);
 
      void ossia_value_convert_list (
       Pointer val_in,
-      Pointer val_out,
-      Pointer size);
+      PointerByReference val_out,
+      SizeTByReference size);
 
       Vec2F.ByValue ossia_value_convert_2f (Pointer val);
       Vec3F.ByValue ossia_value_convert_3f (Pointer val);

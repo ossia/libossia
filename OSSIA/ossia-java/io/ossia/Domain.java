@@ -24,6 +24,31 @@ public class Domain implements AutoCloseable
     Ossia.INSTANCE.ossia_value_free(b);
     Ossia.INSTANCE.ossia_value_free(a);
   }
+  public Domain(Vec2F min, Vec2F max)
+  {
+    Pointer a = Ossia.INSTANCE.ossia_value_create_2f(min.x, min.y);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_2f(max.x, max.y);
+    impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
+    Ossia.INSTANCE.ossia_value_free(b);
+    Ossia.INSTANCE.ossia_value_free(a);
+  }
+  public Domain(Vec3F min, Vec3F max)
+  {
+    Pointer a = Ossia.INSTANCE.ossia_value_create_3f(min.x, min.y, min.z);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_3f(max.x, max.y, min.z);
+    impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
+    Ossia.INSTANCE.ossia_value_free(b);
+    Ossia.INSTANCE.ossia_value_free(a);
+  }
+  public Domain(Vec4F min, Vec4F max)
+  {
+    Pointer a = Ossia.INSTANCE.ossia_value_create_4f(min.x, min.y, min.z, min.w);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_4f(max.x, max.y, min.z, min.w);
+    impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
+    Ossia.INSTANCE.ossia_value_free(b);
+    Ossia.INSTANCE.ossia_value_free(a);
+  }
+
 
   @Override
   public void close() {
