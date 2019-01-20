@@ -137,6 +137,11 @@ public interface Ossia extends Library
       Pointer node,
       int type);
 
+     Pointer ossia_create_parameter(
+      Pointer node,
+      String name,
+      String type);
+
      Pointer ossia_node_get_parameter(
       Pointer node);
 
@@ -273,6 +278,36 @@ public interface Ossia extends Library
       Pointer property);
 
 
+      int ossia_parameter_to_int (Pointer val);
+      float ossia_parameter_to_float (Pointer val);
+      Vec2F.ByValue ossia_parameter_to_2f (Pointer val);
+      Vec3F.ByValue ossia_parameter_to_3f (Pointer val);
+      Vec4F.ByValue ossia_parameter_to_4f (Pointer val);
+      boolean ossia_parameter_to_bool (Pointer val);
+      byte ossia_parameter_to_char (Pointer val);
+      Pointer ossia_parameter_to_string (Pointer val);
+
+     void ossia_parameter_to_byte_array (
+       Pointer val_in,
+       PointerByReference val_out,
+       SizeTByReference size);
+
+      void ossia_parameter_to_list (
+       Pointer val_in,
+       PointerByReference val_out,
+       SizeTByReference size);
+
+      void ossia_parameter_to_fn(
+       Pointer val_in,
+       PointerByReference val_out,
+       SizeTByReference size);
+
+      void ossia_parameter_to_in(
+       Pointer val_in,
+       PointerByReference val_out,
+       SizeTByReference size);
+
+
 
      void ossia_parameter_push_value (
       Pointer property,
@@ -314,6 +349,10 @@ public interface Ossia extends Library
       Pointer value,
       SizeT sz);
      void ossia_parameter_push_cn( // pushed as a string
+      Pointer property,
+      Pointer value,
+      SizeT sz);
+     void ossia_parameter_push_list(
       Pointer property,
       Pointer value,
       SizeT sz);

@@ -220,10 +220,18 @@ std::string to_pretty_string(const destination_index& index)
 std::string to_pretty_string(const destination& d) noexcept
 {
   using namespace std::literals;
-  return ossia::net::address_string_from_node(d.value.get())
-         + to_pretty_string(d.index)
-         + (d.unit ? ("["s + ossia::get_pretty_unit_text(d.unit) + "]"s)
-                   : ":"s);
+  // TODO check if it's faster with fmt ?
+  std::string str;
+  str.reserve(128);
+  str += ossia::net::address_string_from_node(d.value.get());
+  str += to_pretty_string(d.index);
+  if(d.unit)
+  {
+    str += "[";
+    str += ossia::get_pretty_unit_text(d.unit);
+    str += "]";
+  }
+  return str;
 }
 
 template <typename Comparator>

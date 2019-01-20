@@ -110,6 +110,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/vec.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_parse.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_text.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_merge.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_convert.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/dataspace/detail/dataspace_list.hpp"

@@ -139,6 +139,222 @@ ossia_value_t ossia_parameter_get_value(ossia_parameter_t address)
   });
 }
 
+int ossia_parameter_to_int(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_int: address is null");
+      return {};
+    }
+
+    return convert_parameter(address)->value().get<int>();
+  });
+}
+
+float ossia_parameter_to_float(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> float {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_float: address is null");
+      return {};
+    }
+
+    return convert_parameter(address)->value().get<float>();
+  });
+}
+
+ossia_vec2f ossia_parameter_to_2f(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> ossia_vec2f {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_2f: address is null");
+      return {};
+    }
+
+    auto res = convert_parameter(address)->value().get<ossia::vec2f>();
+    return {res[0], res[1]};
+  });
+}
+
+ossia_vec3f ossia_parameter_to_3f(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> ossia_vec3f {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_3f: address is null");
+      return {};
+    }
+
+    auto res = convert_parameter(address)->value().get<ossia::vec3f>();
+    return {res[0], res[1], res[2]};
+  });
+}
+
+ossia_vec4f ossia_parameter_to_4f(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> ossia_vec4f {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_4f: address is null");
+      return {};
+    }
+
+    auto res = convert_parameter(address)->value().get<ossia::vec4f>();
+    return {res[0], res[1], res[2], res[3]};
+  });
+}
+
+int ossia_parameter_to_bool(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> int {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_bool: address is null");
+      return {};
+    }
+
+    return convert_parameter(address)->value().get<bool>();
+  });
+}
+
+char ossia_parameter_to_char(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> char {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_char: address is null");
+      return {};
+    }
+
+    return convert_parameter(address)->value().get<char>();
+  });
+}
+
+void ossia_parameter_to_byte_array(ossia_parameter_t address, char** out, size_t* size)
+{
+  return safe_function(__func__, [=]() -> void {
+    if (!address || !out || !size)
+    {
+      ossia_log_error("ossia_parameter_to_byte_array: a parameter is null");
+    }
+    else
+    {
+      const auto& val = convert_parameter(address)->value();
+      if (auto casted_val = val.target<std::string>())
+      copy_bytes(*casted_val, out, size);
+      return;
+    }
+    *out = nullptr;
+    *size = 0;
+  });
+}
+
+const char* ossia_parameter_to_string(ossia_parameter_t address)
+{
+  return safe_function(__func__, [=]() -> const char* {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_to_string: address is null");
+      return {};
+    }
+
+    const auto& val = convert_parameter(address)->value();
+    if (auto casted_val = val.target<std::string>())
+      return copy_string(*casted_val);
+    else
+      return nullptr;
+  });
+}
+
+void ossia_parameter_to_list(ossia_parameter_t parameter, ossia_value_t** out, size_t* size)
+{
+  return safe_function(__func__, [=]() -> void {
+    if (!parameter || !out || !size)
+    {
+      ossia_log_error("ossia_parameter_to_list: a parameter is null");
+    }
+    else
+    {
+      const auto& val = convert_parameter(parameter)->value();
+      if (auto casted_val = val.target<std::vector<ossia::value>>())
+      {
+        size_t N = casted_val->size();
+        auto ptr = new ossia_value_t[N];
+        *size = N;
+        for(size_t i = 0; i < N; i++)
+        {
+          ptr[i] = convert((*casted_val)[i]);
+        }
+        *out = ptr;
+      }
+      return;
+    }
+
+    *out = nullptr;
+    *size = 0;
+  });
+}
+
+void ossia_parameter_to_fn(ossia_parameter_t parameter, float** out, size_t* size)
+{
+  return safe_function(__func__, [=]() -> void {
+    if (!parameter || !out || !size)
+    {
+      ossia_log_error("ossia_parameter_to_fn: a parameter is null");
+    }
+    else
+    {
+      const auto& val = convert_parameter(parameter)->value();
+      if (auto casted_val = val.target<std::vector<ossia::value>>())
+      {
+        const size_t N = casted_val->size();
+        auto ptr = new float[N];
+        *size = N;
+        for(size_t i = 0; i < N; i++)
+        {
+          ptr[i] = (*casted_val)[i].get<float>();
+        }
+        *out = ptr;
+      }
+      return;
+    }
+
+    *out = nullptr;
+    *size = 0;
+  });
+}
+
+void ossia_parameter_to_in(ossia_parameter_t parameter, int** out, size_t* size)
+{
+  return safe_function(__func__, [=]() -> void {
+    if (!parameter || !out || !size)
+    {
+      ossia_log_error("ossia_parameter_to_fn: a parameter is null");
+    }
+    else
+    {
+      const auto& val = convert_parameter(parameter)->value();
+      if (auto casted_val = val.target<std::vector<ossia::value>>())
+      {
+        const size_t N = casted_val->size();
+        auto ptr = new int[N];
+        *size = N;
+        for(size_t i = 0; i < N; i++)
+        {
+          ptr[i] = (*casted_val)[i].get<int>();
+        }
+        *out = ptr;
+      }
+      return;
+    }
+
+    *out = nullptr;
+    *size = 0;
+  });
+}
 void ossia_parameter_push_value(ossia_parameter_t address, ossia_value_t value)
 {
   return safe_function(__func__, [=] {
@@ -162,7 +378,7 @@ void ossia_parameter_push_impulse(ossia_parameter_t address)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_impulse: address is null");
       return;
     }
 
@@ -174,7 +390,7 @@ void ossia_parameter_push_i(ossia_parameter_t address, int i)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_i: address is null");
       return;
     }
 
@@ -186,7 +402,7 @@ void ossia_parameter_push_b(ossia_parameter_t address, int i)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_b: address is null");
       return;
     }
 
@@ -198,7 +414,7 @@ void ossia_parameter_push_f(ossia_parameter_t address, float f)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_f: address is null");
       return;
     }
 
@@ -210,7 +426,7 @@ void ossia_parameter_push_2f(ossia_parameter_t address, float f1, float f2)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_2f: address is null");
       return;
     }
 
@@ -222,7 +438,7 @@ void ossia_parameter_push_3f(ossia_parameter_t address, float f1, float f2, floa
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_3f: address is null");
       return;
     }
 
@@ -234,7 +450,7 @@ void ossia_parameter_push_4f(ossia_parameter_t address, float f1, float f2, floa
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_4f: address is null");
       return;
     }
 
@@ -246,7 +462,7 @@ void ossia_parameter_push_c(ossia_parameter_t address, char c)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_c: address is null");
       return;
     }
 
@@ -258,7 +474,7 @@ void ossia_parameter_push_s(ossia_parameter_t address, const char* s)
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_s: address is null");
       return;
     }
 
@@ -274,7 +490,12 @@ void ossia_parameter_push_in(ossia_parameter_t address, const int* in, size_t sz
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_in: address is null");
+      return;
+    }
+    if (!in)
+    {
+      ossia_log_error("ossia_parameter_push_in: value is null");
       return;
     }
 
@@ -292,7 +513,12 @@ void ossia_parameter_push_fn(ossia_parameter_t address, const float* in, size_t 
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_fn: address is null");
+      return;
+    }
+    if (!in)
+    {
+      ossia_log_error("ossia_parameter_push_fn: value is null");
       return;
     }
 
@@ -310,7 +536,12 @@ void ossia_parameter_push_cn(ossia_parameter_t address, const char* in, size_t s
   return safe_function(__func__, [=] {
     if (!address)
     {
-      ossia_log_error("ossia_parameter_push_value: address is null");
+      ossia_log_error("ossia_parameter_push_cn: address is null");
+      return;
+    }
+    if (!in)
+    {
+      ossia_log_error("ossia_parameter_push_cn: value is null");
       return;
     }
 
@@ -318,6 +549,29 @@ void ossia_parameter_push_cn(ossia_parameter_t address, const char* in, size_t s
   });
 }
 
+void ossia_parameter_push_list(ossia_parameter_t address, const ossia_value_t* in, size_t sz)
+{
+  return safe_function(__func__, [=] {
+    if (!address)
+    {
+      ossia_log_error("ossia_parameter_push_list: address is null");
+      return;
+    }
+    if (!in)
+    {
+      ossia_log_error("ossia_parameter_push_list: value is null");
+      return;
+    }
+
+    std::vector<ossia::value> v;
+    v.resize(sz);
+    for(size_t i = 0; i < sz; i++)
+    {
+      v[i] = in[i]->value;
+    }
+    convert_parameter(address)->push_value(std::move(v));
+  });
+}
 ossia_value_t ossia_parameter_fetch_value(ossia_parameter_t address)
 {
   return safe_function(__func__, [=]() -> ossia_value_t {
@@ -459,7 +713,7 @@ const char* ossia_parameter_get_unit(
       return nullptr;
     }
 
-    return copy_string(ossia::get_pretty_unit_text(convert_parameter(address)->get_unit()));
+    return ossia::get_pretty_unit_text(convert_parameter(address)->get_unit()).data();
   });
 }
 

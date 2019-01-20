@@ -36,6 +36,11 @@ public class Node
     return new Parameter(Ossia.INSTANCE.ossia_node_create_parameter(impl, t));
   }
 
+  public Parameter create(String name, String type)
+  {
+    return new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+  }
+
   public Parameter getParameter()
   {
     Pointer p = Ossia.INSTANCE.ossia_node_get_parameter(impl);
@@ -48,7 +53,6 @@ public class Node
   {
     return Ossia.INSTANCE.ossia_node_get_description(impl);
   }
-
   public void setDescription(String u)
   {
     Ossia.INSTANCE.ossia_node_set_description(impl, u);
@@ -58,7 +62,6 @@ public class Node
   {
     return Ossia.INSTANCE.ossia_node_get_extended_type(impl);
   }
-
   public void setExtendedType(String u)
   {
     Ossia.INSTANCE.ossia_node_set_extended_type(impl, u);

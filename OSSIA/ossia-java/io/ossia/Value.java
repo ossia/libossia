@@ -4,7 +4,6 @@ import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.ptr.ByReference;
 import com.sun.jna.ptr.PointerByReference;
-import java.util.ArrayList;
 import java.lang.Object;
 import java.lang.Class;
 
@@ -68,7 +67,7 @@ public class Value implements AutoCloseable
   public void set(int[] l)
   {
     final int sz = Native.getNativeSize(Integer.TYPE);
-    final Pointer p = new Memory(l.length * sz);
+    final Memory p = new Memory(l.length * sz);
 
     for (int i = 0; i < l.length; i++) {
       p.setInt(i * sz, l[i]);
@@ -79,7 +78,7 @@ public class Value implements AutoCloseable
   public void set(float[] l)
   {
     final int sz = Native.getNativeSize(Float.TYPE);
-    final Pointer p = new Memory(l.length * sz);
+    final Memory p = new Memory(l.length * sz);
 
     for (int i = 0; i < l.length; i++) {
       p.setFloat(i * sz, l[i]);
@@ -89,14 +88,50 @@ public class Value implements AutoCloseable
   }
   public void set(Value[] l)
   {
-    final int sz = Pointer.SIZE;
-    final Pointer p = new Memory(l.length * sz);
+    final int sz = Native.POINTER_SIZE;
+    final Memory p = new Memory(l.length * sz);
 
     for (int i = 0; i < l.length; i++) {
       p.setPointer(i * sz, l[i].impl);
     }
     close();
     impl = Ossia.INSTANCE.ossia_value_create_list(p, new SizeT(l.length));
+  }
+
+  public float getFloat()
+  {
+    return Ossia.INSTANCE.ossia_value_to_float(impl);
+  }
+  public int getInt()
+  {
+    return Ossia.INSTANCE.ossia_value_to_int(impl);
+  }
+  public byte getChar()
+  {
+    return Ossia.INSTANCE.ossia_value_to_char(impl);
+  }
+  public String getString()
+  {
+    Pointer p = Ossia.INSTANCE.ossia_value_to_string(impl);
+    String str = p.getString(0);
+    Ossia.INSTANCE.ossia_string_free(p);
+    return str;
+  }
+  public Vec2F getVec2()
+  {
+    return Ossia.INSTANCE.ossia_value_to_2f(impl);
+  }
+  public Vec3F getVec3()
+  {
+    return Ossia.INSTANCE.ossia_value_to_3f(impl);
+  }
+  public Vec4F getVec4()
+  {
+    return Ossia.INSTANCE.ossia_value_to_4f(impl);
+  }
+  public boolean getBoolean()
+  {
+    return Ossia.INSTANCE.ossia_value_to_bool(impl);
   }
 
   public float asFloat()
@@ -110,6 +145,13 @@ public class Value implements AutoCloseable
   public byte asChar()
   {
     return Ossia.INSTANCE.ossia_value_convert_char(impl);
+  }
+  public String asString()
+  {
+    Pointer p = Ossia.INSTANCE.ossia_value_to_string(impl);
+    String str = p.getString(0);
+    Ossia.INSTANCE.ossia_string_free(p);
+    return str;
   }
   public Vec2F asVec2()
   {
@@ -208,7 +250,7 @@ public class Value implements AutoCloseable
     final int n = sz.getValue().intValue();
     list = new Value[n];
 
-    final int type_sz = Pointer.SIZE;
+    final int type_sz = Native.POINTER_SIZE;
 
     if (n > 0) {
       final Pointer vals = ptr.getValue();

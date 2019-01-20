@@ -57,7 +57,7 @@ ossia::domain get_unit_default_domain(const ossia::unit_t&);
  * Format is dataspace.unit, e.g. distance.m/s or color.rgb
  */
 OSSIA_EXPORT
-std::string get_pretty_unit_text(const ossia::unit_t&);
+std::string_view get_pretty_unit_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_accessor Return the character corresponding to the accessor

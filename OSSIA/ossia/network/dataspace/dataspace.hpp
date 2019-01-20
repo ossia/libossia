@@ -9,6 +9,7 @@
 #include <ossia/network/dataspace/speed.hpp>
 #include <ossia/network/dataspace/time.hpp>
 
+#include <ossia/detail/hash.hpp>
 #include <functional>
 namespace ossia
 {
@@ -350,6 +351,23 @@ struct hash<ossia::timing_u>
   std::size_t operator()(const ossia::timing_u& k) const
   {
     return k.which();
+  }
+};
+
+template<>
+struct hash<ossia::unit_t>
+{
+  std::size_t operator()(const ossia::unit_t& v) const
+  {
+    std::size_t seed = 0;
+    if(v.v.which() != v.v.npos)
+    {
+      ossia::hash_combine(seed, v.v.which());
+      ossia::apply_nonnull([&] (auto& d) {
+        ossia::hash_combine(seed, d.which());
+      }, v.v);
+    }
+    return seed;
   }
 };
 }

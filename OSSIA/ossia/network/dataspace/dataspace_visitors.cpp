@@ -9,6 +9,7 @@
 #include <ossia/network/dataspace/detail/list_units.hpp>
 #include <ossia/network/dataspace/detail/make_unit.hpp>
 #include <ossia/network/dataspace/detail/make_value.hpp>
+#include <ossia/network/dataspace/detail/dataspace_text.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
@@ -41,24 +42,17 @@ ossia::string_view get_unit_accessors(const unit_t& u)
   return ossia::apply(detail::unit_accessor_visitor{}, u.v);
 }
 
-std::string get_pretty_unit_text(const unit_t& u)
+ossia::string_view get_pretty_unit_text(const unit_t& u)
 {
   using namespace std::literals;
   if (u)
   {
-    std::string str{get_dataspace_text(u)};
-    auto str2 = get_unit_text(u);
-    if (!str2.empty())
-    {
-      str.reserve(str.size() + 1 + str2.size());
-      str += '.';
-      str += str2;
-    }
-    return str;
+    static const detail::unit_pretty_texts map;
+    return map.map.at(u);
   }
   else
   {
-    return "none"s;
+    return "none"sv;
   }
 }
 

@@ -4,6 +4,8 @@
 #include "ossia_utils.hpp"
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/common/complex_type.hpp>
+
 extern "C" {
 
 void ossia_node_remove_child(ossia_node_t node, ossia_node_t child)
@@ -236,6 +238,34 @@ ossia_parameter_t ossia_node_create_parameter(ossia_node_t node, ossia_type type
     return convert(n->create_parameter(convert(type)));
   });
 }
+
+ossia_parameter_t ossia_create_parameter(
+    ossia_node_t node,
+    const char* name,
+    const char* type)
+{
+  return safe_function(__func__, [=]() -> ossia_parameter_t {
+    if (!node)
+    {
+      ossia_log_error("ossia_create_parameter: node is null");
+      return nullptr;
+    }
+    if (!name)
+    {
+      ossia_log_error("ossia_create_parameter: name is null");
+      return nullptr;
+    }
+    if (!type)
+    {
+      ossia_log_error("ossia_create_parameter: type is null");
+      return nullptr;
+    }
+
+    auto n = convert_node(node);
+    return convert(ossia::create_parameter(*n, name, type));
+  });
+}
+
 
 ossia_parameter_t ossia_node_get_parameter(ossia_node_t node)
 {

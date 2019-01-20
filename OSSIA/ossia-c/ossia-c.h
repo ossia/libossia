@@ -579,6 +579,117 @@ void ossia_parameter_set_value(
 OSSIA_EXPORT
 ossia_value_t ossia_parameter_get_value(
     ossia_parameter_t param);
+
+
+
+
+
+/**
+ * @brief Get the value if it is an int.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != INT_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+int ossia_parameter_to_int(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is an float.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != FLOAT_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+float ossia_parameter_to_float(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a vec2f.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != VEC2F_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec2f ossia_parameter_to_2f(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a vec3f.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != VEC3F_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec3f ossia_parameter_to_3f(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a vec4f.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != VEC4F_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+struct ossia_vec4f ossia_parameter_to_4f(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a bool.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != BOOL_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+int ossia_parameter_to_bool(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a char.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != CHAR_T
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+char ossia_parameter_to_char(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a byte array.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != STRING_T
+ * @note Multithread guarantees: Data-Safe.
+ *
+ * Usage:
+ * @code
+ * char* str;
+ * size_t b;
+ * ossia_parameter_to_byte_array(val, &str, &b);
+ * @endcode
+ *
+ * @see ossia_string_free
+ */
+OSSIA_EXPORT
+void ossia_parameter_to_byte_array(ossia_parameter_t val, char** str, size_t* sz);
+/**
+ * @brief Get the value if it is a null-terminated string.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != STRING_T
+ * @note Multithread guarantees: Data-Safe.
+ *
+ * @see ossia_string_free
+ */
+OSSIA_EXPORT
+const char* ossia_parameter_to_string(ossia_parameter_t val);
+/**
+ * @brief Get the value if it is a list.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T
+ * @note Multithread guarantees: Data-Safe.
+ * @see ossia_value_free_list
+ */
+OSSIA_EXPORT
+void ossia_parameter_to_list(ossia_parameter_t val_in, ossia_value_t** out, size_t* size);
+
+/**
+ * @brief Get the value if it is a list of floats.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T or any of the values are not FLOAT_T.
+ * @note Multithread guarantees: Data-Safe.
+ * @see ossia_value_free_list
+ */
+OSSIA_EXPORT
+void ossia_parameter_to_fn(ossia_parameter_t val_in, float** out, size_t* size);
+
+/**
+ * @brief Get the value if it is a list of ints.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T or any of the values are not INT_T.
+ * @note Multithread guarantees: Data-Safe.
+ * @see ossia_value_free_list
+ */
+OSSIA_EXPORT
+void ossia_parameter_to_in(ossia_parameter_t val_in, int** out, size_t* size);
+
+
+
+
+
+
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
@@ -671,6 +782,7 @@ void ossia_parameter_push_in(
     ossia_parameter_t param,
     const int* value,
     size_t sz);
+
 /**
  * @brief Push an array of floats.
  * @see ossia::net::parameter_base::push_value
@@ -681,6 +793,7 @@ void ossia_parameter_push_fn(
     ossia_parameter_t param,
     const float* value,
     size_t sz);
+
 /**
  * @brief Push a string with known length.
  * @see ossia::net::parameter_base::push_value
@@ -691,8 +804,22 @@ void ossia_parameter_push_cn(
     ossia_parameter_t param,
     const char* value,
     size_t sz);
+
 /**
+ * @brief Push an array of values.
+ * @see ossia::net::parameter_base::push_value
+ * @note Multithread guarantees: Data-Safe.
+ */
+OSSIA_EXPORT
+void ossia_parameter_push_list(
+    ossia_parameter_t param,
+    const ossia_value_t* value,
+    size_t sz);
+
+/**
+ * @brief Fetch the value of a parameter
  * @see ossia::net::parameter_base::fetch_value
+ * @return Fetched value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
@@ -956,6 +1083,19 @@ OSSIA_EXPORT
 ossia_parameter_t ossia_node_create_parameter(
     ossia_node_t node,
     ossia_type type);
+
+/**
+ * @brief Create a child parameter.
+ * @param type Type of the address ("color.rgba8", "float", "i32"...)
+ * @note Multithread guarantees: MT-Safe.
+ * @see ossia::net::create_parameter
+ */
+OSSIA_EXPORT
+ossia_parameter_t ossia_create_parameter(
+    ossia_node_t node,
+    const char* name,
+    const char* type);
+
 
 /**
  * @brief Get the address contained in a node if any.
