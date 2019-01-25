@@ -1558,7 +1558,7 @@ std::string node::get_unit() const
 {
   if (m_param)
   {
-    return ossia::get_pretty_unit_text(m_param->get_unit());
+    return std::string(ossia::get_pretty_unit_text(m_param->get_unit()));
   }
   return {};
 }
