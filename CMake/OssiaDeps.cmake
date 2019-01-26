@@ -120,6 +120,7 @@ else()
       endif()
     endif()
     set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" CACHE INTERNAL "")
+    set(Boost_INCLUDE_DIR ${BOOST_ROOT})
     find_package(Boost REQUIRED)
   endif()
 
