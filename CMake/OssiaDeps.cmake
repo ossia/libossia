@@ -20,11 +20,31 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 
   execute_process(COMMAND git submodule sync --recursive
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+
   foreach(submodule ${OSSIA_SUBMODULES})
       message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
       execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
   endforeach()
+
+  if(OSSIA_DNSSD)
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/Servus")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/Servus
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
+
+  if(OSSIA_PROTOCOL_MIDI)
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/RtMidi17")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/RtMidi17
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
+
+
+  if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
+    message(" -> ${OSSIA_3RDPARTY_FOLDER}/oscpack")
+    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/oscpack
+                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  endif()
 
   if(OSSIA_PROTOCOL_ARTNET)
       message(" -> ${OSSIA_3RDPARTY_FOLDER}/libartnet")
@@ -44,7 +64,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 
   message(STATUS "...done")
   set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
-endif(OSSIA_SUBMODULE_AUTOUPDATE)
+endif()
 
 # Download various dependencies
 if(WIN32)
@@ -65,7 +85,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR 68)
+set(BOOST_MINOR 69)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
@@ -108,32 +128,22 @@ else()
                INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
 endif()
 
-if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten AND NOT ANDROID)
-  message(STATUS "Update OSSIA Midi Protocol dependency : RtMidi17")
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/RtMidi17
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if(OSSIA_PROTOCOL_MIDI)
   set(RTMIDI17_HEADER_ONLY 1 CACHE "" INTERNAL)
   set(WEAKJACK_FOLDER "${OSSIA_3RDPARTY_FOLDER}")
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/RtMidi17" EXCLUDE_FROM_ALL)
 endif()
 
 if(OSSIA_DATAFLOW)
-  message(STATUS "Update tbb")
   set(TBB_LINKAGE "STATIC" CACHE "" INTERNAL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
 endif()
 
 if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
-  message(STATUS "Update OSSIA OSC Protocol dependency : oscpack")
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/oscpack
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 endif()
 
 if(OSSIA_DNSSD)
-  message(STATUS "Update OSSIA DNSSD dependency : servus")
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/Servus
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
 endif()
 

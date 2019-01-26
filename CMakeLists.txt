@@ -19,11 +19,6 @@ find_package(Qt5 5.3 COMPONENTS Core)
 #cmake_policy(VERSION 3.9)
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty")
 
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake-modules/LICENSE")
-  execute_process(COMMAND git submodule update --init -- ${CMAKE_CURRENT_SOURCE_DIR}/CMake/cmake-modules
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-endif()
-
 include(OssiaConfiguration)
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0056 NEW)
@@ -44,10 +39,6 @@ if(MSVC)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 add_subdirectory(OSSIA)
-
-if(ANDROID)
-  return()
-endif()
 
 # Examples & tests
 if(OSSIA_EXAMPLES)
