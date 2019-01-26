@@ -21,8 +21,6 @@ if(APPLE)
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 
-find_package(Boost REQUIRED)
-
 if(OSSIA_QT)
   find_package(Qt5 5.6 QUIET COMPONENTS Core Gui Qml Quick)
   if(NOT "${Qt5Core_FOUND}")
