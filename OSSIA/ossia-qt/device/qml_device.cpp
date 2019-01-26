@@ -258,7 +258,7 @@ bool qml_device::openMIDIInputDevice(int port)
         midi_info{midi_info::Type::RemoteOutput, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
-    dev->update_namespace();
+    dev->create_full_tree();
     m_device = std::move(dev);
     m_device->set_name(m_name.toUtf8().toStdString());
     return true;
@@ -289,7 +289,7 @@ bool qml_device::openMIDIOutputDevice(int port)
         = new midi_protocol{midi_info{midi_info::Type::RemoteInput, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
-    dev->update_namespace();
+    dev->create_full_tree();
     m_device = std::move(dev);
     m_device->set_name(m_name.toUtf8().toStdString());
 

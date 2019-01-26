@@ -393,7 +393,7 @@ TEST_CASE ("test_midi", "test_midi")
       {
         ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
         dev.set_name("dada");
-        dev.update_namespace();
+        dev.create_full_tree();
       }
 
     }
