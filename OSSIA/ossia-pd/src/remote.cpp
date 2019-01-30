@@ -198,7 +198,7 @@ void remote::set_unit()
           auto src = ossia::get_pretty_unit_text(*m_ounit);
           auto dst = ossia::get_pretty_unit_text(dst_unit);
           pd_error(this, "sorry I don't know how to convert '%s' into '%s'",
-                   src.c_str(), dst.c_str() );
+                   src.data(), dst.data() );
           m_ounit = ossia::none;
           m_unit = gensym("");
           break;
@@ -386,8 +386,8 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
       if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
       {
         x->m_ounit = param->get_unit();
-        std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-        x->m_unit = gensym(unit.c_str());
+        auto unit = ossia::get_pretty_unit_text(param->get_unit());
+        x->m_unit = gensym(unit.data());
       }
     }
   } else {

@@ -512,8 +512,8 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-    std::string unit = ossia::get_pretty_unit_text(param->get_unit());
-    x->m_unit = gensym(unit.c_str());
+    auto unit = ossia::get_pretty_unit_text(param->get_unit());
+    x->m_unit = gensym(unit.data());
 
     t_atom a;
     SETSYMBOL(&a, x->m_unit);
