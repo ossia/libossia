@@ -80,10 +80,13 @@ if(OSSIA_QT)
   )
   add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
 
-  ossia_add_test(QtTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
-  ossia_add_test(QmlTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
-  ossia_add_test(QmlApiTest              "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
-  ossia_add_test(QmlPresetTest           "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlPresetTest.cpp")
+
+  if(OSSIA_QML_DEVICE)
+    ossia_add_test(QtTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
+    ossia_add_test(QmlTest                 "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlDeviceTest.cpp")
+    ossia_add_test(QmlApiTest              "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlApiTest.cpp")
+    ossia_add_test(QmlPresetTest           "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlPresetTest.cpp")
+  endif()
   ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
 
   if(OSSIA_PROTOCOL_WEBSOCKETS)

@@ -269,7 +269,7 @@ void phidget_protocol::request(net::parameter_base&)
 {
 }
 
-bool phidget_protocol::push(const net::parameter_base&)
+bool phidget_protocol::push(const net::parameter_base&, const ossia::value& v)
 {
   return true;
 }

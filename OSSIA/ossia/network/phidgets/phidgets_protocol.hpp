@@ -5,6 +5,7 @@
 #include <ossia/network/phidgets/phidgets_parameter_data.hpp>
 
 #include <readerwriterqueue.h>
+#include <ossia_export.h>
 
 namespace ossia
 {
@@ -28,7 +29,7 @@ public:
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
   void request(net::parameter_base&) override;
-  bool push(const net::parameter_base&) override;
+  bool push(const net::parameter_base&, const ossia::value& v) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& node_base) override;
