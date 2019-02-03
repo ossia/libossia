@@ -3,10 +3,10 @@
   <title>OSCQuery Remote example</title>
 </head>
 <script>
-    function init() { 
-      var ws = new WebSocket("ws://172.17.0.2:5678");
+    function init() {
+      var ws = new WebSocket("ws://127.0.0.1:5678");
       ws.onopen = function(mess) {
-          // This way the protocol will always try to send 
+          // This way the protocol will always try to send
           // data through websockets.
           ws.send("/?SET_PORT=0");
           ws.send("/");
@@ -18,7 +18,7 @@
       var modgain = document.getElementById('modgain');
 
       ws.onmessage = function(mess) {
-          // An OSCQuery value json looks like 
+          // An OSCQuery value json looks like
           // { "/the/addr" : 123 }
           console.log(mess.data);
           var json = JSON.parse(mess.data);
@@ -28,7 +28,7 @@
           var note_k = keys.findIndex(function(val) { return val == "/note"; });
           var modratio_k = keys.findIndex(function(val) { return val == "/modratio"; });
           var modgain_k = keys.findIndex(function(val) { return val == "/modgain"; });
-          
+
           if(note_k != -1)
           {
             note.innerText = json["/note"][0];
@@ -46,9 +46,9 @@
           {
               play.checked = json["/play"];
           }
-          
 
-      } 
+
+      }
       modratio.oninput = function(ev) {
               ws.send('{ "/modratio": ' + modratio.value + '}');
               console.log('{ "/modratio": ' + modratio.value + '}');

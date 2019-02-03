@@ -173,8 +173,10 @@ QVariantList qml_parameter::values() const
 QString qml_parameter::unit() const
 {
   if (m_param)
-    return QString::fromStdString(
-        ossia::get_pretty_unit_text(m_param->get_unit()));
+  {
+    auto sv = ossia::get_pretty_unit_text(m_param->get_unit());
+    return QString::fromLatin1(sv.data(), sv.size());
+  }
   return m_unit ? *m_unit : QString{};
 }
 

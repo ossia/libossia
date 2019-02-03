@@ -74,13 +74,11 @@ if(NOT OSSIA_QML_ONLY AND NOT OSSIA_UNITY3D_ONLY)
 # Default case, C / C++ library
 # Install
 install(TARGETS ossia
+    COMPONENT Devel
     EXPORT ossia-targets
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib/static
-    RUNTIME DESTINATION bin
-    INCLUDES
-      DESTINATION include
-      COMPONENT Devel)
+    RUNTIME DESTINATION bin)
 
 # Install headers
 function(install_headers_rec theHeaders)
