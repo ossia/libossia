@@ -30,7 +30,10 @@ void client::destroy(client* x)
 {
   x->m_dead = true;
   x->m_matchers.clear();
+
   clock_free(x->m_poll_clock);
+  clock_free(x->m_clock);
+
   x->unregister_children();
   if (x->m_device)
     delete (x->m_device);
@@ -67,6 +70,7 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
     x->m_name = gensym("Pd");
     x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
     x->m_poll_clock = clock_new((t_object*)x, (t_method) client::poll_message);
+    x->m_clock = clock_new(x, (t_method)client::check_thread_status);
 
     x->m_rate = 100;
 
@@ -415,9 +419,6 @@ void client::check_thread_status(client* x)
     delete x->m_async_thread;
     x->m_async_thread = nullptr;
 
-    clock_free(x->m_clock);
-    x->m_clock = nullptr;
-
     t_atom a;
     float num = x->m_minuit_devices.size() + x->m_oscq_devices.size();
     SETFLOAT(&a, num);
@@ -486,7 +487,6 @@ void client::get_devices(client* x)
     pd_error(x, "already scanning network for device, please wait a bit.");
   } else {
     x->m_async_thread = new std::thread(client::find_devices_async,x);
-    x->m_clock = clock_new(x, (t_method)client::check_thread_status);
     clock_delay(x->m_clock,100);
   }
 }
