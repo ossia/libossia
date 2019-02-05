@@ -464,8 +464,17 @@ void client::find_devices_async(client* x)
   x->m_minuit_devices.clear();
   x->m_oscq_devices.clear();
 
-  x->m_minuit_devices =  ossia::net::list_minuit_devices();
-  x->m_oscq_devices = ossia::net::list_oscquery_devices();
+  try {
+    // ossia::net::list_* functions are blocking calls
+    // so we put this in a separate thread and check
+    // periodically for m_done status
+    x->m_minuit_devices =  ossia::net::list_minuit_devices();
+    x->m_oscq_devices = ossia::net::list_oscquery_devices();
+  }
+  catch (...)
+  {
+    pd_error(x, "error while scanning network");
+  }
 
   x->m_done = true;
 }
