@@ -434,6 +434,7 @@ T* find_parent(object_base* x, unsigned int start_level, int* level)
     {
       if (x->m_patcher_hierarchy[i] == o->m_patcher_hierarchy[0])
       {
+        (*level) = i;
         return o;
       }
     }
@@ -576,13 +577,15 @@ bool ossia_register(T* x)
   }
   else
   {
-    int l{};
-    ossia::pd::device* device = find_parent_alive<ossia::pd::device>(x, 0, &l);
-    ossia::pd::client* client = find_parent_alive<ossia::pd::client>(x, 0, &l);
+    std::pair<int,ossia::pd::device*> device{};
+    device.second = find_parent_alive<ossia::pd::device>(x, 0, &device.first);
 
-    ossia::pd::model* model = nullptr;
-    ossia::pd::view* view = nullptr;
-    int view_level{}, model_level{}, start_level{};
+    std::pair<int,ossia::pd::client*> client{};
+    client.second = find_parent_alive<ossia::pd::client>(x, 0, &client.first);
+
+    std::pair<int,ossia::pd::model*> model{};
+    std::pair<int,ossia::pd::view*> view{};
+    int start_level{};
 
     if (x->m_otype == object_class::view || x->m_otype == object_class::model)
     {
@@ -594,34 +597,32 @@ bool ossia_register(T* x)
       // then try to locate a parent view or model
       if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
       {
-        view = find_parent_alive<ossia::pd::view>(
-              x, start_level, &view_level);
+        view.second = find_parent_alive<ossia::pd::view>(
+              x, start_level, &view.first);
       }
 
-      if (!view)
+      if(!view.second)
       {
-        model = find_parent_alive<ossia::pd::model>(
-              x, 0, &model_level);
+        model.second = find_parent_alive<ossia::pd::model>(
+              x, 0, &model.first);
       }
     }
 
-    if (view)
+
+    std::vector<std::pair<int, object_base*>> vec{device, client, model, view};
+    // sort pair by ascending order : closest one first
+    std::sort(vec.begin(), vec.end());
+
+    for(auto& p : vec)
     {
-      matchers = &view->m_matchers;
+      if(p.second)
+      {
+        matchers = &p.second->m_matchers;
+        break;
+      }
     }
-    else if (model)
-    {
-      matchers = &model->m_matchers;
-    }
-    else if (client)
-    {
-      matchers = &client->m_matchers;
-    }
-    else if (device)
-    {
-      matchers = &device->m_matchers;
-    }
-    else
+
+    if(matchers == &tmp)
     {
       tmp.push_back({&ossia_pd::get_default_device()->get_root_node(),
                       (object_base*) nullptr});
