@@ -669,7 +669,7 @@ std::vector<parameter_base*> find_or_create_parameter(
     if (n->get_parameter())
       // this will create a new node with the name incremented by one (e.g.
       // foo.1)
-      nodes.push_back(&ossia::net::create_node(*n, n->get_name()));
+      nodes.push_back(&ossia::net::create_node(node, address));
     else
       nodes.push_back(n);
 
