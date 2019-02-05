@@ -249,7 +249,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       {
         if ( !x->m_done )
         {
-          pd_error(x, "it seems that I'am already looking for something, please wait a bit...");
+          // pd_error(x, "it seems that I'am already looking for something, please wait a bit...");
           return;
         }
         else
@@ -409,11 +409,11 @@ void client::check_thread_status(client* x)
 {
   if ( x->m_done )
   {
-    x->m_async_thread->join();
+    if(x->m_async_thread->joinable())
+      x->m_async_thread->join();
+
     delete x->m_async_thread;
     x->m_async_thread = nullptr;
-
-    x->m_done = false;
 
     clock_free(x->m_clock);
     x->m_clock = nullptr;
@@ -454,7 +454,7 @@ void client::check_thread_status(client* x)
     }
 
   } else {
-    clock_delay(x->m_clock,10);
+    clock_delay(x->m_clock,100);
   }
 }
 
@@ -478,7 +478,7 @@ void client::get_devices(client* x)
   } else {
     x->m_async_thread = new std::thread(client::find_devices_async,x);
     x->m_clock = clock_new(x, (t_method)client::check_thread_status);
-    clock_delay(x->m_clock,1000);
+    clock_delay(x->m_clock,100);
   }
 }
 
