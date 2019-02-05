@@ -107,7 +107,7 @@ else()
           WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
 
       else()
-        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.tar.gz")
+        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
 
         file(DOWNLOAD
           https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.tar.gz
