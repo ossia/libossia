@@ -76,6 +76,7 @@ public:
    * @param argv :  list of t_atom value(s)
    */
   static void push(parameter_base* x, t_symbol*, int argc, t_atom* argv);
+  static void push_symbol(parameter_base* x, t_symbol* s);
 
   static void push_default_value(parameter_base* x);
   /**

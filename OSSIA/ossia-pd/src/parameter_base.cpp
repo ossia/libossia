@@ -624,6 +624,14 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
   }
 }
 
+void parameter_base::push_symbol(parameter_base* x, t_symbol* s)
+{
+  if( s )
+  {
+    just_push(x, std::string(s->s_name), false);
+  }
+}
+
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
   if (x->m_mute)
@@ -872,6 +880,7 @@ void parameter_base::class_setup(t_eclass* c)
   {
     eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
     eclass_addmethod(c, (method) push,               "set",      A_GIMME, 0);
+    eclass_addmethod(c, (method) push_symbol,        "symbol",   A_SYMBOL, 0);
     eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
     eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
   }
