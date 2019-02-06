@@ -243,15 +243,18 @@ bool is_brace_expansion(string_view s)
 {
   int brace_count = 0;
   int arr_count = 0;
+  bool b = false;
 
   for (std::size_t i = 0; i < s.size(); i++)
   {
     if (s[i] == '{')
     {
+      b = true;
       brace_count++;
     }
     else if (s[i] == '[')
     {
+      b = true;
       arr_count++;
     }
     else if (s[i] == '}')
@@ -268,7 +271,7 @@ bool is_brace_expansion(string_view s)
     }
   }
 
-  return brace_count == 0 && arr_count == 0;
+  return b && brace_count == 0 && arr_count == 0;
 }
 }
 }
