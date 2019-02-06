@@ -98,6 +98,7 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
 void client::register_children(client* x)
 {
 
+  std::string model_name(x->m_name->s_name);
   std::vector<object_base*> modelnodes
       = find_child_to_register(x, x->m_obj.o_canvas->gl_list, ossia_pd::o_sym_model);
   for (auto m : modelnodes)
@@ -105,11 +106,19 @@ void client::register_children(client* x)
     if (m->m_otype == object_class::model)
     {
       ossia::pd::model* model = (ossia::pd::model*)m;
+      std::string name(model->m_name->s_name);
+      if(model->m_addr_scope == ossia::net::address_scope::global
+        && !boost::starts_with(name, model_name))
+        continue;
       model->register_node(x->m_matchers);
     }
     else if (m->m_otype == object_class::param)
     {
       ossia::pd::parameter* param = (ossia::pd::parameter*)m;
+      std::string name(param->m_name->s_name);
+      if(param->m_addr_scope == ossia::net::address_scope::global
+        && !boost::starts_with(name, model_name))
+        continue;
       param->register_node(x->m_matchers);
     }
   }
@@ -121,11 +130,19 @@ void client::register_children(client* x)
     if (v->m_otype == object_class::view)
     {
       ossia::pd::view* view = (ossia::pd::view*)v;
+      std::string name(view->m_name->s_name);
+      if(view->m_addr_scope == ossia::net::address_scope::global
+        && !boost::starts_with(name, model_name))
+        continue;
       view->register_node(x->m_matchers);
     }
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
+      std::string name(remote->m_name->s_name);
+      if(remote->m_addr_scope == ossia::net::address_scope::global
+        && !boost::starts_with(name, model_name))
+        continue;
       remote->register_node(x->m_matchers);
     }
   }
