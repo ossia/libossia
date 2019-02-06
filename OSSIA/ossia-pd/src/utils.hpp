@@ -576,13 +576,13 @@ bool ossia_register(T* x)
        {
          // remove the last part which should be created
          pos = addr.find_last_of('/');
-         if( pos < addr.size()+1 )
+         if( pos < addr.size() )
          {
-           addr = addr.substr(0,pos+1);
-           std::cout << addr << std::endl;
+           addr = addr.substr(0,pos);
          }
-         nodes = ossia::pd::find_global_nodes(addr);
+         nodes = ossia::pd::find_global_nodes(addr+"/");
        }
+       addr += '/';
     }
     else
     {
@@ -642,7 +642,8 @@ bool ossia_register(T* x)
       }
     }
 
-    if(matchers == &tmp)
+    if(matchers == &tmp
+       && x->m_addr_scope != ossia::net::address_scope::global)
     {
       tmp.push_back({&ossia_pd::get_default_device()->get_root_node(),
                       (object_base*) nullptr});
