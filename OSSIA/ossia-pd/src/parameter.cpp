@@ -28,23 +28,33 @@ bool parameter::register_node(const std::vector<t_matcher>& matchers)
 
   // TODO should we put this into device_base::on_parameter_deleted_callback ?
   // the drawback is that when the parameter is created, it is not fully configured
+  if(res)
+  {
+    obj_dequarantining<parameter>(this);
 
-  for (auto remote : ossia::pd::remote::quarantine().copy())
-  {
-    ossia_register(remote);
-  }
-  for (auto attribute : ossia::pd::attribute::quarantine().copy())
-  {
-    ossia_register(attribute);
-  }
+    for (auto remote : ossia::pd::remote::quarantine().copy())
+    {
+      ossia_register(remote);
+    }
+    for (auto attribute : ossia::pd::attribute::quarantine().copy())
+    {
+      ossia_register(attribute);
+    }
 
-  const auto& map = ossia_pd::instance().m_root_patcher;
-  auto it = map.find(m_patcher_hierarchy.back());
-  if (it != map.end() && it->second.is_loadbanged)
-  {
-    push_default_value(this);
+    const auto& map = ossia_pd::instance().m_root_patcher;
+    auto it = map.find(m_patcher_hierarchy.back());
+    if (it != map.end() && it->second.is_loadbanged)
+    {
+      push_default_value(this);
+    }
+    clock_delay(m_poll_clock,1);
   }
-  clock_delay(m_poll_clock,1);
+  else {
+    // we need to quarantine parameter (and model)
+    // because if they use a global name and are initialized before
+    // corresponding device, this device should be able to initialize them
+    obj_quarantining<parameter>(this);
+  }
 
   return res;
 }
@@ -53,6 +63,9 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
 {
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
+
+  if(matchers.empty())
+    return false;
 
   for (auto& m : matchers)
   {
@@ -288,5 +301,11 @@ extern "C" void setup_ossia0x2eparam(void)
 
   ossia_pd::param_class = c;
 }
+
+ossia::safe_set<parameter*>& parameter::quarantine()
+{
+  return ossia_pd::instance().parameter_quarantine;
+}
+
 } // pd namespace
 } // ossia namespace

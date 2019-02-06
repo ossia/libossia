@@ -98,6 +98,14 @@ std::string string_from_path(const std::vector<std::string>& vs)
 
 void register_quarantinized()
 {
+  for (auto model : ossia::pd::model::quarantine().copy())
+  {
+    ossia_register<ossia::pd::model>(model);
+  }
+  for (auto param : ossia::pd::parameter::quarantine().copy())
+  {
+    ossia_register<ossia::pd::parameter>(param);
+  }
   for (auto view : ossia::pd::view::quarantine().copy())
   {
     ossia_register<ossia::pd::view>(view);
@@ -314,7 +322,8 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   std::vector<ossia::net::node_base*> nodes;
   ossia_pd& instance = ossia_pd::instance();
   size_t pos = addr.find(":");
-  if (pos == std::string::npos) return nodes;
+  if (pos > addr.size()-2 )
+    return nodes;
 
   auto prefix = addr.substr(0,pos);
   // remove 'device_name:/' prefix

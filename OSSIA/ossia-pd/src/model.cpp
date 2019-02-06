@@ -18,8 +18,15 @@ model::model():
 
 bool model::register_node(const std::vector<t_matcher>& matchers)
 {
-  if (m_dead) return true;
+  if (m_dead)
+    return true;
   bool res = do_registration(matchers);
+
+  if(res)
+    obj_dequarantining<model>(this);
+  else {
+    obj_quarantining<model>(this);
+  }
 
   register_children();
 
@@ -117,6 +124,11 @@ void model::register_children()
       if (remote->m_addr_scope == ossia::net::address_scope::relative )
         remote->register_node(m_matchers);
     }
+  }
+
+  for (auto param : parameter::quarantine().copy())
+  {
+    ossia_register(static_cast<ossia::pd::parameter*>(param));
   }
 
   for (auto view : view::quarantine().copy())
@@ -251,6 +263,11 @@ extern "C" void setup_ossia0x2emodel(void)
     eclass_register(CLASS_OBJ,c);
   }
   ossia_pd::model_class = c;
+}
+
+ossia::safe_set<model*>& model::quarantine()
+{
+  return ossia_pd::instance().model_quarantine;
 }
 } // pd namespace
 } // ossia namespace

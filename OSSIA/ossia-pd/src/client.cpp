@@ -146,6 +146,10 @@ void client::register_children(client* x)
       remote->register_node(x->m_matchers);
     }
   }
+
+  // after all, try to register quarantinized objects
+  // needed to register objects with global address
+  register_quarantinized();
 }
 
 void client::unregister_children()

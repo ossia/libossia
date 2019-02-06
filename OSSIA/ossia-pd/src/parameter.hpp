@@ -26,7 +26,7 @@ public:
   static void* create(t_symbol* name, int argc, t_atom* argv);
   static void destroy(parameter* x);
 
-
+  static ossia::safe_set<parameter*>& quarantine();
 };
 } // namespace pd
 } // namespace ossia

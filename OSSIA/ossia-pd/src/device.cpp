@@ -146,6 +146,10 @@ void device::register_children(device* x)
     if (x->m_is_pattern)
       ossia_register<remote>(x);
   }
+
+  // after all, try to register quarantinized object
+  // needed to register objects with global address
+  register_quarantinized();
 }
 
 void device::unregister_children()
