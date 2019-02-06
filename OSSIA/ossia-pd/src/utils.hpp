@@ -564,10 +564,30 @@ bool ossia_register(T* x)
 
   std::vector<t_matcher> tmp;
   std::vector<t_matcher>* matchers = &tmp;
+  std::vector<ossia::net::node_base*> nodes;
 
   if (x->m_addr_scope == ossia::net::address_scope::global)
   {
-    auto nodes = ossia::pd::find_global_nodes(x->m_name->s_name);
+    std::string addr = x->m_name->s_name;
+    if(x->m_otype == object_class::param || x->m_otype == object_class::model)
+    {
+       size_t pos = 0;
+       while( pos != std::string::npos && nodes.empty())
+       {
+         // remove the last part which should be created
+         pos = addr.find_last_of('/');
+         if( pos < addr.size()+1 )
+         {
+           addr = addr.substr(0,pos+1);
+           std::cout << addr << std::endl;
+         }
+         nodes = ossia::pd::find_global_nodes(addr);
+       }
+    }
+    else
+    {
+      nodes = ossia::pd::find_global_nodes(addr);
+    }
 
     tmp.reserve(nodes.size());
     for (auto n : nodes)

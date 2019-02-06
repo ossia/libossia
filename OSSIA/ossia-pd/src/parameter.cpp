@@ -6,7 +6,10 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
+
 #include <sstream>
+#include <regex>
+
 #include <boost/algorithm/string/case_conv.hpp>
 
 namespace ossia
@@ -56,8 +59,40 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
     auto node = m.get_node();
     m_parent_node = node;
 
+    std::string name = m_name->s_name;
+    if(m_addr_scope == ossia::net::address_scope::global)
+    {
+      auto addr = ossia::net::address_string_from_node(*node);
+      std::string common_part = name;
+      if(ossia::traversal::is_pattern(common_part))
+      {
+        // FIXME it doesn't really work
+        // dev:/foo.1 doesn't match dev:/foo*
+        std::regex pattern(common_part.data(), common_part.size(),
+                           std::regex_constants::ECMAScript);
+        try {
+          while(!std::regex_match(addr, pattern))
+          {
+            auto pos = common_part.find_last_of('/');
+            if(pos == std::string::npos)
+            {
+              pd_error(this, "failed to register parameter with global address : no match found");
+              break;
+            }
+            common_part = common_part.substr(0, pos);
+            pattern = std::regex(common_part.data(), common_part.size(),
+                              std::regex_constants::ECMAScript);
+          }
+        } catch (...) { }
+      } else {
+        common_part = addr;
+      }
+      // remove common part from name
+      name = name.substr(common_part.size());
+    }
+
     auto params = ossia::net::find_or_create_parameter(
-          *node, m_name->s_name, m_type->s_name);
+          *node, name, m_type->s_name);
 
     for (auto p : params)
     {
