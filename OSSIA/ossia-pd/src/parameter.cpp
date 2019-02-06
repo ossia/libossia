@@ -66,24 +66,22 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
       std::string common_part = name;
       if(ossia::traversal::is_pattern(common_part))
       {
-        // FIXME it doesn't really work
+        // FIXME see https://github.com/OSSIA/libossia/issues/473
         // dev:/foo.1 doesn't match dev:/foo*
-        std::regex pattern(common_part.data(), common_part.size(),
-                           std::regex_constants::ECMAScript);
-        try {
-          while(!std::regex_match(addr, pattern))
+        auto path = ossia::traversal::make_path(common_part);
+        std::vector<ossia::net::node_base*> vec{node};
+        ossia::traversal::apply(*path, vec);
+        while(vec.empty())
+        {
+          auto pos = common_part.find_last_of('/');
+          if(pos == std::string::npos)
           {
-            auto pos = common_part.find_last_of('/');
-            if(pos == std::string::npos)
-            {
-              pd_error(this, "failed to register parameter with global address : no match found");
-              break;
-            }
-            common_part = common_part.substr(0, pos);
-            pattern = std::regex(common_part.data(), common_part.size(),
-                              std::regex_constants::ECMAScript);
+            pd_error(this, "failed to register parameter with global address : no match found");
+            break;
           }
-        } catch (...) { }
+          common_part = common_part.substr(0, pos);
+          path = ossia::traversal::make_path(common_part);
+        }
       } else {
         common_part = addr;
       }
