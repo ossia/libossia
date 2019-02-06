@@ -150,7 +150,7 @@ TEST_CASE ("test_traversal", "test_traversal")
   auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/baz");
   auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/blop");
   auto& n5 = ossia::net::find_or_create_node(device1, "foo/war/waz");
-  ossia::net::find_or_create_node(device1, "foo/kar/kaz");
+  auto& n6 = ossia::net::find_or_create_node(device1, "foo/kar/kaz");
 
   auto& n3 = ossia::net::find_or_create_node(device2, "fizz/baz");
   auto& n4 = ossia::net::find_or_create_node(device2, "foo/baz.2/blop");
@@ -202,7 +202,6 @@ TEST_CASE ("test_traversal", "test_traversal")
     REQUIRE(vec == expected);
   }
 
-
   {
     auto p = traversal::make_path("foo/[bw]*/[bw]*");
     REQUIRE(bool(p));
@@ -211,6 +210,26 @@ TEST_CASE ("test_traversal", "test_traversal")
     debug(vec);
     std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n4};
     REQUIRE(vec == expected);
+  }
+
+  {
+    auto p = traversal::make_path("test:/foo/*");
+    REQUIRE(bool(p));
+    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    traversal::apply(*p, vec);
+    debug(vec);
+    std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n6};
+    CHECK(vec == expected);
+  }
+
+  {
+    auto p = traversal::make_path("*:/foo/*/blop");
+    REQUIRE(bool(p));
+    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    traversal::apply(*p, vec);
+    debug(vec);
+    std::vector<ossia::net::node_base*> expected{&n2, &n4};
+    CHECK(vec == expected);
   }
 }
 
