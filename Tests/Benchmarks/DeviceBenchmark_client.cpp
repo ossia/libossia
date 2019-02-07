@@ -1,6 +1,8 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-
+#define CATCH_CONFIG_MAIN
+#include "../catch/catch.hpp"
+#include <ossia/detail/config.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <boost/range/algorithm/find_if.hpp>
@@ -10,7 +12,8 @@
 #include "Random.hpp"
 #include <thread>
 #include <cmath>
-Random r;
+
+static Random r;
 using namespace ossia;
 
 const ossia::net::node_base* goToRandomNode(
@@ -41,60 +44,46 @@ auto goToRandomNode(std::vector<ossia::net::parameter_base*>& p)
   return p[r.getRandomUInt() % (p.size() - 1)];
 }
 
-
-class DeviceBenchmark_client : public QObject
+TEST_CASE ("device_benchmark_client", "device_benchmark_client")
 {
-    Q_OBJECT
+  ossia::net::generic_device remote{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "B"};
+  remote.get_protocol().update(remote.get_root_node());
+  ossia::net::parameter_base* start_addr{};
+  ossia::net::parameter_base* stop_addr{};
+  std::vector<ossia::net::parameter_base*> other_addr;
+  for(const auto& node : remote.children())
+  {
+    if(node->get_name() == "startTick")
+      start_addr = node->get_parameter();
+    else if(node->get_name() == "stopTick")
+      stop_addr = node->get_parameter();
+    else if(auto p = node->get_parameter())
+      other_addr.push_back(p);
 
-  private Q_SLOTS:
+    if(start_addr && stop_addr)
+      break;
+  }
+  REQUIRE(start_addr);
 
-    /*! test life cycle and accessors functions */
-    void test_basic()
-    {
-      ossia::net::generic_device remote{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "B"};
-      remote.get_protocol().update(remote.get_root_node());
-      ossia::net::parameter_base* start_addr{};
-      ossia::net::parameter_base* stop_addr{};
-      std::vector<ossia::net::parameter_base*> other_addr;
-      for(const auto& node : remote.children())
-      {
-        if(node->get_name() == "startTick")
-          start_addr = node->get_parameter();
-        else if(node->get_name() == "stopTick")
-          stop_addr = node->get_parameter();
-        else if(auto p = node->get_parameter())
-          other_addr.push_back(p);
+  start_addr->push_value(ossia::impulse{});
+  // Send the "start" tick
+  // Send the messages
+  int iter = 1000000;
+  std::chrono::steady_clock::duration total_dur;
+  for(int i = 0; i < iter; i++)
+  {
+    // Select a new node
+    auto p = goToRandomNode(other_addr);
+    auto start = std::chrono::steady_clock::now();
+    p->push_value(0.f);
+    auto end = std::chrono::steady_clock::now();
 
-        if(start_addr && stop_addr)
-          break;
-      }
-      REQUIRE(start_addr);
+    total_dur += end - start;
+  }
 
-      start_addr->push_value(ossia::impulse{});
-      // Send the "start" tick
-      // Send the messages
-      int iter = 1000000;
-      std::chrono::steady_clock::duration total_dur;
-      for(int i = 0; i < iter; i++)
-      {
-        // Select a new node
-        auto p = goToRandomNode(other_addr);
-        auto start = std::chrono::steady_clock::now();
-        p->push_value(0.f);
-        auto end = std::chrono::steady_clock::now();
-
-        total_dur += end - start;
-      }
-
-      stop_addr->push_value(ossia::impulse{});
-      std::cout << "Sending: " << iter << ": "
-                << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
-          << "" << std::endl;
-    }
-};
-
-
-QTEST_APPLESS_MAIN(DeviceBenchmark_client)
-
-#include "DeviceBenchmark_client.moc"
+  stop_addr->push_value(ossia::impulse{});
+  std::cout << "Sending: " << iter << ": "
+            << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
+      << "" << std::endl;
+}
 

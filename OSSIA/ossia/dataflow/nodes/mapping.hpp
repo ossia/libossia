@@ -13,7 +13,7 @@
 namespace ossia::nodes
 {
 /**
- * @brief The mapping_node class
+ * @brief The ossia::nodes::mapping class
  *
  * Allows to map a value to another following a transfer function.
  * The driver address is where the input value is taken from;

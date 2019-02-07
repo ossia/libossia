@@ -1,15 +1,19 @@
-#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/detail/any.hpp>
+#include <random>
+#include <valgrind/callgrind.h>
+#include <ossia/detail/pod_vector.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <flat_hash_map.hpp>
 
-#include <ossia/editor/automation/automation.hpp>
+#define private public
+#include "../Editor/TestUtils.hpp"
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <valgrind/callgrind.h>
-#include <random>
-#include "../Editor/TestUtils.hpp"
-#include <ossia/detail/pod_vector.hpp>
-
 
 static const constexpr int NUM_TAKES = 5;
 static const constexpr auto NUM_CURVES = { 10, 20, 30, 40,
@@ -60,7 +64,7 @@ int main()
         {
           if(i%2)
           {
-            auto node = std::make_shared<automation_node>();
+            auto node = std::make_shared<ossia::nodes::automation>();
 
             auto v = std::make_shared<ossia::curve<double, float>>();
             v->set_x0(0.); v->set_y0(0.);
@@ -71,13 +75,13 @@ int main()
           }
           else
           {
-            auto node = std::make_shared<mapping_node>();
+            auto node = std::make_shared<ossia::nodes::mapping>();
 
             auto v = std::make_shared<ossia::curve<float, float>>();
             v->set_x0(0.); v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
-            node->set_driven(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
+            node->value_out.address = t.float_params[std::abs(rand()) % t.float_params.size()];
             mappings.push_back(node);
             g.add_node(std::move(node));
           }
@@ -122,14 +126,14 @@ int main()
         //ossia::print_graph(g.impl(), std::cerr);
         ossia::execution_state e;
         e.register_device(&t.device);
-        ossia::time_value v{};
+        ossia::time_value old_v{}, v{};
         // run a first tick to init the graph
 
 
         e.clear_local_state();
         e.get_new_values();
         for(auto& n : g.m_nodes)
-          n.first->request(ossia::token_request{ossia::time_value{1}});
+          n.first->request(ossia::token_request{0_tv, 1_tv, 0., 0_tv, 1.});
 
         g.state(e);
         std::size_t msg_count = num_messages(e);
@@ -149,7 +153,7 @@ int main()
         {
           int64_t count = 0;
           for(auto& n : g.m_nodes)
-            n.first->request(ossia::token_request{ossia::time_value{k}});
+            n.first->request(ossia::token_request{old_v, v, 0., 0_tv, 1.});
 
           auto t0 = std::chrono::steady_clock::now();
           CALLGRIND_START_INSTRUMENTATION;
@@ -166,6 +170,7 @@ int main()
             break;
           }
           count += t;
+          old_v = v;
           v = v + (int64_t)1;
 
           counts[k++] += count;

@@ -1,10 +1,13 @@
-#include <ossia/dataflow/graph/graph_static.hpp>
-
-#include <ossia/editor/automation/automation.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/detail/any.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/detail/hash_map.hpp>
+#include <sstream>
+#define private public
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
 #include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
 
@@ -20,6 +23,7 @@ static const constexpr auto NUM_CURVES = {1, 10, 20, 30, 40,
 int main()
 {
   using namespace ossia;
+  using namespace ossia::nodes;
   // Benchmark: how many automations can run at the same time
   // We need a graph
 
@@ -42,9 +46,9 @@ int main()
       s.add_time_interval(tc);
       g.add_node(tc->node);
 
-      auto node = std::make_shared<automation_node>();
-      auto autom = std::make_shared<automation_process>(node);
-      node->set_destination(destination{*t.all_params[std::abs(rand()) % t.all_params.size()]});
+      auto node = std::make_shared<ossia::nodes::automation>();
+      auto autom = std::make_shared<ossia::nodes::automation_process>(node);
+      node->outputs()[0]->address = t.all_params[std::abs(rand()) % t.all_params.size()];
 
       auto v = std::make_shared<ossia::curve<double, float>>();
       v->set_x0(0.); v->set_y0(0.);
@@ -64,7 +68,7 @@ int main()
 
     e.clear_local_state();
     e.get_new_values();
-    s.state(v, 0., 0_tv, 0_tv);
+    s.state(0_tv, v, 0., 0_tv, 0_tv);
     g.state(e);
     e.commit();
 
@@ -74,7 +78,8 @@ int main()
       CALLGRIND_START_INSTRUMENTATION;
       e.clear_local_state();
       e.get_new_values();
-      s.state(v, 0., 0_tv, 0_tv);
+      auto old_v = v > 0 ? v - 1_tv : 0_tv;
+      s.state(old_v, v, 0., 0_tv, 0_tv);
       g.state(e);
       e.commit();
       CALLGRIND_STOP_INSTRUMENTATION;

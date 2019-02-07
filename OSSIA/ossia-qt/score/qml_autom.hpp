@@ -2,7 +2,7 @@
 #include <ossia-qt/score/qml_interval.hpp>
 #include <wobjectdefs.h>
 #include <ossia/editor/scenario/time_process.hpp>
-#include <ossia/editor/automation/automation.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia-qt/device/qml_node_base.hpp>
 #include <QQuickItem>
 #include <QPointer>

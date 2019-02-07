@@ -1,15 +1,21 @@
-#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/nodes/mapping.hpp>
 
-#include <ossia/editor/automation/automation.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <valgrind/callgrind.h>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/detail/any.hpp>
+#include <ossia/detail/hash_map.hpp>
+#include <sstream>
+#define private public
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
 #include "../Editor/TestUtils.hpp"
 
-
+using namespace ossia::nodes;
 static const constexpr int NUM_TAKES = 10;
 static const constexpr auto NUM_CURVES = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41
                                            /*1, 10, 20, 30, 40
@@ -63,9 +69,9 @@ int main()
 
         if(i%2)
         {
-          auto node = std::make_shared<automation_node>();
-          auto autom = std::make_shared<automation_process>(node);
-          node->set_destination(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
+          auto node = std::make_shared<ossia::nodes::automation>();
+          auto autom = std::make_shared<ossia::nodes::automation_process>(node);
+          node->outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
 
           auto v = std::make_shared<ossia::curve<double, float>>();
           v->set_x0(0.); v->set_y0(0.);
@@ -77,10 +83,10 @@ int main()
         }
         else
         {
-          auto node = std::make_shared<mapping_node>();
+          auto node = std::make_shared<ossia::nodes::mapping>();
           auto autom = std::make_shared<node_process>(node);
-          node->set_driver(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
-          node->set_driven(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
+          node->inputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+          node->outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
 
           auto v = std::make_shared<ossia::curve<float, float>>();
           v->set_x0(0.); v->set_y0(0.);
@@ -100,7 +106,7 @@ int main()
 
       e.clear_local_state();
       e.get_new_values();
-      s.state(v, 0., 0_tv, 0_tv);
+      s.state(0_tv, 0_tv, 0., 0_tv, 0_tv);
       g.state(e);
       std::size_t msg_count = num_messages(e);
       avg_msg_count += msg_count;
@@ -115,7 +121,7 @@ int main()
         CALLGRIND_START_INSTRUMENTATION;
         e.clear_local_state();
         e.get_new_values();
-        s.state(v, 0., 0_tv, 0_tv);
+        s.state(0_tv, 1_tv, 0., 0_tv, 0_tv);
         g.state(e);
         (e.*fun)();
         CALLGRIND_STOP_INSTRUMENTATION;

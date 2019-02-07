@@ -1,15 +1,19 @@
-#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/detail/any.hpp>
+#include <random>
+#include <valgrind/callgrind.h>
+#include <ossia/detail/pod_vector.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <flat_hash_map.hpp>
 
-#include <ossia/editor/automation/automation.hpp>
+#define private public
+#include "../Editor/TestUtils.hpp"
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
-#include <valgrind/callgrind.h>
-#include <random>
-#include "../Editor/TestUtils.hpp"
-#include <ossia/detail/pod_vector.hpp>
-
 
 static const constexpr int NUM_TAKES = 5;
 static const constexpr auto NUM_CURVES = { 10, 20, 30, 40,
@@ -71,8 +75,8 @@ int main()
 
           if(i%2)
           {
-            auto node = std::make_shared<automation_node>();
-            auto autom = std::make_shared<automation_process>(node);
+            auto node = std::make_shared<ossia::nodes::automation>();
+            auto autom = std::make_shared<ossia::nodes::automation_process>(node);
 
             auto v = std::make_shared<ossia::curve<double, float>>();
             v->set_x0(0.); v->set_y0(0.);
@@ -84,14 +88,14 @@ int main()
           }
           else
           {
-            auto node = std::make_shared<mapping_node>();
+            auto node = std::make_shared<ossia::nodes::mapping>();
             auto autom = std::make_shared<node_process>(node);
 
             auto v = std::make_shared<ossia::curve<float, float>>();
             v->set_x0(0.); v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
-            node->set_driven(destination{*t.float_params[std::abs(rand()) % t.float_params.size()]});
+            node->value_out.address = t.float_params[std::abs(rand()) % t.float_params.size()];
             mappings.push_back(node);
             tc->add_time_process(std::move(autom));
             g.add_node(std::move(node));
@@ -144,7 +148,7 @@ int main()
 
         e.clear_local_state();
         e.get_new_values();
-        s.state(v, 0., 0_tv, 0_tv);
+        s.state(0_tv, v, 0., 0_tv, 0_tv);
         g.state(e);
         std::size_t msg_count = num_messages(e);
         if(msg_count > 50000)
@@ -167,7 +171,8 @@ int main()
           CALLGRIND_START_INSTRUMENTATION;
           e.clear_local_state();
           e.get_new_values();
-          s.state(v, 0., 0_tv, 0_tv);
+          auto old_v = v > 0 ? v - 1_tv : 0_tv;
+          s.state(old_v, v, 0., 0_tv, 0_tv);
           g.state(e);
           (e.*fun)();
           CALLGRIND_STOP_INSTRUMENTATION;

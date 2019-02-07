@@ -84,7 +84,7 @@ int main(int argc, char** argv)
     std::cerr << "STOP received" << std::endl;
   });
 
-  qDebug() << "running with" << num_nodes;
+  std::cerr << "running with: " << num_nodes << std::endl;
   while(!b)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));

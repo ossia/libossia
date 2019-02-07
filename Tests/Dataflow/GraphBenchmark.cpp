@@ -37,7 +37,7 @@ template<typename Port_T>
 class node_empty_mock final : public graph_node {
 public:
   std::string lbl{};
-  std::string label() const override
+  std::string label() const noexcept override
   {
     return lbl;
   }
@@ -47,7 +47,7 @@ public:
     m_outlets.push_back(ossia::make_outlet<Port_T>());
   }
 
-  void run(token_request t, exec_state_facade e) override
+  void run(token_request t, exec_state_facade e) noexcept override
   {
   }
 };

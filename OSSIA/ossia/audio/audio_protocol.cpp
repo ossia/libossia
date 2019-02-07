@@ -374,13 +374,12 @@ void audio_protocol::process_generic(
 
 static std::string default_audio_protocol()
 {
-
 #if defined(__EMSCRIPTEN__)
   return "SDL";
-#elif defined(_MSC_VER) || __has_include(<weak_libjack.h>)
-  return "JACK";
 #elif __has_include(<portaudio.h>)
   return "PortAudio";
+#elif defined(_MSC_VER) || __has_include(<weak_libjack.h>)
+  return "JACK";
 #else
   return "";
 #endif
@@ -388,12 +387,6 @@ static std::string default_audio_protocol()
 audio_device::audio_device(std::string name)
     : audio_device{std::make_unique<audio_protocol>(), name}
 {
-  int ins = 2, outs = 2, rate = 44100, bs = 64;
-  engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(
-      default_audio_protocol(), name, "", "", ins, outs, rate, bs));
-  engine->reload(&protocol);
-  m_bs = bs;
-  m_sr = rate;
 }
 
 audio_device::audio_device(
@@ -401,9 +394,29 @@ audio_device::audio_device(
     : device{std::move(proto), name}
     , protocol{static_cast<audio_protocol&>(device.get_protocol())}
 {
-  int ins = 2, outs = 2, rate = 44100, bs = 64;
+  int ins = 2, outs = 2, rate = 44100, bs = 1024;
+  std::string default_protocol, default_in, default_out;
+#if defined(__EMSCRIPTEN__)
+  default_protocol = "SDL";
+#elif __has_include(<portaudio.h>)
+  default_protocol = "PortAudio";
+  Pa_Initialize();
+  {
+    auto in = Pa_GetDeviceInfo(Pa_GetDefaultInputDevice());
+    auto out = Pa_GetDeviceInfo(Pa_GetDefaultOutputDevice());
+    if(in)
+      default_in = in->name;
+    if(out)
+      default_out = out->name;
+  }
+  Pa_Terminate();
+#elif defined(_MSC_VER) || __has_include(<weak_libjack.h>)
+  default_protocol = "JACK";
+#else
+  default_protocol = "";
+#endif
   engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(
-      default_audio_protocol(), name, "", "", ins, outs, rate, bs));
+      default_protocol, name, default_in, default_out, ins, outs, rate, bs));
   engine->reload(&protocol);
   m_bs = bs;
   m_sr = rate;

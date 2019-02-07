@@ -14,7 +14,7 @@
 namespace ossia::nodes
 {
 /**
- * \brief The automation_node class
+ * \brief The ossia::nodes::automation class
  *
  * An automation is a time process that represents a curve of one
  * or multiple parameters.
