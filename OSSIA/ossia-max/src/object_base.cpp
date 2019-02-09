@@ -151,9 +151,10 @@ t_matcher::~t_matcher()
 
         for (auto remote : ossia_max::instance().remotes.copy())
         {
-          for (auto m : remote->m_matchers)
+          auto matchers_copy = remote->m_matchers;
+          for (auto m : matchers_copy)
           {
-            if(*m == *this)
+            if(m && *m == *this)
             {
               if(m->is_locked())
               {
