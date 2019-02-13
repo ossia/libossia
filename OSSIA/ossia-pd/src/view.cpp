@@ -61,10 +61,13 @@ bool view::do_registration(const std::vector<t_matcher>& matchers)
   // between the registered node and the remote
   unregister();
 
+  if(!m_name)
+    return false;
+
+  std::string name = m_name->s_name;
+
   for (auto& m : matchers)
   {
-    std::string name = m_name->s_name;
-
     auto _node = m.get_node();
 
     if (m_addr_scope == ossia::net::address_scope::absolute)
