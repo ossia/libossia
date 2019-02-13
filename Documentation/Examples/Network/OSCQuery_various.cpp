@@ -26,6 +26,17 @@ int main()
     ossia::create_parameter(root, "db", "db");
 
     ossia::create_parameter(root, "meter", "meter");
+
+
+    {
+        auto f = ossia::create_parameter(root, "domain/minmax/float", "float");
+        f->set_domain(ossia::make_domain(-100., 100.));
+    }
+
+    {
+        auto f = ossia::create_parameter(root, "domain/minmax/int", "int");
+        f->set_domain(ossia::make_domain(-100, 100));
+    }
     while(1)
         std::this_thread::sleep_for(std::chrono::seconds(1));
 }

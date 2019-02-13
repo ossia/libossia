@@ -121,6 +121,7 @@ public:
 
   host_info get_host_info() const noexcept;
 
+  void reconnect();
 private:
   friend struct http_answer;
 

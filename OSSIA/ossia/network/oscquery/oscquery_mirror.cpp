@@ -501,6 +501,11 @@ host_info oscquery_mirror_protocol::get_host_info() const noexcept
   return m_host_info;
 }
 
+void oscquery_mirror_protocol::reconnect()
+{
+  init();
+}
+
 void oscquery_mirror_protocol::init()
 {
   m_oscServer = std::make_unique<osc::receiver>(
