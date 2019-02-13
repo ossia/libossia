@@ -488,12 +488,14 @@ void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const s
 
 void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
 {
-  m_websocketClient->onClose = std::move(f);
+  if(m_websocketClient)
+    m_websocketClient->onClose = std::move(f);
 }
 
 void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 {
-  m_websocketClient->onFail = std::move(f);
+  if(m_websocketClient)
+    m_websocketClient->onFail = std::move(f);
 }
 
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
