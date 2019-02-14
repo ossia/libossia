@@ -372,18 +372,6 @@ void audio_protocol::process_generic(
   }
 }
 
-static std::string default_audio_protocol()
-{
-#if defined(__EMSCRIPTEN__)
-  return "SDL";
-#elif __has_include(<portaudio.h>)
-  return "PortAudio";
-#elif defined(_MSC_VER) || __has_include(<weak_libjack.h>)
-  return "JACK";
-#else
-  return "";
-#endif
-}
 audio_device::audio_device(std::string name)
     : audio_device{std::make_unique<audio_protocol>(), name}
 {
