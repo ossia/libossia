@@ -199,7 +199,6 @@ void oscquery_mirror_protocol::query_stop()
   {
     m_hasWS = false;
     m_websocketClient->stop();
-    m_websocketClient.reset();
   }
 }
 
@@ -559,9 +558,11 @@ void oscquery_mirror_protocol::init()
   start_http();
 
   m_hasWS = true;
-  m_wsThread = std::thread([=] {
+  std::atomic_bool started{false};
+  m_wsThread = std::thread([=,&started] {
     try
     {
+      started = true;
       m_websocketClient->connect(m_queryHost);
     }
     catch (...)
@@ -570,8 +571,12 @@ void oscquery_mirror_protocol::init()
       // m_websocketClient.reset(); // TODO unsafe non-atomic access
     }
     m_hasWS = false;
+
+    m_websocketClient.reset();
   });
 
+  while(!started)
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
   int n = 0;
   while (!query_connected())
   {

@@ -76,17 +76,16 @@ public:
 
   void stop()
   {
-    if (!connected())
+    if (!m_open)
+    {
+      m_client.stop();
+      m_connected = false;
       return;
+    }
 
     scoped_lock guard(m_lock);
     m_client.close(m_hdl, websocketpp::close::status::normal, "");
     m_open = false;
-  }
-
-  void close()
-  {
-    stop();
   }
 
   auto& client()
@@ -97,7 +96,7 @@ public:
   {
     return m_hdl;
   }
-  auto after_connect()
+  bool after_connect()
   {
     return m_connected;
   }
@@ -185,8 +184,8 @@ private:
   client_t m_client;
   connection_handler m_hdl;
   websocketpp::lib::mutex m_lock;
-  bool m_open;
-  bool m_connected{false};
+  std::atomic_bool m_open{false};
+  std::atomic_bool m_connected{false};
 };
 }
 }
