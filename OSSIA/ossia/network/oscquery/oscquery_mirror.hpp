@@ -4,6 +4,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/host_info.hpp>
+#include <atomic>
 #include <readerwriterqueue.h>
 namespace osc
 {
@@ -143,14 +144,12 @@ private:
   bool query_connected();
   void query_stop();
 
-  void on_queryClose();
-  void on_queryFail();
-
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;
+  std::atomic_bool m_hasWS{};
 
   // Listening status of the local software
   net::listened_parameters m_listening;

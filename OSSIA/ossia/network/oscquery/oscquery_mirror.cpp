@@ -169,34 +169,38 @@ void oscquery_mirror_protocol::http_send_message(
 
 void oscquery_mirror_protocol::ws_send_message(const std::string& str)
 {
-  if (m_websocketClient)
+  if (m_hasWS)
     m_websocketClient->send_message(str);
 }
 
 void oscquery_mirror_protocol::ws_send_message(
     const rapidjson::StringBuffer& str)
 {
-  if (m_websocketClient)
+  if (m_hasWS)
     m_websocketClient->send_message(str);
 }
 
 void oscquery_mirror_protocol::ws_send_binary_message(const std::string& str)
 {
-  if (m_websocketClient)
+  if (m_hasWS)
     m_websocketClient->send_binary_message(str);
 }
 
 bool oscquery_mirror_protocol::query_connected()
 {
-  if (m_websocketClient)
+  if (m_hasWS)
     return m_websocketClient->connected();
   return true;
 }
 
 void oscquery_mirror_protocol::query_stop()
 {
-  if (m_websocketClient)
+  if (m_hasWS)
+  {
+    m_hasWS = false;
     m_websocketClient->stop();
+    m_websocketClient.reset();
+  }
 }
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
@@ -256,7 +260,7 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
   {
     // Push to server
     auto critical = addr.get_critical();
-    if ((!critical || m_websocketClient) && m_oscSender)
+    if ((!critical || m_hasWS) && m_oscSender)
     {
       ossia::oscquery::osc_writer::send_message(
           addr, val, m_logger, m_oscSender->socket());
@@ -283,7 +287,7 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
   {
     // Push to server
     auto critical = addr.get_critical();
-    if ((!critical || m_websocketClient) && m_oscSender)
+    if ((!critical || m_hasWS) && m_oscSender)
     {
       ossia::oscquery::osc_writer::send_message(
           addr, val, m_logger, m_oscSender->socket());
@@ -343,7 +347,7 @@ bool oscquery_mirror_protocol::observe(
   {
     auto str = address.get_node().osc_address();
 
-    if (m_websocketClient)
+    if (m_hasWS)
       ws_send_message(json_writer::listen(str));
 
     m_listening.insert(std::make_pair(std::move(str), &address));
@@ -352,7 +356,7 @@ bool oscquery_mirror_protocol::observe(
   {
     const auto& str = address.get_node().osc_address();
 
-    if (m_websocketClient)
+    if (m_hasWS)
       ws_send_message(json_writer::ignore(str));
 
     m_listening.erase(str);
@@ -488,14 +492,32 @@ void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const s
 
 void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
 {
-  if(m_websocketClient)
-    m_websocketClient->onClose = std::move(f);
+  if(m_hasWS)
+  {
+    if(f)
+    {
+      m_websocketClient->onClose = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
+    }
+    else
+    {
+      m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
+    }
+  }
 }
 
 void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
 {
-  if(m_websocketClient)
-    m_websocketClient->onFail = std::move(f);
+  if(m_hasWS)
+  {
+    if(f)
+    {
+      m_websocketClient->onFail = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
+    }
+    else
+    {
+      m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
+    }
+  }
 }
 
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
@@ -531,8 +553,12 @@ void oscquery_mirror_protocol::init()
         }
       });
 
+  set_disconnect_callback({});
+  set_fail_callback({});
+
   start_http();
 
+  m_hasWS = true;
   m_wsThread = std::thread([=] {
     try
     {
@@ -541,8 +567,9 @@ void oscquery_mirror_protocol::init()
     catch (...)
     {
       // Websocket does not connect, so let's try http requests
-      m_websocketClient.reset(); // TODO unsafe non-atomic access
+      // m_websocketClient.reset(); // TODO unsafe non-atomic access
     }
+    m_hasWS = false;
   });
 
   int n = 0;
