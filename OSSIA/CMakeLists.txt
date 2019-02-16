@@ -295,9 +295,6 @@ if(OSSIA_QT)
 endif()
 
 if(OSSIA_DNSSD)
-  if(UNIX AND NOT APPLE AND NOT ANDROID)
-    include_directories(${Avahi_CLIENT_INCLUDE_DIRS})
-  endif()
   target_link_libraries(ossia PRIVATE Servus_iface)
 endif()
 
