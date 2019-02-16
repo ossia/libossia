@@ -88,7 +88,14 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
     if (argc != 0 && argv[0].a_type == A_SYMBOL)
     {
       x->m_name = atom_getsymbol(argv);
-      connect(x,gensym("connect"),argc,argv);
+      bool autoconnect = true;
+      if(argc > 1 && argv[1].a_type == A_FLOAT)
+      {
+        float f = atom_getfloat(argv+1);
+        autoconnect = f > 0.;
+      }
+      if(autoconnect)
+        connect(x,gensym("connect"),argc,argv);
     }
   }
 
