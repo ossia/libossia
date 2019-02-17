@@ -552,8 +552,8 @@ void oscquery_mirror_protocol::init()
         }
       });
 
-  set_disconnect_callback({});
-  set_fail_callback({});
+  m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
+  m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
 
   start_http();
 
@@ -564,6 +564,7 @@ void oscquery_mirror_protocol::init()
     {
       started = true;
       m_websocketClient->connect(m_queryHost);
+
     }
     catch (...)
     {
@@ -572,7 +573,7 @@ void oscquery_mirror_protocol::init()
     }
     m_hasWS = false;
 
-    m_websocketClient.reset();
+    //m_websocketClient.reset(); TODO
   });
 
   while(!started)
