@@ -31,7 +31,7 @@ public:
   bool remove_parameter() final override;
 
   std::unique_ptr<node_base>
-  make_child(const std::string& name) final override;
+  make_child(const std::string& name) override;
   void removing_child(node_base& node_base) final override;
 
   //! Explicitely add a child node (which has to be valid)

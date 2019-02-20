@@ -11,6 +11,7 @@ namespace ossia::net::midi
 midi_device::midi_device(std::unique_ptr<protocol_base> prot)
     : ossia::net::device_base{std::move(prot)}, midi_node{*this}
 {
+  m_capabilities.change_tree = true;
   m_protocol->set_device(*this);
   m_parameter = std::make_unique<midi_parameter>(
       address_info{{}, address_info::Type::Any, {}}, *this);
@@ -27,6 +28,30 @@ node_base& midi_device::set_name(std::string n)
 {
   m_name = n;
   return *this;
+}
+
+const node_base&midi_device::get_root_node() const
+{
+  return *this;
+}
+
+node_base&midi_device::get_root_node()
+{
+  return *this;
+}
+
+std::unique_ptr<node_base> midi_device::make_child(const std::string& name)
+{
+  try {
+    int chan = std::stoi(name);
+    if(chan >= 1 && chan <= 16)
+    {
+      return std::make_unique<channel_node>(false, chan, *this, *this);
+    }
+  } catch(...) {
+  }
+
+  return nullptr;
 }
 
 bool midi_device::create_full_tree()

@@ -5,8 +5,9 @@
 
 namespace ossia::net::midi
 {
-class OSSIA_EXPORT midi_device final : public ossia::net::device_base,
-                                       public midi_node
+class OSSIA_EXPORT midi_device final
+    : public ossia::net::device_base,
+    public midi_node
 {
 public:
   midi_device(std::unique_ptr<ossia::net::protocol_base> prot);
@@ -20,13 +21,9 @@ public:
 
   node_base& set_name(std::string n) override;
 
-  const ossia::net::node_base& get_root_node() const override
-  {
-    return *this;
-  }
-  ossia::net::node_base& get_root_node() override
-  {
-    return *this;
-  }
+  const ossia::net::node_base& get_root_node() const override;
+  ossia::net::node_base& get_root_node() override;
+
+  std::unique_ptr<node_base> make_child(const std::string& name) override;
 };
 }

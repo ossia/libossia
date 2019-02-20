@@ -128,13 +128,6 @@ struct address_info
 
 class midi_parameter : public ossia::net::parameter_base
 {
-  address_info m_info;
-  ossia::net::protocol_base& m_protocol;
-  ossia::domain m_domain;
-
-  ossia::val_type m_type = ossia::val_type::INT;
-  ossia::value m_value;
-
 public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
   ossia::net::protocol_base& get_protocol() const
@@ -170,5 +163,13 @@ public:
   void on_removing_last_callback() final override;
 
   void value_callback(const ossia::value& val);
+
+protected:
+  address_info m_info;
+  ossia::net::protocol_base& m_protocol;
+  ossia::domain m_domain;
+
+  ossia::val_type m_type = ossia::val_type::INT;
+  ossia::value m_value;
 };
 }

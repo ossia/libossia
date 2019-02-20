@@ -469,66 +469,6 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
 
 }
 
-class generic_node final : public midi_node, public midi_parameter
-{
-public:
-  generic_node(address_info addr, midi_device& dev, ossia::net::node_base& p)
-    : midi_node{dev, p}
-    , midi_parameter{addr, *this}
-  {
-    using namespace std::literals;
-    switch(addr.type)
-    {
-      case address_info::Type::NoteOn:
-        m_name = "on"s;
-        break;
-      case address_info::Type::NoteOn_N:
-        m_name = midi_node_name(addr.note);
-        break;
-      case address_info::Type::NoteOff:
-        m_name = "off"s;
-        break;
-      case address_info::Type::NoteOff_N:
-        m_name = midi_node_name(addr.note);
-        break;
-      case address_info::Type::CC:
-        m_name = "control"s;
-        break;
-      case address_info::Type::CC_N:
-        m_name = midi_node_name(addr.note);
-        break;
-      case address_info::Type::PC:
-        m_name = "program"s;
-        break;
-      case address_info::Type::PC_N:
-        m_name = midi_node_name(addr.note);
-        break;
-      case address_info::Type::PB:
-        m_name = "pitchbend"s;
-        break;
-      case address_info::Type::Any:
-        m_name = "TODO"s;
-        break;
-      default:
-        break;
-    }
-
-    m_parameter.reset(this);
-  }
-
-  ~generic_node()
-  {
-    m_children.clear();
-
-    about_to_be_deleted(*this);
-
-    m_device.on_parameter_removing(*this);
-    m_device.get_protocol().observe(*this, false);
-
-    m_parameter.release();
-  }
-};
-
 template<typename T, typename... Args>
 midi_node* find_or_create (ossia::string_view name, midi_device& dev, midi_node& parent, Args&&... args)
 {
