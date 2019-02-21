@@ -444,6 +444,10 @@ struct OSSIA_EXPORT graph_base : graph_interface
       m_nodes.insert({n, k});
     }
 
+    // https://svn.boost.org/trac10/ticket/5706#no1
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+
     auto edges = boost::edges(m_graph);
     for (auto it = edges.first; it != edges.second; ++it)
     {
@@ -453,7 +457,9 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
       m_edges.insert({n, k});
     }
+#pragma GCC diagnostic pop
   }
+
   auto add_node_impl(node_ptr n)
   {
     // auto& bench = *ossia::bench_ptr();
