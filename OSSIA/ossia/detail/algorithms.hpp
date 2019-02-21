@@ -90,6 +90,15 @@ void remove_erase_if(Vector& v, const Function& val)
 }
 
 template <typename Vector, typename Fun>
+void erase_if(Vector& r, Fun f)
+{
+  for (auto it = std::begin(r); it != std::end(r);)
+  {
+    it = f(*it) ? r.erase(it) : ++it;
+  }
+}
+
+template <typename Vector, typename Fun>
 bool any_of(Vector&& v, Fun fun) noexcept
 {
   return std::any_of(std::begin(v), std::end(v), fun);
