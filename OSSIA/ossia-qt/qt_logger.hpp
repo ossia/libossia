@@ -26,10 +26,10 @@ public:
   void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
   void log(const spdlog::details::log_msg& msg) override
   {
-    std::cerr.write(msg.raw.data(), msg.raw.size());
+    std::cerr.write(msg.payload.data(), msg.payload.size());
     std::cerr << std::endl;
     l(msg.level,
-      QString::fromUtf8(msg.raw.data(), msg.raw.size()));
+      QString::fromUtf8(msg.payload.data(), msg.payload.size()));
   }
 
   void flush() override

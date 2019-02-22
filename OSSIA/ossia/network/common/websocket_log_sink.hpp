@@ -131,7 +131,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
     writer.String(sender.data(), sender.size());
 
     writer.Key("message");
-    writer.String(msg.raw.data(), msg.raw.size());
+    writer.String(msg.payload.data(), msg.payload.size());
 
     writer.EndObject();
   }
