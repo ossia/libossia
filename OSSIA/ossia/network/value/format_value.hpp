@@ -12,48 +12,48 @@ struct value_prettyprint_visitor
   FormatContext& ctx;
   auto operator()(impulse) const
   {
-    return fmt::format_to(ctx.begin(), "impulse");
+    return fmt::format_to(ctx.out(), "impulse");
   }
   auto operator()(int32_t i) const
   {
-    return fmt::format_to(ctx.begin(), "int: {}", i);
+    return fmt::format_to(ctx.out(), "int: {}", i);
   }
   auto operator()(float f) const
   {
-    return fmt::format_to(ctx.begin(), "float: {}", f);
+    return fmt::format_to(ctx.out(), "float: {}", f);
   }
   auto operator()(bool b) const
   {
-    return fmt::format_to(ctx.begin(), "bool: {}", b ? "true" : "false");
+    return fmt::format_to(ctx.out(), "bool: {}", b ? "true" : "false");
   }
   auto operator()(char c) const
   {
-    return fmt::format_to(ctx.begin(), "char: '{}'", c);
+    return fmt::format_to(ctx.out(), "char: '{}'", c);
   }
   auto operator()(std::string str) const
   {
     boost::algorithm::replace_all(str, "\"", "\\\"");
-    return fmt::format_to(ctx.begin(), "string: \"{}\"", str);
+    return fmt::format_to(ctx.out(), "string: \"{}\"", str);
   }
   auto operator()(vec2f vec) const
   {
-    return fmt::format_to(ctx.begin(), "vec2f: {}", vec);
+    return fmt::format_to(ctx.out(), "vec2f: {}", vec);
   }
   auto operator()(vec3f vec) const
   {
-    return fmt::format_to(ctx.begin(), "vec3f: {}", vec);
+    return fmt::format_to(ctx.out(), "vec3f: {}", vec);
   }
   auto operator()(vec4f vec) const
   {
-    return fmt::format_to(ctx.begin(), "vec4f: {}", vec);
+    return fmt::format_to(ctx.out(), "vec4f: {}", vec);
   }
   auto operator()(const std::vector<ossia::value>& t) const
   {
-    return fmt::format_to(ctx.begin(), "list: {}", t);
+    return fmt::format_to(ctx.out(), "list: {}", t);
   }
   auto operator()() const
   {
-    return fmt::format_to(ctx.begin(), "invalid");
+    return fmt::format_to(ctx.out(), "invalid");
   }
 };
 
@@ -72,11 +72,11 @@ struct formatter<ossia::optional<T>>
   {
     if(n)
     {
-      return format_to(ctx.begin(), "{}", *n);
+      return format_to(ctx.out(), "{}", *n);
     }
     else
     {
-      return format_to(ctx.begin(), "none");
+      return format_to(ctx.out(), "none");
     }
   }
 };

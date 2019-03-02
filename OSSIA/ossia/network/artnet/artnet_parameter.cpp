@@ -1,3 +1,5 @@
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_PROTOCOL_ARTNET)
 #include "artnet_parameter.hpp"
 
 #include <cstdio>
@@ -53,3 +55,4 @@ void artnet_parameter::device_update_value()
 }
 }
 }
+#endif

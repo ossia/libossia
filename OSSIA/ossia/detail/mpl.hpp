@@ -3,6 +3,7 @@
 
 #include <ossia/detail/for_each.hpp>
 
+#include <brigand/algorithms/for_each.hpp>
 #include <brigand/algorithms/transform.hpp>
 #include <brigand/sequences/make_sequence.hpp>
 

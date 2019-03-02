@@ -1,5 +1,6 @@
 #pragma once
-
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_PROTOCOL_ARTNET)
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -54,3 +55,4 @@ private:
 };
 }
 }
+#endif

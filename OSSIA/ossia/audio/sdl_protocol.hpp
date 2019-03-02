@@ -46,7 +46,7 @@ public:
 
   bool running() const override
   {
-    return SDL_GetAudioStatus() == SDL_audiostatus::SDL_AUDIO_PLAYING;
+    return SDL_GetAudioStatus() == SDL_AUDIO_PLAYING;
   }
 
   void stop() override

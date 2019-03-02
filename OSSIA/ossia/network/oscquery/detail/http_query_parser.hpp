@@ -24,11 +24,11 @@ namespace oscquery
 template <typename T = std::string>
 auto& query()
 {
-  using namespace boost::spirit::x3;
+  namespace x3 = boost::spirit::x3;
   static const auto s_pair
-      = rule<struct pair_, std::pair<std::string, T>>{"pair"}
-  = +~char_("&=") >> -('=' >> *~char_("&"));
-  static const auto s_query = rule<struct query_, string_map<T>>{"query"}
+      = x3::rule<struct pair_, std::pair<std::string, T>>{"pair"}
+  = +~x3::char_("&=") >> -('=' >> *~x3::char_("&"));
+  static const auto s_query = x3::rule<struct query_, string_map<T>>{"query"}
   = s_pair % '&';
 
   return s_query;

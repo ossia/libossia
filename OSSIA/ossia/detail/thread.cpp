@@ -47,6 +47,8 @@ int get_pid()
 #endif
 
 #if defined(__EMSCRIPTEN__)
+namespace ossia
+{
 std::string get_exe_path()
 {
   return "";
@@ -54,6 +56,7 @@ std::string get_exe_path()
 std::string get_module_path()
 {
   return "";
+}
 }
 #else
 #include <ossia/../../3rdparty/whereami/src/whereami.h>

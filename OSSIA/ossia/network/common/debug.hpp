@@ -94,14 +94,14 @@ struct formatter<ossia::net::node_base>
     if(auto p = n.get_parameter())
     {
       return format_to(
-            ctx.begin(),
+            ctx.out(),
             "{:<{}} : {}, AccessMode({}), BoundingMode({}), Domain({}), Unit({})"
             , n.get_name(), num_indent
             , p->value(), p->get_access(), p->get_bounding(), p->get_domain(), ossia::get_pretty_unit_text(p->get_unit()));
     }
     else
     {
-      return format_to(ctx.begin(), "{}{}", num_indent, n.get_name());
+      return format_to(ctx.out(), "{}{}", num_indent, n.get_name());
     }
   }
 };
