@@ -6,22 +6,15 @@
 
 namespace ossia::net
 {
-rate_limiting_protocol::rate_limiting_protocol(
-    rate_limiting_protocol::duration d
-    , std::unique_ptr<protocol_base> arg)
-  : m_duration{d}
-  , m_protocol{std::move(arg)}
-
+struct rate_limiter
 {
-  m_userMessages.container.reserve(4096);
-  m_buffer.container.reserve(4096);
-  m_threadMessages.container.reserve(4096);
-  m_lastTime = clock::now();
-  m_thread = std::thread{[this] {
+  rate_limiting_protocol& self;
+  void operator()() const noexcept {
     using namespace std::literals;
-    const auto duration = m_duration.load();
+    using clock = rate_limiting_protocol::clock;
+    const auto duration = self.m_duration.load();
     thread_local auto time_to_sleep = duration;
-    while(m_running)
+    while(self.m_running)
     {
       try {
         auto prev_time = clock::now();
@@ -32,33 +25,33 @@ rate_limiting_protocol::rate_limiting_protocol(
         // TODO instead we should do the value filtering in the parameter ...
         // but still have to handle cases that can be optimized, such as midi
         {
-          std::lock_guard lock{m_msgMutex};
-          std::swap(m_buffer, m_userMessages);
+          std::lock_guard lock{self.m_msgMutex};
+          std::swap(self.m_buffer, self.m_userMessages);
         }
 
         // Copy newest messages in local map
-        for(auto& msg : m_buffer.container)
+        for(auto& msg : self.m_buffer.container)
         {
           if(msg.second.first.valid())
           {
-            m_threadMessages[msg.first] = std::move(msg.second);
+            self.m_threadMessages[msg.first] = std::move(msg.second);
             msg.second.first = ossia::value{};
           }
         }
 
         // Push the actual messages
-        for(auto& v : m_threadMessages.container)
+        for(auto& v : self.m_threadMessages.container)
         {
           auto val = v.second.first;
           if(val.valid())
           {
-            m_protocol->push(*v.first, v.second.first);
+            self.m_protocol->push(*v.first, v.second.first);
           }
         }
 
         // Clear both containers (while keeping memory allocated for sent messages
         // so that it stays fast)
-        for(auto& v : m_buffer.container)
+        for(auto& v : self.m_buffer.container)
         {
           if(v.second.first.valid())
           {
@@ -66,7 +59,7 @@ rate_limiting_protocol::rate_limiting_protocol(
           }
         }
 
-        for(auto& v : m_threadMessages.container)
+        for(auto& v : self.m_threadMessages.container)
         {
           if(v.second.first.valid())
           {
@@ -90,8 +83,21 @@ rate_limiting_protocol::rate_limiting_protocol(
 
       }
     }
-  }};
+  }
+};
 
+rate_limiting_protocol::rate_limiting_protocol(
+    rate_limiting_protocol::duration d
+    , std::unique_ptr<protocol_base> arg)
+  : m_duration{d}
+  , m_protocol{std::move(arg)}
+
+{
+  m_userMessages.container.reserve(4096);
+  m_buffer.container.reserve(4096);
+  m_threadMessages.container.reserve(4096);
+  m_lastTime = clock::now();
+  m_thread = std::thread{rate_limiter{*this}};
 }
 
 rate_limiting_protocol::~rate_limiting_protocol()

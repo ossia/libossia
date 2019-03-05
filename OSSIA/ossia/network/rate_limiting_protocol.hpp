@@ -11,6 +11,7 @@
 
 namespace ossia::net
 {
+struct rate_limiter;
 class OSSIA_EXPORT rate_limiting_protocol final
     : public ossia::net::protocol_base
 {
@@ -42,6 +43,8 @@ private:
   rate_limiting_protocol(rate_limiting_protocol&&) = delete;
   rate_limiting_protocol& operator=(const rate_limiting_protocol&) = delete;
   rate_limiting_protocol& operator=(rate_limiting_protocol&&) = delete;
+
+  friend class rate_limiter;
 
   std::atomic<duration> m_duration{};
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
