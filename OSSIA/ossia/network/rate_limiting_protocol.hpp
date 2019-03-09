@@ -44,7 +44,7 @@ private:
   rate_limiting_protocol& operator=(const rate_limiting_protocol&) = delete;
   rate_limiting_protocol& operator=(rate_limiting_protocol&&) = delete;
 
-  friend class rate_limiter;
+  friend struct rate_limiter;
 
   std::atomic<duration> m_duration{};
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
