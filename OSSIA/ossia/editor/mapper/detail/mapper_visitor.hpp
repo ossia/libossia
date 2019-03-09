@@ -15,90 +15,24 @@ struct mapper_compute_visitor
   operator()(float driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->get_type();
-
-    switch (t.second)
-    {
-      case ossia::curve_segment_type::FLOAT:
-      {
-        auto c = static_cast<curve<float, float>*>(base_curve);
-        return float{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::INT:
-      {
-        auto c = static_cast<curve<float, int>*>(base_curve);
-        return int32_t{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::BOOL:
-      {
-        auto c = static_cast<curve<float, bool>*>(base_curve);
-        return bool{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::DOUBLE:
-      case ossia::curve_segment_type::ANY:
-      default:
-        return {};
-    }
+    auto c_curve = static_cast<curve<float, float>*>(base_curve);
+    return float{c_curve->value_at(driver)};
   }
 
   ossia::value
   operator()(int32_t driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->get_type();
-
-    switch (t.second)
-    {
-      case ossia::curve_segment_type::FLOAT:
-      {
-        auto c = static_cast<curve<int, float>*>(base_curve);
-        return float{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::INT:
-      {
-        auto c = static_cast<curve<int, int>*>(base_curve);
-        return int32_t{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::BOOL:
-      {
-        auto c = static_cast<curve<int, bool>*>(base_curve);
-        return bool{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::DOUBLE:
-      case ossia::curve_segment_type::ANY:
-      default:
-        return {};
-    }
+    auto c_curve = static_cast<curve<float, float>*>(base_curve);
+    return float{c_curve->value_at(driver)};
   }
 
   ossia::value
   operator()(bool driver, const std::shared_ptr<curve_abstract>& c)
   {
     auto base_curve = c.get();
-    auto t = base_curve->get_type();
-
-    switch (t.second)
-    {
-      case ossia::curve_segment_type::FLOAT:
-      {
-        auto c = static_cast<curve<bool, float>*>(base_curve);
-        return float{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::INT:
-      {
-        auto c = static_cast<curve<bool, int>*>(base_curve);
-        return int32_t{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::BOOL:
-      {
-        auto c = static_cast<curve<bool, bool>*>(base_curve);
-        return bool{c->value_at(driver)};
-      }
-      case ossia::curve_segment_type::DOUBLE:
-      case ossia::curve_segment_type::ANY:
-      default:
-        return {};
-    }
+    auto c_curve = static_cast<curve<float, float>*>(base_curve);
+    return float{c_curve->value_at(driver)};
   }
 
   ossia::value operator()(
