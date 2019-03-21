@@ -59,7 +59,7 @@ struct faust_setup_ui : UIGlue
       return reinterpret_cast<T*>(self)->addVerticalBargraph(
           label, zone, min, max);
     };
-    addSoundFile = [](void* self, const char* label, const char* filename,
+    addSoundfile = [](void* self, const char* label, const char* filename,
                       Soundfile** sf_zone) {
       return reinterpret_cast<T*>(self)->addSoundfile(
           label, filename, sf_zone);
