@@ -78,7 +78,7 @@ public:
       throw std::runtime_error("Audio error: no JACK server");
     }
     jack_set_process_callback(client, process, this);
-    jack_set_sample_rate_callback(client, JackSampleRateCallback{}, this);
+    jack_set_sample_rate_callback(client, [] (jack_nframes_t nframes, void *arg) -> int { return 0; }, this);
     jack_on_shutdown(client, JackShutdownCallback{}, this);
     jack_set_error_function([](const char* str) {
       std::cerr << "JACK ERROR: " << str << std::endl;
