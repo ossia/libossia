@@ -806,6 +806,19 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
   dev.vec4f_addr->push_value(vec4f{1.1f,2.2f,3.3f,4.4f});
   dev.tuple_addr->push_value(std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
 
+  {
+    auto p = dev.device.create_child("list2")->create_parameter(val_type::LIST);
+    p->push_value(std::vector<value>{1.1f,2.2f});
+  }
+  {
+    auto p = dev.device.create_child("list3")->create_parameter(val_type::LIST);
+    p->push_value(std::vector<value>{1.1f,2.2f,3.3f});
+  }
+  {
+    auto p = dev.device.create_child("list4")->create_parameter(val_type::LIST);
+    p->push_value(std::vector<value>{1.1f,2.2f,3.3f,4.4f});
+  }
+
   // WS client
   auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
   std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
@@ -896,5 +909,32 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(p->get_value_type() == val_type::LIST);
     auto v = p->value().get<std::vector<value>>();
     REQUIRE(v == std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/list2");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::VEC2F);
+    auto v = p->value().get<vec2f>();
+    REQUIRE(v == vec2f{1.1f,2.2f});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/list3");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::VEC3F);
+    auto v = p->value().get<vec3f>();
+    REQUIRE(v == vec3f{1.1f,2.2f,3.3f});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/list4");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::VEC4F);
+    auto v = p->value().get<vec4f>();
+    REQUIRE(v == vec4f{1.1f,2.2f,3.3f,4.4f});
   }
 }
