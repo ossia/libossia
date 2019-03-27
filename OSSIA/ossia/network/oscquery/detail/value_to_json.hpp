@@ -388,9 +388,26 @@ struct json_to_single_value
 
   bool operator()(bool& res) const
   {
-    bool b = val.IsBool();
-    if (b)
-      res = val.GetBool();
+    bool b=false;
+    if(typetags == "F")
+    {
+      res = false;
+      b = true;
+    }
+    else if ( typetags == "T" )
+    {
+      res = true;
+      b = true;
+    }
+    else
+    {
+      // weird case where the typetag is wrongly set
+      // then we expect that the value is not null
+      // This doesn't follow the OSCQuery specification
+      bool b = val.IsBool();
+      if (b)
+        res = val.GetBool();
+    }
     return b;
   }
 
