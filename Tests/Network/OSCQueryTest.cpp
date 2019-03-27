@@ -217,9 +217,15 @@ TEST_CASE ("test_json_impulse", "test_json_impulse")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "I"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsNull());
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsNull());
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsNull());
+    }
   }
 }
 
@@ -242,9 +248,15 @@ TEST_CASE ("test_json_bool", "test_json_bool")
       REQUIRE(doc["TYPE"].IsString());
       REQUIRE(doc["TYPE"].GetString() == "F"s);
 
-      REQUIRE(doc["VALUE"].IsArray());
-      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-      REQUIRE(doc["VALUE"][0].IsNull());
+      if(doc["VALUE"].IsArray())
+      {
+        REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+        REQUIRE(doc["VALUE"][0].IsNull());
+      }
+      else
+      {
+        REQUIRE(doc["VALUE"].IsNull());
+      }
     }
   }
   {
@@ -260,9 +272,15 @@ TEST_CASE ("test_json_bool", "test_json_bool")
       REQUIRE(doc["TYPE"].IsString());
       REQUIRE(doc["TYPE"].GetString() == "T"s);
 
-      REQUIRE(doc["VALUE"].IsArray());
-      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-      REQUIRE(doc["VALUE"][0].IsNull());
+      if(doc["VALUE"].IsArray())
+      {
+        REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+        REQUIRE(doc["VALUE"][0].IsNull());
+      }
+      else
+      {
+        REQUIRE(doc["VALUE"].IsNull());
+      }
     }
   }
 }
@@ -285,10 +303,17 @@ TEST_CASE ("test_json_int", "test_json_int")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "i"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsInt());
-    REQUIRE(doc["VALUE"][0].GetInt() == 1234);
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsInt());
+      REQUIRE(doc["VALUE"][0].GetInt() == 1234);
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsInt());
+      REQUIRE(doc["VALUE"].GetInt() == 1234);
+    }
   }
 }
 
@@ -310,10 +335,17 @@ TEST_CASE ("test_json_float", "test_json_float")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "f"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsFloat());
-    REQUIRE(doc["VALUE"][0].GetFloat() == 1234.f);
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsFloat());
+      REQUIRE(doc["VALUE"][0].GetFloat() == 1234.f);
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsFloat());
+      REQUIRE(doc["VALUE"].GetFloat() == 1234.f);
+    }
   }
 }
 
@@ -335,10 +367,17 @@ TEST_CASE ("test_json_string", "test_json_string")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "s"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsString());
-    REQUIRE(doc["VALUE"][0].GetString() == "hello world"s);
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsString());
+      REQUIRE(doc["VALUE"][0].GetString() == "hello world"s);
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsString());
+      REQUIRE(doc["VALUE"].GetString() == "hello world"s);
+    }
   }
 }
 
@@ -361,10 +400,17 @@ TEST_CASE ("test_json_char", "test_json_char")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "c"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsString());
-    REQUIRE(doc["VALUE"][0].GetString() == "x"s);
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsString());
+      REQUIRE(doc["VALUE"][0].GetString() == "x"s);
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsString());
+      REQUIRE(doc["VALUE"].GetString() == "x"s);
+    }
   }
 }
 
@@ -548,10 +594,17 @@ TEST_CASE ("test_json_unit_float", "test_json_unit_float")
     REQUIRE(doc["TYPE"].IsString());
     REQUIRE(doc["TYPE"].GetString() == "f"s);
 
-    REQUIRE(doc["VALUE"].IsArray());
-    REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-    REQUIRE(doc["VALUE"][0].IsFloat());
-    REQUIRE(doc["VALUE"][0].GetFloat() == 100.f);
+    if(doc["VALUE"].IsArray())
+    {
+      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
+      REQUIRE(doc["VALUE"][0].IsFloat());
+      REQUIRE(doc["VALUE"][0].GetFloat() == 100.f);
+    }
+    else
+    {
+      REQUIRE(doc["VALUE"].IsFloat());
+      REQUIRE(doc["VALUE"].GetFloat() == 100.f);
+    }
 
     REQUIRE(doc.HasMember("UNIT"));
     REQUIRE(doc["UNIT"].IsArray());
