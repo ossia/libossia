@@ -91,11 +91,11 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
       case ossia::val_type::VEC2F:
       case ossia::val_type::VEC3F:
       case ossia::val_type::VEC4F:
+      case ossia::val_type::LIST:
         // Erase the top-level '[ ]'
         s.pop_back();
         s.erase(0, 1);
         break;
-      case ossia::val_type::LIST:
       default:
         break;
     }
