@@ -800,14 +800,21 @@ TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
 
 TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
 {
+  // Here we check that a nested list is not flatten when sent by OSC
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
   TestDeviceRef dev{serv}; (void) dev;
   ossia::net::parameter_base* a{};
-  {
-    auto& n = find_or_create_node(serv, "/main");
-    a = n.create_parameter(ossia::val_type::LIST);
-  }
+
+  auto& n = find_or_create_node(serv, "/main");
+  a = n.create_parameter(ossia::val_type::LIST);
+
+  std::vector<ossia::value> val;
+  val.push_back(0);
+  val.push_back(4.5f);
+  val.push_back(false);
+  val.push_back(std::vector<ossia::value>{"reg","fruh", "tot"});
+  a->push_value(val);
 
   // WS client
   auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
@@ -820,23 +827,22 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   REQUIRE(node);
   auto param = node->get_parameter();
   REQUIRE(param);
-  REQUIRE(param->value().get<std::vector<ossia::value>>() == std::vector<ossia::value>{});
+  REQUIRE(param->value().get<std::vector<ossia::value>>() == val);
 
-  std::vector<ossia::value> val;
+  val.clear();
   val.push_back(4.5f);
   val.push_back(1);
   val.push_back(false);
   val.push_back(std::vector<ossia::value>{"reg","fruh", "tot"});
 
   {
-    param->push_value(val); // This will god through the WS port
+    param->push_value(val); // This will go through the WS port
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  std::cout << "new value : " << a->value() << " expecting " << 4.5f << std::endl;
+  std::cout << "new value : " << a->value() << " expecting " << val << std::endl;
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
-
 }
 
 TEST_CASE ("test_oscquery_value", "test_oscquery_value")
