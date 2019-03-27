@@ -163,11 +163,24 @@ struct json_to_value
 
   bool operator()(bool& res) const
   {
-    typetag_cursor++;
+    bool b = false;
 
-    bool b = val.IsBool();
-    if (b)
-      res = val.GetBool();
+    switch(typetags[typetag_cursor])
+    {
+      case 'F':
+        res = false;
+        b = true;
+        break;
+      case 'T':
+        res = true;
+        b = true;
+        break;
+      default:
+        b = val.IsBool();
+        if (b)
+          res = val.GetBool();
+    }
+    typetag_cursor++;
     return b;
   }
 
