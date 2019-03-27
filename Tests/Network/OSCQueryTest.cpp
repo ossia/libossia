@@ -785,3 +785,116 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 
 }
+
+TEST_CASE ("test_oscquery_value", "test_oscquery_value")
+{
+  // Here we check that the fullpath JSON is correctly parsed
+  // and that all mirror parameter value are set correctly
+  // with a call to ws_proto->update(...);
+
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  TestDeviceRef dev{serv}; (void) dev;
+
+  dev.bool_addr->push_value(true);
+  dev.int_addr->push_value(-23);
+  dev.float_addr->push_value(-1234.56789f);
+  dev.char_addr->push_value('a');
+  dev.string_addr->push_value("My sup€r $Ŧringø");
+  dev.vec2f_addr->push_value(vec2f{1.1f,2.2f});
+  dev.vec3f_addr->push_value(vec3f{1.1f,2.2f,3.3f});
+  dev.vec4f_addr->push_value(vec4f{1.1f,2.2f,3.3f,4.4f});
+  dev.tuple_addr->push_value(std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+
+  // WS client
+  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  ws_proto->update(ws_clt->get_root_node());
+
+  // Wait a little bit for the server to send the namespace
+  // and to network thread to process it
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/bool");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::BOOL);
+    auto v = p->value().get<bool>();
+    REQUIRE(v);
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/int");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::INT);
+    auto v = p->value().get<int>();
+    REQUIRE(v == -23);
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/float");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::FLOAT);
+    auto v = p->value().get<float>();
+    REQUIRE(v == -1234.56789f);
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/char");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::CHAR);
+    auto v = p->value().get<char>();
+    REQUIRE(v == 'a');
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/string");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::STRING);
+    auto v = p->value().get<std::string>();
+    REQUIRE(v == "My sup€r $Ŧringø");
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/vec2f");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST); // Oscquery limitation : all vecnf become list
+    auto v = p->value().get<std::vector<value>>();
+    REQUIRE(v == std::vector<value>{1.1f,2.2f});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/vec3f");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST);
+    auto v = p->value().get<std::vector<value>>();
+    REQUIRE(v == std::vector<value>{1.1f,2.2f,3.3f});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/vec4f");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST);
+    auto v = p->value().get<std::vector<value>>();
+    REQUIRE(v == std::vector<value>{1.1f,2.2f,3.3f,4.4f});
+  }
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/tuple");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST);
+    auto v = p->value().get<std::vector<value>>();
+    REQUIRE(v == std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+  }
+}
