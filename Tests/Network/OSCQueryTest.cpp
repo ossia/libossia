@@ -866,27 +866,27 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    REQUIRE(p->get_value_type() == val_type::LIST); // Oscquery limitation : all vecnf become list
-    auto v = p->value().get<std::vector<value>>();
-    REQUIRE(v == std::vector<value>{1.1f,2.2f});
+    REQUIRE(p->get_value_type() == val_type::VEC2F); // Oscquery limitation : all vecnf become list
+    auto v = p->value().get<vec2f>();
+    REQUIRE(v == vec2f{1.1f,2.2f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/vec3f");
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    REQUIRE(p->get_value_type() == val_type::LIST);
-    auto v = p->value().get<std::vector<value>>();
-    REQUIRE(v == std::vector<value>{1.1f,2.2f,3.3f});
+    REQUIRE(p->get_value_type() == val_type::VEC3F);
+    auto v = p->value().get<vec3f>();
+    REQUIRE(v == vec3f{1.1f,2.2f,3.3f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/vec4f");
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    REQUIRE(p->get_value_type() == val_type::LIST);
-    auto v = p->value().get<std::vector<value>>();
-    REQUIRE(v == std::vector<value>{1.1f,2.2f,3.3f,4.4f});
+    REQUIRE(p->get_value_type() == val_type::VEC4F);
+    auto v = p->value().get<vec4f>();
+    REQUIRE(v == vec4f{1.1f,2.2f,3.3f,4.4f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/tuple");

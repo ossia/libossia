@@ -166,6 +166,15 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
       break;
   }
 
+  if( str == "ff" || str == "[ff]")
+    return ossia::val_type::VEC2F;
+
+  if( str == "fff" || str == "[fff]")
+    return ossia::val_type::VEC3F;
+
+  if( str == "ffff" || str == "[ffff]")
+    return ossia::val_type::VEC4F;
+
   return ossia::val_type::LIST;
 }
 
