@@ -566,7 +566,34 @@ else()
   if(APPLE)
     set(OSSIA_COMPILE_OPTIONS
         ${OSSIA_COMPILE_OPTIONS}
+        -Wno-auto-var-id
+        -Wno-availability
+        -Wno-deprecated-declarations
+        -Wno-exceptions
+        -Wno-auto-var-id
+        -Wno-availability
+        -Wno-deprecated-declarations
+        -Wno-exceptions
+        -Wno-extra-semi
+        -Wno-gnu-folding-constant
+        -Wno-gnu-zero-variadic-macro-arguments
+        -Wno-inconsistent-missing-override
+        -Wno-infinite-recursion
+        -Wno-missing-method-return-type
+        -Wno-non-virtual-dtor
+        -Wno-nullability-completeness-on-arrays
         -Wno-nullability-extension
+        -Wno-pedantic
+        -Wno-sign-compare
+        -Wno-switch
+        -Wno-unguarded-availability-new
+        -Wno-unknown-warning-option
+        -Wno-unused-function
+        -Wno-unused-local-typedef
+        -Wno-unused-private-field
+        -Wno-unused-variable
+        -Wno-variadic-macros
+        -Wno-zero-length-array
     )
   endif()
 
