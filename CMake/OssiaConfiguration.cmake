@@ -563,6 +563,12 @@ else()
       -Wmissing-field-initializers
       ${OSSIA_LINK_OPTIONS}
   )
+  if(APPLE)
+    set(OSSIA_COMPILE_OPTIONS
+        ${OSSIA_COMPILE_OPTIONS}
+        -Wno-nullability-extension
+    )
+  endif()
 
   if(OSSIA_CI)
     if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
