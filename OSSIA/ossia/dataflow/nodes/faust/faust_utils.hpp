@@ -240,6 +240,8 @@ void faust_exec_synth(Node& self, dsp_poly& dsp, const ossia::token_request& tk)
           dsp.pitchWheel(mess[0], mess.bytes[2] * 128 + mess.bytes[1]);
           break;
         }
+        default:
+          break;
           // TODO continue...
       }
     }

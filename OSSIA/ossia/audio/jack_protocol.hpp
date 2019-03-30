@@ -56,7 +56,7 @@ inline bool has_jackd_process()
 class jack_engine final : public audio_engine
 {
 public:
-  jack_engine(std::string name, int inputs, int outputs, int rate, int bs)
+  jack_engine(std::string name, int inputs, int outputs, int , int )
   {
     stopped = true;
 #if defined(_WIN32)
@@ -106,9 +106,10 @@ public:
 
     std::cerr << "=== stream start ===\n";
 
-    rate = jack_get_sample_rate(client);
-    bs = jack_get_buffer_size(client);
-
+    /* TODO
+    int rate = jack_get_sample_rate(client);
+    int bs = jack_get_buffer_size(client);
+    */
     int err = jack_activate(client);
     if (err != 0)
     {
