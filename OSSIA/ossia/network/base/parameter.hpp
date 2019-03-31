@@ -119,6 +119,16 @@ public:
   //! Sets the value locally, and sends it to the network.
   virtual parameter_base& push_value(const ossia::value&) = 0;
   virtual parameter_base& push_value(ossia::value&&) = 0;
+  void push_value_quiet(const ossia::value& v)
+  {
+    set_value_quiet(v);
+    push_value();
+  }
+  void push_value_quiet(ossia::value&& v)
+  {
+    set_value_quiet(std::move(v));
+    push_value();
+  }
 
   /// Value setters ///
   //! Sends the local value to the network
