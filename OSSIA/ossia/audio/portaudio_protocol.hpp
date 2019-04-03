@@ -165,6 +165,18 @@ public:
   }
 
 private:
+  static int clearBuffers(float** float_output, unsigned long nframes, int outs)
+  {
+    for (int i = 0; i < outs; i++)
+    {
+      auto chan = float_output[i];
+      for (std::size_t j = 0; j < nframes; j++)
+        chan[j] = 0.f;
+    }
+
+    return 0;
+  }
+
   static int PortAudioCallback(
       const void* input, void* output, unsigned long nframes,
       const PaStreamCallbackTimeInfo* timeInfo,
@@ -174,15 +186,7 @@ private:
 
     if (self.stop_processing)
     {
-      auto float_output = ((float**)output);
-      for (int i = 0; i < self.m_outs; i++)
-      {
-        auto chan = float_output[i];
-        for (std::size_t j = 0; j < nframes; j++)
-          chan[j] = 0.;
-      }
-
-      return 0;
+      return clearBuffers(((float**)output), nframes, self.m_outs);
     }
 
     auto clt = self.m_stream.load();
@@ -207,6 +211,9 @@ private:
       }
 
       self.processing = false;
+    }
+    else {
+      return clearBuffers(((float**)output), nframes, self.m_outs);
     }
 
     return paContinue;

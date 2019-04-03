@@ -189,6 +189,18 @@ public:
   }
 
 private:
+  static int clearBuffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
+  {
+    for (std::size_t i = 0; i < outputs; i++)
+    {
+      auto chan = (jack_default_audio_sample_t*)jack_port_get_buffer(
+          self.output_ports[i], nframes);
+      for (std::size_t j = 0; j < nframes; j++)
+        chan[j] = 0.f;
+    }
+
+    return 0;
+  }
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
@@ -197,15 +209,7 @@ private:
     auto proto = self.protocol.load();
     if (self.stop_processing)
     {
-      for (std::size_t i = 0; i < outputs; i++)
-      {
-        auto chan = (jack_default_audio_sample_t*)jack_port_get_buffer(
-            self.output_ports[i], nframes);
-        for (std::size_t j = 0; j < nframes; j++)
-          chan[j] = 0.;
-      }
-
-      return 0;
+      return clearBuffers(self, nframes, outputs);
     }
 
     if (proto)
@@ -237,6 +241,10 @@ private:
         proto->replace_tick = false;
       }
       self.processing = false;
+    }
+    else
+    {
+      return clearBuffers(self, nframes, outputs);
     }
     return 0;
   }

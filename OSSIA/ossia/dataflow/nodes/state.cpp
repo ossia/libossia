@@ -19,4 +19,9 @@ void state_writer::run(
   data.launch();
   //e.insert(data);
 }
+std::string ossia::nodes::state_writer::label() const noexcept
+{
+  return "state";
 }
+}
+
