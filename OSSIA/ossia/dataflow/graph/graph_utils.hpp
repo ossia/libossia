@@ -292,15 +292,18 @@ struct OSSIA_EXPORT graph_util
   static void exec_node(graph_node& first_node, execution_state& e)
   {
     init_node(first_node, e);
-    if (first_node.start_discontinuous())
+    if(!first_node.requested_tokens.empty())
     {
-      first_node.requested_tokens.front().start_discontinuous = true;
-      first_node.set_start_discontinuous(false);
-    }
-    if (first_node.end_discontinuous())
-    {
-      first_node.requested_tokens.front().end_discontinuous = true;
-      first_node.set_end_discontinuous(false);
+      if (first_node.start_discontinuous())
+      {
+        first_node.requested_tokens.front().start_discontinuous = true;
+        first_node.set_start_discontinuous(false);
+      }
+      if (first_node.end_discontinuous())
+      {
+        first_node.requested_tokens.front().end_discontinuous = true;
+        first_node.set_end_discontinuous(false);
+      }
     }
 
     for (const auto& request : first_node.requested_tokens)
