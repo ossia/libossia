@@ -14,12 +14,12 @@ find "$1" -name '*.maxpat' -exec sed -E -i.bak '
     s/j\.return ([a-zA-Z0-9~().\/]+) /ossia.parameter \1 @mode get /g;    
     s/j\.parameter/ossia.parameter/g;
     s/@clipmode none/@clip free/g;
-    s/clipmode/clip/g;   
-    s/decimal/float/g;
-    s/integer/int/g;
-    s/boolean/bool/g;
-    s/generic/tuple/g;
-    s/symbol/string/g;
+    s/@clipmode/@clip/g;   
+    s/@typedecimal/@type float/g;
+    s/@type integer/@type int/g;
+    s/@type boolean/@type bool/g;
+    s/@type generic/@type list/g;
+    s/@type symbol/@type string/g;
     s/@type none/@type impulse/g;
     s/@repetitions\/filter 0/@repetitions 1/g;
     s/@repetitions\/filter 1/@repetitions 0/g; 
