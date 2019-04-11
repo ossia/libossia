@@ -61,16 +61,17 @@ void ossia_register(object_base* x)
   }
   else
   {
-    int l;
-    ossia::max::device* device =
-        find_parent_box_alive<ossia::max::device>(x, 0, &l);
-    ossia::max::client* client =
-        find_parent_box_alive<ossia::max::client>(x, 0, &l);
+    std::pair<int,ossia::max::device*> device{};
+    device.second =
+        find_parent_box_alive<ossia::max::device>(x, 0, &device.first);
 
-    model* model = nullptr;
-    view* view = nullptr;
-    int view_level = 0, model_level = 0;
-    int start_level = 0;
+    std::pair<int,ossia::max::client*> client{};
+    client.second =
+        find_parent_box_alive<ossia::max::client>(x, 0, &client.first);
+
+    std::pair<int,ossia::pd::model*> model{};
+    std::pair<int,ossia::pd::view*> view{};
+    int start_level{};
 
     if ( x->m_otype == object_class::view || x->m_otype == object_class::model)
     {
@@ -82,57 +83,39 @@ void ossia_register(object_base* x)
       // then try to locate a parent view or model
       if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
       {
-        view = find_parent_box_alive<ossia::max::view>(
-              x, start_level, &view_level);
+        view.second = find_parent_box_alive<ossia::max::view>(
+              x, start_level, &view.first);
       }
 
-      if (!view)
+      if (!view.second)
       {
-        model = find_parent_box_alive<ossia::max::model>(
-              x, start_level, &model_level);
+        model.second = find_parent_box_alive<ossia::max::model>(
+              x, start_level, &model.first);
       }
     }
 
-    if (view)
+    std::vector<std::pair<int, object_base*>> vec{device, client, model, view};
+    // sort pair by ascending order : closest one first
+    std::sort(vec.begin(), vec.end());
+
+    for(auto& p : vec)
     {
-      matchers = &view->m_matchers;
+      if(p.second)
+      {
+        matchers = &p.second->m_matchers;
+        break;
+      }
     }
-    else if (model)
+
+    if(matchers == &tmp
+       && x->m_addr_scope != ossia::net::address_scope::global)
     {
-      matchers = &model->m_matchers;
-    } else if (client)
-    {
-      matchers = &client->m_matchers;
-    } else if (device)
-    {
-      matchers = &device->m_matchers;
-    }
-    else
-    {
-      tmp.emplace_back(std::make_shared<t_matcher>(&ossia_max::get_default_device()->get_root_node(), (object_base*)nullptr));
+      tmp.push_back({&ossia_pd::get_default_device()->get_root_node(),
+                      (object_base*) nullptr});
     }
   }
 
-  switch( x->m_otype )
-  {
-    case object_class::remote:
-      static_cast<max::remote*>(x)->register_node(*matchers);
-      break;
-    case object_class::view:
-      static_cast<max::view*>(x)->register_node(*matchers);
-      break;
-    case object_class::param:
-      static_cast<max::parameter*>(x)->register_node(*matchers);
-      break;
-    case object_class::model:
-      static_cast<max::model*>(x)->register_node(*matchers);
-      break;
-    case object_class::attribute:
-      static_cast<max::attribute*>(x)->register_node(*matchers);
-      break;
-    default:
-      break;
-  }
+  x->register_node(*matchers);
 }
 
 void ossia_check_and_register(object_base* x)
