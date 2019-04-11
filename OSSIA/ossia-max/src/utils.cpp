@@ -10,7 +10,8 @@ namespace ossia
 namespace max
 {
 
-void ossia_register(object_base* x)
+template<typename T>
+void ossia_register(T* x)
 {
   if(x->m_dead)
     return; // object will be removed soon
