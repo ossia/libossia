@@ -12,6 +12,9 @@ namespace max
 
 void ossia_register(object_base* x)
 {
+  if(x->m_dead)
+    return; // object will be removed soon
+
   if (x->m_reg_clock)
   {
     clock_unset(x->m_reg_clock);
