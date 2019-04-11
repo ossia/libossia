@@ -255,8 +255,6 @@ bool model::unregister()
 {
   m_matchers.clear();
 
-  object_quarantining<model>(this);
-
   register_children();
 
   return true;
