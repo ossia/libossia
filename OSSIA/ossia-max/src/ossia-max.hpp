@@ -49,7 +49,7 @@ struct max_msp_log_sink final :
 {
     void log(const spdlog::details::log_msg& msg) override
     {
-        std::string s(msg.raw.data(), msg.raw.size());
+        std::string s(msg.payload.data(), msg.payload.size());
         switch(msg.level)
         {
           case spdlog::level::warn:
