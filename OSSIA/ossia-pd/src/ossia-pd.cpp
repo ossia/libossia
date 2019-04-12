@@ -8,6 +8,7 @@
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
+#include <ossia/context.hpp>
 
 #include <git_info.h>
 
@@ -126,8 +127,12 @@ t_symbol* ossia_pd::o_sym_address = gensym("address");
 // ossia-pd constructor
 ossia_pd::ossia_pd():
   m_localProtocol{new ossia::net::local_protocol},
-  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"}
+  m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_pd_device"},
+  m_log_sink{std::make_shared<pd_log_sink>()}
 {
+  m_log_sink.get()->set_level(spdlog::level::err);
+  ossia::context c{{m_log_sink}};
+
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
   m_reg_clock = clock_new(this, (t_method) ossia_pd::register_nodes);
