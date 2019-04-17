@@ -208,9 +208,148 @@ static inline T* find_parent_box_alive(
   return parent;
 }
 
-void ossia_register(object_base* x);
+template<typename T>
+void ossia_register(T* x)
+{
+  if(x->m_dead)
+    return; // object will be removed soon
 
-void ossia_check_and_register(object_base* x);
+  if (x->m_reg_clock)
+  {
+    clock_unset(x->m_reg_clock);
+    clock_free((t_object*)x->m_reg_clock);
+    x->m_reg_clock = nullptr;
+  }
+
+  if (!x->m_name)
+    return;
+
+  std::vector<std::shared_ptr<t_matcher>> tmp;
+  std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
+  std::vector<ossia::net::node_base*> nodes;
+
+  if (x->m_addr_scope == ossia::net::address_scope::global)
+  {
+    std::string addr = x->m_name->s_name;
+
+    if(x->m_otype == object_class::param || x->m_otype == object_class::model)
+    {
+       size_t pos = 0;
+       while( pos != std::string::npos && nodes.empty())
+       {
+         // remove the last part which should be created
+         pos = addr.find_last_of('/');
+         if( pos < addr.size() )
+         {
+           addr = addr.substr(0,pos);
+         }
+         nodes = ossia::max::find_global_nodes(addr+"/");
+       }
+       addr += '/';
+    }
+    else
+    {
+      nodes = ossia::max::find_global_nodes(addr);
+    }
+
+    tmp.reserve(nodes.size());
+    for (auto n : nodes)
+    {
+      tmp.emplace_back(std::make_shared<t_matcher>(n, (object_base*)nullptr));
+    }
+  }
+  else
+  {
+    std::pair<int,ossia::max::device*> device{};
+    device.second =
+        find_parent_box_alive<ossia::max::device>(x, 0, &device.first);
+
+    std::pair<int,ossia::max::client*> client{};
+    client.second =
+        find_parent_box_alive<ossia::max::client>(x, 0, &client.first);
+
+    std::pair<int,ossia::max::model*> model{};
+    std::pair<int,ossia::max::view*> view{};
+    int start_level{};
+
+    if ( x->m_otype == object_class::view || x->m_otype == object_class::model)
+    {
+      start_level = 1;
+    }
+
+    if (x->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      // then try to locate a parent view or model
+      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
+      {
+        view.second = find_parent_box_alive<ossia::max::view>(
+              x, start_level, &view.first);
+      }
+
+      if (!view.second)
+      {
+        model.second = find_parent_box_alive<ossia::max::model>(
+              x, start_level, &model.first);
+      }
+    }
+
+    std::vector<std::pair<int, object_base*>> vec{device, client, model, view};
+    // sort pair by ascending order : closest one first
+    std::sort(vec.begin(), vec.end());
+
+    for(auto& p : vec)
+    {
+      if(p.second)
+      {
+        matchers = &p.second->m_matchers;
+        break;
+      }
+    }
+
+    if(matchers == &tmp
+       && x->m_addr_scope != ossia::net::address_scope::global)
+    {
+      tmp.push_back(std::make_shared<t_matcher>(&ossia_max::get_default_device()->get_root_node(),
+                      (object_base*) nullptr));
+    }
+  }
+
+  x->register_node(*matchers);
+}
+
+template<typename T>
+void ossia_check_and_register(T* x)
+{
+  x->get_hierarchy();
+  auto& map = ossia_max::instance().root_patcher;
+  auto it = map.find(x->m_patcher_hierarchy.back());
+
+  if(x->m_reg_clock)
+    freeobject((t_object*)x->m_reg_clock);
+
+  x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
+  clock_delay(x->m_reg_clock, 2);
+
+  /*
+  post("map size: %d", map.size());
+
+  if (it != map.end())
+  {
+    post("was root patcher loadbanged ? %d", it->second.is_loadbanged);
+  }
+  else
+  {
+    post("reach map list end !");
+  }
+  */
+
+  // register object only if root patcher have been loadbanged
+  // else the patcher itself will trig a registration on loadbang
+  if (it != map.end() && it->second.is_loadbanged)
+  {
+    ossia_register(x);
+  }
+}
 
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)

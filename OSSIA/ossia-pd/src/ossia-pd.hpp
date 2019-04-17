@@ -9,6 +9,7 @@
 #include <ossia-pd/src/view.hpp>
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/client.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -19,6 +20,38 @@ namespace ossia
 struct websocket_threaded_connection;
 namespace pd
 {
+
+
+struct pd_log_sink final :
+        public spdlog::sinks::sink
+{
+    void log(const spdlog::details::log_msg& msg) override
+    {
+        std::string s(msg.payload.data(), msg.payload.size());
+        switch(msg.level)
+        {
+          case spdlog::level::warn:
+          case spdlog::level::err:
+          {
+            error("%s", s.c_str());
+            break;
+          }
+
+          default:
+            post("%s", s.c_str());
+            break;
+          }
+      }
+
+    void flush() override
+    {
+    }
+
+    void set_pattern(const std::string &pattern) override { }
+    void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
+
+};
+
 
 extern "C" void setup_ossia0x2eassert(void);
 extern "C" void setup_ossia0x2eattribute(void);
@@ -40,6 +73,22 @@ public:
       return &instance().m_device;
     }
     static void register_nodes(void* x);
+
+    void set_log_level(t_symbol* log_sym)
+    {
+      std::vector<std::string> vec = SPDLOG_LEVEL_NAMES;
+      auto it = std::find(vec.begin(), vec.end(), log_sym->s_name);
+      if(it != vec.end())
+      {
+        int level = it - vec.begin();
+        m_log_sink.get()->set_level(
+                    static_cast<spdlog::level::level_enum>(level));
+      }
+      else
+      {
+        error("Unknown log level : %s", log_sym->s_name);
+      }
+    }
 
     static t_eclass* attribute_class;
     static t_eclass* client_class;
@@ -104,6 +153,7 @@ private:
     ossia::net::local_protocol* m_localProtocol{};
     ossia::net::generic_device m_device;
     string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
+    std::shared_ptr<pd_log_sink> m_log_sink;
 };
 
 }
