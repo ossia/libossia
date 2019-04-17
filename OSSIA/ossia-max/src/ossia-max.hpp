@@ -199,7 +199,7 @@ void register_quarantinized();
  * @brief Find all objects [classname] in the current patcher.
  * @param patcher : patcher in which we are looking for objects
  * @param classname : name of the object to search (ossia.model or ossia.view)
- * @return std::vector<t_pd*> containing pointer to t_pd struct of the
+ * @return std::vector<object_base*> containing pointer to object_base struct of the
  * corresponding classname
  */
 std::vector<object_base*> find_children_to_register(
