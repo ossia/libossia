@@ -5,16 +5,28 @@ set(CMAKE_SUPPRESS_REGENERATION true)
 set(CMAKE_MACOSX_RPATH Off)
 
 option(OSSIA_PD_BENCHMARK "Add some process time computation and print it to the console" OFF)
+option(OSSIA_PURR_DATA "Build against Purr Data sources" OFF)
 
 if(OSSIA_PD_BENCHMARK)
     add_definitions(-DOSSIA_PD_BENCHMARK)
 endif()
 
 message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if(OSSIA_PURR_DATA)
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND git checkout 6343214214dc71fe37352b8c60f5980c2f0a67a7
+                  WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper)
+else()
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/purr-data
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+
 
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
@@ -38,7 +50,11 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
 endif()
 endif()
 
-set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
+if(OSSIA_PURR_DATA)
+  set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/purr-data/pd")
+else()
+  set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
+endif()
 set(OSSIA_CICM_PATH "${OSSIA_3RDPARTY_FOLDER}/CicmWrapper")
 include_directories("${OSSIA_PD_PATH}/src")
 

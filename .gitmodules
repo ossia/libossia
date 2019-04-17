@@ -102,3 +102,6 @@
 [submodule "3rdparty/tbb"]
 	path = 3rdparty/tbb
 	url = https://github.com/jcelerier/tbb
+[submodule "3rdparty/purr-data"]
+	path = 3rdparty/purr-data
+	url = https://github.com/agraef/purr-data.git
