@@ -177,6 +177,7 @@ public:
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 protected:
   ossia::optional<ossia::traversal::path> m_path;
+  std::unordered_map<std::string_view, ossia::value> m_value_map;
 };
 
 }

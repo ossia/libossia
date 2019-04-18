@@ -273,6 +273,20 @@ void parameter::destroy(parameter* x)
   x->~parameter();
 }
 
+void parameter::save_values()
+{
+  if(!m_matchers.empty())
+  {
+    m_value_map.clear();
+    for(const auto& m : m_matchers)
+    {
+      auto n = m.get_node();
+      if(auto p = n->get_parameter())
+        m_value_map[n->get_name()] = p->value();
+    }
+  }
+}
+
 extern "C" void setup_ossia0x2eparam(void)
 {
   t_eclass* c = eclass_new(

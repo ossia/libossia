@@ -91,6 +91,28 @@ bool model::do_registration(const std::vector<t_matcher>& matchers)
   return true;
 }
 
+void model::save_children_state()
+{
+  for(auto& m : m_matchers)
+  {
+    for(auto x : ossia_pd::instance().parameters.reference() )
+    {
+      if(x->m_parent_node == m.get_node())
+      {
+        x->save_values();
+      }
+    }
+
+    for(auto x : ossia_pd::instance().models.reference() )
+    {
+      if(x->m_parent_node == m.get_node())
+      {
+        x->save_children_state();
+      }
+    }
+  }
+}
+
 void model::register_children()
 {
   std::vector<object_base*> obj
@@ -145,6 +167,7 @@ void model::register_children()
 
 bool model::unregister()
 {
+  save_children_state();
 
   m_matchers.clear();
 

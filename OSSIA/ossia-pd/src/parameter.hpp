@@ -17,6 +17,7 @@ public:
   bool register_node(const std::vector<t_matcher>& node);
   bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();
+  void save_values();
 
   static t_pd_err notify(
       parameter*x, t_symbol*s, t_symbol* msg, void* sender, void* data);

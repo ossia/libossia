@@ -16,6 +16,7 @@ public:
   bool do_registration(const std::vector<t_matcher>& node);
   bool unregister();
   void register_children();
+  void save_children_state();
 
   static void destroy(model* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
