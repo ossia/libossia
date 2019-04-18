@@ -66,18 +66,15 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
       return nullptr;
     }
 
-    // parse arguments
-    long attrstart = attr_args_offset(argc, argv);
-
     // check name argument
     x->m_name = _sym_nothing;
-    if (attrstart && argv)
+    if (argc > 0 && argv)
     {
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
-       }
+      }
     }
 
     if (x->m_name == _sym_nothing)
@@ -88,6 +85,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     }
 
     // process attr args, if any
+    long attrstart = attr_args_offset(argc, argv);
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
     // we need to delay registration because object may use patcher hierarchy
@@ -253,11 +251,35 @@ void model::register_children()
 
 bool model::unregister()
 {
+  save_children_state();
+
   m_matchers.clear();
 
   register_children();
 
   return true;
+}
+
+void model::save_children_state()
+{
+  for(auto& m : m_matchers)
+  {
+    for(auto x : ossia_max::instance().parameters.reference() )
+    {
+      if(x->m_parent_node == m->get_node())
+      {
+        x->save_values();
+      }
+    }
+
+    for(auto x : ossia_max::instance().models.reference() )
+    {
+      if(x->m_parent_node == m->get_node())
+      {
+        x->save_children_state();
+      }
+    }
+  }
 }
 
 ossia::safe_set<model*>& model::quarantine()

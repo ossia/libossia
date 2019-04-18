@@ -13,6 +13,8 @@
 
 #include <concurrentqueue.h>
 
+#include <map>
+
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
 
 namespace ossia
@@ -189,6 +191,7 @@ public:
 
 protected:
   ossia::optional<ossia::traversal::path> m_path;
+  std::map<std::string, ossia::value> m_value_map;
 };
 
 #pragma mark -

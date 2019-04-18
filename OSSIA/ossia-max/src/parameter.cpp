@@ -268,6 +268,22 @@ bool parameter::unregister()
   return true;
 }
 
+void parameter::save_values()
+{
+  if(!m_matchers.empty())
+  {
+    m_value_map.clear();
+    for(const auto& m : m_matchers)
+    {
+      auto n = m->get_node();
+      if(auto p = n->get_parameter())
+      {
+        m_value_map[n->get_name()] = p->value();
+      }
+    }
+  }
+}
+
 ossia::safe_set<parameter *> &parameter::quarantine()
 {
   return ossia_max::instance().parameter_quarantine;

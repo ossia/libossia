@@ -130,13 +130,13 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
     switch(a)
     {
     case 0:
-      sprintf(s, "deferred outlet with set prefix (for connecting to UI object), %l", a);
+      sprintf(s, "deferred outlet with set prefix (for connecting to UI object), %ld", a);
         break;
       case 1:
-        sprintf(s, "raw outlet, %l", a);
+        sprintf(s, "raw outlet, %ld", a);
         break;
       case 2:
-        sprintf(s, "dump outlet, %l", a);
+        sprintf(s, "dump outlet, %ld", a);
         break;
       default:
         break;

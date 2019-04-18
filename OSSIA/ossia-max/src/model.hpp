@@ -19,6 +19,7 @@ public:
   bool do_registration(const std::vector<std::shared_ptr<t_matcher>>& nodes);
   bool unregister();
   void register_children();
+  void save_children_state();
 
   static ossia::safe_set<model*>& quarantine();
 

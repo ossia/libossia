@@ -16,6 +16,7 @@ public:
   bool register_node(const std::vector<std::shared_ptr<t_matcher>>& node);
   bool do_registration(const std::vector<std::shared_ptr<t_matcher>>& node);
   bool unregister();
+  void save_values();
 
   static ossia::safe_set<parameter*>& quarantine();
 

@@ -262,18 +262,27 @@ void parameter_base::push_default_value(parameter_base* x)
 
   if (!x->m_mute)
   {
-    for (auto& m : x->m_node_selection)
+    for (auto m : x->m_node_selection)
     {
       if(!m->is_zombie())
       {
         node = m->get_node();
         auto param = node->get_parameter();
 
-        auto def_val = ossia::net::get_default_value(*node);
-        if (def_val)
+        auto it = x->m_value_map.find(node->get_name());
+        if(it != x->m_value_map.end())
         {
-          param->push_value(*def_val);
+          param->push_value(it->second);
           trig_output_value(node);
+        }
+        else
+        {
+          auto def_val = ossia::net::get_default_value(*node);
+          if (def_val)
+          {
+            param->push_value(*def_val);
+            trig_output_value(node);
+          }
         }
       }
     }
