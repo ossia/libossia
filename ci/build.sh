@@ -196,6 +196,25 @@ case "$TRAVIS_OS_NAME" in
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
+      PurrDataRelease)
+
+        $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
+                   -DCMAKE_CXX_COMPILER="$CXX" \
+                   -DBOOST_ROOT="$BOOST_ROOT" \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_PD_ONLY=1 \
+                   -DOSSIA_PURR_DATA=1 \
+                   -DOSSIA_CI=1 \
+                   ..
+
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install
+
+        cd $TRAVIS_BUILD_DIR/ossia-pd-package
+        tar -czf ${ARTIFACTS_DIR}/ossia-purr-data-linux_x86_64.tar.gz ossia
+
+      ;;
       RpiPdRelease)
 
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
@@ -441,6 +460,26 @@ def get_versions():
       pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia && popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
+
+    elif [[ "$BUILD_TYPE" == "PurrDataRelease" ]]; then
+
+      $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
+               -DOSSIA_SANITIZE=1 \
+               -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
+               -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+               -DCMAKE_CXX_COMPILER=/usr/bin/clang++ \
+               -DOSSIA_CI=1 \
+               -DOSSIA_PD_ONLY=1 \
+               -DOSSIA_PURR_DATA=ON \
+               -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
+               -DOSSIA_OSX_FAT_LIBRARIES=1 \
+               ..
+      $CMAKE_BIN --build . -- -j2
+      $CMAKE_BIN --build . --target install
+      echo List TRAVIS_BUILD_DIR content
+      cd $TRAVIS_BUILD_DIR
+      ls
+      pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-purr-data-osx.tar.gz ossia && popd
 
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
 

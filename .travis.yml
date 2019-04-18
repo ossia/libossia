@@ -43,6 +43,8 @@ matrix:
   - os: linux
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1
   - os: linux
+    env: BUILD_TYPE=PurrDataRelease OSSIA_STATIC=1
+  - os: linux
     env: BUILD_TYPE=PdTest OSSIA_STATIC=1
 
 ## RpiDocker build is tooooooo slow
@@ -104,6 +106,8 @@ matrix:
     env: BUILD_TYPE=Release OSSIA_STATIC=1
   - os: osx
     env: BUILD_TYPE=PdRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
+  - os: osx
+    env: BUILD_TYPE=PurrDataRelease OSSIA_STATIC=1 PYTHON_VERSION=3.6
   - os: osx
     env: BUILD_TYPE=PdTest OSSIA_STATIC=1 PYTHON_VERSION=3.6
   - os: osx
