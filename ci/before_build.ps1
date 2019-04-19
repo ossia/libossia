@@ -35,9 +35,9 @@ cd ..
 mkdir build
 cd build
 
-$CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
-$CommonFlags32 = "-G""Visual Studio 15 2017""",$CommonFlags
-$CommonFlags64 = "-G""Visual Studio 15 2017 Win64""",$CommonFlags
+$CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DOSSIA_C=1","-DOSSIA_CPP=1","-DOSSIA_UNITY3D=0","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
+$32bitgen = "-G""Visual Studio 15 2017"""
+$64bitgen = "-G""Visual Studio 15 2017 Win64"""
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
@@ -47,7 +47,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-${env:configuration}.log"
   
-  cmake -G "Visual Studio 15 2017 Win64" -T host=x64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DOSSIA_EDITOR=1 -DOSSIA_DATAFLOW=1 -DOSSIA_QT=1 -DOSSIA_QML=1 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  cmake $64bitgen -T host=x64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_PD=0 -DOSSIA_CI=1 -DOSSIA_TESTING=1 -DOSSIA_EDITOR=1 -DOSSIA_DATAFLOW=1 -DOSSIA_QT=1 -DOSSIA_QML=1 -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
 
   CheckLastExitCode
 
@@ -57,7 +57,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $CommonFlags64 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=0 c:\projects\libossia > $LogFile
+  cmake $64bitgen $CommonFlags c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -66,7 +66,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake $CommonFlags32 -DOSSIA_C=1 -DOSSIA_CPP=1 -DOSSIA_UNITY3D=0 c:\projects\libossia > $LogFile
+  cmake $32bitgen $CommonFlags c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-unity3d" ) {
@@ -75,7 +75,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake -G"Visual Studio 15 2017 Win64" -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -84,12 +84,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake -G"Visual Studio 15 2017" -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake -G"Visual Studio 15 2017 Win64" -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -98,12 +98,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake -G"Visual Studio 15 2017" -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp" ) {
   $LogFile = "c:\projects\libossia\configure-opp.log"
-  cmake -G"Visual Studio 15 2017 Win64" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -112,7 +112,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "c:\projects\libossia\configure-opp-32bit.log"
-  cmake -G"Visual Studio 15 2017" -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install-32bit" -DOSSIA_STATIC=0 -DOSSIA_CPP_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
@@ -122,12 +122,12 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-32bit" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G"Visual Studio 15 2017" -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G"Visual Studio 15 2017" -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ) {
@@ -140,7 +140,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install twine
 
     cd C:\projects\libossia\build
-    cmake  -G"Visual Studio 15 2017 Win64" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}-x64\python.exe -DPYTHON_LIBRARY=C:\${env:python}-x64\lib${env:python}.a -DOSSIA_PYTHON_ONLY=1 c:\projects\libossia > $LogFile
+    cmake  $64bitgen -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}-x64\python.exe -DPYTHON_LIBRARY=C:\${env:python}-x64\lib${env:python}.a -DOSSIA_PYTHON_ONLY=1 c:\projects\libossia > $LogFile
     CheckLastExitCode
   } else {
 
@@ -149,7 +149,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
     pip.exe install twine
 
     cd C:\projects\libossia\build
-    cmake  -G"Visual Studio 15 2017" -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DOSSIA_PYTHON_ONLY=1 c:\projects\libossia > $LogFile
+    cmake $32bitgen -DPYTHON_EXECUTABLE:FILEPATH=C:\${env:python}\python.exe -DPYTHON_LIBRARY=C:\${env:python}\lib${env:python}.a -DOSSIA_PYTHON_ONLY=1 c:\projects\libossia > $LogFile
     CheckLastExitCode
   }
 
@@ -159,6 +159,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake  -G"Visual Studio 15 2017 Win64" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_QML_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_QML_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 }
