@@ -19,14 +19,16 @@ find_package(Qt5 5.3 COMPONENTS Core)
 
 # Configuration
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE "" INTERNAL)
+set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
+# Dependencies
+include(CMake/OssiaDeps.cmake)
+
+# Configuration
 include(OssiaConfiguration)
 cmake_policy(SET CMP0054 NEW)
 cmake_policy(SET CMP0056 NEW)
 cmake_policy(SET CMP0069 NEW)
-
-# Dependencies
-include(CMake/OssiaDeps.cmake)
 
 # Main library
 add_subdirectory(OSSIA)

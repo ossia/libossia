@@ -20,8 +20,6 @@ option(OSSIA_GFX "Graphics features" ON)
 option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
 option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 option(OSSIA_HIDE_ALL_SYMBOLS "Hide all symbols from the ossia lib" OFF)
-#option(OSSIA_SUBMODULE_AUTOUPDATE "Auto update submodule" ON)
-set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
