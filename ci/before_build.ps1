@@ -27,10 +27,15 @@ cd  C:\projects\libossia
 #   7z x max-sdk-7.3.3.zip -y
 # }
 
+cd c:\projects\libossia\3rdparty
+appveyor DownloadFile https://github.com/OSSIA/sdk/releases/download/sdk11/score-sdk-windows-llvm.7z
+7z x score-sdk-windows-llvm.7z
+cd ..
+
 mkdir build
 cd build
 
-$CommonFlags = "-Thost=x64","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
+$CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 $CommonFlags32 = "-G""Visual Studio 15 2017""",$CommonFlags
 $CommonFlags64 = "-G""Visual Studio 15 2017 Win64""",$CommonFlags
 
