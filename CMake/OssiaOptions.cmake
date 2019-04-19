@@ -63,6 +63,7 @@ if(NOT OSSIA_SDK)
 endif()
 
 set(CMAKE_PREFIX_PATH
+  "${OSSIA_SDK}/SDL2"
   "${OSSIA_SDK}/SDL2/cmake"
   "${OSSIA_SDK}/portaudio/lib/cmake"
   "${CMAKE_PREFIX_PATH}"
