@@ -17,9 +17,9 @@ project(OSSIA C CXX)
 find_package(Threads)
 find_package(Qt5 5.3 COMPONENTS Core)
 
-# Configuration
+# Options
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE "" INTERNAL)
-set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
+include(CMake/OssiaOptions.cmake)
 
 # Dependencies
 include(CMake/OssiaDeps.cmake)
