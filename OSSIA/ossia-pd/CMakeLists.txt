@@ -21,9 +21,9 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
     message("Downloading and extracting PureData windows binary")
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-2test1-64bit.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.49-0.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     else()
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.48-2test1.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-0.49-0-i386.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
     endif()
 
     # Extract Pd.
@@ -32,7 +32,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-0.48-2test1-64bit.msw" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-0.49-0" "${CMAKE_CURRENT_BINARY_DIR}/pd")
     endif()
 
 endif()
