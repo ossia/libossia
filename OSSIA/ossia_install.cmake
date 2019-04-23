@@ -212,6 +212,13 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.h
         DESTINATION include/
         COMPONENT Devel)
 
+install(FILES
+          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h
+          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_math.h
+          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_flac.h
+        DESTINATION include/
+        COMPONENT Devel)
+
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp
         DESTINATION include/
         COMPONENT Devel)

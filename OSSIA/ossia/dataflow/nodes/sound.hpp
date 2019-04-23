@@ -3,23 +3,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
-
-#include <memory>
-#include <string>
-#include <vector>
-namespace ossia
-{
-using audio_sample = double;
-using audio_array = std::vector<std::vector<audio_sample>>;
-
-struct audio_data
-{
-  std::string file_path;
-  audio_array data;
-};
-
-using audio_handle = std::shared_ptr<audio_data>;
-}
+#include <ossia/dataflow/nodes/media.hpp>
 
 namespace ossia::nodes
 {

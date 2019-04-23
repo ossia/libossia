@@ -561,6 +561,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/input.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/forward_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/mapping.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/media.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/merger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/messages.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/metronome.hpp"
