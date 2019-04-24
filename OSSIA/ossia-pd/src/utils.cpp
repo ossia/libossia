@@ -63,7 +63,7 @@ std::vector<std::string> parse_tags_symbol(t_symbol* tags_symbol)
 
   if (tags_symbol)
   {
-    char* c = tags_symbol->s_name;
+    const char* c = tags_symbol->s_name;
     std::string tag = "";
 
     while (*c != '\0')
