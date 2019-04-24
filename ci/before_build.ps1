@@ -89,7 +89,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $64bitgen -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DOSSIA_MAX_ONLY=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
@@ -98,7 +98,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd build-32bit
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake $32bitgen -DOSSIA_MAX_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_MAX_ONLY=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-cpp" ) {
@@ -117,17 +117,17 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake -G"Visual Studio 15 2017 Win64" -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
+  cmake -G"Visual Studio 15 2017 Win64" -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-32bit" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake $32bitgen -DOSSIA_PD_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "pd-test" ) {
   $LogFile = "c:\projects\libossia\configure-pd.log"
-  cmake $32bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 c:\projects\libossia > $LogFile
+  cmake $32bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ) {
@@ -159,6 +159,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}.log"
-  cmake $64bitgen -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_QML_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DCMAKE_PREFIX_PATH="${env:QTDIR}\lib\cmake\Qt5" -DOSSIA_QML_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 }
