@@ -768,6 +768,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
   for (auto m : x->m_node_selection)
   {
+    if(m->is_zombie())
+      continue;
+
     auto node = m->get_node();
     auto param = node->get_parameter();
     auto xparam = (parameter_base*)m->get_parent();
@@ -793,8 +796,11 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto& m : x->m_matchers)
+  for (auto& m :  x->m_node_selection)
   {
+    if(m->is_zombie())
+      continue;
+
     auto node = m->get_node();
     auto param = node->get_parameter();
     if (set_flag) m->m_set_pool.push_back(v);
