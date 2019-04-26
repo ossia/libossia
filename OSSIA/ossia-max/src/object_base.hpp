@@ -63,6 +63,7 @@ public:
   void set_zombie(){ m_zombie = true; }
   bool is_zombie() const { return  m_zombie; }
   bool is_locked() const { return m_lock; }
+  bool is_dead() const { return m_dead; }
 
   std::vector<ossia::value> m_set_pool;
 
