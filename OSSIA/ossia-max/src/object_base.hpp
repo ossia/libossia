@@ -117,7 +117,7 @@ public:
   object_class m_otype{};
 
   void* m_clock{};
-  void* m_reg_clock{}; // registration clock that should be init in constructor
+  void* m_reg_clock{}; // registration clock that should be initialized in constructor
                        // and canceled by loadbang method
 
   float m_rate{10};

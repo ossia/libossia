@@ -307,7 +307,6 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
-
 }
 
 object_base::~object_base()

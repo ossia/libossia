@@ -233,16 +233,7 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
   set_repetition_filter();
   set_recall_safe();
 
-  auto& map = ossia_max::instance().root_patcher;
-  auto it = map.find(m_patcher_hierarchy.back());
-
-  if (it != map.end())
-  {
-    if(it->second.is_loadbanged)
-    {
-      clock_delay(m_clock, 1);
-    }
-  }
+  clock_delay(m_clock, 1);
 
   return (!m_matchers.empty() || m_is_pattern);
 }
