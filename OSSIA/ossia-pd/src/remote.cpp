@@ -35,16 +35,40 @@ bool remote::register_node(const std::vector<t_matcher>& matchers)
   } else if (!m_is_pattern)
     obj_quarantining<remote>(this);
 
-  if (!m_matchers.empty() && m_is_pattern){
-    // assume all nodes refer to the same device
-    auto& dev = matchers[0].get_node()->get_device();
-    if (&dev != m_dev)
+  if (m_is_pattern){
+    // TODO support cross device remote,
+    // for example *:/foo should match each foo node on all root devices
+    std::pair<int,ossia::pd::device*> device{};
+    device.second = find_parent_alive<ossia::pd::device>(this, 0, &device.first);
+
+    std::pair<int,ossia::pd::client*> client{};
+    client.second = find_parent_alive<ossia::pd::client>(this, 0, &client.first);
+
+    std::vector<std::pair<int, object_base*>> vec{device, client};
+    // sort pair by ascending order : closest one first
+    std::sort(vec.begin(), vec.end());
+
+    ossia::net::device_base* dev{};
+
+    for(auto& p : vec)
+    {
+      if(p.second)
+      {
+        dev = p.second->m_device;
+        break;
+      }
+    }
+
+    if(dev == nullptr)
+      dev = ossia_pd::get_default_device();
+
+    if (dev != m_dev)
     {
       if (m_dev) {
           m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
           m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
       }
-      m_dev = &dev;
+      m_dev = dev;
       m_dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<&remote::on_device_deleted>(this);
 
