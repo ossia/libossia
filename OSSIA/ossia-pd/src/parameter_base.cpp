@@ -317,9 +317,12 @@ void parameter_base::set_default()
         }
       case ossia::val_type::LIST:
         {
-          auto def = attribute2value(m_default, m_default_size);
+          if(m_default_size > 0)
+          {
+            auto def = attribute2value(m_default, m_default_size);
 
-          ossia::net::set_default_value(*node, def);
+            ossia::net::set_default_value(*node, def);
+          }
           break;
         }
       default:
