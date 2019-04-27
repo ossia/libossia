@@ -83,16 +83,51 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
   }
 }
 
+void device_base::on_node_renamed_callback(
+    ossia::net::node_base& node,
+    const std::string& old_name)
+{
+  auto name = node.get_name();
+  std::string addr = ossia::net::address_string_from_node(node);
+  std::string old_addr = addr.substr(0, addr.size()-name.size()) + old_name;
+  t_atom a[3];
+  SETSYMBOL(a, gensym("rename"));
+  SETSYMBOL(a+1, gensym(old_addr.c_str()));
+  SETSYMBOL(a+2, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("node"), 3, a);
+}
+
+void device_base::on_node_created_callback(ossia::net::node_base& node)
+{
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("created"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("node"), 2, a);
+}
+
+void device_base::on_node_removing_callback(ossia::net::node_base& node)
+{
+  std::string addr = ossia::net::address_string_from_node(node);
+  t_atom a[2];
+  SETSYMBOL(a, gensym("removed"));
+  SETSYMBOL(a+1, gensym(addr.c_str()));
+  outlet_anything(m_dumpout, gensym("node"), 2, a);
+}
+
 void device_base::connect_slots()
 {
   if (m_device)
   {
     m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(this);
     m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(this);
-    // TODO add callback for message
+    // TODO add callback for message, unhandled message,
+    // node creation request, node deletion request and node_rename request
     // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
-
+    m_device->on_node_renamed.connect<&device_base::on_node_renamed_callback>(this);
+    m_device->on_node_created.connect<&device_base::on_node_created_callback>(this);
+    m_device->on_node_removing.connect<&device_base::on_node_removing_callback>(this);
     m_matchers.emplace_back(&m_device->get_root_node(), nullptr);
 
     // This is to handle [get address( message only
@@ -111,7 +146,9 @@ void device_base::disconnect_slots()
     // TODO add callback for message
     // x->m_device->on_message.disconnect<&t_client::on_message_callback>(x);
     m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
-
+    m_device->on_node_renamed.disconnect<&device_base::on_node_renamed_callback>(this);
+    m_device->on_node_created.disconnect<&device_base::on_node_created_callback>(this);
+    m_device->on_node_removing.disconnect<&device_base::on_node_removing_callback>(this);
     m_node_selection.clear();
     m_matchers.clear();
   }
