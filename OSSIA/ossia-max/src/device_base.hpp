@@ -14,6 +14,11 @@ public:
   static void on_attribute_modified_callback(ossia::net::node_base& node,
                                       const std::string& attribute);
 
+  void on_node_renamed_callback(ossia::net::node_base& node,
+                                      const std::string& old_name);
+  void on_node_created_callback(ossia::net::node_base& node);
+  void on_node_removing_callback(ossia::net::node_base& node);
+
   void connect_slots();
   void disconnect_slots();
 

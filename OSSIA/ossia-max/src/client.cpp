@@ -331,6 +331,7 @@ void client::connect(client* x, t_symbol*, int argc, t_atom* argv)
       try
       {
         x->m_oscq_protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
+        x->m_oscq_protocol->set_zombie_on_remove(false);
         x->m_device = new ossia::net::generic_device{
             std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name};
 
