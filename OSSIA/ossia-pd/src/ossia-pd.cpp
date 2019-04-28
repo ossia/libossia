@@ -19,6 +19,10 @@ namespace pd
 
 using t_ossia = device;
 
+t_clock* ossia_pd::browse_clock;
+ZeroConfListener ossia_pd::zeroconf_listener;
+
+
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& opd = ossia_pd::instance();
@@ -95,6 +99,9 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   inst.views.reserve(512);
   inst.devices.reserve(4);
   inst.clients.reserve(4);
+
+  ossia_pd::browse_clock = clock_new(nullptr, (t_method) ossia_pd::discover_network_devices);
+  clock_delay(ossia_pd::browse_clock, 100.);
 
   post("Welcome to ossia library");
   post("build SHA %s", ossia::get_commit_sha().c_str());
@@ -250,6 +257,12 @@ void ossia_pd::register_nodes(void* x)
     }
     it->second.is_loadbanged = true;
   }
+}
+
+void ossia_pd::discover_network_devices(ossia_pd* x)
+{
+  ossia_pd::zeroconf_listener.browse();
+  clock_delay(ossia_pd::browse_clock, 100.);
 }
 
 }

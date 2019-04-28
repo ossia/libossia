@@ -86,6 +86,8 @@ set(PROJECT_SRCS
   src/utils.cpp
   src/assert.hpp
   src/assert.cpp
+  src/ZeroConfListener.cpp
+  src/ZeroConfListener.h
   )
 
 include(GenerateExportHeader)
@@ -104,7 +106,7 @@ generate_export_header(${PROJECT_NAME} BASE_NAME OSSIA_PD)
 set(QMLS "examples/client-example.qml")
 add_custom_target(pd_qml_examples SOURCES ${QMLS})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia)
+target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia Servus_iface)
 if(MSVC)
   target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
 endif()

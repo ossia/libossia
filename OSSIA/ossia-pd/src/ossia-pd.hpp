@@ -11,6 +11,8 @@
 #include <ossia-pd/src/client.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
+#include "ZeroConfListener.h"
+
 extern "C" {
 #include <cicm_wrapper.h>
 }
@@ -73,6 +75,7 @@ public:
       return &instance().m_device;
     }
     static void register_nodes(void* x);
+    static void discover_network_devices(ossia_pd* x);
 
     void set_log_level(t_symbol* log_sym)
     {
@@ -143,8 +146,11 @@ public:
 
     RootMap m_root_patcher{};
     t_clock* m_reg_clock{};
+    static t_clock* browse_clock;
 
     bool m_testing{};
+
+    static ZeroConfListener zeroconf_listener;
 
 private:
     ossia_pd(); // constructor

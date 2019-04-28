@@ -22,10 +22,13 @@ public:
   static void print_protocol_help()
   {
     post("connect <protocol> <args> ...");
-    post("Available protocols (case sensitive): Minuit, oscquery");
+    post("or");
+    post("connect <device_name>");
+    post("the later will look for a device with that name on the network");
+    post("Available protocols (case insensitive): minuit, oscquery");
     post("Protocols parameters :");
     post(
-        "Minuit <remoteip> <remoteport> <localport> :\n"
+        "minuit <remoteip> <remoteport> <localport> :\n"
         "\tremoteip (symbol): ip of target device\n"
         "\tremoteport (float): port on which packet should be send\n"
         "\tlocalport (float): port to which this device is listening");
@@ -33,29 +36,35 @@ public:
         "oscquery <oscport> <wsurl> :\n"
         "\twsurl (symbol) : url to connect to (default : "
         "ws://127.0.0.1:5678)\n");
+    post(
+        "osc <oscport> :\n"
+        "\tip (string) : ip to connect to"
+        "\toscport (float) : port to connect to");
   }
 
   std::vector<ossia::net::minuit_connection_data> m_minuit_devices{};
   std::vector<ossia::net::oscquery_connection_data> m_oscq_devices{};
 
-  std::thread* m_async_thread{};
-
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
   bool m_done{true};
-  t_symbol* m_looking_for{}; // the device's name we are looking for
+  bool m_zeroconf{true}; // true if we should lookup for device name with zeroconf
+
+  bool is_zeroconf() const { return m_zeroconf; }
+  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
 
   static void get_mess_cb(client* x, t_symbol* s);
-  static void get_devices(client* x);
 
   static void disconnect(client* x);
-  static void connect(client* x, t_symbol*, int argc, t_atom* argv);
-  static void check_thread_status(client* x);
+  static void connect(client* x);
+  static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);
   static void update(client* x);
   static void poll_message(client* x);
   static void destroy(client* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
-  static void find_devices_async(client* x);
+
+  int m_argc{};
+  t_atom* m_argv{};
 
 };
 }
