@@ -6,6 +6,7 @@ set(CMAKE_MACOSX_RPATH 1)
 set(CMAKE_INCLUDE_CURRENT_DIR 1)
 
 option(OSSIA_MAX_TEST "Run automatic test for C74 Max" OFF)
+set(MAXSDK_PATH "${OSSIA_3RDPARTY_FOLDER}/max-sdk" CACHE PATH "Path to Max SDK folder")
 
 include(GenerateExportHeader)
 if(APPLE)
@@ -13,11 +14,21 @@ if(APPLE)
 elseif(WIN32)
     set(CMAKE_INSTALL_RPATH  "\$ORIGIN/../support;\$ORIGIN")
 endif()
-find_package(MaxSDK QUIET)
-if(NOT MaxSDK_FOUND)
+
+if(${MAXSDK_PATH} STREQUAL "${OSSIA_3RDPARTY_FOLDER}/max-sdk")
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
-                WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  find_package(MaxSDK REQUIRED)
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
+set(MAXSDK_MAX_INCLUDE_DIR "${MAXSDK_PATH}/source/c74support/max-includes")
+if(APPLE)
+  find_library(MAXSDK_API_LIBRARY NAMES MaxAPI HINTS "${MAXSDK_MAX_INCLUDE_DIR}")
+elseif(WIN32)
+  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "4")
+    find_library(MAXSDK_API_LIBRARY NAMES MaxAPI.lib HINTS "${MAXSDK_MAX_INCLUDE_DIR}")
+  else()
+    find_library(MAXSDK_API_LIBRARY NAMES MaxAPI.lib HINTS "${MAXSDK_MAX_INCLUDE_DIR}/x64")
+  endif()
 endif()
 
 if(APPLE)
@@ -72,7 +83,7 @@ set(PROJECT_SRCS
     src/utils.cpp
     src/view.hpp
     src/view.cpp
-    ${MAXSDK_MAINPATH}/c74support/max-includes/common/commonsyms.c
+    ${MAXSDK_MAX_INCLUDE_DIR}/common/commonsyms.c
     )
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
