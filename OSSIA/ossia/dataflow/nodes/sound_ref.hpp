@@ -7,15 +7,16 @@
 
 namespace ossia::nodes
 {
-class sound final : public ossia::nonowning_graph_node
+
+class sound_ref final : public ossia::nonowning_graph_node
 {
 public:
-  sound()
+  sound_ref()
   {
     m_outlets.push_back(&audio_out);
   }
 
-  ~sound()
+  ~sound_ref()
   {
   }
 
@@ -31,18 +32,17 @@ public:
   {
     upmix = v;
   }
-  void set_sound(const std::vector<ossia::float_vector>& vec)
+
+  void set_sound(const audio_handle& hdl)
   {
-    m_data.resize(vec.size());
-    for (std::size_t i = 0; i < vec.size(); i++)
+    m_handle = hdl;
+    m_data.clear();
+    if (hdl)
     {
-      m_data[i].assign(vec[i].begin(), vec[i].end());
+      m_data.assign(m_handle->data.begin(), m_handle->data.end());
     }
   }
-  void set_sound(std::vector<ossia::double_vector> vec)
-  {
-    m_data = std::move(vec);
-  }
+
   void
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
@@ -98,7 +98,7 @@ public:
     {
       if (upmix < chan)
       {
-        /* //TODO
+        /* TODO
     // Downmix
     switch(upmix)
     {
@@ -155,10 +155,11 @@ public:
   }
 
 private:
-  std::vector<ossia::double_vector> m_data;
+  ossia::small_vector<gsl::span<const double>, 8> m_data;
   std::size_t start{};
   std::size_t start_offset{};
   std::size_t upmix{};
   ossia::outlet audio_out{ossia::audio_port{}};
+  audio_handle m_handle;
 };
 }
