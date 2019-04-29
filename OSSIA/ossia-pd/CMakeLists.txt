@@ -86,8 +86,8 @@ set(PROJECT_SRCS
   src/utils.cpp
   src/assert.hpp
   src/assert.cpp
-  src/ZeroConfListener.cpp
-  src/ZeroConfListener.h
+  src/ZeroconfOscqueryListener.cpp
+  src/ZeroconfOscqueryListener.h
   )
 
 include(GenerateExportHeader)

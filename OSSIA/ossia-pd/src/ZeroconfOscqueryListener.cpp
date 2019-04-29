@@ -1,4 +1,4 @@
-#include "ZeroConfListener.h"
+#include "ZeroconfOscqueryListener.h"
 #include <asio/io_service.hpp>
 #include <asio/ip/resolver_service.hpp>
 #include <asio/ip/tcp.hpp>
@@ -11,11 +11,11 @@ namespace ossia
 {
 namespace pd
 {
-std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroConfListener::m_devices;
-std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroConfListener::m_zombie_devices;
+std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfOscqueryListener::m_devices;
+std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroconfOscqueryListener::m_zombie_devices;
 
 // TODO add support for Minuit discovery
-  ZeroConfListener::ZeroConfListener()
+  ZeroconfOscqueryListener::ZeroconfOscqueryListener()
     : service {"_oscjson._tcp"}
   {
     for (const auto& i : service.getInstances())
@@ -25,13 +25,13 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     service.beginBrowsing(servus::Interface::IF_ALL);
   }
 
-  ZeroConfListener::~ZeroConfListener()
+  ZeroconfOscqueryListener::~ZeroconfOscqueryListener()
   {
     service.removeListener(this);
     service.endBrowsing();
   }
 
-  void ZeroConfListener::instanceAdded(const std::string& instance)
+  void ZeroconfOscqueryListener::instanceAdded(const std::string& instance)
   {
     for (const auto& dev : m_devices)
     {
@@ -82,7 +82,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     }
   }
 
-  void ZeroConfListener::instanceRemoved(const std::string& instance)
+  void ZeroconfOscqueryListener::instanceRemoved(const std::string& instance)
   {
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
       return d->get_name() == instance;
@@ -94,7 +94,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     }
   }
 
-  ossia::net::generic_device* ZeroConfListener::find_device(
+  ossia::net::generic_device* ZeroconfOscqueryListener::find_device(
       const std::string& instance)
   {
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
@@ -108,7 +108,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     return nullptr;
   }
 
-  void ZeroConfListener::browse()
+  void ZeroconfOscqueryListener::browse()
   {
     for(auto it : m_zombie_devices)
     {

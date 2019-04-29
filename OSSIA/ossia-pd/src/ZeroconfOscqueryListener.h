@@ -10,11 +10,11 @@ namespace ossia
 {
 namespace pd
 {
-class ZeroConfListener final : servus::Listener
+class ZeroconfOscqueryListener final : servus::Listener
 {
   public:
-    ZeroConfListener();
-    ~ZeroConfListener() override;
+    ZeroconfOscqueryListener();
+    ~ZeroconfOscqueryListener() override;
 
     static ossia::net::generic_device* find_device(const std::string& name);
 

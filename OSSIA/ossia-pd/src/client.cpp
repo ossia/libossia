@@ -418,7 +418,7 @@ void client::connect(client* x)
     {
       // Connect by device name : retrieve connection info
       x->m_zeroconf = true;
-      x->m_device = ZeroConfListener::find_device(name);
+      x->m_device = ZeroconfOscqueryListener::find_device(name);
 
       SETSYMBOL(connection_status+1, gensym(name.c_str()));
       count = 2;
