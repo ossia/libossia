@@ -11,7 +11,8 @@
 #include <ossia-pd/src/client.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
-#include "ZeroconfOscqueryListener.h"
+#include "ZeroconfOscqueryListener.hpp"
+#include "ZeroconfMinuitListener.hpp"
 
 extern "C" {
 #include <cicm_wrapper.h>
@@ -150,7 +151,8 @@ public:
 
     bool m_testing{};
 
-    static ZeroconfOscqueryListener zeroconf_listener;
+    static ZeroconfOscqueryListener zeroconf_oscq_listener;
+    static ZeroconfMinuitListener   zeroconf_minuit_listener;
 
 private:
     ossia_pd(); // constructor

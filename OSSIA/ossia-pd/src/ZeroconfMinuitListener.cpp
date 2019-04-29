@@ -1,9 +1,10 @@
-#include "ZeroconfOscqueryListener.hpp"
+#include "ZeroconfMinuitListener.hpp"
 #include <asio/io_service.hpp>
 #include <asio/ip/resolver_service.hpp>
 #include <asio/ip/tcp.hpp>
 
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/minuit/minuit.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "ossia-pd.hpp"
 
@@ -11,12 +12,12 @@ namespace ossia
 {
 namespace pd
 {
-std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfOscqueryListener::m_devices;
-std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroconfOscqueryListener::m_zombie_devices;
+std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::m_devices;
+std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroconfMinuitListener::m_zombie_devices;
 
 // TODO add support for Minuit discovery
-  ZeroconfOscqueryListener::ZeroconfOscqueryListener()
-    : service {"_oscjson._tcp"}
+  ZeroconfMinuitListener::ZeroconfMinuitListener()
+    : service {"_minuit._tcp"}
   {
     for (const auto& i : service.getInstances())
       instanceAdded(i);
@@ -25,13 +26,13 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     service.beginBrowsing(servus::Interface::IF_ALL);
   }
 
-  ZeroconfOscqueryListener::~ZeroconfOscqueryListener()
+  ZeroconfMinuitListener::~ZeroconfMinuitListener()
   {
     service.removeListener(this);
     service.endBrowsing();
   }
 
-  void ZeroconfOscqueryListener::instanceAdded(const std::string& instance)
+  void ZeroconfMinuitListener::instanceAdded(const std::string& instance)
   {
     for (const auto& dev : m_devices)
     {
@@ -41,6 +42,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
     std::string ip = service.get(instance, "servus_ip");
     std::string port = service.get(instance, "servus_port");
+
     if (ip.empty())
     {
       ip = service.get(instance, "servus_host");
@@ -68,21 +70,23 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
     try
     {
+      int p = boost::lexical_cast<int>(port);
       auto clt = std::make_unique<ossia::net::generic_device>(
-          std::make_unique<ossia::oscquery::oscquery_mirror_protocol>(
-              "ws://" + ip + ":" + port),
-          instance);
+                   std::make_unique<ossia::net::minuit_protocol>(
+                     instance, ip,
+                     p, (rand() + 1024)%65536),
+                     "Mirror");
       clt->get_protocol().update(clt->get_root_node());
       m_devices.push_back(std::move(clt));
     }
     catch (...)
     {
-      std::cerr << "Could not connect: "
-                << "ws://" + ip + ":" + port << "\n";
+      std::cerr << "Could not connect to Minuit device: "
+                << instance + " on " + ip + ":" + port << "\n";
     }
   }
 
-  void ZeroconfOscqueryListener::instanceRemoved(const std::string& instance)
+  void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
   {
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
       return d->get_name() == instance;
@@ -94,7 +98,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     }
   }
 
-  ossia::net::generic_device* ZeroconfOscqueryListener::find_device(
+  ossia::net::generic_device* ZeroconfMinuitListener::find_device(
       const std::string& instance)
   {
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
@@ -108,7 +112,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     return nullptr;
   }
 
-  void ZeroconfOscqueryListener::browse()
+  void ZeroconfMinuitListener::browse()
   {
     for(auto it : m_zombie_devices)
     {

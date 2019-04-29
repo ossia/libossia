@@ -20,7 +20,8 @@ namespace pd
 using t_ossia = device;
 
 t_clock* ossia_pd::browse_clock;
-ZeroConfListener ossia_pd::zeroconf_listener;
+ZeroconfOscqueryListener ossia_pd::zeroconf_oscq_listener;
+ZeroconfMinuitListener ossia_pd::zeroconf_minuit_listener;
 
 
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
@@ -261,7 +262,8 @@ void ossia_pd::register_nodes(void* x)
 
 void ossia_pd::discover_network_devices(ossia_pd* x)
 {
-  ossia_pd::zeroconf_listener.browse();
+  ossia_pd::zeroconf_oscq_listener.browse();
+  ossia_pd::zeroconf_minuit_listener.browse();
   clock_delay(ossia_pd::browse_clock, 100.);
 }
 

@@ -218,8 +218,6 @@ void client::unregister_children()
   }
 }
 
-
-
 void client::update(client* x)
 {
   // TODO use ossia::net::oscquery::oscquery_mirror_protocol::run_commands()
@@ -419,6 +417,8 @@ void client::connect(client* x)
       // Connect by device name : retrieve connection info
       x->m_zeroconf = true;
       x->m_device = ZeroconfOscqueryListener::find_device(name);
+      if(!x->m_device)
+        x->m_device = ZeroconfMinuitListener::find_device(name);
 
       SETSYMBOL(connection_status+1, gensym(name.c_str()));
       count = 2;
