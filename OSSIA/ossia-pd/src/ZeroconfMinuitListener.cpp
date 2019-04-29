@@ -12,8 +12,9 @@ namespace ossia
 {
 namespace pd
 {
-std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::m_devices;
-std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroconfMinuitListener::m_zombie_devices;
+std::vector<ossia::net::minuit_connection_data> ZeroconfMinuitListener::m_devices;
+std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> ZeroconfMinuitListener::m_zombie_devices;
+std::mutex ZeroconfMinuitListener::m_mutex;
 
 // TODO add support for Minuit discovery
   ZeroconfMinuitListener::ZeroconfMinuitListener()
@@ -36,7 +37,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
   {
     for (const auto& dev : m_devices)
     {
-      if (dev->get_name() == instance)
+      if (dev.name == instance)
         return;
     }
 
@@ -70,14 +71,14 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
     try
     {
-      int p = boost::lexical_cast<int>(port);
-      auto clt = std::make_unique<ossia::net::generic_device>(
-                   std::make_unique<ossia::net::minuit_protocol>(
-                     instance, ip,
-                     p, (rand() + 1024)%65536),
-                     "Mirror");
-      clt->get_protocol().update(clt->get_root_node());
-      m_devices.push_back(std::move(clt));
+      ossia::net::minuit_connection_data dat;
+      dat.name = instance;
+      dat.host = ip;
+      dat.local_port = boost::lexical_cast<int>(port);
+
+      m_mutex.lock();
+      m_devices.push_back(std::move(dat));
+      m_mutex.unlock();
     }
     catch (...)
     {
@@ -88,28 +89,35 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
   void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
   {
+    m_mutex.lock();
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
-      return d->get_name() == instance;
+      return d.name == instance;
     });
 
     if (it != m_devices.end())
     {
       m_zombie_devices.push_back(it);
     }
+    m_mutex.unlock();
   }
 
-  ossia::net::generic_device* ZeroconfMinuitListener::find_device(
+  ossia::net::minuit_connection_data* ZeroconfMinuitListener::find_device(
       const std::string& instance)
   {
-    auto it = ossia::find_if(m_devices, [&](const auto& d) {
-      return d->get_name() == instance;
-    });
-
-    if (it != m_devices.end())
+    if(m_mutex.try_lock())
     {
-      return it->get();
+      auto it = ossia::find_if(m_devices, [&](const auto& d) {
+        return d.name == instance + " Minuit server";
+      });
+
+      if (it != m_devices.end())
+      {
+        return &(*it);
+      }
+      m_mutex.unlock();
     }
     return nullptr;
+
   }
 
   void ZeroconfMinuitListener::browse()
@@ -118,9 +126,11 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
     {
       for (auto client : ossia_pd::instance().clients.reference())
       {
-        if(client->is_zeroconf() && client->m_device == it->get())
+        if(client->is_zeroconf() && client->m_device->get_name() == it->name)
         {
+          auto dev = client->m_device;
           ossia::pd::client::client::disconnect(client);
+          delete dev; // FIXME this is ugly
           clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
         }
       }
