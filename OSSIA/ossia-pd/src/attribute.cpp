@@ -275,7 +275,9 @@ extern "C" void setup_ossia0x2eattribute(void)
     eclass_addmethod(c, (method) address_mess_cb<attribute>, "address",   A_SYMBOL, 0);
     eclass_addmethod(c, (method) attribute::notify,    "notify",   A_NULL,  0);
 
+#ifndef PURR_DATA
     eclass_register(CLASS_OBJ, c);
+#endif
   }
 
   eclass_register(CLASS_OBJ, c);

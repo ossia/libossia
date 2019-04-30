@@ -17,7 +17,7 @@ if(OSSIA_PURR_DATA)
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  execute_process(COMMAND git checkout 6343214214dc71fe37352b8c60f5980c2f0a67a7
+  execute_process(COMMAND git checkout ef2d85771b3e5f01cc41e6f236f27afe09378f4d
                   WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper)
 else()
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/purr-data
@@ -52,6 +52,7 @@ endif()
 
 if(OSSIA_PURR_DATA)
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/purr-data/pd")
+  add_definitions(-DPURR_DATA)
 else()
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
 endif()

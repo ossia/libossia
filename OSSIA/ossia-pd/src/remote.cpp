@@ -430,7 +430,9 @@ extern "C" void setup_ossia0x2eremote(void)
     // remote special attributes
     eclass_addmethod(c, (method) remote::get_mess_cb, "get", A_SYMBOL, 0);
 
+#ifndef PURR_DATA
     eclass_register(CLASS_OBJ, c);
+#endif
   }
 
   ossia_pd::remote_class = c;
