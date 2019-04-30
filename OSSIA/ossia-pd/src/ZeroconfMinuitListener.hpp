@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
 
 namespace ossia
 {
@@ -16,7 +17,7 @@ class ZeroconfMinuitListener final : servus::Listener
     ZeroconfMinuitListener();
     ~ZeroconfMinuitListener() override;
 
-    static ossia::net::generic_device* find_device(const std::string& name);
+    static ossia::net::minuit_connection_data* find_device(const std::string& name);
 
     void browse();
 
@@ -24,8 +25,8 @@ class ZeroconfMinuitListener final : servus::Listener
     void instanceAdded(const std::string& instance) final override;
     void instanceRemoved(const std::string& instance) final override;
 
-    static std::vector<std::shared_ptr<ossia::net::generic_device>> m_devices;
-    static std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> m_zombie_devices;
+    static std::vector<ossia::net::minuit_connection_data> m_devices;
+    static std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> m_zombie_devices;
 
     servus::Servus service;
     static std::mutex m_mutex;

@@ -418,8 +418,16 @@ void client::connect(client* x)
       x->m_zeroconf = true;
       x->m_device = ZeroconfOscqueryListener::find_device(name);
       if(!x->m_device)
-        x->m_device = ZeroconfMinuitListener::find_device(name);
-
+      {
+        if(auto data = ZeroconfMinuitListener::find_device(name))
+        {
+          x->m_device = new ossia::net::generic_device(
+                          std::make_unique<ossia::net::minuit_protocol>(
+                            data->name, data->host,
+                            data->remote_port, (rand() + 1024)%65536),
+                            data->name);
+        }
+      }
       SETSYMBOL(connection_status+1, gensym(name.c_str()));
       count = 2;
     }
