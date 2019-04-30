@@ -16,6 +16,7 @@ std::vector<ossia::net::minuit_connection_data> ZeroconfMinuitListener::m_device
 std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> ZeroconfMinuitListener::m_zombie_devices;
 
 std::mutex ZeroconfMinuitListener::m_mutex;
+std::vector<std::string> ZeroconfMinuitListener::m_embryo_devices;
 
 // TODO add support for Minuit discovery
   ZeroconfMinuitListener::ZeroconfMinuitListener()
@@ -37,6 +38,11 @@ std::mutex ZeroconfMinuitListener::m_mutex;
   void ZeroconfMinuitListener::instanceAdded(const std::string& instance)
   {
     std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
+    m_embryo_devices.push_back(instance);
+  }
+
+  void ZeroconfMinuitListener::process_new_devices(const std::string& instance)
+  {
     for (const auto& dev : m_devices)
     {
       if (dev.name == instance)
@@ -78,9 +84,7 @@ std::mutex ZeroconfMinuitListener::m_mutex;
       dat.host = ip;
       dat.remote_port = boost::lexical_cast<int>(port);
 
-      m_mutex.lock();
       m_devices.push_back(std::move(dat));
-      m_mutex.unlock();
     }
     catch (...)
     {
@@ -123,7 +127,17 @@ std::mutex ZeroconfMinuitListener::m_mutex;
 
   void ZeroconfMinuitListener::browse()
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
+    ZeroconfMinuitListener::m_mutex.lock();
+
+    // FIXME we should take receiving order into account
+    // a device that is first removed, then added
+    // will currently be removed
+    for(const auto& s : m_embryo_devices)
+    {
+      process_new_devices(s);
+    }
+    m_embryo_devices.clear();
+
     for(auto it : m_zombie_devices)
     {
       for (auto client : ossia_pd::instance().clients.reference())
@@ -140,6 +154,7 @@ std::mutex ZeroconfMinuitListener::m_mutex;
       m_devices.erase(it);
     }
     m_zombie_devices.clear();
+    ZeroconfMinuitListener::m_mutex.unlock();
 
     service.browse(0);
   }

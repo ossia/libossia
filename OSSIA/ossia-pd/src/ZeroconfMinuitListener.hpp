@@ -24,9 +24,11 @@ class ZeroconfMinuitListener final : servus::Listener
   private:
     void instanceAdded(const std::string& instance) final override;
     void instanceRemoved(const std::string& instance) final override;
+    void process_new_devices(const std::string& instance);
 
     static std::vector<ossia::net::minuit_connection_data> m_devices;
     static std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> m_zombie_devices;
+    static std::vector<std::string> m_embryo_devices;
 
     servus::Servus service;
     static std::mutex m_mutex;
