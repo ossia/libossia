@@ -28,7 +28,7 @@ class ZeroconfMinuitListener final : servus::Listener
     static std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> m_zombie_devices;
 
     servus::Servus service;
-    std::mutex m_mutex;
+    static std::mutex m_mutex;
 };
 
 } // namespace pd

@@ -14,6 +14,7 @@ namespace pd
 {
 std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::m_devices;
 std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator>  ZeroconfMinuitListener::m_zombie_devices;
+std::mutex ZeroconfMinuitListener::m_mutex;
 
 // TODO add support for Minuit discovery
   ZeroconfMinuitListener::ZeroconfMinuitListener()
@@ -34,6 +35,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
   void ZeroconfMinuitListener::instanceAdded(const std::string& instance)
   {
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
     for (const auto& dev : m_devices)
     {
       if (dev->get_name() == instance)
@@ -88,6 +90,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
   void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
   {
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
       return d->get_name() == instance;
     });
@@ -101,6 +104,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
   ossia::net::generic_device* ZeroconfMinuitListener::find_device(
       const std::string& instance)
   {
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
     auto it = ossia::find_if(m_devices, [&](const auto& d) {
       return d->get_name() == instance;
     });
@@ -114,6 +118,7 @@ std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> 
 
   void ZeroconfMinuitListener::browse()
   {
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
     for(auto it : m_zombie_devices)
     {
       for (auto client : ossia_pd::instance().clients.reference())
