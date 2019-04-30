@@ -252,7 +252,9 @@ extern "C" void setup_ossia0x2eview(void)
     eclass_addmethod(c, (method) view::get_mess_cb, "get",   A_SYMBOL, 0);
     eclass_addmethod(c, (method) view::notify,    "notify",   A_NULL,  0);
 
+#ifndef PURR_DATA
     eclass_register(CLASS_OBJ, c);
+#endif
   }
 
   ossia_pd::view_class = c;

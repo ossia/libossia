@@ -310,7 +310,9 @@ extern "C" void setup_ossia0x2eparam(void)
     CLASS_ATTR_DEFAULT(c, "clip", 0, "free");
     CLASS_ATTR_DEFAULT(c, "mode", 0, "bi");
 
+#ifndef PURR_DATA
     eclass_register(CLASS_OBJ, c);
+#endif
   }
 
   ossia_pd::param_class = c;

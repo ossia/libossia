@@ -151,8 +151,9 @@ extern "C" void setup_ossia0x2elogger(void)
   CLASS_ATTR_LABEL(c, "heartbeat", 0, "Heartbeat interval, in seconds");
   CLASS_ATTR_FILTER_CLIP(c, "heartbeat", 1, 1000);
 
-
+#ifndef PURR_DATA
   eclass_register(CLASS_OBJ, c);
+#endif
   ossia_pd::logger_class = c;
 }
 

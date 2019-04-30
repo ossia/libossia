@@ -105,3 +105,6 @@
 [submodule "3rdparty/dr_libs"]
 	path = 3rdparty/dr_libs
 	url = https://github.com/mackron/dr_libs
+[submodule "3rdparty/purr-data"]
+	path = 3rdparty/purr-data
+	url = https://git.purrdata.net/jwilkes/purr-data.git 

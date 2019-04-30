@@ -40,7 +40,9 @@ extern "C" void setup_ossia0x2eexplorer(void)
       "anything", A_GIMME, 0);
   */
 
+#ifndef PURR_DATA
   eclass_register(CLASS_OBJ, c);
+#endif
   ossia_pd::explorer_class = c;
 }
 

@@ -150,8 +150,11 @@ std::string get_absolute_path(object_base* x)
   ossia::pd::view* tmp_view = nullptr;
   while (view)
   {
-    vs.push_back(view->m_name->s_name);
-    tmp_view = view;
+    if(view->m_name)
+    {
+      vs.push_back(view->m_name->s_name);
+      tmp_view = view;
+    }
     view = find_parent_alive<ossia::pd::view>(tmp_view, 1, &view_level);
   }
 
