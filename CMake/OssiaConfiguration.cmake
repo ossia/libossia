@@ -1,4 +1,3 @@
-
 include(Sanitize)
 include(DebugMode)
 include(UseGold)

@@ -14,6 +14,8 @@ endif()
 cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
 
 project(OSSIA C CXX)
+
+set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 find_package(Threads)
 find_package(Qt5 5.3 COMPONENTS Core)
 
