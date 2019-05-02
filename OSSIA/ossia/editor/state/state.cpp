@@ -25,7 +25,7 @@ void state::launch()
 {
   for (auto& state : m_children)
   {
-    ossia::apply(state_execution_visitor{}, std::move(state));
+    ossia::apply(state_execution_visitor{}, state);
   }
 }
 

@@ -18,13 +18,13 @@ void message::launch()
   {
     if (!unit || unit == addr_unit)
     {
-      addr.push_value(std::move(message_value));
+      addr.push_value(message_value);
     }
     else
     {
       // Convert from this message's unit to the address's unit
       addr.push_value(
-          ossia::convert(std::move(message_value), unit, addr_unit));
+          ossia::convert(message_value, unit, addr_unit));
     }
   }
   else
@@ -40,7 +40,7 @@ void message::launch()
         case ossia::val_type::VEC4F:
         {
           ossia::apply(
-              vec_merger{dest, dest}, cur.v, std::move(message_value).v);
+              vec_merger{dest, dest}, cur.v, message_value.v);
 
           addr.push_value(std::move(cur));
           break;
@@ -50,7 +50,7 @@ void message::launch()
           auto& cur_list = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
           value_merger<true>::insert_in_list(
-              cur_list, std::move(message_value), dest.index);
+              cur_list, message_value, dest.index);
           addr.push_value(std::move(cur));
           break;
         }
@@ -59,7 +59,7 @@ void message::launch()
           // Create a list and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
           value_merger<true>::insert_in_list(
-              t, std::move(message_value), dest.index);
+              t, message_value, dest.index);
           addr.push_value(std::move(t));
           break;
         }
