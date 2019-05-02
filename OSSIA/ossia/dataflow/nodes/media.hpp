@@ -1,12 +1,10 @@
 #pragma once
 
-#include <dr_wav.h>
-
 #include <memory>
 #include <string>
 #include <vector>
 #include <variant>
-
+#include <dr_wav.h>
 namespace ossia
 {
 using audio_sample = double;
