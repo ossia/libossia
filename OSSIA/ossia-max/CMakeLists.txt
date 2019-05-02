@@ -83,6 +83,11 @@ set(PROJECT_SRCS
     src/utils.cpp
     src/view.hpp
     src/view.cpp
+    src/ZeroconfMinuitListener.cpp
+    src/ZeroconfMinuitListener.hpp
+    src/ZeroconfOscqueryListener.cpp
+    src/ZeroconfOscqueryListener.hpp
+
     ${MAXSDK_MAX_INCLUDE_DIR}/common/commonsyms.c
     )
 
@@ -101,7 +106,8 @@ target_include_directories(${PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     ${MAXSDK_MAX_INCLUDE_DIR}
 
-    ${OSSIA_3RDPARTY_FOLDER}/concurrentqueue)
+    ${OSSIA_3RDPARTY_FOLDER}/concurrentqueue
+    ${OSSIA_3RDPARTY_FOLDER}/Servus)
 
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)

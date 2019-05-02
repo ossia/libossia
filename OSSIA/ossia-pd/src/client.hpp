@@ -47,7 +47,6 @@ public:
 
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
-  bool m_done{true};
   bool m_zeroconf{true}; // true if we should lookup for device name with zeroconf
 
   bool is_zeroconf() const { return m_zeroconf; }

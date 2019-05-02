@@ -47,16 +47,17 @@ public:
   std::vector<ossia::net::minuit_connection_data> m_minuit_devices;
   std::vector<ossia::net::oscquery_connection_data> m_oscq_devices;
 
-  std::thread* m_async_thread;
   void* m_poll_clock;
 
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
-  bool m_done{true};
-  t_symbol* m_looking_for{}; // the name of the device we are looking for
+  bool m_zeroconf{true};
+  bool is_zeroconf() const { return m_zeroconf; }
+  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
 
-  static void connect(ossia::max::client*, t_symbol*, int, t_atom*);
-  static void disconnect(ossia::max::client*);
+  static void connect(client*);
+  static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);
+  static void disconnect(client*);
   static void get_devices(client*x);
   static void check_thread_status(client* x);
   static void update(client* x);
@@ -69,6 +70,10 @@ public:
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::client*);
+
+  int m_argc{};
+  t_atom* m_argv{};
+
 
 };
 

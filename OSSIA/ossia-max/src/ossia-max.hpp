@@ -23,6 +23,9 @@
 #include "ossia_object.hpp"
 #include "logger.hpp"
 
+#include "ZeroconfOscqueryListener.hpp"
+#include "ZeroconfMinuitListener.hpp"
+
 extern "C"
 {
     OSSIA_MAX_EXPORT void ossia_attribute_setup();
@@ -87,6 +90,7 @@ public:
   static void stop_timers();
   static void register_nodes(ossia_max* x);
   static void poll_all_queues(ossia_max* x);
+  static void discover_network_devices(ossia_max* x);
 
   template<typename T>
   t_class* get_class() {
@@ -158,8 +162,13 @@ public:
   RootMap root_patcher;
   void* m_reg_clock{};
   void* m_timer_clock{};
+  static void* browse_clock;
+
 
   unsigned long long m_clock_count{0};
+
+  static ZeroconfOscqueryListener zeroconf_oscq_listener;
+  static ZeroconfMinuitListener   zeroconf_minuit_listener;
 
 private:
   ossia_max();

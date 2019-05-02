@@ -92,7 +92,8 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
       {
         float f = atom_getfloat(argv+1);
         autoconnect = f > 0.;
-        connect_mess_cb(x,nullptr,1,argv);
+        if (autoconnect)
+          connect_mess_cb(x,nullptr,1,argv);
       }
       else
         connect_mess_cb(x,nullptr,argc,argv);
@@ -441,6 +442,9 @@ void client::connect(client* x)
   if(x->m_device)
   {
     SETFLOAT(connection_status,1);
+
+    outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
+
     x->connect_slots();
     client::update(x);
     clock_unset(x->m_clock);
@@ -448,11 +452,11 @@ void client::connect(client* x)
   else
   {
     SETFLOAT(connection_status,0);
+
+    outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
+
     clock_delay(x->m_clock, 1000); // hardcoded reconnection delay
   }
-
-  outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
-
 }
 
 void client::get_mess_cb(client* x, t_symbol* s)
