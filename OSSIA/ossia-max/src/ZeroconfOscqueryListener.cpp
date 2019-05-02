@@ -117,8 +117,7 @@ std::mutex ZeroconfOscqueryListener::m_mutex;
 
   void ZeroconfOscqueryListener::browse()
   {
-    std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
-
+    m_mutex.lock();
     for(auto it : m_zombie_devices)
     {
       for (auto client : ossia_max::instance().clients.reference())
@@ -133,6 +132,7 @@ std::mutex ZeroconfOscqueryListener::m_mutex;
       m_devices.erase(it);
     }
     m_zombie_devices.clear();
+    m_mutex.unlock();
 
     service.browse(0);
   }
