@@ -330,13 +330,11 @@ void client::connect(client* x)
               minuit_settings.name, minuit_settings.host,
               minuit_settings.remote_port, minuit_settings.local_port),
             x->m_name->s_name};
-        SETFLOAT(connection_status,1);
       }
       catch (const std::exception& e)
       {
         pd_error(x, "can't connect, port might be already in use");
         pd_error(x, "libossia error: '%s'", e.what());
-        SETFLOAT(connection_status,0);
       }
 
       count = 6;
@@ -365,13 +363,11 @@ void client::connect(client* x)
             std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name};
 
         clock_set(x->m_poll_clock, 1);
-        SETFLOAT(connection_status,1);
       }
       catch (const std::exception& e)
       {
         pd_error(x, "can't connect, port might be already in use");
         pd_error(x, "libossia error: '%s'", e.what());
-        SETFLOAT(connection_status,0);
       }
       count = 4;
     }
@@ -404,12 +400,10 @@ void client::connect(client* x)
               osc_settings.host, osc_settings.remote_port,
               osc_settings.local_port, osc_settings.name),
             x->m_name->s_name};
-        SETFLOAT(connection_status,1);
       }
       catch (const std::exception& e)
       {
         pd_error(x, "%s", e.what());
-        SETFLOAT(connection_status,0);
       }
       count = 6;
     }

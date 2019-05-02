@@ -7,6 +7,8 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/common/path.hpp>
 
+#include <map>
+
 extern "C" {
 #include <cicm_wrapper.h>
 }
