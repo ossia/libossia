@@ -1,9 +1,6 @@
 #pragma once
 
 #include <memory>
-#include <string>
-#include <vector>
-#include <variant>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/small_vector.hpp>
 
