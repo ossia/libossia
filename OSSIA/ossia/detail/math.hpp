@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
+#include <boost/math/constants/constants.hpp>
 #include <cmath>
 
 #include <utility>
@@ -33,6 +33,7 @@ const constexpr auto half_pi = 1.570796326794896619231321691639751442;
 const constexpr auto rad_to_deg = 5.729577951308232087679815481410517033e+01;
 const constexpr auto deg_to_rad = 1.745329251994329576923690768488612713e-02;
 const constexpr auto ln_2 = 6.931471805599453094172321214581765680e-01;
+const constexpr auto sqrt_2 = 1.414213562373095048801688724209698078e+00;
 
 template <typename T>
 T ipow(T x, int N) noexcept
