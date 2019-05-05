@@ -5,11 +5,15 @@
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 
-#define DR_WAV_IMPLEMENTATION
 #define DR_WAV_NO_STDIO
 #include <dr_wav.h>
 
 #include <type_traits>
+
+namespace ossia
+{
+struct drwav_handle final : ::drwav { };
+}
 namespace ossia::nodes
 {
 // TODO refactor with AudioDecoder
