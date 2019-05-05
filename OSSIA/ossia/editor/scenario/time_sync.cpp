@@ -6,13 +6,19 @@
 namespace ossia
 {
 
-time_sync::time_sync() : m_expression(expressions::make_expression_true())
+time_sync::time_sync()
+  : m_expression(expressions::make_expression_true())
+  , m_status{status::NOT_DONE}
+  , m_observe{}
+  , m_evaluating{}
+  , m_muted{}
+  , m_autotrigger{}
 {
 }
 
 time_sync::~time_sync() = default;
 
-time_value time_sync::get_date() const
+time_value time_sync::get_date() const noexcept
 {
   // compute the date from each first previous time interval
   // ignoring zero duration time interval
@@ -37,12 +43,12 @@ time_value time_sync::get_date() const
   return Zero;
 }
 
-const expression& time_sync::get_expression() const
+const expression& time_sync::get_expression() const noexcept
 {
   return *m_expression;
 }
 
-time_sync& time_sync::set_expression(expression_ptr exp)
+time_sync& time_sync::set_expression(expression_ptr exp) noexcept
 {
   assert(exp);
   m_expression = std::move(exp);
@@ -69,12 +75,22 @@ time_sync::iterator time_sync::emplace(
       pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
-bool time_sync::is_evaluating() const
+bool time_sync::is_evaluating() const noexcept
 {
   return m_evaluating;
 }
 
-bool time_sync::is_observing_expression() const
+bool time_sync::is_autotrigger() const noexcept
+{
+  return m_autotrigger;
+}
+
+void time_sync::set_autotrigger(bool a) noexcept
+{
+  m_autotrigger = a;
+}
+
+bool time_sync::is_observing_expression() const noexcept
 {
   return m_observe;
 }

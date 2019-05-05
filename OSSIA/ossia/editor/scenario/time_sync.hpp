@@ -14,7 +14,6 @@
  */
 namespace ossia
 {
-
 class expression_base;
 class state;
 class time_event;
@@ -50,10 +49,10 @@ public:
  \details a #time_sync with na previous #time_intervals have a date equals to
  0.
  \return #TimeValue the date */
-  time_value get_date() const;
+  time_value get_date() const noexcept;
 
   /*! get the expression of the #time_sync */
-  const expression& get_expression() const;
+  const expression& get_expression() const noexcept;
 
   /*! set the expression of the #time_sync
  \details setting the expression to ExpressionTrue will defer the evaluation
@@ -62,7 +61,7 @@ public:
  execution
  \param expression_ptr
  \return #time_sync the time_sync */
-  time_sync& set_expression(expression_ptr);
+  time_sync& set_expression(expression_ptr) noexcept;
 
   /*! create and store a #time_event
  \param #Container<#time_event>::const_iterator where to store the #time_event
@@ -78,28 +77,35 @@ public:
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  ptr_container<time_event>& get_time_events()
+  ptr_container<time_event>& get_time_events() noexcept
   {
     return m_timeEvents;
   }
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  const ptr_container<time_event>& get_time_events() const
+  const ptr_container<time_event>& get_time_events() const noexcept
   {
     return m_timeEvents;
   }
 
   // Interface to be used for set-up by other time processes
-  /* is the TimeSync observing its Expression ? */
-  bool is_observing_expression() const;
+  bool is_observing_expression() const noexcept;
+  bool is_evaluating() const noexcept;
 
-  bool is_evaluating() const;
+  /**
+   * Auto-trigger timesyncs are timesyncs which will
+   * directly restart their following graph upon triggering.
+   * Else, triggering the timesync will stop the following subgraph.
+   * This is only relevant for subgraphs not connected
+   * to the root of a ossia::scenario
+   */
+  bool is_autotrigger() const noexcept;
+  void set_autotrigger(bool) noexcept;
 
-  /* enable observation of the Expression */
+  //! enable observation of the ossia::expression
   void observe_expression(bool);
-  void
-  observe_expression(bool, ossia::expressions::expression_result_callback cb);
+  void observe_expression(bool, ossia::expressions::expression_result_callback cb);
 
   //! Resets the internal state. Necessary when restarting an execution.
   void reset();
@@ -128,37 +134,37 @@ public:
 
   enum class status : int8_t
   {
-    NOT_DONE,
-    DONE_TRIGGERED,
-    DONE_MAX_REACHED
+    NOT_DONE = 0,
+    DONE_TRIGGERED = 1,
+    DONE_MAX_REACHED = 2
   };
-  status get_status() const
+  status get_status() const noexcept
   {
     return m_status;
   }
 
-  void set_sync_rate(time_value v)
+  void set_sync_rate(time_value v) noexcept
   {
     m_sync_rate = v;
   }
-  time_value get_sync_rate() const
+  time_value get_sync_rate() const noexcept
   {
     return m_sync_rate;
   }
-  bool has_sync_rate() const
+  bool has_sync_rate() const noexcept
   {
     return !m_sync_rate.infinite();
   }
 
-  void set_trigger_date(time_value v)
+  void set_trigger_date(time_value v) noexcept
   {
     m_trigger_date = v;
   }
-  time_value get_trigger_date() const
+  time_value get_trigger_date() const noexcept
   {
     return m_trigger_date;
   }
-  bool has_trigger_date() const
+  bool has_trigger_date() const noexcept
   {
     return !m_trigger_date.infinite();
   }
@@ -171,9 +177,10 @@ private:
 
   time_value m_sync_rate = Infinite;
   time_value m_trigger_date = Infinite;
-  status m_status = status::NOT_DONE;
-  bool m_observe = false;
-  bool m_evaluating = false;
-  bool m_muted = false;
+  status m_status : 2;
+  bool m_observe : 1;
+  bool m_evaluating : 1;
+  bool m_muted : 1;
+  bool m_autotrigger : 1;
 };
 }

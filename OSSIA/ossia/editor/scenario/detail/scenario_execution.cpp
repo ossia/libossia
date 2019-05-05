@@ -423,6 +423,10 @@ void scenario::state(
               break;
             }
           }
+
+          if(n->is_autotrigger())
+            n->m_evaluating = true;
+
           m_waitingNodes.insert(n);
         }
       }
