@@ -132,11 +132,11 @@ public:
   //! Boolean : true if the evaluation was finished due to the max bound
   callback_container<std::function<void(bool)>> finished_evaluation;
 
-  enum class status : int8_t
+  enum class status : uint8_t
   {
-    NOT_DONE = 0,
-    DONE_TRIGGERED = 1,
-    DONE_MAX_REACHED = 2
+    NOT_DONE,
+    DONE_TRIGGERED,
+    DONE_MAX_REACHED
   };
   status get_status() const noexcept
   {

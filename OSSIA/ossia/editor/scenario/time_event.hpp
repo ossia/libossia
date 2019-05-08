@@ -37,7 +37,7 @@ class OSSIA_EXPORT time_event
 
 public:
   /*! event status */
-  enum class status : int8_t
+  enum class status : uint8_t
   {
     NONE,
     PENDING,
@@ -51,7 +51,7 @@ public:
    * does an offset beyond this event. This is useful to
    * make default cases for the scenario.
    */
-  enum class offset_behavior : int8_t
+  enum class offset_behavior : uint8_t
   {
     EXPRESSION_TRUE,  //! The condition is considered True
     EXPRESSION_FALSE, //! The condition is considered False
