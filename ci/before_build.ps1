@@ -130,6 +130,16 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake $32bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_TESTING=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
   CheckLastExitCode
 
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "purrdata" ) {
+  $LogFile = "c:\projects\libossia\configure-pd.log"
+  cmake $64bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_PURR_DATA=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "purrdata-32bit" ) {
+  $LogFile = "c:\projects\libossia\configure-pd.log"
+  cmake $32bitgen -DOSSIA_PD_ONLY=1 -DOSSIA_PURR_DATA=1 -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" c:\projects\libossia > $LogFile
+  CheckLastExitCode
+
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "python" ) {
   $LogFile = "c:\projects\libossia\configure-${env:APPVEYOR_BUILD_TYPE}-${env:platform}.log"
 

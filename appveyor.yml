@@ -35,6 +35,12 @@ environment:
     - APPVEYOR_BUILD_TYPE: pd-32bit
       configuration: Release
 
+    - APPVEYOR_BUILD_TYPE: purrdata
+      configuration: Release
+
+    - APPVEYOR_BUILD_TYPE: purrdata-32bit
+      configuration: Release
+
     - APPVEYOR_BUILD_TYPE: pd-test
       configuration: Debug
       QTDIR-32bit: C:\Qt\5.11\msvc2015
@@ -82,6 +88,15 @@ test_script:
 artifacts:
   - path: ossia-pd-win32.zip
     name: ossia-pd-win32
+    type: zip
+  - path: ossia-pd-win64.zip
+    name: ossia-pd-win64
+    type: zip
+  - path: ossia-purrdata-win32.zip
+    name: ossia-purrdata-win32
+    type: zip
+  - path: ossia-purrdata-win64.zip
+    name: ossia-purrdata-win64
     type: zip
   - path: ossia-max-win.zip
     name: ossia-max-win

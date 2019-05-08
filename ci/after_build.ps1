@@ -135,7 +135,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
   ls .
 
-  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32-64bit.zip ossia
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win64.zip ossia
 
   if (${env:APPVEYOR_REPO_TAG}){
     $env:PATH="C:\msys64\usr\bin;${env:PATH}"
@@ -149,7 +149,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
     curl.exe --user "ossia:${env:DEKEN_PASSWORD}" -X MKCOL  "https://puredata.info/Members/ossia/software/ossia/${VERSION}/"
     $ARCHIVE_NAME="ossia-v${VERSION}-(Windows-amd64-32)-externals.zip"
-    copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32-64bit.zip ${ARCHIVE_NAME}
+    copy ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win64.zip ${ARCHIVE_NAME}
 
     gpg.exe -ab --batch --yes ${ARCHIVE_NAME}
     $SHA = sha256.exe ${ARCHIVE_NAME}
@@ -170,8 +170,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   ls .
 
   7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-pd-win32.zip ossia
-
-
 
   if (${env:APPVEYOR_REPO_TAG}){
     $env:PATH="C:\msys64\usr\bin;${env:PATH}"
@@ -214,6 +212,30 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\test-pd.log"
   cmake --build . --config "${env:configuration}" --target RUN_TESTS > "$LogFile"
   CheckLastExitCode
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "purrdata-32bit" ){
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  ls .
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-purrdata-win32.zip ossia
+
+} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "purrdata" ){
+  cd ${env:APPVEYOR_BUILD_FOLDER}\build
+
+  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-pd.log"
+  cmake --build . --config "${env:configuration}" --target install > "$LogFile"
+  CheckLastExitCode
+
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\
+  ls .
+
+  7z a ${env:APPVEYOR_BUILD_FOLDER}\ossia-purrdata-win64.zip ossia
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "qml" ){
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
