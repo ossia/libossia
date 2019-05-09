@@ -35,8 +35,8 @@ environment:
     - APPVEYOR_BUILD_TYPE: pd-32bit
       configuration: Release
 
-    - APPVEYOR_BUILD_TYPE: purrdata
-      configuration: Release
+    #- APPVEYOR_BUILD_TYPE: purrdata
+    #  configuration: Release
 
     - APPVEYOR_BUILD_TYPE: purrdata-32bit
       configuration: Release

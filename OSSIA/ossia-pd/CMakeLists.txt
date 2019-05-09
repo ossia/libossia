@@ -13,14 +13,14 @@ endif()
 
 message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
 if(OSSIA_PURR_DATA)
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/purr-data
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   execute_process(COMMAND git checkout ef2d85771b3e5f01cc41e6f236f27afe09378f4d
                   WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper)
 else()
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/purr-data
+  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
   execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
                   WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
@@ -30,6 +30,14 @@ endif()
 
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
+  if(OSSIA_PURR_DATA)
+    message("Downloading and extracting PurrData windows binary")
+    file(DOWNLOAD "https://github.com/agraef/purr-data/releases/download/2.9.0/pd-l2ork-2.9.0-windows-i386.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+  else()
     message("Downloading and extracting PureData windows binary")
     # First download Pd.
     if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
@@ -47,6 +55,7 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
       file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-0.49-0" "${CMAKE_CURRENT_BINARY_DIR}/pd")
     endif()
 
+  endif()
 endif()
 endif()
 
