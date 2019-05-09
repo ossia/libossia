@@ -232,6 +232,22 @@ case "$TRAVIS_OS_NAME" in
 
         $TRAVIS_BUILD_DIR/ci/push_deken.sh
       ;;
+      RpiPurrdataRelease)
+
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+                   -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
+                   -DOSSIA_CI=1 \
+                   -DOSSIA_PD_ONLY=1 \
+                   -DOSSIA_PURR_DATA=1 \
+                   ..
+
+        $CMAKE_BIN --build . -- -j2
+        $CMAKE_BIN --build . --target install
+
+        cd $TRAVIS_BUILD_DIR/ossia-pd-package
+        tar -czf ${ARTIFACTS_DIR}/ossia-purr-data-linux_arm.tar.gz ossia
+      ;;
       RpiPythonRelease)
 
         # _version.py is not valid in a non-git folder

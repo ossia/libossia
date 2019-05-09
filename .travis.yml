@@ -56,6 +56,9 @@ matrix:
     env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
 
   - os: linux
+    env: BUILD_TYPE=RpiPurrdataRelease OSSIA_STATIC=1
+
+  - os: linux
     env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=3.5
 
   - os: linux
@@ -132,7 +135,7 @@ deploy:
     skip_cleanup: true
     draft: false
     prerelease: false
-    description: |+
+    body: |
       # Release of OSSIA $TRAVIS_TAG
 
       * All macOS packages are fat binaries that should work on macOS from 10.9.
@@ -149,6 +152,7 @@ deploy:
       * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation)
       * [Building from source](https://github.com/OSSIA/libossia/wiki/Building)
       * ***Do note use the Github source package ("Source code" link below) to build; instead do a git clone or use 'ossia-src-unix.tar.gz'. Else the build won't work due to Github not putting submodules in the archive.***
+
 
     on:
       repo: OSSIA/libossia
