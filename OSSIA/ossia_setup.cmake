@@ -88,9 +88,15 @@ set_target_properties(ossia PROPERTIES
 endif()
 
 include(GenerateStaticExport)
+
+if(OSSIA_STATIC)
+  target_compile_definitions(ossia PRIVATE "OSSIA_EXPORTS")
+endif()
+set_target_properties(ossia PROPERTIES DEFINE_SYMBOL "OSSIA_EXPORTS")
+
 if(OSSIA_STATIC_EXPORT)
   generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT)
-  target_compile_definitions(ossia PRIVATE ossia_EXPORTS=1)
+  target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1)
 else()
   generate_export_header(ossia BASE_NAME OSSIA)
 endif()

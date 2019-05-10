@@ -13,6 +13,7 @@
 #    else
         /* We are using this library */
 #      define @EXPORT_MACRO_NAME@ @DEFINE_IMPORT@
+#      define @EXPORT_IMPORT_CONDITION@ 0
 #    endif
 #  endif
 
