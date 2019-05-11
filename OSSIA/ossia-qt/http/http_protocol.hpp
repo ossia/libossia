@@ -101,7 +101,7 @@ public:
     return js;
   }
 public:
-  void sig_push(const http_parameter* arg_1, const ossia::value& v) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v);
+  void sig_push(const http_parameter* arg_1, const ossia::value& v) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v)
 
 private:
   void slot_push(const http_parameter*, const ossia::value& v); W_SLOT(slot_push);
