@@ -36,6 +36,6 @@ public:
   {
   }
 
-  void l(spdlog::level::level_enum arg_1, const QString& arg_2) W_SIGNAL(l, arg_1, arg_2);
+  void l(spdlog::level::level_enum arg_1, const QString& arg_2) E_SIGNAL(OSSIA_EXPORT, l, arg_1, arg_2);
 };
 }
