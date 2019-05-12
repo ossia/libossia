@@ -10,12 +10,17 @@ struct node_exec
 
   template <typename T>
   void operator()(const T&)
+  try
   {
     if (node.enabled())
     {
       assert(graph_util::can_execute(node, *g));
       graph_util::exec_node(node, *g);
     }
+  }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
   }
 };
 struct node_exec_bench
@@ -26,6 +31,7 @@ struct node_exec_bench
 
   template <typename T>
   void operator()(const T&)
+  try
   {
     if (perf.measure)
     {
@@ -46,6 +52,10 @@ struct node_exec_bench
       }
     }
   }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
+  }
 };
 
 struct node_exec_logger
@@ -56,6 +66,7 @@ struct node_exec_logger
 
   template <typename T>
   void operator()(const T&)
+  try
   {
     if (node.enabled())
     {
@@ -65,6 +76,10 @@ struct node_exec_logger
       else
         graph_util::exec_node(node, *g, logger);
     }
+  }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
   }
 };
 
@@ -77,6 +92,7 @@ struct node_exec_logger_bench
 
   template <typename T>
   void operator()(const T&)
+  try
   {
     if (perf.measure)
     {
@@ -107,6 +123,10 @@ struct node_exec_logger_bench
         graph_util::exec_node(node, *g, logger);
     }
   }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
+  }
 };
 
 struct static_exec
@@ -129,6 +149,7 @@ struct static_exec
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
       std::vector<graph_node*>& active_nodes)
+  try
   {
     for (auto node : active_nodes)
     {
@@ -138,6 +159,10 @@ struct static_exec
         graph_util::exec_node(*node, e);
       }
     }
+  }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
   }
 };
 
@@ -163,6 +188,7 @@ struct static_exec_bench
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
       std::vector<graph_node*>& active_nodes)
+  try
   {
     auto& p = *perf;
     if (p.measure)
@@ -197,6 +223,10 @@ struct static_exec_bench
       }
     }
   }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
+  }
 };
 
 struct static_exec_logger
@@ -221,6 +251,7 @@ struct static_exec_logger
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
       std::vector<graph_node*>& active_nodes)
+  try
   {
     for (auto node : active_nodes)
     {
@@ -233,6 +264,10 @@ struct static_exec_logger
           graph_util::exec_node(*node, e, *logger);
       }
     }
+  }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
   }
 };
 
@@ -260,6 +295,7 @@ struct static_exec_logger_bench
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
       std::vector<graph_node*>& active_nodes)
+  try
   {
     auto& p = *perf;
     if (p.measure)
@@ -299,6 +335,10 @@ struct static_exec_logger_bench
         }
       }
     }
+  }
+  catch(...)
+  {
+    std::cerr << "Error while executing a node\n";
   }
 };
 }

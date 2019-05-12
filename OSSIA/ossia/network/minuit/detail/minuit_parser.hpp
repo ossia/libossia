@@ -634,7 +634,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Namespace>
           auto str = std::string(address);
           str += ':';
           str.append(it->begin(), it->end());
-          proto.get_refresh(sub_request, str);
+          proto.get_refresh(sub_request, str, std::promise<void>{});
 
           it = attribs.erase(it);
         }
@@ -663,7 +663,7 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Namespace>
           auto str = std::string(address);
           str += ':';
           str.append(attrib.begin(), attrib.end());
-          proto.get_refresh(sub_request, str);
+          proto.get_refresh(sub_request, str, std::promise<void>{});
         }
         default:
           break;

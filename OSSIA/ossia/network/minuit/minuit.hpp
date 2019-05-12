@@ -1,12 +1,11 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
+#include <ossia/detail/string_map.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/minuit/detail/minuit_name_table.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
-
-#include <tsl/hopscotch_map.h>
 
 #include <atomic>
 #include <future>
@@ -77,7 +76,7 @@ public:
   void namespace_refresh(ossia::string_view req, const std::string& addr);
   void namespace_refreshed(ossia::string_view addr);
 
-  void get_refresh(ossia::string_view req, const std::string& addr);
+  void get_refresh(ossia::string_view req, const std::string& addr, std::promise<void>&& p);
   void get_refreshed(ossia::string_view req);
 
   osc::sender<osc_outbound_visitor>& sender() const;
@@ -104,9 +103,7 @@ private:
   std::set<std::string, std::less<>> m_nsRequests;
 
   mutex_t m_getRequestMutex;
-  std::promise<void> m_getFinishedPromise;
-  std::vector<std::string> m_getRequests;
-  std::atomic_int m_pendingGetRequests{};
+  ossia::string_map<std::promise<void>> m_getRequests;
 
   std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;

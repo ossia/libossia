@@ -161,7 +161,8 @@ bool minuit_protocol::update(ossia::net::node_base& node)
 
   auto check_unfinished = [&] {
     lock_type lock(m_nsRequestMutex);
-    return !m_nsRequests.empty() || m_pendingGetRequests > 0
+    lock_type lock2(m_getRequestMutex);
+    return !m_nsRequests.empty() || !m_getRequests.empty()
            || status != std::future_status::ready;
   };
 
@@ -194,7 +195,8 @@ bool minuit_protocol::update(ossia::net::node_base& node)
         {
           lock_type lock(m_getRequestMutex);
           greq.clear();
-          ossia::copy(m_getRequests, greq);
+          for(const auto& req : m_getRequests)
+            greq.push_back(req.first);
         }
         for (const auto& req : greq)
         {
@@ -207,7 +209,6 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     }
   }
 
-  m_pendingGetRequests = 0;
   {
     lock_type lock(m_nsRequestMutex);
     for (const auto& node : m_nsRequests)
@@ -220,7 +221,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     lock_type lock(m_getRequestMutex);
     for (const auto& node : m_getRequests)
     {
-      logger().error("Namespace request unmatched: {0}", node);
+      logger().error("Namespace request unmatched: {0}", node.first);
     }
     m_getRequests.clear();
   }
@@ -240,14 +241,14 @@ void minuit_protocol::request(ossia::net::parameter_base& address)
 std::future<void> minuit_protocol::pull_async(parameter_base& address)
 {
   // Send "get" request
-  m_getFinishedPromise = std::promise<void>();
-  auto fut = m_getFinishedPromise.get_future();
+  std::promise<void> promise;
+  auto fut = promise.get_future();
 
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = address.get_node().osc_address();
   addr += ":value";
 
-  get_refresh(act, addr);
+  get_refresh(act, addr, std::move(promise));
 
   return fut;
 }
@@ -355,14 +356,13 @@ void minuit_protocol::namespace_refreshed(ossia::string_view addr)
 }
 
 void minuit_protocol::get_refresh(
-    ossia::string_view req, const std::string& addr)
+    ossia::string_view req, const std::string& addr, std::promise<void>&& p)
 {
   lock_type lock(m_getRequestMutex);
-  auto it = ossia::find(m_getRequests, addr);
+  auto it = m_getRequests.find(addr);
   if (it == m_getRequests.end())
   {
-    m_getRequests.push_back(addr);
-    m_pendingGetRequests++;
+    m_getRequests[addr] = std::move(p);
     m_sender->send(req, ossia::string_view(addr));
 
     m_lastSentMessage = get_time();
@@ -372,22 +372,11 @@ void minuit_protocol::get_refresh(
 void minuit_protocol::get_refreshed(ossia::string_view addr)
 {
   lock_type lock(m_getRequestMutex);
-  auto it = ossia::find(m_getRequests, addr);
+  auto it = m_getRequests.find(addr);
   if (it != m_getRequests.end())
   {
+    it.value().set_value();
     m_getRequests.erase(it);
-    m_pendingGetRequests--;
-  }
-
-  if (m_getRequests.empty())
-  {
-    try
-    {
-      m_getFinishedPromise.set_value();
-    }
-    catch (...)
-    {
-    }
   }
 }
 
