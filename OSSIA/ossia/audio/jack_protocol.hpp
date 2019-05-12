@@ -53,30 +53,35 @@ inline bool has_jackd_process()
 }
 #endif
 
+struct jack_client
+{
+  jack_client(std::string name) noexcept
+  {
+    client = jack_client_open(name.c_str(), JackNoStartServer, nullptr);
+  }
+
+  ~jack_client()
+  {
+    jack_client_close(client);
+  }
+  operator jack_client_t*() const noexcept { return client; }
+
+  jack_client_t* client{};
+};
+
 class jack_engine final : public audio_engine
 {
 public:
-  jack_engine(std::string name, int inputs, int outputs, int , int )
+  jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs)
+    : m_client{clt}
+    , stopped{true}
   {
-    stopped = true;
-#if defined(_WIN32)
-    {
-      if (!has_jackd_process())
-      {
-        std::cerr << "JACK server not running?" << std::endl;
-        throw std::runtime_error("Audio error: no JACK server");
-      }
-    }
-#endif
-
-    std::cerr << "JACK: " << WeakJack::instance().available() << std::endl;
-    client = jack_client_open(
-        (!name.empty() ? name.c_str() : "score"), JackNoStartServer, nullptr);
-    if (!client)
+    if (!m_client)
     {
       std::cerr << "JACK server not running?" << std::endl;
       throw std::runtime_error("Audio error: no JACK server");
     }
+    jack_client_t* client = *m_client;
     jack_set_process_callback(client, process, this);
     jack_set_sample_rate_callback(client, [] (jack_nframes_t nframes, void *arg) -> int { return 0; }, this);
     jack_on_shutdown(client, JackShutdownCallback{}, this);
@@ -106,10 +111,6 @@ public:
 
     std::cerr << "=== stream start ===\n";
 
-    /* TODO
-    int rate = jack_get_sample_rate(client);
-    int bs = jack_get_buffer_size(client);
-    */
     int err = jack_activate(client);
     if (err != 0)
     {
@@ -152,8 +153,12 @@ public:
     stop();
     if (protocol)
       protocol.load()->engine = nullptr;
-    jack_deactivate(client.load());
-    jack_client_close(client);
+
+    if(m_client)
+    {
+      jack_client_t* client = *m_client;
+      jack_deactivate(client);
+    }
   }
 
   void reload(audio_protocol* p) override
@@ -249,7 +254,7 @@ private:
     return 0;
   }
 
-  std::atomic<jack_client_t*> client{};
+  std::shared_ptr<jack_client> m_client{};
   std::vector<jack_port_t*> input_ports;
   std::vector<jack_port_t*> output_ports;
   std::atomic_bool stopped{};

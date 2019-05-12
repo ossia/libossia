@@ -175,12 +175,7 @@ public:
 
         const auto channels = m_handle->channels;
         const auto max_frames = m_handle->totalPCMFrameCount;
-        const auto rate = m_handle->sampleRate;
 
-        if(rate != e.sampleRate())
-        {
-            // TODO resample.
-        }
         ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
         ap.samples.resize(channels);
         const int64_t max_N = std::min(t.date.impl, (int64_t)(max_frames - start_offset));

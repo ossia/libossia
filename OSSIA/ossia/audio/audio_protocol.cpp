@@ -37,7 +37,7 @@ ossia::audio_engine* make_audio_engine(
 #if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
   else if (proto == "JACK")
   {
-    p = new ossia::jack_engine{name, inputs, outputs, rate, bs};
+    p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
   }
 #endif
 
@@ -66,7 +66,7 @@ ossia::audio_engine* make_audio_engine(
   if (!p)
   {
 #if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
-    p = new ossia::jack_engine{name, inputs, outputs, rate, bs};
+    p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
 #endif
   }
 

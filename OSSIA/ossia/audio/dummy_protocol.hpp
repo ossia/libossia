@@ -28,12 +28,18 @@ public:
     m_active = true;
 
     int us_per_buffer = 1e6 * double(m_bs) / double(m_rate);
+
     m_runThread = std::thread{[=] {
       using clk = std::chrono::high_resolution_clock;
       clk::time_point start = clk::now();
       auto end = start;
       while (m_active)
       {
+        // TODO condition variables for the sleeping instead
+        // linux : https://stackoverflow.com/questions/24051863/how-to-implement-highly-accurate-timers-in-linux-userspace
+        // win : https://stackoverflow.com/a/13413019/1495627
+        // mac : https://stackoverflow.com/a/52905687/1495627
+        // other: naive way
         std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         end = clk::now();
         if (!stop_processing)
