@@ -845,6 +845,57 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 }
 
+TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value")
+{
+  std::vector<ossia::value> val{0.1,0.2};
+
+  // Here we check that a nested list is not flatten when sent by OSC
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
+  // WS client
+  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  auto cb = [&](const parameter_base& p) {
+    auto name = p.get_node().get_name();
+    std::cout << "parameter " << name << " created" << std::endl;
+    auto node = ws_clt->get_root_node().find_child(name);
+    node->get_parameter()->push_value(val);
+  };
+  ws_clt->on_parameter_created.connect(cb);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  auto& n = find_or_create_node(serv, "/dynamic_list");
+  ossia::net::parameter_base* a = n.create_parameter(ossia::val_type::LIST);
+
+  a->add_callback([&](const ossia::value& v){
+    std::cout << "receive new value : " << v << std::endl;
+    REQUIRE(v == val);
+  });
+
+  ws_proto->update(ws_clt->get_root_node());
+  auto node = find_node(ws_clt->get_root_node(), "/dynamic_list");
+  REQUIRE(node);
+  auto param = node->get_parameter();
+  REQUIRE(param);
+  REQUIRE(param->value().get<std::vector<ossia::value>>() == val);
+
+  val.clear();
+  val.push_back(4.5f);
+  val.push_back(2.f);
+
+  {
+    param->push_value(val); // This will go through the WS port
+  }
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+  std::cout << "new value : " << a->value() << " expecting " << val << std::endl;
+  // should use QCOMPARE after device cleaning to avoid hang
+  REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
+}
+
 TEST_CASE ("test_oscquery_value", "test_oscquery_value")
 {
   // Here we check that the fullpath JSON is correctly parsed
