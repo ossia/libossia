@@ -1,5 +1,5 @@
 set(CMAKE_MODULE_PATH
-  "${CMAKE_CURRENT_SOURCE_DIR}/CMake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
   "${CMAKE_MODULE_PATH}"
 )
 
@@ -21,10 +21,10 @@ find_package(Qt5 5.3 COMPONENTS Core)
 
 # Options
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE "" INTERNAL)
-include(cmake/OssiaOptions.cmake)
+include(OssiaOptions)
 
 # Dependencies
-include(cmake/OssiaDeps.cmake)
+include(OssiaDeps)
 
 # Configuration
 include(OssiaConfiguration)
