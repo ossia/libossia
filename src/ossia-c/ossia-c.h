@@ -17,7 +17,7 @@
  * * The `ossia_value_*` functions allow to create and read the content of libossia values.
  *   Simply put, such a value is an union of various types: int, float, string, etc.
  * * The `ossia_logger_*` functions can be usd to set-up a simple WebSocket-based logging infrastructure.
- *   The format of the logger messages is given [in this example](https://github.com/OSSIA/libossia/blob/master/Documentation/Examples/Common/Logger.cpp).
+ *   The format of the logger messages is given [in this example](https://github.com/OSSIA/libossia/blob/master/docs/Examples/Common/Logger.cpp).
  * * The `ossia_mq_*` functions can be used when a thread-safe lock-free queue is needed.
  *   In particular, note that callbacks will be executed in different threads.
  *   Hence, this mechanism is needed if the user of this API cannot make its program thread-safe.

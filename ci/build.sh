@@ -412,7 +412,7 @@ def get_versions():
         coveralls-lcov coverage.info
       ;;
       Docs)
-        cd ../Documentation/Doxygen
+        cd ../docs/Doxygen
 
         doxygen > doxygen.log
         (

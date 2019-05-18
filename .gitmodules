@@ -1,5 +1,5 @@
 [submodule "CMake/cmake-modules"]
-    path = CMake/cmake-modules
+	path = cmake/cmake-modules
     url = https://github.com/OSSIA/cmake-modules
 [submodule "3rdparty/variant"]
     path = 3rdparty/variant

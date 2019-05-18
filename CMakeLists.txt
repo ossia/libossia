@@ -33,16 +33,16 @@ cmake_policy(SET CMP0056 NEW)
 cmake_policy(SET CMP0069 NEW)
 
 # Main library
-add_subdirectory(OSSIA)
+add_subdirectory(src)
 
 # Examples & tests
 if(OSSIA_EXAMPLES)
-    add_subdirectory(Documentation/Examples)
+    add_subdirectory(examples)
 endif()
 
 if(OSSIA_TESTING)
   enable_testing()
-  add_subdirectory(Tests)
+  add_subdirectory(tests)
 endif()
 
 if(OSSIA_GENVAR)

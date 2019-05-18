@@ -64,7 +64,7 @@ void printPreset(ossia::presets::Preset preset) {
 
 int main(int argc, char ** argv) {
 
-    std::string filename = "../Tests/json/test1.json";
+    std::string filename = "../tests/json/test1.json";
     if (argc >= 2) {
         filename = argv[1];
     }

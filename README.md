@@ -13,11 +13,11 @@ You can find some documentation for the library and its various implementations 
 
 Please feel free to ask questions on the [forum](http://forum.ossia.io/c/libossia), or to come and chat with us ! [![Gitter](https://badges.gitter.im/OSSIA/libossia.svg)](https://gitter.im/OSSIA/libossia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
-More about the general project at: http://ossia.io 
+More about the general project at: http://ossia.io
 
 Documentation :
 * [Lib and Implementations](https://ossia.github.io)
-* [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation/Examples)
+* [Examples](https://github.com/OSSIA/libossia/tree/master/examples)
 * [Doxygen](http://ossia.github.io/libossia/html)
 * [Building](https://github.com/OSSIA/libossia/wiki/Building)
 * [Code style](https://github.com/OSSIA/libossia/wiki/Code-style-guide)
