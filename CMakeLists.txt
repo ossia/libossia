@@ -21,10 +21,10 @@ find_package(Qt5 5.3 COMPONENTS Core)
 
 # Options
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE "" INTERNAL)
-include(CMake/OssiaOptions.cmake)
+include(cmake/OssiaOptions.cmake)
 
 # Dependencies
-include(CMake/OssiaDeps.cmake)
+include(cmake/OssiaDeps.cmake)
 
 # Configuration
 include(OssiaConfiguration)

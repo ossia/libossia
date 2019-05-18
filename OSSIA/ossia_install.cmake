@@ -277,7 +277,7 @@ write_basic_package_version_file(
   COMPATIBILITY AnyNewerVersion
 )
 
-configure_package_config_file(../CMake/ossiaConfig.cmake.in
+configure_package_config_file(../cmake/ossiaConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake"
     INSTALL_DESTINATION lib/cmake/ossia
 )

@@ -14,7 +14,7 @@ cp -rf qt/tutu/Ossia ossia-qml/
 mkdir ossia-native
 cp -rf native/tutu/* ossia-native/
 
-cp -rf ~/i-score/API/ossia/ossia-unity3d .
+cp -rf ~/score/API/ossia/ossia-unity3d .
 cp ossia-native/lib/libossia.dylib ossia-unity3d/ossia.bundle
 
 rm -rf **/*.qmlc

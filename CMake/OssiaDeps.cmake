@@ -52,8 +52,8 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
                       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
   endif()
 
-  message(" -> ${PROJECT_SOURCE_DIR}/CMake/cmake-modules")
-  execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/CMake/cmake-modules
+  message(" -> ${PROJECT_SOURCE_DIR}/cmake/cmake-modules")
+  execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/cmake/cmake-modules
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
   if(OSSIA_PROTOCOL_WIIMOTE)

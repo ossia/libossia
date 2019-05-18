@@ -35,6 +35,6 @@
  </data>
  <data>
   <variable>DisplayName</variable>
-  <value type="QString">i-score</value>
+  <value type="QString">score</value>
  </data>
 </qtcreator>

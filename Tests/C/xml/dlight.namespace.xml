@@ -2,7 +2,7 @@
 <jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
 
 <!--"Namespace de DLight V1.1
-Est pilotable via I-score :
+Est pilotable via score :
 - 512 circuits (1 univers DMX)
 - La séquence : 
 	- GO : Envoyer le message

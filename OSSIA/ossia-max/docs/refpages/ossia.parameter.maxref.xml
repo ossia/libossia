@@ -12,7 +12,7 @@
 	</description>
 	<discussion>
     The parameter is an access point for controlling the processing of the patch. 
-    The parameter enables inter-application communication. The parameter is provided with a unique global OSC address. Parameters can also be declared on the network in order for other applications such as i-score to inspect and control models.
+    The parameter enables inter-application communication. The parameter is provided with a unique global OSC address. Parameters can also be declared on the network in order for other applications such as score to inspect and control models.
   </discussion>
 	
 	<!--METADATA-->

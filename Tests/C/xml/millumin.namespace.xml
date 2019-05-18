@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" standalone="yes"?>
 <jamoma version="0.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jamoma.org/ file:jamoma.xsd">
 <!--"Namespace de Millumin
-Est pilotable via I-score :
+Est pilotable via score :
 - La séquence : 
 	- Lancer/Stopper la colonne X (numéro de colonne)
 	- Lancer la colonne X (numéro de colonne)

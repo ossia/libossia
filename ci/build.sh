@@ -217,7 +217,7 @@ case "$TRAVIS_OS_NAME" in
       ;;
       RpiPdRelease)
 
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_CI=1 \
@@ -234,7 +234,7 @@ case "$TRAVIS_OS_NAME" in
       ;;
       RpiPurrdataRelease)
 
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_CI=1 \
@@ -259,7 +259,7 @@ case "$TRAVIS_OS_NAME" in
 
 def get_versions():
   return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
@@ -278,7 +278,7 @@ def get_versions():
       ;;
       RpiRelease)
 
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DOSSIA_PD=0 \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
@@ -303,7 +303,7 @@ def get_versions():
         fi
       ;;
       Rpi-ossia-cpp)
-        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../CMake/toolchain/arm-linux-gnueabihf.cmake" \
+        $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
              -DCMAKE_BUILD_TYPE=Release \
              -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
              -DOSSIA_CI=1 \

@@ -81,7 +81,7 @@ f 61;
 #X text 653 728 @enable <0|1> enable/disable the parameter \, default:
 1;
 #X text 653 697 @hidden <0|1> hide the parameter to the user (e.g.
-in i-score) \, default: 0;
+in score) \, default: 0;
 #X text 651 368 @min <list of float> / @max <list of float> define
 minimum and maximum values. For vector \, min/max are defined for each
 vector element., f 61;
