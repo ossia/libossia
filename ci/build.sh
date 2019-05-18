@@ -3,7 +3,7 @@
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    export CMAKE_BIN=$(readlink -f "$(find cmake/bin -name cmake -type f )")
+    export CMAKE_BIN=$(readlink -f "$(find cmake-latest/bin -name cmake -type f )")
     if [[ "$PYTHON_VERSION" == "2.7" ]]; then
       export PYTHON_BIN=$(which python)
     else

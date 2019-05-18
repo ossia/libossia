@@ -16,7 +16,7 @@ case "$TRAVIS_OS_NAME" in
     else
       sudo wget -nv https://github.com/OSSIA/score-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
 
-      wget -nv https://cmake.org/files/v3.11/cmake-3.11.3-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.14/cmake-3.14.4-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
       echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
@@ -30,14 +30,14 @@ case "$TRAVIS_OS_NAME" in
       (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
       tar xaf cmake-linux.tgz
-      mv cmake-*-x86_64 cmake
+      mv cmake-*-x86_64 cmake-latest
     fi
 
     shopt -s nocasematch # case insensitive comparison in Bash
     if [[ "$BUILD_TYPE" == Rpi* ]]; then
         # install dependencies
         wget -nv https://www.dropbox.com/s/lwchd3va49sd43p/gcc-8.2.0-rpi.tar.bz2
-        tar xf gcc-8.2.0-rpi.tar.bz2 
+        tar xf gcc-8.2.0-rpi.tar.bz2
         sudo mv cross-pi-gcc-8.2.0/ /opt/
         sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
 
