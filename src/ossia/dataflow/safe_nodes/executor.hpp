@@ -239,206 +239,68 @@ public:
       throw;
   }
 
-  template <class F, std::size_t... I>
-  static constexpr void
-  apply_inlet_impl(const F& f, const std::index_sequence<I...>&) noexcept
-  {
-    f(get_inlet_accessor<I>()...);
-  }
-
-  template <class F, std::size_t... I>
-  static constexpr void
-  apply_outlet_impl(const F& f, const std::index_sequence<I...>&) noexcept
-  {
-    f(get_outlet_accessor<I>()...);
-  }
-
-  template <class F, std::size_t... I>
-  static constexpr void
-  apply_control_impl(const F& f, const std::index_sequence<I...>&) noexcept
-  {
-    f(get_control_accessor<I>()...);
-  }
-
   /////////////////
 
-  template <typename T1, typename T3, typename Seq1, typename Seq3>
-  struct forwarder;
-
-  template <typename T1, typename T3, std::size_t... N1, std::size_t... N3>
-  struct forwarder<
-      T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>
+  template <std::size_t... I, std::size_t... C, std::size_t... O >
+  void
+	  apply_all_impl(const std::index_sequence<I...>& i1, const std::index_sequence<C...>& i2, const std::index_sequence<O...>& i3, ossia::token_request tk, ossia::exec_state_facade st) noexcept
   {
-    T1& a1;
-    T3& a3;
-    ossia::exec_state_facade st;
-    template <typename... Args>
-    void
-    operator()(const ossia::token_request& sub_tk, Args&&... args) noexcept
-    {
-      Node_T::run(
-          std::get<N1>(std::forward<T1>(a1))..., std::forward<Args>(args)...,
-          std::get<N3>(std::forward<T3>(a3))..., sub_tk, st);
-    }
-  };
+	  ossia::inlets& inlets = this->inputs();
+	  ossia::outlets& outlets = this->outputs();
 
-  template <
-      typename T1, typename T3, typename State, typename Seq1, typename Seq3>
-  struct forwarder_state;
-
-  template <
-      typename T1, typename T3, typename State, std::size_t... N1,
-      std::size_t... N3>
-  struct forwarder_state<
-      T1, T3, State, std::index_sequence<N1...>, std::index_sequence<N3...>>
-  {
-    T1& a1;
-    T3& a3;
-    ossia::exec_state_facade st;
-    State& s;
-    template <typename... Args>
-    void
-    operator()(const ossia::token_request& sub_tk, Args&&... args) noexcept
-    {
-      Node_T::run(
-          std::get<N1>(std::forward<T1>(a1))..., std::forward<Args>(args)...,
-          std::get<N3>(std::forward<T3>(a3))..., sub_tk, st, s);
-    }
-  };
-  // Expand three tuples and apply a function on the control tuple
-  template <
-      typename F, typename T1, typename T2, typename T3, std::size_t... N1,
-      std::size_t... N2, std::size_t... N3>
-  static constexpr auto invoke_impl(
-      F&& f, T1&& a1, T2&& a2, T3&& a3, const std::index_sequence<N1...>& n1,
-      const std::index_sequence<N2...>& n2,
-      const std::index_sequence<N3...>& n3, const ossia::token_request& tk,
-      ossia::exec_state_facade st) noexcept
-  {
-    f(forwarder<
-          T1, T3, std::index_sequence<N1...>, std::index_sequence<N3...>>{a1,
-                                                                          a3,
-                                                                          st},
-      tk, std::get<N2>(std::forward<T2>(a2))...);
+	  if constexpr (has_state)
+	  {
+		  if constexpr (info::control_count > 0)
+		  {
+			  Node_T::control_policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+				  Node_T::run(
+					  get_inlet_accessor<I>()(inlets)...,
+					  std::forward<decltype(ctls)>(ctls)...,
+					  get_outlet_accessor<O>()(outlets)...,
+					  sub_tk, st, static_cast<state_type&>(*this)
+				  );
+				  }, tk, get_control_accessor<C>()(inlets, *this)...);
+		  }
+		  else
+		  {
+			  Node_T::run(
+				  get_inlet_accessor<I>()(inlets)...,
+				  get_outlet_accessor<O>()(outlets)...,
+				  tk, st, static_cast<state_type&>(*this)
+			  );
+		  }
+	  }
+	  else
+	  {
+		  if constexpr (info::control_count > 0)
+		  { 
+			  Node_T::control_policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+				  Node_T::run(
+					  get_inlet_accessor<I>()(inlets)...,
+					  std::forward<decltype(ctls)>(ctls)...,
+					  get_outlet_accessor<O>()(outlets)...,
+					  sub_tk, st
+				  );
+				  }, tk, get_control_accessor<C>()(inlets, *this)...);
+		  }
+		  else
+		  {
+			  Node_T::run(
+				  get_inlet_accessor<I>()(inlets)...,
+				  get_outlet_accessor<O>()(outlets)...,
+				  tk, st
+			  );
+		  }
+	  }
   }
-
-  // Expand three tuples and apply a function on the control tuple
-  template <
-      typename F, typename T1, typename T2, typename T3, std::size_t... N1,
-      std::size_t... N2, std::size_t... N3, typename State>
-  static constexpr auto invoke_impl(
-      F&& f, T1&& a1, T2&& a2, T3&& a3, const std::index_sequence<N1...>& n1,
-      const std::index_sequence<N2...>& n2,
-      const std::index_sequence<N3...>& n3, const ossia::token_request& tk,
-      ossia::exec_state_facade st, State& s) noexcept
-  {
-    f(forwarder_state<
-          T1, T3, State, std::index_sequence<N1...>,
-          std::index_sequence<N3...>>{a1, a3, st, s},
-      tk, std::get<N2>(std::forward<T2>(a2))...);
-  }
-
-  template <
-      typename F, typename T1, typename T2, typename T3, typename... Args>
-  static constexpr auto
-  invoke(F&& f, T1&& a1, T2&& a2, T3&& a3, Args&&... args) noexcept
-  {
-    using I1 = std::make_index_sequence<std::tuple_size_v<std::decay_t<T1>>>;
-    using I2 = std::make_index_sequence<std::tuple_size_v<std::decay_t<T2>>>;
-    using I3 = std::make_index_sequence<std::tuple_size_v<std::decay_t<T3>>>;
-
-    return invoke_impl(
-        f, std::forward<T1>(a1), std::forward<T2>(a2), std::forward<T3>(a3),
-        I1{}, I2{}, I3{}, std::forward<Args>(args)...);
-  }
-
   void
   run(ossia::token_request tk, ossia::exec_state_facade st) noexcept override
   {
     using inlets_indices = std::make_index_sequence<info::control_start>;
     using controls_indices = std::make_index_sequence<info::control_count>;
     using outlets_indices = std::make_index_sequence<info::outlet_size>;
-
-    ossia::inlets& inlets = this->inputs();
-    ossia::outlets& outlets = this->outputs();
-
-    if constexpr (has_state)
-    {
-      if constexpr (info::control_count > 0)
-      {
-        // from this, create tuples of functions
-        // apply the functions to inlets and outlets
-        apply_inlet_impl(
-            [&](auto&&... i) {
-              apply_control_impl(
-                  [&](auto&&... c) {
-                    apply_outlet_impl(
-                        [&](auto&&... o) {
-                          invoke(
-                              typename Node_T::control_policy{},
-                              std::tie(i(inlets)...),
-                              std::tie(c(inlets, *this)...),
-                              std::tie(o(outlets)...), tk, st,
-                              static_cast<state_type&>(*this));
-                        },
-                        outlets_indices{});
-                  },
-                  controls_indices{});
-            },
-            inlets_indices{});
-      }
-      else
-      {
-        apply_inlet_impl(
-            [&](auto&&... i) {
-              apply_outlet_impl(
-                  [&](auto&&... o) {
-                    Node_T::run(
-                        i(inlets)..., o(outlets)..., tk, st,
-                        static_cast<state_type&>(*this));
-                  },
-                  outlets_indices{});
-            },
-            inlets_indices{});
-      }
-    }
-    else
-    {
-      if constexpr (info::control_count > 0)
-      {
-        // from this, create tuples of functions
-        // apply the functions to inlets and outlets
-        apply_inlet_impl(
-            [&](auto&&... i) {
-              apply_control_impl(
-                  [&](auto&&... c) {
-                    apply_outlet_impl(
-                        [&](auto&&... o) {
-                          invoke(
-                              typename Node_T::control_policy{},
-                              std::tie(i(inlets)...),
-                              std::tie(c(inlets, *this)...),
-                              std::tie(o(outlets)...), tk, st);
-                        },
-                        outlets_indices{});
-                  },
-                  controls_indices{});
-            },
-            inlets_indices{});
-      }
-      else
-      {
-        apply_inlet_impl(
-            [&](auto&&... i) {
-              apply_outlet_impl(
-                  [&](auto&&... o) {
-                    Node_T::run(i(inlets)..., o(outlets)..., tk, st);
-                  },
-                  outlets_indices{});
-            },
-            inlets_indices{});
-      }
-    }
+	
+	apply_all_impl(inlets_indices{}, controls_indices{}, outlets_indices{}, tk, st);
 
     if (cqueue.size_approx() < 1 && controls_changed.any())
     {
