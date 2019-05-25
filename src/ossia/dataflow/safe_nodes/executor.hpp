@@ -252,7 +252,8 @@ public:
 	  {
 		  if constexpr (info::control_count > 0)
 		  {
-			  Node_T::control_policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+			  using policy = typename Node_T::control_policy;
+			  policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
 				  Node_T::run(
 					  get_inlet_accessor<I>()(inlets)...,
 					  std::forward<decltype(ctls)>(ctls)...,
@@ -273,8 +274,9 @@ public:
 	  else
 	  {
 		  if constexpr (info::control_count > 0)
-		  { 
-			  Node_T::control_policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+		  {
+			  using policy = typename Node_T::control_policy;
+			  policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
 				  Node_T::run(
 					  get_inlet_accessor<I>()(inlets)...,
 					  std::forward<decltype(ctls)>(ctls)...,
