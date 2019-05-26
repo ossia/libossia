@@ -38,7 +38,7 @@ inline void union_successor_sets(
 template <
     typename TheContainer, typename ST = std::size_t,
     typename VT = typename TheContainer::value_type>
-struct subscript_t : public std::unary_function<ST, VT>
+struct subscript_t
 {
   typedef VT& result_type;
 
