@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <thread>
+#include <string>
 
 namespace ossia
 {
