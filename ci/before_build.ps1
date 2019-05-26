@@ -37,7 +37,7 @@ cd build
 
 $CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DOSSIA_C=1","-DOSSIA_CPP=1","-DOSSIA_UNITY3D=0","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 $32bitgen = "-G""Visual Studio 15 2017"""
-$64bitgen = "-G""Visual Studio 15 2017"" -A x64"
+$64bitgen = "-G""Visual Studio 15 2017""","-A x64"
 
 if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
