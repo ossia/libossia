@@ -16,6 +16,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       weakjack
       verdigris
       flat
+      dr_libs
       )
 
   execute_process(COMMAND git submodule sync --recursive
