@@ -8,17 +8,17 @@ install(FILES ${CMAKE_CURRENT_LIST_DIR}/setup.py
   ${CMAKE_CURRENT_LIST_DIR}/versioneer.py
   ${CMAKE_CURRENT_LIST_DIR}/setup.cfg
   ${CMAKE_CURRENT_LIST_DIR}/README.rst
-DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)
+DESTINATION ${CMAKE_BINARY_DIR}/src/ossia-python)
 
 install(FILES ${CMAKE_CURRENT_LIST_DIR}/../../LICENSE
-DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python
+DESTINATION ${CMAKE_BINARY_DIR}/src/ossia-python
 RENAME LICENSE.txt)
 
 install(FILES
   ${CMAKE_CURRENT_LIST_DIR}/pyossia/__init__.py
   ${CMAKE_CURRENT_LIST_DIR}/pyossia/ossia_python.py
   ${CMAKE_CURRENT_LIST_DIR}/pyossia/_version.py
-DESTINATION ${CMAKE_BINARY_DIR}/OSSIA/ossia-python/pyossia)
+DESTINATION ${CMAKE_BINARY_DIR}/src/ossia-python/pyossia)
 
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "We can't use pybind11 CMake module when cross-compiling.")
@@ -42,7 +42,7 @@ if(CMAKE_CROSSCOMPILING)
     endif()
 
     install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
-                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)"
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/ossia-python)"
     )
 
 else()
@@ -58,6 +58,6 @@ else()
     target_link_libraries(${PROJECT_NAME} PRIVATE ossia)
 
     install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel
-                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/OSSIA/ossia-python)"
+                                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/ossia-python)"
     )
 endif()
