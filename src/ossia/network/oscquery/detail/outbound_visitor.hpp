@@ -14,6 +14,8 @@ namespace oscquery
 struct osc_outbound_visitor
 {
 public:
+  explicit osc_outbound_visitor(oscpack::OutboundPacketStream& stream): p{stream} { }
+
   oscpack::OutboundPacketStream& p;
   void operator()(impulse) const
   {
@@ -46,25 +48,51 @@ public:
 
   void operator()(vec2f vec) const
   {
+    if(m_depth > 0)
+    { p << oscpack::BeginArray(); }
+
     p << vec[0] << vec[1];
+
+    if(m_depth > 0)
+    { p << oscpack::EndArray(); }
   }
 
   void operator()(vec3f vec) const
   {
+    if(m_depth > 0)
+    { p << oscpack::BeginArray(); }
+
     p << vec[0] << vec[1] << vec[2];
+
+    if(m_depth > 0)
+    { p << oscpack::EndArray(); }
   }
 
   void operator()(vec4f vec) const
   {
+    if(m_depth > 0)
+    { p << oscpack::BeginArray(); }
+
     p << vec[0] << vec[1] << vec[2] << vec[3];
+
+    if(m_depth > 0)
+    { p << oscpack::EndArray(); }
   }
 
   void operator()(const std::vector<value>& t) const
   {
+    if(m_depth > 0)
+    { p << oscpack::BeginArray(); }
+
+    m_depth++;
     for (const auto& val : t)
     {
       val.apply(*this);
     }
+    m_depth--;
+
+    if(m_depth > 0)
+    { p << oscpack::EndArray(); }
   }
 
   template <typename T, typename U>
@@ -85,6 +113,9 @@ public:
   void operator()() const
   {
   }
+
+private:
+  mutable int m_depth = 0;
 };
 }
 }

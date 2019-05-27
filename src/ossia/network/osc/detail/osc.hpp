@@ -192,20 +192,70 @@ struct osc_utilities
     }
   }
 
-  static std::vector<ossia::value> create_list(
-      oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+
+  static std::vector<ossia::value> create_list_(
+      oscpack::ReceivedMessageArgumentIterator& it, oscpack::ReceivedMessageArgumentIterator& end)
   {
     std::vector<ossia::value> t;
-    for (int i = 0; i < numArguments; ++i)
+    for (; it != end; ++it)
     {
-      t.push_back(osc_utilities::create_value(cur_it));
-      ++cur_it;
+      switch (it->TypeTag())
+      {
+        case oscpack::INT32_TYPE_TAG:
+          t.push_back(int32_t{it->AsInt32Unchecked()}); break;
+        case oscpack::INT64_TYPE_TAG:
+          t.push_back(int32_t{(int)it->AsInt64Unchecked()}); break;
+        case oscpack::FLOAT_TYPE_TAG:
+          t.push_back(float{it->AsFloatUnchecked()}); break;
+        case oscpack::DOUBLE_TYPE_TAG:
+          t.push_back(float{(float)it->AsDoubleUnchecked()}); break;
+        case oscpack::TIME_TAG_TYPE_TAG:
+          t.push_back(int32_t(it->AsTimeTagUnchecked())); break;
+        case oscpack::CHAR_TYPE_TAG:
+          t.push_back(char{it->AsCharUnchecked()}); break;
+        case oscpack::TRUE_TYPE_TAG:
+          t.push_back(bool{true}); break;
+        case oscpack::FALSE_TYPE_TAG:
+          t.push_back(bool{false}); break;
+        case oscpack::STRING_TYPE_TAG:
+          t.push_back(std::string{it->AsStringUnchecked()}); break;
+        case oscpack::SYMBOL_TYPE_TAG:
+          t.push_back(std::string{it->AsSymbolUnchecked()}); break;
+        case oscpack::RGBA_COLOR_TYPE_TAG:
+        {
+          auto c = it->AsRgbaColorUnchecked();
+          t.push_back(make_vec(
+              uint8_t(c >> 24 & 0xFF), uint8_t(c >> 16 & 0xFF),
+              uint8_t(c >> 8 & 0xFF), uint8_t(c & 0xFF)));
+          break;
+        }
+        case oscpack::ARRAY_BEGIN_TYPE_TAG:
+        {
+          ++it;
+          t.push_back(create_list_(it, end));
+          break;
+        }
+        case oscpack::ARRAY_END_TYPE_TAG:
+        {
+          ++it;
+          return t;
+        }
+        default:
+          t.push_back( ossia::impulse{});
+          break;
+      }
     }
     return t;
   }
 
+  static std::vector<ossia::value> create_list(
+      oscpack::ReceivedMessageArgumentIterator it, oscpack::ReceivedMessageArgumentIterator end)
+  {
+    return create_list_(it, end);
+  }
+
   static ossia::value
-  create_any(oscpack::ReceivedMessageArgumentIterator cur_it, int numArguments)
+  create_any(oscpack::ReceivedMessageArgumentIterator cur_it, oscpack::ReceivedMessageArgumentIterator end, int numArguments)
   {
     switch (numArguments)
     {
@@ -214,7 +264,7 @@ struct osc_utilities
       case 1:
         return create_value(cur_it);
       default:
-        return create_list(cur_it, numArguments);
+        return create_list(cur_it, end);
     }
   }
 };
@@ -337,7 +387,7 @@ struct osc_inbound_visitor
     }
   }
   */
-    return osc_utilities::create_list(cur_it, numArguments);
+    return osc_utilities::create_list(cur_it, end_it);
   }
 
   ossia::value operator()() const

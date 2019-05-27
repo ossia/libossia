@@ -857,14 +857,6 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
   auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
   std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
-  auto cb = [&](const parameter_base& p) {
-    auto name = p.get_node().get_name();
-    std::cout << "parameter " << name << " created" << std::endl;
-    auto node = ws_clt->get_root_node().find_child(name);
-    node->get_parameter()->push_value(val);
-  };
-  ws_clt->on_parameter_created.connect(cb);
-
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   auto& n = find_or_create_node(serv, "/dynamic_list");
@@ -875,12 +867,19 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
     REQUIRE(v == val);
   });
 
+  std::cerr << " *** updating client *** \n";
   ws_proto->update(ws_clt->get_root_node());
   auto node = find_node(ws_clt->get_root_node(), "/dynamic_list");
   REQUIRE(node);
   auto param = node->get_parameter();
+  param->push_value(val);
+  std::cout << "server-side value: " << a->value() << " \n";
+  std::cout << "client-side value: " << param->value() << " \n";
   REQUIRE(param);
   REQUIRE(param->value().get<std::vector<ossia::value>>() == val);
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 
   val.clear();
   val.push_back(4.5f);

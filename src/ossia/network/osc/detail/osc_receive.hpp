@@ -75,7 +75,7 @@ inline void handle_osc_message(
       {
         dev.on_unhandled_message(
             addr_txt, net::osc_utilities::create_any(
-                          m.ArgumentsBegin(), m.ArgumentCount()));
+                          m.ArgumentsBegin(), m.ArgumentsEnd(), m.ArgumentCount()));
       }
     }
   }

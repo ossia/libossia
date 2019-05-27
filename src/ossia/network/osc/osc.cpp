@@ -320,7 +320,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     case 2:
     {
       auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
       if (is_vec<2>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC2F);
@@ -330,14 +330,14 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
       }
       break;
     }
     case 3:
     {
       auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
       if (is_vec<3>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC3F);
@@ -347,14 +347,14 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
       }
       break;
     }
     case 4:
     {
       auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount());
+          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
       if (is_vec<4>(val))
       {
         auto addr = n->create_parameter(ossia::val_type::VEC4F);
@@ -364,7 +364,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
+            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
       }
       break;
     }
@@ -372,7 +372,7 @@ void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
     {
       auto addr = n->create_parameter(ossia::val_type::LIST);
       addr->set_value(
-          osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentCount()));
+          osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
       break;
     }
   }
