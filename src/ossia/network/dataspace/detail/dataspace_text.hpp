@@ -151,6 +151,8 @@ struct unit_pretty_texts
   {
     ossia::for_each_tagged(dataspace_u_list{}, [&](auto t) {
       using dataspace_type = typename decltype(t)::type;
+      using dataspace_t = typename matching_unit_u_list<dataspace_type>::type;
+      map[dataspace_t{}] = dataspace_traits<dataspace_type>::text()[0];
       ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
         using unit_type = typename decltype(u)::type;
         map[unit_type{}] = make_pretty_unit_text<dataspace_type, unit_type>();
