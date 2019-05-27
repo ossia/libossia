@@ -199,17 +199,14 @@ TEST_CASE ("test_vecnf", "test_vecnf")
 
   p1->push_value(ossia::make_vec(1., -1.));
   p2->push_value(ossia::make_vec(2., -2.5, -123.));
-  p3->push_value(ossia::make_vec(1e2, -0., 999, 4.56));
+  p3->push_value(ossia::make_vec(1e2, -0., 999, 1.));
   p4->push_value(std::vector<ossia::value>{1, 12, 17, -4, 5, .2, 15, "toto", 'a', std::vector<ossia::value>{"foo","bar",0.25}, std::vector<ossia::value>{}});
 
   const auto preset = ossia::presets::make_preset(dev);
   const auto presetStr = ossia::presets::to_string(preset);
-  std::cerr << presetStr.c_str();
 
   const auto loadPreset = ossia::presets::from_string(presetStr);
-  for(auto s : loadPreset) std::cerr << s.first.c_str();
   auto presetStr2 = ossia::presets::to_string(loadPreset);
-  std::cerr << presetStr2.c_str();
   REQUIRE(loadPreset == preset);
 
   std::cerr << "Write json";
@@ -233,18 +230,15 @@ TEST_CASE ("test_values", "test_values")
   auto p4 = ossia::try_setup_parameter("bool", ossia::net::create_node(root, "/my_bool"));
 
   p1->push_value(-5);
-  p2->push_value(3.141);
+  p2->push_value(1e2);
   p3->push_value('e');
   p4->push_value(true);
 
   const auto preset = ossia::presets::make_preset(dev);
   const auto presetStr = ossia::presets::to_string(preset);
-  std::cerr << presetStr.c_str();
 
   const auto loadPreset = ossia::presets::from_string(presetStr);
-  for(auto s : loadPreset) std::cerr << s.first.c_str();
   auto presetStr2 = ossia::presets::to_string(loadPreset);
-  std::cerr << presetStr2.c_str();
   REQUIRE(loadPreset == preset);
 
   std::cerr << "Write json";
