@@ -15,8 +15,9 @@ using namespace std::placeholders;
 
 void debug(std::vector<ossia::net::node_base*> t)
 {
+  std::cout << "\n";
   for(auto n : t)
-    std::cerr << ossia::net::address_string_from_node(*n);
+    std::cout << ossia::net::address_string_from_node(*n) << "\n";
 }
 std::vector<std::string> to_string(const std::vector<ossia::net::node_base*>& match)
 {
@@ -152,6 +153,10 @@ TEST_CASE ("test_traversal", "test_traversal")
   auto& n5 = ossia::net::find_or_create_node(device1, "foo/war/waz");
   auto& n6 = ossia::net::find_or_create_node(device1, "foo/kar/kaz");
 
+  auto& test_foo_bar = *n1.get_parent();
+  auto& test_foo_war = *n5.get_parent();
+  auto& test_foo_kar = *n6.get_parent();
+
   auto& n3 = ossia::net::find_or_create_node(device2, "fizz/baz");
   auto& n4 = ossia::net::find_or_create_node(device2, "foo/baz.2/blop");
 
@@ -218,7 +223,7 @@ TEST_CASE ("test_traversal", "test_traversal")
     std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     debug(vec);
-    std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n6};
+    std::vector<ossia::net::node_base*> expected{&test_foo_bar, &test_foo_war, &test_foo_kar};
     CHECK(vec == expected);
   }
 

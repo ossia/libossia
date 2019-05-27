@@ -66,7 +66,7 @@ TEST_CASE( "Units", "[Units]" )
     });
   });
 }
-
+/*
 // TODO this is a benchmark not a test
 TEST_CASE( "Parameters", "[Parameters]")
 {
@@ -85,3 +85,4 @@ TEST_CASE( "Parameters", "[Parameters]")
 
   std::cout << "average time: " << double(k) / double(5000.) << std::endl;
 }
+*/

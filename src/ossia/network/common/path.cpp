@@ -83,6 +83,19 @@ void get_all_children(std::vector<ossia::net::node_base*>& vec)
   get_all_children_rec(vec, inserted);
 }
 
+void match_device_with_regex(
+    std::vector<ossia::net::node_base*>& vec, const std::regex& r)
+{
+  for (auto it = vec.cbegin(); it != vec.cend();)
+  {
+    const auto& name = (*it)->get_device().get_name();
+    if (!std::regex_match(name, r))
+      it = vec.erase(it);
+    else
+      ++it;
+  }
+}
+
 void match_with_regex(
     std::vector<ossia::net::node_base*>& vec, const std::regex& r)
 {
@@ -112,17 +125,65 @@ struct regex_cache
   std::mutex mutex;
 };
 
+std::regex make_regex(std::string& part)
+{
+  // Perform the various regex-like replacements
+  // note: seriously, don't do this with regex if possible
+  net::expand_ranges(part);
+  std::string res = "^";
+  res.reserve(part.size() + 16);
+
+  static const auto qmark
+      = "[" + std::string(ossia::net::name_characters()) + "]?";
+  static const auto smark
+      = "[" + std::string(ossia::net::name_characters()) + "]*";
+  for (std::size_t i = 0, N = part.size(); i < N; i++)
+  {
+    if (part[i] == '(')
+      res.append("\\(");
+    else if (part[i] == ')')
+      res.append("\\)");
+    else if (part[i] == '{')
+      res.append("(");
+    else if (part[i] == '}')
+      res.append(")");
+    else if (part[i] == ',')
+      res.append("|");
+    else if (part[i] == '?')
+      res.append(qmark);
+    else if (part[i] == '*')
+      res.append(smark);
+    else if (part[i] == '!')
+      res.append(regex_path::any_instance::instance_regex());
+    else
+      res += part[i];
+  }
+  res += "$";
+
+  return std::regex{res};
+}
+
 void add_device_part(std::string part, path& p)
 {
-  p.child_functions.push_back([=](std::vector<ossia::net::node_base*>& x) {
-    for (auto it = x.begin(); it != x.end();)
-    {
-      if ((*it)->get_device().get_name() != part)
-        it = x.erase(it);
-      else
-        ++it;
-    }
-  });
+  // TODO LRU cache
+  auto& map = regex_cache::instance();
+  std::lock_guard<std::mutex> _(map.mutex);
+
+  auto it = map.map.find(part);
+  if (it != map.map.end())
+  {
+    p.child_functions.push_back(
+        [r = it->second](auto& v) { match_device_with_regex(v, r); });
+  }
+  else
+  {
+    std::string orig = part;
+
+    std::regex r = make_regex(part);
+
+    p.child_functions.push_back([=](auto& v) { match_device_with_regex(v, r); });
+    map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+  }
 }
 
 void add_relative_path(std::string& part, path& p)
@@ -130,6 +191,7 @@ void add_relative_path(std::string& part, path& p)
   if (part != "..")
   {
     {
+      // TODO LRU cache
       auto& map = regex_cache::instance();
       std::lock_guard<std::mutex> _(map.mutex);
 
@@ -143,40 +205,8 @@ void add_relative_path(std::string& part, path& p)
       {
         std::string orig = part;
 
-        // Perform the various regex-like replacements
-        // note: seriously, don't do this with regex if possible
-        net::expand_ranges(part);
-        std::string res = "^";
-        res.reserve(part.size() + 16);
+        std::regex r = make_regex(part);
 
-        static const auto qmark
-            = "[" + std::string(ossia::net::name_characters()) + "]?";
-        static const auto smark
-            = "[" + std::string(ossia::net::name_characters()) + "]*";
-        for (std::size_t i = 0, N = part.size(); i < N; i++)
-        {
-          if (part[i] == '(')
-            res.append("\\(");
-          else if (part[i] == ')')
-            res.append("\\)");
-          else if (part[i] == '{')
-            res.append("(");
-          else if (part[i] == '}')
-            res.append(")");
-          else if (part[i] == ',')
-            res.append("|");
-          else if (part[i] == '?')
-            res.append(qmark);
-          else if (part[i] == '*')
-            res.append(smark);
-          else if (part[i] == '!')
-            res.append(regex_path::any_instance::instance_regex());
-          else
-            res += part[i];
-        }
-        res += "$";
-
-        std::regex r(res);
         p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
         map.map.insert(std::make_pair(std::move(orig), std::move(r)));
       }
