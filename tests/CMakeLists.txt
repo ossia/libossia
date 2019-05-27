@@ -29,6 +29,12 @@ ossia_add_test(PathTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
 ossia_add_test(DeviceTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceTest.cpp")
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
+if(MSVC AND NOT OSSIA_STATIC)
+  add_custom_command(TARGET ossia_PresetTest POST_BUILD 
+    COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ossia> $<TARGET_FILE_DIR:ossia_PresetTest>
+  )
+endif()
+
 if(OSSIA_EDITOR)
   ossia_add_test(AutomationTest
       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/AutomationTest.cpp"
