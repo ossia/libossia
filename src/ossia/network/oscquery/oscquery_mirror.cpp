@@ -651,7 +651,6 @@ std::string to_ip(std::string uri)
 bool oscquery_mirror_protocol::on_WSMessage(
     oscquery_mirror_protocol::connection_handler, const std::string& message)
 {
-    std::cout << "attribute changed: " << message << std::endl;
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
