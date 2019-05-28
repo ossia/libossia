@@ -39,7 +39,8 @@ struct OSSIA_EXPORT json_parser
   static void
   parse_path_changed(ossia::net::node_base& map, const rapidjson::Value& mess);
   static void parse_attributes_changed(
-      ossia::net::node_base& map, const rapidjson::Value& obj);
+      ossia::net::node_base& map, const rapidjson::Value& obj,
+      ossia::net::parameter_base*& request_value);
 };
 }
 }

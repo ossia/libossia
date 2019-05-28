@@ -463,29 +463,6 @@ static auto& namespaceSetterMap()
   return map;
 }
 
-static auto& attributesSetterMap()
-{
-  // This one has the missing attributes.
-  // They are not in the previous map because we want to
-  // handle them separately when parsing the namespace.
-  static const reader_map_type map{[] {
-    using namespace ossia::net;
-
-    reader_map_type attr_impl = namespaceSetterMap();
-    // Remaining metadata
-    ossia::for_each_type_tagged<
-        typetag_attribute, extended_type_attribute, unit_attribute>(
-        [&](auto attr) {
-          using type = typename decltype(attr)::type;
-          attr_impl.insert(make_setter_pair<type>());
-        });
-
-    return attr_impl;
-  }()};
-
-  return map;
-}
-
 static ossia::val_type read_vec_typetag(ossia::string_view typetag)
 {
   if (typetag == "ff" || typetag == "[ff]")
@@ -526,6 +503,208 @@ static ossia::val_type read_vec_typetag(const rapidjson::Value& val)
   return ossia::val_type::LIST;
 }
 
+static ossia::val_type underlying_type(
+        const extended_type& e_type,
+        ossia::string_view typetag
+        )
+{
+    ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
+                                                         // case; also
+                                                         // "list_type()"
+    if (e_type == generic_buffer_type() || e_type == filesystem_path_type()
+        || e_type == url_type())
+    {
+      actual_type = ossia::val_type::STRING;
+    }
+    else if (e_type == list_type())
+    {
+      // nothing to do, but don't remove so that
+      // we don't go into the float_array case
+    }
+    else if (e_type == float_array_type())
+    {
+      // Look for Vec2f, Vec3f, Vec4f
+      actual_type = read_vec_typetag(typetag);
+    }
+
+    return actual_type;
+}
+
+static ossia::val_type underlying_type(
+        const extended_type& e_type,
+        const rapidjson::Value& obj,
+        ossia::string_view typetag,
+        rapidjson::Value::ConstMemberIterator value_it,
+        rapidjson::Value::ConstMemberIterator default_value_it
+        )
+{
+    ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
+                                                         // case; also
+                                                         // "list_type()"
+    if (e_type == generic_buffer_type() || e_type == filesystem_path_type()
+        || e_type == url_type())
+    {
+      actual_type = ossia::val_type::STRING;
+    }
+    else if (e_type == list_type())
+    {
+      // nothing to do, but don't remove so that
+      // we don't go into the float_array case
+    }
+    else if (e_type == float_array_type())
+    {
+      // Look for Vec2f, Vec3f, Vec4f
+      actual_type = read_vec_typetag(typetag);
+      if (actual_type == ossia::val_type::LIST)
+      {
+        // We try to find through the actual values
+        if (value_it != obj.MemberEnd())
+        {
+          actual_type = read_vec_typetag(value_it->value);
+        }
+        else if (default_value_it != obj.MemberEnd())
+        {
+          actual_type = read_vec_typetag(default_value_it->value);
+        }
+      }
+    }
+
+    return actual_type;
+}
+
+
+static void create_or_update_parameter_type(
+        ossia::net::node_base& node,
+        const rapidjson::Value& obj,
+        ossia::net::parameter_base*& request_value
+        )
+{
+  using impl = ossia::oscquery::detail::json_parser_impl;
+  // First initialize the address if it's not an empty node
+  ossia::string_view typetag;
+
+  // Try to read all the attributes that could give us the concrete type.
+  complex_type val_type;                                 // Implementation type
+  optional<ossia::unit_t> unit = ossia::none;            // Unit
+  optional<ossia::extended_type> ext_type = ossia::none; // Extended type
+
+  // Look for the typetag
+  auto type_it = obj.FindMember(detail::attribute_typetag());
+  if (type_it != obj.MemberEnd() && type_it->value.IsString())
+  {
+    typetag = get_string_view(type_it->value);
+    val_type = get_type_from_osc_typetag(typetag);
+  }
+
+  // Look for the unit
+  if (auto unit_it = obj.FindMember(detail::attribute_unit());
+      unit_it != obj.MemberEnd())
+  {
+    ossia::unit_t u;
+    impl::ReadValue(unit_it->value, u);
+    if (u)
+      unit = std::move(u);
+  }
+
+  if (auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
+      ext_type_it != obj.MemberEnd() && !ext_type_it->value.IsNull())
+  {
+    ossia::unit_t u;
+    impl::ReadValue(ext_type_it->value, u);
+    if (u)
+    {
+      unit = std::move(u);
+    }
+    else if (ext_type_it->value.IsArray())
+    {
+      // FIXME ext_type should be an array
+      if (auto arr = ext_type_it->value.GetArray(); arr.Size() > 0)
+        ext_type = get_string(ext_type_it->value.GetArray()[0]);
+    }
+    else {
+        ext_type = get_string(ext_type_it->value);
+    }
+  }
+
+  // If any of these exist, we can update the parameter
+  if (val_type || unit || ext_type)
+  {
+    ossia::net::parameter_base* addr = node.get_parameter();
+
+    if(!addr)
+    {
+      if (unit) // The unit enforces the value type
+      {
+        addr = node.create_parameter(ossia::matching_type(*unit));
+        addr->set_unit(*unit);
+        ossia::net::set_extended_type(node, ext_type);
+      }
+      else if (ext_type)
+      {
+        addr = node.create_parameter(detail::underlying_type(*ext_type, typetag));
+        ossia::net::set_extended_type(node, ext_type);
+      }
+      else if (val_type)
+      {
+        addr = setup_parameter(val_type, node);
+      }
+    }
+    else
+    {
+      if (unit) // The unit enforces the value type
+      {
+        addr->set_unit(*unit);
+        ossia::net::set_extended_type(node, ext_type);
+      }
+      else if (ext_type)
+      {
+        const auto t = detail::underlying_type(*ext_type, typetag);
+        if(t != addr->get_value_type())
+            addr->set_value_type(t);
+        ossia::net::set_extended_type(node, ext_type);
+      }
+      else if (val_type)
+      {
+        setup_parameter(val_type, node);
+      }
+    }
+    request_value = addr;
+  }
+}
+
+ossia::value parse_oscquery_value(
+        ossia::net::node_base& node,
+        const rapidjson::Value& v,
+        std::string_view typetag,
+        bool& ok)
+{
+  ossia::value res = node.get_parameter()->value();
+  const auto& u = node.get_parameter()->get_unit();
+  if (typetag.size() == 1)
+  {
+    if (v.IsArray())
+    {
+      const auto& ar = v.GetArray();
+      if (!ar.Empty())
+      {
+        ok = res.apply(oscquery::detail::json_to_single_value{
+            *ar.Begin(), typetag});
+      }
+    }
+    else
+    {
+      ok = res.apply(oscquery::detail::json_to_single_value{v, typetag});
+    }
+  }
+  else
+  {
+    int typetag_counter = 0;
+    ok = res.apply(
+        oscquery::detail::json_to_value{v, typetag, typetag_counter, u});
+  }
+  return res;
+}
+
 void json_parser_impl::readParameter(
     net::node_base& node, const rapidjson::Value& obj)
 {
@@ -534,17 +713,17 @@ void json_parser_impl::readParameter(
   ossia::string_view typetag;
 
   // Try to read all the attributes that could give us the concrete type.
-  complex_type val_type;                      // Implementation type
-  optional<ossia::unit_t> unit = ossia::none; // Unit
+  complex_type val_type;                                 // Implementation type
+  optional<ossia::unit_t> unit = ossia::none;            // Unit
   optional<ossia::extended_type> ext_type = ossia::none; // Extended type
 
   // TODO maybe read all the attributes and store their iterators, then do
   // them in the order we want ?
-  auto value_it = obj.FindMember(detail::attribute_value());
-  auto default_value_it = obj.FindMember(detail::attribute_default_value());
+  const auto value_it = obj.FindMember(detail::attribute_value());
+  const auto default_value_it = obj.FindMember(detail::attribute_default_value());
 
   // Look for the typetag
-  auto type_it = obj.FindMember(detail::attribute_typetag());
+  const auto type_it = obj.FindMember(detail::attribute_typetag());
   if (type_it != obj.MemberEnd())
   {
     typetag = get_string_view(type_it->value);
@@ -562,7 +741,7 @@ void json_parser_impl::readParameter(
   }
 
   if (auto ext_type_it = obj.FindMember(detail::attribute_extended_type());
-      ext_type_it != obj.MemberEnd())
+      ext_type_it != obj.MemberEnd() && !ext_type_it->value.IsNull())
   {
     ossia::unit_t u;
     ReadValue(ext_type_it->value, u);
@@ -575,6 +754,9 @@ void json_parser_impl::readParameter(
       if (auto arr = ext_type_it->value.GetArray(); arr.Size() > 0)
         ext_type = get_string(ext_type_it->value.GetArray()[0]);
     }
+    else {
+        ext_type = get_string(ext_type_it->value);
+    }
   }
 
   // If any of these exist, we can create a parameter
@@ -584,45 +766,12 @@ void json_parser_impl::readParameter(
     if (unit) // The unit enforces the value type
     {
       addr = node.create_parameter(ossia::matching_type(*unit));
-
       addr->set_unit(*unit);
       ossia::net::set_extended_type(node, ext_type);
     }
     else if (ext_type)
     {
-      ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
-                                                           // case; also
-                                                           // "list_type()"
-      const auto& e_type = *ext_type;
-      if (e_type == generic_buffer_type() || e_type == filesystem_path_type()
-          || e_type == url_type())
-      {
-        actual_type = ossia::val_type::STRING;
-      }
-      else if (e_type == list_type())
-      {
-        // nothing to do, but don't remove so that
-        // we don't go into the float_array case
-      }
-      else if (e_type == float_array_type())
-      {
-        // Look for Vec2f, Vec3f, Vec4f
-        actual_type = read_vec_typetag(typetag);
-        if (actual_type == ossia::val_type::LIST)
-        {
-          // We try to find through the actual values
-          if (value_it != obj.MemberEnd())
-          {
-            actual_type = read_vec_typetag(value_it->value);
-          }
-          else if (default_value_it != obj.MemberEnd())
-          {
-            actual_type = read_vec_typetag(default_value_it->value);
-          }
-        }
-      }
-
-      addr = node.create_parameter(actual_type);
+      addr = node.create_parameter(underlying_type(*ext_type, obj, typetag, value_it, default_value_it));
       ossia::net::set_extended_type(node, ext_type);
     }
     else if (val_type)
@@ -631,40 +780,10 @@ void json_parser_impl::readParameter(
     }
 
     // We have a type. Now we read the value according to it.
-
-    auto parse_oscquery_value = [&](const rapidjson::Value& v, bool& ok) {
-      ossia::value res = node.get_parameter()->value();
-      const auto& u = node.get_parameter()->get_unit();
-      if (typetag.size() == 1)
-      {
-        if (v.IsArray())
-        {
-          const auto& ar = v.GetArray();
-          if (!ar.Empty())
-          {
-            ok = res.apply(oscquery::detail::json_to_single_value{
-                *ar.Begin(), typetag});
-          }
-        }
-        else
-        {
-          ok = res.apply(oscquery::detail::json_to_single_value{v, typetag});
-        }
-      }
-      else
-      {
-        int typetag_counter = 0;
-        ok = res.apply(
-            oscquery::detail::json_to_value{v, typetag, typetag_counter, u});
-      }
-      return res;
-    };
-
-    // We have a type. Now we read the value according to it.
     if (value_it != obj.MemberEnd())
     {
       bool ok = false;
-      auto res = parse_oscquery_value(value_it->value, ok);
+      auto res = parse_oscquery_value(node, value_it->value, typetag, ok);
       if (ok)
         node.get_parameter()->set_value(std::move(res));
     }
@@ -673,9 +792,14 @@ void json_parser_impl::readParameter(
     if (default_value_it != obj.MemberEnd())
     {
       bool ok = false;
-      auto res = parse_oscquery_value(default_value_it->value, ok);
+      auto res = parse_oscquery_value(node, default_value_it->value, typetag, ok);
       if (ok)
+      {
+        if(value_it == obj.MemberEnd())
+          node.get_parameter()->set_value(res);
+
         ossia::net::set_default_value(node, std::move(res));
+      }
     }
   }
   else
@@ -1089,12 +1213,13 @@ void json_parser::parse_path_changed(
 }
 
 void json_parser::parse_attributes_changed(
-    net::node_base& root, const rapidjson::Value& obj)
+    net::node_base& root, const rapidjson::Value& obj,
+    ossia::net::parameter_base*& request_value)
 {
   auto dat_it = obj.FindMember(detail::data());
   if (dat_it != obj.MemberEnd())
   {
-    auto& dat = dat_it->value;
+    const rapidjson::Value& dat = dat_it->value;
     auto path_it = dat.FindMember(detail::attribute_full_path());
     if (path_it != dat.MemberEnd())
     {
@@ -1102,7 +1227,11 @@ void json_parser::parse_attributes_changed(
       auto node = ossia::net::find_node(root, path);
       if (node)
       {
-        auto& map = detail::attributesSetterMap();
+        // First handle the typetag, unit, ext_type, etc
+        detail::create_or_update_parameter_type(*node, dat, request_value);
+
+        // Then the remaining attributes
+        auto& map = detail::namespaceSetterMap();
         auto memb_end = dat.MemberEnd();
         for (auto it = dat.MemberBegin(); it != memb_end; ++it)
         {

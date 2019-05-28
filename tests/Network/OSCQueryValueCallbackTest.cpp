@@ -178,10 +178,17 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     }
   }
 
+
   // wait for network to propagate the new nodes
   std::this_thread::sleep_for(100ms);
   // update client to apply node creation
-  client.update();
+  for(int i = 0; i < 5; i++)
+  {
+      client.update();
+      std::this_thread::sleep_for(100ms);
+      client.update();
+      std::this_thread::sleep_for(100ms);
+  }
 
   {
     auto node = client.get_root_node().find_child("my_bool");
@@ -233,6 +240,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   {
     auto node = client.get_root_node().find_child("my_list");
+    CHECK(node);
     {
       auto curr = node.get_value();
       CHECK(curr.is_list());
@@ -262,6 +270,7 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     wait();
   }
   {
+      std::cout << "\nLOL  WAIT\n";
     // Check list of list
     auto node = client.get_root_node().find_child("my_list");
     CHECK(node.get_value().is_list());
@@ -273,9 +282,12 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
     }
     opp::value val(data);
     busy_flag = true;
+
     expected_value = *val.get_raw_value_pointer();
     node.set_value(val);
+    std:: cout << expected_value << "   ===>   " << *node.get_value().get_raw_value_pointer() << std::endl;
     wait();
+    std::cout << "\nLOL I DONT WAIT ACUALLY\n";
   }
 
   {

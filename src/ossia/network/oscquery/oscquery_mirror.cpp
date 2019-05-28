@@ -651,12 +651,13 @@ std::string to_ip(std::string uri)
 bool oscquery_mirror_protocol::on_WSMessage(
     oscquery_mirror_protocol::connection_handler, const std::string& message)
 {
+    std::cout << "attribute changed: " << message << std::endl;
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
   try
   {
-    auto data = json_parser::parse(message);
+    std::shared_ptr<rapidjson::Document> data = json_parser::parse(message);
     if (data->IsNull())
     {
       if (m_logger.inbound_logger)
@@ -670,6 +671,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
     }
     else
     {
+
       switch (json_parser::message_type(*data))
       {
         case message_type::HostInfo:
@@ -717,24 +719,34 @@ bool oscquery_mirror_protocol::on_WSMessage(
             auto node
                 = ossia::net::find_node(m_device->get_root_node(), p->address);
 
+            const rapidjson::Value* obj_value = data.get();
+            if(obj_value->IsObject())
+            {
+                if(auto it = obj_value->FindMember("VALUE");
+                        it != obj_value->MemberEnd())
+                {
+                    obj_value = &it->value;
+                }
+            }
+
             if (node)
             {
               auto addr = node->get_parameter();
               if (addr)
               {
-                json_parser::parse_value(*addr, *data);
+                json_parser::parse_value(*addr, *obj_value);
                 m_device->on_message(*addr);
               }
               else
               {
                 m_device->on_unhandled_message(
-                    p->address, detail::ReadValue(*data));
+                    p->address, detail::ReadValue(*obj_value));
               }
             }
             else
             {
               m_device->on_unhandled_message(
-                  p->address, oscquery::detail::ReadValue(*data));
+                  p->address, oscquery::detail::ReadValue(*obj_value));
             }
 
             p->promise.set_value();
@@ -826,9 +838,15 @@ bool oscquery_mirror_protocol::on_WSMessage(
 
         case message_type::AttributesChanged:
         {
-          m_functionQueue.enqueue([this, doc = std::move(data)] {
+          m_functionQueue.enqueue([this, doc = std::move(data),message] {
+            ossia::net::parameter_base* request_value = nullptr;
             json_parser::parse_attributes_changed(
-                m_device->get_root_node(), *doc);
+                m_device->get_root_node(), *doc, request_value);
+            // TODO investigate why those are called twice in OSCQueryValueCallbackTest
+            if(request_value)
+            {
+              pull_async(*request_value);
+            }
           });
           if (m_commandCallback)
             m_commandCallback();

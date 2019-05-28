@@ -237,7 +237,7 @@ struct osc_utilities
         }
         case oscpack::ARRAY_END_TYPE_TAG:
         {
-          ++it;
+          // don't call ++it here :  it will be increased in the parent's for(....)
           return t;
         }
         default:
