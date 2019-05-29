@@ -253,12 +253,12 @@ case "$TRAVIS_OS_NAME" in
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
@@ -272,9 +272,9 @@ def get_versions():
         $CMAKE_BIN --build . --target install
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
         fi
-        cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+        cp ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       ;;
       RpiRelease)
 
@@ -320,12 +320,12 @@ def get_versions():
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
 
         docker run --rm -v `pwd`:/ $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
 
@@ -337,12 +337,12 @@ def get_versions():
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
         echo "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DBOOST_ROOT="$BOOST_ROOT" \
@@ -357,16 +357,16 @@ def get_versions():
         $CMAKE_BIN --build . --target install
 
         # now we just want to install the wheel and run the tests
-        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
-        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+        ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl
+        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
         fi
 
-        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+        ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
-        cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+        cp ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
 
       ;;
       qml)
@@ -546,12 +546,12 @@ def get_versions():
       # _version.py is not valid in a non-git folder
       # When making a wheel, we write the git tag which it has been build from
       # request the version
-      WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+      WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
       echo "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/pyossia/_version.py
+  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_SANITIZE=1 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
@@ -568,14 +568,14 @@ def get_versions():
       $CMAKE_BIN --build . --target install
 
       # now we just want to install the wheel and run the tests
-      ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
-      ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+      ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl
+      ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
       if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl || true
-          mv ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
+          mv ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       fi
-      cp ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
+      cp ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
     elif [[ "$BUILD_TYPE" == "qml" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_SANITIZE=1 \

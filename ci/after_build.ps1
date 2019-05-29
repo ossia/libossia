@@ -205,7 +205,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   mv ${env:APPVEYOR_BUILD_FOLDER}\install\ossia-pd-package\ossia ${env:HOME}\Documents\Pd\externals\
 
   # add pd/bin folder to environment path variable
-  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-pd/pd/bin/","Process")
+  [Environment]::SetEnvironmentVariable("Path",$env:Path + ";${env:APPVEYOR_BUILD_FOLDER}/build/src/ossia-pd/pd/bin/","Process")
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\build
 
@@ -264,14 +264,14 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   if (${env:APPVEYOR_REPO_TAG}){
     if ( "${env:platform}" -eq "x64" ){
       cd "C:\${env:python}-x64\"
-      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/src/ossia-python/dist/pyossia*.whl
     } else {
       cd "C:\${env:python}\"
-      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl
+      python.exe -m twine upload ${env:APPVEYOR_BUILD_FOLDER}/build/src/ossia-python/dist/pyossia*.whl
     }
   }
 
-  mv ${env:APPVEYOR_BUILD_FOLDER}/build/OSSIA/ossia-python/dist/pyossia*.whl ${env:APPVEYOR_BUILD_FOLDER}/
+  mv ${env:APPVEYOR_BUILD_FOLDER}/build/src/ossia-python/dist/pyossia*.whl ${env:APPVEYOR_BUILD_FOLDER}/
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
 

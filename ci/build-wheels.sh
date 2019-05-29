@@ -3,7 +3,7 @@ set -e -x
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip" wheel /io/build/OSSIA/ossia-python/ -w ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist
+    "${PYBIN}/pip" wheel /io/build/src/ossia-python/ -w ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist
 done
 
 for PYBIN in /opt/python/*/bin/; do
@@ -28,12 +28,12 @@ for PYBIN in /opt/python/*/bin/; do
 
 	$CMAKE_BIN --build . -- -j2
 	# now we just want to install the wheel and run the tests
-	${PYBIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist/pyossia*.whl
-	${PYBIN} ${TRAVIS_BUILD_DIR}/OSSIA/ossia-python/tests/test.py
+	${PYBIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl
+	${PYBIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
 
 if [[ "${TRAVIS_TAG}" != "x" ]]; then
-    for WHEEL in ${TRAVIS_BUILD_DIR}/build/OSSIA/ossia-python/dist; do
+    for WHEEL in ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist; do
         ${PYBIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} WHEEL
     done
 fi
