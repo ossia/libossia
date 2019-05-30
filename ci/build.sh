@@ -67,6 +67,7 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_TESTING=1 \
           -DOSSIA_EXAMPLES=1 \
           -DOSSIA_CI=1 \
+          -DPORTAUDIO_ONLY_DYNAMIC=1 \
           -DOSSIA_QT=1 \
           -DOSSIA_PD=0 \
           -DOSSIA_CPP=1 \
@@ -98,6 +99,7 @@ case "$TRAVIS_OS_NAME" in
           -DOSSIA_PROTOCOL_AUDIO=0 \
           -DOSSIA_PD=0 \
           -DOSSIA_CI=1 \
+          -DPORTAUDIO_ONLY_DYNAMIC=1 \
           -DOSSIA_QT=0 ..
 
         $CMAKE_BIN --build . -- -j2
@@ -392,6 +394,7 @@ def get_versions():
           -DOSSIA_TESTING=1 \
           -DOSSIA_COVERAGE=1 \
           -DOSSIA_CI=1 \
+          -DPORTAUDIO_ONLY_DYNAMIC=1 \
           -DOSSIA_PD=0 \
           -DOSSIA_QT=1 \
           ..
