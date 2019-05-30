@@ -11,6 +11,8 @@ namespace pybind11
 #include <pybind11/stl.h>
 #include <pybind11/stl_bind.h>
 
+#include <string_view>
+
 #include <ossia/preset/preset.hpp>
 
 #include <ossia/network/domain/domain.hpp>
@@ -825,9 +827,9 @@ PYBIND11_MODULE(ossia_python, m)
           &ossia::net::parameter_base::set_repetition_filter)
       .def_property(
           "unit",
-          [](ossia::net::parameter_base& addr) -> std::string {
+          [](ossia::net::parameter_base& addr) -> std::string_view {
             return ossia::get_pretty_unit_text(addr.get_unit()); },
-          [](ossia::net::parameter_base& addr, std::string u) {
+          [](ossia::net::parameter_base& addr, std::string_view u) {
             addr.set_unit(ossia::parse_pretty_unit(u));
           })
       .def_property_readonly(

@@ -20,6 +20,12 @@ install(FILES
   ${CMAKE_CURRENT_LIST_DIR}/pyossia/_version.py
 DESTINATION ${CMAKE_BINARY_DIR}/src/ossia-python/pyossia)
 
+# Needed because python 2.7 uses the register keyword which
+# is an error in C++17
+if(NOT MSVC)
+  target_compile_options(ossia PUBLIC -Wno-register)
+endif()
+
 if(CMAKE_CROSSCOMPILING)
     message(STATUS "We can't use pybind11 CMake module when cross-compiling.")
 
@@ -44,7 +50,6 @@ if(CMAKE_CROSSCOMPILING)
     install(CODE "execute_process(COMMAND ${PYTHON_EXECUTABLE} setup.py bdist_wheel --plat-name linux-armv7l
                                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/src/ossia-python)"
     )
-
 else()
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/pybind11" pybind11)
     message(STATUS "${PROJECT_NAME} binary is compiled and wrap in a python wheel named pyossia")
