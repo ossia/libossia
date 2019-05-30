@@ -21,7 +21,7 @@ case "$TRAVIS_OS_NAME" in
       sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
       sudo add-apt-repository --yes ppa:beineri/opt-qt-5.12.3-xenial
       sudo apt-get update -qq
-      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build gcovr lcov qt512-meta-minimal libasound2-dev clang-8 lld-8 portaudio19-dev mesa-common-dev
+      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build gcovr lcov qt512-meta-minimal libasound2-dev clang-8 lld-8 portaudio19-dev mesa-common-dev libgl1-mesa-dev
 
       wait wget || true
 
