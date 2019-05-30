@@ -14,7 +14,7 @@ env:
 
 
 osx_image: xcode10
-dist: trusty
+dist: xenial
 sudo: required
 
 # That was for RpiDocker build

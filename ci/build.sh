@@ -38,7 +38,10 @@ cd build
 
 case "$TRAVIS_OS_NAME" in
   linux)
-    if [[ -f /usr/bin/gcc-8 ]] ; then
+    if [[ -f /usr/bin/gcc-9 ]] ; then
+      export CC=/usr/bin/gcc-9
+      export CXX=/usr/bin/g++-9
+    elif [[ -f /usr/bin/gcc-8 ]] ; then
       export CC=/usr/bin/gcc-8
       export CXX=/usr/bin/g++-8
     elif [[ -f /usr/bin/gcc-7 ]] ; then

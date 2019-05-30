@@ -14,20 +14,16 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      sudo wget -nv https://github.com/OSSIA/score-sdk/releases/download/sdk7/boost.tar.bz2 -O /opt/boost.tar.bz2 &
-
       wget -nv https://cmake.org/files/v3.14/cmake-3.14.4-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
-      echo 'deb http://apt.llvm.org/trusty/ llvm-toolchain-trusty-6.0 main' | sudo tee /etc/apt/sources.list.d/llvm.list
-      sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551
+      echo 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+      sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
       sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.10.1-trusty
+      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.12.3-xenial
       sudo apt-get update -qq
-      sudo apt-get install -qq --yes --force-yes g++-7 binutils ninja-build gcovr lcov qt510-meta-minimal libasound2-dev clang-6.0 lld-6.0 portaudio19-dev
+      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build gcovr lcov qt512-meta-minimal libasound2-dev clang-8 lld-8 portaudio19-dev
 
       wait wget || true
-
-      (cd /opt; sudo tar xaf boost.tar.bz2; sudo mv boost_* boost ; sudo chmod -R a+rwx boost)
 
       tar xaf cmake-linux.tgz
       mv cmake-*-x86_64 cmake-latest
