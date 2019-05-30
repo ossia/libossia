@@ -100,7 +100,7 @@ else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.zip")
 
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.zip
+          https://fossies.org/linux/misc/${BOOST_VERSION}.zip
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip)
 
         execute_process(
@@ -111,17 +111,12 @@ else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
 
         file(DOWNLOAD
-          https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.tar.gz
+          https://fossies.org/linux/misc/${BOOST_VERSION}.tar.gz
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
 
         execute_process(
           COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
           WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
-        message(FATAL_ERROR "
-           https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.tar.gz
-
-          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
-          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}")
 
       endif()
     endif()
