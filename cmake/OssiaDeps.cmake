@@ -112,7 +112,7 @@ else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
 
         file(DOWNLOAD
-          https://fossies.org/linux/misc/${BOOST_VERSION}.tar.gz
+          https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz
           ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
 
         execute_process(
