@@ -86,7 +86,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR 69)
+set(BOOST_MINOR 70)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
@@ -117,10 +117,15 @@ else()
         execute_process(
           COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
           WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
+        message(FATAL_ERROR "
+           https://dl.bintray.com/boostorg/release/1.${BOOST_MINOR}.0/source/${BOOST_VERSION}.tar.gz
+
+          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
+          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}")
 
       endif()
     endif()
-    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/" CACHE INTERNAL "")
+    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
     set(Boost_INCLUDE_DIR ${BOOST_ROOT})
     find_package(Boost REQUIRED)
   endif()

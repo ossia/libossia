@@ -51,7 +51,6 @@ case "$TRAVIS_OS_NAME" in
       export CC=/usr/bin/gcc-6
       export CXX=/usr/bin/g++-6
     fi
-    export BOOST_ROOT=/opt/boost
 #    export VERBOSE=1
     QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
     set +e
@@ -63,7 +62,6 @@ case "$TRAVIS_OS_NAME" in
       Debug)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=1 \
@@ -87,7 +85,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
@@ -125,7 +122,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=Release \
           -DOSSIA_TESTING=0 \
@@ -145,7 +141,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
-                   -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Debug \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_TESTING=1 \
@@ -176,7 +171,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
-                   -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_PD_ONLY=1 \
@@ -203,7 +197,6 @@ case "$TRAVIS_OS_NAME" in
 
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
                    -DCMAKE_CXX_COMPILER="$CXX" \
-                   -DBOOST_ROOT="$BOOST_ROOT" \
                    -DCMAKE_BUILD_TYPE=Release \
                    -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
                    -DOSSIA_PD_ONLY=1 \
@@ -348,7 +341,6 @@ def get_versions():
   return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-python" \
           -DPYTHON_EXECUTABLE=${PYTHON_BIN} \
@@ -375,7 +367,6 @@ def get_versions():
       qml)
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Release \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/ossia-qml" \
           -DOSSIA_CI=1 \
@@ -397,7 +388,6 @@ def get_versions():
         $CMAKE_BIN \
           -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
-          -DBOOST_ROOT="$BOOST_ROOT" \
           -DCMAKE_BUILD_TYPE=Debug \
           -DOSSIA_TESTING=1 \
           -DOSSIA_COVERAGE=1 \
