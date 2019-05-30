@@ -90,7 +90,7 @@ TEST_CASE ("test_parse", "test_parse")
   {
     std::string str = "vec4f: [0, 0, 0, 0]";
     auto beg = str.begin(), end = str.end();
-    ossia::detail::parse::array_parser<4> v;
+    std::array<float,4> v;
     bool ok = boost::spirit::x3::phrase_parse(
           beg, end,
           ossia::detail::parse::o_vec4_,

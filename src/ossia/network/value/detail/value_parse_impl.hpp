@@ -9,6 +9,7 @@
 #include <ossia/network/base/name_validation.hpp>
 #include <ossia/network/value/value.hpp>
 
+#include <boost/fusion/adapted/std_array.hpp>
 #include <boost/fusion/adapted.hpp>
 #include <boost/spirit/home/x3.hpp>
 #endif
@@ -28,27 +29,6 @@ using x3::int_;
 using x3::real_parser;
 using x3::skip;
 
-template <int N>
-struct array_parser
-{
-  std::array<float, N> arr;
-  int pos = 0;
-  void insert(float x)
-  {
-    arr[pos] = x;
-    pos++;
-  }
-  void operator=(float x)
-  {
-    arr[pos] = x;
-    pos++;
-  }
-  operator std::array<float, N>()
-  {
-    return arr;
-  }
-};
-
 struct BoolParse_map : x3::symbols<bool>
 {
   BoolParse_map()
@@ -61,9 +41,9 @@ struct BoolParse_map : x3::symbols<bool>
 const x3::rule<class value_, ossia::value> value_ = "value";
 const x3::rule<class o_impulse_, ossia::impulse> o_impulse_ = "impulse";
 const x3::rule<class o_str_, std::string> o_str_ = "str";
-const x3::rule<class o_vec2_, array_parser<2>> o_vec2_ = "vec2";
-const x3::rule<class o_vec3_, array_parser<3>> o_vec3_ = "vec3";
-const x3::rule<class o_vec4_, array_parser<4>> o_vec4_ = "vec4";
+const x3::rule<class o_vec2_, std::array<float, 2>> o_vec2_ = "vec2";
+const x3::rule<class o_vec3_, std::array<float, 3>> o_vec3_ = "vec3";
+const x3::rule<class o_vec4_, std::array<float, 4>> o_vec4_ = "vec4";
 const x3::rule<class o_list_, std::vector<ossia::value>> o_list_ = "list";
 
 struct EscapedChar : x3::symbols<const char>
