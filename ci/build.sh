@@ -386,7 +386,6 @@ def get_versions():
         docker run -it  -v $TRAVIS_BUILD_DIR/ci/docker.sh:/docker.sh iscore/iscore-rpi-sdk /bin/bash /docker.sh
       ;;
       Coverage)
-        gem install coveralls-lcov
         $CMAKE_BIN \
           -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
@@ -401,10 +400,7 @@ def get_versions():
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ExperimentalTest
         rm -rf **/*.o
-        lcov --compat-libtool --directory .. --capture --output-file coverage.info
-        lcov --remove coverage.info '*.moc' '*/moc_*' '*/qrc_*' '*/ui_*' '*/tests/*' '/usr/*' '/opt/*' '*/3rdparty/*' --output-file coverage.info.cleaned
-
-        mv coverage.info.cleaned coverage.info
+        fastcov -g gcov-9 --lcov --exclude /usr /opt libossia/3rdparty moc_ ui_ .moc -o coverage.info
         coveralls-lcov coverage.info
       ;;
       Docs)
