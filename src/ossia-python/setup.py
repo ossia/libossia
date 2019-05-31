@@ -7,6 +7,7 @@ setup for the pyossia project
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_packages
+import sys
 
 # To use a consistent encoding
 from codecs import open
@@ -28,7 +29,7 @@ try:
             _bdist_wheel.finalize_options(self)
             self.root_is_pure = False
 except ImportError:
-    bdist_wheel = None
+    sys.exit("ERROR: setup.py: you must install wheel (pip2/3 install wheel)")
 
 setup(
     name = 'pyossia',
@@ -51,7 +52,7 @@ setup(
     keywords = ['creative', 'controls', 'osc', 'oscquery', 'websocket', 'libossia', 'midi'],
     packages = find_packages(),
     cmdclass={
-    
+
     'bdist_wheel': bdist_wheel
     },
     package_data={

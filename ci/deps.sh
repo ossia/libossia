@@ -62,13 +62,13 @@ case "$TRAVIS_OS_NAME" in
       else
         if [[ "$PYTHON_VERSION" == "2.7" ]]; then
           sudo apt-get update -qq
-          sudo apt install -qq python python-dev python-pip
-          sudo pip install twine
+          sudo apt-get install -qq python python-dev python-pip
+          sudo pip install twine wheel
         else
           sudo add-apt-repository --yes ppa:jonathonf/python-3.6
           sudo apt-get update -qq
-          sudo apt install -qq python3 python3-dev python3-pip
-          sudo pip3 install twine
+          sudo apt-get install -qq python3 python3-dev python3-pip
+          sudo pip3 install twine wheel
         fi
       fi
     fi
