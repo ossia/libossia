@@ -684,6 +684,8 @@ PYBIND11_MODULE(ossia_python, m)
       .def_property_readonly(
           "parameter", &ossia::net::node_base::get_parameter,
           py::return_value_policy::reference)
+      .def_property_readonly(
+          "name", &ossia::net::node_base::get_name)
       .def_property("description",
         [](ossia::net::node_base& node) -> ossia::net::description {
           ossia::net::description empty{};
@@ -786,7 +788,8 @@ PYBIND11_MODULE(ossia_python, m)
       .def("children", &ossia::net::node_base::children_copy)
       .def("__str__", [](ossia::net::node_base& node) -> std::string {
         return ossia::net::osc_parameter_string(node);
-      });
+      })
+  ;
 
   py::class_<ossia::net::parameter_base>(m, "Parameter")
       .def_property_readonly(
