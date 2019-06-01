@@ -34,7 +34,7 @@ case "$TRAVIS_OS_NAME" in
 
       sudo add-apt-repository --yes ppa:jonathonf/python-3.6
       sudo apt-get update -qq
-      sudo apt-get install -qq python3 python3-pip
+      sudo apt-get install -qq python3 python3-pip python3-setuptools
       sudo pip3 install wheel
       sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
     fi
