@@ -146,11 +146,6 @@ else()
   set(BUILD_SHARED_LIBS ON)
 endif()
 
-if(OSSIA_COVERAGE)
-  include(CodeCoverage)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_COVERAGE}")
-endif()
-
 # Compiler & linker flags
 if(MSVC)
   set(CMAKE_CXX_FLAGS "-DNOGDI -DLF_FACESIZE=32 ${CMAKE_CXX_FLAGS}")
