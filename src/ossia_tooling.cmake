@@ -5,6 +5,8 @@ if(OSSIA_COVERAGE)
   setup_target_for_coverage(
       ossia_coverage
       "${CMAKE_COMMAND}"
+      "/usr;/opt;libossia/3rdparty;moc_;ui_;.moc;qrc_"
       coverage
-      "--build;.;--target;ExperimentalTest")
+      "--build;.;--target;ExperimentalTest"
+  )
 endif()

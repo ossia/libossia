@@ -1,3 +1,4 @@
+# Copyright (c) 2015 - 2019, Jean-Michaël Celerier
 # Copyright (c) 2012 - 2015, Lars Bilke
 # All rights reserved.
 #
@@ -26,8 +27,6 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-#
-#
 # 2012-01-31, Lars Bilke
 # - Enable Code Coverage
 #
@@ -35,37 +34,8 @@
 # - Added support for Clang.
 # - Some additional usage instructions.
 #
-# USAGE:
-
-# 0. (Mac only) If you use Xcode 5.1 make sure to patch geninfo as described here:
-#      http://stackoverflow.com/a/22404544/80480
-#
-# 1. Copy this file into your cmake modules path.
-#
-# 2. Add the following line to your CMakeLists.txt:
-#      INCLUDE(CodeCoverage)
-#
-# 3. Set compiler flags to turn off optimization and enable coverage:
-#    SET(CMAKE_CXX_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-#	 SET(CMAKE_C_FLAGS "-g -O0 -fprofile-arcs -ftest-coverage")
-#
-# 3. Use the function SETUP_TARGET_FOR_COVERAGE to create a custom make target
-#    which runs your test executable and produces a lcov code coverage report:
-#    Example:
-#	 SETUP_TARGET_FOR_COVERAGE(
-#				my_coverage_target  # Name for custom target.
-#				test_driver         # Name of the test driver executable that runs the tests.
-#									# NOTE! This should always have a ZERO as exit code
-#									# otherwise the coverage generation will not complete.
-#				coverage            # Name of output directory.
-#				)
-#
-# 4. Build a Debug build:
-#	 cmake -DCMAKE_BUILD_TYPE=Debug ..
-#	 make
-#	 make my_coverage_target
-#
-#
+# 2013-09-17, Jean-Michaël Celerier
+# - Use fastcov instead of gcovr / lcov
 
 # Check prereqs
 if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
@@ -91,34 +61,20 @@ if("${CMAKE_MATCH_1}" VERSION_LESS 9.0.0)
 endif()
 
 find_program(FASTCOV_PATH fastcov)
-find_program(GENHTML_PATH genhtml)
 
 if(NOT FASTCOV_PATH)
   message("fastcov not found! No coverage...")
   return()
 endif()
 
-if(NOT GENHTML_PATH)
-  message("genhtml not found! No coverage...")
-  return()
-endif()
-
-# Param _targetname     The name of new the custom make target
-# Param _testrunner     The name of the target which runs the tests.
-#						MUST return ZERO always, even on errors.
-#						If not, no coverage report will be created!
-# Param _outputname     lcov output is generated as _outputname.info
-#                       HTML report is generated in _outputname/index.html
-# Optional fourth parameter is passed as arguments to _testrunner
-#   Pass them in list form, e.g.: "-j;2" for -j 2
-function(setup_target_for_coverage _targetname _testrunner _outputname)
+function(setup_target_for_coverage _targetname _testrunner _exclusions _outputname)
   add_custom_target(${_targetname}
           ${FASTCOV_PATH} --zerocounters
 
-          COMMAND ${_testrunner} ${ARGV3}
+          COMMAND ${_testrunner} ${ARGV4}
 
           # Capturing lcov counters and generating report
-          COMMAND ${FASTCOV_PATH} --lcov --exclude /usr /opt libossia/3rdparty moc_ ui_ .moc qrc_  .. -o ${_outputname}.info
+          COMMAND ${FASTCOV_PATH} --lcov --exclude ${_exclusions} .. -o ${_outputname}.info
 
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
           COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
@@ -134,8 +90,9 @@ install(
   EXPORT enable_coverage-exports
 )
 
-install(EXPORT enable_coverage-exports
-        DESTINATION lib/cmake/enable_coverage
+install(
+  EXPORT enable_coverage-exports
+  DESTINATION lib/cmake/enable_coverage
 )
 
 export(EXPORT enable_coverage-exports)

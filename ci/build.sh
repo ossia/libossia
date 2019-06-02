@@ -398,9 +398,8 @@ def get_versions():
           -DOSSIA_QT=1 \
           ..
         $CMAKE_BIN --build . -- -j2
-        $CMAKE_BIN --build . --target ExperimentalTest
+        $CMAKE_BIN --build . --target ossia_coverage
         rm -rf **/*.o
-        fastcov -g gcov-9 --lcov --exclude /usr /opt libossia/3rdparty moc_ ui_ .moc -o coverage.info
         coveralls-lcov coverage.info
       ;;
       Docs)
