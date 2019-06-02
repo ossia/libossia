@@ -52,12 +52,12 @@ matrix:
 #    dist: trusty
 
 ## How to fix these three ? 
-#  - os: linux
-#    env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
-#
-#  - os: linux
-#    env: BUILD_TYPE=RpiPurrdataRelease OSSIA_STATIC=1
-#
+  - os: linux
+    env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
+
+  - os: linux
+    env: BUILD_TYPE=RpiPurrdataRelease OSSIA_STATIC=1
+
 #  - os: linux
 #    env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=3.5
 

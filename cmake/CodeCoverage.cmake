@@ -74,7 +74,7 @@ function(setup_target_for_coverage _targetname _testrunner _exclusions _outputna
           COMMAND ${_testrunner} ${ARGV4}
 
           # Capturing lcov counters and generating report
-          COMMAND ${FASTCOV_PATH} --lcov --exclude ${_exclusions} .. -o ${_outputname}.info
+          COMMAND ${FASTCOV_PATH} -g ${GCOV_PATH} --lcov --exclude ${_exclusions} .. -o ${_outputname}.info
 
           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
           COMMENT "Resetting code coverage counters to zero.\nProcessing code coverage counters and generating report."
