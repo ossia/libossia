@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia/network/value/value.hpp>
 #include <QMetaType>
 

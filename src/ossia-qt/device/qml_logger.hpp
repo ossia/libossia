@@ -1,6 +1,6 @@
 #pragma once
 #include <QObject>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QString>
 #include <memory>
 #include <QVariantMap>

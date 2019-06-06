@@ -3,7 +3,7 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QObject>
 #include <QSerialPort>
 

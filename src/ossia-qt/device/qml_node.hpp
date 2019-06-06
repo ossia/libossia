@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia-qt/device/qml_node_base.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 
 namespace ossia
 {

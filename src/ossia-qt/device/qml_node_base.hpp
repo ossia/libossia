@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia/network/base/parameter.hpp>
 #include <QObject>
 #include <QQuickItem>

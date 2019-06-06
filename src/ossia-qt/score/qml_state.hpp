@@ -1,6 +1,6 @@
 #pragma once
 #include <QQuickItem>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QQmlExpression>
 #include <QQmlScriptString>
 #include <QQmlListProperty>

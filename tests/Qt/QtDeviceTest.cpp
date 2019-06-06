@@ -7,7 +7,7 @@
 #include <ossia/context.hpp>
 #include <ossia-qt/device/qt_device.hpp>
 #include <iostream>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <wobjectimpl.h>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 

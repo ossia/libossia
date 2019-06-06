@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia-qt/device/qml_device.hpp>
 #include <QQmlScriptString>
 namespace ossia

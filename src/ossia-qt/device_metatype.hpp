@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia-config.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 namespace ossia::net
 { class device_base; }
 

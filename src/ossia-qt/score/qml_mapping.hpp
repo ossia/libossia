@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia/editor/mapper/mapper.hpp>
 
 namespace ossia

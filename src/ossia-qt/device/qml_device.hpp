@@ -4,7 +4,7 @@
 #include <QPointer>
 #include <QVariantMap>
 #include <tsl/hopscotch_map.h>
-#include <wobjectdefs.h>
+#include <verdigris>
 namespace ossia
 {
 namespace net

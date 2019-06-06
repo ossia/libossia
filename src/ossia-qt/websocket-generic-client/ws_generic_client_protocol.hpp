@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia-qt/js_utilities.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/base/protocol.hpp>

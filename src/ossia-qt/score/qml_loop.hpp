@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia-qt/score/qml_autom.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia-qt/score/qml_interval.hpp>
 #include <ossia-qt/score/qml_cond.hpp>
 #include <ossia-qt/score/qml_sync.hpp>

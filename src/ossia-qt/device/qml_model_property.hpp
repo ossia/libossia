@@ -1,7 +1,7 @@
 
 #pragma once
 #include <ossia/network/base/parameter.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QAbstractItemModel>
 #include <QObject>
 #include <QQmlProperty>

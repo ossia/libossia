@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <ossia/network/generic/wrapped_parameter.hpp>
 #include <ossia-qt/js_utilities.hpp>
 

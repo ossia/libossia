@@ -1,6 +1,6 @@
 #pragma once
 #include <QQuickItem>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QPointer>
 #include <readerwriterqueue.h>
 

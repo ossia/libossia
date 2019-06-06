@@ -1,6 +1,6 @@
 /*
 #pragma once
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QString>
 #include <QObject>
 

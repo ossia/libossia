@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <QQmlExtensionPlugin>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QQmlExtensionInterface>
 #include <ossia_export.h>
 namespace ossia

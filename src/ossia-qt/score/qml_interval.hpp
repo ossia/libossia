@@ -1,6 +1,6 @@
 #pragma once
 #include <QQuickItem>
-#include <wobjectdefs.h>
+#include <verdigris>
 #include <QQmlListProperty>
 #include <ossia-qt/score/qml_sync.hpp>
 #include <ossia-qt/score/qml_cond.hpp>

@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
-#include <wobjectdefs.h>
+#include <verdigris>
 
 #include <QMetaType>
 #include <QObject>
