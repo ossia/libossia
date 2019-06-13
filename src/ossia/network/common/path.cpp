@@ -95,17 +95,48 @@ void match_device_with_regex(
       ++it;
   }
 }
+void match_device_simple(
+    std::vector<ossia::net::node_base*>& vec, const std::string& r)
+{
+  for (auto it = vec.cbegin(); it != vec.cend();)
+  {
+    const auto& name = (*it)->get_device().get_name();
+    if (name != r)
+      it = vec.erase(it);
+    else
+      ++it;
+  }
+}
 
 void match_with_regex(
     std::vector<ossia::net::node_base*>& vec, const std::regex& r)
 {
-  std::vector<ossia::net::node_base*> old = std::move(vec);
+  ossia::small_vector<ossia::net::node_base*, 16> old(vec.begin(), vec.end());
+  vec.clear();
 
   for (ossia::net::node_base* node : old)
   {
     for (auto& cld : node->children())
     {
       if (std::regex_match(cld->get_name(), r))
+      {
+        vec.push_back(cld.get());
+      }
+    }
+  }
+}
+
+void match_simple(
+    std::vector<ossia::net::node_base*>& vec, const std::string& r)
+{
+  ossia::small_vector<ossia::net::node_base*, 16> old(vec.begin(), vec.end());
+  vec.clear();
+
+  for (ossia::net::node_base* node : old)
+  {
+    for (auto& cld : node->children())
+    {
+      if (cld->get_name() == r)
       {
         vec.push_back(cld.get());
       }
@@ -163,33 +194,57 @@ std::regex make_regex(std::string& part)
   return std::regex{res};
 }
 
+constexpr bool is_regex(std::string_view v)
+{
+  for(char c : v)
+  {
+    if(c == '(' || c == '{' || c == '[' || c == '*' || c == '?' || c == '^' || c == '$' || c == '\\' || c == '/' || c == '.' || c == ',' || c == '!')
+    {
+      return true;
+    }
+  }
+  return false;
+}
+
 void add_device_part(std::string part, path& p)
 {
   // TODO LRU cache
-  auto& map = regex_cache::instance();
-  std::lock_guard<std::mutex> _(map.mutex);
-
-  auto it = map.map.find(part);
-  if (it != map.map.end())
+  if(!is_regex(part))
   {
-    p.child_functions.push_back(
-        [r = it->second](auto& v) { match_device_with_regex(v, r); });
+    p.child_functions.push_back([=, p = std::move(part)](auto& v) { match_device_simple(v, p); });
   }
   else
   {
-    std::string orig = part;
+    auto& map = regex_cache::instance();
+    std::lock_guard<std::mutex> _(map.mutex);
 
-    std::regex r = make_regex(part);
+    auto it = map.map.find(part);
+    if (it != map.map.end())
+    {
+      p.child_functions.push_back(
+          [r = it->second](auto& v) { match_device_with_regex(v, r); });
+    }
+    else
+    {
+      std::string orig = part;
 
-    p.child_functions.push_back([=](auto& v) { match_device_with_regex(v, r); });
-    map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+      std::regex r = make_regex(part);
+      p.child_functions.push_back([=](auto& v) { match_device_with_regex(v, r); });
+      map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+    }
   }
 }
 
 void add_relative_path(std::string& part, path& p)
 {
-  if (part != "..")
+  using namespace std::literals;
+  if (part != ".."sv)
   {
+    if(!is_regex(part))
+    {
+      p.child_functions.push_back([p = std::move(part)](auto& v) { match_simple(v, p); });
+    }
+    else
     {
       // TODO LRU cache
       auto& map = regex_cache::instance();
