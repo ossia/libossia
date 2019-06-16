@@ -2,7 +2,65 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 
-#include <faust/dsp/poly-llvm-dsp.h>
+#if __has_include(<faust/dsp/poly-llvm-dsp.h>)
+  #include <faust/dsp/poly-llvm-dsp.h>
+#else
+  #ifndef FAUSTFLOAT
+  #define FAUSTFLOAT float
+  #endif
+
+  struct Soundfile { };
+  struct Meta { void declare(const char*, const char*) { } };
+  struct dsp { };
+  struct UI
+  {
+      virtual ~UI() = default;
+
+      virtual void openTabBox(const char* label) = 0;
+      virtual void openHorizontalBox(const char* label) = 0;
+      virtual void openVerticalBox(const char* label) = 0;
+      virtual void closeBox() = 0;
+      virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) = 0;
+      virtual void addSoundfile(
+          const char* label,
+          const char* filename,
+          Soundfile** sf_zone) = 0;
+      virtual void addButton(const char* label, FAUSTFLOAT* zone) = 0;
+      virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) = 0;
+      virtual void addVerticalSlider(
+          const char* label,
+          FAUSTFLOAT* zone,
+          FAUSTFLOAT init,
+          FAUSTFLOAT min,
+          FAUSTFLOAT max,
+          FAUSTFLOAT step) = 0;
+      virtual void addHorizontalSlider(
+          const char* label,
+          FAUSTFLOAT* zone,
+          FAUSTFLOAT init,
+          FAUSTFLOAT min,
+          FAUSTFLOAT max,
+          FAUSTFLOAT step) = 0;
+      virtual void addNumEntry(
+          const char* label,
+          FAUSTFLOAT* zone,
+          FAUSTFLOAT init,
+          FAUSTFLOAT min,
+          FAUSTFLOAT max,
+          FAUSTFLOAT step) = 0;
+      virtual void addHorizontalBargraph(
+          const char* label,
+          FAUSTFLOAT* zone,
+          FAUSTFLOAT min,
+          FAUSTFLOAT max) = 0;
+      virtual void addVerticalBargraph(
+          const char* label,
+          FAUSTFLOAT* zone,
+          FAUSTFLOAT min,
+          FAUSTFLOAT max) = 0;
+  };
+
+#endif
 
 namespace ossia::nodes
 {
@@ -184,8 +242,8 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
 }
 
 /// Synth ///
-template <typename Node>
-void faust_exec_synth(Node& self, dsp_poly& dsp, const ossia::token_request& tk)
+template <typename Node, typename DspPoly>
+void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk)
 {
   if (tk.date > tk.prev_date)
   {
