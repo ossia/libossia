@@ -28,21 +28,21 @@ namespace ossia
 class destination;
 
 template <typename T>
-const constexpr std::nullptr_t curve_segment_type_map = nullptr;
+static const constexpr std::nullptr_t curve_segment_type_map = nullptr;
 template <>
-const constexpr ossia::curve_segment_type
+static const constexpr ossia::curve_segment_type
     curve_segment_type_map<int> = ossia::curve_segment_type::INT;
 template <>
-const constexpr ossia::curve_segment_type
+static const constexpr ossia::curve_segment_type
     curve_segment_type_map<float> = ossia::curve_segment_type::FLOAT;
 template <>
-const constexpr ossia::curve_segment_type
+static const constexpr ossia::curve_segment_type
     curve_segment_type_map<double> = ossia::curve_segment_type::DOUBLE;
 template <>
-const constexpr ossia::curve_segment_type
+static const constexpr ossia::curve_segment_type
     curve_segment_type_map<bool> = ossia::curve_segment_type::BOOL;
 template <>
-const constexpr ossia::curve_segment_type
+static const constexpr ossia::curve_segment_type
     curve_segment_type_map<ossia::value> = ossia::curve_segment_type::ANY;
 
 template <typename K, typename V>
