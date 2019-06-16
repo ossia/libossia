@@ -101,6 +101,7 @@ public:
                 }
                 case 32:
                 {
+                    m_converter = read_s32;
                     break;
                 }
                 }
@@ -108,6 +109,7 @@ public:
             }
             case DR_WAVE_FORMAT_IEEE_FLOAT:
             {
+                m_converter = read_f32;
                 break;
             }
             default:
@@ -163,7 +165,16 @@ public:
 
     static void read_f32(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
     {
-        // TODO
+        const auto channels = ap.samples.size();
+        auto d = reinterpret_cast<float*>(data);
+
+        for (int64_t j = 0; j < samples; j++)
+        {
+            for (std::size_t i = 0; i < channels; i++)
+            {
+                ap.samples[i][j + t.offset.impl] = d[j * channels + i];
+            }
+        }
     }
 
 
