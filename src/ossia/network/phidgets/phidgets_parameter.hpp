@@ -714,34 +714,34 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetVoltageRatioInputHandle;
-    static const constexpr auto Get = PhidgetVoltageRatioInput_getVoltageRatio;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetVoltageRatioInput_getVoltageRatio;
+    inline static const auto Change
         = PhidgetVoltageRatioInput_setOnVoltageRatioChangeHandler;
-    static const constexpr auto Min
+    inline static const auto Min
         = PhidgetVoltageRatioInput_getMinVoltageRatio;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetVoltageRatioInput_getMaxVoltageRatio;
   };
   struct rate_desc
   {
     using handle_type = PhidgetVoltageRatioInputHandle;
-    static const constexpr auto Get = PhidgetVoltageRatioInput_getDataInterval;
-    static const constexpr auto Set = PhidgetVoltageRatioInput_setDataInterval;
-    static const constexpr auto Min
+    inline static const auto Get = PhidgetVoltageRatioInput_getDataInterval;
+    inline static const auto Set = PhidgetVoltageRatioInput_setDataInterval;
+    inline static const auto Min
         = PhidgetVoltageRatioInput_getMinDataInterval;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetVoltageRatioInput_getMaxDataInterval;
   };
   struct trigger_desc
   {
     using handle_type = PhidgetVoltageRatioInputHandle;
-    static const constexpr auto Get
+    inline static const auto Get
         = PhidgetVoltageRatioInput_getVoltageRatioChangeTrigger;
-    static const constexpr auto Set
+    inline static const auto Set
         = PhidgetVoltageRatioInput_setVoltageRatioChangeTrigger;
-    static const constexpr auto Min
+    inline static const auto Min
         = PhidgetVoltageRatioInput_getMinVoltageRatioChangeTrigger;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetVoltageRatioInput_getMaxVoltageRatioChangeTrigger;
   };
 
@@ -783,20 +783,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetCurrentInputHandle;
-    static const constexpr auto Get = PhidgetCurrentInput_getCurrent;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetCurrentInput_getCurrent;
+    inline static const auto Change
         = PhidgetCurrentInput_setOnCurrentChangeHandler;
-    static const constexpr auto Min = PhidgetCurrentInput_getMinCurrent;
-    static const constexpr auto Max = PhidgetCurrentInput_getMaxCurrent;
+    inline static const auto Min = PhidgetCurrentInput_getMinCurrent;
+    inline static const auto Max = PhidgetCurrentInput_getMaxCurrent;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetCurrentInputHandle;
-    static const constexpr auto Get = PhidgetCurrentInput_getDataInterval;
-    static const constexpr auto Set = PhidgetCurrentInput_setDataInterval;
-    static const constexpr auto Min = PhidgetCurrentInput_getMinDataInterval;
-    static const constexpr auto Max = PhidgetCurrentInput_getMaxDataInterval;
+    inline static const auto Get = PhidgetCurrentInput_getDataInterval;
+    inline static const auto Set = PhidgetCurrentInput_setDataInterval;
+    inline static const auto Min = PhidgetCurrentInput_getMinDataInterval;
+    inline static const auto Max = PhidgetCurrentInput_getMaxDataInterval;
   };
 
   phidget_current_input_node(
@@ -832,31 +832,31 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetVoltageInputHandle;
-    static const constexpr auto Get = PhidgetVoltageInput_getVoltage;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetVoltageInput_getVoltage;
+    inline static const auto Change
         = PhidgetVoltageInput_setOnVoltageChangeHandler;
-    static const constexpr auto Min = PhidgetVoltageInput_getMinVoltage;
-    static const constexpr auto Max = PhidgetVoltageInput_getMaxVoltage;
+    inline static const auto Min = PhidgetVoltageInput_getMinVoltage;
+    inline static const auto Max = PhidgetVoltageInput_getMaxVoltage;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetVoltageInputHandle;
-    static const constexpr auto Get = PhidgetVoltageInput_getDataInterval;
-    static const constexpr auto Set = PhidgetVoltageInput_setDataInterval;
-    static const constexpr auto Min = PhidgetVoltageInput_getMinDataInterval;
-    static const constexpr auto Max = PhidgetVoltageInput_getMaxDataInterval;
+    inline static const auto Get = PhidgetVoltageInput_getDataInterval;
+    inline static const auto Set = PhidgetVoltageInput_setDataInterval;
+    inline static const auto Min = PhidgetVoltageInput_getMinDataInterval;
+    inline static const auto Max = PhidgetVoltageInput_getMaxDataInterval;
   };
   struct trigger_desc
   {
     using handle_type = PhidgetVoltageInputHandle;
-    static const constexpr auto Get
+    inline static const auto Get
         = PhidgetVoltageInput_getVoltageChangeTrigger;
-    static const constexpr auto Set
+    inline static const auto Set
         = PhidgetVoltageInput_setVoltageChangeTrigger;
-    static const constexpr auto Min
+    inline static const auto Min
         = PhidgetVoltageInput_getMinVoltageChangeTrigger;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetVoltageInput_getMaxVoltageChangeTrigger;
   };
 
@@ -897,21 +897,21 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetCapacitiveTouchHandle;
-    static const constexpr auto Get = PhidgetCapacitiveTouch_getTouchValue;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetCapacitiveTouch_getTouchValue;
+    inline static const auto Change
         = PhidgetCapacitiveTouch_setOnTouchHandler;
-    static const constexpr auto Min = PhidgetCapacitiveTouch_getMinTouchValue;
-    static const constexpr auto Max = PhidgetCapacitiveTouch_getMaxTouchValue;
+    inline static const auto Min = PhidgetCapacitiveTouch_getMinTouchValue;
+    inline static const auto Max = PhidgetCapacitiveTouch_getMaxTouchValue;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetCapacitiveTouchHandle;
-    static const constexpr auto Get = PhidgetCapacitiveTouch_getDataInterval;
-    static const constexpr auto Set = PhidgetCapacitiveTouch_setDataInterval;
-    static const constexpr auto Min
+    inline static const auto Get = PhidgetCapacitiveTouch_getDataInterval;
+    inline static const auto Set = PhidgetCapacitiveTouch_setDataInterval;
+    inline static const auto Min
         = PhidgetCapacitiveTouch_getMinDataInterval;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetCapacitiveTouch_getMaxDataInterval;
   };
 
@@ -948,20 +948,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetDistanceSensorHandle;
-    static const constexpr auto Get = PhidgetDistanceSensor_getDistance;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetDistanceSensor_getDistance;
+    inline static const auto Change
         = PhidgetDistanceSensor_setOnDistanceChangeHandler;
-    static const constexpr auto Min = PhidgetDistanceSensor_getMinDistance;
-    static const constexpr auto Max = PhidgetDistanceSensor_getMaxDistance;
+    inline static const auto Min = PhidgetDistanceSensor_getMinDistance;
+    inline static const auto Max = PhidgetDistanceSensor_getMaxDistance;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetDistanceSensorHandle;
-    static const constexpr auto Get = PhidgetDistanceSensor_getDataInterval;
-    static const constexpr auto Set = PhidgetDistanceSensor_setDataInterval;
-    static const constexpr auto Min = PhidgetDistanceSensor_getMinDataInterval;
-    static const constexpr auto Max = PhidgetDistanceSensor_getMaxDataInterval;
+    inline static const auto Get = PhidgetDistanceSensor_getDataInterval;
+    inline static const auto Set = PhidgetDistanceSensor_setDataInterval;
+    inline static const auto Min = PhidgetDistanceSensor_getMinDataInterval;
+    inline static const auto Max = PhidgetDistanceSensor_getMaxDataInterval;
   };
 
   phidget_distance_sensor_node(
@@ -997,20 +997,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetHumiditySensorHandle;
-    static const constexpr auto Get = PhidgetHumiditySensor_getHumidity;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetHumiditySensor_getHumidity;
+    inline static const auto Change
         = PhidgetHumiditySensor_setOnHumidityChangeHandler;
-    static const constexpr auto Min = PhidgetHumiditySensor_getMinHumidity;
-    static const constexpr auto Max = PhidgetHumiditySensor_getMaxHumidity;
+    inline static const auto Min = PhidgetHumiditySensor_getMinHumidity;
+    inline static const auto Max = PhidgetHumiditySensor_getMaxHumidity;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetHumiditySensorHandle;
-    static const constexpr auto Get = PhidgetHumiditySensor_getDataInterval;
-    static const constexpr auto Set = PhidgetHumiditySensor_setDataInterval;
-    static const constexpr auto Min = PhidgetHumiditySensor_getMinDataInterval;
-    static const constexpr auto Max = PhidgetHumiditySensor_getMaxDataInterval;
+    inline static const auto Get = PhidgetHumiditySensor_getDataInterval;
+    inline static const auto Set = PhidgetHumiditySensor_setDataInterval;
+    inline static const auto Min = PhidgetHumiditySensor_getMinDataInterval;
+    inline static const auto Max = PhidgetHumiditySensor_getMaxDataInterval;
   };
 
   phidget_humidity_sensor_node(
@@ -1046,20 +1046,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetPressureSensorHandle;
-    static const constexpr auto Get = PhidgetPressureSensor_getPressure;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetPressureSensor_getPressure;
+    inline static const auto Change
         = PhidgetPressureSensor_setOnPressureChangeHandler;
-    static const constexpr auto Min = PhidgetPressureSensor_getMinPressure;
-    static const constexpr auto Max = PhidgetPressureSensor_getMaxPressure;
+    inline static const auto Min = PhidgetPressureSensor_getMinPressure;
+    inline static const auto Max = PhidgetPressureSensor_getMaxPressure;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetPressureSensorHandle;
-    static const constexpr auto Get = PhidgetPressureSensor_getDataInterval;
-    static const constexpr auto Set = PhidgetPressureSensor_setDataInterval;
-    static const constexpr auto Min = PhidgetPressureSensor_getMinDataInterval;
-    static const constexpr auto Max = PhidgetPressureSensor_getMaxDataInterval;
+    inline static const auto Get = PhidgetPressureSensor_getDataInterval;
+    inline static const auto Set = PhidgetPressureSensor_setDataInterval;
+    inline static const auto Min = PhidgetPressureSensor_getMinDataInterval;
+    inline static const auto Max = PhidgetPressureSensor_getMaxDataInterval;
   };
 
   phidget_pressure_sensor_node(
@@ -1094,21 +1094,21 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetResistanceInputHandle;
-    static const constexpr auto Get = PhidgetResistanceInput_getResistance;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetResistanceInput_getResistance;
+    inline static const auto Change
         = PhidgetResistanceInput_setOnResistanceChangeHandler;
-    static const constexpr auto Min = PhidgetResistanceInput_getMinResistance;
-    static const constexpr auto Max = PhidgetResistanceInput_getMaxResistance;
+    inline static const auto Min = PhidgetResistanceInput_getMinResistance;
+    inline static const auto Max = PhidgetResistanceInput_getMaxResistance;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetResistanceInputHandle;
-    static const constexpr auto Get = PhidgetResistanceInput_getDataInterval;
-    static const constexpr auto Set = PhidgetResistanceInput_setDataInterval;
-    static const constexpr auto Min
+    inline static const auto Get = PhidgetResistanceInput_getDataInterval;
+    inline static const auto Set = PhidgetResistanceInput_setDataInterval;
+    inline static const auto Min
         = PhidgetResistanceInput_getMinDataInterval;
-    static const constexpr auto Max
+    inline static const auto Max
         = PhidgetResistanceInput_getMaxDataInterval;
   };
 
@@ -1145,20 +1145,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetLightSensorHandle;
-    static const constexpr auto Get = PhidgetLightSensor_getIlluminance;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetLightSensor_getIlluminance;
+    inline static const auto Change
         = PhidgetLightSensor_setOnIlluminanceChangeHandler;
-    static const constexpr auto Min = PhidgetLightSensor_getMinIlluminance;
-    static const constexpr auto Max = PhidgetLightSensor_getMaxIlluminance;
+    inline static const auto Min = PhidgetLightSensor_getMinIlluminance;
+    inline static const auto Max = PhidgetLightSensor_getMaxIlluminance;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetLightSensorHandle;
-    static const constexpr auto Get = PhidgetLightSensor_getDataInterval;
-    static const constexpr auto Set = PhidgetLightSensor_setDataInterval;
-    static const constexpr auto Min = PhidgetLightSensor_getMinDataInterval;
-    static const constexpr auto Max = PhidgetLightSensor_getMaxDataInterval;
+    inline static const auto Get = PhidgetLightSensor_getDataInterval;
+    inline static const auto Set = PhidgetLightSensor_setDataInterval;
+    inline static const auto Min = PhidgetLightSensor_getMinDataInterval;
+    inline static const auto Max = PhidgetLightSensor_getMaxDataInterval;
   };
 
   phidget_light_sensor_node(
@@ -1303,19 +1303,19 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetMagnetometerHandle;
-    static const constexpr auto Get = PhidgetMagnetometer_getMagneticField;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetMagnetometer_getMagneticField;
+    inline static const auto Change
         = PhidgetMagnetometer_setOnMagneticFieldChangeHandler;
-    static const constexpr auto Min = PhidgetMagnetometer_getMinMagneticField;
-    static const constexpr auto Max = PhidgetMagnetometer_getMaxMagneticField;
+    inline static const auto Min = PhidgetMagnetometer_getMinMagneticField;
+    inline static const auto Max = PhidgetMagnetometer_getMaxMagneticField;
   };
   struct rate_desc
   {
     using handle_type = PhidgetMagnetometerHandle;
-    static const constexpr auto Get = PhidgetMagnetometer_getDataInterval;
-    static const constexpr auto Set = PhidgetMagnetometer_setDataInterval;
-    static const constexpr auto Min = PhidgetMagnetometer_getMinDataInterval;
-    static const constexpr auto Max = PhidgetMagnetometer_getMaxDataInterval;
+    inline static const auto Get = PhidgetMagnetometer_getDataInterval;
+    inline static const auto Set = PhidgetMagnetometer_setDataInterval;
+    inline static const auto Min = PhidgetMagnetometer_getMinDataInterval;
+    inline static const auto Max = PhidgetMagnetometer_getMaxDataInterval;
   };
 
   phidget_magnetometer_node(
@@ -1351,20 +1351,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetAccelerometerHandle;
-    static const constexpr auto Get = PhidgetAccelerometer_getAcceleration;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetAccelerometer_getAcceleration;
+    inline static const auto Change
         = PhidgetAccelerometer_setOnAccelerationChangeHandler;
-    static const constexpr auto Min = PhidgetAccelerometer_getMinAcceleration;
-    static const constexpr auto Max = PhidgetAccelerometer_getMaxAcceleration;
+    inline static const auto Min = PhidgetAccelerometer_getMinAcceleration;
+    inline static const auto Max = PhidgetAccelerometer_getMaxAcceleration;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetAccelerometerHandle;
-    static const constexpr auto Get = PhidgetAccelerometer_getDataInterval;
-    static const constexpr auto Set = PhidgetAccelerometer_setDataInterval;
-    static const constexpr auto Min = PhidgetAccelerometer_getMinDataInterval;
-    static const constexpr auto Max = PhidgetAccelerometer_getMaxDataInterval;
+    inline static const auto Get = PhidgetAccelerometer_getDataInterval;
+    inline static const auto Set = PhidgetAccelerometer_setDataInterval;
+    inline static const auto Min = PhidgetAccelerometer_getMinDataInterval;
+    inline static const auto Max = PhidgetAccelerometer_getMaxDataInterval;
   };
 
   phidget_accelerometer_node(
@@ -1400,20 +1400,20 @@ public:
   struct param_desc
   {
     using handle_type = PhidgetGyroscopeHandle;
-    static const constexpr auto Get = PhidgetGyroscope_getAngularRate;
-    static const constexpr auto Change
+    inline static const auto Get = PhidgetGyroscope_getAngularRate;
+    inline static const auto Change
         = PhidgetGyroscope_setOnAngularRateUpdateHandler;
-    static const constexpr auto Min = PhidgetGyroscope_getMinAngularRate;
-    static const constexpr auto Max = PhidgetGyroscope_getMaxAngularRate;
+    inline static const auto Min = PhidgetGyroscope_getMinAngularRate;
+    inline static const auto Max = PhidgetGyroscope_getMaxAngularRate;
   };
 
   struct rate_desc
   {
     using handle_type = PhidgetGyroscopeHandle;
-    static const constexpr auto Get = PhidgetGyroscope_getDataInterval;
-    static const constexpr auto Set = PhidgetGyroscope_setDataInterval;
-    static const constexpr auto Min = PhidgetGyroscope_getMinDataInterval;
-    static const constexpr auto Max = PhidgetGyroscope_getMaxDataInterval;
+    inline static const auto Get = PhidgetGyroscope_getDataInterval;
+    inline static const auto Set = PhidgetGyroscope_setDataInterval;
+    inline static const auto Min = PhidgetGyroscope_getMinDataInterval;
+    inline static const auto Max = PhidgetGyroscope_getMaxDataInterval;
   };
 
   phidget_gyroscope_node(

@@ -33,11 +33,11 @@ else()
       )
 
     if(CMAKE_SIZEOF_VOID_P MATCHES 4)
-      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
+      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22.lib phidget22
         HINTS
           c:/phidget22-windevel/x86)
     else()
-      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22
+      find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22.lib phidget22
         HINTS
           c:/phidget22-windevel/x64)
     endif()
