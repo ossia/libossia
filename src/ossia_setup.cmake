@@ -31,7 +31,7 @@ if(WIN32)
         target_link_libraries(ossia PRIVATE mswsock)
     endif()
 
-    if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4")
+    if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4" OR OSSIA_UNITY3D)
       set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
     else()
       set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
