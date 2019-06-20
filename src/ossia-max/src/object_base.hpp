@@ -177,7 +177,7 @@ public:
   bool m_loadbanged{}; // true if object receive a loadbang
 
   std::mutex m_bind_mutex;
-  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order
+  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher
 
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);

@@ -355,7 +355,6 @@ void object_base::loadbang(object_base* x)
     std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
                 std::pair<t_object*,ossia_max::root_descriptor>(x->m_patcher_hierarchy.back(), {} ));
 
-
     ossia_max::root_descriptor& desc = (res.first)->second;
     desc.inc();
 #if OSSIA_MAX_AUTOREGISTER

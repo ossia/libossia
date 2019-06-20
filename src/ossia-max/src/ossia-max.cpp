@@ -95,8 +95,11 @@ void ossia_max::register_nodes(ossia_max* x)
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
+    if(it->second.is_loadbanged)
+      continue;
+
     t_object* patcher = it->first;
-    it->second.is_loadbanged = true;
+
     for (auto dev : inst.devices.reference())
     {
       if (dev->m_patcher_hierarchy.empty()) continue;
@@ -170,6 +173,9 @@ void ossia_max::register_nodes(ossia_max* x)
         }
       }
     }
+
+    // finally rise a flag to mark this patcher loadbangded
+    it->second.is_loadbanged = true;
   }
 }
 
