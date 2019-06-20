@@ -5,11 +5,11 @@
 			"major" : 7,
 			"minor" : 3,
 			"revision" : 5,
-			"architecture" : "x86",
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 350.0, 113.0, 640.0, 480.0 ],
+		"rect" : [ 350.0, 113.0, 737.0, 623.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,20 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"bgcolor" : [ 0.92549, 0.364706, 0.341176, 0.99 ],
+					"id" : "obj-2",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 60.0, 493.0, 280.0, 33.0 ],
+					"style" : "",
+					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-21",
 					"maxclass" : "newobj",
@@ -110,7 +124,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 433.0, 299.0, 205.0, 77.0 ],
+					"patching_rect" : [ 433.0, 299.0, 205.0, 76.0 ],
 					"presentation_linecount" : 5,
 					"presentation_rect" : [ 433.0, 134.0, 205.0, 77.0 ],
 					"style" : "",
@@ -421,12 +435,12 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "oscar.mxe",
-				"type" : "iLaF"
+				"name" : "oscar.mxo",
+				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxe",
-				"type" : "iLaF"
+				"name" : "oscar.mxo",
+				"type" : "iLaX"
 			}
  ],
 		"autosave" : 0

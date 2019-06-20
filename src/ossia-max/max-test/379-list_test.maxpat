@@ -4,8 +4,8 @@
 		"appversion" : 		{
 			"major" : 7,
 			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x86",
+			"revision" : 5,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
@@ -38,6 +38,20 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
+					"id" : "obj-14",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 56.0, 80.0, 276.0, 33.0 ],
+					"style" : "",
+					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-10",
 					"maxclass" : "toggle",
 					"numinlets" : 1,
@@ -61,8 +75,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -885,8 +899,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -1812,8 +1826,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -2532,8 +2546,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
@@ -3627,8 +3641,8 @@
 						"appversion" : 						{
 							"major" : 7,
 							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"revision" : 5,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,

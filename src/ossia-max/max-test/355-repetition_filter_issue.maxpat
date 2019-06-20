@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 335.0, 587.0, 1152.0, 698.0 ],
+		"rect" : [ 151.0, 236.0, 1152.0, 698.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,20 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"bgcolor" : [ 0.92549, 0.364706, 0.341176, 0.99 ],
+					"id" : "obj-25",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 467.0, 85.5, 280.0, 33.0 ],
+					"style" : "",
+					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-9",
 					"maxclass" : "newobj",
@@ -258,7 +272,7 @@
 					"patching_rect" : [ 825.0, 339.0, 227.0, 22.0 ],
 					"presentation_rect" : [ 715.0, 403.0, 227.0, 22.0 ],
 					"style" : "",
-					"text" : "32."
+					"text" : "1."
 				}
 
 			}
@@ -368,7 +382,7 @@
 					"patching_rect" : [ 249.0, 278.0, 236.5, 22.0 ],
 					"presentation_rect" : [ 160.0, 418.0, 236.5, 22.0 ],
 					"style" : "",
-					"text" : "32."
+					"text" : "1."
 				}
 
 			}

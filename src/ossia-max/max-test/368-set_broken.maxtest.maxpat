@@ -38,6 +38,20 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
+					"id" : "obj-7",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 167.0, 31.0, 276.0, 33.0 ],
+					"style" : "",
+					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-12",
 					"linecount" : 4,
 					"maxclass" : "comment",
@@ -301,7 +315,7 @@
 									"patching_rect" : [ 386.5, 331.0, 87.0, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45. 65. 55. 85."
+									"text" : "0. 0. 0. 0."
 								}
 
 							}
@@ -432,7 +446,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 137.0, 22.0 ],
 									"style" : "",
-									"text" : "-1234 5678 2585 10235"
+									"text" : "0. 0. 0. 0."
 								}
 
 							}
@@ -833,7 +847,7 @@
 									"patching_rect" : [ 420.5, 341.0, 51.5, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45. 65."
+									"text" : "0. 0."
 								}
 
 							}
@@ -963,7 +977,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 70.0, 22.0 ],
 									"style" : "",
-									"text" : "-1234 5678"
+									"text" : "0. 0."
 								}
 
 							}
@@ -2006,7 +2020,7 @@
 									"patching_rect" : [ 386.5, 331.0, 96.5, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45 a f d g 36.6"
+									"text" : "0. 0."
 								}
 
 							}
@@ -2136,7 +2150,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 22.0 ],
 									"style" : "",
-									"text" : "a b c 4 d"
+									"text" : "0. 0."
 								}
 
 							}
@@ -2579,7 +2593,7 @@
 									"patching_rect" : [ 386.5, 331.0, 87.0, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45 65 55 85"
+									"text" : "0. 0."
 								}
 
 							}
@@ -2705,14 +2719,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 35.0 ],
 									"style" : "",
-									"text" : "-1234 5678 2585 10235"
+									"text" : "0. 0."
 								}
 
 							}
@@ -3107,7 +3120,6 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
@@ -3115,7 +3127,7 @@
 									"patching_rect" : [ 386.5, 331.0, 51.5, 35.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45 65. 55."
+									"text" : "0. 0."
 								}
 
 							}
@@ -3240,14 +3252,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 78.0, 35.0 ],
 									"style" : "",
-									"text" : "-1234 5678 2585"
+									"text" : "0. 0."
 								}
 
 							}
@@ -3649,7 +3660,7 @@
 									"patching_rect" : [ 420.5, 341.0, 51.5, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "45 65."
+									"text" : "0. 0."
 								}
 
 							}
@@ -3774,14 +3785,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 50.0, 35.0 ],
 									"style" : "",
-									"text" : "-1234 5678"
+									"text" : "0. 0."
 								}
 
 							}
@@ -4182,7 +4192,7 @@
 									"patching_rect" : [ 386.5, 352.0, 34.5, 22.0 ],
 									"presentation_rect" : [ 383.0, 72.0, 195.0, 22.0 ],
 									"style" : "",
-									"text" : "34."
+									"text" : "0. 0."
 								}
 
 							}
@@ -4316,7 +4326,7 @@
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 383.0, 50.0, 22.0 ],
 									"style" : "",
-									"text" : "-1234."
+									"text" : "0. 0."
 								}
 
 							}

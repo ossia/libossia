@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 716.0, 1072.0, 700.0, 679.0 ],
+		"rect" : [ 645.0, 282.0, 700.0, 679.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -38,12 +38,24 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 80.0, 58.0, 342.0, 20.0 ],
+					"style" : "",
+					"text" : "This patcher send something to stop upon default value output"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-11",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 375.0, 543.0, 69.0, 22.0 ],
+					"patching_rect" : [ 254.0, 332.0, 69.0, 22.0 ],
 					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
 					"style" : "",
 					"text" : "thispatcher"
@@ -57,7 +69,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 375.0, 474.0, 46.0, 22.0 ],
+					"patching_rect" : [ 254.0, 263.0, 46.0, 22.0 ],
 					"style" : "",
 					"text" : "r close"
 				}
@@ -70,7 +82,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 375.0, 508.0, 47.0, 22.0 ],
+					"patching_rect" : [ 254.0, 297.0, 47.0, 22.0 ],
 					"style" : "",
 					"text" : "wclose"
 				}

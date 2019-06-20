@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 376.0, 1025.0, 787.0, 800.0 ],
+		"rect" : [ 482.0, 184.0, 787.0, 800.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -37,6 +37,20 @@
 		"style" : "",
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
+				"box" : 				{
+					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
+					"id" : "obj-20",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 29.0, 65.0, 276.0, 33.0 ],
+					"style" : "",
+					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-13",
 					"maxclass" : "newobj",
@@ -237,7 +251,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
-					"patching_rect" : [ 333.5, 199.0, 75.0, 22.0 ],
+					"patching_rect" : [ 333.5, 198.0, 75.0, 22.0 ],
 					"style" : "",
 					"text" : "random 100"
 				}
@@ -612,7 +626,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "default_in_poly.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/OSSIA/ossia-max/max-test",
+				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers/tests",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
