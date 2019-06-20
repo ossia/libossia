@@ -334,7 +334,7 @@ void object_base::get_hierarchy()
   while (patcher)
   {
     m_patcher_hierarchy.push_back(patcher);
-    patcher = jpatcher_get_parentpatcher(patcher);
+    patcher = get_patcher(patcher);
   }
 }
 

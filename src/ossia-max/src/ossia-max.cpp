@@ -410,22 +410,12 @@ std::vector<object_base*> find_children_to_register(
 t_object* get_patcher(t_object* object)
 {
   t_object* patcher = NULL;
-  object_obex_lookup(object, gensym("#P"), &patcher);
+  auto err = object_obex_lookup(object, gensym("#P"), &patcher);
 
-  /*
-  // if the box is in a bpatcher, the patcher is NULL
-  if (!patcher)
-  {
-    // FIXME : this crashes too on [ossia.model root] in the toplevel patcher
-    t_object* parentclass = object_attr_getobj(object, _sym_parentclass);
-    t_symbol *cls = object_classname(parentclass);
-    post("parentclasse name %s", cls->s_name);
-    // this crashes if box is in the root patcher
-    // patcher = object_attr_getobj(object, _sym_parentpatcher);
-  }
-  */
-
-  return patcher;
+  if(err == MAX_ERR_NONE)
+    return patcher;
+  else
+    return nullptr;
 }
 
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
