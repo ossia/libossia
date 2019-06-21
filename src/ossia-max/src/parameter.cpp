@@ -58,8 +58,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     x->m_access_mode = gensym("bi");
     x->m_bounding_mode = gensym("free");
 
-    x->m_clock = clock_new(x, (method)parameter_base::push_default_value);
-
     x->m_otype = object_class::param;
 
     // parse arguments
@@ -116,7 +114,6 @@ void parameter::destroy(parameter* x)
   x->unregister();
   object_dequarantining<parameter>(x);
   ossia_max::instance().parameters.remove_all(x);
-  object_free(x->m_clock);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
   x->~parameter();
@@ -185,6 +182,7 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
 
 bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
+  object_post(&m_object, "do_registration for 0x%X", this);
   unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
@@ -233,15 +231,13 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
   set_repetition_filter();
   set_recall_safe();
 
-  clock_delay(m_clock, 1);
+  push_default_value(this);
 
   return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool parameter::unregister()
 {
-  clock_unset(m_clock);
-
   m_node_selection.clear();
   m_matchers.clear();
 
