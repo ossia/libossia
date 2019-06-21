@@ -48,7 +48,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 581.0, 25.0, 276.0, 33.0 ],
 					"style" : "",
-					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "works on 2019.06.21 with  3c9fef2af48a2152cf40ca603d14840dfaabc576"
 				}
 
 			}

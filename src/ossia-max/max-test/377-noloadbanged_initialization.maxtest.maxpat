@@ -38,15 +38,131 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
-					"bgcolor" : [ 0.92549, 0.364706, 0.341176, 0.99 ],
+					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
 					"id" : "obj-2",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 60.0, 493.0, 280.0, 33.0 ],
+					"patching_rect" : [ 72.0, 466.0, 276.0, 33.0 ],
 					"style" : "",
-					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "works on 2019.06.21 with  3c9fef2af48a2152cf40ca603d14840dfaabc576"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-15",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 47.0, 538.0, 319.0, 33.0 ],
+					"style" : "",
+					"text" : "Warning: there is a delay between object creation and value pushing to let the default value to be fired"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-9",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 291.0, 315.0, 34.0, 22.0 ],
+					"style" : "",
+					"text" : "print"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-8",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 428.0, 538.0, 150.0, 33.0 ],
+					"style" : "",
+					"text" : "It creates a new object and send some value to it."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"linecount" : 4,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 428.0, 466.0, 163.0, 60.0 ],
+					"style" : "",
+					"text" : "This patcher tests if a newly created object in a patcher without other ossia object is well registered"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-31",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 218.5, 242.0, 50.0, 22.0 ],
+					"style" : "",
+					"text" : "del 100"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-28",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 141.0, 378.0, 50.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-26",
+					"maxclass" : "button",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 47.0, 283.0, 24.0, 24.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 525.0, 73.0, 50.0, 22.0 ],
+					"style" : ""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 279.888916, 276.0, 50.0, 22.0 ],
+					"style" : "",
+					"varname" : "buf"
 				}
 
 			}
@@ -57,7 +173,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 433.0, 108.0, 34.0, 22.0 ],
+					"patching_rect" : [ 432.999969, 102.0, 34.0, 22.0 ],
 					"style" : "",
 					"text" : "t b b"
 				}
@@ -124,11 +240,11 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 433.0, 299.0, 205.0, 76.0 ],
-					"presentation_linecount" : 5,
+					"patching_rect" : [ 495.0, 231.0, 243.0, 76.0 ],
+					"presentation_linecount" : 6,
 					"presentation_rect" : [ 433.0, 134.0, 205.0, 77.0 ],
 					"style" : "",
-					"text" : "script newobject newobj @text \"ossia.parameter toto\" @varname param @patching_position 304 134, script connect trigger 3 param 0, script connect param 0 gater 0"
+					"text" : "script newobject newobj @text \"ossia.parameter toto @default 123\" @varname param @patching_position 270 134, script connect trigger 2 param 0, script connect param 0 buf 0"
 				}
 
 			}
@@ -164,13 +280,12 @@
 				"box" : 				{
 					"id" : "obj-17",
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 2,
 					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 177.111099, 73.0, 54.0, 22.0 ],
-					"presentation_rect" : [ 177.111099, 73.0, 54.0, 22.0 ],
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 177.111099, 73.0, 57.0, 22.0 ],
 					"style" : "",
-					"text" : "deferlow"
+					"text" : "del 1000"
 				}
 
 			}
@@ -209,10 +324,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 4,
 					"outlettype" : [ "bang", "bang", "int", "int" ],
-					"patching_rect" : [ 177.111115, 108.0, 146.333328, 22.0 ],
-					"presentation_rect" : [ 177.111115, 108.0, 146.333328, 22.0 ],
+					"patching_rect" : [ 177.111099, 102.0, 246.0, 22.0 ],
 					"style" : "",
-					"text" : "t b b 111 100",
+					"text" : "t b b 100 37",
 					"varname" : "trigger"
 				}
 
@@ -243,35 +357,6 @@
 					"presentation_rect" : [ 218.5, 382.0, 117.0, 22.0 ],
 					"style" : "",
 					"text" : "test.assert initialized"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-9",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 2,
-					"outlettype" : [ "int", "int" ],
-					"patching_rect" : [ 304.0, 194.0, 29.5, 22.0 ],
-					"presentation_rect" : [ 304.0, 194.0, 29.5, 22.0 ],
-					"style" : "",
-					"text" : "t 0 i",
-					"varname" : "gater"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-8",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 229.0, 272.0, 52.0, 22.0 ],
-					"presentation_rect" : [ 229.0, 272.0, 52.0, 22.0 ],
-					"style" : "",
-					"text" : "gate 1 1"
 				}
 
 			}
@@ -309,8 +394,8 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-14", 0 ],
-					"source" : [ "obj-12", 1 ]
+					"destination" : [ "obj-14", 1 ],
+					"source" : [ "obj-12", 3 ]
 				}
 
 			}
@@ -323,8 +408,8 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-8", 1 ],
-					"source" : [ "obj-12", 2 ]
+					"destination" : [ "obj-31", 0 ],
+					"source" : [ "obj-12", 1 ]
 				}
 
 			}
@@ -345,6 +430,15 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-11", 0 ],
+					"order" : 0,
+					"source" : [ "obj-14", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-28", 0 ],
+					"order" : 1,
 					"source" : [ "obj-14", 0 ]
 				}
 
@@ -407,6 +501,20 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-14", 0 ],
+					"source" : [ "obj-26", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-14", 0 ],
+					"source" : [ "obj-31", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-38", 0 ]
 				}
@@ -415,21 +523,16 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-14", 1 ],
-					"source" : [ "obj-8", 0 ]
+					"order" : 1,
+					"source" : [ "obj-6", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-14", 1 ],
-					"source" : [ "obj-9", 1 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-8", 0 ],
-					"source" : [ "obj-9", 0 ]
+					"destination" : [ "obj-9", 0 ],
+					"order" : 0,
+					"source" : [ "obj-6", 0 ]
 				}
 
 			}

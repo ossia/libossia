@@ -44,9 +44,21 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 29.0, 65.0, 276.0, 33.0 ],
+					"patching_rect" : [ 41.0, 64.0, 276.0, 33.0 ],
 					"style" : "",
-					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "works on 2019.06.21 with  3c9fef2af48a2152cf40ca603d14840dfaabc576"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-23",
+					"maxclass" : "button",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 426.0, 711.0, 24.0, 24.0 ],
+					"style" : ""
 				}
 
 			}
@@ -169,12 +181,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-26",
+					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 492.5, 704.0, 150.0, 20.0 ],
+					"patching_rect" : [ 492.5, 711.0, 150.0, 33.0 ],
 					"style" : "",
-					"text" : "should be always ON"
+					"text" : "should be ON at the end of initialization"
 				}
 
 			}
@@ -186,7 +199,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 460.25, 704.0, 24.0, 24.0 ],
+					"patching_rect" : [ 460.25, 711.0, 24.0, 24.0 ],
 					"style" : ""
 				}
 
@@ -199,7 +212,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 460.25, 738.0, 66.0, 22.0 ],
+					"patching_rect" : [ 460.25, 745.0, 66.0, 22.0 ],
 					"style" : "",
 					"text" : "test.assert"
 				}
@@ -511,7 +524,16 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-23", 0 ],
+					"order" : 1,
+					"source" : [ "obj-19", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-24", 0 ],
+					"order" : 0,
 					"source" : [ "obj-19", 0 ]
 				}
 
@@ -626,7 +648,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "default_in_poly.maxpat",
-				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers/tests",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1

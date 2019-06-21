@@ -44,9 +44,9 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 467.0, 85.5, 280.0, 33.0 ],
+					"patching_rect" : [ 562.5, 91.0, 280.0, 33.0 ],
 					"style" : "",
-					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "still doesn't work on 2019.06.21 with 3c9fef2af48a2152cf40ca603d14840dfaabc576"
 				}
 
 			}
