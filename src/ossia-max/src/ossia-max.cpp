@@ -156,24 +156,6 @@ void ossia_max::register_nodes(ossia_max* x)
         node_base::push_default_value(dev);
     }
 
-    // send default value for default device's child
-    // TODO make this a method of ossia Max's object
-    auto n = &inst.get_default_device()->get_root_node();
-    auto list = ossia::net::list_all_child(n);
-
-    for (ossia::net::node_base* child : list)
-    {
-      if (auto param = child->get_parameter())
-      {
-        auto val = ossia::net::get_default_value(*child);
-        if(val)
-        {
-          param->push_value(*val);
-          trig_output_value(child);
-        }
-      }
-    }
-
     // finally rise a flag to mark this patcher loadbangded
     it->second.is_loadbanged = true;
   }

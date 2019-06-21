@@ -217,8 +217,6 @@ void ossia_register(T* x)
   if (x->m_reg_clock)
   {
     clock_unset(x->m_reg_clock);
-    clock_free((t_object*)x->m_reg_clock);
-    x->m_reg_clock = nullptr;
   }
 
   if (!x->m_name)
@@ -323,31 +321,10 @@ void ossia_check_and_register(T* x)
   auto& map = ossia_max::instance().root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 
-  if(x->m_reg_clock)
-    freeobject((t_object*)x->m_reg_clock);
+  if(!x->m_reg_clock)
+    x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
 
-  x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
-  clock_delay(x->m_reg_clock, 2);
-
-  /*
-  post("map size: %d", map.size());
-
-  if (it != map.end())
-  {
-    post("was root patcher loadbanged ? %d", it->second.is_loadbanged);
-  }
-  else
-  {
-    post("reach map list end !");
-  }
-  */
-
-  // register object only if root patcher have been loadbanged
-  // else the patcher itself will trig a registration on loadbang
-  if (it != map.end() && it->second.is_loadbanged)
-  {
-    ossia_register(x);
-  }
+  clock_delay(x->m_reg_clock, 1);
 }
 
 template <typename T>
