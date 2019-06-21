@@ -307,22 +307,28 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
+  get_hierarchy();
+
+  auto& map = ossia_max::instance().root_patcher;
+
+  std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
+              std::pair<t_object*,ossia_max::root_descriptor>(m_patcher_hierarchy.back(), {} ));
+
+  ossia_max::root_descriptor& desc = (res.first)->second;
+  desc.inc();
 }
 
 object_base::~object_base()
 {
-  if(m_loadbanged)
-  {
-    auto& root_map = ossia_max::instance().root_patcher;
-    const auto& it = root_map.find(m_patcher_hierarchy.back());
+  auto& root_map = ossia_max::instance().root_patcher;
+  const auto& it = root_map.find(m_patcher_hierarchy.back());
 
-    if(it != root_map.end())
+  if(it != root_map.end())
+  {
+    it->second.dec();
+    if(it->second.count == 0)
     {
-      it->second.dec();
-      if(it->second.count == 0)
-      {
-          root_map.erase(it);
-      }
+        root_map.erase(it);
     }
   }
 }

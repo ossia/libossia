@@ -320,7 +320,6 @@ void ossia_register(T* x)
 template<typename T>
 void ossia_check_and_register(T* x)
 {
-  x->get_hierarchy();
   auto& map = ossia_max::instance().root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 

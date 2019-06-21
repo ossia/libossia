@@ -72,8 +72,6 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     {
       ossia_check_and_register(x);
     }
-    else
-      x->get_hierarchy();
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);

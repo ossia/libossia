@@ -174,7 +174,7 @@ public:
   // dtor
   ~object_base();
 
-  bool m_loadbanged{}; // true if object receive a loadbang
+  bool m_loadbanged{}; // true if object received a loadbang
 
   std::mutex m_bind_mutex;
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher

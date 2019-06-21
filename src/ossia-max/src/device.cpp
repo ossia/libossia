@@ -132,7 +132,6 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                  x->m_name->s_name};
     x->connect_slots();
 
-    x->get_hierarchy();
     auto& map = ossia_max::instance().root_patcher;
 #if OSSIA_MAX_AUTOREGISTER
     auto it = map.find(x->m_patcher_hierarchy.back());

@@ -95,8 +95,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       x->m_is_pattern = ossia::traversal::is_pattern(x->m_name->s_name);
       x->update_path();
       ossia_check_and_register(x);
-    } else {
-      x->get_hierarchy();
     }
 
     ossia_max::instance().remotes.push_back(x);
