@@ -302,9 +302,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
-					"patching_rect" : [ 405.0, 179.0, 34.0, 22.0 ],
+					"patching_rect" : [ 405.0, 179.0, 41.0, 22.0 ],
 					"style" : "",
-					"text" : "> 10"
+					"text" : "> 100"
 				}
 
 			}
