@@ -225,19 +225,20 @@ install(
 if(OSSIA_MAX_TEST)
     set(OSSIA_MAX_TEST_PATCHERS      
         ${CMAKE_CURRENT_LIST_DIR}/max-test/312-default_broken.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/355-repetition_filter_issue.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/366-priorities_init.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/367-set_message_with_empty_list.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/368-set_broken.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/369-register_object_only_once.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/377-noloadbanged_initialization.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/379-list_test.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/383-remote_outputs_zero_on_node_creation.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/379-list_test.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/383-remote_outputs_zero_on_node_creation.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/384-address_output_persistence.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/387-attribute-propagation.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/415-poly_reset.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/441-multi_load.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/default-sometimes_broken.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/447-delete_node_during_registration.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/367-set_message_with_empty_list.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/355-repetition_filter_issue.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/447-delete_node_during_registration.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/503-patcher_registration.maxtest.maxpat
         )
     install(
         FILES

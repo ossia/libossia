@@ -52,19 +52,6 @@
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-15",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 47.0, 538.0, 319.0, 33.0 ],
-					"style" : "",
-					"text" : "Warning: there is a delay between object creation and value pushing to let the default value to be fired"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-9",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -283,9 +270,9 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111099, 73.0, 57.0, 22.0 ],
+					"patching_rect" : [ 177.111099, 73.0, 37.0, 22.0 ],
 					"style" : "",
-					"text" : "del 1000"
+					"text" : "del 1"
 				}
 
 			}
