@@ -45,6 +45,11 @@ public:
     impl.reserve(N);
   }
 
+  auto size() const
+  {
+    return impl.size();
+  }
+
   auto copy() const
   {
     return impl;
