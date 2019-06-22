@@ -128,7 +128,9 @@ bool view::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matche
 {
   // we should unregister here because we may have add a node between the
   // registered node and the remote
-  unregister();
+  const auto& nr_views = ossia_max::instance().nr_views.reference();
+  if(!ossia::contains(nr_views, this))
+    unregister();
 
   for (auto& m : matchers)
   {

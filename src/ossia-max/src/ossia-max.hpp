@@ -141,11 +141,22 @@ public:
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<attribute*> attributes;
 
+  // list of non-registered objects
+  ossia::safe_set<parameter*> nr_parameters;
+  ossia::safe_set<remote*> nr_remotes;
+  ossia::safe_set<model*> nr_models;
+  ossia::safe_set<view*> nr_views;
+  ossia::safe_set<device*> nr_devices;
+  ossia::safe_set<client*> nr_clients;
+  ossia::safe_set<attribute*> nr_attributes;
+
   ossia::safe_set<model*> model_quarantine;
   ossia::safe_set<view*> view_quarantine;
   ossia::safe_set<parameter*> parameter_quarantine;
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
+
+  bool registering_nodes=false;
 
   // this is used at loadbang to mark a patcher loaded
   // and trigger its registration

@@ -274,6 +274,8 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
   if (res)
   {
     object_dequarantining<remote>(this);
+    if(ossia_max::instance().registering_nodes)
+      ossia_max::instance().nr_remotes.remove_all(this);
   }
   else
     object_quarantining<remote>(this);

@@ -132,6 +132,8 @@ bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matcher
   {
     object_dequarantining<model>(this);
     register_children();
+    if(ossia_max::instance().registering_nodes)
+      ossia_max::instance().nr_models.remove_all(this);
   }
   else
     object_quarantining<model>(this);
@@ -143,7 +145,8 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
 {
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
-  unregister();
+  if(!ossia_max::instance().registering)
+    unregister();
 
   ossia::string_view name(m_name->s_name);
 

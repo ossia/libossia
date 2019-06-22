@@ -89,9 +89,28 @@ ossia_max& ossia_max::instance()
   return library_instance;
 }
 
+template<typename T>
+void fill_nr_vector(const ossia::safe_vector<T*>& safe, ossia::safe_set<T*>& nr)
+{
+  nr.clear();
+  nr.reserve(safe.size());
+  for(auto ptr : safe.reference())
+    nr.push_back(ptr);
+};
+
 void ossia_max::register_nodes(ossia_max* x)
 {
   auto& inst = ossia_max::instance();
+  inst.registering_nodes = true;
+
+  // first fill non-registered containers with all objects
+  fill_nr_vector(inst.devices, inst.nr_devices);
+  fill_nr_vector(inst.models, inst.nr_models);
+  fill_nr_vector(inst.parameters, inst.nr_parameters);
+  fill_nr_vector(inst.clients,    inst.nr_clients);
+  fill_nr_vector(inst.views, inst.nr_views);
+  fill_nr_vector(inst.remotes, inst.nr_remotes);
+  fill_nr_vector(inst.attributes, inst.nr_attributes);
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
@@ -100,20 +119,20 @@ void ossia_max::register_nodes(ossia_max* x)
 
     t_object* patcher = it->first;
 
-    for (auto dev : inst.devices.reference())
+    for (auto dev : inst.nr_devices.copy())
     {
       if (dev->m_patcher_hierarchy.empty()) continue;
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::max::device::register_children(dev);
     }
-    for (auto model : inst.models.reference())
+    for (auto model : inst.nr_models.copy())
     {
       if (model->m_patcher_hierarchy.empty()) continue;
       if ( model->m_patcher_hierarchy.back() == patcher
             && model->m_matchers.empty())
         ossia_register(model);
     }
-    for (auto param : inst.parameters.reference())
+    for (auto param : inst.nr_parameters.copy())
     {
       if (param->m_patcher_hierarchy.empty()) continue;
       if ( param->m_patcher_hierarchy.back() == patcher
@@ -121,27 +140,27 @@ void ossia_max::register_nodes(ossia_max* x)
         ossia_register(param);
     }
 
-    for (auto client : inst.clients.reference())
+    for (auto client : inst.nr_clients.copy())
     {
       if(client->m_patcher_hierarchy.empty()) continue;
       if(client->m_patcher_hierarchy.back() == patcher)
         ossia::max::client::register_children(client);
     }
-    for (auto view : inst.views.reference())
+    for (auto view : inst.nr_views.copy())
     {
       if (view->m_patcher_hierarchy.empty()) continue;
       if ( view->m_patcher_hierarchy.back() == patcher
             && view->m_matchers.empty())
         ossia_register(view);
     }
-    for (auto remote : inst.remotes.reference())
+    for (auto remote : inst.nr_remotes.copy())
     {
       if (remote->m_patcher_hierarchy.empty()) continue;
       if ( remote->m_patcher_hierarchy.back() == patcher
             && remote->m_matchers.empty())
         ossia_register(remote);
     }
-    for (auto attr : inst.attributes.reference())
+    for (auto attr : inst.nr_attributes.copy())
     {
       if (attr->m_patcher_hierarchy.empty()) continue;
       if ( attr->m_patcher_hierarchy.back() == patcher
@@ -149,15 +168,16 @@ void ossia_max::register_nodes(ossia_max* x)
         ossia_register(attr);
     }
 
-    for (auto dev : inst.devices.reference())
-    {
-      if (dev->m_patcher_hierarchy.empty()) continue;
-      if(dev->m_patcher_hierarchy.back() == patcher)
-        node_base::push_default_value(dev);
-    }
-
     // finally rise a flag to mark this patcher loadbangded
     it->second.is_loadbanged = true;
+  }
+
+  inst.registering_nodes = false;
+
+  // push default value for all devices
+  for (auto dev : inst.devices.copy())
+  {
+    node_base::push_default_value(dev);
   }
 }
 

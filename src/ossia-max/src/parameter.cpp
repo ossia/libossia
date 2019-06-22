@@ -173,6 +173,8 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
     {
       ossia_register(remote);
     }
+    if(ossia_max::instance().registering_nodes)
+      ossia_max::instance().nr_parameters.remove_all(this);
   }
   else
     object_quarantining<parameter>(this);
@@ -182,8 +184,8 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
 
 bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  object_post(&m_object, "do_registration for 0x%X", this);
-  unregister(); // we should unregister here because we may have add a node
+  if(!ossia_max::instance().registering_nodes)
+    unregister(); // we should unregister here because we may have add a node
                 // between the registered node and the parameter
 
 

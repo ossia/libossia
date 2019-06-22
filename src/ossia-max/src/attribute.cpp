@@ -70,6 +70,8 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
   if (res)
   {
     object_dequarantining<attribute>(this);
+    if(ossia_max::instance().registering_nodes)
+      ossia_max::instance().nr_attributes.remove_all(this);
   }
   else
     object_quarantining<attribute>(this);
