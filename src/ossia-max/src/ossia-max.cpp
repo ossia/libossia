@@ -146,6 +146,9 @@ void ossia_max::register_nodes(ossia_max* x)
   auto view_obj_list = sort_by_depth(inst.nr_views);
   auto rem_obj_list = sort_by_depth(inst.nr_remotes);
   auto att_obj_list = sort_by_depth(inst.nr_attributes);
+
+  std::vector<t_object*> to_be_initialized;
+
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
@@ -153,6 +156,8 @@ void ossia_max::register_nodes(ossia_max* x)
       continue;
 
     t_object* patcher = it->first;
+
+    to_be_initialized.push_back(patcher);
 
     for (auto dev : dev_obj_list)
     {
@@ -167,7 +172,7 @@ void ossia_max::register_nodes(ossia_max* x)
             && model->m_matchers.empty())
         ossia_register(model);
     }
-    for (auto param : inst.nr_parameters.copy())    for (auto param : param_obj_list)
+    for (auto param : param_obj_list)
     {
       if (param->m_patcher_hierarchy.empty()) continue;
       if ( param->m_patcher_hierarchy.back() == patcher
@@ -175,7 +180,7 @@ void ossia_max::register_nodes(ossia_max* x)
         ossia_register(param);
     }
 
-    for (auto client : inst.nr_clients.copy())    for (auto client : clt_obj_list)
+    for (auto client : clt_obj_list)
     {
       if(client->m_patcher_hierarchy.empty()) continue;
       if(client->m_patcher_hierarchy.back() == patcher)
@@ -243,8 +248,32 @@ void ossia_max::register_nodes(ossia_max* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          param->push_value(*val);
-          trig_output_value(child);
+          bool trig = false;
+          for(auto param : ossia_max::instance().parameters.reference())
+          {
+            for (auto& m : param->m_matchers)
+            {
+              if ( m->get_node() == child )
+              {
+                auto op = static_cast<parameter*>(m->get_parent());
+                auto patcher = op->m_patcher_hierarchy.back();
+                if(ossia::contains(to_be_initialized,patcher))
+                {
+                  child->get_parameter()->push_value(*val);
+                  trig = true;
+                  break;
+                }
+              }
+            }
+            if(trig)
+              break;
+          }
+
+          if(trig)
+          {
+            post("push default value for %s", param->get_node().get_name().c_str());
+            trig_output_value(child);
+          }
         }
       }
     }
