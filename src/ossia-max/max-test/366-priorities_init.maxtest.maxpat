@@ -38,6 +38,19 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-30",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 335.0, 650.0, 238.0, 33.0 ],
+					"style" : "",
+					"text" : "This patcher tests if default values are fired by priority order"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-23",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -337,15 +350,16 @@
 			}
 , 			{
 				"box" : 				{
-					"bgcolor" : [ 0.92549, 0.364706, 0.341176, 0.99 ],
+					"bgcolor" : [ 0.141179, 0.999856, 0.033349, 1.0 ],
 					"id" : "obj-25",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 364.0, 592.0, 280.0, 33.0 ],
+					"patching_rect" : [ 367.0, 592.0, 280.0, 33.0 ],
 					"style" : "",
-					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "works on 2019.06.24 with bfb35df0fa2b0c55a19020b152afb462f3be8e03",
+					"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 				}
 
 			}

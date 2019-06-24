@@ -239,6 +239,13 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/441-multi_load.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/447-delete_node_during_registration.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/503-patcher_registration.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/default-sometimes_broken.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/subpatcher_for_503.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/model-test-for-369.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/param-test-for-369.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/submodel-test-for-369.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
         )
     install(
         FILES

@@ -151,9 +151,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 349.5, 184.0, 326.0, 22.0 ],
+					"patching_rect" : [ 349.5, 184.0, 401.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter float_parameter @type float @default 23.4"
+					"text" : "ossia.parameter float_parameter @type float @default 23.4 @priority 500"
 				}
 
 			}
@@ -190,9 +190,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 1034.0, 724.5, 337.0, 22.0 ],
+					"patching_rect" : [ 1034.0, 725.5, 405.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_list_mixed @type list @default a 65. 101"
+					"text" : "ossia.parameter my_list_mixed @type list @default a 65. 101 @priority 50"
 				}
 
 			}
@@ -245,9 +245,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 836.0, 681.5, 372.0, 22.0 ],
+					"patching_rect" : [ 836.0, 681.5, 427.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_list5 @type list @default 45. 65. 78. 99. 101."
+					"text" : "ossia.parameter my_list5 @type list @default 45. 65. 78. 99. 101. @priority 60"
 				}
 
 			}
@@ -342,9 +342,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 702.0, 632.0, 292.0, 22.0 ],
+					"patching_rect" : [ 702.0, 632.0, 360.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_list2 @type list @default 45. 65."
+					"text" : "ossia.parameter my_list2 @type list @default 45. 65. @priority 70"
 				}
 
 			}
@@ -397,9 +397,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 526.0, 588.5, 353.0, 22.0 ],
+					"patching_rect" : [ 526.0, 588.5, 421.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_vec4f @type vec4f @default 45. 65. 78. 99."
+					"text" : "ossia.parameter my_vec4f @type vec4f @default 45. 65. 78. 99. @priority 80"
 				}
 
 			}
@@ -452,9 +452,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 377.0, 542.0, 333.0, 22.0 ],
+					"patching_rect" : [ 377.0, 539.0, 401.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_vec3f @type vec3f @default 45. 65. 78."
+					"text" : "ossia.parameter my_vec3f @type vec3f @default 45. 65. 78. @priority 90"
 				}
 
 			}
@@ -507,9 +507,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 246.0, 496.0, 313.0, 22.0 ],
+					"patching_rect" : [ 247.5, 495.0, 388.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter my_vec2f @type vec2f @default 45. 65."
+					"text" : "ossia.parameter my_vec2f @type vec2f @default 45. 65. @priority 100"
 				}
 
 			}
@@ -575,9 +575,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 649.5, 277.0, 373.0, 22.0 ],
+					"patching_rect" : [ 649.5, 277.5, 448.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter string_parameter @type string @default \"hello test\""
+					"text" : "ossia.parameter string_parameter @type string @default \"hello test\" @priority 300"
 				}
 
 			}
@@ -672,9 +672,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 520.5, 231.0, 344.0, 22.0 ],
+					"patching_rect" : [ 520.5, 231.0, 385.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter bool_parameter @type bool @default 1"
+					"text" : "ossia.parameter bool_parameter @type bool @default 1 @priority 400"
 				}
 
 			}
@@ -685,9 +685,9 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 212.0, 138.0, 307.0, 22.0 ],
+					"patching_rect" : [ 212.0, 138.0, 378.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.parameter int_parameter @type int @default 123"
+					"text" : "ossia.parameter int_parameter @type int @default 123 @priority 800"
 				}
 
 			}

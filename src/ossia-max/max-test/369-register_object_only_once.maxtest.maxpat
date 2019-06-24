@@ -38,6 +38,20 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"bgcolor" : [ 0.141179, 0.999856, 0.033349, 1.0 ],
+					"id" : "obj-24",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 43.0, 15.0, 280.0, 33.0 ],
+					"style" : "",
+					"text" : "works on 2019.06.24 with bfb35df0fa2b0c55a19020b152afb462f3be8e03"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-27",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -360,7 +374,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 139.0, 29.0, 256.0, 33.0 ],
+					"patching_rect" : [ 43.0, 54.0, 256.0, 33.0 ],
 					"style" : "",
 					"text" : "This patcher tests if ossia objects are registered only once when the patcher loads"
 				}
