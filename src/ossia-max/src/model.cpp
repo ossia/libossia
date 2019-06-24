@@ -145,7 +145,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
 {
   // we should unregister here because we may have add a node between the
   // registered node and the parameter
-  if(!ossia_max::instance().registering)
+  if(!ossia_max::instance().registering_nodes)
     unregister();
 
   ossia::string_view name(m_name->s_name);
@@ -173,7 +173,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
           parameter* param = (parameter*)v;
           if (ossia::string_view(param->m_name->s_name) == name)
           {
-            // if we already have a t_param node of that
+            // if we already have a parameter of that
             // name, unregister it
             // we will register it again after node creation
             param->unregister();
@@ -206,9 +206,32 @@ void model::register_children()
   std::vector<object_base*> children = find_children_to_register(
       &m_object, get_patcher(&m_object), gensym("ossia.model"));
 
-  for (auto child : children)
+  // TODO take care of not registering a child twice
+
+  auto& nr_models = ossia_max::instance().nr_models;
+  auto& nr_parameters = ossia_max::instance().nr_parameters;
+  auto& nr_remotes = ossia_max::instance().nr_remotes;
+
+  for(auto child : children)
   {
     if (child->m_otype == object_class::model)
+    {
+      nr_models.push_back(static_cast<model*>(child));
+    }
+    else if (child->m_otype == object_class::param)
+    {
+      nr_parameters.push_back(static_cast<parameter*>(child));
+    }
+    else if (child->m_otype == object_class::remote)
+    {
+      nr_remotes.push_back(static_cast<remote*>(child));
+    }
+  }
+
+  auto copy = children;
+  for (auto child : copy)
+  {
+    if (child->m_otype == object_class::model && ossia::contains(nr_models.reference(), child))
     {
       ossia::max::model* model = (ossia::max::model*)child;
 
@@ -220,16 +243,30 @@ void model::register_children()
         model->register_node(m_matchers);
       else
         ossia_register(model);
+
+      ossia::remove_erase(children, child);
     }
-    else if (child->m_otype == object_class::param)
+  }
+
+  copy = children;
+  for (auto child : copy)
+  {
+    if (child->m_otype == object_class::param && ossia::contains(nr_parameters.reference(), child))
     {
       ossia::max::parameter* parameter = (ossia::max::parameter*)child;
       if(parameter->m_addr_scope == ossia::net::address_scope::relative && !m_matchers.empty())
         parameter->register_node(m_matchers);
       else // FIXME is the else statement needed ?
         ossia_register(parameter);
+
+      ossia::remove_erase(children, child);
     }
-    else if (child->m_otype == object_class::remote)
+  }
+
+  copy = children;
+  for (auto child : copy)
+  {
+    if (child->m_otype == object_class::remote && ossia::contains(nr_remotes.reference(), child))
     {
       ossia::max::remote* remote = (ossia::max::remote*)child;
 
@@ -237,6 +274,8 @@ void model::register_children()
         remote->register_node(m_matchers);
       else
         ossia_register(remote);
+
+      ossia::remove_erase(children, child);
     }
   }
 
@@ -245,7 +284,7 @@ void model::register_children()
     ossia_register(view);
   }
 
-  // then try to register qurantinized remote
+  // then try to register quarantinized remote
   for (auto remote : remote::quarantine().copy())
   {
     ossia_register(remote);
