@@ -7,6 +7,9 @@
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 #include <ossia/context.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
+
 #include <commonsyms.h>
 #pragma mark -
 #pragma mark library
@@ -98,9 +101,34 @@ void fill_nr_vector(const ossia::safe_vector<T*>& safe, ossia::safe_set<T*>& nr)
     nr.push_back(ptr);
 };
 
+template<typename T>
+std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
+{
+  std::vector<T*> list;
+  list.reserve(safe.size());
+  for(auto pt : safe.reference())
+  {
+    // need to update hierarchy here because
+    // some object might have been inserted
+    // after the initialization of some of their children
+    // thus children have the wrong hierarchy, so update it
+    // before sorting them
+    pt->get_hierarchy();
+    list.push_back(pt);
+  }
+
+  ossia::sort(list, [&](T* a, T*b)
+  {
+    return a->m_patcher_hierarchy.size() < b->m_patcher_hierarchy.size();
+  });
+
+  return list;
+}
+
 void ossia_max::register_nodes(ossia_max* x)
 {
   auto& inst = ossia_max::instance();
+
   inst.registering_nodes = true;
 
   // first fill non-registered containers with all objects
@@ -111,6 +139,13 @@ void ossia_max::register_nodes(ossia_max* x)
   fill_nr_vector(inst.views, inst.nr_views);
   fill_nr_vector(inst.remotes, inst.nr_remotes);
   fill_nr_vector(inst.attributes, inst.nr_attributes);
+  auto dev_obj_list   = sort_by_depth(inst.nr_devices);
+  auto mod_obj_list   = sort_by_depth(inst.nr_models);
+  auto param_obj_list = sort_by_depth(inst.nr_parameters);
+  auto clt_obj_list = sort_by_depth(inst.nr_clients);
+  auto view_obj_list = sort_by_depth(inst.nr_views);
+  auto rem_obj_list = sort_by_depth(inst.nr_remotes);
+  auto att_obj_list = sort_by_depth(inst.nr_attributes);
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
@@ -119,20 +154,20 @@ void ossia_max::register_nodes(ossia_max* x)
 
     t_object* patcher = it->first;
 
-    for (auto dev : inst.nr_devices.copy())
+    for (auto dev : dev_obj_list)
     {
       if (dev->m_patcher_hierarchy.empty()) continue;
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::max::device::register_children(dev);
     }
-    for (auto model : inst.nr_models.copy())
+    for (auto model : mod_obj_list)
     {
       if (model->m_patcher_hierarchy.empty()) continue;
       if ( model->m_patcher_hierarchy.back() == patcher
             && model->m_matchers.empty())
         ossia_register(model);
     }
-    for (auto param : inst.nr_parameters.copy())
+    for (auto param : inst.nr_parameters.copy())    for (auto param : param_obj_list)
     {
       if (param->m_patcher_hierarchy.empty()) continue;
       if ( param->m_patcher_hierarchy.back() == patcher
@@ -140,27 +175,27 @@ void ossia_max::register_nodes(ossia_max* x)
         ossia_register(param);
     }
 
-    for (auto client : inst.nr_clients.copy())
+    for (auto client : inst.nr_clients.copy())    for (auto client : clt_obj_list)
     {
       if(client->m_patcher_hierarchy.empty()) continue;
       if(client->m_patcher_hierarchy.back() == patcher)
         ossia::max::client::register_children(client);
     }
-    for (auto view : inst.nr_views.copy())
+    for (auto view : view_obj_list)
     {
       if (view->m_patcher_hierarchy.empty()) continue;
       if ( view->m_patcher_hierarchy.back() == patcher
             && view->m_matchers.empty())
         ossia_register(view);
     }
-    for (auto remote : inst.nr_remotes.copy())
+    for (auto remote : rem_obj_list)
     {
       if (remote->m_patcher_hierarchy.empty()) continue;
       if ( remote->m_patcher_hierarchy.back() == patcher
             && remote->m_matchers.empty())
         ossia_register(remote);
     }
-    for (auto attr : inst.nr_attributes.copy())
+    for (auto attr : att_obj_list)
     {
       if (attr->m_patcher_hierarchy.empty()) continue;
       if ( attr->m_patcher_hierarchy.back() == patcher
