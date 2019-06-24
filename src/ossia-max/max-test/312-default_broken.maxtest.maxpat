@@ -675,7 +675,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 137.0, 44.0, 307.0, 22.0 ],
+					"patching_rect" : [ 137.0, 44.0, 303.0, 22.0 ],
 					"style" : "",
 					"text" : "ossia.parameter int_parameter @type int @default 123"
 				}
