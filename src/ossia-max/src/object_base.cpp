@@ -469,9 +469,9 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
     get_description(x, matchers);
   } else if ( attribute == ossia::net::text_tags() ){
     get_tags(x, matchers);
-  } else if ( attribute == ossia::net::text_hidden() ){
+  } else if ( attribute == "invisible" ){
     get_hidden(x, matchers);
-  } else if ( attribute == ossia::net::text_recall_safe() ){
+  } else if ( attribute == "recall_safe" ){
     get_recall_safe(x, matchers);
   } else {
     object_error((t_object*)x, "no attribute %s", std::string(attribute).c_str());
