@@ -213,7 +213,8 @@ void parameter_base::set_minmax()
           continue;
       }
 
-      param->set_domain(make_domain_from_minmax(min, max, param->get_value_type()));
+      auto domain = make_domain_from_minmax({min}, max, param->get_value_type());
+      param->set_domain(domain);
     }
   }
 }
@@ -1248,10 +1249,6 @@ parameter_base::parameter_base()
   m_access_mode = gensym("bi");
   m_description = gensym("");
   m_unit = gensym("");
-
-  m_range_size = 2;
-  atom_setfloat(m_range,0.);
-  atom_setfloat(m_range+1,1.);
 }
 
 } // namespace max
