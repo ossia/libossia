@@ -167,14 +167,24 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 {
   auto& node = param.get_node();
 
-  if ( m_path && ossia::traversal::match(*m_path, node) )
+  if ( m_path )
   {
-    // TODO rethink that parent_node
-    m_parent_node = node.get_parent();
-    m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
-    // TODO optimize : don't clear and iterate through all matchers
-    // just add it if it matches instead
-    fill_selection();
+    if( ossia::traversal::match(*m_path, node) )
+    {
+      if(m_addr_scope == net::address_scope::relative)
+      {
+        m_parent_node = node.get_parent();
+        std::string name(m_name->s_name);
+        size_t pos = name.find('/', 0);
+        while(pos != std::string::npos)
+        {
+          m_parent_node = node.get_parent();
+          pos = name.find('/',pos+1);
+        }
+      }
+      m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
+      fill_selection();
+    }
   }
 }
 
@@ -206,13 +216,6 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
       }
     }
 
-    if (x->m_name == _sym_nothing)
-    {
-      object_error((t_object*)x, "needs a name as first argument");
-      x->m_name = gensym("untitledParameter");
-      return x;
-    }
-
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
@@ -221,11 +224,13 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // start registration
-    ossia_check_and_register(x);
-    ossia_max::instance().attributes.push_back(x);
+    if (x->m_name != _sym_nothing)
+    {
+      x->update_path();
+      ossia_check_and_register(x);
+    }
 
-    x->update_path();
+    ossia_max::instance().attributes.push_back(x);
   }
 
   return (x);

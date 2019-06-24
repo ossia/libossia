@@ -725,18 +725,18 @@ void object_base::lock_and_touch(object_base* x, t_symbol* s)
 
 void object_base::update_path()
 {
-    std::string name = object_path_absolute(this);
+  std::string name = object_path_absolute(this);
 
-    m_is_pattern = ossia::traversal::is_pattern(name);
+  m_is_pattern = ossia::traversal::is_pattern(name);
 
-    if(m_is_pattern)
-    {
-        m_path = ossia::traversal::make_path(name);
-    }
-    else
-    {
-        m_path = ossia::none;
-    }
+  if(m_is_pattern)
+  {
+    m_path = ossia::traversal::make_path(name);
+  }
+  else
+  {
+    m_path = ossia::none;
+  }
 }
 
 } // max namespace
