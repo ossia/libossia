@@ -469,7 +469,7 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
     get_description(x, matchers);
   } else if ( attribute == ossia::net::text_tags() ){
     get_tags(x, matchers);
-  } else if ( attribute == "invisible" ){
+  } else if ( attribute == "invisible" || attribute == "hidden" ){
     get_hidden(x, matchers);
   } else if ( attribute == "recall_safe" ){
     get_recall_safe(x, matchers);
