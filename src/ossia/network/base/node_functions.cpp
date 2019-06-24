@@ -614,6 +614,7 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
+  // first sort by name
   ossia::sort(children, [](auto n1, auto n2) {
     std::string s1 = n1->get_name();
     std::string s2 = n2->get_name();
@@ -624,6 +625,7 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
     return s1 < s2;
   });
 
+  // then sort by priority
   ossia::sort(children, [](auto n1, auto n2) {
     return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
   });

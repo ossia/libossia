@@ -158,7 +158,7 @@ operator<<(std::ostream&, const ossia::net::parameter_base&);
 void expand_ranges(std::string& str);
 
 /**
- * @brief list_all_child : list all node childs recursively
+ * @brief list_all_child : list all child nodes recursively
  * @param node : starting point
  * @return list : vector of child sorted by name then by priority
  */
