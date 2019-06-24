@@ -481,13 +481,15 @@ std::vector<object_base*> find_children_to_register(
 
 t_object* get_patcher(t_object* object)
 {
-  t_object* patcher = NULL;
+  t_object* patcher = nullptr;
   auto err = object_obex_lookup(object, gensym("#P"), &patcher);
 
-  if(err == MAX_ERR_NONE)
+  auto bpatcher = object_attr_getobj(object, _sym_parentpatcher);
+
+  if(patcher != nullptr && err == MAX_ERR_NONE)
     return patcher;
   else
-    return nullptr;
+    return bpatcher;
 }
 
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
