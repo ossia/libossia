@@ -6370,14 +6370,14 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-24",
-					"linecount" : 4,
+					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 231.0, 442.0, 50.0, 62.0 ],
+					"patching_rect" : [ 231.0, 442.0, 50.0, 35.0 ],
 					"style" : "",
-					"text" : "tags test \"super cool\""
+					"text" : "enable 1"
 				}
 
 			}
