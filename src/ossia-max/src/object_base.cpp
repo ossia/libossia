@@ -504,11 +504,13 @@ void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     t_atom a;
 
     A_SETLONG(&a, ossia::net::get_recall_safe(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("recall_safe"), 1, &a);
   }
   lock_and_touch(x, gensym("recall_safe"));
@@ -518,7 +520,8 @@ void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto optags = ossia::net::get_tags(*m->get_node());
 
@@ -533,6 +536,7 @@ void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
         A_SETSYM(&asym[i], x->m_tags[i]);
       }
 
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
       outlet_anything(x->m_dumpout, gensym("tags"),
                       x->m_tags_size, asym);
     }
@@ -544,7 +548,8 @@ void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto description = ossia::net::get_description(*m->get_node());
 
@@ -555,9 +560,11 @@ void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
       t_atom adesc;
       A_SETSYM(&adesc,x->m_description);
 
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
       outlet_anything(x->m_dumpout, gensym("description"),
                       1, &adesc);
     } else {
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
       outlet_anything(x->m_dumpout, gensym("description"), 0, nullptr);
     }
   }
@@ -568,7 +575,8 @@ void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto priority = ossia::net::get_priority(*m->get_node());
     if (priority)
@@ -578,6 +586,8 @@ void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
 
     t_atom a;
     A_SETFLOAT(&a, x->m_priority);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("priority"), 1, &a);
   }
   lock_and_touch(x, gensym("priority"));
@@ -587,10 +597,12 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     t_atom a;
     A_SETFLOAT(&a, ossia::net::get_hidden(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("invisible"), 1, &a);
   }
   lock_and_touch(x, gensym("invisible"));
@@ -600,10 +612,12 @@ void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     t_atom a;
     A_SETFLOAT(&a, ossia::net::get_zombie(*m->get_node()));
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("zombie"), 1, &a);
   }
 }
@@ -666,23 +680,24 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
   else if (s == gensym("recall_safe"))
     get_recall_safe(x,x->m_node_selection);
   else
-    object_post((t_object*)x,"nsso attribute %s", s->s_name);
+    object_post((t_object*)x,"no attribute %s", s->s_name);
 }
 
 void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
 {
-
-  t_symbol* sym_address = gensym("global_address");
   for (auto m : nodes)
   {
+    if(m->is_zombie() || m->is_dead())
+      continue;
+
     std::string addr = ossia::net::address_string_from_node(*m->get_node());
     t_atom a;
     A_SETSYM(&a, gensym(addr.c_str()));
-    outlet_anything(x->m_dumpout, sym_address, 1, &a);
+    outlet_anything(x->m_dumpout, gensym("global_address"), 1, &a);
   }
 
   if (nodes.empty())
-    outlet_anything(x->m_dumpout, gensym("address"), 0, NULL);
+    outlet_anything(x->m_dumpout, gensym("global_address"), 0, NULL);
 }
 
 void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv)

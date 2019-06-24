@@ -524,7 +524,8 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto domain = ossia::net::get_domain(*m->get_node());
     if (domain)
@@ -537,6 +538,8 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
       x->m_min_size = 0;
       x->m_max_size = 0;
     }
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
     outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
     outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
@@ -550,13 +553,16 @@ void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*>
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
     x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
     t_atom a;
     A_SETSYM(&a,x->m_bounding_mode);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
   }
   lock_and_touch(x, gensym("clip"));
@@ -566,7 +572,8 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto def_val = ossia::net::get_default_value(*m->get_node());
 
@@ -584,6 +591,7 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
       x->m_default_size = 0;
     }
 
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("default"),
                     x->m_default_size, x->m_default);
   }
@@ -595,7 +603,8 @@ void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -603,6 +612,8 @@ void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
 
     t_atom a;
     A_SETSYM(&a,x->m_type);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
   }
   lock_and_touch(x, gensym("type"));
@@ -612,7 +623,8 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -620,6 +632,8 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
 
     t_atom a;
     A_SETSYM(&a, x->m_access_mode);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
   }
   lock_and_touch(x, gensym("mode"));
@@ -629,7 +643,8 @@ void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> node
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -637,6 +652,8 @@ void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> node
 
     t_atom a;
     A_SETLONG(&a, x->m_critical);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("critical"), 1, &a);
   }
   lock_and_touch(x, gensym("critical"));
@@ -646,7 +663,8 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_match
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -654,6 +672,8 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_match
 
     t_atom a;
     A_SETLONG(&a, x->m_repetitions);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
   }
   lock_and_touch(x, gensym("repetitions"));
@@ -663,13 +683,16 @@ void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto param = m->get_node()->get_parameter();
     x->m_enable = !param->get_disabled();
 
     t_atom a;
     A_SETLONG(&a,x->m_enable);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
   }
   lock_and_touch(x, gensym("enable"));
@@ -679,7 +702,8 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -688,6 +712,8 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
 
     t_atom a;
     A_SETSYM(&a, x->m_unit);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
   }
   lock_and_touch(x, gensym("unit"));
@@ -697,7 +723,8 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
@@ -705,6 +732,8 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
 
     t_atom a;
     A_SETLONG(&a, x->m_mute);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
   }
   lock_and_touch(x, gensym("mute"));
@@ -714,10 +743,13 @@ void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> 
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     t_atom a;
     A_SETLONG(&a, x->m_queue_length);
+
+    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("queue_length"), 1, &a);
   }
   lock_and_touch(x, gensym("queue_length"));
@@ -727,7 +759,8 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
 {
   for (auto m : nodes)
   {
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+    if(m->is_zombie() || m->is_dead())
+      continue;
 
     auto rate = ossia::net::get_refresh_rate(*m->get_node());
 
@@ -737,6 +770,8 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
 
       t_atom a;
       A_SETFLOAT(&a, x->m_rate);
+
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
       outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
     }
   }

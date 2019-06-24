@@ -36,7 +36,6 @@ public:
   static void get_unit(remote*x);
   static void get_mute(remote*x);
   static void get_rate(remote*x);
-  static void get_enable(remote*x);
 
   static void assist(ossia::max::remote*, void*, long, long, char*);
   static void* create(t_symbol*, long, t_atom*);
