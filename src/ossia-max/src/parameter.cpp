@@ -233,7 +233,8 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
   set_repetition_filter();
   set_recall_safe();
 
-  push_default_value(this);
+  if(!ossia_max::instance().registering_nodes) // don't push default value when registering at loadbang
+    push_default_value(this);                  // default value will be sent at the end of the global registration
 
   return (!m_matchers.empty() || m_is_pattern);
 }

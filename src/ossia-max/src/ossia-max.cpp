@@ -210,9 +210,44 @@ void ossia_max::register_nodes(ossia_max* x)
   inst.registering_nodes = false;
 
   // push default value for all devices
-  for (auto dev : inst.devices.copy())
+  std::vector<ossia::net::generic_device*> dev_list;
+  dev_list.reserve(inst.devices.size() + 1);
+  for(auto dev : inst.devices.reference())
   {
-    node_base::push_default_value(dev);
+    dev_list.push_back(dev->m_device);
+  }
+  dev_list.push_back(inst.get_default_device());
+
+  ossia::sort(dev_list, [&](ossia::net::generic_device* a, ossia::net::generic_device* b)
+  {
+    auto prio_a = ossia::net::get_priority(a->get_root_node());
+    auto prio_b = ossia::net::get_priority(b->get_root_node());
+
+    if(!prio_a)
+      prio_a = 0.;
+
+    if(!prio_b)
+      prio_b = 0.;
+
+    return *prio_a > *prio_b;
+  });
+
+  for (auto dev : dev_list)
+  {
+    auto list = ossia::net::list_all_child(&dev->get_root_node());
+
+    for (ossia::net::node_base* child : list)
+    {
+      if (auto param = child->get_parameter())
+      {
+        auto val = ossia::net::get_default_value(*child);
+        if(val)
+        {
+          param->push_value(*val);
+          trig_output_value(child);
+        }
+      }
+    }
   }
 }
 
