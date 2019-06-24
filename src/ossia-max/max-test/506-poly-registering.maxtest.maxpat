@@ -38,6 +38,19 @@
 		"subpatcher_template" : "",
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-20",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 134.0, 364.0, 57.0, 22.0 ],
+					"style" : "",
+					"text" : "del 1000"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-22",
 					"linecount" : 2,
 					"maxclass" : "comment",
@@ -94,8 +107,7 @@
 					"id" : "obj-30",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
+					"numoutlets" : 0,
 					"patching_rect" : [ 279.5, 626.0, 174.0, 22.0 ],
 					"style" : "",
 					"text" : "test.assert namespace_priority"
@@ -327,7 +339,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 134.0, 353.0, 83.0, 22.0 ],
+					"patching_rect" : [ 134.0, 408.0, 83.0, 22.0 ],
 					"style" : "",
 					"text" : "test.terminate"
 				}
@@ -509,15 +521,8 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-10", 0 ],
+					"destination" : [ "obj-20", 0 ],
 					"source" : [ "obj-14", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-16", 0 ],
-					"source" : [ "obj-14", 1 ]
 				}
 
 			}
@@ -567,6 +572,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-6", 0 ],
 					"source" : [ "obj-2", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-10", 0 ],
+					"source" : [ "obj-20", 0 ]
 				}
 
 			}
@@ -696,14 +708,6 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
 				"type" : "iLaX"
 			}
  ],

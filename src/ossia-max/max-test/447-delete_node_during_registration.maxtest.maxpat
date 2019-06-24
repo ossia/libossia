@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 454.0, 122.0, 1336.0, 909.0 ],
+		"rect" : [ 454.0, 122.0, 930.0, 909.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -142,15 +142,15 @@
 			}
 , 			{
 				"box" : 				{
-					"bgcolor" : [ 0.92549, 0.364706, 0.341176, 0.99 ],
+					"bgcolor" : [ 0.141179, 0.999856, 0.033349, 1.0 ],
 					"id" : "obj-46",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 786.0, 478.5, 280.0, 33.0 ],
+					"patching_rect" : [ 790.0, 478.5, 280.0, 33.0 ],
 					"style" : "",
-					"text" : "still doesn't work on 2019.06.20 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
+					"text" : "works on 2019.06.24 with 14b1a13be174832e3b5a80909a8c6ddf5b52005d"
 				}
 
 			}
