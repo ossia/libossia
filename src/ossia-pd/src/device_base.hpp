@@ -15,6 +15,9 @@ public:
   void on_parameter_deleted_callback(const ossia::net::parameter_base& param);
   static void on_attribute_modified_callback(ossia::net::node_base& node,
                                       const std::string& attribute);
+
+  void on_unhandled_message_callback(const std::string addr, const ossia::value& val);
+
   void on_node_renamed_callback(ossia::net::node_base& node,
                                       const std::string& old_name);
   void on_node_created_callback(ossia::net::node_base& node);

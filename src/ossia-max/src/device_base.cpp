@@ -132,7 +132,8 @@ void device_base::connect_slots()
     m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(this);
     m_device->on_unhandled_message.connect<&device_base::on_unhandled_message_callback>(this);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
-    // TODO add callback for message
+    // TODO add callback for node creation request,
+    // node deletion request and node_rename request
 
     m_device->on_node_renamed.connect<&device_base::on_node_renamed_callback>(this);
     m_device->on_node_created.connect<&device_base::on_node_created_callback>(this);
