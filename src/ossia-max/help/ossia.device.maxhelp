@@ -9,7 +9,7 @@
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 39.0, 79.0, 945.0, 783.0 ],
+		"rect" : [ 100.0, 100.0, 945.0, 783.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 39.0, 105.0, 945.0, 757.0 ],
+						"rect" : [ 0.0, 26.0, 945.0, 757.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -1533,7 +1533,7 @@
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 945.0, 757.0 ],
+						"rect" : [ 100.0, 126.0, 945.0, 757.0 ],
 						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -1563,6 +1563,44 @@
 						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
+								"box" : 								{
+									"id" : "obj-33",
+									"linecount" : 3,
+									"maxclass" : "comment",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 285.0, 368.0, 273.0, 47.0 ],
+									"style" : "",
+									"text" : "device outputs unhandled OSC message (i.e. a message that doesn't correspond to an existing node) through dump outlet with \"osc\" prefix"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-30",
+									"maxclass" : "message",
+									"numinlets" : 2,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 223.0, 433.0, 258.0, 22.0 ],
+									"style" : ""
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-25",
+									"maxclass" : "newobj",
+									"numinlets" : 2,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 223.0, 390.0, 60.0, 22.0 ],
+									"style" : "",
+									"text" : "route osc"
+								}
+
+							}
+, 							{
 								"box" : 								{
 									"fontname" : "Lato Regular",
 									"fontsize" : 12.0,
@@ -2006,7 +2044,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 563.0, 377.0, 175.0, 50.0 ],
+									"patching_rect" : [ 638.0, 377.0, 175.0, 50.0 ],
 									"style" : "",
 									"text" : "Remote control can be done locally or from another computer",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
@@ -2024,7 +2062,7 @@
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 676.0, 286.0, 145.0, 64.0 ],
+									"patching_rect" : [ 751.0, 286.0, 145.0, 64.0 ],
 									"style" : "",
 									"text" : "Open client patcher to remote control this device's model",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
@@ -2038,7 +2076,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 563.0, 307.0, 107.0, 22.0 ],
+									"patching_rect" : [ 638.0, 307.0, 107.0, 22.0 ],
 									"style" : "",
 									"text" : "load distant_client"
 								}
@@ -2051,7 +2089,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 563.0, 344.0, 53.0, 22.0 ],
+									"patching_rect" : [ 638.0, 344.0, 53.0, 22.0 ],
 									"style" : "",
 									"text" : "pcontrol"
 								}
@@ -2277,6 +2315,15 @@
 , 							{
 								"patchline" : 								{
 									"destination" : [ "obj-11", 0 ],
+									"order" : 1,
+									"source" : [ "obj-2", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-25", 0 ],
+									"order" : 0,
 									"source" : [ "obj-2", 0 ]
 								}
 
@@ -2302,6 +2349,13 @@
 									"destination" : [ "obj-16", 1 ],
 									"hidden" : 1,
 									"source" : [ "obj-23", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-30", 1 ],
+									"source" : [ "obj-25", 0 ]
 								}
 
 							}
@@ -2378,7 +2432,7 @@
 , 			{
 				"name" : "fm_synth.maxpat",
 				"bootpath" : "~/Documents/Max 7/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../Documents/Max 7/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../Documents/Max 7/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
