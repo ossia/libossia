@@ -271,7 +271,6 @@ void ossia_max::register_nodes(ossia_max* x)
 
           if(trig)
           {
-            post("push default value for %s", param->get_node().get_name().c_str());
             trig_output_value(child);
           }
         }

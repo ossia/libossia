@@ -337,11 +337,16 @@ void object_base::get_hierarchy()
 {
   t_object* patcher = get_patcher(&m_object);
 
+  auto& vec = m_patcher_hierarchy;
+
   while (patcher)
   {
-    m_patcher_hierarchy.push_back(patcher);
+    vec.push_back(patcher);
     patcher = get_patcher(patcher);
   }
+
+  // remove duplicates
+  vec.erase( std::unique( vec.begin(), vec.end() ), vec.end() );
 }
 
 void object_base::loadbang(object_base* x)
