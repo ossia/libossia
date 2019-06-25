@@ -18,6 +18,18 @@ void device_base::on_parameter_created_callback(const ossia::net::parameter_base
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
 
+void device_base::on_unhandled_message_callback(const std::string addr, const ossia::value& val)
+{
+  std::vector<t_atom> va;
+  t_atom a;
+  A_SETSYM(&a, gensym(addr.c_str()));
+  va.push_back(std::move(a));
+  value2atom vm{va};
+  val.apply(vm);
+
+  outlet_anything(m_dumpout, gensym("osc"), va.size(), va.data());
+}
+
 void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base& param)
 {
   auto& node = param.get_node();
@@ -118,7 +130,7 @@ void device_base::connect_slots()
   {
     m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(this);
     m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(this);
-    // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
+    m_device->on_unhandled_message.connect<&device_base::on_unhandled_message_callback>(this);
     m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
     // TODO add callback for message
 
@@ -141,13 +153,14 @@ void device_base::disconnect_slots()
   {
     m_device->on_parameter_created.disconnect<&device_base::on_parameter_created_callback>(this);
     m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(this);
-    // x->m_device->on_message.connect<&t_client::on_message_callback>(x);
+    m_device->on_unhandled_message.disconnect<&device_base::on_unhandled_message_callback>(this);
+
     m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
 
     m_device->on_node_renamed.disconnect<&device_base::on_node_renamed_callback>(this);
     m_device->on_node_created.disconnect<&device_base::on_node_created_callback>(this);
     m_device->on_node_removing.disconnect<&device_base::on_node_removing_callback>(this);
-    // TODO add callback for message, unhandled message, and command request
+    // TODO add callback for command request
   }
 }
 
