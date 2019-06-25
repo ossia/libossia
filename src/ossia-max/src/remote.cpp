@@ -150,34 +150,8 @@ t_max_err remote::notify(remote *x, t_symbol *s,
   if (!x->m_lock && msg == gensym("attr_modified") && sender == x) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
-    if( attrname == gensym("range") )
-      x->set_range();
-    else if ( attrname == gensym("clip") )
-      x->set_bounding_mode();
-    else if ( attrname == gensym("min") || attrname == gensym("max") )
-      x->set_minmax();
-    else if ( attrname == gensym("default") )
-      x->set_default();
-    else if ( attrname == gensym("unit") )
+    if ( attrname == gensym("unit") )
       x->set_unit();
-    else if ( attrname == gensym("rate") )
-      x->set_rate();
-    else if ( attrname == gensym("invisible") )
-      x->set_hidden();
-    else if ( attrname == gensym("priority") )
-      x->set_priority();
-    else if ( attrname == gensym("mode") )
-      x->set_access_mode();
-    else if ( attrname == gensym("repetitions") )
-      x->set_repetition_filter();
-    else if ( attrname == gensym("tags") )
-      x->set_tags();
-    else if ( attrname == gensym("description") )
-      x->set_description();
-    else if ( attrname == gensym("enable") )
-      x->set_enable();
-    else if ( attrname == gensym("type") )
-      x->set_type();
     else if ( attrname == gensym("mute") )
     {
       if (x->m_mute)
@@ -185,6 +159,8 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       else
         ossia_register(x);
     }
+    else
+      parameter_base::notify(x, s, msg, sender, data);
 
   }
   return 0;
@@ -230,12 +206,6 @@ void remote::set_unit()
     m_ounit = ossia::none;
   }
 }
-
-void remote::set_rate()
-{
-  m_rate = m_rate < m_rate_min ? m_rate_min : m_rate;
-}
-
 
 void remote::get_unit(remote*x)
 {
@@ -442,36 +412,8 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
 {
   // @mute and @unit attributes are specific to each remote
   // it makes no sens to sens to change when an attribute changes
-  if ( attribute == ossia::net::text_refresh_rate() )
-  {
-    // assume all matchers have the same refresh_rate
-    assert(!x->m_matchers.empty());
 
-    std::shared_ptr<ossia::max::t_matcher> good_one{};
-
-    for(auto& m : x->m_matchers)
-    {
-      if(!m->is_zombie())
-      {
-        good_one = m;
-        break;
-      }
-    }
-
-    if(good_one)
-    {
-      ossia::net::node_base* node = good_one->get_node();
-
-      auto rate = ossia::net::get_refresh_rate(*node);
-      if (rate)
-      {
-        x->m_rate_min = *rate;
-        x->m_rate = x->m_rate < x->m_rate_min ? x->m_rate_min : x->m_rate;
-      }
-      notify(x, nullptr, gensym("attr_modified"), 0L, 0L);
-    }
-
-  } else if ( attribute == ossia::net::text_unit()) {
+  if ( attribute == ossia::net::text_unit()) {
     // assume all matchers have the same bounding_mode
     assert(!x->m_matchers.empty());
 

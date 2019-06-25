@@ -469,9 +469,9 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
     get_description(x, matchers);
   } else if ( attribute == ossia::net::text_tags() ){
     get_tags(x, matchers);
-  } else if ( attribute == "invisible" || attribute == "hidden" ){
+  } else if ( attribute == ossia::net::text_hidden() ){
     get_hidden(x, matchers);
-  } else if ( attribute == "recall_safe" ){
+  } else if ( attribute == ossia::net::text_recall_safe() ){
     get_recall_safe(x, matchers);
   } else {
     object_error((t_object*)x, "no attribute %s", std::string(attribute).c_str());
@@ -494,7 +494,7 @@ t_max_err object_base::notify(object_base *x, t_symbol *s,
       x->set_description();
     else if ( attrname == gensym("tags") )
       x->set_tags();
-    else if ( s == gensym("recall_safe") )
+    else if ( attrname == gensym("recall_safe") )
       x->set_recall_safe();
   }
   return 0;
