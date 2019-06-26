@@ -1,28 +1,25 @@
 using System;
-using System.Reflection;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 
-namespace Ossia
-{
+namespace Ossia {
   //! Expose an object through ossia.
   //! This shows all the components put in the component list
-  public class ExposeComponents : ExposedObject
-  {
+  public class ExposeComponents : ExposedObject {
     public string NodeName = "Object";
     public List<Component> components;
 
     Ossia.Node scene_node;
 
-    void RegisterComponent (Component component, Ossia.Node node)
-    {
+    void RegisterComponent (Component component, Ossia.Node node) {
       var flags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
       var fields = component.GetType ().GetFields (flags);
       var properties = component.GetType ().GetProperties ();
 
       if (fields.Length == 0 && properties.Length == 0)
         return;
-      
+
       // Create a node for the component
       var ossia_c = new OssiaEnabledComponent (component, node);
 
@@ -44,26 +41,24 @@ namespace Ossia
         controller.Register (oep);
       }
 
-
       // Create nodes for all the fields that were exposed
       foreach (PropertyInfo prop in properties) {
         var prop_t = prop.PropertyType;
-        Debug.Log ("Prop: " + prop.Name + " => " + prop.PropertyType.ToString());
-        if (prop_t == typeof(UnityEngine.Transform)) { 
+        // Debug.Log ("Prop: " + prop.Name + " => " + prop.PropertyType.ToString());
+        if (prop_t == typeof (UnityEngine.Transform)) {
           // TODO
-        } else if (prop_t == typeof(UnityEngine.Component)) { 
-          try { 
-            var subcomp = (Component)prop.GetValue (component, null);
+        } else if (prop_t == typeof (UnityEngine.Component)) {
+          try {
+            var subcomp = (Component) prop.GetValue (component, null);
             var subnode = node.AddChild (prop.Name);
             RegisterComponent (subcomp, subnode);
-          } catch {
-          }
-        } else { 
+          } catch { }
+        } else {
           // Get the type of the field
           ossia_type t;
           try {
             t = Ossia.Value.GetOssiaType (prop_t);
-          } catch { 
+          } catch {
             continue;
           }
 
@@ -74,10 +69,9 @@ namespace Ossia
       }
     }
 
-    public override void Start ()
-    {
+    public override void Start () {
       if (child_node != null) {
-        Debug.Log ("Object already registered.");        
+        Debug.Log ("Object already registered.");
         return;
       }
 

@@ -37,8 +37,23 @@ namespace Ossia
 
         oscq_protocol = new Ossia.OSCQuery (1234, 5678);
         local_protocol.ExposeTo (oscq_protocol);
+
+
+        score_protocol = new Ossia.OSC("127.0.0.1", 6666, 6657);
+        score_device = new Ossia.Device(score_protocol, "score");
+        
+        var reconnect = Ossia.Node.CreateNode(score_device.GetRootNode(), "/reconnect").CreateParameter(Ossia.ossia_type.STRING);
+        reconnect.PushValue("");
+        score_play = Ossia.Node.CreateNode(score_device.GetRootNode(), "/play").CreateParameter(Ossia.ossia_type.BOOL);
+        StartCoroutine(playScore());
       }
     }
+
+        IEnumerator playScore()
+        {
+            yield return new WaitForSeconds(8);
+            score_play.PushValue(true);
+        }
 
     void Update()
     {
@@ -92,8 +107,18 @@ namespace Ossia
       Hash.Remove (p.ossia_parameter.ossia_parameter);
     }
 
+        internal void Register(Ossia.OssiaEnabledElement p)
+        {
+            Queue.Register(p.parameter());
+            Hash.Add(p.parameter().ossia_parameter, p);
+        }
+        internal void Unregister(Ossia.OssiaEnabledElement p)
+        {
+            Queue.Unregister(p.parameter());
+            Hash.Remove(p.parameter().ossia_parameter);
+        }
 
-    internal static Controller Get()
+        internal static Controller Get()
     {
       GameObject controller = GameObject.Find ("OssiaController");
       if (controller == null) {
@@ -114,6 +139,9 @@ namespace Ossia
     Ossia.Device local_device = null;
     Ossia.OSCQuery oscq_protocol = null;
 
+    Ossia.Device score_device = null;
+    Ossia.OSC score_protocol = null;
+    Ossia.Parameter score_play = null;
     Ossia.Node scene_node;
     Ossia.Network main;
     Ossia.MessageQueue Queue;

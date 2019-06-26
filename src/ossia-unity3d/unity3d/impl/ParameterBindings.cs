@@ -8,6 +8,7 @@ namespace Ossia
   internal interface OssiaEnabledElement
   {
     void ReceiveUpdates ();
+    Ossia.Parameter parameter();
   }
 
   //! Used to register C# fields to Ossia
@@ -59,7 +60,9 @@ namespace Ossia
         ossia_parameter.PushValue (new Value (val));
       }
     }
-  }
+
+    public Ossia.Parameter parameter() { return ossia_parameter;  }
+    }
 
   //! Used to register C# properties to Ossia
   internal class OssiaEnabledProperty : OssiaEnabledElement
@@ -114,6 +117,7 @@ namespace Ossia
         }
       }
     }
+    public Ossia.Parameter parameter() { return ossia_parameter;  }
   }
 
   //! A component whose fields have some [Ossia.Expose] attributes
