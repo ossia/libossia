@@ -261,7 +261,8 @@
 			Define access mode of parameter : GET, SET, or both (BI)
 			</digest>
 			<description>
-			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, not retrieved, and when at BI, it can be both set and retrieved.
+			Defines the way the value of ossia.parameter will be accessible : when set at GET, the value can only be retrieved, when at SET, it can only be set, and when at BI, it can be both set and retrieved.
+			However, when `@mode` is set as SET, it is possible to retrieve the last value it has received, without any guarantee this will reflect the system's current/actual state.
 			</description>
 		</attribute>
 		
