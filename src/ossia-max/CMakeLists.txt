@@ -249,6 +249,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/param-test-for-369.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/submodel-test-for-369.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/507_sub_bpatch.maxpat
         )
     install(
         FILES
