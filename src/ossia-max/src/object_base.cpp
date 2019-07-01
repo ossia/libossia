@@ -338,6 +338,8 @@ void object_base::get_hierarchy()
   t_object* patcher = get_patcher(&m_object);
 
   auto& vec = m_patcher_hierarchy;
+  vec.clear();
+  vec.reserve(32);
 
   while (patcher)
   {
