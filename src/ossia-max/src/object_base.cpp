@@ -355,11 +355,6 @@ void object_base::loadbang(object_base* x)
 {
   x->m_loadbanged = true;
 
-  if (x->m_reg_clock)
-  {
-    clock_unset(x->m_reg_clock);
-  }
-
   if (!x->m_patcher_hierarchy.empty())
   {
     auto& root_map = ossia_max::instance().root_patcher;
@@ -375,6 +370,15 @@ void object_base::loadbang(object_base* x)
         // this schedules the registration of all opened patchers
         // that have not already been registered
         clock_delay(ossia_max::instance().m_reg_clock,1);
+
+        // disable registration clock only if we trig a global
+        // registration from root patcher
+        // this is not ideal because in this case, objects might
+        // be registered twice if they are in a nested abtraction
+        if (x->m_reg_clock)
+        {
+          clock_unset(x->m_reg_clock);
+        }
       }
 #endif
     }
