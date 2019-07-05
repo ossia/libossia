@@ -48,8 +48,16 @@ public:
       ui_tick = std::move(t);
       replace_tick = true;
 
-      while (replace_tick)
+      int i = 0;
+      while (replace_tick && i < 200)
+      {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        i++;
+      }
+      if(i == 200)
+      {
+        throw std::runtime_error("Audio thread is not responding");
+      }
     }
     else
     {
