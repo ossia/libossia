@@ -127,25 +127,17 @@ public:
   }
 
   template <std::size_t N>
-  static constexpr auto get_inlet_accessor() noexcept
+  static constexpr auto& get_inlet_accessor(const ossia::inlets& inl) noexcept
   {
     constexpr auto cat = info::categorize_inlet(N);
     if constexpr (cat == ossia::safe_nodes::inlet_kind::audio_in)
-      return [](const ossia::inlets& inl) -> const ossia::audio_port& {
         return *inl[N]->data.target<ossia::audio_port>();
-      };
     else if constexpr (cat == ossia::safe_nodes::inlet_kind::midi_in)
-      return [](const ossia::inlets& inl) -> const ossia::midi_port& {
         return *inl[N]->data.target<ossia::midi_port>();
-      };
     else if constexpr (cat == ossia::safe_nodes::inlet_kind::value_in)
-      return [](const ossia::inlets& inl) -> const ossia::value_port& {
         return *inl[N]->data.target<ossia::value_port>();
-      };
     else if constexpr (cat == ossia::safe_nodes::inlet_kind::address_in)
-      return [](const ossia::inlets& inl) -> const ossia::destination_t& {
         return inl[N]->address;
-      };
     else
       throw;
   }
@@ -186,55 +178,47 @@ public:
       }
     }
   };
+
   template <std::size_t N>
-  static constexpr auto get_control_accessor() noexcept
+  constexpr const auto& get_control_accessor (const ossia::inlets& inl) noexcept
   {
-    return [](const ossia::inlets& inl, safe_node& self) -> const auto&
-    {
-      constexpr const auto idx = info::control_start + N;
-      static_assert(info::control_count > 0);
-      static_assert(N < info::control_count);
+    constexpr const auto idx = info::control_start + N;
+    static_assert(info::control_count > 0);
+    static_assert(N < info::control_count);
 
-      using control_type = typename std::tuple_element<
-          N, decltype(get_controls<Node_T>{}())>::type;
-      using val_type = typename control_type::type;
+    using control_type = typename std::tuple_element<
+    N, decltype(get_controls<Node_T>{}())>::type;
+    using val_type = typename control_type::type;
 
-      ossia::safe_nodes::timed_vec<val_type>& vec
-          = std::get<N>(self.control_tuple);
-      vec.clear();
-      const auto& vp
-          = inl[idx]->data.template target<ossia::value_port>()->get_data();
-      vec.container.reserve(vp.size() + 1);
+    ossia::safe_nodes::timed_vec<val_type>& vec
+        = std::get<N>(this->control_tuple);
+    vec.clear();
+    const auto& vp
+        = inl[idx]->data.template target<ossia::value_port>()->get_data();
+    vec.container.reserve(vp.size() + 1);
 
-      // in all cases, set the current value at t=0
-      vec.insert(std::make_pair(int64_t{0}, std::get<N>(self.controls)));
+    // in all cases, set the current value at t=0
+    vec.insert(std::make_pair(int64_t{0}, std::get<N>(this->controls)));
 
-      // copy all the values... values arrived later replace previous ones
-      apply_control<control_type::must_validate, N>{}(vec, self, vp);
+    // copy all the values... values arrived later replace previous ones
+    apply_control<control_type::must_validate, N>{}(vec, *this, vp);
 
-      // the last value will be the first for the next tick
-      std::get<N>(self.controls) = vec.rbegin()->second;
-      return vec;
-    };
+    // the last value will be the first for the next tick
+    std::get<N>(this->controls) = vec.rbegin()->second;
+    return vec;
   }
 
   template <std::size_t N>
-  static constexpr auto get_outlet_accessor() noexcept
+  static constexpr auto& get_outlet_accessor(const ossia::outlets& inl) noexcept
   {
     if constexpr (N < info::audio_out_count)
-      return [](const ossia::outlets& inl) -> ossia::audio_port& {
         return *inl[N]->data.target<ossia::audio_port>();
-      };
     else if constexpr (N < (info::audio_out_count + info::midi_out_count))
-      return [](const ossia::outlets& inl) -> ossia::midi_port& {
         return *inl[N]->data.target<ossia::midi_port>();
-      };
     else if constexpr (
         N < (info::audio_out_count + info::midi_out_count
              + info::value_out_count))
-      return [](const ossia::outlets& inl) -> ossia::value_port& {
         return *inl[N]->data.target<ossia::value_port>();
-      };
     else
       throw;
   }
@@ -243,66 +227,67 @@ public:
 
   template <std::size_t... I, std::size_t... C, std::size_t... O >
   void
-	  apply_all_impl(const std::index_sequence<I...>& i1, const std::index_sequence<C...>& i2, const std::index_sequence<O...>& i3, ossia::token_request tk, ossia::exec_state_facade st) noexcept
+    apply_all_impl(const std::index_sequence<I...>& i1, const std::index_sequence<C...>& i2, const std::index_sequence<O...>& i3, ossia::token_request tk, ossia::exec_state_facade st) noexcept
   {
-	  ossia::inlets& inlets = this->inputs();
-	  ossia::outlets& outlets = this->outputs();
+    ossia::inlets& inlets = this->inputs();
+    ossia::outlets& outlets = this->outputs();
 
-	  if constexpr (has_state)
-	  {
-		  if constexpr (info::control_count > 0)
-		  {
-			  using policy = typename Node_T::control_policy;
-			  policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
-				  Node_T::run(
-					  get_inlet_accessor<I>()(inlets)...,
-					  std::forward<decltype(ctls)>(ctls)...,
-					  get_outlet_accessor<O>()(outlets)...,
-					  sub_tk, st, static_cast<state_type&>(*this)
-				  );
-				  }, tk, get_control_accessor<C>()(inlets, *this)...);
-		  }
-		  else
-		  {
-			  Node_T::run(
-				  get_inlet_accessor<I>()(inlets)...,
-				  get_outlet_accessor<O>()(outlets)...,
-				  tk, st, static_cast<state_type&>(*this)
-			  );
-		  }
-	  }
-	  else
-	  {
-		  if constexpr (info::control_count > 0)
-		  {
-			  using policy = typename Node_T::control_policy;
-			  policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
-				  Node_T::run(
-					  get_inlet_accessor<I>()(inlets)...,
-					  std::forward<decltype(ctls)>(ctls)...,
-					  get_outlet_accessor<O>()(outlets)...,
-					  sub_tk, st
-				  );
-				  }, tk, get_control_accessor<C>()(inlets, *this)...);
-		  }
-		  else
-		  {
-			  Node_T::run(
-				  get_inlet_accessor<I>()(inlets)...,
-				  get_outlet_accessor<O>()(outlets)...,
-				  tk, st
-			  );
-		  }
-	  }
+    if constexpr (has_state)
+    {
+      if constexpr (info::control_count > 0)
+      {
+        using policy = typename Node_T::control_policy;
+        policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+          Node_T::run(
+            get_inlet_accessor<I>(inlets)...,
+            std::forward<decltype(ctls)>(ctls)...,
+            get_outlet_accessor<O>(outlets)...,
+            sub_tk, st, static_cast<state_type&>(*this)
+          );
+          }, tk, get_control_accessor<C>(inlets)...);
+      }
+      else
+      {
+        Node_T::run(
+          get_inlet_accessor<I>(inlets)...,
+          get_outlet_accessor<O>(outlets)...,
+          tk, st, static_cast<state_type&>(*this)
+        );
+      }
+    }
+    else
+    {
+      if constexpr (info::control_count > 0)
+      {
+        using policy = typename Node_T::control_policy;
+        policy{}([&](const ossia::token_request& sub_tk, auto&& ... ctls) {
+          Node_T::run(
+            get_inlet_accessor<I>(inlets)...,
+            std::forward<decltype(ctls)>(ctls)...,
+            get_outlet_accessor<O>(outlets)...,
+            sub_tk, st
+          );
+          }, tk, get_control_accessor<C>(inlets)...);
+      }
+      else
+      {
+        Node_T::run(
+          get_inlet_accessor<I>(inlets)...,
+          get_outlet_accessor<O>(outlets)...,
+          tk, st
+        );
+      }
+    }
   }
+
   void
   run(ossia::token_request tk, ossia::exec_state_facade st) noexcept override
   {
     using inlets_indices = std::make_index_sequence<info::control_start>;
     using controls_indices = std::make_index_sequence<info::control_count>;
     using outlets_indices = std::make_index_sequence<info::outlet_size>;
-	
-	apply_all_impl(inlets_indices{}, controls_indices{}, outlets_indices{}, tk, st);
+
+  apply_all_impl(inlets_indices{}, controls_indices{}, outlets_indices{}, tk, st);
 
     if (cqueue.size_approx() < 1 && controls_changed.any())
     {
