@@ -78,12 +78,11 @@ int main()
     auto& node = find_or_create_node(device, "/test/my_float");
     auto address = node.create_parameter(val_type::FLOAT);
     address->add_callback(printValueCallback);
-    address->push_value(1234.);
+    address->push_value(0.5);
 
     std::thread t{[=] {
-        static int i = 1234;
         while(true) {
-          address->push_value(i++);
+          address->push_value(double(rand()) / RAND_MAX);
           std::this_thread::sleep_for(std::chrono::seconds(1));
         }}};
     t.detach();

@@ -1,19 +1,13 @@
 #pragma once
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/audio/drwav_handle.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 
-#define DR_WAV_NO_STDIO
-#include <dr_wav.h>
-
 #include <type_traits>
 
-namespace ossia
-{
-struct drwav_handle final : ::drwav { };
-}
 namespace ossia::nodes
 {
 // TODO refactor with AudioDecoder
@@ -78,16 +72,16 @@ public:
         upmix = v;
     }
 
-    void set_sound(drwav* hdl)
+    void set_sound(drwav_handle hdl)
     {
-        m_handle = hdl;
+        m_handle = std::move(hdl);
         if(m_handle)
         {
-            switch(m_handle->translatedFormatTag)
+            switch(m_handle.translatedFormatTag())
             {
             case DR_WAVE_FORMAT_PCM:
             {
-                switch(m_handle->bitsPerSample)
+                switch(m_handle.bitsPerSample())
                 {
                 case 16:
                 {
@@ -184,8 +178,8 @@ public:
         if(!m_handle)
             return;
 
-        const auto channels = m_handle->channels;
-        const auto max_frames = m_handle->totalPCMFrameCount;
+        const auto channels = m_handle.channels();
+        const auto max_frames = m_handle.totalPCMFrameCount();
 
         ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
         ap.samples.resize(channels);
@@ -199,7 +193,7 @@ public:
 
         if (t.date > t.prev_date)
         {
-            const bool ok = drwav_seek_to_pcm_frame(m_handle, t.prev_date.impl + start_offset);
+            const bool ok = m_handle.seek_to_pcm_frame(t.prev_date.impl + start_offset);
             if(!ok)
                 return;
 
@@ -215,7 +209,7 @@ public:
                 data = m_safetyBuffer.data();
             }
 
-            auto count = drwav_read_pcm_frames(m_handle, frames, data);
+            auto count = m_handle.read_pcm_frames(frames, data);
 
             for (std::size_t i = 0; i < channels; i++)
             {
@@ -289,11 +283,11 @@ public:
     }
     std::size_t channels() const
     {
-        return m_handle ? m_handle->channels : 0;
+        return m_handle ? m_handle.channels() : 0;
     }
     std::size_t duration() const
     {
-        return m_handle ? m_handle->totalPCMFrameCount: 0;
+        return m_handle ? m_handle.totalPCMFrameCount(): 0;
     }
 
 private:
@@ -302,7 +296,7 @@ private:
     std::size_t upmix{};
     ossia::outlet audio_out{ossia::audio_port{}};
 
-    drwav* m_handle{};
+    drwav_handle m_handle{};
     using read_fn_t = void(*)(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples);
     read_fn_t m_converter{};
     std::vector<char> m_safetyBuffer;

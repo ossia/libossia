@@ -97,7 +97,12 @@ public:
       auto in = jack_port_register(
           client, ("in_" + std::to_string(i + 1)).c_str(),
           JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
-      assert(in);
+      if(!in)
+      {
+        jack_deactivate(client);
+        jack_client_close(client);
+        throw std::runtime_error("Audio error: cannot register JACK input");
+      }
       input_ports.push_back(in);
     }
     for (int i = 0; i < outputs; i++)
@@ -105,7 +110,12 @@ public:
       auto out = jack_port_register(
           client, ("out_" + std::to_string(i + 1)).c_str(),
           JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
-      assert(out);
+      if(!out)
+      {
+        jack_deactivate(client);
+        jack_client_close(client);
+        throw std::runtime_error("Audio error: cannot register JACK output");
+      }
       output_ports.push_back(out);
     }
 
