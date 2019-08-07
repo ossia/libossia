@@ -121,4 +121,16 @@ OSSIA_INLINE constexpr std::pair<T, T> div(T num, T denom) noexcept
 {
   return {num / denom, num % denom};
 }
+
+
+// normalized means x in [min, min + range] => f(x) in [0; 1] with log increase
+OSSIA_INLINE float log_to_normalized(float min, float range, float val) noexcept
+{
+  return val <= min ? 0.f : std::log1pf( val - min) / std::log1pf(range);
+}
+OSSIA_INLINE float normalized_to_log(float min, float range, float val) noexcept
+{
+  const float res = std::expm1f(val * std::log1pf(range)) + min;
+  return std::min(res, min + range);
+}
 }

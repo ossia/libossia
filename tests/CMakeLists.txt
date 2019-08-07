@@ -76,7 +76,7 @@ if(OSSIA_DATAFLOW)
   ossia_add_test(TickMethodTest              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TickMethodTest.cpp")
 endif()
 
-if(OSSIA_QT)
+if(OSSIA_QML)
   # The following lines are used to display the QMLs in the project view of IDEs
   SET(QMLS
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/http/http_example.qml"

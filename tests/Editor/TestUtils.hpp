@@ -6,7 +6,7 @@
 #include <ossia/editor/scenario/clock.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/graph_node.hpp>
-#if defined(OSSIA_QT)
+#if defined(OSSIA_QML)
 #include <ossia-qt/js_utilities.hpp>
 #endif
 

@@ -42,13 +42,13 @@
 
 /// Inline support ///
 #if defined(__GNUC__)
-#define OSSIA_INLINE __attribute__((always_inline))
+#define OSSIA_INLINE inline __attribute__((always_inline))
 #elif defined(__clang__)
-#define OSSIA_INLINE __attribute__((always_inline))
+#define OSSIA_INLINE inline __attribute__((always_inline))
 #elif defined(_MSC_VER)
-#define OSSIA_INLINE __forceinline
+#define OSSIA_INLINE inline __forceinline
 #else
-#define OSSIA_INLINE
+#define OSSIA_INLINE inline
 #endif
 
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
