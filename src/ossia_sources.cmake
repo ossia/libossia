@@ -455,14 +455,12 @@ set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.hpp"
     )
 
 set(OSSIA_QTQML_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.cpp"
     )
 set(OSSIA_QML_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml"
