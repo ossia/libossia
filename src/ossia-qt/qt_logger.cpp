@@ -1,4 +1,7 @@
 #include <ossia-qt/qt_logger.hpp>
+#include <ossia/network/base/name_validation.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <wobjectimpl.h>
 #include <QString>
 #include <QStringBuilder>
