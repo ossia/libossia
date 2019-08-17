@@ -2,14 +2,13 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 0,
-			"revision" : 6,
-			"architecture" : "x64",
+			"major" : 7,
+			"minor" : 3,
+			"revision" : 5,
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
-		"classnamespace" : "box",
 		"rect" : [ 100.0, 100.0, 699.0, 368.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
@@ -60,6 +59,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 7.0, 68.0, 542.0, 20.0 ],
+					"style" : "",
 					"text" : "Make life easier when accessing the individual members of a @type list parameter in the GUI"
 				}
 
@@ -75,7 +75,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 260.0, 308.0, 165.0, 22.0 ],
-					"text" : "10 20 30"
+					"style" : ""
 				}
 
 			}
@@ -90,6 +90,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 258.0, 274.0, 191.0, 22.0 ],
+					"style" : "",
 					"text" : "ossia.parameter testing @type list",
 					"varname" : "testing[1]"
 				}
@@ -104,7 +105,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 501.0, 124.0, 105.0, 22.0 ],
+					"patching_rect" : [ 502.0, 124.0, 105.0, 22.0 ],
+					"style" : "",
 					"text" : "11.11 22.22 33.33"
 				}
 
@@ -119,6 +121,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 451.0, 124.0, 47.0, 22.0 ],
+					"style" : "",
 					"text" : "1. 2. 3."
 				}
 
@@ -132,6 +135,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 114.0, 152.0, 19.0, 20.0 ],
+					"style" : "",
 					"text" : "Z"
 				}
 
@@ -145,6 +149,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 75.0, 152.0, 21.0, 20.0 ],
+					"style" : "",
 					"text" : "Y"
 				}
 
@@ -160,6 +165,7 @@
 					"numoutlets" : 11,
 					"outlettype" : [ "", "", "", "", "", "", "", "", "", "", "" ],
 					"patching_rect" : [ 196.0, 172.0, 126.0, 22.0 ],
+					"style" : "",
 					"text" : "ossia.list2parameter 3"
 				}
 
@@ -174,6 +180,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 391.0, 124.0, 57.0, 22.0 ],
+					"style" : "",
 					"text" : "10 20 30"
 				}
 
@@ -189,6 +196,7 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 391.0, 172.0, 118.0, 22.0 ],
+					"style" : "",
 					"text" : "ossia.remote testing",
 					"varname" : "testing"
 				}
@@ -205,6 +213,7 @@
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 108.0, 171.0, 36.0, 22.0 ],
+					"style" : "",
 					"triscale" : 0.9,
 					"varname" : "Z"
 				}
@@ -221,6 +230,7 @@
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 69.0, 171.0, 36.0, 22.0 ],
+					"style" : "",
 					"triscale" : 0.9,
 					"varname" : "Y"
 				}
@@ -237,6 +247,7 @@
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 30.0, 171.0, 36.0, 22.0 ],
+					"style" : "",
 					"triscale" : 0.9,
 					"varname" : "X"
 				}
@@ -252,6 +263,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 306.0, 207.0, 52.0, 22.0 ],
+					"style" : "",
 					"text" : "pvar Z"
 				}
 
@@ -266,6 +278,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 251.0, 207.0, 52.0, 22.0 ],
+					"style" : "",
 					"text" : "pvar Y"
 				}
 
@@ -280,6 +293,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 196.0, 207.0, 52.0, 22.0 ],
+					"style" : "",
 					"text" : "pvar X"
 				}
 
@@ -293,6 +307,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 36.0, 152.0, 21.0, 20.0 ],
+					"style" : "",
 					"text" : "X"
 				}
 
@@ -307,6 +322,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 192.0, 116.0, 170.0, 33.0 ],
+					"style" : "",
 					"text" : "accepts up to ten inputs of any type"
 				}
 
@@ -315,7 +331,7 @@
 		"lines" : [ 			{
 				"patchline" : 				{
 					"destination" : [ "obj-10", 0 ],
-					"midpoints" : [ 510.5, 158.0, 400.5, 158.0 ],
+					"midpoints" : [ 511.5, 158.0, 400.5, 158.0 ],
 					"source" : [ "obj-1", 0 ]
 				}
 
@@ -330,7 +346,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 2 ],
-					"midpoints" : [ 315.5, 243.0, 172.0, 243.0, 172.0, 155.0, 226.900000000000006, 155.0 ],
+					"midpoints" : [ 315.5, 243.0, 172.0, 243.0, 172.0, 155.0, 226.899994, 155.0 ],
 					"source" : [ "obj-14", 0 ]
 				}
 
@@ -338,7 +354,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 1 ],
-					"midpoints" : [ 260.5, 237.0, 180.0, 237.0, 180.0, 161.0, 216.199999999999989, 161.0 ],
+					"midpoints" : [ 260.5, 237.0, 180.0, 237.0, 180.0, 161.0, 216.199997, 161.0 ],
 					"source" : [ "obj-15", 0 ]
 				}
 
@@ -377,7 +393,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
-					"midpoints" : [ 226.900000000000006, 199.0, 315.5, 199.0 ],
+					"midpoints" : [ 226.899994, 199.0, 315.5, 199.0 ],
 					"source" : [ "obj-6", 2 ]
 				}
 
@@ -385,7 +401,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-15", 0 ],
-					"midpoints" : [ 216.199999999999989, 203.0, 260.5, 203.0 ],
+					"midpoints" : [ 216.199997, 203.0, 260.5, 203.0 ],
 					"source" : [ "obj-6", 1 ]
 				}
 
@@ -407,7 +423,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.list2parameter.maxpat",
-				"bootpath" : "~/Github/phase/ossia/ossia.list2parameter",
+				"bootpath" : "~/Github/libossia/OSSIA/ossia-max/patchers/ossia.list2parameter",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
