@@ -20,6 +20,11 @@ public:
   {
   }
 
+  std::string label() const noexcept override
+  {
+    return "sound_ref";
+  }
+
   void set_start(std::size_t v)
   {
     start = v;
@@ -47,7 +52,9 @@ public:
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
     if (m_data.empty())
+    {
       return;
+    }
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
 
@@ -163,3 +170,4 @@ private:
   audio_handle m_handle;
 };
 }
+
