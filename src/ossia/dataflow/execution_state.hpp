@@ -52,6 +52,9 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   /// To be called from the execution thread ///
   void register_inlet(const ossia::inlet& port);
+  void register_outlet(const ossia::outlet& port);
+  void unregister_inlet(const ossia::inlet& port);
+  void unregister_outlet(const ossia::outlet& port);
 
   const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const
       noexcept
@@ -129,6 +132,7 @@ private:
   void register_parameter(ossia::net::parameter_base& p);
   void unregister_parameter(ossia::net::parameter_base& p);
   void register_midi_parameter(net::midi::midi_protocol& p);
+  void unregister_midi_parameter(net::midi::midi_protocol& p);
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_edit;
   ossia::small_vector<ossia::net::device_base*, 4> m_devices_exec;
   struct device_operation
@@ -147,7 +151,7 @@ private:
   ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>>
       m_receivedValues;
   ossia::ptr_map<
-      ossia::net::midi::midi_protocol*, value_vector<rtmidi::message>>
+      ossia::net::midi::midi_protocol*, std::pair<int, value_vector<rtmidi::message>>>
       m_receivedMidi;
 
   ossia::mono_state m_monoState;
