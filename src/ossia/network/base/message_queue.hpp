@@ -28,7 +28,7 @@ public:
     {
       for (auto reg : m_reg)
       {
-        reg.first->remove_callback(reg.second);
+        reg.first->remove_callback(reg.second.second);
       }
     }
     catch (...)
@@ -50,7 +50,11 @@ public:
       auto it = p.add_callback([=](const ossia::value& val) {
         m_queue.enqueue({ptr, val});
       });
-      m_reg.insert({&p, it});
+      m_reg.insert({&p, {0, it}});
+    }
+    else
+    {
+      reg_it.value().first++;
     }
   }
 
@@ -59,8 +63,12 @@ public:
     auto it = m_reg.find(&p);
     if (it != m_reg.end())
     {
-      p.remove_callback(it->second);
-      m_reg.erase(it);
+      it.value().first--;
+      if(it.value().first <= 0)
+      {
+        p.remove_callback(it->second.second);
+        m_reg.erase(it);
+      }
     }
   }
 
@@ -75,7 +83,8 @@ private:
   moodycamel::ConcurrentQueue<received_value> m_queue;
 
   ossia::ptr_map<
-      ossia::net::parameter_base*, ossia::net::parameter_base::callback_index>
+      ossia::net::parameter_base*,
+        std::pair<int, ossia::net::parameter_base::callback_index>>
       m_reg;
 };
 

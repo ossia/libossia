@@ -97,7 +97,7 @@ struct global_pull_visitor
       auto it = state.m_receivedMidi.find(midi);
       if (it != state.m_receivedMidi.end())
       {
-        for (auto& v : it->second)
+        for (auto& v : it->second.second)
         {
           val.messages.push_back(std::move(v));
         }
@@ -174,7 +174,29 @@ void execution_state::unregister_parameter(net::parameter_base& p)
 void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
 {
   p.enable_registration();
-  m_receivedMidi.insert({&p, {}});
+  auto it = m_receivedMidi.find(&p);
+  if(it == m_receivedMidi.end())
+  {
+    m_receivedMidi.insert({&p, {0, {}}});
+  }
+  else
+  {
+    it.value().first++;
+  }
+}
+
+void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
+{
+  auto it = m_receivedMidi.find(&p);
+  if(it != m_receivedMidi.end())
+  {
+    it.value().first--;
+    if(it.value().first <= 0)
+    {
+      m_receivedMidi.erase(it);
+      // TODO p.disable_registration();
+    }
+  }
 }
 
 void execution_state::get_new_values()
@@ -193,8 +215,8 @@ void execution_state::get_new_values()
   for (auto it = m_receivedMidi.begin(), end = m_receivedMidi.end(); it != end;
        ++it)
   {
-    it.value().clear();
-    it->first->clone_value(it.value());
+    it.value().second.clear();
+    it->first->clone_value(it.value().second);
   }
 }
 
@@ -241,6 +263,62 @@ void execution_state::register_inlet(const inlet& port)
       }
     }
   }
+}
+
+void execution_state::register_outlet(const outlet& port)
+{
+  // nothing to do
+}
+
+
+void execution_state::unregister_inlet(const inlet& port)
+{
+  if (auto vp = port.data.target<ossia::value_port>())
+  {
+    if (vp->is_event)
+    {
+      if (auto addr = port.address.target<ossia::net::parameter_base*>())
+      {
+        unregister_parameter(**addr);
+      }
+      else if (auto p = port.address.target<ossia::traversal::path>())
+      {
+        std::vector<ossia::net::node_base*> roots{};
+
+        for (auto n : m_devices_exec)
+          roots.push_back(&n->get_root_node());
+
+        ossia::traversal::apply(*p, roots);
+        for (auto n : roots)
+          if (auto param = n->get_parameter())
+            unregister_parameter(*param);
+      }
+    }
+  }
+  else if (port.data.target<ossia::midi_port>())
+  {
+    if (auto addr = port.address.target<ossia::net::node_base*>())
+    {
+      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+            &(*addr)->get_device().get_protocol()))
+      {
+        unregister_midi_parameter(*midi_addr);
+      }
+    }
+    else if (auto addr = port.address.target<ossia::net::parameter_base*>())
+    {
+      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+            &(*addr)->get_node().get_device().get_protocol()))
+      {
+        unregister_midi_parameter(*midi_addr);
+      }
+    }
+  }
+}
+
+void execution_state::unregister_outlet(const outlet& port)
+{
+  // nothing to do
 }
 
 void execution_state::apply_device_changes()

@@ -435,6 +435,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
   void recompute_maps()
   {
+    // TODO we should instead mark it for cleaning and do it once per tick ?
     m_nodes.clear();
     m_edges.clear();
     auto vertices = boost::vertices(m_graph);

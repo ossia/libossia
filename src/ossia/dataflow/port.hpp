@@ -49,6 +49,11 @@ struct OSSIA_EXPORT inlet : public port
     sources.push_back(&edge);
   }
 
+  ~inlet()
+  {
+
+  }
+
   void connect(graph_edge* e) noexcept
   {
     auto it = ossia::find(sources, e);
@@ -83,6 +88,11 @@ struct OSSIA_EXPORT outlet : public port
   outlet(data_type&& d, graph_edge& edge) noexcept : port{std::move(d)}
   {
     targets.push_back(&edge);
+  }
+
+  ~outlet()
+  {
+
   }
 
   void connect(graph_edge* e) noexcept
