@@ -220,7 +220,7 @@ void execution_state::get_new_values()
   }
 }
 
-void execution_state::register_inlet(const inlet& port)
+void execution_state::register_port(const inlet& port)
 {
   if (auto vp = port.data.target<ossia::value_port>())
   {
@@ -265,13 +265,13 @@ void execution_state::register_inlet(const inlet& port)
   }
 }
 
-void execution_state::register_outlet(const outlet& port)
+void execution_state::register_port(const outlet& port)
 {
   // nothing to do
 }
 
 
-void execution_state::unregister_inlet(const inlet& port)
+void execution_state::unregister_port(const inlet& port)
 {
   if (auto vp = port.data.target<ossia::value_port>())
   {
@@ -316,7 +316,7 @@ void execution_state::unregister_inlet(const inlet& port)
   }
 }
 
-void execution_state::unregister_outlet(const outlet& port)
+void execution_state::unregister_port(const outlet& port)
 {
   // nothing to do
 }
