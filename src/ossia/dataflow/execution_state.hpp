@@ -51,10 +51,10 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   }
 
   /// To be called from the execution thread ///
-  void register_inlet(const ossia::inlet& port);
-  void register_outlet(const ossia::outlet& port);
-  void unregister_inlet(const ossia::inlet& port);
-  void unregister_outlet(const ossia::outlet& port);
+  void register_port(const ossia::inlet& port);
+  void register_port(const ossia::outlet& port);
+  void unregister_port(const ossia::inlet& port);
+  void unregister_port(const ossia::outlet& port);
 
   const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const
       noexcept
