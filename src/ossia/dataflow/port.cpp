@@ -117,6 +117,6 @@ void outlet::write(execution_state& e)
             copy_to_global(data, *addr, e);
           }
         }
-      });
+      }, do_nothing_for_nodes{});
 }
 }

@@ -127,6 +127,9 @@ struct OSSIA_EXPORT graph_util
           {
             e.copy_from_global(*addr, in);
           }
+        },
+        [&](ossia::net::node_base* node, bool) {
+          e.copy_from_global_node(*node, in);
         });
   }
 
@@ -412,8 +415,8 @@ struct OSSIA_EXPORT graph_util
                   [&](ossia::net::parameter_base* p2, bool) {
                     if (p1 == p2)
                       ok = true;
-                  });
-            });
+                  }, do_nothing_for_nodes{});
+            }, do_nothing_for_nodes{});
 
         if (ok)
           break;

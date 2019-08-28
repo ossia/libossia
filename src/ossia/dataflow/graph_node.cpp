@@ -38,6 +38,7 @@ void node_process::start()
 
 void node_process::stop()
 {
+  if(node) node->all_notes_off();
 }
 
 void node_process::pause()
@@ -171,7 +172,7 @@ bool graph_node::has_local_inputs(const execution_state& st) const noexcept
           [&](ossia::net::parameter_base* addr, bool) {
             if (!b || st.in_local_scope(*addr))
               b = true;
-          });
+          }, do_nothing_for_nodes{});
 
       if (b)
         return true;

@@ -7,9 +7,13 @@
 
 namespace ossia
 {
-template <typename Fun, typename DeviceList_T>
+struct do_nothing_for_nodes {
+  void operator()(ossia::net::node_base* node, bool) const noexcept { }
+};
+
+template <typename Fun, typename NodeFun, typename DeviceList_T>
 bool apply_to_destination(
-    const destination_t& address, const DeviceList_T& devices, Fun f)
+    const destination_t& address, const DeviceList_T& devices, Fun f, NodeFun nf)
 {
   switch (address.which())
   {
@@ -35,12 +39,15 @@ bool apply_to_destination(
       for (auto n : roots)
         if (auto addr = n->get_parameter())
           f(addr, unique);
+        else
+          nf(n, unique);
       return unique;
     }
 
     // ossia::net::node_base*
     case 2:
     {
+      nf(*address.target<ossia::net::node_base*>(), true);
       return true;
     }
     default:
