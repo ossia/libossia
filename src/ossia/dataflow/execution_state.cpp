@@ -13,6 +13,7 @@
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/network/midi/detail/midi_impl.hpp>
 namespace ossia
 {
 struct local_pull_visitor
@@ -91,15 +92,80 @@ struct global_pull_visitor
 
   void operator()(midi_port& val)
   {
-    auto& proto = out.get_node().get_device().get_protocol();
-    if (auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
+    auto& node = out.get_node();
+    auto& dev = node.get_device();
+    auto& proto = dev.get_protocol();
+
+    // TODO how to do without that dynamic_cast ?
+    // Can we *ensure* that the address of the midi_port is a midi one ?
+    auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
+    if (!midi)
+      return;
+
+    auto it = state.m_receivedMidi.find(midi);
+    if (it != state.m_receivedMidi.end())
     {
-      auto it = state.m_receivedMidi.find(midi);
-      if (it != state.m_receivedMidi.end())
+      for (const rtmidi::message& v : it->second.second)
       {
-        for (auto& v : it->second.second)
+        val.messages.push_back(v);
+      }
+    }
+  }
+
+  void operator()()
+  {
+  }
+};
+
+struct global_pull_node_visitor
+{
+  ossia::execution_state& state;
+  const net::node_base& out;
+  void operator()(value_port& val)
+  {
+    // TODO Nothing to do ?
+  }
+
+  void operator()(audio_port& val)
+  {
+    // TODO Nothing to do ?
+  }
+
+  void operator()(midi_port& val)
+  {
+    auto& node = out;
+    auto& dev = node.get_device();
+    auto& proto = dev.get_protocol();
+
+    // TODO how to do without that dynamic_cast ?
+    // Can we *ensure* that the address of the midi_port is a midi one ?
+    auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
+    if (!midi)
+      return;
+
+    int channel = -1;
+    if (node.get_parent() == &dev.get_root_node())
+    {
+      // the node is a MIDI channel node
+      channel = static_cast<const ossia::net::midi::channel_node&>(node).channel;
+    }
+
+    auto it = state.m_receivedMidi.find(midi);
+    if (it != state.m_receivedMidi.end())
+    {
+      if(channel == -1)
+      {
+        for (const rtmidi::message& v : it->second.second)
         {
-          val.messages.push_back(std::move(v));
+          val.messages.push_back(v);
+        }
+      }
+      else
+      {
+        for (const rtmidi::message& v : it->second.second)
+        {
+          if(v.get_channel() == channel)
+            val.messages.push_back(v);
         }
       }
     }
@@ -625,6 +691,14 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
   if (in.scope & port::scope_t::global)
   {
     ossia::apply(global_pull_visitor{*this, addr}, in.data);
+  }
+}
+
+void execution_state::copy_from_global_node(net::node_base& node, inlet& in)
+{
+  if (in.scope & port::scope_t::global)
+  {
+    ossia::apply(global_pull_node_visitor{*this, node}, in.data);
   }
 }
 

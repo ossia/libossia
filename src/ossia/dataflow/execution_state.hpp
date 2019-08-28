@@ -94,6 +94,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   void find_and_copy(ossia::net::parameter_base& addr, inlet& in);
   void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
+  void copy_from_global_node(ossia::net::node_base& addr, inlet& in);
 
   void insert(const ossia::destination& dest, const data_type& v);
   void insert(const ossia::destination& dest, data_type&& v);
@@ -163,6 +164,7 @@ private:
 
   friend struct local_pull_visitor;
   friend struct global_pull_visitor;
+  friend struct global_pull_node_visitor;
   friend struct state_exec_visitor;
 };
 }

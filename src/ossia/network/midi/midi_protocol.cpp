@@ -381,6 +381,11 @@ void midi_protocol::value_callback(parameter_base& param, const value& val)
 
 void midi_protocol::midi_callback(const rtmidi::message& mess)
 {
+  if(m_logger.inbound_logger)
+  {
+    m_logger.inbound_logger->info("MIDI in: {0} {1} {2}", mess.bytes[0], mess.bytes[1], mess.bytes[2]);
+  }
+
   if(m_learning)
   {
     on_learn(mess);
