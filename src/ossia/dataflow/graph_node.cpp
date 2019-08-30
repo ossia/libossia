@@ -16,19 +16,19 @@ node_process::node_process(node_ptr n)
   node = std::move(n);
 }
 
-void node_process::offset(time_value date, double pos)
+void node_process::offset_impl(time_value date, double pos)
 {
 }
 
-void node_process::transport(time_value date, double pos)
+void node_process::transport_impl(time_value date, double pos)
 {
 }
 
-void node_process::state(
-    ossia::time_value from, ossia::time_value to, double relative_position,
+void node_process::state_impl(
+    ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
     time_value tick_offset, double gspeed)
 {
-  node->request({from, to, relative_position, tick_offset, gspeed});
+  node->request({from, to, to.impl / double(parent_duration.impl), tick_offset, gspeed});
 }
 
 void node_process::start()

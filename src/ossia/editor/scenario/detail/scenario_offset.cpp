@@ -122,7 +122,7 @@ void process_offset(
     }
   }
 }
-void scenario::transport(ossia::time_value offset, double pos)
+void scenario::transport_impl(ossia::time_value offset, double pos)
 {
   // reset internal offset list and state
 
@@ -219,7 +219,7 @@ void scenario::transport(ossia::time_value offset, double pos)
   m_lastDate = offset;
 }
 
-void scenario::offset(ossia::time_value offset, double pos)
+void scenario::offset_impl(ossia::time_value offset, double pos)
 {
   // reset internal offset list and state
 

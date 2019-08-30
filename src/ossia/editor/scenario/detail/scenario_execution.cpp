@@ -41,7 +41,7 @@ void scenario::make_happen(
     stopped.erase(timeInterval.get());
   }
 
-  event.tick(0_tv, 0., tick_offset);
+  event.tick(0_tv, tick_offset);
 
   // setup next TimeIntervals
   for (const std::shared_ptr<ossia::time_interval>& timeInterval :
@@ -352,11 +352,11 @@ ossia::time_value clamp_zero(ossia::time_value t)
 }
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-void scenario::state(
-    ossia::time_value from, ossia::time_value date, double pos,
+void scenario::state_impl(
+    ossia::time_value from, ossia::time_value date, ossia::time_value parent_duration,
     ossia::time_value tick_offset, double gspeed)
 {
-  node->request({from, date, pos, tick_offset, gspeed});
+  node->request({from, date, date.impl / double(parent_duration.impl), tick_offset, gspeed});
   // ossia::logger().info("scenario::state starts");
   // if (date != m_lastDate)
   {

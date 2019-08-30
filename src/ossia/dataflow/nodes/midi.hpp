@@ -253,7 +253,7 @@ class midi_node_process final : public ossia::node_process
 public:
   using ossia::node_process::node_process;
 
-  void transport(ossia::time_value date, double pos) override
+  void transport_impl(ossia::time_value date, double pos) override
   {
     midi& n = *static_cast<midi*>(node.get());
     n.transport(date, pos);

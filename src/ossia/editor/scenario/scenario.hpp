@@ -103,10 +103,10 @@ public:
 
 private:
   friend struct scenario_graph;
-  void offset(ossia::time_value, double pos) override;
+  void offset_impl(ossia::time_value, double pos) override;
 
-  void state(
-      ossia::time_value from, ossia::time_value to, double pos,
+  void state_impl(
+      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
       ossia::time_value tick_offset, double gspeed) override;
 
   void start() override;
@@ -114,7 +114,7 @@ private:
   void pause() override;
   void resume() override;
 
-  void transport(ossia::time_value offset, double pos) override;
+  void transport_impl(ossia::time_value offset, double pos) override;
   void mute_impl(bool) override;
   bool is_root_sync(ossia::time_sync& sync) const;
 

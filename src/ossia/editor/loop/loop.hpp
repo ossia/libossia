@@ -64,10 +64,10 @@ public:
   const time_sync& get_end_timesync() const;
   time_sync& get_end_timesync();
 
-  void transport(ossia::time_value offset, double pos) override;
-  void offset(ossia::time_value, double pos) override;
-  void state(
-      ossia::time_value from, ossia::time_value to, double pos,
+  void transport_impl(ossia::time_value offset, double pos) override;
+  void offset_impl(ossia::time_value, double pos) override;
+  void state_impl(
+      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
       ossia::time_value tick_offset, double gspeed) override;
 
 private:
