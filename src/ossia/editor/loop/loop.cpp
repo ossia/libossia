@@ -41,7 +41,7 @@ loop::~loop()
   m_endNode.cleanup();
 }
 
-void loop::offset(ossia::time_value offset, double pos)
+void loop::offset_impl(ossia::time_value offset, double pos)
 {
   time_value patternOffset{int64_t(
       std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
@@ -71,7 +71,7 @@ void loop::offset(ossia::time_value offset, double pos)
   */
 }
 
-void loop::transport(ossia::time_value offset, double pos)
+void loop::transport_impl(ossia::time_value offset, double pos)
 {
   time_value patternOffset{int64_t(
       std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
@@ -197,11 +197,11 @@ bool loop::process_sync(
   return true;
 }
 
-void loop::state(
-    ossia::time_value from, ossia::time_value date, double pos,
+void loop::state_impl(
+    ossia::time_value from, ossia::time_value date, ossia::time_value parent_duration,
     ossia::time_value tick_offset, double gspeed)
 {
-  node->request({from, date, pos, tick_offset, gspeed});
+  node->request({from, date, date.impl / double(parent_duration.impl), tick_offset, gspeed});
   m_interval.set_parent_speed(gspeed);
   // if date hasn't been processed already
   // if (date != m_lastDate)
@@ -232,7 +232,7 @@ void loop::state(
       {
         if (m_interval.get_date() == 0)
         {
-          start_ev.tick(0_tv, 0., tick_offset);
+          start_ev.tick(0_tv, tick_offset);
           m_interval.set_offset(0_tv);
           m_interval.start();
           m_interval.tick_current(tick_offset);
@@ -240,6 +240,8 @@ void loop::state(
 
         while (tick_amount > 0)
         {
+          // TODO this is not stateless ! we should compute
+          // it from "from"
           const auto cur_date = m_interval.get_date();
           if (cur_date + tick_amount < itv_dur)
           {
@@ -254,7 +256,7 @@ void loop::state(
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            end_ev.tick(0_tv, 0., tick_offset);
+            end_ev.tick(0_tv, tick_offset);
             m_interval.stop();
 
             if (tick_amount > 0)
@@ -263,7 +265,7 @@ void loop::state(
               m_interval.start();
               m_interval.set_offset(0_tv);
               m_interval.tick_current(tick_offset);
-              start_ev.tick(0_tv, 0., tick_offset);
+              start_ev.tick(0_tv, tick_offset);
             }
           }
         }
@@ -286,14 +288,14 @@ void loop::state(
             m_interval.tick_offset(this_tick, tick_offset);
             tick_offset += this_tick;
 
-            end_ev.tick(0_tv, 0., tick_offset);
+            end_ev.tick(0_tv, tick_offset);
             // m_interval.stop();
 
             if (tick_amount < 0)
             {
               m_interval.offset(itv_dur);
               // m_interval.start();
-              start_ev.tick(0_tv, 0., tick_offset);
+              start_ev.tick(0_tv, tick_offset);
             }
           }
         }

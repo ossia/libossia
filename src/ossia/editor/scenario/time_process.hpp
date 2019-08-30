@@ -31,18 +31,17 @@ public:
    \details don't call offset when the parent #time_interval is running
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration) */
-  virtual void offset(ossia::time_value date, double pos) = 0;
+  void offset(ossia::time_value date, double pos);
 
-  virtual void transport(ossia::time_value date, double pos) = 0;
+  void transport(ossia::time_value date, double pos);
 
   /*! get a #StateElement from the process depending on its parent
    #time_interval date
    \details don't call state when the parent #time_interval is not running
    */
-  virtual void state(
-      ossia::time_value from, ossia::time_value to, double pos,
-      ossia::time_value tick_offset, double gspeed)
-      = 0;
+  void state(
+      ossia::time_value from, ossia::time_value to, ossia::time_value parent_dur,
+      ossia::time_value tick_offset, double gspeed);
 
   /**
    * @brief start
@@ -84,7 +83,9 @@ public:
    */
   void mute(bool m);
 
-  //! True if the process is not currently muted.
+  /**
+   * @brief True if the process is not currently muted.
+   */
   bool unmuted() const;
 
   /**
@@ -94,14 +95,42 @@ public:
    */
   void enable(bool m);
 
-  //! True if the process is enabled.
+  /**
+   * @brief True if the process is enabled.
+   */
   bool enabled() const;
+
+  /**
+   * @brief Enables looping of the process after every loop_duration
+   */
+  void set_loops(bool b);
+
+  /**
+   * @brief Make the process's data be displaced of v units.
+   */
+  void set_start_offset(time_value v);
+
+  /**
+   * @brief Set how long a single loop lasts.
+   *
+   * Only relevant if loops have been enabled.
+   */
+  void set_loop_duration(time_value v);
 
 protected:
   //! Reimplement this to have a special behaviour on mute
   virtual void mute_impl(bool);
+  virtual void state_impl(
+      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
+      ossia::time_value tick_offset, double gspeed)
+  = 0;
+  virtual void offset_impl(ossia::time_value date, double pos) = 0;
 
-private:
+  virtual void transport_impl(ossia::time_value date, double pos) = 0;
+
+  time_value m_loop_duration{};
+  time_value m_start_offset{};
+  bool m_loops = false; // TODO bitfields ?
   bool m_unmuted = true;
   bool m_enabled = true;
 };

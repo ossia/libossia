@@ -191,7 +191,7 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
       time_process& p = *timeProcess;
       if (p.enabled())
       {
-        p.state(from, to, m_position, m_tick_offset, m_globalSpeed);
+        p.state(from, to, m_nominal, m_tick_offset, m_globalSpeed);
       }
     }
   }
@@ -259,8 +259,8 @@ time_interval::set_nominal_duration(ossia::time_value durationNominal)
   if (m_nominal > m_max)
     set_max_duration(m_nominal);
 
-  if (m_date > m_nominal)
-    m_date = m_nominal;
+  if (!m_max.infinite() && m_date > m_max)
+    m_date = m_max;
 
   return *this;
 }

@@ -12,12 +12,11 @@ struct node_chain_process final : public ossia::time_process
     m_lastDate = ossia::Zero;
   }
 
-  void state(
-      ossia::time_value from, ossia::time_value to, double relative_position,
+  void state_impl(
+      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
       ossia::time_value tick_offset, double speed) override
   {
-    const ossia::token_request tk{from, to, relative_position, tick_offset,
-                                  speed};
+    const ossia::token_request tk{from, to, to.impl / double(parent_duration.impl), tick_offset, speed};
     for (auto& node : nodes)
     {
       node->request(tk);
@@ -39,7 +38,7 @@ struct node_chain_process final : public ossia::time_process
     }
   }
 
-  void offset(time_value date, double pos) override
+  void offset_impl(time_value date, double pos) override
   {
     for (auto& node : nodes)
     {
@@ -47,7 +46,7 @@ struct node_chain_process final : public ossia::time_process
     }
   }
 
-  void transport(ossia::time_value date, double pos) override
+  void transport_impl(ossia::time_value date, double pos) override
   {
     for (auto& node : nodes)
     {
