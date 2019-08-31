@@ -5,7 +5,7 @@
 			"major" : 7,
 			"minor" : 3,
 			"revision" : 5,
-			"architecture" : "x64",
+			"architecture" : "x86",
 			"modernui" : 1
 		}
 ,
@@ -164,9 +164,9 @@
 					"numinlets" : 11,
 					"numoutlets" : 11,
 					"outlettype" : [ "", "", "", "", "", "", "", "", "", "", "" ],
-					"patching_rect" : [ 196.0, 172.0, 174.0, 22.0 ],
+					"patching_rect" : [ 196.0, 172.0, 128.0, 22.0 ],
 					"style" : "",
-					"text" : "ossia.list2parameter"
+					"text" : "ossia.list2parameter 3"
 				}
 
 			}
@@ -346,7 +346,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 2 ],
-					"midpoints" : [ 315.5, 243.0, 172.0, 243.0, 172.0, 155.0, 236.5, 155.0 ],
+					"midpoints" : [ 315.5, 243.0, 172.0, 243.0, 172.0, 155.0, 227.300003, 155.0 ],
 					"source" : [ "obj-14", 0 ]
 				}
 
@@ -354,7 +354,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-6", 1 ],
-					"midpoints" : [ 260.5, 237.0, 180.0, 237.0, 180.0, 161.0, 221.0, 161.0 ],
+					"midpoints" : [ 260.5, 237.0, 180.0, 237.0, 180.0, 161.0, 216.399994, 161.0 ],
 					"source" : [ "obj-15", 0 ]
 				}
 
@@ -393,7 +393,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
-					"midpoints" : [ 236.5, 199.0, 315.5, 199.0 ],
+					"midpoints" : [ 227.300003, 199.0, 315.5, 199.0 ],
 					"source" : [ "obj-6", 2 ]
 				}
 
@@ -401,7 +401,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-15", 0 ],
-					"midpoints" : [ 221.0, 203.0, 260.5, 203.0 ],
+					"midpoints" : [ 216.399994, 203.0, 260.5, 203.0 ],
 					"source" : [ "obj-6", 1 ]
 				}
 
@@ -423,7 +423,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.list2parameter.maxpat",
-				"bootpath" : "~/Github/TML-depo/TML-code/ossia/ossia.list2parameter",
+				"bootpath" : "~/Github/libossia/src/ossia-max/patchers/ossia.list2parameter",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
