@@ -3,14 +3,21 @@
   https://github.com/PeterScott/murmur3/blob/master/murmur3.c
 **/
 #pragma once
-#include <ossia/detail/hash.hpp>
-
 #include <cstdint>
 namespace ossia
 {
 namespace murmur
 {
 
+static constexpr inline uint32_t rotl32(uint32_t x, int8_t r) noexcept
+{
+  return (x << r) | (x >> (32 - r));
+}
+
+static constexpr inline uint64_t rotl64(uint64_t x, int8_t r) noexcept
+{
+  return (x << r) | (x >> (64 - r));
+}
 //-----------------------------------------------------------------------------
 // Finalization mix - force all bits of a hash block to avalanche
 

@@ -8,16 +8,6 @@
 namespace ossia
 {
 
-static constexpr inline uint32_t rotl32(uint32_t x, int8_t r) noexcept
-{
-  return (x << r) | (x >> (32 - r));
-}
-
-static constexpr inline uint64_t rotl64(uint64_t x, int8_t r) noexcept
-{
-  return (x << r) | (x >> (64 - r));
-}
-
 // hash_combine_impl taken from boost
 
 // https://stackoverflow.com/q/20953390/1495627
@@ -110,6 +100,11 @@ constexpr inline void hash_combine(uint32_t& seed, int64_t k) noexcept
 
 constexpr inline void hash_combine(uint32_t& h1, uint32_t k1) noexcept
 {
+  constexpr auto rotl32 = [] (uint32_t x, int8_t r) noexcept
+  {
+    return (x << r) | (x >> (32 - r));
+  };
+
   constexpr uint32_t c1 = 0xcc9e2d51;
   constexpr uint32_t c2 = 0x1b873593;
 
