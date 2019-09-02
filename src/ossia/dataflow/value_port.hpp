@@ -14,7 +14,7 @@ enum data_mix_method : int8_t
   mix_merge
 };
 
-struct value_port
+struct OSSIA_EXPORT value_port
 {
   //! Use this function to write from a node to an output port
   void write_value(const ossia::value& v, int64_t timestamp);
