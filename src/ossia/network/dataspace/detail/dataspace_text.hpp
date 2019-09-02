@@ -45,7 +45,7 @@ struct unit_text_visitor
   template <typename Unit>
   OSSIA_INLINE ossia::string_view operator()(Unit)
   {
-    return ossia::unit_traits<Unit>::text()[0];
+    constexpr_return(ossia::unit_traits<Unit>::text()[0]);
   }
 
   OSSIA_INLINE ossia::string_view operator()(const ossia::value&)
@@ -113,7 +113,7 @@ struct dataspace_text_visitor
   template <typename Dataspace>
   OSSIA_INLINE ossia::string_view operator()(const Dataspace& dataspace)
   {
-    return ossia::dataspace_traits<Dataspace>::text()[0];
+    constexpr_return(ossia::dataspace_traits<Dataspace>::text()[0]);
   }
 
   OSSIA_INLINE ossia::string_view operator()()
@@ -131,8 +131,8 @@ std::string make_pretty_unit_text()
   std::string res;
   res.reserve(20);
 
-  auto ds = dataspace_traits<Dataspace>::text()[0];
-  auto un = unit_traits<unit_type>::text()[0];
+  constexpr auto ds = dataspace_traits<Dataspace>::text()[0];
+  constexpr auto un = unit_traits<unit_type>::text()[0];
 
   res.append(ds.data(), ds.size()); // color
   res += '.';                       // color.

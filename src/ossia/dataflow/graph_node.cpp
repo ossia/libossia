@@ -6,6 +6,7 @@
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {

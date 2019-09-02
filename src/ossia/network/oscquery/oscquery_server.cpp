@@ -19,6 +19,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/detail/algorithms.hpp>
 namespace ossia
 {
 namespace oscquery

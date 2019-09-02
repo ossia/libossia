@@ -3,6 +3,7 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {

@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <boost/math/constants/constants.hpp>
+//#include <boost/math/constants/constants.hpp>
 #include <cmath>
 
 #include <utility>

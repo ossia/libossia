@@ -7,7 +7,7 @@
 
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
-
+#include <ossia/detail/algorithms.hpp>
 #include <bitset>
 #include <iostream>
 #include <iterator>

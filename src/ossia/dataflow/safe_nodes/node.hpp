@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/dataflow/safe_nodes/port.hpp>
-#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_map.hpp>
 
 #include <brigand/algorithms/index_of.hpp>

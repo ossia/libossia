@@ -4,6 +4,8 @@
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/network/common/path.hpp>
+#include <ossia/detail/algorithms.hpp>
+
 namespace ossia
 {
 struct OSSIA_EXPORT port
