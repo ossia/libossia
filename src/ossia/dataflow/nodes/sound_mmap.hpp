@@ -63,10 +63,6 @@ public:
     {
         start = v;
     }
-    void set_start_offset(std::size_t v)
-    {
-        start_offset = v;
-    }
     void set_upmix(std::size_t v)
     {
         upmix = v;
@@ -183,7 +179,7 @@ public:
 
         ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
         ap.samples.resize(channels);
-        const int64_t max_N = std::min(t.date.impl, (int64_t)(max_frames - start_offset));
+        const int64_t max_N = std::min(t.date.impl, (int64_t)(max_frames));
         if (max_N <= 0)
             return;
 
@@ -193,7 +189,7 @@ public:
 
         if (t.date > t.prev_date)
         {
-            const bool ok = m_handle.seek_to_pcm_frame(t.prev_date.impl + start_offset);
+            const bool ok = m_handle.seek_to_pcm_frame(t.prev_date.impl);
             if(!ok)
                 return;
 
@@ -292,7 +288,6 @@ public:
 
 private:
     std::size_t start{};
-    std::size_t start_offset{};
     std::size_t upmix{};
     ossia::outlet audio_out{ossia::audio_port{}};
 

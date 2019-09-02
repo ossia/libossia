@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ossia/dataflow/data.hpp>
+#include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/pod_vector.hpp>

@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/dataflow/data.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/timed_value.hpp>
+#include <ossia/dataflow/value_vector.hpp>
 namespace ossia
 {
 inline const ossia::value&

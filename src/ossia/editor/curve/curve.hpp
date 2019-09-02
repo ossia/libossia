@@ -28,7 +28,7 @@ namespace ossia
 class destination;
 
 template <typename T>
-static const constexpr std::nullptr_t curve_segment_type_map = nullptr;
+inline const constexpr std::nullptr_t curve_segment_type_map = nullptr;
 template <>
 inline const constexpr ossia::curve_segment_type
     curve_segment_type_map<int> = ossia::curve_segment_type::INT;

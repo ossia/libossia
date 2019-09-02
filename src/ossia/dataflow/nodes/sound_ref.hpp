@@ -29,10 +29,6 @@ public:
   {
     start = v;
   }
-  void set_start_offset(std::size_t v)
-  {
-    start_offset = v;
-  }
   void set_upmix(std::size_t v)
   {
     upmix = v;
@@ -60,7 +56,7 @@ public:
 
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(chan);
-    int64_t max_N = std::min(t.date.impl, (int64_t)(len - start_offset));
+    int64_t max_N = std::min(t.date.impl, (int64_t)(len));
     if (max_N <= 0)
       return;
     const auto samples = max_N - t.prev_date + t.offset.impl;
@@ -75,7 +71,7 @@ public:
         for (int64_t j = t.prev_date; j < max_N; j++)
         {
           ap.samples[i][j - t.prev_date + t.offset.impl]
-              = m_data[i][j + start_offset];
+              = m_data[i][j];
         }
         do_fade(
             t.start_discontinuous, t.end_discontinuous, ap.samples[i],
@@ -164,7 +160,6 @@ public:
 private:
   ossia::small_vector<gsl::span<const double>, 8> m_data;
   std::size_t start{};
-  std::size_t start_offset{};
   std::size_t upmix{};
   ossia::outlet audio_out{ossia::audio_port{}};
   audio_handle m_handle;
