@@ -2,6 +2,9 @@
 #include <ossia/dataflow/data.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
+#include <ossia/dataflow/midi_port.hpp>
 namespace ossia
 {
 

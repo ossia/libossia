@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/dataflow/data.hpp>
+#include <ossia/dataflow/dataflow_fwd.hpp>
+#include <ossia/dataflow/value_vector.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/mutex.hpp>
@@ -13,6 +14,8 @@
 namespace ossia
 {
 class message_queue;
+struct typed_value;
+struct timed_value;
 struct local_pull_visitor;
 struct global_pull_visitor;
 struct state_exec_visitor;
