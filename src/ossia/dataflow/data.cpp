@@ -1,4 +1,5 @@
 #include <ossia/dataflow/value_port.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {

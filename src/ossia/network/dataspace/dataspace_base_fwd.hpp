@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/config.hpp>
+#include <ossia/detail/string_view.hpp>
 #include <ossia/network/dataspace/dataspace_base_defs_fwd.hpp>
 
 namespace ossia

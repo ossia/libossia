@@ -10,6 +10,7 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 #include <tsl/hopscotch_set.h>
 

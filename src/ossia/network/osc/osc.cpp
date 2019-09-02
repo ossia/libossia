@@ -12,6 +12,7 @@
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/value/value.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 #include <boost/algorithm/string.hpp>
 

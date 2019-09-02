@@ -11,6 +11,7 @@
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/preset/exception.hpp>
 #include <ossia/preset/preset.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 #include <boost/algorithm/string.hpp>
 
