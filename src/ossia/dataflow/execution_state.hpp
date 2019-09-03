@@ -10,6 +10,10 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
+#if defined(OSSIA_SMALL_VECTOR)
+#include <rtmidi17/message.hpp>
+#endif
+
 #include <smallfun.hpp>
 namespace ossia
 {
