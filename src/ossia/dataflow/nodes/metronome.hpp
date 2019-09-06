@@ -38,8 +38,8 @@ private:
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
-    const auto& date = t.date;
-    const auto& pos = t.position;
+    const auto date = t.date;
+    const auto pos = t.position();
 
     // TODO use a better temporal accuracy ?
 

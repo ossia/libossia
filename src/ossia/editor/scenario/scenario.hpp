@@ -105,9 +105,7 @@ private:
   friend struct scenario_graph;
   void offset_impl(ossia::time_value, double pos) override;
 
-  void state_impl(
-      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
-      ossia::time_value tick_offset, double gspeed) override;
+  void state_impl(ossia::token_request req) override;
 
   void start() override;
   void stop() override;
@@ -139,17 +137,15 @@ private:
 
   ossia::time_value m_lastDate{ossia::Infinite};
 
-  bool process_this(
-      time_sync& node, small_event_vec& pendingEvents,
+  bool process_this(time_sync& node, small_event_vec& pendingEvents,
       small_event_vec& maxReachedEvents, interval_set& started,
-      interval_set& stopped, ossia::time_value tick_offset);
+      interval_set& stopped, ossia::time_value tick_offset, const token_request& tok);
   static void make_happen(
       time_event& event, interval_set& started, interval_set& stopped,
-      ossia::time_value tick_offset);
+      ossia::time_value tick_offset, const ossia::token_request& tok);
   static void make_dispose(time_event& event, interval_set& stopped);
-  bool trigger_sync(
-      time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
+  bool trigger_sync(time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
       interval_set& started, interval_set& stopped,
-      ossia::time_value tick_offset, bool maxReached);
+      ossia::time_value tick_offset, const token_request& req, bool maxReached);
 };
 }

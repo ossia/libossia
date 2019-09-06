@@ -14,9 +14,7 @@ public:
   void offset_impl(ossia::time_value, double pos) override;
   void transport_impl(ossia::time_value date, double pos) override;
 
-  void state_impl(
-      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
-      ossia::time_value tick_offset, double gspeed) override;
+  void state_impl(ossia::token_request) override;
 
   void start() override;
   void stop() override;

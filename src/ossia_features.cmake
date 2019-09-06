@@ -265,6 +265,8 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
   endif()
 
+
+  target_link_libraries(ossia PUBLIC rubberband)
   if(APPLE)
       find_library(Foundation_FK Foundation)
       find_library(AVFoundation_FK AVFoundation)

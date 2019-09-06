@@ -208,7 +208,7 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
   }
   return ossia::buffer_tick<&ossia::execution_state::commit>{st, g, itv};
 }
-
+/*
 struct rescale_in
 {
   const ossia::time_value& prev_date;
@@ -281,33 +281,34 @@ struct rescale_out
   {
   }
 };
+*/
 
-void graph_util::run_scaled(graph_node& first_node, execution_state& e)
-{
-  std::vector<ossia::data_type> orig_ins;
-  orig_ins.reserve(first_node.inputs().size());
-  for (auto& n : first_node.inputs())
-  {
-    orig_ins.push_back(n->data);
-  }
-
-  /*
-    for(const auto& request : first_node.requested_tokens)
-    {
-      for(auto& n : first_node.inputs())
-        ossia::apply(rescale_in{first_node.prev_date(), request}, n->data);
-
-      first_node.run(request, e);
-      for(auto& n : first_node.outputs())
-        ossia::apply(rescale_out{first_node.prev_date(), request}, n->data);
-
-      first_node.set_prev_date(request.date);
-
-      // Restore original input for the next token
-      for(std::size_t i = 0; i < first_node.inputs().size(); i++)
-        first_node.inputs()[i]->data = orig_ins[i];
-    }*/
-}
+// void graph_util::run_scaled(graph_node& first_node, execution_state& e)
+// {
+//   std::vector<ossia::data_type> orig_ins;
+//   orig_ins.reserve(first_node.inputs().size());
+//   for (auto& n : first_node.inputs())
+//   {
+//     orig_ins.push_back(n->data);
+//   }
+//
+//   /*
+//     for(const auto& request : first_node.requested_tokens)
+//     {
+//       for(auto& n : first_node.inputs())
+//         ossia::apply(rescale_in{first_node.prev_date(), request}, n->data);
+//
+//       first_node.run(request, e);
+//       for(auto& n : first_node.outputs())
+//         ossia::apply(rescale_out{first_node.prev_date(), request}, n->data);
+//
+//       first_node.set_prev_date(request.date);
+//
+//       // Restore original input for the next token
+//       for(std::size_t i = 0; i < first_node.inputs().size(); i++)
+//         first_node.inputs()[i]->data = orig_ins[i];
+//     }*/
+// }
 
 void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
 {

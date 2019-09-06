@@ -73,7 +73,7 @@ private:
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
     vp->write_value(
         ossia::apply(
-            ossia::detail::compute_value_visitor{t.position,
+            ossia::detail::compute_value_visitor{t.position(),
                                                  ossia::val_type::FLOAT},
             m_drive),
         t.tick_start());

@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/token_request.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/thread.hpp>
@@ -47,7 +48,7 @@ void clock::start_and_tick()
 
   // notify the owner
   m_interval.start();
-  m_interval.tick_current(0_tv);
+  m_interval.tick_current(0_tv, ossia::token_request{});
 
   if (m_thread.joinable())
     m_thread.join();
@@ -107,6 +108,7 @@ bool clock::tick()
   droppedTicks
       = ossia::llround(std::floor(double(deltaInUs) / double(m_granularity)));
 
+  const auto tok = ossia::token_request{};
   // adjust date and elapsed time considering the dropped ticks
   if (droppedTicks)
   {
@@ -117,7 +119,7 @@ bool clock::tick()
     if (m_duration - m_date < Zero && !m_duration.infinite())
     {
       // notify the owner
-      m_interval.tick_offset(time_value{deltaInUs}, 0_tv);
+      m_interval.tick_offset(time_value{deltaInUs}, 0_tv, tok);
 
       request_stop();
 
@@ -168,7 +170,7 @@ bool clock::tick()
   if (!paused && running)
   {
     // notify the owner
-    m_interval.tick(time_value{deltaInUs}, m_ratio);
+    m_interval.tick(time_value{deltaInUs}, tok, m_ratio);
 
     // is this the end
     if (m_duration - m_date < Zero && !m_duration.infinite())

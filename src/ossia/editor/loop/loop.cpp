@@ -197,20 +197,18 @@ bool loop::process_sync(
   return true;
 }
 
-void loop::state_impl(
-    ossia::time_value from, ossia::time_value date, ossia::time_value parent_duration,
-    ossia::time_value tick_offset, double gspeed)
+void loop::state_impl(ossia::token_request req)
 {
-  node->request({from, date, date.impl / double(parent_duration.impl), tick_offset, gspeed});
-  m_interval.set_parent_speed(gspeed);
+  node->request(req);
+  m_interval.set_parent_speed(req.speed);
   // if date hasn't been processed already
   // if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
 
-    m_lastDate = date;
+    m_lastDate = req.date;
 
-    ossia::time_value tick_amount = date - from;
+    ossia::time_value tick_amount = req.date - req.prev_date;
 
     auto& start_ev = *m_startNode.get_time_events()[0];
     auto& end_ev = *m_endNode.get_time_events()[0];
@@ -232,10 +230,10 @@ void loop::state_impl(
       {
         if (m_interval.get_date() == 0)
         {
-          start_ev.tick(0_tv, tick_offset);
+          start_ev.tick(0_tv, req.offset);
           m_interval.set_offset(0_tv);
           m_interval.start();
-          m_interval.tick_current(tick_offset);
+          m_interval.tick_current(req.offset, req);
         }
 
         while (tick_amount > 0)
@@ -245,7 +243,7 @@ void loop::state_impl(
           const auto cur_date = m_interval.get_date();
           if (cur_date + tick_amount < itv_dur)
           {
-            m_interval.tick_offset(tick_amount, tick_offset);
+            m_interval.tick_offset(tick_amount, req.offset, req);
             break;
           }
           else
@@ -253,10 +251,10 @@ void loop::state_impl(
             auto this_tick = itv_dur - cur_date;
 
             tick_amount -= this_tick;
-            m_interval.tick_offset(this_tick, tick_offset);
-            tick_offset += this_tick;
+            m_interval.tick_offset(this_tick, req.offset, req);
+            req.offset += this_tick;
 
-            end_ev.tick(0_tv, tick_offset);
+            end_ev.tick(0_tv, req.offset);
             m_interval.stop();
 
             if (tick_amount > 0)
@@ -264,8 +262,8 @@ void loop::state_impl(
               m_interval.offset(time_value{});
               m_interval.start();
               m_interval.set_offset(0_tv);
-              m_interval.tick_current(tick_offset);
-              start_ev.tick(0_tv, tick_offset);
+              m_interval.tick_current(req.offset, req);
+              start_ev.tick(0_tv, req.offset);
             }
           }
         }
@@ -277,7 +275,7 @@ void loop::state_impl(
           const auto cur_date = m_interval.get_date();
           if (cur_date + tick_amount >= Zero)
           {
-            m_interval.tick_offset(tick_amount, tick_offset);
+            m_interval.tick_offset(tick_amount, req.offset, req);
             break;
           }
           else
@@ -285,17 +283,17 @@ void loop::state_impl(
             const auto& this_tick = cur_date;
 
             tick_amount += this_tick;
-            m_interval.tick_offset(this_tick, tick_offset);
-            tick_offset += this_tick;
+            m_interval.tick_offset(this_tick, req.offset, req);
+            req.offset += this_tick;
 
-            end_ev.tick(0_tv, tick_offset);
+            end_ev.tick(0_tv, req.offset);
             // m_interval.stop();
 
             if (tick_amount < 0)
             {
               m_interval.offset(itv_dur);
               // m_interval.start();
-              start_ev.tick(0_tv, tick_offset);
+              start_ev.tick(0_tv, req.offset);
             }
           }
         }
@@ -326,9 +324,9 @@ void loop::state_impl(
       }
 
       if (prev_last_date == Infinite)
-        m_interval.tick_offset(date, tick_offset);
+        m_interval.tick_offset(req.date, req.offset, req);
       else
-        m_interval.tick_offset(tick_amount, tick_offset);
+        m_interval.tick_offset(tick_amount, req.offset, req);
 
       switch (m_endEvent.get_status())
       {

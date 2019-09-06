@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/dataflow/token_request.hpp>
 
 #include <ossia_export.h>
 
@@ -39,9 +40,7 @@ public:
    #time_interval date
    \details don't call state when the parent #time_interval is not running
    */
-  void state(
-      ossia::time_value from, ossia::time_value to, ossia::time_value parent_dur,
-      ossia::time_value tick_offset, double gspeed);
+  void state(ossia::token_request);
 
   /**
    * @brief start
@@ -120,10 +119,7 @@ public:
 protected:
   //! Reimplement this to have a special behaviour on mute
   virtual void mute_impl(bool);
-  virtual void state_impl(
-      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
-      ossia::time_value tick_offset, double gspeed)
-  = 0;
+  virtual void state_impl(ossia::token_request) = 0;
   virtual void offset_impl(ossia::time_value date, double pos) = 0;
 
   virtual void transport_impl(ossia::time_value date, double pos) = 0;

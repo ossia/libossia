@@ -91,8 +91,9 @@ struct tick_all_nodes
     e.samples_since_start += samples;
     const time_value new_date{e.samples_since_start};
 
+    // TODO tempo / sig ?
     for (auto& node : g.get_nodes())
-      node->request(token_request{old_date, new_date});
+      node->request(token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, 120.});
 
     g.state(e);
     e.commit();
@@ -114,7 +115,8 @@ struct buffer_tick
     st.bufferSize = (int)frameCount;
     // we could run a syscall and call now() but that's a bit more costly.
     st.cur_date = seconds * 1e9;
-    itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv);
+    const ossia::token_request tok{};
+    itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv, tok);
     g.state(st);
     (st.*Commit)();
   }
@@ -136,7 +138,8 @@ struct precise_score_tick
     {
       st.begin_tick();
       st.samples_since_start++;
-      itv.tick_offset(ossia::time_value{1}, 0_tv);
+      const ossia::token_request tok{};
+      itv.tick_offset(ossia::time_value{1}, 0_tv, tok);
       g.state(st);
       (st.*Commit)();
 
@@ -164,16 +167,6 @@ public:
       ossia::flat_set<int64_t>& cuts, token_request_vec& tokens,
       time_value cur_date)
   {
-    double parent_length = 0;
-    for (auto& token : tokens)
-    {
-      if (token.date != 0 && token.position != 0)
-      {
-        parent_length = token.date / token.position;
-        break;
-      }
-    }
-
     for (auto it = tokens.begin(); it != tokens.end(); ++it)
     {
       if (it->date > cur_date)
@@ -188,7 +181,6 @@ public:
 
           // make first token shorter
           it->date = cur_date + N;
-          it->position = it->date / parent_length;
 
           // make next token
           inserted_token.offset = cut;
@@ -255,7 +247,8 @@ public:
     st.bufferSize = (int)frameCount;
     // we could run a syscall and call now() but that's a bit more costly.
     st.cur_date = seconds * 1e9;
-    itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv);
+    const ossia::token_request tok{};
+    itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv, tok);
 
     cut(g);
   }

@@ -8,7 +8,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       SmallFunction
       Servus
       bitset2
-      concurrentqueue tbb
+      concurrentqueue
       exprtk
       flat_hash_map
       multi_index
@@ -16,8 +16,32 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       weakjack
       verdigris
       flat
-      dr_libs
+      cmake/cmake-modules
       )
+
+  if(OSSIA_DATAFLOW)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dr_libs rubberband tbb)
+  endif()
+
+  if(OSSIA_DNSSD)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} Servus)
+  endif()
+
+  if(OSSIA_PROTOCOL_MIDI)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} RtMidi17)
+  endif()
+
+  if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} oscpack)
+  endif()
+
+  if(OSSIA_PROTOCOL_ARTNET)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} libartnet)
+  endif()
+
+  if(OSSIA_PROTOCOL_WIIMOTE)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} wiiuse)
+  endif()
 
   execute_process(COMMAND git submodule sync --recursive
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
@@ -27,41 +51,6 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
   endforeach()
-
-  if(OSSIA_DNSSD)
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/Servus")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/Servus
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  endif()
-
-  if(OSSIA_PROTOCOL_MIDI)
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/RtMidi17")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/RtMidi17
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  endif()
-
-
-  if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/oscpack")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/oscpack
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  endif()
-
-  if(OSSIA_PROTOCOL_ARTNET)
-      message(" -> ${OSSIA_3RDPARTY_FOLDER}/libartnet")
-      execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/libartnet
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-  endif()
-
-  message(" -> ${PROJECT_SOURCE_DIR}/cmake/cmake-modules")
-  execute_process(COMMAND git submodule update --init -- ${PROJECT_SOURCE_DIR}/cmake/cmake-modules
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-
-  if(OSSIA_PROTOCOL_WIIMOTE)
-    message(" -> ${OSSIA_3RDPARTY_FOLDER}/wiiuse")
-    execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/wiiuse
-                    WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
-  endif()
 
   message(STATUS "...done")
   set(OSSIA_SUBMODULE_AUTOUPDATE OFF CACHE BOOL "Auto update submodule" FORCE)
@@ -140,6 +129,7 @@ endif()
 if(OSSIA_DATAFLOW)
   set(TBB_LINKAGE "STATIC" CACHE "" INTERNAL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
+  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/rubberband" EXCLUDE_FROM_ALL)
 endif()
 
 if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)

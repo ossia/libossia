@@ -78,8 +78,9 @@ private:
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
+    const double pos = t.position();
 
-    auto p = m_spline.evaluate(t.position >= 0. ? t.position : 0.);
+    auto p = m_spline.evaluate(pos >= 0. ? pos : 0.);
     auto d = p.data();
 
     vp->write_value(

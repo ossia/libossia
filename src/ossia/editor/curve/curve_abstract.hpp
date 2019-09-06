@@ -20,6 +20,7 @@ enum class curve_segment_type
   FLOAT,
   DOUBLE,
   BOOL,
+  INT64,
   ANY
 };
 /**

@@ -21,47 +21,16 @@ void time_process::transport(time_value date, double pos)
 }
 
 void time_process::state(
-    time_value from,
-    time_value to,
-    ossia::time_value parent_dur,
-    time_value tick_offset,
-    double gspeed)
+    ossia::token_request tok
+    )
 {
   if(!m_loops)
   {
-    state_impl(from + m_start_offset, to + m_start_offset, parent_dur, tick_offset, gspeed);
+    state_impl(tok.add_offset(m_start_offset));
   }
   else
   {
-    // TODO this breaks relative_position
-    ossia::time_value tick_amount = to - from;
-
-    while (tick_amount > 0)
-    {
-      const auto cur_from = from % m_loop_duration;
-      if (cur_from + tick_amount < m_loop_duration)
-      {
-        state_impl(time_value{cur_from + m_start_offset},
-                   time_value{cur_from + tick_amount + m_start_offset},
-                   parent_dur,
-                   tick_offset,
-                   gspeed);
-        break;
-      }
-      else
-      {
-        auto this_tick = m_loop_duration - cur_from;
-
-        tick_amount -= this_tick;
-        from += this_tick;
-        state_impl(time_value{cur_from + m_start_offset},
-                   time_value{cur_from + this_tick + m_start_offset},
-                   parent_dur,
-                   tick_offset,
-                   gspeed);
-        tick_offset += this_tick;
-      }
-    }
+    tok.loop(m_start_offset, m_loop_duration, [this] (auto tr) { state_impl(tr); });
   }
 }
 

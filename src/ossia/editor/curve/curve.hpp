@@ -28,10 +28,13 @@ namespace ossia
 class destination;
 
 template <typename T>
-inline const constexpr std::nullptr_t curve_segment_type_map = nullptr;
+static const constexpr std::nullptr_t curve_segment_type_map = nullptr;
 template <>
 inline const constexpr ossia::curve_segment_type
     curve_segment_type_map<int> = ossia::curve_segment_type::INT;
+template <>
+inline const constexpr ossia::curve_segment_type
+    curve_segment_type_map<int64_t> = ossia::curve_segment_type::INT64;
 template <>
 inline const constexpr ossia::curve_segment_type
     curve_segment_type_map<float> = ossia::curve_segment_type::FLOAT;
@@ -65,9 +68,37 @@ public:
 
   curve() = default;
   curve(const curve&) = delete;
-  curve(curve&&) = delete;
+  curve(curve&& other)
+  {
+    m_x0 = other.m_x0;
+    m_y0 = other.m_y0;
+    m_x0_destination = std::move(other.m_x0_destination);
+    m_y0_destination = std::move(other.m_y0_destination);
+
+    m_points = std::move(other.m_points);
+
+    m_scaleBounds = std::move(other.m_scaleBounds);
+    m_originalPoints = std::move(other.m_originalPoints);
+
+    m_y0_cacheUsed = false;
+  }
+
   curve& operator=(const curve&) = delete;
-  curve& operator=(curve&&) = delete;
+  curve& operator=(curve&& other)
+  {
+    m_x0 = other.m_x0;
+    m_y0 = other.m_y0;
+    m_x0_destination = std::move(other.m_x0_destination);
+    m_y0_destination = std::move(other.m_y0_destination);
+
+    m_points = std::move(other.m_points);
+
+    m_scaleBounds = std::move(other.m_scaleBounds);
+    m_originalPoints = std::move(other.m_originalPoints);
+
+    m_y0_cacheUsed = false;
+    return *this;
+  }
   /*! destructor */
   virtual ~curve() = default;
 

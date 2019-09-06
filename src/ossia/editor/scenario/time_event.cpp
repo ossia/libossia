@@ -59,7 +59,7 @@ void time_event::tick(ossia::time_value date, ossia::time_value offset)
   for (auto& proc : m_processes)
   {
     proc->start();
-    proc->state(0_tv, date, 0_tv, offset, 1.);
+    proc->state(ossia::token_request{0_tv, date, 0_tv, offset, 1., {}, {}});
     proc->stop();
   }
 }

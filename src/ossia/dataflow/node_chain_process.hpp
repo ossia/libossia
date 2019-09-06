@@ -9,19 +9,14 @@ struct node_chain_process final : public ossia::time_process
 {
   node_chain_process()
   {
-    m_lastDate = ossia::Zero;
   }
 
-  void state_impl(
-      ossia::time_value from, ossia::time_value to, ossia::time_value parent_duration,
-      ossia::time_value tick_offset, double speed) override
+  void state_impl(ossia::token_request req) override
   {
-    const ossia::token_request tk{from, to, to.impl / double(parent_duration.impl), tick_offset, speed};
     for (auto& node : nodes)
     {
-      node->request(tk);
+      node->request(req);
     }
-    m_lastDate = to;
   }
 
   void add_node(int64_t idx, std::shared_ptr<ossia::graph_node> n)
@@ -60,6 +55,5 @@ struct node_chain_process final : public ossia::time_process
       node->set_mute(b);
   }
   std::vector<std::shared_ptr<ossia::graph_node>> nodes;
-  ossia::time_value m_lastDate{ossia::Infinite};
 };
 }

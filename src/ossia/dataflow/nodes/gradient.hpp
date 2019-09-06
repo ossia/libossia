@@ -38,7 +38,7 @@ public:
 
   void handle_before_first(ossia::token_request tk)
   {
-    auto position = tk.position;
+    const auto position = tk.position();
     auto& out = *m_outlets[0]->data.target<ossia::value_port>();
     auto beg = m_data.begin();
     if (beg->first >= position)
@@ -90,7 +90,7 @@ public:
         return;
       default:
       {
-        auto it_next = m_data.lower_bound(t.position);
+        auto it_next = m_data.lower_bound(t.position());
         // Before start
         if (it_next == m_data.begin())
         {
@@ -111,7 +111,7 @@ public:
           out.write_value(
               ease_color(
                   it_prev->first, it_prev->second, it_next->first,
-                  it_next->second, t.position)
+                  it_next->second, t.position())
                   .dataspace_value,
               t.tick_start());
         }

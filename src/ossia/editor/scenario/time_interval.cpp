@@ -14,39 +14,38 @@ namespace ossia
 
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date,
-    ossia::time_value offset)
+    ossia::time_value offset, const ossia::token_request& parent_request)
 {
   m_tick_offset = offset;
   m_date = new_date;
   compute_position();
-
-  node->request(
-      {old_date, new_date, m_position, m_tick_offset, m_globalSpeed});
+  m_current_signature = signature(new_date, parent_request);
+  m_current_tempo = tempo(new_date, parent_request);
 
   state(old_date, new_date);
   if (m_callback)
     (*m_callback)(m_position, new_date);
 }
 
-void time_interval::tick_current(ossia::time_value offset)
+void time_interval::tick_current(ossia::time_value offset, const ossia::token_request& parent_request)
 {
-  tick_impl(m_date, m_date, offset);
+  tick_impl(m_date, m_date, offset, parent_request);
 }
 
-void time_interval::tick(time_value date, double ratio)
+void time_interval::tick(time_value date, const ossia::token_request& parent_request, double ratio)
 {
   tick_impl(
-      m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset);
+      m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset, parent_request);
 }
 
-void time_interval::tick_offset(time_value date, ossia::time_value offset)
+void time_interval::tick_offset(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
 {
-  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset);
+  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset, parent_request);
 }
 
-void time_interval::tick_offset_speed_precomputed(time_value date, ossia::time_value offset)
+void time_interval::tick_offset_speed_precomputed(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
 {
-  tick_impl(m_date, m_date + date.impl, offset);
+  tick_impl(m_date, m_date + date.impl, offset, parent_request);
 }
 
 std::shared_ptr<time_interval> time_interval::create(
@@ -84,7 +83,7 @@ time_interval::~time_interval()
 void time_interval::start_and_tick()
 {
   start();
-  tick_current(0_tv);
+  tick_current(0_tv, {});
 }
 
 void time_interval::start()
@@ -185,16 +184,41 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
 
   if (N > 0)
   {
+    const ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
+    node->request(tok);
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
     {
       time_process& p = *timeProcess;
       if (p.enabled())
       {
-        p.state(from, to, m_nominal, m_tick_offset, m_globalSpeed);
+        p.state(tok);
       }
     }
   }
+}
+
+time_signature time_interval::signature(time_value date, const ossia::token_request& parent_request) const noexcept
+{
+  if(m_hasSignature && !m_timeSignature.empty())
+  {
+    auto it = m_timeSignature.lower_bound(date);
+    if(it != m_timeSignature.end())
+    {
+      return it->second;
+    }
+  }
+  return parent_request.signature;
+}
+
+double time_interval::tempo(time_value date, const ossia::token_request& parent_request) const noexcept
+{
+  // TODO tempo should be hierarchic
+  if(m_hasTempo)
+  {
+    return m_tempoCurve.value_at(date.impl);
+  }
+  return parent_request.tempo;
 }
 
 void time_interval::pause()
@@ -347,5 +371,18 @@ void time_interval::mute(bool m)
   {
     p->mute(m);
   }
+}
+
+void time_interval::set_tempo_curve(optional<tempo_curve> curve)
+{
+  if((m_hasTempo = bool(curve)))
+    m_tempoCurve = *std::move(curve);
+  else
+    m_tempoCurve.reset();
+}
+
+void time_interval::set_time_signature_map(optional<time_signature_map> map)
+{
+
 }
 }

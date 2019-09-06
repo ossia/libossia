@@ -2,7 +2,9 @@
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-
+#include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/detail/flat_map.hpp>
+#include <ossia/editor/curve/curve.hpp>
 #include <ossia_export.h>
 #include <smallfun.hpp>
 
@@ -13,10 +15,13 @@
  */
 namespace ossia
 {
+struct token_request;
 class time_event;
 class time_process;
 class graph_node;
 
+using time_signature_map = ossia::flat_map<ossia::time_value, time_signature>;
+using tempo_curve = ossia::curve<int64_t, double>;
 /**
  * @brief The time_interval class
  *
@@ -60,11 +65,11 @@ public:
     m_globalSpeed = g * m_speed;
   }
 
-  void tick_current(ossia::time_value offset);
+  void tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
 
-  void tick(ossia::time_value, double ratio = 1.0);
-  void tick_offset(ossia::time_value, ossia::time_value offset);
-  void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset);
+  void tick(ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
+  void tick_offset(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
+  void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
   // void tick_offset(ossia::time_value, double ratio, ossia::time_value
   // offset);
 
@@ -121,13 +126,6 @@ public:
   void offset(ossia::time_value);
 
   void transport(ossia::time_value);
-
-  /*! get a #State from the interval depending on its date
-   \details the returned #State is made of as many as sub States for each
-   TimeProcess the #time_interval manages
-   \details don't call state when the #time_interval is not running
-   \return std::shared_ptr<#State> */
-  void state(ossia::time_value from, ossia::time_value to);
 
   /*! sets a new callback for the interval
     \param #time_interval::ExecutionCallback to use to be notified at each
@@ -204,15 +202,27 @@ public:
   void cleanup();
   void mute(bool);
 
+  void set_tempo_curve(optional<tempo_curve> curve);
+  void set_time_signature_map(optional<time_signature_map> map);
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;
   time_interval& operator=(const time_interval&) = delete;
   time_interval& operator=(time_interval&&) = delete;
+
+  /*! get a #State from the interval depending on its date
+   \details the returned #State is made of as many as sub States for each
+   TimeProcess the #time_interval manages
+   \details don't call state when the #time_interval is not running
+   \return std::shared_ptr<#State> */
+  void state(ossia::time_value from, ossia::time_value to);
+
+  time_signature signature(time_value date, const ossia::token_request& parent_request) const noexcept;
+  double tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
   void compute_position();
   void tick_impl(
       ossia::time_value old_date, ossia::time_value new_date,
-      ossia::time_value offset);
+      ossia::time_value offset, const ossia::token_request& parent_request);
 
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
@@ -232,9 +242,17 @@ private:
   time_value m_offset{}; /// the date the clock will run from
 
   time_value m_tick_offset{}; /// offset in the current tick
+
+  double m_current_tempo{};
+
+  time_signature_map m_timeSignature{};
+  tempo_curve m_tempoCurve;
   double m_speed{1.};         /// tick length is multiplied by this
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
+  time_signature m_current_signature{};
   bool m_running{false};
+  bool m_hasTempo{false};
+  bool m_hasSignature{false};
 };
 }

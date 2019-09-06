@@ -28,7 +28,7 @@ namespace ossia
 {
 void scenario::make_happen(
     time_event& event, interval_set& started, interval_set& stopped,
-    ossia::time_value tick_offset)
+    ossia::time_value tick_offset, const ossia::token_request& tok)
 {
   event.m_status = time_event::status::HAPPENED;
 
@@ -48,7 +48,7 @@ void scenario::make_happen(
        event.next_time_intervals())
   {
     timeInterval->start();
-    timeInterval->tick_current(tick_offset);
+    timeInterval->tick_current(tick_offset, tok);
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
@@ -105,7 +105,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 bool scenario::trigger_sync(
     time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
     interval_set& started, interval_set& stopped,
-    ossia::time_value tick_offset, bool maximalDurationReached)
+    ossia::time_value tick_offset, const ossia::token_request& req, bool maximalDurationReached)
 {
   if (!node.m_evaluating)
   {
@@ -207,7 +207,7 @@ bool scenario::trigger_sync(
 
     if (expressions::evaluate(expr))
     {
-      make_happen(*ev, started, stopped, tick_offset);
+      make_happen(*ev, started, stopped, tick_offset, req);
       if (maximalDurationReached)
         maxReachedEv.push_back(ev);
     }
@@ -236,7 +236,8 @@ bool scenario::trigger_sync(
 bool scenario::process_this(
     time_sync& node, small_event_vec& pendingEvents,
     small_event_vec& maxReachedEvents, interval_set& started,
-    interval_set& stopped, ossia::time_value tick_offset)
+    interval_set& stopped, ossia::time_value tick_offset,
+    const ossia::token_request& req)
 {
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
@@ -336,7 +337,7 @@ bool scenario::process_this(
   }
 
   return trigger_sync(
-      node, pendingEvents, maxReachedEvents, started, stopped, tick_offset,
+      node, pendingEvents, maxReachedEvents, started, stopped, tick_offset, req,
       maximalDurationReached);
 }
 
@@ -352,20 +353,18 @@ ossia::time_value clamp_zero(ossia::time_value t)
 }
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-void scenario::state_impl(
-    ossia::time_value from, ossia::time_value date, ossia::time_value parent_duration,
-    ossia::time_value tick_offset, double gspeed)
+void scenario::state_impl(ossia::token_request req)
 {
-  node->request({from, date, date.impl / double(parent_duration.impl), tick_offset, gspeed});
+  node->request(req);
   // ossia::logger().info("scenario::state starts");
   // if (date != m_lastDate)
   {
     auto prev_last_date = m_lastDate;
-    m_lastDate = date;
+    m_lastDate = req.date;
 
     // Duration of this tick.
     time_value tick_ms
-        = (prev_last_date == Infinite) ? date : (date - prev_last_date);
+        = (prev_last_date == Infinite) ? req.date : (req.date - prev_last_date);
 
     m_overticks.clear();
     m_endNodes.clear();
@@ -440,7 +439,7 @@ void scenario::state_impl(
       // it's the root scenarios. So this prevents initializing a dummy class.
       bool res = process_this(
           *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
-          m_runningIntervals, tick_offset);
+          m_runningIntervals, req.offset, req);
       if (res)
       {
         it = m_waitingNodes.erase(it);
@@ -466,7 +465,7 @@ void scenario::state_impl(
         cst_max_dur = it->second;
       }
 
-      interval.set_parent_speed(gspeed);
+      interval.set_parent_speed(req.speed);
 
       // Tick without going over the max
       // so that the state is not 1.01*automation for instance.
@@ -479,13 +478,13 @@ void scenario::state_impl(
           if (diff <= 0)
           {
             if (tick != 0)
-              interval.tick_offset(tick, offset);
+              interval.tick_offset(tick, offset, req);
           }
           else
           {
             if (max_tick != 0)
             {
-              interval.tick_offset_speed_precomputed(max_tick, offset);
+              interval.tick_offset_speed_precomputed(max_tick, offset, req);
             }
 
             const auto ot
@@ -500,7 +499,7 @@ void scenario::state_impl(
               if (ot > cur.max)
               {
                 cur.max = ot;
-                cur.offset = tick_offset + tick_ms - cur.max;
+                cur.offset = req.offset + tick_ms - cur.max;
               }
             }
             else
@@ -508,7 +507,7 @@ void scenario::state_impl(
               m_overticks.insert(
                   node_it,
                   std::make_pair(
-                      end_node, overtick{ot, ot, tick_offset + tick_ms - ot}));
+                      end_node, overtick{ot, ot, req.offset + tick_ms - ot}));
             }
           }
         }
@@ -517,13 +516,13 @@ void scenario::state_impl(
           if (tick * s < cst_old_date)
           {
             if (tick != 0)
-              interval.tick_offset(tick, offset);
+              interval.tick_offset(tick, offset, req);
           }
           else
           {
             if (tick != 0)
             {
-              interval.tick_offset_speed_precomputed(ossia::time_value{-cst_old_date.impl}, offset);
+              interval.tick_offset_speed_precomputed(ossia::time_value{-cst_old_date.impl}, offset, req);
             }
           }
           // no overtick support for running backwards for now - we just stop at zero
@@ -531,7 +530,7 @@ void scenario::state_impl(
       }
       else
       {
-        interval.tick_offset(tick, offset);
+        interval.tick_offset(tick, offset, req);
       }
       if (interval.get_date() >= interval.get_min_duration())
         m_endNodes.insert(end_node);
@@ -539,7 +538,7 @@ void scenario::state_impl(
 
     for (time_interval* interval : m_runningIntervals)
     {
-      run_interval(*interval, tick_ms, tick_offset);
+      run_interval(*interval, tick_ms, req.offset);
     }
 
     // Handle time syncs / events... if they are not finished, intervals in
@@ -564,7 +563,7 @@ void scenario::state_impl(
         const time_value remaining_tick
             = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
 
-        const auto offset = tick_offset + tick_ms - remaining_tick;
+        const auto offset = req.offset + tick_ms - remaining_tick;
         const_cast<overtick&>(it->second).offset = offset;
         for (const auto& interval : ev.next_time_intervals())
         {
@@ -582,13 +581,13 @@ void scenario::state_impl(
         {
           process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
-              m_runningIntervals, it->second.offset);
+              m_runningIntervals, it->second.offset, req);
         }
         else
         {
           process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
-              m_runningIntervals, tick_offset);
+              m_runningIntervals, req.offset, req);
         }
       }
 

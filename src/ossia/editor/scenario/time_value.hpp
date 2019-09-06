@@ -203,6 +203,7 @@ OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2)
     return Infinite;
   return time_value{t1.impl > t2.impl ? t1.impl - t2.impl : t2.impl - t1.impl};
 }
+
 }
 
 // static_assert(std::is_pod<ossia::time_value>::value, "bug introduced
