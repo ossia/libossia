@@ -122,14 +122,14 @@ void process_offset(
     }
   }
 }
-void scenario::transport_impl(ossia::time_value offset, double pos)
+void scenario::transport_impl(ossia::time_value offset)
 {
   // reset internal offset list and state
 
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
-  pastEvents.container.reserve(this->m_intervals.size() * 1.5 * pos);
+  pastEvents.container.reserve(this->m_intervals.size() * 1.5);
 
   m_runningIntervals.clear();
 
@@ -219,14 +219,14 @@ void scenario::transport_impl(ossia::time_value offset, double pos)
   m_lastDate = offset;
 }
 
-void scenario::offset_impl(ossia::time_value offset, double pos)
+void scenario::offset_impl(ossia::time_value offset)
 {
   // reset internal offset list and state
 
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
-  pastEvents.container.reserve(this->m_intervals.size() * 1.5 * pos);
+  pastEvents.container.reserve(this->m_intervals.size() * 1.5);
 
   m_runningIntervals.clear();
 

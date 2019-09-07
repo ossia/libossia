@@ -9,15 +9,15 @@ time_process::~time_process()
 {
 }
 
-void time_process::offset(time_value date, double pos)
+void time_process::offset(time_value date)
 {
   // TODO looping
-  offset_impl(date, pos);
+  offset_impl(date);
 }
 
-void time_process::transport(time_value date, double pos)
+void time_process::transport(time_value date)
 {
-  transport_impl(date, pos);
+  transport_impl(date);
 }
 
 void time_process::state(

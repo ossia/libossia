@@ -32,9 +32,9 @@ public:
    \details don't call offset when the parent #time_interval is running
    \param date offset date
    \param pos offset position (in [0;1] relative to parent nominal duration) */
-  void offset(ossia::time_value date, double pos);
+  void offset(ossia::time_value date);
 
-  void transport(ossia::time_value date, double pos);
+  void transport(ossia::time_value date);
 
   /*! get a #StateElement from the process depending on its parent
    #time_interval date
@@ -120,9 +120,9 @@ protected:
   //! Reimplement this to have a special behaviour on mute
   virtual void mute_impl(bool);
   virtual void state_impl(ossia::token_request) = 0;
-  virtual void offset_impl(ossia::time_value date, double pos) = 0;
+  virtual void offset_impl(ossia::time_value date) = 0;
 
-  virtual void transport_impl(ossia::time_value date, double pos) = 0;
+  virtual void transport_impl(ossia::time_value date) = 0;
 
   time_value m_loop_duration{};
   time_value m_start_offset{};

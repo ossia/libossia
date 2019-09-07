@@ -43,10 +43,6 @@ public:
   {
     return m_date;
   }
-  auto get_position() const
-  {
-    return m_position;
-  }
   auto get_offset() const
   {
     return m_offset;
@@ -78,7 +74,7 @@ public:
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = optional<smallfun::function<void(double, ossia::time_value), 32>>;
+      = optional<smallfun::function<void(ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -132,12 +128,12 @@ public:
     step
     */
   void set_callback(exec_callback);
-  void set_callback(smallfun::function<void(double, ossia::time_value), 32>);
+  void set_callback(smallfun::function<void(ossia::time_value), 32>);
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
   void set_stateless_callback(
-      smallfun::function<void(double, ossia::time_value), 32>);
+      smallfun::function<void(ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
@@ -219,7 +215,7 @@ private:
 
   time_signature signature(time_value date, const ossia::token_request& parent_request) const noexcept;
   double tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
-  void compute_position();
+
   void tick_impl(
       ossia::time_value old_date, ossia::time_value new_date,
       ossia::time_value offset, const ossia::token_request& parent_request);
@@ -233,10 +229,6 @@ private:
   time_value m_nominal{};
   time_value m_min{};
   time_value m_max{};
-
-  /// the progression of the interval between the beginning
-  /// and the nominal duration [0. :: 1.]
-  double m_position{};
 
   time_value m_date{};
   time_value m_offset{}; /// the date the clock will run from

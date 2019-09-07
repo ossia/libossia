@@ -41,7 +41,7 @@ loop::~loop()
   m_endNode.cleanup();
 }
 
-void loop::offset_impl(ossia::time_value offset, double pos)
+void loop::offset_impl(ossia::time_value offset)
 {
   time_value patternOffset{int64_t(
       std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
@@ -71,7 +71,7 @@ void loop::offset_impl(ossia::time_value offset, double pos)
   */
 }
 
-void loop::transport_impl(ossia::time_value offset, double pos)
+void loop::transport_impl(ossia::time_value offset)
 {
   time_value patternOffset{int64_t(
       std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};

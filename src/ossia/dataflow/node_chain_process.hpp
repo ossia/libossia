@@ -33,7 +33,7 @@ struct node_chain_process final : public ossia::time_process
     }
   }
 
-  void offset_impl(time_value date, double pos) override
+  void offset_impl(time_value date) override
   {
     for (auto& node : nodes)
     {
@@ -41,7 +41,7 @@ struct node_chain_process final : public ossia::time_process
     }
   }
 
-  void transport_impl(ossia::time_value date, double pos) override
+  void transport_impl(ossia::time_value date) override
   {
     for (auto& node : nodes)
     {

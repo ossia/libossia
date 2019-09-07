@@ -18,13 +18,13 @@ void time_interval::tick_impl(
 {
   m_tick_offset = offset;
   m_date = new_date;
-  compute_position();
+
   m_current_signature = signature(new_date, parent_request);
   m_current_tempo = tempo(new_date, parent_request);
 
   state(old_date, new_date);
   if (m_callback)
-    (*m_callback)(m_position, new_date);
+    (*m_callback)(new_date);
 }
 
 void time_interval::tick_current(ossia::time_value offset, const ossia::token_request& parent_request)
@@ -102,9 +102,9 @@ void time_interval::start()
   // set clock at a tick
   m_running = true;
   m_date = m_offset;
-  compute_position();
+
   if (m_callback)
-    (*m_callback)(m_position, m_date);
+    (*m_callback)(m_date);
 }
 
 void time_interval::stop()
@@ -117,16 +117,7 @@ void time_interval::stop()
   }
 
   m_date = Zero;
-  m_position = 0.;
   m_running = false;
-}
-
-void time_interval::compute_position()
-{
-  if (m_nominal != Zero)
-    m_position = double(m_date) / m_nominal;
-  else
-    m_position = 0.0;
 }
 
 void time_interval::offset(ossia::time_value date)
@@ -134,8 +125,6 @@ void time_interval::offset(ossia::time_value date)
   m_offset = date;
   m_date = date;
 
-  compute_position();
-
   const auto& processes = get_time_processes();
   const auto N = processes.size();
   if (N > 0)
@@ -145,12 +134,12 @@ void time_interval::offset(ossia::time_value date)
     {
       if (timeProcess->enabled())
       {
-        timeProcess->offset(m_date, m_position);
+        timeProcess->offset(m_date);
       }
     }
   }
   if (m_callback)
-    (*m_callback)(m_position, m_date);
+    (*m_callback)(m_date);
 }
 
 void time_interval::transport(time_value date)
@@ -158,8 +147,6 @@ void time_interval::transport(time_value date)
   m_offset = date;
   m_date = date;
 
-  compute_position();
-
   const auto& processes = get_time_processes();
   const auto N = processes.size();
   if (N > 0)
@@ -169,12 +156,12 @@ void time_interval::transport(time_value date)
     {
       if (timeProcess->enabled())
       {
-        timeProcess->transport(m_date, m_position);
+        timeProcess->transport(m_date);
       }
     }
   }
   if (m_callback)
-    (*m_callback)(m_position, m_date);
+    (*m_callback)(m_date);
 }
 
 void time_interval::state(ossia::time_value from, ossia::time_value to)
@@ -248,7 +235,7 @@ void time_interval::set_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_callback(
-    smallfun::function<void(double, time_value), 32> cb)
+    smallfun::function<void(time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
@@ -262,7 +249,7 @@ void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_stateless_callback(
-    smallfun::function<void(double, time_value), 32> cb)
+    smallfun::function<void(time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }

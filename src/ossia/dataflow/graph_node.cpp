@@ -17,11 +17,11 @@ node_process::node_process(node_ptr n)
   node = std::move(n);
 }
 
-void node_process::offset_impl(time_value date, double pos)
+void node_process::offset_impl(time_value date)
 {
 }
 
-void node_process::transport_impl(time_value date, double pos)
+void node_process::transport_impl(time_value date)
 {
 }
 

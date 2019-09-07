@@ -103,7 +103,7 @@ public:
 
 private:
   friend struct scenario_graph;
-  void offset_impl(ossia::time_value, double pos) override;
+  void offset_impl(ossia::time_value) override;
 
   void state_impl(ossia::token_request req) override;
 
@@ -112,7 +112,7 @@ private:
   void pause() override;
   void resume() override;
 
-  void transport_impl(ossia::time_value offset, double pos) override;
+  void transport_impl(ossia::time_value offset) override;
   void mute_impl(bool) override;
   bool is_root_sync(ossia::time_sync& sync) const;
 

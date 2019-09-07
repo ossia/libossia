@@ -75,7 +75,7 @@ public:
     }
   }
 
-  void transport(ossia::time_value date, double pos)
+  void transport(ossia::time_value date)
   {
     // 1. Send note-offs
     m_toStop.insert(m_playingnotes.begin(), m_playingnotes.end());
@@ -253,11 +253,11 @@ class midi_node_process final : public ossia::node_process
 public:
   using ossia::node_process::node_process;
 
-  void transport_impl(ossia::time_value date, double pos) override
+  void transport_impl(ossia::time_value date) override
   {
     midi& n = *static_cast<midi*>(node.get());
-    n.transport(date, pos);
-    node_process::transport(date, pos);
+    n.transport(date);
+    node_process::transport(date);
   }
 
   void stop() override
