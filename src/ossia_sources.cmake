@@ -550,6 +550,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/value_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/value_port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_port.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/audio_stretch_mode.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/midi_port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data_copy.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow_fwd.hpp"
