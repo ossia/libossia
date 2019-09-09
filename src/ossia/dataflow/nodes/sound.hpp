@@ -1,164 +1,253 @@
 #pragma once
-#include <ossia/audio/audio_parameter.hpp>
-#include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/dataflow/audio_stretch_mode.hpp>
+#include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+#include <ossia/dataflow/nodes/timestretch/rubberband_stretcher.hpp>
+#include <ossia/dataflow/nodes/timestretch/repitch_stretcher.hpp>
+#include <variant>
 
-namespace ossia::nodes
+namespace ossia
 {
-class sound final : public ossia::nonowning_graph_node
+
+template<typename SoundNode_T>
+class sound_process
+    : public ossia::node_process
 {
-public:
-  sound()
+protected:
+  void offset_impl(time_value date) override
   {
-    m_outlets.push_back(&audio_out);
+    static_cast<SoundNode_T&>(*this->node).reset_resampler(date);
   }
+  void transport_impl(time_value date) override
+  {
+    static_cast<SoundNode_T&>(*this->node).reset_resampler(date);
+  }
+};
 
-  ~sound()
+struct resampler
+{
+  void reset(time_value date, ossia::audio_stretch_mode mode, std::size_t channels, std::size_t fileSampleRate)
   {
-  }
-
-  void set_start(std::size_t v)
-  {
-    start = v;
-  }
-  void set_start_offset(std::size_t v)
-  {
-    start_offset = v;
-  }
-  void set_upmix(std::size_t v)
-  {
-    upmix = v;
-  }
-  void set_sound(const std::vector<ossia::float_vector>& vec)
-  {
-    m_data.resize(vec.size());
-    for (std::size_t i = 0; i < vec.size(); i++)
+    switch(mode)
     {
-      m_data[i].assign(vec[i].begin(), vec[i].end());
-    }
-  }
-  void set_sound(std::vector<ossia::double_vector> vec)
-  {
-    m_data = std::move(vec);
-  }
-  void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
-  {
-    if (m_data.empty())
-      return;
-    const std::size_t chan = m_data.size();
-    const std::size_t len = m_data[0].size();
-
-    ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
-    ap.samples.resize(chan);
-    int64_t max_N = std::min(t.date.impl, (int64_t)(len - start_offset));
-    if (max_N <= 0)
-      return;
-    const auto samples = max_N - t.prev_date + t.offset.impl;
-    if (samples <= 0)
-      return;
-
-    if (t.date > t.prev_date)
-    {
-      for (std::size_t i = 0; i < chan; i++)
+      case audio_stretch_mode::None:
       {
-        ap.samples[i].resize(samples);
-        for (int64_t j = t.prev_date; j < max_N; j++)
-        {
-          ap.samples[i][j - t.prev_date + t.offset.impl]
-              = m_data[i][j + start_offset];
-        }
-        do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-            t.offset.impl, samples);
+        m_stretch = raw_stretcher{};
+        break;
+      }
+      case audio_stretch_mode::Repitch:
+      {
+        m_stretch = repitch_stretcher{};
+        break;
+      }
+      case audio_stretch_mode::RubberBandStandard:
+      {
+        m_stretch = rubberband_stretcher{RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate};
+        break;
+      }
+      case audio_stretch_mode::RubberBandPercussive:
+      {
+        m_stretch = rubberband_stretcher{RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate};
+        break;
       }
     }
-    else
-    {
-      // TODO rewind correctly and add rubberband
-      for (std::size_t i = 0; i < chan; i++)
-      {
-        ap.samples[i].resize(samples);
-        for (int64_t j = t.prev_date; j < max_N; j++)
-        {
-          ap.samples[i][max_N - (j - t.prev_date) + t.offset.impl]
-              = m_data[i][j];
-        }
+  }
 
-        do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-            max_N + t.offset.impl, t.prev_date + t.offset.impl);
+  void run(
+      ossia::audio_span& data,
+      const ossia::token_request& t,
+      ossia::exec_state_facade e,
+      std::size_t chan,
+      std::size_t len,
+      int64_t samples_to_read,
+      int64_t samples_to_write,
+      ossia::audio_port& ap)
+  {
+    switch(m_stretch.index())
+    {
+      case 0:
+      {
+        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        return;
       }
-    }
-
-    // Upmix
-    if (upmix != 0)
-    {
-      if (upmix < chan)
-      {
-        /* //TODO
-    // Downmix
-    switch(upmix)
-    {
       case 1:
       {
-        for(std::size_t i = 1; i < chan; i++)
-        {
-          if(ap.samples[0].size() < ap.samples[i].size())
-            ap.samples[0].resize(ap.samples[i].size());
-
-          for(std::size_t j = 0; j < ap.samples[i].size(); j++)
-            ap.samples[0][j] += ap.samples[i][j];
-        }
-      }
-      default:
-        // TODO
+        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
         break;
-    }
-    */
       }
-      else if (upmix > chan)
+      case 2:
       {
-        switch (chan)
-        {
-          case 1:
-          {
-            ap.samples.resize(upmix);
-            for (std::size_t i = 1; i < upmix; i++)
-            {
-              ap.samples[i] = ap.samples[0];
-            }
-            break;
-          }
-          default:
-            // TODO
-            break;
-        }
+        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        break;
       }
     }
-
-    // Move channels
-    if (start != 0)
-    {
-      ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
-    }
-  }
-  std::size_t channels() const
-  {
-    return m_data.size();
-  }
-  std::size_t duration() const
-  {
-    return m_data.empty() ? 0 : m_data[0].size();
   }
 
-private:
-  std::vector<ossia::double_vector> m_data;
-  std::size_t start{};
-  std::size_t start_offset{};
-  std::size_t upmix{};
-  ossia::outlet audio_out{ossia::audio_port{}};
+  std::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
 };
+
+
 }
+//
+// namespace ossia::nodes
+// {
+// class sound final : public ossia::nonowning_graph_node
+// {
+// public:
+//   sound()
+//   {
+//     m_outlets.push_back(&audio_out);
+//   }
+//
+//   ~sound()
+//   {
+//   }
+//
+//   void set_start(std::size_t v)
+//   {
+//     start = v;
+//   }
+//   void set_start_offset(std::size_t v)
+//   {
+//     start_offset = v;
+//   }
+//   void set_upmix(std::size_t v)
+//   {
+//     upmix = v;
+//   }
+//   void set_sound(const std::vector<ossia::float_vector>& vec)
+//   {
+//     m_data.resize(vec.size());
+//     for (std::size_t i = 0; i < vec.size(); i++)
+//     {
+//       m_data[i].assign(vec[i].begin(), vec[i].end());
+//     }
+//   }
+//   void set_sound(std::vector<ossia::double_vector> vec)
+//   {
+//     m_data = std::move(vec);
+//   }
+//   void
+//   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+//   {
+//     if (m_data.empty())
+//       return;
+//     const std::size_t chan = m_data.size();
+//     const std::size_t len = m_data[0].size();
+//
+//     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
+//     ap.samples.resize(chan);
+//     int64_t max_N = std::min(t.date.impl, (int64_t)(len - start_offset));
+//     if (max_N <= 0)
+//       return;
+//     const auto samples = max_N - t.prev_date + t.offset.impl;
+//     if (samples <= 0)
+//       return;
+//
+//     if (t.date > t.prev_date)
+//     {
+//       for (std::size_t i = 0; i < chan; i++)
+//       {
+//         ap.samples[i].resize(samples);
+//         for (int64_t j = t.prev_date; j < max_N; j++)
+//         {
+//           ap.samples[i][j - t.prev_date + t.offset.impl]
+//               = m_data[i][j + start_offset];
+//         }
+//         do_fade(
+//             t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+//             t.offset.impl, samples);
+//       }
+//     }
+//     else
+//     {
+//       // TODO rewind correctly and add rubberband
+//       for (std::size_t i = 0; i < chan; i++)
+//       {
+//         ap.samples[i].resize(samples);
+//         for (int64_t j = t.prev_date; j < max_N; j++)
+//         {
+//           ap.samples[i][max_N - (j - t.prev_date) + t.offset.impl]
+//               = m_data[i][j];
+//         }
+//
+//         do_fade(
+//             t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+//             max_N + t.offset.impl, t.prev_date + t.offset.impl);
+//       }
+//     }
+//
+//     // Upmix
+//     if (upmix != 0)
+//     {
+//       if (upmix < chan)
+//       {
+//         /* //TODO
+//     // Downmix
+//     switch(upmix)
+//     {
+//       case 1:
+//       {
+//         for(std::size_t i = 1; i < chan; i++)
+//         {
+//           if(ap.samples[0].size() < ap.samples[i].size())
+//             ap.samples[0].resize(ap.samples[i].size());
+//
+//           for(std::size_t j = 0; j < ap.samples[i].size(); j++)
+//             ap.samples[0][j] += ap.samples[i][j];
+//         }
+//       }
+//       default:
+//         // TODO
+//         break;
+//     }
+//     */
+//       }
+//       else if (upmix > chan)
+//       {
+//         switch (chan)
+//         {
+//           case 1:
+//           {
+//             ap.samples.resize(upmix);
+//             for (std::size_t i = 1; i < upmix; i++)
+//             {
+//               ap.samples[i] = ap.samples[0];
+//             }
+//             break;
+//           }
+//           default:
+//             // TODO
+//             break;
+//         }
+//       }
+//     }
+//
+//     // Move channels
+//     if (start != 0)
+//     {
+//       ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
+//     }
+//   }
+//   std::size_t channels() const
+//   {
+//     return m_data.size();
+//   }
+//   std::size_t duration() const
+//   {
+//     return m_data.empty() ? 0 : m_data[0].size();
+//   }
+//
+// private:
+//   std::vector<ossia::double_vector> m_data;
+//   std::size_t start{};
+//   std::size_t start_offset{};
+//   std::size_t upmix{};
+//   ossia::outlet audio_out{ossia::audio_port{}};
+// };
+// }
+//

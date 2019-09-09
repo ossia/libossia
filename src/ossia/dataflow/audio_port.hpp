@@ -1,11 +1,10 @@
 #pragma once
+#include <ossia/dataflow/nodes/media.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <vector>
+#include <ossia_export.h>
 namespace ossia
 {
-using audio_channel = ossia::small_vector<double, 256>;
-using audio_vector = ossia::small_vector<audio_channel, 2>;
-
 struct audio_port
 {
   bool upmix{};

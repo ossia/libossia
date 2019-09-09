@@ -3,6 +3,8 @@
 #include <ossia/audio/drwav_handle.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/nodes/sound.hpp>
+#include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 
@@ -107,6 +109,26 @@ public:
                 break;
             }
         }
+        m_resampler.reset(0_tv, m_mode, hdl.channels(), hdl.sampleRate());
+    }
+
+    void set_native_tempo(double v)
+    {
+      tempo = v;
+    }
+
+    void set_stretch_mode(ossia::audio_stretch_mode mode)
+    {
+      if(m_mode != mode)
+      {
+        m_mode = mode;
+        m_resampler.reset(0_tv, m_mode, channels(), m_handle.sampleRate());
+      }
+    }
+
+    void reset_resampler(time_value date)
+    {
+      m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
     }
 
     static void read_s16(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
@@ -289,12 +311,16 @@ public:
 private:
     std::size_t start{};
     std::size_t upmix{};
+    double tempo{};
     ossia::outlet audio_out{ossia::audio_port{}};
 
     drwav_handle m_handle{};
     using read_fn_t = void(*)(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples);
     read_fn_t m_converter{};
     std::vector<char> m_safetyBuffer;
+
+    resampler m_resampler;
+    audio_stretch_mode m_mode{};
 };
 
 }

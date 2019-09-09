@@ -568,6 +568,11 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/faust/faust_utils.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/timestretch/r8b_stretcher.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/timestretch/raw_stretcher.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/timestretch/repitch_stretcher.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/timestretch/rubberband_stretcher.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/automation.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/gain.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/gradient.hpp"
