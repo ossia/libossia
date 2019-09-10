@@ -93,6 +93,7 @@ public:
   auto sampleRate() const noexcept { return impl->sampleRate; }
   auto totalPCMFrameCount() const noexcept { return impl->totalPCMFrameCount; }
 
+  ::drwav* wav() const noexcept { return impl; }
 private:
 
   ::drwav* impl{};
