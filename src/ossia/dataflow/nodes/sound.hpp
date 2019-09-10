@@ -36,22 +36,22 @@ struct resampler
     {
       case audio_stretch_mode::None:
       {
-        m_stretch = raw_stretcher{};
+        m_stretch.emplace<raw_stretcher>();
         break;
       }
       case audio_stretch_mode::Repitch:
       {
-        m_stretch = repitch_stretcher{};
+        m_stretch.emplace<repitch_stretcher>();
         break;
       }
       case audio_stretch_mode::RubberBandStandard:
       {
-        m_stretch = rubberband_stretcher{RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate};
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate);
         break;
       }
       case audio_stretch_mode::RubberBandPercussive:
       {
-        m_stretch = rubberband_stretcher{RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate};
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate);
         break;
       }
     }

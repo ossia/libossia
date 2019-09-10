@@ -5,6 +5,7 @@
 #include <ossia/dataflow/nodes/media.hpp>
 #include <RubberBandStretcher.h>
 
+#include <iostream>
 namespace ossia
 {
 
@@ -13,6 +14,7 @@ struct rubberband_stretcher
   rubberband_stretcher(RubberBand::RubberBandStretcher::PresetOption opt, std::size_t channels, std::size_t sampleRate)
     : m_rubberBand{sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt}
   {
+    std::cerr << "construicting with : " << channels << std::endl;
 
   }
   RubberBand::RubberBandStretcher m_rubberBand;
