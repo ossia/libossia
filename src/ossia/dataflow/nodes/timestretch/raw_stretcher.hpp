@@ -25,14 +25,12 @@ struct raw_stretcher
       const int64_t read_max = std::min(t.prev_date.impl + samples_to_write, len);
       for (std::size_t i = 0; i < chan; i++)
       {
-        ap.samples[i].resize(samples_to_write + t.offset.impl);
+        const float* input = data[i].data();
+        double* output = ap.samples[i].data();
         for (int64_t j = t.prev_date; j < read_max; j++)
         {
-          ap.samples[i][j - t.prev_date + t.offset.impl] = data[i][j];
+          output[j - t.prev_date + t.offset.impl] = input[j];
         }
-        do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-            t.offset.impl, samples_to_read);
       }
     }
     else

@@ -72,80 +72,30 @@ public:
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(chan);
-    int64_t max_N = std::min(t.date.impl, (int64_t)(len));
-    if (max_N <= 0)
-      return;
 
-    const int64_t samples_to_read = max_N - t.prev_date + t.offset.impl;
-    const int64_t samples_to_write =
-        [&] {
-      using namespace std;
-      if(t.speed < 1)
-        return std::min(int64_t(lrint(ceil(samples_to_read / t.speed))), e.bufferSize() - t.offset);
-      else if(t.speed > 1)
-        return std::max(int64_t(lrint(ceil(samples_to_read / t.speed))), e.bufferSize() - t.offset);
-      else
-        return samples_to_read;
-    }();
+    const auto [samples_to_read, samples_to_write] = ossia::snd::sample_info(len, e.bufferSize(), t);
 
     if (samples_to_read <= 0)
       return;
 
+    for (std::size_t i = 0; i < chan; ++i)
+    {
+      ap.samples[i].resize(t.offset.impl + samples_to_write);
+    }
+
     m_resampler.run(m_data, t, e, chan, len, samples_to_read, samples_to_write, ap);
 
-    // Upmix
-    if (upmix != 0)
+    for(std::size_t i = 0; i < chan; i++)
     {
-      if (upmix < chan)
-      {
-        /* TODO
-    // Downmix
-    switch(upmix)
-    {
-      case 1:
-      {
-        for(std::size_t i = 1; i < chan; i++)
-        {
-          if(ap.samples[0].size() < ap.samples[i].size())
-            ap.samples[0].resize(ap.samples[i].size());
-
-          for(std::size_t j = 0; j < ap.samples[i].size(); j++)
-            ap.samples[0][j] += ap.samples[i][j];
-        }
-      }
-      default:
-        // TODO
-        break;
-    }
-    */
-      }
-      else if (upmix > chan)
-      {
-        switch (chan)
-        {
-          case 1:
-          {
-            ap.samples.resize(upmix);
-            for (std::size_t i = 1; i < upmix; i++)
-            {
-              ap.samples[i] = ap.samples[0];
-            }
-            break;
-          }
-          default:
-            // TODO
-            break;
-        }
-      }
+        ossia::snd::do_fade(
+            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+            t.offset.impl, samples_to_write);
     }
 
-    // Move channels
-    if (start != 0)
-    {
-      ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
-    }
-
+    ossia::snd::perform_upmix(this->upmix, chan, ap);
+    ossia::snd::perform_start_offset(this->start, ap);
   }
+
   std::size_t channels() const
   {
     return m_data.size();

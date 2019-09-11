@@ -2,6 +2,7 @@
 
 #include "audio_protocol.hpp"
 
+#include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
@@ -164,6 +165,8 @@ mapped_audio_parameter::~mapped_audio_parameter()
   proto.unregister_parameter(*this);
 }
 
+namespace snd
+{
 void do_fade(
     bool start_discontinuous, bool end_discontinuous, audio_channel& ap,
     std::size_t start, std::size_t end)
@@ -200,5 +203,6 @@ void do_fade(
       gain -= decrement;
     }
   }
+}
 }
 }

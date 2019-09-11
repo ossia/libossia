@@ -15,7 +15,6 @@ struct repitch_stretcher
       : resampler{src_new(SRC_SINC_BEST_QUALITY, 1, nullptr)}
       , next_sample_to_read{0}
       , data(10 * buffersize)
-
     {
 
     }
@@ -41,6 +40,15 @@ struct repitch_stretcher
     boost::circular_buffer<float> data;
   };
 
+  repitch_stretcher(int channels, int bufferSize)
+  {
+    repitchers.reserve(channels);
+    while(repitchers.size() < channels)
+    {
+      repitchers.emplace_back(bufferSize);
+    }
+  }
+
   std::vector<resample_channel> repitchers;
 
   void run(
@@ -53,34 +61,12 @@ struct repitch_stretcher
       const int64_t samples_to_write,
       ossia::audio_port& ap) noexcept
   {
-    for(auto& resampler : repitchers)
-    {
-      // Check if we are already past the end.
-      if(resampler.next_sample_to_read > len)
-      {
-        for(auto& channel : ap.samples)
-        {
-          // will be filled with zeros
-          channel.resize(t.offset.impl + samples_to_write);
-        }
-
-        return;
-      }
-    }
-
-    while(repitchers.size() < chan)
-    {
-      repitchers.emplace_back(e.bufferSize());
-    }
-
     auto input = (float*) alloca(sizeof(float) * samples_to_read);
     auto output = (float*) alloca(sizeof(float) * samples_to_write);
 
     for (std::size_t i = 0; i < chan; ++i)
     {
       auto& source_channel = data[i];
-      /* Create the resampler objects. */
-      ap.samples[i].resize(t.offset.impl + samples_to_write);
 
       for(int64_t j = 0; j < samples_to_read; j++)
         input[j] = float(source_channel[j + t.prev_date]);
@@ -134,10 +120,6 @@ struct repitch_stretcher
       }
 
       repitchers[i].data.erase_begin(samples_to_write);
-
-      do_fade(
-          t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-          t.offset.impl, samples_to_write);
     }
   }
 };

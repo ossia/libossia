@@ -14,9 +14,9 @@ struct rubberband_stretcher
   rubberband_stretcher(RubberBand::RubberBandStretcher::PresetOption opt, std::size_t channels, std::size_t sampleRate)
     : m_rubberBand{sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt}
   {
-    std::cerr << "construicting with : " << channels << std::endl;
 
   }
+
   RubberBand::RubberBandStretcher m_rubberBand;
 
   void run(
@@ -29,10 +29,10 @@ struct rubberband_stretcher
       const int64_t samples_to_write,
       ossia::audio_port& ap) noexcept
   {
-    const double r = 1.0/t.speed;
+    const double r = 1.0 / t.speed;
     if(r != m_rubberBand.getTimeRatio())
     {
-      m_rubberBand.setTimeRatio(1.0 / t.speed);
+      m_rubberBand.setTimeRatio(r);
     }
 
     if (t.date > t.prev_date)
@@ -90,15 +90,10 @@ struct rubberband_stretcher
 
       for (std::size_t i = 0; i < chan; i++)
       {
-        ap.samples[i].resize(t.offset.impl + samples_to_write);
         for (int64_t j = 0; j < samples_to_write; j++)
         {
-          ap.samples[i][j + t.offset.impl]
-              = double(output[i][j]);
+          ap.samples[i][j + t.offset.impl] = double(output[i][j]);
         }
-        do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-            t.offset.impl, samples_to_read);
       }
     }
     else
