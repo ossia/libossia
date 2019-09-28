@@ -159,6 +159,16 @@ public:
   ~wrapped_device()
   {
     // TODO c.f. generic_device
+    this->remove_parameter();
+
+    m_protocol->stop();
+
+    {
+      write_lock_t lock{this->m_mutex};
+      this->m_children.clear();
+    }
+
+    m_protocol.reset();
   }
 };
 }
