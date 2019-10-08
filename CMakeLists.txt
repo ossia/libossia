@@ -20,7 +20,7 @@ find_package(Threads)
 find_package(Qt5 5.3 COMPONENTS Core)
 
 # Options
-set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE "" INTERNAL)
+set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE PATH "" INTERNAL)
 include(OssiaOptions)
 
 # Dependencies
