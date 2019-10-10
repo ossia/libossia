@@ -32,7 +32,10 @@ public:
     m_runThread = std::thread{[=] {
       using clk = std::chrono::high_resolution_clock;
       clk::time_point start = clk::now();
+      auto orig_start = start;
       auto end = start;
+      int64_t ns_total = 0;
+      int64_t ns_delta = 0;
       while (m_active)
       {
         // TODO condition variables for the sleeping instead
@@ -49,6 +52,11 @@ public:
             auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
                           end - start)
                           .count();
+            ns += ns_delta;
+            ns_total += ns;
+
+            ns_delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - orig_start).count() - ns_total;
+
             int samples = std::ceil(double(m_rate) * ns / 1e9);
             proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
             proto->audio_tick(m_bs, 0);
