@@ -2,6 +2,7 @@ image: Visual Studio 2019
 
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
+  BOOST_ROOT: C:/Libraries/boost_1_71_0
   DEKEN_PASSWORD:
     secure: J57LV7zrVl8xsXC/ng0TgA==
   GPG_DECODE_KEY:
