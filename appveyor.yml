@@ -1,4 +1,4 @@
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 environment:
   CTEST_OUTPUT_ON_FAILURE: 1
@@ -11,17 +11,17 @@ environment:
     - APPVEYOR_BUILD_TYPE: testing
       platform: x64
       configuration: Debug
-      QTDIR: C:\Qt\5.12\msvc2017_64
+      QTDIR: C:\Qt\5.13\msvc2017_64
 
     - APPVEYOR_BUILD_TYPE: testing
       platform: x64
       configuration: Release
-      QTDIR: C:\Qt\5.12\msvc2017_64
+      QTDIR: C:\Qt\5.13\msvc2017_64
 
     - APPVEYOR_BUILD_TYPE: Release
       configuration: Release
-      QTDIR: C:\Qt\5.12\msvc2017_64
-      QTDIR-32bit: C:\Qt\5.12\msvc2015
+      QTDIR: C:\Qt\5.13\msvc2017_64
+      QTDIR-32bit: C:\Qt\5.12\msvc2017
 
     - APPVEYOR_BUILD_TYPE: ossia-cpp
       configuration: Release
@@ -43,7 +43,7 @@ environment:
 
     - APPVEYOR_BUILD_TYPE: pd-test
       configuration: Debug
-      QTDIR-32bit: C:\Qt\5.12\msvc2015
+      QTDIR-32bit: C:\Qt\5.13\msvc2017
 
     - APPVEYOR_BUILD_TYPE: max
       configuration: Release
@@ -70,7 +70,7 @@ environment:
 
     - APPVEYOR_BUILD_TYPE: qml
       configuration: Release
-      QTDIR: C:\Qt\5.12\msvc2017_64
+      QTDIR: C:\Qt\5.13\msvc2017_64
       platform: x64
 
 before_build:
