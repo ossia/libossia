@@ -1,6 +1,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <iostream>
 int main()
 {
   using namespace ossia;

@@ -25,7 +25,10 @@ struct tick_all_nodes_bench
       ossia::time_value new_t{e.samples_since_start};
 
       for(auto& node : g.get_nodes())
-        node->request(ossia::token_request{old_t, new_t});
+      {
+        using namespace ossia;
+        node->request(ossia::simple_token_request{old_t, new_t});
+      }
 
       g.state(e);
       e.commit();

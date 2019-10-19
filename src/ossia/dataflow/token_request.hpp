@@ -64,6 +64,7 @@ struct token_request
       }
     }
   }
+
 /*
   constexpr token_request(
       ossia::time_value prev_d, ossia::time_value d, double pos,
@@ -134,4 +135,14 @@ inline bool operator!=(const token_request& lhs, const token_request& rhs)
 {
   return !(lhs == rhs);
 }
+
+// To be used only for simple examples
+struct simple_token_request : token_request
+{
+  using token_request::token_request;
+  simple_token_request(ossia::time_value prev_d, ossia::time_value d):
+    ossia::token_request{prev_d, d, 0_tv, 0_tv, 1.0, {4,4}, 120.}
+  {
+  }
+};
 }
