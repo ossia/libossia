@@ -3,7 +3,6 @@
 #include <ossia/network/dataspace/dataspace_base.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <brigand/algorithms/fold.hpp>
 namespace ossia
 {
 

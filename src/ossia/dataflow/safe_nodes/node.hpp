@@ -3,9 +3,8 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_map.hpp>
 
-#include <brigand/algorithms/index_of.hpp>
 #include <brigand/algorithms/transform.hpp>
-#include <brigand/sequences/list.hpp>
+#include <brigand/types/args.hpp>
 
 #include <array>
 #include <tuple>
