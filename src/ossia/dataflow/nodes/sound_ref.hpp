@@ -60,6 +60,19 @@ public:
     }
   }
 
+  ossia::audio_span<float> fetch_audio(int64_t start, int64_t dur) const noexcept
+  {
+    if(start >= m_data[0].size())
+      return {};
+
+    auto source = m_data;
+    for(auto& chan : source)
+    {
+      chan = {chan.data() + start, chan.size() - start};
+    }
+    return source;
+  }
+
   void
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
@@ -83,7 +96,7 @@ public:
       ap.samples[i].resize(t.offset.impl + samples_to_write);
     }
 
-    m_resampler.run(m_data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+    m_resampler.run(*this, t, e, chan, len, samples_to_read, samples_to_write, ap);
 
     for(std::size_t i = 0; i < chan; i++)
     {
@@ -106,7 +119,7 @@ public:
   }
 
 private:
-  audio_span m_data;
+  audio_span<float> m_data;
   resampler m_resampler;
   ossia::outlet audio_out{ossia::audio_port{}};
 

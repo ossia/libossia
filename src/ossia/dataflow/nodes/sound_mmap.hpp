@@ -12,6 +12,7 @@
 
 namespace ossia::nodes
 {
+
 class sound_mmap final : public ossia::nonowning_graph_node
 {
 public:
@@ -28,6 +29,7 @@ public:
   {
     start = v;
   }
+
   void set_upmix(std::size_t v)
   {
     upmix = v;
@@ -75,7 +77,7 @@ public:
           break;
       }
     }
-    m_resampler.reset(0_tv, m_mode, hdl.channels(), hdl.sampleRate());
+    m_resampler.reset(0_tv, m_mode, m_handle.channels(), m_handle.sampleRate());
   }
 
   void set_native_tempo(double v)
@@ -97,6 +99,49 @@ public:
     m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
   }
 
+  ossia::audio_span<float> fetch_audio(int64_t start, int64_t dur) noexcept
+  {
+    // Read data into the allocated space
+    // TODO if(current_pcm_frame != start)
+
+    const auto N = channels();
+    ossia::audio_span<float> ret(N);
+
+    m_handle.seek_to_pcm_frame(start);
+
+    const auto bytes_to_allocate = sizeof(double) * dur * N;
+    if(bytes_to_allocate < 300000)
+    {
+      frame_data = alloca(bytes_to_allocate);
+    }
+    else
+    {
+      m_safetyBuffer.resize(bytes_to_allocate); // TODO pector
+      frame_data = m_safetyBuffer.data();
+    }
+
+    auto count = m_handle.read_pcm_frames(dur, frame_data);
+    if(count == 0)
+    {
+      ret.clear();
+      return ret;
+    }
+    ossia::mutable_audio_span<float> source(N);
+
+    m_resampleBuffer.resize(N);
+    for(int i = 0; i < N; i++)
+    {
+      m_resampleBuffer[i].resize(count);
+      source[i] = gsl::span(m_resampleBuffer[i].data(), count);
+      ret[i] = gsl::span(m_resampleBuffer[i].data(), count);
+    }
+
+    // go from the native wav format to float or double
+    m_converter(source, frame_data, count);
+
+    return ret;
+  }
+
 
   void
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
@@ -114,36 +159,28 @@ public:
     if (samples_to_read <= 0)
       return;
 
+
     if (t.date > t.prev_date)
     {
       const bool ok = m_handle.seek_to_pcm_frame(t.prev_date.impl);
       if(!ok)
         return;
 
-      void* data = nullptr;
-      const auto bytes_to_allocate = sizeof(double) * samples_to_read * channels;
-      if(bytes_to_allocate < 300000)
+      // Allocate some space
+      frame_data = nullptr;
+
+      for (std::size_t chan = 0; chan < channels; chan++)
       {
-        data = alloca(bytes_to_allocate);
-      }
-      else
-      {
-        m_safetyBuffer.resize(bytes_to_allocate); // TODO pector
-        data = m_safetyBuffer.data();
+        ap.samples[chan].resize(t.offset.impl + samples_to_write);
       }
 
-      auto count = m_handle.read_pcm_frames(samples_to_read, data);
+      // resample
+      m_resampler.run(*this, t, e, channels, len, samples_to_read, samples_to_write, ap);
 
-      for (std::size_t i = 0; i < channels; i++)
+      for (std::size_t chan = 0; chan < channels; chan++)
       {
-        ap.samples[i].resize(samples_to_read + t.offset.impl);
-      }
-
-      m_converter(ap, t, data, count);
-
-      for (std::size_t i = 0; i < channels; i++)
-      {
-        snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+        // fade
+        snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[chan],
                      t.offset.impl, samples_to_read);
       }
     }
@@ -175,9 +212,11 @@ private:
   std::size_t upmix{};
   double tempo{};
 
-  using read_fn_t = void(*)(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples);
+  using read_fn_t = void(*)(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples);
   read_fn_t m_converter{};
   std::vector<char> m_safetyBuffer;
+  std::vector<std::vector<float>> m_resampleBuffer;
+  void* frame_data{};
 
   resampler m_resampler;
   audio_stretch_mode m_mode{};

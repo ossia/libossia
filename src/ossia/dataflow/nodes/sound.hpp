@@ -53,25 +53,25 @@ constexpr audio_sample convert_sample<float, 32>(float i)
   return i;
 }
 
-inline void read_s16(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
+inline void read_s16(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
 {
-  const auto channels = ap.samples.size();
+  const auto channels = ap.size();
   auto d = reinterpret_cast<int16_t*>(data);
 
   for (int64_t j = 0; j < samples; j++)
   {
     for (std::size_t i = 0; i < channels; i++)
     {
-      ap.samples[i][j + t.offset.impl]
+      ap[i][j]
           = convert_sample<int16_t, 16>(d[j * channels + i]);
     }
   }
 }
 
 
-inline void read_s24(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
+inline void read_s24(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
 {
-  const auto channels = ap.samples.size();
+  const auto channels = ap.size();
   const auto frame_bytes = channels * 3;
 
   auto bytes = reinterpret_cast<uint8_t*>(data);
@@ -84,51 +84,51 @@ inline void read_s24(ossia::audio_port& ap, const ossia::token_request& t, void*
       sample += (bytes[3 * i + 1] << 16);
       sample += (bytes[3 * i + 2] << 24);
 
-      ap.samples[i][j + t.offset.impl]
+      ap[i][j]
           = convert_sample<int32_t, 24>(sample);
     }
     bytes += frame_bytes;
   }
 }
 
-inline void read_s32(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
+inline void read_s32(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
 {
-  const auto channels = ap.samples.size();
+  const auto channels = ap.size();
   auto d = reinterpret_cast<int32_t*>(data);
 
   for (int64_t j = 0; j < samples; j++)
   {
     for (std::size_t i = 0; i < channels; i++)
     {
-      ap.samples[i][j + t.offset.impl] = convert_sample<int32_t, 32>(d[j * channels + i]);
+      ap[i][j] = convert_sample<int32_t, 32>(d[j * channels + i]);
     }
   }
 }
 
-inline void read_f32(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
+inline void read_f32(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
 {
-  const auto channels = ap.samples.size();
+  const auto channels = ap.size();
   auto d = reinterpret_cast<float*>(data);
 
   for (int64_t j = 0; j < samples; j++)
   {
     for (std::size_t i = 0; i < channels; i++)
     {
-      ap.samples[i][j + t.offset.impl] = d[j * channels + i];
+      ap[i][j] = d[j * channels + i];
     }
   }
 }
 
-inline void read_f64(ossia::audio_port& ap, const ossia::token_request& t, void* data, int64_t samples)
+inline void read_f64(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
 {
-  const auto channels = ap.samples.size();
+  const auto channels = ap.size();
   auto d = reinterpret_cast<double*>(data);
 
   for (int64_t j = 0; j < samples; j++)
   {
     for (std::size_t i = 0; i < channels; i++)
     {
-      ap.samples[i][j + t.offset.impl] = d[j * channels + i];
+      ap[i][j] = d[j * channels + i];
     }
   }
 }
@@ -249,7 +249,7 @@ struct resampler
     {
       case audio_stretch_mode::None:
       {
-        m_stretch.emplace<raw_stretcher>();
+        m_stretch.emplace<raw_stretcher>(date.impl);
         break;
       }
       case audio_stretch_mode::Repitch:
@@ -270,8 +270,9 @@ struct resampler
     }
   }
 
+  template<typename T>
   void run(
-      ossia::audio_span& data,
+      T& audio_fetcher,
       const ossia::token_request& t,
       ossia::exec_state_facade e,
       std::size_t chan,
@@ -284,17 +285,17 @@ struct resampler
     {
       case 0:
       {
-        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
         return;
       }
       case 1:
       {
-        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
         break;
       }
       case 2:
       {
-        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(data, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
         break;
       }
     }

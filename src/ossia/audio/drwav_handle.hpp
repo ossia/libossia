@@ -21,7 +21,7 @@ public:
 
   drwav_handle(const drwav_handle& other) noexcept
   {
-    if(other.impl->memoryStream.data)
+    if(other.impl && other.impl->memoryStream.data)
     {
       impl = drwav_open_memory(other.impl->memoryStream.data, other.impl->memoryStream.dataSize);
     }

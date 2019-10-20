@@ -50,9 +50,12 @@ struct repitch_stretcher
   }
 
   std::vector<resample_channel> repitchers;
+  int64_t num_samples_written = 0;
+  int64_t next_sample_to_read = 0;
 
+  template<typename T>
   void run(
-      ossia::audio_span& data,
+      T& audio_fetcher,
       const ossia::token_request& t,
       ossia::exec_state_facade e,
       const std::size_t chan,
@@ -61,18 +64,27 @@ struct repitch_stretcher
       const int64_t samples_to_write,
       ossia::audio_port& ap) noexcept
   {
+    assert(chan > 0);
+
     auto input = (float*) alloca(sizeof(float) * samples_to_read);
     auto output = (float*) alloca(sizeof(float) * samples_to_write);
 
-    for (std::size_t i = 0; i < chan; ++i)
+    num_samples_written = repitchers[0].data.size();
+    next_sample_to_read = repitchers[0].next_sample_to_read;
+    while(num_samples_written < samples_to_write)
     {
-      auto& source_channel = data[i];
+      auto read_start = !repitchers.empty() ? repitchers[0].next_sample_to_read : t.prev_date;
 
-      for(int64_t j = 0; j < samples_to_read; j++)
-        input[j] = float(source_channel[j + t.prev_date]);
-
-      while(int64_t(repitchers[i].data.size()) < samples_to_write)
+      auto data = audio_fetcher.fetch_audio(read_start, samples_to_read);
+      if(data.empty())
+        return;
+      for (std::size_t i = 0; i < chan; ++i)
       {
+        auto& source_channel = data[i];
+
+        for(int64_t j = 0; j < samples_to_read; j++)
+          input[j] = float(source_channel[j]);
+
         const int64_t n = repitchers[i].next_sample_to_read;
 
         SRC_DATA data;
@@ -88,7 +100,7 @@ struct repitch_stretcher
         if(n + samples_to_read < len)
         {
           for(int j = 0; j < samples_to_read; j++)
-            input[j] = float(source_channel[j + n]);
+            input[j] = float(source_channel[j]);
 
           data.end_of_input = 0;
         }
@@ -96,7 +108,7 @@ struct repitch_stretcher
         {
           const int64_t max_samples_to_read = len - n;
           for(int64_t j = 0; j < max_samples_to_read; j++)
-            input[j] = float(source_channel[j + n]);
+            input[j] = float(source_channel[j]);
           for(int64_t j = max_samples_to_read; j < samples_to_read; j++)
             input[j] = 0.f;
           data.end_of_input = 1;
@@ -111,7 +123,12 @@ struct repitch_stretcher
 
         repitchers[i].next_sample_to_read += data.input_frames_used;
       }
+      num_samples_written = repitchers[0].data.size();
+      next_sample_to_read = repitchers[0].next_sample_to_read;
+    }
 
+    for(std::size_t i = 0; i < chan; ++i)
+    {
       auto it = repitchers[i].data.begin();
       for(int j = 0; j < samples_to_write; j++)
       {
@@ -121,6 +138,7 @@ struct repitch_stretcher
 
       repitchers[i].data.erase_begin(samples_to_write);
     }
+
   }
 };
 }

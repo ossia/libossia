@@ -9,8 +9,21 @@ namespace ossia
 
 struct raw_stretcher
 {
+  int64_t cur_pos{};
+  raw_stretcher() noexcept = default;
+  raw_stretcher(const raw_stretcher&) noexcept = default;
+  raw_stretcher(raw_stretcher&&) noexcept = default;
+  raw_stretcher& operator=(const raw_stretcher&) noexcept = default;
+  raw_stretcher& operator=(raw_stretcher&&) noexcept = default;
+  raw_stretcher(int64_t pos) noexcept
+    : cur_pos{pos}
+  {
+
+  }
+
+  template<typename T>
   void run(
-      const ossia::audio_span& data,
+      T& audio_fetcher,
       const ossia::token_request& t,
       const ossia::exec_state_facade e,
       const std::size_t chan,
@@ -22,14 +35,18 @@ struct raw_stretcher
   {
     if (t.date > t.prev_date)
     {
-      const int64_t read_max = std::min(t.prev_date.impl + samples_to_write, len);
+      auto data = audio_fetcher.fetch_audio(cur_pos, samples_to_write);
+      if(data.empty())
+        return;
+      cur_pos += samples_to_write;
+
       for (std::size_t i = 0; i < chan; i++)
       {
-        const float* input = data[i].data();
+        const auto* input = data[i].data();
         double* output = ap.samples[i].data();
-        for (int64_t j = t.prev_date; j < read_max; j++)
+        for (int64_t j = 0; j < samples_to_write; j++)
         {
-          output[j - t.prev_date + t.offset.impl] = input[j];
+          output[j + t.offset.impl] = input[j];
         }
       }
     }

@@ -19,8 +19,9 @@ struct rubberband_stretcher
 
   RubberBand::RubberBandStretcher m_rubberBand;
 
+  template<typename T>
   void run(
-      ossia::audio_span& data,
+      T& audio_fetcher,
       const ossia::token_request& t,
       ossia::exec_state_facade e,
       const std::size_t chan,
@@ -37,17 +38,21 @@ struct rubberband_stretcher
 
     if (t.date > t.prev_date)
     {
+      // TODO : if T::sample_type == float we could leverage it directly as input
       float** const input = (float**)alloca(sizeof(float*) * chan);
       float** const output = (float**)alloca(sizeof(float*) * chan);
 
+      auto data = audio_fetcher.fetch_audio(t.prev_date, samples_to_read);
+      if(data.empty())
+        return;
       for(std::size_t i = 0; i < chan; i++)
       {
         input[i] = (float*) alloca(sizeof(float) * samples_to_read);
-        for(int j = 0; j <samples_to_read; j++)
-          input[i][j] = float(data[i][j + t.prev_date]);
+        for(int j = 0; j < samples_to_read; j++)
+          input[i][j] = float(data[i][j]);
 
         output[i] = (float*) alloca(sizeof(float) * samples_to_write);
-        for(int j = 0; j <samples_to_write; j++)
+        for(int j = 0; j < samples_to_write; j++)
           output[i][j] = 0.f;
       }
 
@@ -58,19 +63,23 @@ struct rubberband_stretcher
       while (m_rubberBand.available() < samples_to_write || m_rubberBand.getSamplesRequired() > 0)
       {
         const auto new_start = n * samples_to_read + t.prev_date;
+        data = audio_fetcher.fetch_audio(new_start, samples_to_read);
+        if(data.empty())
+          return;
+
         const int max = len - new_start;
         if(max > 0)
         {
           for(std::size_t i = 0; i < chan; i++)
             for(int j = 0; j <samples_to_read; j++)
-              input[i][j] = float(data[i][new_start + j]);
+              input[i][j] = float(data[i][j]);
         }
         else if(samples_to_read + max > 0)
         {
           for(std::size_t i = 0; i < chan; i++)
           {
             for(int j = 0; j < samples_to_read + max; j++)
-              input[i][j] = float(data[i][new_start + j]);
+              input[i][j] = float(data[i][j]);
             for(int j = samples_to_read + max; j < samples_to_read; j++)
               input[i][j] = 0.f;
           }
