@@ -43,7 +43,7 @@ struct token_request
 
     while (tick_amount > 0)
     {
-      const auto cur_from = orig_from % loop_duration;
+      const auto cur_from = orig_from.impl % loop_duration.impl;
       if (cur_from + tick_amount < loop_duration)
       {
         other.prev_date = cur_from + start_offset;

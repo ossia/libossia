@@ -312,10 +312,13 @@ operator()(bounding_mode b, std::array<float, N> val) const
 value list_clamp::
 operator()(bounding_mode b, const std::vector<ossia::value>& val) const
 {
-  if (b == bounding_mode::FREE)
-    return val;
-
   std::vector<ossia::value> res;
+  if (b == bounding_mode::FREE)
+  {
+    res = val;
+    return res;
+  }
+
 
   // We handle values by checking component by component
   const auto& values = domain.values;
@@ -428,7 +431,7 @@ operator()(bounding_mode b, const std::vector<ossia::value>& val) const
       res[i] = val[i];
     }
   }
-  return std::move(res);
+  return res;
 }
 
 template <>
@@ -468,10 +471,12 @@ operator()(bounding_mode b, std::array<float, N> val) const
 value list_clamp::
 operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
-  if (b == bounding_mode::FREE)
-    return val;
-
   std::vector<ossia::value> res;
+  if (b == bounding_mode::FREE)
+  {
+    res = val;
+    return res;
+  }
 
   // We handle values by checking component by component
 
@@ -583,16 +588,18 @@ operator()(bounding_mode b, std::vector<ossia::value>&& val) const
       res[i] = std::move(val[i]);
     }
   }
-  return std::move(res);
+  return res;
 }
 
 template <std::size_t N>
 value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
 {
-  if (b == bounding_mode::FREE)
-    return val;
-
   std::array<float, N> res{};
+  if (b == bounding_mode::FREE)
+  {
+    res = val;
+    return res;
+  }
 
   // We handle values by checking component by component
   const auto& min = domain.min;
@@ -667,7 +674,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
       }
     }
   }
-  return std::move(res);
+  return res;
 }
 
 value generic_clamp::operator()(bounding_mode b, const value& v) const
