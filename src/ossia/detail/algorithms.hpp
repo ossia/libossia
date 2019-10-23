@@ -179,6 +179,16 @@ void copy_if(const Vector1& source, Vector2& destination, Pred predicate)
       predicate);
 }
 
+template <typename T, typename K>
+auto last_before(T&& container, const K& k)
+{
+  auto it = container.upper_bound(k);
+  if (it != container.begin()) {
+    std::advance(it, -1);
+  }
+  return it;
+}
+
 // http://stackoverflow.com/a/26902803/1495627
 template <class F, class... Ts, std::size_t... Is>
 void for_each_in_tuple(
