@@ -223,7 +223,6 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
 
   if (N > 0)
   {
-    std::cerr << m_globalSpeed << std::endl;
     ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
     tok.musical_last_bar = this->m_musical_last_bar;
     tok.musical_position = this->m_musical_position;
