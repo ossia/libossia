@@ -13,7 +13,7 @@
 namespace ossia::nodes
 {
 
-class sound_mmap final : public ossia::nonowning_graph_node
+class sound_mmap final : public ossia::sound_node
 {
 public:
   sound_mmap()
@@ -94,11 +94,16 @@ public:
     }
   }
 
-  void reset_resampler(time_value date)
+  void reset_resampler(time_value date) override
   {
     m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
   }
 
+  template<typename T>
+  void fetch_audio(int64_t start, int64_t dur, T** audio_array) const noexcept
+  {
+
+  }
   ossia::audio_span<float> fetch_audio(int64_t start, int64_t dur) noexcept
   {
     // Read data into the allocated space
@@ -107,7 +112,11 @@ public:
     const auto N = channels();
     ossia::audio_span<float> ret(N);
 
-    m_handle.seek_to_pcm_frame(start);
+    const bool ok = m_handle.seek_to_pcm_frame(start);
+    if(!ok) {
+      ret.clear();
+      return ret;
+    }
 
     const auto bytes_to_allocate = sizeof(double) * dur * N;
     if(bytes_to_allocate < 300000)
@@ -142,7 +151,6 @@ public:
     return ret;
   }
 
-
   void
   run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
   {
@@ -159,13 +167,8 @@ public:
     if (samples_to_read <= 0)
       return;
 
-
-    if (t.date > t.prev_date)
+    if (t.speed > 0)
     {
-      const bool ok = m_handle.seek_to_pcm_frame(t.prev_date.impl);
-      if(!ok)
-        return;
-
       // Allocate some space
       frame_data = nullptr;
 
@@ -183,6 +186,9 @@ public:
         snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[chan],
                      t.offset.impl, samples_to_read);
       }
+
+      ossia::snd::perform_upmix(this->upmix, channels, ap);
+      ossia::snd::perform_start_offset(this->start, ap);
     }
     else
     {
@@ -191,8 +197,6 @@ public:
     }
 
 
-    ossia::snd::perform_upmix(this->upmix, channels, ap);
-    ossia::snd::perform_start_offset(this->start, ap);
   }
   std::size_t channels() const
   {

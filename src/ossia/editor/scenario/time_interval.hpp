@@ -19,6 +19,7 @@ struct token_request;
 class time_event;
 class time_process;
 class graph_node;
+using quarter_note = double;
 
 using time_signature_map = ossia::flat_map<ossia::time_value, time_signature>;
 using tempo_curve = ossia::curve<int64_t, double>;
@@ -55,10 +56,17 @@ public:
   {
     m_offset = g;
   }
+
   void set_speed(double g)
   {
     m_speed = g;
-    m_globalSpeed = g * m_speed;
+    m_globalSpeed = m_parentSpeed * m_speed;
+  }
+
+  void set_parent_speed(double sp)
+  {
+    m_parentSpeed = sp;
+    m_globalSpeed = m_parentSpeed * m_speed;
   }
 
   void tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
@@ -189,12 +197,6 @@ public:
     return m_processes;
   }
 
-  void set_parent_speed(double sp)
-  {
-    m_parentSpeed = sp;
-    m_globalSpeed = m_parentSpeed * m_speed;
-  }
-
   void cleanup();
   void mute(bool);
 
@@ -238,7 +240,11 @@ private:
   double m_current_tempo{};
 
   time_signature_map m_timeSignature{};
-  tempo_curve m_tempoCurve;
+  tempo_curve m_tempoCurve{};
+
+  ossia::quarter_note m_musical_last_bar{};
+  ossia::quarter_note m_musical_position{};
+
   double m_speed{1.};         /// tick length is multiplied by this
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};

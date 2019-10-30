@@ -64,8 +64,9 @@ private:
   ossia::ptr_map<const time_interval*, graph_t::edge_descriptor> edges;
 };
 
-class OSSIA_EXPORT scenario final : public time_process
+class OSSIA_EXPORT scenario final : public looping_process<scenario>
 {
+  friend class looping_process<scenario>;
 public:
   scenario();
   ~scenario() override;
@@ -105,7 +106,7 @@ private:
   friend struct scenario_graph;
   void offset_impl(ossia::time_value) override;
 
-  void state_impl(ossia::token_request req) override;
+  void state_impl(const ossia::token_request& req);
 
   void start() override;
   void stop() override;

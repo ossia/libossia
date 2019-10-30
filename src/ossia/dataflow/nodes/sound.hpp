@@ -225,18 +225,54 @@ void do_fade(
 
 }
 
-template<typename SoundNode_T>
+template<typename T>
+struct at_end
+{
+  T func;
+  at_end(T t): func{t} { }
+  ~at_end() { func(); }
+};
+
+class sound_node : public ossia::nonowning_graph_node
+{
+public:
+  void set_loop_info(ossia::time_value loop_duration, ossia::time_value start_offset, bool loops)
+  {
+    m_loop_duration = loop_duration;
+    m_start_offset = start_offset;
+    m_loops = loops;
+  }
+  virtual void reset_resampler(time_value date) = 0;
+
+protected:
+  time_value m_loop_duration{};
+  time_value m_start_offset{};
+  bool m_loops{};
+};
+
 class sound_process
     : public ossia::node_process
 {
+public:
+  using ossia::node_process::node_process;
 protected:
+  void state(const ossia::token_request& req) override
+  {
+    static_cast<sound_node&>(*this->node).set_loop_info(m_loop_duration, m_start_offset, m_loops);
+
+    // Start offset and looping are done manually inside the sound nodes
+    // since it is much more efficient in this case
+    // (see fetch_audio)
+    node->request(req);
+  }
+
   void offset_impl(time_value date) override
   {
-    static_cast<SoundNode_T&>(*this->node).reset_resampler(date);
+    static_cast<sound_node&>(*this->node).reset_resampler(date);
   }
   void transport_impl(time_value date) override
   {
-    static_cast<SoundNode_T&>(*this->node).reset_resampler(date);
+    static_cast<sound_node&>(*this->node).reset_resampler(date);
   }
 };
 
@@ -254,17 +290,17 @@ struct resampler
       }
       case audio_stretch_mode::Repitch:
       {
-        m_stretch.emplace<repitch_stretcher>(channels, 1024);
+        m_stretch.emplace<repitch_stretcher>(channels, 1024, date.impl);
         break;
       }
       case audio_stretch_mode::RubberBandStandard:
       {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate);
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate, date.impl);
         break;
       }
       case audio_stretch_mode::RubberBandPercussive:
       {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate);
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate, date.impl);
         break;
       }
     }

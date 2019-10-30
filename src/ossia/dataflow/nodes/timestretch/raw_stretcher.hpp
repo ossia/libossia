@@ -9,14 +9,14 @@ namespace ossia
 
 struct raw_stretcher
 {
-  int64_t cur_pos{};
+  int64_t next_sample_to_read{};
   raw_stretcher() noexcept = default;
   raw_stretcher(const raw_stretcher&) noexcept = default;
   raw_stretcher(raw_stretcher&&) noexcept = default;
   raw_stretcher& operator=(const raw_stretcher&) noexcept = default;
   raw_stretcher& operator=(raw_stretcher&&) noexcept = default;
   raw_stretcher(int64_t pos) noexcept
-    : cur_pos{pos}
+    : next_sample_to_read{pos}
   {
 
   }
@@ -35,39 +35,16 @@ struct raw_stretcher
   {
     if (t.date > t.prev_date)
     {
-      auto data = audio_fetcher.fetch_audio(cur_pos, samples_to_write);
-      if(data.empty())
-        return;
-      cur_pos += samples_to_write;
-
+      double** output = (double**)alloca(sizeof(double*) * chan);
       for (std::size_t i = 0; i < chan; i++)
-      {
-        const auto* input = data[i].data();
-        double* output = ap.samples[i].data();
-        for (int64_t j = 0; j < samples_to_write; j++)
-        {
-          output[j + t.offset.impl] = input[j];
-        }
-      }
+        output[i] = ap.samples[i].data() + t.offset.impl;
+
+      audio_fetcher.fetch_audio(next_sample_to_read, samples_to_write, output);
+      next_sample_to_read += samples_to_write;
     }
     else
     {
-      /*
-      // TODO rewind correctly and add rubberband
-      for (std::size_t i = 0; i < chan; i++)
-      {
-        ap.samples[i].resize(samples_to_read);
-        for (int64_t j = t.prev_date; j < max_N; j++)
-        {
-          ap.samples[i][max_N - (j - t.prev_date) + t.offset.impl]
-              = m_data[i][j];
-        }
-
-        do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.samples[i],
-            max_N + t.offset.impl, t.prev_date + t.offset.impl);
-      }
-      */
+      // TODO
     }
   }
 };

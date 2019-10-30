@@ -5,6 +5,8 @@
 namespace ossia
 {
 
+using quarter_note = double;
+
 struct token_request
 {
   constexpr token_request() noexcept = default;
@@ -110,25 +112,31 @@ struct token_request
     return parent_duration.impl > 0 ? date.impl / double(parent_duration.impl) : 0.;
   }
 
-  ossia::time_value prev_date{};
-  ossia::time_value date{};
-  ossia::time_value parent_duration{};
-  ossia::time_value offset{};
+  ossia::time_value prev_date{}; // Sample we are at
+  ossia::time_value date{}; // Sample we are finishing at
+  ossia::time_value parent_duration{}; // Duration of the parent item of the one being ticked
+  ossia::time_value offset{}; // Position at which to write in the output buffer
   double speed{1.};
   double tempo{120.};
-  time_signature signature{};
+  time_signature signature{}; // Time signature at start
+  ossia::quarter_note musical_last_bar{}; // Position of the last bar start in quarter notes
+  ossia::quarter_note musical_position{}; // Current position in quarter notes
   bool start_discontinuous{};
   bool end_discontinuous{};
 };
 
 inline bool operator==(const token_request& lhs, const token_request& rhs)
 {
-  return lhs.date == rhs.date && lhs.parent_duration == rhs.parent_duration
+  return    lhs.prev_date == rhs.prev_date
+         && lhs.date == rhs.date
+         && lhs.parent_duration == rhs.parent_duration
          && lhs.offset == rhs.offset
          && lhs.speed == rhs.speed
-         && lhs.signature == rhs.signature
-         && lhs.start_discontinuous == rhs.start_discontinuous
          && lhs.tempo == rhs.tempo
+         && lhs.signature == rhs.signature
+         && lhs.musical_last_bar == rhs.musical_last_bar
+         && lhs.musical_position == rhs.musical_position
+         && lhs.start_discontinuous == rhs.start_discontinuous
          && lhs.end_discontinuous == rhs.end_discontinuous;
 }
 inline bool operator!=(const token_request& lhs, const token_request& rhs)

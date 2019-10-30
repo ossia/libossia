@@ -20,20 +20,6 @@ void time_process::transport(time_value date)
   transport_impl(date);
 }
 
-void time_process::state(
-    ossia::token_request tok
-    )
-{
-  if(!m_loops)
-  {
-    state_impl(tok.add_offset(m_start_offset));
-  }
-  else
-  {
-    tok.loop(m_start_offset, m_loop_duration, [this] (auto tr) { state_impl(tr); });
-  }
-}
-
 void time_process::start()
 {
 }

@@ -22,7 +22,7 @@ class graph;
  * Then the main interval executes.
  * Then the end time_sync is checked.
  */
-class OSSIA_EXPORT loop final : public time_process
+class OSSIA_EXPORT loop final : public looping_process<loop>
 {
 public:
   /*! factory
@@ -66,7 +66,7 @@ public:
 
   void transport_impl(ossia::time_value offset) override;
   void offset_impl(ossia::time_value) override;
-  void state_impl(ossia::token_request) override;
+  void state_impl(ossia::token_request);
 
 private:
   bool process_sync(

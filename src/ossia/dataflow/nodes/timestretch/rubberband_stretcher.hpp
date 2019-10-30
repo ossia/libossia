@@ -11,12 +11,19 @@ namespace ossia
 
 struct rubberband_stretcher
 {
-  rubberband_stretcher(RubberBand::RubberBandStretcher::PresetOption opt, std::size_t channels, std::size_t sampleRate)
+  rubberband_stretcher(
+      RubberBand::RubberBandStretcher::PresetOption opt,
+      std::size_t channels,
+      std::size_t sampleRate,
+      int64_t pos)
     : m_rubberBand{sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt}
+    , next_sample_to_read{pos}
+
   {
 
   }
 
+  int64_t next_sample_to_read = 0;
   RubberBand::RubberBandStretcher m_rubberBand;
 
   template<typename T>
@@ -26,7 +33,7 @@ struct rubberband_stretcher
       ossia::exec_state_facade e,
       const std::size_t chan,
       const std::size_t len,
-      const int64_t samples_to_read,
+      int64_t samples_to_read,
       const int64_t samples_to_write,
       ossia::audio_port& ap) noexcept
   {
@@ -41,58 +48,20 @@ struct rubberband_stretcher
       // TODO : if T::sample_type == float we could leverage it directly as input
       float** const input = (float**)alloca(sizeof(float*) * chan);
       float** const output = (float**)alloca(sizeof(float*) * chan);
-
-      auto data = audio_fetcher.fetch_audio(t.prev_date, samples_to_read);
-      if(data.empty())
-        return;
-      for(std::size_t i = 0; i < chan; i++)
+      for(int i = 0; i < chan; i++)
       {
-        input[i] = (float*) alloca(sizeof(float) * samples_to_read);
-        for(int j = 0; j < samples_to_read; j++)
-          input[i][j] = float(data[i][j]);
-
+        input[i] =  (float*) alloca(sizeof(float) * samples_to_read);
         output[i] = (float*) alloca(sizeof(float) * samples_to_write);
-        for(int j = 0; j < samples_to_write; j++)
-          output[i][j] = 0.f;
       }
 
-      int n = 1;
-
-      m_rubberBand.process(input, samples_to_read, false);
-
-      while (m_rubberBand.available() < samples_to_write || m_rubberBand.getSamplesRequired() > 0)
+      while (m_rubberBand.available() < samples_to_write)
       {
-        const auto new_start = n * samples_to_read + t.prev_date;
-        data = audio_fetcher.fetch_audio(new_start, samples_to_read);
-        if(data.empty())
-          return;
-
-        const int max = len - new_start;
-        if(max > 0)
-        {
-          for(std::size_t i = 0; i < chan; i++)
-            for(int j = 0; j <samples_to_read; j++)
-              input[i][j] = float(data[i][j]);
-        }
-        else if(samples_to_read + max > 0)
-        {
-          for(std::size_t i = 0; i < chan; i++)
-          {
-            for(int j = 0; j < samples_to_read + max; j++)
-              input[i][j] = float(data[i][j]);
-            for(int j = samples_to_read + max; j < samples_to_read; j++)
-              input[i][j] = 0.f;
-          }
-        }
-        else
-        {
-          for(std::size_t i = 0; i < chan; i++)
-            for(int j = 0 ; j < samples_to_read; j++)
-              input[i][j] = 0.f;
-        }
-        n++;
+        audio_fetcher.fetch_audio(next_sample_to_read, samples_to_read, input);
 
         m_rubberBand.process(input, samples_to_read, false);
+
+        next_sample_to_read += samples_to_read;
+        samples_to_read = 16;
       }
 
       m_rubberBand.retrieve(output, std::min((int)samples_to_write, m_rubberBand.available()));

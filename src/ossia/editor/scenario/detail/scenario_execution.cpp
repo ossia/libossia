@@ -353,7 +353,7 @@ ossia::time_value clamp_zero(ossia::time_value t)
 }
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-void scenario::state_impl(ossia::token_request req)
+void scenario::state_impl(const ossia::token_request& req)
 {
   node->request(req);
   // ossia::logger().info("scenario::state starts");

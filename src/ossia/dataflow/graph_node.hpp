@@ -99,7 +99,7 @@ public:
     m_executed = b;
   }
 
-  void request(ossia::token_request req) noexcept;
+  void request(const ossia::token_request& req) noexcept;
 
   void disable() noexcept
   {

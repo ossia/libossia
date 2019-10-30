@@ -11,7 +11,6 @@
 #include <iostream>
 namespace ossia
 {
-
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date,
     ossia::time_value offset, const ossia::token_request& parent_request)
@@ -19,8 +18,38 @@ void time_interval::tick_impl(
   m_tick_offset = offset;
   m_date = new_date;
 
-  m_current_signature = signature(new_date, parent_request);
-  m_current_tempo = tempo(new_date, parent_request);
+  m_current_signature = signature(old_date, parent_request);
+  m_current_tempo = tempo(old_date, parent_request);
+
+  if(m_hasSignature)
+  {
+    // Compute the amount of bars for each signature change.
+    // We need the exact amount of time that happens between two signature changes.
+
+    // At interval t = 1s, date = sampling frequency. (result of time() function in score)
+    // This is the same referential that the time of the bar changes.
+    // -> date is already tempo-processed, we only need to care about the measure.
+    // -> FS samples is always 0.5 measure at 120
+
+
+    const double quarter_dur = 44100. / 4.;
+    const double num_quarters = old_date / quarter_dur;
+
+    auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
+
+    auto quarters_since_last_measure_change = (old_date - time) / quarter_dur;
+    auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
+    auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
+
+    m_musical_last_bar = (time / quarter_dur + bars_since_last_measure_change);
+    m_musical_position = num_quarters;
+  }
+  else
+  {
+    m_musical_last_bar = parent_request.musical_last_bar;
+    m_musical_position = parent_request.musical_position;
+  }
+
 
   state(old_date, new_date);
   if (m_callback)
@@ -46,6 +75,29 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset, const
 void time_interval::tick_offset_speed_precomputed(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
 {
   tick_impl(m_date, m_date + date.impl, offset, parent_request);
+}
+
+time_signature time_interval::signature(time_value date, const ossia::token_request& parent_request) const noexcept
+{
+  if(m_hasSignature && !m_timeSignature.empty())
+  {
+    auto it = ossia::last_before(m_timeSignature, date);
+    if(it != m_timeSignature.end())
+    {
+      return it->second;
+    }
+  }
+  return parent_request.signature;
+}
+
+double time_interval::tempo(time_value date, const ossia::token_request& parent_request) const noexcept
+{
+  // TODO tempo should be hierarchic
+  if(m_hasTempo)
+  {
+    return m_tempoCurve.value_at(date.impl);
+  }
+  return parent_request.tempo;
 }
 
 std::shared_ptr<time_interval> time_interval::create(
@@ -171,7 +223,10 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
 
   if (N > 0)
   {
-    const ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
+    std::cerr << m_globalSpeed << std::endl;
+    ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
+    tok.musical_last_bar = this->m_musical_last_bar;
+    tok.musical_position = this->m_musical_position;
     node->request(tok);
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
@@ -183,29 +238,6 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
       }
     }
   }
-}
-
-time_signature time_interval::signature(time_value date, const ossia::token_request& parent_request) const noexcept
-{
-  if(m_hasSignature && !m_timeSignature.empty())
-  {
-    auto it = m_timeSignature.lower_bound(date);
-    if(it != m_timeSignature.end())
-    {
-      return it->second;
-    }
-  }
-  return parent_request.signature;
-}
-
-double time_interval::tempo(time_value date, const ossia::token_request& parent_request) const noexcept
-{
-  // TODO tempo should be hierarchic
-  if(m_hasTempo)
-  {
-    return m_tempoCurve.value_at(date.impl);
-  }
-  return parent_request.tempo;
 }
 
 void time_interval::pause()
@@ -370,6 +402,8 @@ void time_interval::set_tempo_curve(optional<tempo_curve> curve)
 
 void time_interval::set_time_signature_map(optional<time_signature_map> map)
 {
-
+  m_hasSignature = bool(map);
+  if(map)
+    m_timeSignature = *std::move(map);
 }
 }

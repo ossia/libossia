@@ -40,7 +40,7 @@ public:
    #time_interval date
    \details don't call state when the parent #time_interval is not running
    */
-  void state(ossia::token_request);
+  virtual void state(const ossia::token_request&) = 0;
 
   /**
    * @brief start
@@ -119,7 +119,6 @@ public:
 protected:
   //! Reimplement this to have a special behaviour on mute
   virtual void mute_impl(bool);
-  virtual void state_impl(ossia::token_request) = 0;
   virtual void offset_impl(ossia::time_value date) = 0;
 
   virtual void transport_impl(ossia::time_value date) = 0;
@@ -129,5 +128,26 @@ protected:
   bool m_loops = false; // TODO bitfields ?
   bool m_unmuted = true;
   bool m_enabled = true;
+};
+
+
+template<typename T>
+class looping_process : public time_process
+{
+public:
+  using time_process::time_process;
+  void state(const ossia::token_request& tok) override
+  {
+    if(!this->m_loops)
+    {
+      static_cast<T*>(this)->state_impl(tok.add_offset(this->m_start_offset));
+    }
+    else
+    {
+      tok.loop(this->m_start_offset,
+               this->m_loop_duration,
+               [this] (const auto& tr) { static_cast<T*>(this)->state_impl(tr); });
+    }
+  }
 };
 }

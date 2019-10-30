@@ -25,10 +25,7 @@ void node_process::transport_impl(time_value date)
 {
 }
 
-void node_process::state_impl(ossia::token_request req)
-{
-  node->request(req);
-}
+
 
 void node_process::start()
 {
@@ -212,7 +209,7 @@ void graph_node::clear() noexcept
   m_outlets.clear();
 }
 
-void graph_node::request(token_request req) noexcept
+void graph_node::request(const token_request& req) noexcept
 {
   /*
   if(std::abs(req.date - req.prev_date) > 1000)

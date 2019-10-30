@@ -5,13 +5,13 @@
 namespace ossia
 {
 
-struct node_chain_process final : public ossia::time_process
+struct node_chain_process final : public looping_process<node_chain_process>
 {
   node_chain_process()
   {
   }
 
-  void state_impl(ossia::token_request req) override
+  void state_impl(const ossia::token_request& req)
   {
     for (auto& node : nodes)
     {
