@@ -29,25 +29,43 @@ void time_interval::tick_impl(
     // At interval t = 1s, date = sampling frequency. (result of time() function in score)
     // This is the same referential that the time of the bar changes.
     // -> date is already tempo-processed, we only need to care about the measure.
-    // -> FS samples is always 0.5 measure at 120
+    // -> FS samples is always 0.5 measure (4/4) at 120
 
 
-    const double quarter_dur = 44100. / 4.;
-    const double num_quarters = old_date / quarter_dur;
+    {
+      const double quarter_dur = 44100. / 4.;
+      const double num_quarters = old_date / quarter_dur;
 
-    auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
+      auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
 
-    auto quarters_since_last_measure_change = (old_date - time) / quarter_dur;
-    auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
-    auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
+      auto quarters_since_last_measure_change = (old_date - time) / quarter_dur;
+      auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
+      auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
-    m_musical_last_bar = (time / quarter_dur + bars_since_last_measure_change);
-    m_musical_position = num_quarters;
+      m_musical_start_last_bar = (time / quarter_dur + bars_since_last_measure_change);
+      m_musical_start_position = num_quarters;
+    }
+
+    {
+      const double quarter_dur = 44100. / 4.;
+      const double num_quarters = new_date / quarter_dur;
+
+      auto [time, sig] = *ossia::last_before(m_timeSignature, new_date);
+
+      auto quarters_since_last_measure_change = (new_date - time) / quarter_dur;
+      auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
+      auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
+
+      m_musical_end_last_bar = (time / quarter_dur + bars_since_last_measure_change);
+      m_musical_end_position = num_quarters;
+    }
   }
   else
   {
-    m_musical_last_bar = parent_request.musical_last_bar;
-    m_musical_position = parent_request.musical_position;
+    m_musical_start_last_bar = parent_request.musical_start_last_bar;
+    m_musical_start_position = parent_request.musical_start_position;
+    m_musical_end_last_bar = parent_request.musical_end_last_bar;
+    m_musical_end_position = parent_request.musical_end_position;
   }
 
 
@@ -224,8 +242,10 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
   if (N > 0)
   {
     ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
-    tok.musical_last_bar = this->m_musical_last_bar;
-    tok.musical_position = this->m_musical_position;
+    tok.musical_start_last_bar = this->m_musical_start_last_bar;
+    tok.musical_start_position = this->m_musical_start_position;
+    tok.musical_end_last_bar = this->m_musical_end_last_bar;
+    tok.musical_end_position = this->m_musical_end_position;
     node->request(tok);
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)

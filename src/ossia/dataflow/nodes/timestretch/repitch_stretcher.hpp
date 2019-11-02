@@ -66,7 +66,7 @@ struct repitch_stretcher
 
     auto input = (float**) alloca(sizeof(float*) * chan);
     for(int i = 0; i < chan; i++)
-      input[i] =  (float*) alloca(sizeof(float) * samples_to_read);
+      input[i] =  (float*) alloca(sizeof(float) * std::max(16L, samples_to_read));
     auto output = (float*) alloca(sizeof(float) * samples_to_write);
 
     int64_t num_samples_available = repitchers[0].data.size();

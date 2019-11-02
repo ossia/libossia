@@ -242,8 +242,11 @@ private:
   time_signature_map m_timeSignature{};
   tempo_curve m_tempoCurve{};
 
-  ossia::quarter_note m_musical_last_bar{};
-  ossia::quarter_note m_musical_position{};
+  ossia::quarter_note m_musical_start_last_bar{};
+  ossia::quarter_note m_musical_start_position{};
+
+  ossia::quarter_note m_musical_end_last_bar{};
+  ossia::quarter_note m_musical_end_position{};
 
   double m_speed{1.};         /// tick length is multiplied by this
   double m_globalSpeed{1.};

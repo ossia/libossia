@@ -119,8 +119,11 @@ struct token_request
   double speed{1.};
   double tempo{120.};
   time_signature signature{}; // Time signature at start
-  ossia::quarter_note musical_last_bar{}; // Position of the last bar start in quarter notes
-  ossia::quarter_note musical_position{}; // Current position in quarter notes
+
+  ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in quarter notes (at prev_date)
+  ossia::quarter_note musical_start_position{}; // Current position in quarter notes
+  ossia::quarter_note musical_end_last_bar{}; // Position of the last bar start in quarter notes (at date)
+  ossia::quarter_note musical_end_position{}; // Current position in quarter notes
   bool start_discontinuous{};
   bool end_discontinuous{};
 };
@@ -134,11 +137,14 @@ inline bool operator==(const token_request& lhs, const token_request& rhs)
          && lhs.speed == rhs.speed
          && lhs.tempo == rhs.tempo
          && lhs.signature == rhs.signature
-         && lhs.musical_last_bar == rhs.musical_last_bar
-         && lhs.musical_position == rhs.musical_position
+         && lhs.musical_start_last_bar == rhs.musical_start_last_bar
+         && lhs.musical_start_position == rhs.musical_start_position
+         && lhs.musical_end_last_bar == rhs.musical_end_last_bar
+         && lhs.musical_end_position == rhs.musical_end_position
          && lhs.start_discontinuous == rhs.start_discontinuous
          && lhs.end_discontinuous == rhs.end_discontinuous;
 }
+
 inline bool operator!=(const token_request& lhs, const token_request& rhs)
 {
   return !(lhs == rhs);

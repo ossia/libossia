@@ -99,56 +99,147 @@ public:
     m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
   }
 
-  template<typename T>
-  void fetch_audio(int64_t start, int64_t dur, T** audio_array) const noexcept
+  void fetch_audio(int64_t start, int64_t samples_to_write, double** audio_array) noexcept
   {
+    const int channels = this->channels();
+    const int file_duration = this->duration();
 
-  }
-  ossia::audio_span<float> fetch_audio(int64_t start, int64_t dur) noexcept
-  {
-    // Read data into the allocated space
-    // TODO if(current_pcm_frame != start)
+    m_resampleBuffer.resize(channels);
+    for(auto& buf : m_resampleBuffer)
+      buf.resize(samples_to_write);
 
-    const auto N = channels();
-    ossia::audio_span<float> ret(N);
+    ossia::mutable_audio_span<float> source(channels);
 
-    const bool ok = m_handle.seek_to_pcm_frame(start);
-    if(!ok) {
-      ret.clear();
-      return ret;
-    }
-
-    const auto bytes_to_allocate = sizeof(double) * dur * N;
-    if(bytes_to_allocate < 300000)
+    void* frame_data = alloca(sizeof(double) * samples_to_write * channels);
+    if(m_loops)
     {
-      frame_data = alloca(bytes_to_allocate);
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        // TODO add a special case if [0; samples_to_write] don't loop around
+        int pos =  this->m_start_offset + ((start + k) % this->m_loop_duration);
+        if(pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const int max = 1;
+        const auto count = this->m_handle.read_pcm_frames(max, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = gsl::span(m_resampleBuffer[i].data() + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
     }
     else
     {
-      m_safetyBuffer.resize(bytes_to_allocate); // TODO pector
-      frame_data = m_safetyBuffer.data();
+      for(int i = 0; i < channels; i++)
+      {
+        source[i] = gsl::span(m_resampleBuffer[i].data(), samples_to_write);
+      }
+
+      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset);
+      if(!ok)
+      {
+        for(int i = 0; i < channels; i++)
+          for(int k = 0; k < samples_to_write; k++)
+            audio_array[i][k] = 0;
+        return;
+      }
+
+      const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
+      m_converter(source, frame_data, count);
+      for(int i = 0; i < channels; i++)
+        for(int k = count; k < samples_to_write; k++)
+          audio_array[i][k] = 0;
     }
 
-    auto count = m_handle.read_pcm_frames(dur, frame_data);
-    if(count == 0)
+    for(int i = 0; i < channels; i++)
+      std::copy_n(m_resampleBuffer[i].data(), samples_to_write, audio_array[i]);
+  }
+
+  void fetch_audio(int64_t start, int64_t samples_to_write, float** audio_array) noexcept
+  {
+    const int channels = this->channels();
+    const int file_duration = this->duration();
+
+    ossia::mutable_audio_span<float> source(channels);
+
+    void* frame_data = alloca(sizeof(double) * samples_to_write * channels);
+    if(m_loops)
     {
-      ret.clear();
-      return ret;
-    }
-    ossia::mutable_audio_span<float> source(N);
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        // TODO add a special case if [0; samples_to_write] don't loop around
+        int pos =  this->m_start_offset + ((start + k) % this->m_loop_duration);
+        if(pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
 
-    m_resampleBuffer.resize(N);
-    for(int i = 0; i < N; i++)
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const int max = 1;
+        const auto count = this->m_handle.read_pcm_frames(max, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = gsl::span(audio_array[i] + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
+    }
+    else
     {
-      m_resampleBuffer[i].resize(count);
-      source[i] = gsl::span(m_resampleBuffer[i].data(), count);
-      ret[i] = gsl::span(m_resampleBuffer[i].data(), count);
+      for(int i = 0; i < channels; i++)
+      {
+        source[i] = gsl::span(audio_array[i], samples_to_write);
+      }
+
+      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset);
+      if(!ok)
+      {
+        for(int i = 0; i < channels; i++)
+          for(int k = 0; k < samples_to_write; k++)
+            audio_array[i][k] = 0;
+        return;
+      }
+
+      const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
+      m_converter(source, frame_data, count);
+      for(int i = 0; i < channels; i++)
+        for(int k = count; k < samples_to_write; k++)
+          audio_array[i][k] = 0;
     }
-
-    // go from the native wav format to float or double
-    m_converter(source, frame_data, count);
-
-    return ret;
   }
 
   void
@@ -162,7 +253,12 @@ public:
 
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(channels);
-    const auto [samples_to_read, samples_to_write] = ossia::snd::sample_info(len, e.bufferSize(), t);
+
+    auto samples_to_read = std::abs(t.date - t.prev_date);
+    if(samples_to_read == 0)
+      return;
+
+    auto samples_to_write = std::abs(e.bufferSize() - t.offset);
 
     if (samples_to_read <= 0)
       return;

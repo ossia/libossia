@@ -72,6 +72,7 @@ public:
         auto& src = m_data[i];
         T* dst = audio_array[i];
 
+        // TODO add a special case if [0; samples_to_write] don't loop around
         for(int k = 0; k < samples_to_write; k++)
         {
           int pos =  m_start_offset + ((start + k) % m_loop_duration);
@@ -126,8 +127,6 @@ public:
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(chan);
-
-    // auto [samples_to_read, samples_to_write] = ossia::snd::sample_info(len, e.bufferSize(), t);
 
     auto samples_to_read = std::abs(t.date - t.prev_date);
     if(samples_to_read == 0)
