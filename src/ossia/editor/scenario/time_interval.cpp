@@ -33,30 +33,28 @@ void time_interval::tick_impl(
 
 
     {
-      const double quarter_dur = 44100. / 4.;
-      const double num_quarters = old_date / quarter_dur;
+      const double num_quarters = old_date / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
 
-      auto quarters_since_last_measure_change = (old_date - time) / quarter_dur;
+      auto quarters_since_last_measure_change = (old_date - time) / m_quarter_duration;
       auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
-      m_musical_start_last_bar = (time / quarter_dur + bars_since_last_measure_change);
+      m_musical_start_last_bar = (time / m_quarter_duration + bars_since_last_measure_change);
       m_musical_start_position = num_quarters;
     }
 
     {
-      const double quarter_dur = 44100. / 4.;
-      const double num_quarters = new_date / quarter_dur;
+      const double num_quarters = new_date / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, new_date);
 
-      auto quarters_since_last_measure_change = (new_date - time) / quarter_dur;
+      auto quarters_since_last_measure_change = (new_date - time) / m_quarter_duration;
       auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
-      m_musical_end_last_bar = (time / quarter_dur + bars_since_last_measure_change);
+      m_musical_end_last_bar = (time / m_quarter_duration + bars_since_last_measure_change);
       m_musical_end_position = num_quarters;
     }
   }
@@ -424,5 +422,10 @@ void time_interval::set_time_signature_map(optional<time_signature_map> map)
   m_hasSignature = bool(map);
   if(map)
     m_timeSignature = *std::move(map);
+}
+
+void time_interval::set_quarter_duration(double tu)
+{
+  m_quarter_duration = tu;
 }
 }

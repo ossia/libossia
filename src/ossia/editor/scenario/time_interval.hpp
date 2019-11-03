@@ -202,6 +202,7 @@ public:
 
   void set_tempo_curve(optional<tempo_curve> curve);
   void set_time_signature_map(optional<time_signature_map> map);
+  void set_quarter_duration(double tu);
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;
@@ -252,6 +253,7 @@ private:
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   time_signature m_current_signature{};
+  double m_quarter_duration{22050};
   bool m_running{false};
   bool m_hasTempo{false};
   bool m_hasSignature{false};
