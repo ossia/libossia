@@ -149,20 +149,37 @@ inline QDebug operator<<(QDebug d, const ossia::time_value&  s)
 }
 */
 
-inline
-std::ostream& operator<<(std::ostream& d, ossia::token_request t)
+namespace ossia
 {
-  d << (int64_t)t.date << " "
-    << t.position << " "
+inline
+std::ostream& operator<<(std::ostream& d, const ossia::token_request& t)
+{
+  d
+    << (int64_t)t.prev_date << " -> "
+    << (int64_t)t.date << " "
     << (int64_t)t.offset << " "
+    << (int64_t)t.parent_duration << " "
     << t.start_discontinuous << " "
-    << t.end_discontinuous << std::endl;
+    << t.end_discontinuous;
+  return d;
+}
+inline
+std::ostream& operator<<(std::ostream& d, const ossia::simple_token_request& t)
+{
+  d
+      << (int64_t)t.prev_date << " -> "
+      << (int64_t)t.date << " "
+      << (int64_t)t.offset << " "
+      << (int64_t)t.parent_duration << " "
+      << t.start_discontinuous << " "
+      << t.end_discontinuous;
   return d;
 }
 
 inline
-std::ostream& operator<<(std::ostream& d, decltype(ossia::graph_node::requested_tokens) t)
+std::ostream& operator<<(std::ostream& d, const decltype(ossia::graph_node::requested_tokens)& t)
 {
   for(auto tk : t) d << tk << ", ";
   return d;
+}
 }

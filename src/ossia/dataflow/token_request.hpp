@@ -155,8 +155,32 @@ struct simple_token_request : token_request
 {
   using token_request::token_request;
   simple_token_request(ossia::time_value prev_d, ossia::time_value d):
-    ossia::token_request{prev_d, d, 0_tv, 0_tv, 1.0, {4,4}, 120.}
+    simple_token_request{prev_d, d, 0_tv}
   {
+  }
+  simple_token_request(ossia::time_value prev_d, ossia::time_value d, ossia::time_value offset):
+    ossia::token_request{prev_d, d, 0_tv, offset, 1.0, {4,4}, 120.}
+  {
+  }
+
+  friend bool operator==(const token_request& lhs, const simple_token_request& self)
+  {
+    return
+        lhs.prev_date == self.prev_date &&
+        lhs.date == self.date &&
+        lhs.offset == self.offset;
+  }
+  friend bool operator==(const simple_token_request& self, const token_request& rhs)
+  {
+    return rhs == self;
+  }
+  friend bool operator!=(const token_request& lhs, const simple_token_request& self)
+  {
+    return !(lhs == self);
+  }
+  friend bool operator!=(const simple_token_request& self, const token_request& rhs)
+  {
+    return !(rhs == self);
   }
 };
 }

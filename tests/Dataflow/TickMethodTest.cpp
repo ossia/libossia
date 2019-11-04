@@ -10,9 +10,9 @@ TEST_CASE ("test_cuts", "test_cuts")
 
   ossia::flat_set<int64_t> cuts{3, 7, 9, 35};
   ossia::token_request_vec tokens;
-  tokens.push_back(ossia::token_request{0_tv, 5_tv, 0.1});
-  tokens.push_back(ossia::token_request{5_tv, 10_tv, 0.2});
-  tokens.push_back(ossia::token_request{10_tv, 15_tv, 0.3});
+  tokens.push_back(ossia::simple_token_request{0_tv, 5_tv});
+  tokens.push_back(ossia::simple_token_request{5_tv, 10_tv});
+  tokens.push_back(ossia::simple_token_request{10_tv, 15_tv});
   split_score_tick<&ossia::execution_state::commit>::do_cuts(cuts, tokens, 0_tv);
 
   // from 0 to 3

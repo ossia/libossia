@@ -18,19 +18,19 @@ using namespace std::placeholders;
 std::shared_ptr<time_interval> main_interval;
 std::vector<ossia::time_value> events_date;
 
-static void main_interval_callback(double position, ossia::time_value date)
+static void main_interval_callback(ossia::time_value date)
 {
-  std::cout << "Main Interval : " << double(position) << ", " << double(date) << std::endl;
+  std::cout << "Main Interval : " << date << std::endl;
 }
 
-static void first_interval_callback(double position, ossia::time_value date)
+static void first_interval_callback(ossia::time_value date)
 {
-  std::cout << "First Interval : " << double(position) << ", " << double(date) << std::endl;
+  std::cout << "First Interval : " << date << std::endl;
 }
 
-static void second_interval_callback(double position, ossia::time_value date)
+static void second_interval_callback(ossia::time_value date)
 {
-  std::cout << "Second Interval : " << double(position) << ", " << double(date) << std::endl;
+  std::cout << "Second Interval : " << date << std::endl;
 }
 
 void event_callback(time_event::status newStatus)

@@ -48,6 +48,19 @@ public:
     m_resampler.reset(date, m_mode, channels(), m_fileSampleRate);
   }
 
+  // Used for testing only
+  void set_sound(std::vector<ossia::float_vector> data)
+  {
+    m_handle = std::make_shared<audio_data>();
+    m_handle->data = std::move(data);
+    m_data.clear();
+    {
+      m_fileSampleRate = 44100;
+      m_data.assign(m_handle->data.begin(), m_handle->data.end());
+      m_resampler.reset(0_tv, audio_stretch_mode::None, m_handle->data.size(), m_fileSampleRate);
+    }
+  }
+
   void set_sound(const audio_handle& hdl, int channels, int sampleRate)
   {
     m_handle = hdl;

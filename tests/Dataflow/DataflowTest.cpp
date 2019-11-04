@@ -625,18 +625,18 @@ TEST_CASE ("strict_explicit_relationship_simple", "strict_explicit_relationship_
   simple_explicit_graph g(test, immediate_strict_connection{});
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // nothing
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 1_tv, 0.5});
-  g.n2->request(token_request{0_tv, 1_tv, 0.5});
+  g.n1->request(simple_token_request{0_tv, 1_tv});
+  g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
-  g.n2->request(token_request{1_tv, 2_tv, 1.});
+  g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // nothing
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
@@ -652,9 +652,9 @@ TEST_CASE ("strict_explicit_relationship_serial", "strict_explicit_relationship_
   three_serial_nodes_explicit_graph g(test, immediate_strict_connection{});
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 0_tv});
-  g.n2->request(token_request{0_tv, 0_tv});
-  g.n3->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
+  g.n3->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // nothing
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
@@ -670,8 +670,8 @@ TEST_CASE ("implicit_ab_bc", "implicit_ab_bc")
   // Functional dependency
   ab_bc_graph g(test, immediate_strict_connection{});
 
-  g.n1->request(token_request{0_tv, 0_tv});
-  g.n2->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // nothing
   REQUIRE(test.b->value() == ossia::value(std::vector<ossia::value>{1 * 1}));
@@ -686,8 +686,8 @@ TEST_CASE ("implicit_bc_ab", "implicit_bc_ab")
   // Functional dependency
   bc_ab_graph g(test, immediate_strict_connection{});
 
-  g.n1->request(token_request{0_tv, 0_tv});
-  g.n2->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // nothing
   REQUIRE(test.b->value() == ossia::value(std::vector<ossia::value>{10 * 1}));
@@ -702,18 +702,18 @@ TEST_CASE ("glutton_implicit_relationship", "glutton_implicit_relationship")
   simple_implicit_graph g{test};
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // f1
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1}));
 
-  g.n1->request(token_request{0_tv, 1_tv, 0.5});
-  g.n2->request(token_request{0_tv, 1_tv, 0.5});
+  g.n1->request(simple_token_request{0_tv, 1_tv});
+  g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-  g.n2->request(token_request{1_tv, 2_tv, 1.});
+  g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // f2
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -730,18 +730,18 @@ TEST_CASE ("glutton_explicit_relationship", "glutton_explicit_relationship")
   simple_explicit_graph g(test, immediate_glutton_connection{});
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // f1
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1}));
 
-  g.n1->request(token_request{0_tv, 1_tv, 0.5});
-  g.n2->request(token_request{0_tv, 1_tv, 0.5});
+  g.n1->request(simple_token_request{0_tv, 1_tv});
+  g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
-  g.n2->request(token_request{1_tv, 2_tv, 1.});
+  g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // f2
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
@@ -759,19 +759,19 @@ TEST_CASE ("glutton_explicit_relationship_2", "glutton_explicit_relationship_2")
   no_parameter_explicit_graph g(test, immediate_glutton_connection{});
   debug_mock::messages.clear();
 
-  g.n1->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // f1
   REQUIRE((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}}));
 
-  g.n1->request(token_request{0_tv, 1_tv, 0.5});
-  g.n2->request(token_request{0_tv, 1_tv, 0.5});
+  g.n1->request(simple_token_request{0_tv, 1_tv});
+  g.n2->request(simple_token_request{0_tv, 1_tv});
 
   debug_mock::messages.clear();
   g.state(); // f2 o f1
   REQUIRE((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 1}, {10, 1}}));
 
-  g.n2->request(token_request{1_tv, 2_tv, 1.});
+  g.n2->request(simple_token_request{1_tv, 2_tv});
 
   debug_mock::messages.clear();
   g.state(); // f2
@@ -789,14 +789,14 @@ TEST_CASE ("delayed_relationship", "delayed_relationship")
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
 
-  g.n1->request(token_request{0_tv, 0_tv});
+  g.n1->request(simple_token_request{0_tv, 0_tv});
 
   // f1 pushes 1 * 1 in its queue
   g.state();
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
-  g.n1->request(token_request{0_tv, 1_tv, 0.5});
-  g.n2->request(token_request{0_tv, 0_tv, 0.});
+  g.n1->request(simple_token_request{0_tv, 1_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
 
   // f1(0) = 1
   // f1(1) = 2
@@ -804,7 +804,7 @@ TEST_CASE ("delayed_relationship", "delayed_relationship")
   g.state();
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
-  g.n2->request(token_request{0_tv, 1_tv, 1.});
+  g.n2->request(simple_token_request{0_tv, 1_tv});
 
   // f2(f1(1), 1) = [2, 20]
   g.state(); // f2 o f1(t-1)

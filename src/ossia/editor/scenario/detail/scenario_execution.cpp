@@ -102,43 +102,44 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
     (event.m_callback)(event.m_status);
 }
 
-bool scenario::trigger_sync(
-    time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
+scenario::sync_status scenario::trigger_sync(
+    time_sync& sync, small_event_vec& pending, small_event_vec& maxReachedEv,
     interval_set& started, interval_set& stopped,
-    ossia::time_value tick_offset, const ossia::token_request& req, bool maximalDurationReached)
+    ossia::time_value tick_offset, const ossia::token_request& tk, bool maximalDurationReached)
 {
-  if (!node.m_evaluating)
+  if (!sync.m_evaluating)
   {
-    node.m_evaluating = true;
-    node.trigger_request = false;
-    node.entered_evaluation.send();
+    sync.m_evaluating = true;
+    sync.trigger_request = false;
+    sync.entered_evaluation.send();
   }
 
   // update the expression one time
   // then observe and evaluate TimeSync's expression before to trig
   // only if no maximal duration have been reached
-  if (*node.m_expression != expressions::expression_true()
+  if (*sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if (!node.has_trigger_date())
+    if (!sync.has_trigger_date() && !sync.m_is_being_triggered)
     {
-      if (!node.is_observing_expression())
-        expressions::update(*node.m_expression);
+      if (!sync.is_observing_expression())
+        expressions::update(*sync.m_expression);
 
-      node.observe_expression(true);
+      sync.observe_expression(true);
 
-      if (node.trigger_request)
-        node.trigger_request = false;
-      else if (!expressions::evaluate(*node.m_expression))
-        return false;
+      if (sync.trigger_request)
+        sync.trigger_request = false;
+      else if (!expressions::evaluate(*sync.m_expression))
+        return sync_status::NOT_READY;
     }
 
     // at this point we can assume we are going to trigger.
-    const auto& cur_date = this->node->requested_tokens.back().date;
-    if (node.has_trigger_date())
+    sync.m_is_being_triggered = true;
+
+    if (sync.has_trigger_date())
     {
       bool ok = true;
-      for (const auto& ev : node.get_time_events())
+      for (const auto& ev : sync.get_time_events())
       {
         for (const auto& cst : ev->previous_time_intervals())
         {
@@ -155,12 +156,12 @@ bool scenario::trigger_sync(
       }
 
       if (!ok)
-        return false;
+        return sync_status::NOT_READY;
       else
       {
         maximalDurationReached = true;
 
-        for (const auto& ev : node.get_time_events())
+        for (const auto& ev : sync.get_time_events())
         {
           for (const auto& cst : ev->previous_time_intervals())
           {
@@ -169,33 +170,88 @@ bool scenario::trigger_sync(
         }
       }
     }
-    else if (node.has_sync_rate())
+    else if (sync.has_sync_rate())
     {
-      // compute absolute date at which it should execute,
-      // assuming we start at the next tick
-      // TODO div by zero
-      time_value expected_date{
-          node.get_sync_rate().impl
-          * (1 + cur_date.impl / node.get_sync_rate().impl)};
-      node.set_trigger_date(expected_date);
-      auto diff_date = expected_date - cur_date;
+      const auto rate = sync.get_sync_rate();
+      // we are asked to execute, now we must quantize to the next step
 
-      // compute the "fake max" date at which intervals must end for this to
-      // work
-      for (const auto& ev : node.get_time_events())
+      optional<time_value> next_bar_start{};
+      if(rate <= 1.)
       {
-        for (const auto& cst : ev->previous_time_intervals())
+        // Quantize relative to bars
+        if(tk.musical_end_last_bar != tk.musical_start_last_bar)
         {
-          m_itv_end_map.insert(
-              std::make_pair(cst.get(), cst->get_date() + diff_date));
+          // There is a bar change in this tick
+          double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
+          double musical_bar_start = tk.musical_end_last_bar - tk.musical_start_position;
+
+          double ratio = musical_bar_start / musical_tick_duration;
+          time_value dt = tk.date - tk.prev_date; // TODO should be tick_offset
+
+          next_bar_start = tk.prev_date + dt * ratio;
         }
       }
-      node.observe_expression(false);
-      return false;
+      else
+      {
+        // Quantize relative to quarter divisions
+        // note ! if there is a bar change,
+        // and no prior quantization date before that, we have to quantize to the bar change
+
+        double start_quarter = (tk.musical_start_position - tk.musical_start_last_bar);
+        double end_quarter = (tk.musical_end_position - tk.musical_start_last_bar);
+
+        // rate = 2 -> half
+        // rate = 4 -> quarter
+        // rate = 8 -> 8th..
+
+        // duration of what we quantify in terms of quarters
+        double musical_quant_dur = rate / 4.;
+        double start_quant = std::floor(start_quarter * musical_quant_dur);
+        double end_quant = std::floor(end_quarter * musical_quant_dur);
+
+        if(start_quant != end_quant)
+        {
+          // Date to quantify is the next one :
+          auto quant_date = tk.musical_start_last_bar + (start_quant + 1) * 4. / rate;
+          std::cerr << start_quant << " " << end_quant <<  " => " << quant_date << std::endl;
+
+
+          double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
+          double ratio = quant_date / musical_tick_duration;
+          time_value dt = tk.date - tk.prev_date; // TODO should be tick_offset
+          next_bar_start = tk.prev_date + dt * ratio;
+        }
+      }
+
+      if(next_bar_start)
+      {
+        std::cerr << "next bar start: " << *next_bar_start << std::endl;
+        sync.set_trigger_date(*next_bar_start);
+        auto diff_date = *next_bar_start - tk.prev_date;
+        // compute the "fake max" date at which intervals must end for this to
+        // work
+        for (auto& ev : sync.get_time_events())
+        {
+          maxReachedEv.push_back(ev.get());
+          for (const auto& cst : ev->previous_time_intervals())
+          {
+            m_itv_end_map.insert(
+                std::make_pair(cst.get(), cst->get_date() + diff_date));
+          }
+
+          std::cerr << "adding overtick : " << diff_date << " => " << tk.date - tk.prev_date - diff_date << std::endl;
+          m_overticks.insert(std::make_pair(&sync, overtick{0, tk.date - tk.prev_date - diff_date, 0}));
+        }
+        sync.observe_expression(false);
+        return sync_status::RETRY;
+      }
+
+      return sync_status::NOT_READY;
     }
   }
 
   // trigger the time sync
+  sync.m_is_being_triggered = false;
 
   // now TimeEvents will happen or be disposed.
   // the last added events are necessarily the ones of this node.
@@ -207,7 +263,7 @@ bool scenario::trigger_sync(
 
     if (expressions::evaluate(expr))
     {
-      make_happen(*ev, started, stopped, tick_offset, req);
+      make_happen(*ev, started, stopped, tick_offset, tk);
       if (maximalDurationReached)
         maxReachedEv.push_back(ev);
     }
@@ -218,23 +274,23 @@ bool scenario::trigger_sync(
   }
 
   // stop expression observation now the TimeSync has been processed
-  node.observe_expression(false);
+  sync.observe_expression(false);
 
   // notify observers
-  node.triggered.send();
+  sync.triggered.send();
 
-  node.m_evaluating = false;
-  node.finished_evaluation.send(maximalDurationReached);
+  sync.m_evaluating = false;
+  sync.finished_evaluation.send(maximalDurationReached);
   if (maximalDurationReached)
-    node.m_status = time_sync::status::DONE_MAX_REACHED;
+    sync.m_status = time_sync::status::DONE_MAX_REACHED;
   else
-    node.m_status = time_sync::status::DONE_TRIGGERED;
+    sync.m_status = time_sync::status::DONE_TRIGGERED;
 
-  return true;
+  return sync_status::DONE;
 }
 
-bool scenario::process_this(
-    time_sync& node, small_event_vec& pendingEvents,
+scenario::sync_status scenario::process_this(
+    time_sync& sync, small_event_vec& pendingEvents,
     small_event_vec& maxReachedEvents, interval_set& started,
     interval_set& stopped, ossia::time_value tick_offset,
     const ossia::token_request& req)
@@ -242,7 +298,7 @@ bool scenario::process_this(
   // prepare to remember which event changed its status to PENDING
   // because it is needed in time_sync::trigger
   pendingEvents.clear();
-  auto activeCount = node.get_time_events().size();
+  auto activeCount = sync.get_time_events().size();
   std::size_t pendingCount = 0;
 
   bool maximalDurationReached = false;
@@ -264,7 +320,7 @@ bool scenario::process_this(
     }
   };
 
-  for (const std::shared_ptr<time_event>& timeEvent : node.get_time_events())
+  for (const std::shared_ptr<time_event>& timeEvent : sync.get_time_events())
   {
     switch (timeEvent->get_status())
     {
@@ -326,18 +382,18 @@ bool scenario::process_this(
   // if all TimeEvents are not PENDING
   if (pendingCount != activeCount)
   {
-    if (node.m_evaluating)
+    if (sync.m_evaluating)
     {
-      node.m_evaluating = false;
-      node.trigger_request = false;
-      node.left_evaluation.send();
+      sync.m_evaluating = false;
+      sync.trigger_request = false;
+      sync.left_evaluation.send();
     }
 
-    return false;
+    return scenario::sync_status::NOT_READY;
   }
 
   return trigger_sync(
-      node, pendingEvents, maxReachedEvents, started, stopped, tick_offset, req,
+      sync, pendingEvents, maxReachedEvents, started, stopped, tick_offset, req,
       maximalDurationReached);
 }
 
@@ -355,6 +411,7 @@ static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void scenario::state_impl(const ossia::token_request& req)
 {
+  std::cerr << "start tick: " << req.prev_date << " -> " << req.date << std::endl;
   node->request(req);
   // ossia::logger().info("scenario::state starts");
   // if (date != m_lastDate)
@@ -368,7 +425,9 @@ void scenario::state_impl(const ossia::token_request& req)
 
     m_overticks.clear();
     m_endNodes.clear();
+    m_retry_syncs.clear();
 
+    m_retry_syncs.container.reserve(8);
     m_endNodes.container.reserve(m_nodes.size());
     m_overticks.container.reserve(m_nodes.size());
 
@@ -437,16 +496,20 @@ void scenario::state_impl(const ossia::token_request& req)
       // Note: we pass m_runningIntervals as stopped because it does not
       // matter: by design, no interval could be stopped at this point since
       // it's the root scenarios. So this prevents initializing a dummy class.
-      bool res = process_this(
+      scenario::sync_status res = process_this(
           *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
           m_runningIntervals, req.offset, req);
-      if (res)
+      switch (res)
       {
-        it = m_waitingNodes.erase(it);
-      }
-      else
-      {
-        ++it;
+        case sync_status::NOT_READY:
+          ++it;
+          break;
+        case sync_status::RETRY:
+          ++it;
+          break;
+        case sync_status::DONE:
+          it = m_waitingNodes.erase(it);
+          break;
       }
       m_pendingEvents.clear();
     }
@@ -536,6 +599,24 @@ void scenario::state_impl(const ossia::token_request& req)
         m_endNodes.insert(end_node);
     };
 
+
+    // First check timesyncs already past their min
+    // for any that may have a quantization setting
+
+    for (time_interval* interval : m_runningIntervals)
+    {
+      if (interval->get_date() >= interval->get_min_duration())
+      {
+        const auto end_node = &interval->get_end_event().get_time_sync();
+        if(end_node->has_sync_rate())
+        {
+          m_endNodes.insert(end_node);
+          process_this(
+                *end_node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
+                m_runningIntervals, req.offset, req);
+        }
+      }
+    }
     for (time_interval* interval : m_runningIntervals)
     {
       run_interval(*interval, tick_ms, req.offset);
@@ -556,18 +637,20 @@ void scenario::state_impl(const ossia::token_request& req)
         auto it = m_overticks.find(&tn);
         if (it == m_overticks.end())
         {
-          // ossia::logger().info("scenario::state tick_dur not found");
           continue;
         }
-
-        const time_value remaining_tick
-            = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
-
-        const auto offset = req.offset + tick_ms - remaining_tick;
-        const_cast<overtick&>(it->second).offset = offset;
-        for (const auto& interval : ev.next_time_intervals())
+        else
         {
-          run_interval(*interval, remaining_tick, offset);
+          const time_value remaining_tick
+              = (mode == PROGRESS_MAX) ? it->second.max : it->second.min;
+
+          const auto offset = req.offset + tick_ms - remaining_tick;
+          const_cast<overtick&>(it->second).offset = offset;
+          for (const auto& interval : ev.next_time_intervals())
+          {
+            std::cerr << "executing overtick: " <<remaining_tick << " ; " << offset << std::endl;
+            run_interval(*interval, remaining_tick, offset);
+          }
         }
       }
       // std::cerr << "END EVENT" << std::endl;
@@ -577,23 +660,37 @@ void scenario::state_impl(const ossia::token_request& req)
       for (auto node : m_endNodes)
       {
         auto it = m_overticks.find(node);
+        sync_status status{};
         if (it != m_overticks.end())
         {
-          process_this(
+          status = process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
               m_runningIntervals, it->second.offset, req);
         }
         else
         {
-          process_this(
+          status = process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
               m_runningIntervals, req.offset, req);
         }
+
+        switch(status)
+        {
+          case sync_status::DONE:
+            m_retry_syncs.erase(node);
+            break;
+          case sync_status::NOT_READY:
+            break;
+          case sync_status::RETRY:
+            m_retry_syncs.insert(node);
+            break;
+        }
       }
 
-      m_endNodes.clear();
+      m_endNodes = std::move(m_retry_syncs);
 
-    } while (!m_maxReachedEvents.empty());
+
+    } while (!m_maxReachedEvents.empty() || !m_endNodes.empty());
   }
 
   // ossia::logger().info("scenario::state ends");

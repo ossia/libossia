@@ -10,14 +10,12 @@
 
 using namespace ossia;
 
-void interval_callback(double position, ossia::time_value date)
+void interval_callback(ossia::time_value date)
 {
-  ;
 }
 
 void event_callback(time_event::status newStatus)
 {
-  ;
 }
 
 /*! test life cycle and accessors functions */
@@ -56,7 +54,6 @@ TEST_CASE ("test_basic", "test_basic")
   REQUIRE(interval->get_max_duration() == 3000._tv);
   REQUIRE(interval->get_offset() == 500._tv);
 
-  REQUIRE(interval->get_position() == 0.25);
   REQUIRE(c.running() == false);
   REQUIRE(interval->get_date() == 500._tv);
 

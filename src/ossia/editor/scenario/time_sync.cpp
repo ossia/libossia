@@ -14,6 +14,7 @@ time_sync::time_sync()
   , m_evaluating{}
   , m_muted{}
   , m_autotrigger{}
+  , m_is_being_triggered{}
 {
 }
 

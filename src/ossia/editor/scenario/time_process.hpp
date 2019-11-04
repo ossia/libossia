@@ -140,7 +140,10 @@ public:
   {
     if(!this->m_loops)
     {
-      static_cast<T*>(this)->state_impl(tok.add_offset(this->m_start_offset));
+      if(this->m_start_offset == 0_tv)
+        static_cast<T*>(this)->state_impl(tok);
+      else
+        static_cast<T*>(this)->state_impl(tok.add_offset(this->m_start_offset));
     }
     else
     {

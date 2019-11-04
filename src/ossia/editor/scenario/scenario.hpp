@@ -133,19 +133,27 @@ private:
   small_event_vec m_maxReachedEvents;
   overtick_map m_overticks; // used as cache
   ossia::flat_map<time_interval*, time_value> m_itv_end_map;
+  sync_set m_retry_syncs; // used as cache
   sync_set m_endNodes; // used as cache
   scenario_graph m_sg; // used as cache
 
   ossia::time_value m_lastDate{ossia::Infinite};
 
-  bool process_this(time_sync& node, small_event_vec& pendingEvents,
+  enum class sync_status
+  {
+    NOT_READY,
+    RETRY,
+    DONE
+  };
+
+  sync_status process_this(time_sync& node, small_event_vec& pendingEvents,
       small_event_vec& maxReachedEvents, interval_set& started,
       interval_set& stopped, ossia::time_value tick_offset, const token_request& tok);
   static void make_happen(
       time_event& event, interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const ossia::token_request& tok);
   static void make_dispose(time_event& event, interval_set& stopped);
-  bool trigger_sync(time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
+  sync_status trigger_sync(time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
       interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const token_request& req, bool maxReached);
 };
