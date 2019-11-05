@@ -146,15 +146,19 @@ private:
     DONE
   };
 
-  sync_status process_this(time_sync& node, small_event_vec& pendingEvents,
-      small_event_vec& maxReachedEvents, interval_set& started,
-      interval_set& stopped, ossia::time_value tick_offset, const token_request& tok);
   static void make_happen(
       time_event& event, interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const ossia::token_request& tok);
   static void make_dispose(time_event& event, interval_set& stopped);
+
+  sync_status process_this(time_sync& node, small_event_vec& pendingEvents,
+      small_event_vec& maxReachedEvents, interval_set& started,
+      interval_set& stopped, ossia::time_value tick_offset, const token_request& tok);
   sync_status trigger_sync(time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
       interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const token_request& req, bool maxReached);
+
+  sync_status process_this_musical(time_sync& node, small_event_vec& pendingEvents, small_event_vec& maxReachedEvents, ossia::time_value tick_offset, const token_request& tok);
+  sync_status trigger_sync_musical(time_sync& node, small_event_vec& maxReachedEvents, ossia::time_value tick_offset, const token_request& req, bool maxReached);
 };
 }

@@ -253,6 +253,8 @@ set(OSSIA_EDITOR_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_pulse.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/loop/loop.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_execution.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_sync_execution.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_sync_musical_execution.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/detail/scenario_offset.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/scenario.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_interval.cpp"
