@@ -186,4 +186,5 @@ private:
   bool m_autotrigger : 1;
   bool m_is_being_triggered : 1;
 };
+
 }

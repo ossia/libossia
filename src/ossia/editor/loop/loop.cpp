@@ -7,6 +7,7 @@
 #include <ossia/editor/scenario/detail/continuity.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/scenario/quantification.hpp>
 #include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
@@ -129,45 +130,109 @@ void loop::mute_impl(bool m)
   m_endNode.mute(m);
   m_interval.mute(m);
 }
+sync_status loop::trigger_quantified_time_sync(time_sync& sync, bool& maximalDurationReached) noexcept
+{
+  if(&sync == &this->m_startNode)
+  {
+    return sync_status::DONE;
+  }
+  else
+  {
+    if (m_startEvent.get_status() != ossia::time_event::status::HAPPENED)
+      return sync_status::NOT_READY;
 
-bool loop::process_sync(
-    ossia::time_sync& node, ossia::time_event& ev, bool event_pending,
+    if(!m_sync_date)
+      return sync_status::NOT_READY;
+
+    if(m_interval.get_date() == *m_sync_date)
+      return sync_status::NOT_READY;
+
+    maximalDurationReached = true;
+
+    m_sync_date = ossia::none;
+
+    return sync_status::DONE;
+  }
+}
+
+sync_status loop::quantify_time_sync(time_sync& sync, const ossia::token_request& tk) noexcept
+{
+  // we are asked to execute, now we must quantize to the next step
+  auto qdate = get_quantification_date(tk, sync.get_sync_rate());
+
+  if(qdate)
+  {
+    // compute the "fake max" date at which intervals must end for this to
+    // work
+    sync.set_trigger_date(*qdate);
+    auto diff_date = *qdate - tk.prev_date - 1_tv;
+
+    m_sync_date = m_interval.get_date() + diff_date;
+
+    sync.observe_expression(false);
+    return sync_status::RETRY;
+  }
+
+  return sync_status::NOT_READY;
+}
+
+
+ossia::sync_status loop::process_sync(
+    ossia::time_sync& sync, const ossia::token_request& tk,
+    ossia::time_event& ev, bool event_pending,
     bool maximalDurationReached)
 {
   if (!event_pending)
   {
-    if (node.m_evaluating)
+    if (sync.m_evaluating)
     {
-      node.m_evaluating = false;
-      node.trigger_request = false;
-      node.left_evaluation.send();
+      sync.m_evaluating = false;
+      sync.trigger_request = false;
+      sync.left_evaluation.send();
     }
 
-    return false;
+    return sync_status::NOT_READY;
   }
 
-  if (!node.m_evaluating)
+  if (!sync.m_evaluating)
   {
-    node.m_evaluating = true;
-    node.entered_evaluation.send();
-    node.trigger_request = false;
+    sync.m_evaluating = true;
+    sync.entered_evaluation.send();
+    sync.trigger_request = false;
   }
 
   // update the expression one time
   // then observe and evaluate TimeSync's expression before to trig
   // only if no maximal duration have been reached
-  if (*node.m_expression != expressions::expression_true()
+  if (*sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if (!node.is_observing_expression())
-      expressions::update(*node.m_expression);
+    if (!sync.has_trigger_date() && !sync.m_is_being_triggered)
+    {
+      if (!sync.is_observing_expression())
+        expressions::update(*sync.m_expression);
 
-    node.observe_expression(true);
+      sync.observe_expression(true);
 
-    if (node.trigger_request)
-      node.trigger_request = false;
-    else if (!expressions::evaluate(*node.m_expression))
-      return false;
+      if (sync.trigger_request)
+        sync.trigger_request = false;
+      else if (!expressions::evaluate(*sync.m_expression))
+        return sync_status::NOT_READY;
+    }
+
+    // at this point we can assume we are going to trigger.
+    sync.m_is_being_triggered = true;
+
+    if (sync.has_trigger_date())
+    {
+      auto res = trigger_quantified_time_sync(sync, maximalDurationReached);
+      if(res != sync_status::DONE)
+        return res;
+    }
+    else if (sync.has_sync_rate())
+    {
+      return quantify_time_sync(sync, tk);
+    }
   }
 
   // now TimeEvents will happen or be disposed
@@ -181,20 +246,20 @@ bool loop::process_sync(
     make_dispose(ev);
 
   // stop expression observation now the TimeSync has been processed
-  node.observe_expression(false);
+  sync.observe_expression(false);
 
   // notify observers
-  node.triggered.send();
+  sync.triggered.send();
 
-  node.m_evaluating = false;
-  node.finished_evaluation.send(maximalDurationReached);
+  sync.m_evaluating = false;
+  sync.finished_evaluation.send(maximalDurationReached);
 
   if (maximalDurationReached)
-    node.m_status = time_sync::status::DONE_MAX_REACHED;
+    sync.m_status = time_sync::status::DONE_MAX_REACHED;
   else
-    node.m_status = time_sync::status::DONE_TRIGGERED;
+    sync.m_status = time_sync::status::DONE_TRIGGERED;
 
-  return true;
+  return sync_status::DONE;
 }
 
 void loop::state_impl(ossia::token_request req)
@@ -306,7 +371,7 @@ void loop::state_impl(ossia::token_request req)
         case time_event::status::NONE:
         case time_event::status::PENDING:
         {
-          process_sync(m_startNode, m_startEvent, true, false);
+          process_sync(m_startNode, req, m_startEvent, true, false);
           if (m_startEvent.get_status() != time_event::status::HAPPENED)
           {
             m_startEvent.set_status(time_event::status::PENDING);
@@ -336,7 +401,7 @@ void loop::state_impl(ossia::token_request req)
           {
             m_endEvent.set_status(time_event::status::PENDING);
             process_sync(
-                m_endNode, m_endEvent, true,
+                m_endNode, req, m_endEvent, true,
                 m_interval.get_date() >= m_interval.get_max_duration());
           }
           break;
@@ -345,13 +410,13 @@ void loop::state_impl(ossia::token_request req)
         case time_event::status::PENDING:
         {
           process_sync(
-              m_endNode, m_endEvent, true,
+              m_endNode, req, m_endEvent, true,
               m_interval.get_date() >= m_interval.get_max_duration());
           break;
         }
         case time_event::status::HAPPENED:
         case time_event::status::DISPOSED:
-          process_sync(m_endNode, m_endEvent, false, false);
+          process_sync(m_endNode, req, m_endEvent, false, false);
           break;
       }
 

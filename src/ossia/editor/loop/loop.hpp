@@ -69,12 +69,16 @@ public:
   void state_impl(ossia::token_request);
 
 private:
-  bool process_sync(
-      ossia::time_sync& node, ossia::time_event& event, bool pending,
+  ossia::sync_status process_sync(
+      ossia::time_sync& node, const ossia::token_request& tk,
+      ossia::time_event& event, bool pending,
       bool maxReached);
   void make_happen(time_event& event);
   void make_dispose(time_event& event);
   void mute_impl(bool) override;
+
+  sync_status quantify_time_sync(time_sync& sync, const ossia::token_request& tk) noexcept;
+  sync_status trigger_quantified_time_sync(time_sync& sync, bool& maximalDurationReached) noexcept;
 
   time_sync m_startNode;
   time_sync m_endNode;
@@ -83,5 +87,6 @@ private:
   time_interval m_interval;
 
   ossia::time_value m_lastDate{ossia::Infinite};
+  optional<ossia::time_value> m_sync_date{};
 };
 }

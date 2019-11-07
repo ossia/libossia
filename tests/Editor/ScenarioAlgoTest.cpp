@@ -1165,6 +1165,116 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
 }
 
 
+TEST_CASE ("test_musical_bar_offset", "test_musical_bar_offset")
+{
+
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+  std::shared_ptr<time_event> ex = create_event(scenario); ex->get_time_sync().set_expression(ossia::expressions::make_expression_true());
+  std::shared_ptr<time_event> e1 = create_event(scenario); e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+  std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+  // assume sampling rate is 44100 -> a quarter note is 22050
+  e1->get_time_sync().set_sync_rate(1, 22050);
+
+  /*                      c0                  c1
+    * ex -- e0 - - - - - - - - - - e1 - - - - - - - - - - e2
+   */
+
+  std::shared_ptr<time_interval> cx = time_interval::create({}, *e0, *ex, 88200_tv * 1.5,88200_tv * 1.5,88200_tv * 1.5);
+  cx->add_time_process(dummy_process());
+
+  std::shared_ptr<time_interval> c0 = time_interval::create({}, *ex, *e1, 0_tv, 0_tv, ossia::Infinite);
+  c0->add_time_process(dummy_process());
+
+  std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+  c1->add_time_process(dummy_process());
+
+
+  s.scenario->add_time_interval(cx);
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+
+  s.interval->start_and_tick();
+  {
+    // we go past cx, 1/4 in c0
+    s.interval->tick( 88200_tv * 2, default_request());
+
+    REQUIRE(c0->get_date() == 88200_tv * 0.5);
+    REQUIRE(e1->get_status() == time_event::status::PENDING);
+
+    REQUIRE(c1->get_date() == 0_tv);
+    REQUIRE(e2->get_status() == time_event::status::NONE);
+  }
+
+  e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(1, ossia::expressions::comparator::EQUAL, 1));
+
+
+  // Tick a bit : nothing happens
+  {
+    s.interval->tick(500_tv, default_request());
+
+    REQUIRE(c0->get_date() == 88200_tv * 0.5 + 500_tv); // 44600
+    REQUIRE(e1->get_status() == time_event::status::PENDING);
+
+    REQUIRE(c1->get_date() == 0_tv);
+    REQUIRE(e2->get_status() == time_event::status::NONE);
+  }
+
+
+  c0->node->requested_tokens.clear();
+  c1->node->requested_tokens.clear();
+  // Tick enough to go past the next quantification value :
+  {
+    // globally: we're at 88200 * 2 + 500, we are going to 88200 * 3
+    // locally : c0 is at 44600.
+    //  -> In absolute time it has started at 88200_tv * 1.5 (132300)
+    //  -> Next quantification step is 88200 * 3
+    //  -> 88200 * 3 - (88200 * 2 + 500) = 87700
+    //  -> c0 has to go to 44600 + 87700
+    //  -> c1 will go from 0 to 500
+    ossia::token_request req;
+    req.tempo = 120;
+    req.speed = 1.;
+    req.musical_start_last_bar = 8.;
+    req.musical_end_last_bar = 12.;
+    req.musical_start_position = (88200_tv * 2 + 500_tv) / 22050.;
+    req.musical_end_position = (88200_tv * 3 + 500_tv) / 22050.;
+    req.signature = {4, 4};
+    std::cerr << "start musical tick:" << std::endl;
+    s.interval->tick(88200_tv, req); // go forward a whole bar
+    std::cerr << std::flush;
+    std::cout << std::flush;
+
+    REQUIRE(e1->get_status() == time_event::status::HAPPENED);
+    std::vector<ossia::simple_token_request> expected0{
+      { 44600_tv, 44600_tv + 87700_tv - 1_tv, 0_tv }
+    };
+
+    REQUIRE(c0->get_date() == 0_tv);
+
+    REQUIRE(!c0->node->requested_tokens.empty());
+    REQUIRE(c0->node->requested_tokens == expected0);
+
+    std::vector<ossia::simple_token_request> expected1{
+      { 0_tv,
+        0_tv,
+        88200_tv - 501_tv },
+      { 0_tv,
+        501_tv,
+        88200_tv - 501_tv }
+    };
+
+    REQUIRE(c1->get_date() == 501_tv);
+    REQUIRE(!c1->node->requested_tokens.empty());
+    REQUIRE(c1->node->requested_tokens == expected1);
+    REQUIRE(e2->get_status() == time_event::status::PENDING);
+  }
+}
+
 TEST_CASE ("test_musical_quarter", "test_musical_quarter")
 {
 
@@ -1263,6 +1373,110 @@ TEST_CASE ("test_musical_quarter", "test_musical_quarter")
     };
 
     REQUIRE(c1->get_date() == 3001_tv);
+    REQUIRE(!c1->node->requested_tokens.empty());
+    REQUIRE(c1->node->requested_tokens == expected1);
+    REQUIRE(e2->get_status() == time_event::status::PENDING);
+  }
+}
+
+
+TEST_CASE ("test_musical_eighth", "test_musical_eighth")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+  std::shared_ptr<time_event> e1 = create_event(scenario); e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+  std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
+
+  // assume sampling rate is 44100 -> a quarter note is 22050
+  e1->get_time_sync().set_sync_rate(8, 22050);
+
+  /*                c0                  c1
+    * e0 - - - - - - - - - - e1 - - - - - - - - - - e2
+   */
+
+  std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
+  c0->add_time_process(dummy_process());
+
+  std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+  c1->add_time_process(dummy_process());
+
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+
+  s.interval->start_and_tick();
+  {
+    s.interval->tick(50_tv, default_request());
+
+    REQUIRE(c0->get_date() == 50_tv);
+    REQUIRE(e1->get_status() == time_event::status::PENDING);
+
+    REQUIRE(c1->get_date() == 0_tv);
+    REQUIRE(e2->get_status() == time_event::status::NONE);
+  }
+
+
+  e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(1, ossia::expressions::comparator::EQUAL, 1));
+
+  // Tick a bit : nothing happens
+  {
+    ossia::token_request req;
+    req.tempo = 120;
+    req.speed = 1.;
+    req.musical_start_last_bar = 0.;
+    req.musical_end_last_bar = 0.;
+    req.musical_start_position = 50./22050.;
+    req.musical_end_position = 60./22050.;
+    req.signature = {4, 4};
+    s.interval->tick(10_tv, req);
+
+    REQUIRE(c0->get_date() == 60_tv);
+    REQUIRE(e1->get_status() == time_event::status::PENDING);
+
+    REQUIRE(c1->get_date() == 0_tv);
+    REQUIRE(e2->get_status() == time_event::status::NONE);
+  }
+
+  c0->node->requested_tokens.clear();
+  c1->node->requested_tokens.clear();
+  // Tick enough to go past the next quantification value :
+  {
+    ossia::token_request req;
+    req.tempo = 120;
+    req.speed = 1.;
+    req.musical_start_last_bar = 0.;
+    req.musical_end_last_bar = 0.;
+    req.musical_start_position = 60./22050.;
+    req.musical_end_position = (60. + 20000.) / 22050.;
+    req.signature = {4, 4};
+    std::cerr << "start musical tick:" << std::endl;
+    s.interval->tick(20000_tv, req); // go forward past the first quarter note
+    std::cerr << std::flush;
+    std::cout << std::flush;
+
+    REQUIRE(e1->get_status() == time_event::status::HAPPENED);
+    std::vector<ossia::simple_token_request> expected0{
+      { 60_tv, 11024_tv, 0_tv }
+    };
+
+    REQUIRE(c0->get_date() == 0_tv);
+
+    REQUIRE(!c0->node->requested_tokens.empty());
+    REQUIRE(c0->node->requested_tokens == expected0);
+
+    std::vector<ossia::simple_token_request> expected1{
+      { 0_tv,
+        0_tv,
+        10964_tv },
+      { 0_tv,
+        9036_tv,
+        10964_tv }
+    };
+
+    REQUIRE(c1->get_date() == 9036_tv);
     REQUIRE(!c1->node->requested_tokens.empty());
     REQUIRE(c1->node->requested_tokens == expected1);
     REQUIRE(e2->get_status() == time_event::status::PENDING);

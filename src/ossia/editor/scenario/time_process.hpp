@@ -153,4 +153,12 @@ public:
     }
   }
 };
+
+enum class sync_status
+{
+  NOT_READY,
+  RETRY,
+  DONE
+};
+
 }

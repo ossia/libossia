@@ -139,26 +139,41 @@ private:
 
   ossia::time_value m_lastDate{ossia::Infinite};
 
-  enum class sync_status
-  {
-    NOT_READY,
-    RETRY,
-    DONE
-  };
-
   static void make_happen(
       time_event& event, interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const ossia::token_request& tok);
+
   static void make_dispose(time_event& event, interval_set& stopped);
 
   sync_status process_this(time_sync& node, small_event_vec& pendingEvents,
       small_event_vec& maxReachedEvents, interval_set& started,
       interval_set& stopped, ossia::time_value tick_offset, const token_request& tok);
+
   sync_status trigger_sync(time_sync& node, small_event_vec& pending, small_event_vec& maxReachedEv,
       interval_set& started, interval_set& stopped,
       ossia::time_value tick_offset, const token_request& req, bool maxReached);
 
-  sync_status process_this_musical(time_sync& node, small_event_vec& pendingEvents, small_event_vec& maxReachedEvents, ossia::time_value tick_offset, const token_request& tok);
-  sync_status trigger_sync_musical(time_sync& node, small_event_vec& maxReachedEvents, ossia::time_value tick_offset, const token_request& req, bool maxReached);
+  sync_status process_this_musical(
+      time_sync& node, small_event_vec& pendingEvents,
+      small_event_vec& maxReachedEvents, ossia::time_value tick_offset,
+      const token_request& tok) noexcept;
+
+  sync_status trigger_sync_musical(
+      time_sync& node, small_event_vec& maxReachedEvents,
+      ossia::time_value tick_offset, const token_request& req,
+      bool maxReached) noexcept;
+
+  sync_status quantify_time_sync(
+      time_sync& sync, const ossia::token_request& tk) noexcept;
+
+  sync_status trigger_quantified_time_sync(
+      time_sync& sync, bool& maximalDurationReached) noexcept;
+
+  void run_interval(
+      ossia::time_interval& interval,
+      const ossia::token_request& tk,
+      const time_value& tick_ms,
+      ossia::time_value tick,
+      ossia::time_value offset);
 };
 }

@@ -185,19 +185,6 @@ else()
     -fdata-sections
   )
 
-  if(NOT WIN32)
-    if(NOT APPLE)
-      set(OSSIA_LINK_OPTIONS
-        -Wl,--gc-sections
-        -Wl,--as-needed
-      )
-    else()
-      set(OSSIA_LINK_OPTIONS
-        -Wl,-dead_strip
-      )
-    endif()
-  endif()
-
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
       -fvar-tracking-assignments
@@ -291,6 +278,19 @@ else()
   if(OSSIA_CI)
     if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
           set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
+    endif()
+  endif()
+
+  if(NOT WIN32)
+    if(NOT APPLE)
+      set(OSSIA_LINK_OPTIONS
+        -Wl,--gc-sections
+        -Wl,--as-needed
+      )
+    else()
+      set(OSSIA_LINK_OPTIONS
+        -Wl,-dead_strip
+      )
     endif()
   endif()
 

@@ -114,7 +114,7 @@ public:
         }
         else
         {
-          const int max = start + samples_to_write + m_start_offset - file_duration;
+          const int max = ossia::clamp(file_duration - (start + m_start_offset), 0L, samples_to_write);
           for(int k = 0, pos = start + m_start_offset;
               k < max;
               k++, pos++)
@@ -141,13 +141,17 @@ public:
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(chan);
 
-    auto samples_to_read = std::abs(t.date - t.prev_date);
-    if(samples_to_read == 0)
+    auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), t);
+    if(samples_to_write == 0)
       return;
 
-    auto samples_to_write = std::abs(e.bufferSize() - t.offset);
     if(t.speed > 0)
     {
+      if(t.prev_date < m_prev_date)
+      {
+        reset_resampler(t.prev_date);
+      }
+
       for (std::size_t i = 0; i < chan; ++i)
       {
         ap.samples[i].resize(t.offset.impl + samples_to_write);
@@ -164,6 +168,8 @@ public:
 
       ossia::snd::perform_upmix(this->upmix, chan, ap);
       ossia::snd::perform_start_offset(this->start, ap);
+
+      m_prev_date = t.date;
     }
   }
 
@@ -188,6 +194,8 @@ private:
   std::size_t m_fileSampleRate{};
   audio_handle m_handle{};
   audio_stretch_mode m_mode{};
+
+  time_value m_prev_date{};
 };
 }
 

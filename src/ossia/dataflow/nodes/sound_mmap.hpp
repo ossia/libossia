@@ -254,17 +254,17 @@ public:
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(channels);
 
-    auto samples_to_read = std::abs(t.date - t.prev_date);
-    if(samples_to_read == 0)
-      return;
-
-    auto samples_to_write = std::abs(e.bufferSize() - t.offset);
-
-    if (samples_to_read <= 0)
+    auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), t);
+    if(samples_to_write == 0)
       return;
 
     if (t.speed > 0)
     {
+      if(t.prev_date < m_prev_date)
+      {
+        reset_resampler(t.prev_date);
+      }
+
       // Allocate some space
       frame_data = nullptr;
 
@@ -285,15 +285,15 @@ public:
 
       ossia::snd::perform_upmix(this->upmix, channels, ap);
       ossia::snd::perform_start_offset(this->start, ap);
+
+      m_prev_date = t.date;
     }
     else
     {
       /* TODO */
-
     }
-
-
   }
+
   std::size_t channels() const
   {
     return m_handle ? m_handle.channels() : 0;
@@ -320,6 +320,8 @@ private:
 
   resampler m_resampler;
   audio_stretch_mode m_mode{};
+
+  time_value m_prev_date{};
 };
 
 }

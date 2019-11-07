@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 //#include <boost/math/constants/constants.hpp>
 #include <cmath>
+#include <algorithm>
 
 #include <utility>
 /**

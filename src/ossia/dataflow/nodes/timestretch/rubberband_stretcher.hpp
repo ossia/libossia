@@ -23,8 +23,8 @@ struct rubberband_stretcher
 
   }
 
-  int64_t next_sample_to_read = 0;
   RubberBand::RubberBandStretcher m_rubberBand;
+  int64_t next_sample_to_read = 0;
 
   template<typename T>
   void run(
