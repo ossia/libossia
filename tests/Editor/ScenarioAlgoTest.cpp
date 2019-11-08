@@ -23,8 +23,6 @@ auto create_event(ossia::scenario& s)
   return ee;
 }
 
-auto dummy_process() { return std::make_shared<ossia::node_process>(std::make_shared<ossia::graph_node>()); }
-
 namespace ossia
 {
 bool operator==(const std::vector<ossia::token_request>& lhs, const std::vector<ossia::simple_token_request>& rhs)

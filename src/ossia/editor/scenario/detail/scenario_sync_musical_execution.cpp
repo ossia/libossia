@@ -89,29 +89,7 @@ sync_status scenario::trigger_sync_musical(
 
     if (!sync.has_trigger_date() && sync.has_sync_rate())
     {
-      // we are asked to execute, now we must quantize to the next step
-      auto qdate = get_quantification_date(tk, sync.get_sync_rate());
-
-      if(qdate)
-      {
-        sync.set_trigger_date(*qdate);
-        auto diff_date = *qdate - tk.prev_date - 1_tv;
-        // compute the "fake max" date at which intervals must end for this to
-        // work
-        for (const std::shared_ptr<time_event>& ev : sync.get_time_events())
-        {
-          // maxReachedEvents.push_back(ev.get());
-          for (const auto& cst : ev->previous_time_intervals())
-          {
-            m_itv_end_map.insert(
-                std::make_pair(cst.get(), cst->get_date() + diff_date));
-          }
-        }
-        sync.observe_expression(false);
-        return sync_status::RETRY;
-      }
-
-      return sync_status::NOT_READY;
+      return quantify_time_sync(sync, tk);
     }
   }
   return sync_status::NOT_READY;

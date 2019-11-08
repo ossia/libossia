@@ -167,7 +167,7 @@ sync_status loop::quantify_time_sync(time_sync& sync, const ossia::token_request
     sync.set_trigger_date(*qdate);
     auto diff_date = *qdate - tk.prev_date - 1_tv;
 
-    m_sync_date = m_interval.get_date() + diff_date;
+    m_sync_date = /*m_interval.get_date() + */ diff_date;
 
     sync.observe_expression(false);
     return sync_status::RETRY;
@@ -235,6 +235,8 @@ ossia::sync_status loop::process_sync(
     }
   }
 
+  sync.m_is_being_triggered = false;
+
   // now TimeEvents will happen or be disposed
   auto& expr = ev.get_expression();
   // update any Destination value into the expression
@@ -262,6 +264,217 @@ ossia::sync_status loop::process_sync(
   return sync_status::DONE;
 }
 
+void loop::simple_tick(
+    ossia::token_request& req,
+    time_value tick_amount,
+    const time_value& itv_dur)
+{
+  if (tick_amount >= 0)
+  {
+    if (m_interval.get_date() == 0)
+    {
+      m_startEvent.tick(0_tv, req.offset);
+      m_interval.set_offset(0_tv);
+      m_interval.start();
+      m_interval.tick_current(req.offset, req);
+    }
+
+    while (tick_amount > 0)
+    {
+      // TODO this is not stateless ! we should compute
+      // it from "from"
+      const auto cur_date = m_interval.get_date();
+      if (cur_date + tick_amount < itv_dur)
+      {
+        m_interval.tick_offset(tick_amount, req.offset, req);
+        break;
+      }
+      else
+      {
+        auto this_tick = itv_dur - cur_date;
+
+        tick_amount -= this_tick;
+        m_interval.tick_offset(this_tick, req.offset, req);
+        req.offset += this_tick;
+
+        m_endEvent.tick(0_tv, req.offset);
+        m_interval.stop();
+
+        if (tick_amount > 0)
+        {
+          m_interval.offset(time_value{});
+          m_interval.start();
+          m_interval.set_offset(0_tv);
+          m_interval.tick_current(req.offset, req);
+          m_startEvent.tick(0_tv, req.offset);
+        }
+      }
+    }
+  }
+  else
+  {
+    while (tick_amount < 0)
+    {
+      const auto cur_date = m_interval.get_date();
+      if (cur_date + tick_amount >= Zero)
+      {
+        m_interval.tick_offset(tick_amount, req.offset, req);
+        break;
+      }
+      else
+      {
+        const auto& this_tick = cur_date;
+
+        tick_amount += this_tick;
+        m_interval.tick_offset(this_tick, req.offset, req);
+        req.offset += this_tick;
+
+        m_endEvent.tick(0_tv, req.offset);
+        // m_interval.stop();
+
+        if (tick_amount < 0)
+        {
+          m_interval.offset(itv_dur);
+          // m_interval.start();
+          m_startEvent.tick(0_tv, req.offset);
+        }
+      }
+    }
+  }
+}
+
+void loop::general_tick(
+    const ossia::token_request& req,
+    const ossia::time_value prev_last_date,
+    ossia::time_value tick_amount
+    )
+{
+  while(tick_amount > 0)
+  {
+    // First check the start event
+    switch (m_startEvent.get_status())
+    {
+      case time_event::status::NONE:
+      case time_event::status::PENDING:
+      {
+        process_sync(m_startNode, req, m_startEvent, true, false);
+        if (m_startEvent.get_status() != time_event::status::HAPPENED)
+        {
+          m_startEvent.set_status(time_event::status::PENDING);
+          m_endEvent.set_status(time_event::status::NONE);
+          return;
+        }
+        break;
+      }
+      case time_event::status::HAPPENED:
+        break;
+      case time_event::status::DISPOSED:
+        m_startEvent.set_status(time_event::status::PENDING);
+        m_endEvent.set_status(time_event::status::NONE);
+        return;
+    }
+
+    // If the end sync is quantized, we must adapt the tick duration.
+    if(m_endNode.get_sync_rate() > 0.)
+    {
+      if(m_endEvent.get_status() == time_event::status::PENDING)
+      {
+
+        if (*m_endNode.m_expression != expressions::expression_true()
+            && !(m_interval.get_date() >= m_interval.get_max_duration()))
+        {
+          if (!m_endNode.has_trigger_date() && !m_endNode.m_is_being_triggered)
+          {
+            if (!m_endNode.is_observing_expression())
+              expressions::update(*m_endNode.m_expression);
+
+            m_endNode.observe_expression(true);
+
+            if (m_endNode.trigger_request)
+              m_endNode.trigger_request = false;
+            else if (!expressions::evaluate(*m_endNode.m_expression))
+              goto continue_running;
+          }
+          m_endNode.m_is_being_triggered = true;
+
+          // TODO what if sync_date > interval's max date
+
+          if (!m_endNode.has_trigger_date() && m_endNode.has_sync_rate())
+          {
+            auto res = quantify_time_sync(m_endNode, req);
+            if(res == sync_status::RETRY)
+            {
+              m_interval.tick_offset(*m_sync_date, req.offset, req);
+              tick_amount -= *m_sync_date;
+              m_sync_date = ossia::none;
+
+              process_sync(m_endNode, req, m_endEvent, true, true);
+
+              stop();
+              start();
+              continue;
+            }
+          }
+        }
+      }
+    }
+continue_running:
+      // Run the interval.
+    if (prev_last_date == Infinite)
+      m_interval.tick_offset(req.date, req.offset, req);
+    else
+      m_interval.tick_offset(tick_amount, req.offset, req);
+
+    tick_amount = 0;
+
+    // Check if the end timesync can be triggered
+    switch (m_endEvent.get_status())
+    {
+      case time_event::status::NONE:
+      {
+        if (m_interval.get_date() >= m_interval.get_min_duration())
+        {
+          m_endEvent.set_status(time_event::status::PENDING);
+          process_sync(
+                m_endNode, req, m_endEvent, true,
+                m_interval.get_date() >= m_interval.get_max_duration());
+        }
+        break;
+      }
+
+      case time_event::status::PENDING:
+      {
+        process_sync(
+              m_endNode, req, m_endEvent, true,
+              m_interval.get_date() >= m_interval.get_max_duration());
+        break;
+      }
+      case time_event::status::HAPPENED:
+      case time_event::status::DISPOSED:
+        process_sync(m_endNode, req, m_endEvent, false, false);
+        break;
+    }
+
+    // We are done, put us back in the initial state
+    if (m_endEvent.get_status() == time_event::status::HAPPENED)
+    {
+      stop();
+    }
+  }
+}
+
+bool loop::is_simple() const noexcept
+{
+  return m_startNode.get_expression()
+             == ossia::expressions::expression_true()
+         && m_startEvent.get_expression()
+                == ossia::expressions::expression_true()
+         && m_endNode.get_expression()
+                == ossia::expressions::expression_true()
+         && m_endEvent.get_expression()
+                == ossia::expressions::expression_true();
+}
+
 void loop::state_impl(ossia::token_request req)
 {
   node->request(req);
@@ -275,155 +488,13 @@ void loop::state_impl(ossia::token_request req)
 
     ossia::time_value tick_amount = req.date - req.prev_date;
 
-    auto& start_ev = *m_startNode.get_time_events()[0];
-    auto& end_ev = *m_endNode.get_time_events()[0];
-    const auto& itv_dur = m_interval.get_nominal_duration();
-    auto isSimpleLoop = [&] {
-      return m_startNode.get_expression()
-                 == ossia::expressions::expression_true()
-             && start_ev.get_expression()
-                    == ossia::expressions::expression_true()
-             && m_endNode.get_expression()
-                    == ossia::expressions::expression_true()
-             && end_ev.get_expression()
-                    == ossia::expressions::expression_true();
-    };
-
-    if (isSimpleLoop())
+    if (is_simple())
     {
-      if (tick_amount >= 0)
-      {
-        if (m_interval.get_date() == 0)
-        {
-          start_ev.tick(0_tv, req.offset);
-          m_interval.set_offset(0_tv);
-          m_interval.start();
-          m_interval.tick_current(req.offset, req);
-        }
-
-        while (tick_amount > 0)
-        {
-          // TODO this is not stateless ! we should compute
-          // it from "from"
-          const auto cur_date = m_interval.get_date();
-          if (cur_date + tick_amount < itv_dur)
-          {
-            m_interval.tick_offset(tick_amount, req.offset, req);
-            break;
-          }
-          else
-          {
-            auto this_tick = itv_dur - cur_date;
-
-            tick_amount -= this_tick;
-            m_interval.tick_offset(this_tick, req.offset, req);
-            req.offset += this_tick;
-
-            end_ev.tick(0_tv, req.offset);
-            m_interval.stop();
-
-            if (tick_amount > 0)
-            {
-              m_interval.offset(time_value{});
-              m_interval.start();
-              m_interval.set_offset(0_tv);
-              m_interval.tick_current(req.offset, req);
-              start_ev.tick(0_tv, req.offset);
-            }
-          }
-        }
-      }
-      else
-      {
-        while (tick_amount < 0)
-        {
-          const auto cur_date = m_interval.get_date();
-          if (cur_date + tick_amount >= Zero)
-          {
-            m_interval.tick_offset(tick_amount, req.offset, req);
-            break;
-          }
-          else
-          {
-            const auto& this_tick = cur_date;
-
-            tick_amount += this_tick;
-            m_interval.tick_offset(this_tick, req.offset, req);
-            req.offset += this_tick;
-
-            end_ev.tick(0_tv, req.offset);
-            // m_interval.stop();
-
-            if (tick_amount < 0)
-            {
-              m_interval.offset(itv_dur);
-              // m_interval.start();
-              start_ev.tick(0_tv, req.offset);
-            }
-          }
-        }
-      }
+      simple_tick(req, tick_amount, m_interval.get_nominal_duration());
     }
     else
     {
-      switch (m_startEvent.get_status())
-      {
-        case time_event::status::NONE:
-        case time_event::status::PENDING:
-        {
-          process_sync(m_startNode, req, m_startEvent, true, false);
-          if (m_startEvent.get_status() != time_event::status::HAPPENED)
-          {
-            m_startEvent.set_status(time_event::status::PENDING);
-            m_endEvent.set_status(time_event::status::NONE);
-            return;
-          }
-          break;
-        }
-        case time_event::status::HAPPENED:
-          break;
-        case time_event::status::DISPOSED:
-          m_startEvent.set_status(time_event::status::PENDING);
-          m_endEvent.set_status(time_event::status::NONE);
-          return;
-      }
-
-      if (prev_last_date == Infinite)
-        m_interval.tick_offset(req.date, req.offset, req);
-      else
-        m_interval.tick_offset(tick_amount, req.offset, req);
-
-      switch (m_endEvent.get_status())
-      {
-        case time_event::status::NONE:
-        {
-          if (m_interval.get_date() >= m_interval.get_min_duration())
-          {
-            m_endEvent.set_status(time_event::status::PENDING);
-            process_sync(
-                m_endNode, req, m_endEvent, true,
-                m_interval.get_date() >= m_interval.get_max_duration());
-          }
-          break;
-        }
-
-        case time_event::status::PENDING:
-        {
-          process_sync(
-              m_endNode, req, m_endEvent, true,
-              m_interval.get_date() >= m_interval.get_max_duration());
-          break;
-        }
-        case time_event::status::HAPPENED:
-        case time_event::status::DISPOSED:
-          process_sync(m_endNode, req, m_endEvent, false, false);
-          break;
-      }
-
-      if (m_endEvent.get_status() == time_event::status::HAPPENED)
-      {
-        stop();
-      }
+      general_tick(req, prev_last_date, tick_amount);
     }
   }
 }
