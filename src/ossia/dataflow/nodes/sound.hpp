@@ -148,7 +148,7 @@ inline auto sample_info(int64_t bufferSize, const ossia::token_request& t)
     return _;
 
   _.samples_to_read =  std::abs(t.date - t.prev_date);
-  _.samples_to_write = std::min((int64_t)std::floor(_.samples_to_read / t.speed), bufferSize - t.offset.impl);
+  _.samples_to_write = std::min((int64_t)std::floor(_.samples_to_read / t.speed), int64_t(bufferSize - t.offset.impl / t.speed));
 
   return _;
 }
