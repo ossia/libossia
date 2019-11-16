@@ -15,6 +15,12 @@
 
 #include <spdlog/sinks/stdout_sinks.h>
 
+// double websocket server test
+// this example create a simple oscquery server that exposes its parameter through port 5678
+// you can get the namespace in a browser with : ws://127.0.0.1:5678
+// and it also creates a second web socket server to stream a webcam in JPEG on port 9003
+// to see it, open the file double_ws_server-test.html (next to this one) in a browser
+// KNOWN issue : as soon as you start the second ws server, the first one doesn't respond anymore
 
 typedef websocketpp::server<websocketpp::config::asio> server;
 
@@ -122,23 +128,31 @@ int main()
       auto& node = find_or_create_node(device, "/test/foo." + std::to_string(i));
       auto param = node.create_parameter(ossia::val_type::FLOAT);
       param->push_value(0.1 + 0.01 * i);
+      param->add_callback(printValueCallback);
 
       my_params.push_back(param);
     }
 
-    while (true)
-    {
-      using namespace std::chrono_literals;
-      std::this_thread::sleep_for(100ms);
-
-      // Update the values of the parameters with a chaotic function regularly
-      for(auto param : my_params)
+    std::thread push_thread([&](){
+      while (true)
       {
-        const auto v = param->value().get<float>();
-        param->push_value(3.7f * v * (1.f - v));
-      }
-    }
+        using namespace std::chrono_literals;
+        std::this_thread::sleep_for(1000ms);
 
-    // broadcast_server server;
-    // server.run(9003);
+        // Update the values of the parameters with a chaotic function regularly
+        for(auto param : my_params)
+        {
+          const auto v = param->value().get<float>();
+          param->push_value(3.7f * v * (1.f - v));
+        }
+      }
+    });
+    push_thread.detach();
+
+    broadcast_server server;
+    // comment the following to make ossia ws server work again
+    server.run(9003);
+
+    while(true)
+      ;
 }
