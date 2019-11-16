@@ -4,9 +4,10 @@
    <head>
       <title>DpvCam Webcontrol</title>
       <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+      <script type="text/javascript" src="lib/osc.min.js"></script>
       <script type = "text/javascript">
          function WebSocketTest() {
-            
+                       
             var elem = document.getElementById("image");
             if ("WebSocket" in window) {              
                // Let us open a web socket
@@ -27,9 +28,22 @@
                   }
                   catch(err)
                   {
-                    document.getElementById("error").innerHTML = err.message;
+                    var arrayBuffer
+                    var fileReader = new FileReader()
+                    fileReader.onload = function(event) {
+                        arrayBuffer = event.target.result
+                        var view = new DataView(arrayBuffer)
+                        const msg = new OSC.Message()
+                        msg.unpack(view)
+                        if(msg.address == "/jpeg")
+                          elem.setAttribute('src','data:image/jpeg;base64,' + msg.args)
+
+                    };
+                    fileReader.readAsArrayBuffer(evt.data);
+                    
+                    //document.getElementById("error").innerHTML = err.message;
                     // document.getElementById("inlineFrameExample").setAttribute('src', evt.data);
-                    console.log("JSON data: " + evt.data);
+                    //console.log("JSON data: " + evt.data);
 
 /*
                     var myReader = new FileReader();
@@ -84,12 +98,6 @@
          <a href = "javascript:WebSocketTest()">Run WebSocket</a>
       </div>
       <img id="image" src="" width="1280" height="720"/>
-      <p id="error"></p>  
-      <iframe id="inlineFrameExample"
-    title="Inline Frame Example"
-    width="300"
-    height="800"
-    src="">
-</iframe>
+      <p id="error"></p>
    </body>
 </html>
