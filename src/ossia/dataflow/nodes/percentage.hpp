@@ -14,10 +14,10 @@ public:
   }
 
   void
-  run(ossia::token_request tk, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     outputs().back()->data.target<ossia::value_port>()->write_value(
-        (float)tk.position(), tk.tick_start());
+        (float)tk.position(), e.physical_start(tk));
   }
 };
 }

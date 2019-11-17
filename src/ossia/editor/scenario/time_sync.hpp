@@ -177,7 +177,7 @@ private:
   optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = 22050.;
+  double m_quarter_duration = 705600000. / 2.;
   time_value m_trigger_date = Infinite;
   status m_status : 2;
   bool m_observe : 1;

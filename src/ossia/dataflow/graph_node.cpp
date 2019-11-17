@@ -132,7 +132,7 @@ bool graph_node::consumes(const execution_state&) const noexcept
   return false;
 }
 
-void graph_node::run(token_request t, exec_state_facade) noexcept
+void graph_node::run(const token_request& t, exec_state_facade) noexcept
 {
 }
 

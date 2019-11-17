@@ -12,7 +12,7 @@ public:
   {
   }
 
-  void run(ossia::token_request, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request&, ossia::exec_state_facade e) noexcept override
   {
     for (auto& msg : data)
     {

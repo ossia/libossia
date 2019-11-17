@@ -162,8 +162,8 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
       return ossia::buffer_tick<commit_policy>{st, g, itv};
     else if (tick == tick_setup_options::Precise)
       return ossia::precise_score_tick<commit_policy>{st, g, itv};
-    else if (tick == tick_setup_options::ScoreAccurate)
-      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    //else if (tick == tick_setup_options::ScoreAccurate)
+    //  return ossia::split_score_tick<commit_policy>{st, g, itv};
     else
       return ossia::buffer_tick<commit_policy>{st, g, itv};
   }
@@ -175,8 +175,8 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
       return ossia::buffer_tick<commit_policy>{st, g, itv};
     else if (tick == tick_setup_options::Precise)
       return ossia::precise_score_tick<commit_policy>{st, g, itv};
-    else if (tick == tick_setup_options::ScoreAccurate)
-      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    //else if (tick == tick_setup_options::ScoreAccurate)
+    //  return ossia::split_score_tick<commit_policy>{st, g, itv};
     else
       return ossia::buffer_tick<commit_policy>{st, g, itv};
   }
@@ -188,8 +188,8 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
       return ossia::buffer_tick<commit_policy>{st, g, itv};
     else if (tick == tick_setup_options::Precise)
       return ossia::precise_score_tick<commit_policy>{st, g, itv};
-    else if (tick == tick_setup_options::ScoreAccurate)
-      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    //else if (tick == tick_setup_options::ScoreAccurate)
+    //  return ossia::split_score_tick<commit_policy>{st, g, itv};
     else
       return ossia::buffer_tick<commit_policy>{st, g, itv};
   }
@@ -201,8 +201,8 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
       return ossia::buffer_tick<commit_policy>{st, g, itv};
     else if (tick == tick_setup_options::Precise)
       return ossia::precise_score_tick<commit_policy>{st, g, itv};
-    else if (tick == tick_setup_options::ScoreAccurate)
-      return ossia::split_score_tick<commit_policy>{st, g, itv};
+    //else if (tick == tick_setup_options::ScoreAccurate)
+    //  return ossia::split_score_tick<commit_policy>{st, g, itv};
     else
       return ossia::buffer_tick<commit_policy>{st, g, itv};
   }

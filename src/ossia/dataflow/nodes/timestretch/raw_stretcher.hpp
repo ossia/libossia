@@ -30,14 +30,15 @@ struct raw_stretcher
       const int64_t len,
       const int64_t samples_to_read,
       const int64_t samples_to_write,
+      const int64_t samples_offset,
       ossia::audio_port& ap
       ) noexcept
   {
-    if (t.date > t.prev_date)
+    if (t.forward())
     {
       double** output = (double**)alloca(sizeof(double*) * chan);
       for (std::size_t i = 0; i < chan; i++)
-        output[i] = ap.samples[i].data() + t.offset.impl;
+        output[i] = ap.samples[i].data() + samples_offset;
 
       audio_fetcher.fetch_audio(next_sample_to_read, samples_to_write, output);
       next_sample_to_read += samples_to_write;

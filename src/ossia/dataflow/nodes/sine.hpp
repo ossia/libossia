@@ -47,7 +47,7 @@ public:
     m_outlets.push_back(&audio_out);
   }
   void
-  run(const ossia::token_request t,
+  run(const ossia::token_request& t,
       ossia::exec_state_facade st) noexcept override
   {
     auto& vals = freq_in.data.target<ossia::value_port>()->get_data();
@@ -56,13 +56,16 @@ public:
           ossia::convert<float>(vals.back().value), 0.f, 20000.f);
 
     auto& audio = audio_out.data.target<ossia::audio_port>()->samples;
-    if (auto N = t.date - t.prev_date; N > 0)
+    auto N = t.physical_write_duration(st.modelToSamples());
+    auto tick_start = t.physical_start(st.modelToSamples());
+
+    if (N > 0)
     {
       audio.resize(1);
-      audio[0].resize(t.offset.impl + N);
+      audio[0].resize(tick_start + N);
 
 #if BOOST_COMP_GNUC
-      for (int64_t i = t.offset.impl; i < t.offset.impl + N; i++)
+      for (int64_t i = tick_start; i < tick_start + N; i++)
       {
         audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate());
       }
@@ -72,7 +75,7 @@ public:
       const auto fs = st.sampleRate();
       auto frequ_cos = std::cos(ossia::two_pi * freq / fs);
       auto frequ_sin = std::sin(ossia::two_pi * freq / fs);
-      for (int64_t i = t.offset.impl; i < t.offset.impl + N; i++)
+      for (int64_t i =tick_start; i < tick_start + N; i++)
       {
         auto new_cos = m_cos * frequ_cos - m_sin * frequ_sin;
         auto new_sin = m_cos * frequ_sin + m_sin * frequ_cos;

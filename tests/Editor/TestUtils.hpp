@@ -156,13 +156,19 @@ inline QDebug operator<<(QDebug d, const ossia::time_value&  s)
 namespace ossia
 {
 inline
+std::ostream& operator<<(std::ostream& d, const ossia::time_value& t)
+{
+  d << t.impl;
+  return d;
+}
+inline
 std::ostream& operator<<(std::ostream& d, const ossia::token_request& t)
 {
   d
-    << (int64_t)t.prev_date << " -> "
-    << (int64_t)t.date << " "
-    << (int64_t)t.offset << " "
-    << (int64_t)t.parent_duration << " "
+    << t.prev_date << " -> "
+    << t.date << " "
+    << t.offset << " "
+    << t.parent_duration << " "
     << t.start_discontinuous << " "
     << t.end_discontinuous;
   return d;
@@ -171,10 +177,10 @@ inline
 std::ostream& operator<<(std::ostream& d, const ossia::simple_token_request& t)
 {
   d
-      << (int64_t)t.prev_date << " -> "
-      << (int64_t)t.date << " "
-      << (int64_t)t.offset << " "
-      << (int64_t)t.parent_duration << " "
+      << t.prev_date << " -> "
+      << t.date << " "
+      << t.offset << " "
+      << t.parent_duration << " "
       << t.start_discontinuous << " "
       << t.end_discontinuous;
   return d;

@@ -74,6 +74,7 @@ endif()
 if(OSSIA_DATAFLOW)
   ossia_add_test(DataflowTest                "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/DataflowTest.cpp")
   ossia_add_test(TickMethodTest              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TickMethodTest.cpp")
+  ossia_add_test(TokenRequestTest            "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TokenRequestTest.cpp")
   ossia_add_test(SoundTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SoundTest.cpp")
 endif()
 

@@ -23,7 +23,7 @@ struct precise_tick
 {
   template <typename TickFun, typename... Args>
   void operator()(
-      TickFun&& f, ossia::token_request req,
+      TickFun&& f, const ossia::token_request& req,
       const ossia::safe_nodes::timed_vec<Args>&... arg)
   {
     auto iterators = std::make_tuple(arg.begin()...);
@@ -72,9 +72,9 @@ struct precise_tick
         {
           auto next = it;
           ++next;
-          const auto next_ts = timestamp(*next);
+          const auto next_ts = time_value{timestamp(*next)};
           const auto diff = next_ts - current_time;
-          if (diff < 0)
+          if (diff < 0_tv)
           {
             // token before offset, we increment in all cases
             it = next;

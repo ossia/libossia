@@ -9,8 +9,22 @@
 
 #include <algorithm>
 #include <iostream>
+#include <boost/config.hpp>
 namespace ossia
 {
+double time_interval::get_speed(time_value date) const noexcept
+{
+  if(BOOST_LIKELY(!m_hasTempo))
+  {
+    return m_speed;
+  }
+  else
+  {
+    auto t = m_tempoCurve.value_at(date.impl);
+    return m_speed * t / 120.;
+  }
+}
+
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date,
     ossia::time_value offset, const ossia::token_request& parent_request)
@@ -21,6 +35,14 @@ void time_interval::tick_impl(
   m_current_signature = signature(old_date, parent_request);
   m_current_tempo = tempo(old_date, parent_request);
 
+  if(m_hasTempo)
+  {
+    m_globalSpeed = get_speed(old_date);
+  }
+  else
+  {
+    m_globalSpeed = m_parentSpeed * m_speed;
+  }
   if(m_hasSignature)
   {
     // Compute the amount of bars for each signature change.
@@ -33,28 +55,28 @@ void time_interval::tick_impl(
 
 
     {
-      const double num_quarters = old_date / m_quarter_duration;
+      const double num_quarters = old_date.impl / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, old_date);
 
-      auto quarters_since_last_measure_change = (old_date - time) / m_quarter_duration;
-      auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
+      auto quarters_since_last_measure_change = (old_date - time).impl / m_quarter_duration;
+      auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
-      m_musical_start_last_bar = (time / m_quarter_duration + bars_since_last_measure_change);
+      m_musical_start_last_bar = (time.impl / m_quarter_duration + bars_since_last_measure_change);
       m_musical_start_position = num_quarters;
     }
 
     {
-      const double num_quarters = new_date / m_quarter_duration;
+      const double num_quarters = new_date.impl / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, new_date);
 
-      auto quarters_since_last_measure_change = (new_date - time) / m_quarter_duration;
-      auto quarters_in_bar = (4 * (double(sig.upper) / sig.lower));
+      auto quarters_since_last_measure_change = (new_date - time).impl / m_quarter_duration;
+      auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
-      m_musical_end_last_bar = (time / m_quarter_duration + bars_since_last_measure_change);
+      m_musical_end_last_bar = (time.impl / m_quarter_duration + bars_since_last_measure_change);
       m_musical_end_position = num_quarters;
     }
   }
@@ -80,12 +102,31 @@ void time_interval::tick_current(ossia::time_value offset, const ossia::token_re
 void time_interval::tick(time_value date, const ossia::token_request& parent_request, double ratio)
 {
   tick_impl(
-      m_date, m_date + std::ceil(date.impl * m_speed / ratio), m_tick_offset, parent_request);
+      m_date, m_date + std::ceil(date.impl * get_speed(m_date) / ratio), m_tick_offset, parent_request);
 }
 
 void time_interval::tick_offset(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
 {
-  tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset, parent_request);
+  if(BOOST_UNLIKELY(m_hasTempo && parent_request.speed != 0))
+  {
+    // TODO : use this formula to compute the exact date at which we must end for this tick
+    // t = beat / (t0/2 + ta/2)
+    // we must find the equivalent constant tempo that would make us end at the exact same
+    // date than a proper linear interpolation
+    auto beat = date - m_date;
+    auto t0 = m_tempoCurve.value_at(m_date.impl);
+    auto ta = m_tempoCurve.value_at(date.impl);
+
+    // absolute tempo given : we negate the speed of the parent
+    // todo : this should be done outside for the scenario
+    double speed = (m_speed * t0 / 120.) / parent_request.speed;
+
+    tick_impl(m_date, m_date + std::ceil(date.impl * speed), offset, parent_request);
+  }
+  else
+  {
+    tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset, parent_request);
+  }
 }
 
 void time_interval::tick_offset_speed_precomputed(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
@@ -411,7 +452,8 @@ void time_interval::mute(bool m)
 
 void time_interval::set_tempo_curve(optional<tempo_curve> curve)
 {
-  if((m_hasTempo = bool(curve)))
+  m_hasTempo = bool(curve);
+  if(m_hasTempo)
     m_tempoCurve = *std::move(curve);
   else
     m_tempoCurve.reset();

@@ -30,7 +30,7 @@ loop::loop(
                  patternDuration}
 {
   node = std::make_shared<ossia::nodes::loop>();
-  if (patternDuration <= 0)
+  if (patternDuration <= 0_tv)
   {
     throw std::runtime_error{"Loop duration cannot be null"};
   }
@@ -45,7 +45,7 @@ loop::~loop()
 void loop::offset_impl(ossia::time_value offset)
 {
   time_value patternOffset{int64_t(
-      std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
+      std::fmod((double)offset.impl, (double)m_interval.get_nominal_duration().impl))};
   m_interval.offset(patternOffset);
   m_lastDate = offset;
   /*
@@ -75,7 +75,7 @@ void loop::offset_impl(ossia::time_value offset)
 void loop::transport_impl(ossia::time_value offset)
 {
   time_value patternOffset{int64_t(
-      std::fmod((double)offset, (double)m_interval.get_nominal_duration()))};
+      std::fmod((double)offset.impl, (double)m_interval.get_nominal_duration().impl))};
   m_interval.transport(patternOffset);
   m_lastDate = offset;
 }
@@ -269,9 +269,9 @@ void loop::simple_tick(
     time_value tick_amount,
     const time_value& itv_dur)
 {
-  if (tick_amount >= 0)
+  if (tick_amount >= 0_tv)
   {
-    if (m_interval.get_date() == 0)
+    if (m_interval.get_date() == 0_tv)
     {
       m_startEvent.tick(0_tv, req.offset);
       m_interval.set_offset(0_tv);
@@ -279,7 +279,7 @@ void loop::simple_tick(
       m_interval.tick_current(req.offset, req);
     }
 
-    while (tick_amount > 0)
+    while (tick_amount > 0_tv)
     {
       // TODO this is not stateless ! we should compute
       // it from "from"
@@ -300,7 +300,7 @@ void loop::simple_tick(
         m_endEvent.tick(0_tv, req.offset);
         m_interval.stop();
 
-        if (tick_amount > 0)
+        if (tick_amount > 0_tv)
         {
           m_interval.offset(time_value{});
           m_interval.start();
@@ -313,7 +313,7 @@ void loop::simple_tick(
   }
   else
   {
-    while (tick_amount < 0)
+    while (tick_amount < 0_tv)
     {
       const auto cur_date = m_interval.get_date();
       if (cur_date + tick_amount >= Zero)
@@ -332,7 +332,7 @@ void loop::simple_tick(
         m_endEvent.tick(0_tv, req.offset);
         // m_interval.stop();
 
-        if (tick_amount < 0)
+        if (tick_amount < 0_tv)
         {
           m_interval.offset(itv_dur);
           // m_interval.start();
@@ -349,7 +349,7 @@ void loop::general_tick(
     ossia::time_value tick_amount
     )
 {
-  while(tick_amount > 0)
+  while(tick_amount > 0_tv)
   {
     // First check the start event
     switch (m_startEvent.get_status())

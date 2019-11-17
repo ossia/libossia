@@ -33,7 +33,7 @@ TEST_CASE ("test_basic", "test_basic")
 
   REQUIRE(c.get_granularity() == 1._tv);
   REQUIRE(interval->get_offset() == 0._tv);
-  REQUIRE(interval->get_speed() == 1._tv);
+  REQUIRE(interval->get_internal_speed() == 1.);
   REQUIRE(interval->get_nominal_duration() == 1000._tv);
   REQUIRE(interval->get_min_duration() == 0._tv);
   REQUIRE(interval->get_max_duration() == Infinite);
@@ -41,14 +41,14 @@ TEST_CASE ("test_basic", "test_basic")
   using namespace std::literals;
 
   c.set_granularity(50ms);
-  interval->set_speed(2._tv);
+  interval->set_speed(2.);
   interval->set_nominal_duration(2000._tv);
   interval->set_min_duration(1000._tv);
   interval->set_max_duration(3000._tv);
   interval->offset(500._tv);
 
   REQUIRE(c.get_granularity() == 50000._tv);
-  REQUIRE(interval->get_speed() == 2._tv);
+  REQUIRE(interval->get_internal_speed() == 2.);
   REQUIRE(interval->get_nominal_duration() == 2000._tv);
   REQUIRE(interval->get_min_duration() == 1000._tv);
   REQUIRE(interval->get_max_duration() == 3000._tv);

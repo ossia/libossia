@@ -152,11 +152,11 @@ struct faust_exec_ui final : UI
 
 /// Execution ///
 template <typename Node, typename Dsp>
-void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
+void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
 {
-  if (tk.date > tk.prev_date)
+  if (tk.forward())
   {
-    std::size_t d = tk.date - tk.prev_date;
+    int64_t d = tk.physical_write_duration(e.modelToSamples());
     for (auto ctrl : self.controls)
     {
       auto& dat = ctrl.first->get_data();
@@ -171,8 +171,8 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
     auto& audio_out
         = *self.outputs()[0]->data.template target<ossia::audio_port>();
 
-    const std::size_t n_in = dsp.getNumInputs();
-    const std::size_t n_out = dsp.getNumOutputs();
+    const int64_t n_in = dsp.getNumInputs();
+    const int64_t n_out = dsp.getNumOutputs();
 
     float* inputs_ = (float*)alloca(n_in * d * sizeof(float));
     float* outputs_ = (float*)alloca(n_out * d * sizeof(float));
@@ -182,21 +182,21 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
 
     // Copy inputs
     // TODO offset !!!
-    for (std::size_t i = 0; i < n_in; i++)
+    for (int64_t i = 0; i < n_in; i++)
     {
       input_n[i] = inputs_ + i * d;
       if (audio_in.samples.size() > i)
       {
         auto num_samples = std::min(
-            (std::size_t)d, (std::size_t)audio_in.samples[i].size());
-        for (std::size_t j = 0; j < num_samples; j++)
+            (int64_t)d, (int64_t)audio_in.samples[i].size());
+        for (int64_t j = 0; j < num_samples; j++)
         {
           input_n[i][j] = (float)audio_in.samples[i][j];
         }
 
         if (d > audio_in.samples[i].size())
         {
-          for (std::size_t j = audio_in.samples[i].size(); j < d; j++)
+          for (int64_t j = audio_in.samples[i].size(); j < d; j++)
           {
             input_n[i][j] = 0.f;
           }
@@ -204,17 +204,17 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
       }
       else
       {
-        for (std::size_t j = 0; j < d; j++)
+        for (int64_t j = 0; j < d; j++)
         {
           input_n[i][j] = 0.f;
         }
       }
     }
 
-    for (std::size_t i = 0; i < n_out; i++)
+    for (int64_t i = 0; i < n_out; i++)
     {
       output_n[i] = outputs_ + i * d;
-      for (std::size_t j = 0; j < d; j++)
+      for (int64_t j = 0; j < d; j++)
       {
         output_n[i][j] = 0.f;
       }
@@ -223,10 +223,10 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
     dsp.compute(d, input_n, output_n);
 
     audio_out.samples.resize(n_out);
-    for (std::size_t i = 0; i < n_out; i++)
+    for (int64_t i = 0; i < n_out; i++)
     {
       audio_out.samples[i].resize(d);
-      for (std::size_t j = 0; j < d; j++)
+      for (int64_t j = 0; j < d; j++)
       {
         audio_out.samples[i][j] = (double)output_n[i][j];
       }
@@ -243,11 +243,11 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk)
 
 /// Synth ///
 template <typename Node, typename DspPoly>
-void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk)
+void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
 {
-  if (tk.date > tk.prev_date)
+  if (tk.forward())
   {
-    std::size_t d = tk.date - tk.prev_date;
+    int64_t d = tk.physical_write_duration(e.modelToSamples());
     for (auto ctrl : self.controls)
     {
       auto& dat = ctrl.first->get_data();
@@ -262,8 +262,8 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk)
     auto& audio_out
         = *self.outputs()[0]->data.template target<ossia::audio_port>();
 
-    const std::size_t n_in = dsp.getNumInputs();
-    const std::size_t n_out = dsp.getNumOutputs();
+    const int64_t n_in = dsp.getNumInputs();
+    const int64_t n_out = dsp.getNumOutputs();
 
     float* inputs_ = (float*)alloca(n_in * d * sizeof(float));
     float* outputs_ = (float*)alloca(n_out * d * sizeof(float));
@@ -304,19 +304,19 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk)
       }
     }
 
-    for (std::size_t i = 0; i < n_in; i++)
+    for (int64_t i = 0; i < n_in; i++)
     {
       input_n[i] = inputs_ + i * d;
-      for (std::size_t j = 0; j < d; j++)
+      for (int64_t j = 0; j < d; j++)
       {
         input_n[i][j] = 0.f;
       }
     }
 
-    for (std::size_t i = 0; i < n_out; i++)
+    for (int64_t i = 0; i < n_out; i++)
     {
       output_n[i] = outputs_ + i * d;
-      for (std::size_t j = 0; j < d; j++)
+      for (int64_t j = 0; j < d; j++)
       {
         output_n[i][j] = 0.f;
       }
@@ -325,10 +325,10 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk)
     dsp.compute(d, input_n, output_n);
 
     audio_out.samples.resize(n_out);
-    for (std::size_t i = 0; i < n_out; i++)
+    for (int64_t i = 0; i < n_out; i++)
     {
       audio_out.samples[i].resize(d);
-      for (std::size_t j = 0; j < d; j++)
+      for (int64_t j = 0; j < d; j++)
       {
         audio_out.samples[i][j] = (double)output_n[i][j];
       }

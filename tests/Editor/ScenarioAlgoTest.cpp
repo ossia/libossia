@@ -1239,8 +1239,8 @@ TEST_CASE ("test_musical_bar_offset", "test_musical_bar_offset")
     req.speed = 1.;
     req.musical_start_last_bar = 8.;
     req.musical_end_last_bar = 12.;
-    req.musical_start_position = (88200_tv * 2 + 500_tv) / 22050.;
-    req.musical_end_position = (88200_tv * 3 + 500_tv) / 22050.;
+    req.musical_start_position = (88200_tv * 2 + 500_tv).impl / 22050.;
+    req.musical_end_position = (88200_tv * 3 + 500_tv).impl / 22050.;
     req.signature = {4, 4};
     std::cerr << "start musical tick:" << std::endl;
     s.interval->tick(88200_tv, req); // go forward a whole bar

@@ -40,33 +40,33 @@ class OSSIA_EXPORT time_interval
 public:
   const std::shared_ptr<ossia::graph_node> node;
 
-  auto get_date() const
+  auto get_date() const noexcept
   {
     return m_date;
   }
-  auto get_offset() const
+  auto get_offset() const noexcept
   {
     return m_offset;
   }
-  auto get_speed() const
+  double get_internal_speed() const noexcept
   {
     return m_speed;
   }
-  void set_offset(ossia::time_value g)
+
+  double get_speed(time_value date) const noexcept;
+  void set_offset(ossia::time_value g) noexcept
   {
     m_offset = g;
   }
 
-  void set_speed(double g)
+  void set_speed(double g) noexcept
   {
     m_speed = g;
-    m_globalSpeed = m_parentSpeed * m_speed;
   }
 
-  void set_parent_speed(double sp)
+  void set_parent_speed(double sp) noexcept
   {
     m_parentSpeed = sp;
-    m_globalSpeed = m_parentSpeed * m_speed;
   }
 
   void tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
@@ -253,7 +253,7 @@ private:
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   time_signature m_current_signature{};
-  double m_quarter_duration{22050};
+  double m_quarter_duration{705600000. / 2.};
   bool m_running{false};
   bool m_hasTempo{false};
   bool m_hasSignature{false};

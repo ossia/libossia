@@ -115,8 +115,10 @@ struct buffer_tick
     st.bufferSize = (int)frameCount;
     // we could run a syscall and call now() but that's a bit more costly.
     st.cur_date = seconds * 1e9;
+
+    const auto flicks = frameCount * st.samplesToModelRatio;
     const ossia::token_request tok{};
-    itv.tick_offset(ossia::time_value{int64_t(frameCount)}, 0_tv, tok);
+    itv.tick_offset(ossia::time_value{int64_t(flicks)}, 0_tv, tok);
     g.state(st);
     (st.*Commit)();
   }
@@ -148,6 +150,7 @@ struct precise_score_tick
   }
 };
 
+/*
 template <void (ossia::execution_state::*Commit)()>
 struct split_score_tick
 {
@@ -171,7 +174,7 @@ public:
     {
       if (it->date > cur_date)
       {
-        auto token_end_offset = it->offset + std::abs(it->date - cur_date);
+        auto token_end_offset = it->offset + abs(it->date - cur_date);
         auto start_it = cuts.upper_bound(it->offset);
         while (start_it != cuts.end() && (*start_it) < token_end_offset)
         {
@@ -202,8 +205,8 @@ public:
     {
       for (const auto& tk : node->requested_tokens)
       {
-        cuts.insert(tk.offset);
-        cuts.insert(tk.offset + std::abs(tk.date - tk.prev_date));
+        cuts.insert(tk.offset.impl);
+        cuts.insert((tk.offset + abs(tk.date - tk.prev_date)).impl);
       }
     }
 
@@ -260,6 +263,7 @@ private:
       std::pair<ossia::token_request_vec, ossia::token_request_vec::iterator>>
       requests;
 };
+*/
 #if defined(SCORE_BENCHMARK)
 template <typename BaseTick>
 struct benchmark_score_tick

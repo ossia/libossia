@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-//#include <boost/math/constants/constants.hpp>
 #include <cmath>
 #include <algorithm>
 
@@ -62,6 +61,25 @@ auto norm(T x, T y, T z) noexcept
 inline constexpr size_t constexpr_log2(size_t n) noexcept
 {
   return ((n < 2) ? 0 : 1 + constexpr_log2(n / 2));
+}
+
+template<typename T>
+inline constexpr size_t constexpr_abs(T n) noexcept
+{
+  return n < 0 ? -n : n;
+}
+
+// https://github.com/a2flo/floor/blob/master/constexpr/const_math.hpp#L251
+template<typename T>
+inline constexpr int64_t constexpr_floor(T val) noexcept
+{
+  const auto val_int = (int64_t) val;
+  const T fval_int = (T)val_int;
+  return (val >= (T)0
+          ? fval_int
+          : (val == fval_int
+             ? val
+             : fval_int - 1));
 }
 
 /**

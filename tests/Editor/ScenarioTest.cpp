@@ -11,6 +11,7 @@
 
 #include <functional>
 #include <iostream>
+#include "TestUtils.hpp"
 
 using namespace ossia;
 using namespace std::placeholders;
@@ -46,18 +47,18 @@ void event_callback(time_event::status newStatus)
     }
     case time_event::status::PENDING:
     {
-      std::cout << "Event PENDING at " << double(date) << " ms" << std::endl;
+      std::cout << "Event PENDING at " << date << " ms" << std::endl;
       break;
     }
     case time_event::status::HAPPENED:
     {
-      std::cout << "Event HAPPENED at " << double(date) << " ms" << std::endl;
+      std::cout << "Event HAPPENED at " << date << " ms" << std::endl;
       events_date.push_back(date);
       break;
     }
     case time_event::status::DISPOSED:
     {
-      std::cout << "Event DISPOSED at " << double(date) << " ms" << std::endl;
+      std::cout << "Event DISPOSED at " << date << " ms" << std::endl;
       break;
     }
   }
@@ -75,7 +76,7 @@ TEST_CASE ("test_basic", "test_basic")
   REQUIRE(scenar->get_time_syncs().size() == 1);
   REQUIRE(scenar->get_time_intervals().size() == 0);
 
-  REQUIRE(scenar->get_start_time_sync()->get_date() == 0.);
+  REQUIRE(scenar->get_start_time_sync()->get_date() == 0_tv);
 
   auto e_callback = std::bind(&event_callback, _1);
   auto start_event = *(scenar->get_start_time_sync()->emplace(
@@ -159,9 +160,9 @@ TEST_CASE ("test_execution", "test_execution")
 
   main_interval->add_time_process(std::move(main_scenario));
 
-  main_interval->set_speed(1._tv);
-  first_interval->set_speed(1._tv);
-  second_interval->set_speed(1._tv);
+  main_interval->set_speed(1.);
+  first_interval->set_speed(1.);
+  second_interval->set_speed(1.);
 
   events_date.clear();
   c.start_and_tick();

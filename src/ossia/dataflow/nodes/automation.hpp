@@ -65,10 +65,11 @@ public:
 
 private:
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     if (!m_drive)
       return;
+    const auto tick_start = e.physical_start(t);
 
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
     vp->write_value(
@@ -76,7 +77,7 @@ private:
             ossia::detail::compute_value_visitor{t.position(),
                                                  ossia::val_type::FLOAT},
             m_drive),
-        t.tick_start());
+        tick_start);
   }
 
   ossia::behavior m_drive;

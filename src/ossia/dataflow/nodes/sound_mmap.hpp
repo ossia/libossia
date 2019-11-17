@@ -116,7 +116,7 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos =  this->m_start_offset + ((start + k) % this->m_loop_duration);
+        int pos =  this->m_start_offset_samples + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -154,7 +154,7 @@ public:
         source[i] = gsl::span(m_resampleBuffer[i].data(), samples_to_write);
       }
 
-      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset);
+      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
       if(!ok)
       {
         for(int i = 0; i < channels; i++)
@@ -187,7 +187,7 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos =  this->m_start_offset + ((start + k) % this->m_loop_duration);
+        int pos =  this->m_start_offset_samples + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -225,7 +225,7 @@ public:
         source[i] = gsl::span(audio_array[i], samples_to_write);
       }
 
-      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset);
+      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
       if(!ok)
       {
         for(int i = 0; i < channels; i++)
@@ -243,7 +243,7 @@ public:
   }
 
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     if(!m_handle)
       return;
@@ -254,10 +254,13 @@ public:
     ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
     ap.samples.resize(channels);
 
-    auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), t);
+    const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_write == 0)
       return;
 
+    assert(samples_to_write > 0);
+
+    const auto samples_offset = t.physical_start(e.modelToSamples());
     if (t.speed > 0)
     {
       if(t.prev_date < m_prev_date)
@@ -270,17 +273,20 @@ public:
 
       for (std::size_t chan = 0; chan < channels; chan++)
       {
-        ap.samples[chan].resize(t.offset.impl + samples_to_write);
+        ap.samples[chan].resize(e.bufferSize());
       }
 
+      m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples();
+      m_start_offset_samples = m_start_offset.impl * e.modelToSamples();
+
       // resample
-      m_resampler.run(*this, t, e, channels, len, samples_to_read, samples_to_write, ap);
+      m_resampler.run(*this, t, e, channels, len, samples_to_read, samples_to_write, samples_offset, ap);
 
       for (std::size_t chan = 0; chan < channels; chan++)
       {
         // fade
         snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[chan],
-                     t.offset.impl, samples_to_read);
+                     samples_offset, samples_to_read);
       }
 
       ossia::snd::perform_upmix(this->upmix, channels, ap);
@@ -322,6 +328,9 @@ private:
   audio_stretch_mode m_mode{};
 
   time_value m_prev_date{};
+
+  int64_t m_loop_duration_samples{};
+  int64_t m_start_offset_samples{};
 };
 
 }

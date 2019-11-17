@@ -16,7 +16,7 @@ public:
     m_outlets.push_back(&midi_out);
   }
 
-  void run(token_request t, exec_state_facade) noexcept override
+  void run(const token_request& t, exec_state_facade) noexcept override
   {
     {
       auto i = audio_in.data.target<ossia::audio_port>();

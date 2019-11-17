@@ -6,6 +6,7 @@
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include "../Editor/TestUtils.hpp"
 #include "../Network/TestUtils.hpp"
 
 namespace ossia
@@ -26,7 +27,7 @@ public:
   }
 
   std::function<void(token_request t, exec_state_facade e)> fun;
-  void run(token_request t, exec_state_facade e) noexcept override
+  void run(const token_request& t, exec_state_facade e) noexcept override
   {
     if(fun)
       fun(t, e);
@@ -102,7 +103,7 @@ struct debug_mock
     if(auto n = node.lock())
     {
       std::cerr << factor << tk.date;
-      messages.emplace_back(factor, tk.date);
+      messages.emplace_back(factor, tk.date.impl);
     }
   }
   static std::vector<std::pair<int, int>> messages;
@@ -125,7 +126,7 @@ struct execution_mock
       if(auto val = elt.value.target<std::vector<ossia::value>>())
       {
         auto v = *val;
-        v.push_back(factor * (1+int(tk.date)));
+        v.push_back(factor * (1 + tk.date.impl));
         out_port.write_value(std::move(v), 0);
       }
     }

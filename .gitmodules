@@ -117,3 +117,6 @@
 [submodule "3rdparty/libsamplerate"]
 	path = 3rdparty/libsamplerate
 	url = https://github.com/erikd/libsamplerate
+[submodule "3rdparty/Flicks"]
+	path = 3rdparty/Flicks
+	url = https://github.com/OculusVR/Flicks

@@ -281,7 +281,7 @@ public:
   }
 
   void
-  run(ossia::token_request tk, ossia::exec_state_facade st) noexcept override
+  run(const ossia::token_request& tk, ossia::exec_state_facade st) noexcept override
   {
     using inlets_indices = std::make_index_sequence<info::control_start>;
     using controls_indices = std::make_index_sequence<info::control_count>;

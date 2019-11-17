@@ -63,12 +63,13 @@ struct repitch_stretcher
       const int64_t len,
       int64_t samples_to_read,
       const int64_t samples_to_write,
+      const int64_t samples_offset,
       ossia::audio_port& ap) noexcept
   {
     assert(chan > 0);
 
     input_channels.resize(chan);
-    for(int i = 0; i < chan; i++)
+    for(std::size_t i = 0; i < chan; i++)
     {
       repitchers[i].input_buffer.resize(std::max(16L, samples_to_read));
       input_channels[i] = repitchers[i].input_buffer.data();
@@ -122,7 +123,7 @@ struct repitch_stretcher
       auto it = repitchers[i].data.begin();
       for(int j = 0; j < samples_to_write; j++)
       {
-        ap.samples[i][j + t.offset] = double(*it);
+        ap.samples[i][j + samples_offset] = double(*it);
         ++it;
       }
 

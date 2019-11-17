@@ -35,7 +35,7 @@ public:
 
 private:
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
     const auto date = t.date;
@@ -66,7 +66,7 @@ private:
       {
         m_metroPrevTick = elapsed - cur;
         vp->write_value(
-            ossia::impulse{}, t.tick_start()); // TODO offset is wrong here
+            ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
     else if (date < t.prev_date)
@@ -82,7 +82,7 @@ private:
       {
         m_metroPrevTick = elapsed - cur;
         vp->write_value(
-            ossia::impulse{}, t.tick_start()); // TODO offset is wrong here
+            ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
   }

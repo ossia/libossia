@@ -10,8 +10,8 @@ namespace ossia::nodes
 using midi_size_t = uint8_t;
 struct note_data
 {
-  int64_t start{};
-  int64_t duration{};
+  time_value start{};
+  time_value duration{};
 
   midi_size_t pitch{};
   midi_size_t velocity{};
@@ -25,7 +25,7 @@ struct note_comparator
   }
   bool operator()(const note_data& lhs, int64_t rhs) const
   {
-    return lhs.start < rhs;
+    return lhs.start.impl < rhs;
   }
 };
 
@@ -144,15 +144,16 @@ public:
 
 private:
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     ossia::midi_port* mp = midi_out.data.target<ossia::midi_port>();
-
+    const auto samplesratio = e.modelToSamples();
+    const auto tick_start = t.physical_start(samplesratio);
     for (const note_data& note : m_toStop)
     {
       mp->messages.push_back(
           rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
-      mp->messages.back().timestamp = t.offset;
+      mp->messages.back().timestamp = tick_start;
     }
     m_toStop.clear();
 
@@ -162,7 +163,7 @@ private:
       {
         mp->messages.push_back(
             rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
-        mp->messages.back().timestamp = t.offset;
+        mp->messages.back().timestamp = tick_start;
       }
 
       m_notes = m_orig_notes;
@@ -180,14 +181,15 @@ private:
           auto& note = *it;
           mp->messages.push_back(
               rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
-          mp->messages.back().timestamp = t.offset;
+          mp->messages.back().timestamp = tick_start;
           m_playingnotes.insert(note);
           it = m_notes.erase(it);
         }
 
         doTransport = false;
       }
-      if (t.date > t.prev_date)
+
+      if (t.forward())
       {
         // First send note offs
         for (auto it = m_playingnotes.begin(); it != m_playingnotes.end();)
@@ -195,12 +197,12 @@ private:
           note_data& note = const_cast<note_data&>(*it);
           auto end_time = note.start + note.duration;
 
-          if (end_time >= t.prev_date && end_time < t.date)
+          if (t.in_range({end_time}))
           {
             mp->messages.push_back(rtmidi::message::note_off(
                 m_channel, note.pitch, note.velocity));
             mp->messages.back().timestamp
-                = t.offset + (end_time - t.prev_date);
+                = t.to_physical_time_in_tick(end_time, samplesratio);
 
             it = m_playingnotes.erase(it);
           }
@@ -222,12 +224,12 @@ private:
             mp->messages.push_back(rtmidi::message::note_on(
                 m_channel, note.pitch, note.velocity));
             mp->messages.back().timestamp
-                = t.offset + (start_time - t.prev_date);
+                = t.to_physical_time_in_tick(start_time, samplesratio);
 
             m_playingnotes.insert(note);
             it = m_notes.erase(it);
             max_it = std::lower_bound(
-                it, m_notes.end(), t.date + int64_t{1}, note_comparator{});
+                it, m_notes.end(), t.date.impl + 1, note_comparator{});
           }
           else
           {

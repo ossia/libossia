@@ -18,9 +18,9 @@ public:
     m_dsp->buildUserInterface(&ex);
   }
 
-  void run(ossia::token_request tk, ossia::exec_state_facade) noexcept override
+  void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    faust_exec(*this, *m_dsp, tk);
+    faust_exec(*this, *m_dsp, tk, e);
   }
 
   std::string label() const noexcept override
@@ -48,9 +48,9 @@ public:
     m_dsp->buildUserInterface(&ex);
   }
 
-  void run(ossia::token_request tk, ossia::exec_state_facade) noexcept override
+  void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    faust_exec_synth(*this, *m_dsp, tk);
+    faust_exec_synth(*this, *m_dsp, tk, e);
   }
 
   std::string label() const noexcept override

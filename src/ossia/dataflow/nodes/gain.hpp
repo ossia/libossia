@@ -22,7 +22,7 @@ public:
   }
 
   void
-  run(ossia::token_request t, ossia::exec_state_facade st) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade st) noexcept override
   {
     auto& vals = gain_in.data.target<ossia::value_port>()->get_data();
     if (!vals.empty())
@@ -35,19 +35,22 @@ public:
     auto& in = audio_in.data.target<ossia::audio_port>()->samples;
     auto& out = audio_out.data.target<ossia::audio_port>()->samples;
 
-    const auto N = t.date - t.prev_date;
-    const std::size_t last_pos = t.offset.impl + N;
+    const int64_t N = t.physical_write_duration(st.modelToSamples());
+
+    const int64_t first_pos = t.physical_start(st.modelToSamples());
+    const int64_t last_pos = first_pos + N;
+
     const auto channels = in.size();
     out.resize(channels);
 
     for (std::size_t i = 0; i < channels; i++)
     {
-      const auto cur_chan_size = in[i].size();
+      const int64_t cur_chan_size = in[i].size();
 
-      out[i].resize(t.offset.impl + N);
+      out[i].resize(st.bufferSize());
       if (cur_chan_size < last_pos)
       {
-        for (std::size_t j = t.offset.impl; j < cur_chan_size; j++)
+        for (std::size_t j = first_pos; j < cur_chan_size; j++)
           out[i][j] = m_gain * in[i][j];
 
         for (std::size_t j = cur_chan_size; j < last_pos; j++)
@@ -55,7 +58,7 @@ public:
       }
       else
       {
-        for (std::size_t j = t.offset.impl; j < last_pos; j++)
+        for (std::size_t j = first_pos; j < last_pos; j++)
           out[i][j] = m_gain * in[i][j];
       }
     }

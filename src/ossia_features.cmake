@@ -231,6 +231,10 @@ if(OSSIA_DATAFLOW)
   set(OSSIA_PARALLEL 1)
   target_link_libraries(ossia PRIVATE tbb)
 
+  target_include_directories(ossia PUBLIC
+    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
+  )
+
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
   ossia_link_jack()

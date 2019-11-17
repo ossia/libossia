@@ -35,7 +35,7 @@ public:
   }
 
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     auto& out = m_outlets.back()->data.target<ossia::audio_port>()->samples;
     std::size_t cur = 0;

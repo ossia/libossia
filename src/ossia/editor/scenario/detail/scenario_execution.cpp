@@ -107,10 +107,6 @@ enum progress_mode
   PROGRESS_MAX
 };
 
-ossia::time_value clamp_zero(ossia::time_value t)
-{
-   return t >= 0 ? t : 0_tv;
-}
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
 
@@ -137,18 +133,18 @@ void scenario::run_interval(
   // so that the state is not 1.01*automation for instance.
   if (!cst_max_dur.infinite())
   {
-    if(auto s = interval.get_speed(); BOOST_LIKELY(s >= 0.))
+    if(auto s = interval.get_speed(interval.get_date()); BOOST_LIKELY(s >= 0.))
     {
       auto max_tick = time_value{cst_max_dur - cst_old_date};
-      auto diff = s * tick - max_tick;
-      if (diff <= 0)
+      double diff = s * tick.impl - max_tick.impl;
+      if (diff <= 0.)
       {
-        if (tick != 0)
+        if (tick != 0_tv)
           interval.tick_offset(tick, offset, tk);
       }
       else
       {
-        if (max_tick != 0)
+        if (max_tick != 0_tv)
         {
           interval.tick_offset_speed_precomputed(max_tick, offset, tk);
         }
@@ -181,12 +177,12 @@ void scenario::run_interval(
     {
       if (tick * s < cst_old_date)
       {
-        if (tick != 0)
+        if (tick != 0_tv)
           interval.tick_offset(tick, offset, tk);
       }
       else
       {
-        if (tick != 0)
+        if (tick != 0_tv)
         {
           interval.tick_offset_speed_precomputed(ossia::time_value{-cst_old_date.impl}, offset, tk);
         }

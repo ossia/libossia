@@ -951,6 +951,16 @@ int exec_state_facade::bufferSize() const noexcept
   return impl.bufferSize;
 }
 
+double exec_state_facade::modelToSamples() const noexcept
+{
+  return impl.modelToSamplesRatio;
+}
+
+double exec_state_facade::samplesToModel() const noexcept
+{
+  return impl.samplesToModelRatio;
+}
+
 int64_t exec_state_facade::samplesSinceStart() const noexcept
 {
   return impl.samples_since_start;
@@ -970,6 +980,11 @@ ossia::net::node_base*
 exec_state_facade::find_node(std::string_view name) const noexcept
 {
   return impl.find_node(name);
+}
+
+int64_t exec_state_facade::physical_start(const token_request& t) const noexcept
+{
+  return t.physical_start(impl.modelToSamplesRatio);
 }
 
 void exec_state_facade::insert(net::parameter_base& dest, const typed_value& v)

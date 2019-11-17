@@ -11,7 +11,7 @@ public:
   {
   }
 
-  void run(token_request t, exec_state_facade) noexcept override
+  void run(const token_request& t, exec_state_facade) noexcept override
   {
   }
 };
@@ -25,7 +25,7 @@ public:
     m_outlets.push_back(new ossia::outlet {ossia::audio_port{}});
   }
 
-  void run(token_request t, exec_state_facade) noexcept override
+  void run(const token_request& t, exec_state_facade) noexcept override
   {
     auto i = m_inlets[0]->data.target<ossia::audio_port>();
     auto o = m_outlets[0]->data.target<ossia::audio_port>();
@@ -42,7 +42,7 @@ public:
     m_outlets.push_back(new ossia::outlet {ossia::midi_port{}});
   }
 
-  void run(token_request t, exec_state_facade) noexcept override
+  void run(const token_request& t, exec_state_facade) noexcept override
   {
     auto i = m_inlets[0]->data.target<ossia::midi_port>();
     auto o = m_outlets[0]->data.target<ossia::midi_port>();
@@ -59,7 +59,7 @@ public:
     m_outlets.push_back(new ossia::outlet {ossia::audio_port{}});
   }
 
-  void run(token_request t, exec_state_facade) noexcept override
+  void run(const token_request& t, exec_state_facade) noexcept override
   {
     auto i = m_inlets[0]->data.target<ossia::value_port>();
     auto o = m_outlets[0]->data.target<ossia::value_port>();

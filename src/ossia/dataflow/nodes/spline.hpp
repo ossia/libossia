@@ -75,18 +75,19 @@ public:
 
 private:
   void
-  run(ossia::token_request t, ossia::exec_state_facade e) noexcept override
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     ossia::value_port* vp = value_out.data.target<ossia::value_port>();
     const double pos = t.position();
 
     auto p = m_spline.evaluate(pos >= 0. ? pos : 0.);
     auto d = p.data();
+    const auto tick_start = e.physical_start(t);
 
     vp->write_value(
         ossia::make_vec(
             m_x + m_scaleX * d->result[0], m_y + m_scaleY * d->result[1]),
-        t.tick_start());
+        tick_start);
   }
 
   ossia::outlet value_out{ossia::value_port{}};

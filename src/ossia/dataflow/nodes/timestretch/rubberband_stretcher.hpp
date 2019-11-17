@@ -35,6 +35,7 @@ struct rubberband_stretcher
       const std::size_t len,
       int64_t samples_to_read,
       const int64_t samples_to_write,
+      const int64_t samples_offset,
       ossia::audio_port& ap) noexcept
   {
     const double r = 1.0 / t.speed;
@@ -43,12 +44,12 @@ struct rubberband_stretcher
       m_rubberBand.setTimeRatio(r);
     }
 
-    if (t.date > t.prev_date)
+    if (t.forward())
     {
       // TODO : if T::sample_type == float we could leverage it directly as input
       float** const input = (float**)alloca(sizeof(float*) * chan);
       float** const output = (float**)alloca(sizeof(float*) * chan);
-      for(int i = 0; i < chan; i++)
+      for(std::size_t i = 0; i < chan; i++)
       {
         input[i] =  (float*) alloca(sizeof(float) * std::max(16L, samples_to_read));
         output[i] = (float*) alloca(sizeof(float) * samples_to_write);
@@ -70,7 +71,7 @@ struct rubberband_stretcher
       {
         for (int64_t j = 0; j < samples_to_write; j++)
         {
-          ap.samples[i][j + t.offset.impl] = double(output[i][j]);
+          ap.samples[i][j + samples_offset] = double(output[i][j]);
         }
       }
     }

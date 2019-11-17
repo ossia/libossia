@@ -134,21 +134,25 @@ inline void read_f64(ossia::mutable_audio_span<float>& ap, void* data, int64_t s
 }
 
 
-inline auto sample_info(int64_t bufferSize, const ossia::token_request& t)
-{
-  struct {
-    int64_t samples_to_read{};
-    int64_t samples_to_write{};
-  } _{};
 
-  if (t.date == t.prev_date)
+struct sample_read_info {
+  int64_t samples_to_read{};
+  int64_t samples_to_write{};
+};
+
+inline auto sample_info(int64_t bufferSize, double durationRatio, const ossia::token_request& t)
+{
+  sample_read_info _;
+  if (t.paused())
     return _;
 
   if(t.speed == 0.0)
     return _;
 
-  _.samples_to_read =  std::abs(t.date - t.prev_date);
-  _.samples_to_write = std::min((int64_t)std::floor(_.samples_to_read / t.speed), int64_t(bufferSize - t.offset.impl / t.speed));
+  _.samples_to_read = t.physical_read_duration(durationRatio);
+  _.samples_to_write = std::min(t.physical_write_duration(durationRatio),
+                                t.safe_physical_write_duration(durationRatio, bufferSize)
+                                );
 
   return _;
 }
@@ -251,6 +255,8 @@ public:
 protected:
   void state(const ossia::token_request& req) override
   {
+    // TODO here we should also pass the execution state so that we can
+    // leverage the timing info & transform loop_duration / start_offset in samples right here...
     static_cast<sound_node&>(*this->node).set_loop_info(m_loop_duration, m_start_offset, m_loops);
 
     // Start offset and looping are done manually inside the sound nodes
@@ -323,23 +329,24 @@ struct resampler
       std::size_t len,
       int64_t samples_to_read,
       int64_t samples_to_write,
+      int64_t samples_offset,
       ossia::audio_port& ap)
   {
     switch(m_stretch.index())
     {
       case 0:
       {
-        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         return;
       }
       case 1:
       {
-        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         break;
       }
       case 2:
       {
-        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, ap);
+        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(audio_fetcher, t, e, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         break;
       }
     }

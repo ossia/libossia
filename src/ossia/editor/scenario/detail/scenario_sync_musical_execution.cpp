@@ -49,7 +49,7 @@ optional<time_value> get_quantification_date(const ossia::token_request& tk, dou
       // Date to quantify is the next one :
       double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
       double quantified_duration = (tk.musical_start_last_bar + (start_quant + 1) * 4. / rate) - tk.musical_start_position;
-      double ratio = (tk.date - tk.prev_date) / musical_tick_duration;
+      double ratio = (tk.date - tk.prev_date).impl / musical_tick_duration;
 
       quantification_date = tk.prev_date + quantified_duration * ratio;
     }

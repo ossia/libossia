@@ -19,7 +19,7 @@ inline auto defaultTime(qint32 t) -> ossia::time_value {
 inline auto reverseTime(time_value t) -> qint32 {
   return t.infinite()
       ? infinite()
-      : double(t) / 1000.;
+      : double(t.impl) / 1000.;
 }
 }
 }
