@@ -128,4 +128,55 @@ outlet_ptr make_outlet(Args&&... args)
 {
   return new outlet(T{}, std::forward<Args>(args)...);
 }
+
+
+
+struct audio_inlet : public ossia::inlet
+{
+  audio_inlet(): ossia::inlet{ossia::audio_port{}} { }
+  const ossia::audio_port& operator*() const noexcept { return *this->data.target<ossia::audio_port>(); }
+  const ossia::audio_port& operator->() const noexcept { return *this->data.target<ossia::audio_port>(); }
+  ossia::audio_port& operator*() noexcept { return *this->data.target<ossia::audio_port>(); }
+  ossia::audio_port& operator->() noexcept { return *this->data.target<ossia::audio_port>(); }
+};
+struct midi_inlet : public ossia::inlet
+{
+  midi_inlet(): ossia::inlet{ossia::midi_port{}} { }
+  const ossia::midi_port& operator*() const noexcept { return *this->data.target<ossia::midi_port>(); }
+  const ossia::midi_port& operator->() const noexcept { return *this->data.target<ossia::midi_port>(); }
+  ossia::midi_port& operator*()  noexcept { return *this->data.target<ossia::midi_port>(); }
+  ossia::midi_port& operator->()  noexcept { return *this->data.target<ossia::midi_port>(); }
+};
+struct value_inlet : public ossia::inlet
+{
+  value_inlet(): ossia::inlet{ossia::value_port{}} { }
+  const ossia::value_port& operator*() const noexcept { return *this->data.target<ossia::value_port>(); }
+  const ossia::value_port& operator->() const noexcept { return *this->data.target<ossia::value_port>(); }
+  ossia::value_port& operator*()  noexcept { return *this->data.target<ossia::value_port>(); }
+  ossia::value_port& operator->()  noexcept { return *this->data.target<ossia::value_port>(); }
+};
+struct audio_outlet : public ossia::outlet
+{
+  audio_outlet(): ossia::outlet{ossia::audio_port{}} { }
+  const ossia::audio_port& operator*() const noexcept { return *this->data.target<ossia::audio_port>(); }
+  const ossia::audio_port& operator->() const noexcept { return *this->data.target<ossia::audio_port>(); }
+  ossia::audio_port& operator*()  noexcept { return *this->data.target<ossia::audio_port>(); }
+  ossia::audio_port& operator->()  noexcept { return *this->data.target<ossia::audio_port>(); }
+};
+struct midi_outlet : public ossia::outlet
+{
+  midi_outlet(): ossia::outlet{ossia::midi_port{}} { }
+  const ossia::midi_port& operator*() const noexcept { return *this->data.target<ossia::midi_port>(); }
+  const ossia::midi_port& operator->() const noexcept { return *this->data.target<ossia::midi_port>(); }
+  ossia::midi_port& operator*()  noexcept { return *this->data.target<ossia::midi_port>(); }
+  ossia::midi_port& operator->()  noexcept { return *this->data.target<ossia::midi_port>(); }
+};
+struct value_outlet : public ossia::outlet
+{
+  value_outlet(): ossia::outlet{ossia::value_port{}} { }
+  const ossia::value_port& operator*() const noexcept { return *this->data.target<ossia::value_port>(); }
+  const ossia::value_port& operator->() const noexcept { return *this->data.target<ossia::value_port>(); }
+  ossia::value_port& operator*()  noexcept { return *this->data.target<ossia::value_port>(); }
+  ossia::value_port& operator->()  noexcept { return *this->data.target<ossia::value_port>(); }
+};
 }

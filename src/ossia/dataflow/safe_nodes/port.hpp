@@ -20,7 +20,8 @@ enum class outlet_kind
 {
   audio_out,
   midi_out,
-  value_out
+  value_out,
+  control_out
 };
 struct address_in
 {
@@ -98,6 +99,16 @@ struct control_in
 
   template <std::size_t N>
   constexpr control_in(const char (&name)[N]) : name{name, N-1}
+  {
+  }
+};
+
+struct control_out
+{
+  const std::string_view name;
+
+  template <std::size_t N>
+  constexpr control_out(const char (&name)[N]) : name{name, N-1}
   {
   }
 };
