@@ -6,7 +6,6 @@
 
 namespace ossia
 {
-
 using quarter_note = double;
 
 struct token_request
@@ -30,7 +29,7 @@ struct token_request
     }
   }
 
-  token_request add_offset(ossia::time_value t) const noexcept
+  constexpr token_request add_offset(ossia::time_value t) const noexcept
   {
     token_request other = *this;
     other.prev_date += t;
@@ -39,7 +38,7 @@ struct token_request
   }
 
   template<typename F>
-  void loop(ossia::time_value start_offset, ossia::time_value loop_duration, F f) const noexcept
+  constexpr void loop(ossia::time_value start_offset, ossia::time_value loop_duration, F f) const noexcept
   {
     ossia::token_request other = *this;
     ossia::time_value orig_from = other.prev_date;
@@ -170,6 +169,119 @@ struct token_request
     return date < prev_date;
   }
 
+  //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
+  //! return the next occuring quantification date, if such date is in the tick
+  //! defined by this token_request.
+  constexpr std::optional<time_value> get_quantification_date(double rate) const noexcept
+  {
+    std::optional<time_value> quantification_date;
+
+    if(rate <= 0.)
+      return prev_date;
+
+    const double musical_tick_duration = musical_end_position - musical_start_position;
+    if(musical_tick_duration <= 0.)
+      return prev_date;
+
+    if(rate <= 1.)
+    {
+      // Quantize relative to bars
+      if(musical_end_last_bar != musical_start_last_bar)
+      {
+        // There is a bar change in this tick
+        const double musical_bar_start = musical_end_last_bar - musical_start_position;
+
+        const double ratio = musical_bar_start / musical_tick_duration;
+        const time_value dt = date - prev_date; // TODO should be tick_offset
+
+        quantification_date = prev_date + dt * ratio;
+      }
+    }
+    else
+    {
+      // Quantize relative to quarter divisions
+      // TODO ! if there is a bar change,
+      // and no prior quantization date before that, we have to quantize to the bar change
+      const double start_quarter = (musical_start_position - musical_start_last_bar);
+      const double end_quarter = (musical_end_position - musical_start_last_bar);
+
+      // duration of what we quantify in terms of quarters
+      const double musical_quant_dur = rate / 4.;
+      const double start_quant = std::floor(start_quarter * musical_quant_dur);
+      const double end_quant = std::floor(end_quarter * musical_quant_dur);
+
+      if(start_quant != end_quant)
+      {
+        // Date to quantify is the next one :
+        const double musical_tick_duration = musical_end_position - musical_start_position;
+        const double quantified_duration = (musical_start_last_bar + (start_quant + 1) * 4. / rate) - musical_start_position;
+        const double ratio = (date - prev_date).impl / musical_tick_duration;
+
+        quantification_date = prev_date + quantified_duration * ratio;
+      }
+    }
+
+    return quantification_date;
+  }
+
+  template<typename Tick, typename Tock>
+  constexpr void metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
+  {
+    if((musical_end_last_bar != musical_start_last_bar) || prev_date == 0_tv)
+    {
+      // There is a bar change in this tick, start the up tick
+      const double musical_tick_duration = musical_end_position - musical_start_position;
+      const double musical_bar_start = musical_end_last_bar - musical_start_position;
+      const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+      if(samples_tick_duration > 0)
+      {
+        const double ratio = musical_bar_start / musical_tick_duration;
+        const int64_t hi_start_sample = samples_tick_duration * ratio;
+        tick(hi_start_sample);
+      }
+    }
+    else
+    {
+      const int64_t start_quarter = std::floor(musical_start_position - musical_start_last_bar);
+      const int64_t end_quarter = std::floor(musical_end_position - musical_start_last_bar);
+      if(start_quarter != end_quarter)
+      {
+        // There is a quarter change in this tick, start the down tick
+        // start_position is prev_date
+        // end_position is date
+        const double musical_tick_duration = musical_end_position - musical_start_position;
+        const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
+        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+        if(samples_tick_duration > 0)
+        {
+          const double ratio = musical_bar_start / musical_tick_duration;
+          const int64_t lo_start_sample = samples_tick_duration * ratio;
+          tock(lo_start_sample);
+        }
+      }
+    }
+  }
+
+  constexpr bool unexpected_bar_change() const noexcept
+  {
+    double bar_difference = musical_end_last_bar - musical_start_last_bar;
+    if(bar_difference != 0.)
+    {
+      // If the difference is divisble by the signature,
+      // then the bar change is expected.
+      // e.g. start = 4 -> end = 8  ; signature = 4/4 : good
+      // e.g. start = 4 -> end = 8  ; signature = 6/8 : bad
+      // e.g. start = 4 -> end = 7  ; signature = 6/8 : good
+
+      double quarters_sig = 4. * double(signature.upper) / signature.lower;
+      double div = bar_difference / quarters_sig;
+      bool unexpected = div - int64_t(div) > 0.000001;
+      return unexpected;
+    }
+    return false;
+  }
+
+
   ossia::time_value prev_date{}; // Sample we are at
   ossia::time_value date{}; // Sample we are finishing at
   ossia::time_value parent_duration{}; // Duration of the parent item of the one being ticked
@@ -216,8 +328,8 @@ struct simple_token_request : token_request
     simple_token_request{prev_d, d, 0_tv}
   {
   }
-  simple_token_request(ossia::time_value prev_d, ossia::time_value d, ossia::time_value offset):
-    ossia::token_request{prev_d, d, 0_tv, offset, 1.0, {4,4}, 120.}
+  simple_token_request(ossia::time_value prev_d, ossia::time_value d, ossia::time_value off):
+    ossia::token_request{prev_d, d, 0_tv, off, 1.0, {4,4}, 120.}
   {
   }
 

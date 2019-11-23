@@ -4,6 +4,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/detail/flicks.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia_export.h>
 #include <smallfun.hpp>
@@ -253,7 +254,7 @@ private:
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   time_signature m_current_signature{};
-  double m_quarter_duration{705600000. / 2.};
+  double m_quarter_duration{ossia::quarter_duration<double>};
   bool m_running{false};
   bool m_hasTempo{false};
   bool m_hasSignature{false};

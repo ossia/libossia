@@ -8,60 +8,6 @@
 
 namespace ossia
 {
-optional<time_value> get_quantification_date(const ossia::token_request& tk, double rate)
-{
-  optional<time_value> quantification_date{};
-
-  double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
-  if(musical_tick_duration <= 0)
-    return tk.prev_date;
-
-  if(rate <= 1.)
-  {
-    // Quantize relative to bars
-    if(tk.musical_end_last_bar != tk.musical_start_last_bar)
-    {
-      // There is a bar change in this tick
-
-      double musical_bar_start = tk.musical_end_last_bar - tk.musical_start_position;
-
-      double ratio = musical_bar_start / musical_tick_duration;
-      time_value dt = tk.date - tk.prev_date; // TODO should be tick_offset
-
-      quantification_date = tk.prev_date + dt * ratio;
-    }
-  }
-  else
-  {
-    // Quantize relative to quarter divisions
-    // TODO ! if there is a bar change,
-    // and no prior quantization date before that, we have to quantize to the bar change
-
-    double start_quarter = (tk.musical_start_position - tk.musical_start_last_bar);
-    double end_quarter = (tk.musical_end_position - tk.musical_start_last_bar);
-
-    // rate = 2 -> half
-    // rate = 4 -> quarter
-    // rate = 8 -> 8th..
-
-    // duration of what we quantify in terms of quarters
-    double musical_quant_dur = rate / 4.;
-    double start_quant = std::floor(start_quarter * musical_quant_dur);
-    double end_quant = std::floor(end_quarter * musical_quant_dur);
-
-    if(start_quant != end_quant)
-    {
-      // Date to quantify is the next one :
-      double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
-      double quantified_duration = (tk.musical_start_last_bar + (start_quant + 1) * 4. / rate) - tk.musical_start_position;
-      double ratio = (tk.date - tk.prev_date).impl / musical_tick_duration;
-
-      quantification_date = tk.prev_date + quantified_duration * ratio;
-    }
-  }
-  return quantification_date;
-}
-
 sync_status scenario::trigger_sync_musical(
     time_sync& sync, small_event_vec& maxReachedEvents,
     ossia::time_value tick_offset,

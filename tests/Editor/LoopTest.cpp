@@ -369,7 +369,7 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
   using namespace ossia;
 
   loop l{ossia::Infinite, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{}};
-  auto& t0 = l.get_start_timesync();
+
   auto& c = l.get_time_interval();
   c.set_min_duration(0_tv);
   c.set_nominal_duration(1234_tv);

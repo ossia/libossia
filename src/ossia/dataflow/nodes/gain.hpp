@@ -48,18 +48,21 @@ public:
       const int64_t cur_chan_size = in[i].size();
 
       out[i].resize(st.bufferSize());
+
+      const auto* input = in[i].data();
+      auto* output = out[i].data();
       if (cur_chan_size < last_pos)
       {
-        for (std::size_t j = first_pos; j < cur_chan_size; j++)
-          out[i][j] = m_gain * in[i][j];
+        for (int64_t j = first_pos; j < cur_chan_size; j++)
+          output[j] = m_gain * input[j];
 
-        for (std::size_t j = cur_chan_size; j < last_pos; j++)
-          out[i][j] = 0.;
+        for (int64_t j = cur_chan_size; j < last_pos; j++)
+          output[j] = 0.;
       }
       else
       {
-        for (std::size_t j = first_pos; j < last_pos; j++)
-          out[i][j] = m_gain * in[i][j];
+        for (int64_t j = first_pos; j < last_pos; j++)
+          out[i][j] = m_gain * input[j];
       }
     }
   }

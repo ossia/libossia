@@ -43,7 +43,7 @@ struct repitch_stretcher
     : next_sample_to_read{pos}
   {
     repitchers.reserve(channels);
-    while(repitchers.size() < channels)
+    while(int(repitchers.size()) < channels)
     {
       repitchers.emplace_back(bufferSize);
     }

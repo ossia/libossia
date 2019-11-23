@@ -3,7 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-
+#include <ossia/detail/flicks.hpp>
 #include <ossia_export.h>
 
 #include <atomic>
@@ -177,7 +177,7 @@ private:
   optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = 705600000. / 2.;
+  double m_quarter_duration = ossia::quarter_duration<double>;
   time_value m_trigger_date = Infinite;
   status m_status : 2;
   bool m_observe : 1;

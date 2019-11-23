@@ -12,7 +12,7 @@ namespace ossia
 sync_status scenario::quantify_time_sync(time_sync& sync, const ossia::token_request& tk) noexcept
 {
   // we are asked to execute, now we must quantize to the next step
-  auto qdate = get_quantification_date(tk, sync.get_sync_rate());
+  auto qdate = tk.get_quantification_date(sync.get_sync_rate());
 
   if(qdate)
   {
