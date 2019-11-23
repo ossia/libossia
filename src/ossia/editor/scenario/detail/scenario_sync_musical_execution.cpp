@@ -11,13 +11,18 @@ namespace ossia
 optional<time_value> get_quantification_date(const ossia::token_request& tk, double rate)
 {
   optional<time_value> quantification_date{};
+
+  double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
+  if(musical_tick_duration <= 0)
+    return tk.prev_date;
+
   if(rate <= 1.)
   {
     // Quantize relative to bars
     if(tk.musical_end_last_bar != tk.musical_start_last_bar)
     {
       // There is a bar change in this tick
-      double musical_tick_duration = tk.musical_end_position - tk.musical_start_position;
+
       double musical_bar_start = tk.musical_end_last_bar - tk.musical_start_position;
 
       double ratio = musical_bar_start / musical_tick_duration;
