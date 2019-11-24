@@ -26,6 +26,7 @@ struct raw_stretcher
       T& audio_fetcher,
       const ossia::token_request& t,
       const ossia::exec_state_facade e,
+      double tempo_ratio,
       const std::size_t chan,
       const int64_t len,
       const int64_t samples_to_read,

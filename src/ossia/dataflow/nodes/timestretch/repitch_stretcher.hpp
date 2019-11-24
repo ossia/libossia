@@ -59,6 +59,7 @@ struct repitch_stretcher
       T& audio_fetcher,
       const ossia::token_request& t,
       ossia::exec_state_facade e,
+      double tempo_ratio,
       const std::size_t chan,
       const int64_t len,
       int64_t samples_to_read,
@@ -92,7 +93,7 @@ struct repitch_stretcher
         data.output_frames = samples_to_write - num_samples_available;
         data.input_frames_used = 0;
         data.output_frames_gen = 0;
-        data.src_ratio = 1. / t.speed;
+        data.src_ratio = tempo_ratio;
         data.end_of_input = 0;
 
         // Resample

@@ -93,7 +93,7 @@ struct tick_all_nodes
 
     // TODO tempo / sig ?
     for (auto& node : g.get_nodes())
-      node->request(token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, 120.});
+      node->request(token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, ossia::root_tempo});
 
     g.state(e);
     e.commit();

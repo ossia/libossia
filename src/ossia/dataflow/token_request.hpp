@@ -2,6 +2,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/detail/math.hpp>
+#include <ossia/detail/flicks.hpp>
 #include <cassert>
 
 namespace ossia
@@ -287,7 +288,7 @@ struct token_request
   ossia::time_value parent_duration{}; // Duration of the parent item of the one being ticked
   ossia::time_value offset{}; // Position at which to write in the output buffer
   double speed{1.};
-  double tempo{120.};
+  double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
 
   ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in quarter notes (at prev_date)

@@ -261,7 +261,7 @@ public:
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if (t.speed > 0)
+    if (t.tempo > 0)
     {
       if(t.prev_date < m_prev_date)
       {
@@ -280,7 +280,12 @@ public:
       m_start_offset_samples = m_start_offset.impl * e.modelToSamples();
 
       // resample
-      m_resampler.run(*this, t, e, channels, len, samples_to_read, samples_to_write, samples_offset, ap);
+      double tempo_ratio =  this->tempo / t.tempo;
+      m_resampler.run(*this, t, e,
+                      tempo_ratio,
+                      channels, len,
+                      samples_to_read, samples_to_write, samples_offset,
+                      ap);
 
       for (std::size_t chan = 0; chan < channels; chan++)
       {

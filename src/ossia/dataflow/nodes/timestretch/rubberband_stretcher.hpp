@@ -31,6 +31,7 @@ struct rubberband_stretcher
       T& audio_fetcher,
       const ossia::token_request& t,
       ossia::exec_state_facade e,
+      double tempo_ratio,
       const std::size_t chan,
       const std::size_t len,
       int64_t samples_to_read,
@@ -38,10 +39,9 @@ struct rubberband_stretcher
       const int64_t samples_offset,
       ossia::audio_port& ap) noexcept
   {
-    const double r = 1.0 / t.speed;
-    if(r != m_rubberBand.getTimeRatio())
+    if(tempo_ratio != m_rubberBand.getTimeRatio())
     {
-      m_rubberBand.setTimeRatio(r);
+      m_rubberBand.setTimeRatio(tempo_ratio);
     }
 
     if (t.forward())

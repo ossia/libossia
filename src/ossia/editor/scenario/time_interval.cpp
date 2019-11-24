@@ -21,7 +21,7 @@ double time_interval::get_speed(time_value date) const noexcept
   else
   {
     auto t = m_tempoCurve.value_at(date.impl);
-    return m_speed * t / 120.;
+    return m_speed * t / ossia::root_tempo;
   }
 }
 
@@ -33,7 +33,7 @@ void time_interval::tick_impl(
   m_date = new_date;
 
   m_current_signature = signature(old_date, parent_request);
-  m_current_tempo = tempo(old_date, parent_request);
+  m_current_tempo = m_speed * tempo(old_date, parent_request);
 
   if(m_hasTempo)
   {
@@ -51,7 +51,7 @@ void time_interval::tick_impl(
     // At interval t = 1s, date = sampling frequency. (result of time() function in score)
     // This is the same referential that the time of the bar changes.
     // -> date is already tempo-processed, we only need to care about the measure.
-    // -> FS samples is always 0.5 measure (4/4) at 120
+    // -> FS samples is always 0.5 measure (4/4) at ossia::root_tempo
 
 
     {
@@ -119,7 +119,7 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset, const
 
     // absolute tempo given : we negate the speed of the parent
     // todo : this should be done outside for the scenario
-    double speed = (m_speed * t0 / 120.) / parent_request.speed;
+    double speed = (m_speed * t0 / ossia::root_tempo) / parent_request.speed;
 
     tick_impl(m_date, m_date + std::ceil(date.impl * speed), offset, parent_request);
   }
