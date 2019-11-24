@@ -110,7 +110,7 @@
 	url = https://git.purrdata.net/jwilkes/purr-data.git 
 [submodule "3rdparty/rubberband"]
 	path = 3rdparty/rubberband
-	url = https://github.com/breakfastquay/rubberband/
+	url = https://github.com/jcelerier/rubberband/
 [submodule "3rdparty/r8brain-free-src"]
 	path = 3rdparty/r8brain-free-src
 	url = https://github.com/avaneev/r8brain-free-src
