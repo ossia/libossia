@@ -3,6 +3,7 @@
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
+#include <cinttypes>
 #include <samplerate.h>
 #include <boost/circular_buffer.hpp>
 namespace ossia
@@ -72,7 +73,7 @@ struct repitch_stretcher
     input_channels.resize(chan);
     for(std::size_t i = 0; i < chan; i++)
     {
-      repitchers[i].input_buffer.resize(std::max(16L, samples_to_read));
+      repitchers[i].input_buffer.resize(std::max((int64_t)16, samples_to_read));
       input_channels[i] = repitchers[i].input_buffer.data();
     }
     output_buffer.resize(samples_to_write);

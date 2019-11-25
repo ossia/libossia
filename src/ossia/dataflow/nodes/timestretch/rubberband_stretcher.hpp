@@ -51,7 +51,7 @@ struct rubberband_stretcher
       float** const output = (float**)alloca(sizeof(float*) * chan);
       for(std::size_t i = 0; i < chan; i++)
       {
-        input[i] =  (float*) alloca(sizeof(float) * std::max(16L, samples_to_read));
+        input[i] =  (float*) alloca(sizeof(float) * std::max((int64_t)16, samples_to_read));
         output[i] = (float*) alloca(sizeof(float) * samples_to_write);
       }
 
