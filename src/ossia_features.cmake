@@ -270,6 +270,7 @@ if(OSSIA_DATAFLOW)
   endif()
 
 
+  target_link_libraries(ossia PUBLIC samplerate)
   target_link_libraries(ossia PUBLIC rubberband)
   if(APPLE)
       find_library(Foundation_FK Foundation)

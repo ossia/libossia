@@ -116,7 +116,7 @@
 	url = https://github.com/avaneev/r8brain-free-src
 [submodule "3rdparty/libsamplerate"]
 	path = 3rdparty/libsamplerate
-	url = https://github.com/erikd/libsamplerate
+	url = https://github.com/jcelerier/libsamplerate
 [submodule "3rdparty/Flicks"]
 	path = 3rdparty/Flicks
 	url = https://github.com/OculusVR/Flicks

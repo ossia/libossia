@@ -20,7 +20,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       )
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dr_libs rubberband tbb)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dr_libs rubberband libsamplerate tbb)
   endif()
 
   if(OSSIA_DNSSD)
@@ -127,9 +127,13 @@ if(OSSIA_PROTOCOL_MIDI)
 endif()
 
 if(OSSIA_DATAFLOW)
+  set(_oldmode ${BUILD_SHARED_LIBS})
+  set(BUILD_SHARED_LIBS 0)
   set(TBB_LINKAGE "STATIC" CACHE "" INTERNAL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
+  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libsamplerate" EXCLUDE_FROM_ALL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/rubberband" EXCLUDE_FROM_ALL)
+  set(BUILD_SHARED_LIBS ${_oldmode})
 endif()
 
 if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
