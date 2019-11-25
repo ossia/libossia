@@ -114,7 +114,7 @@ public:
         }
         else
         {
-          const int max = ossia::clamp(file_duration - (start + m_start_offset_samples), 0L, samples_to_write);
+          const int max = ossia::clamp(file_duration - (start + m_start_offset_samples), (int64_t)0, samples_to_write);
           for(int k = 0, pos = start + m_start_offset_samples;
               k < max;
               k++, pos++)
