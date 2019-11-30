@@ -137,7 +137,7 @@ struct token_request
   //! Maps a time value in the frame of reference of this tick's node to a time value inside its physical buffers
   constexpr physical_time to_physical_time_in_tick(ossia::time_value global_time, double ratio) const noexcept
   {
-    return (global_time - prev_date + offset).impl * ratio;
+    return (global_time - prev_date + offset).impl * ratio / speed;
   }
 
   //! Maps a time value in the frame of reference of this tick's node to a time value inside its physical buffers
@@ -223,6 +223,14 @@ struct token_request
     }
 
     return quantification_date;
+  }
+
+  //! Like physical_quantification_date, but returns a date mapped to this tick
+  constexpr std::optional<physical_time> get_physical_quantification_date(double rate, double modelToSamples) const noexcept
+  {
+    if(auto d = get_quantification_date(rate))
+      return to_physical_time_in_tick(*d, modelToSamples);
+    return {};
   }
 
   template<typename Tick, typename Tock>
