@@ -124,6 +124,13 @@ void process_offset(
 }
 void scenario::transport_impl(ossia::time_value offset)
 {
+  if(offset == 0_tv)
+  {
+    stop();
+    start();
+    return;
+  }
+
   // reset internal offset list and state
 
   // a temporary list to order all past events to build the
