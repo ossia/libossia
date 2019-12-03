@@ -23,6 +23,9 @@ public:
   std::atomic<audio_protocol*> protocol{};
   std::atomic_bool stop_processing{};
   std::atomic_bool processing{};
+
+  int effective_sample_rate{};
+  int effective_buffer_size{};
 };
 
 class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base

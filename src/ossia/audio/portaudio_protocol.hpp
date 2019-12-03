@@ -90,12 +90,19 @@ public:
     if (ec == PaErrorCode::paNoError)
     {
       ec = Pa_StartStream(stream);
+
       if (ec != PaErrorCode::paNoError)
       {
         std::cerr << "Error while starting audio stream: "
                   << Pa_GetErrorText(ec) << std::endl;
         Pa_CloseStream(stream);
         m_stream.store(nullptr);
+      }
+      else
+      {
+          auto info = Pa_GetStreamInfo(stream);
+          this->effective_sample_rate = info->sampleRate;
+          this->effective_buffer_size = bs;
       }
     }
     else

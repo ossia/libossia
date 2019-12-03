@@ -122,6 +122,8 @@ public:
     std::cerr << "=== stream start ===\n";
 
     int err = jack_activate(client);
+    this->effective_sample_rate = jack_get_sample_rate(client);
+    this->effective_buffer_size = jack_get_buffer_size(client);
     if (err != 0)
     {
       jack_deactivate(client);

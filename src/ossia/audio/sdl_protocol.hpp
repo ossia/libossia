@@ -31,8 +31,8 @@ public:
       throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
     }
 
-    rate = m_obtained.freq;
-    bs = m_obtained.samples;
+    this->effective_sample_rate = m_obtained.freq;
+    this->effective_buffer_size = m_obtained.samples;
 
     SDL_PauseAudio(0);
   }

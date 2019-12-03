@@ -4,14 +4,14 @@ namespace ossia
 {
 class dummy_engine final : public audio_engine
 {
-  int m_rate{}, m_bs{};
+  int effective_sample_rate{}, effective_buffer_size{};
   std::atomic_bool m_active;
 
 public:
   dummy_engine(int rate, int bs)
   {
-    m_rate = rate;
-    m_bs = bs;
+    effective_sample_rate = rate;
+    effective_buffer_size = bs;
 
     setup_thread();
   }
@@ -27,7 +27,7 @@ public:
       m_runThread.join();
     m_active = true;
 
-    int us_per_buffer = 1e6 * double(m_bs) / double(m_rate);
+    int us_per_buffer = 1e6 * double(effective_buffer_size) / double(effective_sample_rate);
 
     m_runThread = std::thread{[=] {
       using clk = std::chrono::high_resolution_clock;
@@ -57,9 +57,9 @@ public:
 
             ns_delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - orig_start).count() - ns_total;
 
-            int samples = std::ceil(double(m_rate) * ns / 1e9);
+            int samples = std::ceil(double(effective_sample_rate) * ns / 1e9);
             proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
-            proto->audio_tick(m_bs, 0);
+            proto->audio_tick(effective_buffer_size, 0);
 
             // Run a tick
             if (proto->replace_tick)
