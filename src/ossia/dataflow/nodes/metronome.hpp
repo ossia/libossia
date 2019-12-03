@@ -37,7 +37,7 @@ private:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    ossia::value_port* vp = value_out.data.target<ossia::value_port>();
+    ossia::value_port& vp = *value_out;
     const auto date = t.date;
     const auto pos = t.position();
 
@@ -65,7 +65,7 @@ private:
       else
       {
         m_metroPrevTick = elapsed - cur;
-        vp->write_value(
+        vp.write_value(
             ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
@@ -81,14 +81,14 @@ private:
       else
       {
         m_metroPrevTick = elapsed - cur;
-        vp->write_value(
+        vp.write_value(
             ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
   }
 
   std::shared_ptr<curve<double, float>> m_curve;
-  ossia::outlet value_out{ossia::value_port{}};
+  ossia::value_outlet value_out;
   time_value m_metroPrevTick{};
 };
 

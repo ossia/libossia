@@ -8,9 +8,9 @@ namespace ossia::nodes
 struct gain final : public ossia::nonowning_graph_node
 {
   double m_gain{0.005};
-  ossia::inlet audio_in{ossia::audio_port{}};
-  ossia::inlet gain_in{ossia::value_port{}};
-  ossia::outlet audio_out{ossia::audio_port{}};
+  ossia::audio_inlet audio_in;
+  ossia::value_inlet gain_in;
+  ossia::audio_outlet audio_out;
 
 public:
   gain()
@@ -32,8 +32,8 @@ public:
               .dataspace_value,
           0.f, 1.f);
 
-    auto& in = audio_in.data.target<ossia::audio_port>()->samples;
-    auto& out = audio_out.data.target<ossia::audio_port>()->samples;
+    auto& in = audio_in->samples;
+    auto& out = audio_out->samples;
 
     const int64_t N = t.physical_write_duration(st.modelToSamples());
 

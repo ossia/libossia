@@ -31,8 +31,8 @@ struct sin_table
 
 struct sine final : public ossia::nonowning_graph_node
 {
-  ossia::inlet freq_in{ossia::value_port{}};
-  ossia::outlet audio_out{ossia::audio_port{}};
+  ossia::value_inlet freq_in;
+  ossia::audio_outlet audio_out;
 
 #if BOOST_COMP_GNUC
   static constexpr sin_table<1024> sines{[](auto f) { return sin(f); }};
@@ -55,7 +55,7 @@ public:
       freq = ossia::clamp(
           ossia::convert<float>(vals.back().value), 0.f, 20000.f);
 
-    auto& audio = audio_out.data.target<ossia::audio_port>()->samples;
+    auto& audio = audio_out->samples;
     auto N = t.physical_write_duration(st.modelToSamples());
     auto tick_start = t.physical_start(st.modelToSamples());
 

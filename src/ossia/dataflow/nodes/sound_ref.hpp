@@ -138,7 +138,7 @@ public:
 
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
-    ossia::audio_port& ap = *audio_out.data.target<ossia::audio_port>();
+    ossia::audio_port& ap = *audio_out;
     ap.samples.resize(chan);
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
@@ -196,7 +196,7 @@ public:
 private:
   audio_span<float> m_data;
   resampler m_resampler;
-  ossia::outlet audio_out{ossia::audio_port{}};
+  ossia::audio_outlet audio_out;
 
   std::size_t start{};
   std::size_t upmix{};

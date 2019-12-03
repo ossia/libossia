@@ -8,7 +8,7 @@ namespace ossia::nodes
 {
 struct rand_float final : public ossia::nonowning_graph_node
 {
-  ossia::outlet value_out{ossia::value_port{}};
+  ossia::value_outlet value_out;
 
 public:
   std::uniform_real_distribution<float> dist;

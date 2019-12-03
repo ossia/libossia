@@ -71,8 +71,8 @@ private:
       return;
     const auto tick_start = e.physical_start(t);
 
-    ossia::value_port* vp = value_out.data.target<ossia::value_port>();
-    vp->write_value(
+    ossia::value_port& vp = *value_out;
+    vp.write_value(
         ossia::apply(
             ossia::detail::compute_value_visitor{t.position(),
                                                  ossia::val_type::FLOAT},
@@ -81,7 +81,7 @@ private:
   }
 
   ossia::behavior m_drive;
-  ossia::outlet value_out{ossia::value_port{}};
+  ossia::value_outlet value_out;
 };
 
 class automation_process final : public ossia::node_process

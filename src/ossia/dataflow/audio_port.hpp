@@ -5,10 +5,14 @@
 #include <ossia_export.h>
 namespace ossia
 {
+using pan_weight = ossia::small_vector<double, 2>;
 struct audio_port
 {
-  bool upmix{};
   audio_vector samples;
+  double gain{1.};
+  pan_weight pan{};
+  bool upmix{};
+  bool has_gain{};
 };
 
 struct audio_delay_line

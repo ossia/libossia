@@ -31,7 +31,7 @@ struct note_comparator
 
 class midi final : public ossia::nonowning_graph_node
 {
-  ossia::outlet midi_out{ossia::midi_port{}};
+  ossia::midi_outlet midi_out;
 
 public:
   using note_set = ossia::flat_multiset<note_data, note_comparator>;
@@ -146,14 +146,14 @@ private:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    ossia::midi_port* mp = midi_out.data.target<ossia::midi_port>();
+    ossia::midi_port& mp = *midi_out;
     const auto samplesratio = e.modelToSamples();
     const auto tick_start = t.physical_start(samplesratio);
     for (const note_data& note : m_toStop)
     {
-      mp->messages.push_back(
+      mp.messages.push_back(
           rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
-      mp->messages.back().timestamp = tick_start;
+      mp.messages.back().timestamp = tick_start;
     }
     m_toStop.clear();
 
@@ -161,9 +161,9 @@ private:
     {
       for (auto& note : m_playingnotes)
       {
-        mp->messages.push_back(
+        mp.messages.push_back(
             rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
-        mp->messages.back().timestamp = tick_start;
+        mp.messages.back().timestamp = tick_start;
       }
 
       m_notes = m_orig_notes;
@@ -179,9 +179,9 @@ private:
         while (it != m_notes.end() && it->start < t.date)
         {
           auto& note = *it;
-          mp->messages.push_back(
+          mp.messages.push_back(
               rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
-          mp->messages.back().timestamp = tick_start;
+          mp.messages.back().timestamp = tick_start;
           m_playingnotes.insert(note);
           it = m_notes.erase(it);
         }
@@ -199,9 +199,9 @@ private:
 
           if (t.in_range({end_time}))
           {
-            mp->messages.push_back(rtmidi::message::note_off(
+            mp.messages.push_back(rtmidi::message::note_off(
                 m_channel, note.pitch, note.velocity));
-            mp->messages.back().timestamp
+            mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(end_time, samplesratio);
 
             it = m_playingnotes.erase(it);
@@ -221,9 +221,9 @@ private:
           if (start_time >= t.prev_date && start_time < t.date)
           {
             // Send note_on
-            mp->messages.push_back(rtmidi::message::note_on(
+            mp.messages.push_back(rtmidi::message::note_on(
                 m_channel, note.pitch, note.velocity));
-            mp->messages.back().timestamp
+            mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(start_time, samplesratio);
 
             m_playingnotes.insert(note);

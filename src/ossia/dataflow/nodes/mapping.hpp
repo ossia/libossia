@@ -50,10 +50,8 @@ private:
     if (!m_drive)
       return;
 
-    auto& inlet = *m_inlets[0];
-    auto& outlet = *m_outlets[0];
-    const ossia::value_port& ip = *inlet.data.target<ossia::value_port>();
-    ossia::value_port& op = *outlet.data.target<ossia::value_port>();
+    const ossia::value_port& ip = *value_in;
+    ossia::value_port& op = *value_out;
 
     // TODO use correct unit / whatever ?
     for (auto& tv : ip.get_data())
@@ -69,7 +67,7 @@ private:
   }
 
   ossia::behavior m_drive;
-  ossia::inlet value_in{ossia::value_port{}};
-  ossia::outlet value_out{ossia::value_port{}};
+  ossia::value_inlet value_in;
+  ossia::value_outlet value_out;
 };
 }
