@@ -33,18 +33,44 @@ public:
         auto C = i.samples.size();
         o.samples.resize(C);
 
-        for(auto chan = 0U; chan < C; chan++)
+        switch(C)
         {
-          auto N = i.samples[chan].size();
-          o.samples[chan].resize(N);
+        case 0:
+            return;
 
-          auto i_ptr = i.samples[chan].data();
-          auto o_ptr  = o.samples[chan].data();
+        case 1:
+        {
+            auto N = i.samples[0].size();
+            auto i_ptr = i.samples[0].data();
+            auto o_ptr  = o.samples[0].data();
 
-          for(std::size_t sample = 0; sample < N; sample++)
-          {
-            o_ptr[sample] = i_ptr[sample] * g;
-          }
+            for(std::size_t sample = 0; sample < N; sample++)
+            {
+                o_ptr[sample] = i_ptr[sample] * g;
+            }
+            break;
+        }
+
+        default:
+        {
+            while(o.pan.size() < C)
+                o.pan.push_back(ossia::sqrt_2 / 2.);
+            for(auto chan = 0U; chan < C; chan++)
+            {
+                auto N = i.samples[chan].size();
+                o.samples[chan].resize(N);
+
+                auto i_ptr = i.samples[chan].data();
+                auto o_ptr  = o.samples[chan].data();
+
+                const auto vol = o.pan[chan] * g;
+                for(std::size_t sample = 0; sample < N; sample++)
+                {
+                    o_ptr[sample] = i_ptr[sample] * vol;
+                }
+            }
+            break;
+        }
         }
       }
     }

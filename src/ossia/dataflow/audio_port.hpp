@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/nodes/media.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/math.hpp>
 #include <vector>
 #include <ossia_export.h>
 namespace ossia
@@ -10,7 +11,7 @@ struct audio_port
 {
   audio_vector samples;
   double gain{1.};
-  pan_weight pan{};
+  pan_weight pan{ossia::sqrt_2 / 2., ossia::sqrt_2 / 2.};
   bool upmix{};
   bool has_gain{};
 };
