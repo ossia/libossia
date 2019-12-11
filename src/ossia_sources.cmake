@@ -411,11 +411,16 @@ set(OSSIA_LEAPMOTION_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
-
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.hpp")
 
 set(OSSIA_JOYSTICK_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
+
+set(OSSIA_LIBMAPPER_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.hpp")
+
+set(OSSIA_LIBMAPPER_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.cpp")
 
 set(OSSIA_WIIMOTE_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.hpp"

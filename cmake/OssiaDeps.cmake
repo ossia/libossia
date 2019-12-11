@@ -154,6 +154,10 @@ if(OSSIA_PROTOCOL_WIIMOTE)
   endif()
 endif()
 
+if(OSSIA_PROTOCOL_LIBMAPPER)
+    find_package(Libmapper REQUIRED)
+endif()
+
 if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
   find_package(PortAudio QUIET)
   if(NOT PortAudio_FOUND)

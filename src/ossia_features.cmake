@@ -175,6 +175,12 @@ if (OSSIA_PROTOCOL_ARTNET)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} artnet)
 endif()
 
+if (OSSIA_PROTOCOL_LIBMAPPER)
+    target_sources(ossia PRIVATE ${OSSIA_LIBMAPPER_SRCS} ${OSSIA_LIBMAPPER_HEADERS})
+    target_link_libraries(ossia PRIVATE mapper)
+    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} libmapper)
+endif()
+
 
 # Additional features
 if(OSSIA_C)
