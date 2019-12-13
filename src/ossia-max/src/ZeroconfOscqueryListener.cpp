@@ -115,7 +115,7 @@ std::mutex ZeroconfOscqueryListener::m_mutex;
     {
       for (auto client : ossia_max::instance().clients.reference())
       {
-        if(client->is_zeroconf() && client->m_device->get_name() == name)
+        if(client->is_zeroconf() && client->m_device && client->m_device->get_name() == name)
         {
           ossia::max::client::client::disconnect(client);
           clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
