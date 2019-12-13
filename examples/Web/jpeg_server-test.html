@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+
+<html>
+   <head>
+      <title>DpvCam Webcontrol</title>
+      <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+      <script type="text/javascript" src="lib/osc.min.js"></script>
+      <script type = "text/javascript">
+         function WebSocketTest() {
+                       
+            var elem = document.getElementById("image");
+            if ("WebSocket" in window) {              
+               // Let us open a web socket
+               var ws = new WebSocket("ws://127.0.0.1:5678");
+				
+               ws.onopen = function() {
+                  
+                  // ask for the namespace
+                  ws.send("/?SET_PORT=0");
+                  ws.send("/");
+               };
+				
+               ws.onmessage = function (evt) { 
+                  var json;
+                  try{
+                    json = JSON.parse(evt.data);
+                    parseOSCQuery(json, '/');
+                  }
+                  catch(err)
+                  {
+                    var arrayBuffer
+                    var fileReader = new FileReader()
+                    fileReader.onload = function(event) {
+                        arrayBuffer = event.target.result
+                        var view = new DataView(arrayBuffer)
+                        const msg = new OSC.Message()
+                        msg.unpack(view)
+                        if(msg.address == "/jpeg")
+                          elem.setAttribute('src','data:image/jpeg;base64,' + msg.args)
+
+                    };
+                    fileReader.readAsArrayBuffer(evt.data);
+                    
+                    //document.getElementById("error").innerHTML = err.message;
+                    // document.getElementById("inlineFrameExample").setAttribute('src', evt.data);
+                    //console.log("JSON data: " + evt.data);
+
+/*
+                    var myReader = new FileReader();
+                    myReader.onload = function(event){
+                        console.log(JSON.stringify(myReader.result));
+                    };
+                    myReader.readAsText(evt.data);
+                    */
+                  }                  
+
+              function parseOSCQuery(json, name)
+              {
+                  // console.log(json);
+
+                  if ("CONTENTS" in json)
+                  {
+                      var content = json["CONTENTS"];
+
+                      for(var prop in content) {
+                          parseOSCQuery(content[prop], prop);
+                      }
+                  }
+
+                  if (("FULL_PATH" in json) && ("VALUE" in json))
+                  {
+                     if(name == "jpeg")
+                     {
+                        var jpeg_data = json["VALUE"];
+                        elem.setAttribute('src','data:image/jpeg;base64,' + jpeg_data);
+                     }
+                  }
+              }
+               };
+				
+               ws.onclose = function() { 
+                  
+                  // websocket is closed.
+                  alert("Connection is closed..."); 
+               };
+            } else {
+              
+               // The browser doesn't support WebSocket
+               alert("WebSocket NOT supported by your Browser!");
+            }
+         }
+      </script>
+		
+   </head>
+   
+   <body>
+      <div id = "sse">
+         <a href = "javascript:WebSocketTest()">Run WebSocket</a>
+      </div>
+      <img id="image" src="" width="1280" height="720"/>
+      <p id="error"></p>
+   </body>
+</html>
