@@ -25,7 +25,7 @@ class ZeroconfOscqueryListener final : servus::Listener
     void instanceRemoved(const std::string& instance) final override;
 
     static std::vector<std::shared_ptr<ossia::net::generic_device>> m_devices;
-    static std::vector<std::vector<std::shared_ptr<ossia::net::generic_device>>::iterator> m_zombie_devices;
+    static std::vector<std::string> m_zombie_devices;
 
     servus::Servus service;
     static std::mutex m_mutex;
