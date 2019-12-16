@@ -75,7 +75,7 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   }
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $64bitgen -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
+  cmake $64bitgen -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
   # now configure 32 bit version
