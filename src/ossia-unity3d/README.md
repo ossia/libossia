@@ -19,6 +19,8 @@ Then once this is done, set the script execution order so that the objects are l
 
 ![ScriptOrder](https://github.com/OSSIA/OSSIA.github.io/blob/dev/source/images/unity/ScriptOrder.png)
 
+under some circumptance on windows, you might have a DLL not found exception. Check first that the dll are in Plugins folder at root directory of your project. If you still have a DLL not found exception, you might need to install [vc_redist](https://github.com/OSSIA/libossia/issues/530)
+
 ### Exposing objects 
 
 To expose objects to the API, either : 
