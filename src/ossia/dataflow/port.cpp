@@ -10,30 +10,19 @@
 namespace ossia
 {
 
-static void
-copy_to_local(const data_type& out, const destination& d, execution_state& in)
-{
-  in.insert(d, out);
-}
-static void
-copy_to_local(data_type&& out, const destination& d, execution_state& in)
-{
-  in.insert(d, std::move(out));
-}
-
 struct push_data
 {
-  const ossia::destination& dest;
+  ossia::net::parameter_base& dest;
   void operator()(const value_port& p) const
   {
     // TODO do the unit conversion
     for (auto& val : p.get_data())
-      dest.address().push_value(val.value);
+      dest.push_value(val.value);
   }
 
   void operator()(const midi_port& p) const
   {
-    auto& proto = dest.address().get_node().get_device().get_protocol();
+    auto& proto = dest.get_node().get_device().get_protocol();
     if (auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
     {
       for (auto& val : p.messages)
@@ -43,52 +32,13 @@ struct push_data
 
   void operator()(const audio_port& p) const
   {
-    if (auto audio = dynamic_cast<ossia::audio_parameter*>(&dest.address()))
+    if (auto audio = dynamic_cast<ossia::audio_parameter*>(&dest))
     {
       audio->push_value(p);
     }
   }
+  void operator()() const noexcept { }
 };
-static void
-copy_to_global(const data_type& out, const destination& d, execution_state& in)
-{
-  switch (out.which())
-  {
-    case 0:
-      push_data{d}(*reinterpret_cast<const ossia::audio_port*>(out.target()));
-      break;
-    case 1:
-      push_data{d}(*reinterpret_cast<const ossia::midi_port*>(out.target()));
-      break;
-    case 2:
-      push_data{d}(*reinterpret_cast<const ossia::value_port*>(out.target()));
-      break;
-    default:
-      break;
-  }
-}
-
-static void
-copy_to_global(data_type&& out, const destination& d, execution_state& in)
-{
-  switch (out.which())
-  {
-    case 0:
-      push_data{d}(
-          std::move(*reinterpret_cast<ossia::audio_port*>(out.target())));
-      break;
-    case 1:
-      push_data{d}(
-          std::move(*reinterpret_cast<ossia::midi_port*>(out.target())));
-      break;
-    case 2:
-      push_data{d}(
-          std::move(*reinterpret_cast<ossia::value_port*>(out.target())));
-      break;
-    default:
-      break;
-  }
-}
 
 void outlet::write(execution_state& e)
 {
@@ -99,24 +49,54 @@ void outlet::write(execution_state& e)
         {
           if (scope & port::scope_t::local)
           {
-            copy_to_local(std::move(data), *addr, e);
+            visit([&] (auto& data) { e.insert(*addr, std::move(data)); });
           }
           else if (scope & port::scope_t::global)
           {
-            copy_to_global(std::move(data), *addr, e);
+            visit(push_data{*addr});
           }
         }
         else
         {
           if (scope & port::scope_t::local)
           {
-            copy_to_local(data, *addr, e);
+            visit([&] (const auto& data) { e.insert(*addr, data); });
           }
           else if (scope & port::scope_t::global)
           {
-            copy_to_global(data, *addr, e);
+            ((const outlet&)(*this)).visit(push_data{*addr});
           }
         }
-      }, do_nothing_for_nodes{});
+  }, do_nothing_for_nodes{});
 }
+
+value_inlet::~value_inlet()
+{
+
+}
+
+value_outlet::~value_outlet()
+{
+
+}
+audio_inlet::~audio_inlet()
+{
+
+}
+
+audio_outlet::~audio_outlet()
+{
+
+}
+
+midi_inlet::~midi_inlet()
+{
+
+}
+
+midi_outlet::~midi_outlet()
+{
+
+}
+
 }

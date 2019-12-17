@@ -10,7 +10,7 @@ class step final : public ossia::graph_node
 public:
   step()
   {
-    m_outlets.push_back(ossia::make_outlet<ossia::value_port>());
+    m_outlets.push_back(new ossia::value_outlet);
   }
 
   ~step() override
@@ -24,7 +24,7 @@ public:
     // last_t and now
     if (t.forward())
     {
-      auto& port = *m_outlets[0]->data.target<ossia::value_port>();
+      auto& port = *m_outlets[0]->target<ossia::value_port>();
 
       const int64_t d = dur.impl * e.samplesToModel();
       int64_t quo = std::floor(double(t.prev_date.impl) / d);

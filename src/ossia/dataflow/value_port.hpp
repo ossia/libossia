@@ -16,6 +16,7 @@ enum data_mix_method : int8_t
 
 struct OSSIA_EXPORT value_port
 {
+  static const constexpr int which = 2;
   //! Use this function to write from a node to an output port
   void write_value(const ossia::value& v, int64_t timestamp);
 

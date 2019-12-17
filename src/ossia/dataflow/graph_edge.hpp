@@ -7,19 +7,19 @@ namespace ossia
 struct init_delay_line
 {
   delay_line_type& delay_line;
-  void operator()(const audio_port&)
+  void operator()(const audio_port&) const noexcept
   {
     delay_line = audio_delay_line{};
   }
-  void operator()(const value_port&)
+  void operator()(const value_port&) const noexcept
   {
     delay_line = value_delay_line{};
   }
-  void operator()(const midi_port&)
+  void operator()(const midi_port&) const noexcept
   {
     delay_line = midi_delay_line{};
   }
-  void operator()()
+  void operator()() const noexcept
   {
   }
 };

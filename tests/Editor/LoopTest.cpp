@@ -239,7 +239,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
 
     for(auto tk : snd->requested_tokens)
       ((ossia::graph_node*)snd.get())->run(tk, {e});
-    auto op = snd->outputs()[0]->data.target<audio_port>()->samples;
+    auto op = snd->outputs()[0]->target<audio_port>()->samples;
     audio_vector expected{audio_channel{0.1f, 0.2f, 0.3f, 0.4f, 0.1f, 0.2f, 0.3f, 0.4f, 0.1f}};
     for(int i = 0; i < 9; i++)
     {
@@ -286,7 +286,7 @@ TEST_CASE ("test_subloop", "test_subloop")
 
   audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1}};
 
-  auto op = snd->outputs()[0]->data.target<audio_port>()->samples;
+  auto op = snd->outputs()[0]->target<audio_port>()->samples;
 
   for(int i = 0; i < 14; i++)
   {

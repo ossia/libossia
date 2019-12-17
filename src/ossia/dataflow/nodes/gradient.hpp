@@ -26,8 +26,8 @@ public:
 
   gradient()
   {
-    ossia::outlet_ptr vp = ossia::make_outlet<ossia::value_port>();
-    vp->data.target<ossia::value_port>()->type = ossia::argb_u{};
+    ossia::outlet_ptr vp = new ossia::value_outlet;
+    vp->target<ossia::value_port>()->type = ossia::argb_u{};
     m_outlets.push_back(std::move(vp));
   }
 
@@ -39,7 +39,7 @@ public:
   void handle_before_first(const ossia::token_request& tk, int64_t tick_start)
   {
     const auto position = tk.position();
-    auto& out = *m_outlets[0]->data.target<ossia::value_port>();
+    auto& out = *m_outlets[0]->target<ossia::value_port>();
     auto beg = m_data.begin();
 
     if (beg->first >= position)
@@ -79,7 +79,7 @@ public:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    auto& out = *m_outlets[0]->data.target<ossia::value_port>();
+    auto& out = *m_outlets[0]->target<ossia::value_port>();
 
     const auto tick_start = e.physical_start(t);
 

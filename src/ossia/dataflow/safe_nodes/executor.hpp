@@ -89,11 +89,11 @@ static constexpr auto& get_inlet_accessor(const ossia::inlets& inl) noexcept
 {
   constexpr auto cat = info::categorize_inlet(N);
   if constexpr (cat == ossia::safe_nodes::inlet_kind::audio_in)
-      return *inl[N]->data.target<ossia::audio_port>();
+      return *inl[N]->target<ossia::audio_port>();
   else if constexpr (cat == ossia::safe_nodes::inlet_kind::midi_in)
-      return *inl[N]->data.target<ossia::midi_port>();
+      return *inl[N]->target<ossia::midi_port>();
   else if constexpr (cat == ossia::safe_nodes::inlet_kind::value_in)
-      return *inl[N]->data.target<ossia::value_port>();
+      return *inl[N]->target<ossia::value_port>();
   else if constexpr (cat == ossia::safe_nodes::inlet_kind::address_in)
       return inl[N]->address;
   else
@@ -105,11 +105,11 @@ static constexpr auto& get_outlet_accessor(const ossia::outlets& outl) noexcept
 {
   constexpr auto cat = info::categorize_outlet(N);
   if constexpr (cat == ossia::safe_nodes::outlet_kind::audio_out)
-      return *outl[N]->data.target<ossia::audio_port>();
+      return *outl[N]->target<ossia::audio_port>();
   else if constexpr (cat == ossia::safe_nodes::outlet_kind::midi_out)
-      return *outl[N]->data.target<ossia::midi_port>();
+      return *outl[N]->target<ossia::midi_port>();
   else if constexpr (cat == ossia::safe_nodes::outlet_kind::value_out)
-      return *outl[N]->data.target<ossia::value_port>();
+      return *outl[N]->target<ossia::value_port>();
   else
     throw;
 }
@@ -225,7 +225,7 @@ public:
         = std::get<N>(this->control_tuple);
     vec.clear();
     const auto& vp
-        = inl[idx]->data.template target<ossia::value_port>()->get_data();
+        = static_cast<ossia::value_inlet*>(inl[idx])->data.get_data();
     vec.container.reserve(vp.size() + 1);
 
     // in all cases, set the current value at t=0

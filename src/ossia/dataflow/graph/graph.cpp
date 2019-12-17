@@ -312,22 +312,23 @@ struct rescale_out
 
 void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
 {
+  int i = 0;
   struct
   {
     spdlog::logger& logger;
-    int i = 0;
-    void operator()(const ossia::value_port& p)
+    int& i;
+    void operator()(const ossia::value_port& p) const noexcept
     {
       for (const ossia::timed_value& val : p.get_data())
         logger.log(spdlog::level::debug, "input {} (value): {}", i, val.value);
       i++;
     }
-    void operator()(const ossia::audio_port& p)
+    void operator()(const ossia::audio_port& p) const noexcept
     {
       // logger.log(spdlog::level::debug, "input {} (audio)");
       i++;
     }
-    void operator()(const ossia::midi_port& p)
+    void operator()(const ossia::midi_port& p) const noexcept
     {
       for (const rtmidi::message& val : p.messages)
       {
@@ -354,36 +355,37 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
       i++;
     }
 
-    void operator()()
+    void operator()() const noexcept
     {
     }
-  } vis{logger};
+  } vis{logger, i};
 
   for (const ossia::inlet_ptr& in : n.inputs())
   {
-    ossia::apply(vis, in->data);
+    in->visit(vis);
   }
 }
 
 void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
 {
+  int i = 0;
   struct
   {
     spdlog::logger& logger;
-    int i = 0;
-    void operator()(const ossia::value_port& p)
+    int& i;
+    void operator()(const ossia::value_port& p) const noexcept
     {
       for (const ossia::timed_value& val : p.get_data())
         logger.log(
             spdlog::level::debug, "output {} (value): {}", i, val.value);
       i++;
     }
-    void operator()(const ossia::audio_port& p)
+    void operator()(const ossia::audio_port& p) const noexcept
     {
       // logger.log(spdlog::level::debug, "output {} (audio)");
       i++;
     }
-    void operator()(const ossia::midi_port& p)
+    void operator()(const ossia::midi_port& p) const noexcept
     {
       for (const rtmidi::message& val : p.messages)
       {
@@ -409,14 +411,14 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
       }
       i++;
     }
-    void operator()()
+    void operator()() const noexcept
     {
     }
-  } vis{logger};
+  } vis{logger, i};
 
   for (const ossia::outlet_ptr& out : n.outputs())
   {
-    ossia::apply(vis, out->data);
+    out->visit(vis);
   }
 }
 graph_interface::~graph_interface()

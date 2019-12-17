@@ -78,24 +78,24 @@ struct init_node_visitor
   static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
   {
     const auto w = out.which();
-    if (w == in.data.which() && w != data_type::npos)
+    if (w == in.which() && w != data_type::npos)
     {
       switch (w)
       {
         case 0:
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::audio_delay_line*>(out.target()),
-              *reinterpret_cast<ossia::audio_port*>(in.data.target()));
+              in.cast<ossia::audio_port>());
           break;
         case 1:
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::midi_delay_line*>(out.target()),
-              *reinterpret_cast<ossia::midi_port*>(in.data.target()));
+              in.cast<ossia::midi_port>());
           break;
         case 2:
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::value_delay_line*>(out.target()),
-              *reinterpret_cast<ossia::value_port*>(in.data.target()));
+              in.cast<ossia::value_port>());
           break;
       }
     }
@@ -103,25 +103,25 @@ struct init_node_visitor
 
   static void copy(const outlet& out, inlet& in)
   {
-    const auto w = out.data.which();
-    if (w == in.data.which() && w != data_type::npos)
+    const auto w = out.which();
+    if (w == in.which() && w != data_type::npos)
     {
       switch (w)
       {
         case 0:
           copy_data{}(
-              *reinterpret_cast<const ossia::audio_port*>(out.data.target()),
-              *reinterpret_cast<ossia::audio_port*>(in.data.target()));
+              out.cast<ossia::audio_port>(),
+              in.cast<ossia::audio_port>());
           break;
         case 1:
           copy_data{}(
-              *reinterpret_cast<const ossia::midi_port*>(out.data.target()),
-              *reinterpret_cast<ossia::midi_port*>(in.data.target()));
+              out.cast<ossia::midi_port>(),
+              in.cast<ossia::midi_port>());
           break;
         case 2:
           copy_data{}(
-              *reinterpret_cast<const ossia::value_port*>(out.data.target()),
-              *reinterpret_cast<ossia::value_port*>(in.data.target()));
+              out.cast<ossia::value_port>(),
+              in.cast<ossia::value_port>());
           break;
       }
     }
@@ -238,32 +238,30 @@ struct env_writer
   bool operator()(delayed_glutton_connection& con) const
   {
     // Copy to the buffer
-    if (con.buffer && out.data && con.buffer.which() == out.data.which())
+    const auto con_w = con.buffer.which();
+    const auto out_w = out.which();
+    if (con_w == out_w)
     {
-      const auto w = con.buffer.which();
-      if (w == out.data.which() && w != data_type::npos)
+      switch (con_w)
       {
-        switch (w)
-        {
-          case 0:
-            copy_data{}(
-                *reinterpret_cast<const ossia::audio_port*>(out.data.target()),
-                *reinterpret_cast<ossia::audio_delay_line*>(
-                    con.buffer.target()));
-            break;
-          case 1:
-            copy_data{}(
-                *reinterpret_cast<const ossia::midi_port*>(out.data.target()),
-                *reinterpret_cast<ossia::midi_delay_line*>(
-                    con.buffer.target()));
-            break;
-          case 2:
-            copy_data{}(
-                *reinterpret_cast<const ossia::value_port*>(out.data.target()),
-                *reinterpret_cast<ossia::value_delay_line*>(
-                    con.buffer.target()));
-            break;
-        }
+        case 0:
+          copy_data{}(
+          static_cast<const ossia::audio_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::audio_delay_line*>(
+                con.buffer.target()));
+          break;
+        case 1:
+          copy_data{}(
+          static_cast<const ossia::midi_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::midi_delay_line*>(
+                con.buffer.target()));
+          break;
+        case 2:
+          copy_data{}(
+          static_cast<const ossia::value_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::value_delay_line*>(
+                con.buffer.target()));
+          break;
       }
     }
     return false;
@@ -271,32 +269,30 @@ struct env_writer
   bool operator()(delayed_strict_connection& con) const
   {
     // Copy to the buffer
-    if (con.buffer && out.data && con.buffer.which() == out.data.which())
+    const auto con_w = con.buffer.which();
+    const auto out_w = out.which();
+    if (con_w == out_w)
     {
-      const auto w = con.buffer.which();
-      if (w == out.data.which() && w != data_type::npos)
+      switch (con_w)
       {
-        switch (w)
-        {
-          case 0:
-            copy_data{}(
-                *reinterpret_cast<const ossia::audio_port*>(out.data.target()),
-                *reinterpret_cast<ossia::audio_delay_line*>(
-                    con.buffer.target()));
-            break;
-          case 1:
-            copy_data{}(
-                *reinterpret_cast<const ossia::midi_port*>(out.data.target()),
-                *reinterpret_cast<ossia::midi_delay_line*>(
-                    con.buffer.target()));
-            break;
-          case 2:
-            copy_data{}(
-                *reinterpret_cast<const ossia::value_port*>(out.data.target()),
-                *reinterpret_cast<ossia::value_delay_line*>(
-                    con.buffer.target()));
-            break;
-        }
+        case 0:
+          copy_data{}(
+          static_cast<const ossia::audio_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::audio_delay_line*>(
+                con.buffer.target()));
+          break;
+        case 1:
+          copy_data{}(
+          static_cast<const ossia::midi_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::midi_delay_line*>(
+                con.buffer.target()));
+          break;
+        case 2:
+          copy_data{}(
+          static_cast<const ossia::value_outlet*>(&out)->data,
+              *reinterpret_cast<ossia::value_delay_line*>(
+                con.buffer.target()));
+          break;
       }
     }
     return false;

@@ -20,7 +20,7 @@ struct local_pull_visitor
 {
   execution_state& st;
   ossia::net::parameter_base* addr{};
-  bool operator()(value_port& val)
+  bool operator()(value_port& val) const
   {
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_valueState.find(addr);
@@ -32,7 +32,7 @@ struct local_pull_visitor
     return false;
   }
 
-  bool operator()(audio_port& val)
+  bool operator()(audio_port& val) const
   {
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_audioState.find(addr);
@@ -44,7 +44,7 @@ struct local_pull_visitor
     return false;
   }
 
-  bool operator()(midi_port& val)
+  bool operator()(midi_port& val) const
   {
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_midiState.find(addr);
@@ -56,7 +56,7 @@ struct local_pull_visitor
     return false;
   }
 
-  bool operator()()
+  bool operator()() const
   {
     return false;
   }
@@ -66,7 +66,7 @@ struct global_pull_visitor
 {
   ossia::execution_state& state;
   const net::parameter_base& out;
-  void operator()(value_port& val)
+  void operator()(value_port& val) const
   {
     if (!val.is_event)
     {
@@ -83,14 +83,14 @@ struct global_pull_visitor
     }
   }
 
-  void operator()(audio_port& val)
+  void operator()(audio_port& val) const
   {
     auto aa = dynamic_cast<const audio_parameter*>(&out);
     assert(aa);
     aa->clone_value(val.samples);
   }
 
-  void operator()(midi_port& val)
+  void operator()(midi_port& val) const
   {
     auto& node = out.get_node();
     auto& dev = node.get_device();
@@ -112,7 +112,7 @@ struct global_pull_visitor
     }
   }
 
-  void operator()()
+  void operator()() const
   {
   }
 };
@@ -121,17 +121,17 @@ struct global_pull_node_visitor
 {
   ossia::execution_state& state;
   const net::node_base& out;
-  void operator()(value_port& val)
+  void operator()(value_port& val) const
   {
     // TODO Nothing to do ?
   }
 
-  void operator()(audio_port& val)
+  void operator()(audio_port& val) const
   {
     // TODO Nothing to do ?
   }
 
-  void operator()(midi_port& val)
+  void operator()(midi_port& val) const
   {
     auto& node = out;
     auto& dev = node.get_device();
@@ -171,7 +171,7 @@ struct global_pull_node_visitor
     }
   }
 
-  void operator()()
+  void operator()() const
   {
   }
 };
@@ -288,7 +288,7 @@ void execution_state::get_new_values()
 
 void execution_state::register_port(const inlet& port)
 {
-  if (auto vp = port.data.target<ossia::value_port>())
+  if (auto vp = port.target<ossia::value_port>())
   {
     if (vp->is_event)
     {
@@ -310,7 +310,7 @@ void execution_state::register_port(const inlet& port)
       }
     }
   }
-  else if (port.data.target<ossia::midi_port>())
+  else if (port.target<ossia::midi_port>())
   {
     if (auto addr = port.address.target<ossia::net::node_base*>())
     {
@@ -339,7 +339,7 @@ void execution_state::register_port(const outlet& port)
 
 void execution_state::unregister_port(const inlet& port)
 {
-  if (auto vp = port.data.target<ossia::value_port>())
+  if (auto vp = port.target<ossia::value_port>())
   {
     if (vp->is_event)
     {
@@ -361,7 +361,7 @@ void execution_state::unregister_port(const inlet& port)
       }
     }
   }
-  else if (port.data.target<ossia::midi_port>())
+  else if (port.target<ossia::midi_port>())
   {
     if (auto addr = port.address.target<ossia::net::node_base*>())
     {
@@ -679,7 +679,7 @@ void execution_state::commit_ordered()
 
 void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
 {
-  bool ok = ossia::apply(local_pull_visitor{*this, &addr}, in.data);
+  bool ok = in.visit(local_pull_visitor{*this, &addr});
   if (!ok)
   {
     copy_from_global(addr, in);
@@ -690,7 +690,7 @@ void execution_state::copy_from_global(net::parameter_base& addr, inlet& in)
 {
   if (in.scope & port::scope_t::global)
   {
-    ossia::apply(global_pull_visitor{*this, addr}, in.data);
+    in.visit(global_pull_visitor{*this, addr});
   }
 }
 
@@ -698,138 +698,109 @@ void execution_state::copy_from_global_node(net::node_base& node, inlet& in)
 {
   if (in.scope & port::scope_t::global)
   {
-    ossia::apply(global_pull_node_visitor{*this, node}, in.data);
+    in.visit(global_pull_node_visitor{*this, node});
   }
 }
 
 void execution_state::insert(
-    const ossia::destination& param, const data_type& v)
+    const ossia::destination& param, const audio_port& v)
 {
-  switch (v.which())
-  {
-    case 0:
-    {
-      auto audio = static_cast<const ossia::audio_port*>(v.target());
-      insert(param.address(), std::move(*audio));
-      break;
-    }
-    case 1:
-    {
-      auto midi = static_cast<const ossia::midi_port*>(v.target());
-      insert(param.address(), std::move(*midi));
-      break;
-    }
-    case 2:
-    {
-      OSSIA_EXEC_STATE_LOCK_WRITE(*this);
-      auto val = static_cast<const ossia::value_port*>(v.target());
-      int idx = m_msgIndex;
-      auto& st = m_valueState[&param.address()];
-
-      // here reserve is a pessimization if we push only a few values...
-      // just letting log2 growth do its job is much better.
-      switch (val->mix_method)
-      {
-        case ossia::data_mix_method::mix_replace:
-        {
-          for (const ossia::timed_value& v : val->get_data())
-          {
-            auto it = ossia::find_if(
-                st, [&](const std::pair<typed_value, int>& val) {
-                  return val.first.timestamp == v.timestamp;
-                });
-            if (it != st.end())
-              it->first = ossia::typed_value{v, val->index, val->type};
-            else
-              st.emplace_back(
-                  ossia::typed_value{v, val->index, val->type}, idx++);
-          }
-          break;
-        }
-        case ossia::data_mix_method::mix_append:
-        {
-          for (const auto& v : val->get_data())
-            st.emplace_back(
-                ossia::typed_value{v, val->index, val->type}, idx++);
-          break;
-        }
-        case ossia::data_mix_method::mix_merge:
-        {
-          // TODO;
-          break;
-        }
-      }
-      idx = m_msgIndex;
-      m_msgIndex += val->get_data().size();
-      break;
-    }
-  }
+  insert(param.address(), v);
 }
-void execution_state::insert(const ossia::destination& param, data_type&& v)
+void execution_state::insert(
+    const ossia::destination& param, const midi_port& v)
 {
-  switch (v.which())
+  insert(param.address(), v);
+}
+void execution_state::insert(
+    const ossia::destination& param, const value_port& val)
+{
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
+  int idx = m_msgIndex;
+  auto& st = m_valueState[&param.address()];
+
+  // here reserve is a pessimization if we push only a few values...
+  // just letting log2 growth do its job is much better.
+  switch (val.mix_method)
   {
-    case 0:
+    case ossia::data_mix_method::mix_replace:
     {
-      auto audio = static_cast<ossia::audio_port*>(v.target());
-      insert(param.address(), std::move(*audio));
-      break;
-    }
-    case 1:
-    {
-      auto midi = static_cast<ossia::midi_port*>(v.target());
-      insert(param.address(), std::move(*midi));
-      break;
-    }
-    case 2:
-    {
-      OSSIA_EXEC_STATE_LOCK_WRITE(*this);
-      auto val = static_cast<ossia::value_port*>(v.target());
-      int idx = m_msgIndex;
-      auto& st = m_valueState[&param.address()];
-
-      // here reserve is a pessimization if we push only a few values...
-      // just letting log2 growth do its job is much better.
-
-      switch (val->mix_method)
+      for (const ossia::timed_value& v : val.get_data())
       {
-        case ossia::data_mix_method::mix_replace:
-        {
-          for (ossia::timed_value& v : val->get_data())
-          {
-            auto it = ossia::find_if(
-                st, [&](const std::pair<typed_value, int>& val) {
-                  return val.first.timestamp == v.timestamp;
-                });
-            if (it != st.end())
-              it->first
-                  = ossia::typed_value{std::move(v), val->index, val->type};
-            else
-              st.emplace_back(
-                  ossia::typed_value{std::move(v), val->index, val->type},
-                  idx++);
-          }
-          break;
-        }
-        case ossia::data_mix_method::mix_append:
-        {
-          for (auto& v : val->get_data())
-            st.emplace_back(
-                ossia::typed_value{std::move(v), val->index, val->type},
-                idx++);
-          break;
-        }
-        case ossia::data_mix_method::mix_merge:
-        {
-          // TODO;
-          break;
-        }
+        auto it = ossia::find_if(
+            st, [&](const std::pair<typed_value, int>& val) {
+              return val.first.timestamp == v.timestamp;
+            });
+        if (it != st.end())
+          it->first = ossia::typed_value{v, val.index, val.type};
+        else
+          st.emplace_back(
+              ossia::typed_value{v, val.index, val.type}, idx++);
       }
-      idx = m_msgIndex;
-      m_msgIndex += val->get_data().size();
+      break;
+    }
+    case ossia::data_mix_method::mix_append:
+    {
+      for (const auto& v : val.get_data())
+        st.emplace_back(
+            ossia::typed_value{v, val.index, val.type}, idx++);
+      break;
+    }
+    case ossia::data_mix_method::mix_merge:
+    {
+      // TODO;
       break;
     }
   }
+  idx = m_msgIndex;
+  m_msgIndex += val.get_data().size();
+}
+
+void execution_state::insert(const ossia::destination& param, value_port&& val)
+{
+  OSSIA_EXEC_STATE_LOCK_WRITE(*this);
+  int idx = m_msgIndex;
+  auto& st = m_valueState[&param.address()];
+
+  // here reserve is a pessimization if we push only a few values...
+  // just letting log2 growth do its job is much better.
+
+  switch (val.mix_method)
+  {
+    case ossia::data_mix_method::mix_replace:
+    {
+      for (ossia::timed_value& v : val.get_data())
+      {
+        auto it = ossia::find_if(
+                    st, [&](const std::pair<typed_value, int>& val) {
+          return val.first.timestamp == v.timestamp;
+        });
+        if (it != st.end())
+          it->first
+              = ossia::typed_value{std::move(v), val.index, val.type};
+        else
+          st.emplace_back(
+                ossia::typed_value{std::move(v), val.index, val.type},
+                idx++);
+      }
+      break;
+    }
+    case ossia::data_mix_method::mix_append:
+    {
+      for (auto& v : val.get_data())
+        st.emplace_back(
+              ossia::typed_value{std::move(v), val.index, val.type},
+              idx++);
+      break;
+    }
+    case ossia::data_mix_method::mix_merge:
+    {
+      // TODO;
+      break;
+    }
+  }
+  idx = m_msgIndex;
+  m_msgIndex += val.get_data().size();
 }
 
 void execution_state::insert(

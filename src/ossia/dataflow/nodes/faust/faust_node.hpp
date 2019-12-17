@@ -12,8 +12,8 @@ public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
   faust_fx(llvm_dsp* dsp) : m_dsp{dsp}
   {
-    m_inlets.push_back(ossia::make_inlet<ossia::audio_port>());
-    m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+    m_inlets.push_back(new ossia::audio_inlet);
+    m_outlets.push_back(new ossia::audio_outlet);
     faust_exec_ui<faust_fx> ex{*this};
     m_dsp->buildUserInterface(&ex);
   }
@@ -42,8 +42,8 @@ public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
   faust_synth(dsp_poly* dsp) : m_dsp{dsp}
   {
-    m_inlets.push_back(ossia::make_inlet<ossia::midi_port>());
-    m_outlets.push_back(ossia::make_outlet<ossia::audio_port>());
+    m_inlets.push_back(new ossia::midi_inlet);
+    m_outlets.push_back(new ossia::audio_outlet);
     faust_exec_ui<faust_synth> ex{*this};
     m_dsp->buildUserInterface(&ex);
   }

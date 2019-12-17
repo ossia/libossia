@@ -67,7 +67,7 @@ template<typename T>
 ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
   if(p)
   {
-    auto ip = p->data.target<ossia::value_port>();
+    auto ip = p->target<ossia::value_port>();
     if(ip)
     {
       if(!ip->get_data().empty())
@@ -85,15 +85,15 @@ ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
 void push_value(const ossia::outlet_ptr& p, ossia::value val) {
   if(p)
   {
-    if(auto op = p->data.target<ossia::value_port>())
+    if(auto op = p->target<ossia::value_port>())
       op->write_value(std::move(val), 0);
   }
 }
 
 struct my_node final : ossia::graph_node {
     my_node() {
-      inputs().push_back(ossia::make_inlet<ossia::value_port>());
-      outputs().push_back(ossia::make_outlet<ossia::value_port>());
+      inputs().push_back(new ossia::value_inlet);
+      outputs().push_back(new ossia::value_outlet);
     }
 
     void run(const ossia::token_request& t, ossia::exec_state_facade) noexcept override {

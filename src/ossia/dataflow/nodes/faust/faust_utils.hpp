@@ -83,9 +83,9 @@ struct faust_exec_ui final : UI
 
   void addButton(const char* label, FAUSTFLOAT* zone) override
   {
-    fx.inputs().push_back(ossia::make_inlet<ossia::value_port>());
+    fx.inputs().push_back(new ossia::value_inlet);
     fx.controls.push_back(
-        {fx.inputs().back()->data.template target<ossia::value_port>(), zone});
+        {fx.inputs().back()->template target<ossia::value_port>(), zone});
   }
 
   void addCheckButton(const char* label, FAUSTFLOAT* zone) override
@@ -97,9 +97,9 @@ struct faust_exec_ui final : UI
       const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
       FAUSTFLOAT max, FAUSTFLOAT step) override
   {
-    fx.inputs().push_back(ossia::make_inlet<ossia::value_port>());
+    fx.inputs().push_back(new ossia::value_inlet);
     fx.controls.push_back(
-        {fx.inputs().back()->data.template target<ossia::value_port>(), zone});
+        {fx.inputs().back()->template target<ossia::value_port>(), zone});
   }
 
   void addHorizontalSlider(
@@ -119,7 +119,7 @@ struct faust_exec_ui final : UI
   void addHorizontalBargraph(
       const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
   {
-    fx.outputs().push_back(ossia::make_outlet<ossia::value_port>());
+    fx.outputs().push_back(new ossia::value_outlet);
   }
 
   void addVerticalBargraph(
@@ -166,11 +166,8 @@ void faust_exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossi
       }
     }
 
-    auto& audio_in
-        = *self.inputs()[0]->data.template target<ossia::audio_port>();
-    auto& audio_out
-        = *self.outputs()[0]->data.template target<ossia::audio_port>();
-
+    auto& audio_in = self.inputs()[0]->template cast<ossia::audio_port>();
+    auto& audio_out = self.outputs()[0]->template cast<ossia::audio_port>();
     const int64_t n_in = dsp.getNumInputs();
     const int64_t n_out = dsp.getNumOutputs();
 
@@ -257,10 +254,8 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk, 
       }
     }
 
-    auto& midi_in
-        = *self.inputs()[0]->data.template target<ossia::midi_port>();
-    auto& audio_out
-        = *self.outputs()[0]->data.template target<ossia::audio_port>();
+    auto& midi_in = self.inputs()[0]->template cast<ossia::midi_port>();
+    auto& audio_out = self.outputs()[0]->template cast<ossia::audio_port>();
 
     const int64_t n_in = dsp.getNumInputs();
     const int64_t n_out = dsp.getNumOutputs();

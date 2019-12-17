@@ -223,12 +223,12 @@ struct setup_parallel_1node_address
     for(int i = 0; i < num_port; i++)
     {
       auto out_addr = ossia::net::create_node(dev.device.get_root_node(), "out" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
-      auto outlet = ossia::make_outlet<ossia::value_port>();
+      auto outlet = new ossia::value_outlet;
       outlet->address = out_addr;
       n1->outputs().push_back(outlet);
 
       auto in_addr = ossia::net::create_node(dev.device.get_root_node(), "in" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
-      auto inlet = ossia::make_inlet<ossia::value_port>();
+      auto inlet = new ossia::value_inlet;
       inlet->address = in_addr;
       n2->inputs().push_back(inlet);
     }
@@ -253,10 +253,10 @@ struct setup_parallel_1node_connected
     nodes.push_back(n2);
     for(int i = 0; i < num_port; i++)
     {
-      auto outlet = ossia::make_outlet<ossia::value_port>();
+      auto outlet = new ossia::value_outlet;
       n1->outputs().push_back(outlet);
 
-      auto inlet = ossia::make_inlet<ossia::value_port>();
+      auto inlet = new ossia::value_inlet;
       n2->inputs().push_back(inlet);
 
       auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);

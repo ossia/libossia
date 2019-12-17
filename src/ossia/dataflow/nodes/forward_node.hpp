@@ -75,8 +75,8 @@ public:
       }
     }
     // {
-    //   auto i = midi_in.data.target<ossia::midi_port>();
-    //   auto o = midi_out.data.target<ossia::midi_port>();
+    //   auto i = midi_in.target<ossia::midi_port>();
+    //   auto o = midi_out.target<ossia::midi_port>();
     //   o->messages = i->messages;
     // }
   }

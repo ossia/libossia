@@ -7,6 +7,8 @@ namespace ossia
 
 struct midi_port
 {
+  static const constexpr int which = 1;
+
   value_vector<rtmidi::message> messages;
 };
 

@@ -10,8 +10,6 @@ namespace ossia
 {
 struct OSSIA_EXPORT port
 {
-  data_type data;
-
   enum scope_t : uint8_t
   {
     none = 1 << 0,
@@ -23,11 +21,7 @@ struct OSSIA_EXPORT port
   scope_t scope{scope_t::both};
 
 protected:
-  port(data_type&& d) noexcept : data{std::move(d)}
-  {
-  }
-
-  port() = delete;
+  port() = default;
   port(const port&) = delete;
   port(port&&) = delete;
   port& operator=(const port&) = delete;
@@ -36,25 +30,26 @@ protected:
 
 struct OSSIA_EXPORT inlet : public port
 {
-  inlet(data_type&& d) noexcept : port{std::move(d)}
-  {
-  }
-  inlet(data_type&& d, destination_t dest) noexcept
-      : port{std::move(d)}, address{std::move(dest)}
+protected:
+  inlet() noexcept = default;
+
+  inlet(destination_t dest) noexcept
+      : address{std::move(dest)}
   {
   }
 
-  inlet(data_type&& d, ossia::net::parameter_base& addr) noexcept
-      : port{std::move(d)}, address{&addr}
+  inlet(ossia::net::parameter_base& addr) noexcept
+      : address{&addr}
   {
   }
 
-  inlet(data_type&& d, graph_edge& edge) noexcept : port{std::move(d)}
+  inlet(graph_edge& edge) noexcept
   {
     sources.push_back(&edge);
   }
 
-  ~inlet()
+public:
+  virtual ~inlet()
   {
 
   }
@@ -71,31 +66,50 @@ struct OSSIA_EXPORT inlet : public port
     ossia::remove_erase(sources, e);
   }
 
+  template<typename T>
+  T* target() noexcept;
+  template<typename T>
+  const T* target() const noexcept;
+  template<typename T>
+  T& cast() noexcept;
+  template<typename T>
+  const T& cast() const noexcept;
+  template<typename T>
+  auto visit(const T& t);
+  template<typename T>
+  auto visit(const T& t) const;
+
+
+  virtual std::size_t which() const noexcept = 0;
   destination_t address;
   ossia::small_vector<graph_edge*, 2> sources;
+
+  friend struct audio_inlet;
+  friend struct value_inlet;
+  friend struct midi_inlet;
 };
 
 struct OSSIA_EXPORT outlet : public port
 {
-  outlet(data_type&& d) noexcept : port{std::move(d)}
-  {
-  }
-  outlet(data_type&& d, destination_t dest) noexcept
-      : port{std::move(d)}, address{std::move(dest)}
-  {
-  }
-
-  outlet(data_type&& d, ossia::net::parameter_base& addr) noexcept
-      : port{std::move(d)}, address{&addr}
+protected:
+  outlet() noexcept = default;
+  outlet(destination_t dest) noexcept
+      : address{std::move(dest)}
   {
   }
 
-  outlet(data_type&& d, graph_edge& edge) noexcept : port{std::move(d)}
+  outlet(ossia::net::parameter_base& addr) noexcept
+      : address{&addr}
+  {
+  }
+
+  outlet(graph_edge& edge) noexcept
   {
     targets.push_back(&edge);
   }
 
-  ~outlet()
+public:
+  virtual ~outlet()
   {
 
   }
@@ -114,69 +128,513 @@ struct OSSIA_EXPORT outlet : public port
 
   void write(execution_state& e);
 
+  virtual std::size_t which() const noexcept = 0;
+  template<typename T>
+  T* target() noexcept;
+  template<typename T>
+  const T* target() const noexcept;
+  template<typename T>
+  T& cast() noexcept;
+  template<typename T>
+  const T& cast() const noexcept;
+  template<typename T>
+  auto visit(const T& t);
+  template<typename T>
+  auto visit(const T& t) const;
+
   destination_t address;
   ossia::small_vector<graph_edge*, 2> targets;
+
+  friend struct audio_outlet;
+  friend struct value_outlet;
+  friend struct midi_outlet;
 };
 
-template <typename T, typename... Args>
-inlet_ptr make_inlet(Args&&... args)
+struct OSSIA_EXPORT audio_inlet : public ossia::inlet
 {
-  return new inlet(T{}, std::forward<Args>(args)...);
+  audio_inlet() noexcept = default;
+
+  audio_inlet(destination_t dest) noexcept
+      : inlet{std::move(dest)}
+  {
+  }
+
+  audio_inlet(ossia::net::parameter_base& addr) noexcept
+      : inlet{&addr}
+  {
+  }
+
+  audio_inlet(graph_edge& edge) noexcept
+  {
+    sources.push_back(&edge);
+  }
+
+  ~audio_inlet();
+
+  const ossia::audio_port& operator*() const noexcept { return data; }
+  const ossia::audio_port* operator->() const noexcept { return &data; }
+  ossia::audio_port& operator*() noexcept { return data; }
+  ossia::audio_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return audio_port::which; }
+
+  ossia::audio_port data;
+};
+struct OSSIA_EXPORT midi_inlet : public ossia::inlet
+{
+  midi_inlet() noexcept = default;
+
+  midi_inlet(destination_t dest) noexcept
+      : inlet{std::move(dest)}
+  {
+  }
+
+  midi_inlet(ossia::net::parameter_base& addr) noexcept
+      : inlet{&addr}
+  {
+  }
+
+  midi_inlet(graph_edge& edge) noexcept
+  {
+    sources.push_back(&edge);
+  }
+
+  ~midi_inlet();
+
+  const ossia::midi_port& operator*() const noexcept { return data; }
+  const ossia::midi_port* operator->() const noexcept { return &data; }
+  ossia::midi_port& operator*() noexcept { return data; }
+  ossia::midi_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return midi_port::which; }
+
+  ossia::midi_port data;
+};
+struct OSSIA_EXPORT value_inlet : public ossia::inlet
+{
+  value_inlet() noexcept = default;
+
+  value_inlet(destination_t dest) noexcept
+      : inlet{std::move(dest)}
+  {
+  }
+
+  value_inlet(ossia::net::parameter_base& addr) noexcept
+      : inlet{&addr}
+  {
+  }
+
+  value_inlet(graph_edge& edge) noexcept
+  {
+    sources.push_back(&edge);
+  }
+
+
+  ~value_inlet();
+
+  const ossia::value_port& operator*() const noexcept { return data; }
+  const ossia::value_port* operator->() const noexcept { return &data; }
+  ossia::value_port& operator*() noexcept { return data; }
+  ossia::value_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return value_port::which; }
+
+  ossia::value_port data;
+};
+struct OSSIA_EXPORT audio_outlet : public ossia::outlet
+{
+  audio_outlet() noexcept = default;
+
+  audio_outlet(destination_t dest) noexcept
+      : outlet{std::move(dest)}
+  {
+  }
+
+  audio_outlet(ossia::net::parameter_base& addr) noexcept
+      : outlet{&addr}
+  {
+  }
+
+  audio_outlet(graph_edge& edge) noexcept
+  {
+    targets.push_back(&edge);
+  }
+
+  ~audio_outlet();
+
+  const ossia::audio_port& operator*() const noexcept { return data; }
+  const ossia::audio_port* operator->() const noexcept { return &data; }
+  ossia::audio_port& operator*() noexcept { return data; }
+  ossia::audio_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return audio_port::which; }
+
+  ossia::audio_port data;
+};
+struct OSSIA_EXPORT midi_outlet : public ossia::outlet
+{
+  midi_outlet() noexcept = default;
+
+  midi_outlet(destination_t dest) noexcept
+      : outlet{std::move(dest)}
+  {
+  }
+
+  midi_outlet(ossia::net::parameter_base& addr) noexcept
+      : outlet{&addr}
+  {
+  }
+
+  midi_outlet(graph_edge& edge) noexcept
+  {
+    targets.push_back(&edge);
+  }
+  ~midi_outlet();
+
+  const ossia::midi_port& operator*() const noexcept { return data; }
+  const ossia::midi_port* operator->() const noexcept { return &data; }
+  ossia::midi_port& operator*() noexcept { return data; }
+  ossia::midi_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return midi_port::which; }
+
+  ossia::midi_port data;
+};
+struct OSSIA_EXPORT value_outlet : public ossia::outlet
+{
+  value_outlet() noexcept = default;
+
+  value_outlet(destination_t dest) noexcept
+      : outlet{std::move(dest)}
+  {
+  }
+
+  value_outlet(ossia::net::parameter_base& addr) noexcept
+      : outlet{&addr}
+  {
+  }
+
+  value_outlet(graph_edge& edge) noexcept
+  {
+    targets.push_back(&edge);
+  }
+  ~value_outlet();
+
+  const ossia::value_port& operator*() const noexcept { return data; }
+  const ossia::value_port* operator->() const noexcept { return &data; }
+  ossia::value_port& operator*() noexcept { return data; }
+  ossia::value_port* operator->() noexcept { return &data; }
+
+  std::size_t which() const noexcept final override { return value_port::which; }
+
+  ossia::value_port data;
+};
+
+template<typename T>
+inline T* inlet::target() noexcept
+{
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    if(which() == 0)
+    {
+      return &static_cast<audio_inlet*>(this)->data;
+    }
+    else
+    {
+      return (audio_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    if(which() == 1)
+    {
+      return &static_cast<midi_inlet*>(this)->data;
+    }
+    else
+    {
+      return (midi_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    if(which() == 2)
+    {
+      return &static_cast<value_inlet*>(this)->data;
+    }
+    else
+    {
+      return (value_port*)nullptr;
+    }
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
 }
-template <typename T, typename... Args>
-outlet_ptr make_outlet(Args&&... args)
+
+template<typename T>
+inline T* outlet::target() noexcept
 {
-  return new outlet(T{}, std::forward<Args>(args)...);
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    if(which() == 0)
+    {
+      return &static_cast<audio_outlet*>(this)->data;
+    }
+    else
+    {
+      return (audio_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    if(which() == 1)
+    {
+      return &static_cast<midi_outlet*>(this)->data;
+    }
+    else
+    {
+      return (midi_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    if(which() == 2)
+    {
+      return &static_cast<value_outlet*>(this)->data;
+    }
+    else
+    {
+      return (value_port*)nullptr;
+    }
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+template<typename T>
+inline const T* inlet::target() const noexcept
+{
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    if(which() == 0)
+    {
+      return &static_cast<const audio_inlet*>(this)->data;
+    }
+    else
+    {
+      return (const audio_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    if(which() == 1)
+    {
+      return &static_cast<const midi_inlet*>(this)->data;
+    }
+    else
+    {
+      return (const midi_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    if(which() == 2)
+    {
+      return &static_cast<const value_inlet*>(this)->data;
+    }
+    else
+    {
+      return (const value_port*)nullptr;
+    }
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+
+template<typename T>
+inline const T* outlet::target() const noexcept
+{
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    if(which() == 0)
+    {
+      return &static_cast<const audio_outlet*>(this)->data;
+    }
+    else
+    {
+      return (const audio_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    if(which() == 1)
+    {
+      return &static_cast<const midi_outlet*>(this)->data;
+    }
+    else
+    {
+      return (const midi_port*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    if(which() == 2)
+    {
+      return &static_cast<const value_outlet*>(this)->data;
+    }
+    else
+    {
+      return (const value_port*)nullptr;
+    }
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
 }
 
 
 
-struct audio_inlet : public ossia::inlet
+template<typename T>
+inline T& inlet::cast() noexcept
 {
-  audio_inlet(): ossia::inlet{ossia::audio_port{}} { }
-  const ossia::audio_port& operator*() const noexcept { return *this->data.target<ossia::audio_port>(); }
-  const ossia::audio_port* operator->() const noexcept { return this->data.target<ossia::audio_port>(); }
-  ossia::audio_port& operator*() noexcept { return *this->data.target<ossia::audio_port>(); }
-  ossia::audio_port* operator->() noexcept { return this->data.target<ossia::audio_port>(); }
-};
-struct midi_inlet : public ossia::inlet
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    return static_cast<audio_inlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    return static_cast<midi_inlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    return static_cast<value_inlet*>(this)->data;
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+
+template<typename T>
+inline T& outlet::cast() noexcept
 {
-  midi_inlet(): ossia::inlet{ossia::midi_port{}} { }
-  const ossia::midi_port& operator*() const noexcept { return *this->data.target<ossia::midi_port>(); }
-  const ossia::midi_port* operator->() const noexcept { return this->data.target<ossia::midi_port>(); }
-  ossia::midi_port& operator*()  noexcept { return *this->data.target<ossia::midi_port>(); }
-  ossia::midi_port* operator->()  noexcept { return this->data.target<ossia::midi_port>(); }
-};
-struct value_inlet : public ossia::inlet
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    return static_cast<audio_outlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    return static_cast<midi_outlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    return static_cast<value_outlet*>(this)->data;
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+template<typename T>
+inline const T& inlet::cast() const noexcept
 {
-  value_inlet(): ossia::inlet{ossia::value_port{}} { }
-  const ossia::value_port& operator*() const noexcept { return *this->data.target<ossia::value_port>(); }
-  const ossia::value_port* operator->() const noexcept { return this->data.target<ossia::value_port>(); }
-  ossia::value_port& operator*()  noexcept { return *this->data.target<ossia::value_port>(); }
-  ossia::value_port* operator->()  noexcept { return this->data.target<ossia::value_port>(); }
-};
-struct audio_outlet : public ossia::outlet
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    return static_cast<const audio_inlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    return static_cast<const midi_inlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    return static_cast<const value_inlet*>(this)->data;
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+
+template<typename T>
+inline const T& outlet::cast() const noexcept
 {
-  audio_outlet(): ossia::outlet{ossia::audio_port{}} { }
-  const ossia::audio_port& operator*() const noexcept { return *this->data.target<ossia::audio_port>(); }
-  const ossia::audio_port* operator->() const noexcept { return this->data.target<ossia::audio_port>(); }
-  ossia::audio_port& operator*()  noexcept { return *this->data.target<ossia::audio_port>(); }
-  ossia::audio_port* operator->()  noexcept { return this->data.target<ossia::audio_port>(); }
-};
-struct midi_outlet : public ossia::outlet
+  if constexpr(std::is_same_v<T, audio_port>)
+  {
+    return static_cast<const audio_outlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, midi_port>)
+  {
+    return static_cast<const midi_outlet*>(this)->data;
+  }
+  else if constexpr(std::is_same_v<T, value_port>)
+  {
+    return static_cast<const value_outlet*>(this)->data;
+  }
+  else
+  {
+    static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
+  }
+}
+
+
+
+template<typename T>
+inline auto inlet::visit(const T& t)
 {
-  midi_outlet(): ossia::outlet{ossia::midi_port{}} { }
-  const ossia::midi_port& operator*() const noexcept { return *this->data.target<ossia::midi_port>(); }
-  const ossia::midi_port* operator->() const noexcept { return this->data.target<ossia::midi_port>(); }
-  ossia::midi_port& operator*()  noexcept { return *this->data.target<ossia::midi_port>(); }
-  ossia::midi_port* operator->()  noexcept { return this->data.target<ossia::midi_port>(); }
-};
-struct value_outlet : public ossia::outlet
+  switch(which())
+  {
+    case 0: return t(static_cast<audio_inlet*>(this)->data);
+    case 1: return t(static_cast<midi_inlet*>(this)->data);
+    case 2: return t(static_cast<value_inlet*>(this)->data);
+  }
+
+  if constexpr(std::is_invocable_v<T>)
+    return t();
+}
+
+template<typename T>
+inline auto outlet::visit(const T& t)
 {
-  value_outlet(): ossia::outlet{ossia::value_port{}} { }
-  const ossia::value_port& operator*() const noexcept { return *this->data.target<ossia::value_port>(); }
-  const ossia::value_port* operator->() const noexcept { return this->data.target<ossia::value_port>(); }
-  ossia::value_port& operator*()  noexcept { return *this->data.target<ossia::value_port>(); }
-  ossia::value_port* operator->()  noexcept { return this->data.target<ossia::value_port>(); }
-};
+  switch(which())
+  {
+    case 0: return t(static_cast<audio_outlet*>(this)->data);
+    case 1: return t(static_cast<midi_outlet*>(this)->data);
+    case 2: return t(static_cast<value_outlet*>(this)->data);
+  }
+
+  if constexpr(std::is_invocable_v<T>)
+    return t();
+}
+template<typename T>
+inline auto inlet::visit(const T& t) const
+{
+  switch(which())
+  {
+    case 0: return t(static_cast<const audio_inlet*>(this)->data);
+    case 1: return t(static_cast<const midi_inlet*>(this)->data);
+    case 2: return t(static_cast<const value_inlet*>(this)->data);
+  }
+
+  if constexpr(std::is_invocable_v<T>)
+    return t();
+}
+template<typename T>
+inline auto outlet::visit(const T& t) const
+{
+  switch(which())
+  {
+    case 0: return t(static_cast<const audio_outlet*>(this)->data);
+    case 1: return t(static_cast<const midi_outlet*>(this)->data);
+    case 2: return t(static_cast<const value_outlet*>(this)->data);
+  }
+
+  if constexpr(std::is_invocable_v<T>)
+    return t();
+}
 }

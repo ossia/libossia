@@ -10,13 +10,13 @@ class percentage final : public ossia::graph_node
 public:
   percentage(ossia::destination d)
   {
-    outputs().push_back(ossia::make_outlet<ossia::value_port>(&d.address()));
+    outputs().push_back(new ossia::value_outlet(&d.address()));
   }
 
   void
   run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    outputs().back()->data.target<ossia::value_port>()->write_value(
+    outputs().back()->target<ossia::value_port>()->write_value(
         (float)tk.position(), e.physical_start(tk));
   }
 };

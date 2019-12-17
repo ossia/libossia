@@ -20,7 +20,7 @@ public:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     thread_local std::mt19937 gen;
-    auto& out = *value_out.data.target<ossia::value_port>();
+    auto& out = *value_out.target<ossia::value_port>();
     out.write_value(dist(gen), e.physical_start(t));
   }
 };

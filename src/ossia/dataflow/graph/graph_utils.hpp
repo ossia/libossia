@@ -138,8 +138,7 @@ struct OSSIA_EXPORT graph_util
     // Clear the outputs of the node
     for (const outlet_ptr& out : n.outputs())
     {
-      if (out->data)
-        eggs::variants::apply(clear_data{}, out->data);
+      out->visit(clear_data{});
     }
 
     // Copy from environment and previous ports to inputs
@@ -167,8 +166,7 @@ struct OSSIA_EXPORT graph_util
   {
     for (const inlet_ptr& in : n.inputs())
     {
-      if (in->data)
-        eggs::variants::apply(clear_data{}, in->data);
+      in->visit(clear_data{});
     }
 
     // Copy from output ports to environment
@@ -391,8 +389,7 @@ struct OSSIA_EXPORT graph_util
       n.disable();
       for (const outlet_ptr& out : node.first->outputs())
       {
-        if (out->data)
-          eggs::variants::apply(clear_data{}, out->data);
+        out->visit(clear_data{});
       }
     }
   }

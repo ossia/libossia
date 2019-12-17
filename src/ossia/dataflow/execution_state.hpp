@@ -103,8 +103,15 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   void copy_from_global(ossia::net::parameter_base& addr, inlet& in);
   void copy_from_global_node(ossia::net::node_base& addr, inlet& in);
 
-  void insert(const ossia::destination& dest, const data_type& v);
-  void insert(const ossia::destination& dest, data_type&& v);
+  // void insert(const ossia::destination& dest, const data_type& v);
+  // void insert(const ossia::destination& dest, data_type&& v);
+
+  void insert(const ossia::destination& dest, const ossia::audio_port& v);
+  //void insert(const ossia::destination& dest, ossia::audio_port&& v);
+  void insert(const ossia::destination& dest, const ossia::midi_port& v);
+  //void insert(const ossia::destination& dest, ossia::midi_port&& v);
+  void insert(const ossia::destination& dest, const ossia::value_port& v);
+  void insert(const ossia::destination& dest, ossia::value_port&& v);
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);
   void insert(ossia::net::parameter_base& dest, const audio_port& v);

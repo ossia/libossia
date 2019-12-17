@@ -83,11 +83,11 @@ void graph_edge::init() noexcept
 
     if (auto delay = con.target<delayed_glutton_connection>())
     {
-      ossia::apply(init_delay_line{delay->buffer}, out->data);
+      out->visit(init_delay_line{delay->buffer});
     }
     else if (auto sdelay = con.target<delayed_strict_connection>())
     {
-      ossia::apply(init_delay_line{sdelay->buffer}, out->data);
+      out->visit(init_delay_line{sdelay->buffer});
     }
   }
 }

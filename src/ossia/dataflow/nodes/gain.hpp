@@ -17,14 +17,14 @@ public:
   {
     m_inlets.push_back(&audio_in);
     m_inlets.push_back(&gain_in);
-    gain_in.data.target<ossia::value_port>()->type = ossia::decibel_u{};
+    gain_in.target<ossia::value_port>()->type = ossia::decibel_u{};
     m_outlets.push_back(&audio_out);
   }
 
   void
   run(const ossia::token_request& t, ossia::exec_state_facade st) noexcept override
   {
-    auto& vals = gain_in.data.target<ossia::value_port>()->get_data();
+    auto& vals = gain_in.target<ossia::value_port>()->get_data();
     if (!vals.empty())
       m_gain = ossia::clamp(
           ossia::linear{

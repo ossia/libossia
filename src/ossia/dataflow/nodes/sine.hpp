@@ -50,7 +50,7 @@ public:
   run(const ossia::token_request& t,
       ossia::exec_state_facade st) noexcept override
   {
-    auto& vals = freq_in.data.target<ossia::value_port>()->get_data();
+    auto& vals = freq_in.target<ossia::value_port>()->get_data();
     if (!vals.empty())
       freq = ossia::clamp(
           ossia::convert<float>(vals.back().value), 0.f, 20000.f);
