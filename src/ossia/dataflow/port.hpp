@@ -241,6 +241,21 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
 
   ossia::value_port data;
 };
+
+struct audio_outlet;
+
+OSSIA_EXPORT
+void process_audio_out_mono(ossia::audio_outlet& audio_out);
+
+OSSIA_EXPORT
+void process_audio_out_general(ossia::audio_outlet& audio_out);
+
+OSSIA_EXPORT
+void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out);
+
+OSSIA_EXPORT
+void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_out);
+
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
   audio_outlet() noexcept = default;
@@ -269,8 +284,18 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   std::size_t which() const noexcept final override { return audio_port::which; }
 
+  void post_process();
+
+  double gain{1.};
+  pan_weight pan{ossia::sqrt_2 / 2., ossia::sqrt_2 / 2.};
+
+  ossia::value_inlet gain_inlet;
+  ossia::value_inlet pan_inlet;
+
   ossia::audio_port data;
+  bool has_gain{};
 };
+
 struct OSSIA_EXPORT midi_outlet : public ossia::outlet
 {
   midi_outlet() noexcept = default;
@@ -300,6 +325,7 @@ struct OSSIA_EXPORT midi_outlet : public ossia::outlet
 
   ossia::midi_port data;
 };
+
 struct OSSIA_EXPORT value_outlet : public ossia::outlet
 {
   value_outlet() noexcept = default;
@@ -637,4 +663,6 @@ inline auto outlet::visit(const T& t) const
   if constexpr(std::is_invocable_v<T>)
     return t();
 }
+
+
 }

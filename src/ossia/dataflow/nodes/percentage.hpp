@@ -5,19 +5,19 @@
 
 namespace ossia::nodes
 {
-class percentage final : public ossia::graph_node
+class percentage final : public ossia::nonowning_graph_node
 {
 public:
-  percentage(ossia::destination d)
+  ossia::value_outlet outlet;
+  percentage(ossia::destination d): outlet{&d.address()}
   {
-    outputs().push_back(new ossia::value_outlet(&d.address()));
+    outputs().push_back(&outlet);
   }
 
   void
   run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    outputs().back()->target<ossia::value_port>()->write_value(
-        (float)tk.position(), e.physical_start(tk));
+    outlet->write_value((float)tk.position(), e.physical_start(tk));
   }
 };
 }

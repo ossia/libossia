@@ -23,54 +23,24 @@ public:
     {
       ossia::audio_port& i = *audio_in;
       ossia::audio_port& o = *audio_out;
-      if(!o.has_gain)
+      if(!audio_out.has_gain)
       {
         o.samples = i.samples;
       }
       else
       {
-        const double g = o.gain;
-        auto C = i.samples.size();
-        o.samples.resize(C);
-
-        switch(C)
+        switch(i.samples.size())
         {
-        case 0:
+          case 0:
             return;
 
-        case 1:
-        {
-            auto N = i.samples[0].size();
-            auto i_ptr = i.samples[0].data();
-            auto o_ptr  = o.samples[0].data();
-
-            for(std::size_t sample = 0; sample < N; sample++)
-            {
-                o_ptr[sample] = i_ptr[sample] * g;
-            }
+          case 1:
+            process_audio_out_mono(i, audio_out);
             break;
-        }
 
-        default:
-        {
-            while(o.pan.size() < C)
-                o.pan.push_back(ossia::sqrt_2 / 2.);
-            for(auto chan = 0U; chan < C; chan++)
-            {
-                auto N = i.samples[chan].size();
-                o.samples[chan].resize(N);
-
-                auto i_ptr = i.samples[chan].data();
-                auto o_ptr  = o.samples[chan].data();
-
-                const auto vol = o.pan[chan] * g;
-                for(std::size_t sample = 0; sample < N; sample++)
-                {
-                    o_ptr[sample] = i_ptr[sample] * vol;
-                }
-            }
+          default:
+            process_audio_out_general(i, audio_out);
             break;
-        }
         }
       }
     }

@@ -1,8 +1,23 @@
 #include <ossia/dataflow/value_port.hpp>
+#include <ossia/dataflow/data_copy.hpp>
 #include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {
+void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)
+{
+  const auto src_chans = src_vec.size();
+  const auto sink_chans = sink_vec.size();
+  if (sink_chans < src_chans)
+    sink_vec.resize(src_chans);
+  for (std::size_t chan = 0; chan < src_chans; chan++)
+  {
+    const std::size_t N = src_vec[chan].size();
+    if (sink_vec[chan].size() < N)
+      sink_vec[chan].resize(N);
+  }
+}
+
 
 void value_port::write_value(const value& v, int64_t timestamp)
 {

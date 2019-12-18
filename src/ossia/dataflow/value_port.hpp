@@ -52,7 +52,6 @@ struct OSSIA_EXPORT value_port
 
   bool is_event{};
   data_mix_method mix_method{};
-  ossia::timed_value t;
 
 private:
   value_vector<ossia::timed_value> data;

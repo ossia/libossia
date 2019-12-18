@@ -164,14 +164,11 @@ struct OSSIA_EXPORT graph_util
 
   static void teardown_node(const graph_node& n, execution_state& e)
   {
-    for (const inlet_ptr& in : n.inputs())
-    {
-      in->visit(clear_data{});
-    }
-
     // Copy from output ports to environment
     for (const outlet_ptr& out : n.outputs())
     {
+      if(out->which() == ossia::audio_port::which)
+        static_cast<audio_outlet*>(out)->post_process();
       bool must_copy = out->targets.empty();
 
       // If some following glutton nodes aren't enabled, then we copy to the
@@ -187,7 +184,13 @@ struct OSSIA_EXPORT graph_util
       if (must_copy)
         out->write(e);
     }
+
+    for (const inlet_ptr& in : n.inputs())
+    {
+      in->visit(clear_data{});
+    }
   }
+
   /*
     static void disable_strict_nodes_bfs(const graph_t& graph)
     {
@@ -311,22 +314,7 @@ struct OSSIA_EXPORT graph_util
     {
       first_node.run(request, {e});
     }
-    /*
-        auto all_normal = ossia::all_of(first_node.requested_tokens,
-                                       [] (const ossia::token_request& tk) {
-       return tk.speed == 1.;}); if(all_normal)
-        {
-          for(const auto& request : first_node.requested_tokens)
-          {
-            first_node.run(request, e);
-            first_node.set_prev_date(request.date);
-          }
-        }
-        else
-        {
-          run_scaled(first_node, e);
-        }
-    */
+
     first_node.set_executed(true);
     teardown_node(first_node, e);
   }

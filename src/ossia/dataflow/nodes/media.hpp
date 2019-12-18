@@ -1,14 +1,13 @@
 #pragma once
 
 #include <memory>
-#include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <gsl/span>
 
 namespace ossia
 {
 // Used in nodes
-using audio_channel = ossia::small_vector<double, 256>;
+using audio_channel = ossia::small_pod_vector<double, 256>;
 using audio_vector = ossia::small_vector<audio_channel, 2>;
 
 

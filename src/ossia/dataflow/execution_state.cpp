@@ -820,7 +820,7 @@ void execution_state::insert(
     ossia::net::parameter_base& param, const audio_port& v)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
-  mix{}(v.samples, m_audioState[&param].samples, false);
+  mix(v.samples, m_audioState[&param].samples);
 }
 
 void execution_state::insert(

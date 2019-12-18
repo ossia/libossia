@@ -6,6 +6,10 @@
 #include <ossia_export.h>
 namespace ossia
 {
+
+OSSIA_EXPORT
+void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec);
+
 using pan_weight = ossia::small_vector<double, 2>;
 struct inlet;
 struct audio_port
@@ -13,11 +17,6 @@ struct audio_port
   static const constexpr int which = 0;
 
   audio_vector samples;
-
-  double gain{1.};
-  pan_weight pan{ossia::sqrt_2 / 2., ossia::sqrt_2 / 2.};
-  bool upmix{};
-  bool has_gain{};
 };
 
 struct audio_delay_line

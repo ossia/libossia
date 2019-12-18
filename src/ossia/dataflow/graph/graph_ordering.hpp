@@ -245,20 +245,17 @@ struct env_writer
       switch (con_w)
       {
         case 0:
-          copy_data{}(
-          static_cast<const ossia::audio_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
         case 1:
-          copy_data{}(
-          static_cast<const ossia::midi_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
         case 2:
-          copy_data{}(
-          static_cast<const ossia::value_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));
           break;
@@ -276,20 +273,17 @@ struct env_writer
       switch (con_w)
       {
         case 0:
-          copy_data{}(
-          static_cast<const ossia::audio_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
         case 1:
-          copy_data{}(
-          static_cast<const ossia::midi_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
         case 2:
-          copy_data{}(
-          static_cast<const ossia::value_outlet*>(&out)->data,
+          copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));
           break;

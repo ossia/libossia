@@ -92,8 +92,8 @@ void push_value(const ossia::outlet_ptr& p, ossia::value val) {
 
 struct my_node final : ossia::graph_node {
     my_node() {
-      inputs().push_back(new ossia::value_inlet);
-      outputs().push_back(new ossia::value_outlet);
+      m_inlets.push_back(new ossia::value_inlet);
+      m_outlets.push_back(new ossia::value_outlet);
     }
 
     void run(const ossia::token_request& t, ossia::exec_state_facade) noexcept override {
