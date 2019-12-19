@@ -197,13 +197,19 @@ void graph_node::clear() noexcept
     }
   }
 
+  for (auto outl : m_outlets)
+  {
+    // Audio outlets add two inlets at the end
+    if(outl->which() == ossia::audio_port::which)
+    {
+      m_inlets.pop_back();
+      m_inlets.pop_back();
+    }
+    delete outl;
+  }
   for (auto inl : m_inlets)
   {
     delete inl;
-  }
-  for (auto outl : m_outlets)
-  {
-    delete outl;
   }
   m_inlets.clear();
   m_outlets.clear();
@@ -234,5 +240,20 @@ nonowning_graph_node::~nonowning_graph_node()
 
 void nonowning_graph_node::clear() noexcept
 {
+  for (auto inl : m_inlets)
+  {
+    for (ossia::graph_edge* e : inl->sources)
+    {
+      e->clear();
+    }
+  }
+  for (auto outl : m_outlets)
+  {
+    for (ossia::graph_edge* e : outl->targets)
+    {
+      e->clear();
+    }
+  }
+
 }
 }
