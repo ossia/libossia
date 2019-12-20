@@ -27,3 +27,7 @@ template <typename T, std::size_t N>
 using static_vector = std::vector<T>;
 }
 #endif
+
+static_assert(noexcept(ossia::small_vector<int, 1>{}));
+static_assert(noexcept(ossia::small_pod_vector<int, 1>{}));
+static_assert(noexcept(ossia::static_vector<int, 1>{}));

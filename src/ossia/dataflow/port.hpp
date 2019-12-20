@@ -258,7 +258,7 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
 
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
-  audio_outlet() noexcept = default;
+  audio_outlet() noexcept { }
 
   audio_outlet(destination_t dest) noexcept
       : outlet{std::move(dest)}
@@ -295,6 +295,11 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   ossia::audio_port data;
   bool has_gain{};
 };
+
+static_assert(noexcept(pan_weight{}));
+static_assert(noexcept(value_inlet{}));
+static_assert(noexcept(std::allocator<ossia::outlet>{}));
+static_assert(noexcept(audio_outlet{}));
 
 struct OSSIA_EXPORT midi_outlet : public ossia::outlet
 {

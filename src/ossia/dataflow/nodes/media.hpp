@@ -24,6 +24,8 @@ struct audio_data
   audio_array data;
 };
 
+static_assert(noexcept(audio_data{}));
+
 using audio_handle = std::shared_ptr<audio_data>;
 struct drwav_handle;
 /*

@@ -120,11 +120,31 @@ endif()
 # Common setup
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-set(CMAKE_CXX_STANDARD 17)
+
+
 if(MSVC)
+  set(CMAKE_CXX_STANDARD 20)
   set(CMAKE_CXX_FLAGS "/std:c++latest ${CMAKE_CXX_FLAGS}")
 else()
-  set(CMAKE_CXX_FLAGS "-std=c++2a ${CMAKE_CXX_FLAGS}")
+  check_cxx_compiler_flag(-std=c++20 has_std_20_flag)
+  check_cxx_compiler_flag(-std=c++2a has_std_2a_flag)
+  check_cxx_compiler_flag(-std=c++17 has_std_17_flag)
+  check_cxx_compiler_flag(-std=c++1z has_std_1z_flag)
+  
+  if (has_std_20_flag)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CXX_STANDARD_FLAG -std=c++20)
+  elseif (has_std_2a_flag)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CXX_STANDARD_FLAG -std=c++2a)
+  elseif (has_std_17_flag)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CXX_STANDARD_FLAG -std=c++17)
+  elseif (has_std_1z_flag)
+    set(CMAKE_CXX_STANDARD 17)
+    set(CXX_STANDARD_FLAG -std=c++1z)
+  endif ()
+  set(CMAKE_CXX_FLAGS "${CXX_STANDARD_FLAG} ${CMAKE_CXX_FLAGS}")
 endif()
 
 # So that make install after make all_unity does not rebuild everything :

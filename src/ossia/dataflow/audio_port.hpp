@@ -18,6 +18,7 @@ struct audio_port
 
   audio_vector samples;
 };
+static_assert(noexcept(audio_port{}));
 
 struct audio_delay_line
 {
