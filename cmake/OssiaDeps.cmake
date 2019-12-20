@@ -75,7 +75,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR 70)
+set(BOOST_MINOR 72)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
@@ -87,37 +87,30 @@ else()
     if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
 
       if(WIN32)
-        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/boost.zip")
-
-        file(DOWNLOAD
-          https://fossies.org/linux/misc/${BOOST_VERSION}.zip
-          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip)
-
-        execute_process(
-          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.zip
-          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
-
+        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
+        set(BOOST_URL https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
+        set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
       else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-
-        file(DOWNLOAD
-          https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz
-          ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz)
-
-        execute_process(
-          COMMAND ${CMAKE_COMMAND} -E tar xzf ${BOOST_VERSION}.tar.gz
-          WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER})
-
+        set(BOOST_URL https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
+        set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
       endif()
+
+      file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
+
+    execute_process(
+      COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
+      WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+
     endif()
     set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
-    set(Boost_INCLUDE_DIR ${BOOST_ROOT})
+    set(Boost_INCLUDE_DIR "${BOOST_ROOT}")
     find_package(Boost REQUIRED)
   endif()
 
   add_library(boost INTERFACE IMPORTED)
   set_property(TARGET boost PROPERTY
-               INTERFACE_INCLUDE_DIRECTORIES ${Boost_INCLUDE_DIR})
+               INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)
