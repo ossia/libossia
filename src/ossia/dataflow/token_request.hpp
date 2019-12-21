@@ -39,8 +39,8 @@ struct token_request
     return other;
   }
 
-  template<typename F>
-  constexpr void loop(ossia::time_value start_offset, ossia::time_value loop_duration, F f) const noexcept
+  template<typename Exec, typename Transport>
+  constexpr void loop(ossia::time_value start_offset, ossia::time_value loop_duration, Exec f, Transport transport) const noexcept
   {
     ossia::token_request other = *this;
     ossia::time_value orig_from = other.prev_date;
@@ -66,6 +66,8 @@ struct token_request
         other.date = other.prev_date + this_tick;
 
         f(other);
+
+        transport(start_offset);
         other.offset += this_tick;
       }
     }

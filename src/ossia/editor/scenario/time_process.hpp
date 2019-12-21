@@ -149,7 +149,9 @@ public:
     {
       tok.loop(this->m_start_offset,
                this->m_loop_duration,
-               [this] (const auto& tr) { static_cast<T*>(this)->state_impl(tr); });
+               [this] (const token_request& tr) { static_cast<T*>(this)->state_impl(tr); },
+               [this] (const time_value& t) { static_cast<T*>(this)->transport_impl(t); }
+      );
     }
   }
 };

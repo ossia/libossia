@@ -13,7 +13,7 @@ TEST_CASE ("test_loops_integer", "test_loops_integer")
   r.date = 100_tv;
 
   std::vector<ossia::token_request> vec;
-  r.loop(0_tv, 10_tv, [&] (auto& req) { vec.push_back(req); });
+  r.loop(0_tv, 10_tv, [&] (auto& req) { vec.push_back(req); }, [] (const auto&){ });
 
   std::vector<ossia::token_request> expected{
     ossia::simple_token_request{0_tv, 10_tv, 0_tv},
@@ -40,7 +40,7 @@ TEST_CASE ("test_loops_fract", "test_loops_fract")
   r.date = 97_tv;
 
   std::vector<ossia::token_request> vec;
-  r.loop(0_tv, 10_tv, [&] (auto& req) { vec.push_back(req); });
+  r.loop(0_tv, 10_tv, [&] (auto& req) { vec.push_back(req); }, [](const auto&) { });
 
   std::vector<ossia::token_request> expected{
     ossia::simple_token_request{0_tv, 10_tv, 0_tv},
@@ -67,7 +67,7 @@ TEST_CASE ("test_loops_offset", "test_loops_offset")
   r.date = 12_tv;
 
   std::vector<ossia::token_request> vec;
-  r.loop(0_tv, 5_tv, [&] (auto& req) { vec.push_back(req); });
+  r.loop(0_tv, 5_tv, [&] (auto& req) { vec.push_back(req); }, [] (const auto&){ });
 
   std::vector<ossia::token_request> expected{
     ossia::simple_token_request{2_tv, 5_tv, 0_tv},
@@ -87,7 +87,7 @@ TEST_CASE ("test_loops_smaller", "test_loops_smaller")
   r.date = 15_tv;
 
   std::vector<ossia::token_request> vec;
-  r.loop(0_tv, 20_tv, [&] (auto& req) { vec.push_back(req); });
+  r.loop(0_tv, 20_tv, [&] (auto& req) { vec.push_back(req); }, [](const auto&) { });
 
   std::vector<ossia::token_request> expected{
     ossia::simple_token_request{0_tv, 15_tv, 0_tv}
@@ -105,7 +105,7 @@ TEST_CASE ("test_loops_mid", "test_loops_mid")
   r.date = 30_tv;
 
   std::vector<ossia::token_request> vec;
-  r.loop(0_tv, 20_tv, [&] (auto& req) { vec.push_back(req); });
+  r.loop(0_tv, 20_tv, [&] (auto& req) { vec.push_back(req); }, [] (const auto&){ });
 
   std::vector<ossia::token_request> expected{
     ossia::simple_token_request{15_tv, 20_tv, 0_tv},

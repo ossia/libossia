@@ -77,14 +77,17 @@ public:
 
   void transport(ossia::time_value date)
   {
+    requestTransport = true;
+    m_transport_date = date;
+  }
+
+  void transport_impl(ossia::time_value date)
+  {
     // 1. Send note-offs
     m_toStop.insert(m_playingnotes.begin(), m_playingnotes.end());
     m_playingnotes.clear();
 
-    // 2. Send note-ons
-    doTransport = true;
-
-    // 3. Re-add following notes
+    // 2. Re-add following notes
     if (date < m_prev_date)
     {
       if (date == 0_tv)
@@ -120,6 +123,8 @@ public:
       }
       // todo resume current notes
     }
+
+    m_prev_date = date;
   }
 
   void update_note(note_data oldNote, note_data newNote)
@@ -140,19 +145,36 @@ public:
   }
 
   bool mustStop{};
+  bool requestTransport{};
   bool doTransport{};
 
 private:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
+    struct scope_guard {
+      midi& self;
+      const ossia::token_request& t;
+      ~scope_guard() {
+        self.m_prev_date = t.date;
+
+        if(self.requestTransport)
+        {
+          self.transport_impl(self.m_transport_date);
+          self.requestTransport = false;
+        }
+      }
+    } guard{*this, t};
+
     ossia::midi_port& mp = *midi_out;
     const auto samplesratio = e.modelToSamples();
     const auto tick_start = t.physical_start(samplesratio);
+
+
     for (const note_data& note : m_toStop)
     {
       mp.messages.push_back(
-          rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
+          rtmidi::message::note_off(m_channel, note.pitch, 0));
       mp.messages.back().timestamp = tick_start;
     }
     m_toStop.clear();
@@ -162,7 +184,7 @@ private:
       for (auto& note : m_playingnotes)
       {
         mp.messages.push_back(
-            rtmidi::message::note_off(m_channel, note.pitch, note.velocity));
+            rtmidi::message::note_off(m_channel, note.pitch, 0));
         mp.messages.back().timestamp = tick_start;
       }
 
@@ -173,9 +195,12 @@ private:
     }
     else
     {
+      if (m_notes.empty())
+        return;
       if (doTransport)
       {
         auto it = m_notes.begin();
+
         while (it != m_notes.end() && it->start < t.date)
         {
           auto& note = *it;
@@ -200,7 +225,7 @@ private:
           if (t.in_range({end_time}))
           {
             mp.messages.push_back(rtmidi::message::note_off(
-                m_channel, note.pitch, note.velocity));
+                m_channel, note.pitch, 0));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(end_time, samplesratio);
 
@@ -238,7 +263,6 @@ private:
         }
       }
     }
-    m_prev_date = t.date;
   }
 
   note_set m_notes;
@@ -246,6 +270,7 @@ private:
   note_set m_playingnotes;
   note_set m_toStop;
   time_value m_prev_date{};
+  time_value m_transport_date{};
 
   int m_channel{};
 };
@@ -259,7 +284,6 @@ public:
   {
     midi& n = *static_cast<midi*>(node.get());
     n.transport(date);
-    node_process::transport(date);
   }
 
   void stop() override
