@@ -4,6 +4,7 @@
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/flicks.hpp>
 #include <cassert>
+#include <optional>
 
 namespace ossia
 {

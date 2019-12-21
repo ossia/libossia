@@ -21,7 +21,7 @@ if(APPLE)
 endif()
 
 if(OSSIA_QT)
-  find_package(Qt5 5.6 QUIET COMPONENTS Core OPTIONAL_COMPONENTS Gui Qml Quick)
+  find_package(Qt5 5.6 QUIET ${OSSIA_QT_REQUIRED} COMPONENTS Core OPTIONAL_COMPONENTS Gui Qml Quick)
   if(NOT "${Qt5Core_FOUND}")
     set(OSSIA_QT OFF)
   endif()
