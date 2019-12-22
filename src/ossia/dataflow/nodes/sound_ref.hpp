@@ -136,6 +136,10 @@ public:
     if (m_data.empty())
       return;
 
+    // TODO do the backwards play head
+    if(!t.forward())
+      return;
+
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out;

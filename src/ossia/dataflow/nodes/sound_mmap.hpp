@@ -248,6 +248,10 @@ public:
     if(!m_handle)
       return;
 
+    // TODO do the backwards play head
+    if(!t.forward())
+      return;
+
     const auto channels = m_handle.channels();
     const auto len = m_handle.totalPCMFrameCount();
 

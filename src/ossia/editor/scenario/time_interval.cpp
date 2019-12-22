@@ -32,6 +32,9 @@ void time_interval::tick_impl(
   m_tick_offset = offset;
   m_date = new_date;
 
+  if(old_date < 0_tv || new_date < 0_tv)
+    return;
+
   m_current_signature = signature(old_date, parent_request);
   m_current_tempo = m_speed * tempo(old_date, parent_request);
 
