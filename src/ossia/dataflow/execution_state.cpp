@@ -845,6 +845,7 @@ struct state_exec_visitor
 
   void operator()(const ossia::message& msg)
   {
+    OSSIA_EXEC_STATE_LOCK_WRITE(e);
     e.m_valueState[&msg.dest.address()].emplace_back(
         ossia::typed_value{msg.message_value, msg.dest.index, msg.dest.unit},
         e.m_msgIndex++);

@@ -187,6 +187,7 @@ public:
     proto.setup_tree((int)input_ports.size(), (int)output_ports.size());
 
     stop_processing = false;
+    stopped = false;
   }
   void stop() override
   {
@@ -224,45 +225,39 @@ private:
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
     auto proto = self.protocol.load();
-    if (self.stop_processing)
+    if (self.stop_processing || !proto)
     {
       return clearBuffers(self, nframes, outputs);
     }
 
-    if (proto)
+    self.processing = true;
+    auto float_input = (float**)alloca(sizeof(float*) * inputs);
+    auto float_output = (float**)alloca(sizeof(float*) * outputs);
+    for (std::size_t i = 0; i < inputs; i++)
     {
-      self.processing = true;
-      auto float_input = (float**)alloca(sizeof(float*) * inputs);
-      auto float_output = (float**)alloca(sizeof(float*) * outputs);
-      for (std::size_t i = 0; i < inputs; i++)
-      {
-        float_input[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(
-            self.input_ports[i], nframes);
-      }
-      for (std::size_t i = 0; i < outputs; i++)
-      {
-        float_output[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(
-            self.output_ports[i], nframes);
-      }
+      float_input[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(
+                         self.input_ports[i], nframes);
+    }
+    for (std::size_t i = 0; i < outputs; i++)
+    {
+      float_output[i] = (jack_default_audio_sample_t*)jack_port_get_buffer(
+                          self.output_ports[i], nframes);
+    }
 
-      proto->process_generic(
+    proto->process_generic(
           *proto, float_input, float_output, (int)inputs, (int)outputs,
           nframes);
-      proto->audio_tick(nframes, 0);
+    proto->audio_tick(nframes, 0);
 
-      // Run a tick
-      if (proto->replace_tick)
-      {
-        proto->audio_tick = std::move(proto->ui_tick);
-        proto->ui_tick = {};
-        proto->replace_tick = false;
-      }
-      self.processing = false;
-    }
-    else
+    // Run a tick
+    if (proto->replace_tick)
     {
-      return clearBuffers(self, nframes, outputs);
+      proto->audio_tick = std::move(proto->ui_tick);
+      proto->ui_tick = {};
+      proto->replace_tick = false;
     }
+    self.processing = false;
+
     return 0;
   }
 
