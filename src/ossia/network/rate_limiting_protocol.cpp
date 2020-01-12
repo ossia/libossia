@@ -131,7 +131,7 @@ bool rate_limiting_protocol::push_raw(const full_parameter_data& address)
 bool rate_limiting_protocol::observe(
     ossia::net::parameter_base& address, bool enable)
 {
-  return m_protocol->observe_quietly(address, enable);
+  return m_protocol->observe(address, enable);
 }
 
 bool rate_limiting_protocol::update(ossia::net::node_base& node)
