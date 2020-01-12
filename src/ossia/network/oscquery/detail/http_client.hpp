@@ -75,7 +75,7 @@ private:
     {
       asio::async_connect(
           m_socket, endpoints,
-          [self = shared_from_this()](const asio::error_code& err, auto&&) {
+          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
             self->handle_connect(err);
           });
     }
@@ -93,8 +93,8 @@ private:
       asio::const_buffer request(m_request.data(), m_request.size());
       asio::async_write(
           m_socket, request,
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
-            self->handle_write_request(err);
+          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+            self->handle_write_request(err, size);
           });
     }
     else
@@ -104,14 +104,14 @@ private:
     }
   }
 
-  void handle_write_request(const asio::error_code& err)
+  void handle_write_request(const asio::error_code& err, std::size_t size)
   {
     if (!err)
     {
       asio::async_read_until(
           m_socket, m_response, "\r\n",
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
-            self->handle_read_status_line(err);
+          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+            self->handle_read_status_line(err, size);
           });
     }
     else
@@ -121,7 +121,7 @@ private:
     }
   }
 
-  void handle_read_status_line(const asio::error_code& err)
+  void handle_read_status_line(const asio::error_code& err, std::size_t size)
   {
     if (!err)
     {
@@ -174,8 +174,8 @@ private:
       // Read the response headers, which are terminated by a blank line.
       asio::async_read_until(
           m_socket, m_response, "\r\n\r\n",
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
-            self->handle_read_headers(err);
+          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+            self->handle_read_headers(err, size);
           });
     }
     else
@@ -185,7 +185,7 @@ private:
     }
   }
 
-  void handle_read_headers(const asio::error_code& err)
+  void handle_read_headers(const asio::error_code& err, std::size_t size)
   {
     if (!err)
     {
@@ -198,8 +198,8 @@ private:
       // Start reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
-            self->handle_read_content(err);
+          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+            self->handle_read_content(err, size);
           });
     }
     else
@@ -209,15 +209,15 @@ private:
     }
   }
 
-  void handle_read_content(const asio::error_code& err)
+  void handle_read_content(const asio::error_code& err, std::size_t size)
   {
     if (!err)
     {
       // Continue reading remaining data until EOF.
       asio::async_read(
           m_socket, m_response, asio::transfer_at_least(1),
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
-            self->handle_read_content(err);
+          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+            self->handle_read_content(err, size);
           });
     }
     else if (err != asio::error::eof)
