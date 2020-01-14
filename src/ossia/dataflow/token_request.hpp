@@ -239,7 +239,7 @@ struct token_request
   template<typename Tick, typename Tock>
   constexpr void metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
   {
-    if((musical_end_last_bar != musical_start_last_bar) || prev_date == 0_tv)
+    if((musical_end_last_bar != musical_start_last_bar) || musical_start_position == 0.)
     {
       // There is a bar change in this tick, start the up tick
       const double musical_tick_duration = musical_end_position - musical_start_position;
