@@ -62,7 +62,8 @@ struct jack_client
 
   ~jack_client()
   {
-    jack_client_close(client);
+    if(client)
+      jack_client_close(client);
   }
   operator jack_client_t*() const noexcept { return client; }
 
@@ -76,7 +77,7 @@ public:
     : m_client{clt}
     , stopped{true}
   {
-    if (!m_client)
+    if (!m_client || !(*m_client))
     {
       std::cerr << "JACK server not running?" << std::endl;
       throw std::runtime_error("Audio error: no JACK server");
