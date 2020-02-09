@@ -28,6 +28,7 @@ protected:
   port& operator=(port&&) = delete;
 };
 
+struct value_inlet;
 struct OSSIA_EXPORT inlet : public port
 {
 protected:
@@ -79,10 +80,13 @@ public:
   template<typename T>
   auto visit(const T& t) const;
 
+  auto& cables() noexcept { return sources; }
+  auto& cables() const noexcept { return sources; }
 
   virtual std::size_t which() const noexcept = 0;
   destination_t address;
   ossia::small_vector<graph_edge*, 2> sources;
+  ossia::small_vector<value_inlet*, 2> child_inlets;
 
   friend struct audio_inlet;
   friend struct value_inlet;
@@ -142,8 +146,12 @@ public:
   template<typename T>
   auto visit(const T& t) const;
 
+  auto& cables() noexcept { return targets; }
+  auto& cables() const noexcept { return targets; }
+
   destination_t address;
   ossia::small_vector<graph_edge*, 2> targets;
+  ossia::small_vector<value_inlet*, 2> child_inlets;
 
   friend struct audio_outlet;
   friend struct value_outlet;
@@ -258,21 +266,27 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
 
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
-  audio_outlet() noexcept { }
+  audio_outlet() noexcept
+  {
+    init();
+  }
 
   audio_outlet(destination_t dest) noexcept
       : outlet{std::move(dest)}
   {
+    init();
   }
 
   audio_outlet(ossia::net::parameter_base& addr) noexcept
       : outlet{&addr}
   {
+    init();
   }
 
   audio_outlet(graph_edge& edge) noexcept
   {
     targets.push_back(&edge);
+    init();
   }
 
   ~audio_outlet();
@@ -294,6 +308,14 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   ossia::audio_port data;
   bool has_gain{};
+
+private:
+  void init() noexcept
+  {
+    this->child_inlets.resize(2);
+    this->child_inlets[0] = &gain_inlet;
+    this->child_inlets[1] = &pan_inlet;
+  }
 };
 
 static_assert(noexcept(pan_weight{}));

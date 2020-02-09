@@ -284,8 +284,8 @@ public:
       ossia::token_request tk,
       ossia::exec_state_facade st) noexcept
   {
-    ossia::inlets& inlets = this->inputs();
-    ossia::outlets& outlets = this->outputs();
+    ossia::inlets& inlets = this->root_inputs();
+    ossia::outlets& outlets = this->root_outputs();
 
     if constexpr (has_state)
     {

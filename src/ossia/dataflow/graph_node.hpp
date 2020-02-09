@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/token_request.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -15,6 +16,46 @@ using token_request_vec = ossia::small_vector<token_request, 4>;
 
 using inlets = ossia::small_vector<inlet_ptr, 2>;
 using outlets = ossia::small_vector<outlet_ptr, 2>;
+/*
+class inlet_iterator
+{
+  using iterator_category = std::forward_iterator_tag;
+  using value_type = ossia::inlet*;
+  using difference_type = std::ptrdiff_t;
+  using pointer = ossia::inlet**;
+  using reference = ossia::inlet*&;
+private:
+  ossia::small_vector<const inlets*, 2> m_parent{};
+  std::size_t m_index{};
+public:
+  explicit inlet_iterator(const inlets* parent, std::size_t index) noexcept
+  : m_parent{parent}
+  , m_index{index}
+  {
+
+  }
+
+  inlet* operator*() const noexcept
+  { return (*m_parent.back())[m_index]; }
+  bool operator==(const inlet_iterator& other) const noexcept
+  { return m_parent == other.m_parent && m_index == other.m_index; }
+  bool operator!=(const inlet_iterator& other) const noexcept
+  { return !(*this == other); }
+
+  inlet_iterator operator++(int) noexcept
+  {
+      auto ret = *this;
+      ++*this;
+      return ret;
+  }
+  inlet_iterator& operator++() noexcept
+  {
+
+      return *this;
+  }
+};
+*/
+
 struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state& impl;
@@ -70,22 +111,23 @@ public:
   bool has_global_inputs() const noexcept;
   bool has_local_inputs(const execution_state& st) const noexcept;
 
-  const inlets& inputs() const noexcept
+  const inlets& root_inputs() const noexcept
   {
     return m_inlets;
   }
-  const outlets& outputs() const noexcept
+  const outlets& root_outputs() const noexcept
   {
     return m_outlets;
   }
-  inlets& inputs() noexcept
+  inlets& root_inputs() noexcept
   {
     return m_inlets;
   }
-  outlets& outputs() noexcept
+  outlets& root_outputs() noexcept
   {
     return m_outlets;
   }
+
 
   virtual void clear() noexcept;
 
@@ -130,6 +172,109 @@ public:
 
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
+
+
+
+  template<typename Fin>
+  void for_each_inlet(Fin&& fin) const noexcept
+  {
+    for(auto port : m_inlets)
+    {
+      fin(*port);
+      for(auto sub : port->child_inlets)
+      {
+        fin(*sub);
+      }
+    }
+    for(auto port : m_outlets)
+    {
+      for(auto sub : port->child_inlets)
+      {
+        fin(*sub);
+      }
+    }
+  }
+
+  template<typename Fin>
+  bool any_of_inlet(Fin&& fin) const noexcept
+  {
+    for(auto port : m_inlets)
+    {
+      if(fin(*port))
+        return true;
+
+      for(auto sub : port->child_inlets)
+      {
+        if(fin(*sub))
+          return true;
+      }
+    }
+    for(auto port : m_outlets)
+    {
+      for(auto sub : port->child_inlets)
+      {
+        if(fin(*sub))
+          return true;
+      }
+    }
+    return false;
+  }
+
+  template<typename Fin>
+  bool all_of_inlet(Fin&& fin) const noexcept
+  {
+    for(auto port : m_inlets)
+    {
+      if(!fin(*port))
+        return false;
+
+      for(auto sub : port->child_inlets)
+      {
+        if(!fin(*sub))
+          return false;
+      }
+    }
+    for(auto port : m_outlets)
+    {
+      for(auto sub : port->child_inlets)
+      {
+        if(!fin(*sub))
+          return false;
+      }
+    }
+    return true;
+  }
+
+  template<typename Fout>
+  void for_each_outlet(Fout&& fout) const noexcept
+  {
+    for(auto port : m_outlets)
+    {
+      fout(*port);
+    }
+  }
+
+  template<typename Fout>
+  bool any_of_outlet(Fout&& fout) const noexcept
+  {
+    for(auto port : m_outlets)
+    {
+      if(fout(*port))
+        return true;
+    }
+    return false;
+  }
+
+  template<typename Fout>
+  bool all_of_outlet(Fout&& fout) const noexcept
+  {
+    for(auto port : m_outlets)
+    {
+      if(!fout(*port))
+        return false;
+    }
+    return true;
+  }
 
 protected:
   inlets m_inlets;

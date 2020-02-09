@@ -52,7 +52,7 @@ void node_process::mute_impl(bool)
 node_process::~node_process()
 {
 }
-
+/*
 graph_edge::graph_edge(
     connection c, std::size_t pout, std::size_t pin, node_ptr pout_node,
     node_ptr pin_node) noexcept
@@ -60,7 +60,7 @@ graph_edge::graph_edge(
                  std::move(pout_node), std::move(pin_node)}
 {
 }
-
+*/
 graph_edge::graph_edge(
     connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,
     node_ptr pin_node) noexcept
@@ -143,28 +143,28 @@ std::string graph_node::label() const noexcept
 
 bool graph_node::has_port_inputs() const noexcept
 {
-  return ossia::any_of(inputs(), [](const inlet_ptr& inlet) {
-    return !inlet->sources.empty();
+  return any_of_inlet([](const inlet& inlet) {
+    return !inlet.sources.empty();
   });
 }
 
 bool graph_node::has_global_inputs() const noexcept
 {
-  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
-    return (inlet->scope & port::scope_t::global) && bool(inlet->address);
+  return any_of_inlet([&](const inlet& inlet) {
+    return (inlet.scope & port::scope_t::global) && bool(inlet.address);
   });
 }
 
 bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 {
-  return ossia::any_of(inputs(), [&](const inlet_ptr& inlet) {
-    if (inlet->scope & port::scope_t::local)
+  return any_of_inlet([&](const inlet& inlet) {
+    if (inlet.scope & port::scope_t::local)
     {
       bool b = false;
 
       // TODO optimize by stopping when found
       apply_to_destination(
-          inlet->address, st.exec_devices(),
+          inlet.address, st.exec_devices(),
           [&](ossia::net::parameter_base* addr, bool) {
             if (!b || st.in_local_scope(*addr))
               b = true;
@@ -182,29 +182,28 @@ bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 
 void graph_node::clear() noexcept
 {
-  for (auto inl : m_inlets)
-  {
-    for (ossia::graph_edge* e : inl->sources)
+  for_each_inlet([] (auto& port) {
+    for (ossia::graph_edge* e : port.cables())
     {
       e->clear();
     }
-  }
-  for (auto outl : m_outlets)
-  {
-    for (ossia::graph_edge* e : outl->targets)
+  });
+  for_each_outlet([] (auto& port) {
+    for (ossia::graph_edge* e : port.cables())
     {
       e->clear();
     }
-  }
+  });
 
   for (auto outl : m_outlets)
   {
+    /*
     // Audio outlets add two inlets at the end
     if(outl->which() == ossia::audio_port::which)
     {
       m_inlets.pop_back();
       m_inlets.pop_back();
-    }
+    }*/
     delete outl;
   }
   for (auto inl : m_inlets)

@@ -11,7 +11,7 @@ public:
   ossia::value_outlet outlet;
   percentage(ossia::destination d): outlet{&d.address()}
   {
-    outputs().push_back(&outlet);
+    m_outlets.push_back(&outlet);
   }
 
   void
