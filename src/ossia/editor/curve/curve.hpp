@@ -27,7 +27,7 @@ namespace ossia
 {
 class destination;
 
-#if defined(__clang__) && (__clang_major__ <= 9)
+#if defined(__clang__) && (__clang_major__ <= 10)
 #define CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE static
 #else
 #define CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE
