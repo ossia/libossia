@@ -2,7 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ZeroconfMinuitListener.hpp"
 #include <asio/io_service.hpp>
-#include <asio/ip/resolver_service.hpp>
+#include <asio/ip/basic_resolver.hpp>
 #include <asio/ip/tcp.hpp>
 
 #include <ossia/network/minuit/minuit.hpp>
