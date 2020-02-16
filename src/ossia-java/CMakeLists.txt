@@ -8,7 +8,7 @@ include(UseJava)
 # download JNA jar
 if(NOT EXISTS ${CMAKE_CURRENT_BINARY_DIR}/jna.jar)
   file(DOWNLOAD
-    http://repo1.maven.org/maven2/net/java/dev/jna/jna/5.2.0/jna-5.2.0.jar
+    https://repo1.maven.org/maven2/net/java/dev/jna/jna/5.5.0/jna-5.5.0.jar
   ${CMAKE_CURRENT_BINARY_DIR}/jna.jar
   SHOW_PROGRESS
   )
