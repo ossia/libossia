@@ -1,5 +1,6 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
+#include <ossia/dataflow/graph_edge_helpers.hpp>
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
@@ -52,7 +53,7 @@ int main(int argc, char** argv)
 
   auto gain = std::make_shared<ossia::nodes::gain>();
   g.add_node(gain);
-  gain->outputs()[0]->address = &audio.get_main_out();
+  gain->root_outputs()[0]->address = &audio.get_main_out();
 
   for(int i = 0; i < nodes; i++)
   {

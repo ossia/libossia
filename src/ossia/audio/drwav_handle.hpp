@@ -31,11 +31,17 @@ acid_chunk
 
 struct drwav_handle final {
 public:
+  static const constexpr drwav_allocation_callbacks drwav_allocs{
+    nullptr,
+    [ ] (size_t sz, void* pUserData) { return malloc(sz); },
+    [ ] (void* p, size_t sz, void* pUserData) { return realloc(p, sz); },
+    [ ] (void* p, void* pUserData) { return free(p); }
+  };
   drwav_handle() noexcept = default;
   drwav_handle(const void* data, size_t dataSize) noexcept
-    : impl{drwav_open_memory_ex(data, dataSize, on_chunk, this, 0)}
+    : impl{new drwav}
   {
-
+    drwav_init_memory_ex(impl, data, dataSize, on_chunk, this, 0, &drwav_allocs);
   }
 
   drwav_handle(drwav_handle&& other) noexcept
@@ -50,7 +56,8 @@ public:
   {
     if(other.impl && other.impl->memoryStream.data)
     {
-      impl = drwav_open_memory_ex(other.impl->memoryStream.data, other.impl->memoryStream.dataSize, on_chunk, this, 0);
+      impl = new drwav;
+      drwav_init_memory_ex(impl, other.impl->memoryStream.data, other.impl->memoryStream.dataSize, on_chunk, this, 0, &drwav_allocs);
     }
   }
 
@@ -76,7 +83,8 @@ public:
   {
     if(impl)
     {
-      drwav_close(impl);
+      drwav_uninit(impl);
+      delete impl;
       impl = nullptr;
     }
 
@@ -89,13 +97,15 @@ public:
   {
     if(impl)
     {
-      drwav_close(impl);
+      drwav_uninit(impl);
+      delete impl;
       impl = nullptr;
     }
 
     if(other.impl->memoryStream.data)
     {
-      impl = drwav_open_memory_ex(other.impl->memoryStream.data, other.impl->memoryStream.dataSize, on_chunk, this, 0);
+      impl = new drwav;
+      drwav_init_memory_ex(impl, other.impl->memoryStream.data, other.impl->memoryStream.dataSize, on_chunk, this, 0, &drwav_allocs);
     }
     return *this;
   }
@@ -104,7 +114,8 @@ public:
   {
     if(impl)
     {
-      drwav_close(impl);
+      drwav_uninit(impl);
+      delete impl;
     }
   }
 
@@ -112,9 +123,13 @@ public:
   auto open_memory(const void* data, size_t dataSize) noexcept
   {
     if(impl)
-      drwav_close(impl);
+    {
+      drwav_uninit(impl);
+      delete impl;
+    }
 
-    impl = drwav_open_memory_ex(data, dataSize, on_chunk, this, 0);
+    impl = new drwav;
+    drwav_init_memory_ex(impl, data, dataSize, on_chunk, this, 0, &drwav_allocs);
   }
 
   auto seek_to_pcm_frame(drwav_uint64 targetFrameIndex) noexcept

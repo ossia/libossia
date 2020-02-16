@@ -53,30 +53,4 @@ auto make_edge(Args&&... args)
 {
   return std::make_shared<ossia::graph_edge>(std::forward<Args>(args)...);
 }
-
-template <typename... Args>
-auto make_strict_edge(Args&&... args)
-{
-  return std::make_shared<ossia::graph_edge>(
-      ossia::immediate_strict_connection{}, std::forward<Args>(args)...);
-}
-template <typename... Args>
-auto make_glutton_edge(Args&&... args)
-{
-  return std::make_shared<ossia::graph_edge>(
-      ossia::immediate_glutton_connection{}, std::forward<Args>(args)...);
-}
-
-template <typename... Args>
-auto make_delayed_strict_edge(Args&&... args)
-{
-  return std::make_shared<ossia::graph_edge>(
-      ossia::delayed_strict_connection{}, std::forward<Args>(args)...);
-}
-template <typename... Args>
-auto make_delayed_glutton_edge(Args&&... args)
-{
-  return std::make_shared<ossia::graph_edge>(
-      ossia::delayed_glutton_connection{}, std::forward<Args>(args)...);
-}
 }

@@ -1,4 +1,5 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/graph_edge_helpers.hpp>
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
@@ -35,8 +36,8 @@ int main(int argc, char** argv) {
   // and sends data to the sound card
   auto gain_param = ossia::create_parameter(osc.device, "/volume", "dB");
   gain_param->push_value(-60);
-  gain->inputs()[1]->address = gain_param;
-  gain->outputs()[0]->address = &audio.get_main_out();
+  gain->root_inputs()[1]->address = gain_param;
+  gain->root_outputs()[0]->address = &audio.get_main_out();
 
   // 60 sine generators, each with their frequency controllable by
   // an OSC address of the form /freq.1 /freq.2 /freq.3 ...
@@ -46,7 +47,7 @@ int main(int argc, char** argv) {
 
     auto freq_param = ossia::create_parameter(osc.device, "/freq", "hz");
     freq_param->push_value(200 + 12 * i);
-    node->inputs()[0]->address = freq_param;
+    node->root_inputs()[0]->address = freq_param;
   }
 
   // start callback-based soundcard-driven execution : here
