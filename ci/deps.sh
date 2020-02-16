@@ -14,7 +14,7 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      wget -nv https://cmake.org/files/v3.14/cmake-3.14.4-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.16/cmake-3.16.4-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
       echo 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
