@@ -405,7 +405,8 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
 
     auto& req = c.node->requested_tokens;
 
-    REQUIRE((int)req.size() == (int)1);
+    REQUIRE((int)req.size() == (int)1); // TODO sometimes this becomes 1 ?!
+    std::cerr << req[0] << "\n" << req[1] << "\n" << std::endl;
     REQUIRE((req[0] == simple_token_request{1000_tv, 2000_tv}));
 
     req.clear();

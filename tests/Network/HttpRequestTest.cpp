@@ -5,6 +5,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 using namespace ossia;
+std::atomic_bool running{};
 struct http_answer
 {
 
@@ -13,6 +14,7 @@ struct http_answer
   {
       std::cerr << str << std::endl;
       req.close();
+      running = false;
   }
 };
 
@@ -22,6 +24,7 @@ struct http_error
   void operator()(T& req)
   {
     req.close();
+    std::exit(1);
   }
 };
 
@@ -35,7 +38,6 @@ static const std::string rep = "HTTP/1.1 200 OK\r\n"
                               "hi"
 ;
 
-std::atomic_bool running{};
 
 void http_server()
 {
@@ -44,7 +46,7 @@ void http_server()
   {
     asio::io_service io_service;
 
-    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 8080));
+    tcp::acceptor acceptor(io_service, tcp::endpoint(tcp::v4(), 8089));
 
     for (;;)
     {
@@ -58,6 +60,7 @@ void http_server()
   catch (std::exception& e)
   {
     std::cerr << e.what() << std::endl;
+    std::exit(1);
   }
 }
 
@@ -71,7 +74,7 @@ TEST_CASE ("test_http_request", "test_http_request")
     auto worker = std::make_shared<asio::io_service::work>(context);
     using http_request = ossia::oscquery::http_get_request<http_answer, http_error>;
     auto req = std::make_shared<http_request>(http_answer{}, http_error{}, context, "http://127.0.0.1", "/");
-    req->resolve("127.0.0.1", "8080");
+    req->resolve("127.0.0.1", "8089");
 
     context.run();
 

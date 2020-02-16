@@ -51,20 +51,21 @@ value js_value_inbound_visitor::operator()(const std::string& v) const
 value js_value_inbound_visitor::
 operator()(const std::vector<ossia::value>& v) const
 {
+  std::vector<ossia::value> t;
   if (val.isArray())
   {
-    std::vector<ossia::value> t;
-
     QJSValueIterator it(val);
     while (it.hasNext())
     {
       it.next();
       t.push_back(value_from_js(it.value()));
     }
-
-    return std::move(t);
   }
-  return v;
+  else
+  {
+    t = v;
+  }
+  return t;
 }
 
 value js_value_inbound_visitor::operator()(vec2f v) const

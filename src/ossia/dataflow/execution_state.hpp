@@ -122,8 +122,8 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 
   int sampleRate{44100};
   int bufferSize{64};
-  double modelToSamplesRatio{};
-  double samplesToModelRatio{};
+  double modelToSamplesRatio{1.};
+  double samplesToModelRatio{1.};
   int64_t samples_since_start{};
   double start_date{}; // in ns, for vst
   double cur_date{};
