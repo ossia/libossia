@@ -10,6 +10,7 @@
 #include <ossia-c/preset/preset.h>
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 #include <ossia/ossia.hpp>
 

@@ -118,8 +118,8 @@ struct execution_mock
   {
     if(auto n = node.lock())
     {
-      auto& in_port = *n->inputs()[0]->target<value_port>();
-      auto& out_port = *n->outputs()[0]->target<value_port>();
+      auto& in_port = *n->root_inputs()[0]->target<value_port>();
+      auto& out_port = *n->root_outputs()[0]->target<value_port>();
 
       std::cerr << in_port.get_data().size();
       ossia::timed_value elt = in_port.get_data().front();
@@ -492,13 +492,13 @@ TEST_CASE ("test_mock", "test_mock")
   g.add_node(n4);
   g.add_node(n5);
 
-  auto c1 = make_edge(connection{immediate_glutton_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2);
-  auto c2 = make_edge(connection{immediate_glutton_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3);
-  auto c3 = make_edge(connection{immediate_glutton_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4);
-  auto c4 = make_edge(connection{immediate_glutton_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4);
+  auto c1 = make_edge(connection{immediate_glutton_connection{}}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2);
+  auto c2 = make_edge(connection{immediate_glutton_connection{}}, n1->root_outputs()[0], n3->root_inputs()[0], n1, n3);
+  auto c3 = make_edge(connection{immediate_glutton_connection{}}, n2->root_outputs()[0], n4->root_inputs()[0], n2, n4);
+  auto c4 = make_edge(connection{immediate_glutton_connection{}}, n3->root_outputs()[0], n4->root_inputs()[1], n3, n4);
 
-  auto c5 = make_edge(connection{immediate_glutton_connection{}}, n4->outputs()[0], n5->inputs()[0], n4, n5);
-  auto c6 = make_edge(connection{immediate_glutton_connection{}}, n4->outputs()[1], n5->inputs()[1], n4, n5);
+  auto c5 = make_edge(connection{immediate_glutton_connection{}}, n4->root_outputs()[0], n5->root_inputs()[0], n4, n5);
+  auto c6 = make_edge(connection{immediate_glutton_connection{}}, n4->root_outputs()[1], n5->root_inputs()[1], n4, n5);
 
   g.connect(c1);
   g.connect(c2);
@@ -507,17 +507,17 @@ TEST_CASE ("test_mock", "test_mock")
   g.connect(c5);
   g.connect(c6);
 
-  REQUIRE(n1->outputs()[0]->targets[0]);
-  REQUIRE(n1->outputs()[0]->targets[0]->in_node == std::shared_ptr<graph_node>(n2));
-  REQUIRE(n1->outputs()[0]->targets[0]->in == n2->inputs()[0]);
-  REQUIRE(n1->outputs()[0]->targets[0]->out_node == std::shared_ptr<graph_node>(n1));
-  REQUIRE(n1->outputs()[0]->targets[0]->out == n1->outputs()[0]);
+  REQUIRE(n1->root_outputs()[0]->targets[0]);
+  REQUIRE(n1->root_outputs()[0]->targets[0]->in_node == std::shared_ptr<graph_node>(n2));
+  REQUIRE(n1->root_outputs()[0]->targets[0]->in == n2->root_inputs()[0]);
+  REQUIRE(n1->root_outputs()[0]->targets[0]->out_node == std::shared_ptr<graph_node>(n1));
+  REQUIRE(n1->root_outputs()[0]->targets[0]->out == n1->root_outputs()[0]);
 
-  REQUIRE(n2->inputs()[0]->sources[0]);
-  REQUIRE(n2->inputs()[0]->sources[0]->in_node == std::shared_ptr<graph_node>(n2));
-  REQUIRE(n2->inputs()[0]->sources[0]->in == n2->inputs()[0]);
-  REQUIRE(n2->inputs()[0]->sources[0]->out_node == std::shared_ptr<graph_node>(n1));
-  REQUIRE(n2->inputs()[0]->sources[0]->out == n1->outputs()[0]);
+  REQUIRE(n2->root_inputs()[0]->sources[0]);
+  REQUIRE(n2->root_inputs()[0]->sources[0]->in_node == std::shared_ptr<graph_node>(n2));
+  REQUIRE(n2->root_inputs()[0]->sources[0]->in == n2->root_inputs()[0]);
+  REQUIRE(n2->root_inputs()[0]->sources[0]->out_node == std::shared_ptr<graph_node>(n1));
+  REQUIRE(n2->root_inputs()[0]->sources[0]->out == n1->root_outputs()[0]);
 }
 
 
@@ -544,10 +544,10 @@ TEST_CASE ("test_disable_strict_nodes", "test_disable_strict_nodes")
   g.add_node(n3);
   g.add_node(n4);
 
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->outputs()[0], n2->inputs()[0], n1, n2));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->outputs()[0], n3->inputs()[0], n1, n3));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n2->outputs()[0], n4->inputs()[0], n2, n4));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n3->outputs()[0], n4->inputs()[1], n3, n4));
+  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2));
+  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->root_outputs()[0], n3->root_inputs()[0], n1, n3));
+  g.connect(make_edge(connection{immediate_strict_connection{}}, n2->root_outputs()[0], n4->root_inputs()[0], n2, n4));
+  g.connect(make_edge(connection{immediate_strict_connection{}}, n3->root_outputs()[0], n4->root_inputs()[1], n3, n4));
 
   {
     n1->set_enabled(true);
@@ -786,7 +786,7 @@ TEST_CASE ("delayed_relationship", "delayed_relationship")
   TestDevice test;
 
   simple_explicit_graph g(test, delayed_strict_connection{});
-  g.n1->outputs()[0]->address = {};
+  g.n1->root_outputs()[0]->address = {};
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
 
 

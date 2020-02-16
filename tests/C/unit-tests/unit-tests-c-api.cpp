@@ -9,7 +9,7 @@
 #include <ossia-c/preset/preset.h>
 #include <ossia-c/ossia-c.h>
 #include <ossia-c/ossia/ossia_utils.hpp>
-
+#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/ossia.hpp>
 
 TEST_CASE ("C API: Read JSON", "[read]") {
