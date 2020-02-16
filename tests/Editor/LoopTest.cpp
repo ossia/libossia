@@ -68,7 +68,7 @@ struct test_loop
     auto param = std::unique_ptr<ossia::net::parameter_base>{aparam};
     foo->set_parameter(std::move(param));
 
-    parent.node->outputs()[0]->address = foo->get_parameter();
+    parent.node->root_outputs()[0]->address = foo->get_parameter();
     auto scenar = std::make_shared<scenario>();
     parent.get_time_interval().add_time_process(scenar);
 
@@ -92,7 +92,7 @@ struct test_loop
       i1->add_time_process(child);
 
       g.add_node(snd);
-      g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->outputs()[0], parent.node->inputs()[0], snd, parent.node));
+      g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->root_outputs()[0], parent.node->root_inputs()[0], snd, parent.node));
     }
 
     {
@@ -104,7 +104,7 @@ struct test_loop
       i2->add_time_process(child);
 
       g.add_node(snd);
-      g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->outputs()[0], parent.node->inputs()[0], snd, parent.node));
+      g.connect(ossia::make_edge(ossia::immediate_glutton_connection{}, snd->root_outputs()[0], parent.node->root_inputs()[0], snd, parent.node));
     }
 
   }
@@ -239,7 +239,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
 
     for(auto tk : snd->requested_tokens)
       ((ossia::graph_node*)snd.get())->run(tk, {e});
-    auto op = snd->outputs()[0]->target<audio_port>()->samples;
+    auto op = snd->root_outputs()[0]->target<audio_port>()->samples;
     audio_vector expected{audio_channel{0.1f, 0.2f, 0.3f, 0.4f, 0.1f, 0.2f, 0.3f, 0.4f, 0.1f}};
     for(int i = 0; i < 9; i++)
     {
@@ -286,7 +286,7 @@ TEST_CASE ("test_subloop", "test_subloop")
 
   audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1}};
 
-  auto op = snd->outputs()[0]->target<audio_port>()->samples;
+  auto op = snd->root_outputs()[0]->target<audio_port>()->samples;
 
   for(int i = 0; i < 14; i++)
   {
