@@ -214,8 +214,8 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.h
 
 install(FILES
           ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h
-          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_math.h
           ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_flac.h
+          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_mp3.h
         DESTINATION include/
         COMPONENT Devel)
 
