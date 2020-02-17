@@ -4,6 +4,7 @@
 #include "qt_property_node.hpp"
 #include <QChildEvent>
 #include <wobjectimpl.h>
+#include <ossia/detail/algorithms.hpp>
 W_OBJECT_IMPL(ossia::qt::qt_object_node)
 namespace ossia
 {
