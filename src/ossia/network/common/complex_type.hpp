@@ -37,6 +37,7 @@ ossia::val_type underlying_type(const complex_type& t);
 OSSIA_EXPORT
 ossia::net::parameter_base*
 setup_parameter(const complex_type& t, ossia::net::node_base& node);
+
 //! Creates a parameter in a node according to heuristics
 OSSIA_EXPORT
 ossia::net::parameter_base*

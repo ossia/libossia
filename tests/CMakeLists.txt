@@ -109,7 +109,7 @@ if(OSSIA_QML)
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
-  ossia_add_test(HttpRequestTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpRequestTest.cpp")
+  # ossia_add_test(HttpRequestTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpRequestTest.cpp")
   ossia_add_test(OSCQueryTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
   ossia_add_test(OSCQueryColorTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryColorTest.cpp")
   if(OSSIA_CPP)

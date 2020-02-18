@@ -166,16 +166,40 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
       break;
   }
 
-  if( str == "ff" || str == "[ff]")
+  if(str == "ff")
     return ossia::val_type::VEC2F;
 
-  if( str == "fff" || str == "[fff]")
+  if( str == "fff")
     return ossia::val_type::VEC3F;
 
-  if( str == "ffff" || str == "[ffff]")
+  if( str == "ffff")
     return ossia::val_type::VEC4F;
 
   return ossia::val_type::LIST;
+}
+
+//! TODO update create_or_update_parameter_type
+net::parameter_base*
+setup_parameter(ossia::string_view t, net::node_base& node)
+{
+    return nullptr;
+    /*
+    if(!t.empty())
+    {
+        return ossia::apply(setup_parameter_visitor{node}, t);
+    }
+    else
+    {
+        if ((p = n.get_parameter()))
+        {
+            p->set_value_type(ossia::val_type::LIST);
+            return p;
+        }
+        else
+        {
+            return n.create_parameter(ossia::val_type::LIST);
+        }
+    }*/
 }
 
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)

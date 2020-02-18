@@ -724,8 +724,10 @@ void json_parser_impl::readParameter(
 
   // Look for the typetag
   const auto type_it = obj.FindMember(detail::attribute_typetag());
+  bool has_typetag = false;
   if (type_it != obj.MemberEnd())
   {
+    has_typetag = true;
     typetag = get_string_view(type_it->value);
     val_type = get_type_from_osc_typetag(typetag);
   }
@@ -760,7 +762,7 @@ void json_parser_impl::readParameter(
   }
 
   // If any of these exist, we can create a parameter
-  if (val_type || unit || ext_type)
+  if (has_typetag || unit || ext_type)
   {
     ossia::net::parameter_base* addr = nullptr;
     if (unit) // The unit enforces the value type
@@ -769,7 +771,8 @@ void json_parser_impl::readParameter(
       addr->set_unit(*unit);
       ossia::net::set_extended_type(node, ext_type);
     }
-    else if (val_type)
+    // FIXME necessary for R color handling... berk handle that better
+    else if (has_typetag)
     {
       addr = setup_parameter(val_type, node);
     }

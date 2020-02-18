@@ -960,6 +960,74 @@ TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
   }
 }
 
+TEST_CASE ("test_oscquery_sublist", "test_oscquery_sublist")
+{
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
+  {
+      auto p = serv.create_child("list")->create_parameter(val_type::LIST);
+      p->push_value(std::vector<value>{ossia::vec2f{1.1f,2.2f}});
+  }
+
+  // WS client
+  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  ws_proto->update(ws_clt->get_root_node());
+
+  // Wait a little bit for the server to send the namespace
+  // and to network thread to process it
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/list");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST);
+    auto v = p->value().get<std::vector<value>>();
+
+    REQUIRE(v.size() == 1);
+    REQUIRE(v[0].get_type() == val_type::VEC2F);
+    REQUIRE(v[0].get<ossia::vec2f>() == vec2f{1.1f,2.2f});;
+  }
+}
+
+TEST_CASE ("test_oscquery_tuple", "test_oscquery_tuple")
+{
+  // Here we check that the fullpath JSON is correctly parsed
+  // and that all mirror parameter value are set correctly
+  // with a call to ws_proto->update(...);
+
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+
+  {
+      auto p = serv.create_child("tuple")->create_parameter(val_type::LIST);
+      p->push_value(std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+  }
+
+  // WS client
+  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  ws_proto->update(ws_clt->get_root_node());
+
+  // Wait a little bit for the server to send the namespace
+  // and to network thread to process it
+  std::this_thread::sleep_for(std::chrono::milliseconds(300));
+
+  {
+    auto n = find_node(ws_clt->get_root_node(), "/tuple");
+    REQUIRE(n);
+    auto p = n->get_parameter();
+    REQUIRE(p);
+    REQUIRE(p->get_value_type() == val_type::LIST);
+    auto v = p->value().get<std::vector<value>>();
+    REQUIRE(v == std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+  }
+}
 
 TEST_CASE ("test_oscquery_value", "test_oscquery_value")
 {

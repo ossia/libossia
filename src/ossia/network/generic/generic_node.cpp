@@ -141,7 +141,6 @@ bool generic_node::remove_parameter()
 
     return true;
   }
-
   return false;
 }
 

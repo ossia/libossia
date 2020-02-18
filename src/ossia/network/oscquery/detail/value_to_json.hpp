@@ -328,13 +328,46 @@ struct json_to_value
 
         case oscpack::TypeTagValues::ARRAY_BEGIN_TYPE_TAG:
         {
-          std::vector<ossia::value> i;
-          ++typetag_cursor; // We skip the '['
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
-            return false;
+          if(can_read("[ff]"))
+          {
+            ++typetag_cursor; // We skip the '['
+            std::array<float, 2> i;
+            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+              return false;
 
-          ++typetag_cursor; // We skip the ']'
-          res.push_back(std::move(i));
+            res.push_back(i);
+            ++typetag_cursor; // We skip the ']'
+          }
+          else if(can_read("[fff]"))
+          {
+            ++typetag_cursor; // We skip the '['
+            std::array<float, 3> i;
+            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+              return false;
+
+            res.push_back(i);
+            ++typetag_cursor; // We skip the ']'
+          }
+          else if(can_read("[ffff]"))
+          {
+            ++typetag_cursor; // We skip the '['
+            std::array<float, 4> i;
+            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+              return false;
+
+            res.push_back(i);
+            ++typetag_cursor; // We skip the ']'
+          }
+          else
+          {
+            std::vector<ossia::value> i;
+            ++typetag_cursor; // We skip the '['
+            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+              return false;
+
+            ++typetag_cursor; // We skip the ']'
+            res.push_back(std::move(i));
+          }
           return true;
         }
         case oscpack::TypeTagValues::ARRAY_END_TYPE_TAG:
@@ -351,6 +384,19 @@ struct json_to_value
     }
   }
 
+  bool can_read(ossia::string_view sv) const noexcept
+  {
+      const auto res = typetags.find(sv);
+      if(res == std::string_view::npos)
+      {
+        return false;
+      }
+      else
+      {
+        return int64_t(res) == typetag_cursor;
+      }
+  }
+
   bool operator()(std::vector<ossia::value>& res) const
   {
     // TODO read from the typetag
@@ -358,6 +404,7 @@ struct json_to_value
     if (b)
     {
       auto arr = val.GetArray();
+
       for (const auto& elt : arr)
       {
         if (!handleVecElement(elt, res))
