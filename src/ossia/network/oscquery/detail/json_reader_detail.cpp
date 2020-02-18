@@ -781,7 +781,11 @@ void json_parser_impl::readParameter(
       addr = node.create_parameter(underlying_type(*ext_type, obj, typetag, value_it, default_value_it));
       ossia::net::set_extended_type(node, ext_type);
     }
-
+    if(!addr && ext_type)
+    {
+      addr = node.create_parameter(underlying_type(*ext_type, obj, typetag, value_it, default_value_it));
+      ossia::net::set_extended_type(node, ext_type);
+    }
     // We have a type. Now we read the value according to it.
     if (value_it != obj.MemberEnd())
     {
