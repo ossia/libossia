@@ -39,11 +39,10 @@ case "$TRAVIS_OS_NAME" in
       # For some reason gcov seems to be not available anymore...
       wget -nv https://github.com/OSSIA/sdk/releases/download/sdk14/gcov
       file ./gcov
-      ./gcov --version
-      sudo mv gcov /usr/bin/gcov-9
+      chmod +x ./gcov
+      sudo mv ./gcov /usr/bin/gcov-9
 
       gcov-9 --version
-      exit 1
     fi
 
     shopt -s nocasematch # case insensitive comparison in Bash
