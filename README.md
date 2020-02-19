@@ -30,6 +30,6 @@ Build Status
 
 License
 =======
-CeCILL-C (LGPLv3-compatible)
+Available under both LGPLv3 and CeCILL-C
 
 [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FOSSIA%2Flibossia.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2FOSSIA%2Flibossia?ref=badge_shield)
