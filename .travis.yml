@@ -1,4 +1,7 @@
-language: cpp
+osx_image: xcode11.3
+language: minimal
+dist: bionic
+sudo: required
 
 branches:
   except:
@@ -12,19 +15,11 @@ env:
   - secure: "fHuSuq9OJbvmdb4bSKUenCpmJ3XtYtX9xa+dUncxVbwwGJ02K/OrQ594ON5+vK5AL/co8aOx6e5FdZ4lRyFJglevE4Qn0A6LPdH7RoORk3xZWr34BoBQWYCGykBezEu+AIIic8SFfgE2gP0fPmz9IWcEEDgQTuckLVr6DdjLkQw="
   - ARTIFACTS_DIR: ${TRAVIS_BUILD_DIR}/artifacts
 
-osx_image: xcode11.3
-language: minimal
-dist: bionic
-sudo: required
-
 # That was for RpiDocker build
 # service:
 # - docker
 
 matrix:
-  exclude:
-  - os: linux
-  - os: osx
 
   include:
   - os: linux
