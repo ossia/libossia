@@ -16,12 +16,12 @@ case "$TRAVIS_OS_NAME" in
     else
       wget -nv https://cmake.org/files/v3.16/cmake-3.16.4-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
-      echo 'deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+      echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
       sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.12.3-xenial
+      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.14.1-bionic
       sudo apt-get update -qq
-      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build qt512-meta-minimal libasound2-dev clang-8 lld-8 portaudio19-dev mesa-common-dev libgl1-mesa-dev
+      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build qt514-meta-minimal libasound2-dev clang-9 lld-9 portaudio19-dev mesa-common-dev libgl1-mesa-dev
 
       wait wget || true
 
@@ -73,7 +73,6 @@ case "$TRAVIS_OS_NAME" in
           sudo apt-get install -qq python python-dev python-pip
           sudo pip install twine wheel
         else
-          sudo add-apt-repository --yes ppa:jonathonf/python-3.6
           sudo apt-get update -qq
           sudo apt-get install -qq python3 python3-dev python3-pip
           sudo pip3 install twine wheel

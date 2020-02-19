@@ -13,7 +13,7 @@ env:
   - ARTIFACTS_DIR: ${TRAVIS_BUILD_DIR}/artifacts
 
 osx_image: xcode10
-dist: xenial
+dist: bionic
 sudo: required
 
 # That was for RpiDocker build
