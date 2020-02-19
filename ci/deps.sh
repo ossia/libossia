@@ -32,9 +32,13 @@ case "$TRAVIS_OS_NAME" in
     if [[ "$BUILD_TYPE" == "Coverage" ]]; then
       gem install coveralls-lcov
 
-      sudo apt-get install -qq python3 python3-pip 
+      sudo apt-get install -qq python3 python3-pip
       sudo pip3 install --upgrade wheel setuptools
       sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
+
+      # For some reason gcov seems to be not available anymore...
+      wget -nv https://github.com/OSSIA/sdk/releases/download/sdk14/gcov
+      sudo mv gcov /usr/bin/gcov-9
     fi
 
     shopt -s nocasematch # case insensitive comparison in Bash

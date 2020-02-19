@@ -23,6 +23,8 @@ matrix:
 
   include:
   - os: linux
+    env: BUILD_TYPE=Coverage PYTHON_VERSION=3.6
+  - os: linux
     env: BUILD_TYPE=Docs
 
   - os: linux
@@ -47,7 +49,7 @@ matrix:
 #    env: BUILD_TYPE=RpiDocker OSSIA_STATIC=1
 #    dist: trusty
 
-## How to fix these three ? 
+## How to fix these three ?
   - os: linux
     env: BUILD_TYPE=RpiPdRelease OSSIA_STATIC=1
 
@@ -103,8 +105,6 @@ matrix:
   - os: osx
     env: BUILD_TYPE=MaxRelease OSSIA_STATIC=1
 
-  - os: linux
-    env: BUILD_TYPE=Coverage PYTHON_VERSION=3.6
 
 # work around https://github.com/travis-ci/travis-ci/issues/8363
 before_script: pyenv global $TRAVIS_PYTHON_VERSION
