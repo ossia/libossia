@@ -52,8 +52,8 @@ execute_process(
   OUTPUT_VARIABLE GCOV_OUTPUT
 )
 
-if(NOT ("${GCOV_OUTPUT}" MATCHES ".*([0-9]+\.[0-9]+\.[0-9]+).*"))
-  message(FATAL_ERROR "cannot parse gcov version")
+if(NOT ("${GCOV_OUTPUT}" MATCHES ".*([0-9]+\\.[0-9]+\\.[0-9]+).*"))
+  message(FATAL_ERROR "cannot parse gcov version : ${GCOV_OUTPUT}")
 endif()
 
 if("${CMAKE_MATCH_1}" VERSION_LESS 9.0.0)
