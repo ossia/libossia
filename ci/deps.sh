@@ -40,7 +40,8 @@ case "$TRAVIS_OS_NAME" in
       wget -nv https://github.com/OSSIA/sdk/releases/download/sdk14/gcov
       file ./gcov
       chmod +x ./gcov
-      sudo mv ./gcov /usr/bin/gcov-9
+      sudo cp ./gcov /usr/bin/gcov
+      sudo cp ./gcov /usr/bin/gcov-9
 
       gcov-9 --version
     fi
