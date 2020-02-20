@@ -288,6 +288,7 @@ def get_versions():
                    -DOSSIA_PYTHON=0 \
                    -DOSSIA_C=1 \
                    -DOSSIA_CPP=1 \
+                   -DOSSIA_DISABLE_COTIRE=1 \
                    ..
 
         $CMAKE_BIN --build . -- -j2
