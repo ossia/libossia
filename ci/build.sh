@@ -289,6 +289,10 @@ def get_versions():
                    -DOSSIA_C=1 \
                    -DOSSIA_CPP=1 \
                    -DOSSIA_DISABLE_COTIRE=1 \
+                   -DOSSIA_EDITOR=O \
+                   -DOSSIA_DATAFLOW=0 \
+                   -DOSSIA_PROTOCOL_AUDIO=0 \
+                   -DOSSIA_PROTOCOL_WIIMOTE=0 \
                    ..
 
         $CMAKE_BIN --build . -- -j2
