@@ -21,7 +21,7 @@ function init() {
 		var carrier = document.getElementById('carrier');
 		var ratio = document.getElementById('ratio');
 		var index = document.getElementById('index');
-		var ramp = document.getElementById('ramp');
+		var ramptime = document.getElementById('ramptime');
 		var cutoff = document.getElementById('cutoff');
 		var gain = document.getElementById('gain');
 		var pan = document.getElementById('pan');
@@ -36,7 +36,7 @@ function init() {
 		  var carrier_k = keys.findIndex(function(val) { return val == "/my_synth.1/carrier/frequency"; });
 		  var ratio_k = keys.findIndex(function(val) { return val == "/my_synth.1/modulation/ratio"; });
 		  var index_k = keys.findIndex(function(val) { return val == "/my_synth.1/modulation/index"; });
-		  var ramp_k = keys.findIndex(function(val) { return val == "/my_synth.1/ramp"; });
+		  var ramptime_k = keys.findIndex(function(val) { return val == "/my_synth.1/ramptime"; });
 		  var cutoff_k = keys.findIndex(function(val) { return val == "/my_synth.1/cutoff/frequency"; });
 		  var pan_k = keys.findIndex(function(val) { return val == "/my_synth.1/pan"; });
 		  var gain_k = keys.findIndex(function(val) { return val == "/my_synth.1/gain"; });
@@ -53,9 +53,9 @@ function init() {
 		  {
 			  index.value = json["/my_synth.1/modulation/index"];
 		  };
-		  if(ramp_k != -1)
+		  if(ramptime_k != -1)
 		  {
-			  ramp.value = json["/my_synth.1/ramp"];
+			  ramptime.value = json["/my_synth.1/ramptime"];
 		  };
 		  if(cutoff_k != -1)
 		  {
@@ -86,9 +86,9 @@ function init() {
 			  ws.send('{ "/my_synth.1/modulation/index": ' + index.value + '}');
 			  console.log('{ "/my_synth.1/modulation/index": ' + index.value + '}');
 		};
-		ramp.oninput = function(ev) {
-			  ws.send('{ "/my_synth.1/ramp": ' + ramp.value + '}');
-			  console.log('{ "/my_synth.1/ramp": ' + ramp.value + '}');
+		ramptime.oninput = function(ev) {
+			  ws.send('{ "/my_synth.1/ramptime": ' + ramptime.value + '}');
+			  console.log('{ "/my_synth.1/ramptime": ' + ramptime.value + '}');
 		};
 		cutoff.oninput = function(ev) {
 			  ws.send('{ "/my_synth.1/cutoff/frequency": ' + cutoff.value + '}');
@@ -163,7 +163,7 @@ function init() {
 					Ramp time
 				</td>
 				<td>
-					<input id="ramp" type="number" min="0" max="2000">
+					<input id="ramptime" type="number" min="0" max="2000">
 				</td>
 			</tr>
 		</table>
