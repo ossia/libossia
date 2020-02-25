@@ -251,6 +251,20 @@ void remote::get_unit(remote*x)
     outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
 }
 
+void remote::get_units(remote*x)
+{
+  t_atom a;
+  ossia::for_each_tagged(dataspace_u_list{}, [&](auto t) {
+        using dataspace_type = typename decltype(t)::type;
+        ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
+          using unit_type = typename decltype(u)::type;
+          A_SETSYM(&a,unit_traits<unit_type>::text()[0]);
+          outlet_anything(x->m_dumpout, gensym("units"), 1, &a);
+        });
+      });
+}
+
+
 void remote::get_mute(remote*x)
 {
   t_atom a;
@@ -512,6 +526,8 @@ void remote::get_mess_cb(remote* x, t_symbol* s)
 {
   if ( s == gensym("unit") )
     remote::get_unit(x);
+  if ( s == gensym("units") )
+    remote::get_units(x);
   if ( s == gensym("mute") )
     remote::get_mute(x);
   if ( s == gensym("rate") )
