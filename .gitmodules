@@ -120,3 +120,6 @@
 [submodule "3rdparty/Flicks"]
 	path = 3rdparty/Flicks
 	url = https://github.com/OculusVR/Flicks
+[submodule "3rdparty/rnd"]
+	path = 3rdparty/rnd
+	url = git@github.com:jcelerier/rnd

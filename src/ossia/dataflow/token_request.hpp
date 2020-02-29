@@ -149,6 +149,12 @@ struct token_request
     return to_physical_time_in_tick(ossia::time_value{global_time}, ratio);
   }
 
+  //! Maps a time value in the frame of reference of the physical buffers, to a model time
+  constexpr time_value from_physical_time_in_tick(ossia::physical_time phys_time, double ratio) const noexcept
+  {
+    return time_value{constexpr_floor(phys_time * (speed / ratio) + prev_date.impl - offset.impl)};
+  }
+
   //! If we are in a kind of hierarchical object, return where we are at the end of this tick.
   constexpr double position() const noexcept
   {
