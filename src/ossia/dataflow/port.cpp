@@ -40,6 +40,35 @@ struct push_data
   void operator()() const noexcept { }
 };
 
+inlet::~inlet()
+{
+
+}
+
+outlet::~outlet()
+{
+
+}
+
+void inlet::pre_process()
+{
+
+}
+
+void inlet::post_process()
+{
+
+}
+
+void outlet::pre_process()
+{
+
+}
+
+void outlet::post_process()
+{
+
+}
 void outlet::write(execution_state& e)
 {
   apply_to_destination(
@@ -201,5 +230,6 @@ void process_audio_out_general(ossia::audio_outlet& audio_out)
     }
   }
 }
+
 
 }

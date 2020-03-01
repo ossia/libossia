@@ -50,10 +50,7 @@ protected:
   }
 
 public:
-  virtual ~inlet()
-  {
-
-  }
+  virtual ~inlet();
 
   void connect(graph_edge* e) noexcept
   {
@@ -66,6 +63,8 @@ public:
   {
     ossia::remove_erase(sources, e);
   }
+
+  virtual std::size_t which() const noexcept = 0;
 
   template<typename T>
   T* target() noexcept;
@@ -83,7 +82,9 @@ public:
   auto& cables() noexcept { return sources; }
   auto& cables() const noexcept { return sources; }
 
-  virtual std::size_t which() const noexcept = 0;
+  virtual void pre_process();
+  virtual void post_process();
+
   destination_t address;
   ossia::small_vector<graph_edge*, 2> sources;
   ossia::small_vector<value_inlet*, 2> child_inlets;
@@ -113,10 +114,7 @@ protected:
   }
 
 public:
-  virtual ~outlet()
-  {
-
-  }
+  virtual ~outlet();
 
   void connect(graph_edge* e) noexcept
   {
@@ -133,6 +131,7 @@ public:
   void write(execution_state& e);
 
   virtual std::size_t which() const noexcept = 0;
+
   template<typename T>
   T* target() noexcept;
   template<typename T>
@@ -145,6 +144,9 @@ public:
   auto visit(const T& t);
   template<typename T>
   auto visit(const T& t) const;
+
+  virtual void pre_process();
+  virtual void post_process();
 
   auto& cables() noexcept { return targets; }
   auto& cables() const noexcept { return targets; }
@@ -298,7 +300,7 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   std::size_t which() const noexcept final override { return audio_port::which; }
 
-  void post_process();
+  void post_process() override;
 
   double gain{1.};
   pan_weight pan{ossia::sqrt_2 / 2., ossia::sqrt_2 / 2.};
