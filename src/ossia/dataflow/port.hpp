@@ -303,7 +303,7 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
   void post_process() override;
 
   double gain{1.};
-  pan_weight pan{ossia::sqrt_2 / 2., ossia::sqrt_2 / 2.};
+  pan_weight pan{1., 1.};
 
   ossia::value_inlet gain_inlet;
   ossia::value_inlet pan_inlet;

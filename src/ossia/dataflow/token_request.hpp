@@ -249,13 +249,16 @@ struct token_request
     {
       // There is a bar change in this tick, start the up tick
       const double musical_tick_duration = musical_end_position - musical_start_position;
-      const double musical_bar_start = musical_end_last_bar - musical_start_position;
-      const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
-      if(samples_tick_duration > 0)
+      if(musical_tick_duration != 0)
       {
-        const double ratio = musical_bar_start / musical_tick_duration;
-        const int64_t hi_start_sample = samples_tick_duration * ratio;
-        tick(hi_start_sample);
+        const double musical_bar_start = musical_end_last_bar - musical_start_position;
+        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+        if(samples_tick_duration > 0)
+        {
+          const double ratio = musical_bar_start / musical_tick_duration;
+          const int64_t hi_start_sample = samples_tick_duration * ratio;
+          tick(hi_start_sample);
+        }
       }
     }
     else
@@ -268,13 +271,16 @@ struct token_request
         // start_position is prev_date
         // end_position is date
         const double musical_tick_duration = musical_end_position - musical_start_position;
-        const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
-        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
-        if(samples_tick_duration > 0)
+        if(musical_tick_duration != 0)
         {
-          const double ratio = musical_bar_start / musical_tick_duration;
-          const int64_t lo_start_sample = samples_tick_duration * ratio;
-          tock(lo_start_sample);
+          const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
+          const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+          if(samples_tick_duration > 0)
+          {
+            const double ratio = musical_bar_start / musical_tick_duration;
+            const int64_t lo_start_sample = samples_tick_duration * ratio;
+            tock(lo_start_sample);
+          }
         }
       }
     }

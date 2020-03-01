@@ -199,9 +199,9 @@ void execution_state::clear_devices()
 
 execution_state::execution_state()
 {
-  m_valueState.reserve(1024);
-  m_audioState.reserve(64);
-  m_midiState.reserve(64);
+  m_valueState.reserve(100);
+  m_audioState.reserve(8);
+  m_midiState.reserve(4);
 }
 
 void execution_state::register_device(net::device_base* d)

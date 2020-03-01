@@ -222,7 +222,7 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
   const double g = audio_out.gain;
 
   while(audio_out.pan.size() < C)
-    audio_out.pan.push_back(ossia::sqrt_2 / 2.);
+    audio_out.pan.push_back(1.);
 
   ensure_vector_sizes(i.samples, audio_out.data.samples);
 
@@ -234,6 +234,8 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
     auto o_ptr  = o.samples[chan].data();
 
     const auto vol = audio_out.pan[chan] * g;
+    if(vol == 1.)
+      continue;
     for(std::size_t sample = 0; sample < N; sample++)
     {
       o_ptr[sample] = i_ptr[sample] * vol;
@@ -246,6 +248,8 @@ void process_audio_out_mono(ossia::audio_outlet& audio_out)
   ossia::audio_port& o = *audio_out;
 
   const double g = audio_out.gain;
+  if(g == 1.)
+    return;
 
   const auto N = o.samples[0].size();
   const auto o_ptr  = o.samples[0].data();
@@ -263,7 +267,7 @@ void process_audio_out_general(ossia::audio_outlet& audio_out)
   const double g = audio_out.gain;
 
   while(audio_out.pan.size() < C)
-    audio_out.pan.push_back(ossia::sqrt_2 / 2.);
+    audio_out.pan.push_back(1.);
 
   for(auto chan = 0U; chan < C; chan++)
   {
@@ -272,6 +276,8 @@ void process_audio_out_general(ossia::audio_outlet& audio_out)
     auto o_ptr  = o.samples[chan].data();
 
     const auto vol = audio_out.pan[chan] * g;
+    if(vol == 1.)
+      continue;
     for(std::size_t sample = 0; sample < N; sample++)
     {
       o_ptr[sample] *= vol;
