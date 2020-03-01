@@ -389,7 +389,8 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
       }
 
-      m_endNodes = std::move(m_retry_syncs);
+      m_endNodes.container.assign(m_retry_syncs.container.begin(), m_retry_syncs.container.end());
+      m_retry_syncs.clear();
 
     } while (!m_maxReachedEvents.empty() || !m_endNodes.empty());
   }

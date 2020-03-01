@@ -18,6 +18,7 @@
 namespace ossia
 {
 class message_queue;
+class audio_parameter;
 struct typed_value;
 struct timed_value;
 struct local_pull_visitor;
@@ -106,15 +107,17 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   // void insert(const ossia::destination& dest, const data_type& v);
   // void insert(const ossia::destination& dest, data_type&& v);
 
-  void insert(const ossia::destination& dest, const ossia::audio_port& v);
+  //void insert(const ossia::destination& dest, const ossia::audio_port& v);
   //void insert(const ossia::destination& dest, ossia::audio_port&& v);
-  void insert(const ossia::destination& dest, const ossia::midi_port& v);
+  //void insert(const ossia::destination& dest, const ossia::midi_port& v);
   //void insert(const ossia::destination& dest, ossia::midi_port&& v);
-  void insert(const ossia::destination& dest, const ossia::value_port& v);
-  void insert(const ossia::destination& dest, ossia::value_port&& v);
+  //void insert(const ossia::destination& dest, const ossia::value_port& v);
+  //void insert(const ossia::destination& dest, ossia::value_port&& v);
+  void insert(ossia::net::parameter_base& dest, const ossia::value_port& v);
+  void insert(ossia::net::parameter_base& dest, ossia::value_port&& v);
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);
-  void insert(ossia::net::parameter_base& dest, const audio_port& v);
+  void insert(ossia::audio_parameter& dest, const audio_port& v);
   void insert(ossia::net::parameter_base& dest, const midi_port& v);
   void insert(const ossia::state& v);
 
@@ -135,7 +138,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   ossia::fast_hash_map<
       ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>>
       m_valueState;
-  ossia::fast_hash_map<ossia::net::parameter_base*, audio_port> m_audioState;
+  ossia::fast_hash_map<ossia::audio_parameter*, audio_port> m_audioState;
   ossia::fast_hash_map<
       ossia::net::parameter_base*, value_vector<rtmidi::message>>
       m_midiState;

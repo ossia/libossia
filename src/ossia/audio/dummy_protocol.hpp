@@ -47,6 +47,7 @@ public:
         end = clk::now();
         if (!stop_processing)
         {
+          this->processing = true;
           if (auto proto = protocol.load())
           {
             auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -69,16 +70,22 @@ public:
               proto->replace_tick = false;
             }
           }
+
+          this->processing = false;
         }
         start = clk::now();
       }
     }};
+#if defined(__linux__)
+    pthread_setname_np(m_runThread.native_handle(), "ossia execution");
+#endif
   }
 
   ~dummy_engine() override
   {
     m_active = false;
     protocol = nullptr;
+    stop_processing = true;
 
     while (processing)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -108,6 +115,8 @@ public:
   void stop() override
   {
     stop_processing = true;
+    while(processing)
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
 private:

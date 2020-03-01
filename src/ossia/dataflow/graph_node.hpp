@@ -56,6 +56,7 @@ public:
 };
 */
 
+class audio_parameter;
 struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state& impl;
@@ -72,7 +73,7 @@ struct OSSIA_EXPORT exec_state_facade
 
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);
-  void insert(ossia::net::parameter_base& dest, const audio_port& v);
+  void insert(ossia::audio_parameter& dest, const audio_port& v);
   void insert(ossia::net::parameter_base& dest, const midi_port& v);
   void insert(const ossia::state& v);
 };

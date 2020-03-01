@@ -223,15 +223,17 @@ private:
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
+    self.processing = true;
+
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
     auto proto = self.protocol.load();
     if (self.stop_processing || !proto)
     {
+      self.processing = false;
       return clearBuffers(self, nframes, outputs);
     }
 
-    self.processing = true;
     auto float_input = (float**)alloca(sizeof(float*) * inputs);
     auto float_output = (float**)alloca(sizeof(float*) * outputs);
     for (std::size_t i = 0; i < inputs; i++)
@@ -257,8 +259,8 @@ private:
       proto->ui_tick = {};
       proto->replace_tick = false;
     }
-    self.processing = false;
 
+    self.processing = false;
     return 0;
   }
 

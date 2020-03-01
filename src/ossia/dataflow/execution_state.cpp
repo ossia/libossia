@@ -14,6 +14,7 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
+
 namespace ossia
 {
 struct local_pull_visitor
@@ -35,7 +36,7 @@ struct local_pull_visitor
   bool operator()(audio_port& val) const
   {
     OSSIA_EXEC_STATE_LOCK_READ(st);
-    auto it = st.m_audioState.find(addr);
+    auto it = st.m_audioState.find(static_cast<ossia::audio_parameter*>(addr));
     if (it != st.m_audioState.end() && !it->second.samples.empty())
     {
       copy_data{}(it->second, val);
@@ -85,8 +86,12 @@ struct global_pull_visitor
 
   void operator()(audio_port& val) const
   {
+#if !defined(NDEBUG)
     auto aa = dynamic_cast<const audio_parameter*>(&out);
     assert(aa);
+#else
+    auto aa = static_cast<const audio_parameter*>(&out);
+#endif
     aa->clone_value(val.samples);
   }
 
@@ -96,11 +101,14 @@ struct global_pull_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
+#if !defined(NDEBUG)
     // TODO how to do without that dynamic_cast ?
     // Can we *ensure* that the address of the midi_port is a midi one ?
     auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
-    if (!midi)
-      return;
+    assert(midi);
+#else
+    auto midi = static_cast<ossia::net::midi::midi_protocol*>(&proto);
+#endif
 
     auto it = state.m_receivedMidi.find(midi);
     if (it != state.m_receivedMidi.end())
@@ -137,11 +145,14 @@ struct global_pull_node_visitor
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
 
+#if !defined(NDEBUG)
     // TODO how to do without that dynamic_cast ?
     // Can we *ensure* that the address of the midi_port is a midi one ?
     auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto);
-    if (!midi)
-      return;
+    assert(midi);
+#else
+    auto midi = static_cast<ossia::net::midi::midi_protocol*>(&proto);
+#endif
 
     int channel = -1;
     if (node.get_parent() == &dev.get_root_node())
@@ -465,11 +476,8 @@ void execution_state::commit_common()
 {
   for (auto& elt : m_audioState)
   {
-    auto addr = dynamic_cast<audio_parameter*>(elt.first);
-    if (addr)
-    {
-      addr->push_value(elt.second);
-    }
+    assert(elt.first);
+    elt.first->push_value(elt.second);
 
     for (auto& vec : elt.second.samples)
     {
@@ -701,23 +709,34 @@ void execution_state::copy_from_global_node(net::node_base& node, inlet& in)
     in.visit(global_pull_node_visitor{*this, node});
   }
 }
-
+/*
 void execution_state::insert(
     const ossia::destination& param, const audio_port& v)
 {
-  insert(param.address(), v);
+  if(!v.samples.empty())
+  {
+#if !defined(NDEBUG)
+    auto addr = dynamic_cast<ossia::audio_parameter*>(&param.address());
+    assert(addr);
+#else
+    auto addr = static_cast<ossia::audio_parameter*>(&param.address());
+#endif
+    insert(*addr, v);
+  }
 }
+
 void execution_state::insert(
     const ossia::destination& param, const midi_port& v)
 {
   insert(param.address(), v);
 }
+*/
 void execution_state::insert(
-    const ossia::destination& param, const value_port& val)
+    ossia::net::parameter_base& param, const value_port& val)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   int idx = m_msgIndex;
-  auto& st = m_valueState[&param.address()];
+  auto& st = m_valueState[&param];
 
   // here reserve is a pessimization if we push only a few values...
   // just letting log2 growth do its job is much better.
@@ -756,11 +775,11 @@ void execution_state::insert(
   m_msgIndex += val.get_data().size();
 }
 
-void execution_state::insert(const ossia::destination& param, value_port&& val)
+void execution_state::insert(ossia::net::parameter_base& param, value_port&& val)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   int idx = m_msgIndex;
-  auto& st = m_valueState[&param.address()];
+  auto& st = m_valueState[&param];
 
   // here reserve is a pessimization if we push only a few values...
   // just letting log2 growth do its job is much better.
@@ -817,7 +836,7 @@ void execution_state::insert(
 }
 
 void execution_state::insert(
-    ossia::net::parameter_base& param, const audio_port& v)
+    ossia::audio_parameter& param, const audio_port& v)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   mix(v.samples, m_audioState[&param].samples);
@@ -897,10 +916,11 @@ static bool is_in(
 }
 static bool is_in(
     net::parameter_base& other,
-    const ossia::fast_hash_map<ossia::net::parameter_base*, audio_port>&
+    const ossia::fast_hash_map<ossia::audio_parameter*, audio_port>&
         container)
 {
-  auto it = container.find(&other);
+  // TODO dangerous
+  auto it = container.find(static_cast<ossia::audio_parameter*>(&other));
   if (it == container.end())
     return false;
   return !it->second.samples.empty();
@@ -969,7 +989,7 @@ void exec_state_facade::insert(net::parameter_base& dest, typed_value&& v)
   impl.insert(dest, std::move(v));
 }
 
-void exec_state_facade::insert(net::parameter_base& dest, const audio_port& v)
+void exec_state_facade::insert(audio_parameter& dest, const audio_port& v)
 {
   impl.insert(dest, v);
 }

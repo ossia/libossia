@@ -69,6 +69,52 @@ void outlet::post_process()
 {
 
 }
+
+struct outlet_inserter
+{
+  ossia::execution_state& e;
+  ossia::net::parameter_base* addr;
+  void operator()(const ossia::audio_port& data) const noexcept
+  {
+    if(data.samples.empty())
+      return;
+
+#if !defined(NDEBUG)
+    auto audio_addr = dynamic_cast<ossia::audio_parameter*>(addr);
+    assert(audio_addr);
+#else
+    auto audio_addr = static_cast<ossia::audio_parameter*>(addr);
+#endif
+
+    e.insert(*audio_addr, std::move(data));
+  }
+
+  void operator()(const ossia::value_port& data) const noexcept
+  {
+    if(data.get_data().empty())
+      return;
+
+    e.insert(*addr, std::move(data));
+  }
+
+  void operator()(const ossia::midi_port& data) const noexcept
+  {
+    if(data.messages.empty())
+      return;
+
+    e.insert(*addr, std::move(data));
+  }
+
+  void operator()(ossia::value_port&& data) const noexcept
+  {
+    if(data.get_data().empty())
+      return;
+
+    e.insert(*addr, std::move(data));
+  }
+
+};
+
 void outlet::write(execution_state& e)
 {
   apply_to_destination(
@@ -76,9 +122,11 @@ void outlet::write(execution_state& e)
       [&](ossia::net::parameter_base* addr, bool unique) {
         if (unique)
         {
+          // TODO right now with visit this branch is useless - there is never any move
+          // TODO we don't really care about moves anyways
           if (scope & port::scope_t::local)
           {
-            visit([&] (auto& data) { e.insert(*addr, std::move(data)); });
+            visit(outlet_inserter{e, addr});
           }
           else if (scope & port::scope_t::global)
           {
@@ -89,7 +137,7 @@ void outlet::write(execution_state& e)
         {
           if (scope & port::scope_t::local)
           {
-            visit([&] (const auto& data) { e.insert(*addr, data); });
+            visit(outlet_inserter{e, addr});
           }
           else if (scope & port::scope_t::global)
           {
