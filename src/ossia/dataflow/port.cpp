@@ -86,7 +86,7 @@ struct outlet_inserter
     auto audio_addr = static_cast<ossia::audio_parameter*>(addr);
 #endif
 
-    e.insert(*audio_addr, std::move(data));
+    e.insert(*audio_addr, data);
   }
 
   void operator()(const ossia::value_port& data) const noexcept
@@ -94,7 +94,7 @@ struct outlet_inserter
     if(data.get_data().empty())
       return;
 
-    e.insert(*addr, std::move(data));
+    e.insert(*addr, data);
   }
 
   void operator()(const ossia::midi_port& data) const noexcept
@@ -102,7 +102,7 @@ struct outlet_inserter
     if(data.messages.empty())
       return;
 
-    e.insert(*addr, std::move(data));
+    e.insert(*addr, data);
   }
 
   void operator()(ossia::value_port&& data) const noexcept

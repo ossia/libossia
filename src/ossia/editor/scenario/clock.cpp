@@ -233,7 +233,7 @@ void clock::request_stop()
 
 void clock::set_exec_status_callback(exec_status_callback e)
 {
-  m_statusCallback = e;
+  m_statusCallback = std::move(e);
 }
 
 clock::exec_status_callback clock::get_exec_status_callback() const
