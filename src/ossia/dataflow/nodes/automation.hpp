@@ -11,6 +11,22 @@
  * \file automation.hpp
  */
 
+namespace ossia
+{
+class minmax_float_outlet : public value_outlet
+{
+public:
+  minmax_float_outlet()
+  {
+    this->child_inlets.push_back(&min_inlet);
+    this->child_inlets.push_back(&max_inlet);
+  }
+
+  ossia::value_inlet min_inlet;
+  ossia::value_inlet max_inlet;
+};
+}
+
 namespace ossia::nodes
 {
 /**
@@ -25,8 +41,7 @@ namespace ossia::nodes
  * the list only has numeric elements (e.g. List{Float, Float}).
  *
  * The driving \ref value can either be a single \ref Behavior or a \ref List
- * of \ref Behavior,
- * in accordance to the type of the driven \ref net::parameter_base.
+ * of \ref Behan ,e to the type of the driven \ref net::parameter_base.
  *
  * The automation has a "source" domain, i.e. the data space in which the
  * transformation
@@ -81,7 +96,7 @@ private:
   }
 
   ossia::behavior m_drive;
-  ossia::value_outlet value_out;
+  ossia::minmax_float_outlet value_out;
 };
 
 class automation_process final : public ossia::node_process
