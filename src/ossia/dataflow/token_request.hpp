@@ -305,6 +305,29 @@ struct token_request
     return false;
   }
 
+  constexpr void reduce_end_time(time_value t) noexcept
+    //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  {
+    const auto old_date = date;
+    date = t;
+
+    double ratio = t.impl / double(old_date.impl);
+    musical_end_position *= ratio;
+
+    // TODO what if musical_end_position is now before musical_end_last_bar
+  }
+
+  constexpr void increase_start_time(time_value t) noexcept
+  //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  {
+    const auto old_date = prev_date;
+    prev_date = t;
+
+    double ratio = t.impl / double(old_date.impl);
+    musical_start_position *= ratio;
+
+    // TODO what if musical_start_position is now after end_position / end_last_bar ?
+  }
 
   ossia::time_value prev_date{}; // Sample we are at
   ossia::time_value date{}; // Sample we are finishing at
