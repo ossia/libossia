@@ -235,10 +235,18 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
 
     const auto vol = audio_out.pan[chan] * g;
     if(vol == 1.)
-      continue;
-    for(std::size_t sample = 0; sample < N; sample++)
     {
-      o_ptr[sample] = i_ptr[sample] * vol;
+      for(std::size_t sample = 0; sample < N; sample++)
+      {
+        o_ptr[sample] = i_ptr[sample];
+      }
+    }
+    else
+    {
+      for(std::size_t sample = 0; sample < N; sample++)
+      {
+        o_ptr[sample] = i_ptr[sample] * vol;
+      }
     }
   }
 }
