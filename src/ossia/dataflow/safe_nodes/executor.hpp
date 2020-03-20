@@ -194,6 +194,14 @@ public:
       m_inlets.push_back(std::addressof(port));
     }
 
+    {
+      int ctrl_i = 0;
+      for_each_in_tuple(Node_T::Metadata::controls, [&] (auto& ctrl_info) {
+        ctrl_info.setup_exec(this->control_in_ports[ctrl_i]);
+        ctrl_i++;
+      });
+    }
+
     if constexpr(info::audio_out_count > 0)
     for (auto& port : this->audio_out_ports)
       m_outlets.push_back(std::addressof(port));

@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/control_inlets.hpp>
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 
@@ -11,21 +12,6 @@
  * \file automation.hpp
  */
 
-namespace ossia
-{
-class minmax_float_outlet : public value_outlet
-{
-public:
-  minmax_float_outlet()
-  {
-    this->child_inlets.push_back(&min_inlet);
-    this->child_inlets.push_back(&max_inlet);
-  }
-
-  ossia::value_inlet min_inlet;
-  ossia::value_inlet max_inlet;
-};
-}
 
 namespace ossia::nodes
 {
@@ -51,7 +37,7 @@ namespace ossia::nodes
  *
  * \see \ref behavior \ref curve \ref curve_segment
  */
-class OSSIA_EXPORT automation final : public ossia::nonowning_graph_node
+class automation final : public ossia::nonowning_graph_node
 {
 public:
   automation()
@@ -96,9 +82,49 @@ private:
   }
 
   ossia::behavior m_drive;
-  ossia::minmax_float_outlet value_out;
+  ossia::value_outlet value_out;
 };
 
+class float_automation final : public ossia::nonowning_graph_node
+{
+public:
+  float_automation()
+  {
+    m_outlets.push_back(&value_out);
+  }
+
+  ~float_automation() override
+  {
+  }
+
+  std::string label() const noexcept override
+  {
+    return "automation (float)";
+  }
+
+  void set_behavior(ossia::curve<double, float> b)
+  {
+    m_drive = std::move(b);
+  }
+
+  void reset_drive()
+  {
+    m_drive.reset();
+  }
+
+private:
+  void
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  {
+    const auto tick_start = e.physical_start(t);
+
+    ossia::value_port& vp = *value_out;
+    vp.write_value(m_drive.value_at(t.position()), tick_start);
+  }
+
+  ossia::curve<double, float> m_drive;
+  ossia::minmax_float_outlet value_out;
+};
 class automation_process final : public ossia::node_process
 {
 public:

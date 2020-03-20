@@ -2,6 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "domain_base.hpp"
 
+#include <ossia/detail/apply.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/domain/detail/apply_domain.hpp>
 #include <ossia/network/domain/detail/min_max.hpp>
@@ -17,6 +18,11 @@ value get_min(const domain& dom)
 value get_max(const domain& dom)
 {
   return ossia::apply(domain_max_visitor{}, dom.v);
+}
+
+std::pair<std::optional<float>, std::optional<float>> get_float_minmax(const domain& dom)
+{
+  return ossia::apply(domain_float_minmax_visitor{}, dom.v);
 }
 
 void set_min(domain& dom, const ossia::value& val)

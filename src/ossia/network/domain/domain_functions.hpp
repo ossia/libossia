@@ -5,6 +5,8 @@
 
 #include <ossia_export.h>
 
+#include <utility>
+#include <optional>
 #include <vector>
 namespace ossia
 {
@@ -23,6 +25,7 @@ apply_domain(const domain& dom, bounding_mode b, ossia::value&& val);
 
 OSSIA_EXPORT value get_min(const domain& dom);
 OSSIA_EXPORT value get_max(const domain& dom);
+OSSIA_EXPORT std::pair<std::optional<float>, std::optional<float>> get_float_minmax(const domain& dom);
 
 OSSIA_EXPORT void set_min(domain& dom, const ossia::value& val);
 OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);

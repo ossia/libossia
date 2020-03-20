@@ -8,39 +8,6 @@
 namespace ossia
 {
 
-inline void value_port::add_global_values(
-    const net::parameter_base& other, const value_vector<ossia::value>& vec)
-{
-  const ossia::complex_type source_type = other.get_unit();
-  const ossia::destination_index source_idx{};
-
-  if (source_idx == index && source_type == type)
-  {
-    for (const ossia::value& v : vec)
-      write_value(v, 0);
-  }
-  else
-  {
-    for (const ossia::value& v : vec)
-      write_value(filter_value(v, source_idx, source_type), 0);
-  }
-}
-
-inline void value_port::add_global_value(
-    const ossia::net::parameter_base& other, const ossia::value& v)
-{
-  const ossia::complex_type source_type = other.get_unit();
-  const ossia::destination_index source_idx{};
-  if (source_idx == index && source_type == type)
-  {
-    write_value(v, 0);
-  }
-  else
-  {
-    write_value(filter_value(v, source_idx, source_type), 0);
-  }
-}
-
 struct clear_data
 {
   void operator()(value_port& p) const

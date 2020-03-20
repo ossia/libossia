@@ -72,34 +72,46 @@ public:
   using map_type = curve_map<X, std::pair<Y, ossia::curve_segment<Y>>>;
 
   curve() = default;
-  curve(const curve&) = delete;
-  curve(curve&& other)
+  curve(const curve& other)
   {
     m_x0 = other.m_x0;
     m_y0 = other.m_y0;
-    m_x0_destination = std::move(other.m_x0_destination);
-    m_y0_destination = std::move(other.m_y0_destination);
+    m_y0_destination = other.m_y0_destination;
 
-    m_points = std::move(other.m_points);
-
-    m_scaleBounds = std::move(other.m_scaleBounds);
-    m_originalPoints = std::move(other.m_originalPoints);
+    m_points = other.m_points;
 
     m_y0_cacheUsed = false;
   }
 
-  curve& operator=(const curve&) = delete;
-  curve& operator=(curve&& other)
+  curve(curve&& other)
   {
     m_x0 = other.m_x0;
     m_y0 = other.m_y0;
-    m_x0_destination = std::move(other.m_x0_destination);
     m_y0_destination = std::move(other.m_y0_destination);
 
     m_points = std::move(other.m_points);
 
-    m_scaleBounds = std::move(other.m_scaleBounds);
-    m_originalPoints = std::move(other.m_originalPoints);
+    m_y0_cacheUsed = false;
+  }
+
+  curve& operator=(const curve& other)
+  {
+    m_x0 = other.m_x0;
+    m_y0 = other.m_y0;
+    m_y0_destination = other.m_y0_destination;
+
+    m_points = other.m_points;
+
+    m_y0_cacheUsed = false;
+    return *this;
+  }
+  curve& operator=(curve&& other)
+  {
+    m_x0 = other.m_x0;
+    m_y0 = other.m_y0;
+    m_y0_destination = std::move(other.m_y0_destination);
+
+    m_points = std::move(other.m_points);
 
     m_y0_cacheUsed = false;
     return *this;
@@ -150,17 +162,9 @@ public:
  \param Y ordinate */
   void set_y0(Y value);
 
-  /*! get initial point abscissa destination
- \return const Destination* */
-  ossia::optional<destination> get_x0_destination() const;
-
   /*! get initial point ordinate destination
  \return const Destination* */
   ossia::optional<destination> get_y0_destination() const;
-
-  /*! set initial curve abscissa using a Destination
- \param const Destination* */
-  void set_x0_destination(const ossia::destination& destination);
 
   /*! set initial curve ordinate using a Destination
  \param const Destination* */
@@ -172,38 +176,17 @@ public:
   */
   map_type get_points() const;
 
-  /**
-   * @brief set_scale_bounds
-   *
-   * Use this if the curve ordinate is given between [0; 1] and has to be
-   * rescaled to
-   * the correct bounds when the first value is received.
-   *
-   * The arguments are the known bounds of the points at the time of creation.
-   */
-  void set_scale_bounds(Y min, Y max, Y end);
-
   static Y convert_to_template_type_value(
       const ossia::value& value, ossia::destination_index::const_iterator idx);
 
 private:
   mutable X m_x0;
   mutable Y m_y0;
-  mutable ossia::optional<ossia::destination> m_x0_destination;
   mutable ossia::optional<ossia::destination> m_y0_destination;
 
   mutable map_type m_points;
 
   mutable Y m_y0_cache;
-  struct scale_info
-  {
-    Y min;
-    Y max;
-    Y start;
-    Y end;
-  };
-  mutable optional<scale_info> m_scaleBounds;
-  mutable optional<map_type> m_originalPoints;
 
   mutable bool m_y0_cacheUsed = false;
 };
@@ -212,16 +195,12 @@ template <typename X, typename Y>
 inline void curve<X, Y>::reset()
 {
   m_y0_cacheUsed = false;
-  if (m_originalPoints)
-    m_points = *m_originalPoints;
 }
 
 template <typename X, typename Y>
 inline bool
 curve<X, Y>::add_point(ossia::curve_segment<Y>&& segment, X abscissa, Y value)
 {
-  if (m_scaleBounds)
-    m_originalPoints->emplace(abscissa, std::make_pair(value, segment));
   m_points.emplace(abscissa, std::make_pair(value, std::move(segment)));
 
   return true;
@@ -271,17 +250,7 @@ inline curve_type curve<X, Y>::get_type() const
 template <typename X, typename Y>
 inline X curve<X, Y>::get_x0() const
 {
-  if (!m_x0_destination)
-    return m_x0;
-  else
-  {
-    auto& address = m_x0_destination->value.get();
-    address.pull_value();
-    auto val = address.value();
-    auto res
-        = convert_to_template_type_value(val, m_x0_destination->index.begin());
-    return res;
-  }
+  return m_x0;
 }
 
 template <typename X, typename Y>
@@ -299,43 +268,6 @@ inline Y curve<X, Y>::get_y0() const
     m_y0_cache = convert_to_template_type_value(
         dest.address().fetch_value(), dest.index.begin());
 
-    if (m_scaleBounds)
-    {
-      scale_info& bounds = *m_scaleBounds;
-      bounds.start = m_y0_cache;
-
-      // Rescale the whole curve with the acquired information.
-      // It is currently in [0; 1].
-      if (bounds.start < bounds.min)
-        bounds.min = bounds.start;
-      else if (bounds.start > bounds.max)
-        bounds.max = bounds.start;
-
-      if (bounds.start < bounds.end)
-      {
-        for (auto& pt : m_points.container)
-        {
-          Y& y = pt.second.first;
-          y = ossia::easing::ease{}(bounds.min, bounds.max, y);
-        }
-      }
-      else if (bounds.start == bounds.end)
-      {
-        m_points.clear();
-        m_x0 = 0;
-      }
-      else // start > end
-      {
-        for (auto& pt : m_points.container)
-        {
-          auto& y = pt.second.first;
-          const auto fun = [=](Y val) -> Y {
-            return bounds.max - val * (bounds.max - bounds.min);
-          };
-          y = fun(y);
-        }
-      }
-    }
     return m_y0_cache;
   }
 }
@@ -353,21 +285,9 @@ inline void curve<X, Y>::set_y0(Y value)
 }
 
 template <typename X, typename Y>
-inline ossia::optional<destination> curve<X, Y>::get_x0_destination() const
-{
-  return m_x0_destination;
-}
-
-template <typename X, typename Y>
 inline ossia::optional<destination> curve<X, Y>::get_y0_destination() const
 {
   return m_y0_destination;
-}
-
-template <typename X, typename Y>
-inline void curve<X, Y>::set_x0_destination(const destination& destination)
-{
-  m_x0_destination = destination;
 }
 
 template <typename X, typename Y>
@@ -380,13 +300,6 @@ template <typename X, typename Y>
 inline typename curve<X, Y>::map_type curve<X, Y>::get_points() const
 {
   return m_points;
-}
-
-template <typename X, typename Y>
-inline void curve<X, Y>::set_scale_bounds(Y min, Y max, Y end)
-{
-  m_scaleBounds = scale_info{min, max, Y{}, end};
-  m_originalPoints = map_type{};
 }
 
 template <typename X, typename Y>

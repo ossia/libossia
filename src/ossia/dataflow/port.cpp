@@ -10,6 +10,8 @@
 namespace ossia
 {
 
+namespace
+{
 struct push_data
 {
   ossia::net::parameter_base& dest;
@@ -39,6 +41,24 @@ struct push_data
   }
   void operator()() const noexcept { }
 };
+
+void process_port_values(
+    ossia::value_port& source,
+    ossia::net::parameter_base& sink)
+{
+  if(!source.domain)
+    return;
+
+  const auto& addr_dom = sink.get_domain();
+  if(!addr_dom)
+    return;
+
+  for(ossia::timed_value& value : source.get_data())
+  {
+    process_control_value(value.value, source.domain, addr_dom);
+  }
+}
+}
 
 inlet::~inlet()
 {
@@ -94,7 +114,9 @@ struct outlet_inserter
     if(data.get_data().empty())
       return;
 
-    e.insert(*addr, data);
+    auto vp = data;
+    // TODO process_port_values(vp, *addr);
+    e.insert(*addr, std::move(vp));
   }
 
   void operator()(const ossia::midi_port& data) const noexcept
@@ -112,7 +134,6 @@ struct outlet_inserter
 
     e.insert(*addr, std::move(data));
   }
-
 };
 
 void outlet::write(execution_state& e)

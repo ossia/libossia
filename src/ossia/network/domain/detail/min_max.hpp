@@ -177,7 +177,95 @@ struct domain_max_visitor_helper<vecf_domain<N>>
     return arr;
   }
 };
+
+
+//// Float min-max
+using float_minmax = std::pair<std::optional<float>, std::optional<float>>;
+template <typename T>
+struct domain_float_minmax_visitor_helper
+{
+  OSSIA_INLINE float_minmax operator()(const T& value) const
+  {
+    float_minmax ret;
+    if (value.min)
+      ret.first = *value.min;
+    if (value.max)
+      ret.second = *value.max;
+    return ret;
+  }
+};
+
+template <>
+struct domain_float_minmax_visitor_helper<domain_base<bool>>
+{
+  OSSIA_INLINE float_minmax operator()(const domain_base<bool>& value) const
+  {
+    return std::make_pair(0.f, 1.f);
+  }
+};
+
+template <>
+struct domain_float_minmax_visitor_helper<domain_base<impulse>>
+{
+  OSSIA_INLINE float_minmax operator()(const domain_base<impulse>& value) const
+  {
+    return {};
+  }
+};
+
+template <>
+struct domain_float_minmax_visitor_helper<domain_base<std::string>>
+{
+  OSSIA_INLINE float_minmax
+  operator()(const domain_base<std::string>& value) const
+  {
+    return {};
+  }
+};
+
+template <>
+struct domain_float_minmax_visitor_helper<domain_base<ossia::value>>
+{
+  OSSIA_INLINE float_minmax
+  operator()(const domain_base<ossia::value>& value) const
+  {
+    // TODO for this case, it would maybe be better to
+    // use the empty state of value instead of a boost::optional ?
+
+    float_minmax ret;
+    if (value.min)
+      ret.first = ossia::convert<float>(*value.min);
+    if (value.max)
+      ret.second = ossia::convert<float>(*value.max);
+    return ret;
+  }
+};
+
+template <>
+struct domain_float_minmax_visitor_helper<vector_domain>
+{
+  OSSIA_INLINE float_minmax operator()(const vector_domain& value) const
+  {
+    return {};
+  }
+};
+
+template <std::size_t N>
+struct domain_float_minmax_visitor_helper<vecf_domain<N>>
+{
+  OSSIA_INLINE float_minmax operator()(const vecf_domain<N>& value) const
+  {
+    return {};
+  }
+};
+
+
+
 }
+
+
+
+
 
 struct domain_min_visitor
 {
@@ -231,6 +319,32 @@ struct domain_max_visitor
   }
 };
 
+struct domain_float_minmax_visitor
+{
+  using return_type = detail::float_minmax;
+  template <typename T>
+  OSSIA_INLINE return_type operator()(const domain_base<T>& value) const
+  {
+    return detail::domain_float_minmax_visitor_helper<domain_base<T>>{}(value);
+  }
+
+  OSSIA_INLINE return_type operator()(const vector_domain& value) const
+  {
+    return detail::domain_float_minmax_visitor_helper<vector_domain>{}(value);
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE return_type operator()(const vecf_domain<N>& value) const
+  {
+    return detail::domain_float_minmax_visitor_helper<vecf_domain<N>>{}(value);
+  }
+
+  template <typename... T>
+  OSSIA_INLINE return_type operator()(const T&...) const
+  {
+    return {};
+  }
+};
 struct domain_set_min_visitor
 {
   OSSIA_INLINE void operator()(domain_base<int32_t>& domain, int32_t incoming)
