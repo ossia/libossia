@@ -17,6 +17,7 @@ public:
   std::string label() const noexcept override;
 
   ossia::state data;
+  std::vector<ossia::control_message> controls;
 
 };
 }

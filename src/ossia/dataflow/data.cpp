@@ -1,6 +1,7 @@
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/apply.hpp>
 
 namespace ossia
 {
@@ -64,7 +65,7 @@ struct process_float_control_visitor
   void operator()(std::vector<ossia::value>& v) const noexcept
   {
     for(auto& value : v)
-      ossia::apply(*this, value);
+      value.apply(*this);
   }
 
   void operator()() const noexcept
@@ -87,7 +88,7 @@ void process_float_control(
     return;
 
   const float ratio = (dst_max - dst_min) / sub;
-  ossia::apply(process_float_control_visitor{src_min, dst_min, ratio}, v);
+  v.apply(process_float_control_visitor{src_min, dst_min, ratio});
 }
 
 void process_control_value(
