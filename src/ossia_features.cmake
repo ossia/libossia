@@ -251,20 +251,7 @@ if(OSSIA_DATAFLOW)
   elseif(TARGET portaudio)
     target_link_libraries(ossia PUBLIC portaudio)
   else()
-    # Needed because in Ubuntu the static package isn't built with -fPIC
-    if(PORTAUDIO_ONLY_DYNAMIC)
-      find_library(PORTAUDIO_LIBRARY
-        NAMES
-          portaudio
-        PATHS
-          /usr/local/lib)
-    else()
-      find_library(PORTAUDIO_LIBRARY
-        NAMES
-          portaudio_static libportaudio_static.a libportaudio.a portaudio
-        PATHS
-          /usr/local/lib)
-    endif()
+    find_library(PORTAUDIO_LIBRARY NAMES portaudio)
     if(PORTAUDIO_LIBRARY)
       target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
     endif()
