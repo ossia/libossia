@@ -44,17 +44,12 @@ struct scenario_graph
 
   scenario_graph(scenario& sc);
 
-  small_sync_vec get_roots() const;
-
   void add_vertice(scenario_graph_vertex timeSync);
   void add_edge(scenario_graph_edge itv);
   void remove_vertice(scenario_graph_vertex timeSync);
   void remove_edge(scenario_graph_edge itv);
 
   void reset_component(ossia::time_sync& sync) const;
-  ossia::small_vector<ossia::time_sync*, 4>
-  sibling_roots(const ossia::time_sync& sync) const;
-
 private:
   void recompute_maps();
   void update_components_cache() const;
@@ -102,7 +97,6 @@ public:
    \return #Container<#time_interval> */
   const ptr_container<time_interval>& get_time_intervals() const;
 
-private:
   friend struct scenario_graph;
   void offset_impl(ossia::time_value) override;
 
@@ -115,12 +109,14 @@ private:
 
   void transport_impl(ossia::time_value offset) override;
   void mute_impl(bool) override;
-  bool is_root_sync(ossia::time_sync& sync) const;
+
+  small_sync_vec get_roots() const noexcept;
 
   void reset_subgraph(
       const ptr_container<time_sync>&, const ptr_container<time_interval>&,
       time_sync& root);
 
+private:
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
                                     // (the first is the start node, the

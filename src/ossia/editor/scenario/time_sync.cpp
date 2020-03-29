@@ -10,6 +10,7 @@ namespace ossia
 time_sync::time_sync()
   : m_expression(expressions::make_expression_true())
   , m_status{status::NOT_DONE}
+  , m_start{}
   , m_observe{}
   , m_evaluating{}
   , m_muted{}
@@ -90,6 +91,16 @@ bool time_sync::is_autotrigger() const noexcept
 void time_sync::set_autotrigger(bool a) noexcept
 {
   m_autotrigger = a;
+}
+
+bool time_sync::is_start() const noexcept
+{
+  return m_start;
+}
+
+void time_sync::set_start(bool a) noexcept
+{
+  m_start = a;
 }
 
 bool time_sync::is_observing_expression() const noexcept

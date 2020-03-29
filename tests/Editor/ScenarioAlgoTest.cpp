@@ -49,9 +49,11 @@ auto start_event(ossia::scenario& s)
   auto sn = s.get_start_time_sync();
   return *sn->get_time_events().begin();
 }
-ossia::token_request default_request()
+ossia::token_request default_request(ossia::time_value from = {}, ossia::time_value to = {})
 {
   ossia::token_request req;
+  req.prev_date = from;
+  req.date = to;
   req.tempo = 120;
   req.speed = 1.;
   req.musical_start_last_bar = 0.;
@@ -1479,4 +1481,84 @@ TEST_CASE ("test_musical_eighth", "test_musical_eighth")
     REQUIRE(c1->node->requested_tokens == expected1);
     REQUIRE(e2->get_status() == time_event::status::PENDING);
   }
+}
+
+
+struct magic
+{
+    friend bool operator==(const magic&, ossia::time_value other) { return true; };
+};
+std::ostream& operator<<(std::ostream& s, const magic&) { return s; }
+TEST_CASE ("test_exec_chain_loop", "test_exec_chain_loop")
+{
+    /*
+    struct fake {
+
+        auto get_date()
+        {
+            return magic{};
+
+        }
+    };
+    auto c1 = std::make_shared<fake>();
+  */
+
+  using namespace ossia;
+
+  root_scenario s;
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> e0 = start_event(scenario);
+  std::shared_ptr<time_event> e1 = create_event(scenario);
+
+  std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e0, 10_tv, 10_tv, 10_tv);
+
+  s.scenario->add_time_interval(c0);
+  s.scenario->add_time_interval(c1);
+
+  auto print = [&] {
+      std::cerr << e0->get_status() << " "
+                << e1->get_status() << " -- "
+                << c0->get_date() << " "
+                << c1->get_date()
+                << std::endl;
+  } ;
+
+  scenario.start();
+  scenario.state(default_request(0_tv, 0_tv));
+
+  // +5
+  scenario.state(default_request(0_tv, 5_tv));
+  print();
+
+  REQUIRE(c0->get_date() == 5_tv);
+  REQUIRE(c1->get_date() == 0_tv);
+
+  // +10
+  scenario.state(default_request(5_tv, 15_tv));
+  print();
+
+  REQUIRE(c0->get_date() == 0_tv);
+  REQUIRE(c1->get_date() == 5_tv);
+
+  // +10
+  scenario.state(default_request(15_tv, 25_tv));
+  print();
+
+  REQUIRE(c0->get_date() == 5_tv);
+  REQUIRE(c1->get_date() == 0_tv);
+
+  // +10
+  scenario.state(default_request(25_tv, 35_tv));
+  print();
+
+  REQUIRE(c0->get_date() == 0_tv);
+  REQUIRE(c1->get_date() == 5_tv);
+
+  // +10
+  scenario.state(default_request(35_tv, 45_tv));
+  print();
+
+  REQUIRE(c0->get_date() == 5_tv);
+  REQUIRE(c1->get_date() == 0_tv);
 }

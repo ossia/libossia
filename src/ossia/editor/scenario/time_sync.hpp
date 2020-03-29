@@ -103,6 +103,10 @@ public:
   bool is_autotrigger() const noexcept;
   void set_autotrigger(bool) noexcept;
 
+  bool is_start() const noexcept;
+  void set_start(bool) noexcept;
+
+
   //! enable observation of the ossia::expression
   void observe_expression(bool);
   void observe_expression(bool, ossia::expressions::expression_result_callback cb);
@@ -177,9 +181,10 @@ private:
   optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = ossia::quarter_duration<double>;
+  double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME
   time_value m_trigger_date = Infinite;
   status m_status : 2;
+  bool m_start : 1;
   bool m_observe : 1;
   bool m_evaluating : 1;
   bool m_muted : 1;
