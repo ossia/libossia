@@ -94,7 +94,7 @@ void time_interval::tick_impl(
 
   state(old_date, new_date);
   if (m_callback)
-    (*m_callback)(new_date);
+    (*m_callback)(true, new_date);
 }
 
 void time_interval::tick_current(ossia::time_value offset, const ossia::token_request& parent_request)
@@ -216,7 +216,7 @@ void time_interval::start()
   m_date = m_offset;
 
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(true, m_date);
 }
 
 void time_interval::stop()
@@ -230,6 +230,8 @@ void time_interval::stop()
 
   m_date = Zero;
   m_running = false;
+  if (m_callback)
+    (*m_callback)(false, m_date);
 }
 
 void time_interval::offset(ossia::time_value date)
@@ -251,7 +253,7 @@ void time_interval::offset(ossia::time_value date)
     }
   }
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(m_running, m_date);
 }
 
 void time_interval::transport(time_value date)
@@ -273,7 +275,7 @@ void time_interval::transport(time_value date)
     }
   }
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(m_running, m_date);
 }
 
 void time_interval::state(ossia::time_value from, ossia::time_value to)
@@ -328,7 +330,7 @@ void time_interval::set_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_callback(
-    smallfun::function<void(time_value), 32> cb)
+    smallfun::function<void(bool, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
@@ -342,7 +344,7 @@ void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_stateless_callback(
-    smallfun::function<void(time_value), 32> cb)
+    smallfun::function<void(bool, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
