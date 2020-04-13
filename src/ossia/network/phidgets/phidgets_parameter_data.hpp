@@ -328,8 +328,6 @@ struct phidget_handle_t
         return "PHIDID_FIRMWARE_UPGRADE_SPI";
       case PHIDID_VCP1100:
         return "PHIDID_VCP1100";
-      case PHIDID_VINTSERVO_S2313M:
-        return "PHIDID_VINTSERVO_S2313M";
       case PHIDID_DCC1100:
         return "PHIDID_DCC1100";
       case PHIDID_HIN1101:
@@ -338,12 +336,6 @@ struct phidget_handle_t
         return "PHIDID_DCC1001";
       case PHIDID_DICTIONARY:
         return "PHIDID_DICTIONARY";
-      case PHIDID_VINTSERVO_S3317M:
-        return "PHIDID_VINTSERVO_S3317M";
-      case PHIDID_VINTSERVO_S4309M:
-        return "PHIDID_VINTSERVO_S4309M";
-      case PHIDID_VINTSERVO_S4309R:
-        return "PHIDID_VINTSERVO_S4309R";
       case PHIDID_STC1001:
         return "PHIDID_STC1001";
       case PHIDID_USBSWITCH:
@@ -520,8 +512,6 @@ struct phidget_handle_t
         return "LCD_TEXT";
       case PHIDCHSUBCLASS_ENCODER_MODE_SETTABLE:
         return "ENCODER_MODE_SETTABLE";
-      case PHIDCHSUBCLASS_RCSERVO_EMBEDDED:
-        return "RCSERVO_EMBEDDED";
     }
     return "none";
   }
