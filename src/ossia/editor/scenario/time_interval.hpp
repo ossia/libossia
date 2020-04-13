@@ -220,6 +220,7 @@ private:
 
   time_signature signature(time_value date, const ossia::token_request& parent_request) const noexcept;
   double tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
+  double tempo(time_value date) const noexcept;
 
   void tick_impl(
       ossia::time_value old_date, ossia::time_value new_date,

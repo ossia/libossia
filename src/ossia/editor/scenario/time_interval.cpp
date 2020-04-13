@@ -20,8 +20,7 @@ double time_interval::get_speed(time_value date) const noexcept
   }
   else
   {
-    auto t = m_tempoCurve.value_at(date.impl);
-    return m_speed * t / ossia::root_tempo;
+    return m_speed * tempo(date) / ossia::root_tempo;
   }
 }
 
@@ -117,8 +116,8 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset, const
     // we must find the equivalent constant tempo that would make us end at the exact same
     // date than a proper linear interpolation
     auto beat = date - m_date;
-    auto t0 = m_tempoCurve.value_at(m_date.impl);
-    auto ta = m_tempoCurve.value_at(date.impl);
+    auto t0 = tempo(m_date); // TODO check what it means if the tempo comes from outside
+    auto ta = tempo(date);
 
     // absolute tempo given : we negate the speed of the parent
     // todo : this should be done outside for the scenario
@@ -150,12 +149,20 @@ time_signature time_interval::signature(time_value date, const ossia::token_requ
   return parent_request.signature;
 }
 
+double time_interval::tempo(time_value date) const noexcept
+{
+  float t = static_cast<ossia::nodes::interval*>(node.get())->tempo;
+  if (t != ossia::nodes::interval::no_tempo)
+    return t;
+  return m_tempoCurve.value_at(date.impl);
+}
+
 double time_interval::tempo(time_value date, const ossia::token_request& parent_request) const noexcept
 {
   // TODO tempo should be hierarchic
   if(m_hasTempo)
   {
-    return m_tempoCurve.value_at(date.impl);
+    return tempo(date);
   }
   return parent_request.tempo;
 }
@@ -459,9 +466,18 @@ void time_interval::set_tempo_curve(optional<tempo_curve> curve)
 {
   m_hasTempo = bool(curve);
   if(m_hasTempo)
+  {
     m_tempoCurve = *std::move(curve);
+    auto n = static_cast<ossia::nodes::interval*>(node.get());
+    if(n->root_inputs().size() == 1)
+    {
+      n->root_inputs().push_back(new ossia::value_inlet{});
+    }
+  }
   else
+  {
     m_tempoCurve.reset();
+  }
 }
 
 void time_interval::set_time_signature_map(optional<time_signature_map> map)

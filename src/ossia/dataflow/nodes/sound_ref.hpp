@@ -146,6 +146,8 @@ public:
     ap.samples.resize(chan);
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
+    if(samples_to_read == 0)
+      return;
     if(samples_to_write == 0)
       return;
 
