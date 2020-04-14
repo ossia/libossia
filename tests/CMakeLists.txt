@@ -165,6 +165,8 @@ if(OSSIA_BENCHMARKS)
   ossia_add_bench(MappingDataBenchmark        "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/MappingDataBenchmark.cpp")
   ossia_add_bench(OverallBenchmark            "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/OverallBenchmark.cpp")
   ossia_add_bench(GraphBenchmark              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
+  ossia_add_bench(TBBBenchmark                "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TestTBB.cpp")
+  ossia_add_bench(CPPTFBenchmark              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TestCPPTF.cpp")
   ossia_add_bench(DeviceBenchmark             "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/Random.hpp")
   ossia_add_bench(DeviceBenchmark_Nsec_client "${CMAKE_CURRENT_SOURCE_DIR}/Benchmarks/DeviceBenchmark_Nsec_client.cpp")
