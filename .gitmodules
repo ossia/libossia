@@ -123,3 +123,6 @@
 [submodule "3rdparty/rnd"]
 	path = 3rdparty/rnd
 	url = https://github.com/jcelerier/rnd
+[submodule "3rdparty/cpp-taskflow"]
+	path = 3rdparty/cpp-taskflow
+	url = https://github.com/cpp-taskflow/cpp-taskflow

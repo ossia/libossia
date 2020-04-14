@@ -3,7 +3,7 @@
 #if defined(OSSIA_PARALLEL)
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
-
+/*
 #include <tbb/flow_graph.h>
 
 namespace ossia
@@ -142,7 +142,7 @@ struct parallel_exec
 using parallel_tc_graph
     = graph_static<parallel_update<tc_update<fast_tc>>, parallel_exec>;
 }
-
+*/
 #endif
 
 #if __has_include(<taskflow/taskflow.hpp>)
@@ -252,6 +252,6 @@ struct cpptf_exec
 };
 
 using cpptf_tc_graph
-    = graph_static<parallel_update<tc_update<fast_tc>>, parallel_exec>;
+    = graph_static<cpptf_update<tc_update<fast_tc>>, cpptf_exec>;
 }
 #endif
