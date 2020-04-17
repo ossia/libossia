@@ -316,7 +316,7 @@ void audio_protocol::process_generic(
   }
 
   //using idx_t = gsl::span<float>::index_type;
-  const uint64_t fc = frameCount;
+  const gsl::span<float>::size_type fc = frameCount;
 
   // Prepare virtual audio inputs
   for (auto virt : self.virtaudio)
