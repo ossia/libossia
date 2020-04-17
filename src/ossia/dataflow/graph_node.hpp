@@ -1,10 +1,18 @@
 #pragma once
+#include <cstdint>
+#if SIZE_MAX == 0xFFFFFFFF // 32-bit
+#include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
+#include <ossia/dataflow/midi_port.hpp>
+#endif
+
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+
 
 namespace ossia
 {

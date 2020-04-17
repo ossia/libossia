@@ -14,6 +14,7 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 #include <ossia/network/midi/detail/midi_impl.hpp>
+#include <ossia/dataflow/typed_value.hpp>
 
 namespace ossia
 {

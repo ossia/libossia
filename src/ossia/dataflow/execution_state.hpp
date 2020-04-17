@@ -14,6 +14,13 @@
 #include <rtmidi17/message.hpp>
 #endif
 
+#include <cstdint>
+#if SIZE_MAX == 0xFFFFFFFF // 32-bit
+#include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
+#include <ossia/dataflow/midi_port.hpp>
+#endif
+
 #include <smallfun.hpp>
 namespace ossia
 {
