@@ -16,7 +16,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       weakjack
       verdigris
       flat
-      cmake/cmake-modules
+      ../cmake/cmake-modules
       )
 
   if(OSSIA_DATAFLOW)
