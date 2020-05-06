@@ -49,6 +49,12 @@ constexpr void for_each_type(F f)
   (f.template operator()<Args>(), ...);
 }
 
+template <template <typename...> typename T, typename... Args, typename F>
+constexpr void for_each_type(T<Args...>, F f)
+{
+  (f.template operator()<Args>(), ...);
+}
+
 template <typename... Args, typename F>
 constexpr void for_each_type_tagged(F f)
 {

@@ -22,16 +22,29 @@ using physical_time = int64_t;
  */
 struct OSSIA_EXPORT time_value
 {
-  static const constexpr auto infinity = std::numeric_limits<int64_t>::max();
+  static const constexpr int64_t infinity = std::numeric_limits<int64_t>::max();
 
-  constexpr time_value& operator=(double d) noexcept
+  constexpr time_value& operator=(bool d) noexcept = delete;
+  constexpr time_value& operator=(double d) noexcept = delete;
+  constexpr time_value& operator=(float d) noexcept = delete;
+  constexpr time_value& operator=(uint64_t d) noexcept = delete;
+
+  constexpr time_value& operator=(int64_t d) noexcept
+  {
+    impl = d;
+    return *this;
+  }
+  constexpr time_value& operator=(int32_t d) noexcept
   {
     impl = d;
     return *this;
   }
 
   /*! self addition operator */
-  constexpr time_value& operator+=(double d) noexcept
+  constexpr time_value& operator+=(double d) noexcept = delete;
+  constexpr time_value& operator+=(float d) noexcept = delete;
+
+  constexpr time_value& operator+=(int64_t d) noexcept
   {
     if (infinite())
       impl = 0;
@@ -44,7 +57,7 @@ struct OSSIA_EXPORT time_value
   constexpr time_value& operator+=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
-      impl = 0;
+      impl = infinity;
     else
       impl += t.impl;
 
@@ -52,10 +65,11 @@ struct OSSIA_EXPORT time_value
   }
 
   /*! self substraction operator */
-  constexpr time_value& operator-=(double d) noexcept
+  constexpr time_value& operator-=(double d) noexcept = delete;
+  constexpr time_value& operator-=(int64_t d) noexcept
   {
     if (infinite())
-      impl = 0;
+      impl = infinity;
     else
       impl -= d;
 
@@ -65,9 +79,17 @@ struct OSSIA_EXPORT time_value
   constexpr time_value& operator-=(ossia::time_value t) noexcept
   {
     if (infinite() || t.infinite())
-      impl = 0;
+      impl = infinity;
     else
       impl -= t.impl;
+
+    return *this;
+  }
+
+  constexpr time_value& operator-() noexcept
+  {
+    if (!infinite())
+      impl = -impl;
 
     return *this;
   }
@@ -97,9 +119,7 @@ struct OSSIA_EXPORT time_value
   constexpr time_value operator+(ossia::time_value t) const noexcept
   {
     if (infinite() || t.infinite())
-    {
       return time_value{infinity};
-    }
 
     return time_value{impl + t.impl};
   }
@@ -113,9 +133,7 @@ struct OSSIA_EXPORT time_value
   constexpr time_value operator-(ossia::time_value t) const noexcept
   {
     if (infinite() || t.infinite())
-    {
       return time_value{infinity};
-    }
 
     return time_value{impl - t.impl};
   }
@@ -155,12 +173,6 @@ struct OSSIA_EXPORT time_value
   {
     return double(lhs.impl) / double(rhs.impl);
   }
-  /*
-  constexpr operator int64_t() const noexcept
-  {
-    return impl;
-  }
-  */
 
   /*! is the time value infinite ?
    \return bool infinite */

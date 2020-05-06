@@ -244,7 +244,7 @@ void for_each_in_tuples(T1<T1s...>&& t1, T2<T2s...>&& t2, F&& func)
 }
 
 template <class F>
-void for_each_in_tuples(const std::tuple<>& t1, const std::tuple<>& t2, const F& func)
+void for_each_in_tuples(const std::tuple<>& , const std::tuple<>& , const F& )
 {
 }
 
@@ -287,5 +287,14 @@ constexpr std::array<const char*, sizeof...(Args)>
 make_array(Args&&... args) noexcept
 {
   return {args...};
+}
+
+template<typename T>
+void remove_duplicates(T& vec) {
+  if(vec.size() <= 1)
+    return;
+
+  std::sort(vec.begin(), vec.end());
+  vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
 }

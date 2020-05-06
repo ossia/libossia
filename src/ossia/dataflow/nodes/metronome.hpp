@@ -30,7 +30,7 @@ public:
 
   void reset()
   {
-    m_metroPrevTick = {};
+    m_metroPrevTick = ossia::time_value{};
   }
 
 private:

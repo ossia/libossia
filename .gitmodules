@@ -99,9 +99,6 @@
 [submodule "3rdparty/wiiuse"]
 	path = 3rdparty/wiiuse
 	url = https://github.com/OSSIA/wiiuse.git
-[submodule "3rdparty/tbb"]
-	path = 3rdparty/tbb
-	url = https://github.com/jcelerier/tbb
 [submodule "3rdparty/dr_libs"]
 	path = 3rdparty/dr_libs
 	url = https://github.com/mackron/dr_libs
