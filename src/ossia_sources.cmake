@@ -548,6 +548,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/pulseaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/sdl_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
