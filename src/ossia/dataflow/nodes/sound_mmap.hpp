@@ -99,7 +99,7 @@ public:
     m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
   }
 
-  void fetch_audio(int64_t start, int64_t samples_to_write, double** audio_array) noexcept
+  void fetch_audio(int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
   {
     const int channels = this->channels();
     const int file_duration = this->duration();
@@ -107,6 +107,13 @@ public:
     m_resampleBuffer.resize(channels);
     for(auto& buf : m_resampleBuffer)
       buf.resize(samples_to_write);
+
+    float** audio_array = (float**)alloca(sizeof(float*) * channels);
+    for(int i = 0; i < channels; i++)
+    {
+      m_resampleBuffer[i].resize(samples_to_write);
+      audio_array[i] = m_resampleBuffer[i].data();
+    }
 
     ossia::mutable_audio_span<float> source(channels);
 
@@ -137,7 +144,7 @@ public:
         if(count >= 0)
         {
           for(int i = 0; i < channels; i++)
-            source[i] = gsl::span(m_resampleBuffer[i].data() + k, count);
+            source[i] = gsl::span(audio_array[i] + k, count);
           m_converter(source, frame_data, count);
         }
         else
@@ -151,27 +158,32 @@ public:
     {
       for(int i = 0; i < channels; i++)
       {
-        source[i] = gsl::span(m_resampleBuffer[i].data(), samples_to_write);
+        source[i] = gsl::span(audio_array[i], samples_to_write);
       }
 
-      const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
-      if(!ok)
+      bool ok = start + m_start_offset_samples < file_duration;
+      if(ok)
+        ok &= this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
+
+      if(ok)
+      {
+        const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
+        m_converter(source, frame_data, count);
+        for(int i = 0; i < channels; i++)
+          for(int k = count; k < samples_to_write; k++)
+            audio_array[i][k] = 0;
+      }
+      else
       {
         for(int i = 0; i < channels; i++)
           for(int k = 0; k < samples_to_write; k++)
             audio_array[i][k] = 0;
         return;
       }
-
-      const auto count = this->m_handle.read_pcm_frames(samples_to_write, frame_data);
-      m_converter(source, frame_data, count);
-      for(int i = 0; i < channels; i++)
-        for(int k = count; k < samples_to_write; k++)
-          audio_array[i][k] = 0;
     }
 
     for(int i = 0; i < channels; i++)
-      std::copy_n(m_resampleBuffer[i].data(), samples_to_write, audio_array[i]);
+      std::copy_n(audio_array[i], samples_to_write, audio_array_base[i]);
   }
 
   void fetch_audio(int64_t start, int64_t samples_to_write, float** audio_array) noexcept
