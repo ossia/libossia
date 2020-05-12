@@ -24,9 +24,6 @@ ossia::audio_engine* make_audio_engine(
   return new ossia::sdl_protocol{rate, bs};
 #endif
 
-
-  p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate,   bs};
-  return p;
   if (0)
   {
   }
