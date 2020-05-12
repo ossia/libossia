@@ -83,6 +83,19 @@ bool time_sync::is_evaluating() const noexcept
   return m_evaluating;
 }
 
+void time_sync::start_trigger_request() noexcept
+{
+  if(!trigger_request)
+  {
+    trigger_request = true;
+  }
+}
+
+void time_sync::end_trigger_request() noexcept
+{
+  trigger_request = false;
+}
+
 bool time_sync::is_autotrigger() const noexcept
 {
   return m_autotrigger;

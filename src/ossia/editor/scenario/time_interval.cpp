@@ -65,6 +65,7 @@ void time_interval::tick_impl(
       auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
+      m_musical_start_last_signature = time.impl / m_quarter_duration;
       m_musical_start_last_bar = (time.impl / m_quarter_duration + bars_since_last_measure_change);
       m_musical_start_position = num_quarters;
     }
@@ -84,6 +85,7 @@ void time_interval::tick_impl(
   }
   else
   {
+    m_musical_start_last_signature = parent_request.musical_start_last_signature;
     m_musical_start_last_bar = parent_request.musical_start_last_bar;
     m_musical_start_position = parent_request.musical_start_position;
     m_musical_end_last_bar = parent_request.musical_end_last_bar;
@@ -293,6 +295,7 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
   if (N > 0)
   {
     ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
+    tok.musical_start_last_signature = this->m_musical_start_last_signature;
     tok.musical_start_last_bar = this->m_musical_start_last_bar;
     tok.musical_start_position = this->m_musical_start_position;
     tok.musical_end_last_bar = this->m_musical_end_last_bar;

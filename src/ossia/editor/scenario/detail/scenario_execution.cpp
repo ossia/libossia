@@ -265,7 +265,7 @@ void scenario::state_impl(const ossia::token_request& tk)
       {
         n->observe_expression(true, [n](bool b) {
           if (b)
-            n->trigger_request = true;
+            n->start_trigger_request();
         });
       }
 

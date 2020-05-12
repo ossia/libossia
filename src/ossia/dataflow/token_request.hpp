@@ -198,13 +198,24 @@ struct token_request
       // Quantize relative to bars
       if(musical_end_last_bar != musical_start_last_bar)
       {
-        // There is a bar change in this tick
-        const double musical_bar_start = musical_end_last_bar - musical_start_position;
+        // 4 if we're in 4/4 for instance
+        const double musical_bar_duration = musical_end_last_bar - musical_start_last_bar;
 
-        const double ratio = musical_bar_start / musical_tick_duration;
-        const time_value dt = date - prev_date; // TODO should be tick_offset
+        // rate = 0.5 -> 2 bars at 3/4 -> 6 quarter notes
+        const double quantif_duration = musical_bar_duration / rate;
 
-        quantification_date = prev_date + dt * ratio;
+        // we must be on quarter note 6, 12, 18, ... from the previous signature
+        const double rem = std::fmod(musical_end_last_bar - musical_start_last_signature, quantif_duration);
+        if(rem < 0.0001)
+        {
+          // There is a bar change in this tick and it is when we are going to trigger
+          const double musical_bar_start = musical_end_last_bar - musical_start_position;
+
+          const double ratio = musical_bar_start / musical_tick_duration;
+          const time_value dt = date - prev_date; // TODO should be tick_offset
+
+          quantification_date = prev_date + dt * ratio;
+        }
       }
     }
     else
@@ -337,6 +348,7 @@ struct token_request
   double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
 
+  ossia::quarter_note musical_start_last_signature{}; // Position of the last bar signature change in quarter notes (at prev_date)
   ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in quarter notes (at prev_date)
   ossia::quarter_note musical_start_position{}; // Current position in quarter notes
   ossia::quarter_note musical_end_last_bar{}; // Position of the last bar start in quarter notes (at date)

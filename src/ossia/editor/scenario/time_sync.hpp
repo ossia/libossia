@@ -40,9 +40,6 @@ public:
   time_sync();
   ~time_sync();
 
-  /*! evaluate all #time_event's to make them to happen or to dispose them
- \return boolean true if the operation succeeded */
-  std::atomic_bool trigger_request{};
 
   /*! get the date
  \details the date is the sum of its previous #time_interval durations
@@ -93,6 +90,11 @@ public:
   bool is_observing_expression() const noexcept;
   bool is_evaluating() const noexcept;
 
+  /*! evaluate all #time_event's to make them to happen or to dispose them
+ \return boolean true if the operation succeeded */
+  void start_trigger_request() noexcept;
+  void end_trigger_request() noexcept;
+
   /**
    * Auto-trigger timesyncs are timesyncs which will
    * directly restart their following graph upon triggering.
@@ -130,6 +132,12 @@ public:
   //! Called when the time_sync starts evaluating
   callback_container<std::function<void()>> entered_evaluation;
 
+  //! Called when the time_sync has started triggering (e.g. was clicked)
+  callback_container<std::function<void()>> entered_triggering;
+
+  //! Called when we know at which date a trigger must execute due to quantification
+  callback_container<std::function<void(ossia::time_value)>> trigger_date_fixed;
+
   //! Called if the time_sync stops evaluating due to a changing duration
   callback_container<std::function<void()>> left_evaluation;
 
@@ -164,6 +172,7 @@ public:
   void set_trigger_date(time_value v) noexcept
   {
     m_trigger_date = v;
+    trigger_date_fixed.send(v);
   }
   time_value get_trigger_date() const noexcept
   {
@@ -174,6 +183,20 @@ public:
     return !m_trigger_date.infinite();
   }
 
+  void set_is_being_triggered(bool v) noexcept
+  {
+    if(m_is_being_triggered != v)
+    {
+      m_is_being_triggered = v;
+      if (v)
+        entered_triggering.send();
+    }
+  }
+  bool is_being_triggered() const noexcept
+  {
+    return m_is_being_triggered;
+  }
+
 private:
   ossia::expression_ptr m_expression;
   ptr_container<time_event> m_timeEvents;
@@ -182,6 +205,8 @@ private:
 
   double m_sync_rate = 0.;
   double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME
+
+  std::atomic_bool trigger_request{};
   time_value m_trigger_date = Infinite;
   status m_status : 2;
   bool m_start : 1;

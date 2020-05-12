@@ -246,6 +246,8 @@ private:
   time_signature_map m_timeSignature{};
   tempo_curve m_tempoCurve{};
 
+  ossia::quarter_note m_musical_start_last_signature{};
+
   ossia::quarter_note m_musical_start_last_bar{};
   ossia::quarter_note m_musical_start_position{};
 
