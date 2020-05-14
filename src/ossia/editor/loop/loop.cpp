@@ -425,7 +425,7 @@ continue_running:
     else
       m_interval.tick_offset(tick_amount, req.offset, req);
 
-    tick_amount = 0;
+    tick_amount = 0_tv;
 
     // Check if the end timesync can be triggered
     switch (m_endEvent.get_status())

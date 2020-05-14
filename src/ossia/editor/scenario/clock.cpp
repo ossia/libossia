@@ -42,7 +42,7 @@ void clock::start_and_tick()
   m_shouldStop = false;
 
   // set clock at a tick
-  m_date = 0;
+  m_date = 0_tv;
   m_lastTime = clock_type::now();
   m_elapsedTime = 0.;
 
@@ -67,7 +67,7 @@ void clock::stop()
 
   m_interval.stop();
 
-  m_date = 0;
+  m_date = 0_tv;
   m_lastTime = clock_type::time_point{};
   m_elapsedTime = 0;
 }
