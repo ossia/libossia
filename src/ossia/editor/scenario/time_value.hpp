@@ -29,7 +29,7 @@ struct OSSIA_EXPORT time_value
   constexpr time_value& operator=(float d) noexcept = delete;
   constexpr time_value& operator=(uint64_t d) noexcept = delete;
 
-#if !defined(_MSC_VER)
+#if !defined(_MSC_VER) && !defined(__APPLE__)
   // see https://gcc.godbolt.org/z/u9pQDv
   constexpr time_value& operator=(long long d) noexcept
   {
