@@ -1,26 +1,36 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general OSSIA dependencies :")
   set(OSSIA_SUBMODULES
-      GSL chobo-shl hopscotch-map
-      nano-signal-slot brigand whereami
-      rapidjson readerwriterqueue websocketpp
-      asio variant spdlog fmt
-      SmallFunction
-      Servus
+      asio
       bitset2
+      brigand
+      chobo-shl
       concurrentqueue
-      exprtk
-      flat_hash_map
-      multi_index
-      frozen
-      weakjack
-      verdigris
       flat
+      flat_hash_map
+      Flicks
+      fmt
+      frozen
+      GSL
+      hopscotch-map
+      multi_index
+      nano-signal-slot
+      rapidjson
+      readerwriterqueue
+      rnd
+      Servus
+      SmallFunction
+      spdlog
+      variant
+      verdigris
+      weakjack
+      websocketpp
+      whereami
       ../cmake/cmake-modules
-      )
+  )
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dr_libs rubberband libsamplerate cpp-taskflow)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate cpp-taskflow)
   endif()
 
   if(OSSIA_DNSSD)
