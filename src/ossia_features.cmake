@@ -146,7 +146,7 @@ if(OSSIA_PROTOCOL_LEAPMOTION)
 endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
-  find_package(SDL2)
+  find_package(SDL2 CONFIG)
   if(TARGET SDL2::SDL2-static)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
     target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
@@ -258,10 +258,19 @@ if(OSSIA_DATAFLOW)
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
-  find_package(SDL)
-  if(SDL_FOUND)
-    target_include_directories(ossia PUBLIC ${SDL_INCLUDE_DIR})
-    target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
+
+  find_package(SDL2 CONFIG)
+  if(TARGET SDL2::SDL2-static)
+    target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
+  elseif(TARGET SDL2::SDL2)
+    target_link_libraries(ossia PRIVATE SDL2::SDL2)
+  else()
+    # Used for audio support in emscripten
+    find_package(SDL)
+    if(SDL_FOUND)
+      target_include_directories(ossia PUBLIC ${SDL_INCLUDE_DIR})
+      target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
+    endif()
   endif()
 
 
