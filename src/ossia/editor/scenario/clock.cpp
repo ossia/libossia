@@ -200,13 +200,13 @@ time_value clock::get_granularity() const
 
 ossia::clock& clock::set_granularity(std::chrono::milliseconds granularity)
 {
-  m_granularity = granularity.count() * 1000;
+  m_granularity = int64_t(granularity.count() * 1000);
   return *this;
 }
 
 ossia::clock& clock::set_granularity(std::chrono::microseconds granularity)
 {
-  m_granularity = granularity.count();
+  m_granularity = int64_t(granularity.count());
   return *this;
 }
 
