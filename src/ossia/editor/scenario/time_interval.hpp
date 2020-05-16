@@ -205,6 +205,8 @@ public:
   void set_tempo_curve(optional<tempo_curve> curve);
   void set_time_signature_map(optional<time_signature_map> map);
   void set_quarter_duration(double tu);
+
+  bool graphal{};
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;

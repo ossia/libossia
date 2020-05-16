@@ -33,7 +33,8 @@ static void process_timesync_dates(time_sync& t, DateMap& map)
   {
     for (IntervalPtr& cst : ev->next_time_intervals())
     {
-      process_timesync_dates(cst->get_end_event().get_time_sync(), map);
+      if(!cst->graphal)
+        process_timesync_dates(cst->get_end_event().get_time_sync(), map);
     }
   }
 }
