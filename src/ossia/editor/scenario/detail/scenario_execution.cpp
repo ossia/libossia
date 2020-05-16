@@ -399,8 +399,11 @@ void scenario::state_impl(const ossia::token_request& tk)
         switch(status)
         {
           case sync_status::DONE:
+          {
+            node->set_is_being_triggered(false);
             m_retry_syncs.erase(node);
             break;
+          }
           case sync_status::NOT_READY:
             break;
           case sync_status::RETRY:

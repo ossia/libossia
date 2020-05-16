@@ -189,4 +189,21 @@ void time_sync::mute(bool m)
       e->mute(m);
   }
 }
+
+void time_sync::set_is_being_triggered(bool v) noexcept
+{
+  if(m_is_being_triggered != v)
+  {
+    m_is_being_triggered = v;
+    if (v)
+    {
+      entered_triggering.send();
+    }
+  }
+  if(!v)
+  {
+    m_trigger_date = Infinite;
+    trigger_request = false;
+  }
+}
 }

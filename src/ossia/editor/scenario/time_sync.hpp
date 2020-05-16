@@ -183,15 +183,7 @@ public:
     return !m_trigger_date.infinite();
   }
 
-  void set_is_being_triggered(bool v) noexcept
-  {
-    if(m_is_being_triggered != v)
-    {
-      m_is_being_triggered = v;
-      if (v)
-        entered_triggering.send();
-    }
-  }
+  void set_is_being_triggered(bool v) noexcept;
   bool is_being_triggered() const noexcept
   {
     return m_is_being_triggered;
