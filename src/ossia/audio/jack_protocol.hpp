@@ -190,9 +190,11 @@ public:
     stop_processing = false;
     stopped = false;
   }
+
   void stop() override
   {
     std::cerr << "=== STOPPED PROCESS ==" << std::endl;
+     set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
     if (this->protocol)
       this->protocol.load()->engine = nullptr;
     stop_processing = true;
@@ -223,12 +225,14 @@ private:
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
+    self.load_audio_tick();
+
     self.processing = true;
 
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
     auto proto = self.protocol.load();
-    if (self.stop_processing || !proto)
+    if (self.stop_processing || !proto || !self.audio_tick.allocated())
     {
       self.processing = false;
       return clearBuffers(self, nframes, outputs);
@@ -250,15 +254,7 @@ private:
     proto->process_generic(
           *proto, float_input, float_output, (int)inputs, (int)outputs,
           nframes);
-    proto->audio_tick(nframes, 0);
-
-    // Run a tick
-    if (proto->replace_tick)
-    {
-      proto->audio_tick = std::move(proto->ui_tick);
-      proto->ui_tick = {};
-      proto->replace_tick = false;
-    }
+    self.audio_tick(nframes, 0);
 
     self.processing = false;
     return 0;

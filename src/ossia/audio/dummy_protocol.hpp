@@ -38,6 +38,7 @@ public:
       int64_t ns_delta = 0;
       while (m_active)
       {
+        load_audio_tick();
         // TODO condition variables for the sleeping instead
         // linux : https://stackoverflow.com/questions/24051863/how-to-implement-highly-accurate-timers-in-linux-userspace
         // win : https://stackoverflow.com/a/13413019/1495627
@@ -45,7 +46,7 @@ public:
         // other: naive way
         std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         end = clk::now();
-        if (!stop_processing)
+        if (!stop_processing && audio_tick.allocated())
         {
           this->processing = true;
           if (auto proto = protocol.load())
@@ -60,15 +61,7 @@ public:
 
             int samples = std::ceil(double(effective_sample_rate) * ns / 1e9);
             proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
-            proto->audio_tick(effective_buffer_size, 0);
-
-            // Run a tick
-            if (proto->replace_tick)
-            {
-              proto->audio_tick = std::move(proto->ui_tick);
-              proto->ui_tick = {};
-              proto->replace_tick = false;
-            }
+            audio_tick(effective_buffer_size, 0);
           }
 
           this->processing = false;
@@ -114,6 +107,7 @@ public:
 
   void stop() override
   {
+    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
     stop_processing = true;
     while(processing)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));

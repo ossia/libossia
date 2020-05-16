@@ -361,23 +361,6 @@ public:
     m_mainloop = nullptr;
     m_api = nullptr;
     m_stream = nullptr;
-    /*
-    if (auto p = protocol.load())
-      p->engine = nullptr;
-
-    if (auto stream = m_stream.load())
-    {
-      auto ec = Pa_StopStream(stream);
-      std::cerr << "=== stream stop ===\n";
-
-      if (ec != PaErrorCode::paNoError)
-      {
-        std::cerr << "Error while stopping audio stream: "
-                  << Pa_GetErrorText(ec) << std::endl;
-      }
-    }
-    Pa_Terminate();
-    */
   }
 
   void reload(ossia::audio_protocol* p) override
@@ -401,6 +384,7 @@ public:
   {
     stop_processing = true;
     protocol = nullptr;
+    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
 
     while (processing)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -424,6 +408,8 @@ private:
   static void output_callback(pa_stream *stream, size_t requested_bytes, void *userdata)
   {
     auto& self = *static_cast<pulseaudio_engine*>(userdata);
+    self.load_audio_tick();
+
     auto &pa = libpulse::instance();
     size_t bytes_to_fill = requested_bytes;
     float *buffer = nullptr;
@@ -461,8 +447,6 @@ private:
     {
       self.processing = true;
 
-      auto &self = *static_cast<pulseaudio_engine *>(userdata);
-
       do {
         auto res = pa.pa_stream_begin_write(stream, (void **)&buffer, &bytes_to_fill);
         if (res != 0) {
@@ -488,22 +472,13 @@ private:
             proto->process_generic(
                   *proto, float_input, float_outputs, (int)self.m_ins, (int)self.m_outs,
                   size);
-            proto->audio_tick(size, usec); // TODO proper time units !
+            self.audio_tick(size, usec); // TODO proper time units !
 
             int k = 0;
             for(int i = 0; i < size; i ++)
             {
               float_output[k++] = float_outputs[0][i];
               float_output[k++] = float_outputs[1][i];
-            }
-
-
-            // Run a tick
-            if (proto->replace_tick)
-            {
-              proto->audio_tick = std::move(proto->ui_tick);
-              proto->ui_tick = {};
-              proto->replace_tick = false;
             }
           }
         }
@@ -522,14 +497,6 @@ private:
         requested_bytes -= bytes_to_fill;
         bytes_to_fill = requested_bytes;
       } while (requested_bytes > 0);
-
-
-      if (proto->replace_tick)
-      {
-        proto->audio_tick = std::move(proto->ui_tick);
-        proto->ui_tick = {};
-        proto->replace_tick = false;
-      }
       self.processing = false;
     }
   }

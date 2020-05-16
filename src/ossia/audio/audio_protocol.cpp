@@ -103,11 +103,28 @@ ossia::audio_engine* make_audio_engine(
 
 audio_protocol::audio_protocol()
 {
+}
+
+audio_engine::audio_engine()
+{
   audio_tick = [](auto&&...) {};
 }
 
 audio_engine::~audio_engine()
 {
+}
+
+void audio_engine::set_tick(audio_engine::fun_type&& t)
+{
+  tick_funlist.enqueue(std::move(t));
+}
+
+void audio_engine::load_audio_tick()
+{
+  while(tick_funlist.try_dequeue(audio_tick))
+  {
+
+  }
 }
 
 audio_protocol::~audio_protocol()
@@ -125,7 +142,6 @@ void audio_protocol::stop()
   {
     engine->stop();
   }
-  set_tick([](auto&&...) {});
 
   smallfun::function<void()> f;
   while (funlist.try_dequeue(f))
