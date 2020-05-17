@@ -2,6 +2,7 @@
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
+#include <ossia/network/common/complex_type.hpp>
 
 namespace ossia
 {
@@ -77,7 +78,7 @@ bool should_process_control(
     const value_port& source_port,
     const value_port& sink_port) noexcept
 {
-  return (source_port.domain && sink_port.domain) || source_port.tween_date;
+  return (source_port.domain && sink_port.domain) || (source_port.type && sink_port.type) || source_port.tween_date;
 }
 
 void process_float_control(
@@ -96,7 +97,12 @@ void process_control_value(
     const value_port& source_port,
     const value_port& sink_port) noexcept
 {
-  process_control_value(v, source_port.domain, sink_port.domain);
+  if(source_port.domain && sink_port.domain && source_port.type && sink_port.type)
+    process_control_value(v, source_port.domain, sink_port.domain, source_port.type, sink_port.type);
+  else if(source_port.type && sink_port.type)
+    process_control_value(v, source_port.type, sink_port.type);
+  else if(source_port.domain && sink_port.domain )
+    process_control_value(v, source_port.domain, sink_port.domain);
   if (source_port.tween_date)
   {
     // TODO
@@ -116,6 +122,27 @@ void process_control_value(
   {
     process_float_control(v, *src_min, *src_max, *tgt_min, *tgt_max);
   }
+}
+
+
+void process_control_value(
+    ossia::value& v,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept
+{
+  v = convert(v, source_type, sink_type);
+}
+
+void process_control_value(
+    ossia::value& v,
+    const ossia::domain& source_domain,
+    const ossia::domain& sink_domain,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type
+    ) noexcept
+{
+  process_control_value(v, source_type, sink_type);
+  process_control_value(v, source_domain, sink_domain); // TODO does that make sense
 }
 
 void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)

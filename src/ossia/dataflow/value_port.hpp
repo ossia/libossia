@@ -69,4 +69,16 @@ void process_control_value(
     ossia::value& v,
     const ossia::domain& source_domain,
     const ossia::domain& sink_domain) noexcept;
+OSSIA_EXPORT
+void process_control_value(
+    ossia::value& v,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept;
+OSSIA_EXPORT
+void process_control_value(
+    ossia::value& v,
+    const ossia::domain& source_domain,
+    const ossia::domain& sink_domain,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept;
 }
