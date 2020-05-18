@@ -2,6 +2,7 @@ include(Sanitize)
 include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
+include(StaticQt)
 
 if(OSSIA_MOST_STATIC)
     set(OSSIA_STATIC ON)

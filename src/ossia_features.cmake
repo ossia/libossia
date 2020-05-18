@@ -200,6 +200,7 @@ endif()
 
 if(OSSIA_QT)
   target_link_libraries(ossia PUBLIC Qt5::Core)
+  disable_qt_plugins(ossia)
   target_include_directories(ossia
     PRIVATE
       "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt>"
