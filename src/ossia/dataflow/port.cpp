@@ -187,6 +187,16 @@ audio_outlet::~audio_outlet()
 
 }
 
+texture_inlet::~texture_inlet()
+{
+
+}
+texture_outlet::~texture_outlet()
+{
+
+}
+
+
 void audio_outlet::post_process()
 {
   // TODO do that better in a sample accurate way
