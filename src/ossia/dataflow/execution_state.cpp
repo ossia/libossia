@@ -190,11 +190,16 @@ struct global_pull_node_visitor
 
 execution_state::~execution_state()
 {
+  for(auto dev : m_devices_exec)
+    dev->get_protocol().stop_execution();
 }
 
 void execution_state::clear_devices()
 {
   m_devices_edit.clear();
+
+  for(auto dev : m_devices_exec)
+    dev->get_protocol().stop_execution();
   m_devices_exec.clear();
 }
 
@@ -407,11 +412,13 @@ void execution_state::apply_device_changes()
     switch (op.operation)
     {
       case device_operation::REGISTER:
+        op.device->get_protocol().start_execution();
         m_devices_exec.push_back(op.device);
         m_valueQueues.emplace_back(*op.device);
         break;
       case device_operation::UNREGISTER:
       {
+        op.device->get_protocol().stop_execution();
         ossia::remove_erase(m_devices_exec, op.device);
         auto it = ossia::find_if(
             m_valueQueues, [&](auto& mq) { return &mq.device == op.device; });

@@ -144,7 +144,7 @@ void rate_limiting_protocol::set_logger(const network_logger& l)
   m_protocol->set_logger(l);
 }
 
-const network_logger&rate_limiting_protocol::get_logger() const
+const network_logger&rate_limiting_protocol::get_logger() const noexcept
 {
   return m_protocol->get_logger();
 }

@@ -31,7 +31,7 @@ private:
   bool update(ossia::net::node_base& node_base) override;
 
   void set_logger(const network_logger& l) override;
-  const network_logger& get_logger() const override;
+  const network_logger& get_logger() const noexcept override;
 
   void stop() override;
   void set_device(ossia::net::device_base& dev) override;
