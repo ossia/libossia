@@ -79,7 +79,7 @@ ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
       }
     }
   }
-  return ossia::none;
+  return std::nullopt;
 }
 
 void push_value(const ossia::outlet_ptr& p, ossia::value val) {

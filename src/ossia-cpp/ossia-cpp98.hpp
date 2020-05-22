@@ -530,7 +530,7 @@ struct OSSIA_EXPORT callback_index {
  * [Namespace using slashes for instances](https://ossia.github.io/images/NamespaceSlash.png)
  * [Namespace using dots for instances](https://ossia.github.io/images/NamespaceDot.png)
  * @ingroup CPP98API
- * @brief The node class holds all ossia nodes and their optional parameters
+ * @brief The node class holds all ossia nodes and their std::optional parameters
  * @see ossia::value
 */
 class OSSIA_EXPORT node
@@ -1446,7 +1446,7 @@ class OSSIA_EXPORT node
     bool get_repetition_filter() const;
 
     /**
-     * An optional value that says how often a value should be updated.
+     * An std::optional value that says how often a value should be updated.
      * @brief sets the refresh_rate attribute of this node's parameter
      * @param v an int with this node's parameter's refresh_rate value
      * @return a reference to this node
@@ -1464,7 +1464,7 @@ class OSSIA_EXPORT node
     int get_refresh_rate();
 
     /**
-     * An optional value that says by which increment a value should change, for instance in a value editor.
+     * An std::optional value that says by which increment a value should change, for instance in a value editor.
      * @brief sets the value_step_size attribute of this node's parameter
      * @param v the increment size
      * @return a reference to this node
@@ -1547,7 +1547,7 @@ class OSSIA_EXPORT node
 
 
     /**
-     * An optional textual description.
+     * An std::optional textual description.
      * @brief sets this node's description attribute
      * @param v a string with the textual description of this node
      * @return a reference to this node
@@ -1560,7 +1560,7 @@ class OSSIA_EXPORT node
     std::string get_description() const;
 
     /**
-     * An optional array of tags for nodes, expressed as one string per tag.
+     * An std::optional array of tags for nodes, expressed as one string per tag.
      * @brief sets his node's tags attribute
      * @param v a vector of strings with the desired tags of this node'
      * @return a reference to this node
@@ -1574,7 +1574,7 @@ class OSSIA_EXPORT node
 
     /**
      * For nodes that can have instantiatable children, this sets the minimum and maximum number of children that can exist.
-     * This is an optional attribute: it is not enforced and is only to be relied upon as a metadata.
+     * This is an std::optional attribute: it is not enforced and is only to be relied upon as a metadata.
      * @brief sets how many instances this node can have
      * @param min the minimum number of instances this node can have
      * @param max the maximum number of instances this node can have
@@ -1679,7 +1679,7 @@ class OSSIA_EXPORT oscquery_server
      */
     oscquery_server();
     /** A server can be created and directly exposed using the OSCQuery protocol
-     * by giving it a name and optional OSC and websocket port numbers.
+     * by giving it a name and std::optional OSC and websocket port numbers.
      * @brief declares and configures an OSCQuery server
      * @param name the name of the OSCQuery server
      * @param oscPort the OSC port to receive messages from (defaults to 1234)
@@ -1692,7 +1692,7 @@ class OSSIA_EXPORT oscquery_server
     ~oscquery_server();
     /**
      * When created without arguments, a server can be exposed using the OSCQuery protocol
-     * by giving it a name and optional OSC and websocket port numbers.
+     * by giving it a name and std::optional OSC and websocket port numbers.
      * @brief sets up an OSCQuery Server with the appropriate device name and ports
      * @param name the name of the OSCQuery server
      * @param oscPort the OSC port to receive messages from (defaults to 1234)

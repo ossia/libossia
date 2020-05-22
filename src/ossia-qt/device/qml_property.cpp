@@ -132,7 +132,7 @@ void qml_property::resetNode()
   // In case something went wrong...
   setPath({});
   m_param = nullptr;
-  m_callback = ossia::none;
+  m_callback = std::nullopt;
 }
 
 qml_val_type::val_type qml_property::valueType() const
@@ -321,7 +321,7 @@ void qml_property::setupAddress(bool reading)
   }
 
   m_param = nullptr;
-  m_callback = ossia::none;
+  m_callback = std::nullopt;
   if (m_ossia_node)
   {
     m_ossia_node->remove_parameter();

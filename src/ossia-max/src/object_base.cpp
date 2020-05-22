@@ -24,7 +24,7 @@ t_matcher::t_matcher(t_matcher&& other)
   other.owner = nullptr;
 
   callbackit = other.callbackit;
-  other.callbackit = ossia::none;
+  other.callbackit = std::nullopt;
 
   m_addr = other.m_addr;
   ossia::value v;
@@ -60,7 +60,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   other.owner = nullptr;
 
   callbackit = other.callbackit;
-  other.callbackit = ossia::none;
+  other.callbackit = std::nullopt;
 
   ossia::value v;
   while(other.m_queue_list.try_dequeue(v))
@@ -91,7 +91,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 }
 
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
-  node{n}, owner{p}, callbackit{ossia::none}
+  node{n}, owner{p}, callbackit{std::nullopt}
 {
   if (owner)
   {
@@ -238,7 +238,7 @@ void t_matcher::enqueue_value(ossia::value v)
   {
     auto x = (parameter_base*) owner;
 
-    if ( x->m_ounit == ossia::none )
+    if ( x->m_ounit == std::nullopt )
     {
       m_queue_list.enqueue(std::move(filtered));
     }
@@ -721,7 +721,7 @@ void object_base::select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* 
   }
   else
   {
-    x->m_selection_path = ossia::none;
+    x->m_selection_path = std::nullopt;
   }
 
   x->fill_selection();
@@ -746,7 +746,7 @@ void object_base::update_path()
   }
   else
   {
-    m_path = ossia::none;
+    m_path = std::nullopt;
   }
 }
 

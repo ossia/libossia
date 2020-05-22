@@ -140,7 +140,7 @@ public:
   }
 
 public:
-  optional<ossia::argb> tween;
+  std::optional<ossia::argb> tween;
 
 private:
   grad_type m_data;
@@ -155,7 +155,7 @@ public:
   using ossia::node_process::node_process;
   void start() override
   {
-    static_cast<gradient*>(node.get())->tween = ossia::none;
+    static_cast<gradient*>(node.get())->tween = std::nullopt;
   }
 };
 }

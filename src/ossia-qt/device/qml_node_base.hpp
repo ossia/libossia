@@ -158,7 +158,7 @@ protected:
   void clearNode(bool reading);
 
   ossia::net::parameter_base* m_param{};
-  ossia::optional<ossia::net::parameter_base::iterator> m_callback;
+  std::optional<ossia::net::parameter_base::iterator> m_callback;
 };
 }
 }

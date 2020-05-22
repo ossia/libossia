@@ -150,7 +150,7 @@ void time_sync::observe_expression(
       if (wasObserving && m_callback)
       {
         expressions::remove_callback(*m_expression, *m_callback);
-        m_callback = ossia::none;
+        m_callback = std::nullopt;
       }
     }
   }

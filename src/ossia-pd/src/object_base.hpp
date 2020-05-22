@@ -80,8 +80,8 @@ private:
   ossia::net::node_base* node{};
   object_base* owner{};
 
-  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-    callbackit = ossia::none;
+  std::optional<ossia::callback_container<ossia::value_callback>::iterator>
+    callbackit = std::nullopt;
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
@@ -120,7 +120,7 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<t_matcher> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
-  ossia::optional<ossia::traversal::path> m_selection_path{};
+  std::optional<ossia::traversal::path> m_selection_path{};
   std::vector<t_canvas*> m_patcher_hierarchy; // canvas hierarchy in ascending order
                                               // starting at current canvas
 
@@ -178,7 +178,7 @@ public:
 
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
 protected:
-  ossia::optional<ossia::traversal::path> m_path;
+  std::optional<ossia::traversal::path> m_path;
   std::map<std::string_view, ossia::value> m_value_map;
 };
 

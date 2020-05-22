@@ -63,7 +63,7 @@ public:
   /*! create and store a #time_event
  \param #Container<#time_event>::const_iterator where to store the #time_event
  \param #time_event::ExecutionCallback to get #time_event's status back
- \param expression_ptr an optional expression to apply to the
+ \param expression_ptr an std::optional expression to apply to the
  #time_event
  \return std::shared_ptr<#time_event> */
   iterator emplace(
@@ -193,7 +193,7 @@ private:
   ossia::expression_ptr m_expression;
   ptr_container<time_event> m_timeEvents;
 
-  optional<expressions::expression_callback_iterator> m_callback;
+  std::optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
   double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME

@@ -389,17 +389,17 @@ struct domain_set_min_visitor
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<int32_t>& domain, U&&...)
   {
-    domain.min = ossia::none;
+    domain.min = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<float>& domain, U&&...)
   {
-    domain.min = ossia::none;
+    domain.min = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<char>& domain, U&&...)
   {
-    domain.min = ossia::none;
+    domain.min = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
@@ -414,12 +414,12 @@ struct domain_set_min_visitor
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   {
     for (std::size_t i = 0; i < N; i++)
-      domain.min[i] = ossia::none;
+      domain.min[i] = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
   {
-    domain.min = ossia::none;
+    domain.min = std::nullopt;
   }
 
   template <typename T, typename... U>
@@ -470,17 +470,17 @@ struct domain_set_max_visitor
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<int32_t>& domain, U&&...)
   {
-    domain.max = ossia::none;
+    domain.max = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<float>& domain, U&&...)
   {
-    domain.max = ossia::none;
+    domain.max = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<char>& domain, U&&...)
   {
-    domain.max = ossia::none;
+    domain.max = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<bool>& domain, U&&...)
@@ -495,12 +495,12 @@ struct domain_set_max_visitor
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   {
     for (std::size_t i = 0; i < N; i++)
-      domain.max[i] = ossia::none;
+      domain.max[i] = std::nullopt;
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
   {
-    domain.max = ossia::none;
+    domain.max = std::nullopt;
   }
 
   template <typename T, typename... U>

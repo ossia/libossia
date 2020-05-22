@@ -164,7 +164,7 @@ public:
 
   /*! get initial point ordinate destination
  \return const Destination* */
-  ossia::optional<destination> get_y0_destination() const;
+  std::optional<destination> get_y0_destination() const;
 
   /*! set initial curve ordinate using a Destination
  \param const Destination* */
@@ -182,7 +182,7 @@ public:
 private:
   mutable X m_x0;
   mutable Y m_y0;
-  mutable ossia::optional<ossia::destination> m_y0_destination;
+  mutable std::optional<ossia::destination> m_y0_destination;
 
   mutable map_type m_points;
 
@@ -285,7 +285,7 @@ inline void curve<X, Y>::set_y0(Y value)
 }
 
 template <typename X, typename Y>
-inline ossia::optional<destination> curve<X, Y>::get_y0_destination() const
+inline std::optional<destination> curve<X, Y>::get_y0_destination() const
 {
   return m_y0_destination;
 }

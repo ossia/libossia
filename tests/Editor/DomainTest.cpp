@@ -182,17 +182,17 @@ void test_clamp_tuple(ossia::net::parameter_base& addr, T min, T max)
   push_tuple(addr, min, max);
 
   // no min
-  dom.min = ossia::none;
+  dom.min = std::nullopt;
   push_tuple(addr, min, max);
 
   // no max
   dom.min = min;
-  dom.max = ossia::none;
+  dom.max = std::nullopt;
   push_tuple(addr, min, max);
 
   // nothing
-  dom.min = ossia::none;
-  dom.max = ossia::none;
+  dom.min = std::nullopt;
+  dom.max = std::nullopt;
   push_tuple(addr, min, max);
 }
 

@@ -34,7 +34,7 @@ class qml_exec : public QObject
 
     QPointer<qml_interval> m_cur{};
     moodycamel::ReaderWriterQueue<std::function<void()>> m_queue;
-    optional<int> m_timer;
+    std::optional<int> m_timer;
     std::chrono::high_resolution_clock::time_point m_cur_t;
 
 };

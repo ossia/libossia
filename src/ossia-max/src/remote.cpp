@@ -176,7 +176,7 @@ void remote::set_unit()
     else
     {
       object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
-      m_ounit = ossia::none;
+      m_ounit = std::nullopt;
       m_unit = gensym("");
       return;
     }
@@ -192,7 +192,7 @@ void remote::set_unit()
           auto dst = ossia::get_pretty_unit_text(dst_unit);
           object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
                        src.data(), dst.data() );
-          m_ounit = ossia::none;
+          m_ounit = std::nullopt;
           m_unit = gensym("");
           break;
         } else {
@@ -203,7 +203,7 @@ void remote::set_unit()
     }
 
   } else {
-    m_ounit = ossia::none;
+    m_ounit = std::nullopt;
   }
 }
 

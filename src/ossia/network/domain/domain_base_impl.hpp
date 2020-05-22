@@ -35,8 +35,8 @@ template <typename T>
 struct OSSIA_EXPORT domain_base
 {
   using value_type = typename value_trait<T>::value_type;
-  ossia::optional<value_type> min;
-  ossia::optional<value_type> max;
+  std::optional<value_type> min;
+  std::optional<value_type> max;
   ossia::flat_set<value_type> values;
 
   domain_base() noexcept
@@ -184,7 +184,7 @@ struct OSSIA_EXPORT vector_domain
     return *this;
   }
 
-  vector_domain(ossia::none_t, ossia::none_t)
+  vector_domain(std::nullopt_t, std::nullopt_t)
   {
   }
 
@@ -224,8 +224,8 @@ template <std::size_t N>
 struct OSSIA_EXPORT vecf_domain
 {
   using value_type = std::array<float, N>;
-  std::array<optional<float>, N> min;
-  std::array<optional<float>, N> max;
+  std::array<std::optional<float>, N> min;
+  std::array<std::optional<float>, N> max;
   std::array<ossia::flat_set<float>, N> values;
 
   vecf_domain() noexcept
@@ -262,8 +262,8 @@ struct OSSIA_EXPORT vecf_domain
   }
 
   vecf_domain(
-      const std::array<optional<float>, N>& v1,
-      const std::array<optional<float>, N>& v2)
+      const std::array<std::optional<float>, N>& v1,
+      const std::array<std::optional<float>, N>& v2)
       : min{v1}, max{v2}
   {
   }
@@ -277,15 +277,15 @@ struct OSSIA_EXPORT vecf_domain
     }
   }
   vecf_domain(
-      const std::array<optional<float>, N>& v1,
-      const std::array<optional<float>, N>& v2,
+      const std::array<std::optional<float>, N>& v1,
+      const std::array<std::optional<float>, N>& v2,
       const std::array<ossia::flat_set<float>, N>& vals)
       : min{v1}, max{v2}, values{vals}
   {
   }
   vecf_domain(
-      const std::array<optional<float>, N>& v1,
-      const std::array<optional<float>, N>& v2,
+      const std::array<std::optional<float>, N>& v1,
+      const std::array<std::optional<float>, N>& v2,
       std::array<ossia::flat_set<float>, N>&& vals)
       : min{v1}, max{v2}, values{std::move(vals)}
   {
@@ -307,8 +307,8 @@ template <>
 struct OSSIA_EXPORT domain_base<ossia::value>
 {
   using value_type = ossia::value;
-  ossia::optional<value_type> min;
-  ossia::optional<value_type> max;
+  std::optional<value_type> min;
+  std::optional<value_type> max;
   ossia::flat_set<value_type> values;
 
   domain_base() noexcept

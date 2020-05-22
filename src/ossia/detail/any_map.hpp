@@ -54,10 +54,10 @@ auto get_attribute(const any_map& e, ossia::string_view name)
  *   std::cerr << "The description is: " << *desc << "\n";
  * \endcode
  *
- * The value will be an empty \ref optional if it is not found.
+ * The value will be an empty \ref std::optional if it is not found.
  */
 template <typename T>
-optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
+std::optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
 {
   auto it = e.find(name);
   if (it != e.cend())
@@ -67,7 +67,7 @@ optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
       return *val;
   }
 
-  return ossia::none;
+  return std::nullopt;
 }
 
 struct is_empty_value
@@ -152,7 +152,7 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
 
 //! Removes an attribute in an any_map
 inline OSSIA_EXPORT void
-set_attribute(any_map& e, ossia::string_view str, ossia::none_t)
+set_attribute(any_map& e, ossia::string_view str, std::nullopt_t)
 {
   unset_attribute(e, str);
 }
@@ -160,21 +160,21 @@ set_attribute(any_map& e, ossia::string_view str, ossia::none_t)
 //! Sets an attribute if opt has a value, else remove the attribute
 template <typename T>
 void set_optional_attribute(
-    any_map& e, ossia::string_view str, const optional<T>& opt)
+    any_map& e, ossia::string_view str, const std::optional<T>& opt)
 {
   if (opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *opt);
   else
-    set_attribute(e, str, ossia::none);
+    set_attribute(e, str, std::nullopt);
 }
 
 template <typename T>
 void set_optional_attribute(
-    any_map& e, ossia::string_view str, optional<T>&& opt)
+    any_map& e, ossia::string_view str, std::optional<T>&& opt)
 {
   if (opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *std::move(opt));
   else
-    set_attribute(e, str, ossia::none);
+    set_attribute(e, str, std::nullopt);
 }
 }

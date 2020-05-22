@@ -83,7 +83,7 @@ public:
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = optional<smallfun::function<void(bool, ossia::time_value), 32>>;
+      = std::optional<smallfun::function<void(bool, ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -202,8 +202,8 @@ public:
   void cleanup();
   void mute(bool);
 
-  void set_tempo_curve(optional<tempo_curve> curve);
-  void set_time_signature_map(optional<time_signature_map> map);
+  void set_tempo_curve(std::optional<tempo_curve> curve);
+  void set_time_signature_map(std::optional<time_signature_map> map);
   void set_quarter_duration(double tu);
 
   bool graphal{};

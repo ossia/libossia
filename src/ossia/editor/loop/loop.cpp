@@ -149,7 +149,7 @@ sync_status loop::trigger_quantified_time_sync(time_sync& sync, bool& maximalDur
 
     maximalDurationReached = true;
 
-    m_sync_date = ossia::none;
+    m_sync_date = std::nullopt;
 
     return sync_status::DONE;
   }
@@ -406,7 +406,7 @@ void loop::general_tick(
             {
               m_interval.tick_offset(*m_sync_date, req.offset, req);
               tick_amount -= *m_sync_date;
-              m_sync_date = ossia::none;
+              m_sync_date = std::nullopt;
 
               process_sync(m_endNode, req, m_endEvent, true, true);
 

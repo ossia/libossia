@@ -167,7 +167,7 @@ parameter_base::value(const std::vector<destination_index>& indices) const
   return t;
 }
 
-optional<ossia::value> parameter_base::get_default_value() const
+std::optional<ossia::value> parameter_base::get_default_value() const
 {
   return ossia::net::get_default_value(get_node());
 }

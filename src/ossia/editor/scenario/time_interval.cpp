@@ -465,7 +465,7 @@ void time_interval::mute(bool m)
   }
 }
 
-void time_interval::set_tempo_curve(optional<tempo_curve> curve)
+void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
 {
   m_hasTempo = bool(curve);
   if(m_hasTempo)
@@ -483,7 +483,7 @@ void time_interval::set_tempo_curve(optional<tempo_curve> curve)
   }
 }
 
-void time_interval::set_time_signature_map(optional<time_signature_map> map)
+void time_interval::set_time_signature_map(std::optional<time_signature_map> map)
 {
   m_hasSignature = bool(map);
   if(map)

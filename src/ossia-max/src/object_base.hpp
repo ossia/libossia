@@ -71,8 +71,8 @@ private:
   ossia::net::node_base* node{};
   object_base* owner{};
 
-  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-    callbackit = ossia::none;
+  std::optional<ossia::callback_container<ossia::value_callback>::iterator>
+    callbackit = std::nullopt;
 
   moodycamel::ConcurrentQueue<ossia::value> m_queue_list;
 
@@ -128,7 +128,7 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<std::shared_ptr<t_matcher>> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
-  ossia::optional<ossia::traversal::path> m_selection_path{};
+  std::optional<ossia::traversal::path> m_selection_path{};
 
   static void class_setup(t_class*c);
 
@@ -191,7 +191,7 @@ public:
   static void loadbang(object_base* x);
 
 protected:
-  ossia::optional<ossia::traversal::path> m_path;
+  std::optional<ossia::traversal::path> m_path;
   std::map<std::string, ossia::value> m_value_map;
 };
 

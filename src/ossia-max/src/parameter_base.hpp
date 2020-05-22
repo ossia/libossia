@@ -59,7 +59,7 @@ public:
   long m_enable{1};
   long m_critical{0};
   t_symbol* m_unit{};
-  ossia::optional<ossia::unit_t> m_ounit;
+  std::optional<ossia::unit_t> m_ounit;
 
   // size of size-variable attribute
   long m_default_size{};

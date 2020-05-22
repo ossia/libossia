@@ -14,7 +14,7 @@ namespace oscquery
 {
 //! Returns the OSC Typetag associated to an ossia node, if there is a value
 //! associated with it.
-OSSIA_EXPORT optional<std::string>
+OSSIA_EXPORT std::optional<std::string>
 get_osc_typetag(const ossia::net::node_base& n);
 
 //! Returns an object that tries to describe in the best way possible a typetag
