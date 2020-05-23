@@ -200,6 +200,7 @@ endif()
 
 if(OSSIA_QT)
   target_link_libraries(ossia PUBLIC Qt5::Core)
+
   disable_qt_plugins(ossia)
   target_include_directories(ossia
     PRIVATE
@@ -207,7 +208,7 @@ if(OSSIA_QT)
     PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/verdigris/src>
    )
- target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
 
   if(OSSIA_QML)
     qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
