@@ -41,9 +41,9 @@ int main()
 
   // find bitdepth and samplerateRatio nodes to fill the state
   parameter_base* bitdepthAddress{};
-  ossia::optional<message> bitdepthMessage;
+  std::optional<message> bitdepthMessage;
   parameter_base* samplerateAddress{};
-  ossia::optional<message> samplerateMessage;
+  std::optional<message> samplerateMessage;
 
   for (const auto& module : device.children())
   {

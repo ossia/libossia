@@ -113,10 +113,6 @@ struct test_loop
 }
 using namespace ossia;
 
-static void interval_callback(ossia::time_value date)
-{
-}
-
 static void event_callback(time_event::status newStatus)
 {
 }
@@ -125,7 +121,7 @@ static void event_callback(time_event::status newStatus)
 TEST_CASE ("test_basic", "test_basic")
 {
   //using namespace std::placeholders;
-  loop l(25._tv, ossia::time_interval::exec_callback{[] (auto&&... args) { interval_callback(args...); }}, event_callback, event_callback);
+  loop l(25._tv, ossia::time_interval::exec_callback{[] (auto&&... args) { }}, event_callback, event_callback);
 
   //! \todo test clone()
 }
@@ -305,7 +301,7 @@ TEST_CASE ("test_subloops_in_scenario", "test_subloops_in_scenario")
 
   std::vector<float> res(64, 0.);
   l.aparam->audio.resize(1);
-  l.aparam->audio[0] = {res.data(), (int64_t)res.size()};
+  l.aparam->audio[0] = {res.data(), res.size()};
   ossia::execution_state e;
   e.bufferSize = 14;
   l.g.state(e);
@@ -346,7 +342,7 @@ TEST_CASE ("test_subloops_in_scenario_1by1", "test_subloops_in_scenario_1by1")
   for(int64_t i = 1; i <= 14; i++) {
 
     float* chan = audio_data[0] + i - 1 ;
-    l.aparam->audio = {{chan, 64 - i}};
+    l.aparam->audio = {{chan, (std::size_t)(64 - i)}};
     l.parent.state(simple_token_request{ossia::time_value{i - 1}, ossia::time_value{i}});
     e.begin_tick();
     l.g.state(e);
@@ -419,7 +415,7 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
     tk.prev_date = 2000_tv;
     tk.date = 100000_tv;
     tk.parent_duration = 100000_tv;
-    tk.offset = {};
+    tk.offset = 0_tv;
     tk.tempo = 120;
     tk.speed = 1.;
     tk.musical_start_last_bar = 0.;
@@ -467,7 +463,7 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
     tk.prev_date = 102000_tv;
     tk.date = 200000_tv;
     tk.parent_duration = 100000_tv;
-    tk.offset = {};
+    tk.offset = 0_tv;
     tk.tempo = 120;
     tk.speed = 1.;
     tk.musical_start_last_bar = 4.;

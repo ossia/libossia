@@ -68,7 +68,7 @@ int main(int argc, char** argv)
   e.register_device(&audio.device);
 
   g.state(e);
-  audio.protocol.set_tick(tick_all_nodes{e, g});
+  audio.engine->set_tick(tick_all_nodes{e, g});
 
   std::this_thread::sleep_for(10s);
 }

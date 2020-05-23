@@ -10,10 +10,6 @@
 
 using namespace ossia;
 
-void interval_callback(ossia::time_value date)
-{
-}
-
 void event_callback(time_event::status newStatus)
 {
 }
@@ -27,7 +23,7 @@ TEST_CASE ("test_basic", "test_basic")
   auto end_node = std::make_shared<time_sync>();
   auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { interval_callback(args...); }}, *start_event, *end_event, 1000._tv);
+  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) {  }}, *start_event, *end_event, 1000._tv);
   ossia::clock c{*interval};
   REQUIRE(interval != nullptr);
 
@@ -72,7 +68,7 @@ TEST_CASE ("test_edition", "test_edition")
   auto end_node = std::make_shared<time_sync>();
   auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { interval_callback(args...); }}, *start_event, *end_event, 1000._tv);
+  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { }}, *start_event, *end_event, 1000._tv);
   auto scenar = std::make_unique<scenario>();
 
   auto scenar_ptr = scenar.get();
