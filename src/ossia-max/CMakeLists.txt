@@ -181,7 +181,7 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/extras"
         "${CMAKE_CURRENT_SOURCE_DIR}/media"
     DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}
+        "${OSSIA_MAX_INSTALL_FOLDER}"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -191,7 +191,7 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/package-info.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/icon.png"
     DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}
+        "${OSSIA_MAX_INSTALL_FOLDER}"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -200,11 +200,11 @@ install(
     TARGETS
         ${PROJECT_NAME}
     BUNDLE DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     RUNTIME DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     LIBRARY DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -213,11 +213,11 @@ install(
     TARGETS
         ${OSSIA_EXT_LIST}
     BUNDLE DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     RUNTIME DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     LIBRARY DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -255,7 +255,7 @@ if(OSSIA_MAX_TEST)
         FILES
           ${OSSIA_MAX_TEST_PATCHERS}
         DESTINATION
-          ${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests
+          "${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests"
         COMPONENT
           ${PROJECT_NAME}
           )
