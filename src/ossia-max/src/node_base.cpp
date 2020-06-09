@@ -94,9 +94,9 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
         auto json = ossia::presets::read_file(argv[0].a_w.w_sym->s_name);
         ossia::presets::preset preset;
 
-        if (!ossia::presets::apply_json(json, *node, trig_output_value))
+        if (!ossia::presets::apply_json(json, *node))
         {
-          ossia::presets::apply_preset(json, *node, trig_output_value);
+          ossia::presets::apply_preset(json, *node);
         }
 
         A_SETFLOAT(status+1, 1);
@@ -168,7 +168,6 @@ void node_base::push_default_value(node_base* x)
         if(val)
         {
           param->push_value(*val);
-          trig_output_value(child);
         }
       }
     }
@@ -199,9 +198,7 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
       {
         if (auto param = node->get_parameter())
         {
-
           param->push_value(v);
-          trig_output_value(node);
         }
       }
     }

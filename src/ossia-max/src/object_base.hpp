@@ -11,8 +11,6 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/common/path.hpp>
 
-#include <concurrentqueue.h>
-
 #include <map>
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
@@ -49,8 +47,7 @@ public:
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void enqueue_value(ossia::value v);
-  void output_value();
+  void output_value(ossia::value v);
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_parent() const { return owner; }
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
@@ -73,8 +70,6 @@ private:
 
   std::optional<ossia::callback_container<ossia::value_callback>::iterator>
     callbackit = std::nullopt;
-
-  moodycamel::ConcurrentQueue<ossia::value> m_queue_list;
 
   bool m_dead{}; // true when Max object is being deleted
   bool m_zombie{}; // true if node is deleted, t_matcher should be deleted asap

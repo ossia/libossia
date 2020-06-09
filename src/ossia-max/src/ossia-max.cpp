@@ -247,7 +247,6 @@ void ossia_max::register_nodes(ossia_max* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          bool trig = false;
           for(auto param : ossia_max::instance().parameters.reference())
           {
             for (auto& m : param->m_matchers)
@@ -259,40 +258,13 @@ void ossia_max::register_nodes(ossia_max* x)
                 if(ossia::contains(to_be_initialized,patcher))
                 {
                   child->get_parameter()->push_value(*val);
-                  trig = true;
                   break;
                 }
               }
             }
-            if(trig)
-              break;
-          }
-
-          if(trig)
-          {
-            trig_output_value(child);
           }
         }
       }
-    }
-  }
-}
-
-void ossia_max::poll_all_queues(ossia_max* x)
-{
-  for(auto param : ossia_max::instance().parameters.reference())
-  {
-    for (auto& m : param->m_matchers)
-    {
-      m->output_value();
-    }
-  }
-
-  for(auto remote : ossia_max::instance().remotes.reference())
-  {
-    for (auto& m : remote->m_matchers)
-    {
-      m->output_value();
     }
   }
 }

@@ -274,7 +274,6 @@ void parameter_base::push_default_value(parameter_base* x)
         if(it != x->m_value_map.end())
         {
           param->push_value(it->second);
-          trig_output_value(node);
         }
         else
         {
@@ -282,7 +281,6 @@ void parameter_base::push_default_value(parameter_base* x)
           if (def_val)
           {
             param->push_value(*def_val);
-            trig_output_value(node);
           }
         }
       }
@@ -822,11 +820,8 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     }
     else
     {
-      param->push_value(v);
-      if (set_flag)
-        m->m_set_pool.push_back(param->value());
+      param->set_value(v);
     }
-    trig_output_value(node);
   }
 }
 
@@ -841,7 +836,6 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     auto param = node->get_parameter();
     if (set_flag) m->m_set_pool.push_back(v);
     param->push_value(v);
-    trig_output_value(node);
   }
 }
 
@@ -941,45 +935,6 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         }
       }
       convert_or_push(x, std::move(list), set_flag);
-    }
-  }
-
-  // go through all matchers to fire the new value
-  for (auto node : x->m_node_selection)
-  {
-    // there should be only one param with that node
-    // so break asap
-    if (x->m_otype == object_class::param )
-    {
-      node->output_value();
-    }
-    else
-    {
-      for(auto param : ossia_max::instance().parameters.reference())
-      {
-        bool break_flag = false;
-
-        for (auto& m : param->m_matchers)
-        {
-          if ( *m == *node )
-          {
-            m->output_value();
-            break_flag = true;
-            break;
-          }
-          if (break_flag)
-            break;
-        }
-      }
-    }
-
-    for(auto remote : ossia_max::instance().remotes.reference())
-    {
-      for (auto& m : remote->m_matchers)
-      {
-        if ( *m == *node )
-          m->output_value();
-      }
     }
   }
 }
@@ -1090,25 +1045,21 @@ void parameter_base::bang(parameter_base* x)
       param->push_value(ossia::impulse{});
     else
     {
-      m->enqueue_value(param->value());
-      m->output_value();
+      m->output_value(param->value());
     }
   }
 }
 
+/*
 void parameter_base::output_value(parameter_base* x)
 {
-  for (auto& m : x->m_matchers)
-  {
-    m->output_value();
-  }
-
   auto it = std::remove_if(x->m_matchers.begin(), x->m_matchers.end(), [](const auto& m)
   {
     return m->is_zombie();
   });
   x->m_matchers.erase(it, x->m_matchers.end());
 }
+*/
 
 void parameter_base::in_float(parameter_base* x, double f)
 {
