@@ -46,7 +46,6 @@ ossia_max::ossia_max():
   m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
 #endif
 
-  m_timer_clock = clock_new(this, (method) ossia_max::poll_all_queues);
   browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
   clock_delay(ossia_max::browse_clock, 100.);
 
@@ -279,27 +278,6 @@ void ossia_max::register_nodes(ossia_max* x)
   }
 }
 
-void ossia_max::start_timers()
-{
-  auto& x = ossia_max::instance();
-  clock_set(x.m_timer_clock, 1);
-  x.m_clock_count++;
-}
-
-void ossia_max::stop_timers()
-{
-  auto& x = ossia_max::instance();
-  if( x.m_clock_count > 0 )
-  {
-    x.m_clock_count--;
-  }
-  else
-  {
-    std::cout << "stop poll timers" << std::endl;
-    clock_unset(x.m_timer_clock);
-  }
-}
-
 void ossia_max::poll_all_queues(ossia_max* x)
 {
   for(auto param : ossia_max::instance().parameters.reference())
@@ -317,8 +295,6 @@ void ossia_max::poll_all_queues(ossia_max* x)
       m->output_value();
     }
   }
-
-  clock_delay(x->m_timer_clock, 10); // TODO add method to change rate
 }
 
 namespace ossia
