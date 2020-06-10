@@ -372,9 +372,14 @@ struct domain_visitor {
     if(!d.values.empty())
     {
       x->m_range_size = d.values.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.values.size();
-      for (int i = 0; i < x->m_range_size; i++)
+      int i=0;
+      for(const auto& s : d.values.container)
       {
-        // SETSYM(x->m_range+i,gensym(d.values[i].c_str()));
+        auto sym = gensym(s.c_str());
+        A_SETSYM(x->m_range+i, sym);
+        i++;
+        if(i == x->m_range_size)
+          break;
       }
     }
   }
