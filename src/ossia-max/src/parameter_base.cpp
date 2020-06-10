@@ -320,8 +320,9 @@ void parameter_base::set_range()
         }
         param->set_domain(make_domain(senum));
       }
-      else if (   ( m_range[0].a_type == A_FLOAT || m_range[0].a_type == A_LONG )
-                  && ( m_range[1].a_type == A_FLOAT || m_range[1].a_type == A_LONG ) )
+      else if (  m_range_size > 1
+               && ( m_range[0].a_type == A_FLOAT || m_range[0].a_type == A_LONG )
+               && ( m_range[1].a_type == A_FLOAT || m_range[1].a_type == A_LONG ) )
       {
         float fmin = atom_getfloat(m_range);
         float fmax = atom_getfloat(m_range+1);
