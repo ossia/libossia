@@ -445,8 +445,8 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
   }
 }
 
-t_max_err object_base::notify(object_base *x, t_symbol *s,
-                       t_symbol *msg, void *sender, void *data)
+t_max_err object_base::notify(object_base *x, t_symbol*,
+                       t_symbol *msg, void*, void *data)
 {
   t_symbol *attrname;
 

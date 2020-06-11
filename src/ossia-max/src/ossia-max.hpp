@@ -89,6 +89,8 @@ public:
   static void register_nodes(ossia_max* x);
   static void poll_all_queues(ossia_max* x);
   static void discover_network_devices(ossia_max* x);
+  static void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
+  static void set_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
 
   template<typename T>
   t_class* get_class() {
@@ -178,6 +180,8 @@ public:
 private:
   ossia_max();
   ~ossia_max();
+
+  static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 
   ossia::net::local_protocol* m_localProtocol{};
   ossia::net::generic_device m_device;

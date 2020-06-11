@@ -15,7 +15,7 @@ namespace ossia
 namespace max
 {
 
-void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
+void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
   switch (x->m_otype)
@@ -167,7 +167,7 @@ void node_base::push_default_value(node_base* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          param->push_value(*val);
+          ossia_max::push_parameter_value(param, *val);
         }
       }
     }
@@ -183,7 +183,7 @@ void node_base::class_setup(t_class* c)
   class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
 }
 
-void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
+void node_base::set(node_base* x, t_symbol*, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYM)
   {
@@ -198,7 +198,7 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
       {
         if (auto param = node->get_parameter())
         {
-          param->push_value(v);
+          ossia_max::push_parameter_value(param, v);
         }
       }
     }

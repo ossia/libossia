@@ -273,14 +273,14 @@ void parameter_base::push_default_value(parameter_base* x)
         auto it = x->m_value_map.find(node->get_name());
         if(it != x->m_value_map.end())
         {
-          param->push_value(it->second);
+          ossia_max::push_parameter_value(param, it->second);
         }
         else
         {
           auto def_val = ossia::net::get_default_value(*node);
           if (def_val)
           {
-            param->push_value(*def_val);
+            ossia_max::push_parameter_value(param, *def_val);
           }
         }
       }
@@ -816,11 +816,11 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
-      param->push_value(converted);
+      ossia_max::push_parameter_value(param, converted);
     }
     else
     {
-      param->set_value(v);
+      ossia_max::set_parameter_value(param, v);
     }
   }
 }
@@ -834,7 +834,10 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
-    param->push_value(v);
+    if(set_flag)
+      ossia_max::set_parameter_value(param, v);
+    else
+      ossia_max::push_parameter_value(param, v);
   }
 }
 
@@ -998,7 +1001,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       } else
         vv = v;
 
-      param->push_value(std::move(vv));
+      ossia_max::push_parameter_value(param, std::move(vv));
     }
     else
     {
@@ -1028,7 +1031,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
 
       ossia::convert(list, src_unit, dst_unit);
 
-      param->push_value(std::move(list));
+      ossia_max::push_parameter_value(param, std::move(list));
     }
 
   }
@@ -1041,7 +1044,9 @@ void parameter_base::bang(parameter_base* x)
     auto param = m->get_node()->get_parameter();
 
     if (param->get_value_type() == ossia::val_type::IMPULSE)
-      param->push_value(ossia::impulse{});
+    {
+      ossia_max::push_parameter_value(param, ossia::impulse{});
+    }
     else
     {
       m->output_value(param->value());

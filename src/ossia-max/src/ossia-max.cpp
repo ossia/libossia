@@ -21,6 +21,7 @@ using namespace ossia::max;
 void* ossia_max::browse_clock;
 ZeroconfOscqueryListener ossia_max::zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_max::zeroconf_minuit_listener;
+ossia::safe_set<ossia::net::parameter_base*> ossia_max::param_locks;
 
 // ossia-max library constructor
 ossia_max::ossia_max():
@@ -124,7 +125,7 @@ std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
   return list;
 }
 
-void ossia_max::register_nodes(ossia_max* x)
+void ossia_max::register_nodes(ossia_max*)
 {
   auto& inst = ossia_max::instance();
 
@@ -257,7 +258,7 @@ void ossia_max::register_nodes(ossia_max* x)
                 auto patcher = op->m_patcher_hierarchy.back();
                 if(ossia::contains(to_be_initialized,patcher))
                 {
-                  child->get_parameter()->push_value(*val);
+                  ossia_max::push_parameter_value(child->get_parameter(), *val);
                   break;
                 }
               }
@@ -480,11 +481,31 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
   return tags;
 }
 
-void ossia_max::discover_network_devices(ossia_max* x)
+void ossia_max::discover_network_devices(ossia_max*)
 {
   ossia_max::zeroconf_oscq_listener.browse();
   ossia_max::zeroconf_minuit_listener.browse();
   clock_delay(ossia_max::browse_clock, 100.);
+}
+
+void ossia_max::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val)
+{
+  if(!param_locks.contains(param))
+  {
+    param_locks.push_back(param);
+    param->push_value(val);
+    param_locks.remove_all(param);
+  }
+}
+
+void ossia_max::set_parameter_value(ossia::net::parameter_base* param, const ossia::value& val)
+{
+  if(!param_locks.contains(param))
+  {
+    param_locks.push_back(param);
+    param->set_value(val);
+    param_locks.remove_all(param);
+  }
 }
 
 } // max namespace
