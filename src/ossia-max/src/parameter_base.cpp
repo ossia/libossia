@@ -816,7 +816,6 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
-      if (set_flag) m->m_set_pool.push_back(converted);
       param->push_value(converted);
     }
     else
@@ -835,7 +834,6 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
-    if (set_flag) m->m_set_pool.push_back(v);
     param->push_value(v);
   }
 }

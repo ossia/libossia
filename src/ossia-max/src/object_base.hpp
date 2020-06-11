@@ -62,8 +62,6 @@ public:
   bool is_locked() const { return m_lock; }
   bool is_dead() const { return m_dead; }
 
-  std::vector<ossia::value> m_set_pool;
-
 private:
   ossia::net::node_base* node{};
   object_base* owner{};
