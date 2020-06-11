@@ -243,6 +243,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507-dynamic_registering_under_device_object.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
 
         ${CMAKE_CURRENT_LIST_DIR}/max-test/default-sometimes_broken.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/subpatcher_for_503.maxpat
