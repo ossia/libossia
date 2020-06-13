@@ -85,7 +85,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR 72)
+set(BOOST_MINOR 73)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
