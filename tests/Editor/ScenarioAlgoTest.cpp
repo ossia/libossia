@@ -77,7 +77,7 @@ TEST_CASE ("test_exec_simple", "test_exec_simple")
   s.scenario->add_time_interval(c);
 
   s.interval->start_and_tick();
-  REQUIRE(se->get_status() == time_event::status::HAPPENED);
+  REQUIRE(se->get_status() == time_event::status::NONE);
   REQUIRE(c->get_date() == 0_tv);
 
   s.interval->tick(1000_tv, default_request());
@@ -89,14 +89,34 @@ TEST_CASE ("test_exec_simple", "test_exec_simple")
   s.interval->tick(1_tv, default_request()); // The interval is stopped
 
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::HAPPENED);
+  REQUIRE(c->get_end_event().get_status() == time_event::status::NONE);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::HAPPENED);
+  REQUIRE(c->get_end_event().get_status() == time_event::status::NONE);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::HAPPENED);
+  REQUIRE(c->get_end_event().get_status() == time_event::status::NONE);
 }
+TEST_CASE ("test_exec_0", "test_exec_0")
+{
+  using namespace ossia;
+  root_scenario s;
+
+  ossia::scenario& scenario = *s.scenario;
+  std::shared_ptr<time_event> se = start_event(scenario);
+  std::shared_ptr<time_event> ee = create_event(scenario);
+
+  std::shared_ptr<time_interval> c = time_interval::create({}, *se, *ee, 0_tv, 0_tv, 0_tv);
+  s.scenario->add_time_interval(c);
+
+  s.interval->start_and_tick();
+  REQUIRE(se->get_status() == time_event::status::NONE);
+  REQUIRE(c->get_date() == 0_tv);
+
+  s.interval->tick(1000_tv, default_request());
+  REQUIRE(c->get_date() == 0_tv);
+}
+
 
 TEST_CASE ("test_exec_chain_long", "test_exec_chain_long")
 {
@@ -271,7 +291,7 @@ TEST_CASE ("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
              << e4->get_status();
 
     REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(e1->get_status() == time_event::status::HAPPENED);
+    REQUIRE(e1->get_status() == time_event::status::NONE);
 
     REQUIRE(c1->get_date() == 0_tv);
     REQUIRE(e2->get_status() == time_event::status::NONE);
@@ -291,7 +311,7 @@ TEST_CASE ("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
              << e4->get_status();
 
     REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(e1->get_status() == time_event::status::HAPPENED);
+    REQUIRE(e1->get_status() == time_event::status::NONE);
 
     REQUIRE(c1->get_date() == 5_tv);
     REQUIRE(e2->get_status() == time_event::status::PENDING);
