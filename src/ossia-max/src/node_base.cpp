@@ -167,7 +167,7 @@ void node_base::push_default_value(node_base* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          ossia_max::push_parameter_value(param, *val);
+          x->push_parameter_value(param, *val, false);
         }
       }
     }
@@ -198,7 +198,7 @@ void node_base::set(node_base* x, t_symbol*, int argc, t_atom* argv)
       {
         if (auto param = node->get_parameter())
         {
-          ossia_max::push_parameter_value(param, v);
+          x->push_parameter_value(param, v, false);
         }
       }
     }

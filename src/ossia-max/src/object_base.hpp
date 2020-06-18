@@ -182,10 +182,14 @@ public:
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
+  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
+  std::vector<ossia::value> m_set_pool;
 
 protected:
   std::optional<ossia::traversal::path> m_path;
   std::map<std::string, ossia::value> m_value_map;
+
+  static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 };
 
 #pragma mark -

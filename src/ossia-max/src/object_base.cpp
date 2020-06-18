@@ -3,6 +3,7 @@
 #include <ossia-max/src/object_base.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/preset/preset.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
@@ -12,6 +13,8 @@ namespace ossia
 {
 namespace max
 {
+
+ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 
 #pragma mark t_matcher
 
@@ -237,6 +240,13 @@ void t_matcher::output_value(ossia::value v)
     else
     {
       val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit);
+    }
+
+    auto it = find(owner->m_set_pool, val);
+    if (it != owner->m_set_pool.end())
+    {
+      owner->m_set_pool.erase(it);
+      return;
     }
 
     if(owner->m_dumpout)
@@ -688,6 +698,19 @@ void object_base::lock_and_touch(object_base* x, t_symbol* s)
   x->m_lock = true;
   object_attr_touch((t_object*)x, s);
   x->m_lock = false;
+}
+
+void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag)
+{
+  if(!param_locks.contains(param))
+  {
+    param_locks.push_back(param);
+    if(set_flag)
+      m_set_pool.push_back(ossia::convert(val, param->get_value_type()));
+
+    param->push_value(val);
+    param_locks.remove_all(param);
+  }
 }
 
 void object_base::update_path()

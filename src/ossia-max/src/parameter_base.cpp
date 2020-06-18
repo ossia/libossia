@@ -273,14 +273,14 @@ void parameter_base::push_default_value(parameter_base* x)
         auto it = x->m_value_map.find(node->get_name());
         if(it != x->m_value_map.end())
         {
-          ossia_max::push_parameter_value(param, it->second);
+          x->push_parameter_value(param, it->second, false);
         }
         else
         {
           auto def_val = ossia::net::get_default_value(*node);
           if (def_val)
           {
-            ossia_max::push_parameter_value(param, *def_val);
+            x->push_parameter_value(param, *def_val, false);
           }
         }
       }
@@ -816,11 +816,11 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
-      ossia_max::push_parameter_value(param, converted);
+      x->push_parameter_value(param, converted, set_flag);
     }
     else
     {
-      ossia_max::set_parameter_value(param, v);
+      x->push_parameter_value(param, v, set_flag);
     }
   }
 }
@@ -834,10 +834,7 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
-    if(set_flag)
-      ossia_max::set_parameter_value(param, v);
-    else
-      ossia_max::push_parameter_value(param, v);
+    x->push_parameter_value(param, v, set_flag);
   }
 }
 
@@ -1001,7 +998,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       } else
         vv = v;
 
-      ossia_max::push_parameter_value(param, std::move(vv));
+      x->push_parameter_value(param, std::move(vv), false);
     }
     else
     {
@@ -1031,7 +1028,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
 
       ossia::convert(list, src_unit, dst_unit);
 
-      ossia_max::push_parameter_value(param, std::move(list));
+      x->push_parameter_value(param, std::move(list), false);
     }
 
   }
@@ -1045,7 +1042,7 @@ void parameter_base::bang(parameter_base* x)
 
     if (param->get_value_type() == ossia::val_type::IMPULSE)
     {
-      ossia_max::push_parameter_value(param, ossia::impulse{});
+      x->push_parameter_value(param, ossia::impulse{}, false);
     }
     else
     {
