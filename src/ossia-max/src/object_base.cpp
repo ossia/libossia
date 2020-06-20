@@ -234,7 +234,8 @@ void t_matcher::enqueue_value(ossia::value v)
         std::move(v),
         param->get_bounding());
 
-  if(!param->filter_value(filtered))
+  // FIXME filter_value return false but an invalid filtered value
+  if(!param->filter_value(filtered) && filtered.valid())
   {
     auto x = (parameter_base*) owner;
 
