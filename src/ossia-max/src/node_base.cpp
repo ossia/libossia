@@ -15,7 +15,7 @@ namespace ossia
 namespace max
 {
 
-void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
+void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 {
   ossia::net::node_base* node{};
   switch (x->m_otype)
@@ -94,9 +94,9 @@ void node_base::preset(node_base *x, t_symbol*s, long argc, t_atom* argv)
         auto json = ossia::presets::read_file(argv[0].a_w.w_sym->s_name);
         ossia::presets::preset preset;
 
-        if (!ossia::presets::apply_json(json, *node, trig_output_value))
+        if (!ossia::presets::apply_json(json, *node))
         {
-          ossia::presets::apply_preset(json, *node, trig_output_value);
+          ossia::presets::apply_preset(json, *node);
         }
 
         A_SETFLOAT(status+1, 1);
@@ -167,8 +167,7 @@ void node_base::push_default_value(node_base* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          param->push_value(*val);
-          trig_output_value(child);
+          x->push_parameter_value(param, *val, false);
         }
       }
     }
@@ -184,7 +183,7 @@ void node_base::class_setup(t_class* c)
   class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
 }
 
-void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
+void node_base::set(node_base* x, t_symbol*, int argc, t_atom* argv)
 {
   if (argc > 0 && argv[0].a_type == A_SYM)
   {
@@ -199,9 +198,7 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
       {
         if (auto param = node->get_parameter())
         {
-
-          param->push_value(v);
-          trig_output_value(node);
+          x->push_parameter_value(param, v, false);
         }
       }
     }

@@ -3,6 +3,7 @@
 #include <ossia-max/src/object_base.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/preset/preset.hpp>
+#include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
@@ -12,6 +13,8 @@ namespace ossia
 {
 namespace max
 {
+
+ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 
 #pragma mark t_matcher
 
@@ -27,10 +30,6 @@ t_matcher::t_matcher(t_matcher&& other)
   other.callbackit = std::nullopt;
 
   m_addr = other.m_addr;
-  ossia::value v;
-  while(other.m_queue_list.try_dequeue(v))
-    m_queue_list.enqueue(v);
-
   m_dead = other.m_dead;
 
   if(node && !m_dead)
@@ -43,7 +42,7 @@ t_matcher::t_matcher(t_matcher&& other)
       if (owner)
       {
         callbackit = param->add_callback(
-              [=] (const ossia::value& v) { enqueue_value(v); });
+              [=] (const ossia::value& v) { output_value(v); });
 
         set_parent_addr();
       }
@@ -62,12 +61,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   callbackit = other.callbackit;
   other.callbackit = std::nullopt;
 
-  ossia::value v;
-  while(other.m_queue_list.try_dequeue(v))
-    m_queue_list.enqueue(std::move(v));
-
   m_addr = other.m_addr;
-
   m_dead = other.m_dead;
 
   if(node && !m_dead)
@@ -80,7 +74,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
       if (owner && !owner->m_is_deleted)
       {
         callbackit = param->add_callback(
-              [=] (const ossia::value& v) { enqueue_value(v); });
+              [=] (const ossia::value& v) { output_value(v); });
 
         set_parent_addr();
       }
@@ -97,7 +91,7 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
   {
     if (auto param = node->get_parameter())
       callbackit = param->add_callback(
-            [=](const ossia::value& v) { enqueue_value(v); });
+            [=](const ossia::value& v) { output_value(v); });
 
     node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
   }
@@ -226,7 +220,7 @@ t_matcher::~t_matcher()
   }
 }
 
-void t_matcher::enqueue_value(ossia::value v)
+void t_matcher::output_value(ossia::value v)
 {
   auto param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
@@ -239,57 +233,29 @@ void t_matcher::enqueue_value(ossia::value v)
   {
     auto x = (parameter_base*) owner;
 
+    ossia::value val;
     if ( x->m_ounit == std::nullopt )
     {
-      m_queue_list.enqueue(std::move(filtered));
+      val = std::move(filtered);
     }
     else
     {
-      m_queue_list.enqueue(ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit));
+      val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit);
     }
-    if(m_queue_list.size_approx() > owner->m_queue_length)
+
+    auto it = find(owner->m_set_pool, val);
+    if (it != owner->m_set_pool.end())
     {
-      ossia::value val;
-      m_queue_list.try_dequeue(val);
+      owner->m_set_pool.erase(it);
+      return;
     }
-  }
-}
 
-void t_matcher::output_value()
-{
-  if(owner && !m_lock)
-  {
-    m_lock=true;
-    // std::lock_guard<std::mutex> lock(owner->m_bind_mutex);
-    ossia::value val;
-    while(m_queue_list.try_dequeue(val))
-    {
-      bool break_flag = false;
+    if(owner->m_dumpout)
+      outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
 
-      if(   owner->m_otype == object_class::param
-         || owner->m_otype == object_class::remote )
-      {
-        for (const auto& v : m_set_pool)
-        {
-          if (v == val){
-            break_flag = true;
-            ossia::remove_one(m_set_pool, v);
-            break;
-          }
-        }
-      }
-
-      if( break_flag )
-        continue;
-
-      if(owner->m_dumpout)
-        outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
-
-      value_visitor<object_base> vm;
-      vm.x = (object_base*)owner;
-      val.apply(vm);
-    }
-    m_lock=false;
+    value_visitor<object_base> vm;
+    vm.x = (object_base*)owner;
+    val.apply(vm);
   }
 }
 
@@ -490,8 +456,8 @@ void object_base::update_attribute(object_base* x, ossia::string_view attribute,
   }
 }
 
-t_max_err object_base::notify(object_base *x, t_symbol *s,
-                       t_symbol *msg, void *sender, void *data)
+t_max_err object_base::notify(object_base *x, t_symbol*,
+                       t_symbol *msg, void*, void *data)
 {
   t_symbol *attrname;
 
@@ -733,6 +699,19 @@ void object_base::lock_and_touch(object_base* x, t_symbol* s)
   x->m_lock = true;
   object_attr_touch((t_object*)x, s);
   x->m_lock = false;
+}
+
+void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag)
+{
+  if(!param_locks.contains(param))
+  {
+    param_locks.push_back(param);
+    if(set_flag)
+      m_set_pool.push_back(ossia::convert(val, param->get_value_type()));
+
+    param->push_value(val);
+    param_locks.remove_all(param);
+  }
 }
 
 void object_base::update_path()

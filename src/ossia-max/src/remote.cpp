@@ -196,8 +196,7 @@ void remote::set_unit()
           m_unit = gensym("");
           break;
         } else {
-          m->enqueue_value(m->get_node()->get_parameter()->value());
-          m->output_value();
+          m->output_value(m->get_node()->get_parameter()->value());
         }
       }
     }
@@ -342,8 +341,7 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
         auto v = n->get_parameter()->value();
         if(v.valid())
         {
-            m->enqueue_value(v);
-            m->output_value();
+            m->output_value(v);
         }
       }
     }

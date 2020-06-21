@@ -374,7 +374,6 @@ void client::connect(client* x)
     outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
 
     x->connect_slots();
-    ossia_max::instance().start_timers();
     client::update(x);
     clock_unset(x->m_clock);
   }
@@ -461,7 +460,6 @@ void client::disconnect(client* x)
       delete x->m_device;
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
-    ossia_max::instance().stop_timers();
   }
   clock_unset(x->m_clock); // avoid automatic reconnection
 }

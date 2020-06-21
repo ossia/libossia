@@ -181,7 +181,7 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/extras"
         "${CMAKE_CURRENT_SOURCE_DIR}/media"
     DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}
+        "${OSSIA_MAX_INSTALL_FOLDER}"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -191,7 +191,7 @@ install(
         "${CMAKE_CURRENT_BINARY_DIR}/package-info.json"
         "${CMAKE_CURRENT_SOURCE_DIR}/icon.png"
     DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}
+        "${OSSIA_MAX_INSTALL_FOLDER}"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -200,11 +200,11 @@ install(
     TARGETS
         ${PROJECT_NAME}
     BUNDLE DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     RUNTIME DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     LIBRARY DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/support
+        "${OSSIA_MAX_INSTALL_FOLDER}/support"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -213,11 +213,11 @@ install(
     TARGETS
         ${OSSIA_EXT_LIST}
     BUNDLE DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     RUNTIME DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     LIBRARY DESTINATION
-        ${OSSIA_MAX_INSTALL_FOLDER}/externals
+        "${OSSIA_MAX_INSTALL_FOLDER}/externals"
     COMPONENT
         ${PROJECT_NAME}
 )
@@ -243,7 +243,11 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507-dynamic_registering_under_device_object.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/559-ghost_doublon.maxtest.maxpat
 
+        # test dependencies
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/559-master_subpatcher.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/default-sometimes_broken.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/subpatcher_for_503.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/model-test-for-369.maxpat
@@ -256,7 +260,7 @@ if(OSSIA_MAX_TEST)
         FILES
           ${OSSIA_MAX_TEST_PATCHERS}
         DESTINATION
-          ${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests
+          "${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests"
         COMPONENT
           ${PROJECT_NAME}
           )
