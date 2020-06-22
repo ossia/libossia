@@ -76,8 +76,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
     if (x->m_name == _sym_nothing)
     {
-      object_error((t_object*)x, "needs a name as first argument");
-      x->m_name = gensym("untitledParameter");
       return x;
     }
 
