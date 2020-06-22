@@ -176,7 +176,7 @@ void remote::set_unit()
     else
     {
       object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
-      m_ounit = ossia::none;
+      m_ounit = std::nullopt;
       m_unit = gensym("");
       return;
     }
@@ -192,18 +192,17 @@ void remote::set_unit()
           auto dst = ossia::get_pretty_unit_text(dst_unit);
           object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
                        src.data(), dst.data() );
-          m_ounit = ossia::none;
+          m_ounit = std::nullopt;
           m_unit = gensym("");
           break;
         } else {
-          m->enqueue_value(m->get_node()->get_parameter()->value());
-          m->output_value();
+          m->output_value(m->get_node()->get_parameter()->value());
         }
       }
     }
 
   } else {
-    m_ounit = ossia::none;
+    m_ounit = std::nullopt;
   }
 }
 
@@ -342,8 +341,7 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
         auto v = n->get_parameter()->value();
         if(v.valid())
         {
-            m->enqueue_value(v);
-            m->output_value();
+            m->output_value(v);
         }
       }
     }

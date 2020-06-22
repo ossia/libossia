@@ -1,10 +1,18 @@
 #pragma once
+#include <cstdint>
+#if SIZE_MAX == 0xFFFFFFFF // 32-bit
+#include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
+#include <ossia/dataflow/midi_port.hpp>
+#endif
+
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+
 
 namespace ossia
 {
@@ -56,6 +64,7 @@ public:
 };
 */
 
+class audio_parameter;
 struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state& impl;
@@ -72,7 +81,7 @@ struct OSSIA_EXPORT exec_state_facade
 
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);
-  void insert(ossia::net::parameter_base& dest, const audio_port& v);
+  void insert(ossia::audio_parameter& dest, const audio_port& v);
   void insert(ossia::net::parameter_base& dest, const midi_port& v);
   void insert(const ossia::state& v);
 };

@@ -83,7 +83,7 @@ public:
    \param const #TimeValue date
    \param std::shared_ptr<#State> */
   using exec_callback
-      = optional<smallfun::function<void(ossia::time_value), 32>>;
+      = std::optional<smallfun::function<void(bool, ossia::time_value), 32>>;
 
   /*! constructor
    \details by default a #time_interval has an infinite duration with no
@@ -137,12 +137,12 @@ public:
     step
     */
   void set_callback(exec_callback);
-  void set_callback(smallfun::function<void(ossia::time_value), 32>);
+  void set_callback(smallfun::function<void(bool, ossia::time_value), 32>);
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
   void set_stateless_callback(
-      smallfun::function<void(ossia::time_value), 32>);
+      smallfun::function<void(bool, ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
@@ -198,12 +198,15 @@ public:
     return m_processes;
   }
 
+  bool running() const noexcept { return m_running; }
   void cleanup();
   void mute(bool);
 
-  void set_tempo_curve(optional<tempo_curve> curve);
-  void set_time_signature_map(optional<time_signature_map> map);
+  void set_tempo_curve(std::optional<tempo_curve> curve);
+  void set_time_signature_map(std::optional<time_signature_map> map);
   void set_quarter_duration(double tu);
+
+  bool graphal{};
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;
@@ -219,6 +222,7 @@ private:
 
   time_signature signature(time_value date, const ossia::token_request& parent_request) const noexcept;
   double tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
+  double tempo(time_value date) const noexcept;
 
   void tick_impl(
       ossia::time_value old_date, ossia::time_value new_date,
@@ -243,6 +247,8 @@ private:
 
   time_signature_map m_timeSignature{};
   tempo_curve m_tempoCurve{};
+
+  ossia::quarter_note m_musical_start_last_signature{};
 
   ossia::quarter_note m_musical_start_last_bar{};
   ossia::quarter_note m_musical_start_position{};

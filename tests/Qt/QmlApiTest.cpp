@@ -19,6 +19,7 @@
 #include <QQmlEngine>
 #include <QTimer>
 #include <QQmlComponent>
+#include <QCoreApplication>
 #include <ossia-qt/device/qml_logger.hpp>
 
 static int n = 0;

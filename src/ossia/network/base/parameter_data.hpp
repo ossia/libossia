@@ -33,13 +33,13 @@ struct parameter_data
   std::string name;
   ossia::value value;
   ossia::complex_type type;
-  ossia::optional<ossia::domain> domain;
-  ossia::optional<ossia::access_mode> access;
-  ossia::optional<ossia::bounding_mode> bounding;
-  ossia::optional<ossia::repetition_filter> rep_filter;
-  ossia::optional<bool> disabled{};
-  ossia::optional<bool> muted{};
-  ossia::optional<bool> critical{};
+  std::optional<ossia::domain> domain;
+  std::optional<ossia::access_mode> access;
+  std::optional<ossia::bounding_mode> bounding;
+  std::optional<ossia::repetition_filter> rep_filter;
+  std::optional<bool> disabled{};
+  std::optional<bool> muted{};
+  std::optional<bool> critical{};
   unit_t unit;
 
   extended_attributes extended;

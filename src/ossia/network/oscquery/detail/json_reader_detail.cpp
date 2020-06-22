@@ -585,8 +585,8 @@ static void create_or_update_parameter_type(
 
   // Try to read all the attributes that could give us the concrete type.
   complex_type val_type;                                 // Implementation type
-  optional<ossia::unit_t> unit = ossia::none;            // Unit
-  optional<ossia::extended_type> ext_type = ossia::none; // Extended type
+  std::optional<ossia::unit_t> unit = std::nullopt;            // Unit
+  std::optional<ossia::extended_type> ext_type = std::nullopt; // Extended type
 
   // Look for the typetag
   auto type_it = obj.FindMember(detail::attribute_typetag());
@@ -714,8 +714,8 @@ void json_parser_impl::readParameter(
 
   // Try to read all the attributes that could give us the concrete type.
   complex_type val_type;                                 // Implementation type
-  optional<ossia::unit_t> unit = ossia::none;            // Unit
-  optional<ossia::extended_type> ext_type = ossia::none; // Extended type
+  std::optional<ossia::unit_t> unit = std::nullopt;            // Unit
+  std::optional<ossia::extended_type> ext_type = std::nullopt; // Extended type
 
   // TODO maybe read all the attributes and store their iterators, then do
   // them in the order we want ?
@@ -1097,7 +1097,7 @@ void json_parser::parse_parameter_value(
 }
 
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
-static optional<std::pair<std::string, std::string>>
+static std::optional<std::pair<std::string, std::string>>
 splitParentChild(ossia::string_view s)
 {
   auto last_slash_pos = s.rfind('/');
@@ -1107,7 +1107,7 @@ splitParentChild(ossia::string_view s)
         std::string{s.substr(0, last_slash_pos)},
         std::string{s.substr(last_slash_pos + 1)});
   }
-  return ossia::none;
+  return std::nullopt;
 }
 
 void json_parser::parse_path_added(

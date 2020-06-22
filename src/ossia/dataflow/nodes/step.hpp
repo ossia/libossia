@@ -25,12 +25,10 @@ public:
     if (t.forward())
     {
       auto& port = *m_outlets[0]->target<ossia::value_port>();
-
       const int64_t d = dur.impl * e.samplesToModel();
-      int64_t quo = std::floor(double(t.prev_date.impl) / d);
+      int64_t quo = std::floor(double(t.date.impl) / d);
       int64_t prev_step = d * quo;
-      prev_step += d;
-      quo++;
+
       while(t.in_range(time_value{prev_step}))
       {
         port.write_value(

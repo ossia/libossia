@@ -3,6 +3,8 @@
 #include <ossia/dataflow/typed_value.hpp>
 #include <ossia/dataflow/value_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+#include <optional>
 
 namespace ossia
 {
@@ -46,9 +48,9 @@ struct OSSIA_EXPORT value_port
   value_vector<ossia::timed_value>& get_data();
 
   ossia::domain domain;
-  ossia::bounding_mode bounding{};
   ossia::complex_type type;
   ossia::destination_index index;
+  std::optional<ossia::time_value> tween_date;
 
   bool is_event{};
   data_mix_method mix_method{};
@@ -61,4 +63,22 @@ struct value_delay_line
 {
   std::vector<value_vector<ossia::typed_value>> data;
 };
+
+OSSIA_EXPORT
+void process_control_value(
+    ossia::value& v,
+    const ossia::domain& source_domain,
+    const ossia::domain& sink_domain) noexcept;
+OSSIA_EXPORT
+void process_control_value(
+    ossia::value& v,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept;
+OSSIA_EXPORT
+void process_control_value(
+    ossia::value& v,
+    const ossia::domain& source_domain,
+    const ossia::domain& sink_domain,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept;
 }

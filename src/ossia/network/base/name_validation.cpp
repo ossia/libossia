@@ -65,7 +65,7 @@ sanitize_name(std::string name, const std::vector<std::string>& brethren)
 {
   sanitize_name(name);
   bool is_here = false;
-  ossia::optional<int> name_instance;
+  std::optional<int> name_instance;
   ossia::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 
@@ -145,7 +145,7 @@ void sanitize_name(
 {
   sanitize_name(name);
   bool is_here = false;
-  ossia::optional<int> name_instance;
+  std::optional<int> name_instance;
   ossia::small_vector<int, 16> instance_num;
   instance_num.reserve(brethren.size());
 

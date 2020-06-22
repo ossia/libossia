@@ -454,7 +454,7 @@ inline QString value_to_js_string(const ossia::value& cur)
  * C++ enum.
  */
 template <typename T>
-ossia::optional<T> get_enum(const QJSValue& val)
+std::optional<T> get_enum(const QJSValue& val)
 {
   if (val.isNumber())
   {

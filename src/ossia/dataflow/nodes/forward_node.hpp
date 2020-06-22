@@ -50,6 +50,7 @@ public:
     //   o->messages = i->messages;
     // }
   }
+
   ossia::audio_inlet audio_in;
   // ossia::midi_inlet midi_in;
   ossia::audio_outlet audio_out;
@@ -60,10 +61,35 @@ class interval final : public forward_node
 {
 public:
   using forward_node::forward_node;
+
+  ~interval()
+  {
+    if(m_inlets.size() == 2)
+    {
+      delete m_inlets.back();
+      m_inlets.resize(1);
+    }
+  }
   std::string label() const noexcept override
   {
     return "Interval";
   }
+
+  void run(const token_request& t, exec_state_facade f) noexcept override
+  {
+    forward_node::run(t, f);
+    if(m_inlets.size() == 2)
+    {
+      ossia::value_port& vp = *m_inlets[1]->target<ossia::value_port>();
+      if(auto& data = vp.get_data(); !data.empty())
+      {
+        tempo = ossia::convert<float>(data.back().value);
+      }
+    }
+  }
+
+  static const constexpr float no_tempo = -1000.f;
+  float tempo{no_tempo};
 };
 class loop final : public forward_node
 {

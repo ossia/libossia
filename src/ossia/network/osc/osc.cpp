@@ -25,7 +25,7 @@ using sender_t = osc::sender<osc_outbound_visitor>;
 
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port,
-    ossia::optional<std::string> expose)
+    std::optional<std::string> expose)
     : m_ip{std::move(ip)}
     , m_remote_port{remote_port}
     , m_local_port{local_port}

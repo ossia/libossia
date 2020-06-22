@@ -57,7 +57,7 @@ struct pod_allocator
 
   static inline T* allocate(std::size_t num) noexcept
   {
-    static_assert(std::is_pod_v<T>, "can only be used with POD types");
+    static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "can only be used with POD types");
     static_assert(
         alignof(T) <= alignof(std::max_align_t),
         "type must not have specific alignment requirements");

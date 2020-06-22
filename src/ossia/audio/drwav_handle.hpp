@@ -66,7 +66,9 @@ public:
       drwav_read_proc onRead,
       drwav_seek_proc onSeek,
       void* pReadSeekUserData,
-      const drwav_chunk_header* pChunkHeader) noexcept
+      const drwav_chunk_header* pChunkHeader,
+      drwav_container container,
+      const drwav_fmt* pFMT) noexcept
   {
     drwav_handle& self = *(drwav_handle*)pChunkUserData;
     auto& cc = pChunkHeader->id.fourcc;

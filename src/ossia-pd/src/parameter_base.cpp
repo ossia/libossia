@@ -573,7 +573,7 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
 }
 
 template<std::size_t N>
-ossia::optional<std::array<float, N>> to_array(t_atom* argv)
+std::optional<std::array<float, N>> to_array(t_atom* argv)
 {
   std::array<float, N> arr;
   for(std::size_t i = 0; i < N; i++)
@@ -584,7 +584,7 @@ ossia::optional<std::array<float, N>> to_array(t_atom* argv)
         arr[i] = atom_getfloat(&argv[i]);
         break;
       default:
-        return ossia::none;
+        return std::nullopt;
     }
   }
   return arr;
@@ -598,7 +598,7 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
     auto param = node->get_parameter();
     auto xparam = (parameter_base*)m->get_owner();
 
-    if ( xparam->m_ounit != ossia::none )
+    if ( xparam->m_ounit != std::nullopt )
     {
       const auto& src_unit = *xparam->m_ounit;
       const auto& dst_unit = param->get_unit();

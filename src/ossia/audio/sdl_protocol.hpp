@@ -53,6 +53,7 @@ public:
   {
     stop_processing = true;
     protocol = nullptr;
+    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
 
     while (processing)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -80,6 +81,7 @@ private:
   static void SDLCallback(void* userData, Uint8* data, int nframes)
   {
     auto& self = *static_cast<sdl_protocol*>(userData);
+    self.load_audio_tick();
     auto samples = reinterpret_cast<int16_t*>(data);
 
     const auto n_samples = nframes / self.outputs;
@@ -116,15 +118,7 @@ private:
       proto->process_generic(
           *proto, nullptr, float_output, (int)self.inputs, (int)self.outputs,
           nframes / self.outputs);
-      proto->audio_tick(nframes / self.outputs, 0);
-
-      // Run a tick
-      if (proto->replace_tick)
-      {
-        proto->audio_tick = std::move(proto->ui_tick);
-        proto->ui_tick = {};
-        proto->replace_tick = false;
-      }
+      self.audio_tick(nframes / self.outputs, 0);
 
       self.processing = false;
     }

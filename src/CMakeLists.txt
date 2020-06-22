@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.9)
+cmake_minimum_required(VERSION 3.17)
 
 project(libossia CXX)
 
@@ -11,8 +11,6 @@ set(WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
-
-include(cotire)
 
 if(APPLE)
   set(CMAKE_INSTALL_NAME_DIR @rpath)
@@ -100,8 +98,9 @@ message(STATUS "OSSIA - C: ${OSSIA_C}")
 message(STATUS "OSSIA - CPP: ${OSSIA_CPP}")
 message(STATUS "Jack_INCLUDE_DIR : ${Jack_INCLUDE_DIR}")
 
-set_property(TARGET ossia PROPERTY COTIRE_CXX_PREFIX_HEADER_INIT "${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp")
-if(NOT OSSIA_SANITIZE AND NOT OSSIA_DISABLE_COTIRE AND NOT DISABLE_COTIRE )
-  cotire(ossia)
+if(OSSIA_PCH)
+  target_precompile_headers(ossia PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}/ossia/prefix.hpp>"
+  )
 endif()
 

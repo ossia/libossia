@@ -1617,7 +1617,7 @@ node& node::unset_refresh_rate()
 {
   if (m_node)
   {
-    ossia::net::set_refresh_rate(*m_node, ossia::none);
+    ossia::net::set_refresh_rate(*m_node, std::nullopt);
   }
   return *this;
 }
@@ -1648,7 +1648,7 @@ node& node::unset_value_step_size()
 {
   if (m_node)
   {
-    ossia::net::set_value_step_size(*m_node, ossia::none);
+    ossia::net::set_value_step_size(*m_node, std::nullopt);
   }
   return *this;
 }
@@ -1678,7 +1678,7 @@ node& node::unset_priority()
 {
   if (m_node)
   {
-    ossia::net::set_priority(*m_node, ossia::none);
+    ossia::net::set_priority(*m_node, std::nullopt);
   }
   return *this;
 }
@@ -1803,7 +1803,7 @@ node& node::unset_instance_bounds()
 {
   if (m_node)
   {
-    ossia::net::set_instance_bounds(*m_node, ossia::none);
+    ossia::net::set_instance_bounds(*m_node, std::nullopt);
   }
   return *this;
 }

@@ -104,7 +104,7 @@ static std::string get_osc_typetag_impl(const net::parameter_base& addr)
   return s;
 }
 
-optional<std::string> get_osc_typetag(const net::node_base& n)
+std::optional<std::string> get_osc_typetag(const net::node_base& n)
 {
   if (auto addr = n.get_parameter())
   {
@@ -112,7 +112,7 @@ optional<std::string> get_osc_typetag(const net::node_base& n)
   }
   else
   {
-    return ossia::none;
+    return std::nullopt;
   }
 }
 

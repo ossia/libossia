@@ -3,6 +3,6 @@
 
 namespace ossia
 {
-template <typename K, typename V>
-using flat_map = fc::vector_map<K, V>;
+template <typename K, typename V, typename Compare = std::less<void>>
+using flat_map = fc::vector_map<K, V, Compare>;
 }

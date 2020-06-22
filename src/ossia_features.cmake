@@ -146,7 +146,7 @@ if(OSSIA_PROTOCOL_LEAPMOTION)
 endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
-  find_package(SDL2)
+  find_package(SDL2 CONFIG)
   if(TARGET SDL2::SDL2-static)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
     target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
@@ -155,8 +155,13 @@ if(OSSIA_PROTOCOL_JOYSTICK)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
     target_link_libraries(ossia PRIVATE SDL2::SDL2)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
+  elseif(SDL2_LIBRARIES AND SDL2_INCLUDE_DIRS)
+    target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
+    target_include_directories(ossia PRIVATE "${SDL2_INCLUDE_DIRS}")
+    target_link_libraries(ossia PRIVATE "${SDL2_LIBRARIES}")
+    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
   else()
-    set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL)
+    set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL FORCE)
   endif()
 endif()
 
@@ -200,13 +205,15 @@ endif()
 
 if(OSSIA_QT)
   target_link_libraries(ossia PUBLIC Qt5::Core)
+
+  disable_qt_plugins(ossia)
   target_include_directories(ossia
     PRIVATE
       "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt>"
     PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/verdigris/src>
    )
- target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
+  target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
 
   if(OSSIA_QML)
     qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
@@ -237,10 +244,10 @@ endif()
 
 if(OSSIA_DATAFLOW)
   set(OSSIA_PARALLEL 1)
-  target_link_libraries(ossia PRIVATE tbb)
 
   target_include_directories(ossia PUBLIC
     $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
+    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
   )
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
@@ -251,30 +258,26 @@ if(OSSIA_DATAFLOW)
   elseif(TARGET portaudio)
     target_link_libraries(ossia PUBLIC portaudio)
   else()
-    # Needed because in Ubuntu the static package isn't built with -fPIC
-    if(PORTAUDIO_ONLY_DYNAMIC)
-      find_library(PORTAUDIO_LIBRARY
-        NAMES
-          portaudio
-        PATHS
-          /usr/local/lib)
-    else()
-      find_library(PORTAUDIO_LIBRARY
-        NAMES
-          portaudio_static libportaudio_static.a libportaudio.a portaudio
-        PATHS
-          /usr/local/lib)
-    endif()
+    find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
     if(PORTAUDIO_LIBRARY)
       target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
     endif()
   endif()
 
   set(SDL_BUILDING_LIBRARY TRUE)
-  find_package(SDL)
-  if(SDL_FOUND)
-    target_include_directories(ossia PUBLIC ${SDL_INCLUDE_DIR})
-    target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
+
+  find_package(SDL2 CONFIG)
+  if(TARGET SDL2::SDL2-static)
+    target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
+  elseif(TARGET SDL2::SDL2)
+    target_link_libraries(ossia PRIVATE SDL2::SDL2)
+  else()
+    # Used for audio support in emscripten
+    find_package(SDL)
+    if(SDL_FOUND)
+      target_include_directories(ossia PUBLIC ${SDL_INCLUDE_DIR})
+      target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
+    endif()
   endif()
 
 

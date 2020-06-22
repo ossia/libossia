@@ -2,6 +2,7 @@
 #include <ossia/audio/dummy_protocol.hpp>
 #include <ossia/audio/jack_protocol.hpp>
 #include <ossia/audio/portaudio_protocol.hpp>
+#include <ossia/audio/pulseaudio_protocol.hpp>
 #include <ossia/audio/sdl_protocol.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node_functions.hpp>
@@ -26,6 +27,12 @@ ossia::audio_engine* make_audio_engine(
   if (0)
   {
   }
+#if __has_include(<pulse/pulseaudio.h>)
+  else if (proto == "PulseAudio")
+  {
+    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate,   bs};
+  }
+#endif
 #if __has_include(<portaudio.h>)
   else if (proto == "PortAudio")
   {
@@ -53,6 +60,13 @@ ossia::audio_engine* make_audio_engine(
   else if (proto == "Dummy")
   {
     p = new ossia::dummy_engine{rate, bs};
+  }
+
+  if (!p)
+  {
+#if __has_include(<pulse/pulseaudio.h>)
+    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate,   bs};
+#endif
   }
 
   if (!p)
@@ -89,11 +103,28 @@ ossia::audio_engine* make_audio_engine(
 
 audio_protocol::audio_protocol()
 {
+}
+
+audio_engine::audio_engine()
+{
   audio_tick = [](auto&&...) {};
 }
 
 audio_engine::~audio_engine()
 {
+}
+
+void audio_engine::set_tick(audio_engine::fun_type&& t)
+{
+  tick_funlist.enqueue(std::move(t));
+}
+
+void audio_engine::load_audio_tick()
+{
+  while(tick_funlist.try_dequeue(audio_tick))
+  {
+
+  }
 }
 
 audio_protocol::~audio_protocol()
@@ -111,7 +142,6 @@ void audio_protocol::stop()
   {
     engine->stop();
   }
-  set_tick([](auto&&...) {});
 
   smallfun::function<void()> f;
   while (funlist.try_dequeue(f))
@@ -315,8 +345,8 @@ void audio_protocol::process_generic(
       f();
   }
 
-  using idx_t = gsl::span<float>::index_type;
-  const idx_t fc = frameCount;
+  //using idx_t = gsl::span<float>::index_type;
+  const gsl::span<float>::size_type fc = frameCount;
 
   // Prepare virtual audio inputs
   for (auto virt : self.virtaudio)

@@ -20,8 +20,7 @@ double time_interval::get_speed(time_value date) const noexcept
   }
   else
   {
-    auto t = m_tempoCurve.value_at(date.impl);
-    return m_speed * t / ossia::root_tempo;
+    return m_speed * tempo(date) / ossia::root_tempo;
   }
 }
 
@@ -66,6 +65,7 @@ void time_interval::tick_impl(
       auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
+      m_musical_start_last_signature = time.impl / m_quarter_duration;
       m_musical_start_last_bar = (time.impl / m_quarter_duration + bars_since_last_measure_change);
       m_musical_start_position = num_quarters;
     }
@@ -85,6 +85,7 @@ void time_interval::tick_impl(
   }
   else
   {
+    m_musical_start_last_signature = parent_request.musical_start_last_signature;
     m_musical_start_last_bar = parent_request.musical_start_last_bar;
     m_musical_start_position = parent_request.musical_start_position;
     m_musical_end_last_bar = parent_request.musical_end_last_bar;
@@ -94,7 +95,7 @@ void time_interval::tick_impl(
 
   state(old_date, new_date);
   if (m_callback)
-    (*m_callback)(new_date);
+    (*m_callback)(true, new_date);
 }
 
 void time_interval::tick_current(ossia::time_value offset, const ossia::token_request& parent_request)
@@ -117,8 +118,8 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset, const
     // we must find the equivalent constant tempo that would make us end at the exact same
     // date than a proper linear interpolation
     auto beat = date - m_date;
-    auto t0 = m_tempoCurve.value_at(m_date.impl);
-    auto ta = m_tempoCurve.value_at(date.impl);
+    auto t0 = tempo(m_date); // TODO check what it means if the tempo comes from outside
+    auto ta = tempo(date);
 
     // absolute tempo given : we negate the speed of the parent
     // todo : this should be done outside for the scenario
@@ -150,12 +151,20 @@ time_signature time_interval::signature(time_value date, const ossia::token_requ
   return parent_request.signature;
 }
 
+double time_interval::tempo(time_value date) const noexcept
+{
+  float t = static_cast<ossia::nodes::interval*>(node.get())->tempo;
+  if (t != ossia::nodes::interval::no_tempo)
+    return t;
+  return m_tempoCurve.value_at(date.impl);
+}
+
 double time_interval::tempo(time_value date, const ossia::token_request& parent_request) const noexcept
 {
   // TODO tempo should be hierarchic
   if(m_hasTempo)
   {
-    return m_tempoCurve.value_at(date.impl);
+    return tempo(date);
   }
   return parent_request.tempo;
 }
@@ -216,7 +225,7 @@ void time_interval::start()
   m_date = m_offset;
 
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(true, m_date);
 }
 
 void time_interval::stop()
@@ -230,6 +239,8 @@ void time_interval::stop()
 
   m_date = Zero;
   m_running = false;
+  if (m_callback)
+    (*m_callback)(false, m_date);
 }
 
 void time_interval::offset(ossia::time_value date)
@@ -251,7 +262,7 @@ void time_interval::offset(ossia::time_value date)
     }
   }
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(m_running, m_date);
 }
 
 void time_interval::transport(time_value date)
@@ -273,7 +284,7 @@ void time_interval::transport(time_value date)
     }
   }
   if (m_callback)
-    (*m_callback)(m_date);
+    (*m_callback)(m_running, m_date);
 }
 
 void time_interval::state(ossia::time_value from, ossia::time_value to)
@@ -284,6 +295,7 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
   if (N > 0)
   {
     ossia::token_request tok{from, to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature, m_current_tempo};
+    tok.musical_start_last_signature = this->m_musical_start_last_signature;
     tok.musical_start_last_bar = this->m_musical_start_last_bar;
     tok.musical_start_position = this->m_musical_start_position;
     tok.musical_end_last_bar = this->m_musical_end_last_bar;
@@ -328,7 +340,7 @@ void time_interval::set_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_callback(
-    smallfun::function<void(time_value), 32> cb)
+    smallfun::function<void(bool, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
@@ -342,7 +354,7 @@ void time_interval::set_stateless_callback(time_interval::exec_callback cb)
 }
 
 void time_interval::set_stateless_callback(
-    smallfun::function<void(time_value), 32> cb)
+    smallfun::function<void(bool, time_value), 32> cb)
 {
   m_callback = std::move(cb);
 }
@@ -453,16 +465,25 @@ void time_interval::mute(bool m)
   }
 }
 
-void time_interval::set_tempo_curve(optional<tempo_curve> curve)
+void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
 {
   m_hasTempo = bool(curve);
   if(m_hasTempo)
+  {
     m_tempoCurve = *std::move(curve);
+    auto n = static_cast<ossia::nodes::interval*>(node.get());
+    if(n->root_inputs().size() == 1)
+    {
+      n->root_inputs().push_back(new ossia::value_inlet{});
+    }
+  }
   else
+  {
     m_tempoCurve.reset();
+  }
 }
 
-void time_interval::set_time_signature_map(optional<time_signature_map> map)
+void time_interval::set_time_signature_map(std::optional<time_signature_map> map)
 {
   m_hasSignature = bool(map);
   if(map)

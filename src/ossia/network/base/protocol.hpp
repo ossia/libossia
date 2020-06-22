@@ -118,11 +118,18 @@ public:
   {
     m_logger = l;
   }
-  virtual const network_logger& get_logger() const
+
+  virtual const network_logger& get_logger() const noexcept
   {
     return m_logger;
   }
 
+  virtual void start_execution()
+  {
+  }
+  virtual void stop_execution()
+  {
+  }
   virtual void stop()
   {
   }

@@ -8,6 +8,7 @@
 
 #include <array>
 #include <cstdint>
+#include <cinttypes>
 #include <map>
 #include <thread>
 
@@ -19,11 +20,9 @@ namespace ossia
 {
 namespace net
 {
-
 class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
 {
-
-  typedef struct
+  struct wiimote_parameters
   {
     std::map<uint16_t, device_parameter*> button_parameters;
 
@@ -39,8 +38,7 @@ class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
 
     device_parameter* ir_cursor;
     device_parameter* ir_detection;
-
-  } wiimote_parameters;
+  };
 
 public:
   wiimote_protocol(const bool enable_ir);

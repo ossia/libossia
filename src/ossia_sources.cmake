@@ -548,6 +548,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/pulseaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/sdl_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
@@ -567,6 +568,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/control_inlets.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/timed_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/typed_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
@@ -628,6 +630,7 @@ set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/state.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/control_inlets.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph.cpp"
 )

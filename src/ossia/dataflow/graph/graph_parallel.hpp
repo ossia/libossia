@@ -3,7 +3,7 @@
 #if defined(OSSIA_PARALLEL)
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
-
+/*
 #include <tbb/flow_graph.h>
 
 namespace ossia
@@ -40,7 +40,7 @@ public:
         for (const auto& n : nodes)
         {
           graph_node* node = n.first.get();
-          (*perf_map)[node] = ossia::none;
+          (*perf_map)[node] = std::nullopt;
           flow_nodes.insert({node, std::make_unique<cont_node>(
                                        flow_graph, node_exec_logger_bench{
                                                        cur_state, *perf_map,
@@ -142,7 +142,7 @@ struct parallel_exec
 using parallel_tc_graph
     = graph_static<parallel_update<tc_update<fast_tc>>, parallel_exec>;
 }
-
+*/
 #endif
 
 #if __has_include(<taskflow/taskflow.hpp>)
@@ -174,7 +174,7 @@ public:
         for (const auto& n : nodes)
         {
           graph_node* node = n.first.get();
-          (*perf_map)[node] = ossia::none;
+          (*perf_map)[node] = std::nullopt;
           flow_nodes[node] = flow_graph.emplace(node_exec_logger_bench{cur_state, *perf_map, *logger, *node});
         }
       }
@@ -252,6 +252,6 @@ struct cpptf_exec
 };
 
 using cpptf_tc_graph
-    = graph_static<parallel_update<tc_update<fast_tc>>, parallel_exec>;
+    = graph_static<cpptf_update<tc_update<fast_tc>>, cpptf_exec>;
 }
 #endif

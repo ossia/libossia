@@ -97,7 +97,7 @@ void qml_exec::stop(qml_interval* itvl)
   {
     this->killTimer(*m_timer);
   }
-  m_timer = ossia::none;
+  m_timer = std::nullopt;
 }
 
 qml_exec::qml_exec()

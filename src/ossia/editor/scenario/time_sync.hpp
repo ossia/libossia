@@ -40,9 +40,6 @@ public:
   time_sync();
   ~time_sync();
 
-  /*! evaluate all #time_event's to make them to happen or to dispose them
- \return boolean true if the operation succeeded */
-  std::atomic_bool trigger_request{};
 
   /*! get the date
  \details the date is the sum of its previous #time_interval durations
@@ -66,7 +63,7 @@ public:
   /*! create and store a #time_event
  \param #Container<#time_event>::const_iterator where to store the #time_event
  \param #time_event::ExecutionCallback to get #time_event's status back
- \param expression_ptr an optional expression to apply to the
+ \param expression_ptr an std::optional expression to apply to the
  #time_event
  \return std::shared_ptr<#time_event> */
   iterator emplace(
@@ -93,6 +90,11 @@ public:
   bool is_observing_expression() const noexcept;
   bool is_evaluating() const noexcept;
 
+  /*! evaluate all #time_event's to make them to happen or to dispose them
+ \return boolean true if the operation succeeded */
+  void start_trigger_request() noexcept;
+  void end_trigger_request() noexcept;
+
   /**
    * Auto-trigger timesyncs are timesyncs which will
    * directly restart their following graph upon triggering.
@@ -102,6 +104,10 @@ public:
    */
   bool is_autotrigger() const noexcept;
   void set_autotrigger(bool) noexcept;
+
+  bool is_start() const noexcept;
+  void set_start(bool) noexcept;
+
 
   //! enable observation of the ossia::expression
   void observe_expression(bool);
@@ -125,6 +131,12 @@ public:
 
   //! Called when the time_sync starts evaluating
   callback_container<std::function<void()>> entered_evaluation;
+
+  //! Called when the time_sync has started triggering (e.g. was clicked)
+  callback_container<std::function<void()>> entered_triggering;
+
+  //! Called when we know at which date a trigger must execute due to quantification
+  callback_container<std::function<void(ossia::time_value)>> trigger_date_fixed;
 
   //! Called if the time_sync stops evaluating due to a changing duration
   callback_container<std::function<void()>> left_evaluation;
@@ -160,6 +172,7 @@ public:
   void set_trigger_date(time_value v) noexcept
   {
     m_trigger_date = v;
+    trigger_date_fixed.send(v);
   }
   time_value get_trigger_date() const noexcept
   {
@@ -170,16 +183,25 @@ public:
     return !m_trigger_date.infinite();
   }
 
+  void set_is_being_triggered(bool v) noexcept;
+  bool is_being_triggered() const noexcept
+  {
+    return m_is_being_triggered;
+  }
+
 private:
   ossia::expression_ptr m_expression;
   ptr_container<time_event> m_timeEvents;
 
-  optional<expressions::expression_callback_iterator> m_callback;
+  std::optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = ossia::quarter_duration<double>;
+  double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME
+
+  std::atomic_bool trigger_request{};
   time_value m_trigger_date = Infinite;
   status m_status : 2;
+  bool m_start : 1;
   bool m_observe : 1;
   bool m_evaluating : 1;
   bool m_muted : 1;

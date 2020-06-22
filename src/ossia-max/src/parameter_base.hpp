@@ -59,7 +59,7 @@ public:
   long m_enable{1};
   long m_critical{0};
   t_symbol* m_unit{};
-  ossia::optional<ossia::unit_t> m_ounit;
+  std::optional<ossia::unit_t> m_ounit;
 
   // size of size-variable attribute
   long m_default_size{};
@@ -85,7 +85,6 @@ public:
    * @param x
    */
   static void bang(parameter_base* x);
-  static void output_value(parameter_base* x);
   static void push_default_value(parameter_base* x);
 
   static void set(parameter_base* x, t_symbol* s, int argc, t_atom* argv);

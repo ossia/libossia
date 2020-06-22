@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
 
   // start callback-based soundcard-driven execution : here
   // the tick algorithm adds a token of the buffer size to every node
-  audio.protocol.set_tick(tick_all_nodes{e, g});
+  audio.engine->set_tick(tick_all_nodes{e, g});
 
   std::this_thread::sleep_for(10s);
 }

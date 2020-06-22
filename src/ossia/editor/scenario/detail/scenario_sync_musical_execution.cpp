@@ -16,14 +16,14 @@ sync_status scenario::trigger_sync_musical(
   if (!sync.m_evaluating)
   {
     sync.m_evaluating = true;
-    sync.trigger_request = false;
+    sync.end_trigger_request();
     sync.entered_evaluation.send();
   }
 
   if (*sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if (!sync.has_trigger_date() && !sync.m_is_being_triggered)
+    if (!sync.has_trigger_date() && !sync.is_being_triggered())
     {
       if (!sync.is_observing_expression())
         expressions::update(*sync.m_expression);
@@ -31,12 +31,12 @@ sync_status scenario::trigger_sync_musical(
       sync.observe_expression(true);
 
       if (sync.trigger_request)
-        sync.trigger_request = false;
+        sync.end_trigger_request();
       else if (!expressions::evaluate(*sync.m_expression))
         return sync_status::NOT_READY;
     }
 
-    sync.m_is_being_triggered = true;
+    sync.set_is_being_triggered(true);
 
     if (!sync.has_trigger_date() && sync.has_sync_rate())
     {
@@ -84,12 +84,15 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
         {
           const auto& ev = timeInterval->get_start_event();
           // previous TimeIntervals with a DISPOSED start event are ignored
-          if (ev.get_status() == time_event::status::DISPOSED)
+          // as well as those in NONE (that is used in cyclic graphs : they haven't executed
+          // yet so that's ok
+          if (ev.get_status() == time_event::status::DISPOSED
+           || ev.get_status() == time_event::status::NONE)
           {
             continue;
           }
 
-          // previous TimeInterval with a none HAPPENED start event
+          // previous TimeInterval with a not yet HAPPENED start event
           // can't have reached its minimal duration
           if (ev.get_status() != time_event::status::HAPPENED)
           {
@@ -147,7 +150,7 @@ sync_status scenario::process_this_musical(
     if (sync.m_evaluating)
     {
       sync.m_evaluating = false;
-      sync.trigger_request = false;
+      sync.end_trigger_request();
       sync.left_evaluation.send();
     }
 

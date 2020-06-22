@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/control_inlets.hpp>
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 
@@ -10,6 +11,7 @@
 /**
  * \file automation.hpp
  */
+
 
 namespace ossia::nodes
 {
@@ -25,8 +27,7 @@ namespace ossia::nodes
  * the list only has numeric elements (e.g. List{Float, Float}).
  *
  * The driving \ref value can either be a single \ref Behavior or a \ref List
- * of \ref Behavior,
- * in accordance to the type of the driven \ref net::parameter_base.
+ * of \ref Behan ,e to the type of the driven \ref net::parameter_base.
  *
  * The automation has a "source" domain, i.e. the data space in which the
  * transformation
@@ -36,7 +37,7 @@ namespace ossia::nodes
  *
  * \see \ref behavior \ref curve \ref curve_segment
  */
-class OSSIA_EXPORT automation final : public ossia::nonowning_graph_node
+class automation final : public ossia::nonowning_graph_node
 {
 public:
   automation()
@@ -84,6 +85,46 @@ private:
   ossia::value_outlet value_out;
 };
 
+class float_automation final : public ossia::nonowning_graph_node
+{
+public:
+  float_automation()
+  {
+    m_outlets.push_back(&value_out);
+  }
+
+  ~float_automation() override
+  {
+  }
+
+  std::string label() const noexcept override
+  {
+    return "automation (float)";
+  }
+
+  void set_behavior(ossia::curve<double, float> b)
+  {
+    m_drive = std::move(b);
+  }
+
+  void reset_drive()
+  {
+    m_drive.reset();
+  }
+
+private:
+  void
+  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  {
+    const auto tick_start = e.physical_start(t);
+
+    ossia::value_port& vp = *value_out;
+    vp.write_value(m_drive.value_at(t.position()), tick_start);
+  }
+
+  ossia::curve<double, float> m_drive;
+  ossia::minmax_float_outlet value_out;
+};
 class automation_process final : public ossia::node_process
 {
 public:

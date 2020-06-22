@@ -11,8 +11,6 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/common/path.hpp>
 
-#include <concurrentqueue.h>
-
 #include <map>
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256
@@ -49,8 +47,7 @@ public:
   t_matcher& operator=(const t_matcher&) = delete;
   t_matcher& operator=(t_matcher&& other);
 
-  void enqueue_value(ossia::value v);
-  void output_value();
+  void output_value(ossia::value v);
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_parent() const { return owner; }
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
@@ -65,16 +62,12 @@ public:
   bool is_locked() const { return m_lock; }
   bool is_dead() const { return m_dead; }
 
-  std::vector<ossia::value> m_set_pool;
-
 private:
   ossia::net::node_base* node{};
   object_base* owner{};
 
-  ossia::optional<ossia::callback_container<ossia::value_callback>::iterator>
-    callbackit = ossia::none;
-
-  moodycamel::ConcurrentQueue<ossia::value> m_queue_list;
+  std::optional<ossia::callback_container<ossia::value_callback>::iterator>
+    callbackit = std::nullopt;
 
   bool m_dead{}; // true when Max object is being deleted
   bool m_zombie{}; // true if node is deleted, t_matcher should be deleted asap
@@ -128,7 +121,7 @@ public:
   ossia::net::node_base* m_parent_node{};
   std::vector<std::shared_ptr<t_matcher>> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
-  ossia::optional<ossia::traversal::path> m_selection_path{};
+  std::optional<ossia::traversal::path> m_selection_path{};
 
   static void class_setup(t_class*c);
 
@@ -189,10 +182,14 @@ public:
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
+  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
+  std::vector<ossia::value> m_set_pool;
 
 protected:
-  ossia::optional<ossia::traversal::path> m_path;
+  std::optional<ossia::traversal::path> m_path;
   std::map<std::string, ossia::value> m_value_map;
+
+  static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 };
 
 #pragma mark -

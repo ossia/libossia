@@ -67,28 +67,28 @@ public:
   {
     if (m_valueType)
     {
-      m_valueType = ossia::none;
+      m_valueType = std::nullopt;
     }
   }; W_SLOT(resetValueType)
   void resetAccess()
   {
     if (m_access)
     {
-      m_access = ossia::none;
+      m_access = std::nullopt;
     }
   }; W_SLOT(resetAccess)
   void resetBounding()
   {
     if (m_bounding)
     {
-      m_bounding = ossia::none;
+      m_bounding = std::nullopt;
     }
   }; W_SLOT(resetBounding)
   void resetFilterRepetitions()
   {
     if (m_filterRepetitions)
     {
-      m_filterRepetitions = ossia::none;
+      m_filterRepetitions = std::nullopt;
     }
   }; W_SLOT(resetFilterRepetitions)
   void resetMin()
@@ -103,14 +103,14 @@ public:
   {
     if (m_values)
     {
-      m_values = ossia::none;
+      m_values = std::nullopt;
     }
   }; W_SLOT(resetValues)
   void resetUnit()
   {
     if (m_unit)
     {
-      m_values = ossia::none;
+      m_values = std::nullopt;
     }
   }; W_SLOT(resetUnit)
 
@@ -120,14 +120,14 @@ private:
   void updateDomain();
 
   QQmlProperty m_targetProperty;
-  optional<qml_val_type::val_type> m_valueType{};
-  optional<qml_access_mode::access_mode> m_access{};
-  optional<qml_bounding_mode::bounding_mode> m_bounding{};
-  optional<qml_rep_filter::repetition_filter> m_filterRepetitions{};
+  std::optional<qml_val_type::val_type> m_valueType{};
+  std::optional<qml_access_mode::access_mode> m_access{};
+  std::optional<qml_bounding_mode::bounding_mode> m_bounding{};
+  std::optional<qml_rep_filter::repetition_filter> m_filterRepetitions{};
   QVariant m_min{};
   QVariant m_max{};
-  optional<QVariantList> m_values{};
-  optional<QString> m_unit{};
+  std::optional<QVariantList> m_values{};
+  std::optional<QString> m_unit{};
   bool m_updatingFromSetValue{};
 
 W_PROPERTY(QVariantList, values READ values WRITE setValues NOTIFY valuesChanged RESET resetValues, W_Final)

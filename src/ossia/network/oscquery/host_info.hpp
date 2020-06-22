@@ -17,12 +17,12 @@ struct host_info
 
   std::string name;
 
-  optional<std::string> osc_ip;
-  optional<int> osc_port;
-  optional<osc_transport> osc_transport;
+  std::optional<std::string> osc_ip;
+  std::optional<int> osc_port;
+  std::optional<osc_transport> osc_transport;
 
-  optional<std::string> ws_ip;
-  optional<int> ws_port;
+  std::optional<std::string> ws_ip;
+  std::optional<int> ws_port;
 
   ossia::string_map<bool> extensions;
 };

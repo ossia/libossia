@@ -99,9 +99,6 @@
 [submodule "3rdparty/wiiuse"]
 	path = 3rdparty/wiiuse
 	url = https://github.com/OSSIA/wiiuse.git
-[submodule "3rdparty/tbb"]
-	path = 3rdparty/tbb
-	url = https://github.com/jcelerier/tbb
 [submodule "3rdparty/dr_libs"]
 	path = 3rdparty/dr_libs
 	url = https://github.com/mackron/dr_libs
@@ -120,3 +117,9 @@
 [submodule "3rdparty/Flicks"]
 	path = 3rdparty/Flicks
 	url = https://github.com/OculusVR/Flicks
+[submodule "3rdparty/rnd"]
+	path = 3rdparty/rnd
+	url = https://github.com/jcelerier/rnd
+[submodule "3rdparty/cpp-taskflow"]
+	path = 3rdparty/cpp-taskflow
+	url = https://github.com/cpp-taskflow/cpp-taskflow

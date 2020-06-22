@@ -87,7 +87,7 @@ private:
   time_interval m_interval;
 
   ossia::time_value m_lastDate{ossia::Infinite};
-  optional<ossia::time_value> m_sync_date{};
+  std::optional<ossia::time_value> m_sync_date{};
   bool is_simple() const noexcept;
   void simple_tick(ossia::token_request& req, time_value tick_amount, const time_value& itv_dur);
   void general_tick(const ossia::token_request& req, const ossia::time_value prev_last_date, ossia::time_value tick_amount);

@@ -503,11 +503,11 @@ OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
 OSSIA_EXPORT const key_map_type& oscquery_to_ossia_key();
 
 //! Convert the text of an ossia attribute to the key of an oscquery attribute
-OSSIA_EXPORT optional<ossia::string_view>
+OSSIA_EXPORT std::optional<ossia::string_view>
     ossia_to_oscquery_key(ossia::string_view);
 
 //! Convert the text of an oscquery attribute to the key of an ossia attribute.
-OSSIA_EXPORT optional<ossia::string_view>
+OSSIA_EXPORT std::optional<ossia::string_view>
     oscquery_to_ossia_key(ossia::string_view);
 }
 }

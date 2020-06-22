@@ -81,10 +81,7 @@ std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const o
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 
-void trig_output_value(ossia::net::node_base* node);
-
 // put templates after prototype so we can use them
-
 template<typename T>
 std::vector<T*> get_objects(typename T::is_model* = nullptr)
 {
@@ -372,9 +369,14 @@ struct domain_visitor {
     if(!d.values.empty())
     {
       x->m_range_size = d.values.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.values.size();
-      for (int i = 0; i < x->m_range_size; i++)
+      int i=0;
+      for(const auto& s : d.values.container)
       {
-        // SETSYM(x->m_range+i,gensym(d.values[i].c_str()));
+        auto sym = gensym(s.c_str());
+        A_SETSYM(x->m_range+i, sym);
+        i++;
+        if(i == x->m_range_size)
+          break;
       }
     }
   }

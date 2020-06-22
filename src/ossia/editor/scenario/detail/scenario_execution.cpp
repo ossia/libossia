@@ -26,6 +26,22 @@
 
 namespace ossia
 {
+small_sync_vec scenario::get_roots() const noexcept
+{
+  small_sync_vec res;
+  res.reserve(4);
+
+  for (auto& tn : get_time_syncs())
+  {
+    if (tn->is_start())
+    {
+      res.push_back(tn.get());
+    }
+  }
+
+  return res;
+}
+
 void scenario::make_happen(
     time_event& event, interval_set& started, interval_set& stopped,
     ossia::time_value tick_offset, const ossia::token_request& tok)
@@ -56,6 +72,8 @@ void scenario::make_happen(
 
   if (event.m_callback)
     (event.m_callback)(event.m_status);
+
+  event.m_status = time_event::status::NONE;
 }
 
 void scenario::make_dispose(time_event& event, interval_set& stopped)
@@ -100,6 +118,8 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 
   if (event.m_callback)
     (event.m_callback)(event.m_status);
+
+  event.m_status = time_event::status::NONE;
 }
 enum progress_mode
 {
@@ -245,7 +265,7 @@ void scenario::state_impl(const ossia::token_request& tk)
       {
         n->observe_expression(true, [n](bool b) {
           if (b)
-            n->trigger_request = true;
+            n->start_trigger_request();
         });
       }
 
@@ -379,8 +399,11 @@ void scenario::state_impl(const ossia::token_request& tk)
         switch(status)
         {
           case sync_status::DONE:
+          {
+            node->set_is_being_triggered(false);
             m_retry_syncs.erase(node);
             break;
+          }
           case sync_status::NOT_READY:
             break;
           case sync_status::RETRY:
@@ -389,7 +412,8 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
       }
 
-      m_endNodes = std::move(m_retry_syncs);
+      m_endNodes.container.assign(m_retry_syncs.container.begin(), m_retry_syncs.container.end());
+      m_retry_syncs.clear();
 
     } while (!m_maxReachedEvents.empty() || !m_endNodes.empty());
   }
@@ -401,27 +425,6 @@ scenario_graph::scenario_graph(scenario& sc) : scenar{sc}
 {
 }
 
-small_sync_vec scenario_graph::get_roots() const
-{
-  update_components_cache();
-
-  small_sync_vec res;
-
-  int root_comp
-      = m_components_cache[vertices.at(scenar.get_start_time_sync().get())];
-
-  for (auto& tn : scenar.get_time_syncs())
-  {
-    if (scenar.is_root_sync(*tn)
-        && m_components_cache[vertices.at(tn.get())] != root_comp)
-    {
-      res.push_back(tn.get());
-    }
-  }
-
-  return res;
-}
-
 void scenario_graph::update_components_cache() const
 {
   if (dirty)
@@ -430,26 +433,6 @@ void scenario_graph::update_components_cache() const
     boost::connected_components(graph, m_components_cache.data());
     dirty = false;
   }
-}
-
-ossia::small_vector<ossia::time_sync*, 4>
-scenario_graph::sibling_roots(const time_sync& sync) const
-{
-  update_components_cache();
-
-  ossia::small_vector<ossia::time_sync*, 4> res;
-  auto comp = m_components_cache[vertices.at(&sync)];
-
-  for (const auto& s : scenar.get_time_syncs())
-  {
-    if (m_components_cache[vertices.at(s.get())] == comp
-        && scenar.is_root_sync(*s))
-    {
-      res.push_back(s.get());
-    }
-  }
-
-  return res;
 }
 
 void scenario_graph::reset_component(time_sync& sync) const

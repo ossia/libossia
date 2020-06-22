@@ -356,7 +356,7 @@ inline ossia::domain get_domain(
   return ossia::make_domain_from_osc(val, cur);
 }
 
-inline optional<double> AsNumber(oscpack::ReceivedMessageArgumentIterator& it)
+inline std::optional<double> AsNumber(oscpack::ReceivedMessageArgumentIterator& it)
 {
   switch (it->TypeTag())
   {
@@ -369,7 +369,7 @@ inline optional<double> AsNumber(oscpack::ReceivedMessageArgumentIterator& it)
     case oscpack::TypeTagValues::DOUBLE_TYPE_TAG:
       return it->AsDoubleUnchecked();
     default:
-      return ossia::none;
+      return std::nullopt;
   }
 }
 

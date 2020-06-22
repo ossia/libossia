@@ -42,7 +42,7 @@ void clock::start_and_tick()
   m_shouldStop = false;
 
   // set clock at a tick
-  m_date = 0.;
+  m_date = 0_tv;
   m_lastTime = clock_type::now();
   m_elapsedTime = 0.;
 
@@ -67,7 +67,7 @@ void clock::stop()
 
   m_interval.stop();
 
-  m_date = 0;
+  m_date = 0_tv;
   m_lastTime = clock_type::time_point{};
   m_elapsedTime = 0;
 }
@@ -200,13 +200,13 @@ time_value clock::get_granularity() const
 
 ossia::clock& clock::set_granularity(std::chrono::milliseconds granularity)
 {
-  m_granularity = granularity.count() * 1000;
+  m_granularity = int64_t(granularity.count() * 1000);
   return *this;
 }
 
 ossia::clock& clock::set_granularity(std::chrono::microseconds granularity)
 {
-  m_granularity = granularity.count();
+  m_granularity = int64_t(granularity.count());
   return *this;
 }
 
@@ -233,7 +233,7 @@ void clock::request_stop()
 
 void clock::set_exec_status_callback(exec_status_callback e)
 {
-  m_statusCallback = e;
+  m_statusCallback = std::move(e);
 }
 
 clock::exec_status_callback clock::get_exec_status_callback() const

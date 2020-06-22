@@ -49,7 +49,7 @@ t_matcher::t_matcher(t_matcher&& other)
   other.parent = nullptr;
 
   callbackit = other.callbackit;
-  other.callbackit = ossia::none;
+  other.callbackit = std::nullopt;
 
   m_addr = other.m_addr;
   ossia::value v;
@@ -80,7 +80,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   other.parent = nullptr;
 
   callbackit = other.callbackit;
-  other.callbackit = ossia::none;
+  other.callbackit = std::nullopt;
 
   ossia::value v;
   while(other.m_queue_list.try_dequeue(v))
@@ -106,7 +106,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 }
 
 t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
-  node{n}, parent{p}, callbackit{ossia::none}
+  node{n}, parent{p}, callbackit{std::nullopt}
 {
   if (auto param = node->get_parameter())
     callbackit = param->add_callback(
@@ -180,7 +180,7 @@ void t_matcher::output_value()
           param->get_bounding());
 
     ossia::value converted;
-    if ( parent->m_ounit != ossia::none )
+    if ( parent->m_ounit != std::nullopt )
       converted = ossia::convert(filtered, param->get_unit(), *parent->m_ounit);
     else
       converted = filtered;

@@ -187,7 +187,14 @@ public:
     if (m_runThread.joinable())
       stop();
 
-    m_runThread = std::thread([this]() { m_socket->Run(); });
+    m_runThread = std::thread([this]() {
+      osc_thread_run:
+      try {
+        m_socket->Run();
+      } catch(...) {
+        goto osc_thread_run;
+      }
+    });
   }
 
   void stop()

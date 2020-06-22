@@ -149,6 +149,12 @@ struct token_request
     return to_physical_time_in_tick(ossia::time_value{global_time}, ratio);
   }
 
+  //! Maps a time value in the frame of reference of the physical buffers, to a model time
+  constexpr time_value from_physical_time_in_tick(ossia::physical_time phys_time, double ratio) const noexcept
+  {
+    return time_value{constexpr_floor(phys_time * (speed / ratio) + prev_date.impl - offset.impl)};
+  }
+
   //! If we are in a kind of hierarchical object, return where we are at the end of this tick.
   constexpr double position() const noexcept
   {
@@ -192,13 +198,24 @@ struct token_request
       // Quantize relative to bars
       if(musical_end_last_bar != musical_start_last_bar)
       {
-        // There is a bar change in this tick
-        const double musical_bar_start = musical_end_last_bar - musical_start_position;
+        // 4 if we're in 4/4 for instance
+        const double musical_bar_duration = musical_end_last_bar - musical_start_last_bar;
 
-        const double ratio = musical_bar_start / musical_tick_duration;
-        const time_value dt = date - prev_date; // TODO should be tick_offset
+        // rate = 0.5 -> 2 bars at 3/4 -> 6 quarter notes
+        const double quantif_duration = musical_bar_duration / rate;
 
-        quantification_date = prev_date + dt * ratio;
+        // we must be on quarter note 6, 12, 18, ... from the previous signature
+        const double rem = std::fmod(musical_end_last_bar - musical_start_last_signature, quantif_duration);
+        if(rem < 0.0001)
+        {
+          // There is a bar change in this tick and it is when we are going to trigger
+          const double musical_bar_start = musical_end_last_bar - musical_start_position;
+
+          const double ratio = musical_bar_start / musical_tick_duration;
+          const time_value dt = date - prev_date; // TODO should be tick_offset
+
+          quantification_date = prev_date + dt * ratio;
+        }
       }
     }
     else
@@ -243,13 +260,16 @@ struct token_request
     {
       // There is a bar change in this tick, start the up tick
       const double musical_tick_duration = musical_end_position - musical_start_position;
-      const double musical_bar_start = musical_end_last_bar - musical_start_position;
-      const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
-      if(samples_tick_duration > 0)
+      if(musical_tick_duration != 0)
       {
-        const double ratio = musical_bar_start / musical_tick_duration;
-        const int64_t hi_start_sample = samples_tick_duration * ratio;
-        tick(hi_start_sample);
+        const double musical_bar_start = musical_end_last_bar - musical_start_position;
+        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+        if(samples_tick_duration > 0)
+        {
+          const double ratio = musical_bar_start / musical_tick_duration;
+          const int64_t hi_start_sample = samples_tick_duration * ratio;
+          tick(hi_start_sample);
+        }
       }
     }
     else
@@ -262,13 +282,16 @@ struct token_request
         // start_position is prev_date
         // end_position is date
         const double musical_tick_duration = musical_end_position - musical_start_position;
-        const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
-        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
-        if(samples_tick_duration > 0)
+        if(musical_tick_duration != 0)
         {
-          const double ratio = musical_bar_start / musical_tick_duration;
-          const int64_t lo_start_sample = samples_tick_duration * ratio;
-          tock(lo_start_sample);
+          const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
+          const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+          if(samples_tick_duration > 0)
+          {
+            const double ratio = musical_bar_start / musical_tick_duration;
+            const int64_t lo_start_sample = samples_tick_duration * ratio;
+            tock(lo_start_sample);
+          }
         }
       }
     }
@@ -293,6 +316,29 @@ struct token_request
     return false;
   }
 
+  constexpr void reduce_end_time(time_value t) noexcept
+    //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  {
+    const auto old_date = date;
+    date = t;
+
+    double ratio = t.impl / double(old_date.impl);
+    musical_end_position *= ratio;
+
+    // TODO what if musical_end_position is now before musical_end_last_bar
+  }
+
+  constexpr void increase_start_time(time_value t) noexcept
+  //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  {
+    const auto old_date = prev_date;
+    prev_date = t;
+
+    double ratio = t.impl / double(old_date.impl);
+    musical_start_position *= ratio;
+
+    // TODO what if musical_start_position is now after end_position / end_last_bar ?
+  }
 
   ossia::time_value prev_date{}; // Sample we are at
   ossia::time_value date{}; // Sample we are finishing at
@@ -302,6 +348,7 @@ struct token_request
   double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
 
+  ossia::quarter_note musical_start_last_signature{}; // Position of the last bar signature change in quarter notes (at prev_date)
   ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in quarter notes (at prev_date)
   ossia::quarter_note musical_start_position{}; // Current position in quarter notes
   ossia::quarter_note musical_end_last_bar{}; // Position of the last bar start in quarter notes (at date)

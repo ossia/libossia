@@ -144,7 +144,7 @@ void node_base::set(ossia::string_view str, T&& value)
 }
 
 template <typename T>
-void node_base::set(ossia::string_view str, const optional<T>& value)
+void node_base::set(ossia::string_view str, const std::optional<T>& value)
 {
   static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);
@@ -156,7 +156,7 @@ void node_base::set(ossia::string_view str, const optional<T>& value)
 }
 
 template <typename T>
-void node_base::set(ossia::string_view str, optional<T>&& value)
+void node_base::set(ossia::string_view str, std::optional<T>&& value)
 {
   static_assert(!is_parameter_attribute<T>::value, "No parameter");
   auto opt = ossia::get_optional_attribute<T>(*this, str);

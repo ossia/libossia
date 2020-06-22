@@ -137,6 +137,8 @@ struct OSSIA_EXPORT graph_util
   static void init_outlet(outlet& out, execution_state&)
   {
     out.visit(clear_data{});
+
+    out.pre_process();
   }
 
   static void init_inlet(inlet& in, execution_state& e)
@@ -156,6 +158,8 @@ struct OSSIA_EXPORT graph_util
     {
       ossia::apply_con(init_node_visitor{in, *edge, e}, edge->con);
     }
+
+    in.pre_process();
   }
 
   static void init_node(graph_node& n, execution_state& e)
@@ -170,8 +174,7 @@ struct OSSIA_EXPORT graph_util
   /// Teardown : what happens just after a node has executed
   static void teardown_outlet(outlet& out, execution_state& e)
   {
-    if(out.which() == ossia::audio_port::which)
-      static_cast<audio_outlet&>(out).post_process();
+    out.post_process();
     bool must_copy = out.targets.empty();
 
     // If some following glutton nodes aren't enabled, then we copy to the
@@ -190,6 +193,7 @@ struct OSSIA_EXPORT graph_util
 
   static void teardown_inlet(inlet& in, execution_state&)
   {
+    in.post_process();
     in.visit(clear_data{});
   }
 

@@ -30,7 +30,7 @@ struct json_writer_impl
   void writeValue(const ossia::net::instance_bounds& i) const;
 
   template <typename T, typename... Args>
-  void writeValue(const optional<T>& t, Args&&... args) const
+  void writeValue(const std::optional<T>& t, Args&&... args) const
   {
     if (t)
     {

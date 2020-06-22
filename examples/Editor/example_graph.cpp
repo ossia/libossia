@@ -64,7 +64,7 @@ struct root_scenario
 
 
 template<typename T>
-ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
+std::optional<T> pop_value(const ossia::inlet_ptr& p) {
   if(p)
   {
     auto ip = p->target<ossia::value_port>();
@@ -79,7 +79,7 @@ ossia::optional<T> pop_value(const ossia::inlet_ptr& p) {
       }
     }
   }
-  return ossia::none;
+  return std::nullopt;
 }
 
 void push_value(const ossia::outlet_ptr& p, ossia::value val) {

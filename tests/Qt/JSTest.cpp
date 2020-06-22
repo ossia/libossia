@@ -18,6 +18,7 @@
 #include <fmt/format.h>
 #include <QQmlEngine>
 #include <QQmlComponent>
+#include <QCoreApplication>
 
 std::vector<ossia::value> testOssiaValues()
 {

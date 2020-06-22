@@ -1,26 +1,36 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general OSSIA dependencies :")
   set(OSSIA_SUBMODULES
-      GSL chobo-shl hopscotch-map
-      nano-signal-slot brigand whereami
-      rapidjson readerwriterqueue websocketpp
-      asio variant spdlog fmt
-      SmallFunction
-      Servus
+      asio
       bitset2
+      brigand
+      chobo-shl
       concurrentqueue
-      exprtk
-      flat_hash_map
-      multi_index
-      frozen
-      weakjack
-      verdigris
       flat
-      cmake/cmake-modules
-      )
+      flat_hash_map
+      Flicks
+      fmt
+      frozen
+      GSL
+      hopscotch-map
+      multi_index
+      nano-signal-slot
+      rapidjson
+      readerwriterqueue
+      rnd
+      Servus
+      SmallFunction
+      spdlog
+      variant
+      verdigris
+      weakjack
+      websocketpp
+      whereami
+      ../cmake/cmake-modules
+  )
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dr_libs rubberband libsamplerate tbb)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate cpp-taskflow)
   endif()
 
   if(OSSIA_DNSSD)
@@ -75,7 +85,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR 72)
+set(BOOST_MINOR 73)
 if(ANDROID)
   set(Boost_FOUND True)
   include_directories("/opt/boost_1_${BOOST_MINOR}_0")
@@ -123,8 +133,6 @@ endif()
 if(OSSIA_DATAFLOW)
   set(_oldmode ${BUILD_SHARED_LIBS})
   set(BUILD_SHARED_LIBS 0)
-  set(TBB_LINKAGE "STATIC" CACHE "" INTERNAL)
-  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/tbb" EXCLUDE_FROM_ALL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libsamplerate" EXCLUDE_FROM_ALL)
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/rubberband" EXCLUDE_FROM_ALL)
   set(BUILD_SHARED_LIBS ${_oldmode})

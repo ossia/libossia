@@ -63,7 +63,7 @@ void qml_signal::setupAddress(bool reading)
     return;
 
   m_param = nullptr;
-  m_callback = ossia::none;
+  m_callback = std::nullopt;
   if (m_ossia_node)
   {
     m_ossia_node->remove_parameter();
@@ -129,7 +129,7 @@ void qml_signal::resetNode()
   // In case something went wrong...
   setPath({});
   m_param = nullptr;
-  m_callback = ossia::none;
+  m_callback = std::nullopt;
 }
 }
 }

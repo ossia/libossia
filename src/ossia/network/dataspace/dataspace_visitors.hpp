@@ -117,7 +117,7 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u);
 /**
  * @brief get_unit Create an unit from indexes in the variant
  * @param dataspace Identifier in the first variant
- * @param unit Optional identifier in the second variant
+ * @param unit std::optional identifier in the second variant
  *
  * Ex. : position.opengl_u == (1, 4).
  * This is useful for concise serialization / deserialization.
@@ -203,7 +203,7 @@ std::string to_pretty_string(const ossia::value_with_unit& v);
  *
  * @param The value with an unit
  * @param The value to merge
- * @param Optional destination index or bitset to merge with
+ * @param std::optional destination index or bitset to merge with
  * @return
  */
 OSSIA_EXPORT

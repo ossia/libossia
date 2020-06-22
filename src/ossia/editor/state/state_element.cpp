@@ -4,9 +4,17 @@
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/detail/state_print_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/dataflow/value_port.hpp>
 
 namespace ossia
 {
+
+void control_message::launch()
+{
+  // TODO launch should have a timestamp
+  port->write_value(this->value, 0);
+}
+
 void launch(state_element& e)
 {
   ossia::apply(state_execution_visitor{}, e);

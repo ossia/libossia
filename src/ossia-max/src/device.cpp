@@ -439,8 +439,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     {
       object_error((t_object*)x, "Unknown protocol: %s", protocol.c_str());
     }
-
-    ossia_max::instance().start_timers();
   }
   else
     protocol_settings::print_protocol_help();
@@ -506,7 +504,6 @@ void device::stop_expose(device*x, int index)
 #endif
     multiplex.stop_expose_to(*protos[index]);
     x->m_protocols.erase(x->m_protocols.begin() + index);
-    ossia_max::instance().stop_timers();
   }
   else
     object_error((t_object*)x, "Index %d out of bound.", index);

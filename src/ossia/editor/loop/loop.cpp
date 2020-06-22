@@ -149,7 +149,7 @@ sync_status loop::trigger_quantified_time_sync(time_sync& sync, bool& maximalDur
 
     maximalDurationReached = true;
 
-    m_sync_date = ossia::none;
+    m_sync_date = std::nullopt;
 
     return sync_status::DONE;
   }
@@ -187,7 +187,7 @@ ossia::sync_status loop::process_sync(
     if (sync.m_evaluating)
     {
       sync.m_evaluating = false;
-      sync.trigger_request = false;
+      sync.end_trigger_request();
       sync.left_evaluation.send();
     }
 
@@ -198,7 +198,7 @@ ossia::sync_status loop::process_sync(
   {
     sync.m_evaluating = true;
     sync.entered_evaluation.send();
-    sync.trigger_request = false;
+    sync.end_trigger_request();
   }
 
   // update the expression one time
@@ -207,7 +207,7 @@ ossia::sync_status loop::process_sync(
   if (*sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
-    if (!sync.has_trigger_date() && !sync.m_is_being_triggered)
+    if (!sync.has_trigger_date() && !sync.is_being_triggered())
     {
       if (!sync.is_observing_expression())
         expressions::update(*sync.m_expression);
@@ -215,13 +215,13 @@ ossia::sync_status loop::process_sync(
       sync.observe_expression(true);
 
       if (sync.trigger_request)
-        sync.trigger_request = false;
+        sync.end_trigger_request();
       else if (!expressions::evaluate(*sync.m_expression))
         return sync_status::NOT_READY;
     }
 
     // at this point we can assume we are going to trigger.
-    sync.m_is_being_triggered = true;
+    sync.set_is_being_triggered(true);
 
     if (sync.has_trigger_date())
     {
@@ -235,7 +235,7 @@ ossia::sync_status loop::process_sync(
     }
   }
 
-  sync.m_is_being_triggered = false;
+  sync.set_is_being_triggered(false);
 
   // now TimeEvents will happen or be disposed
   auto& expr = ev.get_expression();
@@ -383,7 +383,7 @@ void loop::general_tick(
         if (*m_endNode.m_expression != expressions::expression_true()
             && !(m_interval.get_date() >= m_interval.get_max_duration()))
         {
-          if (!m_endNode.has_trigger_date() && !m_endNode.m_is_being_triggered)
+          if (!m_endNode.has_trigger_date() && !m_endNode.is_being_triggered())
           {
             if (!m_endNode.is_observing_expression())
               expressions::update(*m_endNode.m_expression);
@@ -391,11 +391,11 @@ void loop::general_tick(
             m_endNode.observe_expression(true);
 
             if (m_endNode.trigger_request)
-              m_endNode.trigger_request = false;
+              m_endNode.end_trigger_request();
             else if (!expressions::evaluate(*m_endNode.m_expression))
               goto continue_running;
           }
-          m_endNode.m_is_being_triggered = true;
+          m_endNode.set_is_being_triggered(true);
 
           // TODO what if sync_date > interval's max date
 
@@ -406,7 +406,7 @@ void loop::general_tick(
             {
               m_interval.tick_offset(*m_sync_date, req.offset, req);
               tick_amount -= *m_sync_date;
-              m_sync_date = ossia::none;
+              m_sync_date = std::nullopt;
 
               process_sync(m_endNode, req, m_endEvent, true, true);
 
@@ -425,7 +425,7 @@ continue_running:
     else
       m_interval.tick_offset(tick_amount, req.offset, req);
 
-    tick_amount = 0;
+    tick_amount = 0_tv;
 
     // Check if the end timesync can be triggered
     switch (m_endEvent.get_status())

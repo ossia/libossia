@@ -61,7 +61,7 @@ public:
   t_symbol* m_unit{};
   int m_mute{0};
   int m_enable{1};
-  ossia::optional<ossia::unit_t> m_ounit;
+  std::optional<ossia::unit_t> m_ounit;
 
   // size of size-variable attribute
   long m_default_size{};

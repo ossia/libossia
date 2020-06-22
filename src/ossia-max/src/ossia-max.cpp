@@ -46,7 +46,6 @@ ossia_max::ossia_max():
   m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
 #endif
 
-  m_timer_clock = clock_new(this, (method) ossia_max::poll_all_queues);
   browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
   clock_delay(ossia_max::browse_clock, 100.);
 
@@ -125,7 +124,7 @@ std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
   return list;
 }
 
-void ossia_max::register_nodes(ossia_max* x)
+void ossia_max::register_nodes(ossia_max*)
 {
   auto& inst = ossia_max::instance();
 
@@ -248,7 +247,6 @@ void ossia_max::register_nodes(ossia_max* x)
         auto val = ossia::net::get_default_value(*child);
         if(val)
         {
-          bool trig = false;
           for(auto param : ossia_max::instance().parameters.reference())
           {
             for (auto& m : param->m_matchers)
@@ -259,66 +257,16 @@ void ossia_max::register_nodes(ossia_max* x)
                 auto patcher = op->m_patcher_hierarchy.back();
                 if(ossia::contains(to_be_initialized,patcher))
                 {
-                  child->get_parameter()->push_value(*val);
-                  trig = true;
+                  param->push_parameter_value(child->get_parameter(), *val, false);
                   break;
                 }
               }
             }
-            if(trig)
-              break;
-          }
-
-          if(trig)
-          {
-            trig_output_value(child);
           }
         }
       }
     }
   }
-}
-
-void ossia_max::start_timers()
-{
-  auto& x = ossia_max::instance();
-  clock_set(x.m_timer_clock, 1);
-  x.m_clock_count++;
-}
-
-void ossia_max::stop_timers()
-{
-  auto& x = ossia_max::instance();
-  if( x.m_clock_count > 0 )
-  {
-    x.m_clock_count--;
-  }
-  else
-  {
-    std::cout << "stop poll timers" << std::endl;
-    clock_unset(x.m_timer_clock);
-  }
-}
-
-void ossia_max::poll_all_queues(ossia_max* x)
-{
-  for(auto param : ossia_max::instance().parameters.reference())
-  {
-    for (auto& m : param->m_matchers)
-    {
-      m->output_value();
-    }
-  }
-
-  for(auto remote : ossia_max::instance().remotes.reference())
-  {
-    for (auto& m : remote->m_matchers)
-    {
-      m->output_value();
-    }
-  }
-
-  clock_delay(x->m_timer_clock, 10); // TODO add method to change rate
 }
 
 namespace ossia
@@ -532,7 +480,7 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
   return tags;
 }
 
-void ossia_max::discover_network_devices(ossia_max* x)
+void ossia_max::discover_network_devices(ossia_max*)
 {
   ossia_max::zeroconf_oscq_listener.browse();
   ossia_max::zeroconf_minuit_listener.browse();

@@ -62,13 +62,13 @@ struct value_prettyprint_visitor
 namespace fmt
 {
 template <typename T>
-struct formatter<ossia::optional<T>>
+struct formatter<std::optional<T>>
 {
   template <typename ParseContext>
   constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
   template <typename FormatContext>
-  auto format(const ossia::optional<T>& n, FormatContext &ctx)
+  auto format(const std::optional<T>& n, FormatContext &ctx)
   {
     if(n)
     {

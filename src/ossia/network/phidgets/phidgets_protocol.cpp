@@ -11,6 +11,7 @@
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/value/value_traits.hpp>
+#include <iostream>
 namespace ossia
 {
 template <typename Fun>

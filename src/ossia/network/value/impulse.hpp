@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 namespace ossia
 {
 class value;
@@ -23,23 +22,11 @@ class value;
 struct OSSIA_EXPORT impulse
 {
   using value_type = impulse;
-  constexpr impulse() noexcept
-  {
-  }
-  constexpr impulse(const impulse&) noexcept
-  {
-  }
-  constexpr impulse(impulse&&) noexcept
-  {
-  }
-  constexpr impulse& operator=(const impulse&) noexcept
-  {
-    return *this;
-  }
-  constexpr impulse& operator=(impulse&&) noexcept
-  {
-    return *this;
-  }
+  constexpr impulse() noexcept = default;
+  constexpr impulse(const impulse&) noexcept = default;
+  constexpr impulse(impulse&&) noexcept = default;
+  constexpr impulse& operator=(const impulse&) noexcept = default;
+  constexpr impulse& operator=(impulse&&) noexcept = default;
 
   constexpr bool operator==(const ossia::impulse&) const
   {

@@ -392,7 +392,7 @@ void ossia_node_set_extended_type(
     if(extended_type)
       ossia::net::set_extended_type(n, ossia::extended_type{extended_type});
     else
-      ossia::net::set_extended_type(n, ossia::none);
+      ossia::net::set_extended_type(n, std::nullopt);
   });
 }
 
@@ -536,7 +536,7 @@ void ossia_node_unset_priority(
       return;
     }
 
-    ossia::net::set_priority(*convert_node(node), ossia::none);
+    ossia::net::set_priority(*convert_node(node), std::nullopt);
   });
 }
 float ossia_node_get_priority(
@@ -586,7 +586,7 @@ void ossia_node_unset_refresh_rate(
       return;
     }
 
-    ossia::net::set_refresh_rate(*convert_node(node), ossia::none);
+    ossia::net::set_refresh_rate(*convert_node(node), std::nullopt);
   });
 }
 int ossia_node_get_refresh_rate(
@@ -636,7 +636,7 @@ void ossia_node_unset_value_step_size(
       return;
     }
 
-    ossia::net::set_value_step_size(*convert_node(node), ossia::none);
+    ossia::net::set_value_step_size(*convert_node(node), std::nullopt);
   });
 }
 double ossia_node_get_value_step_size(
@@ -689,7 +689,7 @@ void ossia_node_unset_instance_bounds(
       return;
     }
 
-    ossia::net::set_instance_bounds(*convert_node(node), ossia::none);
+    ossia::net::set_instance_bounds(*convert_node(node), std::nullopt);
   });
 }
 void ossia_node_get_instance_bounds(
@@ -733,7 +733,7 @@ void ossia_node_set_default_value(
 
     auto& n = *convert_node(node);
     if(!default_value)
-      ossia::net::set_default_value(n, ossia::none);
+      ossia::net::set_default_value(n, std::nullopt);
     else
       ossia::net::set_default_value(n, convert(default_value->value));
   });

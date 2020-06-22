@@ -14,11 +14,21 @@ class audio_protocol;
 class OSSIA_EXPORT audio_engine
 {
 public:
+  audio_engine();
   virtual ~audio_engine();
 
   virtual bool running() const = 0;
   virtual void stop() = 0;
   virtual void reload(audio_protocol* cur) = 0;
+
+
+
+  using fun_type = smallfun::function<void(unsigned long, double), 256>;
+  void set_tick(fun_type&& t);
+  void load_audio_tick();
+
+  moodycamel::ReaderWriterQueue<fun_type> tick_funlist;
+  fun_type audio_tick;
 
   std::atomic<audio_protocol*> protocol{};
   std::atomic_bool stop_processing{};
@@ -31,11 +41,6 @@ public:
 class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
 public:
-  std::atomic_bool replace_tick{false};
-  using fun_type = smallfun::function<void(unsigned long, double), 256>;
-  fun_type ui_tick;
-  fun_type audio_tick;
-
   static void process_generic(
       audio_protocol& self, float* const* inputs, float** outputs, int n_in,
       int n_out, uint64_t nsamples);
@@ -43,30 +48,6 @@ public:
   audio_protocol();
   ~audio_protocol() override;
   void stop() override;
-
-  void set_tick(fun_type&& t)
-  {
-    if (engine && engine->running() && !engine->stop_processing)
-    {
-      ui_tick = std::move(t);
-      replace_tick = true;
-
-      int i = 0;
-      while (replace_tick && i < 200)
-      {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
-        i++;
-      }
-      if(i == 200)
-      {
-        throw std::runtime_error("Audio thread is not responding");
-      }
-    }
-    else
-    {
-      audio_tick = t;
-    }
-  }
 
   void setup_tree(int inputs, int outputs);
   void advance_tick(std::size_t count);

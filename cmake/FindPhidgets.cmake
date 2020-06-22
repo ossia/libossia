@@ -24,22 +24,34 @@ elseif(UNIX)
       ${PHIDGETS_LIB_DIR}
       ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets/.libs)
 else()
+    find_path(LIBPHIDGETS_ROOT_DIR lib/c/phidget22.h
+      HINTS
+        ${PHIDGETS_INCLUDE_DIR}
+        ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets
+        c:/phidget22-windevel
+        lib/c
+    )
 
     find_path(LIBPHIDGETS_INCLUDE_DIR phidget22.h
       HINTS
         ${PHIDGETS_INCLUDE_DIR}
         ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/libphidgets
+        "${LIBPHIDGETS_ROOT_DIR}/lib/c"
         c:/phidget22-windevel
-      )
+    )
 
     if(CMAKE_SIZEOF_VOID_P MATCHES 4)
       find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22.lib phidget22
         HINTS
-          c:/phidget22-windevel/x86)
+          c:/phidget22-windevel/x86          
+          "${LIBPHIDGETS_ROOT_DIR}/lib/c/x86"
+      )
     else()
       find_library(LIBPHIDGETS_LIBRARIES NAMES phidget22.lib phidget22
         HINTS
-          c:/phidget22-windevel/x64)
+          c:/phidget22-windevel/x64
+          "${LIBPHIDGETS_ROOT_DIR}/lib/c/x64"
+      )
     endif()
 endif()
 include(FindPackageHandleStandardArgs)
