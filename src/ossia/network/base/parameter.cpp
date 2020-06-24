@@ -6,6 +6,7 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 
 #include <future>
+#include <iostream>
 /*
 template class ossia::callback_container<ossia::value_callback>;
 */
