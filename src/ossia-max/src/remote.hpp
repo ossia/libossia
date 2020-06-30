@@ -20,10 +20,8 @@ public:
   bool unregister();
 
   ossia::net::device_base* m_dev{};
-  float m_rate_min;
 
   void set_unit();
-  void set_rate();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
 
@@ -35,7 +33,6 @@ public:
   static void get_mess_cb(remote* x, t_symbol* s);
   static void get_unit(remote*x);
   static void get_mute(remote*x);
-  static void get_rate(remote*x);
 
   static void assist(ossia::max::remote*, void*, long, long, char*);
   static void* create(t_symbol*, long, t_atom*);

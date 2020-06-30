@@ -224,13 +224,6 @@ void remote::get_mute(remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote::get_rate(remote*x)
-{
-  t_atom a;
-  A_SETFLOAT(&a,x->m_rate);
-  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-}
-
 bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   if(m_mute) return false;
@@ -453,8 +446,6 @@ void remote::get_mess_cb(remote* x, t_symbol* s)
     remote::get_unit(x);
   if ( s == gensym("mute") )
     remote::get_mute(x);
-  if ( s == gensym("rate") )
-    remote::get_rate(x);
   else
     parameter_base::get_mess_cb(x,s);
 }
