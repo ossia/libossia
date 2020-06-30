@@ -17,42 +17,42 @@
 
 using namespace ossia;
 
-TEST_CASE( "Addresses", "[Addresses]" )
+TEST_CASE( "Nodes", "[Nodes]" )
 {
   ossia::net::generic_device device{"test"};
   auto cld = device.create_child("child");
-  auto address = cld->create_parameter();
-  REQUIRE(address != nullptr);
-  if(address == nullptr)
+  auto node = cld->create_parameter();
+  REQUIRE(node != nullptr);
+  if(node == nullptr)
     return;
 
-  REQUIRE(&address->get_node() == device.children().front().get());
-  REQUIRE(&address->get_node().get_device() == &device);
+  REQUIRE(&node->get_node() == device.children().front().get());
+  REQUIRE(&node->get_node().get_device() == &device);
 
-  REQUIRE(address->get_value_type() == val_type::IMPULSE);
+  REQUIRE(node->get_value_type() == val_type::IMPULSE);
 
-  address->set_value_type(val_type::INT);
-  REQUIRE(address->get_value_type() == val_type::INT);
+  node->set_value_type(val_type::INT);
+  REQUIRE(node->get_value_type() == val_type::INT);
 
-  REQUIRE(address->get_access() == ossia::access_mode::BI);
+  REQUIRE(node->get_access() == ossia::access_mode::BI);
 
-  address->set_access(ossia::access_mode::SET);
-  REQUIRE(address->get_access() == ossia::access_mode::SET);
+  node->set_access(ossia::access_mode::SET);
+  REQUIRE(node->get_access() == ossia::access_mode::SET);
 
-  REQUIRE(!address->get_domain());
+  REQUIRE(!node->get_domain());
 
-  address->set_domain(make_domain(0, 100));
-  REQUIRE(address->get_domain() == make_domain(0, 100));
+  node->set_domain(make_domain(0, 100));
+  REQUIRE(node->get_domain() == make_domain(0, 100));
 
-  REQUIRE(address->get_bounding() == ossia::bounding_mode::FREE);
+  REQUIRE(node->get_bounding() == ossia::bounding_mode::FREE);
 
-  address->set_bounding(ossia::bounding_mode::CLIP);
-  REQUIRE(address->get_bounding() == ossia::bounding_mode::CLIP);
+  node->set_bounding(ossia::bounding_mode::CLIP);
+  REQUIRE(node->get_bounding() == ossia::bounding_mode::CLIP);
 
-  REQUIRE(address->get_repetition_filter() == repetition_filter::OFF);
+  REQUIRE(node->get_repetition_filter() == repetition_filter::OFF);
 
-  address->set_repetition_filter(repetition_filter::ON);
-  REQUIRE(address->get_repetition_filter() == repetition_filter::ON);
+  node->set_repetition_filter(repetition_filter::ON);
+  REQUIRE(node->get_repetition_filter() == repetition_filter::ON);
 }
 
 // TODO add some checks
