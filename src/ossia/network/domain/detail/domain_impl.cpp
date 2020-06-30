@@ -161,7 +161,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
   else
   {
     // Return a valid value only if it is in the given values
-    auto it = domain.values.find(val);
+    auto it = ossia::find(domain.values, val);
     if (it != domain.values.end())
     {
       return T(*it);
@@ -298,7 +298,7 @@ operator()(bounding_mode b, std::array<float, N> val) const
     for (std::size_t i = 0; i < N; i++)
     {
       // Return a valid value only if it is in the given values
-      auto it = values.find(val[i]);
+      auto it = ossia::find(values, val[i]);
       if (it == values.end())
       {
         return {};
@@ -737,7 +737,7 @@ value generic_clamp::operator()(bounding_mode b, const value& v) const
   else
   {
     // Return a valid value only if it is in the given values
-    auto it = values.find(v);
+    auto it = ossia::find(values, v);
     return (it != values.end()) ? v : ossia::value{};
   }
 }
@@ -802,7 +802,7 @@ value generic_clamp::operator()(bounding_mode b, value&& v) const
   else
   {
     // Return a valid value only if it is in the given values
-    auto it = values.find(v);
+    auto it = ossia::find(values, v);
     return (it != values.end()) ? std::move(v) : ossia::value{};
   }
 }
@@ -903,7 +903,7 @@ operator()(bounding_mode b, const std::vector<ossia::value>& val) const
     for (auto& v : val)
     {
       // Return a valid value only if all the subvalues are in the given values
-      auto it = values.find(v);
+      auto it = ossia::find(values, v);
       if (it == values.end())
       {
         return {};
@@ -998,7 +998,7 @@ operator()(bounding_mode b, std::vector<ossia::value>&& val) const
     for (auto& v : val)
     {
       // Return a valid value only if it is in the given values
-      auto it = values.find(v);
+      auto it = ossia::find(values, v);
       if (it == values.end())
       {
         // TODO should we remove the "bad" value instead ?
