@@ -244,8 +244,8 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/559-ghost_doublon.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/545-bind_remote_without_args.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/545-bind_remote_without_args.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/543-double_namespace.maxtest.maxpat
 
         # test dependencies
