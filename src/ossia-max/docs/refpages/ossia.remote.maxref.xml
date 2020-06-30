@@ -323,12 +323,13 @@
 
 		<attribute name="rate" get="1" set="1" type="integer" size="1">
 			<digest>
-				Determine the refresh interval at which values will be set and get
+				An optional value that says how often a value should be updated.			
 			</digest>
 			<description>
-				The <at>rate</at> attribute defines the interval at which values will be set and get from/to the parameter
+				The <at>rate</at> attribute is an optional value that says how often a value should be updated. Currently does nothing in Max but remote application can use it to limit the data rate of that parameter.
 			</description>
 		</attribute>
+
 
 		<attribute name="repetitions" get="1" set="1" type="boolean" size="1">
 			<digest>
