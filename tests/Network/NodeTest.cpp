@@ -98,6 +98,28 @@ TEST_CASE ("test_edition", "test_edition")
 
     REQUIRE(node->get_name() == "child");
   }
+
+  {
+    auto params = ossia::net::find_or_create_parameter(device.get_root_node(), "child", "float");
+    REQUIRE(params.size() == 1);
+  }
+
+  {
+    auto complex_param = ossia::net::find_or_create_parameter(device.get_root_node(),
+                                                              "myspat.1/source.1/gain.L",
+                                                              "gain.linear");
+
+    REQUIRE(complex_param.size() == 1);
+
+    auto params = ossia::net::find_or_create_parameter(device.get_root_node(),
+                                                      "myspat.1/source.1/gain.L",
+                                                      "gain.linear");
+
+    REQUIRE(params.size() == 1);
+
+    // '.1' suffix should have been added to the name
+    REQUIRE(params[0]->get_node().get_name() == "gain.L.1");
+  }
 }
 
 TEST_CASE ("test_path", "test_path")
