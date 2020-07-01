@@ -133,6 +133,19 @@ struct formatter<std::vector<ossia::value>>
   }
 };
 
+template <typename T>
+struct formatter<std::vector<T>>
+{
+  template <typename ParseContext>
+  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  template <typename FormatContext>
+  auto format(const std::vector<T>& v, FormatContext &ctx)
+  {
+    return format_vec(v, ctx);
+  }
+};
+
 template <>
 struct formatter<std::vector<fc::flat_set<std::vector<ossia::value>>>>
 {

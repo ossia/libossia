@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain_base.hpp>
+#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {
@@ -21,7 +22,7 @@ struct value_set_clamp
     }
     else
     {
-      auto it = values.find(val);
+      auto it = ossia::find(values, val);
       return (it != values.end()) ? ossia::value{std::forward<U>(val)}
                                   : ossia::value{};
     }
@@ -78,10 +79,11 @@ struct value_set_update_visitor
   void operator()(ossia::domain_base<T>& dom)
   {
     dom.values.clear();
+    dom.values.reserve(values.size());
     for (auto& value : values)
     {
       if (auto r = value.target<T>())
-        dom.values.insert(*r);
+        dom.values.push_back(*r);
     }
   }
 
@@ -102,7 +104,7 @@ struct value_set_update_visitor
     dom.values.clear();
     for (auto& value : values)
     {
-      dom.values.insert(value);
+      dom.values.push_back(value);
     }
   }
 
