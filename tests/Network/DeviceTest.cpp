@@ -70,6 +70,30 @@ template<>
 struct matching_domain<ossia::val_type::VEC4F>
 { using type = ossia::vecf_domain<4>; };
 
+const std::vector<ossia::value> value_to_test{
+    ossia::impulse{},
+    int32_t{0},
+    int32_t{-1000},
+    int32_t{1000},
+    float{0},
+    float{-1000},
+    float{1000},
+    bool{true},
+    bool{false},
+    char{},
+    char{'a'},
+    std::string{""},
+    std::string{"Welcome to the wonderful OSSIA world!"},
+    std::vector<ossia::value>{},
+    std::vector<ossia::value>{int32_t{0}},
+    std::vector<ossia::value>{int32_t{0}, int32_t{1}},
+    std::vector<ossia::value>{float{0}, int32_t{1}},
+    std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::impulse{}},
+    std::vector<ossia::value>{float{0}, float{1000}},
+    ossia::vec2f{},
+    ossia::vec3f{},
+    ossia::vec4f{}
+};
 
 struct remote_data
 {
@@ -85,48 +109,37 @@ struct remote_data
     for(int i = 0; i < N; i++)
     {
       auto cld = local_device.create_child(std::to_string(i));
-      local_addr.push_back(cld->create_parameter((ossia::val_type) i));
+      std::vector<ossia::net::parameter_base*> params;
+      params.reserve(value_to_test.size());
+      for(size_t j = 0; j<value_to_test.size(); j++)
+      {
+        auto node = cld->create_child(std::to_string(j));
+        auto param = node->create_parameter(value_to_test[j].get_type());
+        params.push_back(param);
+      }
+      local_addr.push_back(params);
     }
 
     for(int i = 0; i < N; i++)
     {
       auto cld = remote_device.create_child(std::to_string(i));
-      remote_addr.push_back(cld->create_parameter((ossia::val_type) i));
+      std::vector<ossia::net::parameter_base*> params;
+      params.reserve(value_to_test.size());
+      for(size_t j = 0; j<value_to_test.size(); j++)
+      {
+        auto node = cld->create_child(std::to_string(j));
+        auto param = node->create_parameter(value_to_test[j].get_type());
+        params.push_back(param);
+      }
+      remote_addr.push_back(params);
     }
   }
 
   ossia::net::generic_device local_device;
   ossia::net::generic_device remote_device;
 
-  std::vector<ossia::net::parameter_base*> local_addr;
-  std::vector<ossia::net::parameter_base*> remote_addr;
-};
-
-
-
-const std::vector<ossia::value> value_to_test{
-  ossia::impulse{},
-  int32_t{0},
-  int32_t{-1000},
-  int32_t{1000},
-  float{0},
-  float{-1000},
-  float{1000},
-  bool{true},
-  bool{false},
-  char{},
-  char{'a'},
-  std::string{""},
-  std::string{"ossia"},
-  std::vector<ossia::value>{},
-  std::vector<ossia::value>{int32_t{0}},
-  std::vector<ossia::value>{int32_t{0}, int32_t{1}},
-  std::vector<ossia::value>{float{0}, int32_t{1}},
-  std::vector<ossia::value>{float{0}, int32_t{1}, std::string{}, ossia::impulse{}},
-  std::vector<ossia::value>{float{0}, float{1000}},
-  ossia::vec2f{},
-  ossia::vec3f{},
-  ossia::vec4f{}
+  std::vector<std::vector<ossia::net::parameter_base*>> local_addr;
+  std::vector<std::vector<ossia::net::parameter_base*>> remote_addr;
 };
 
 template<typename FunProto1, typename FunProto2>
@@ -142,35 +155,44 @@ void test_comm_generic(
   auto push_all_values = [&] {
     for(int i = 0; i < N; i++)
     {
+      int j = 0;
       for(const ossia::value& val : value_to_test)
       {
-        local_addr[i]->set_value_type(val.get_type());
-        local_addr[i]->push_value(val);
+        local_addr[i][j]->set_value_type(val.get_type());
+        local_addr[i][j]->push_value(val);
+        j++;
       }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
     for(int i = 0; i < N; i++)
     {
-      local_addr[i]->set_value_type((ossia::val_type) i);
-      local_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
-    }
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
-
-    for(int i = 0; i < N; i++)
-    {
+      int j = 0;
       for(const ossia::value& val : value_to_test)
       {
-        remote_addr[i]->set_value_type(val.get_type());
-        remote_addr[i]->push_value(val);
+        REQUIRE(remote_addr[i][j]->value() == val);
+        remote_addr[i][j]->push_value(val);
       }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
 
+    int j = 0;
     for(int i = 0; i < N; i++)
     {
-      remote_addr[i]->set_value_type((ossia::val_type) i);
-      remote_addr[i]->push_value(ossia::init_value((ossia::val_type) i));
+      local_addr[i][j]->set_value_type((ossia::val_type) i);
+      local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
+      j++;
+    }
+    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+
+    for(int i = 0; i < N; i++)
+    {
+      int j = 0;
+      for(const ossia::value& val : value_to_test)
+      {
+        remote_addr[i][j]->push_value(ossia::init_value((ossia::val_type) val.get_type()));
+        j++;
+      }
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(20));
   };
@@ -178,13 +200,19 @@ void test_comm_generic(
   push_all_values();
 
 
-  for(auto val : local_addr)
+  for(const auto& vec : local_addr)
   {
-    rem.local_device.get_protocol().observe(*val, true);
+    for(auto val : vec)
+    {
+      rem.local_device.get_protocol().observe(*val, true);
+    }
   }
-  for(auto val : remote_addr)
+  for(const auto& vec : remote_addr)
   {
-    rem.remote_device.get_protocol().observe(*val, true);
+    for(auto val : vec)
+    {
+      rem.remote_device.get_protocol().observe(*val, true);
+    }
   }
   push_all_values();
 
@@ -225,12 +253,14 @@ void test_comm_generic(
     }
   };
 
-  test_all_values(local_addr);
+  for(auto& vec : local_addr)
+    test_all_values(vec);
 
   for(int i = 0; i < 10; i++)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  test_all_values(remote_addr);
+  for(auto& vec : remote_addr)
+    test_all_values(vec);
 
   for(int i = 0; i < 10; i++)
       std::this_thread::sleep_for(std::chrono::milliseconds(100));
