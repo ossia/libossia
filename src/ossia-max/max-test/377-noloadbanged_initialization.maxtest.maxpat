@@ -2,14 +2,15 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
+			"major" : 8,
+			"minor" : 1,
 			"revision" : 5,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 350.0, 113.0, 737.0, 623.0 ],
+		"classnamespace" : "box",
+		"rect" : [ 350.0, 113.0, 785.0, 623.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -36,6 +37,7 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
@@ -45,7 +47,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 72.0, 466.0, 276.0, 33.0 ],
-					"style" : "",
 					"text" : "works on 2019.06.21 with  3c9fef2af48a2152cf40ca603d14840dfaabc576"
 				}
 
@@ -57,7 +58,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 291.0, 315.0, 34.0, 22.0 ],
-					"style" : "",
 					"text" : "print"
 				}
 
@@ -70,7 +70,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 428.0, 538.0, 150.0, 33.0 ],
-					"style" : "",
 					"text" : "It creates a new object and send some value to it."
 				}
 
@@ -83,7 +82,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 428.0, 466.0, 163.0, 60.0 ],
-					"style" : "",
 					"text" : "This patcher tests if a newly created object in a patcher without other ossia object is well registered"
 				}
 
@@ -96,7 +94,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 218.5, 242.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "del 100"
 				}
 
@@ -109,8 +106,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 141.0, 378.0, 50.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 141.0, 378.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -121,8 +117,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 47.0, 283.0, 24.0, 24.0 ],
-					"style" : ""
+					"parameter_enable" : 0,
+					"patching_rect" : [ 47.0, 283.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -134,8 +130,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 525.0, 73.0, 50.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 525.0, 73.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -147,8 +142,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 279.888916, 276.0, 50.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 279.888915999999995, 276.0, 50.0, 22.0 ],
 					"varname" : "buf"
 				}
 
@@ -160,8 +154,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 432.999969, 102.0, 34.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 432.999969000000021, 102.0, 34.0, 22.0 ],
 					"text" : "t b b"
 				}
 
@@ -174,7 +167,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
 					"patching_rect" : [ 177.0, 172.0, 34.0, 22.0 ],
-					"style" : "",
 					"text" : "t b b"
 				}
 
@@ -187,7 +179,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 177.0, 143.0, 57.0, 22.0 ],
-					"style" : "",
 					"text" : "del 1000"
 				}
 
@@ -200,7 +191,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 362.0, 266.0, 113.0, 22.0 ],
-					"style" : "",
 					"text" : "script delete param"
 				}
 
@@ -212,9 +202,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111099, 8.0, 58.0, 22.0 ],
-					"presentation_rect" : [ 177.111099, 8.0, 58.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.111098999999996, 8.0, 58.0, 22.0 ],
 					"text" : "loadbang"
 				}
 
@@ -229,14 +217,13 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 495.0, 231.0, 243.0, 76.0 ],
 					"presentation_linecount" : 6,
-					"presentation_rect" : [ 433.0, 134.0, 205.0, 77.0 ],
-					"style" : "",
 					"text" : "script newobject newobj @text \"ossia.parameter toto @default 123\" @varname param @patching_position 270 134, script connect trigger 2 param 0, script connect param 0 buf 0"
 				}
 
 			}
 , 			{
 				"box" : 				{
+					"checkedcolor" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-25",
 					"maxclass" : "toggle",
 					"numinlets" : 1,
@@ -244,8 +231,7 @@
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
 					"patching_rect" : [ 272.0, 351.0, 24.0, 24.0 ],
-					"presentation_rect" : [ 272.0, 351.0, 24.0, 24.0 ],
-					"style" : ""
+					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
 				}
 
 			}
@@ -256,9 +242,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 177.11113, 426.0, 81.0, 22.0 ],
-					"presentation_rect" : [ 177.11113, 426.0, 81.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.111130000000003, 426.0, 81.0, 22.0 ],
 					"text" : "test.terminate"
 				}
 
@@ -270,8 +254,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111099, 73.0, 37.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.111098999999996, 73.0, 37.0, 22.0 ],
 					"text" : "del 1"
 				}
 
@@ -284,8 +267,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"patching_rect" : [ 218.5, 319.0, 29.5, 22.0 ],
-					"presentation_rect" : [ 218.5, 319.0, 29.5, 22.0 ],
-					"style" : "",
 					"text" : "i"
 				}
 
@@ -297,9 +278,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 177.111099, 38.0, 274.888885, 22.0 ],
-					"presentation_rect" : [ 177.111099, 38.0, 274.888885, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.111098999999996, 38.0, 274.888885000000016, 22.0 ],
 					"text" : "t b b"
 				}
 
@@ -311,8 +290,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 4,
 					"outlettype" : [ "bang", "bang", "int", "int" ],
-					"patching_rect" : [ 177.111099, 102.0, 246.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.111098999999996, 102.0, 246.0, 22.0 ],
 					"text" : "t b b 100 37",
 					"varname" : "trigger"
 				}
@@ -326,8 +304,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"patching_rect" : [ 218.5, 351.0, 46.0, 22.0 ],
-					"presentation_rect" : [ 218.5, 351.0, 46.0, 22.0 ],
-					"style" : "",
 					"text" : "== 100"
 				}
 
@@ -341,8 +317,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 218.5, 382.0, 117.0, 22.0 ],
-					"presentation_rect" : [ 218.5, 382.0, 117.0, 22.0 ],
-					"style" : "",
 					"text" : "test.assert initialized"
 				}
 
@@ -355,9 +329,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 433.0, 397.0, 67.0, 22.0 ],
-					"presentation_rect" : [ 433.0, 232.0, 67.0, 22.0 ],
 					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
-					"style" : "",
 					"text" : "thispatcher"
 				}
 
