@@ -34,6 +34,11 @@ public:
 
   ~wrapped_node() override
   {
+    clear();
+  }
+
+  void clear()
+  {
     about_to_be_deleted(*this);
 
     write_lock_t lock{m_mutex};
@@ -167,6 +172,10 @@ public:
       write_lock_t lock{this->m_mutex};
       this->m_children.clear();
     }
+
+    // Parameters, etc of the device's own node must also be cleared
+    // before removing the protocol:
+    Node_T::clear();
 
     m_protocol.reset();
   }
