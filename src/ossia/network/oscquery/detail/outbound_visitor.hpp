@@ -19,6 +19,8 @@ public:
   oscpack::OutboundPacketStream& p;
   void operator()(impulse) const
   {
+    if (m_depth > 0)
+      p << oscpack::Infinitum();
   }
 
   void operator()(int32_t i) const

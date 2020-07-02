@@ -11,12 +11,12 @@ namespace ossia
 {
 namespace net
 {
-
-struct osc_outbound_visitor
+struct osc_outbound_array_visitor
 {
   oscpack::OutboundPacketStream& p;
   void operator()(impulse) const
   {
+    p << oscpack::Infinitum();
   }
 
   void operator()(int32_t i) const
@@ -69,6 +69,25 @@ struct osc_outbound_visitor
 
   void operator()() const
   {
+  }
+};
+
+struct osc_outbound_visitor : osc_outbound_array_visitor
+{
+  using osc_outbound_array_visitor::operator();
+  void operator()(impulse) const
+  {
+  }
+
+  void operator()(const std::vector<value>& t) const
+  {
+    // We separate this case because an ossia::impulse type on its own
+    // should not have anything but a vector{ossia::impulse, ossia::impulse} should be [II]
+    const auto& self = static_cast<const osc_outbound_array_visitor&>(*this);
+    for (const auto& val : t)
+    {
+      val.apply(self);
+    }
   }
 };
 }
