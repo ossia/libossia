@@ -60,6 +60,7 @@ public:
   long m_critical{0};
   t_symbol* m_unit{};
   std::optional<ossia::unit_t> m_ounit;
+  ossia::value m_loadbanged_value;
 
   // size of size-variable attribute
   long m_default_size{};

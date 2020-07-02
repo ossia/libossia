@@ -270,17 +270,24 @@ void parameter_base::push_default_value(parameter_base* x)
         node = m->get_node();
         auto param = node->get_parameter();
 
-        auto it = x->m_value_map.find(node->get_name());
-        if(it != x->m_value_map.end())
+        if(x->m_loadbanged_value.valid())
         {
-          x->push_parameter_value(param, it->second, false);
+          x->push_parameter_value(param, x->m_loadbanged_value, false);
         }
         else
         {
-          auto def_val = ossia::net::get_default_value(*node);
-          if (def_val)
+          auto it = x->m_value_map.find(node->get_name());
+          if(it != x->m_value_map.end())
           {
-            x->push_parameter_value(param, *def_val, false);
+            x->push_parameter_value(param, it->second, false);
+          }
+          else
+          {
+            auto def_val = ossia::net::get_default_value(*node);
+            if (def_val)
+            {
+              x->push_parameter_value(param, *def_val, false);
+            }
           }
         }
       }
@@ -801,6 +808,11 @@ std::optional<std::array<float, N>> to_array(t_atom* argv)
 
 void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
+  if(x->m_otype == object_class::param && x->m_matchers.empty())
+  {
+    x->m_loadbanged_value = v;
+    return;
+  }
   for (auto m : x->m_node_selection)
   {
     if(m->is_zombie())
@@ -827,6 +839,11 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
+  if(x->m_otype == object_class::param && x->m_matchers.empty())
+  {
+    x->m_loadbanged_value = v;
+    return;
+  }
   for (auto& m :  x->m_node_selection)
   {
     if(m->is_zombie())
