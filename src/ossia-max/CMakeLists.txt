@@ -242,6 +242,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507-dynamic_registering_under_device_object.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter_on_bpatcher_deletion.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/513-impulse_test.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
@@ -260,6 +261,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/submodel-test-for-369.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507_sub_bpatch.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bpatcher.maxpat
         )
     install(
         FILES
