@@ -114,7 +114,29 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
       else if (child->m_otype == object_class::remote)
       {
         ossia::max::remote* remote = (ossia::max::remote*)child;
-        remote->register_node(m_matchers);
+        remote->register_node(m_matchers, false);
+      }
+    }
+
+    // once registered, gather all matchers and sort them by priority
+    std::vector<std::shared_ptr<t_matcher>> matchers;
+    for(const auto& child : children_view)
+    {
+      matchers.insert(matchers.end(), child->m_matchers.begin(), child->m_matchers.end());
+    }
+
+    ossia::sort(matchers, [&](const std::shared_ptr<t_matcher>& a, const std::shared_ptr<t_matcher>& b)
+    {
+      return ossia::net::get_priority(*a->get_node()) > ossia::net::get_priority(*b->get_node());
+    });
+
+    // then output their value
+    for(auto m : matchers)
+    {
+      auto v = m->get_node()->get_parameter()->value();
+      if(v.valid())
+      {
+        m->output_value(v);
       }
     }
   }
