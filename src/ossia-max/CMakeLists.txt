@@ -222,7 +222,8 @@ install(
 )
 
 if(OSSIA_MAX_TEST)
-    set(OSSIA_MAX_TEST_PATCHERS      
+    set(OSSIA_MAX_TEST_PATCHERS
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/179-priority_when_binding_view.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/312-default_broken.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/355-repetition_filter_issue.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/366-priorities_init.maxtest.maxpat
