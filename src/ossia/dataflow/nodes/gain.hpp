@@ -5,15 +5,12 @@
 namespace ossia::nodes
 {
 
-struct gain final : public ossia::nonowning_graph_node
+struct gain_node final : public ossia::nonowning_graph_node
 {
-  double m_gain{0.005};
-  ossia::audio_inlet audio_in;
-  ossia::value_inlet gain_in;
-  ossia::audio_outlet audio_out;
-
 public:
-  gain()
+  double gain{0.005};
+
+  gain_node()
   {
     m_inlets.push_back(&audio_in);
     m_inlets.push_back(&gain_in);
@@ -26,7 +23,7 @@ public:
   {
     auto& vals = gain_in.target<ossia::value_port>()->get_data();
     if (!vals.empty())
-      m_gain = ossia::clamp(
+      gain = ossia::clamp(
           ossia::linear{
               ossia::decibel{ossia::convert<float>(vals.back().value)}}
               .dataspace_value,
@@ -54,7 +51,7 @@ public:
       if (cur_chan_size < last_pos)
       {
         for (int64_t j = first_pos; j < cur_chan_size; j++)
-          output[j] = m_gain * input[j];
+          output[j] = gain * input[j];
 
         for (int64_t j = cur_chan_size; j < last_pos; j++)
           output[j] = 0.;
@@ -62,9 +59,14 @@ public:
       else
       {
         for (int64_t j = first_pos; j < last_pos; j++)
-          out[i][j] = m_gain * input[j];
+          out[i][j] = gain * input[j];
       }
     }
   }
+
+private:
+  ossia::audio_inlet audio_in;
+  ossia::value_inlet gain_in;
+  ossia::audio_outlet audio_out;
 };
 }
