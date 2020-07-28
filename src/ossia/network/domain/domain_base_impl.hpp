@@ -37,7 +37,7 @@ struct OSSIA_EXPORT domain_base
   using value_type = typename value_trait<T>::value_type;
   std::optional<value_type> min;
   std::optional<value_type> max;
-  ossia::flat_set<value_type> values;
+  std::vector<value_type> values;
 
   domain_base() noexcept
   {
@@ -132,7 +132,7 @@ struct OSSIA_EXPORT domain_base<bool>
 template <>
 struct OSSIA_EXPORT domain_base<std::string>
 {
-  ossia::flat_set<std::string> values;
+  std::vector<std::string> values;
   friend bool operator==(
       const domain_base<std::string>& lhs, const domain_base<std::string>& rhs)
   {
@@ -309,7 +309,7 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   using value_type = ossia::value;
   std::optional<value_type> min;
   std::optional<value_type> max;
-  ossia::flat_set<value_type> values;
+  std::vector<value_type> values;
 
   domain_base() noexcept
   {
@@ -354,12 +354,12 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   }
   domain_base(
       const value_type& v1, const value_type& v2,
-      const ossia::flat_set<value_type>& vals)
+      const std::vector<value_type>& vals)
       : min{v1}, max{v2}, values{vals}
   {
   }
   domain_base(
-      value_type&& v1, value_type&& v2, ossia::flat_set<value_type>&& vals)
+      value_type&& v1, value_type&& v2, std::vector<value_type>&& vals)
       : min{std::move(v1)}, max{std::move(v2)}, values{std::move(vals)}
   {
   }

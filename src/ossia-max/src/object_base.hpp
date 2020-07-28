@@ -11,6 +11,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/common/path.hpp>
 
+#include <iostream>
 #include <map>
 
 #define OSSIA_MAX_MAX_ATTR_SIZE 256

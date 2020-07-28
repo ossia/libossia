@@ -223,6 +223,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_sync.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_process.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_signature.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/mapper_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/destination_qualifiers.hpp"
@@ -233,6 +234,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state_element_fwd.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/state.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/control_message.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/flat_state.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/flat_vec_state.hpp"
 
@@ -565,6 +567,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/dataflow_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_edge_helpers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"

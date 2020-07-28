@@ -51,7 +51,7 @@ int main(int argc, char** argv)
   execution_state e;
   audio_device audio;
 
-  auto gain = std::make_shared<ossia::nodes::gain>();
+  auto gain = std::make_shared<ossia::nodes::gain_node>();
   g.add_node(gain);
   gain->root_outputs()[0]->address = &audio.get_main_out();
 

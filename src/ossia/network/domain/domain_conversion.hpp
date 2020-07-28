@@ -23,7 +23,7 @@ struct domain_conversion
       f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
-        f.values.insert(val);
+        f.values.push_back(val);
     return f;
   }
 
@@ -36,7 +36,7 @@ struct domain_conversion
       f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
-        f.values.insert(val);
+        f.values.push_back(val);
     return f;
   }
 
@@ -57,7 +57,7 @@ struct domain_conversion
       f.max = *t.max;
     if (!t.values.empty())
       for (auto val : t.values)
-        f.values.insert(val);
+        f.values.push_back(val);
     return f;
   }
 };

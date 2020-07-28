@@ -674,7 +674,7 @@ struct domain_value_set_creation_visitor
     for (auto& value : values)
     {
       if (auto r = value.target<T>())
-        dom.values.insert(*r);
+        dom.values.push_back(*r);
     }
     return dom;
   }

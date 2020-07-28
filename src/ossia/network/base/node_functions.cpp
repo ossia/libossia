@@ -648,8 +648,9 @@ std::vector<parameter_base*> find_or_create_parameter(
   // or create a new node with that name and a parameter
 
   std::vector<std::string> names;
+  bool pattern_matching = is_brace_expansion(address);
 
-  if (is_brace_expansion(address))
+  if (pattern_matching)
   {
     // 1. Replace all [ ] with { } form
     auto str = canonicalize_str(address);
@@ -675,7 +676,10 @@ std::vector<parameter_base*> find_or_create_parameter(
     else
       nodes.push_back(n);
 
-    ossia::remove_one_if(names, [&](auto& s) { return s == n->get_name(); });
+    if(pattern_matching)
+      ossia::remove_one_if(names, [&](auto& s) { return s == n->get_name(); });
+    else
+      ossia::remove_one_if(names, [&](auto& s) { return s == address; });
   }
 
   for (auto s : names)

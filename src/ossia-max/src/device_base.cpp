@@ -13,7 +13,7 @@ void device_base::on_parameter_created_callback(const ossia::net::parameter_base
   auto& node = param.get_node();
   std::string addr = ossia::net::address_string_from_node(node);
   t_atom a[2];
-  A_SETSYM(a, gensym("create"));
+  A_SETSYM(a, gensym("created"));
   A_SETSYM(a+1, gensym(addr.c_str()));
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
@@ -35,7 +35,7 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
   auto& node = param.get_node();
   std::string addr = ossia::net::address_string_from_node(node);
   t_atom a[2];
-  A_SETSYM(a, gensym("delete"));
+  A_SETSYM(a, gensym("removed"));
   A_SETSYM(a+1, gensym(addr.c_str()));
   outlet_anything(m_dumpout, gensym("parameter"), 2, a);
 }
@@ -100,7 +100,7 @@ void device_base::on_node_renamed_callback(
   std::string addr = ossia::net::address_string_from_node(node);
   std::string old_addr = addr.substr(0, addr.size()-name.size()) + old_name;
   t_atom a[3];
-  A_SETSYM(a, gensym("rename"));
+  A_SETSYM(a, gensym("renamed"));
   A_SETSYM(a+1, gensym(old_addr.c_str()));
   A_SETSYM(a+2, gensym(addr.c_str()));
   outlet_anything(m_dumpout, gensym("node"), 3, a);

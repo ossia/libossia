@@ -82,7 +82,7 @@ domain make_domain(const ossia::value& min, const ossia::value& max)
 domain make_domain(const std::vector<std::string>& s)
 {
   domain_base<std::string> v;
-  v.values.insert(s.begin(), s.end());
+  v.values.insert(v.values.end(), s.begin(), s.end());
   return domain{std::move(v)};
 }
 

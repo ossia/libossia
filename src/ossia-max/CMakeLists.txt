@@ -1,4 +1,3 @@
-cmake_minimum_required(VERSION 3.17)
 project(ossia-max C CXX)
 
 set(CMAKE_SUPPRESS_REGENERATION true)
@@ -223,7 +222,8 @@ install(
 )
 
 if(OSSIA_MAX_TEST)
-    set(OSSIA_MAX_TEST_PATCHERS      
+    set(OSSIA_MAX_TEST_PATCHERS
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/179-priority_when_binding_view.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/312-default_broken.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/355-repetition_filter_issue.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/366-priorities_init.maxtest.maxpat
@@ -242,11 +242,16 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/503-patcher_registration.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507-dynamic_registering_under_device_object.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter_on_bpatcher_deletion.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/513-impulse_test.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/559-ghost_doublon.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/545-bind_remote_without_args.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/545-bind_remote_without_args.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/543-double_namespace.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/565-range_values_order.maxtest.maxpat
 
         # test dependencies
         ${CMAKE_CURRENT_LIST_DIR}/max-test/559-master_subpatcher.maxpat
@@ -257,6 +262,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/submodel-test-for-369.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/507_sub_bpatch.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bpatcher.maxpat
         )
     install(
         FILES

@@ -370,7 +370,7 @@ struct domain_visitor {
     {
       x->m_range_size = d.values.size() > OSSIA_MAX_MAX_ATTR_SIZE ? OSSIA_MAX_MAX_ATTR_SIZE : d.values.size();
       int i=0;
-      for(const auto& s : d.values.container)
+      for(const auto& s : d.values)
       {
         auto sym = gensym(s.c_str());
         A_SETSYM(x->m_range+i, sym);

@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
   e.register_device(&osc.device);
 
   // multiplies the inputs by a float value
-  auto gain = std::make_shared<ossia::nodes::gain>();
+  auto gain = std::make_shared<ossia::nodes::gain_node>();
   g.add_node(gain);
 
   // the gain node can be controlled through the OSC address /volume,

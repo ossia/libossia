@@ -885,56 +885,27 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       start_with_symbol = true;
     }
 
-    bool is_array = false;
-
-    /*
-    if(!start_with_symbol)
+    for (; argc > 0; argc--, argv++)
     {
-      switch(argc)
+      switch(argv->a_type)
       {
-        case 2:
-          if(auto arr = to_array<2>(argv)) {
-            is_array = true;
-            convert_or_push(x, *arr, set_flag);
-          }
+        case A_SYM:
+          list.push_back(std::string(atom_getsym(argv)->s_name));
           break;
-        case 3:
-          if(auto arr = to_array<3>(argv)) {
-            is_array = true;
-            convert_or_push(x, *arr, set_flag);
-          }
+        case A_FLOAT:
+          list.push_back(atom_getfloat(argv));
           break;
-        case 4:
-          if(auto arr = to_array<4>(argv)) {
-            is_array = true;
-            convert_or_push(x, *arr, set_flag);
-          }
+        case A_LONG:
+          list.push_back(static_cast<long>(atom_getlong(argv)));
           break;
+        default:
+          object_error((t_object*)x, "value type not handled");
       }
     }
-    */
-
-    if (!is_array)
-    {
-      for (; argc > 0; argc--, argv++)
-      {
-        switch(argv->a_type)
-        {
-          case A_SYM:
-            list.push_back(std::string(atom_getsym(argv)->s_name));
-            break;
-          case A_FLOAT:
-            list.push_back(atom_getfloat(argv));
-            break;
-          case A_LONG:
-            list.push_back(static_cast<long>(atom_getlong(argv)));
-            break;
-          default:
-            object_error((t_object*)x, "value type not handled");
-        }
-      }
+    if(list.size() == 1)
+      convert_or_push(x, std::move(list[0]), set_flag);
+    else
       convert_or_push(x, std::move(list), set_flag);
-    }
   }
 }
 

@@ -52,8 +52,10 @@ public:
   {
     auto& vals = freq_in.target<ossia::value_port>()->get_data();
     if (!vals.empty())
+    {
       freq = ossia::clamp(
           ossia::convert<float>(vals.back().value), 0.f, 20000.f);
+    }
 
     auto& audio = audio_out->samples;
     auto N = t.physical_write_duration(st.modelToSamples());

@@ -224,20 +224,13 @@ void remote::get_mute(remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote::get_rate(remote*x)
-{
-  t_atom a;
-  A_SETFLOAT(&a,x->m_rate);
-  outlet_anything(x->m_dumpout, gensym("rate"), 1, &a);
-}
-
-bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
 {
   if(m_mute) return false;
 
   update_path();
 
-  bool res = do_registration(matchers);
+  bool res = do_registration(matchers, output_value);
 
   if (res)
   {
@@ -275,7 +268,7 @@ void remote::on_device_deleted(const net::node_base &)
   m_dev = nullptr;
 }
 
-bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
 {
   unregister();
 
@@ -334,14 +327,16 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
         }
       }
 
-      if (n->get_parameter()->get_value_type()
+      if (output_value && n->get_parameter()->get_value_type()
           != ossia::val_type::IMPULSE)
       {
-        auto& m = m_matchers.back();
-        auto v = n->get_parameter()->value();
-        if(v.valid())
+        for(const auto& m : m_matchers)
         {
+          auto v = m->get_node()->get_parameter()->value();
+          if(v.valid())
+          {
             m->output_value(v);
+          }
         }
       }
     }
@@ -453,8 +448,6 @@ void remote::get_mess_cb(remote* x, t_symbol* s)
     remote::get_unit(x);
   if ( s == gensym("mute") )
     remote::get_mute(x);
-  if ( s == gensym("rate") )
-    remote::get_rate(x);
   else
     parameter_base::get_mess_cb(x,s);
 }
