@@ -16,7 +16,7 @@ Please feel free to ask questions on the [forum](http://forum.ossia.io/c/libossi
 More about the general project at: http://ossia.io
 
 Documentation :
-* [Lib and Implementations](https://ossia.github.io)
+* [Lib and Implementations](https://ossia.github.io/ossia-docs)
 * [Examples](https://github.com/OSSIA/libossia/tree/master/examples)
 * [Doxygen](http://ossia.github.io/libossia/html)
 * [Building](https://github.com/OSSIA/libossia/wiki/Building)
