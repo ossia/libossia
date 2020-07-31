@@ -976,7 +976,11 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       std::vector<ossia::value> list;
       list.reserve(argc+1);
 
-      for (; argc > 1; argc--, argv++)
+      // shift to remove first argument which is the target address
+      argc--;
+      argv++;
+
+      for (; argc > 0; argc--, argv++)
       {
         switch(argv->a_type)
         {
