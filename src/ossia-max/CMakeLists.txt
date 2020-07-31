@@ -252,6 +252,7 @@ if(OSSIA_MAX_TEST)
         ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/543-double_namespace.maxtest.maxpat
         ${CMAKE_CURRENT_LIST_DIR}/max-test/565-range_values_order.maxtest.maxpat
+        ${CMAKE_CURRENT_LIST_DIR}/max-test/575-send_list.maxpat
 
         # test dependencies
         ${CMAKE_CURRENT_LIST_DIR}/max-test/559-master_subpatcher.maxpat
