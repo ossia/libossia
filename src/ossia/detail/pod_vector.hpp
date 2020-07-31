@@ -12,9 +12,9 @@ template <class T>
 struct pod_allocator
 {
   using value_type = T;
-
+    
   template <typename... Args>
-  pod_allocator(Args&&...) noexcept
+  explicit pod_allocator(Args&&...) noexcept
   {
   }
 
@@ -34,11 +34,11 @@ struct pod_allocator
     delete[] p;
   }
 
-  friend inline bool operator==(pod_allocator lhs, pod_allocator rhs) noexcept
+  friend inline bool operator==(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
   {
     return true;
   }
-  friend inline bool operator!=(pod_allocator lhs, pod_allocator rhs) noexcept
+  friend inline bool operator!=(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
   {
     return false;
   }

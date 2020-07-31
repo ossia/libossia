@@ -126,7 +126,7 @@ struct execution_mock
       if(auto val = elt.value.target<std::vector<ossia::value>>())
       {
         auto v = *val;
-        v.push_back(factor * (1 + tk.date.impl));
+        v.push_back(ossia::value {int32_t(factor * (1 + tk.date.impl))});
         out_port.write_value(std::move(v), 0);
       }
     }

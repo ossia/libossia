@@ -9,7 +9,7 @@ TEST_CASE ("test_sound_ref", "test_sound_ref")
 {
   using namespace ossia;
   nodes::sound_ref snd;
-  snd.set_sound(std::vector<float_vector>{ {0.1, 0.2, 0.3, 0.4} });
+  snd.set_sound(ossia::audio_array{ {0.1, 0.2, 0.3, 0.4} });
 
   execution_state e;
   e.bufferSize = 9;

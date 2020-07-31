@@ -98,8 +98,10 @@ struct OSSIA_EXPORT time_value
   /*! addition operator */
   constexpr time_value operator+(double d) const noexcept
   {
+#if !defined(_MSC_VER)
     assert(!std::isnan(d));
     assert(d < static_cast<double>(infinite_min));
+#endif
     return *this + time_value{int64_t(d)};
   }
   constexpr time_value operator+(int64_t d) const noexcept
@@ -199,8 +201,10 @@ struct OSSIA_EXPORT time_value
   /*! substraction operator */
   constexpr time_value operator-(double d) const noexcept
   {
+#if !defined(_MSC_VER)
     assert(!std::isnan(d));
     assert(d < static_cast<double>(infinite_min));
+#endif
     return *this - time_value{int64_t(d)};
   }
 

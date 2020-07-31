@@ -710,7 +710,7 @@ TEST_CASE ("test_tokens", "test_tokens")
   s.interval->start();
   s.interval->tick(700_tv, default_request());
 
-  ossia::small_vector<simple_token_request, 4> expected0{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 300_tv, 0_tv}};
+  ossia::token_request_vec expected0{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 300_tv, 0_tv}};
   REQUIRE(c0->node->requested_tokens == expected0);
 
   std::cerr << c1->node->requested_tokens.size();
@@ -719,7 +719,9 @@ TEST_CASE ("test_tokens", "test_tokens")
   REQUIRE(c1->node->requested_tokens.size() == 2);
   std::cerr << c1->node->requested_tokens[1];
 
-  ossia::small_vector<simple_token_request, 4> expected1{simple_token_request{0_tv, 0_tv, 300_tv}, simple_token_request{0_tv, 400_tv, 300_tv}};
+  ossia::token_request_vec expected1 {
+      simple_token_request {0_tv, 0_tv, 300_tv},
+      simple_token_request {0_tv, 400_tv, 300_tv}};
   REQUIRE(c1->node->requested_tokens == expected1);
 
 }
@@ -750,13 +752,17 @@ TEST_CASE ("test_tokens_max", "test_tokens_max")
 
   // In this case (when there are flexible bounsd) we go as far as possible in the tick.
   // Else this would cause deadlocks if one interval reached its max before another reached its min
-  ossia::small_vector<simple_token_request, 4> expected0{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 300_tv, 0_tv}};
+  ossia::token_request_vec expected0 {
+      simple_token_request {0_tv, 0_tv, 0_tv},
+      simple_token_request {0_tv, 300_tv, 0_tv}};
   REQUIRE(c0->node->requested_tokens == expected0);
   std::cerr << c1->node->requested_tokens.size();
   std::cerr << c1->node->requested_tokens[0];
   REQUIRE(c1->node->requested_tokens.size() == 2);
   std::cerr << c1->node->requested_tokens[1];
-  ossia::small_vector<simple_token_request, 4> expected1{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 700_tv, 0_tv}};
+  ossia::token_request_vec expected1 {
+      simple_token_request {0_tv, 0_tv, 0_tv},
+      simple_token_request {0_tv, 700_tv, 0_tv}};
   REQUIRE(c1->node->requested_tokens == expected1);
 }
 
@@ -784,13 +790,13 @@ TEST_CASE ("test_tokens_min", "test_tokens_min")
 
   {
     s.interval->tick(20_tv, default_request());
-    ossia::small_vector<simple_token_request, 4> expected0{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 20_tv, 0_tv}};
+    ossia::token_request_vec expected0{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 20_tv, 0_tv}};
     REQUIRE(c0->node->requested_tokens == expected0);
     std::cerr << c1->node->requested_tokens.size();
     std::cerr << c1->node->requested_tokens[0];
     REQUIRE(c1->node->requested_tokens.size() == 2);
     std::cerr << c1->node->requested_tokens[1];
-    ossia::small_vector<simple_token_request, 4> expected1{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 10_tv, 0_tv}};
+    ossia::token_request_vec expected1{simple_token_request{0_tv, 0_tv, 0_tv}, simple_token_request{0_tv, 10_tv, 0_tv}};
     REQUIRE(c1->node->requested_tokens == expected1);
 
     REQUIRE(c0->get_date() == 20_tv);
@@ -802,7 +808,7 @@ TEST_CASE ("test_tokens_min", "test_tokens_min")
   REQUIRE(e1->get_status() == time_event::status::NONE);
   {
     s.interval->tick(20_tv, default_request());
-    ossia::small_vector<simple_token_request, 4> expected0{simple_token_request{20_tv, 30_tv, 0_tv}};
+    ossia::token_request_vec expected0{simple_token_request{20_tv, 30_tv, 0_tv}};
     std::cerr << c0->node->requested_tokens;
     std::cerr << c1->node->requested_tokens;
     REQUIRE(c0->node->requested_tokens.size() == 1);
@@ -1159,8 +1165,8 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
     std::cout << std::flush;
 
     REQUIRE(e1->get_status() == time_event::status::HAPPENED);
-    std::vector<ossia::simple_token_request> expected0{
-      { 22050_tv, 88199_tv, 0_tv }
+    ossia::token_request_vec expected0{
+        ossia::simple_token_request {22050_tv, 88199_tv, 0_tv}
     };
 
     REQUIRE(c0->get_date() == 0_tv);
@@ -1168,11 +1174,13 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
     REQUIRE(!c0->node->requested_tokens.empty());
     REQUIRE(c0->node->requested_tokens == expected0);
 
-    std::vector<ossia::simple_token_request> expected1{
-      { 0_tv,
+    ossia::token_request_vec expected1 {
+      ossia::simple_token_request {
+        0_tv,
         0_tv,
         66149_tv }, // == 88200_tv - 22050_tv
-      { 0_tv,
+      ossia::simple_token_request {
+        0_tv,
         22051_tv,
         66149_tv } // == 88200_tv - 22050_tv
     };
@@ -1270,8 +1278,9 @@ TEST_CASE ("test_musical_bar_offset", "test_musical_bar_offset")
     std::cout << std::flush;
 
     REQUIRE(e1->get_status() == time_event::status::HAPPENED);
-    std::vector<ossia::simple_token_request> expected0{
-      { 44600_tv, 44600_tv + 87700_tv - 1_tv, 0_tv }
+    ossia::token_request_vec expected0{
+        ossia::simple_token_request {
+            44600_tv, 44600_tv + 87700_tv - 1_tv, 0_tv}
     };
 
     REQUIRE(c0->get_date() == 0_tv);
@@ -1279,11 +1288,13 @@ TEST_CASE ("test_musical_bar_offset", "test_musical_bar_offset")
     REQUIRE(!c0->node->requested_tokens.empty());
     REQUIRE(c0->node->requested_tokens == expected0);
 
-    std::vector<ossia::simple_token_request> expected1{
-      { 0_tv,
+    ossia::token_request_vec expected1 {
+      ossia::simple_token_request {
+        0_tv,
         0_tv,
         88200_tv - 501_tv },
-      { 0_tv,
+      ossia::simple_token_request {
+        0_tv,
         501_tv,
         88200_tv - 501_tv }
     };
@@ -1374,8 +1385,8 @@ TEST_CASE ("test_musical_quarter", "test_musical_quarter")
     std::cout << std::flush;
 
     REQUIRE(e1->get_status() == time_event::status::HAPPENED);
-    std::vector<ossia::simple_token_request> expected0{
-      { 20050_tv, 22049_tv, 0_tv }
+    ossia::token_request_vec expected0 {
+        ossia::simple_token_request {20050_tv, 22049_tv, 0_tv}
     };
 
     REQUIRE(c0->get_date() == 0_tv);
@@ -1383,11 +1394,13 @@ TEST_CASE ("test_musical_quarter", "test_musical_quarter")
     REQUIRE(!c0->node->requested_tokens.empty());
     REQUIRE(c0->node->requested_tokens == expected0);
 
-    std::vector<ossia::simple_token_request> expected1{
-      { 0_tv,
+    ossia::token_request_vec expected1{
+        ossia::simple_token_request {
+        0_tv,
         0_tv,
         1999_tv }, // == 5000 - (22050 - 20050)
-      { 0_tv,
+        ossia::simple_token_request {
+        0_tv,
         3001_tv,
         1999_tv } // == 88200_tv - 22050_tv
     };
@@ -1478,8 +1491,8 @@ TEST_CASE ("test_musical_eighth", "test_musical_eighth")
     std::cout << std::flush;
 
     REQUIRE(e1->get_status() == time_event::status::HAPPENED);
-    std::vector<ossia::simple_token_request> expected0{
-      { 60_tv, 11024_tv, 0_tv }
+    ossia::token_request_vec expected0{
+        ossia::simple_token_request {60_tv, 11024_tv, 0_tv}
     };
 
     REQUIRE(c0->get_date() == 0_tv);
@@ -1487,11 +1500,13 @@ TEST_CASE ("test_musical_eighth", "test_musical_eighth")
     REQUIRE(!c0->node->requested_tokens.empty());
     REQUIRE(c0->node->requested_tokens == expected0);
 
-    std::vector<ossia::simple_token_request> expected1{
-      { 0_tv,
+    ossia::token_request_vec expected1{
+      ossia::simple_token_request {
+        0_tv,
         0_tv,
         10964_tv },
-      { 0_tv,
+      ossia::simple_token_request { 
+        0_tv,
         9036_tv,
         10964_tv }
     };

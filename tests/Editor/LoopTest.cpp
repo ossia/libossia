@@ -87,7 +87,7 @@ struct test_loop
       auto child = std::make_shared<loop>(1_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
       auto snd = std::make_shared<ossia::nodes::sound_ref>(); snd1 = snd.get();
-      snd->set_sound(std::vector<ossia::float_vector>{ {1., 2., 3., 4.} });
+      snd->set_sound(ossia::audio_array{ {1., 2., 3., 4.} });
       child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
       i1->add_time_process(child);
 
@@ -99,7 +99,7 @@ struct test_loop
       auto child = std::make_shared<loop>(2_tv, time_interval::exec_callback{}, time_event::exec_callback{}, time_event::exec_callback{});
 
       auto snd = std::make_shared<ossia::nodes::sound_ref>(); snd2 = snd.get();
-      snd->set_sound(std::vector<ossia::float_vector>{ {5.,6.,7.,8.} });
+      snd->set_sound(ossia::audio_array {{5., 6., 7., 8.}});
       child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
       i2->add_time_process(child);
 
@@ -193,7 +193,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
     loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
            time_event::exec_callback{}};
     auto snd = std::make_shared<ossia::nodes::sound_ref>();
-    snd->set_sound(std::vector<ossia::float_vector>{ {0.1, 0.2, 0.3, 0.4} });
+    snd->set_sound(ossia::audio_array {{0.1, 0.2, 0.3, 0.4}});
     l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
     l.start();
@@ -208,7 +208,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
     loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
            time_event::exec_callback{}};
     auto snd = std::make_shared<ossia::nodes::sound_ref>();
-    snd->set_sound(std::vector<ossia::float_vector>{ {0.1, 0.2, 0.3, 0.4} });
+    snd->set_sound(ossia::audio_array {{0.1, 0.2, 0.3, 0.4}});
     l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
     l.start();
@@ -225,7 +225,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
     loop l{4_tv, time_interval::exec_callback{}, time_event::exec_callback{},
            time_event::exec_callback{}};
     auto snd = std::make_shared<ossia::nodes::sound_ref>();
-    snd->set_sound(std::vector<ossia::float_vector>{ {0.1, 0.2, 0.3, 0.4} });
+    snd->set_sound(ossia::audio_array {{0.1, 0.2, 0.3, 0.4}});
     l.get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
     l.start();
@@ -268,7 +268,7 @@ TEST_CASE ("test_subloop", "test_subloop")
   parent.get_time_interval().add_time_process(child);
 
   auto snd = std::make_shared<ossia::nodes::sound_ref>();
-  snd->set_sound(std::vector<ossia::float_vector>{ {0.1, 0.2, 0.3, 0.4} });
+  snd->set_sound(ossia::audio_array {{0.1, 0.2, 0.3, 0.4}});
   child->get_time_interval().add_time_process(std::make_shared<ossia::node_process>(snd));
 
   parent.start();
