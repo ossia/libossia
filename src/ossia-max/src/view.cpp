@@ -133,10 +133,14 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
     // then output their value
     for(auto m : matchers)
     {
-      auto v = m->get_node()->get_parameter()->value();
-      if(v.valid())
+      auto p = m->get_node()->get_parameter();
+      if(p)
       {
-        m->output_value(v);
+        auto v = p->value();
+        if(v.valid())
+        {
+          m->output_value(v);
+        }
       }
     }
   }
