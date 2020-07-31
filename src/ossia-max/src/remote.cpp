@@ -196,6 +196,10 @@ void remote::set_unit()
           m_unit = gensym("");
           break;
         } else {
+          outlet_anything(m->get_parent()->m_dumpout,gensym("address"),1, m->get_atom_addr_ptr());
+          t_atom a;
+          A_SETSYM(&a, m_unit);
+          outlet_anything(m->get_parent()->m_dumpout,gensym("unit"),   1, &a);
           m->output_value(m->get_node()->get_parameter()->value());
         }
       }
