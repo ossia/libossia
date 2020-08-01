@@ -12,19 +12,22 @@ endif()
 
 message(STATUS "Update ossia-pd dependencies: pure-data and CicmWrapper")
 if(OSSIA_PURR_DATA)
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/purr-data
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  execute_process(COMMAND git checkout ef2d85771b3e5f01cc41e6f236f27afe09378f4d
-                  WORKING_DIRECTORY ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper)
+  if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/purr-data")
+    execute_process(COMMAND git clone --recursive -j16 https://github.com/jcelerier/purr-data
+                    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+    execute_process(COMMAND git clone --recursive -j16 https://github.com/jcelerier/CicmWrapper
+                    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+  endif()
 else()
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/pure-data
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
-  execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/CicmWrapper
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+  if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/pure-data")
+    execute_process(COMMAND git clone --recursive -j16 https://git.code.sf.net/p/pure-data/pure-data
+                    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+    execute_process(COMMAND git checkout 0.49-0
+                    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/pure-data")
+    execute_process(COMMAND git clone --recursive -j16 https://github.com/jcelerier/CicmWrapper
+                    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+  endif()
 endif()
-
 
 
 if(MSVC)
