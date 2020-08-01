@@ -7,10 +7,8 @@ if(OSSIA_NODEJS)
   add_subdirectory(ossia-node)
 endif()
 
-if(NOT WIN32)
 if(OSSIA_PYTHON)
   add_subdirectory(ossia-python ossia-python/pyossia)
-endif()
 endif()
 
 if(OSSIA_PD)
