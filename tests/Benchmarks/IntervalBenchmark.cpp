@@ -90,19 +90,19 @@ TEST_CASE ("test_states_rigid", "test_states_rigid")
   std::cout << "\nAfter start:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 1:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 2:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 3:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 4:\n";
   print_states(*root.scenario);
 }
@@ -120,23 +120,23 @@ TEST_CASE ("test_states_flexible", "test_states_flexible")
   std::cout << "\nAfter start:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 1:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 2:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 3:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 4:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 5:\n";
   print_states(*root.scenario);
 }
@@ -154,23 +154,23 @@ TEST_CASE ("test_states_flexible_no_min", "test_states_flexible_no_min")
   std::cout << "\nAfter start:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 1:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 2:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 3:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 4:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 5:\n";
   print_states(*root.scenario);
 }
@@ -188,23 +188,23 @@ TEST_CASE ("test_states_flexible_no_max", "test_states_flexible_no_max")
   std::cout << "\nAfter start:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 1:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 2:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 3:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 4:\n";
   print_states(*root.scenario);
 
-  root.interval->tick(1000_tv);
+  root.interval->tick(1000_tv, {});
   std::cout << "\nAfter tick 5:\n";
   print_states(*root.scenario);
 }
@@ -230,7 +230,7 @@ TEST_CASE ("test_basic", "test_basic")
   for(int i = 0; i < N; i++)
   {
     auto t0 = std::chrono::high_resolution_clock::now();
-    root.interval->tick(1000_tv);
+    root.interval->tick(1000_tv, {});
     auto t1 = std::chrono::high_resolution_clock::now();
     total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
     cleanup_tokens(root);
@@ -238,7 +238,7 @@ TEST_CASE ("test_basic", "test_basic")
 
   cleanup_tokens(root);
   auto tick_us = total / double(N);
-  qDebug() << tick_us;
+  std::cerr << tick_us << "\n";
 }
 
 TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
@@ -260,7 +260,7 @@ TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
     for(int i = 0; i < N; i++)
     {
       auto t0 = std::chrono::high_resolution_clock::now();
-      root.interval->tick(1_tv);
+      root.interval->tick(1_tv, {});
       auto t1 = std::chrono::high_resolution_clock::now();
       total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
@@ -272,7 +272,7 @@ TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
 
     auto tick_us = total / double(N);
     dur.insert({k, tick_us});
-    qDebug() << tick_us;
+    std::cerr << tick_us << "\n";
   }
 #if USE_CALLGRIND
   CALLGRIND_DUMP_STATS;
@@ -305,7 +305,7 @@ TEST_CASE ("test_graph_parallel_infinite", "test_graph_parallel_infinite")
     for(int i = 0; i < N; i++)
     {
       auto t0 = std::chrono::high_resolution_clock::now();
-      root.interval->tick(1_tv);
+      root.interval->tick(1_tv, {});
       auto t1 = std::chrono::high_resolution_clock::now();
       total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
 
@@ -317,7 +317,7 @@ TEST_CASE ("test_graph_parallel_infinite", "test_graph_parallel_infinite")
 
     auto tick_us = total / double(N);
     dur.insert({k, tick_us});
-    qDebug() << tick_us;
+    std::cerr << tick_us << "\n";
   }
 #if USE_CALLGRIND
   CALLGRIND_DUMP_STATS;
@@ -352,7 +352,7 @@ TEST_CASE ("test_graph_serial", "test_graph_serial")
     for(int i = 0; i < N; i++)
     {
       auto t0 = std::chrono::high_resolution_clock::now();
-      root.interval->tick(1000_tv);
+      root.interval->tick(1000_tv, {});
       auto t1 = std::chrono::high_resolution_clock::now();
       total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
     }
@@ -362,7 +362,7 @@ TEST_CASE ("test_graph_serial", "test_graph_serial")
 
     auto tick_us = total / double(N);
     dur.insert({k, tick_us});
-    qDebug() << tick_us;
+    std::cerr << tick_us << "\n";
   }
 #if USE_CALLGRIND
   CALLGRIND_DUMP_STATS;
@@ -404,7 +404,7 @@ TEST_CASE ("test_graph_random", "test_graph_random")
     for(int i = 0; i < N; i++)
     {
       auto t0 = std::chrono::high_resolution_clock::now();
-      root.interval->tick(10_tv);
+      root.interval->tick(10_tv, {});
       auto t1 = std::chrono::high_resolution_clock::now();
       total += std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
     }
@@ -414,7 +414,7 @@ TEST_CASE ("test_graph_random", "test_graph_random")
 
     auto tick_us = total / double(N);
     dur.insert({k, tick_us});
-    qDebug() << tick_us;
+    std::cerr << tick_us << "\n";
   }
 #if USE_CALLGRIND
   CALLGRIND_DUMP_STATS;

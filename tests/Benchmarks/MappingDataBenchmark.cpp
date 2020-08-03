@@ -58,7 +58,7 @@ int main()
         if(i%2)
         {
           auto node = std::make_shared<ossia::nodes::automation>();
-          node->outputs()[0]->address = t.float_params[dist(rand)];
+          node->root_outputs()[0]->address = t.float_params[dist(rand)];
 
           auto v = std::make_shared<ossia::curve<double, float>>();
           v->set_x0(0.); v->set_y0(0.);
@@ -88,7 +88,7 @@ int main()
       e.clear_local_state();
       e.get_new_values();
       for(auto& n : g.m_nodes)
-        n.first->request(ossia::token_request{0_tv, 1_tv, 0., 0_tv});
+        n.first->request(ossia::simple_token_request{0_tv, 1_tv});
 
       g.state(e);
       std::size_t msg_count = num_messages(e);
@@ -101,7 +101,7 @@ int main()
       {
         int64_t count = 0;
         for(auto& n : g.m_nodes)
-          n.first->request(ossia::token_request{0_tv, 1_tv, 0., 0_tv});
+          n.first->request(ossia::simple_token_request{0_tv, 1_tv});
 
         auto t0 = std::chrono::steady_clock::now();
         CALLGRIND_START_INSTRUMENTATION;

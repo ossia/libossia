@@ -98,7 +98,7 @@ int main()
           const auto& autom = automs[i];
           const auto& mapping = mappings[i];
 
-          g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, autom->outputs()[0], mapping->inputs()[0], autom, mapping));
+          g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, autom->root_outputs()[0], mapping->root_inputs()[0], autom, mapping));
           num_cables++;
         }
 
@@ -110,7 +110,7 @@ int main()
             const auto& target = mappings[j];
             if(bdist{D}(mt))
             {
-              g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, source->outputs()[0], target->inputs()[0], source, target));
+              g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, source->root_outputs()[0], target->root_inputs()[0], source, target));
 
               num_cables++;
             }
@@ -119,8 +119,8 @@ int main()
 
         for(auto mapping : mappings)
         {
-          if(!mapping->outputs()[0]->targets.empty())
-            mapping->outputs()[0]->address = {};
+          if(!mapping->root_outputs()[0]->targets.empty())
+            mapping->root_outputs()[0]->address = {};
         }
 
         //ossia::print_graph(g.impl(), std::cerr);
@@ -133,7 +133,7 @@ int main()
         e.clear_local_state();
         e.get_new_values();
         for(auto& n : g.m_nodes)
-          n.first->request(ossia::token_request{0_tv, 1_tv, 0., 0_tv, 1.});
+          n.first->request(ossia::simple_token_request{0_tv, 1_tv});
 
         g.state(e);
         std::size_t msg_count = num_messages(e);
@@ -153,7 +153,7 @@ int main()
         {
           int64_t count = 0;
           for(auto& n : g.m_nodes)
-            n.first->request(ossia::token_request{old_v, v, 0., 0_tv, 1.});
+            n.first->request(ossia::simple_token_request{old_v, v});
 
           auto t0 = std::chrono::steady_clock::now();
           CALLGRIND_START_INSTRUMENTATION;

@@ -40,7 +40,7 @@ struct tick_nodes_custom
       e.samples_since_start += samples;
 
       for(auto& node : g.m_nodes)
-        node.first->request({0_tv, ossia::time_value{e.samples_since_start}, 0., 0_tv});
+        node.first->request(ossia::simple_token_request{0_tv, ossia::time_value{e.samples_since_start}});
 
       g.state(e);
       (e.*f)();
@@ -61,7 +61,7 @@ int main()
     for(int i = 0; i < N; i++)
     {
       auto node = std::make_shared<ossia::nodes::automation>();
-      node->outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+      node->root_outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
 
       auto v = std::make_shared<ossia::curve<double, float>>();
       v->set_x0(0.); v->set_y0(0.);

@@ -13,6 +13,7 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/dataflow/nodes/gain.hpp>
 #include "../Editor/TestUtils.hpp"
 
 
@@ -45,10 +46,10 @@ void benchmark_main()
       tc_graph g;
       std::vector<ossia::node_ptr> nodes;
 
-      auto gain = std::make_shared<ossia::nodes::gain>();
+      auto gain = std::make_shared<ossia::nodes::gain_node>();
       g.add_node(gain);
       nodes.push_back(gain);
-      gain->outputs()[0]->address = &device.get_main_out();
+      gain->root_outputs()[0]->address = &device.get_main_out();
 
       for(int i = 0; i < N; i++)
       {
@@ -57,7 +58,7 @@ void benchmark_main()
         g.connect(
               make_edge(
                 immediate_strict_connection{},
-                node->outputs()[0], gain->inputs()[0],
+                node->root_outputs()[0], gain->root_inputs()[0],
                 node, gain));
         nodes.push_back(node);
       }
@@ -70,7 +71,7 @@ void benchmark_main()
       ossia::time_value cur_time{};
       e.clear_local_state();
       e.get_new_values();
-      ossia::token_request tk{0_tv, 0_tv, 0., 0_tv};
+      ossia::simple_token_request tk{0_tv, 0_tv};
       for(auto& node : nodes) { node->request(tk); }
       g.state(e);
       e.commit();
@@ -80,12 +81,12 @@ void benchmark_main()
         auto t0 = std::chrono::steady_clock::now();
         e.clear_local_state();
         e.get_new_values();
-        ossia::token_request tk{cur_time, cur_time + 64_tv, 0., 0_tv};
+        ossia::simple_token_request tk{cur_time, cur_time + 64_tv};
         for(auto& node : nodes)
         {
           node->request(tk);
         }
-        cur_time += 64;
+        cur_time += 64_tv;
         g.state(e);
         (e.*fun)();
         auto t1 = std::chrono::steady_clock::now();

@@ -71,7 +71,7 @@ int main()
         {
           auto node = std::make_shared<ossia::nodes::automation>();
           auto autom = std::make_shared<ossia::nodes::automation_process>(node);
-          node->outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+          node->root_outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
 
           auto v = std::make_shared<ossia::curve<double, float>>();
           v->set_x0(0.); v->set_y0(0.);
@@ -85,8 +85,8 @@ int main()
         {
           auto node = std::make_shared<ossia::nodes::mapping>();
           auto autom = std::make_shared<node_process>(node);
-          node->inputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
-          node->outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+          node->root_inputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+          node->root_outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
 
           auto v = std::make_shared<ossia::curve<float, float>>();
           v->set_x0(0.); v->set_y0(0.);
@@ -106,7 +106,7 @@ int main()
 
       e.clear_local_state();
       e.get_new_values();
-      s.state(0_tv, 0_tv, 0., 0_tv, 0_tv);
+      s.state(ossia::simple_token_request{0_tv, 0_tv});
       g.state(e);
       std::size_t msg_count = num_messages(e);
       avg_msg_count += msg_count;
@@ -121,7 +121,7 @@ int main()
         CALLGRIND_START_INSTRUMENTATION;
         e.clear_local_state();
         e.get_new_values();
-        s.state(0_tv, 1_tv, 0., 0_tv, 0_tv);
+        s.state(ossia::simple_token_request{0_tv, 1_tv});
         g.state(e);
         (e.*fun)();
         CALLGRIND_STOP_INSTRUMENTATION;

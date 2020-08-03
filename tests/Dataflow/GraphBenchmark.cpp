@@ -32,7 +32,23 @@ std::string graph_kind(const ossia::tc_graph& g)
 {
   return "transitive_closure";
 }
-
+namespace ossia
+{
+template<typename Port_T>
+auto make_inlet()
+{
+    if constexpr(std::is_same_v<Port_T, value_port>) return new ossia::value_inlet{};
+    if constexpr(std::is_same_v<Port_T, audio_port>) return new ossia::audio_inlet{};
+    if constexpr(std::is_same_v<Port_T, midi_port>) return new ossia::midi_inlet{};
+}
+template<typename Port_T>
+auto make_outlet()
+{
+    if constexpr(std::is_same_v<Port_T, value_port>) return new ossia::value_outlet{};
+    if constexpr(std::is_same_v<Port_T, audio_port>) return new ossia::audio_outlet{};
+    if constexpr(std::is_same_v<Port_T, midi_port>) return new ossia::midi_outlet{};
+}
+}
 template<typename Port_T>
 class node_empty_mock final : public graph_node {
 public:
@@ -170,7 +186,7 @@ struct setup_serial_connected
       if(prev)
       {
         g.connect(ossia::make_edge(ossia::immediate_strict_connection{}
-                                   , prev->outputs()[0], n->inputs()[0]
+                                   , prev->root_outputs()[0], n->root_inputs()[0]
             , prev, n));
       }
       prev = n;
@@ -195,8 +211,8 @@ struct setup_serial_address
     {
       auto next_addr = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
       auto n = std::make_shared<value_mock>();
-      n->inputs()[0]->address = prev_addr;
-      n->outputs()[0]->address = next_addr;
+      n->root_inputs()[0]->address = prev_addr;
+      n->root_outputs()[0]->address = next_addr;
       prev_addr = next_addr;
       nodes.push_back(n);
       g.add_node(std::move(n));
@@ -225,12 +241,12 @@ struct setup_parallel_1node_address
       auto out_addr = ossia::net::create_node(dev.device.get_root_node(), "out" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
       auto outlet = new ossia::value_outlet;
       outlet->address = out_addr;
-      n1->outputs().push_back(outlet);
+      n1->root_outputs().push_back(outlet);
 
       auto in_addr = ossia::net::create_node(dev.device.get_root_node(), "in" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
       auto inlet = new ossia::value_inlet;
       inlet->address = in_addr;
-      n2->inputs().push_back(inlet);
+      n2->root_inputs().push_back(inlet);
     }
     return nodes;
   }
@@ -254,10 +270,10 @@ struct setup_parallel_1node_connected
     for(int i = 0; i < num_port; i++)
     {
       auto outlet = new ossia::value_outlet;
-      n1->outputs().push_back(outlet);
+      n1->root_outputs().push_back(outlet);
 
       auto inlet = new ossia::value_inlet;
-      n2->inputs().push_back(inlet);
+      n2->root_inputs().push_back(inlet);
 
       auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);
       g.connect(edge);
@@ -279,8 +295,8 @@ struct setup_parallel_address
       auto addr = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i)).create_parameter(ossia::val_type::FLOAT);
       auto n1 = std::make_shared<value_mock>();
       auto n2 = std::make_shared<value_mock>();
-      n1->outputs()[0]->address = addr;
-      n2->inputs()[0]->address = addr;
+      n1->root_outputs()[0]->address = addr;
+      n2->root_inputs()[0]->address = addr;
       nodes.push_back(n1);
       nodes.push_back(n2);
       g.add_node(std::move(n1));
@@ -307,7 +323,7 @@ struct setup_parallel_connected
       nodes.push_back(n1);
       nodes.push_back(n2);
 
-      auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, n1->outputs()[0], n2->inputs()[0], n1, n2);
+      auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2);
       g.add_node(std::move(n1));
       g.add_node(std::move(n2));
       g.connect(edge);
@@ -328,7 +344,7 @@ void setup_random_edges(const std::vector<std::shared_ptr<value_mock>>& nodes, T
       if(std::uniform_real_distribution<double>{0., 1.}(mt) < edge_chance)
       {
         auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                     nodes[i]->outputs()[0], nodes[j]->inputs()[0],
+                                     nodes[i]->root_outputs()[0], nodes[j]->root_inputs()[0],
                                      nodes[i], nodes[j]);
         g.connect(edge);
       }
@@ -343,13 +359,13 @@ void setup_random_address(value_mock& node, const std::vector<ossia::net::parame
     if(std::uniform_real_distribution<double>{0., 1.}(mt) <= addr_chance)
     {
       auto idx = std::uniform_int_distribution<std::size_t>{0, addresses.size() - 1}(mt);
-      node.inputs()[0]->address = addresses[idx];
+      node.root_inputs()[0]->address = addresses[idx];
       node.lbl += "in: " + ossia::net::osc_parameter_string(addresses[idx]->get_node());
     }
     if(std::uniform_real_distribution<double>{0., 1.}(mt) <= addr_chance)
     {
       auto idx = std::uniform_int_distribution<std::size_t>{0, addresses.size() - 1}(mt);
-      node.outputs()[0]->address = addresses[idx];
+      node.root_outputs()[0]->address = addresses[idx];
       node.lbl += "\nout: " + ossia::net::osc_parameter_string(addresses[idx]->get_node());
     }
   }
