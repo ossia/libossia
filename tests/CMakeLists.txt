@@ -143,7 +143,7 @@ if(OSSIA_BENCHMARKS)
       target_compile_options(ossia_${TESTNAME} PUBLIC -O3 -march=native)
     endif()
 
-    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} Qt5::Core ossia)
+    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia)
 
     if(OSSIA_SANITIZE)
       sanitize_build(ossia_${TESTNAME})
