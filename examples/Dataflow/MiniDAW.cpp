@@ -70,13 +70,13 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
     automation_node->set_behavior(std::move(crv));
   }
 
-  auto rand_node = std::make_shared<ossia::nodes::rand_float>(200, 600);
+  auto rand_node = std::make_shared<ossia::nodes::rand_float>(200, 400);
   auto gain_node = std::make_shared<ossia::nodes::gain_node>();
   auto sine_node = std::make_shared<ossia::nodes::sine>();
   auto low_sine_node = std::make_shared<ossia::nodes::sine>();
 
   // Create the temporal structure.
-  // The root of a score is always a time_interval. 
+  // The root of a score is always a time_interval.
 
   // In this interval we will create a few processes :
   // * One to hold a sine generator
@@ -181,6 +181,7 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
   // Set some parameters
   gain_node->gain = 0.5;
   low_sine_node->freq = 100;
+  low_sine_node->amplitude = 0.65;
 
   return main_interval;
 }
@@ -191,11 +192,18 @@ int main(int argc, char** argv)
 
   // Setup our datastructures
   ossia::tc_graph graph;
-  ossia::audio_device audio;
+  ossia::audio_device audio{
+      "minidaw", // name, for APIs like JACK
+      256, // buffer size
+      48000, // sample rate
+      0, 2 // inputs, outputs
+  };
+
   ossia::execution_state e;
 
   e.sampleRate = audio.get_sample_rate();
   e.bufferSize = audio.get_buffer_size();
+
   e.modelToSamplesRatio = audio.get_sample_rate() / ossia::flicks_per_second<double>;
   e.samplesToModelRatio = ossia::flicks_per_second<double> / audio.get_sample_rate();
   e.register_device(&audio.device);

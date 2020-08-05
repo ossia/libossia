@@ -19,9 +19,9 @@ struct sin_table
     }
   }
 
-  constexpr double value(double freq) const
+  constexpr double value(double t) const
   {
-    const auto res = int(std::fmod(freq, 2. * M_PI) * (N - 1));
+    const auto res = int((std::fmod(t, 2. * M_PI) / (2. * M_PI)) * (N - 1));
     assert(res >= 0);
     assert(res < (int)N);
     return values[res];
@@ -36,11 +36,14 @@ struct sine final : public ossia::nonowning_graph_node
 
 #if BOOST_COMP_GNUC
   static constexpr sin_table<1024> sines{[](auto f) { return sin(f); }};
-#endif
-public:
+#else
   double m_cos = 1.;
-  double m_sin = 0;
+  double m_sin = 0.;
+#endif
+
+public:
   double freq = 440.;
+  double amplitude = 0.8;
   sine()
   {
     m_inlets.push_back(&freq_in);
@@ -59,7 +62,7 @@ public:
 
     auto& audio = audio_out->samples;
     auto N = t.physical_write_duration(st.modelToSamples());
-    auto tick_start = t.physical_start(st.modelToSamples());
+    int64_t tick_start = t.physical_start(st.modelToSamples());
 
     if (N > 0)
     {
@@ -67,9 +70,10 @@ public:
       audio[0].resize(tick_start + N);
 
 #if BOOST_COMP_GNUC
+      int64_t k = t.start_date_to_physical(st.modelToSamples());
       for (int64_t i = tick_start; i < tick_start + N; i++)
       {
-        audio[0][i] = sines.value(2. * M_PI * freq / st.sampleRate());
+        audio[0][i] = amplitude * sines.value(2. * (k++) * M_PI * freq / st.sampleRate());
       }
 #else
       // Uses the method in
@@ -77,7 +81,7 @@ public:
       const auto fs = st.sampleRate();
       auto frequ_cos = std::cos(ossia::two_pi * freq / fs);
       auto frequ_sin = std::sin(ossia::two_pi * freq / fs);
-      for (int64_t i =tick_start; i < tick_start + N; i++)
+      for (int64_t i = tick_start; i < tick_start + N; i++)
       {
         auto new_cos = m_cos * frequ_cos - m_sin * frequ_sin;
         auto new_sin = m_cos * frequ_sin + m_sin * frequ_cos;
@@ -86,7 +90,7 @@ public:
         m_cos = new_cos / norm;
         m_sin = new_sin / norm;
 
-        audio[0][i] = m_sin;
+        audio[0][i] = amplitude * m_sin;
       }
 #endif
     }

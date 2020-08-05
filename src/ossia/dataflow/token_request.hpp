@@ -99,6 +99,16 @@ struct token_request
   }
 
 
+  //! The date of the first sample in the context of the parent.
+  //! e.g. if we're at the start of our third buffer of 256 samples for
+  //! a given time_interval, this will give 768.
+  constexpr physical_time start_date_to_physical(double ratio) const noexcept
+  //C++23: [[ expects: speed != 0. ]]
+  {
+      assert(speed != 0.);
+      return this->prev_date.impl * ratio / speed;
+  }
+
   //! Where we must start to read / write in our physical buffers
   constexpr physical_time physical_start(double ratio) const noexcept
     //C++23: [[ expects: speed != 0. ]]

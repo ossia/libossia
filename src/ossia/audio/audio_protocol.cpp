@@ -402,17 +402,16 @@ void audio_protocol::process_generic(
   }
 }
 
-audio_device::audio_device(std::string name)
-    : audio_device{std::make_unique<audio_protocol>(), name}
+audio_device::audio_device(std::string name, int bufferSize, int sampleRate, int inputs, int outputs)
+    : audio_device{std::make_unique<audio_protocol>(), name, bufferSize, sampleRate, inputs, outputs}
 {
 }
 
 audio_device::audio_device(
-    std::unique_ptr<audio_protocol> proto, std::string name)
+    std::unique_ptr<audio_protocol> proto, std::string name, int bs, int rate, int ins, int outs)
     : device{std::move(proto), name}
     , protocol{static_cast<audio_protocol&>(device.get_protocol())}
 {
-  int ins = 2, outs = 2, rate = 44100, bs = 1024;
   std::string default_protocol, default_in, default_out;
 #if defined(__EMSCRIPTEN__)
   default_protocol = "SDL";
