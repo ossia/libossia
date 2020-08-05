@@ -144,7 +144,7 @@ std::string get_absolute_path(object_base* x)
 
   t_eobj* obj = nullptr;
 
-  // FIXME this will fail as soon as https://github.com/OSSIA/libossia/issues/208 is implemented
+  // FIXME this will fail as soon as https://github.com/ossia/libossia/issues/208 is implemented
   // or if model and view are mixed in the same hierarchy
 
   ossia::pd::view* tmp_view = nullptr;

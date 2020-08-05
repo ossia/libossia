@@ -702,7 +702,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.remote_array.maxpat",
-				"bootpath" : "~/dev/libossia/OSSIA/ossia-max/patchers",
+				"bootpath" : "~/dev/libossia/ossia/ossia-max/patchers",
 				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
 				"implicit" : 1

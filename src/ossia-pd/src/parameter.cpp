@@ -79,7 +79,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
       std::string common_part = name;
       if(ossia::traversal::is_pattern(common_part))
       {
-        // FIXME see https://github.com/OSSIA/libossia/issues/473
+        // FIXME see https://github.com/ossia/libossia/issues/473
         // dev:/foo.1 doesn't match dev:/foo*
         auto path = ossia::traversal::make_path(common_part);
         std::vector<ossia::net::node_base*> vec{node};

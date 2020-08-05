@@ -45,7 +45,7 @@ PROJECT_BRIEF          = "Open Scenario System for Interactive Application"
 # exceed 55 pixels and the maximum width should not exceed 200 pixels. 
 # Doxygen will copy the logo to the output directory.
 
-# PROJECT_LOGO           = /Users/WALL-E/Dropbox/OSSIA/Documents/Présentations/OSSIA.jpg
+# PROJECT_LOGO           = /Users/WALL-E/Dropbox/ossia/Documents/Présentations/ossia.jpg
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute) 
 # base path where the generated documentation will be put. 

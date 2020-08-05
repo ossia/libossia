@@ -943,7 +943,7 @@ int main()
 
   // Behavior variant generation
   {
-    std::ofstream f("/home/jcelerier/travail/score/API/OSSIA/ossia/editor/curve/behavior_variant_impl.hpp");
+    std::ofstream f("/home/jcelerier/travail/score/API/ossia/ossia/editor/curve/behavior_variant_impl.hpp");
     gen_var<brigand::list<std::shared_ptr<ossia::curve_abstract>, std::vector<ossia::behavior>>> behav_gen("behavior_variant_type");
     behav_gen.write_class();
     f << behav_gen.str.str();
@@ -951,7 +951,7 @@ int main()
 
   // Domain variant generation
   {
-    std::ofstream f("/home/jcelerier/travail/score/API/OSSIA/ossia/network/domain/domain_variant_impl.hpp");
+    std::ofstream f("/home/jcelerier/travail/score/API/ossia/ossia/network/domain/domain_variant_impl.hpp");
     gen_var<domain_list> domain_gen("domain_base_variant");
     domain_gen.write_class();
     domain_gen.write_comparison_operators();
@@ -970,7 +970,7 @@ int main()
   {
 
     // Value variant generation
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/value/value_variant_impl.hpp");
+    std::ofstream f("/home/jcelerier/score/API/ossia/ossia/network/value/value_variant_impl.hpp");
 
     gen_var<value_list> value_gen("value_variant_type");
     value_gen.write_class();
@@ -1005,7 +1005,7 @@ int main()
   }
 
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/misc_visitors.hpp");
+    std::ofstream f("/home/jcelerier/score/API/ossia/ossia/misc_visitors.hpp");
     apply_writer r;
     r.write_apply_switch({ class_info{"value_variant_type", value_size, class_info::Cref},
                            class_info{"behavior_variant_type", 2, class_info::Cref}
@@ -1021,7 +1021,7 @@ int main()
   using namespace ossia;
 
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_base_variants.hpp");
+    std::ofstream f("/home/jcelerier/score/API/ossia/ossia/network/dataspace/dataspace_base_variants.hpp");
     {
       gen_var<angle_u_list> u("angle_u");
       u.write_class();
@@ -1079,7 +1079,7 @@ int main()
     }
   }
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_strong_variants.hpp");
+    std::ofstream f("/home/jcelerier/score/API/ossia/ossia/network/dataspace/dataspace_strong_variants.hpp");
     // Strong value form
     {
       gen_var<angle_list> u("angle");
@@ -1141,7 +1141,7 @@ int main()
   }
 
   {
-    std::ofstream f("/home/jcelerier/score/API/OSSIA/ossia/network/dataspace/dataspace_variant_visitors.hpp");
+    std::ofstream f("/home/jcelerier/score/API/ossia/ossia/network/dataspace/dataspace_variant_visitors.hpp");
     apply_writer r;
     r.write_apply_switch({ class_info{"strong_value_variant", brigand::size<strong_value_variant_list>::value, class_info::Cref},
                            class_info{"unit_variant", brigand::size<dataspace_u_list>::value, class_info::Cref}

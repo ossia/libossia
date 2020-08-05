@@ -76,7 +76,7 @@ if(WIN32)
   if (NOT EXISTS "${OSSIA_SDK}")
     file(MAKE_DIRECTORY ${OSSIA_SDK})
     file(DOWNLOAD
-      https://github.com/OSSIA/sdk/releases/download/sdk10/win-audio-sdk.zip
+      https://github.com/ossia/sdk/releases/download/sdk10/win-audio-sdk.zip
       ${OSSIA_SDK}/win-audio-sdk.zip)
 
     execute_process(
@@ -98,11 +98,11 @@ else()
 
       if(WIN32)
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
-        set(BOOST_URL https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
+        set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
         set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
       else()
         message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-        set(BOOST_URL https://github.com/OSSIA/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
+        set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
         set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
       endif()
 

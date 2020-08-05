@@ -1267,7 +1267,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 28.0, 854.0, 351.0, 20.0 ],
 					"style" : "",
-					"text" : "Please report bugs on: https://github.com/OSSIA/libossia/issues"
+					"text" : "Please report bugs on: https://github.com/ossia/libossia/issues"
 				}
 
 			}

@@ -700,7 +700,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "default_in_poly.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1

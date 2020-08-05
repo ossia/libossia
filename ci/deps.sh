@@ -37,7 +37,7 @@ case "$TRAVIS_OS_NAME" in
       sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
 
       # For some reason gcov seems to be not available anymore...
-      wget -nv https://github.com/OSSIA/sdk/releases/download/sdk14/gcov
+      wget -nv https://github.com/ossia/sdk/releases/download/sdk14/gcov
       file ./gcov
       chmod +x ./gcov
       sudo cp ./gcov /usr/bin/gcov
@@ -97,7 +97,7 @@ case "$TRAVIS_OS_NAME" in
     # HOMEBREW_NO_AUTO_UPDATE=1 brew install ruby
     HOMEBREW_NO_AUTO_UPDATE=1 brew install gnu-tar xz
     ARCHIVE=homebrew-cache.txz
-    wget -nv "https://github.com/OSSIA/score-sdk/releases/download/sdk9/$ARCHIVE" -O "$ARCHIVE"
+    wget -nv "https://github.com/ossia/score-sdk/releases/download/sdk9/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
     brew link --force boost cmake qt5 #ninja
     brew install portaudio

@@ -145,7 +145,7 @@ foreach(ossiaExt ${OSSIA_EXT_LIST})
     configure_file(src/empty_external.c.in ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)
     add_library(${ossiaExt} MODULE ${CMAKE_CURRENT_BINARY_DIR}/${ossiaExt}.c)
     target_link_libraries(${ossiaExt} PRIVATE ${PROJECT_NAME})
-    target_include_directories(${ossiaExt} PRIVATE ${CMAKE_BINARY_DIR}/OSSIA)
+    target_include_directories(${ossiaExt} PRIVATE ${CMAKE_BINARY_DIR}/ossia)
     setup_max_external(${ossiaExt})
 
     string(APPEND OSSIA_MAX_SYMBOLS "_${ossia_lib_name}_setup\n")

@@ -1,6 +1,6 @@
 # Build tips
 
-* First do a git clone according to the procedure here: https://github.com/OSSIA/libossia/wiki/Building
+* First do a git clone according to the procedure here: https://github.com/ossia/libossia/wiki/Building
 * Then go to the root libossia folder
 * Create a build folder and go inside
 * Run one of the following commands:

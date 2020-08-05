@@ -186,7 +186,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 61.0, 173.5, 246.0, 74.0 ],
 					"style" : "",
-					"text" : "follow the instructions at https://github.com/OSSIA/libossia/tree/master/docs/Examples/Common \n\nto setup a log server"
+					"text" : "follow the instructions at https://github.com/ossia/libossia/tree/master/docs/Examples/Common \n\nto setup a log server"
 				}
 
 			}

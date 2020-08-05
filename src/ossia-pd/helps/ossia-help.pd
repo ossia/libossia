@@ -78,7 +78,7 @@ f 116;
 adresses registered to the global device., f 96;
 #X text 27 783 ________________________________________________________________________________________________________________
 , f 122;
-#X text 30 815 Please report bugs on: https://github.com/OSSIA/libossia/issues
+#X text 30 815 Please report bugs on: https://github.com/ossia/libossia/issues
 , f 84;
 #N canvas 0 22 361 184 presets 0;
 #X obj 196 126 outlet;

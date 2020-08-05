@@ -36,7 +36,7 @@ setup(
     version =__version__,
     description = 'libossia is a modern C++, cross-environment distributed object model for creative coding and interaction scoring Edit',
     long_description = LONG_DESCRIPTION,
-    url = 'https://github.com/OSSIA/libossia/ossia-python',
+    url = 'https://github.com/ossia/libossia/ossia-python',
     author = 'OSSIA team',
     author_email = 'contact@ossia.io',
     license ='GPLv3+',

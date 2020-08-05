@@ -539,7 +539,7 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "559-master_subpatcher.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1

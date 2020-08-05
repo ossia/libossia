@@ -404,7 +404,7 @@ std::string object_path_absolute(object_base* x)
   t_object* object = nullptr;
   ossia::max::view* tmp = nullptr;
 
-  // FIXME this will fail as soon as https://github.com/OSSIA/libossia/issues/208 is implemented
+  // FIXME this will fail as soon as https://github.com/ossia/libossia/issues/208 is implemented
   // or if model and view are mixed in the same hierarchy
 
   while (view)

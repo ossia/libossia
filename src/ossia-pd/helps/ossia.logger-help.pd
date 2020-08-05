@@ -6,7 +6,7 @@
 #X msg 345 193 warning My warning message;
 #X msg 344 223 critical My critical message;
 #X msg 344 254 debug My debug message;
-#X text 64 28 follow the instructions at https://github.com/OSSIA/libossia/tree/master/docs/Examples/Common
+#X text 64 28 follow the instructions at https://github.com/ossia/libossia/tree/master/docs/Examples/Common
 to setup a log server, f 39;
 #X msg 61 108 host ws://127.0.0.1:1337;
 #X msg 72 144 appname pd;

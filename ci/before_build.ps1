@@ -28,7 +28,7 @@ cd  C:\projects\libossia
 # }
 
 cd c:\projects\libossia\3rdparty
-appveyor DownloadFile https://github.com/OSSIA/sdk/releases/download/sdk11/score-sdk-windows-llvm.7z
+appveyor DownloadFile https://github.com/ossia/sdk/releases/download/sdk11/score-sdk-windows-llvm.7z
 7z x score-sdk-windows-llvm.7z
 cd ..
 

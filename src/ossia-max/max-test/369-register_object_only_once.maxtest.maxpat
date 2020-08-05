@@ -624,21 +624,21 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "param-test-for-369.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "model-test-for-369.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "submodel-test-for-369.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1

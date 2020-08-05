@@ -6,7 +6,7 @@ This example show you how to automatically build a [dat.gui](https://github.com/
 
 ## Dependecy
 
-An OSCQuery device available on the network. This example works out-the-box with libossia OSCQuery device example, like the [device-example.pd](https://github.com/OSSIA/libossia/blob/master/OSSIA/ossia-pd/examples/device-example.pd) patcher.
+An OSCQuery device available on the network. This example works out-the-box with libossia OSCQuery device example, like the [device-example.pd](https://github.com/ossia/libossia/blob/master/ossia/ossia-pd/examples/device-example.pd) patcher.
 
 You also need `dat.gui` itself, install it with : 
 
