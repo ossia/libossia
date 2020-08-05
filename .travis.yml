@@ -151,12 +151,12 @@ deploy:
       * QML packages are meant to be put in the [QML Import Path](http://doc.qt.io/qt-5/qtqml-syntax-imports.html). For instance on macOS it should look like '/usr/local/Cellar/qt/5.9.1/qml/Ossia/qmldir'.<br>
       </p>
       <p>
-      Please consult [this wiki page](https://github.com/OSSIA/libossia/wiki/Integrations) to see what's here and what's missing.<br><br>
+      Please consult [this wiki page](https://github.com/ossia/libossia/wiki/Integrations) to see what's here and what's missing.<br><br>
       * [Documentation](https://ossia.github.io)<br>
-      * [Examples](https://github.com/OSSIA/libossia/tree/master/Documentation)<br>
-      * [Building from source](https://github.com/OSSIA/libossia/wiki/Building)<br>
+      * [Examples](https://github.com/ossia/libossia/tree/master/Documentation)<br>
+      * [Building from source](https://github.com/ossia/libossia/wiki/Building)<br>
       * ***Do note use the Github source package ("Source code" link below) to build; instead do a git clone or use 'ossia-src-unix.tar.gz'. Else the build won't work due to Github not putting submodules in the archive.***<br>
 
     on:
-      repo: OSSIA/libossia
+      repo: ossia/libossia
       tags: true
