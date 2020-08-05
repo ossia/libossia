@@ -9,7 +9,7 @@ branches:
 env:
   global:
   - GH_REPO_NAME: libossia
-  - GH_REPO_REF: github.com/OSSIA/libossia.git
+  - GH_REPO_REF: github.com/ossia/libossia.git
   - secure: "fHuSuq9OJbvmdb4bSKUenCpmJ3XtYtX9xa+dUncxVbwwGJ02K/OrQ594ON5+vK5AL/co8aOx6e5FdZ4lRyFJglevE4Qn0A6LPdH7RoORk3xZWr34BoBQWYCGykBezEu+AIIic8SFfgE2gP0fPmz9IWcEEDgQTuckLVr6DdjLkQw="
   - ARTIFACTS_DIR: ${TRAVIS_BUILD_DIR}/artifacts
 

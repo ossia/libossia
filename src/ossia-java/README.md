@@ -6,9 +6,9 @@ It relies on [Java Native Access - JNA](https://github.com/java-native-access/) 
 
 Currently it's a work in progress.
 
-You should configure with `OSSIA_C=ON` and `OSSIA_JAVA=ON` :
+You should configure with `OSSIA_JAVA_ONLY=ON` :
 
-    cmake /path/to/libossia -DOSSIA_C=ON -DOSSIA_JAVA=ON
+    cmake /path/to/libossia -DOSSIA_JAVA_ONLY=ON
 
 If build succeed, you could try to run the example :
 

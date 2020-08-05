@@ -71,6 +71,17 @@ else()
 endif()
 
 add_custom_command(TARGET ossia-java POST_BUILD
-  COMMAND "${CMAKE_COMMAND}" -E make_directory $<TARGET_FILE_DIR:ossia>/${JAVA_FOLDER}
-  COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:ossia> $<TARGET_FILE_DIR:ossia>/${JAVA_FOLDER}/${JAVA_NAME}
-  COMMAND "${Java_JAR_EXECUTABLE}" -uf ossia-java.jar -C $<TARGET_FILE_DIR:ossia> ${JAVA_FOLDER}/${JAVA_NAME})
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "$<TARGET_FILE_DIR:ossia>/${JAVA_FOLDER}"
+  COMMAND "${CMAKE_COMMAND}" -E copy $<TARGET_FILE:ossia> "$<TARGET_FILE_DIR:ossia>/${JAVA_FOLDER}/${JAVA_NAME}"
+  COMMAND "${Java_JAR_EXECUTABLE}" -uf ossia-java.jar -C $<TARGET_FILE_DIR:ossia> "${JAVA_FOLDER}/${JAVA_NAME}"
+)
+
+install(
+  FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/jna.jar"
+    "${CMAKE_CURRENT_BINARY_DIR}/ossia-java-example.jar"
+    "${CMAKE_CURRENT_BINARY_DIR}/ossia-java-test.jar"
+    "${CMAKE_CURRENT_BINARY_DIR}/ossia-java.jar"
+  DESTINATION
+    .
+)
