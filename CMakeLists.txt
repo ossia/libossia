@@ -13,7 +13,7 @@ endif()
 
 cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 
-project(OSSIA C CXX)
+project(ossia C CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 find_package(Threads)
