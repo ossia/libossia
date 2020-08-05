@@ -38,7 +38,7 @@ public:
           }
           catch (...)
           {
-            ossia::logger().warn("Could not set TCP nodelay option");
+            ossia::logger().trace("Could not set TCP nodelay option");
           }
         });
   }
