@@ -1,45 +1,20 @@
 #pragma once
-#include <ciso646>
+#include <ossia/detail/std_fwd.hpp>
 
-namespace std
-{
-#if defined(__EMSCRIPTEN__)
-inline namespace __2
-{
-
-#elif defined(_LIBCPP_VERSION)
-inline namespace __1
-{
-
-#elif defined(__GLIBCXX__)
-#if _GLIBCXX_USE_CXX11_ABI
-inline _GLIBCXX_BEGIN_NAMESPACE_CXX11
-#else
-_GLIBCXX_BEGIN_NAMESPACE_CXX11
-#endif
-#else
-#endif
-
+OSSIA_STD_BEGIN_NAMESPACE_CXX11
 #if defined(_MSC_VER)
-template <typename T>
-class regex_traits;
+  template <typename T>
+  class regex_traits;
 #else
-template <typename T>
-struct regex_traits;
+  template <typename T>
+  struct regex_traits;
 #endif
 
 template <typename T, typename Traits>
 class basic_regex;
 
 using regex = basic_regex<char, regex_traits<char>>;
-
-#if defined(_LIBCPP_VERSION)
-}
-#elif defined(__GLIBCXX__)
-_GLIBCXX_END_NAMESPACE_CXX11
-#else
-#endif
-}
+OSSIA_STD_END_NAMESPACE_CXX11
 
 #if defined(_MSC_VER)
 #if defined(NDEBUG)

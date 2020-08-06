@@ -339,11 +339,7 @@ void minuit_protocol::namespace_refresh(
 void minuit_protocol::namespace_refreshed(ossia::string_view addr)
 {
   lock_type lock(m_nsRequestMutex);
-#if defined(__ANDROID_API__)
-  auto it = m_nsRequests.find(addr.to_string());
-#else
   auto it = m_nsRequests.find(addr);
-#endif
   if (it != m_nsRequests.end())
   {
     m_nsRequests.erase(it);

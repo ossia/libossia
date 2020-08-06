@@ -32,6 +32,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/pod_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/regex_fwd.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/std_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"

@@ -1,10 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#if defined(__native_client__) || defined(__ANDROID_API__) \
-    || defined(__ANDROID__) || defined(ANDROID)
-#define OSSIA_USE_BOOST_ANY 1
-#elif defined(_MSC_VER)
+#if defined(_MSC_VER)
 #define OSSIA_USE_BOOST_ANY 1
 #elif defined(__APPLE__)
 // APPLE && (__cplusplus < 201703L) <- "|| "error: call to unavailable function 'any_cast': introduced in macOS 10.14"

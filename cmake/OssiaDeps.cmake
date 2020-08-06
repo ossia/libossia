@@ -86,42 +86,37 @@ if(WIN32)
 endif()
 
 set(BOOST_MINOR 73)
-if(ANDROID)
-  set(Boost_FOUND True)
-  include_directories("/opt/boost_1_${BOOST_MINOR}_0")
-else()
-  find_package(Boost 1.${BOOST_MINOR} QUIET)
-  if (NOT Boost_FOUND )
-    set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
-    set(BOOST_VERSION "boost_1_${BOOST_MINOR}_0" CACHE INTERNAL "")
-    if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
+find_package(Boost 1.${BOOST_MINOR} QUIET)
+if (NOT Boost_FOUND )
+  set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
+  set(BOOST_VERSION "boost_1_${BOOST_MINOR}_0" CACHE INTERNAL "")
+  if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
 
-      if(WIN32)
-        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
-        set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
-        set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
-      else()
-        message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-        set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
-        set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
-      endif()
-
-      file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
-
-    execute_process(
-      COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
-      WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
-
+    if(WIN32)
+      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
+      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
+      set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
+    else()
+      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
+      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
+      set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
     endif()
-    set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
-    set(Boost_INCLUDE_DIR "${BOOST_ROOT}")
-    find_package(Boost 1.${BOOST_MINOR} REQUIRED)
-  endif()
 
-  add_library(boost INTERFACE IMPORTED)
-  set_property(TARGET boost PROPERTY
-               INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
+    file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
+
+  execute_process(
+    COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
+    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
+
+  endif()
+  set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
+  set(Boost_INCLUDE_DIR "${BOOST_ROOT}")
+  find_package(Boost 1.${BOOST_MINOR} REQUIRED)
 endif()
+
+add_library(boost INTERFACE IMPORTED)
+set_property(TARGET boost PROPERTY
+             INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
 
 if(OSSIA_PROTOCOL_MIDI)
   set(RTMIDI17_EXAMPLES OFF CACHE "" INTERNAL)

@@ -7,7 +7,7 @@
 #include <ossia/network/dataspace/dataspace_fwd.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
 #include <ossia/network/value/destination.hpp>
-
+#include <ossia/detail/std_fwd.hpp>
 #include <nano_signal_slot.hpp>
 #include <ossia_export.h>
 
@@ -15,26 +15,11 @@
 #include <functional>
 #include <memory>
 #include <vector>
+OSSIA_STD_BEGIN_NAMESPACE
+template <typename T>
+class future;
+OSSIA_STD_END_NAMESPACE
 
-namespace std
-{
-#if defined(__EMSCRIPTEN__)
-inline namespace __2
-{
-template <typename T>
-class future;
-}
-#elif defined(_LIBCPP_VERSION)
-inline namespace __1
-{
-template <typename T>
-class future;
-}
-#else
-template <typename T>
-class future;
-#endif
-}
 /*
 extern template class ossia::callback_container<ossia::value_callback>;
 extern template class std::future<void>;
