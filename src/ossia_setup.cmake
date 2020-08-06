@@ -20,13 +20,7 @@ if(WIN32)
         NOMINMAX
         _CRT_SECURE_NO_WARNINGS
         WIN32_LEAN_AND_MEAN)
-    if(OSSIA_LTO)
-      if(MSVC)
-        target_compile_options(ossia PUBLIC "$<$<CONFIG:Release>:/GL>")
-      else()
-        # target_compile_options(ossia PUBLIC "$<$<CONFIG:Release>:-flto>")
-      endif()
-    endif()
+
     target_link_libraries(ossia PRIVATE ws2_32 winmm)
     if(MINGW)
         target_link_libraries(ossia PRIVATE mswsock)
@@ -40,22 +34,10 @@ if(WIN32)
 endif()
 
 find_package(Threads)
-target_link_libraries(ossia PUBLIC ${CMAKE_THREAD_LIBS_INIT} )
+target_link_libraries(ossia PUBLIC ${CMAKE_THREAD_LIBS_INIT})
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
-
-if(OSSIA_SANITIZE)
-    sanitize_build(ossia)
-else()
-    # TODO fix the weak symbol problem on OS X release build with fsanitize=address
-    add_linker_warnings(ossia)
-endif()
-use_gold(ossia)
-
-if(OSSIA_LTO)
-  enable_lto(ossia)
-endif()
 
 if(BUILD_SHARED_LIBS AND NOT "${OSSIA_STATIC}")
   set_target_properties(ossia PROPERTIES

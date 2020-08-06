@@ -3,11 +3,6 @@ function(ossia_add_example TESTNAME TESTSRCS)
 
     target_compile_options(ossia_${TESTNAME}_example PUBLIC ${OSSIA_COMPILE_OPTIONS})
     target_link_libraries(ossia_${TESTNAME}_example PUBLIC ossia)
-
-    if(OSSIA_SANITIZE)
-        sanitize_build(ossia_${TESTNAME}_example)
-    endif()
-    use_gold(ossia_${TESTNAME}_example)
 endFunction()
 
 

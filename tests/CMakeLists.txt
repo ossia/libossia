@@ -12,11 +12,6 @@ function(ossia_add_test TESTNAME TESTSRCS)
     target_include_directories(ossia_${TESTNAME} PUBLIC "${CMAKE_CURRENT_LIST_DIR}/catch")
     target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia)
 
-    if(OSSIA_SANITIZE)
-        sanitize_build(ossia_${TESTNAME})
-    endif()
-    use_gold(ossia_${TESTNAME})
-
     add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
 
@@ -148,11 +143,6 @@ if(OSSIA_BENCHMARKS)
     endif()
 
     target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia)
-
-    if(OSSIA_SANITIZE)
-      sanitize_build(ossia_${TESTNAME})
-    endif()
-    use_gold(ossia_${TESTNAME})
 
     # add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
   endFunction()

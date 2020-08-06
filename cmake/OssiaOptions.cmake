@@ -1,6 +1,4 @@
 # Build settings :
-option(OSSIA_SANITIZE "Sanitize build" OFF)
-option(OSSIA_TIDY "Use clang-tidy" OFF)
 option(OSSIA_STATIC "Make a static build" OFF)
 option(OSSIA_COVERAGE "Run code coverage" OFF)
 option(OSSIA_EXAMPLES "Build examples" OFF)
@@ -9,16 +7,11 @@ option(OSSIA_CI "Continuous integration run" OFF)
 option(OSSIA_FRAMEWORK "Build an OS X framework" OFF)
 option(OSSIA_PCH "Enable PCH" ON)
 option(OSSIA_NO_SONAME "Set NO_SONAME property" ON)
-option(OSSIA_LTO "Link-time optimizations. Fails on Windows." OFF)
 option(OSSIA_OSX_FAT_LIBRARIES "Build 32 and 64 bit fat libraries on OS X" OFF)
 option(OSSIA_OSX_RETROCOMPATIBILITY "Build for older OS X versions" OFF)
-option(OSSIA_USE_FAST_LINKER "Use a faster linker (GNU gold or LLVM lld). Fails on some Ubuntu systems" OFF)
-option(OSSIA_MOST_STATIC "Try to make binaries that are mostly static" OFF)
 option(OSSIA_DATAFLOW "Dataflow features" ON)
 option(OSSIA_EDITOR "Editor features" ON)
 option(OSSIA_GFX "Graphics features" ON)
-option(OSSIA_SPLIT_DEBUG "Split debug info" ON)
-option(OSSIA_NO_DEBUG_INFO "No debug info" OFF)
 option(OSSIA_HIDE_ALL_SYMBOLS "Hide all symbols from the ossia lib" OFF)
 
 # Bindings :
@@ -77,11 +70,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJEC
 set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
 if(NOT OSSIA_SDK)
-  set(OSSIA_SDK ${OSSIA_3RDPARTY_FOLDER}/win_audio_sdk)
-endif()
-
-if(OSSIA_SANITIZE)
-  set(OSSIA_PCH 0)
+  set(OSSIA_SDK "${OSSIA_3RDPARTY_FOLDER}/win_audio_sdk")
 endif()
 
 set(CMAKE_PREFIX_PATH

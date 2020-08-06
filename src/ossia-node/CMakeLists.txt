@@ -27,12 +27,3 @@ elseif(UNIX)
     target_link_libraries(ossia-node INTERFACE -Wl,--warn-unresolved-symbols)
   endif()
 endif()
-
-if(OSSIA_SANITIZE)
-  target_link_libraries(ossia-node INTERFACE
-      -fsanitize=address
-      -fsanitize=undefined
-      asan
-      ubsan
-  )
-endif()
