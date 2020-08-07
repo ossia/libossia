@@ -28,6 +28,9 @@ steps:
     brew install ninja
   displayName: Dependencies
   condition: eq( variables['Agent.OS'], 'Darwin' )
+- powershell: |
+    cinst -y ninja
+  condition: eq( variables['Agent.OS'], 'Windows_NT' )
 
 ## Build ##
 - bash: |
