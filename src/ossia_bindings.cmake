@@ -3,6 +3,10 @@ if(OSSIA_JAVA)
   add_subdirectory(ossia-java)
 endif()
 
+if(OSSIA_UNITY3D)
+  add_subdirectory(ossia-unity3d)
+endif()
+
 if(OSSIA_NODEJS)
   add_subdirectory(ossia-node)
 endif()

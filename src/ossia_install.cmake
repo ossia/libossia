@@ -1,49 +1,3 @@
-if(OSSIA_UNITY3D)
-    if(${CMAKE_SIZEOF_VOID_P} MATCHES "4")
-        set(OSSIA_UNITY_PLUGIN_FOLDER "x86")
-    else()
-        set(OSSIA_UNITY_PLUGIN_FOLDER "x86_64")
-    endif()
-
-    if(APPLE)
-        set_target_properties(ossia PROPERTIES
-            PREFIX ""
-            SUFFIX ".bundle"
-            )
-        install(
-            TARGETS ossia
-            LIBRARY DESTINATION ossia-unity/Assets/Plugins/
-            )
-    elseif(WIN32)
-        install(
-            TARGETS ossia
-            RUNTIME DESTINATION ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
-            )
-    else() # Linux
-        install(
-            TARGETS ossia
-            LIBRARY DESTINATION ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}
-            )
-    endif()
-
-    file(GLOB_RECURSE UNITY3D_FILES RELATIVE ${CMAKE_CURRENT_LIST_DIR} "ossia-unity3d/*.cs")
-
-    install(
-        FILES ${UNITY3D_FILES}
-        DESTINATION ossia-unity/Assets/ossia
-    )
-
-    install(
-        FILES ossia-unity3d/README.md
-        DESTINATION ossia-unity/Assets/
-    )
-
-    install(
-        FILES "${CMAKE_CURRENT_LIST_DIR}/../LICENSE"
-        DESTINATION ossia-unity/Assets
-    )
-endif()
-
 if(OSSIA_QML)
     install(
         TARGETS ossia
@@ -70,7 +24,7 @@ if(OSSIA_QML)
 endif()
 
 
-if(NOT OSSIA_QML_ONLY AND NOT OSSIA_UNITY3D_ONLY)
+if(NOT OSSIA_QML_ONLY)
 # Default case, C / C++ library
 # Install
 install(TARGETS ossia
