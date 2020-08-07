@@ -19,7 +19,17 @@ pool:
   vmImage: $(imageName)
 
 steps:
-# Linux
+## Install packages ##
+- bash: |
+    sudo apt install -qq -y build-essential g++ ninja-build 
+  displayName: Dependencies
+  condition: eq( variables['Agent.OS'], 'Linux' )
+- bash: |
+    brew install ninja
+  displayName: Dependencies
+  condition: eq( variables['Agent.OS'], 'Darwin' )
+
+## Build ##
 - bash: |
     cd $(Build.SourcesDirectory)
     mkdir build
@@ -29,12 +39,7 @@ steps:
     cmake --build . --target install
   displayName: Build
 
-#- task: PublishPipelineArtifact@1
-#  inputs:
-#    targetPath: $(System.DefaultWorkingDirectory)/build/install
-#    artifactName: libossia-linux
-#  condition: eq( variables['Agent.OS'], 'Linux' )
-
+## Assemble ##
 # Publish the artefacts from the Windows and Mac system
 - task: PublishPipelineArtifact@1
   condition: eq( variables['Agent.OS'], 'Windows_NT' )
@@ -67,6 +72,9 @@ steps:
     find .
   displayName: Package
   condition: eq( variables['Agent.OS'], 'Linux' )
+
+## Deploy ##
+
 #  condition: eq( variables['Agent.OS'], 'Linux' )
 #  displayName: Get IP on Linux
 ## macOS
