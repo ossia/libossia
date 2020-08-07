@@ -1,90 +1,117 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-20.04'
-    mac:
-      imageName: 'macos-10.14'
-    windows:
-      imageName: 'windows-2019'
-
 trigger:
 - master
 
-pool:
-  vmImage: $(imageName)
-
-steps:
-## Install packages ##
-- bash: |
-    sudo apt install -qq -y build-essential g++ ninja-build 
-  displayName: Dependencies
-  condition: eq( variables['Agent.OS'], 'Linux' )
-- bash: |
-    brew install ninja
-  displayName: Dependencies
-  condition: eq( variables['Agent.OS'], 'Darwin' )
-- powershell: |
-    cinst -y ninja
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
-
-## Build ##
-- bash: |
-    cd $(Build.SourcesDirectory)
-    mkdir build
-    cd build
-    cmake -GNinja .. -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-    cmake --build . 
-    cmake --build . --target install
-  displayName: Build
-
-## Assemble ##
-# Publish the artefacts from the Windows and Mac system
-- task: PublishPipelineArtifact@1
-  condition: eq( variables['Agent.OS'], 'Windows_NT' )
-  inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/build/install
-    artifactName: libossia-win32
-- task: PublishPipelineArtifact@1
-  condition: eq( variables['Agent.OS'], 'Darwin' )
-  inputs:
-    targetPath: $(System.DefaultWorkingDirectory)/build/install
-    artifactName: libossia-macos
+stages:
+  - stage: build
+    displayName: Build packages
+    jobs: 
+      - job: build
+        strategy:
+          matrix:
+            linux:
+              imageName: 'ubuntu-20.04'
+            mac:
+              imageName: 'macos-10.14'
+            windows:
+              imageName: 'windows-2019'
+        
+        steps:
+        ## Install packages ##
+        - bash: |
+            sudo apt install -qq -y build-essential g++ ninja-build 
+          displayName: Dependencies
+          condition: eq( variables['Agent.OS'], 'Linux' )
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+          condition: eq( variables['Agent.OS'], 'Darwin' )
+        - powershell: |
+            cinst -y ninja
+          condition: eq( variables['Agent.OS'], 'Windows_NT' )
+        
+        ## Build ##
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build . 
+            cmake --build . --target install
+          displayName: Build
+        
+        ## Assemble ##
+        # Publish the artefacts
+        - task: PublishPipelineArtifact@1
+          condition: eq( variables['Agent.OS'], 'Windows_NT' )
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-win32
+        - task: PublishPipelineArtifact@1
+          condition: eq( variables['Agent.OS'], 'Darwin' )
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-macos
+        - task: PublishPipelineArtifact@1
+          condition: eq( variables['Agent.OS'], 'Darwin' )
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-linux
   
-# Download them to the Linux system
-- task: DownloadPipelineArtifact@2
-  condition: eq( variables['Agent.OS'], 'Linux' )
-  inputs:
-    artifact: libossia-win32
-    #patterns: '**/*.js'
-    path: $(Build.SourcesDirectory)/build/install/win32
-- task: DownloadPipelineArtifact@2
-  condition: eq( variables['Agent.OS'], 'Linux' )
-  inputs:
-    artifact: libossia-macos
-    #patterns: '**/*.js'
-    path: $(Build.SourcesDirectory)/build/install/macos
+  - stage: assemble
+    displayName: Assemble packages
+    dependsOn: string | [ string ]
+    condition: string
+    jobs: 
+      - job: deps
+        strategy:
+          matrix:
+            linux:
+              imageName: 'ubuntu-20.04'
+        steps:      
+        # Download them to the Linux system
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-win32
+            path: $(System.DefaultWorkingDirectory)/win32
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-macos
+            path: $(System.DefaultWorkingDirectory)/macos
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-linux
+            path: $(System.DefaultWorkingDirectory)/linux
+        
+        - bash: |
+            cd $(Build.SourcesDirectory)
+            cd build
+            find .
+          displayName: Package
+        
+  ## Deploy ##
+        
+      
 
-- bash: |
-    cd $(Build.SourcesDirectory)
-    cd build
-    find .
-  displayName: Package
-  condition: eq( variables['Agent.OS'], 'Linux' )
 
-## Deploy ##
 
-#  condition: eq( variables['Agent.OS'], 'Linux' )
-#  displayName: Get IP on Linux
-## macOS
-#- bash: |
-#    export IPADDR=$(ifconfig | grep 'en0' -A3 | tail -n1 | awk '{print $2}')
-#    echo "##vso[task.setvariable variable=IP_ADDR]$IPADDR"
-#  condition: eq( variables['Agent.OS'], 'Darwin' )
+
+
+
+
+
+
+
+
+
+
+  #  condition: eq( variables['Agent.OS'], 'Linux' )
+  #  displayName: Get IP on Linux
+  ## macOS
+  #- bash: |
+  #    export IPADDR=$(ifconfig | grep 'en0' -A3 | tail -n1 | awk '{print $2}')
+  #    echo "##vso[task.setvariable variable=IP_ADDR]$IPADDR"
+  #  condition: eq( variables['Agent.OS'], 'Darwin' )
+
 #  displayName: Get IP on macOS
 ## Windows
 #- powershell: |
