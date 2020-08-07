@@ -185,7 +185,7 @@ stages:
             artifactName: libossia-java-win32
 
   - stage: Assemble
-    condition: and(succeeded(), eq(variables.isGitTag, true))
+    # condition: and(succeeded(), eq(variables.isGitTag, true))
 
     jobs:
       - job: Unity3D
@@ -225,22 +225,22 @@ stages:
             popd
           displayName: Package
 
-        # - task: PublishPipelineArtifact@1
-        #   inputs:
-        #     targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
-        #     artifactName: ossia-unity3d
-
-        - task: GitHubRelease@1
+        - task: PublishPipelineArtifact@1
           inputs:
-            gitHubConnection: github.com_jcelerier
-            repositoryName: ossia/libossia
-            action: 'edit'
-            target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            assetUploadMode: 'replace'
-            isDraft: true
-            assets: |
-              $(System.DefaultWorkingDirectory)/*.zip
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
+            artifactName: ossia-unity3d
+
+        # - task: GitHubRelease@1
+        #   inputs:
+        #     gitHubConnection: github.com_jcelerier
+        #     repositoryName: ossia/libossia
+        #     action: 'edit'
+        #     target: '$(Build.SourceVersion)'
+        #     tagSource: 'gitTag'
+        #     assetUploadMode: 'replace'
+        #     isDraft: true
+        #     assets: |
+        #       $(System.DefaultWorkingDirectory)/*.zip
       - job: Java
         pool:
           vmImage: 'ubuntu-20.04'
@@ -290,19 +290,19 @@ stages:
             popd
           displayName: Package
 
-        # - task: PublishPipelineArtifact@1
-        #   inputs:
-        #     targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
-        #     artifactName: ossia-java
-
-        - task: GitHubRelease@1
+        - task: PublishPipelineArtifact@1
           inputs:
-            gitHubConnection: github.com_jcelerier
-            repositoryName: ossia/libossia
-            action: 'edit'
-            target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            assetUploadMode: 'replace'
-            isDraft: true
-            assets: |
-              $(System.DefaultWorkingDirectory)/*.zip
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-java*.zip
+            artifactName: ossia-java
+
+        # - task: GitHubRelease@1
+        #   inputs:
+        #     gitHubConnection: github.com_jcelerier
+        #     repositoryName: ossia/libossia
+        #     action: 'edit'
+        #     target: '$(Build.SourceVersion)'
+        #     tagSource: 'gitTag'
+        #     assetUploadMode: 'replace'
+        #     isDraft: true
+        #     assets: |
+        #       $(System.DefaultWorkingDirectory)/*.zip
