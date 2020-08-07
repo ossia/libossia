@@ -111,9 +111,6 @@ artifacts:
   - path: pyossia*.whl
     name: pyossia-wheel-win
     type: zip
-  - path: ossia-unity3d-win.zip
-    name: ossia-unity3d-win
-    type: zip
 
 deploy:
   provider: GitHub
