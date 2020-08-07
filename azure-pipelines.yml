@@ -2,34 +2,65 @@ trigger:
 - master
 
 stages:
-  - stage: build
+  - stage: Build
     jobs: 
-      - job: build
-        strategy:
-          matrix:
-            linux:
-              imageName: 'ubuntu-20.04'
-            mac:
-              imageName: 'macos-10.14'
-            windows:
-              imageName: 'windows-2019'
-        
+      - job: Linux        
+        pool:
+          vmImage: 'ubuntu-20.04'
+
         steps:
-        ## Install packages ##
         - bash: |
             sudo apt install -qq -y build-essential g++ ninja-build 
           displayName: Dependencies
-          condition: eq( variables['Agent.OS'], 'Linux' )
+        
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build . 
+            cmake --build . --target install
+          displayName: Build
+        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-linux
+
+      - job: macOS        
+        pool:
+          vmImage: 'macos-10.14'
+
+        steps:
         - bash: |
             brew install ninja
           displayName: Dependencies
-          condition: eq( variables['Agent.OS'], 'Darwin' )
+        
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build . 
+            cmake --build . --target install
+          displayName: Build
+        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-macos
+            
+      - job: Win32        
+        pool:
+          vmImage: 'windows-2019'
+
+        steps:
+        ## Install packages ##
         - powershell: |
             cinst -y ninja
-          condition: eq( variables['Agent.OS'], 'Windows_NT' )
         
         ## Build ##
-        - bash: |
+        - powershell: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
@@ -41,28 +72,16 @@ stages:
         ## Assemble ##
         # Publish the artefacts
         - task: PublishPipelineArtifact@1
-          condition: eq( variables['Agent.OS'], 'Windows_NT' )
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-win32
-        - task: PublishPipelineArtifact@1
-          condition: eq( variables['Agent.OS'], 'Darwin' )
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-macos
-        - task: PublishPipelineArtifact@1
-          condition: eq( variables['Agent.OS'], 'Darwin' )
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-linux
   
   - stage: assemble
     jobs: 
-      - job: deps
-        strategy:
-          matrix:
-            linux:
-              imageName: 'ubuntu-20.04'
+      - job: deps        
+        pool:
+          vmImage: 'ubuntu-20.04'
+
         steps:      
         # Download them to the Linux system
         - task: DownloadPipelineArtifact@2
