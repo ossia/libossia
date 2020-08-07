@@ -1,169 +1,199 @@
+trigger:
+  branches:
+    include:
+    - '*'
+  tags:
+    include:
+    - '*'
+  pr:
+    - '*'
+
 variables:
   isGitTag: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
 
 stages:
   - stage: Build
-    jobs: 
-      - job: Unity3DLinux        
+    jobs:
+      - job: Unity3DLinux
         displayName: Unity3D (Linux)
         pool:
           vmImage: 'ubuntu-20.04'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build 
+            sudo apt install -qq -y build-essential g++ ninja-build
           displayName: Dependencies
-        
+
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-unity3d-linux
 
-      - job: Unity3DMac        
+      - job: Unity3DMac
         displayName: Unity3D (macOS)
         pool:
           vmImage: 'macos-10.14'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - bash: |
             brew install ninja
           displayName: Dependencies
-        
+
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-unity3d-macos
-            
-      - job: Unity3DWin32       
-        displayName: Unity3D (Win32) 
+
+      - job: Unity3DWin32
+        displayName: Unity3D (Win32)
         pool:
           vmImage: 'windows-2019'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - script: |
             cinst -y ninja
-        
+
         - script: |
             pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
             for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
             popd
             call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
-            
+
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-unity3d-win32
 
-      - job: JavaLinux        
+      - job: JavaLinux
         displayName: Java (Linux)
         pool:
           vmImage: 'ubuntu-20.04'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build 
+            sudo apt install -qq -y build-essential g++ ninja-build
           displayName: Dependencies
-        
+
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-java-linux
 
-      - job: JavaMac        
+      - job: JavaMac
         displayName: Java (macOS)
         pool:
           vmImage: 'macos-10.14'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - bash: |
             brew install ninja
           displayName: Dependencies
-        
+
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-java-macos
-            
-      - job: JavaWin32       
-        displayName: Java (Win32) 
+
+      - job: JavaWin32
+        displayName: Java (Win32)
         pool:
           vmImage: 'windows-2019'
 
         steps:
+        - checkout: self
+          submodules: true
+
         - script: |
             cinst -y ninja
-        
+
         - script: |
             pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
             for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
             popd
             call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
-            
+
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
             cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build . 
+            cmake --build .
             cmake --build . --target install
           displayName: Build
-        
+
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-java-win32
 
   - stage: Assemble
-    condition: and(succeeded(), eq(variables.isGitTag, true))        
-    jobs: 
+    condition: and(succeeded(), eq(variables.isGitTag, true))
+
+    jobs:
       - job: Unity3D
         pool:
           vmImage: 'ubuntu-20.04'
 
-        steps:      
+        steps:
+        - checkout: none
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-win32
@@ -176,7 +206,7 @@ stages:
           inputs:
             artifact: libossia-unity3d-linux
             path: $(System.DefaultWorkingDirectory)/unity3d-linux
-        
+
         - bash: |
             echo "Does ninja still exist"
             find /usr -name ninja
@@ -194,12 +224,12 @@ stages:
             fi
             popd
           displayName: Package
-        
+
         # - task: PublishPipelineArtifact@1
         #   inputs:
         #     targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
         #     artifactName: ossia-unity3d
-        
+
         - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
@@ -215,7 +245,7 @@ stages:
         pool:
           vmImage: 'ubuntu-20.04'
 
-        steps:      
+        steps:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-java-win32
@@ -228,13 +258,13 @@ stages:
           inputs:
             artifact: libossia-java-linux
             path: $(System.DefaultWorkingDirectory)/java-linux
-        
+
         - bash: |
             echo "Does ninja still exist"
             find /usr -name ninja
 
             cd $(System.DefaultWorkingDirectory)
-            
+
             pushd java-macos
             unzip -n ossia-java.jar
             rm *.jar
@@ -259,12 +289,12 @@ stages:
             fi
             popd
           displayName: Package
-        
+
         # - task: PublishPipelineArtifact@1
         #   inputs:
         #     targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
         #     artifactName: ossia-java
-        
+
         - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
