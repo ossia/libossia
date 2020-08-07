@@ -27,9 +27,6 @@ environment:
     - APPVEYOR_BUILD_TYPE: ossia-cpp
       configuration: Release
 
-    - APPVEYOR_BUILD_TYPE: ossia-unity3d
-      configuration: Release
-
     - APPVEYOR_BUILD_TYPE: pd
       configuration: Release
 

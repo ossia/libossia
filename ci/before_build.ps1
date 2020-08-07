@@ -35,7 +35,7 @@ cd ..
 mkdir build
 cd build
 
-$CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DBOOST_ROOT=""${env:BOOST_ROOT}""","-DOSSIA_C=1","-DOSSIA_CPP=1","-DOSSIA_UNITY3D=0","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
+$CommonFlags = "-Thost=x64","-DOSSIA_SDK=c:\projects\libossia\3rdparty","-DBOOST_ROOT=""${env:BOOST_ROOT}""","-DOSSIA_C=1","-DOSSIA_CPP=1","-DOSSIA_EDITOR=0","-DOSSIA_DATAFLOW=0","-DCMAKE_BUILD_TYPE=Release","-DOSSIA_CI=1","-DOSSIA_TESTING=0","-DOSSIA_EXAMPLES=0","-DOSSIA_PD=0","-DOSSIA_PYTHON=0","-DOSSIA_QT=0","-DOSSIA_PROTOCOL_AUDIO=0","-DOSSIA_PROTOCOL_JOYSTICK=0","-DOSSIA_PROTOCOL_WIIMOTE=0","-DOSSIA_PROTOCOL_ARTNET=0","-DCMAKE_INSTALL_PREFIX=""${env:APPVEYOR_BUILD_FOLDER}/install"""
 $32bitgen = "-G""Visual Studio 16 2019""","-A","Win32"
 $64bitgen = "-G""Visual Studio 16 2019""","-A","x64"
 
@@ -67,24 +67,6 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
   cmake $32bitgen $CommonFlags c:\projects\libossia > $LogFile
-  CheckLastExitCode
-
-} elseif ( $env:APPVEYOR_BUILD_TYPE -eq "ossia-unity3d" ) {
-  if ( Test-Path ${env:QTDIR}\bin\ ) {
-    set $env:PATH=${env:QTDIR}\bin;${env:PATH};
-  }
-
-  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win64.log"
-  cmake $64bitgen -DCMAKE_INSTALL_PREFIX="${env:APPVEYOR_BUILD_FOLDER}/install" -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
-  CheckLastExitCode
-
-  # now configure 32 bit version
-  cd ..
-  mkdir build-32bit
-  cd build-32bit
-
-  $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\config-${env:APPVEYOR_BUILD_TYPE}-win32.log"
-  cmake $32bitgen -DOSSIA_UNITY3D_ONLY=1 c:\projects\libossia > $LogFile
   CheckLastExitCode
 
 } elseif ( $env:APPVEYOR_BUILD_TYPE -eq "max" ) {

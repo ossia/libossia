@@ -79,18 +79,12 @@ case "$TRAVIS_OS_NAME" in
 
       ;;
       Release)
-        OSSIA_UNITY=1
-        if [[ "$OSSIA_STATIC" == "1" ]]; then
-          OSSIA_UNITY=0
-        fi
-
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR/install" \
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_C=1 \
           -DOSSIA_CPP=1 \
-          -DOSSIA_UNITY3D=$OSSIA_UNITY \
           -DOSSIA_STATIC=$OSSIA_STATIC \
           -DOSSIA_TESTING=1 \
           -DOSSIA_EXAMPLES=0 \
@@ -111,10 +105,6 @@ case "$TRAVIS_OS_NAME" in
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64-static.tar.gz include lib
         else
-          # make unity3d package
-          cd $TRAVIS_BUILD_DIR/install/ossia-unity/
-          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-linux_x86_64.tar.gz *
-
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-linux_x86_64.tar.gz include lib
         fi
@@ -599,11 +589,6 @@ def get_versions():
         cd $TRAVIS_BUILD_DIR/install
         tar -czf ${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz *
     else
-      OSSIA_UNITY=1
-      if [[ "$OSSIA_STATIC" == "1" ]]; then
-        OSSIA_UNITY=0
-      fi
-
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
                -DOSSIA_STATIC=$OSSIA_STATIC \
                -DOSSIA_SANITIZE=1 \
@@ -618,7 +603,6 @@ def get_versions():
                -DOSSIA_PROTOCOL_AUDIO=0 \
                -DOSSIA_C=1 \
                -DOSSIA_CPP=1 \
-               -DOSSIA_UNITY3D=${OSSIA_UNITY} \
                -DOSSIA_OSX_RETROCOMPATIBILITY=1 \
                -DCMAKE_INSTALL_PREFIX=$TRAVIS_BUILD_DIR/install \
                -DOSSIA_PD=0 \
@@ -633,9 +617,6 @@ def get_versions():
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos-static.tar.gz include lib
         else
-          cd $TRAVIS_BUILD_DIR/install/ossia-unity
-          tar -czf ${ARTIFACTS_DIR}/ossia-unity3d-macos.tar.gz *
-
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz include lib
         fi
