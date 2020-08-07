@@ -2,7 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <cmath>
 #include <algorithm>
-
+#include <cinttypes>
 #include <utility>
 /**
  * \file math.hpp
