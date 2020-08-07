@@ -4,7 +4,8 @@ trigger:
 stages:
   - stage: Build
     jobs: 
-      - job: Linux        
+      - job: Unity3DLinux        
+        displayName: Unity3D (Linux)
         pool:
           vmImage: 'ubuntu-20.04'
 
@@ -25,9 +26,10 @@ stages:
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-linux
+            artifactName: libossia-unity3d-linux
 
-      - job: macOS        
+      - job: Unity3DMac        
+        displayName: Unity3D (macOS)
         pool:
           vmImage: 'macos-10.14'
 
@@ -48,18 +50,17 @@ stages:
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-macos
+            artifactName: libossia-unity3d-macos
             
-      - job: Win32        
+      - job: Unity3DWin32       
+        displayName: Unity3D (Win32) 
         pool:
           vmImage: 'windows-2019'
 
         steps:
-        ## Install packages ##
         - script: |
             cinst -y ninja
         
-        ## Build ##
         - script: |
             pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
             for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
@@ -74,39 +75,50 @@ stages:
             cmake --build . --target install
           displayName: Build
         
-        ## Assemble ##
-        # Publish the artefacts
         - task: PublishPipelineArtifact@1
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-win32
+            artifactName: libossia-unity3d-win32
   
-  - stage: assemble
+  - stage: Assemble        
     jobs: 
-      - job: deps        
+      - job: Unity3D
         pool:
           vmImage: 'ubuntu-20.04'
 
         steps:      
-        # Download them to the Linux system
         - task: DownloadPipelineArtifact@2
           inputs:
-            artifact: libossia-win32
-            path: $(System.DefaultWorkingDirectory)/win32
+            artifact: libossia-unity3d-win32
+            path: $(System.DefaultWorkingDirectory)/unity3d-win32
         - task: DownloadPipelineArtifact@2
           inputs:
-            artifact: libossia-macos
-            path: $(System.DefaultWorkingDirectory)/macos
+            artifact: libossia-unity3d-macos
+            path: $(System.DefaultWorkingDirectory)/unity3d-macos
         - task: DownloadPipelineArtifact@2
           inputs:
-            artifact: libossia-linux
-            path: $(System.DefaultWorkingDirectory)/linux
+            artifact: libossia-unity3d-linux
+            path: $(System.DefaultWorkingDirectory)/unity3d-linux
         
         - bash: |
-            cd $(Build.SourcesDirectory)
-            cd build
-            find .
+            echo "Does ninja still exist"
+            find /usr -name ninja
+
+            cd $(System.DefaultWorkingDirectory)
+            mkdir ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64
+            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins
+            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/libossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64
+
+            pushd ./unity3d-linux/ossia-unity/
+            zip -r ossia-unity3d.zip *
+            mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/
+            popd
           displayName: Package
+        
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
+            artifactName: ossia-unity3d
         
   ## Deploy ##
         
