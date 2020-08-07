@@ -139,7 +139,7 @@ deploy:
     skip_cleanup: true
     draft: false
     prerelease: false
-    name: libossia $TRAVIS_TAG
+    name: $TRAVIS_TAG
     release_notes: >-
       <h1> Release of OSSIA $TRAVIS_TAG </h1>
       <p>
