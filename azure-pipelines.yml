@@ -202,7 +202,7 @@ stages:
         
         - task: GitHubRelease@1
           inputs:
-            gitHubConnection: ossia
+            gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
@@ -267,7 +267,7 @@ stages:
         
         - task: GitHubRelease@1
           inputs:
-            gitHubConnection: ossia
+            gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
