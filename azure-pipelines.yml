@@ -5,8 +5,8 @@ trigger:
   tags:
     include:
     - '*'
-  pr:
-    - '*'
+pr:
+  - '*'
 
 variables:
   isGitTag: startsWith(variables['Build.SourceBranch'], 'refs/tags/')
