@@ -10,6 +10,7 @@ pr:
 
 variables:
   isGitTag: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/')]
+  gitTag: $[replace(variables['Build.SourceBranch'], 'refs/tags/', '')]
 
 stages:
   - stage: Build
@@ -28,6 +29,7 @@ stages:
           displayName: Dependencies
 
         - bash: |
+            echo $(variables.gitTag)
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
@@ -208,9 +210,6 @@ stages:
             path: $(System.DefaultWorkingDirectory)/unity3d-linux
 
         - bash: |
-            echo "Does ninja still exist"
-            find /usr -name ninja
-
             cd $(System.DefaultWorkingDirectory)
             mkdir ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64
             cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins
@@ -218,16 +217,14 @@ stages:
 
             pushd ./unity3d-linux/ossia-unity/
             zip -r ossia-unity3d.zip *
-            GIT_TAG=$(git describe --exact-match $(Build.SourceVersion))
-            if [[ "x$GIT_TAG" != "x" ]]; then
-              mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d-$GIT_TAG.zip
-            fi
+
+            mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d-$(variables.gitTag).zip
             popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
+            targetPath: $(System.DefaultWorkingDirectory)/*.zip
             artifactName: ossia-unity3d
 
         - task: GitHubRelease@1
@@ -239,8 +236,7 @@ stages:
             tagSource: 'gitTag'
             assetUploadMode: 'replace'
             isDraft: true
-            assets: |
-              $(System.DefaultWorkingDirectory)/*.zip
+            assets: $(System.DefaultWorkingDirectory)/*.zip
 
       - job: Java
         pool:
@@ -261,9 +257,6 @@ stages:
             path: $(System.DefaultWorkingDirectory)/java-linux
 
         - bash: |
-            echo "Does ninja still exist"
-            find /usr -name ninja
-
             cd $(System.DefaultWorkingDirectory)
 
             pushd java-macos
@@ -284,16 +277,13 @@ stages:
             zip ossia-java.jar *
             zip -r ossia-java.zip ossia-java.jar
 
-            GIT_TAG=$(git describe --exact-match $(Build.SourceVersion))
-            if [[ "x$GIT_TAG" != "x" ]]; then
-              mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java-$GIT_TAG.zip
-            fi
+            mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java-$(variables.gitTag).zip
             popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/ossia-java*.zip
+            targetPath: $(System.DefaultWorkingDirectory)/*.zip
             artifactName: ossia-java
 
         - task: GitHubRelease@1
@@ -305,5 +295,4 @@ stages:
             tagSource: 'gitTag'
             assetUploadMode: 'replace'
             isDraft: true
-            assets: |
-              $(System.DefaultWorkingDirectory)/*.zip
+            assets: $(System.DefaultWorkingDirectory)/*.zip
