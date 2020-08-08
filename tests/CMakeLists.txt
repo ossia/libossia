@@ -1,4 +1,8 @@
 ### Setup ###
+# Don't run tests when we're building specific bindings...
+if(OSSIA_PD OR OSSIA_MAX OR OSSIA_PYTHON OR OSSIA_NODEJS OR OSSIA_JAVA OR OSSIA_UNITY3D)
+  return()
+endif()
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
@@ -14,7 +18,6 @@ function(ossia_add_test TESTNAME TESTSRCS)
 
     add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
 endFunction()
-
 
 ### Tests ###
 ossia_add_test(PresetTest   "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
