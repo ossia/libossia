@@ -7,19 +7,19 @@ if(OSSIA_QML)
         )
     install(
         FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Property.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml
-        ${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/qmldir"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Node.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSink.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/MidiSource.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSC.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Property.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryClient.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/OSCQueryServer.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Reader.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Writer.qml"
+        "${CMAKE_CURRENT_SOURCE_DIR}/../LICENSE"
         DESTINATION Ossia)
 endif()
 
@@ -166,7 +166,7 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.h
         DESTINATION include/
         COMPONENT Devel)
 
-if(EXISTS ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h)
+if(EXISTS "${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h")
   install(FILES
             ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h
             ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_flac.h
