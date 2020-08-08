@@ -166,12 +166,14 @@ install(FILES ${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/smallfun.h
         DESTINATION include/
         COMPONENT Devel)
 
-install(FILES
-          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h
-          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_flac.h
-          ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_mp3.h
-        DESTINATION include/
-        COMPONENT Devel)
+if(EXISTS ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h)
+  install(FILES
+            ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h
+            ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_flac.h
+            ${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_mp3.h
+          DESTINATION include/
+          COMPONENT Devel)
+endif()
 
 install(FILES ${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp
         DESTINATION include/
