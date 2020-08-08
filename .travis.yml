@@ -56,13 +56,13 @@ jobs:
 
 #  - os: linux
 #    env: BUILD_TYPE=RpiPythonRelease OSSIA_STATIC=1 PYTHON_VERSION=3.5
-
-  - os: linux
-    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
-
-  - os: linux
-    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
-
+#
+#  - os: linux
+#    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=0
+#
+#  - os: linux
+#    env: BUILD_TYPE=RpiRelease OSSIA_STATIC=1
+#
   - os: linux
     env: BUILD_TYPE=Rpi-ossia-cpp
 

@@ -39,33 +39,33 @@ environment:
     - APPVEYOR_BUILD_TYPE: purrdata-32bit
       configuration: Release
 
-    - APPVEYOR_BUILD_TYPE: pd-test
-      configuration: Debug
-      QTDIR-32bit: C:\Qt\latest\msvc2019
+#    - APPVEYOR_BUILD_TYPE: pd-test
+#      configuration: Debug
+#      QTDIR-32bit: C:\Qt\latest\msvc2019
 
     - APPVEYOR_BUILD_TYPE: max
       configuration: Release
 
-    - APPVEYOR_BUILD_TYPE: python
-      configuration: Release
-      python: Python27
-      platform: x64
-
-    - APPVEYOR_BUILD_TYPE: python
-      configuration: Release
-      python: Python27
-      platform: x86
-
-    - APPVEYOR_BUILD_TYPE: python
-      configuration: Release
-      python: Python36
-      platform: x64
-
-    - APPVEYOR_BUILD_TYPE: python
-      configuration: Release
-      python: Python36
-      platform: x86
-
+#     - APPVEYOR_BUILD_TYPE: python
+#       configuration: Release
+#       python: Python27
+#       platform: x64
+# 
+#     - APPVEYOR_BUILD_TYPE: python
+#       configuration: Release
+#       python: Python27
+#       platform: x86
+# 
+#     - APPVEYOR_BUILD_TYPE: python
+#       configuration: Release
+#       python: Python36
+#       platform: x64
+# 
+#     - APPVEYOR_BUILD_TYPE: python
+#       configuration: Release
+#       python: Python36
+#       platform: x86
+# 
     - APPVEYOR_BUILD_TYPE: qml
       configuration: Release
       QTDIR-32bit: C:\Qt\latest\msvc2019
@@ -108,9 +108,9 @@ artifacts:
   - path: libossia-native-win*.zip
     name: ossia-windows
     type: zip
-  - path: pyossia*.whl
-    name: pyossia-wheel-win
-    type: zip
+#  - path: pyossia*.whl
+#    name: pyossia-wheel-win
+#    type: zip
 
 deploy:
   provider: GitHub
