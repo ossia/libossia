@@ -211,20 +211,20 @@ stages:
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
-            mkdir ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64
-            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins
-            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/libossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64
+            mkdir -p ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
+            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
+            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/libossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
 
             pushd ./unity3d-linux/ossia-unity/
             zip -r ossia-unity3d.zip *
 
-            mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d-$(variables.gitTag).zip
+            mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/*.zip
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
 
         - task: GitHubRelease@1
@@ -236,7 +236,7 @@ stages:
             tagSource: 'gitTag'
             assetUploadMode: 'replace'
             isDraft: true
-            assets: $(System.DefaultWorkingDirectory)/*.zip
+            assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
 
       - job: Java
         pool:
@@ -261,29 +261,27 @@ stages:
 
             pushd java-macos
             unzip -n ossia-java.jar
-            rm *.jar
             popd
 
             pushd java-win32
             unzip -n ossia-java.jar
-            rm *.jar
             popd
 
             pushd java-linux
+            cp -rf ../java-macos/darwin .
+            cp -rf ../java-win32/win32-x86_64 .
             unzip -n ossia-java.jar
-            rm *.jar
-            cp -rf ../java-macos/* .
-            cp -rf ../java-win32/* .
-            zip ossia-java.jar *
-            zip -r ossia-java.zip ossia-java.jar
+            rm ossia-java.jar
+            zip -r ossia-java.jar darwin win32-x86_64 linux-x86-64 io META-INF
+            zip -r ossia-java.zip ossia-java.jar ossia-java-example.jar jna.jar
 
-            mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java-$(variables.gitTag).zip
+            mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java.zip
             popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/*.zip
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
         - task: GitHubRelease@1
@@ -295,4 +293,4 @@ stages:
             tagSource: 'gitTag'
             assetUploadMode: 'replace'
             isDraft: true
-            assets: $(System.DefaultWorkingDirectory)/*.zip
+            assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
