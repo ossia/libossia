@@ -15,6 +15,3 @@ If build succeed, you could try to run the example :
     java -cp OSSIA/ossia-java/ossia-java-example.jar:OSSIA/ossia-java/jna.jar:OSSIA/ossia-java/ossia-java.jar example
 
 The OSCQuery server should start, then it terminates as soon as `/foo/bar` value is no more equals to `0.f`.
-
-## TODO :
-- add it to CI
