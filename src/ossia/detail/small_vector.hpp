@@ -2,7 +2,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
-#if defined(NDEBUG)
+#if !defined(OSSIA_NO_SMALLVECTOR)
 #define OSSIA_SMALL_VECTOR
 #include <boost/container/small_vector.hpp>
 #include <boost/container/static_vector.hpp>
