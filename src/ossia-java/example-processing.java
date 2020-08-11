@@ -18,7 +18,7 @@ void setup()
   Node root = d.getRootNode();
   Node bar = root.createNode("/foo/bar");
   bar.setDescription("Rectangle fill color");
-  my_color = bar.createParameter(Type.VEC3F_T);
+  my_color = bar.createParameter(Type.VEC4F_T);
   my_color.setUnit("color.rgba8");
   my_color.push(120f, 20f, 50f, 255f);
 }
