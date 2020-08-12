@@ -42,7 +42,7 @@ if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
   message(FATAL_ERROR "Coverage only implemented for GCC 9+")
 endif()
 
-find_program(GCOV_PATH NAMES gcov-9 gcov)
+find_program(GCOV_PATH NAMES gcov-13 gcov-12 gcov-11 gcov-10 gcov-9 gcov)
 if(NOT GCOV_PATH)
   message(FATAL_ERROR "gcov not found")
 endif()
@@ -52,7 +52,7 @@ execute_process(
   OUTPUT_VARIABLE GCOV_OUTPUT
 )
 
-if(NOT ("${GCOV_OUTPUT}" MATCHES ".*([0-9]+\\.[0-9]+\\.[0-9]+).*"))
+if(NOT ("${GCOV_OUTPUT}" MATCHES ".* ([0-9]+\\.[0-9]+\\.[0-9]+).*"))
   message(FATAL_ERROR "cannot parse gcov version : ${GCOV_OUTPUT}")
 endif()
 
@@ -71,7 +71,7 @@ function(setup_target_for_coverage _targetname _testrunner _exclusions _outputna
   add_custom_target(${_targetname}
           ${FASTCOV_PATH} --zerocounters
 
-          COMMAND ${_testrunner} ${ARGV4}
+          COMMAND ${_testrunner} ${ARGV4} || (exit 0)
 
           # Capturing lcov counters and generating report
           COMMAND ${FASTCOV_PATH} -g ${GCOV_PATH} --lcov --exclude ${_exclusions} .. -o ${_outputname}.info

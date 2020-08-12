@@ -382,10 +382,10 @@ def get_versions():
           -DCMAKE_BUILD_TYPE=Debug \
           -DOSSIA_TESTING=1 \
           -DOSSIA_COVERAGE=1 \
-          -DOSSIA_CI=1 \
           -DPORTAUDIO_ONLY_DYNAMIC=1 \
           -DOSSIA_PD=0 \
           -DOSSIA_QT=1 \
+          -DOSSIA_C=1 \
           ..
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target ossia_coverage
