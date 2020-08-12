@@ -9,7 +9,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <boost/bind.hpp>
 #include <boost/concept/assert.hpp>
 #include <boost/config.hpp>
 #include <boost/graph/adjacency_list.hpp>
