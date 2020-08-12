@@ -51,8 +51,9 @@ if(OSSIA_EDITOR)
     ossia_add_test(ScenarioAlgoTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioAlgoTest.cpp")
     ossia_add_test(ScenarioTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ScenarioTest.cpp")
     ossia_add_test(LoopTest                    "${CMAKE_CURRENT_SOURCE_DIR}/Editor/LoopTest.cpp")
-
+    target_link_libraries(ossia_LoopTest PRIVATE rubberband)
   endif()
+
   ossia_add_test(CurveTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveTest.cpp")
   ossia_add_test(CurveSegmentEmptyTest       "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentEmptyTest.cpp")
   ossia_add_test(CurveSegmentLinearTest      "${CMAKE_CURRENT_SOURCE_DIR}/Editor/CurveSegment/CurveSegmentLinearTest.cpp")
@@ -79,6 +80,7 @@ if(OSSIA_DATAFLOW)
   ossia_add_test(TickMethodTest              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TickMethodTest.cpp")
   ossia_add_test(TokenRequestTest            "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/TokenRequestTest.cpp")
   ossia_add_test(SoundTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SoundTest.cpp")
+  target_link_libraries(ossia_SoundTest PRIVATE rubberband)
 endif()
 
 if(OSSIA_QML)
@@ -92,7 +94,6 @@ if(OSSIA_QML)
     "${CMAKE_CURRENT_SOURCE_DIR}/testdata/websocket/ws_icmc.qml"
   )
   add_custom_target(ossia_test_ui_qml SOURCES ${QMLS})
-
 
   if(OSSIA_QML_DEVICE)
     ossia_add_test(QtTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QtDeviceTest.cpp")
