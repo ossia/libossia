@@ -68,6 +68,7 @@ environment:
 # 
     - APPVEYOR_BUILD_TYPE: qml
       configuration: Release
+      QTDIR: C:\Qt\latest\msvc2019_64
       QTDIR-32bit: C:\Qt\latest\msvc2019
       platform: x64
 

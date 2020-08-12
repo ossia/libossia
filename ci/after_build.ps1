@@ -62,6 +62,8 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\install
   ls
+  ls lib
+  ls bin
 
   cd ${env:APPVEYOR_BUILD_FOLDER}\build-32bit
   $LogFile = "${env:APPVEYOR_BUILD_FOLDER}\install-${env:APPVEYOR_BUILD_TYPE}-win32.log"
@@ -72,10 +74,11 @@ if ( $env:APPVEYOR_BUILD_TYPE -eq "testing" ){
   cmake --build . --config Debug --target install > "$LogFile"
   CheckLastExitCode
 
-  cd ${env:APPVEYOR_BUILD_FOLDER}\install\bin
-  cd ${env:APPVEYOR_BUILD_FOLDER}\install\lib\static
+  cd ${env:APPVEYOR_BUILD_FOLDER}\install
   ls
-
+  ls lib
+  ls bin
+  
   7z a ${env:APPVEYOR_BUILD_FOLDER}\libossia-native-win.zip .
 
 
