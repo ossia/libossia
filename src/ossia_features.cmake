@@ -1,5 +1,7 @@
 if(TARGET Boost::boost)
   target_link_libraries(ossia PUBLIC Boost::boost)
+elseif(TARGET boost)
+  target_link_libraries(ossia PUBLIC boost)
 endif()
 
 ### Protocol setup ###

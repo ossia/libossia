@@ -85,7 +85,7 @@ if(WIN32)
   endif()
 endif()
 
-set(BOOST_MINOR_MINIMAL 61)
+set(BOOST_MINOR_MINIMAL 67)
 set(BOOST_MINOR_LATEST 73)
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
 if (NOT Boost_FOUND)
