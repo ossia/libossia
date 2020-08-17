@@ -64,11 +64,21 @@ private:
 
   message& create(uint8_t b0, uint8_t b1) noexcept
   {
+#if BOOST_VERSION >= 107200
     return messages.emplace_back(b0, b1);
+#else
+    messages.emplace_back(b0, b1);
+    return messages.back();
+#endif
   }
   message& create(uint8_t b0, uint8_t b1, uint8_t b2) noexcept
   {
+#if BOOST_VERSION >= 107200
     return messages.emplace_back(b0, b1, b2);
+#else
+    messages.emplace_back(b0, b1, b2);
+    return messages.back();
+#endif
   }
 };
 

@@ -6,6 +6,7 @@
 #define OSSIA_SMALL_VECTOR
 #include <boost/container/small_vector.hpp>
 #include <boost/container/static_vector.hpp>
+#include <boost/version.hpp>
 
 namespace ossia
 {
@@ -28,6 +29,8 @@ using static_vector = std::vector<T>;
 }
 #endif
 
+#if BOOST_VERSION >= 107200
 static_assert(noexcept(ossia::small_vector<int, 1>{}));
 static_assert(noexcept(ossia::small_pod_vector<int, 1>{}));
 static_assert(noexcept(ossia::static_vector<int, 1>{}));
+#endif

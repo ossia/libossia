@@ -322,10 +322,12 @@ private:
   }
 };
 
+#if BOOST_VERSION >= 107200
 static_assert(noexcept(pan_weight{}));
 static_assert(noexcept(value_inlet{}));
 static_assert(noexcept(std::allocator<ossia::outlet>{}));
 static_assert(noexcept(audio_outlet{}));
+#endif
 
 struct OSSIA_EXPORT midi_outlet : public ossia::outlet
 {

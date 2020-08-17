@@ -18,7 +18,10 @@ struct audio_port
 
   audio_vector samples;
 };
+
+#if BOOST_VERSION >= 107200
 static_assert(noexcept(audio_port{}));
+#endif
 
 struct audio_delay_line
 {

@@ -24,7 +24,9 @@ struct audio_data
   audio_array data;
 };
 
+#if BOOST_VERSION >= 107200
 static_assert(noexcept(audio_data{}));
+#endif
 
 using audio_handle = std::shared_ptr<audio_data>;
 struct drwav_handle;
