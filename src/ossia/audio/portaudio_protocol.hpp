@@ -209,6 +209,9 @@ private:
       proto->process_generic(
           *proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs,
           nframes);
+
+      std::atomic_thread_fence(std::memory_order_seq_cst);
+
       self.audio_tick(nframes, timeInfo->currentTime);
 
       self.processing = false;
