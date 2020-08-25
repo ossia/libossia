@@ -111,14 +111,14 @@ stages:
           submodules: true
 
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build
+            sudo apt install -qq -y build-essential g++ ninja-build openjdk-8-jdk-headless
           displayName: Dependencies
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
@@ -139,13 +139,16 @@ stages:
 
         - bash: |
             brew install ninja
+            brew cask install adoptopenjdk8
           displayName: Dependencies
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
+            echo "JAVA_HOME: $JAVA_HOME"
+            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME=$JAVA_HOME -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
@@ -166,6 +169,7 @@ stages:
 
         - script: |
             cinst -y ninja
+            cinst -y jdk8
 
         - script: |
             pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
@@ -176,7 +180,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME="c:\Program Files\Java\jdk1.8.0_211" -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
