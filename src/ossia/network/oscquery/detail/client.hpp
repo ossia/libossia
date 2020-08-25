@@ -32,7 +32,7 @@ public:
     m_client.clear_error_channels(websocketpp::log::elevel::all);
     m_client.init_asio();
 
-    m_client.set_open_handler([=](connection_handler hdl) {
+    m_client.set_open_handler([this](connection_handler hdl) {
       scoped_lock guard(m_lock);
       m_open = true;
       onOpen();
@@ -44,7 +44,7 @@ public:
           handler(hdl, msg->get_opcode(), msg->get_raw_payload());
         });
 
-    m_client.set_close_handler([=](connection_handler hdl) {
+    m_client.set_close_handler([this](connection_handler hdl) {
       {
         scoped_lock guard(m_lock);
         m_open = false;
@@ -53,7 +53,7 @@ public:
         onClose();
     });
 
-    m_client.set_fail_handler([=](connection_handler hdl) {
+    m_client.set_fail_handler([this](connection_handler hdl) {
       {
         scoped_lock guard(m_lock);
         m_open = false;

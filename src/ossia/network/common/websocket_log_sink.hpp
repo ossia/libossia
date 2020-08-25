@@ -17,7 +17,7 @@ struct websocket_threaded_connection
       : socket([](auto&&...) {})
   {
     running = true;
-    thread = std::thread([=] {
+    thread = std::thread([this, ip] {
       auto log = spdlog::get("websocket");
       if (!log)
         log = spdlog::stderr_logger_mt("websocket");
@@ -179,10 +179,10 @@ public:
       std::chrono::seconds dur)
       : interval{dur}, sender{s}, conn{t}
   {
-    thread = std::thread([=] {
+    thread = std::thread([this] {
       while (running)
       {
-        if (init && t->socket.connected())
+        if (init && conn->socket.connected())
         {
           buffer.Clear();
           rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
@@ -196,13 +196,13 @@ public:
 
           writer.EndObject();
 
-          t->socket.send_message(buffer);
+          conn->socket.send_message(buffer);
         }
 
         for (int i = 0; i < 100; i++)
         {
           std::this_thread::sleep_for(
-              std::chrono::duration_cast<std::chrono::milliseconds>(dur)
+              std::chrono::duration_cast<std::chrono::milliseconds>(interval)
               / 100.0);
           if (!running)
             return;

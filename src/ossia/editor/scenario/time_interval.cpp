@@ -117,9 +117,9 @@ void time_interval::tick_offset(time_value date, ossia::time_value offset, const
     // t = beat / (t0/2 + ta/2)
     // we must find the equivalent constant tempo that would make us end at the exact same
     // date than a proper linear interpolation
-    auto beat = date - m_date;
+    //auto beat = date - m_date;
     auto t0 = tempo(m_date); // TODO check what it means if the tempo comes from outside
-    auto ta = tempo(date);
+    //auto ta = tempo(date);
 
     // absolute tempo given : we negate the speed of the parent
     // todo : this should be done outside for the scenario

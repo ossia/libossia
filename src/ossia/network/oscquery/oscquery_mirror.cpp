@@ -533,11 +533,11 @@ void oscquery_mirror_protocol::init()
 {
   m_oscServer = std::make_unique<osc::receiver>(
       m_osc_port,
-      [=](const oscpack::ReceivedMessage& m,
+      [this](const oscpack::ReceivedMessage& m,
           const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); });
 
   m_websocketClient = std::make_unique<websocket_client>(
-      [=](connection_handler hdl, websocketpp::frame::opcode::value op,
+      [this](connection_handler hdl, websocketpp::frame::opcode::value op,
           std::string& msg) {
         switch (op)
         {
@@ -559,7 +559,7 @@ void oscquery_mirror_protocol::init()
 
   m_hasWS = true;
   std::atomic_bool started{false};
-  m_wsThread = std::thread([=,&started] {
+  m_wsThread = std::thread([this,&started] {
     try
     {
       started = true;
@@ -600,7 +600,7 @@ void oscquery_mirror_protocol::init()
 void oscquery_mirror_protocol::start_http()
 {
   m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
-  m_http->thread = std::thread([=] { m_http->context.run(); });
+  m_http->thread = std::thread([this] { m_http->context.run(); });
 }
 
 void oscquery_mirror_protocol::request_add_node(
@@ -880,7 +880,7 @@ bool oscquery_mirror_protocol::on_BinaryWSMessage(
     const std::string& message)
 {
   auto handler
-      = [=](const oscpack::ReceivedMessage& m,
+      = [this](const oscpack::ReceivedMessage& m,
             const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); };
   osc::listener<decltype(handler)> h{handler};
   // TODO use proper ip / port

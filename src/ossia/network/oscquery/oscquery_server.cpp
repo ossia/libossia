@@ -28,7 +28,7 @@ oscquery_server_protocol::oscquery_server_protocol(
     uint16_t osc_port, uint16_t ws_port)
     : m_oscServer{std::make_unique<osc::receiver>(
           osc_port,
-          [=](const oscpack::ReceivedMessage& m,
+          [this](const oscpack::ReceivedMessage& m,
               const oscpack::IpEndpointName& ip) {
             this->on_OSCMessage(m, ip);
           })}
@@ -698,7 +698,7 @@ server_reply oscquery_server_protocol::on_BinaryWSrequest(
     const std::string& message)
 {
   auto handler
-      = [=](const oscpack::ReceivedMessage& m,
+      = [this](const oscpack::ReceivedMessage& m,
             const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); };
   osc::listener<decltype(handler)> h{handler};
   auto clt = find_client(hdl);

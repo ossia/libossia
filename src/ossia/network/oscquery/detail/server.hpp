@@ -59,7 +59,7 @@ public:
   void set_message_handler(Handler h)
   {
     m_server.set_message_handler(
-        [=](connection_handler hdl, server_t::message_ptr msg) {
+        [this, h](connection_handler hdl, server_t::message_ptr msg) {
 #if defined OSSIA_BENCHMARK
           auto t1 = std::chrono::high_resolution_clock::now();
 #endif
@@ -105,7 +105,7 @@ public:
 #endif
         });
 
-    m_server.set_http_handler([=](connection_handler hdl) {
+    m_server.set_http_handler([this, h](connection_handler hdl) {
       auto con = m_server.get_con_from_hdl(hdl);
 
       try

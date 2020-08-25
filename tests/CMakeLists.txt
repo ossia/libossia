@@ -139,6 +139,7 @@ endif()
 ### Benchmarks ###
 
 if(OSSIA_BENCHMARKS)
+  find_package(benchmark REQUIRED)
   function(ossia_add_bench TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME} ${TESTSRCS})
     target_compile_options(ossia_${TESTNAME} PUBLIC ${OSSIA_COMPILE_OPTIONS})
@@ -146,7 +147,7 @@ if(OSSIA_BENCHMARKS)
       target_compile_options(ossia_${TESTNAME} PUBLIC -O3 -march=native)
     endif()
 
-    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia)
+    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia benchmark)
 
     # add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
   endFunction()

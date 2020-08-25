@@ -174,7 +174,7 @@ struct compute_value_uninformed_visitor
         return {};
     }
 
-    return std::move(t);
+    return t;
   }
 };
 
@@ -234,6 +234,8 @@ struct compute_value_visitor
               return bool{static_cast<curve<double, bool>*>(base_curve)
                               ->value_at(position)};
             case ossia::curve_segment_type::DOUBLE:
+              break;
+            case ossia::curve_segment_type::INT64:
               break;
             case ossia::curve_segment_type::ANY:
               // TODO we need a specific handling for destination.
@@ -298,7 +300,7 @@ struct compute_value_visitor
         return {};
     }
 
-    return std::move(t);
+    return t;
   }
 };
 }

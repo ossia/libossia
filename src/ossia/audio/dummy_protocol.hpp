@@ -29,7 +29,7 @@ public:
 
     int us_per_buffer = 1e6 * double(effective_buffer_size) / double(effective_sample_rate);
 
-    m_runThread = std::thread{[=] {
+    m_runThread = std::thread{[this, us_per_buffer] {
       using clk = std::chrono::high_resolution_clock;
       clk::time_point start = clk::now();
       auto orig_start = start;

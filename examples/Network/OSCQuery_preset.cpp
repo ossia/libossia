@@ -11,8 +11,6 @@
 
 int main(int argc, char** argv)
 {
-  int remote_port = 9997;
-
   std::string json_example =
       R"_(
       {

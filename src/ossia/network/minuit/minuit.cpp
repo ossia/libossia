@@ -36,7 +36,7 @@ minuit_protocol::minuit_protocol(
           m_logger, remote_ip, remote_port)}
     , m_receiver{std::make_unique<osc::receiver>(
           local_port,
-          [=](const oscpack::ReceivedMessage& m,
+          [this](const oscpack::ReceivedMessage& m,
               const oscpack::IpEndpointName& ip) {
             this->on_received_message(m, ip);
           })}
@@ -108,7 +108,7 @@ minuit_protocol& minuit_protocol::set_local_port(uint16_t out_port)
 {
   m_localPort = out_port;
   m_receiver = std::make_unique<osc::receiver>(
-      out_port, [=](const oscpack::ReceivedMessage& m,
+      out_port, [this](const oscpack::ReceivedMessage& m,
                     const oscpack::IpEndpointName& ip) {
         this->on_received_message(m, ip);
       });

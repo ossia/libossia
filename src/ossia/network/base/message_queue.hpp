@@ -47,7 +47,7 @@ public:
     auto reg_it = m_reg.find(&p);
     if (reg_it == m_reg.end())
     {
-      auto it = p.add_callback([=](const ossia::value& val) {
+      auto it = p.add_callback([this, ptr](const ossia::value& val) {
         m_queue.enqueue({ptr, val});
       });
       m_reg.insert({&p, {0, it}});

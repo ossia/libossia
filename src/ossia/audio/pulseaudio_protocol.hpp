@@ -475,7 +475,7 @@ private:
             self.audio_tick(size, usec); // TODO proper time units !
 
             int k = 0;
-            for(int i = 0; i < size; i ++)
+            for(std::size_t i = 0; i < size; i ++)
             {
               float_output[k++] = float_outputs[0][i];
               float_output[k++] = float_outputs[1][i];
