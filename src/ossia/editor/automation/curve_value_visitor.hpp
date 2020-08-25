@@ -74,6 +74,7 @@ ossia::value make_filled_vec(
       return fill_vec<N>(bool(c->value_at(position)));
     }
     case ossia::curve_segment_type::DOUBLE:
+    case ossia::curve_segment_type::INT64:
     case ossia::curve_segment_type::ANY:
       break;
   }
@@ -128,6 +129,8 @@ struct compute_value_uninformed_visitor
         return bool{
             static_cast<curve<double, bool>*>(base_curve)->value_at(position)};
       case ossia::curve_segment_type::DOUBLE:
+        break;
+      case ossia::curve_segment_type::INT64:
         break;
       case ossia::curve_segment_type::ANY:
         // TODO we need a specific handling for destination.

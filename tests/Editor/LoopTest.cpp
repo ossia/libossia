@@ -325,7 +325,7 @@ TEST_CASE ("test_subloops_in_scenario", "test_subloops_in_scenario")
   {
     REQUIRE(chan[i] - expected[0][i] < 0.000001);
   }
-  for(int i = 14; i < chan.size(); i++)
+  for(std::size_t i = 14; i < chan.size(); i++)
   {
     REQUIRE(0.f == chan[i]);
   }
