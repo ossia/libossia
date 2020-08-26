@@ -29,15 +29,23 @@ TEST_CASE ("test_oscq", "test_oscq")
       n->create_parameter(ossia::val_type::FLOAT);
     }
 
-    auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5566");
-    std::unique_ptr<ossia::net::protocol_base> p(proto);
-    ossia::net::generic_device dest{std::move(p), "dev"};
+    {
+        REQUIRE(src.children().size() == k);
 
-    std::cerr << "K : " << k << std::endl;
-    auto t0 = std::chrono::high_resolution_clock::now();
-    proto->update(dest);
-    auto t1 = std::chrono::high_resolution_clock::now();
-    auto tick_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-    std::cerr << "WRITE: " << tick_us << std::endl;
+        auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5566");
+        std::unique_ptr<ossia::net::protocol_base> p(proto);
+        ossia::net::generic_device dest{std::move(p), "dev"};
+
+        std::cerr << "K : " << k << std::endl;
+        auto t0 = std::chrono::high_resolution_clock::now();
+        proto->update(dest);
+        auto t1 = std::chrono::high_resolution_clock::now();
+        auto tick_us = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+        std::cerr << "WRITE: " << tick_us << std::endl;
+
+        //REQUIRE(dest.children().size() == k);
+        std::cerr << "deleting dest " << std::endl;
+    }
+    std::cerr << "deleting src " << std::endl;
   }
 }

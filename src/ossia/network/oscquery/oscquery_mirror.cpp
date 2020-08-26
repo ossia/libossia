@@ -98,6 +98,12 @@ oscquery_mirror_protocol::oscquery_mirror_protocol(
     m_httpHost.erase(m_httpHost.begin(), m_httpHost.begin() + 5);
 }
 
+
+void oscquery_mirror_protocol::stop()
+{
+  cleanup_connections();
+}
+
 void oscquery_mirror_protocol::cleanup_connections()
 {
   try
@@ -204,7 +210,7 @@ void oscquery_mirror_protocol::query_stop()
 
 oscquery_mirror_protocol::~oscquery_mirror_protocol()
 {
-  cleanup_connections();
+  stop();
 }
 
 bool oscquery_mirror_protocol::pull(net::parameter_base& address)

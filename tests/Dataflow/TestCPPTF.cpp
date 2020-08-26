@@ -184,7 +184,3 @@ int main()
   std::cerr << "Done\n" << this_count << " => " << sum << std::endl;
   delete graph;
 }
-// Workaround for a bug with rubberband on archlinux & clang 9
-#if defined(__clang__) && (__clang_major__ == 9) && (__linux__) && __has_include(<fftw3.h>)
-extern "C" float __log_finite(float v) { return std::log(v); }
-#endif

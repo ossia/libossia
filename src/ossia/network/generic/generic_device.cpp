@@ -28,9 +28,9 @@ generic_device::generic_device(
 
 generic_device::~generic_device()
 {
-  remove_parameter();
-
   m_protocol->stop();
+
+  remove_parameter();
 
   {
     write_lock_t lock{m_mutex};

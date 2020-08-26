@@ -55,6 +55,7 @@ public:
 
   std::future<void> update_future(net::node_base& b);
 
+  void stop() override;
   void set_device(net::device_base& dev) override;
   ossia::net::device_base& get_device() const
   {
