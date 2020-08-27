@@ -53,7 +53,7 @@ public:
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
 
-  std::future<void> update_future(net::node_base& b);
+  std::future<void> update_async(net::node_base& b) override;
 
   void stop() override;
   void set_device(net::device_base& dev) override;

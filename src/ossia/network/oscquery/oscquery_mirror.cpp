@@ -383,12 +383,12 @@ bool oscquery_mirror_protocol::observe_quietly(
 
 bool oscquery_mirror_protocol::update(net::node_base& b)
 {
-  auto fut = update_future(b);
+  auto fut = update_async(b);
   auto status = fut.wait_for(std::chrono::seconds(3));
   return status == std::future_status::ready;
 }
 
-std::future<void> oscquery_mirror_protocol::update_future(net::node_base& b)
+std::future<void> oscquery_mirror_protocol::update_async(net::node_base& b)
 {
   m_namespacePromise = std::promise<void>{};
   auto fut = m_namespacePromise.get_future();

@@ -44,6 +44,19 @@ bool protocol_base::push_raw_bundle(
   return b;
 }
 
+std::future<void> protocol_base::update_async(node_base& node_base)
+{
+  // Mock implementation for devices which haven't been ported to async yet
+  std::promise<void> promise;
+  promise.set_value();
+  update(node_base);
+  return promise.get_future();
+}
+
+void protocol_base::set_device(device_base& dev)
+{
+}
+
 std::future<void> protocol_base::pull_async(parameter_base&)
 {
   return {};

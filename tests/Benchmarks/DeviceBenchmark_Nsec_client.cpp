@@ -57,7 +57,7 @@ int main(int argc, char** argv)
 {
   auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678");
   ossia::net::generic_device remote{std::unique_ptr<ossia::oscquery::oscquery_mirror_protocol>{proto}, "B"};
-  if(proto->update_future(remote.get_root_node()).wait_for(std::chrono::seconds(10)) != std::future_status::ready)
+  if(proto->update_async(remote.get_root_node()).wait_for(std::chrono::seconds(10)) != std::future_status::ready)
     return 1;
   ossia::net::parameter_base* start_addr{};
   ossia::net::parameter_base* stop_addr{};
