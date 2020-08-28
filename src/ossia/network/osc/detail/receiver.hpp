@@ -187,18 +187,25 @@ public:
     if (m_runThread.joinable())
       stop();
 
-    m_runThread = std::thread([this]() {
-      osc_thread_run:
-      try {
-        m_socket->Run();
-      } catch(...) {
-        goto osc_thread_run;
-      }
-    });
+    m_runThread = std::thread([this] { run_impl(); });
+    while(!m_running)
+      std::this_thread::sleep_for(std::chrono::microseconds(1));
+  }
+
+  void run_impl()
+  {
+    m_running = true;
+osc_thread_run:
+    try {
+      m_socket->Run();
+    } catch(...) {
+      goto osc_thread_run;
+    }
   }
 
   void stop()
   {
+    m_running = false;
     if (m_socket)
     {
       if (m_runThread.joinable())
@@ -254,5 +261,6 @@ private:
   std::unique_ptr<oscpack::ReceiveSocket> m_socket;
 
   std::thread m_runThread;
+  std::atomic_bool m_running = false;
 };
 }
