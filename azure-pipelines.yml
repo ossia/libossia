@@ -15,6 +15,34 @@ variables:
 stages:
   - stage: Build
     jobs:
+      - job: Benchmarks
+        displayName: Benchmarks
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - bash: |
+            sudo apt install -qq -y build-essential g++ ninja-build libbenchmark-dev
+          displayName: Dependencies
+
+        - bash: |
+            echo $(variables.gitTag)
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -Wno-dev -GNinja $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=Release -DOSSIA_STATIC=1 -DOSSIA_TESTING=1 -DOSSIA_BENCHMARKS=1 -DOSSIA_EDITOR=0 -DOSSIA_DATAFLOW=0 -DOSSIA_PROTOCOL_AUDIO=0 -DOSSIA_PROTOCOL_JOYSTICK=0 -DOSSIA_PROTOCOL_WIIMOTE=0 -DOSSIA_PROTOCOL_ARTNET=0
+            cmake --build . --target ossia_DeviceBenchmark
+
+          displayName: Build
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/tests/ossia_DeviceBenchmark
+            artifactName: libossia-device-bench
+
       - job: Unity3DLinux
         displayName: Unity3D (Linux)
         pool:
