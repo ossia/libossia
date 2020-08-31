@@ -334,8 +334,8 @@ stages:
       dependsOn: build_benchmark_ubuntu
       pool:
         demands:
-          - agent.os -equals Linux # On demande un runner linux
-          - StabilizerServer       # On veut que l'adresse ip du serveur de stabilisation soit disponible (et donc supporté)
+          - agent.os -equals Linux
+          - StabilizerServer
       steps:
       - script: curl http://$(StabilizerServer):7373/acquire # On stabilise la machine
         displayName: 'Tune system performance'
@@ -348,13 +348,14 @@ stages:
           mkdir results
           chmod +x ossia_DeviceBenchmark
           ossia_DeviceBenchmark
-        env: # Pour configurer l'output des benchs, a adapter en fonction de la lib
+        env:
           BENCHMARK_FORMAT: 'json'
-          BENCHMARK_OUT: 'results/$(LambdaProjectName)-benchmarks-results.json'
+          BENCHMARK_OUT: 'results/benchmarks-results.json'
         displayName: 'Run benchmarks'
-      - publish: results # On publie les résultats en tant qu'artifacts, on les enverra a calcite dans un autre job
+
+      - publish: results
         artifact: benchResults_selfhosted
         
-      - script:  curl http://$(StabilizerServer):7373/release # Quoiqu'il arrive, remettre la machine en état
+      - script:  curl http://$(StabilizerServer):7373/release
         condition: always()
         displayName: 'Reset system performance'
