@@ -8,6 +8,7 @@ trigger:
 pr:
   - '*'
 
+
 variables:
   isGitTag: $[startsWith(variables['Build.SourceBranch'], 'refs/tags/')]
   gitTag: $[replace(variables['Build.SourceBranch'], 'refs/tags/', '')]
@@ -15,7 +16,7 @@ variables:
 stages:
   - stage: Build
     jobs:
-      - job: Benchmarks
+      - job: build_benchmark_ubuntu
         displayName: Benchmarks
         pool:
           vmImage: 'ubuntu-20.04'
@@ -326,3 +327,34 @@ stages:
             assetUploadMode: 'replace'
             isDraft: true
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
+
+  - stage: Benchmark
+    jobs:
+    - job: ubuntu_RunBenchmarks_selfhosted
+      dependsOn: build_benchmark_ubuntu
+      pool:
+        demands:
+          - agent.os -equals Linux # On demande un runner linux
+          - StabilizerServer       # On veut que l'adresse ip du serveur de stabilisation soit disponible (et donc supporté)
+      steps:
+      - script: curl http://$(StabilizerServer):7373/acquire # On stabilise la machine
+        displayName: 'Tune system performance'
+    
+      - download: current
+        artifact: libossia-device-bench
+    
+      - script: |
+          ls
+          mkdir results
+          chmod +x ossia_DeviceBenchmark
+          ossia_DeviceBenchmark
+        env: # Pour configurer l'output des benchs, a adapter en fonction de la lib
+          BENCHMARK_FORMAT: 'json'
+          BENCHMARK_OUT: 'results/$(LambdaProjectName)-benchmarks-results.json'
+        displayName: 'Run benchmarks'
+      - publish: results # On publie les résultats en tant qu'artifacts, on les enverra a calcite dans un autre job
+        artifact: benchResults_selfhosted
+        
+      - script:  curl http://$(StabilizerServer):7373/release # Quoiqu'il arrive, remettre la machine en état
+        condition: always()
+        displayName: 'Reset system performance'
