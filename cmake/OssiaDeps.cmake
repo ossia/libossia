@@ -58,7 +58,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 
   foreach(submodule ${OSSIA_SUBMODULES})
       message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
-      execute_process(COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
+      execute_process(COMMAND git submodule update --init --recursive -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
   endforeach()
 
