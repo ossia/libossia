@@ -1,5 +1,5 @@
 language: shell
-dist: bionic
+dist: focal
 
 branches:
   except:

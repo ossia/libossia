@@ -14,14 +14,19 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      wget -nv https://cmake.org/files/v3.17/cmake-3.17.3-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.18/cmake-3.18.1-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
-      echo 'deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+      echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
       sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.14.1-bionic
+      sudo add-apt-repository --yes ppa:beineri/opt-qt-5.15.0-focal
       sudo apt-get update -qq
-      sudo apt-get install -qq --yes --force-yes g++-9 binutils ninja-build qt514-meta-minimal libasound2-dev clang-9 lld-9 portaudio19-dev mesa-common-dev libgl1-mesa-dev
+      sudo apt-get install -qq --yes --force-yes \
+          g++-9 binutils ninja-build \
+          clang-10 lld-10 \
+          qt515base qt515declarative qt515svg qt515quickcontrols2 qt515websockets qt515serialport \
+          libasound2-dev portaudio19-dev \
+          mesa-common-dev libgl1-mesa-dev
 
       wait wget || true
 
