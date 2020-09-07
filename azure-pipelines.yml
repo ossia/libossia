@@ -47,6 +47,7 @@ stages:
       - job: ubuntu_RunBenchmarks_selfhosted
         dependsOn: build_benchmark_ubuntu
         pool:
+          name: Default
           demands:
             - agent.os -equals Linux
             - StabilizerServer
