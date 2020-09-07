@@ -60,6 +60,10 @@ stages:
       
         - script: |
             ls
+            file /azp/agent/_work/1/libossia-device-bench
+            ls /azp/agent/_work/1/libossia-device-bench
+            cp -rf /azp/agent/_work/1/libossia-device-bench/* .
+            ls
             mkdir results
             chmod +x ossia_DeviceBenchmark
             ossia_DeviceBenchmark
