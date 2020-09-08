@@ -26,16 +26,33 @@ stages:
           submodules: true
 
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build libbenchmark-dev
+            sudo apt install -qq -y build-essential g++ ninja-build wget
+            wget https://github.com/jcelerier/cninja/releases/download/v3.6.1/cninja-v3.6.1-Linux.tar.gz
+            tar xaf https://github.com/jcelerier/cninja/releases/download/v3.6.1/cninja-v3.6.1-Linux.tar.gz
+            mv cninja /usr/bin/
+            rm *.tar.gz
+
           displayName: Dependencies
 
         - bash: |
             echo $(variables.gitTag)
             cd $(System.DefaultWorkingDirectory)
-            mkdir build
-            cd build
-            cmake -Wno-dev -GNinja $(Build.SourcesDirectory) -DCMAKE_BUILD_TYPE=Release -DOSSIA_STATIC=1 -DOSSIA_TESTING=1 -DOSSIA_BENCHMARKS=1 -DOSSIA_EDITOR=0 -DOSSIA_DATAFLOW=0 -DOSSIA_PROTOCOL_AUDIO=0 -DOSSIA_PROTOCOL_JOYSTICK=0 -DOSSIA_PROTOCOL_WIIMOTE=0 -DOSSIA_PROTOCOL_ARTNET=0
-            cmake --build . --target ossia_DeviceBenchmark
+
+            git clone https://github.com/google/benchmark
+            git clone https://github.com/google/googletest.git benchmark/googletest
+            (
+              cd benchmark/
+              mkdir build
+              cd build/
+              cmake -GNinja .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=inst -DBUILD_SHARED_LIBS=OFF
+              ninja
+              ninja install
+            )
+
+            (
+              cninja $(Build.SourcesDirectory) static minimal benchmarks -- -DCMAKE_PREFIX_PATH=$PWD/benchmark/build/inst
+              mv build-* build
+            )
 
           displayName: Build
 
@@ -55,10 +72,10 @@ stages:
         - checkout: none
         - script: curl http://$(StabilizerServer):7373/acquire # On stabilise la machine
           displayName: 'Tune system performance'
-      
+
         - download: current
           artifact: libossia-device-bench
-      
+
         - script: |
             apt install libbenchmark-dev libbenchmark-tools
             cp -rf /azp/agent/_work/1/libossia-device-bench/* .
@@ -71,10 +88,10 @@ stages:
             BENCHMARK_FORMAT: 'json'
             BENCHMARK_OUT: 'results/benchmarks-results.json'
           displayName: 'Run benchmarks'
-  
+
         - publish: results
           artifact: benchResults_selfhosted
-          
+
         - script:  curl http://$(StabilizerServer):7373/release
           condition: always()
           displayName: 'Reset system performance'
