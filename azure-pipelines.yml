@@ -27,8 +27,8 @@ stages:
 
         - bash: |
             sudo apt install -qq -y build-essential g++ ninja-build wget
-            wget https://github.com/jcelerier/cninja/releases/download/v3.6.1/cninja-v3.6.1-Linux.tar.gz
-            tar xaf https://github.com/jcelerier/cninja/releases/download/v3.6.1/cninja-v3.6.1-Linux.tar.gz
+            wget https://github.com/jcelerier/cninja/releases/download/v3.7.2/cninja-v3.7.2-Linux.tar.gz
+            tar xaf cninja-*-Linux.tar.gz
             mv cninja /usr/bin/
             rm *.tar.gz
 
