@@ -527,11 +527,13 @@ def get_versions():
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       # _version.py is not valid in a non-git folder
       # When making a wheel, we write the git tag from which it has been build
+      PEP440_VERSION=$(echo $TRAVIS_TAG | sed s/^[^0-9]*//g)
+
       echo "#! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
 def get_versions():
-  return {'version':'${TRAVIS_TAG}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
+  return {'version':'${PEP440_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DOSSIA_SANITIZE=1 \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
