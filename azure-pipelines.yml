@@ -219,7 +219,7 @@ stages:
 
         - bash: |
             brew install ninja
-            brew cask install adoptopenjdk8
+            brew cask install adoptopenjdk/openjdk/adoptopenjdk8
           displayName: Dependencies
 
         - bash: |
