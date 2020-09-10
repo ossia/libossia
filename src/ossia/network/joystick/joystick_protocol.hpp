@@ -38,6 +38,10 @@ public:
   static unsigned int get_joystick_count();
   static const char* get_joystick_name(const int index);
   static int32_t get_joystick_id(const int index);
+  static void write_joystick_uuid(const int index, uint8_t* dst);
+
+  // {device id, device index} or {-1, -1} if no suitable joystick is available
+  static std::pair<int32_t, int32_t> get_available_id_for_uid(const uint8_t* uid);
 
 private:
   ossia::net::device_base* m_device{};

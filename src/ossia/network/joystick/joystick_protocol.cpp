@@ -374,4 +374,29 @@ int32_t joystick_protocol::get_joystick_id(const int index)
 {
   return SDL_JoystickGetDeviceInstanceID(index);
 }
+
+void joystick_protocol::write_joystick_uuid(const int index, uint8_t* dst)
+{
+  const auto uid = SDL_JoystickGetDeviceGUID(index);
+  std::copy_n(&uid.data[0], 16, dst);
+}
+
+std::pair<int32_t, int32_t> joystick_protocol::get_available_id_for_uid(const uint8_t* request)
+{
+  auto& mgr = joystick_protocol_manager::get_instance();
+  SDL_JoystickUpdate();
+  for(int i = 0, N = SDL_NumJoysticks(); i < N; i++)
+  {
+    const auto uid = SDL_JoystickGetDeviceGUID(i);
+    if (std::equal(std::begin(uid.data), std::end(uid.data), request))
+    {
+      auto id = SDL_JoystickGetDeviceInstanceID(i);
+      if(mgr.joystick_is_registered(id))
+        continue;
+
+      return {id, i};
+    }
+  }
+  return {-1, -1};
+}
 }
