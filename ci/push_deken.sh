@@ -16,7 +16,7 @@ if [[ "$BUILD_TYPE" == *Pd* && "$TRAVIS_TAG" != "" ]]; then
 
   VERSION="test"
   if [[ "$TRAVIS_TAG" != "" ]]; then
-    VERSION=${TRAVIS_TAG}
+    VERSION=$(echo $TRAVIS_TAG | sed s/^[^0-9]*//g)
   else
     VERSION=git-${TRAVIS_COMMIT:0:7} # get the first 7th char of SHA
   fi
