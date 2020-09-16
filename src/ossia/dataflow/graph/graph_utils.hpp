@@ -338,7 +338,7 @@ struct OSSIA_EXPORT graph_util
 
     for (const auto& request : first_node.requested_tokens)
     {
-      first_node.run(request, {e});
+      first_node.run(request, {&e});
     }
 
     first_node.set_executed(true);
@@ -363,7 +363,7 @@ struct OSSIA_EXPORT graph_util
     log_inputs(first_node, logger);
     for (const auto& request : first_node.requested_tokens)
     {
-      first_node.run(request, {e});
+      first_node.run(request, {&e});
     }
     log_outputs(first_node, logger);
 

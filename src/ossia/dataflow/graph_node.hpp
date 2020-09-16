@@ -67,7 +67,7 @@ public:
 class audio_parameter;
 struct OSSIA_EXPORT exec_state_facade
 {
-  ossia::execution_state& impl;
+  ossia::execution_state* impl{};
   int sampleRate() const noexcept;
   int bufferSize() const noexcept;
   double modelToSamples() const noexcept;

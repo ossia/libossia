@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/dataflow/token_request.hpp>
 #include <verdigris>
 
 Q_DECLARE_METATYPE(ossia::time_value)
@@ -30,3 +31,6 @@ struct bar_time {
 
 Q_DECLARE_METATYPE(ossia::bar_time)
 W_REGISTER_ARGTYPE(ossia::bar_time)
+
+Q_DECLARE_METATYPE(ossia::token_request)
+W_REGISTER_ARGTYPE(ossia::token_request)
