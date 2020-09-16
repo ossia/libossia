@@ -33,7 +33,9 @@ enum class object_class
   view,
   device,
   client,
-  attribute
+  attribute,
+  explorer,
+  unregistered = 255
 };
 
 struct object_base;
