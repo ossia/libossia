@@ -353,6 +353,8 @@ struct resampler
     }
   }
 
+  bool stretch() const noexcept { return m_stretch.index() != 0; }
+
   std::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
 };
 }

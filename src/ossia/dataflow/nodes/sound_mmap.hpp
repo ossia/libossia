@@ -292,11 +292,12 @@ public:
         ap.samples[chan].resize(e.bufferSize());
       }
 
-      m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples();
-      m_start_offset_samples = m_start_offset.impl * e.modelToSamples();
+      const double tempo_ratio = this->tempo / t.tempo;
+      const double inv_tempo_ratio = this->m_resampler.stretch() ? t.tempo / this->tempo : 1.;
+      m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * inv_tempo_ratio;
+      m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * inv_tempo_ratio;
 
-      // resample
-      double tempo_ratio =  this->tempo / t.tempo;
+      // Resample
       m_resampler.run(*this, t, e,
                       tempo_ratio,
                       channels, len,
