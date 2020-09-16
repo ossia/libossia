@@ -22,6 +22,7 @@
 #include "client.hpp"
 #include "ossia_object.hpp"
 #include "logger.hpp"
+#include "explorer.hpp"
 
 #include "ZeroconfOscqueryListener.hpp"
 #include "ZeroconfMinuitListener.hpp"
@@ -37,6 +38,7 @@ extern "C"
     OSSIA_MAX_EXPORT void ossia_remote_setup();
     OSSIA_MAX_EXPORT void ossia_view_setup();
     OSSIA_MAX_EXPORT void ossia_ossia_setup();
+    OSSIA_MAX_EXPORT void ossia_explorer_setup();
 }
 
 namespace ossia
@@ -123,6 +125,7 @@ public:
   t_class* ossia_client_class{};
   t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};
+  t_class* ossia_explorer_class{};
   t_class* ossia_logger_class{};
   t_class* ossia_model_class{};
   t_class* ossia_parameter_class{};
@@ -138,6 +141,7 @@ public:
   ossia::safe_vector<device*> devices;
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<attribute*> attributes;
+  ossia::safe_vector<explorer*> explorers;
 
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
@@ -147,6 +151,7 @@ public:
   ossia::safe_set<device*> nr_devices;
   ossia::safe_set<client*> nr_clients;
   ossia::safe_set<attribute*> nr_attributes;
+  ossia::safe_set<explorer*> nr_explorers;
 
   ossia::safe_set<model*> model_quarantine;
   ossia::safe_set<view*> view_quarantine;

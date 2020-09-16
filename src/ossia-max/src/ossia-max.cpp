@@ -41,6 +41,7 @@ ossia_max::ossia_max():
   views.reserve(512);
   devices.reserve(8);
   clients.reserve(8);
+  explorers.reserve(128);
 
 #if OSSIA_MAX_AUTOREGISTER
   m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);

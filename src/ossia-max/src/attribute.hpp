@@ -19,7 +19,6 @@ public:
 
   ossia::net::device_base* m_dev{};
 
-  void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   static void assist(attribute*, void*, long, long, char*);
   static t_max_err notify(attribute *x, t_symbol *s,
                           t_symbol *msg, void *sender, void *data);
@@ -28,6 +27,7 @@ public:
 
   static ossia::safe_set<attribute*>& quarantine();
 
+  void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   void on_device_deleted(const ossia::net::node_base&);
 };
 } // namespace pd
