@@ -239,7 +239,7 @@ void ossia_max::register_nodes(ossia_max*)
 
   for (auto dev : dev_list)
   {
-    auto list = ossia::net::list_all_child(&dev->get_root_node());
+    auto list = ossia::net::list_all_children(&dev->get_root_node());
 
     for (ossia::net::node_base* child : list)
     {

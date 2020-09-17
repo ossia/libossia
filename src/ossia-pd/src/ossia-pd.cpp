@@ -242,7 +242,7 @@ void ossia_pd::register_nodes(void* x)
     // send default value for default device's child
     // TODO make this a method of ossia Max's object
     auto n = &inst.get_default_device()->get_root_node();
-    list = ossia::net::list_all_child(n);
+    list = ossia::net::list_all_children(n);
 
     for (ossia::net::node_base* child : list)
     {

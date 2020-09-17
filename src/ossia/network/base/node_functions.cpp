@@ -184,11 +184,11 @@ find_or_create_node(node_base& dev, string_view parameter_base, bool reading)
   }
 }
 
-std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
+std::vector<node_base*> find_nodes(node_base& root, string_view pattern)
 {
   if (!ossia::traversal::is_pattern(pattern))
   {
-    auto node = ossia::net::find_node(dev, pattern);
+    auto node = ossia::net::find_node(root, pattern);
     if (node)
       return {node};
     else
@@ -196,13 +196,13 @@ std::vector<node_base*> find_nodes(node_base& dev, string_view pattern)
   }
   else if (auto path = traversal::make_path(pattern))
   {
-    std::vector<node_base*> nodes{&dev};
+    std::vector<node_base*> nodes{&root};
     traversal::apply(*path, nodes);
     return nodes;
   }
   else
   {
-    auto node = ossia::net::find_node(dev, pattern);
+    auto node = ossia::net::find_node(root, pattern);
     if (node)
       return {node};
     else
@@ -617,7 +617,7 @@ ossia::net::address_scope get_address_scope(ossia::string_view addr)
   return type;
 }
 
-std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
+std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* node)
 {
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
@@ -641,7 +641,7 @@ std::vector<ossia::net::node_base*> list_all_child(ossia::net::node_base* node)
   for (auto it = children.begin(); it != children.end(); it++)
   {
     list.push_back(*it);
-    auto nested_list = list_all_child(*it);
+    auto nested_list = list_all_children(*it);
     list.insert(list.end(), nested_list.begin(), nested_list.end());
   }
 
