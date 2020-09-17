@@ -103,6 +103,7 @@ public:
     if(std::is_same<T, attribute>::value) return ossia_attribute_class;
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
+    if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
     return nullptr;
   }
 
@@ -158,6 +159,7 @@ public:
   ossia::safe_set<parameter*> parameter_quarantine;
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
+  ossia::safe_set<explorer*> explorer_quarantine;
 
   bool registering_nodes=false;
 

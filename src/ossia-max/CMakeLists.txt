@@ -140,7 +140,18 @@ function(setup_max_external theTarget)
 endfunction()
 
 # Shim externals to allow objects to be found by Max search box
-set(OSSIA_EXT_LIST ossia.attribute ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
+set(OSSIA_EXT_LIST
+    ossia.attribute
+    ossia.parameter
+    ossia.model
+    ossia.view
+    ossia.remote
+    ossia.device
+    ossia.client
+    ossia.logger
+    ossia.ossia
+    ossia.explorer
+)
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
     string(REPLACE "." "_" ossia_lib_name ${ossiaExt})
