@@ -166,7 +166,6 @@ bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
 
 bool attribute::unregister()
 {
-
   m_matchers.clear();
 
   object_quarantining<attribute>(this);

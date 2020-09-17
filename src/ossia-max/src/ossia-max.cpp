@@ -139,6 +139,7 @@ void ossia_max::register_nodes(ossia_max*)
   fill_nr_vector(inst.views, inst.nr_views);
   fill_nr_vector(inst.remotes, inst.nr_remotes);
   fill_nr_vector(inst.attributes, inst.nr_attributes);
+  fill_nr_vector(inst.explorers, inst.nr_explorers);
   auto dev_obj_list   = sort_by_depth(inst.nr_devices);
   auto mod_obj_list   = sort_by_depth(inst.nr_models);
   auto param_obj_list = sort_by_depth(inst.nr_parameters);
@@ -146,6 +147,7 @@ void ossia_max::register_nodes(ossia_max*)
   auto view_obj_list = sort_by_depth(inst.nr_views);
   auto rem_obj_list = sort_by_depth(inst.nr_remotes);
   auto att_obj_list = sort_by_depth(inst.nr_attributes);
+  auto exp_obj_list = sort_by_depth(inst.nr_explorers);
 
   std::vector<t_object*> to_be_initialized;
 
@@ -288,6 +290,7 @@ template void object_quarantining<attribute>(attribute*);
 template void object_quarantining<model>(model*);
 template void object_quarantining<remote>(remote*);
 template void object_quarantining<view>(view*);
+template void object_quarantining<explorer>(explorer*);
 
 template <typename T>
 void object_dequarantining(T* x)
@@ -300,6 +303,7 @@ template void object_dequarantining<parameter>(parameter*);
 template void object_dequarantining<model>(model*);
 template void object_dequarantining<remote>(remote*);
 template void object_dequarantining<view>(view*);
+template void object_dequarantining<explorer>(explorer*);
 
 template <typename T>
 bool object_is_quarantined(T* x)

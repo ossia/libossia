@@ -147,7 +147,6 @@ public:
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_recall_safe(object_base*x, std::vector<t_matcher*> nodes);
 
-
   // default attributes
   t_symbol* m_name{};
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
@@ -174,7 +173,6 @@ public:
 
   std::mutex m_bind_mutex;
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher
-
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
