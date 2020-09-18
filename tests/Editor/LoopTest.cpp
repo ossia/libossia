@@ -234,7 +234,7 @@ TEST_CASE ("test_loop_sound", "test_loop_sound")
     e.bufferSize = 9;
 
     for(auto tk : snd->requested_tokens)
-      ((ossia::graph_node*)snd.get())->run(tk, {e});
+      ((ossia::graph_node*)snd.get())->run(tk, {&e});
     auto op = snd->root_outputs()[0]->target<audio_port>()->samples;
     audio_vector expected{audio_channel{0.1f, 0.2f, 0.3f, 0.4f, 0.1f, 0.2f, 0.3f, 0.4f, 0.1f}};
     for(int i = 0; i < 9; i++)
@@ -277,7 +277,7 @@ TEST_CASE ("test_subloop", "test_subloop")
   ossia::execution_state e;
   e.bufferSize = 14;
   for(auto tk : snd->requested_tokens)
-    ((ossia::graph_node*)snd.get())->run(tk, {e});
+    ((ossia::graph_node*)snd.get())->run(tk, {&e});
 
 
   audio_vector expected{audio_channel{0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1}};

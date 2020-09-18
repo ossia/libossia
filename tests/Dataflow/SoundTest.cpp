@@ -23,7 +23,7 @@ TEST_CASE ("test_sound_ref", "test_sound_ref")
 
   for(auto tk : snd.requested_tokens)
   {
-    snd.run(tk, {e});
+    snd.run(tk, {&e});
   }
 
   auto op = snd.root_outputs()[0]->target<audio_port>()->samples;
@@ -100,7 +100,7 @@ TEST_CASE ("test_sound_mmap", "test_sound_mmap")
 
   for(auto tk : snd.requested_tokens)
   {
-    snd.run(tk, {e});
+    snd.run(tk, {&e});
     auto op = snd.root_outputs()[0]->target<audio_port>()->samples;
   }
 
