@@ -125,6 +125,26 @@ public class Parameter
   {
     Ossia.INSTANCE.ossia_parameter_set_domain(impl, v.impl);
   }
+  public void setDomain(int min, int max)
+  {
+    setDomain(new Domain(min, max));
+  }
+  public void setDomain(float min, float max)
+  {
+    setDomain(new Domain(min, max));
+  }
+  public void setDomain(Vec2F min, Vec2F max)
+  {
+    setDomain(new Domain(min, max));
+  }
+  public void setDomain(Vec3F min, Vec3F max)
+  {
+    setDomain(new Domain(min, max));
+  }
+  public void setDomain(Vec4F min, Vec4F max)
+  {
+    setDomain(new Domain(min, max));
+  }
 
   public String getUnit()
   {

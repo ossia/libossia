@@ -11,6 +11,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.ptr.IntByReference;
 
 public interface Ossia extends Library
 {
@@ -199,7 +200,7 @@ public interface Ossia extends Library
         Pointer node);
      int ossia_node_get_refresh_rate(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_priority(
         Pointer node,
@@ -208,7 +209,7 @@ public interface Ossia extends Library
         Pointer node);
      float ossia_node_get_priority(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_value_step_size(
         Pointer node,
@@ -217,7 +218,7 @@ public interface Ossia extends Library
         Pointer node);
      double ossia_node_get_value_step_size(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_instance_bounds(
         Pointer node,
@@ -226,8 +227,8 @@ public interface Ossia extends Library
         Pointer node);
      void ossia_node_get_instance_bounds(
         Pointer node,
-        Pointer min, Pointer max,
-        Pointer ok);
+        IntByReference min, IntByReference max,
+        IntByReference ok);
 
      void ossia_node_set_default_value(
         Pointer node,
