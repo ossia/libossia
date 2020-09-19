@@ -58,7 +58,7 @@ public interface Ossia extends Library
       Pointer device);
 
 
-     Pointer ossia_device_get_name (
+     String ossia_device_get_name (
       Pointer device);
 
      Pointer ossia_device_get_root_node (
@@ -117,7 +117,7 @@ public interface Ossia extends Library
       Pointer node,
       Pointer child);
 
-     Pointer ossia_node_get_name (
+     String ossia_node_get_name (
       Pointer node);
 
      Pointer ossia_node_get_device (
@@ -147,8 +147,7 @@ public interface Ossia extends Library
       Pointer node);
 
      void ossia_node_remove_parameter (
-      Pointer node,
-      Pointer property);
+      Pointer node);
 
 
      Pointer ossia_node_add_deleting_callback(
@@ -254,6 +253,39 @@ public interface Ossia extends Library
       String unit);
      String ossia_parameter_get_unit(
       Pointer address);
+
+
+     void ossia_parameter_set_muted (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_muted (
+      Pointer property);
+
+
+     void ossia_parameter_set_disabled (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_disabled (
+      Pointer property);
+
+
+     void ossia_parameter_set_critical (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_critical (
+      Pointer property);
+
+
+     void ossia_parameter_set_repetition_filter (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_repetition_filter (
+      Pointer property);
+
 
      void ossia_parameter_set_bounding_mode (
       Pointer property,
@@ -501,7 +533,7 @@ public interface Ossia extends Library
 
      void ossia_string_free( Pointer str );
 
-    /// LOG ///
+     /// LOG ///
      void ossia_set_debug_logger( Pointer fp );
      Pointer ossia_logger_create(String host, String app);
      void ossia_logger_init_heartbeat(Pointer log, int pid, String cmdline);
@@ -509,8 +541,8 @@ public interface Ossia extends Library
      void ossia_log(Pointer log, int lvl, String message);
      void ossia_logger_free(Pointer log);
 
-    /// MESSAGE QUEUE ///
-    Pointer ossia_mq_create(Pointer device);
+     /// MESSAGE QUEUE ///
+     Pointer ossia_mq_create(Pointer device);
      void ossia_mq_register(Pointer mq, Pointer param);
      void ossia_mq_unregister(Pointer mq, Pointer param);
      int ossia_mq_pop(Pointer mq, PointerByReference address, PointerByReference value);

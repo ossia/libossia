@@ -1,6 +1,8 @@
 package io.ossia;
 import com.sun.jna.Pointer;
+import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.ptr.IntByReference;
+import com.sun.jna.Native;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalDouble;
@@ -12,17 +14,62 @@ public class Node
     impl = p;
   }
 
-  public Node createNode(String s)
+  // Child node management
+  public Node createNode(String name)
   {
-    return new Node(Ossia.INSTANCE.ossia_node_create(impl, s));
+    return new Node(Ossia.INSTANCE.ossia_node_create(impl, name));
   }
 
-  public Node findNode(String s)
+  public Node findNode(String name)
   {
-    Pointer p = Ossia.INSTANCE.ossia_node_find(impl, s);
+    Pointer p = Ossia.INSTANCE.ossia_node_find(impl, name);
     if(p != null)
       return new Node(p);
     return null;
+  }
+
+  public Node[] createPattern(String pattern)
+  {
+    PointerByReference data = new PointerByReference();
+    SizeTByReference size = new SizeTByReference();
+
+    Ossia.INSTANCE.ossia_node_create_pattern(impl, pattern, data, size);
+
+    int n = (int)size.getValue().longValue();
+    Node[] nodes = new Node[n];
+    if(n > 0)
+    {
+      final int type_sz = Native.POINTER_SIZE;
+      final Pointer vals = data.getValue();
+      for(int i = 0; i < n; i ++)
+      {
+        nodes[i] = new Node(vals.getPointer(i * type_sz));
+      }
+    }
+    Ossia.INSTANCE.ossia_node_array_free(data.getValue());
+    return nodes;
+  }
+
+  public Node[] findPattern(String pattern)
+  {
+    PointerByReference data = new PointerByReference();
+    SizeTByReference size = new SizeTByReference();
+
+    Ossia.INSTANCE.ossia_node_find_pattern(impl, pattern, data, size);
+    
+    int n = (int)size.getValue().longValue();
+    Node[] nodes = new Node[n];
+    if(n > 0)
+    {
+      final int type_sz = Native.POINTER_SIZE;
+      final Pointer vals = data.getValue();
+      for(int i = 0; i < n; i ++)
+      {
+        nodes[i] = new Node(vals.getPointer(i * type_sz));
+      }
+    }
+    Ossia.INSTANCE.ossia_node_array_free(data.getValue());
+    return nodes;
   }
 
   public int childCount()
@@ -35,9 +82,21 @@ public class Node
     return new Node(Ossia.INSTANCE.ossia_node_get_child(impl, i));
   }
 
+  // Name
+  public String getName()
+  {
+    return Ossia.INSTANCE.ossia_node_get_name(impl);
+  }
+
+  // Parameter
   public Parameter createParameter(int t)
   {
     return new Parameter(Ossia.INSTANCE.ossia_node_create_parameter(impl, t));
+  }
+
+  public void removeParameter()
+  {
+    Ossia.INSTANCE.ossia_node_remove_parameter(impl);
   }
 
   public Parameter create(String name, String type)
@@ -53,6 +112,7 @@ public class Node
     return null;
   }
 
+  // Description
   public String getDescription()
   {
     return Ossia.INSTANCE.ossia_node_get_description(impl);
@@ -62,6 +122,7 @@ public class Node
     Ossia.INSTANCE.ossia_node_set_description(impl, u);
   }
 
+  // Extended type
   public String getExtendedType()
   {
     return Ossia.INSTANCE.ossia_node_get_extended_type(impl);
@@ -226,7 +287,7 @@ public class Node
       return Optional.of(new Value(p));  
     }
   }
-  
+
   public void setDefaultValue(Value u)
   {
     Ossia.INSTANCE.ossia_node_set_default_value(impl, u.impl);

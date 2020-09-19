@@ -150,11 +150,63 @@ public class Parameter
   {
     return Ossia.INSTANCE.ossia_parameter_get_unit(impl);
   }
-
   public void setUnit(String u)
   {
     Ossia.INSTANCE.ossia_parameter_set_unit(impl, u);
   }
 
+  public int getAccessMode()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_access_mode(impl);
+  }
+  public void setAccessMode(int u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_access_mode(impl, u);
+  }
+
+  public int getBoundingMode()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_bounding_mode(impl);
+  }
+  public void setBoundingMode(int u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_bounding_mode(impl, u);
+  }
+
+  public boolean getMuted()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_muted(impl) != 0 ? true : false;
+  }
+  public void setMuted(boolean u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_muted(impl, u ? 1 : 0);
+  }
+
+  public boolean getDisabled()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_disabled(impl) != 0 ? true : false;
+  }
+  public void setDisabled(boolean u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_disabled(impl, u ? 1 : 0);
+  }
+
+  public boolean getCritical()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_critical(impl) != 0 ? true : false;
+  }
+  public void setCritical(boolean u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_critical(impl, u ? 1 : 0);
+  }
+
+  public boolean getRepetitionFilter()
+  {
+    return Ossia.INSTANCE.ossia_parameter_get_repetition_filter(impl) != 0 ? true : false;
+  }
+  public void setRepetitionFilter(boolean u)
+  {
+    Ossia.INSTANCE.ossia_parameter_set_repetition_filter(impl, u ? 1 : 0);
+  }
   Pointer impl;
 }
