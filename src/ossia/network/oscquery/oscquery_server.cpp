@@ -64,23 +64,6 @@ oscquery_server_protocol::oscquery_server_protocol(
             return oscquery::server_reply{};
         }
       });
-
-  m_websocketServer->listen(m_wsPort);
-  m_serverThread = std::thread{[&] {
-    try
-    {
-      m_websocketServer->run();
-    }
-    catch (const std::exception& e)
-    {
-      ossia::logger().error("Error in websocket processing: {}", e.what());
-    }
-    catch (...)
-    {
-      ossia::logger().error("Error in websocket processing");
-    }
-  }};
-  m_oscServer->run();
 }
 
 oscquery_server_protocol::~oscquery_server_protocol()
@@ -316,6 +299,23 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
         if (p.callback_count() > 0)
           observe(p, true);
       });
+
+  m_websocketServer->listen(m_wsPort);
+  m_serverThread = std::thread{[&] {
+    try
+    {
+      m_websocketServer->run();
+    }
+    catch (const std::exception& e)
+    {
+      ossia::logger().error("Error in websocket processing: {}", e.what());
+    }
+    catch (...)
+    {
+      ossia::logger().error("Error in websocket processing");
+    }
+  }};
+  m_oscServer->run();
 }
 
 void oscquery_server_protocol::stop()
