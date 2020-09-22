@@ -23,12 +23,14 @@
 #include "ossia_object.hpp"
 #include "logger.hpp"
 #include "explorer.hpp"
+#include "address_router.hpp"
 
 #include "ZeroconfOscqueryListener.hpp"
 #include "ZeroconfMinuitListener.hpp"
 
 extern "C"
 {
+    OSSIA_MAX_EXPORT void ossia_address_router_setup();
     OSSIA_MAX_EXPORT void ossia_attribute_setup();
     OSSIA_MAX_EXPORT void ossia_client_setup();
     OSSIA_MAX_EXPORT void ossia_device_setup();
@@ -104,6 +106,7 @@ public:
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
+    if(std::is_same<T, ossia::max::address_router>::value) return ossia_address_router_class;
     return nullptr;
   }
 
@@ -123,6 +126,7 @@ public:
     }
   }
 
+  t_class* ossia_address_router_class{};
   t_class* ossia_client_class{};
   t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};

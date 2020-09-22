@@ -52,6 +52,8 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SRCS
+    src/address_router.cpp
+    src/address_router.hpp
     src/ossia-max.cpp
     src/ossia-max.hpp
     src/object_base.cpp
@@ -151,6 +153,7 @@ set(OSSIA_EXT_LIST
     ossia.logger
     ossia.ossia
     ossia.explorer
+    ossia.address_router
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
