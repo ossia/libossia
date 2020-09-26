@@ -18,6 +18,5 @@ public:
 
   ossia::state data;
   std::vector<ossia::control_message> controls;
-
 };
 }
