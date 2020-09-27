@@ -15,6 +15,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       hopscotch-map
       multi_index
       nano-signal-slot
+      rapidfuzz-cpp
       rapidjson
       readerwriterqueue
       rnd
@@ -163,3 +164,10 @@ if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
 endif()
 
 add_definitions(-DFMT_HEADER_ONLY=1)
+
+include(FetchContent)
+FetchContent_Declare(
+    rapidfuzz
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/rapidfuzz-cpp
+)
+FetchContent_MakeAvailable(rapidfuzz)
