@@ -223,9 +223,19 @@ static const ossia::string_map<net::parameter_data>& parameter_creation_map()
     add_ext_2("lst", list_type());
     add_ext_2("tuple", list_type());
     add_ext_2("vector", list_type());
+    add_ext_2("values", list_type());
     add_ext_2("generic", list_type());
     add_ext_2("anything", list_type());
     add_ext_2("any", list_type());
+    add_ext_2("floatarray", float_list_type());
+    add_ext_2("intarray", integer_list_type());
+    add_ext_2("stringarray", string_list_type());
+    add_ext_2("floatlist", float_list_type());
+    add_ext_2("intlist", integer_list_type());
+    add_ext_2("stringlist", string_list_type());
+    add_ext_2("floats", float_list_type());
+    add_ext_2("ints", integer_list_type());
+    add_ext_2("strings", string_list_type());
 
     return t;
   }();
