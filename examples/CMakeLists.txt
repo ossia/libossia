@@ -61,6 +61,7 @@ endif()
 ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PrintNamespace.cpp")
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
+ossia_add_example(fuzzysearch "${CMAKE_CURRENT_SOURCE_DIR}/Common/FuzzySearch.cpp")
 
 find_package(OpenCV
   COMPONENTS
