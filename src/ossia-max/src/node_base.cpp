@@ -123,7 +123,7 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 
 void node_base::get_namespace(node_base* x)
 {
-  t_symbol* prependsym = gensym("namespace");
+  const static t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
   for (auto& m : x->m_matchers)
   {
