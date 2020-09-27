@@ -6,6 +6,9 @@ import com.sun.jna.ptr.ByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.lang.Object;
 import java.lang.Class;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.OptionalDouble;
 
 public class Parameter
 {
@@ -210,5 +213,100 @@ public class Parameter
   {
     Ossia.INSTANCE.ossia_parameter_set_repetition_filter(impl, u ? 1 : 0);
   }
+
+  public Node getNode()
+  {
+    return new Node(Ossia.INSTANCE.ossia_parameter_get_node(impl));
+  }
+
+  public String getDescription()
+  {
+    return getNode().getDescription();
+  }
+  public void setDescription(String v)
+  {
+    getNode().setDescription(v);
+  }
+
+  public String getExtendedType()
+  {
+    return getNode().getExtendedType();
+  }
+  public void setExtendedType(String v)
+  {
+    getNode().setExtendedType(v);
+  }
+
+  public boolean getHidden()
+  {
+    return getNode().getHidden();
+  }
+  public void setHidden(boolean v)
+  {
+    getNode().setHidden(v);
+  }
+
+  public OptionalInt getRefreshRate()
+  {
+    return getNode().getRefreshRate();
+  }
+  public void setRefreshRate(OptionalInt u)
+  {
+    getNode().setRefreshRate(u);
+  }
+  public void setRefreshRate(int u)
+  {
+    getNode().setRefreshRate(u);
+  }
+  public void unsetRefreshRate()
+  {
+    getNode().unsetRefreshRate();
+  }
+
+  public OptionalDouble getPriority()
+  {
+    return getNode().getPriority();
+  }
+  public void setPriority(OptionalDouble u)
+  {
+    getNode().setPriority(u);
+  }
+  public void setPriority(double u)
+  {
+    getNode().setPriority(u);
+  }
+  public void unsetPriority()
+  {
+    getNode().unsetPriority();
+  }
+
+
+  public OptionalDouble getValueStepSize()
+  {
+    return getNode().getValueStepSize();
+  }
+  public void setValueStepSize(OptionalDouble u)
+  {
+    getNode().setValueStepSize(u);
+  }
+  public void setValueStepSize(double u)
+  {
+    getNode().setValueStepSize(u);
+  }
+  public void unsetValueStepSize()
+  {
+    getNode().unsetValueStepSize();
+  }
+
+
+  public Optional<Value> getDefaultValue()
+  {
+    return getNode().getDefaultValue();
+  }
+  public void setDefaultValue(Value u)
+  {
+    getNode().setDefaultValue(u);
+  }
+
   Pointer impl;
 }
