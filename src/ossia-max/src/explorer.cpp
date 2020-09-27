@@ -20,6 +20,7 @@ t_symbol* explorer::s_search = gensym("search");
 t_symbol* explorer::s_monitor = gensym("monitor");
 t_symbol* explorer::s_size = gensym("size");
 t_symbol* explorer::s_namespace = gensym("namespace");
+t_symbol* explorer::s_open = gensym("open");
 
 t_symbol* explorer::s_parameter = gensym("parameter");
 t_symbol* explorer::s_node = gensym("node");
@@ -45,6 +46,9 @@ extern "C" void ossia_explorer_setup()
       "search", A_GIMME, 0);
   class_addmethod(
       c, (method)explorer::execute_method,
+      "open", A_GIMME, 0);
+  class_addmethod(
+      c, (method)explorer::execute_method,
       "monitor", A_GIMME, 0);
   class_addmethod(
       c, (method)explorer::assist,
@@ -53,15 +57,17 @@ extern "C" void ossia_explorer_setup()
       c, (method)explorer::notify,
       "notify", A_CANT, 0);
 
+  /*
   CLASS_ATTR_SYM(c, "type", 0, explorer, m_type);
   CLASS_ATTR_LABEL(c, "type", 0, "Type of nodes to search");
 
-  CLASS_ATTR_SYM(c, "appname", 0, explorer, m_sort);
-  CLASS_ATTR_LABEL(c, "appname", 0, "Sort method");
+  CLASS_ATTR_SYM(c, "sort", 0, explorer, m_sort);
+  CLASS_ATTR_LABEL(c, "sort", 0, "Sort method");
 
   CLASS_ATTR_LONG(c, "highlight", 0, explorer, m_highlight);
   CLASS_ATTR_LABEL(c, "highlight", 0, "Highlight objects returned by search");
   CLASS_ATTR_FILTER_CLIP(c, "highlight", 0, 1);
+  */
 
   CLASS_ATTR_LONG(c, "depth", 0, explorer, m_highlight);
   CLASS_ATTR_LABEL(c, "depth", 0, "Limit explore depth");
@@ -195,8 +201,7 @@ bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matc
       outlet_anything(m_dumpout, s_namespace, 1, &a);
     }
   }
-
-  if(m_method == s_search)
+  else if(m_method == s_search)
   {
     // only return given nodes addresses
     t_atom a;
@@ -209,8 +214,7 @@ bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matc
       outlet_anything(m_dumpout, s_namespace, 1, &a);
     }
   }
-
-  if(m_method == s_monitor)
+  else if(m_method == s_monitor)
   {
     for(const auto& n : matchers)
     {
@@ -226,6 +230,82 @@ bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matc
       dev->on_parameter_created.connect<&explorer::on_parameter_created_callback>(this);
       dev->on_parameter_removing.connect<&explorer::on_parameter_removing_callback>(this);
       dev->get_root_node().about_to_be_deleted.connect<&explorer::on_device_deleted>(this);
+    }
+  }
+  else if(m_method == s_open)
+  {
+
+    auto open_parent = [](object_base* x, ossia::net::node_base* node)
+    {
+      for ( auto& om : x->m_matchers )
+      {
+        if ( om->get_node() == node )
+        {
+          t_object *jp{};
+
+          // get the object's parent patcher
+          object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
+
+          if (jp)
+            typedmess(jp, gensym("front"), 0, NULL);	// opens the subpatcher
+
+          x->highlight();
+        }
+      }
+    };
+
+    for(const auto& m : matchers)
+    {
+      auto node = m->get_node();
+
+      if(node->get_parameter())
+      {
+        // if node has a paremeter, search only for ossia.parameter,
+        // ossia.remote & ossia.attribute object
+        for ( auto param : ossia_max::instance().parameters.reference() )
+        {
+          open_parent(param, node);
+        }
+
+        for ( auto remote : ossia_max::instance().remotes.reference() )
+        {
+          open_parent(remote, node);
+        }
+
+        for ( auto attr : ossia_max::instance().attributes.reference() )
+        {
+          open_parent(attr, node);
+        }
+      }
+      else if(!node->get_parent())
+      {
+        // if node doesn't have a parent node, then search only
+        // ossia.device and ossia.client objects
+        for ( auto dev : ossia_max::instance().devices.reference() )
+        {
+          open_parent(dev, node);
+        }
+
+        for ( auto client : ossia_max::instance().clients.reference() )
+        {
+          open_parent(client, node);
+        }
+      }
+      else
+      {
+        // if node has a parent but no paremeter,
+        // search only for ossia.model and ossia.view object
+        for ( auto model : ossia_max::instance().models.reference() )
+        {
+          open_parent(model, node);
+        }
+
+        for ( auto view : ossia_max::instance().views.reference() )
+        {
+          open_parent(view, node);
+        }
+      }
+
     }
   }
 

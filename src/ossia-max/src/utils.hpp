@@ -156,7 +156,7 @@ T* find_parent_box(
   ossia::remove_one(objects, x);
 
   // and sort objects by hierarchy size
-  // because the first parent have potentially the same hierarchy depth
+  // because the first parent might have the same hierarchy depth
   ossia::sort(objects, [](auto o1, auto o2){
     return o1->m_patcher_hierarchy.size() > o2->m_patcher_hierarchy.size();});
 
