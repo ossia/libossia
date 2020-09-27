@@ -318,8 +318,8 @@ stages:
             action: 'edit'
             target: '$(Build.SourceVersion)'
             tagSource: 'gitTag'
+            tag: '$(gitTag)'
             assetUploadMode: 'replace'
-            isDraft: true
             assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
 
       - job: Java
@@ -349,15 +349,17 @@ stages:
 
             pushd java-win32
             unzip -n ossia-java.jar
+            mv win32-x86-64/ossia_x64.dll win32-x86-64/ossia.dll
             popd
 
             pushd java-linux
             cp -rf ../java-macos/darwin .
-            cp -rf ../java-win32/win32-x86_64 .
+            cp -rf ../java-win32/win32-x86-64 .            
+            
             unzip -n ossia-java.jar
             rm ossia-java.jar
-            zip -r ossia-java.jar darwin win32-x86_64 linux-x86-64 io META-INF
-            zip -r ossia-java.zip ossia-java.jar ossia-java-example.jar jna.jar
+            zip -r ossia-java.jar darwin win32-x86-64 linux-x86-64 io META-INF
+            zip -r ossia-java.zip ossia-java.jar jna.jar
 
             mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java.zip
             popd
@@ -375,6 +377,6 @@ stages:
             action: 'edit'
             target: '$(Build.SourceVersion)'
             tagSource: 'gitTag'
+            tag: '$(gitTag)'
             assetUploadMode: 'replace'
-            isDraft: true
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip

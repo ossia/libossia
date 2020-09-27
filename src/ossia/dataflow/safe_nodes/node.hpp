@@ -154,5 +154,7 @@ struct base_metadata
   static const constexpr dummy_container<address_in> address_ins{};
   static const constexpr std::tuple<> controls{};
   static const constexpr std::tuple<> control_outs{};
+
+  static const constexpr double recommended_height{};
 };
 }

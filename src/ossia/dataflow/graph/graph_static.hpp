@@ -41,11 +41,26 @@ public:
       m_topo_order_cache.reserve(m_nodes.size());
       boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
 
+      // First put the ones without any I/O (most likely states)
       for (auto vtx : m_topo_order_cache)
       {
         auto node = gr[vtx].get();
-        assert(gr[vtx].get());
-        m_all_nodes.push_back(node);
+        assert(node);
+        if(node->root_inputs().empty() && node->root_outputs().empty())
+        {
+          m_all_nodes.push_back(node);
+        }
+      }
+      // Then the others
+      for (auto vtx : m_topo_order_cache)
+      {
+        auto node = gr[vtx].get();
+        assert(node);
+
+        if(!(node->root_inputs().empty() && node->root_outputs().empty()))
+        {
+          m_all_nodes.push_back(node);
+        }
       }
     }
     catch (...)

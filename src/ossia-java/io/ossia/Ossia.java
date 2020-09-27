@@ -11,6 +11,7 @@ import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
 import com.sun.jna.ptr.PointerByReference;
+import com.sun.jna.ptr.IntByReference;
 
 public interface Ossia extends Library
 {
@@ -57,7 +58,7 @@ public interface Ossia extends Library
       Pointer device);
 
 
-     Pointer ossia_device_get_name (
+     String ossia_device_get_name (
       Pointer device);
 
      Pointer ossia_device_get_root_node (
@@ -116,7 +117,7 @@ public interface Ossia extends Library
       Pointer node,
       Pointer child);
 
-     Pointer ossia_node_get_name (
+     String ossia_node_get_name (
       Pointer node);
 
      Pointer ossia_node_get_device (
@@ -146,8 +147,7 @@ public interface Ossia extends Library
       Pointer node);
 
      void ossia_node_remove_parameter (
-      Pointer node,
-      Pointer property);
+      Pointer node);
 
 
      Pointer ossia_node_add_deleting_callback(
@@ -199,7 +199,7 @@ public interface Ossia extends Library
         Pointer node);
      int ossia_node_get_refresh_rate(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_priority(
         Pointer node,
@@ -208,7 +208,7 @@ public interface Ossia extends Library
         Pointer node);
      float ossia_node_get_priority(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_value_step_size(
         Pointer node,
@@ -217,7 +217,7 @@ public interface Ossia extends Library
         Pointer node);
      double ossia_node_get_value_step_size(
         Pointer node,
-        Pointer ok);
+        IntByReference ok);
 
      void ossia_node_set_instance_bounds(
         Pointer node,
@@ -226,8 +226,8 @@ public interface Ossia extends Library
         Pointer node);
      void ossia_node_get_instance_bounds(
         Pointer node,
-        Pointer min, Pointer max,
-        Pointer ok);
+        IntByReference min, IntByReference max,
+        IntByReference ok);
 
      void ossia_node_set_default_value(
         Pointer node,
@@ -253,6 +253,39 @@ public interface Ossia extends Library
       String unit);
      String ossia_parameter_get_unit(
       Pointer address);
+
+
+     void ossia_parameter_set_muted (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_muted (
+      Pointer property);
+
+
+     void ossia_parameter_set_disabled (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_disabled (
+      Pointer property);
+
+
+     void ossia_parameter_set_critical (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_critical (
+      Pointer property);
+
+
+     void ossia_parameter_set_repetition_filter (
+      Pointer property,
+      int m);
+
+     int ossia_parameter_get_repetition_filter (
+      Pointer property);
+
 
      void ossia_parameter_set_bounding_mode (
       Pointer property,
@@ -500,7 +533,7 @@ public interface Ossia extends Library
 
      void ossia_string_free( Pointer str );
 
-    /// LOG ///
+     /// LOG ///
      void ossia_set_debug_logger( Pointer fp );
      Pointer ossia_logger_create(String host, String app);
      void ossia_logger_init_heartbeat(Pointer log, int pid, String cmdline);
@@ -508,8 +541,8 @@ public interface Ossia extends Library
      void ossia_log(Pointer log, int lvl, String message);
      void ossia_logger_free(Pointer log);
 
-    /// MESSAGE QUEUE ///
-    Pointer ossia_mq_create(Pointer device);
+     /// MESSAGE QUEUE ///
+     Pointer ossia_mq_create(Pointer device);
      void ossia_mq_register(Pointer mq, Pointer param);
      void ossia_mq_unregister(Pointer mq, Pointer param);
      int ossia_mq_pop(Pointer mq, PointerByReference address, PointerByReference value);

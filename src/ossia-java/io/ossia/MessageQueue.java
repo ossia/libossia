@@ -42,6 +42,5 @@ public class MessageQueue implements AutoCloseable
     Ossia.INSTANCE.ossia_mq_free(impl);
   }
 
-
   Pointer impl;
 }

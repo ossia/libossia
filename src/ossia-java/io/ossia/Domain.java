@@ -35,7 +35,7 @@ public class Domain implements AutoCloseable
   public Domain(Vec3F min, Vec3F max)
   {
     Pointer a = Ossia.INSTANCE.ossia_value_create_3f(min.x, min.y, min.z);
-    Pointer b = Ossia.INSTANCE.ossia_value_create_3f(max.x, max.y, min.z);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_3f(max.x, max.y, max.z);
     impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
     Ossia.INSTANCE.ossia_value_free(b);
     Ossia.INSTANCE.ossia_value_free(a);
@@ -43,7 +43,7 @@ public class Domain implements AutoCloseable
   public Domain(Vec4F min, Vec4F max)
   {
     Pointer a = Ossia.INSTANCE.ossia_value_create_4f(min.x, min.y, min.z, min.w);
-    Pointer b = Ossia.INSTANCE.ossia_value_create_4f(max.x, max.y, min.z, min.w);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_4f(max.x, max.y, max.z, max.w);
     impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
     Ossia.INSTANCE.ossia_value_free(b);
     Ossia.INSTANCE.ossia_value_free(a);
