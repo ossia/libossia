@@ -6,6 +6,7 @@ import com.sun.jna.Native;
 import java.util.Optional;
 import java.util.OptionalInt;
 import java.util.OptionalDouble;
+import java.util.AbstractCollection;
 
 public class Node
 {
@@ -56,7 +57,7 @@ public class Node
     SizeTByReference size = new SizeTByReference();
 
     Ossia.INSTANCE.ossia_node_find_pattern(impl, pattern, data, size);
-    
+
     int n = (int)size.getValue().longValue();
     Node[] nodes = new Node[n];
     if(n > 0)
@@ -103,6 +104,89 @@ public class Node
   {
     return new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
   }
+
+  public Parameter create(String name, String type, float min, float max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(min, max));
+    return p;
+  }
+
+  public Parameter create(String name, String type, double min, double max)
+  {
+    return create(name, type, (float) min, (float) max);
+  }
+
+  public Parameter create(String name, String type, int min, int max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(min, max));
+    return p;
+  }
+
+  public Parameter create(String name, String type, Vec2F min, Vec2F max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(min, max));
+    return p;
+  }
+
+  public Parameter create(String name, String type, Vec3F min, Vec3F max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(min, max));
+    return p;
+  }
+
+  public Parameter create(String name, String type, Vec4F min, Vec4F max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(min, max));
+    return p;
+  }
+
+  public Parameter create(String name, String type, float[] min, float[] max)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    if(min.length == 2 && max.length == 2)
+      p.setDomain(new Domain(new Vec2F(min), new Vec2F(max)));
+    else if(min.length == 3 && max.length == 3)
+      p.setDomain(new Domain(new Vec3F(min), new Vec3F(max)));
+    else if(min.length == 4 && max.length == 4)
+      p.setDomain(new Domain(new Vec4F(min), new Vec4F(max)));
+    else
+      p.setDomain(new Domain(new Value(min), new Value(max)));
+    return p;
+  }
+
+  public Parameter create(String name, String type, String[] values)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(values));
+    return p;
+  }
+
+  public Parameter create(String name, String type, int[] values)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(values));
+    return p;
+  }
+
+  public Parameter create(String name, String type, float[] values)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(values));
+    return p;
+  }
+
+  public Parameter create(String name, String type, Value[] values)
+  {
+    Parameter p = new Parameter(Ossia.INSTANCE.ossia_create_parameter(impl, name, type));
+    p.setDomain(new Domain(values));
+    return p;
+  }
+
 
   public Parameter getParameter()
   {
@@ -174,7 +258,7 @@ public class Node
   {
     Ossia.INSTANCE.ossia_node_unset_refresh_rate(impl);
   }
-  
+
   // Priority
   public OptionalDouble getPriority()
   {
@@ -251,7 +335,7 @@ public class Node
       return Optional.empty();
     }
   }
-  
+
   public void setInstanceBounds(Optional<InstanceBounds> u)
   {
     if(u.isPresent())
@@ -264,7 +348,7 @@ public class Node
       Ossia.INSTANCE.ossia_node_unset_instance_bounds(impl);
     }
   }
-  
+
   public void setInstanceBounds(int min, int max)
   {
     Ossia.INSTANCE.ossia_node_set_instance_bounds(impl, min, max);
@@ -284,7 +368,7 @@ public class Node
     }
     else
     {
-      return Optional.of(new Value(p));  
+      return Optional.of(new Value(p));
     }
   }
 

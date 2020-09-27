@@ -60,6 +60,8 @@ public class Parameter
   }
 
 
+  public void push(Value v)
+  { Ossia.INSTANCE.ossia_parameter_push_value(impl, v.impl); }
   public void push_impulse()
   { Ossia.INSTANCE.ossia_parameter_push_impulse(impl); }
   public void push(int v)

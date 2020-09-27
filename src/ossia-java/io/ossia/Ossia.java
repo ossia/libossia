@@ -10,6 +10,7 @@ import com.sun.jna.Library;
 import com.sun.jna.Native;
 import com.sun.jna.Platform;
 import com.sun.jna.Pointer;
+import com.sun.jna.StringArray;
 import com.sun.jna.ptr.PointerByReference;
 import com.sun.jna.ptr.IntByReference;
 
@@ -416,7 +417,10 @@ public interface Ossia extends Library
       Pointer index);
 
 
-    //// Domain ////
+     //// Domain ////
+     Pointer ossia_domain_create ();
+
+
      Pointer ossia_domain_make_min_max (
       Pointer min,
       Pointer max);
@@ -435,6 +439,22 @@ public interface Ossia extends Library
      void ossia_domain_set_max (
       Pointer domain,
       Pointer value);
+
+     Pointer ossia_domain_make_string_set(
+      String[] strings,
+      SizeT sz);
+
+     Pointer ossia_domain_make_int_set(
+      int[] v,
+      SizeT sz);
+
+     Pointer ossia_domain_make_float_set(
+      float[] v,
+      SizeT sz);
+
+     Pointer ossia_domain_make_value_set(
+      Pointer v,
+      SizeT sz);
 
      void ossia_domain_get_values(
       Pointer domain,
@@ -471,8 +491,8 @@ public interface Ossia extends Library
      Pointer ossia_value_create_byte_array (Pointer value, SizeT sz);
 
      Pointer ossia_value_create_list (Pointer values, SizeT size);
-     Pointer ossia_value_create_fn (Pointer values, SizeT size);
-     Pointer ossia_value_create_in (Pointer values, SizeT size);
+     Pointer ossia_value_create_fn (float[] values, SizeT size);
+     Pointer ossia_value_create_in (int[] values, SizeT size);
 
 
      void ossia_value_free (Pointer value);
