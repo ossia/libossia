@@ -112,3 +112,6 @@
 [submodule "3rdparty/cpp-taskflow"]
 	path = 3rdparty/cpp-taskflow
 	url = https://github.com/cpp-taskflow/cpp-taskflow
+[submodule "3rdparty/rapidfuzz-cpp"]
+	path = 3rdparty/rapidfuzz-cpp
+	url = https://github.com/avilleret/rapidfuzz-cpp.git
