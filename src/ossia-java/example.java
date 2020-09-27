@@ -61,7 +61,7 @@ class example
 
     // Best API:
     Parameter built = root.newChild()
-        .name("my_child")
+        .name("/boo/bar/baz")
         .type("float")
         .domain(-5.f, 5.f)
         .description("Sweet summer child")

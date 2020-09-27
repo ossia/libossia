@@ -1,10 +1,9 @@
 // To use :
-// * Download http://repo1.maven.org/maven2/net/java/dev/jna/jna/4.5.1/jna-4.5.1.jar
-//   - rename it to jna.jar
-//   - put it in a "code" folder in the sketchbook
+// * Download the latest ossia-java release
+//   - put its content in a "code" folder in the sketchbook
 //   e.g. ~/sketchbook/sketch_123456/code/jna.jar
-// * Then do the same with the ossia-java release for your operating system:
-//   e.g. ~/sketchbook/sketch_123456/code/ossia-java.jar
+//   and  ~/sketchbook/sketch_123456/code/ossia-java.jar
+// * Copy this file as ~/sketchbook/sketch_123456/sketch_123456.pde
 
 import io.ossia.*;
 
@@ -16,11 +15,13 @@ void setup()
 {
   size(100, 100);
   Node root = d.getRootNode();
-  Node bar = root.createNode("/foo/bar");
-  bar.setDescription("Rectangle fill color");
-  my_color = bar.createParameter(Type.VEC4F_T);
-  my_color.setUnit("color.rgba8");
-  my_color.push(120f, 20f, 50f, 255f);
+  my_color = root.newChild()
+                 .name("/foo/bar")
+                 .type("rgba8")
+                 .value(120, 20, 50, 255)
+                 .description("Rectangle fill color")
+                 .get()
+  ;
 }
 
 void stop()
