@@ -15,6 +15,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       hopscotch-map
       multi_index
       nano-signal-slot
+      rapidfuzz-cpp
       rapidjson
       readerwriterqueue
       rnd
@@ -166,3 +167,10 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
+
+include(FetchContent)
+FetchContent_Declare(
+    rapidfuzz
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/rapidfuzz-cpp
+)
+FetchContent_MakeAvailable(rapidfuzz)

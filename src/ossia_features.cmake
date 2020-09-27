@@ -316,3 +316,5 @@ if(OSSIA_EDITOR)
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
+
+target_link_libraries(ossia PRIVATE rapidfuzz::rapidfuzz)
