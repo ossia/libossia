@@ -70,7 +70,7 @@ class example
         .value(1.4)
         .get();
 
-    System.out.println("The example will now run for 100 seconds. Go check it on https://127.0.0.1:5678");
+    System.out.println("The example will now run for 100 seconds. Go check it on http://127.0.0.1:5678");
     try
     {
       Thread.sleep(100000);

@@ -1411,7 +1411,7 @@ void ossia_domain_set_max(
  */
 OSSIA_EXPORT
 ossia_domain_t ossia_domain_make_string_set(
-        const char* const* strings,
+        const char** strings,
         size_t n);
 
 /**
