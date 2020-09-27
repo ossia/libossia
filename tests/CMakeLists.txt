@@ -1,8 +1,10 @@
 ### Setup ###
-# Don't run tests when we're building specific bindings...
-if(OSSIA_PD OR OSSIA_MAX OR OSSIA_PYTHON OR OSSIA_NODEJS OR OSSIA_JAVA OR OSSIA_UNITY3D)
+# Don't run tests on CI when we're building specific bindings...
+if(OSSIA_CI)
+if(OSSIA_PD_ONLY OR OSSIA_MAX_ONLY OR OSSIA_PYTHON_ONLY OR OSSIA_NODEJS OR OSSIA_JAVA_ONLY OR OSSIA_UNITY3D)
   return()
 endif()
+endif(OSSIA_CI)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
