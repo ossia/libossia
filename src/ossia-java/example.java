@@ -58,6 +58,18 @@ class example
       Parameter list = root.create("list", "list");
       list.push(new Value[]{new Value(132), new Value(10.456), new Value("foo bar")});
     }
+
+    // Best API:
+    Parameter built = root.newChild()
+        .name("my_child")
+        .type("float")
+        .domain(-5.f, 5.f)
+        .description("Sweet summer child")
+        .unit("m/s")
+        .bounding(BoundingMode.CLIP)
+        .value(1.4)
+        .get();
+
     System.out.println("The example will now run for 100 seconds. Go check it on https://127.0.0.1:5678");
     try
     {

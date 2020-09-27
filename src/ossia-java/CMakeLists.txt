@@ -22,6 +22,7 @@ add_jar(ossia-java
   io/ossia/OscQueryServer.java
   io/ossia/OscQueryMirror.java
   io/ossia/Parameter.java
+  io/ossia/ParameterBuilder.java
   io/ossia/Protocol.java
   io/ossia/Value.java
   io/ossia/Domain.java

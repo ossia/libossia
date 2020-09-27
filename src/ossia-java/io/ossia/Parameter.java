@@ -71,6 +71,8 @@ public class Parameter
   { Ossia.INSTANCE.ossia_parameter_push_i(impl, v); }
   public void push(float v)
   { Ossia.INSTANCE.ossia_parameter_push_f(impl, v); }
+  public void push(double v)
+  { Ossia.INSTANCE.ossia_parameter_push_f(impl, (float)v); }
   public void push(boolean v)
   { Ossia.INSTANCE.ossia_parameter_push_b(impl, v ? 1 : 0); }
   public void push(byte v)
@@ -93,23 +95,11 @@ public class Parameter
 
   public void push(int[] l)
   {
-    final int sz = Native.getNativeSize(Integer.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setInt(i * sz, l[i]);
-    }
-    Ossia.INSTANCE.ossia_parameter_push_in(impl, p, new SizeT(l.length));
+    Ossia.INSTANCE.ossia_parameter_push_in(impl, l, new SizeT(l.length));
   }
   public void push(float[] l)
   {
-    final int sz = Native.getNativeSize(Float.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setFloat(i * sz, l[i]);
-    }
-    Ossia.INSTANCE.ossia_parameter_push_fn(impl, p, new SizeT(l.length));
+    Ossia.INSTANCE.ossia_parameter_push_fn(impl, l, new SizeT(l.length));
   }
   public void push(Value[] l)
   {
@@ -138,6 +128,10 @@ public class Parameter
   {
     setDomain(new Domain(min, max));
   }
+  public void setDomain(double min, double max)
+  {
+    setDomain(new Domain(min, max));
+  }
   public void setDomain(Vec2F min, Vec2F max)
   {
     setDomain(new Domain(min, max));
@@ -149,6 +143,22 @@ public class Parameter
   public void setDomain(Vec4F min, Vec4F max)
   {
     setDomain(new Domain(min, max));
+  }
+  public void setDomain(int[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(float[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(String[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(Value[] v)
+  {
+    setDomain(new Domain(v));
   }
 
   public String getUnit()

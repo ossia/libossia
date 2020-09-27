@@ -187,6 +187,10 @@ public class Node
     return p;
   }
 
+  public ParameterBuilder newChild() { return new ParameterBuilder(this); }
+  public ParameterBuilder newChild(String name) { return new ParameterBuilder(this).name(name); }
+  public ParameterBuilder newChild(String name, String type) { return new ParameterBuilder(this).name(name).type(type); }
+
 
   public Parameter getParameter()
   {

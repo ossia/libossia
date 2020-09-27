@@ -376,11 +376,11 @@ public interface Ossia extends Library
       String value);
      void ossia_parameter_push_in(
       Pointer property,
-      Pointer value,
+      int[] value,
       SizeT sz);
      void ossia_parameter_push_fn(
       Pointer property,
-      Pointer value,
+      float[] value,
       SizeT sz);
      void ossia_parameter_push_cn( // pushed as a string
       Pointer property,

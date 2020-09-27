@@ -33,6 +33,14 @@ public class Domain implements AutoCloseable
     Ossia.INSTANCE.ossia_value_free(b);
     Ossia.INSTANCE.ossia_value_free(a);
   }
+  public Domain(double min, double max)
+  {
+    Pointer a = Ossia.INSTANCE.ossia_value_create_float((float)min);
+    Pointer b = Ossia.INSTANCE.ossia_value_create_float((float)max);
+    impl = Ossia.INSTANCE.ossia_domain_make_min_max(a, b);
+    Ossia.INSTANCE.ossia_value_free(b);
+    Ossia.INSTANCE.ossia_value_free(a);
+  }
   public Domain(Vec2F min, Vec2F max)
   {
     Pointer a = Ossia.INSTANCE.ossia_value_create_2f(min.x, min.y);
