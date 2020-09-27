@@ -60,6 +60,7 @@ struct explorer : object_base
   static t_symbol* s_created;
   static t_symbol* s_removing;
   static t_symbol* s_renamed;
+  static t_symbol* s_open;
 };
 } // max namespace
 } // ossia namespace

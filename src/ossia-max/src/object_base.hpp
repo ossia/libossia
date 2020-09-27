@@ -116,6 +116,8 @@ public:
   void* m_clock{};
   void* m_reg_clock{}; // registration clock that should be initialized by constructor
                        // and canceled by loadbang method
+  void* m_highlight_clock{}; // clock to reset color after some amount of time
+                             // to highlight the object in the patcher
 
   float m_rate{10};
 
@@ -158,6 +160,7 @@ public:
 
   long m_tags_size{};
   long m_description_size{};
+  t_jrgba m_color{};
 
   std::vector<search_result> m_found_parameters{};
   std::vector<search_result> m_found_models{};
@@ -183,6 +186,9 @@ public:
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
+  void highlight();
+  static void reset_color(object_base* x);
+
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
   std::vector<ossia::value> m_set_pool;
 
