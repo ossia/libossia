@@ -70,6 +70,8 @@ set(PROJECT_SRCS
     src/device_base.cpp
     src/explorer.hpp
     src/explorer.cpp
+    src/fuzzysearch.hpp
+    src/fuzzysearch.cpp
     src/logger.hpp
     src/logger.cpp
     src/model.hpp
@@ -96,6 +98,7 @@ set(PROJECT_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
+
 # add_custom_target just to display sources files in qtcreator
 add_custom_target(source SOURCES ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
@@ -154,6 +157,7 @@ set(OSSIA_EXT_LIST
     ossia.ossia
     ossia.explorer
     ossia.address_router
+    ossia.fuzzysearch
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})

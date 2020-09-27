@@ -24,6 +24,7 @@
 #include "logger.hpp"
 #include "explorer.hpp"
 #include "address_router.hpp"
+#include "fuzzysearch.hpp"
 
 #include "ZeroconfOscqueryListener.hpp"
 #include "ZeroconfMinuitListener.hpp"
@@ -107,6 +108,7 @@ public:
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
     if(std::is_same<T, ossia::max::address_router>::value) return ossia_address_router_class;
+    if(std::is_same<T, ossia::max::fuzzysearch>::value) return ossia_fuzzysearch_class;
     return nullptr;
   }
 
@@ -131,6 +133,7 @@ public:
   t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};
   t_class* ossia_explorer_class{};
+  t_class* ossia_fuzzysearch_class{};
   t_class* ossia_logger_class{};
   t_class* ossia_model_class{};
   t_class* ossia_parameter_class{};
