@@ -165,5 +165,10 @@ void expand_ranges(std::string& str);
 OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node);
+
+OSSIA_EXPORT
+std::vector<std::tuple<double, std::string, ossia::net::node_base*>>
+fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& patterns);
+
 }
 }
