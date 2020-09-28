@@ -126,7 +126,7 @@ stages:
       - job: Unity3DMac
         displayName: Unity3D (macOS)
         pool:
-          vmImage: 'macos-10.14'
+          vmImage: 'macos-10.15'
 
         steps:
         - checkout: self
@@ -140,7 +140,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
@@ -171,7 +171,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
@@ -211,7 +211,7 @@ stages:
       - job: JavaMac
         displayName: Java (macOS)
         pool:
-          vmImage: 'macos-10.14'
+          vmImage: 'macos-10.15'
 
         steps:
         - checkout: self
@@ -228,7 +228,7 @@ stages:
             cd build
             export JAVA_HOME=$(/usr/libexec/java_home -v 1.8)
             echo "JAVA_HOME: $JAVA_HOME"
-            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME=$JAVA_HOME -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME=$JAVA_HOME -DOSSIA_JAVA_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
@@ -260,7 +260,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME="c:\Program Files\Java\jdk1.8.0_211" -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME="c:\Program Files\Java\jdk1.8.0_211" -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DCMAKE_SYSTEM_VERSION=7 -DOSSIA_JAVA_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
