@@ -5,6 +5,7 @@
 #undef post
 
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
 
 namespace ossia
 {
@@ -19,6 +20,7 @@ struct fuzzysearch
   t_object m_object;
   ossia::net::node_base* m_root{};
   void* m_outlet{};
+  std::vector<ossia::net::fuzzysearch_result> m_matches{};
 
   fuzzysearch(long argc, t_atom* argv);
 

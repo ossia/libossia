@@ -27,7 +27,16 @@ int main(int argc, char** argv)
   adsr_node->create_child("sustain")->create_parameter();
   adsr_node->create_child("release")->create_parameter();
 
-  auto matches = ossia::net::fuzzysearch(&device.get_root_node(), {"frequency"});
+  std::vector<ossia::net::fuzzysearch_result> matches;
+  ossia::net::fuzzysearch(&device.get_root_node(), {"frequency"}, matches);
+
+  for(const auto& m : matches)
+  {
+    std::cout << m.score << "\t"
+              << m.oscname << std::endl;
+  }
+
+  ossia::net::fuzzysearch(&device.get_root_node(), {"band", "gain"}, matches);
 
   for(const auto& m : matches)
   {

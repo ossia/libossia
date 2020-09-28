@@ -656,15 +656,14 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
  * @param pattern: strings to search
  * @return a vector of fuzzysearch_result sorted in descending score order
  */
-std::vector<fuzzysearch_result>
-fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& patterns)
+void fuzzysearch(ossia::net::node_base* node,
+                 const std::vector<std::string>& patterns,
+                 std::vector<fuzzysearch_result>& results)
 {
   auto children = list_all_children(node);
 
-  std::vector<std::string> oscnames;
-  oscnames.reserve(children.size());
-
-  std::vector<fuzzysearch_result> scores;
+  results.clear();
+  results.reserve(children.size());
 
   for(const auto& n : children)
   {
@@ -674,14 +673,12 @@ fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& pattern
     {
       percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
     }
-    scores.push_back({percent * 100., oscaddress, n});
+    results.push_back({percent * 100., oscaddress, n});
   }
 
-  ossia::sort(scores, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
+  ossia::sort(results, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
     return left.score > right.score;
   });
-
-  return scores;
 }
 
 std::vector<parameter_base*> find_or_create_parameter(

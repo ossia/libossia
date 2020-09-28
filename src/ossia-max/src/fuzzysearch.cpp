@@ -56,9 +56,9 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   if(patterns.empty())
     return;
 
-  auto matches = ossia::net::fuzzysearch(x->m_root, patterns);
+  ossia::net::fuzzysearch(x->m_root, patterns, x->m_matches);
 
-  for(const auto& m : matches)
+  for(const auto& m : x->m_matches)
   {
     t_atom a[2];
     A_SETFLOAT(a, m.score);
