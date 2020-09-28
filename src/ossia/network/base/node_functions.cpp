@@ -665,6 +665,7 @@ void fuzzysearch(ossia::net::node_base* node,
   results.clear();
   results.reserve(children.size());
 
+#pragma omp parallel for
   for(const auto& n : children)
   {
     std::string oscaddress = ossia::net::osc_parameter_string_with_device(*n);
