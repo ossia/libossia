@@ -168,6 +168,6 @@ add_definitions(-DFMT_HEADER_ONLY=1)
 include(FetchContent)
 FetchContent_Declare(
     rapidfuzz
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/rapidfuzz-cpp
+    SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/rapidfuzz-cpp"
 )
 FetchContent_MakeAvailable(rapidfuzz)
