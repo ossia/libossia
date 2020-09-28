@@ -31,8 +31,8 @@ int main(int argc, char** argv)
 
   for(const auto& m : matches)
   {
-    std::cout << std::get<0>(m) << "\t"
-              << std::get<1>(m) << std::endl;
+    std::cout << m.score << "\t"
+              << m.oscname << std::endl;
   }
 
   return 0;

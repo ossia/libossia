@@ -646,9 +646,9 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
  * @brief fuzzysearch: search for nodes that match the pattern string
  * @param node: root node from where to start
  * @param pattern: strings to search
- * @return a vector of pairs of matching score and node pointer sorted in descending order
+ * @return a vector of fuzzysearch_result sorted in descending score order
  */
-std::vector<std::tuple<double, std::string, ossia::net::node_base*>>
+std::vector<fuzzysearch_result>
 fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& patterns)
 {
   auto children = list_all_children(node);
@@ -656,9 +656,7 @@ fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& pattern
   std::vector<std::string> oscnames;
   oscnames.reserve(children.size());
 
-  using score = std::tuple<double, std::string, ossia::net::node_base*>;
-
-  std::vector<score> scores;
+  std::vector<fuzzysearch_result> scores;
 
   for(const auto& n : children)
   {
@@ -671,8 +669,8 @@ fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& pattern
     scores.push_back({percent * 100., oscaddress, n});
   }
 
-  ossia::sort(scores, [](const score& left, const score& right){
-    return std::get<0>(left) > std::get<0>(right);
+  ossia::sort(scores, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
+    return left.score > right.score;
   });
 
   return scores;

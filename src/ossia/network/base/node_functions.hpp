@@ -166,8 +166,16 @@ OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node);
 
+
+OSSIA_EXPORT struct fuzzysearch_result
+{
+  double score;
+  std::string oscname;
+  ossia::net::node_base* node;
+};
+
 OSSIA_EXPORT
-std::vector<std::tuple<double, std::string, ossia::net::node_base*>>
+std::vector<fuzzysearch_result>
 fuzzysearch(ossia::net::node_base* node, const std::vector<std::string>& patterns);
 
 }
