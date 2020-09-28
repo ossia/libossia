@@ -61,8 +61,8 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   for(const auto& m : matches)
   {
     t_atom a[2];
-    A_SETFLOAT(a, std::get<0>(m));
-    A_SETSYM(a+1, gensym(std::get<1>(m).c_str()));
+    A_SETFLOAT(a, m.score);
+    A_SETSYM(a+1, gensym(m.oscname.c_str()));
     outlet_anything(x->m_outlet, gensym("match"), 2, a);
   }
 }
