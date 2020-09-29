@@ -77,10 +77,8 @@ public:
 class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
 public:
-
   audio_protocol();
   ~audio_protocol() override;
-  void stop() override;
 
   void setup_tree(int inputs, int outputs);
   void advance_tick(std::size_t count);
@@ -117,8 +115,6 @@ public:
 
 protected:
   ossia::net::device_base* m_dev{};
-
-  ossia::spsc_queue<smallfun::function<void()>> funlist;
 };
 
 class OSSIA_EXPORT audio_device

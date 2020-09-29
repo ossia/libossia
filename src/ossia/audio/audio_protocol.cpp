@@ -178,16 +178,6 @@ audio_protocol::~audio_protocol()
 {
 }
 
-void audio_protocol::stop()
-{
-  /*
-  smallfun::function<void()> f;
-  while (funlist.try_dequeue(f))
-    f();
-
-    */
-}
-
 void audio_protocol::setup_tree(int inputs, int outputs)
 {
   if(inputs == int(audio_ins.size()) && outputs == int(audio_outs.size()))
@@ -336,54 +326,42 @@ void audio_protocol::set_device(ossia::net::device_base& dev)
 
 void audio_protocol::register_parameter(mapped_audio_parameter& p)
 {
-  funlist.enqueue([&] {
-    if (p.is_output)
-      out_mappings.push_back(&p);
-    else
-      in_mappings.push_back(&p);
-  });
+  if (p.is_output)
+    out_mappings.push_back(&p);
+  else
+    in_mappings.push_back(&p);
 }
 
 void audio_protocol::unregister_parameter(mapped_audio_parameter& p)
 {
-  funlist.enqueue([&] {
-    if (p.is_output)
-    {
-      auto it = ossia::find(out_mappings, &p);
-      if (it != out_mappings.end())
-        out_mappings.erase(it);
-    }
-    else
-    {
-      auto it = ossia::find(in_mappings, &p);
-      if (it != in_mappings.end())
-        in_mappings.erase(it);
-    }
-  });
+  if (p.is_output)
+  {
+    auto it = ossia::find(out_mappings, &p);
+    if (it != out_mappings.end())
+      out_mappings.erase(it);
+  }
+  else
+  {
+    auto it = ossia::find(in_mappings, &p);
+    if (it != in_mappings.end())
+      in_mappings.erase(it);
+  }
 }
 
 void audio_protocol::register_parameter(virtual_audio_parameter& p)
 {
-  funlist.enqueue([&] { virtaudio.push_back(&p); });
+   virtaudio.push_back(&p);
 }
 
 void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
 {
-  funlist.enqueue([&] {
-    auto it = ossia::find(virtaudio, &p);
-    if (it != virtaudio.end())
-      virtaudio.erase(it);
-  });
+  auto it = ossia::find(virtaudio, &p);
+  if (it != virtaudio.end())
+    virtaudio.erase(it);
 }
 
 void audio_protocol::setup_buffers(ossia::audio_tick_state state)
 {
-  {
-    smallfun::function<void()> f;
-    while (funlist.try_dequeue(f))
-      f();
-  }
-
   setup_tree(state.n_in, state.n_out);
 
   //using idx_t = gsl::span<float>::index_type;
