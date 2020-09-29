@@ -76,7 +76,7 @@ public:
     PaStreamParameters* actualOutput{};
     if (card_out_idx != paNoDevice && outputs > 0)
       actualOutput = &outputParameters;
-    std::cerr << "=== stream start ===\n";
+
     PaStream* stream;
     auto ec = Pa_OpenStream(
         &stream, actualInput, actualOutput, rate,
@@ -99,8 +99,8 @@ public:
         auto info = Pa_GetStreamInfo(stream);
         this->effective_sample_rate = info->sampleRate;
         this->effective_buffer_size = bs;
-        this->effective_inputs = actualInput->channelCount;
-        this->effective_outputs = actualOutput->channelCount;
+        this->effective_inputs = actualInput ? actualInput->channelCount : 0;
+        this->effective_outputs = actualOutput ? actualOutput->channelCount : 0;
       }
     }
     else
