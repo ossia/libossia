@@ -115,10 +115,10 @@ private:
 
       self.processing = true;
 
-      proto->process_generic(
-          *proto, nullptr, float_output, (int)self.inputs, (int)self.outputs,
-          nframes / self.outputs);
-      self.audio_tick(nframes / self.outputs, 0);
+      // TODO time in seconds !
+      ossia::audio_tick_state ts{nullptr, float_output, (int)self.inputs, (int)self.outputs, uint64_t(nframes / self.outputs), 0};
+      proto->process_generic(*proto, ts);
+      self.audio_tick(ts);
 
       self.processing = false;
     }

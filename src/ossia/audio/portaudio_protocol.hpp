@@ -206,13 +206,9 @@ private:
       auto float_input = ((float* const*)input);
       auto float_output = ((float**)output);
 
-      proto->process_generic(
-          *proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs,
-          nframes);
-
-      std::atomic_thread_fence(std::memory_order_seq_cst);
-
-      self.audio_tick(nframes, timeInfo->currentTime);
+      ossia::audio_tick_state ts{float_input, float_output, (int)self.m_ins, (int)self.m_outs, nframes, timeInfo->currentTime};
+      proto->process_generic(*proto, ts);
+      self.audio_tick(ts);
 
       self.processing = false;
     }

@@ -469,10 +469,9 @@ private:
             pa_usec_t usec{};
             pa.pa_stream_get_time(stream, &usec);
 
-            proto->process_generic(
-                  *proto, float_input, float_outputs, (int)self.m_ins, (int)self.m_outs,
-                  size);
-            self.audio_tick(size, usec); // TODO proper time units !
+            ossia::audio_tick_state ts{float_input, float_outputs, (int)self.m_ins, (int)self.m_outs, size, usec / 1e6};
+            proto->process_generic(*proto, ts);
+            self.audio_tick(ts);
 
             int k = 0;
             for(std::size_t i = 0; i < size; i ++)

@@ -60,8 +60,13 @@ public:
             ns_delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - orig_start).count() - ns_total;
 
             int samples = std::ceil(double(effective_sample_rate) * ns / 1e9);
-            proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
-            audio_tick(effective_buffer_size, 0);
+            samples = std::min(samples, effective_buffer_size);
+            if(samples < 0)
+              samples = 0;
+
+            ossia::audio_tick_state ts{nullptr, nullptr, 0, 0, (uint64_t)samples, ns_total / 1e9};
+            proto->process_generic(*proto, ts);
+            audio_tick(ts);
           }
 
           this->processing = false;

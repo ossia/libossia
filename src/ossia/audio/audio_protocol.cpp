@@ -336,8 +336,7 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
 }
 
 void audio_protocol::process_generic(
-    audio_protocol& self, float* const* float_input, float** float_output,
-    int inputs, int outputs, uint64_t frameCount)
+    audio_protocol& self, ossia::audio_tick_state state)
 {
   {
     smallfun::function<void()> f;
@@ -346,20 +345,19 @@ void audio_protocol::process_generic(
   }
 
   //using idx_t = gsl::span<float>::index_type;
-  const gsl::span<float>::size_type fc = frameCount;
+  const gsl::span<float>::size_type fc = state.frames;
 
   // Prepare virtual audio inputs
   for (auto virt : self.virtaudio)
   {
-    virt->set_buffer_size(frameCount);
+    virt->set_buffer_size(state.frames);
   }
 
   // Prepare audio inputs
-  const int n_in_channels = inputs;
-  for (int i = 0; i < n_in_channels; i++)
+  for (int i = 0; i < state.n_in; i++)
   {
-    self.main_audio_in->audio[i] = {float_input[i], fc};
-    self.audio_ins[i]->audio[0] = {float_input[i], fc};
+    self.main_audio_in->audio[i] = {state.inputs[i], fc};
+    self.audio_ins[i]->audio[0] = {state.inputs[i], fc};
   }
 
   for (auto mapped : self.in_mappings)
@@ -368,23 +366,22 @@ void audio_protocol::process_generic(
     for (std::size_t i = 0; i < mapped->mapping.size(); i++)
     {
       auto map_channel = mapped->mapping[i];
-      if (map_channel < n_in_channels)
-        mapped->audio[i] = {float_input[map_channel], fc};
+      if (map_channel < state.n_in)
+        mapped->audio[i] = {state.inputs[map_channel], fc};
       else
         mapped->audio[i] = {};
     }
   }
 
   // Prepare audio outputs
-  const int n_out_channels = outputs;
-  for (int i = 0; i < n_out_channels; i++)
+  for (int i = 0; i < state.n_out; i++)
   {
-    self.main_audio_out->audio[i] = {float_output[i], fc};
-    self.audio_outs[i]->audio[0] = {float_output[i], fc};
+    self.main_audio_out->audio[i] = {state.outputs[i], fc};
+    self.audio_outs[i]->audio[0] = {state.outputs[i], fc};
 
-    for (int j = 0; j < (int)frameCount; j++)
+    for (int j = 0; j < (int)state.frames; j++)
     {
-      float_output[i][j] = 0;
+      state.outputs[i][j] = 0;
     }
   }
 
@@ -394,8 +391,8 @@ void audio_protocol::process_generic(
     for (std::size_t i = 0; i < mapped->mapping.size(); i++)
     {
       auto map_channel = mapped->mapping[i];
-      if (map_channel < n_out_channels)
-        mapped->audio[i] = {float_output[map_channel], fc};
+      if (map_channel < state.n_out)
+        mapped->audio[i] = {state.outputs[map_channel], fc};
       else
         mapped->audio[i] = {};
     }

@@ -251,10 +251,10 @@ private:
                           self.output_ports[i], nframes);
     }
 
-    proto->process_generic(
-          *proto, float_input, float_output, (int)inputs, (int)outputs,
-          nframes);
-    self.audio_tick(nframes, 0);
+    jack_time_t usecs = jack_get_time();
+    ossia::audio_tick_state ts{float_input, float_output, (int)inputs, (int)outputs, nframes, usecs / 1e6};
+    proto->process_generic(*proto, ts);
+    self.audio_tick(ts);
 
     self.processing = false;
     return 0;

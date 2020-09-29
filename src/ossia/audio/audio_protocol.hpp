@@ -3,6 +3,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <nano_signal_slot.hpp>
 #include <readerwriterqueue.h>
 #include <smallfun.hpp>
 
@@ -11,6 +12,17 @@
 namespace ossia
 {
 class audio_protocol;
+
+struct audio_tick_state
+{
+  float* const* inputs{};
+  float** outputs{};
+  int32_t n_in{};
+  int32_t n_out{};
+  uint64_t frames{};
+  double seconds{};
+};
+
 class OSSIA_EXPORT audio_engine
 {
 public:
@@ -21,13 +33,28 @@ public:
   virtual void stop() = 0;
   virtual void reload(audio_protocol* cur) = 0;
 
+  void poll();
+
+  enum audio_engine_message {
+    started,
+    stopped,
+    tick_loaded
+  };
+
+  Nano::Signal<void(audio_engine_message)> on_audio_message;
 
 
-  using fun_type = smallfun::function<void(unsigned long, double), 256>;
+  using fun_type = smallfun::function<void(ossia::audio_tick_state), 256>;
   void set_tick(fun_type&& t);
   void load_audio_tick();
 
+  // From main thread to audio thread
   moodycamel::ReaderWriterQueue<fun_type> tick_funlist;
+
+  // From audio thread to main thread
+  moodycamel::ReaderWriterQueue<fun_type> tick_gc;
+  moodycamel::ReaderWriterQueue<audio_engine_message> audio_messages;
+
   fun_type audio_tick;
 
   std::atomic<audio_protocol*> protocol{};
@@ -41,9 +68,7 @@ public:
 class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
 public:
-  static void process_generic(
-      audio_protocol& self, float* const* inputs, float** outputs, int n_in,
-      int n_out, uint64_t nsamples);
+  static void process_generic(audio_protocol& self, audio_tick_state state);
 
   audio_protocol();
   ~audio_protocol() override;
