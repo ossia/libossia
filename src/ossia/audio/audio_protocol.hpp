@@ -3,8 +3,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <nano_signal_slot.hpp>
-#include <readerwriterqueue.h>
+#include <ossia/detail/lockfree_queue.hpp>
 #include <smallfun.hpp>
 
 #include <ossia-config.hpp>
@@ -30,45 +29,54 @@ public:
   virtual ~audio_engine();
 
   virtual bool running() const = 0;
-  virtual void stop() = 0;
-  virtual void reload(audio_protocol* cur) = 0;
+  void stop();
+  void start();
 
-  void poll();
-
-  enum audio_engine_message {
-    started,
-    stopped,
-    tick_loaded
-  };
-
-  Nano::Signal<void(audio_engine_message)> on_audio_message;
-
+  void gc();
 
   using fun_type = smallfun::function<void(ossia::audio_tick_state), 256>;
   void set_tick(fun_type&& t);
   void load_audio_tick();
 
   // From main thread to audio thread
-  moodycamel::ReaderWriterQueue<fun_type> tick_funlist;
+  ossia::spsc_queue<fun_type> tick_funlist;
 
   // From audio thread to main thread
-  moodycamel::ReaderWriterQueue<fun_type> tick_gc;
-  moodycamel::ReaderWriterQueue<audio_engine_message> audio_messages;
+  ossia::spsc_queue<fun_type> tick_gc;
 
   fun_type audio_tick;
 
-  std::atomic<audio_protocol*> protocol{};
+  std::atomic_int req_stop{};
+  std::atomic_int ack_stop{};
+  std::atomic_int req_tick{};
+  std::atomic_int ack_tick{};
   std::atomic_bool stop_processing{};
   std::atomic_bool processing{};
 
   int effective_sample_rate{};
   int effective_buffer_size{};
+  int effective_inputs{};
+  int effective_outputs{};
+
+  void tick_start()
+  {
+    processing = true;
+    load_audio_tick();
+  }
+  void tick_clear()
+  {
+    processing = false;
+    ack_stop = req_stop.load();
+  }
+  void tick_end()
+  {
+    processing = false;
+  }
 };
 
 class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
 public:
-  static void process_generic(audio_protocol& self, audio_tick_state state);
 
   audio_protocol();
   ~audio_protocol() override;
@@ -76,6 +84,7 @@ public:
 
   void setup_tree(int inputs, int outputs);
   void advance_tick(std::size_t count);
+  void setup_buffers(audio_tick_state state);
 
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
@@ -105,12 +114,11 @@ public:
   std::vector<ossia::mapped_audio_parameter*> in_mappings;
   std::vector<ossia::mapped_audio_parameter*> out_mappings;
   std::vector<ossia::virtual_audio_parameter*> virtaudio;
-  audio_engine* engine{};
 
 protected:
   ossia::net::device_base* m_dev{};
 
-  moodycamel::ReaderWriterQueue<smallfun::function<void()>> funlist;
+  ossia::spsc_queue<smallfun::function<void()>> funlist;
 };
 
 class OSSIA_EXPORT audio_device

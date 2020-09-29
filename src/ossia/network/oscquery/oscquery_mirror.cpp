@@ -718,11 +718,11 @@ bool oscquery_mirror_protocol::on_WSMessage(
         case message_type::Value:
         {
           // TODO instead just put full path in reply ?
-          auto p = m_getWSPromises.peek();
-          if (p)
+          get_ws_promise p;
+          if (m_getWSPromises.try_dequeue(p))
           {
             auto node
-                = ossia::net::find_node(m_device->get_root_node(), p->address);
+                = ossia::net::find_node(m_device->get_root_node(), p.address);
 
             const rapidjson::Value* obj_value = data.get();
             if(obj_value->IsObject())
@@ -745,17 +745,16 @@ bool oscquery_mirror_protocol::on_WSMessage(
               else
               {
                 m_device->on_unhandled_message(
-                    p->address, detail::ReadValue(*obj_value));
+                    p.address, detail::ReadValue(*obj_value));
               }
             }
             else
             {
               m_device->on_unhandled_message(
-                  p->address, oscquery::detail::ReadValue(*obj_value));
+                  p.address, oscquery::detail::ReadValue(*obj_value));
             }
 
-            p->promise.set_value();
-            m_getWSPromises.pop();
+            p.promise.set_value();
           }
 
           else // if update from critical param

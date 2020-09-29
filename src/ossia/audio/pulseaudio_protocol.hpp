@@ -181,7 +181,6 @@ public:
   using sample_rate_t = double;
   using buffer_size_t = uint32_t;
 
-  int m_ins{}, m_outs{};
   pulseaudio_engine(
       std::string name, std::string card_in, std::string card_out, int inputs,
       int outputs, int rate, int bs)
@@ -190,8 +189,8 @@ public:
     outputs = 2;
     bs = 512;
     rate = 48000;
-    m_ins = inputs;
-    m_outs = outputs;
+    effective_inputs = inputs;
+    effective_outputs = outputs;
     m_frames = bs;
 
     const auto &pa = libpulse::instance();
@@ -299,8 +298,8 @@ public:
     // Don't set values here, instead the server will provide what it judges to
     // be the best.
     pa_buffer_attr buffer_attr;
-    buffer_attr.maxlength = m_frames * sizeof(float) * m_outs;
-    buffer_attr.tlength = m_frames * sizeof(float) * m_outs;
+    buffer_attr.maxlength = m_frames * sizeof(float) * inputs;
+    buffer_attr.tlength = m_frames * sizeof(float) * outputs;
     buffer_attr.prebuf = (uint32_t)-1;
     buffer_attr.minreq = 0;
 
@@ -363,34 +362,6 @@ public:
     m_stream = nullptr;
   }
 
-  void reload(ossia::audio_protocol* p) override
-  {
-    if (this->protocol)
-      this->protocol.load()->engine = nullptr;
-    stop();
-
-    this->protocol = p;
-    if (!p)
-      return;
-    auto& proto = *p;
-    proto.engine = this;
-
-    proto.setup_tree(m_ins, m_outs);
-
-    stop_processing = false;
-  }
-
-  void stop() override
-  {
-    stop_processing = true;
-    protocol = nullptr;
-    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
-
-    while (processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  }
-
 private:
   static int clearBuffers(float** float_output, unsigned long nframes, int outs)
   {
@@ -408,16 +379,16 @@ private:
   static void output_callback(pa_stream *stream, size_t requested_bytes, void *userdata)
   {
     auto& self = *static_cast<pulseaudio_engine*>(userdata);
-    self.load_audio_tick();
+    self.tick_start();
 
     auto &pa = libpulse::instance();
     size_t bytes_to_fill = requested_bytes;
     float *buffer = nullptr;
 
     auto clt = self.m_stream.load();
-    auto proto = self.protocol.load();
-    if (self.stop_processing || !clt || !proto)
+    if (self.stop_processing || !clt || !self.audio_tick.allocated())
     {
+      self.tick_clear();
       do
       {
       // Do nothing
@@ -445,19 +416,19 @@ private:
 
 
     {
-      self.processing = true;
 
       do {
         auto res = pa.pa_stream_begin_write(stream, (void **)&buffer, &bytes_to_fill);
         if (res != 0) {
           // we're in huge trouble
           std::cerr << "no pa_stream_begin_write\n";
+          self.processing = false;
           return;
         }
 
         if(buffer)
         {
-          const auto size = bytes_to_fill / (sizeof(float) * self.m_outs);
+          const auto size = bytes_to_fill / (sizeof(float) * self.effective_outputs);
           {
             auto float_input = nullptr;
             auto float_output = ((float*)buffer);
@@ -469,8 +440,7 @@ private:
             pa_usec_t usec{};
             pa.pa_stream_get_time(stream, &usec);
 
-            ossia::audio_tick_state ts{float_input, float_outputs, (int)self.m_ins, (int)self.m_outs, size, usec / 1e6};
-            proto->process_generic(*proto, ts);
+            ossia::audio_tick_state ts{float_input, float_outputs, (int)self.effective_inputs, (int)self.effective_outputs, size, usec / 1e6};
             self.audio_tick(ts);
 
             int k = 0;
@@ -490,14 +460,17 @@ private:
                                           0LL, PA_SEEK_RELATIVE);
             res != 0) {
           // we're in huge trouble
+          self.processing = false;
           return;
         }
 
         requested_bytes -= bytes_to_fill;
         bytes_to_fill = requested_bytes;
       } while (requested_bytes > 0);
-      self.processing = false;
+
     }
+
+    self.tick_end();
   }
 
   std::string m_name;

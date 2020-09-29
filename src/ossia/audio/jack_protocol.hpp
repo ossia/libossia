@@ -75,7 +75,6 @@ class jack_engine final : public audio_engine
 public:
   jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs)
     : m_client{clt}
-    , stopped{true}
   {
     if (!m_client || !(*m_client))
     {
@@ -125,6 +124,8 @@ public:
     int err = jack_activate(client);
     this->effective_sample_rate = jack_get_sample_rate(client);
     this->effective_buffer_size = jack_get_buffer_size(client);
+    this->effective_inputs = inputs;
+    this->effective_outputs = outputs;
     if (err != 0)
     {
       jack_deactivate(client);
@@ -158,14 +159,12 @@ public:
       }
     }
 
-    stopped = false;
+    activated = true;
   }
 
   ~jack_engine() override
   {
     stop();
-    if (protocol)
-      protocol.load()->engine = nullptr;
 
     if(m_client)
     {
@@ -174,39 +173,11 @@ public:
     }
   }
 
-  void reload(audio_protocol* p) override
-  {
-    stop();
-    this->protocol = p;
-
-    if (!p)
-      return;
-    auto& proto = *p;
-    proto.engine = this;
-    std::cerr << "=== STARTING PROCESS ==" << std::endl;
-
-    proto.setup_tree((int)input_ports.size(), (int)output_ports.size());
-
-    stop_processing = false;
-    stopped = false;
-  }
-
-  void stop() override
-  {
-    std::cerr << "=== STOPPED PROCESS ==" << std::endl;
-     set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
-    if (this->protocol)
-      this->protocol.load()->engine = nullptr;
-    stop_processing = true;
-    protocol = nullptr;
-    while (processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    stopped = true;
-  }
-
   bool running() const override
   {
-    return !stopped;
+    if(!m_client)
+      return false;
+    return activated;
   }
 
 private:
@@ -225,16 +196,13 @@ private:
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
-    self.load_audio_tick();
-
-    self.processing = true;
+    self.tick_start();
 
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
-    auto proto = self.protocol.load();
-    if (self.stop_processing || !proto || !self.audio_tick.allocated())
+    if (self.stop_processing || !self.audio_tick.allocated())
     {
-      self.processing = false;
+      self.tick_clear();
       return clearBuffers(self, nframes, outputs);
     }
 
@@ -253,17 +221,17 @@ private:
 
     jack_time_t usecs = jack_get_time();
     ossia::audio_tick_state ts{float_input, float_output, (int)inputs, (int)outputs, nframes, usecs / 1e6};
-    proto->process_generic(*proto, ts);
     self.audio_tick(ts);
 
-    self.processing = false;
+    self.tick_end();
     return 0;
   }
 
   std::shared_ptr<jack_client> m_client{};
   std::vector<jack_port_t*> input_ports;
   std::vector<jack_port_t*> output_ports;
-  std::atomic_bool stopped{};
+
+  bool activated{};
 };
 }
 

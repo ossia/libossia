@@ -4,8 +4,9 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/oscquery/host_info.hpp>
+#include <ossia/detail/lockfree_queue.hpp>
 #include <atomic>
-#include <readerwriterqueue.h>
+
 namespace osc
 {
 template <typename T>
@@ -181,8 +182,8 @@ private:
   };
   using promises_map = locked_map<string_map<get_osc_promise>>;
 
-  moodycamel::ReaderWriterQueue<get_ws_promise> m_getWSPromises;
-  moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
+  ossia::spsc_queue<std::function<void()>> m_functionQueue;
   std::function<void()> m_commandCallback;
 
   std::thread m_wsThread;

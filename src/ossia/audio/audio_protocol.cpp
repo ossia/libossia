@@ -114,44 +114,85 @@ audio_engine::~audio_engine()
 {
 }
 
+void audio_engine::stop()
+{
+  int timeout = 5000;
+  req_stop++;
+  stop_processing = true;
+  while (ack_stop != req_stop && running() && timeout > 0)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    timeout -= 100;
+  }
+
+  std::atomic_thread_fence(std::memory_order_seq_cst);
+
+  if(timeout <= 0)
+    throw std::runtime_error("Audio thread not responding");
+}
+
+void audio_engine::start()
+{
+  stop_processing = false;
+  std::atomic_thread_fence(std::memory_order_seq_cst);
+}
+
+void audio_engine::gc()
+{
+  // try to make deallocations happen in the main thread as far as possible
+  fun_type t;
+  while(tick_gc.try_dequeue(t));
+}
+
 void audio_engine::set_tick(audio_engine::fun_type&& t)
 {
+  int timeout = 5000;
+
   tick_funlist.enqueue(std::move(t));
+  req_tick++;
+
+  while (ack_tick != req_tick && running() && timeout > 0)
+  {
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    timeout -= 100;
+  }
+
+  std::atomic_thread_fence(std::memory_order_seq_cst);
+
+  if(timeout <= 0)
+    throw std::runtime_error("Audio thread not responding");
 }
 
 void audio_engine::load_audio_tick()
 {
-  while(tick_funlist.try_dequeue(audio_tick))
+  fun_type tick;
+  while(tick_funlist.try_dequeue(tick))
   {
-
+    tick_gc.enqueue(std::move(audio_tick));
+    audio_tick = std::move(tick);
+    ack_tick++;
   }
 }
 
 audio_protocol::~audio_protocol()
 {
-  if (engine)
-  {
-    engine->stop();
-    engine->protocol = nullptr;
-  }
 }
 
 void audio_protocol::stop()
 {
-  if (engine)
-  {
-    engine->stop();
-  }
-
+  /*
   smallfun::function<void()> f;
   while (funlist.try_dequeue(f))
     f();
 
-  engine = nullptr;
+    */
 }
 
 void audio_protocol::setup_tree(int inputs, int outputs)
 {
+  if(inputs == int(audio_ins.size()) && outputs == int(audio_outs.size()))
+    return;
+
   auto& dev = get_device();
   auto& root = dev.get_root_node();
 
@@ -335,20 +376,21 @@ void audio_protocol::unregister_parameter(virtual_audio_parameter& p)
   });
 }
 
-void audio_protocol::process_generic(
-    audio_protocol& self, ossia::audio_tick_state state)
+void audio_protocol::setup_buffers(ossia::audio_tick_state state)
 {
   {
     smallfun::function<void()> f;
-    while (self.funlist.try_dequeue(f))
+    while (funlist.try_dequeue(f))
       f();
   }
+
+  setup_tree(state.n_in, state.n_out);
 
   //using idx_t = gsl::span<float>::index_type;
   const gsl::span<float>::size_type fc = state.frames;
 
   // Prepare virtual audio inputs
-  for (auto virt : self.virtaudio)
+  for (auto virt : virtaudio)
   {
     virt->set_buffer_size(state.frames);
   }
@@ -356,11 +398,11 @@ void audio_protocol::process_generic(
   // Prepare audio inputs
   for (int i = 0; i < state.n_in; i++)
   {
-    self.main_audio_in->audio[i] = {state.inputs[i], fc};
-    self.audio_ins[i]->audio[0] = {state.inputs[i], fc};
+    main_audio_in->audio[i] = {state.inputs[i], fc};
+    audio_ins[i]->audio[0] = {state.inputs[i], fc};
   }
 
-  for (auto mapped : self.in_mappings)
+  for (auto mapped : in_mappings)
   {
     mapped->audio.resize(mapped->mapping.size());
     for (std::size_t i = 0; i < mapped->mapping.size(); i++)
@@ -376,8 +418,8 @@ void audio_protocol::process_generic(
   // Prepare audio outputs
   for (int i = 0; i < state.n_out; i++)
   {
-    self.main_audio_out->audio[i] = {state.outputs[i], fc};
-    self.audio_outs[i]->audio[0] = {state.outputs[i], fc};
+    main_audio_out->audio[i] = {state.outputs[i], fc};
+    audio_outs[i]->audio[0] = {state.outputs[i], fc};
 
     for (int j = 0; j < (int)state.frames; j++)
     {
@@ -385,7 +427,7 @@ void audio_protocol::process_generic(
     }
   }
 
-  for (auto mapped : self.out_mappings)
+  for (auto mapped : out_mappings)
   {
     mapped->audio.resize(mapped->mapping.size());
     for (std::size_t i = 0; i < mapped->mapping.size(); i++)
@@ -431,7 +473,7 @@ audio_device::audio_device(
 #endif
   engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(
       default_protocol, name, default_in, default_out, ins, outs, rate, bs));
-  engine->reload(&protocol);
+
   m_bs = bs;
   m_sr = rate;
 }
