@@ -25,14 +25,15 @@ ZeroconfMinuitListener ossia_max::zeroconf_minuit_listener;
 // ossia-max library constructor
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
-    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"},
+    m_device{std::make_shared<ossia::net::generic_device>(
+        std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device")},
     m_log_sink{std::make_shared<max_msp_log_sink>()}
 {
   m_log_sink.get()->set_level(spdlog::level::err);
   ossia::context c{{m_log_sink}};
   common_symbols_init();
 
-  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
+  m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
   parameters.reserve(2048);
   remotes.reserve(1024);
@@ -57,7 +58,7 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+  m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
 
   for (auto x : devices.copy())
   {
@@ -217,7 +218,7 @@ void ossia_max::register_nodes(ossia_max*)
   inst.registering_nodes = false;
 
   // push default value for all devices
-  std::vector<ossia::net::generic_device*> dev_list;
+  std::vector<std::shared_ptr<ossia::net::generic_device>> dev_list;
   dev_list.reserve(inst.devices.size() + 1);
   for(auto dev : inst.devices.reference())
   {
@@ -225,7 +226,8 @@ void ossia_max::register_nodes(ossia_max*)
   }
   dev_list.push_back(inst.get_default_device());
 
-  ossia::sort(dev_list, [&](ossia::net::generic_device* a, ossia::net::generic_device* b)
+  ossia::sort(dev_list, [&](std::shared_ptr<ossia::net::generic_device> a,
+                            std::shared_ptr<ossia::net::generic_device> b)
   {
     auto prio_a = ossia::net::get_priority(a->get_root_node());
     auto prio_b = ossia::net::get_priority(b->get_root_node());

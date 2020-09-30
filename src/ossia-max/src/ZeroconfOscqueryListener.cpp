@@ -12,10 +12,9 @@ namespace ossia
 namespace max
 {
 std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfOscqueryListener::m_devices;
-std::vector<std::string>  ZeroconfOscqueryListener::m_zombie_devices;
+std::vector<std::pair<ZeroconfOscqueryListener::ConnectionEvent, std::string>> ZeroconfOscqueryListener::m_connection_events;
 std::mutex ZeroconfOscqueryListener::m_mutex;
 
-// TODO add support for Minuit discovery
   ZeroconfOscqueryListener::ZeroconfOscqueryListener()
     : service {"_oscjson._tcp"}
   {
@@ -35,7 +34,54 @@ std::mutex ZeroconfOscqueryListener::m_mutex;
   void ZeroconfOscqueryListener::instanceAdded(const std::string& instance)
   {
     std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
+    m_connection_events.push_back({ZeroconfOscqueryListener::ConnectionEvent::ADDED, instance});
+  }
 
+  void ZeroconfOscqueryListener::instanceRemoved(const std::string& instance)
+  {
+    std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
+    m_connection_events.push_back({ZeroconfOscqueryListener::ConnectionEvent::REMOVED, instance});
+  }
+
+  std::shared_ptr<ossia::net::generic_device> ZeroconfOscqueryListener::find_device(
+      const std::string& instance)
+  {
+    std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
+
+    auto it = ossia::find_if(m_devices, [&](const auto& d) {
+      return d->get_name() == instance;
+    });
+
+    if (it != m_devices.end())
+    {
+      return *it;
+    }
+    return nullptr;
+  }
+
+  void ZeroconfOscqueryListener::browse()
+  {
+    m_mutex.lock();
+    for(const auto& event : m_connection_events)
+    {
+      switch(event.first)
+      {
+        case ZeroconfOscqueryListener::ConnectionEvent::ADDED:
+          addInstance(event.second);
+          break;
+        case  ZeroconfOscqueryListener::ConnectionEvent::REMOVED:
+          removeInstance(event.second);
+          break;
+      }
+    }
+    m_connection_events.clear();
+    m_mutex.unlock();
+
+    service.browse(0);
+  }
+
+  void ZeroconfOscqueryListener::addInstance(const std::string& instance)
+  {
     for (const auto& dev : m_devices)
     {
       if (dev->get_name() == instance)
@@ -85,51 +131,20 @@ std::mutex ZeroconfOscqueryListener::m_mutex;
     }
   }
 
-  void ZeroconfOscqueryListener::instanceRemoved(const std::string& instance)
+  void ZeroconfOscqueryListener::removeInstance(const std::string& name)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
-
-    m_zombie_devices.push_back(instance);
-  }
-
-  ossia::net::generic_device* ZeroconfOscqueryListener::find_device(
-      const std::string& instance)
-  {
-    std::lock_guard<std::mutex> lock(ZeroconfOscqueryListener::m_mutex);
-
-    auto it = ossia::find_if(m_devices, [&](const auto& d) {
-      return d->get_name() == instance;
-    });
-
-    if (it != m_devices.end())
+    for (auto client : ossia_max::instance().clients.reference())
     {
-      return it->get();
-    }
-    return nullptr;
-  }
-
-  void ZeroconfOscqueryListener::browse()
-  {
-    m_mutex.lock();
-    for(const auto& name : m_zombie_devices)
-    {
-      for (auto client : ossia_max::instance().clients.reference())
+      if(client->is_zeroconf() && client->m_device && client->m_device->get_name() == name)
       {
-        if(client->is_zeroconf() && client->m_device && client->m_device->get_name() == name)
-        {
-          ossia::max::client::client::disconnect(client);
-          clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
-        }
+        ossia::max::client::client::disconnect(client);
+        clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
       }
-
-      ossia::remove_erase_if(m_devices, [&](const auto& d) {
-          return d->get_name() == name;
-      });
     }
-    m_zombie_devices.clear();
-    m_mutex.unlock();
 
-    service.browse(0);
+    ossia::remove_erase_if(m_devices, [&](const auto& d) {
+      return d->get_name() == name;
+    });
   }
 
 }

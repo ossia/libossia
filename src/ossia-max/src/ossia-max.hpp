@@ -86,9 +86,9 @@ class ossia_max
 {
 public:
   static ossia_max& instance();
-  static ossia::net::generic_device* get_default_device()
+  static std::shared_ptr<ossia::net::generic_device> get_default_device()
   {
-    return &instance().m_device;
+    return instance().m_device;
   }
 
   static void register_nodes(ossia_max* x);
@@ -194,7 +194,7 @@ private:
   ~ossia_max();
 
   ossia::net::local_protocol* m_localProtocol{};
-  ossia::net::generic_device m_device;
+  std::shared_ptr<ossia::net::generic_device> m_device;
   string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
   std::shared_ptr<max_msp_log_sink> m_log_sink;
 };
