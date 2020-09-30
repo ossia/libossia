@@ -256,11 +256,11 @@ void client::connect(client* x)
 
       try
       {
-        x->m_device = new ossia::net::generic_device{
+        x->m_device = std::make_shared<ossia::net::generic_device>(
             std::make_unique<ossia::net::minuit_protocol>(
               minuit_settings.name, minuit_settings.host,
               minuit_settings.remote_port, minuit_settings.local_port),
-            x->m_name->s_name};
+            x->m_name->s_name);
       }
       catch (const std::exception& e)
       {
@@ -289,8 +289,8 @@ void client::connect(client* x)
       {
         x->m_oscq_protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
         x->m_oscq_protocol->set_zombie_on_remove(false);
-        x->m_device = new ossia::net::generic_device{
-            std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name};
+        x->m_device = std::make_shared<ossia::net::generic_device>(
+            std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name);
 
         clock_set(x->m_poll_clock, 1);
       }
@@ -325,11 +325,11 @@ void client::connect(client* x)
 
       try
       {
-        x->m_device = new ossia::net::generic_device{
+        x->m_device = std::make_shared<ossia::net::generic_device>(
             std::make_unique<ossia::net::osc_protocol>(
               osc_settings.host, osc_settings.remote_port,
               osc_settings.local_port, osc_settings.name),
-            x->m_name->s_name};
+            x->m_name->s_name);
       }
       catch (const std::exception& e)
       {
@@ -344,14 +344,7 @@ void client::connect(client* x)
       x->m_device = ZeroconfOscqueryListener::find_device(name);
       if(!x->m_device)
       {
-        if(auto data = ZeroconfMinuitListener::find_device(name))
-        {
-          x->m_device = new ossia::net::generic_device(
-                          std::make_unique<ossia::net::minuit_protocol>(
-                            data->name, data->host,
-                            data->remote_port, (rand() + 1024)%65536),
-                            data->name);
-        }
+        x->m_device = ZeroconfMinuitListener::find_device(name);
       }
       else
       {
@@ -456,8 +449,6 @@ void client::disconnect(client* x)
     x->m_matchers.clear();
     x->disconnect_slots();
     x->unregister_children();
-    if(!x->is_zeroconf())
-      delete x->m_device;
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
   }

@@ -128,8 +128,8 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
 
-    x->m_device = new ossia::net::generic_device{std::move(local_proto_ptr),
-                                                 x->m_name->s_name};
+    x->m_device = std::make_shared<ossia::net::generic_device>(std::move(local_proto_ptr),
+                                                               x->m_name->s_name);
     x->connect_slots();
 
     auto& map = ossia_max::instance().root_patcher;
@@ -181,7 +181,6 @@ void device::destroy(device* x)
 
   x->disconnect_slots();
 
-  delete x->m_device;
   x->m_device = nullptr;
 
   outlet_delete(x->m_dumpout);

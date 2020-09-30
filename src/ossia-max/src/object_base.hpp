@@ -52,7 +52,7 @@ public:
 
   void output_value(ossia::value v);
   ossia::net::node_base* get_node() const { return node; }
-  object_base* get_parent() const { return owner; }
+  object_base* get_parent() const { return owner; }   // return the max object that holds this
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
   void set_parent_addr();
 
@@ -121,7 +121,7 @@ public:
 
   float m_rate{10};
 
-  ossia::net::generic_device* m_device{};
+  std::shared_ptr<ossia::net::generic_device> m_device{};
   // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<std::shared_ptr<t_matcher>> m_matchers{};
@@ -175,6 +175,7 @@ public:
   bool m_loadbanged{}; // true if object received a loadbang
 
   std::mutex m_bind_mutex;
+  // TODO check where this is filled
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
