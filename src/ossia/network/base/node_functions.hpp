@@ -175,7 +175,7 @@ OSSIA_EXPORT struct fuzzysearch_result
 };
 
 OSSIA_EXPORT
-void fuzzysearch(ossia::net::node_base* node,
+void fuzzysearch(std::vector<ossia::net::node_base*> node,
                  const std::vector<std::string>& patterns,
                  std::vector<fuzzysearch_result>& results);
 
