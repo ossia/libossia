@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   std::vector<ossia::net::fuzzysearch_result> matches;
 
   std::cout << "Search for 'frequency'" << std::endl;
-  ossia::net::fuzzysearch(&device.get_root_node(), {"frequency"}, matches);
+  ossia::net::fuzzysearch({&device.get_root_node()}, {"frequency"}, matches);
 
   for(const auto& m : matches)
   {
@@ -40,7 +40,7 @@ int main(int argc, char** argv)
 
   std::cout << "Second round, search for 'band' and 'gain'" << std::endl;
 
-  ossia::net::fuzzysearch(&device.get_root_node(), {"band", "gain"}, matches);
+  ossia::net::fuzzysearch({&device.get_root_node()}, {"band", "gain"}, matches);
 
   for(const auto& m : matches)
   {

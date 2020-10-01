@@ -644,34 +644,38 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
 
 /**
  * @brief fuzzysearch: search for nodes that match the pattern string
- * @param node: root node from where to start
+ * @param nodes: vector of nodes from where to start
  * @param pattern: strings to search
  * @return a vector of fuzzysearch_result sorted in descending score order
  */
-void fuzzysearch(ossia::net::node_base* node,
+void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
                  const std::vector<std::string>& patterns,
                  std::vector<fuzzysearch_result>& results)
 {
-  auto children = list_all_children(node);
-
   results.clear();
-  results.reserve(children.size());
+
+  for(const auto& node : nodes)
+  {
+    auto children = list_all_children(node);
+
+    results.reserve(results.size() + children.size());
 
 #pragma omp parallel for
-  for(const auto& n : children)
-  {
-    std::string oscaddress = ossia::net::osc_parameter_string_with_device(*n);
-    double percent = 1.0;
-    for(const auto& pattern : patterns)
+    for(const auto& n : children)
     {
-      percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
+      std::string oscaddress = ossia::net::osc_parameter_string_with_device(*n);
+      double percent = 1.0;
+      for(const auto& pattern : patterns)
+      {
+        percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
+      }
+      results.push_back({percent * 100., oscaddress, n});
     }
-    results.push_back({percent * 100., oscaddress, n});
-  }
 
-  ossia::sort(results, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
-    return left.score > right.score;
-  });
+    ossia::sort(results, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
+      return left.score > right.score;
+    });
+  }
 }
 
 std::vector<parameter_base*> find_or_create_parameter(
