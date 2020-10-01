@@ -16,6 +16,7 @@ class ZeroconfOscqueryListener final : servus::Listener
     ~ZeroconfOscqueryListener() override;
 
     static std::shared_ptr<ossia::net::generic_device> find_device(const std::string& name);
+    static std::vector<std::shared_ptr<ossia::net::generic_device>> get_devices() { return s_devices; }
 
     void browse();
 
@@ -33,11 +34,11 @@ class ZeroconfOscqueryListener final : servus::Listener
     void addInstance(const std::string& instance);
     void removeInstance(const std::string& instance);
 
-    static std::vector<std::shared_ptr<ossia::net::generic_device>> m_devices;
-    static std::vector<std::pair<ConnectionEvent, std::string>> m_connection_events;
+    static std::vector<std::shared_ptr<ossia::net::generic_device>> s_devices;
+    static std::vector<std::pair<ConnectionEvent, std::string>> s_connection_events;
 
     servus::Servus service;
-    static std::mutex m_mutex;
+    static std::mutex s_mutex;
 };
 
 } // namespace pd

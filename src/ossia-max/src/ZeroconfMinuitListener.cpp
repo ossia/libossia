@@ -14,10 +14,10 @@ namespace ossia
 {
 namespace max
 {
-std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::m_devices;
+std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::s_devices;
 
-std::mutex ZeroconfMinuitListener::m_mutex;
-std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> ZeroconfMinuitListener::m_connection_events;
+std::mutex ZeroconfMinuitListener::s_mutex;
+std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> ZeroconfMinuitListener::s_connection_events;
 
 // TODO add support for Minuit discovery
   ZeroconfMinuitListener::ZeroconfMinuitListener()
@@ -38,19 +38,19 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
 
   void ZeroconfMinuitListener::instanceAdded(const std::string& instance)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
-    m_connection_events.push_back({ZeroconfMinuitListener::ADDED, instance});
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+    s_connection_events.push_back({ZeroconfMinuitListener::ADDED, instance});
   }
 
   void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
-    m_connection_events.push_back({ZeroconfMinuitListener::REMOVED, instance});
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+    s_connection_events.push_back({ZeroconfMinuitListener::REMOVED, instance});
   }
 
   void ZeroconfMinuitListener::addDevice(const std::string& instance)
   {
-    for (const auto& dev : m_devices)
+    for (const auto& dev : s_devices)
     {
       if (dev->get_name() == instance)
         return;
@@ -97,7 +97,7 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
               boost::lexical_cast<int>(port), (rand() % 64512) + 1024),
           instance);
 
-      m_devices.push_back(std::move(clt));
+      s_devices.push_back(std::move(clt));
     }
     catch (...)
     {
@@ -109,17 +109,17 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
   std::shared_ptr<ossia::net::generic_device> ZeroconfMinuitListener::find_device(
       const std::string& instance)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
     {
-      auto it = ossia::find_if(m_devices, [&](const auto& d) {
+      auto it = ossia::find_if(s_devices, [&](const auto& d) {
         return d->get_name() == instance + " Minuit server";
       });
 
-      if (it != m_devices.end())
+      if (it != s_devices.end())
       {
         return *it;
       }
-      m_mutex.unlock();
+      s_mutex.unlock();
     }
     return {};
 
@@ -127,9 +127,9 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
 
   void ZeroconfMinuitListener::browse()
   {
-    ZeroconfMinuitListener::m_mutex.lock();
+    ZeroconfMinuitListener::s_mutex.lock();
 
-    for(const auto& s : m_connection_events)
+    for(const auto& s : s_connection_events)
     {
       switch(s.first)
       {
@@ -139,12 +139,12 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
         case ZeroconfMinuitListener::ConnectionEvent::REMOVED:
           break;
 
-          std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
-          auto it = ossia::find_if(m_devices, [&](const auto& d) {
+          std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+          auto it = ossia::find_if(s_devices, [&](const auto& d) {
             return d->get_name() == s.second;
           });
 
-          if (it != m_devices.end())
+          if (it != s_devices.end())
           {
             for (auto client : ossia_max::instance().clients.reference())
             {
@@ -157,9 +157,9 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
           }
       }
     }
-    m_connection_events.clear();
+    s_connection_events.clear();
 
-    ZeroconfMinuitListener::m_mutex.unlock();
+    ZeroconfMinuitListener::s_mutex.unlock();
 
     service.browse(0);
   }
