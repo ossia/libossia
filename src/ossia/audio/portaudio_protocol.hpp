@@ -13,7 +13,7 @@ class portaudio_engine final : public audio_engine
 public:
   portaudio_engine(
       std::string name, std::string card_in, std::string card_out, int inputs,
-      int outputs, int rate, int bs)
+      int outputs, int rate, int bs, PaHostApiTypeId hostApi)
   {
     if (Pa_Initialize() != paNoError)
       throw std::runtime_error("Audio error");
@@ -21,17 +21,28 @@ public:
     int card_in_idx = paNoDevice;
     int card_out_idx = paNoDevice;
 
+    auto hostApiIndex = Pa_HostApiTypeIdToHostApiIndex(hostApi);
+
     for (int i = 0; i < Pa_GetDeviceCount(); i++)
     {
-      auto raw_name = Pa_GetDeviceInfo(i)->name;
-      if (raw_name == card_in)
+      auto info = Pa_GetDeviceInfo(i);
+      if(info->hostApi != hostApiIndex && hostApiIndex != paInDevelopment)
+        continue;
+
+      auto raw_name = info->name;
+      //std::cerr << " - device " << i << " has name: " << raw_name << "\n";
+      if (raw_name == card_in && info->maxInputChannels > 0)
       {
+        //std::cerr << " its the input" << inputs << " " << info->maxInputChannels << "\n";
         card_in_idx = i;
       }
-      if (raw_name == card_out)
+      if (raw_name == card_out && info->maxOutputChannels > 0)
       {
+        //std::cerr << " its the output" << outputs << " " << info->maxOutputChannels << "\n";
         card_out_idx = i;
       }
+      if(card_in_idx != paNoDevice && card_out_idx != paNoDevice)
+        break;
     }
 
     auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
@@ -76,7 +87,16 @@ public:
     PaStreamParameters* actualOutput{};
     if (card_out_idx != paNoDevice && outputs > 0)
       actualOutput = &outputParameters;
-
+/*
+    std::cerr << "input: \n"
+         << bool(actualInput) << " "
+        << card_in_idx<< " "
+        << inputs << "\n";
+    std::cerr << "output: \n"
+              << bool(actualOutput) << " "
+        << card_out_idx<< " "
+        << outputs << "\n";
+        */
     PaStream* stream;
     auto ec = Pa_OpenStream(
         &stream, actualInput, actualOutput, rate,
@@ -160,6 +180,7 @@ private:
       const PaStreamCallbackTimeInfo* timeInfo,
       PaStreamCallbackFlags statusFlags, void* userData)
   {
+    // auto t0 = std::chrono::steady_clock::now();
     auto& self = *static_cast<portaudio_engine*>(userData);
     self.tick_start();
     auto clt = self.m_stream.load();
@@ -178,6 +199,9 @@ private:
 
     self.tick_end();
 
+    // auto t1 = std::chrono::steady_clock::now();
+    //
+    // std::cerr << nframes << " => " << std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() << std::endl;
     return paContinue;
   }
 
