@@ -1,71 +1,15 @@
 #pragma once
-#include <ossia/audio/audio_parameter.hpp>
 #include <ossia/audio/audio_tick.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <ossia/detail/lockfree_queue.hpp>
-#include <smallfun.hpp>
-
-#include <ossia-config.hpp>
-
 namespace ossia
 {
-class audio_protocol;
-
-class OSSIA_EXPORT audio_engine
-{
-public:
-  audio_engine();
-  virtual ~audio_engine();
-
-  virtual bool running() const = 0;
-  void stop();
-  void start();
-
-  void gc();
-
-  using fun_type = smallfun::function<void(ossia::audio_tick_state), 256>;
-  void set_tick(fun_type&& t);
-  void load_audio_tick();
-
-  // From main thread to audio thread
-  ossia::spsc_queue<fun_type> tick_funlist;
-
-  // From audio thread to main thread
-  ossia::spsc_queue<fun_type> tick_gc;
-
-  fun_type audio_tick;
-
-  std::atomic_int req_stop{};
-  std::atomic_int ack_stop{};
-  std::atomic_int req_tick{};
-  std::atomic_int ack_tick{};
-  std::atomic_bool stop_processing{};
-  std::atomic_bool processing{};
-
-  int effective_sample_rate{};
-  int effective_buffer_size{};
-  int effective_inputs{};
-  int effective_outputs{};
-
-  void tick_start()
-  {
-    processing = true;
-    load_audio_tick();
-  }
-  void tick_clear()
-  {
-    processing = false;
-    ack_stop = req_stop.load();
-  }
-  void tick_end()
-  {
-    processing = false;
-  }
-};
-
-class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
+class audio_parameter;
+class virtual_audio_parameter;
+class mapped_audio_parameter;
+class OSSIA_EXPORT audio_protocol final
+    : public ossia::net::protocol_base
 {
 public:
   audio_protocol();
@@ -77,8 +21,7 @@ public:
 
   bool pull(ossia::net::parameter_base&) override;
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
-  bool
-  push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw(const ossia::net::full_parameter_data&) override;
   bool push_raw_bundle(
       const std::vector<ossia::net::full_parameter_data>&) override;
@@ -108,29 +51,4 @@ protected:
   ossia::net::device_base* m_dev{};
 };
 
-class OSSIA_EXPORT audio_device
-{
-public:
-  audio_device(std::string name = "audio", int bufferSize = 512, int sampleRate = 44100, int inputs = 2, int outputs = 2);
-  audio_device(std::unique_ptr<audio_protocol>, std::string name = "audio", int bufferSize = 512, int sampleRate = 44100, int inputs = 2, int outputs = 2);
-  ~audio_device();
-
-  ossia::audio_parameter& get_main_in();
-  ossia::audio_parameter& get_main_out();
-
-  int get_buffer_size() const;
-  int get_sample_rate() const;
-
-  std::unique_ptr<ossia::audio_engine> engine;
-  ossia::net::generic_device device;
-  ossia::audio_protocol& protocol;
-
-private:
-  int m_bs{}, m_sr{};
-};
-
-OSSIA_EXPORT
-ossia::audio_engine* make_audio_engine(
-    std::string proto, std::string name, std::string req_in,
-    std::string req_out, int& inputs, int& outputs, int& rate, int& bs);
 }

@@ -552,6 +552,8 @@ set(OSSIA_QT_SCORE_SRCS
 
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_tick.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
@@ -633,6 +635,8 @@ set(OSSIA_DATAFLOW_HEADERS
 set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"

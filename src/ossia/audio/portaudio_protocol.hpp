@@ -1,6 +1,6 @@
 #pragma once
 #if __has_include(<portaudio.h>)
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
 
 #include <portaudio.h>
 
@@ -185,7 +185,7 @@ private:
     self.tick_start();
     auto clt = self.m_stream.load();
 
-    if (self.stop_processing || !self.audio_tick.allocated() || !clt)
+    if (self.stop_processing || !clt)
     {
       self.tick_clear();
       return clearBuffers(((float**)output), nframes, self.effective_outputs);

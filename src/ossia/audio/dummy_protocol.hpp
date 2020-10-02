@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
+#include <thread>
 namespace ossia
 {
 class dummy_engine final : public audio_engine
@@ -46,7 +47,7 @@ public:
         std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         end = clk::now();
         tick_start();
-        if (stop_processing || !audio_tick.allocated())
+        if (stop_processing)
         {
           tick_clear();
           continue;

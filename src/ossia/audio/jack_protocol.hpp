@@ -1,7 +1,7 @@
 #pragma once
 #if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
 
 #include <weak_libjack.h>
 
@@ -200,7 +200,7 @@ private:
 
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
-    if (self.stop_processing || !self.audio_tick.allocated())
+    if (self.stop_processing)
     {
       self.tick_clear();
       return clearBuffers(self, nframes, outputs);

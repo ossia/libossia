@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if __has_include(<SDL/SDL_audio.h>) && !defined(OSSIA_PROTOCOL_JOYSTICK)
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
@@ -60,7 +60,7 @@ private:
     auto samples = reinterpret_cast<int16_t*>(data);
 
     const auto n_samples = nframes / self.outputs;
-    if (self.stop_processing || !self.audio_tick.allocated())
+    if (self.stop_processing)
     {
       self.tick_clear();
       for (int i = 0; i < n_samples; i++)
