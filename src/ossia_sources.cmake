@@ -553,6 +553,7 @@ set(OSSIA_QT_SCORE_SRCS
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_tick.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/pulseaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"

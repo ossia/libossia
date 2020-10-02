@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/audio/audio_parameter.hpp>
+#include <ossia/audio/audio_tick.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
@@ -11,16 +12,6 @@
 namespace ossia
 {
 class audio_protocol;
-
-struct audio_tick_state
-{
-  float* const* inputs{};
-  float** outputs{};
-  int32_t n_in{};
-  int32_t n_out{};
-  uint64_t frames{};
-  double seconds{};
-};
 
 class OSSIA_EXPORT audio_engine
 {
