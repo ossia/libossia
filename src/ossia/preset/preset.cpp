@@ -15,6 +15,7 @@
 
 #include <boost/algorithm/string.hpp>
 
+#include <ossia/detail/json.hpp>
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/filewritestream.h>

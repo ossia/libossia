@@ -16,7 +16,7 @@
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 
 #include <oscpack/osc/OscTypes.h>
-#include <rapidjson/document.h>
+#include <ossia/detail/json.hpp>
 
 namespace ossia
 {
