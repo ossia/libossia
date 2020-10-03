@@ -72,18 +72,35 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
     auto oscq_devices = ZeroconfOscqueryListener::get_devices();
     auto minuit_devices = ZeroconfMinuitListener::get_devices();
 
-    x->m_roots.reserve(minuit_devices.size() + oscq_devices.size());
     for(const auto& dev: oscq_devices)
     {
-      x->m_roots.push_back(dev.get());
+      x->m_roots.insert(dev.get());
     }
     for(const auto& dev: minuit_devices)
     {
-      x->m_roots.push_back(dev.get());
+      x->m_roots.insert(dev.get());
+    }
+
+    // then all devices and client that Max already knows
+    for(const auto& dev : ossia_max::instance().devices.reference())
+    {
+      x->m_roots.insert(&dev->m_device->get_root_node());
+    }
+    for(const auto& clt : ossia_max::instance().clients.reference())
+    {
+      x->m_roots.insert(&clt->m_device->get_root_node());
     }
   }
+  else if(x->m_scope == s_sym_absolute)
+  {
 
-  ossia::net::fuzzysearch(x->m_roots, patterns, x->m_matches);
+  }
+  else // relative
+  {
+
+  }
+
+  ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, x->m_matches);
 
   for(const auto& m : x->m_matches)
   {

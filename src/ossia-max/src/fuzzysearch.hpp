@@ -19,7 +19,7 @@ struct fuzzysearch
 {
   t_object m_object;
   t_symbol* m_scope{};
-  std::vector<ossia::net::node_base*> m_roots{};
+  std::set<ossia::net::node_base*> m_roots{};
   void* m_outlet{};
   std::vector<ossia::net::fuzzysearch_result> m_matches{};
 
