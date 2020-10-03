@@ -8,6 +8,10 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_fuzzysearch class methods
 
+static t_symbol* s_sym_global = gensym("Global");
+static t_symbol* s_sym_absolute = gensym("Absolute");
+static t_symbol* s_sym_relative = gensym("Relative");
+
 extern "C" void ossia_fuzzysearch_setup()
 {
   auto& ossia_library = ossia_max::instance();
@@ -28,13 +32,17 @@ extern "C" void ossia_fuzzysearch_setup()
       c, (method)fuzzysearch::notify,
       "notify", A_CANT, 0);
 
+  CLASS_ATTR_SYM(c, "scope", 0, fuzzysearch, m_scope);
+  CLASS_ATTR_LABEL(c, "scope", 0, "Search scope");
+  CLASS_ATTR_ENUMINDEX3(c, "scope", 0, "Global", "Absolute", "Relative");
+
   class_register(CLASS_BOX, ossia_library.ossia_fuzzysearch_class);
 }
 
 extern "C" void* ossia_fuzzysearch_new(t_symbol* s, long argc, t_atom* argv)
 {
   auto x = make_ossia<fuzzysearch>(argc, argv);
-  x->m_root = &ossia_max::get_default_device()->get_root_node();
+  x->m_scope = s_sym_global;
   x->m_outlet = outlet_new(x, nullptr);
   return x;
 }
@@ -56,7 +64,26 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   if(patterns.empty())
     return;
 
-  ossia::net::fuzzysearch(x->m_root, patterns, x->m_matches);
+  if(x->m_scope == s_sym_global)
+  {
+    // gather all known devices
+    // first all ZeroConf devices
+    x->m_roots.clear();
+    auto oscq_devices = ZeroconfOscqueryListener::get_devices();
+    auto minuit_devices = ZeroconfMinuitListener::get_devices();
+
+    x->m_roots.reserve(minuit_devices.size() + oscq_devices.size());
+    for(const auto& dev: oscq_devices)
+    {
+      x->m_roots.push_back(dev.get());
+    }
+    for(const auto& dev: minuit_devices)
+    {
+      x->m_roots.push_back(dev.get());
+    }
+  }
+
+  ossia::net::fuzzysearch(x->m_roots, patterns, x->m_matches);
 
   for(const auto& m : x->m_matches)
   {

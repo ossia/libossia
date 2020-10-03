@@ -18,7 +18,8 @@ namespace max
 struct fuzzysearch
 {
   t_object m_object;
-  ossia::net::node_base* m_root{};
+  t_symbol* m_scope{};
+  std::vector<ossia::net::node_base*> m_roots{};
   void* m_outlet{};
   std::vector<ossia::net::fuzzysearch_result> m_matches{};
 
@@ -29,8 +30,6 @@ struct fuzzysearch
   static t_max_err notify(fuzzysearch *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
 
   static void assist(fuzzysearch* x, void* b, long m, long a, char* s);
-
-
 };
 } // max namespace
 } // ossia namespace
