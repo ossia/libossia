@@ -11,7 +11,11 @@ if(APPLE AND EXISTS /usr/local/opt/qt5)
   list(APPEND CMAKE_PREFIX_PATH "/usr/local/opt/qt5")
 endif()
 
-cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
+  cmake_policy(VERSION 3.18)
+endif()
+
 
 project(ossia C CXX)
 
