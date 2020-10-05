@@ -105,7 +105,7 @@ stages:
           submodules: true
 
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build
+            sudo apt install -qq -y build-essential g++ ninja-build libavahi-client-dev
           displayName: Dependencies
 
         - bash: |
@@ -191,7 +191,7 @@ stages:
           submodules: true
 
         - bash: |
-            sudo apt install -qq -y build-essential g++ ninja-build openjdk-8-jdk-headless
+            sudo apt install -qq -y build-essential g++ ninja-build openjdk-8-jdk-headless libavahi-client-dev
           displayName: Dependencies
 
         - bash: |
