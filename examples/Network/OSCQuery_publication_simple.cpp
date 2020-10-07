@@ -13,7 +13,7 @@ int main()
   std::vector<parameter_base*> my_params;
   for(int i = 0; i < 10; i++)
   {
-    auto& node = find_or_create_node(device, "/test/foo." + std::to_string(i));
+    auto& node = find_or_create_node(device, "/tes t/ fo o." + std::to_string(i));
     auto param = node.create_parameter(ossia::val_type::FLOAT);
     param->push_value(0.1 + 0.01 * i);
 

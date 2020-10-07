@@ -46,7 +46,7 @@ parse_http_methods_encoded(ossia::string_view str)
 //! url_decode taken from boost
 // Copyright (c) 2003-2015 Christopher M. Kohlhoff (chris at kohlhoff dot com)
 // Distributed under the Boost Software License, Version 1.0.
-inline bool url_decode(const std::string& in, std::string& out)
+inline bool url_decode(std::string_view in, std::string& out)
 {
   out.clear();
   out.reserve(in.size());
@@ -60,7 +60,7 @@ inline bool url_decode(const std::string& in, std::string& out)
         if (i + 3 <= N)
         {
           int value = 0;
-          std::istringstream is(in.substr(i + 1, 2));
+          std::istringstream is(std::string(in.substr(i + 1, 2)));
           if (is >> std::hex >> value)
           {
             out += static_cast<char>(value);
