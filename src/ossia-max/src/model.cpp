@@ -143,10 +143,7 @@ bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matcher
 
 bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  // we should unregister here because we may have add a node between the
-  // registered node and the parameter
-  if(!ossia_max::instance().registering_nodes)
-    unregister();
+  unregister();
 
   ossia::string_view name(m_name->s_name);
 

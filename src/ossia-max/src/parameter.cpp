@@ -182,10 +182,7 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
 
 bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  if(!ossia_max::instance().registering_nodes)
-    unregister(); // we should unregister here because we may have add a node
-                // between the registered node and the parameter
-
+  unregister();
 
   for (auto& m : matchers)
   {
