@@ -8,6 +8,7 @@
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/sinks/null_sink.h>
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif
@@ -82,10 +83,15 @@ spdlog::logger& logger() noexcept
 }
 
 std::shared_ptr<spdlog::logger> logger_ptr() noexcept
+try
 {
   if (auto logger = spdlog::get("ossia"))
     return logger;
   else
     return spdlog::stderr_logger_mt("ossia");
+}
+catch(...)
+{
+  return spdlog::null_logger_mt("ossia");
 }
 }

@@ -14,7 +14,7 @@ case "$TRAVIS_OS_NAME" in
       docker pull iscore/iscore-rpi-sdk:latest
       set -e
     else
-      wget -nv https://cmake.org/files/v3.18/cmake-3.18.1-Linux-x86_64.tar.gz -O cmake-linux.tgz &
+      wget -nv https://cmake.org/files/v3.18/cmake-3.18.3-Linux-x86_64.tar.gz -O cmake-linux.tgz &
 
       echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-10 main' | sudo tee /etc/apt/sources.list.d/llvm.list
       sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
@@ -26,7 +26,9 @@ case "$TRAVIS_OS_NAME" in
           clang-10 lld-10 \
           qt515base qt515declarative qt515svg qt515quickcontrols2 qt515websockets qt515serialport \
           libasound2-dev portaudio19-dev \
-          mesa-common-dev libgl1-mesa-dev
+          mesa-common-dev libgl1-mesa-dev \
+          libbluetooth-dev \
+          libavahi-client-dev
 
       wait wget || true
 

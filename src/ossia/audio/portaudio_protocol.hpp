@@ -1,6 +1,6 @@
 #pragma once
 #if __has_include(<portaudio.h>)
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
 
 #include <portaudio.h>
 
@@ -11,10 +11,9 @@ namespace ossia
 class portaudio_engine final : public audio_engine
 {
 public:
-  int m_ins{}, m_outs{};
   portaudio_engine(
       std::string name, std::string card_in, std::string card_out, int inputs,
-      int outputs, int rate, int bs)
+      int outputs, int rate, int bs, PaHostApiTypeId hostApi)
   {
     if (Pa_Initialize() != paNoError)
       throw std::runtime_error("Audio error");
@@ -22,17 +21,28 @@ public:
     int card_in_idx = paNoDevice;
     int card_out_idx = paNoDevice;
 
+    auto hostApiIndex = Pa_HostApiTypeIdToHostApiIndex(hostApi);
+
     for (int i = 0; i < Pa_GetDeviceCount(); i++)
     {
-      auto raw_name = Pa_GetDeviceInfo(i)->name;
-      if (raw_name == card_in)
+      auto info = Pa_GetDeviceInfo(i);
+      if(info->hostApi != hostApiIndex && hostApiIndex != paInDevelopment)
+        continue;
+
+      auto raw_name = info->name;
+      //std::cerr << " - device " << i << " has name: " << raw_name << "\n";
+      if (raw_name == card_in && info->maxInputChannels > 0)
       {
+        //std::cerr << " its the input" << inputs << " " << info->maxInputChannels << "\n";
         card_in_idx = i;
       }
-      if (raw_name == card_out)
+      if (raw_name == card_out && info->maxOutputChannels > 0)
       {
+        //std::cerr << " its the output" << outputs << " " << info->maxOutputChannels << "\n";
         card_out_idx = i;
       }
+      if(card_in_idx != paNoDevice && card_out_idx != paNoDevice)
+        break;
     }
 
     auto devInInfo = Pa_GetDeviceInfo(card_in_idx);
@@ -57,9 +67,6 @@ public:
       outputs = std::min(outputs, devOutInfo->maxOutputChannels);
     }
 
-    m_ins = inputs;
-    m_outs = outputs;
-
     PaStreamParameters inputParameters;
     inputParameters.device = card_in_idx;
     inputParameters.channelCount = inputs;
@@ -80,7 +87,16 @@ public:
     PaStreamParameters* actualOutput{};
     if (card_out_idx != paNoDevice && outputs > 0)
       actualOutput = &outputParameters;
-    std::cerr << "=== stream start ===\n";
+/*
+    std::cerr << "input: \n"
+         << bool(actualInput) << " "
+        << card_in_idx<< " "
+        << inputs << "\n";
+    std::cerr << "output: \n"
+              << bool(actualOutput) << " "
+        << card_out_idx<< " "
+        << outputs << "\n";
+        */
     PaStream* stream;
     auto ec = Pa_OpenStream(
         &stream, actualInput, actualOutput, rate,
@@ -100,9 +116,11 @@ public:
       }
       else
       {
-          auto info = Pa_GetStreamInfo(stream);
-          this->effective_sample_rate = info->sampleRate;
-          this->effective_buffer_size = bs;
+        auto info = Pa_GetStreamInfo(stream);
+        this->effective_sample_rate = info->sampleRate;
+        this->effective_buffer_size = bs;
+        this->effective_inputs = actualInput ? actualInput->channelCount : 0;
+        this->effective_outputs = actualOutput ? actualOutput->channelCount : 0;
       }
     }
     else
@@ -128,8 +146,6 @@ public:
   ~portaudio_engine() override
   {
     stop();
-    if (auto p = protocol.load())
-      p->engine = nullptr;
 
     if (auto stream = m_stream.load())
     {
@@ -145,32 +161,6 @@ public:
     Pa_Terminate();
   }
 
-  void reload(ossia::audio_protocol* p) override
-  {
-    if (this->protocol)
-      this->protocol.load()->engine = nullptr;
-    stop();
-
-    this->protocol = p;
-    if (!p)
-      return;
-    auto& proto = *p;
-    proto.engine = this;
-
-    proto.setup_tree(m_ins, m_outs);
-
-    stop_processing = false;
-  }
-
-  void stop() override
-  {
-    stop_processing = true;
-    protocol = nullptr;
-
- set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
-    while (processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
 
 private:
   static int clearBuffers(float** float_output, unsigned long nframes, int outs)
@@ -182,7 +172,7 @@ private:
         chan[j] = 0.f;
     }
 
-    return 0;
+    return paContinue;
   }
 
   static int PortAudioCallback(
@@ -190,36 +180,28 @@ private:
       const PaStreamCallbackTimeInfo* timeInfo,
       PaStreamCallbackFlags statusFlags, void* userData)
   {
+    // auto t0 = std::chrono::steady_clock::now();
     auto& self = *static_cast<portaudio_engine*>(userData);
-    self.load_audio_tick();
-
-    if (self.stop_processing)
-    {
-      return clearBuffers(((float**)output), nframes, self.m_outs);
-    }
-
+    self.tick_start();
     auto clt = self.m_stream.load();
-    auto proto = self.protocol.load();
-    if (clt && proto)
+
+    if (self.stop_processing || !clt)
     {
-      self.processing = true;
-      auto float_input = ((float* const*)input);
-      auto float_output = ((float**)output);
-
-      proto->process_generic(
-          *proto, float_input, float_output, (int)self.m_ins, (int)self.m_outs,
-          nframes);
-
-      std::atomic_thread_fence(std::memory_order_seq_cst);
-
-      self.audio_tick(nframes, timeInfo->currentTime);
-
-      self.processing = false;
-    }
-    else {
-      return clearBuffers(((float**)output), nframes, self.m_outs);
+      self.tick_clear();
+      return clearBuffers(((float**)output), nframes, self.effective_outputs);
     }
 
+    auto float_input = ((float* const*)input);
+    auto float_output = ((float**)output);
+
+    ossia::audio_tick_state ts{float_input, float_output, self.effective_inputs, self.effective_outputs, nframes, timeInfo->currentTime};
+    self.audio_tick(ts);
+
+    self.tick_end();
+
+    // auto t1 = std::chrono::steady_clock::now();
+    //
+    // std::cerr << nframes << " => " << std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() << std::endl;
     return paContinue;
   }
 

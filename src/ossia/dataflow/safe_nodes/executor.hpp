@@ -7,7 +7,7 @@
 #include <ossia/dataflow/safe_nodes/tick_policies.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply_type.hpp>
-#include <readerwriterqueue.h>
+#include <ossia/detail/lockfree_queue.hpp>
 
 #include <bitset>
 namespace ossia{
@@ -135,7 +135,7 @@ public:
   controls_changed_list controls_changed;
 
   // used to communicate control changes from the ui
-  moodycamel::ReaderWriterQueue<controls_values_type> cqueue;
+  ossia::spsc_queue<controls_values_type> cqueue;
 
   // holds the std::tuple<timed_vec<float>, ...>
   control_tuple_t control_tuple;
@@ -150,7 +150,7 @@ public:
 
   control_outs_values_type control_outs;
   control_outs_changed_list control_outs_changed;
-  moodycamel::ReaderWriterQueue<control_outs_values_type> control_outs_queue;
+  ossia::spsc_queue<control_outs_values_type> control_outs_queue;
   control_out_tuple_t control_outs_tuple;
 
   std::array<ossia::audio_inlet, info::audio_in_count> audio_in_ports;
@@ -385,7 +385,7 @@ public:
 
       if(ok)
       {
-        this->control_outs_queue.emplace(this->control_outs);
+        this->control_outs_queue.enqueue(this->control_outs);
       }
     }
   }

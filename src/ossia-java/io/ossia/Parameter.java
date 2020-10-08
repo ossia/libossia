@@ -6,6 +6,9 @@ import com.sun.jna.ptr.ByReference;
 import com.sun.jna.ptr.PointerByReference;
 import java.lang.Object;
 import java.lang.Class;
+import java.util.Optional;
+import java.util.OptionalInt;
+import java.util.OptionalDouble;
 
 public class Parameter
 {
@@ -60,12 +63,16 @@ public class Parameter
   }
 
 
+  public void push(Value v)
+  { Ossia.INSTANCE.ossia_parameter_push_value(impl, v.impl); }
   public void push_impulse()
   { Ossia.INSTANCE.ossia_parameter_push_impulse(impl); }
   public void push(int v)
   { Ossia.INSTANCE.ossia_parameter_push_i(impl, v); }
   public void push(float v)
   { Ossia.INSTANCE.ossia_parameter_push_f(impl, v); }
+  public void push(double v)
+  { Ossia.INSTANCE.ossia_parameter_push_f(impl, (float)v); }
   public void push(boolean v)
   { Ossia.INSTANCE.ossia_parameter_push_b(impl, v ? 1 : 0); }
   public void push(byte v)
@@ -88,23 +95,11 @@ public class Parameter
 
   public void push(int[] l)
   {
-    final int sz = Native.getNativeSize(Integer.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setInt(i * sz, l[i]);
-    }
-    Ossia.INSTANCE.ossia_parameter_push_in(impl, p, new SizeT(l.length));
+    Ossia.INSTANCE.ossia_parameter_push_in(impl, l, new SizeT(l.length));
   }
   public void push(float[] l)
   {
-    final int sz = Native.getNativeSize(Float.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setFloat(i * sz, l[i]);
-    }
-    Ossia.INSTANCE.ossia_parameter_push_fn(impl, p, new SizeT(l.length));
+    Ossia.INSTANCE.ossia_parameter_push_fn(impl, l, new SizeT(l.length));
   }
   public void push(Value[] l)
   {
@@ -133,6 +128,10 @@ public class Parameter
   {
     setDomain(new Domain(min, max));
   }
+  public void setDomain(double min, double max)
+  {
+    setDomain(new Domain(min, max));
+  }
   public void setDomain(Vec2F min, Vec2F max)
   {
     setDomain(new Domain(min, max));
@@ -144,6 +143,22 @@ public class Parameter
   public void setDomain(Vec4F min, Vec4F max)
   {
     setDomain(new Domain(min, max));
+  }
+  public void setDomain(int[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(float[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(String[] v)
+  {
+    setDomain(new Domain(v));
+  }
+  public void setDomain(Value[] v)
+  {
+    setDomain(new Domain(v));
   }
 
   public String getUnit()
@@ -208,5 +223,100 @@ public class Parameter
   {
     Ossia.INSTANCE.ossia_parameter_set_repetition_filter(impl, u ? 1 : 0);
   }
+
+  public Node getNode()
+  {
+    return new Node(Ossia.INSTANCE.ossia_parameter_get_node(impl));
+  }
+
+  public String getDescription()
+  {
+    return getNode().getDescription();
+  }
+  public void setDescription(String v)
+  {
+    getNode().setDescription(v);
+  }
+
+  public String getExtendedType()
+  {
+    return getNode().getExtendedType();
+  }
+  public void setExtendedType(String v)
+  {
+    getNode().setExtendedType(v);
+  }
+
+  public boolean getHidden()
+  {
+    return getNode().getHidden();
+  }
+  public void setHidden(boolean v)
+  {
+    getNode().setHidden(v);
+  }
+
+  public OptionalInt getRefreshRate()
+  {
+    return getNode().getRefreshRate();
+  }
+  public void setRefreshRate(OptionalInt u)
+  {
+    getNode().setRefreshRate(u);
+  }
+  public void setRefreshRate(int u)
+  {
+    getNode().setRefreshRate(u);
+  }
+  public void unsetRefreshRate()
+  {
+    getNode().unsetRefreshRate();
+  }
+
+  public OptionalDouble getPriority()
+  {
+    return getNode().getPriority();
+  }
+  public void setPriority(OptionalDouble u)
+  {
+    getNode().setPriority(u);
+  }
+  public void setPriority(double u)
+  {
+    getNode().setPriority(u);
+  }
+  public void unsetPriority()
+  {
+    getNode().unsetPriority();
+  }
+
+
+  public OptionalDouble getValueStepSize()
+  {
+    return getNode().getValueStepSize();
+  }
+  public void setValueStepSize(OptionalDouble u)
+  {
+    getNode().setValueStepSize(u);
+  }
+  public void setValueStepSize(double u)
+  {
+    getNode().setValueStepSize(u);
+  }
+  public void unsetValueStepSize()
+  {
+    getNode().unsetValueStepSize();
+  }
+
+
+  public Optional<Value> getDefaultValue()
+  {
+    return getNode().getDefaultValue();
+  }
+  public void setDefaultValue(Value u)
+  {
+    getNode().setDefaultValue(u);
+  }
+
   Pointer impl;
 }

@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph/tick_methods.hpp>
 #include <ossia/dataflow/graph_edge_helpers.hpp>
 #include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_device.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
 #include <ossia/dataflow/nodes/gain.hpp>

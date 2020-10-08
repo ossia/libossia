@@ -19,6 +19,75 @@ public class Value implements AutoCloseable
     impl = Ossia.INSTANCE.ossia_value_create_impulse();
   }
 
+  public Value(float v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_float(v);
+  }
+  public Value(double v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_float((float)v);
+  }
+  public Value(int v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_int(v);
+  }
+  public Value(boolean v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_bool(v ? 1 : 0);
+  }
+  public Value(byte v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_char(v);
+  }
+  public Value(String v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_string(v);
+  }
+  public Value(float v1, float v2)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_2f(v1, v2);
+  }
+  public Value(float v1, float v2, float v3)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_3f(v1, v2, v3);
+  }
+  public Value(float v1, float v2, float v3, float v4)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_4f(v1, v2, v3, v4);
+  }
+  public Value(Vec2F v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_2f(v.x, v.y);
+  }
+  public Value(Vec3F v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_3f(v.x, v.y, v.z);
+  }
+  public Value(Vec4F v)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_4f(v.x, v.y, v.z, v.w);
+  }
+  public Value(int[] l)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_in(l, new SizeT(l.length));
+  }
+  public Value(float[] l)
+  {
+    impl = Ossia.INSTANCE.ossia_value_create_fn(l, new SizeT(l.length));
+  }
+  public Value(Value[] l)
+  {
+    final int sz = Native.POINTER_SIZE;
+    final Memory p = new Memory(l.length * sz);
+
+    for (int i = 0; i < l.length; i++) {
+      p.setPointer(i * sz, l[i].impl);
+    }
+    impl = Ossia.INSTANCE.ossia_value_create_list(p, new SizeT(l.length));
+  }
+
+
+
   public void set_impulse()
   {
     close();
@@ -66,25 +135,13 @@ public class Value implements AutoCloseable
   }
   public void set(int[] l)
   {
-    final int sz = Native.getNativeSize(Integer.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setInt(i * sz, l[i]);
-    }
     close();
-    impl = Ossia.INSTANCE.ossia_value_create_in(p, new SizeT(l.length));
+    impl = Ossia.INSTANCE.ossia_value_create_in(l, new SizeT(l.length));
   }
   public void set(float[] l)
   {
-    final int sz = Native.getNativeSize(Float.TYPE);
-    final Memory p = new Memory(l.length * sz);
-
-    for (int i = 0; i < l.length; i++) {
-      p.setFloat(i * sz, l[i]);
-    }
     close();
-    impl = Ossia.INSTANCE.ossia_value_create_fn(p, new SizeT(l.length));
+    impl = Ossia.INSTANCE.ossia_value_create_fn(l, new SizeT(l.length));
   }
   public void set(Value[] l)
   {

@@ -10,6 +10,8 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
+#include <ossia/detail/lockfree_queue.hpp>
+
 #if defined(OSSIA_SMALL_VECTOR)
 #include <rtmidi17/message.hpp>
 #endif
@@ -171,7 +173,7 @@ private:
     } operation{};
     ossia::net::device_base* device{};
   };
-  moodycamel::ReaderWriterQueue<device_operation> m_device_change_queue;
+  ossia::spsc_queue<device_operation> m_device_change_queue;
 
   std::list<message_queue> m_valueQueues;
 

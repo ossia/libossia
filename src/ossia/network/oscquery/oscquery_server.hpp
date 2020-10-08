@@ -5,10 +5,10 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/detail/server_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+#include <ossia/detail/lockfree_queue.hpp>
 
 #include <tsl/hopscotch_map.h>
 #include <nano_signal_slot.hpp>
-#include <readerwriterqueue.h>
 
 #include <atomic>
 namespace osc
@@ -150,7 +150,7 @@ private:
 
   // function queue to hold ws callback
   // and avoid tree to be modified on another thread
-  moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
+  ossia::spsc_queue<std::function<void()>> m_functionQueue;
 
 };
 }

@@ -16,7 +16,6 @@
 #include "../Benchmarks/Random.hpp"
 
 using namespace ossia;
-
 TEST_CASE( "Nodes", "[Nodes]" )
 {
   ossia::net::generic_device device{"test"};

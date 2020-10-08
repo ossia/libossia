@@ -289,3 +289,12 @@ endif()
 if(OSSIA_OSX_RETROCOMPATIBILITY)
   set(CMAKE_OSX_DEPLOYMENT_TARGET 10.9)
 endif()
+
+if(MSVC)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+
+  if(OSSIA_MAX OR OSSIA_PD OR OSSIA_JAVA OR OSSIA_UNITY3D OR OSSIA_PYTHON)
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+  endif()
+endif()

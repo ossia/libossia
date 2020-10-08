@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if __has_include(<SDL/SDL_audio.h>) && !defined(OSSIA_PROTOCOL_JOYSTICK)
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
 
 #include <SDL/SDL.h>
 #include <SDL/SDL_audio.h>
@@ -33,6 +33,8 @@ public:
 
     this->effective_sample_rate = m_obtained.freq;
     this->effective_buffer_size = m_obtained.samples;
+    this->effective_inputs = 0;
+    this->effective_outputs = m_obtained.channels;
 
     SDL_PauseAudio(0);
   }
@@ -49,44 +51,18 @@ public:
     return SDL_GetAudioStatus() == SDL_AUDIO_PLAYING;
   }
 
-  void stop() override
-  {
-    stop_processing = true;
-    protocol = nullptr;
-    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
-
-    while (processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
-  }
-
-  void reload(ossia::audio_protocol* p) override
-  {
-    if (this->protocol)
-      this->protocol.load()->engine = nullptr;
-    stop();
-
-    this->protocol = p;
-    if (!p)
-      return;
-
-    auto& proto = *p;
-    proto.engine = this;
-
-    proto.setup_tree(inputs, outputs);
-
-    stop_processing = false;
-  }
-
 private:
   static void SDLCallback(void* userData, Uint8* data, int nframes)
   {
     auto& self = *static_cast<sdl_protocol*>(userData);
-    self.load_audio_tick();
+    self.tick_start();
+
     auto samples = reinterpret_cast<int16_t*>(data);
 
     const auto n_samples = nframes / self.outputs;
     if (self.stop_processing)
     {
+      self.tick_clear();
       for (int i = 0; i < n_samples; i++)
       {
         samples[i] = 0;
@@ -94,8 +70,6 @@ private:
       return;
     }
 
-    auto proto = self.protocol.load();
-    if (proto)
     {
       auto float_data = (float*)alloca(sizeof(float) * nframes);
       auto float_output = (float**)alloca(sizeof(float*) * self.outputs);
@@ -105,22 +79,27 @@ private:
         float_output[i] = float_data + i * n_samples;
       }
 
-      int l_i = 0;
-      int r_i = 0;
+      // if one day there's input... samples[j++] / 32768.;
+      int k = 0;
       for (int j = 0; j < n_samples;)
       {
-        float_output[0][l_i++] = samples[j++] / 32768.;
-        float_output[1][r_i++] = samples[j++] / 32768.;
+        float_output[0][k] = 0.; j++;
+        float_output[1][k] = 0.; j++;
+        k++;
       }
 
-      self.processing = true;
+      // TODO time in seconds !
+      ossia::audio_tick_state ts{nullptr, float_output, (int)self.inputs, (int)self.outputs, uint64_t(nframes / self.outputs), 0};
+      self.audio_tick(ts);
 
-      proto->process_generic(
-          *proto, nullptr, float_output, (int)self.inputs, (int)self.outputs,
-          nframes / self.outputs);
-      self.audio_tick(nframes / self.outputs, 0);
-
-      self.processing = false;
+      k = 0;
+      for (int j = 0; j < n_samples;)
+      {
+        samples[j++] = float_output[0][k] * 32768.;
+        samples[j++] = float_output[1][k] * 32768.;
+        k++;
+      }
+      self.tick_end();
     }
   }
 

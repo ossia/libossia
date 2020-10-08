@@ -6,19 +6,26 @@
 
 extern "C" {
 
+ossia_domain_t ossia_domain_create()
+{
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    return convert(ossia::domain{});
+  });
+}
+
 ossia_domain_t ossia_domain_make_min_max(
         ossia_value_t min,
         ossia_value_t max)
 {
-    return safe_function(__func__, [=]() -> ossia_domain_t {
-        ossia::value vmin, vmax;
-      if (min)
-        vmin = min->value;
-      if(max)
-        vmax = max->value;
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    ossia::value vmin, vmax;
+    if (min)
+      vmin = min->value;
+    if(max)
+      vmax = max->value;
 
-      return convert(ossia::make_domain(vmin, vmax));
-    });
+    return convert(ossia::make_domain(vmin, vmax));
+  });
 }
 
 ossia_value_t ossia_domain_get_min(ossia_domain_t domain)
@@ -65,6 +72,48 @@ void ossia_domain_set_max(ossia_domain_t domain, ossia_value_t value)
   });
 }
 
+ossia_domain_t ossia_domain_make_string_set(const char** strings, size_t n)
+{
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    return convert(ossia::make_domain(gsl::span<const char*>(strings, n)));
+  });
+}
+
+ossia_domain_t ossia_domain_make_int_set(const int* v, size_t n)
+{
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    ossia::domain_base<int> dom;
+    dom.values.resize(n);
+    for(std::size_t i = 0; i < n; i++)
+      dom.values[i] = v[i];
+
+    return convert(ossia::domain{std::move(dom)});
+  });
+}
+
+ossia_domain_t ossia_domain_make_float_set(const float* v, size_t n)
+{
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    ossia::domain_base<float> dom;
+    dom.values.resize(n);
+    for(std::size_t i = 0; i < n; i++)
+      dom.values[i] = v[i];
+
+    return convert(ossia::domain{std::move(dom)});
+  });
+}
+
+ossia_domain_t ossia_domain_make_value_set(const ossia_value_t* v, size_t n)
+{
+  return safe_function(__func__, [=]() -> ossia_domain_t {
+    ossia::domain_base<ossia::value> dom;
+    dom.values.reserve(n);
+    for(std::size_t i = 0; i < n; i++)
+      dom.values.push_back(v[i]->value);
+
+    return convert(ossia::domain{std::move(dom)});
+  });
+}
 void ossia_domain_get_values(
     ossia_domain_t domain,
     ossia_value_t** values,

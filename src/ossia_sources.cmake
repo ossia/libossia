@@ -8,6 +8,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/closest_element.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/constexpr_string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
@@ -22,6 +23,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/locked_container.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/lockfree_queue.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/logger.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mpl.hpp"
@@ -40,7 +42,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_tuple.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/closest_element.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/parameter_properties.hpp"
@@ -550,7 +552,10 @@ set(OSSIA_QT_SCORE_SRCS
 
 set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_tick.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/portaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/pulseaudio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
@@ -630,6 +635,8 @@ set(OSSIA_DATAFLOW_HEADERS
 set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"

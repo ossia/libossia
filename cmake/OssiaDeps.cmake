@@ -162,6 +162,7 @@ if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
     find_package(portaudio QUIET)
   endif()
 endif()
+
 add_definitions(-DFMT_HEADER_ONLY=1)
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)

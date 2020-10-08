@@ -79,10 +79,18 @@ domain make_domain(const ossia::value& min, const ossia::value& max)
   return {};
 }
 
-domain make_domain(const std::vector<std::string>& s)
+domain make_domain(std::vector<std::string> s)
 {
   domain_base<std::string> v;
-  v.values.insert(v.values.end(), s.begin(), s.end());
+  v.values = std::move(s);
+  return domain{std::move(v)};
+}
+
+domain make_domain(gsl::span<const char*> span)
+{
+  domain_base<std::string> v;
+  for(std::size_t i = 0, N = span.size(); i < N; i++)
+    v.values.push_back(span[i]);
   return domain{std::move(v)};
 }
 

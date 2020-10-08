@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/audio/audio_engine.hpp>
+#include <thread>
 namespace ossia
 {
 class dummy_engine final : public audio_engine
@@ -12,19 +13,19 @@ public:
   {
     effective_sample_rate = rate;
     effective_buffer_size = bs;
+    effective_inputs = 0;
+    effective_outputs = 0;
 
     setup_thread();
   }
 
   bool running() const override
   {
-    return !m_runThread.joinable();
+    return m_active;
   }
+
   void setup_thread()
   {
-    m_active = false;
-    if (m_runThread.joinable())
-      m_runThread.join();
     m_active = true;
 
     int us_per_buffer = 1e6 * double(effective_buffer_size) / double(effective_sample_rate);
@@ -38,7 +39,6 @@ public:
       int64_t ns_delta = 0;
       while (m_active)
       {
-        load_audio_tick();
         // TODO condition variables for the sleeping instead
         // linux : https://stackoverflow.com/questions/24051863/how-to-implement-highly-accurate-timers-in-linux-userspace
         // win : https://stackoverflow.com/a/13413019/1495627
@@ -46,27 +46,31 @@ public:
         // other: naive way
         std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
         end = clk::now();
-        if (!stop_processing && audio_tick.allocated())
+        tick_start();
+        if (stop_processing)
         {
-          this->processing = true;
-          if (auto proto = protocol.load())
-          {
-            auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
-                          end - start)
-                          .count();
-            ns += ns_delta;
-            ns_total += ns;
-
-            ns_delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - orig_start).count() - ns_total;
-
-            int samples = std::ceil(double(effective_sample_rate) * ns / 1e9);
-            proto->process_generic(*proto, nullptr, nullptr, 0, 0, samples);
-            audio_tick(effective_buffer_size, 0);
-          }
-
-          this->processing = false;
+          tick_clear();
+          continue;
         }
+
+        auto ns = std::chrono::duration_cast<std::chrono::nanoseconds>(
+                      end - start)
+                      .count();
+        ns += ns_delta;
+        ns_total += ns;
+
+        ns_delta = std::chrono::duration_cast<std::chrono::nanoseconds>(end - orig_start).count() - ns_total;
+
+        int samples = std::ceil(double(effective_sample_rate) * ns / 1e9);
+        samples = std::min(samples, effective_buffer_size);
+        if(samples < 0)
+          samples = 0;
+
+        ossia::audio_tick_state ts{nullptr, nullptr, 0, 0, (uint64_t)samples, ns_total / 1e9};
+        audio_tick(ts);
+
         start = clk::now();
+        tick_end();
       }
     }};
 #if defined(__linux__)
@@ -77,40 +81,8 @@ public:
   ~dummy_engine() override
   {
     m_active = false;
-    protocol = nullptr;
-    stop_processing = true;
-
-    while (processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
     if (m_runThread.joinable())
       m_runThread.join();
-  }
-
-  void reload(audio_protocol* p) override
-  {
-    if (this->protocol)
-      this->protocol.load()->engine = nullptr;
-    stop();
-
-    this->protocol = p;
-    if (!p)
-      return;
-
-    auto& proto = *p;
-    proto.engine = this;
-
-    proto.setup_tree(0, 0);
-
-    stop_processing = false;
-    setup_thread();
-  }
-
-  void stop() override
-  {
-    set_tick([](auto&&...) {}); // TODO this prevents having audio in the background...
-    stop_processing = true;
-    while(processing)
-      std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 
 private:

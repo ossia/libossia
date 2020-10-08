@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <vector>
+#include <stdexcept>
 
 /**
  * \file behavior.hpp
