@@ -318,8 +318,20 @@ void ossia_check_and_register(T* x)
   auto& map = ossia_max::instance().root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 
+  if(it != map.end())
+  {
+    ossia_max::root_descriptor& descriptor = it->second;
+    if(descriptor.is_loadbanged)
+    {
+      ossia_register<T>(x);
+      return;
+    }
+  }
+
   if(!x->m_reg_clock)
     x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
+  else
+    clock_unset(x->m_reg_clock);
 
   clock_delay(x->m_reg_clock, 1);
 }
