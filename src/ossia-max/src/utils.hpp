@@ -309,6 +309,10 @@ void ossia_register(T* x)
     }
   }
 
+  // TODO we should exclude object that have not been loadbanged yet for performance
+  // when adding an abstraction with model and parameter in subpatcher,
+  // then the deeper object will be loadbanged first and should not register to its parent which has not been loadbanged yet
+  // in that case, we should leave the object unregistered and wait for parent to register its child
   x->register_node(*matchers);
 }
 
