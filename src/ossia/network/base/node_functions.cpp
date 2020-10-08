@@ -470,18 +470,26 @@ void expand_ranges(std::string& str)
 
     for (auto it = positions.rbegin(); it != positions.rend(); ++it)
     {
-      std::string rep{"{"};
-      rep.reserve(3 * std::abs((it->last - it->first)));
-      for (int64_t v = it->first; v <= it->last; v++)
+      if(it->last == it->first)
       {
-        rep += std::to_string(v);
-        rep += ',';
+        str.replace(it->start, it->length, std::to_string(it->first));
       }
-
-      if (rep.back() == ',')
+      else
       {
-        rep.back() = '}';
-        str.replace(it->start, it->length, rep);
+        std::string rep;
+        rep.reserve(3 * std::abs((it->last - it->first)) + 2);
+        rep.push_back('{');
+        for (int64_t v = it->first; v <= it->last; v++)
+        {
+          rep += std::to_string(v);
+          rep += ',';
+        }
+
+        if (rep.back() == ',')
+        {
+          rep.back() = '}';
+          str.replace(it->start, it->length, rep);
+        }
       }
     }
   }

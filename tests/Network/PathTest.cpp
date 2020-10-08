@@ -479,6 +479,24 @@ TEST_CASE ("test_match_range", "test_match_range")
 
 }
 
+TEST_CASE ("test_match_range_bug_588", "test_match_range_bug_588")
+{
+  {
+    ossia::net::generic_device device{};
+    auto created = ossia::net::create_nodes(device, "/foo.{1..1}");
+    std::set<ossia::net::node_base*> created_set(created.begin(), created.end());
+
+    REQUIRE(created_set.size() == 1);
+    REQUIRE((*created_set.begin())->get_name() == "foo.1");
+
+    {
+      auto match = ossia::net::find_nodes(device, "/foo.{1..1}");
+      std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
+
+      REQUIRE(created_set == match_set);
+    }
+  }
+}
 
 TEST_CASE ("test_match_instances", "test_match_instances")
 
