@@ -73,27 +73,8 @@ struct token_request
     }
   }
 
-
-  //! Where in the tick we are located.
-  //! e.g. if we read 9 time_value across two intervals,
-  //! the second interval's first token_request will have
-  //! - prev_date = 0
-  //! - date = 5
-  //! - offset = 3
-  //!
-  //!    [  |     [ : 9
-  //! -----------------
-  //!   7   |     10
-  //!
-  //! Note that the offset is independent of the actual execution speed
-
-  constexpr ossia::time_value logical_start() const noexcept
-  {
-    return offset;
-  }
-
   //! How much we read from our data model
-  constexpr time_value logical_read_duration() const noexcept
+  constexpr time_value model_read_duration() const noexcept
   {
     return date - prev_date;
   }
@@ -353,7 +334,22 @@ struct token_request
   ossia::time_value prev_date{}; // Sample we are at
   ossia::time_value date{}; // Sample we are finishing at
   ossia::time_value parent_duration{}; // Duration of the parent item of the one being ticked
-  ossia::time_value offset{}; // Position at which to write in the output buffer
+
+
+  //! Where in the tick we are located.
+  //! e.g. if we read 9 time_value across two intervals,
+  //! the second interval's first token_request will have
+  //! - prev_date = 0
+  //! - date = 5
+  //! - offset = 3
+  //!
+  //!    [  |     [ : 9
+  //! -----------------
+  //!   7   |     10
+  //!
+  //! Note that the offset is independent of the actual execution speed
+  ossia::time_value offset{};
+
   double speed{1.};
   double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
