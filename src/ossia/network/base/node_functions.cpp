@@ -16,7 +16,7 @@
 #include <utility>
 #include <vector>
 
-#include <fuzz.hpp>
+#include <rapidfuzz/fuzz.hpp>
 
 namespace ossia
 {
