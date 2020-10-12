@@ -297,7 +297,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir -p ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
             cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/libossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
+            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/ossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
 
             pushd ./unity3d-linux/ossia-unity/
             zip -r ossia-unity3d.zip *
