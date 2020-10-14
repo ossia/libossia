@@ -27,6 +27,7 @@ struct router
 
   std::vector<std::array<std::string, 2>> m_patterns{};
   std::vector<void*> m_outlets{};
+  void* m_inlet{};
 
 };
 } // max namespace

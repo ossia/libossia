@@ -42,6 +42,12 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   // extra outlet for non matching addresses
   x->m_outlets.push_back(outlet_new(x, nullptr));
 
+  if(argc == 0)
+  {
+    x->m_inlet = proxy_new(x, 2, 0L);
+    x->m_outlets.push_back(outlet_new(x, nullptr));
+  }
+
   while(argc--)
   {
     if(argv[argc].a_type == A_SYM)
@@ -71,35 +77,59 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 {
   std::string address(s->s_name);
 
-  bool match = false;
-  for(int i = 0 ; i < x->m_patterns.size(); i++)
+  long inlet = proxy_getinlet((t_object*)x);
+
+  if(inlet > 0)
   {
-    for(const auto& pattern : x->m_patterns[i])
+    x->m_patterns.clear();
+
+    if(address.back() != '/')
     {
-      if(boost::algorithm::starts_with(address, pattern))
+      x->m_patterns.push_back({address, address + '/'});
+    }
+    else
+    {
+      x->m_patterns.push_back({address.substr(0, address.size()-1), address});
+    }
+    x->m_outlets.push_back(outlet_new(x, nullptr));
+
+  }
+  else
+  {
+    bool match = false;
+    for(int i = 0 ; i < x->m_patterns.size(); i++)
+    {
+      for(const auto& pattern : x->m_patterns[i])
       {
-        std::string sub = address.substr(pattern.size());
-        if(sub.size() > 0)
+        if(boost::algorithm::starts_with(address, pattern))
         {
-          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
+          std::string sub = address.substr(pattern.size());
+          if(sub.size() > 0)
+          {
+            outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
+          }
+          else
+          {
+            outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
+          }
+          match = true;
         }
-        else
-        {
-          outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
-        }
-        match = true;
       }
     }
-  }
 
-  if(!match)
-    outlet_anything(x->m_outlets[0], s, argc, argv);
+    if(!match)
+      outlet_anything(x->m_outlets[0], s, argc, argv);
+  }
 }
 
 void router::free(router* x)
 {
   if (x)
   {
+    for(auto out : x->m_outlets)
+      outlet_delete(out);
+    if(x->m_inlet)
+      proxy_delete(x->m_inlet);
     x->~router();
   }
 }
