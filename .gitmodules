@@ -114,4 +114,4 @@
 	url = https://github.com/cpp-taskflow/cpp-taskflow
 [submodule "3rdparty/rapidfuzz-cpp"]
 	path = 3rdparty/rapidfuzz-cpp
-	url = https://github.com/avilleret/rapidfuzz-cpp.git
+	url = https://github.com/maxbachmann/rapidfuzz-cpp.git 
