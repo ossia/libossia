@@ -317,4 +317,5 @@ endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 
-target_link_libraries(ossia PRIVATE rapidfuzz::rapidfuzz)
+add_dependencies(ossia rapidfuzz-cpp)
+target_include_directories(ossia PRIVATE ${RAPIDFUZZ_INCLUDE_DIR})

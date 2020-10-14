@@ -165,9 +165,13 @@ endif()
 
 add_definitions(-DFMT_HEADER_ONLY=1)
 
-include(FetchContent)
-FetchContent_Declare(
-    rapidfuzz
-    SOURCE_DIR "${CMAKE_SOURCE_DIR}/3rdparty/rapidfuzz-cpp"
+include(ExternalProject)
+# rapidfuzz
+ExternalProject_add(rapidfuzz-cpp
+    SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/rapidfuzz-cpp"
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rapidfuzz-cpp
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
 )
-FetchContent_MakeAvailable(rapidfuzz)
+
+ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)
+set(RAPIDFUZZ_INCLUDE_DIR ${INSTALL_DIR}/include)
