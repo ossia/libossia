@@ -97,6 +97,7 @@ void explorer::free(explorer* x)
 {
   if (x)
   {
+    ossia_max::instance().explorers.remove_all(x);
     x->~explorer();
   }
 }
