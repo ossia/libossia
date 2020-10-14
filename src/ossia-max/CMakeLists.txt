@@ -52,8 +52,6 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SRCS
-    src/address_router.cpp
-    src/address_router.hpp
     src/ossia-max.cpp
     src/ossia-max.hpp
     src/object_base.cpp
@@ -84,6 +82,8 @@ set(PROJECT_SRCS
     src/parameter_base.cpp
     src/remote.hpp
     src/remote.cpp
+    src/router.cpp
+    src/router.hpp
     src/utils.hpp
     src/utils.cpp
     src/view.hpp
