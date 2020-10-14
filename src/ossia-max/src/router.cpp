@@ -48,9 +48,14 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
     {
       std::string pattern(argv[argc].a_w.w_sym->s_name);
       if(pattern.back() != '/')
-        pattern += '/';
+      {
+        x->m_patterns.push_back({pattern, pattern + '/'});
+      }
+      else
+      {
+        x->m_patterns.push_back({pattern.substr(0, pattern.size()-1), pattern});
+      }
 
-      x->m_patterns.push_back(pattern);
       x->m_outlets.push_back(outlet_new(x, nullptr));
     }
     else
@@ -69,12 +74,21 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   bool match = false;
   for(int i = 0 ; i < x->m_patterns.size(); i++)
   {
-    std::string pattern = x->m_patterns[i];
-    if(boost::algorithm::starts_with(address, pattern))
+    for(const auto& pattern : x->m_patterns[i])
     {
-      std::string sub = address.substr(pattern.size());
-      outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
-      match = true;
+      if(boost::algorithm::starts_with(address, pattern))
+      {
+        std::string sub = address.substr(pattern.size());
+        if(sub.size() > 0)
+        {
+          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
+        }
+        else
+        {
+          outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
+        }
+        match = true;
+      }
     }
   }
 
