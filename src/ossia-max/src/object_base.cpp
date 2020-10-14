@@ -41,8 +41,16 @@ t_matcher::t_matcher(t_matcher&& other)
 
       if (owner)
       {
-        callbackit = param->add_callback(
-              [=] (const ossia::value& v) { output_value(v); });
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
 
         set_parent_addr();
       }
@@ -73,8 +81,16 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
       if (owner && !owner->m_is_deleted)
       {
-        callbackit = param->add_callback(
-              [=] (const ossia::value& v) { output_value(v); });
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
 
         set_parent_addr();
       }
@@ -89,9 +105,17 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 {
   if (owner)
   {
-    if (auto param = node->get_parameter())
-      callbackit = param->add_callback(
-            [=](const ossia::value& v) { output_value(v); });
+    switch(owner->m_otype)
+    {
+      case object_class::remote:
+      case object_class::param:
+        if (auto param = node->get_parameter())
+          callbackit = param->add_callback(
+              [=](const ossia::value& v) { output_value(v); });
+        break;
+      default:
+        break;
+    }
 
     node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
   }
