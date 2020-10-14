@@ -156,7 +156,7 @@ set(OSSIA_EXT_LIST
     ossia.logger
     ossia.ossia
     ossia.explorer
-    ossia.address_router
+    ossia.router
     ossia.fuzzysearch
 )
 set(OSSIA_MAX_SYMBOLS "")
