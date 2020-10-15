@@ -619,7 +619,8 @@ ossia::net::address_scope get_address_scope(ossia::string_view addr)
   return type;
 }
 
-std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* node)
+std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* node,
+                                                      unsigned int depth)
 {
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
@@ -640,11 +641,18 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
     return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
   });
 
+  int next_depth = -1;
+  if(depth > 0)
+    next_depth = depth - 1;
+
   for (auto it = children.begin(); it != children.end(); it++)
   {
     list.push_back(*it);
-    auto nested_list = list_all_children(*it);
-    list.insert(list.end(), nested_list.begin(), nested_list.end());
+    if(next_depth != 0)
+    {
+      auto nested_list = list_all_children(*it, next_depth);
+      list.insert(list.end(), nested_list.begin(), nested_list.end());
+    }
   }
 
   return list;
