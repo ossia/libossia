@@ -84,6 +84,8 @@ set(PROJECT_SRCS
     src/remote.cpp
     src/router.cpp
     src/router.hpp
+    src/search_filter.hpp
+    src/search_filter.cpp
     src/utils.hpp
     src/utils.cpp
     src/view.hpp

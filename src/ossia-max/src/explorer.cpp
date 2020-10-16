@@ -57,16 +57,7 @@ extern "C" void ossia_explorer_setup()
       c, (method)explorer::notify,
       "notify", A_CANT, 0);
 
-  CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, explorer, m_tags, m_tags_size, MAX_NUM_ITEMS);
-  CLASS_ATTR_LABEL(c, "tags", 0, "Filter by tags");
-
-  CLASS_ATTR_SYM_VARSIZE(c, "mode", 0, explorer, m_modes, m_modes_size, MAX_NUM_ITEMS);
-  CLASS_ATTR_LABEL(c, "mode", 0, "Filter by access mode");
-
-  CLASS_ATTR_LONG(c, "visible", 0, explorer, m_visible);
-  CLASS_ATTR_LABEL(c, "visible", 0, "Filter by visibility (0 means no filtering, 1 only visible, 2 only hidden");
-  CLASS_ATTR_FILTER_CLIP(c, "visible", 0, 2);
-
+  search_filter::setup_attribute<explorer>(c);
   /*
   CLASS_ATTR_SYM(c, "sort", 0, explorer, m_sort);
   CLASS_ATTR_LABEL(c, "sort", 0, "Sort method");
@@ -323,64 +314,6 @@ bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matc
       }
 
     }
-  }
-
-  return true;
-}
-
-bool explorer::filter(const ossia::net::node_base& node)
-{
-  if(m_tags_size > 0)
-  {
-    bool match = false;
-    auto tags_opt = ossia::net::get_tags(node.get_extended_attributes());
-    if(!tags_opt.has_value())
-      return false;
-
-    for(int i = 0; i < m_tags_size; i++)
-    {
-      if(ossia::find(tags_opt.value(), std::string(m_tags[i]->s_name)) != tags_opt.value().end())
-      {
-        match = true;
-        break;
-      }
-    }
-    if(!match)
-      return false;
-  }
-
-  if(m_visible > 0)
-  {
-    auto hidden = ossia::net::get_hidden(node.get_extended_attributes());
-    switch(m_visible)
-    {
-      case 1:
-        if(hidden) return false;
-        break;
-      case 2:
-        if(!hidden) return false;
-        break;
-      default:
-          ;
-    }
-  }
-
-  if(m_modes_size > 0)
-  {
-    auto access_opt = ossia::net::get_access_mode(node);
-    if(!access_opt.has_value())
-      return false;
-    bool match = false;
-    for(int i = 0; i<m_modes_size; i++)
-    {
-      if(symbol2access_mode(m_modes[i]) == access_opt.value())
-      {
-        match = true;
-        break;
-      }
-    }
-    if(!match)
-      return false;
   }
 
   return true;

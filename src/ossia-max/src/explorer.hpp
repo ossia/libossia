@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia-max/src/object_base.hpp>
+#include "search_filter.hpp"
 
 namespace ossia
 {
@@ -11,26 +12,19 @@ namespace max
 #pragma mark -
 #pragma mark t_explorer structure declaration
 
-struct explorer : object_base
+struct explorer : object_base, search_filter
 {
   using is_explorer = std::true_type;
 
   // argument variables
   long m_highlight{};
   long m_depth{0}; // 0 means no depth filtering
-  t_symbol* m_types[MAX_NUM_ITEMS];
-  long m_types_size{};
-  t_symbol* m_tags[MAX_NUM_ITEMS];
-  long m_tags_size{};
-  t_symbol* m_modes[MAX_NUM_ITEMS];
-  long m_modes_size{};
-  long m_visible{0};
+
   t_symbol* m_sort{};
   t_symbol* m_format{};
   t_symbol* m_method{};
 
   std::set<ossia::net::device_base*> m_devices;
-  std::map<std::string, std::vector<t_atom>> m_filters;
 
   // ctor / dtor
   explorer(long argc, t_atom* argv);
@@ -41,7 +35,6 @@ struct explorer : object_base
   bool register_node(const std::vector<std::shared_ptr<t_matcher>>& node);
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
-  bool filter(const ossia::net::node_base& node);
 
   // device callbacks
   void on_node_created_callback(const ossia::net::node_base& node);
