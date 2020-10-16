@@ -127,7 +127,7 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
 
   void ZeroconfMinuitListener::browse()
   {
-    ZeroconfMinuitListener::s_mutex.lock();
+    std::lock_guard lock(s_mutex);
 
     for(const auto& s : s_connection_events)
     {
@@ -158,8 +158,6 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
       }
     }
     s_connection_events.clear();
-
-    ZeroconfMinuitListener::s_mutex.unlock();
 
     service.browse(0);
   }

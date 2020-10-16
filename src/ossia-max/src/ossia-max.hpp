@@ -79,14 +79,13 @@ struct max_msp_log_sink final :
 
     void set_pattern(const std::string &pattern) override { }
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
-
 };
 
 class ossia_max
 {
 public:
   static ossia_max& instance();
-  static std::shared_ptr<ossia::net::generic_device> get_default_device()
+  static const std::shared_ptr<ossia::net::generic_device>& get_default_device()
   {
     return instance().m_device;
   }
