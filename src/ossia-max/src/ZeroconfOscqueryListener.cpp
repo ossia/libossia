@@ -61,7 +61,7 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
 
   void ZeroconfOscqueryListener::browse()
   {
-    s_mutex.lock();
+    std::lock_guard lock(s_mutex);
     for(const auto& event : s_connection_events)
     {
       switch(event.first)
@@ -75,7 +75,6 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
       }
     }
     s_connection_events.clear();
-    s_mutex.unlock();
 
     service.browse(0);
   }
