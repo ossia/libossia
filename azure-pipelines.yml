@@ -143,6 +143,38 @@ stages:
             cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ossia.bundle
+
+              zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
+              xcrun altool \
+                   --notarize-app \
+                   -t osx \
+                   -f "ossia-unity.zip" \
+                   --primary-bundle-id "io.ossia.ossia-unity" \
+                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+            )
+
           displayName: Build
 
         - task: PublishPipelineArtifact@1
@@ -231,6 +263,40 @@ stages:
             cmake -GNinja $(Build.SourcesDirectory) -DJAVA_HOME=$JAVA_HOME -DOSSIA_JAVA_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              unzip ossia-java.jar
+              codesign --force --timestamp --sign "ossia.io" darwin/*
+              rm ossia-java.jar
+              zip -r ossia-java.jar META-INF io darwin
+              cp ossia-java.jar ossia-java.zip
+              xcrun altool \
+                   --notarize-app \
+                   -t osx \
+                   -f "ossia-java.zip" \
+                   --primary-bundle-id "io.ossia.ossia-java" \
+                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+            )
+
           displayName: Build
 
         - task: PublishPipelineArtifact@1
