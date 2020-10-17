@@ -6,6 +6,7 @@
 
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include "search_filter.hpp"
 
 namespace ossia
 {
@@ -15,7 +16,7 @@ namespace max
 #pragma mark -
 #pragma mark t_fuzzysearch structure declaration
 
-struct fuzzysearch
+struct fuzzysearch : search_filter
 {
   t_object m_object;
   t_symbol* m_scope{};
