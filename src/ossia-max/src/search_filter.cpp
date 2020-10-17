@@ -12,17 +12,17 @@ bool search_filter::filter(const ossia::net::node_base& node)
   if(m_filter_tags_size > 0)
   {
     bool match = true;
-    auto tags_opt = ossia::net::get_tags(node.get_extended_attributes());
+    const auto& tags_opt = ossia::net::get_tags(node.get_extended_attributes());
     if(!tags_opt.has_value())
       return false;
 
-    std::vector<std::string>& tags = tags_opt.value();
+    const std::vector<std::string>& tags = *tags_opt;
 
     for(int i = 0; i < m_filter_tags_size; i++)
     {
       std::string tag(m_filter_tags[i]->s_name);
 
-      if(ossia::find(tags, tag) == tags_opt.value().end())
+      if(ossia::find(tags, tag) == tags.end())
       {
         match = false;
         break;
@@ -50,13 +50,13 @@ bool search_filter::filter(const ossia::net::node_base& node)
 
   if(m_filter_modes_size > 0)
   {
-    auto access_opt = ossia::net::get_access_mode(node);
+    const auto& access_opt = ossia::net::get_access_mode(node);
     if(!access_opt.has_value())
       return false;
     bool match = false;
     for(int i = 0; i<m_filter_modes_size; i++)
     {
-      if(symbol2access_mode(m_filter_modes[i]) == access_opt.value())
+      if(symbol2access_mode(m_filter_modes[i]) == *access_opt)
       {
         match = true;
         break;
