@@ -189,19 +189,14 @@ bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matc
       }
     }
 
-    // TODO use ossia::remove_erase_if here ?
-    std::vector<ossia::net::node_base*> filtered;
-    filtered.reserve(nodes.size());
-    for(const auto& n : nodes)
-    {
-      if(filter(*n))
-        filtered.push_back(n);
-    }
+    ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
+      return !filter(*m);
+    });
 
     t_atom a;
-    A_SETLONG(&a, filtered.size());
+    A_SETLONG(&a, nodes.size());
     outlet_anything(m_dumpout, s_size, 1, &a);
-    for(const auto& n : filtered)
+    for(const auto& n : nodes)
     {
       auto s = ossia::net::address_string_from_node(*n);
       A_SETSYM(&a, gensym(s.c_str()));
