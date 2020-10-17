@@ -32,6 +32,8 @@ extern "C" void ossia_fuzzysearch_setup()
       c, (method)fuzzysearch::notify,
       "notify", A_CANT, 0);
 
+  search_filter::setup_attribute<fuzzysearch>(c);
+
   CLASS_ATTR_SYM(c, "scope", 0, fuzzysearch, m_scope);
   CLASS_ATTR_LABEL(c, "scope", 0, "Search scope");
   CLASS_ATTR_ENUMINDEX3(c, "scope", 0, "Global", "Absolute", "Relative");
@@ -90,6 +92,7 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
     {
       x->m_roots.insert(&clt->m_device->get_root_node());
     }
+    x->m_roots.insert(&ossia_max::instance().get_default_device()->get_root_node());
   }
   else if(x->m_scope == s_sym_absolute)
   {
@@ -101,6 +104,10 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   }
 
   ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, x->m_matches);
+
+  ossia::remove_erase_if(x->m_matches, [&](const ossia::net::fuzzysearch_result& m){
+    return !x->filter(*m.node);
+  });
 
   for(const auto& m : x->m_matches)
   {
