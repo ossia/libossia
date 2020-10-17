@@ -1,13 +1,20 @@
 #!/bin/bash -ex
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
 
-function codesign_osx folder {
+codesign_osx() {
+  local folder=${1}
   security unlock-keychain -p travis build.keychain
   find $folder -name '*.dylib' -exec codesign --force --timestamp --sign "ossia.io" {} \;
   find $folder -name '*.mxo' -exec codesign --force --timestamp --sign "ossia.io" {} \;
   find $folder -name '*.whl' -exec codesign --force --timestamp --sign "ossia.io" {} \;
   find $folder -name '*.so' -exec codesign --force --timestamp --sign "ossia.io" {} \;
   find $folder -name '*.pd_darwin' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+}
+notarize_osx() { 
+  set +x 
+  local zipfile=${1}
+  local bundle_id=${2}
+  xcrun altool --notarize-app -t osx -f "$zipfile" --primary-bundle-id "$bundle_id" -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
 }
 
 case "$TRAVIS_OS_NAME" in
@@ -466,6 +473,8 @@ def get_versions():
       codesign_osx "$TRAVIS_BUILD_DIR/ossia-pd-package/"
       pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia && popd
 
+      notarize_osx "${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz" "io.ossia.ossia-puredata"
+
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
 
     elif [[ "$BUILD_TYPE" == "PurrDataRelease" ]]; then
@@ -488,6 +497,8 @@ def get_versions():
       ls
       codesign_osx "$TRAVIS_BUILD_DIR/ossia-pd-package/"
       pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-purr-data-osx.tar.gz ossia && popd
+
+      notarize_osx "${ARTIFACTS_DIR}/ossia-purr-data-osx.tar.gz" "io.ossia.ossia-purrdata"
 
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
 
@@ -533,9 +544,14 @@ def get_versions():
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
+      
       codesign_osx "$TRAVIS_BUILD_DIR/ossia-max-package/"
-      pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-max-osx.tar.gz ossia && popd
 
+      pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/ && zip -r ${ARTIFACTS_DIR}/ossia-max-osx.zip ossia && popd
+
+      notarize_osx "${ARTIFACTS_DIR}/ossia-max-osx.zip" "io.ossia.ossia-max"
+
+      ${ARTIFACTS_DIR}/ossia-max-osx.zip
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       # _version.py is not valid in a non-git folder
       # When making a wheel, we write the git tag from which it has been build
@@ -587,6 +603,7 @@ def get_versions():
       codesign_osx "$TRAVIS_BUILD_DIR/ossia-qml/"
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml" && tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
+      notarize_osx "${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz" "io.ossia.ossia-qml"
 
     elif [[  "$BUILD_TYPE" == "ossia-cpp" ]]; then
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
@@ -605,6 +622,8 @@ def get_versions():
 
         cd $TRAVIS_BUILD_DIR/install
         tar -czf ${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz *
+
+        notarize_osx "${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz" "io.ossia.ossia-cpp"
     else
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
                -DOSSIA_STATIC=$OSSIA_STATIC \
@@ -637,6 +656,7 @@ def get_versions():
         else
           cd $TRAVIS_BUILD_DIR/install
           tar -czf ${ARTIFACTS_DIR}/libossia-native-macos.tar.gz include lib
+          notarize_osx "${ARTIFACTS_DIR}/libossia-native-macos.tar.gz" "io.ossia.ossia-native"
         fi
       fi
     fi
