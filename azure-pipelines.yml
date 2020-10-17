@@ -177,9 +177,9 @@ stages:
 
           displayName: Build
           env:
-            - MAC_CERT_B64: $(MAC_CERT_B64)
-            - MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
-            - MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
 
         - task: PublishPipelineArtifact@1
           inputs:
@@ -303,9 +303,9 @@ stages:
 
           displayName: Build
           env:
-            - MAC_CERT_B64: $(MAC_CERT_B64)
-            - MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
-            - MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
 
         - task: PublishPipelineArtifact@1
           inputs:
