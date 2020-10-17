@@ -61,20 +61,22 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
 
   void ZeroconfOscqueryListener::browse()
   {
-    std::lock_guard lock(s_mutex);
-    for(const auto& event : s_connection_events)
     {
-      switch(event.first)
+      std::lock_guard lock(s_mutex);
+      for(const auto& event : s_connection_events)
       {
-        case ZeroconfOscqueryListener::ConnectionEvent::ADDED:
-          addInstance(event.second);
-          break;
-        case  ZeroconfOscqueryListener::ConnectionEvent::REMOVED:
-          removeInstance(event.second);
-          break;
+        switch(event.first)
+        {
+          case ZeroconfOscqueryListener::ConnectionEvent::ADDED:
+            addInstance(event.second);
+            break;
+          case  ZeroconfOscqueryListener::ConnectionEvent::REMOVED:
+            removeInstance(event.second);
+            break;
+        }
       }
+      s_connection_events.clear();
     }
-    s_connection_events.clear();
 
     service.browse(0);
   }

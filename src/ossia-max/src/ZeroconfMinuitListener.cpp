@@ -127,37 +127,39 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
 
   void ZeroconfMinuitListener::browse()
   {
-    std::lock_guard lock(s_mutex);
-
-    for(const auto& s : s_connection_events)
     {
-      switch(s.first)
+      std::lock_guard lock(s_mutex);
+
+      for(const auto& s : s_connection_events)
       {
-        case ZeroconfMinuitListener::ConnectionEvent::ADDED:
-          addDevice(s.second);
-          break;
-        case ZeroconfMinuitListener::ConnectionEvent::REMOVED:
-          break;
+        switch(s.first)
+        {
+          case ZeroconfMinuitListener::ConnectionEvent::ADDED:
+            addDevice(s.second);
+            break;
+          case ZeroconfMinuitListener::ConnectionEvent::REMOVED:
+            break;
 
-          std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
-          auto it = ossia::find_if(s_devices, [&](const auto& d) {
-            return d->get_name() == s.second;
-          });
+            std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+            auto it = ossia::find_if(s_devices, [&](const auto& d) {
+              return d->get_name() == s.second;
+            });
 
-          if (it != s_devices.end())
-          {
-            for (auto client : ossia_max::instance().clients.reference())
+            if (it != s_devices.end())
             {
-              if(client->is_zeroconf() && client->m_device->get_name() == it->get()->get_name())
+              for (auto client : ossia_max::instance().clients.reference())
               {
-                ossia::max::client::client::disconnect(client);
-                clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
+                if(client->is_zeroconf() && client->m_device->get_name() == it->get()->get_name())
+                {
+                  ossia::max::client::client::disconnect(client);
+                  clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
+                }
               }
             }
-          }
+        }
       }
+      s_connection_events.clear();
     }
-    s_connection_events.clear();
 
     service.browse(0);
   }
