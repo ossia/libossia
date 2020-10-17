@@ -1,6 +1,15 @@
 #!/bin/bash -ex
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
 
+function codesign_osx folder {
+  security unlock-keychain -p travis build.keychain
+  find $folder -name '*.dylib' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+  find $folder -name '*.mxo' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+  find $folder -name '*.whl' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+  find $folder -name '*.so' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+  find $folder -name '*.pd_darwin' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+}
+
 case "$TRAVIS_OS_NAME" in
   linux)
     export CMAKE_BIN=$(readlink -f "$(find cmake-latest/bin -name cmake -type f )")
@@ -454,6 +463,7 @@ def get_versions():
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
+      codesign_osx "$TRAVIS_BUILD_DIR/ossia-pd-package/"
       pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-pd-osx.tar.gz ossia && popd
 
       $TRAVIS_BUILD_DIR/ci/push_deken.sh
@@ -476,6 +486,7 @@ def get_versions():
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
+      codesign_osx "$TRAVIS_BUILD_DIR/ossia-pd-package/"
       pushd $TRAVIS_BUILD_DIR/ossia-pd-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-purr-data-osx.tar.gz ossia && popd
 
     elif [[ "$BUILD_TYPE" == "PdTest" ]]; then
@@ -522,6 +533,7 @@ def get_versions():
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
+      codesign_osx "$TRAVIS_BUILD_DIR/ossia-max-package/"
       pushd ${TRAVIS_BUILD_DIR}/ossia-max-package/ && tar -czf ${ARTIFACTS_DIR}/ossia-max-osx.tar.gz ossia && popd
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
@@ -547,7 +559,9 @@ def get_versions():
                  ..
 
       $CMAKE_BIN --build . -- -j2
+      codesign_osx "$TRAVIS_BUILD_DIR"
       $CMAKE_BIN --build . --target install
+      codesign_osx "$TRAVIS_BUILD_DIR"
 
       # now we just want to install the wheel and run the tests
       ${PYTHON_BIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl
@@ -570,6 +584,7 @@ def get_versions():
                  ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install
+      codesign_osx "$TRAVIS_BUILD_DIR/ossia-qml/"
 
       cd "$TRAVIS_BUILD_DIR/ossia-qml" && tar -czf ${ARTIFACTS_DIR}/ossia-qml-osx.tar.gz Ossia
 
@@ -586,6 +601,7 @@ def get_versions():
 
         $CMAKE_BIN --build . -- -j2
         $CMAKE_BIN --build . --target install
+        codesign_osx "$TRAVIS_BUILD_DIR/install/"
 
         cd $TRAVIS_BUILD_DIR/install
         tar -czf ${ARTIFACTS_DIR}/libossia-cpp-osx.tar.gz *
@@ -612,6 +628,7 @@ def get_versions():
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target ExperimentalTest
       $CMAKE_BIN --build . --target install
+      codesign_osx "$TRAVIS_BUILD_DIR/install/"
 
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
