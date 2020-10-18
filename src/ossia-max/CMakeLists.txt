@@ -74,6 +74,8 @@ set(PROJECT_SRCS
     src/logger.cpp
     src/model.hpp
     src/model.cpp
+    src/monitor.cpp
+    src/monitor.hpp
     src/node_base.cpp
     src/node_base.hpp
     src/parameter.hpp
@@ -84,6 +86,8 @@ set(PROJECT_SRCS
     src/remote.cpp
     src/router.cpp
     src/router.hpp
+    src/search.hpp
+    src/search.cpp
     src/search_filter.hpp
     src/search_filter.cpp
     src/utils.hpp
@@ -160,6 +164,8 @@ set(OSSIA_EXT_LIST
     ossia.explorer
     ossia.router
     ossia.fuzzysearch
+    ossia.search
+    ossia.monitor
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})

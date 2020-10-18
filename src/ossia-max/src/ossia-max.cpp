@@ -293,6 +293,8 @@ template void object_quarantining<model>(model*);
 template void object_quarantining<remote>(remote*);
 template void object_quarantining<view>(view*);
 template void object_quarantining<explorer>(explorer*);
+template void object_quarantining<search>(search*);
+template void object_quarantining<monitor>(monitor*);
 
 template <typename T>
 void object_dequarantining(T* x)
