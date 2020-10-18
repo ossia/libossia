@@ -73,7 +73,7 @@ struct faust_setup_ui : UI
   }
 };
 
-template <typename Node>
+template <typename Node, bool Synth>
 struct faust_exec_ui final : UI
 {
   Node& fx;
@@ -83,6 +83,13 @@ struct faust_exec_ui final : UI
 
   void addButton(const char* label, FAUSTFLOAT* zone) override
   {
+    if constexpr(Synth)
+    {
+      using namespace std::literals;
+      if (label == "Panic"sv || label == "gate"sv)
+        return;
+    }
+
     fx.root_inputs().push_back(new ossia::value_inlet);
     fx.controls.push_back(
         {fx.root_inputs().back()->template target<ossia::value_port>(), zone});
@@ -97,6 +104,12 @@ struct faust_exec_ui final : UI
       const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
       FAUSTFLOAT max, FAUSTFLOAT step) override
   {
+    if constexpr(Synth)
+    {
+      using namespace std::literals;
+      if (label == "gain"sv || label == "freq"sv || label == "sustain"sv)
+        return;
+    }
     fx.root_inputs().push_back(new ossia::value_inlet);
     fx.controls.push_back(
         {fx.root_inputs().back()->template target<ossia::value_port>(), zone});
@@ -254,6 +267,8 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk, 
       }
     }
 
+    dsp.updateAllZones();
+
     auto& midi_in = self.root_inputs()[0]->template cast<ossia::midi_port>();
     auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
 
@@ -337,4 +352,185 @@ void faust_exec_synth(Node& self, DspPoly& dsp, const ossia::token_request& tk, 
     }
   }
 }
+
+// NOTE: all the code below taken and slightly modified from poly-dsp
+// with small modifications to allow thread-safe update of GroupUI
+// Keep up-to-date with updates in faust.. last update 2020-10-18
+// GPLv3
+// Copyright is the Faust team and Faust contributors
+// Copyright (C) 2003-2017 GRAME, Centre National de Creation Musicale
+class custom_dsp_poly_effect : public dsp_poly {
+
+    private:
+        mydsp_poly* fPolyDSP;
+
+    public:
+        custom_dsp_poly_effect(mydsp_poly* dsp1, dsp* dsp2)
+        :dsp_poly(dsp2), fPolyDSP(dsp1)
+        {}
+
+        virtual ~custom_dsp_poly_effect()
+        {
+            // dsp_poly_effect is also a decorator_dsp, which will free fPolyDSP
+        }
+
+        void updateAllZones()
+        {
+          fPolyDSP->fGroups.updateAllZones();
+        }
+        // MIDI API
+        MapUI* keyOn(int channel, int pitch, int velocity)
+        {
+            return fPolyDSP->keyOn(channel, pitch, velocity);
+        }
+        void keyOff(int channel, int pitch, int velocity)
+        {
+            fPolyDSP->keyOff(channel, pitch, velocity);
+        }
+        void keyPress(int channel, int pitch, int press)
+        {
+            fPolyDSP->keyPress(channel, pitch, press);
+        }
+        void chanPress(int channel, int press)
+        {
+            fPolyDSP->chanPress(channel, press);
+        }
+        void ctrlChange(int channel, int ctrl, int value)
+        {
+            fPolyDSP->ctrlChange(channel, ctrl, value);
+        }
+        void ctrlChange14bits(int channel, int ctrl, int value)
+        {
+            fPolyDSP->ctrlChange14bits(channel, ctrl, value);
+        }
+        void pitchWheel(int channel, int wheel)
+        {
+            fPolyDSP->pitchWheel(channel, wheel);
+        }
+        void progChange(int channel, int pgm)
+        {
+            fPolyDSP->progChange(channel, pgm);
+        }
+
+        // Group API
+        void setGroup(bool group)
+        {
+            fPolyDSP->setGroup(group);
+        }
+        bool getGroup()
+        {
+            return fPolyDSP->getGroup();
+        }
+};
+
+struct custom_dsp_poly_factory : public dsp_factory {
+
+    dsp_factory* fProcessFactory;
+    dsp_factory* fEffectFactory;
+
+    std::string getEffectCode(const std::string& dsp_content)
+    {
+        std::stringstream effect_code;
+        effect_code << "adapt(1,1) = _; adapt(2,2) = _,_; adapt(1,2) = _ <: _,_; adapt(2,1) = _,_ :> _;";
+        effect_code << "adaptor(F,G) = adapt(outputs(F),inputs(G)); dsp_code = environment{ " << dsp_content << " };";
+        effect_code << "process = adaptor(dsp_code.process, dsp_code.effect) : dsp_code.effect;";
+        return effect_code.str();
+    }
+
+    custom_dsp_poly_factory(dsp_factory* process_factory = NULL,
+                     dsp_factory* effect_factory = NULL):
+    fProcessFactory(process_factory)
+    ,fEffectFactory(effect_factory)
+    {}
+
+    virtual ~custom_dsp_poly_factory()
+    {}
+
+    virtual std::string getName() { return fProcessFactory->getName(); }
+    virtual std::string getSHAKey() { return fProcessFactory->getSHAKey(); }
+    virtual std::string getDSPCode() { return fProcessFactory->getDSPCode(); }
+    virtual std::string getCompileOptions() { return fProcessFactory->getCompileOptions(); }
+    virtual std::vector<std::string> getLibraryList() { return fProcessFactory->getLibraryList(); }
+    virtual std::vector<std::string> getIncludePathnames() { return fProcessFactory->getIncludePathnames(); }
+
+    virtual void setMemoryManager(dsp_memory_manager* manager)
+    {
+        fProcessFactory->setMemoryManager(manager);
+        if (fEffectFactory) {
+            fEffectFactory->setMemoryManager(manager);
+        }
+    }
+    virtual dsp_memory_manager* getMemoryManager() { return fProcessFactory->getMemoryManager(); }
+
+    /* Create a new polyphonic DSP instance with global effect, to be deleted with C++ 'delete'
+     *
+     * @param nvoices - number of polyphony voices, should be at least 1
+     * @param control - whether voices will be dynamically allocated and controlled (typically by a MIDI controler).
+     *                If false all voices are always running.
+     * @param group - if true, voices are not individually accessible, a global "Voices" tab will automatically dispatch
+     *                a given control on all voices, assuming GUI::updateAllGuis() is called.
+     *                If false, all voices can be individually controlled.
+     */
+    custom_dsp_poly_effect* createPolyDSPInstance(int nvoices, bool control, bool group)
+    {
+        auto dsp_poly = new mydsp_poly(fProcessFactory->createDSPInstance(), nvoices, control, group);
+        if (fEffectFactory) {
+            // the 'dsp_poly' object has to be controlled with MIDI, so kept separated from new dsp_sequencer(...) object
+            return new custom_dsp_poly_effect(dsp_poly, new dsp_sequencer(dsp_poly, fEffectFactory->createDSPInstance()));
+        } else {
+            return new custom_dsp_poly_effect(dsp_poly, dsp_poly);
+        }
+    }
+
+    /* Create a new DSP instance, to be deleted with C++ 'delete' */
+    dsp* createDSPInstance()
+    {
+        return fProcessFactory->createDSPInstance();
+    }
+
+};
+struct custom_llvm_dsp_poly_factory : public custom_dsp_poly_factory {
+
+    custom_llvm_dsp_poly_factory(const std::string& name_app,
+                          const std::string& dsp_content,
+                          int argc, const char* argv[],
+                          const std::string& target,
+                          std::string& error_msg,
+                          int opt_level = -1)
+    {
+        fProcessFactory = createDSPFactoryFromString(name_app, dsp_content, argc, argv, target, error_msg);
+        if (fProcessFactory) {
+            fEffectFactory = createDSPFactoryFromString(name_app, getEffectCode(dsp_content), argc, argv, target, error_msg);
+            if (!fEffectFactory) {
+                std::cerr << "llvm_dsp_poly_factory : fEffectFactory " << error_msg;
+                // The error message is not really needed...
+                error_msg = "";
+            }
+        } else {
+            std::cerr << "llvm_dsp_poly_factory : fProcessFactory " << error_msg;
+            throw std::bad_alloc();
+        }
+    }
+
+    virtual ~custom_llvm_dsp_poly_factory()
+    {
+        deleteDSPFactory(static_cast<llvm_dsp_factory*>(fProcessFactory));
+        deleteDSPFactory(static_cast<llvm_dsp_factory*>(fEffectFactory));
+    }
+};
+
+static custom_llvm_dsp_poly_factory* createCustomPolyDSPFactoryFromString(const std::string& name_app,
+                                                             const std::string& dsp_content,
+                                                             int argc, const char* argv[],
+                                                             const std::string& target,
+                                                             std::string& error_msg,
+                                                             int opt_level = -1)
+{
+    try {
+        return new custom_llvm_dsp_poly_factory(name_app, dsp_content, argc, argv, target, error_msg, opt_level);
+    } catch (...) {
+        return NULL;
+    }
+}
+
 }
