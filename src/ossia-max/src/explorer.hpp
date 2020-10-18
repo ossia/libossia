@@ -30,20 +30,9 @@ struct explorer : object_base, search_filter
   explorer(long argc, t_atom* argv);
   ~explorer();
 
-  void stop_monitoring();
-
-  bool register_node(const std::vector<std::shared_ptr<t_matcher>>& node);
+  bool register_node(std::vector<std::shared_ptr<t_matcher>>& node);
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
-
-  // device callbacks
-  void on_node_created_callback(const ossia::net::node_base& node);
-  void on_node_removing_callback(const ossia::net::node_base& node);
-  void on_node_renamed_callback(const ossia::net::node_base& node, const std::string& name);
-  void on_parameter_created_callback(const ossia::net::parameter_base& addr);
-  void on_parameter_removing_callback(const ossia::net::parameter_base& addr);
-  void on_device_deleted(const ossia::net::node_base&);
-  void handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action);
 
   ossia::safe_set<explorer*>& quarantine();
 
@@ -53,16 +42,8 @@ struct explorer : object_base, search_filter
   static void assist(explorer* x, void* b, long m, long a, char* s);
 
   static t_symbol* s_explore;
-  static t_symbol* s_search;
-  static t_symbol* s_monitor;
   static t_symbol* s_size;
   static t_symbol* s_namespace;
-  static t_symbol* s_parameter;
-  static t_symbol* s_node;
-  static t_symbol* s_created;
-  static t_symbol* s_removing;
-  static t_symbol* s_renamed;
-  static t_symbol* s_open;
 };
 } // max namespace
 } // ossia namespace

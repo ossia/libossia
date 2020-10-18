@@ -16,17 +16,8 @@ using namespace ossia::max;
 #pragma mark ossia_explorer class methods
 
 t_symbol* explorer::s_explore = gensym("explore");
-t_symbol* explorer::s_search = gensym("search");
-t_symbol* explorer::s_monitor = gensym("monitor");
 t_symbol* explorer::s_size = gensym("size");
 t_symbol* explorer::s_namespace = gensym("namespace");
-t_symbol* explorer::s_open = gensym("open");
-
-t_symbol* explorer::s_parameter = gensym("parameter");
-t_symbol* explorer::s_node = gensym("node");
-t_symbol* explorer::s_created = gensym("created");
-t_symbol* explorer::s_removing = gensym("removing");
-t_symbol* explorer::s_renamed = gensym("renamed");
 
 extern "C" void ossia_explorer_setup()
 {
@@ -42,15 +33,6 @@ extern "C" void ossia_explorer_setup()
       c, (method)explorer::execute_method,
       "explore", A_GIMME, 0);
   class_addmethod(
-      c, (method)explorer::execute_method,
-      "search", A_GIMME, 0);
-  class_addmethod(
-      c, (method)explorer::execute_method,
-      "open", A_GIMME, 0);
-  class_addmethod(
-      c, (method)explorer::execute_method,
-      "monitor", A_GIMME, 0);
-  class_addmethod(
       c, (method)explorer::assist,
       "assist", A_CANT, 0);
   class_addmethod(
@@ -58,14 +40,6 @@ extern "C" void ossia_explorer_setup()
       "notify", A_CANT, 0);
 
   search_filter::setup_attribute<explorer>(c);
-  /*
-  CLASS_ATTR_SYM(c, "sort", 0, explorer, m_sort);
-  CLASS_ATTR_LABEL(c, "sort", 0, "Sort method");
-
-  CLASS_ATTR_LONG(c, "highlight", 0, explorer, m_highlight);
-  CLASS_ATTR_LABEL(c, "highlight", 0, "Highlight objects returned by search");
-  CLASS_ATTR_FILTER_CLIP(c, "highlight", 0, 1);
-  */
 
   CLASS_ATTR_LONG(c, "depth", 0, explorer, m_depth);
   CLASS_ATTR_LABEL(c, "depth", 0, "Limit exploration depth");
@@ -124,27 +98,11 @@ explorer::explorer(long argc, t_atom *argv)
 
 explorer::~explorer()
 {
-  stop_monitoring();
   outlet_delete(m_dumpout);
-}
-
-void explorer::stop_monitoring()
-{
-  for(const auto& dev : m_devices)
-  {
-    dev->on_node_created.disconnect<&explorer::on_node_created_callback>(this);
-    dev->on_node_removing.disconnect<&explorer::on_node_removing_callback>(this);
-    dev->on_node_renamed.disconnect<&explorer::on_node_renamed_callback>(this);
-    dev->on_parameter_created.disconnect<&explorer::on_parameter_created_callback>(this);
-    dev->on_parameter_removing.disconnect<&explorer::on_parameter_removing_callback>(this);
-    dev->get_root_node().about_to_be_deleted.disconnect<&explorer::on_device_deleted>(this);
-  }
-  m_devices.clear();
 }
 
 void explorer::parse_args(t_symbol* s, long argc, t_atom* argv)
 {
-  stop_monitoring();
   m_method = s;
   m_name = nullptr;
   if(argc > 0 && argv->a_type == A_SYM)
@@ -160,155 +118,48 @@ void explorer::execute_method(explorer* x, t_symbol* s, long argc, t_atom* argv)
   ossia_register(x);
 }
 
-bool explorer::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool explorer::register_node(std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   update_path();
 
-  if(m_method == s_explore)
-  {
-    // get namespace of given nodes
-    std::vector<ossia::net::node_base*> nodes;
-    for(const auto& m : matchers)
-    {
-      auto node = m->get_node();
-      std::string address(m_name->s_name);
-      std::vector<ossia::net::node_base*> found_nodes;
-      if(m_addr_scope == ossia::net::address_scope::global)
-      {
-        found_nodes = {node};
-      }
-      else
-      {
-        found_nodes = ossia::net::find_nodes(*node, address);
-      }
+  ossia::remove_erase_if(matchers, [&](const std::shared_ptr<t_matcher>& m)
+                         { return !filter(*m->get_node()); });
 
-      for(const auto& n : found_nodes)
-      {
-        auto vec = ossia::net::list_all_children(n, m_depth);
-        nodes.insert(nodes.end(), vec.begin(), vec.end());
-      }
+  // get namespace of given nodes
+  std::vector<ossia::net::node_base*> nodes;
+  for(const auto& m : matchers)
+  {
+    auto node = m->get_node();
+    std::string address(m_name->s_name);
+    std::vector<ossia::net::node_base*> found_nodes;
+    if(m_addr_scope == ossia::net::address_scope::global)
+    {
+      found_nodes = {node};
+    }
+    else
+    {
+      found_nodes = ossia::net::find_nodes(*node, address);
     }
 
-    ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
-      return !filter(*m);
-    });
-
-    t_atom a;
-    A_SETLONG(&a, nodes.size());
-    outlet_anything(m_dumpout, s_size, 1, &a);
-    for(const auto& n : nodes)
+    for(const auto& n : found_nodes)
     {
-      auto s = ossia::net::address_string_from_node(*n);
-      A_SETSYM(&a, gensym(s.c_str()));
-      outlet_anything(m_dumpout, s_namespace, 1, &a);
+      auto vec = ossia::net::list_all_children(n, m_depth);
+      nodes.insert(nodes.end(), vec.begin(), vec.end());
     }
   }
-  else if(m_method == s_search)
+
+  ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
+    return !filter(*m);
+  });
+
+  t_atom a;
+  A_SETLONG(&a, nodes.size());
+  outlet_anything(m_dumpout, s_size, 1, &a);
+  for(const auto& n : nodes)
   {
-    // only return given nodes addresses
-    t_atom a;
-    A_SETLONG(&a, matchers.size());
-    outlet_anything(m_dumpout, s_size, 1, &a);
-    for(const auto& m : matchers)
-    {
-      std::string addr = ossia::net::address_string_from_node(*m->get_node());
-      A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(m_dumpout, s_namespace, 1, &a);
-    }
-  }
-  else if(m_method == s_monitor)
-  {
-    for(const auto& n : matchers)
-    {
-      m_devices.insert(&n->get_node()->get_device());
-    }
-
-    for(const auto& dev : m_devices)
-    {
-      // TODO register other signals according to attributes' values
-      dev->on_node_created.connect<&explorer::on_node_created_callback>(this);
-      dev->on_node_removing.connect<&explorer::on_node_removing_callback>(this);
-      dev->on_node_renamed.connect<&explorer::on_node_renamed_callback>(this);
-      dev->on_parameter_created.connect<&explorer::on_parameter_created_callback>(this);
-      dev->on_parameter_removing.connect<&explorer::on_parameter_removing_callback>(this);
-      dev->get_root_node().about_to_be_deleted.connect<&explorer::on_device_deleted>(this);
-    }
-  }
-  else if(m_method == s_open)
-  {
-
-    auto open_parent = [](object_base* x, ossia::net::node_base* node)
-    {
-      for ( auto& om : x->m_matchers )
-      {
-        if ( om->get_node() == node )
-        {
-          t_object *jp{};
-
-          // get the object's parent patcher
-          object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
-
-          if (jp)
-            typedmess(jp, gensym("front"), 0, NULL);	// opens the subpatcher
-
-          x->highlight();
-        }
-      }
-    };
-
-    for(const auto& m : matchers)
-    {
-      auto node = m->get_node();
-
-      if(node->get_parameter())
-      {
-        // if node has a paremeter, search only for ossia.parameter,
-        // ossia.remote & ossia.attribute object
-        for ( auto param : ossia_max::instance().parameters.reference() )
-        {
-          open_parent(param, node);
-        }
-
-        for ( auto remote : ossia_max::instance().remotes.reference() )
-        {
-          open_parent(remote, node);
-        }
-
-        for ( auto attr : ossia_max::instance().attributes.reference() )
-        {
-          open_parent(attr, node);
-        }
-      }
-      else if(!node->get_parent())
-      {
-        // if node doesn't have a parent node, then search only
-        // ossia.device and ossia.client objects
-        for ( auto dev : ossia_max::instance().devices.reference() )
-        {
-          open_parent(dev, node);
-        }
-
-        for ( auto client : ossia_max::instance().clients.reference() )
-        {
-          open_parent(client, node);
-        }
-      }
-      else
-      {
-        // if node has a parent but no paremeter,
-        // search only for ossia.model and ossia.view object
-        for ( auto model : ossia_max::instance().models.reference() )
-        {
-          open_parent(model, node);
-        }
-
-        for ( auto view : ossia_max::instance().views.reference() )
-        {
-          open_parent(view, node);
-        }
-      }
-
-    }
+    auto s = ossia::net::address_string_from_node(*n);
+    A_SETSYM(&a, gensym(s.c_str()));
+    outlet_anything(m_dumpout, s_namespace, 1, &a);
   }
 
   return true;
@@ -322,70 +173,7 @@ bool explorer::unregister()
 
   m_parent_node = nullptr;
 
-  stop_monitoring();
   return true;
-}
-
-void explorer::on_node_created_callback(const ossia::net::node_base& node)
-{
-  handle_modification(node, s_node, s_created);
-}
-
-void explorer::on_node_removing_callback(const ossia::net::node_base& node)
-{
-  handle_modification(node, s_node, s_created);
-}
-
-void explorer::on_node_renamed_callback(const ossia::net::node_base& node, const std::string&)
-{
-  handle_modification(node, s_node, s_created);
-}
-
-void explorer::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  handle_modification(param.get_node(), s_parameter, s_created);
-}
-
-void explorer::on_parameter_removing_callback(const ossia::net::parameter_base& param)
-{
-  handle_modification(param.get_node(), s_parameter, s_removing);
-}
-
-void explorer::handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
-{
-  if ( m_path )
-  {
-    if( ossia::traversal::match(*m_path, node) )
-    {
-      t_atom a[3];
-      A_SETSYM(a, s_parameter);
-      A_SETSYM(a+1, s_created);
-      std::string address = ossia::net::osc_parameter_string_with_device(node);
-      A_SETSYM(a+2, gensym(address.c_str()));
-      outlet_anything(m_dumpout, s_monitor, 3, a);
-    }
-  }
-  else
-  {
-    std::string address = ossia::net::osc_parameter_string_with_device(node);
-    if( boost::algorithm::ends_with(address, m_name->s_name) )
-    {
-      t_atom a[3];
-      A_SETSYM(a, s_parameter);
-      A_SETSYM(a+1, s_created);
-      A_SETSYM(a+2, gensym(address.c_str()));
-      outlet_anything(m_dumpout, s_monitor, 3, a);
-    }
-  }
-}
-
-void explorer::on_device_deleted(const net::node_base & node)
-{
-  auto it = m_devices.find(&node.get_device());
-  if(it != m_devices.end())
-  {
-    m_devices.erase(it);
-  }
 }
 
 ossia::safe_set<explorer*>& explorer::quarantine()

@@ -23,6 +23,8 @@
 #include "ossia_object.hpp"
 #include "logger.hpp"
 #include "explorer.hpp"
+#include "monitor.hpp"
+#include "search.hpp"
 #include "router.hpp"
 #include "fuzzysearch.hpp"
 
@@ -106,6 +108,8 @@ public:
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
     if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
+    if(std::is_same<T, ossia::max::monitor>::value) return ossia_monitor_class;
+    if(std::is_same<T, ossia::max::search>::value) return ossia_search_class;
     if(std::is_same<T, ossia::max::router>::value) return ossia_router_class;
     if(std::is_same<T, ossia::max::fuzzysearch>::value) return ossia_fuzzysearch_class;
     return nullptr;
@@ -132,6 +136,8 @@ public:
   t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};
   t_class* ossia_explorer_class{};
+  t_class* ossia_monitor_class{};
+  t_class* ossia_search_class{};
   t_class* ossia_fuzzysearch_class{};
   t_class* ossia_logger_class{};
   t_class* ossia_model_class{};
@@ -149,6 +155,8 @@ public:
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<attribute*> attributes;
   ossia::safe_vector<explorer*> explorers;
+  ossia::safe_vector<monitor*> monitors;
+  ossia::safe_vector<search*> searchs;
 
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
@@ -166,6 +174,8 @@ public:
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
   ossia::safe_set<explorer*> explorer_quarantine;
+  ossia::safe_set<monitor*> monitor_quarantine;
+  ossia::safe_set<search*> search_quarantine;
 
   bool registering_nodes=false;
 
