@@ -53,14 +53,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
     if(argv[argc].a_type == A_SYM)
     {
       std::string pattern(argv[argc].a_w.w_sym->s_name);
-      if(pattern.back() != '/')
-      {
-        x->m_patterns.push_back({pattern, pattern + '/'});
-      }
-      else
-      {
-        x->m_patterns.push_back({pattern.substr(0, pattern.size()-1), pattern});
-      }
+      x->m_patterns.push_back(pattern);
 
       x->m_outlets.push_back(outlet_new(x, nullptr));
     }
@@ -82,38 +75,29 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   if(inlet > 0)
   {
     x->m_patterns.clear();
-
-    if(address.back() != '/')
-    {
-      x->m_patterns.push_back({address, address + '/'});
-    }
-    else
-    {
-      x->m_patterns.push_back({address.substr(0, address.size()-1), address});
-    }
-    x->m_outlets.push_back(outlet_new(x, nullptr));
-
+    x->m_patterns.push_back(address);
   }
   else
   {
     bool match = false;
     for(int i = 0 ; i < x->m_patterns.size(); i++)
     {
-      for(const auto& pattern : x->m_patterns[i])
+      const auto& pattern = x->m_patterns[i];
+
+      if(boost::algorithm::starts_with(address, pattern))
       {
-        if(boost::algorithm::starts_with(address, pattern))
+        int offset = pattern.size();
+
+        std::string sub = address.substr(offset);
+        if(sub.size() > 0)
         {
-          std::string sub = address.substr(pattern.size());
-          if(sub.size() > 0)
-          {
-            outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
-          }
-          else
-          {
-            outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
-          }
-          match = true;
+          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
         }
+        else
+        {
+          outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
+        }
+        match = true;
       }
     }
 

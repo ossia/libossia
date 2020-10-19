@@ -25,7 +25,7 @@ struct router
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
-  std::vector<std::array<std::string, 2>> m_patterns{};
+  std::vector<std::string> m_patterns{};
   std::vector<void*> m_outlets{};
   void* m_inlet{};
 
