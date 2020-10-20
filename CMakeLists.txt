@@ -21,7 +21,12 @@ project(ossia C CXX)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 find_package(Threads)
-find_package(Qt5 5.3 COMPONENTS Core)
+
+if(NOT QT_VERSION)
+  set(QT_VERSION Qt5 5.9)
+  set(QT_PREFIX Qt5)
+endif()
+find_package(${QT_VERSION} COMPONENTS Core)
 
 # Options
 ## FIXME : the following variable doesn't have a type

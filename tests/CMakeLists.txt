@@ -153,9 +153,9 @@ if(OSSIA_BENCHMARKS)
   endFunction()
 
   if(OSSIA_DATAFLOW)
-    if(TARGET Qt5::Core)
+    if(TARGET ${QT_PREFIX}::Core)
       ossia_add_bench(GraphBenchmark              "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/GraphBenchmark.cpp")
-      target_link_libraries(ossia_GraphBenchmark PRIVATE Qt5::Core)
+      target_link_libraries(ossia_GraphBenchmark PRIVATE ${QT_PREFIX}::Core)
     endif()
 
     if(TARGET TBB::TBB)

@@ -50,9 +50,9 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   endif()
 
   if(OSSIA_QT)
-    find_package(Qt5 COMPONENTS Widgets)
+    find_package(${QT_VERSION} COMPONENTS Widgets)
     ossia_add_example(qt_colors "${CMAKE_CURRENT_SOURCE_DIR}/Qt/Colors/main.cpp")
-    target_link_libraries(ossia_qt_colors_example PRIVATE Qt5::Widgets)
+    target_link_libraries(ossia_qt_colors_example PRIVATE ${QT_PREFIX}::Widgets)
   endif()
 endif()
 
