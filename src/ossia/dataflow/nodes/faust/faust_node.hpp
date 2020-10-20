@@ -6,11 +6,12 @@ namespace ossia::nodes
 {
 class faust_fx final : public ossia::graph_node
 {
-  dsp* m_dsp{};
+  std::shared_ptr<dsp> m_dsp{};
 
 public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
-  faust_fx(llvm_dsp* dsp) : m_dsp{dsp}
+  faust_fx(std::shared_ptr<llvm_dsp> dsp)
+    : m_dsp{std::move(dsp)}
   {
     m_inlets.push_back(new ossia::audio_inlet);
     m_outlets.push_back(new ossia::audio_outlet);
@@ -36,11 +37,12 @@ public:
 
 class faust_synth final : public ossia::graph_node
 {
-  ossia::nodes::custom_dsp_poly_effect* m_dsp{};
+  std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> m_dsp{};
 
 public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
-  faust_synth(ossia::nodes::custom_dsp_poly_effect* dsp) : m_dsp{dsp}
+  faust_synth(std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> dsp)
+    : m_dsp{std::move(dsp)}
   {
     m_inlets.push_back(new ossia::midi_inlet);
     m_outlets.push_back(new ossia::audio_outlet);
