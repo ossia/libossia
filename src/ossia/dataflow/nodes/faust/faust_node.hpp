@@ -21,7 +21,7 @@ public:
 
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    faust_exec(*this, *m_dsp, tk, e);
+    faust_node_utils{}.exec(*this, *m_dsp, tk, e);
   }
 
   std::string label() const noexcept override
@@ -44,6 +44,7 @@ public:
   faust_synth(std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> dsp)
     : m_dsp{std::move(dsp)}
   {
+    m_inlets.push_back(new ossia::audio_inlet);
     m_inlets.push_back(new ossia::midi_inlet);
     m_outlets.push_back(new ossia::audio_outlet);
     faust_exec_ui<faust_synth, true> ex{*this};
@@ -52,7 +53,7 @@ public:
 
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    faust_exec_synth(*this, *m_dsp, tk, e);
+    faust_node_utils{}.exec_synth(*this, *m_dsp, tk, e);
   }
 
   std::string label() const noexcept override
