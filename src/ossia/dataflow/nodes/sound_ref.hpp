@@ -166,14 +166,11 @@ public:
         ap.samples[i].resize(e.bufferSize());
       }
 
-      const double tempo_ratio = this->tempo / t.tempo;
-      const double inv_tempo_ratio = this->m_resampler.stretch() ? t.tempo / this->tempo : 1.;
-      m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * inv_tempo_ratio;
-      m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * inv_tempo_ratio;
+      double stretch_ratio = update_stretch(t, e);
 
       // Resample
       m_resampler.run(*this, t, e,
-                      tempo_ratio,
+                      stretch_ratio,
                       chan, len,
                       samples_to_read, samples_to_write, samples_offset,
                       ap);
@@ -202,22 +199,16 @@ public:
   }
 
 private:
+
   audio_span<float> m_data;
   resampler m_resampler;
   ossia::audio_outlet audio_out;
 
   std::size_t start{};
   std::size_t upmix{};
-  double tempo{};
 
   std::size_t m_fileSampleRate{};
   audio_handle m_handle{};
-  audio_stretch_mode m_mode{};
-
-  time_value m_prev_date{};
-
-  int64_t m_loop_duration_samples{};
-  int64_t m_start_offset_samples{};
 };
 }
 

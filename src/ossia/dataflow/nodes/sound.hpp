@@ -242,8 +242,36 @@ public:
   virtual void reset_resampler(time_value date) = 0;
 
 protected:
+  double update_stretch(const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
+  {
+    double stretch_ratio = 1.;
+    double model_ratio = 1.;
+    switch(m_mode)
+    {
+      case ossia::audio_stretch_mode::None:
+        model_ratio = ossia::root_tempo / t.tempo;
+      default:
+        model_ratio = ossia::root_tempo / this->tempo;
+        stretch_ratio = this->tempo / t.tempo;
+        break;
+    }
+
+    m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
+    m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * model_ratio;
+    return stretch_ratio;
+  }
+
+  time_value m_prev_date{};
+
   time_value m_loop_duration{};
   time_value m_start_offset{};
+
+  double tempo{};
+
+  int64_t m_loop_duration_samples{};
+  int64_t m_start_offset_samples{};
+
+  audio_stretch_mode m_mode{};
   bool m_loops{};
 };
 

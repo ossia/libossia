@@ -292,14 +292,11 @@ public:
         ap.samples[chan].resize(e.bufferSize());
       }
 
-      const double tempo_ratio = this->tempo / t.tempo;
-      const double inv_tempo_ratio = this->m_resampler.stretch() ? t.tempo / this->tempo : 1.;
-      m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * inv_tempo_ratio;
-      m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * inv_tempo_ratio;
+      double stretch_ratio = update_stretch(t, e);
 
       // Resample
       m_resampler.run(*this, t, e,
-                      tempo_ratio,
+                      stretch_ratio,
                       channels, len,
                       samples_to_read, samples_to_write, samples_offset,
                       ap);
@@ -338,7 +335,6 @@ private:
 
   std::size_t start{};
   std::size_t upmix{};
-  double tempo{};
 
   using read_fn_t = void(*)(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples);
   read_fn_t m_converter{};
@@ -347,12 +343,6 @@ private:
   void* frame_data{};
 
   resampler m_resampler;
-  audio_stretch_mode m_mode{};
-
-  time_value m_prev_date{};
-
-  int64_t m_loop_duration_samples{};
-  int64_t m_start_offset_samples{};
 };
 
 }
