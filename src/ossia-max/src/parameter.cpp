@@ -161,17 +161,7 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
   bool res = do_registration(nodes);
   if (res)
   {
-    // FIXME remote and attributes should only be registered when adding an ossia.device object
-    // or upon on_parameter_created callback
     ossia_max::instance().nr_parameters.remove_all(this);
-    for (auto remote : ossia_max::instance().nr_remotes.copy())
-    {
-      ossia_register(remote);
-    }
-    for (auto attribute : ossia_max::instance().nr_attributes.copy())
-    {
-      ossia_register(attribute);
-    }
   }
   else
   {
