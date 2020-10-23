@@ -107,7 +107,7 @@ private:
         pa_threaded_mainloop_free = library.symbol<decltype(&::pa_threaded_mainloop_free)>("pa_threaded_mainloop_free");
         pa_threaded_mainloop_get_api = library.symbol<decltype(&::pa_threaded_mainloop_get_api)>("pa_threaded_mainloop_get_api");
         pa_threaded_mainloop_lock = library.symbol<decltype(&::pa_threaded_mainloop_lock)>("pa_threaded_mainloop_lock");
-        pa_threaded_mainloop_unlock = library.symbol<decltype(&::pa_threaded_mainloop_lock)>("pa_threaded_mainloop_unlock");
+        pa_threaded_mainloop_unlock = library.symbol<decltype(&::pa_threaded_mainloop_unlock)>("pa_threaded_mainloop_unlock");
         pa_threaded_mainloop_start = library.symbol<decltype(&::pa_threaded_mainloop_start)>("pa_threaded_mainloop_start");
         pa_threaded_mainloop_stop = library.symbol<decltype(&::pa_threaded_mainloop_stop)>("pa_threaded_mainloop_stop");
         pa_threaded_mainloop_signal = library.symbol<decltype(&::pa_threaded_mainloop_signal)>("pa_threaded_mainloop_signal");
@@ -177,6 +177,27 @@ private:
 class pulseaudio_engine final : public audio_engine
 {
 public:
+  struct mainloop_locker {
+    pulseaudio_engine& engine;
+    mainloop_locker(pulseaudio_engine& engine)
+      : engine{engine}
+    {
+      if(engine.m_mainloop)
+      {
+        const auto &pa = libpulse::instance();
+        pa.pa_threaded_mainloop_lock(engine.m_mainloop);
+      }
+    }
+
+    ~mainloop_locker()
+    {
+      if(engine.m_mainloop)
+      {
+        const auto &pa = libpulse::instance();
+        pa.pa_threaded_mainloop_unlock(engine.m_mainloop);
+      }
+    }
+  };
 
   using sample_rate_t = double;
   using buffer_size_t = uint32_t;
@@ -220,7 +241,7 @@ public:
     };
     pa.pa_context_set_state_callback(m_context, context_callback, m_mainloop);
 
-    pa.pa_threaded_mainloop_lock(m_mainloop);
+    mainloop_locker lock{*this};
 
     if (auto err = pa.pa_threaded_mainloop_start(m_mainloop); err != 0) {
       throw std::runtime_error("Cannot start pulseaudio main loop");
@@ -288,11 +309,12 @@ public:
       throw std::runtime_error("Cannot initialize pulseaudio stream");
     }
 
-    const auto stream_cb = [](pa_stream *s, void *mainloop) {
+    const auto stream_callback = [](pa_stream *s, void *mainloop) {
       auto &pa = libpulse::instance();
       pa.pa_threaded_mainloop_signal((pa_threaded_mainloop *)mainloop, 0);
     };
-    pa.pa_stream_set_state_callback(m_stream, stream_cb, m_mainloop);
+
+    pa.pa_stream_set_state_callback(m_stream, stream_callback, m_mainloop);
     pa.pa_stream_set_write_callback(m_stream, output_callback, this);
 
     // Don't set values here, instead the server will provide what it judges to
@@ -336,8 +358,6 @@ public:
       }
     }
 
-    pa.pa_threaded_mainloop_unlock(m_mainloop);
-
     // cork means pausing, cork = 0 means resuming
     pa.pa_stream_cork(m_stream, 0, success_cb, this);
   }
@@ -351,11 +371,18 @@ public:
   ~pulseaudio_engine() override
   {
     stop();
+
     auto &pa = libpulse::instance();
-    pa.pa_stream_unref(m_stream);
-    m_stream = nullptr;
-    pa.pa_context_unref(m_context);
-    m_context = nullptr;
+    {
+      mainloop_locker lock{*this};
+      pa.pa_stream_unref(m_stream);
+      m_stream = nullptr;
+      pa.pa_context_unref(m_context);
+      m_context = nullptr;
+    }
+
+    pa.pa_threaded_mainloop_stop(m_mainloop);
+
     pa.pa_threaded_mainloop_free(m_mainloop);
     m_mainloop = nullptr;
     m_api = nullptr;
@@ -474,7 +501,6 @@ private:
   }
 
   std::string m_name;
-  double m_sampleRate{};
   buffer_size_t m_frames{};
 
   pa_threaded_mainloop *m_mainloop{};
