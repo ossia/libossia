@@ -224,6 +224,9 @@ void register_quarantinized();
 std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
+std::vector<object_base*> find_objects_to_register(
+    t_object* patcher, object_base* caller = nullptr);
+
 /**
  * @brief             Convenient method to easily get the patcher where a box
  * is

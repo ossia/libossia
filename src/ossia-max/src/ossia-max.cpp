@@ -132,26 +132,13 @@ void ossia_max::register_nodes(ossia_max*)
 
   inst.registering_nodes = true;
 
-  // first fill non-registered containers with all objects
-  fill_nr_vector(inst.devices, inst.nr_devices);
-  fill_nr_vector(inst.models, inst.nr_models);
-  fill_nr_vector(inst.parameters, inst.nr_parameters);
-  fill_nr_vector(inst.clients,    inst.nr_clients);
-  fill_nr_vector(inst.views, inst.nr_views);
-  fill_nr_vector(inst.remotes, inst.nr_remotes);
-  fill_nr_vector(inst.attributes, inst.nr_attributes);
-  fill_nr_vector(inst.explorers, inst.nr_explorers);
-  auto dev_obj_list   = sort_by_depth(inst.nr_devices);
-  auto mod_obj_list   = sort_by_depth(inst.nr_models);
-  auto param_obj_list = sort_by_depth(inst.nr_parameters);
-  auto clt_obj_list = sort_by_depth(inst.nr_clients);
-  auto view_obj_list = sort_by_depth(inst.nr_views);
-  auto rem_obj_list = sort_by_depth(inst.nr_remotes);
-  auto att_obj_list = sort_by_depth(inst.nr_attributes);
-  auto exp_obj_list = sort_by_depth(inst.nr_explorers);
-
   std::vector<t_object*> to_be_initialized;
 
+
+  // we iterate through all objects in the patcher from the top to the bottom
+  // registering ossia.device, ossia.client, ossia.model and ossia.parameter
+  // remote and view are either listening on a parent ossia.device/ossia.client for node/parameter creation
+  // or be registered when we add a new ossia.device/ossia.client
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {
@@ -162,12 +149,53 @@ void ossia_max::register_nodes(ossia_max*)
 
     to_be_initialized.push_back(patcher);
 
+    auto objects_to_register = find_objects_to_register(patcher);
+
+    auto copy = objects_to_register;
+
+    for(auto obj : copy)
+    {
+      switch(obj->m_otype)
+      {
+        case object_class::device:
+        {
+          device* dev = (device*)obj;
+          device::register_children(dev);
+          break;
+        }
+        case object_class::client:
+        {
+          client* clt = (client*)obj;
+          client::register_children(clt);
+          break;
+        }
+        case object_class::param:
+        {
+          parameter* param = (parameter*)obj;
+          ossia_register<parameter>(param);
+          break;
+        }
+        case object_class::model:
+        {
+          model* mdl = (model*)obj;
+          ossia_register<model>(mdl);
+          break;
+        }
+        default:
+          break;
+      }
+    }
+
+    auto dev_obj_list   = sort_by_depth(inst.nr_devices);
     for (auto dev : dev_obj_list)
     {
       if (dev->m_patcher_hierarchy.empty()) continue;
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::max::device::register_children(dev);
     }
+
+    auto mod_obj_list   = sort_by_depth(inst.nr_models);
+
     for (auto model : mod_obj_list)
     {
       if (model->m_patcher_hierarchy.empty()) continue;
@@ -175,6 +203,8 @@ void ossia_max::register_nodes(ossia_max*)
             && model->m_matchers.empty())
         ossia_register(model);
     }
+
+    auto param_obj_list = sort_by_depth(inst.nr_parameters);
     for (auto param : param_obj_list)
     {
       if (param->m_patcher_hierarchy.empty()) continue;
@@ -183,12 +213,15 @@ void ossia_max::register_nodes(ossia_max*)
         ossia_register(param);
     }
 
+    auto clt_obj_list = sort_by_depth(inst.nr_clients);
     for (auto client : clt_obj_list)
     {
       if(client->m_patcher_hierarchy.empty()) continue;
       if(client->m_patcher_hierarchy.back() == patcher)
         ossia::max::client::register_children(client);
     }
+
+    auto view_obj_list = sort_by_depth(inst.nr_views);
     for (auto view : view_obj_list)
     {
       if (view->m_patcher_hierarchy.empty()) continue;
@@ -196,6 +229,8 @@ void ossia_max::register_nodes(ossia_max*)
             && view->m_matchers.empty())
         ossia_register(view);
     }
+
+    auto rem_obj_list = sort_by_depth(inst.nr_remotes);
     for (auto remote : rem_obj_list)
     {
       if (remote->m_patcher_hierarchy.empty()) continue;
@@ -203,6 +238,8 @@ void ossia_max::register_nodes(ossia_max*)
             && remote->m_matchers.empty())
         ossia_register(remote);
     }
+
+    auto att_obj_list = sort_by_depth(inst.nr_attributes);
     for (auto attr : att_obj_list)
     {
       if (attr->m_patcher_hierarchy.empty()) continue;
@@ -320,21 +357,22 @@ std::vector<object_base*> find_children_to_register(
   t_object* next_box = object_attr_getobj(root_patcher, _sym_firstobject);
 
   t_object* object_box = NULL;
-  object_obex_lookup(caller, gensym("#B"), &object_box);
+  if(caller)
+    object_obex_lookup(caller, gensym("#B"), &object_box);
 
   while (next_box)
   {
     if(next_box != object_box)
     {
+      object_base* object = (object_base*) jbox_get_object(next_box);
+
       t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
       if (curr_classname == search_symbol)
       {
-          object_base* o = (object_base*) jbox_get_object(next_box);
 
           // ignore dying object
-          if (!o->m_dead)
-            found.push_back(o);
-
+          if (!object->m_dead)
+            found.push_back(object);
       }
 
       // if we're looking for ossia.view but found a model, remind it
@@ -346,12 +384,14 @@ std::vector<object_base*> find_children_to_register(
         found_view = true;
 
       // if there is a client or device in the current patcher
-      // don't register anything
+      // return only that object
       if ( search_dev
            && ( curr_classname == gensym("ossia.device")
              || curr_classname == gensym("ossia.client") ))
       {
-        return {};
+        // ignore dying object
+        if (!object->m_dead)
+          return {object};
       }
     }
     next_box = object_attr_getobj(next_box, _sym_nextobject);
@@ -421,6 +461,86 @@ std::vector<object_base*> find_children_to_register(
   }
 
   return found;
+}
+
+
+std::vector<object_base*> find_objects_to_register(t_object* root_patcher, object_base* caller)
+{
+  std::vector<object_base*> objects_to_register;
+
+  // 1: look for device, client, model and view objects into the patcher
+  t_object* next_box = object_attr_getobj(root_patcher, _sym_firstobject);
+  while (next_box)
+  {
+      object_base* object = (object_base*) jbox_get_object(next_box);
+
+      if(object != caller)
+      {
+        t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
+
+        if ( curr_classname == gensym("ossia.model") )
+        {
+          objects_to_register.push_back(object);
+        }
+        // if there is a client or device in the current patcher
+        // return only that object
+        if (( curr_classname == gensym("ossia.device")
+           || curr_classname == gensym("ossia.client") ))
+        {
+          // ignore dying object
+          if (!object->m_dead)
+            return {object};
+        }
+      }
+    next_box = object_attr_getobj(next_box, _sym_nextobject);
+  }
+
+  // 2: if there is an ossia.model / ossia.view in the current patch, return it
+  if (!objects_to_register.empty())
+  {
+    return objects_to_register;
+  }
+  else
+  {
+    // iterate again looking for device/client/model/view in its subpatchers
+    // and for parameters in the current patcher
+    next_box = object_attr_getobj(root_patcher, _sym_firstobject);
+
+    while (next_box)
+    {
+      t_object* object = jbox_get_object(next_box);
+      t_symbol* classname = object_classname(object);
+
+      // jpatcher or bpatcher case, look for object in those
+      if (classname == _sym_jpatcher
+       || classname == _sym_bpatcher)
+      {
+        std::vector<object_base*> found_tmp = find_objects_to_register(object, caller);
+        objects_to_register.insert(objects_to_register.end(),found_tmp.begin(), found_tmp.end());
+      }
+      else if (classname == gensym("poly~"))
+      {
+        long idx = 0;
+        t_object* subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
+        while(subpatcher)
+        {
+          std::vector<object_base*> found_tmp = find_objects_to_register(subpatcher, caller);
+
+          objects_to_register.insert(objects_to_register.end(),found_tmp.begin(), found_tmp.end());
+          subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
+        }
+      }
+      else if (classname == gensym("ossia.parameter"))
+      {
+        object_base* o = (object_base*) jbox_get_object(next_box);
+        objects_to_register.push_back(o);
+      }
+
+      next_box = object_attr_getobj(next_box, _sym_nextobject);
+    }
+  }
+
+  return objects_to_register;
 }
 
 t_object* get_patcher(t_object* object)

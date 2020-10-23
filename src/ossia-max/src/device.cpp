@@ -193,10 +193,10 @@ void device::destroy(device* x)
 
 void device::register_children(device* x)
 {
-  std::vector<object_base*> children_model = find_children_to_register(
+  std::vector<object_base*> object_to_register = find_objects_to_register(
       &x->m_object, get_patcher(&x->m_object), gensym("ossia.model"));
 
-  for (auto child : children_model)
+  for (auto child : object_to_register)
   {
     if (child->m_otype == object_class::model)
     {
