@@ -305,7 +305,7 @@ public:
       {
         // fade
         snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[chan],
-                     samples_offset, samples_to_read);
+                     samples_offset, samples_to_write);
       }
 
       ossia::snd::perform_upmix(this->upmix, channels, ap);
