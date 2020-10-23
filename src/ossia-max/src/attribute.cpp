@@ -87,12 +87,12 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
   bool res = do_registration(node);
   if (res)
   {
-    object_dequarantining<attribute>(this);
-    if(ossia_max::instance().registering_nodes)
-      ossia_max::instance().nr_attributes.remove_all(this);
+    ossia_max::instance().nr_attributes.remove_all(this);
   }
   else
-    object_quarantining<attribute>(this);
+  {
+    ossia_max::instance().nr_attributes.push_back(this);
+  }
 
   if (!node.empty() && m_is_pattern){
 
@@ -108,7 +108,7 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
       m_dev->on_parameter_created.connect<&attribute::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<&attribute::on_device_deleted>(this);
 
-      object_dequarantining<attribute>(this);
+      ossia_max::instance().nr_attributes.remove_all(this);
     }
   }
 
@@ -168,7 +168,7 @@ bool attribute::unregister()
 {
   m_matchers.clear();
 
-  object_quarantining<attribute>(this);
+  ossia_max::instance().nr_attributes.push_back(this);
 
   m_parent_node = nullptr;
   if(m_dev)
@@ -257,7 +257,6 @@ void attribute::destroy(attribute* x)
 {
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<attribute>(x);
   ossia_max::instance().attributes.remove_all(x);
 
   if(x->m_is_pattern && x->m_dev)
@@ -268,11 +267,6 @@ void attribute::destroy(attribute* x)
 
   outlet_delete(x->m_dumpout);
   x->~attribute();
-}
-
-ossia::safe_set<attribute*>& attribute::quarantine()
-{
-  return ossia_max::instance().attribute_quarantine;
 }
 
 } // pd namespace

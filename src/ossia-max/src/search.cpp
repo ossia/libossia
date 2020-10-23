@@ -222,14 +222,9 @@ bool search::unregister()
 {
   m_matchers.clear();
 
-  object_quarantining<search>(this);
+  ossia_max::instance().searchs.push_back(this);
 
   m_parent_node = nullptr;
 
   return true;
-}
-
-ossia::safe_set<search*>& search::quarantine()
-{
-  return ossia_max::instance().search_quarantine;
 }

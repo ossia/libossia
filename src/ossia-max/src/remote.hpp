@@ -28,8 +28,6 @@ public:
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
 
-  static ossia::safe_set<remote *> &quarantine();
-
   static void get_mess_cb(remote* x, t_symbol* s);
   static void get_unit(remote*x);
   static void get_mute(remote*x);

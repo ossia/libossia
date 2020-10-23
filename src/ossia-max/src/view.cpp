@@ -86,7 +86,6 @@ void view::destroy(view* x)
 {
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<view>(x);
   ossia_max::instance().views.remove_all(x);
   object_free(x->m_clock);
 
@@ -100,7 +99,8 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
 
   if (res)
   {
-    object_dequarantining<view>(this);
+    ossia_max::instance().nr_views.remove_all(this);
+
     std::vector<object_base*> children_view = find_children_to_register(
         &m_object, get_patcher(&m_object), gensym("ossia.view"));
 
@@ -145,7 +145,9 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
     }
   }
   else
-    object_quarantining<ossia::max::view>(this);
+  {
+    ossia_max::instance().nr_views.push_back(this);
+  }
 
   return res;
 }
@@ -246,16 +248,11 @@ bool view::unregister()
     }
   }
 
-  object_quarantining<view>(this);
+  ossia_max::instance().nr_views.push_back(this);
 
   register_children(this);
 
   return true;
-}
-
-ossia::safe_set<view*>& view::quarantine()
-{
-    return ossia_max::instance().view_quarantine;
 }
 
 } // max namespace

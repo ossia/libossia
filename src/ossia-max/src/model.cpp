@@ -106,7 +106,6 @@ void model::destroy(model* x)
 {
   x->m_dead = true;
   x->unregister();
-  object_dequarantining<model>(x);
   ossia_max::instance().models.remove_all(x);
   if(x->m_dumpout) outlet_delete(x->m_dumpout);
   x->~model();
@@ -130,13 +129,13 @@ bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matcher
 
   if (res)
   {
-    object_dequarantining<model>(this);
+    ossia_max::instance().nr_models.remove_all(this);
     register_children();
-    if(ossia_max::instance().registering_nodes)
-      ossia_max::instance().nr_models.remove_all(this);
   }
   else
-    object_quarantining<model>(this);
+  {
+    ossia_max::instance().nr_models.push_back(this);
+  }
 
   return res;
 }
@@ -276,13 +275,13 @@ void model::register_children()
     }
   }
 
-  for (auto view : view::quarantine().copy())
+  for (auto view : ossia_max::instance().nr_views.copy())
   {
     ossia_register(view);
   }
 
   // then try to register quarantinized remote
-  for (auto remote : remote::quarantine().copy())
+  for (auto remote : ossia_max::instance().nr_remotes.copy())
   {
     ossia_register(remote);
   }
@@ -319,11 +318,6 @@ void model::save_children_state()
       }
     }
   }
-}
-
-ossia::safe_set<model*>& model::quarantine()
-{
-  return ossia_max::instance().model_quarantine;
 }
 
 } // max namespace

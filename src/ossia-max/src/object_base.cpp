@@ -201,10 +201,10 @@ t_matcher::~t_matcher()
         switch(owner->m_otype)
         {
           case object_class::model:
-            object_quarantining<model>((model*) owner);
+            ossia_max::instance().nr_models.push_back((model*) owner);
             break;
           case object_class::param:
-            object_quarantining<parameter>((parameter*) owner);
+            ossia_max::instance().nr_parameters.push_back((parameter*) owner);
             break;
           default:
             ;
@@ -226,13 +226,13 @@ t_matcher::~t_matcher()
         switch(owner->m_otype)
         {
           case object_class::attribute:
-            object_quarantining<attribute>((attribute*) owner);
+            ossia_max::instance().nr_attributes.push_back((attribute*) owner);
             break;
           case object_class::remote:
-            object_quarantining<remote>((remote*) owner);
+            ossia_max::instance().nr_remotes.push_back((remote*) owner);
             break;
           case object_class::view:
-            object_quarantining<view>((view*) owner);
+            ossia_max::instance().nr_views.push_back((view*) owner);
             break;
           default:
             ;

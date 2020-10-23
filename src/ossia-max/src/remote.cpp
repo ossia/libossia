@@ -107,7 +107,6 @@ void remote::destroy(remote* x)
   x->m_dead = true;
   x->unregister();
 
-  object_dequarantining<remote>(x);
   ossia_max::instance().remotes.remove_all(x);
 
   outlet_delete(x->m_dumpout);
@@ -238,15 +237,16 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
 
   if (res)
   {
-    object_dequarantining<remote>(this);
-    if(ossia_max::instance().registering_nodes)
-      ossia_max::instance().nr_remotes.remove_all(this);
+    ossia_max::instance().nr_remotes.remove_all(this);
   }
   else
-    object_quarantining<remote>(this);
+  {
+    ossia_max::instance().nr_remotes.push_back(this);
+  }
 
-  if (!matchers.empty() && m_is_pattern){
-    object_dequarantining<remote>(this);
+  if (!matchers.empty() && m_is_pattern)
+  {
+    ossia_max::instance().nr_remotes.remove_all(this);
 
     // assume all nodes refer to the same device
     auto& dev = matchers[0]->get_node()->get_device();
@@ -260,7 +260,10 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
       m_dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
       m_dev->get_root_node().about_to_be_deleted.connect<&remote::on_device_deleted>(this);
 
-      object_dequarantining<remote>(this);
+      // FIXME : we should not need that because it's already removed just above
+      // or maybe it could be re-added in between ?
+      // in that case it sounds like a design issue
+      ossia_max::instance().nr_remotes.remove_all(this);
     }
   }
 
@@ -368,7 +371,7 @@ bool remote::unregister()
     }
   }
 
-  object_quarantining<remote>(this);
+  ossia_max::instance().nr_remotes.push_back(this);
 
   m_parent_node = nullptr;
   if(m_dev)
@@ -455,12 +458,6 @@ void remote::get_mess_cb(remote* x, t_symbol* s)
   else
     parameter_base::get_mess_cb(x,s);
 }
-
-ossia::safe_set<remote*>& remote::quarantine()
-{
-    return ossia_max::instance().remote_quarantine;
-}
-
 
 } // max namespace
 } // ossia namespace

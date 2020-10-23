@@ -18,8 +18,6 @@ public:
   bool unregister();
   void save_values();
 
-  static ossia::safe_set<parameter*>& quarantine();
-
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::parameter*);
 

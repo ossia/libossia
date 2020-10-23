@@ -166,16 +166,7 @@ public:
   ossia::safe_set<device*> nr_devices;
   ossia::safe_set<client*> nr_clients;
   ossia::safe_set<attribute*> nr_attributes;
-  ossia::safe_set<explorer*> nr_explorers;
-
-  ossia::safe_set<model*> model_quarantine;
-  ossia::safe_set<view*> view_quarantine;
-  ossia::safe_set<parameter*> parameter_quarantine;
-  ossia::safe_set<remote*> remote_quarantine;
-  ossia::safe_set<attribute*> attribute_quarantine;
-  ossia::safe_set<explorer*> explorer_quarantine;
-  ossia::safe_set<monitor*> monitor_quarantine;
-  ossia::safe_set<search*> search_quarantine;
+  ossia::safe_set<monitor*> nr_monitors;
 
   bool registering_nodes=false;
 
@@ -210,15 +201,6 @@ private:
 
 #pragma mark -
 #pragma mark Templates
-
-template <typename T>
-extern void object_quarantining(T*);
-
-template <typename T>
-extern void object_dequarantining(T*);
-
-template <typename T>
-extern bool object_is_quarantined(T*);
 
 struct object_base;
 

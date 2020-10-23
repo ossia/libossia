@@ -169,14 +169,7 @@ bool explorer::unregister()
 {
   m_matchers.clear();
 
-  object_quarantining<explorer>(this);
-
   m_parent_node = nullptr;
 
   return true;
-}
-
-ossia::safe_set<explorer*>& explorer::quarantine()
-{
-  return ossia_max::instance().explorer_quarantine;
 }

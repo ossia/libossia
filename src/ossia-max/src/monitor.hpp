@@ -45,8 +45,6 @@ struct monitor : object_base, search_filter
   void on_device_deleted(const ossia::net::node_base&);
   void handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action);
 
-  ossia::safe_set<monitor*>& quarantine();
-
   static void execute_method(ossia::max::monitor* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max::monitor* x);
   static t_max_err notify(monitor *x, t_symbol *s, t_symbol *msg, void *sender, void *data);

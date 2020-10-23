@@ -25,8 +25,6 @@ public:
   static void destroy(attribute* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
 
-  static ossia::safe_set<attribute*>& quarantine();
-
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   void on_device_deleted(const ossia::net::node_base&);
 };

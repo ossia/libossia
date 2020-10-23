@@ -173,7 +173,7 @@ bool monitor::unregister()
 {
   m_matchers.clear();
 
-  object_quarantining<monitor>(this);
+  ossia_max::instance().nr_monitors.push_back(this);
 
   m_parent_node = nullptr;
 
@@ -241,9 +241,4 @@ void monitor::on_device_deleted(const net::node_base & node)
   {
     m_devices.erase(it);
   }
-}
-
-ossia::safe_set<monitor*>& monitor::quarantine()
-{
-  return ossia_max::instance().monitor_quarantine;
 }

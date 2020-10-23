@@ -31,8 +31,6 @@ struct search : object_base, search_filter
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
 
-  ossia::safe_set<search*>& quarantine();
-
   static void execute_method(ossia::max::search* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max::search* x);
   static t_max_err notify(search *x, t_symbol *s, t_symbol *msg, void *sender, void *data);

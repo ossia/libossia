@@ -110,7 +110,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 void parameter::destroy(parameter* x)
 {
   x->unregister();
-  object_dequarantining<parameter>(x);
   ossia_max::instance().parameters.remove_all(x);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
@@ -162,20 +161,22 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
   bool res = do_registration(nodes);
   if (res)
   {
-    object_dequarantining<parameter>(this);
-    for (auto remote : remote::quarantine().copy())
+    // FIXME remote and attributes should only be registered when adding an ossia.device object
+    // or upon on_parameter_created callback
+    ossia_max::instance().nr_parameters.remove_all(this);
+    for (auto remote : ossia_max::instance().nr_remotes.copy())
     {
       ossia_register(remote);
     }
-    for (auto remote : attribute::quarantine().copy())
+    for (auto attribute : ossia_max::instance().nr_attributes.copy())
     {
-      ossia_register(remote);
+      ossia_register(attribute);
     }
-    if(ossia_max::instance().registering_nodes)
-      ossia_max::instance().nr_parameters.remove_all(this);
   }
   else
-    object_quarantining<parameter>(this);
+  {
+    ossia_max::instance().nr_parameters.push_back(this);
+  }
 
   return res;
 }
@@ -239,16 +240,16 @@ bool parameter::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
-  for (auto remote : remote::quarantine().copy())
+  for (auto remote : ossia_max::instance().nr_remotes.copy())
   {
     ossia_register(remote);
   }
-  for (auto attribute : attribute::quarantine().copy())
+  for (auto attribute : ossia_max::instance().nr_attributes.copy())
   {
     ossia_register(attribute);
   }
 
-  object_quarantining(this);
+  ossia_max::instance().nr_parameters.push_back(this);
 
   return true;
 }
@@ -267,11 +268,6 @@ void parameter::save_values()
       }
     }
   }
-}
-
-ossia::safe_set<parameter *> &parameter::quarantine()
-{
-  return ossia_max::instance().parameter_quarantine;
 }
 
 } // max namespace

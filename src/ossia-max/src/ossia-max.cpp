@@ -279,68 +279,27 @@ namespace ossia
 namespace max
 {
 
-template <typename T>
-void object_quarantining(T* x)
-{
-  x->m_node_selection.clear();
-  if (!object_is_quarantined<T>(x))
-    x->quarantine().push_back(x);
-}
-
-template void object_quarantining<parameter>(parameter*);
-template void object_quarantining<attribute>(attribute*);
-template void object_quarantining<model>(model*);
-template void object_quarantining<remote>(remote*);
-template void object_quarantining<view>(view*);
-template void object_quarantining<explorer>(explorer*);
-template void object_quarantining<search>(search*);
-template void object_quarantining<monitor>(monitor*);
-
-template <typename T>
-void object_dequarantining(T* x)
-{
-  x->quarantine().remove_all(x);
-}
-
-template void object_dequarantining<attribute>(attribute*);
-template void object_dequarantining<parameter>(parameter*);
-template void object_dequarantining<model>(model*);
-template void object_dequarantining<remote>(remote*);
-template void object_dequarantining<view>(view*);
-template void object_dequarantining<explorer>(explorer*);
-
-template <typename T>
-bool object_is_quarantined(T* x)
-{
-  return x->quarantine().contains(x);
-}
-
-template bool object_is_quarantined<parameter>(parameter*);
-template bool object_is_quarantined<model>(model*);
-template bool object_is_quarantined<remote>(remote*);
-template bool object_is_quarantined<view>(view*);
-
 #pragma mark -
 #pragma mark Utilities
 
 void register_quarantinized()
 {
-  for (auto model : model::quarantine().copy())
+  for (auto model : ossia_max::instance().models.copy())
   {
     ossia_register(model);
   }
 
-  for (auto parameter : parameter::quarantine().copy())
+  for (auto parameter : ossia_max::instance().parameters.copy())
   {
     ossia_register(parameter);
   }
 
-  for (auto view : view::quarantine().copy())
+  for (auto view : ossia_max::instance().views.copy())
   {
     ossia_register(view);
   }
 
-  for (auto remote : remote::quarantine().copy())
+  for (auto remote : ossia_max::instance().remotes.copy())
   {
     ossia_register(remote);
   }
