@@ -255,7 +255,7 @@ bool qml_device::openMIDIInputDevice(int port)
   {
     using namespace ossia::net::midi;
     auto proto = new midi_protocol{
-        midi_info{midi_info::Type::RemoteOutput, {}, port}};
+        midi_info{midi_info::Type::Input, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->create_full_tree();
@@ -286,7 +286,7 @@ bool qml_device::openMIDIOutputDevice(int port)
   {
     using namespace ossia::net::midi;
     auto proto
-        = new midi_protocol{midi_info{midi_info::Type::RemoteInput, {}, port}};
+        = new midi_protocol{midi_info{midi_info::Type::Output, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->create_full_tree();
@@ -318,7 +318,7 @@ QVariantMap qml_device::getMIDIInputDevices() const
   midi_protocol p;
   for (const auto& info : p.scan())
   {
-    if (info.type == midi_info::Type::RemoteOutput)
+    if (info.type == midi_info::Type::Input)
       lst.insert(QString::fromStdString(info.device), info.port);
   }
 #endif
@@ -335,7 +335,7 @@ QVariantMap qml_device::getMIDIOutputDevices() const
   midi_protocol p;
   for (const auto& info : p.scan())
   {
-    if (info.type == midi_info::Type::RemoteInput)
+    if (info.type == midi_info::Type::Output)
       lst.insert(QString::fromStdString(info.device), info.port);
   }
 #endif

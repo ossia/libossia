@@ -63,18 +63,18 @@ bool midi_protocol::set_info(midi_info m)
   try
   {
     // Close current ports
-    if (m_info.type == midi_info::Type::RemoteOutput)
+    if (m_info.type == midi_info::Type::Input)
     {
       m_input->close_port();
     }
-    else if (m_info.type == midi_info::Type::RemoteInput)
+    else if (m_info.type == midi_info::Type::Output)
     {
       m_output->close_port();
     }
 
     m_info = m;
 
-    if (m_info.type == midi_info::Type::RemoteOutput)
+    if (m_info.type == midi_info::Type::Input)
     {
       if (m_dev)
         m_input->open_port(m_info.port, m_dev->get_name());
@@ -83,7 +83,7 @@ bool midi_protocol::set_info(midi_info m)
 
       m_input->set_callback([&] (const auto& m) { midi_callback(m); });
     }
-    else if (m_info.type == midi_info::Type::RemoteInput)
+    else if (m_info.type == midi_info::Type::Output)
     {
       if (m_dev)
         m_output->open_port(m_info.port, m_dev->get_name());
@@ -112,7 +112,7 @@ bool midi_protocol::pull(parameter_base& address)
 {
 #if !defined(__EMSCRIPTEN__)
   midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
-  if (m_info.type != midi_info::Type::RemoteOutput)
+  if (m_info.type != midi_info::Type::Input)
     return false;
 
   const address_info& adrinfo = adrs.info();
@@ -198,7 +198,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
   try
   {
     const midi_parameter& adrs = dynamic_cast<const midi_parameter&>(address);
-    if (m_info.type != midi_info::Type::RemoteInput)
+    if (m_info.type != midi_info::Type::Output)
       return false;
 
     auto& adrinfo = adrs.info();
@@ -314,7 +314,7 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
 {
   enable = true;
   midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
-  if (m_info.type != midi_info::Type::RemoteOutput)
+  if (m_info.type != midi_info::Type::Input)
     return false;
 
   auto adrs_ptr = &adrs;
@@ -547,22 +547,20 @@ std::vector<midi_info> midi_protocol::scan()
 #if !defined(__EMSCRIPTEN__)
 
   {
-    // Input devices are those on which we do output
     rtmidi::midi_in& in = *m_input;
     auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::RemoteOutput, in.get_port_name(i), i);
+      vec.emplace_back(midi_info::Type::Input, in.get_port_name(i), i);
     }
   }
 
   {
-    // Output devices are those that will send data to us
     rtmidi::midi_out& out = *m_output;
     auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::RemoteInput, out.get_port_name(i), i);
+      vec.emplace_back(midi_info::Type::Output, out.get_port_name(i), i);
     }
   }
 #endif

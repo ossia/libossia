@@ -641,8 +641,8 @@ PYBIND11_MODULE(ossia_python, m)
       .def_readonly("port", &ossia::net::midi::midi_info::port);
 
   py::enum_<ossia::net::midi::midi_info::Type>(m, "MidiDeviceType", py::arithmetic())
-      .value("RemoteInput", ossia::net::midi::midi_info::Type::RemoteInput)
-      .value("RemoteOutput", ossia::net::midi::midi_info::Type::RemoteOutput)
+      .value("Output", ossia::net::midi::midi_info::Type::Output)
+      .value("Input", ossia::net::midi::midi_info::Type::Input)
       .export_values();
 
   py::class_<ossia_device_callback>(m, "DeviceCallback")

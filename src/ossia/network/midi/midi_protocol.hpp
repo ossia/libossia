@@ -26,8 +26,8 @@ struct OSSIA_EXPORT midi_info
 {
   enum class Type
   {
-    RemoteInput,
-    RemoteOutput
+    Input,
+    Output
   };
 
   midi_info() = default;
