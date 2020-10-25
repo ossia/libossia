@@ -132,7 +132,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                                x->m_name->s_name);
     x->connect_slots();
 
-    auto& map = ossia_max::instance().root_patcher;
+    const auto& map = ossia_max::instance().root_patcher;
 #if OSSIA_MAX_AUTOREGISTER
     auto it = map.find(x->m_patcher_hierarchy.back());
 
@@ -193,39 +193,8 @@ void device::destroy(device* x)
 
 void device::register_children(device* x)
 {
-  std::vector<object_base*> object_to_register = find_objects_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.model"));
-
-  for (auto child : object_to_register)
-  {
-    if (child->m_otype == object_class::model)
-    {
-      ossia::max::model* model = (ossia::max::model*)child;
-      model->register_node(x->m_matchers);
-    }
-    else if (child->m_otype == object_class::param)
-    {
-      ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      parameter->register_node(x->m_matchers);
-    }
-  }
-
-  std::vector<object_base*> children_view = find_children_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_matchers);
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_matchers);
-    }
-  }
+  std::vector<std::shared_ptr<t_matcher>> matchers{std::make_shared<t_matcher>(&x->m_device->get_root_node(), x)};
+  return register_objects_in_patcher_recursively(get_patcher(&x->m_object), x, matchers);
 }
 
 void device::unregister_children()

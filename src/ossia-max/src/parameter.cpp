@@ -230,6 +230,7 @@ bool parameter::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
+  /*
   for (auto remote : ossia_max::instance().nr_remotes.copy())
   {
     ossia_register(remote);
@@ -238,6 +239,7 @@ bool parameter::unregister()
   {
     ossia_register(attribute);
   }
+  */
 
   ossia_max::instance().nr_parameters.push_back(this);
 

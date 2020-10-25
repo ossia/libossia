@@ -224,25 +224,23 @@ void register_quarantinized();
 std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
-std::vector<object_base*> find_objects_to_register(
-    t_object* patcher, object_base* caller = nullptr);
 
+/**
+ * @brief register_objects_in_patcher_recursively : iterate over all patcher's objects and register them one by one recursively
+ * @param root_patcher starting patcher
+ * @param caller object that calls the function
+ * @param matchers vector of t_matcher to register against
+ */
+void register_objects_in_patcher_recursively(t_object* root_patcher, object_base* caller,
+                                             const std::vector<std::shared_ptr<t_matcher>>& matchers);
+
+
+std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(t_object* patcher, bool look_for_model_view = true);
 /**
  * @brief             Convenient method to easily get the patcher where a box
  * is
  */
 t_object* get_patcher(t_object* object);
-
-/**
- * @brief return relative path to corresponding object
- * @param x
- * @param classname
- * @param found_obj
- * @param address
- * @return
- */
-//    bool get_relative_path(t_object* x, t_symbol* classname, t_class**
-//    found_obj, std::string& address);
 
 /**
  */
