@@ -43,12 +43,25 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    auto patcher = get_patcher(&x->m_object);
+    if( ossia_max::instance().patchers[patcher].models.empty()
+        && ossia_max::instance().patchers[patcher].views.empty())
+    {
+      ossia_max::instance().patchers[patcher].views.push_back(x);
+    }
+    else
+    {
+      error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      return nullptr;
+    }
+
+    x->m_otype = object_class::view;
+
     // make outlets
     x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump view state
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
-    x->m_otype = object_class::view;
 
     if(find_peer(x))
     {
@@ -68,13 +81,14 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
       }
     }
 
-    if(x->m_name != _sym_nothing)
-    {
-      ossia_check_and_register(x);
-    }
-
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    if(ossia_max::instance().patchers[patcher].loadbanged)
+    {
+      auto matchers = x->find_parent_nodes();
+      x->do_registration(matchers);
+    }
   }
 
   ossia_max::instance().views.push_back(x);
@@ -84,12 +98,22 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
 void view::destroy(view* x)
 {
+  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    pat_desc.models.remove_all(x);
+    if(pat_desc.empty())
+    {
+      ossia_max::instance().patchers.erase(pat_it);
+    }
+  }
+
   x->m_dead = true;
   x->unregister();
   ossia_max::instance().views.remove_all(x);
   object_free(x->m_clock);
-
-  if(x->m_dumpout) outlet_delete(x->m_dumpout);
+  outlet_delete(x->m_dumpout);
   x->~view();
 }
 

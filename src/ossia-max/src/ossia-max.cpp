@@ -137,8 +137,7 @@ void ossia_max::register_nodes(ossia_max*)
 
   // we iterate through all objects in the patcher from the top to the bottom
   // registering ossia.device, ossia.client, ossia.model and ossia.parameter
-  // remote and view are either listening on a parent ossia.device/ossia.client for node/parameter creation
-  // or be registered when we add a new ossia.device/ossia.client
+  // remote and view will be registered
   auto& map = inst.root_patcher;
   for (auto it = map.begin(); it != map.end(); it++)
   {

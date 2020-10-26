@@ -51,20 +51,27 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    auto patcher = get_patcher(&x->m_object);
+    if( ossia_max::instance().patchers[patcher].models.empty()
+     && ossia_max::instance().patchers[patcher].views.empty())
+    {
+      ossia_max::instance().patchers[patcher].models.push_back(x);
+    }
+    else
+    {
+      error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      object_free(x);
+      x->~model();
+      return nullptr;
+    }
+
+    x->m_otype = object_class::model;
+
     // make outlets
     x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump model state
 
     x->m_description = _sym_nothing;
     x->m_tags_size = 0;
-    x->m_otype = object_class::model;
-
-    if(find_peer(x))
-    {
-      error("You can put only one [ossia.model] or [ossia.view] per patcher");
-      model::destroy(x);
-      // free(x);
-      return nullptr;
-    }
 
     // check name argument
     x->m_name = _sym_nothing;
@@ -88,14 +95,12 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
     long attrstart = attr_args_offset(argc, argv);
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    // we need to delay registration because object may use patcher hierarchy
-    // to check address validity
-    // and object will be added to patcher's objects list (aka canvas g_list)
-    // after model_new() returns.
-    // 0 ms delay means that it will be perform on next clock tick
-    // defer_low(x,reinterpret_cast<method>(
-                //static_cast<bool (*)(t_model*)>(&max_object_register<t_model>)), nullptr, 0, 0L );
-    ossia_check_and_register(x);
+    if(ossia_max::instance().patchers[patcher].loadbanged)
+    {
+      auto matchers = x->find_parent_nodes();
+      x->do_registration(matchers);
+    }
+
     ossia_max::instance().models.push_back(x);
   }
 
@@ -104,10 +109,21 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
 
 void model::destroy(model* x)
 {
+  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    pat_desc.models.remove_all(x);
+    if(pat_desc.empty())
+    {
+      ossia_max::instance().patchers.erase(pat_it);
+    }
+  }
+
   x->m_dead = true;
   x->unregister();
   ossia_max::instance().models.remove_all(x);
-  if(x->m_dumpout) outlet_delete(x->m_dumpout);
+  outlet_delete(x->m_dumpout);
   x->~model();
 }
 
@@ -290,10 +306,11 @@ void model::register_children()
 bool model::unregister()
 {
   save_children_state();
-
   m_matchers.clear();
 
-  register_children();
+  auto nodes = find_parent_nodes();
+  auto patcher = get_patcher(&m_object);
+  register_objects_in_patcher_recursively(patcher, this, nodes);
 
   return true;
 }
@@ -302,6 +319,8 @@ void model::save_children_state()
 {
   for(auto& m : m_matchers)
   {
+    // FIXME : why iterating over all parameters here ?
+    // shouldn't it be fine to get matcher's owner and cast it according to it's m_otype ?
     for(auto x : ossia_max::instance().parameters.reference() )
     {
       if(x->m_parent_node == m->get_node())

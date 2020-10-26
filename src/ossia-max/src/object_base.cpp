@@ -394,6 +394,36 @@ void object_base::loadbang(object_base* x)
 {
   x->m_loadbanged = true;
 
+  auto matchers = x->find_parent_nodes();
+
+  if(!matchers.empty())
+  {
+    switch(x->m_otype)
+    {
+      case object_class::param:
+        static_cast<parameter*>(x)->do_registration(matchers);
+        break;
+      case object_class::remote:
+        static_cast<remote*>(x)->do_registration(matchers);
+        break;
+      case object_class::attribute:
+        static_cast<attribute*>(x)->do_registration(matchers);
+        break;
+      case object_class::model:
+        static_cast<model*>(x)->do_registration(matchers);
+        break;
+      case object_class::view:
+        static_cast<view*>(x)->do_registration(matchers);
+        break;
+      default:
+        break;
+    }
+  }
+
+  auto patcher = get_patcher(&x->m_object);
+  ossia_max::instance().patchers[patcher].loadbanged = true;
+
+/*
   if (!x->m_patcher_hierarchy.empty())
   {
     auto& root_map = ossia_max::instance().root_patcher;
@@ -422,6 +452,7 @@ void object_base::loadbang(object_base* x)
 #endif
     }
   }
+*/
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
@@ -444,7 +475,7 @@ void object_base::is_deleted(const ossia::net::node_base& n)
           nd->set_zombie();
         nd->set_dead();
       }
-    }    
+    }
     m_node_selection.erase(ossia::remove_if(
       m_node_selection,
       [&] (const t_matcher* m) {
@@ -783,6 +814,60 @@ void object_base::push_parameter_value(ossia::net::parameter_base* param, const 
 
     param->push_value(val);
     param_locks.remove_all(param);
+  }
+}
+
+std::vector<std::shared_ptr<t_matcher>> object_base::find_parent_nodes()
+{
+  switch(m_otype)
+  {
+    case object_class::device:
+    case object_class::client:
+      return {};
+      break;
+    default:
+        ;
+  }
+
+  if (m_name == _sym_nothing)
+    return {};
+
+  bool look_for_model_view = true;
+  switch(m_addr_scope)
+  {
+    case ossia::net::address_scope::absolute:
+      look_for_model_view = false;
+    case ossia::net::address_scope::relative:
+    {
+      t_object* patcher;
+      switch(m_otype)
+      {
+        case object_class::param:
+        case object_class::remote:
+        case object_class::attribute:
+          patcher = get_patcher(&m_object);
+          look_for_model_view &= true;
+          break;
+        case object_class::model:
+        case object_class::view:
+          patcher = get_patcher(&m_object);
+          if(patcher)
+            patcher = get_patcher(patcher);
+          break;
+      }
+      return find_parent_nodes_recursively(patcher, look_for_model_view);
+    }
+    case ossia::net::address_scope::global:
+    {
+      auto nodes = find_global_nodes(std::string(m_name->s_name));
+      std::vector<std::shared_ptr<t_matcher>> matchers;
+      matchers.reserve(nodes.size());
+      for(auto n : nodes)
+      {
+        matchers.push_back(std::make_shared<t_matcher>(n, nullptr));
+      }
+      return matchers;
+    }
   }
 }
 

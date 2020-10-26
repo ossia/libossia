@@ -3,8 +3,9 @@
 #include "remote.hpp"
 #include "device.hpp"
 #include "parameter.hpp"
-#include <ossia-max/src/utils.hpp>
 
+#include <ossia/network/base/parameter.hpp>
+#include <ossia-max/src/utils.hpp>
 #include <ossia/network/common/path.hpp>
 
 using namespace ossia::max;
@@ -56,6 +57,11 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    auto patcher = get_patcher(&x->m_object);
+    ossia_max::instance().patchers[patcher].remotes.push_back(x);
+
+    x->m_otype = object_class::remote;
+
     // make outlets:
     // anything outlet to dump remote state
     x->m_dumpout = outlet_new(x, NULL);
@@ -63,15 +69,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     x->m_data_out = outlet_new(x, NULL);
     // anything outlet to output data for ui
     x->m_set_out  = outlet_new(x, NULL);
-
-    x->m_dev = nullptr;
-
-    x->m_otype = object_class::remote;
-
-    // Register object to istself so it can receive notification when attribute changed
-    // This is not documented anywhere, please look at :
-    // https://cycling74.com/forums/notify-when-attribute-changes
-    object_attach_byptr_register(x, x, CLASS_BOX);
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -90,13 +87,16 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    if (x->m_name != _sym_nothing)
-    {
-      x->update_path();
-      ossia_check_and_register(x);
-    }
+    // Register object to istself so it can receive notification when attribute changed
+    // This is not documented anywhere, please look at :
+    // https://cycling74.com/forums/notify-when-attribute-changes
+    object_attach_byptr_register(x, x, CLASS_BOX);
 
-    ossia_max::instance().remotes.push_back(x);
+    if(ossia_max::instance().patchers[patcher].loadbanged)
+    {
+      auto matchers = x->find_parent_nodes();
+      x->do_registration(matchers);
+    }
   }
 
   return (x);
@@ -104,11 +104,21 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
 void remote::destroy(remote* x)
 {
+  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    pat_desc.remotes.remove_all(x);
+    if(pat_desc.empty())
+    {
+      ossia_max::instance().patchers.erase(pat_it);
+    }
+  }
+
   x->m_dead = true;
   x->unregister();
 
   ossia_max::instance().remotes.remove_all(x);
-
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);
@@ -244,35 +254,87 @@ bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matche
     ossia_max::instance().nr_remotes.push_back(this);
   }
 
-  if (!matchers.empty() && m_is_pattern)
+  if (m_matchers.empty() || m_is_pattern)
   {
-    ossia_max::instance().nr_remotes.remove_all(this);
-
-    // assume all nodes refer to the same device
-    auto& dev = matchers[0]->get_node()->get_device();
-    if (&dev != m_dev)
+    bool registered = false;
+    if (m_addr_scope == ossia::net::address_scope::global)
     {
-      if (m_dev) {
-          m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
-          m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
+      std::size_t pos = std::string(m_name->s_name).find(":/");
+      std::string device_name = std::string(m_name->s_name).substr(0,pos);
+      if(ossia::traversal::is_pattern(device_name))
+      {
+        // TODO listen to device (local or remote) creation
+        // in the meanwhile, when ossia.device or ossia.client is created / connected,
+        // a new registration will be performed, this is suboptimal, but should work
       }
-      m_dev = &dev;
-      m_dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
-      m_dev->get_root_node().about_to_be_deleted.connect<&remote::on_device_deleted>(this);
+      else
+      {
+        for(auto& dev : ossia_max::instance().devices.reference())
+        {
+          if(dev->m_device->get_name() == device_name)
+          {
+            registered = true;
+            m_devices.push_back(dev->m_device.get());
+          }
+        }
 
-      // FIXME : we should not need that because it's already removed just above
-      // or maybe it could be re-added in between ?
-      // in that case it sounds like a design issue
-      ossia_max::instance().nr_remotes.remove_all(this);
+        if(!registered)
+        {
+          for(auto& dev : ossia_max::instance().devices.reference())
+          {
+            if(dev->m_device->get_name() == device_name)
+            {
+              registered = true;
+              m_devices.push_back(dev->m_device.get());
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      if (m_addr_scope == ossia::net::address_scope::relative)
+      {
+        object_base* parent{};
+        int model_level, view_level;
+        // look for parent view/model to get full path in case it's a relative address
+        auto model = find_parent_box_alive<ossia::max::model>(this, 0, &model_level);
+        auto view = find_parent_box_alive<ossia::max::view>(this, 0, &view_level);
+
+        if(model && view)
+        {
+          if(model_level < view_level)
+          {
+            parent = static_cast<object_base*>(model);
+          }
+          else
+          {
+            parent = static_cast<object_base*>(view);
+          }
+        }
+        if(parent)
+        {
+          // build  full path to device/client
+        }
+      }
     }
   }
 
   return res;
 }
 
-void remote::on_device_deleted(const net::node_base &)
+void remote::on_device_deleted(const net::node_base& root)
 {
-  m_dev = nullptr;
+  for(auto dev : m_devices.reference())
+  {
+    if(&dev->get_root_node() == &root)
+    {
+      dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+      dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
+      m_devices.remove_all(dev);
+      break;
+    }
+  }
 }
 
 bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
@@ -374,12 +436,14 @@ bool remote::unregister()
   ossia_max::instance().nr_remotes.push_back(this);
 
   m_parent_node = nullptr;
-  if(m_dev)
+
+  for(auto dev : m_devices.reference())
   {
-    m_dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
-    m_dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
+    dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+    dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
   }
-  m_dev = nullptr;
+  m_devices.clear();
+
   return true;
 }
 

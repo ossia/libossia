@@ -140,6 +140,8 @@ public:
   void set_hidden();
   void set_recall_safe();
 
+  std::vector<std::shared_ptr<t_matcher>> find_parent_nodes();
+
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
   static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
   static void get_priority(object_base* x, std::vector<t_matcher*> nodes);

@@ -216,6 +216,9 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
+    auto patcher = get_patcher(&x->m_object);
+    ossia_max::instance().patchers[patcher].attributes.push_back(x);
+
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);
 
@@ -241,13 +244,11 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    if (x->m_name != _sym_nothing)
+    if(ossia_max::instance().patchers[patcher].loadbanged)
     {
-      x->update_path();
-      ossia_check_and_register(x);
+      auto matchers = x->find_parent_nodes();
+      x->do_registration(matchers);
     }
-
-    ossia_max::instance().attributes.push_back(x);
   }
 
   return (x);

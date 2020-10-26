@@ -35,6 +35,11 @@ public:
     impl.push_back(t);
   }
 
+  bool empty() const noexcept
+  {
+    return impl.empty();
+  }
+
   void remove_all(T t)
   {
     ossia::remove_erase(impl, t);

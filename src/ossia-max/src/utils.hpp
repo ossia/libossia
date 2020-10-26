@@ -206,49 +206,6 @@ static inline T* find_parent_box_alive(
 }
 
 template<typename T>
-std::vector<std::shared_ptr<t_matcher>> find_parent_nodes(T* x)
-{
-  bool look_for_model_view = true;
-  switch(x->m_addr_scope)
-  {
-    case ossia::net::address_scope::absolute:
-      look_for_model_view = false;
-    case ossia::net::address_scope::relative:
-    {
-      t_object* patcher;
-      switch(x->m_otype)
-      {
-        case object_class::param:
-        case object_class::remote:
-        case object_class::attribute:
-          patcher = get_patcher(&x->m_object);
-          look_for_model_view &= true;
-          break;
-        case object_class::model:
-        case object_class::view:
-          patcher = get_patcher(&x->m_object);
-          if(patcher)
-            patcher = get_patcher(patcher);
-          break;
-      }
-      return find_parent_nodes_recursively(patcher, look_for_model_view);
-    }
-    case ossia::net::address_scope::global:
-    {
-      auto nodes = find_global_nodes(std::string(x->m_name->s_name));
-      std::vector<std::shared_ptr<t_matcher>> matchers;
-      matchers.reserve(nodes.size());
-      for(auto n : nodes)
-      {
-        matchers.push_back(std::make_shared<t_matcher>(n, nullptr));
-      }
-      return matchers;
-    }
-  }
-
-}
-
-template<typename T>
 void ossia_register(T* x)
 {
   if(x->m_dead)

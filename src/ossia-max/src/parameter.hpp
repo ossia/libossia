@@ -8,7 +8,7 @@ namespace ossia
 namespace max
 {
 
-class parameter : public parameter_base
+class parameter final : public parameter_base
 {
 public:
   using is_parameter = std::true_type;

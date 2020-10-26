@@ -182,6 +182,34 @@ public:
 
   typedef std::map<t_object*, root_descriptor> RootMap;
 
+  struct patcher_descriptor{
+    ossia::safe_vector<parameter*> parameters{};
+    ossia::safe_vector<remote*>    remotes{};
+    ossia::safe_vector<attribute*> attributes{};
+    ossia::safe_vector<model*>     models{};
+    ossia::safe_vector<view*>      views{};
+    ossia::safe_vector<device*>    devices{};
+    ossia::safe_vector<client*>    clients{};
+
+    t_object* parent_patcher;
+    ossia::safe_set<t_object*> subpatchers;
+
+    bool loadbanged; // true if patcher have been loadbanged already
+
+    bool empty() const
+    {
+      return parameters.empty()
+             && remotes.empty()
+             && attributes.empty()
+             && models.empty()
+             && views.empty()
+             && devices.empty()
+             && clients.empty();
+    }
+
+  };
+  std::map<t_object*, patcher_descriptor> patchers;
+
   RootMap root_patcher;
   void* m_reg_clock{};
   static void* browse_clock;

@@ -48,6 +48,9 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
   if (x)
   {
+    auto patcher = get_patcher(&x->m_object);
+    ossia_max::instance().patchers[patcher].parameters.push_back(x);
+
     // make outlets
     x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump parameter state
@@ -98,8 +101,11 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // start registration
-    ossia_check_and_register(x);
+    if(ossia_max::instance().patchers[patcher].loadbanged)
+    {
+      auto matchers = x->find_parent_nodes();
+      x->do_registration(matchers);
+    }
 
     ossia_max::instance().parameters.push_back(x);
   }
@@ -109,6 +115,18 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
 void parameter::destroy(parameter* x)
 {
+  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    pat_desc.parameters.remove_all(x);
+    if(pat_desc.empty())
+    {
+      ossia_max::instance().patchers.erase(pat_it);
+    }
+  }
+
+  x->m_dead = true;
   x->unregister();
   ossia_max::instance().parameters.remove_all(x);
   outlet_delete(x->m_data_out);

@@ -19,11 +19,12 @@ public:
   bool do_registration(const std::vector<std::shared_ptr<t_matcher>>& node, bool output_value = true);
   bool unregister();
 
-  ossia::net::device_base* m_dev{};
+  ossia::safe_set<ossia::net::generic_device*> m_devices{};
 
   void set_unit();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
+  void on_device_deleted(const ossia::net::node_base&);
 
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
@@ -35,8 +36,6 @@ public:
   static void assist(ossia::max::remote*, void*, long, long, char*);
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::remote*);
-
-  void on_device_deleted(const ossia::net::node_base&);
 };
 
 } // max namespace
