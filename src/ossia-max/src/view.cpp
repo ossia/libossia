@@ -84,11 +84,9 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    if(ossia_max::instance().patchers[patcher].loadbanged)
-    {
-      auto matchers = x->find_parent_nodes();
-      x->do_registration(matchers);
-    }
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
   }
 
   ossia_max::instance().views.push_back(x);

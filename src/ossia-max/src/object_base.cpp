@@ -392,6 +392,9 @@ void object_base::reset_color(object_base* x)
 
 void object_base::loadbang(object_base* x)
 {
+  if(x->m_loadbanged)
+    return;
+
   x->m_loadbanged = true;
 
   auto matchers = x->find_parent_nodes();

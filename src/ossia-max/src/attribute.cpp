@@ -244,11 +244,9 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    if(ossia_max::instance().patchers[patcher].loadbanged)
-    {
-      auto matchers = x->find_parent_nodes();
-      x->do_registration(matchers);
-    }
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
   }
 
   return (x);
