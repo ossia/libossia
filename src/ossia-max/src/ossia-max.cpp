@@ -372,6 +372,8 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
 {
   std::vector<object_base*> objects_to_register;
 
+  ossia_max::instance().patchers[patcher].loadbanged = true;
+
   t_object* root_patcher{};
   if(caller)
     root_patcher = caller->m_patcher;
@@ -389,7 +391,9 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
       if ( curr_classname == gensym("ossia.model")
         || curr_classname == gensym("ossia.view"))
       {
-        objects_to_register.push_back(object);
+        auto ob = static_cast<object_base*>(object);
+        if(!ob->m_dead)
+          objects_to_register.push_back(object);
       }
       // if where are not in the caller patcher and
       // there is a client or device in the current patcher
@@ -506,7 +510,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
         if ( curr_classname == gensym("ossia.model")
           || curr_classname == gensym("ossia.view"))
         {
-          matchers = object->m_matchers;
+          return object->m_matchers;
         }
       }
 
@@ -519,7 +523,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
-          return {std::make_shared<t_matcher>(&dev->m_device->get_root_node(), object)};
+          matchers = {std::make_shared<t_matcher>(&dev->m_device->get_root_node(), object)};
         }
       }
 
@@ -537,12 +541,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
     }
   }
 
-  if(matchers.empty())
-  {
-    return {std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
-  }
-
-  return matchers;
+  return {std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
 }
 
 t_object* get_patcher(t_object* object)

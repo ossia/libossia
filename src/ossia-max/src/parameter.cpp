@@ -50,6 +50,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
   {
     auto patcher = x->m_patcher;
     ossia_max::instance().patchers[patcher].parameters.push_back(x);
+    ossia_max::instance().patchers[patcher].parent_patcher = ossia::max::get_patcher(patcher);
 
     // make outlets
     x->m_dumpout
@@ -191,7 +192,22 @@ bool parameter::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
 
 bool parameter::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  unregister();
+  object_post(&m_object, "register parameter");
+
+  if(!m_registered)
+  {
+    m_registered = true;
+
+    switch(m_addr_scope)
+    {
+      case ossia::net::address_scope::absolute:
+      case ossia::net::address_scope::global:
+        object_error(&m_object, "parameter with glboal/absolute path are not supported yet");
+        return true;
+      default:
+          ;
+    }
+  }
 
   for (auto& m : matchers)
   {

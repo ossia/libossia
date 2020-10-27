@@ -337,7 +337,9 @@ void remote::on_device_deleted(const net::node_base& root)
 
 bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
 {
-  unregister();
+  object_post(&m_object, "register remote");
+
+  m_registered = true;
 
   std::string name = m_name->s_name;
 

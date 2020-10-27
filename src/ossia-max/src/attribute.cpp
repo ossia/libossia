@@ -117,7 +117,7 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
 
 bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  unregister();
+  m_registered = true;
 
   std::string name = m_name->s_name;
 

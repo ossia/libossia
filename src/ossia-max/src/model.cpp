@@ -156,7 +156,7 @@ bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matcher
 
 bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
-  unregister();
+  m_registered = true;
 
   ossia::string_view name(m_name->s_name);
 

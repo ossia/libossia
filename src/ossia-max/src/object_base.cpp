@@ -384,70 +384,52 @@ void object_base::reset_color(object_base* x)
 
 void object_base::loadbang(object_base* x)
 {
-  if(x->m_loadbanged)
+  if(x->m_registered)
     return;
 
-  x->m_loadbanged = true;
+  t_object* patcher = x->m_patcher;
+  t_object* root_patcher{};
 
-  auto matchers = x->find_parent_nodes();
-
-  if(!matchers.empty())
+  while(patcher && !ossia_max::instance().patchers[patcher].loadbanged)
   {
-    switch(x->m_otype)
-    {
-      case object_class::param:
-        static_cast<parameter*>(x)->do_registration(matchers);
-        break;
-      case object_class::remote:
-        static_cast<remote*>(x)->do_registration(matchers);
-        break;
-      case object_class::attribute:
-        static_cast<attribute*>(x)->do_registration(matchers);
-        break;
-      case object_class::model:
-        static_cast<model*>(x)->do_registration(matchers);
-        break;
-      case object_class::view:
-        static_cast<view*>(x)->do_registration(matchers);
-        break;
-      default:
-        break;
-    }
+    root_patcher = patcher;
+    patcher = get_patcher(patcher);
   }
 
-  auto patcher = x->m_patcher;
-  ossia_max::instance().patchers[patcher].loadbanged = true;
-
-/*
-  if (!x->m_patcher_hierarchy.empty())
+  if(ossia_max::instance().patchers[root_patcher].loadbanged)
   {
-    auto& root_map = ossia_max::instance().root_patcher;
-    const auto& it = root_map.find(x->m_patcher_hierarchy.back());
+    auto matchers = x->find_parent_nodes();
 
-    if(it != root_map.end())
+    if(!matchers.empty())
     {
-      ossia_max::root_descriptor& desc = it->second;
-
-#if OSSIA_MAX_AUTOREGISTER
-      if (!desc.is_loadbanged)
+      switch(x->m_otype)
       {
-        // this schedules the registration of all opened patchers
-        // that have not already been registered
-        clock_delay(ossia_max::instance().m_reg_clock,1);
-
-        // disable registration clock only if we trig a global
-        // registration from root patcher
-        // this is not ideal because in this case, objects might
-        // be registered twice if they are in a nested abtraction
-        if (x->m_reg_clock)
-        {
-          clock_unset(x->m_reg_clock);
-        }
+        case object_class::param:
+          static_cast<parameter*>(x)->do_registration(matchers);
+          break;
+        case object_class::remote:
+          static_cast<remote*>(x)->do_registration(matchers);
+          break;
+        case object_class::attribute:
+          static_cast<attribute*>(x)->do_registration(matchers);
+          break;
+        case object_class::model:
+          static_cast<model*>(x)->do_registration(matchers);
+          break;
+        case object_class::view:
+          static_cast<view*>(x)->do_registration(matchers);
+          break;
+        default:
+          break;
       }
-#endif
     }
   }
-*/
+  else
+  {
+    register_children_in_patcher_recursively(root_patcher, nullptr,
+                                           {std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)});
+    ossia_max::instance().patchers[root_patcher].loadbanged = true;
+  }
 }
 
 void object_base::is_deleted(const ossia::net::node_base& n)
