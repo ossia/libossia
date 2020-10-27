@@ -51,7 +51,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = get_patcher(&x->m_object);
+    auto patcher = x->m_patcher;
     if( ossia_max::instance().patchers[patcher].models.empty()
      && ossia_max::instance().patchers[patcher].views.empty())
     {
@@ -107,7 +107,7 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
 
 void model::destroy(model* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
@@ -175,7 +175,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
       // we have to check if a node with the same name already exists to avoid
       // auto-incrementing name
       std::vector<object_base*> obj = find_children_to_register(
-            &m_object, get_patcher(&m_object), gensym("ossia.model"));
+            &m_object, m_patcher, gensym("ossia.model"));
       for (auto v : obj)
       {
         if (v->m_otype == object_class::param)
@@ -214,7 +214,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
 void model::register_children()
 {
   std::vector<object_base*> children = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.model"));
+      &m_object, m_patcher, gensym("ossia.model"));
 
   // TODO take care of not registering a child twice
 
@@ -307,8 +307,8 @@ bool model::unregister()
   m_matchers.clear();
 
   auto nodes = find_parent_nodes();
-  auto patcher = get_patcher(&m_object);
-  register_objects_in_patcher_recursively(patcher, this, nodes);
+  auto patcher = m_patcher;
+  register_children_in_patcher_recursively(patcher, this, nodes);
 
   return true;
 }

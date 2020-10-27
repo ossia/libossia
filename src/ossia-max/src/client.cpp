@@ -388,7 +388,7 @@ void client::get_devices(client* x)
 void client::register_children(client* x)
 {
   std::vector<object_base*> children_view = find_children_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
+      &x->m_object, x->m_patcher, gensym("ossia.view"));
 
   for (auto child : children_view)
   {
@@ -409,7 +409,7 @@ void client::unregister_children()
 {
 
   std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.view"));
+      &m_object, m_patcher, gensym("ossia.view"));
 
   for (auto child : children_view)
   {

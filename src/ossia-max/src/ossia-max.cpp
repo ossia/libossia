@@ -150,7 +150,7 @@ void ossia_max::register_nodes(ossia_max*)
 
     std::vector<std::shared_ptr<t_matcher>> matchers{
         std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
-    register_objects_in_patcher_recursively(patcher, nullptr, matchers);
+    register_children_in_patcher_recursively(patcher, nullptr, matchers);
 
     // finally rise a flag to mark this patcher loadbangded
     it->second.is_loadbanged = true;
@@ -367,13 +367,17 @@ std::vector<object_base*> find_children_to_register(
   return found;
 }
 
-void register_objects_in_patcher_recursively(t_object* root_patcher, object_base* caller,
+void register_children_in_patcher_recursively(t_object* patcher, object_base* caller,
                                              const std::vector<std::shared_ptr<t_matcher>>& matchers)
 {
   std::vector<object_base*> objects_to_register;
 
+  t_object* root_patcher{};
+  if(caller)
+    root_patcher = caller->m_patcher;
+
   // 1: look for device, client, model and view objects into the patcher
-  t_object* next_box = object_attr_getobj(root_patcher, _sym_firstobject);
+  t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
   while (next_box)
   {
     object_base* object = (object_base*) jbox_get_object(next_box);
@@ -387,17 +391,19 @@ void register_objects_in_patcher_recursively(t_object* root_patcher, object_base
       {
         objects_to_register.push_back(object);
       }
-      // if there is a client or device in the current patcher
+      // if where are not in the caller patcher and
+      // there is a client or device in the current patcher
       // return only that object
-      if ( curr_classname == gensym("ossia.device")
-        || curr_classname == gensym("ossia.client"))
+      if ( root_patcher != patcher
+          && (curr_classname == gensym("ossia.device")
+           || curr_classname == gensym("ossia.client")))
       {
         // ignore dying object
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
           std::vector<std::shared_ptr<t_matcher>> matchers{std::make_shared<t_matcher>(&dev->m_device->get_root_node(), object)};
-          return register_objects_in_patcher_recursively(root_patcher, object, matchers);
+          return register_children_in_patcher_recursively(patcher, object, matchers);
         }
       }
     }
@@ -415,14 +421,14 @@ void register_objects_in_patcher_recursively(t_object* root_patcher, object_base
         {
           auto mdl = static_cast<model*>(obj);
           mdl->do_registration(matchers);
-          register_objects_in_patcher_recursively(root_patcher, mdl, mdl->m_matchers);
+          register_children_in_patcher_recursively(patcher, mdl, mdl->m_matchers);
           break;
         }
         case object_class::view:
         {
           auto vw = static_cast<view*>(obj);
           vw->do_registration(matchers);
-          register_objects_in_patcher_recursively(root_patcher, vw, vw->m_matchers);
+          register_children_in_patcher_recursively(patcher, vw, vw->m_matchers);
           break;
         }
         default:
@@ -434,7 +440,7 @@ void register_objects_in_patcher_recursively(t_object* root_patcher, object_base
   {
     // iterate again looking for device/client/model/view in its subpatchers
     // and for parameters/remote/attribute in the current patcher
-    next_box = object_attr_getobj(root_patcher, _sym_firstobject);
+    next_box = object_attr_getobj(patcher, _sym_firstobject);
 
     while (next_box)
     {
@@ -444,7 +450,7 @@ void register_objects_in_patcher_recursively(t_object* root_patcher, object_base
       // jpatcher or bpatcher case, look for object in those
       if (classname == _sym_jpatcher || classname == _sym_bpatcher)
       {
-        register_objects_in_patcher_recursively(object, caller, matchers);
+        register_children_in_patcher_recursively(object, caller, matchers);
       }
       else if (classname == gensym("poly~"))
       {
@@ -452,7 +458,7 @@ void register_objects_in_patcher_recursively(t_object* root_patcher, object_base
         t_object* subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
         while(subpatcher)
         {
-          register_objects_in_patcher_recursively(subpatcher, caller, matchers);
+          register_children_in_patcher_recursively(subpatcher, caller, matchers);
           subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
         }
       }
@@ -523,7 +529,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
     if(matchers.empty())
     {
       // look into parent patcher
-      patcher = get_patcher(patcher);
+      patcher = ossia::max::get_patcher(patcher);
     }
     else
     {

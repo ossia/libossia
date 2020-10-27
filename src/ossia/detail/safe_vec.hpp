@@ -133,6 +133,11 @@ public:
     return impl.size();
   }
 
+  auto empty() const
+  {
+    return impl.empty();
+  }
+
 private:
   ossia::ptr_set<T> impl;
 };

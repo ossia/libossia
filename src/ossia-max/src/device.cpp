@@ -194,13 +194,13 @@ void device::destroy(device* x)
 void device::register_children(device* x)
 {
   std::vector<std::shared_ptr<t_matcher>> matchers{std::make_shared<t_matcher>(&x->m_device->get_root_node(), x)};
-  return register_objects_in_patcher_recursively(get_patcher(&x->m_object), x, matchers);
+  return register_children_in_patcher_recursively(x->m_patcher, x, matchers);
 }
 
 void device::unregister_children()
 {
   std::vector<object_base*> children_model = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.model"));
+      &m_object, m_patcher, gensym("ossia.model"));
 
 
   for (auto child : children_model)
@@ -218,7 +218,7 @@ void device::unregister_children()
   }
 
   std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.view"));
+      &m_object, m_patcher, gensym("ossia.view"));
 
   for (auto child : children_view)
   {

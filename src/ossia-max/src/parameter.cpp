@@ -48,7 +48,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = get_patcher(&x->m_object);
+    auto patcher = x->m_patcher;
     ossia_max::instance().patchers[patcher].parameters.push_back(x);
 
     // make outlets
@@ -115,7 +115,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
 void parameter::destroy(parameter* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;

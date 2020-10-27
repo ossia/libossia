@@ -127,7 +127,6 @@ public:
   std::vector<std::shared_ptr<t_matcher>> m_matchers{};
   std::vector<t_matcher*> m_node_selection{};
   std::optional<ossia::traversal::path> m_selection_path{};
-
   static void class_setup(t_class*c);
 
   void fill_selection();
@@ -159,6 +158,7 @@ public:
   long m_invisible{};
   long m_defer_set{1};
   long m_recall_safe{};
+  t_object* m_patcher{};
 
   long m_tags_size{};
   long m_description_size{};
@@ -166,7 +166,6 @@ public:
 
   std::vector<search_result> m_found_parameters{};
   std::vector<search_result> m_found_models{};
-  t_object* m_patcher{};
 
   // constructor
   object_base();

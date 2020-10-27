@@ -57,7 +57,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = get_patcher(&x->m_object);
+    auto patcher = x->m_patcher;
     ossia_max::instance().patchers[patcher].remotes.push_back(x);
 
     x->m_otype = object_class::remote;
@@ -102,7 +102,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
 void remote::destroy(remote* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;

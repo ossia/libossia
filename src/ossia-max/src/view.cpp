@@ -43,7 +43,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = get_patcher(&x->m_object);
+    auto patcher = x->m_patcher;
     if( ossia_max::instance().patchers[patcher].models.empty()
         && ossia_max::instance().patchers[patcher].views.empty())
     {
@@ -96,11 +96,11 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
 void view::destroy(view* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(get_patcher(&x->m_object));
+  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
-    pat_desc.models.remove_all(x);
+    pat_desc.views.remove_all(x);
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);
@@ -124,7 +124,7 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
     ossia_max::instance().nr_views.remove_all(this);
 
     std::vector<object_base*> children_view = find_children_to_register(
-        &m_object, get_patcher(&m_object), gensym("ossia.view"));
+        &m_object, m_patcher, gensym("ossia.view"));
 
     for (auto child : children_view)
     {
@@ -224,7 +224,7 @@ bool view::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matche
 void view::register_children(view* x)
 {
   std::vector<object_base*> children_view = find_children_to_register(
-      &x->m_object, get_patcher(&x->m_object), gensym("ossia.view"));
+      &x->m_object, x->m_patcher, gensym("ossia.view"));
 
   for (auto child : children_view)
   {
@@ -250,7 +250,7 @@ bool view::unregister()
   m_matchers.clear();
 
   std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, get_patcher(&m_object), gensym("ossia.view"));
+      &m_object, m_patcher, gensym("ossia.view"));
 
   for (auto child : children_view)
   {

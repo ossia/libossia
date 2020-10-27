@@ -298,15 +298,7 @@ void t_matcher::set_parent_addr()
 
 object_base::object_base()
 {
-  get_hierarchy();
-
-  auto& map = ossia_max::instance().root_patcher;
-
-  std::pair<ossia_max::RootMap::iterator, bool> res = map.insert(
-              std::pair<t_object*,ossia_max::root_descriptor>(m_patcher_hierarchy.back(), {} ));
-
-  ossia_max::root_descriptor& desc = (res.first)->second;
-  desc.inc();
+  m_patcher = ossia::max::get_patcher(&m_object);
 }
 
 object_base::~object_base()
@@ -331,7 +323,7 @@ object_base::~object_base()
 
 void object_base::get_hierarchy()
 {
-  t_object* patcher = get_patcher(&m_object);
+  t_object* patcher = m_patcher;
 
   auto& vec = m_patcher_hierarchy;
   vec.clear();
@@ -340,7 +332,7 @@ void object_base::get_hierarchy()
   while (patcher)
   {
     vec.push_back(patcher);
-    patcher = get_patcher(patcher);
+    patcher = ossia::max::get_patcher(patcher);
   }
 
   // remove duplicates
@@ -423,7 +415,7 @@ void object_base::loadbang(object_base* x)
     }
   }
 
-  auto patcher = get_patcher(&x->m_object);
+  auto patcher = x->m_patcher;
   ossia_max::instance().patchers[patcher].loadbanged = true;
 
 /*
@@ -842,20 +834,18 @@ std::vector<std::shared_ptr<t_matcher>> object_base::find_parent_nodes()
       look_for_model_view = false;
     case ossia::net::address_scope::relative:
     {
-      t_object* patcher;
+      t_object* patcher{};
       switch(m_otype)
       {
         case object_class::param:
         case object_class::remote:
         case object_class::attribute:
-          patcher = get_patcher(&m_object);
           look_for_model_view &= true;
-          break;
         case object_class::model:
         case object_class::view:
-          patcher = get_patcher(&m_object);
-          if(patcher)
-            patcher = get_patcher(patcher);
+          patcher = m_patcher;
+          break;
+        default:
           break;
       }
       return find_parent_nodes_recursively(patcher, look_for_model_view);

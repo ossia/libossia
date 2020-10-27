@@ -183,13 +183,13 @@ public:
   typedef std::map<t_object*, root_descriptor> RootMap;
 
   struct patcher_descriptor{
-    ossia::safe_vector<parameter*> parameters{};
-    ossia::safe_vector<remote*>    remotes{};
-    ossia::safe_vector<attribute*> attributes{};
-    ossia::safe_vector<model*>     models{};
-    ossia::safe_vector<view*>      views{};
-    ossia::safe_vector<device*>    devices{};
-    ossia::safe_vector<client*>    clients{};
+    ossia::safe_set<parameter*> parameters{};
+    ossia::safe_set<remote*>    remotes{};
+    ossia::safe_set<attribute*> attributes{};
+    ossia::safe_set<model*>     models{};
+    ossia::safe_set<view*>      views{};
+    ossia::safe_set<device*>    devices{};
+    ossia::safe_set<client*>    clients{};
 
     t_object* parent_patcher;
     ossia::safe_set<t_object*> subpatchers;
@@ -205,6 +205,17 @@ public:
              && views.empty()
              && devices.empty()
              && clients.empty();
+    }
+
+    auto size() const
+    {
+      return parameters.size()
+           + remotes.size()
+           + attributes.size()
+           + models.size()
+           + views.size()
+           + devices.size()
+           + clients.size();
     }
 
   };
@@ -259,7 +270,7 @@ std::vector<object_base*> find_children_to_register(
  * @param caller object that calls the function
  * @param matchers vector of t_matcher to register against
  */
-void register_objects_in_patcher_recursively(t_object* root_patcher, object_base* caller,
+void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller,
                                              const std::vector<std::shared_ptr<t_matcher>>& matchers);
 
 
