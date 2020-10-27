@@ -140,6 +140,7 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
           case ZeroconfMinuitListener::ConnectionEvent::REMOVED:
             break;
 
+            // FIXME when this part of code will be executed ??
             std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
             auto it = ossia::find_if(s_devices, [&](const auto& d) {
               return d->get_name() == s.second;
