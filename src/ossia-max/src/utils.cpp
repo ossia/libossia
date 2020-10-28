@@ -297,9 +297,9 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
   }
 }
 
-std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
+std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
 {
-  std::vector<ossia::max::t_matcher*> matchers;
+  std::vector<ossia::max::matcher*> matchers;
   if (node)
   {
     for (auto& m : x->m_matchers)

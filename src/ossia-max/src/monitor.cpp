@@ -146,7 +146,7 @@ void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
   ossia_register(x);
 }
 
-bool monitor::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool monitor::register_node(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   update_path();
 

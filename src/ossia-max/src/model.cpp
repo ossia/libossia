@@ -137,7 +137,7 @@ void model::assist(model* x, void* b, long m, long a, char* s)
   }
 }
 
-bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool model::register_node(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   bool res = do_registration(matchers);
 
@@ -154,7 +154,7 @@ bool model::register_node(const std::vector<std::shared_ptr<t_matcher>>& matcher
   return res;
 }
 
-bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   m_registered = true;
 
@@ -196,7 +196,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<t_matcher>>& match
     auto m_nodes = ossia::net::create_nodes(*node, name);
     for (auto n : m_nodes)
     {
-      m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
+      m_matchers.emplace_back(std::make_shared<matcher>(n, this));
     }
 
     fill_selection();

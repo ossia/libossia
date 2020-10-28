@@ -32,7 +32,7 @@ struct monitor : object_base, search_filter
 
   void stop_monitoring();
 
-  bool register_node(const std::vector<std::shared_ptr<t_matcher>>& node);
+  bool register_node(const std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
 

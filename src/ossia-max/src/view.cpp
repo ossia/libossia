@@ -115,7 +115,7 @@ void view::destroy(view* x)
   x->~view();
 }
 
-bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
+bool view::register_node(const std::vector<std::shared_ptr<matcher>>& nodes)
 {
   bool res = do_registration(nodes);
 
@@ -141,13 +141,13 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
     }
 
     // once registered, gather all matchers and sort them by priority
-    std::vector<std::shared_ptr<t_matcher>> matchers;
+    std::vector<std::shared_ptr<matcher>> matchers;
     for(const auto& child : children_view)
     {
       matchers.insert(matchers.end(), child->m_matchers.begin(), child->m_matchers.end());
     }
 
-    ossia::sort(matchers, [&](const std::shared_ptr<t_matcher>& a, const std::shared_ptr<t_matcher>& b)
+    ossia::sort(matchers, [&](const std::shared_ptr<matcher>& a, const std::shared_ptr<matcher>& b)
     {
       return ossia::net::get_priority(*a->get_node()) > ossia::net::get_priority(*b->get_node());
     });
@@ -174,7 +174,7 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
   return res;
 }
 
-bool view::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   m_registered = true;
 
@@ -208,7 +208,7 @@ bool view::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matche
       // but with a parameter, in that case it's an ø.param
       // then forget it
       if (!n->get_parameter())
-        m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
+        m_matchers.emplace_back(std::make_shared<matcher>(n, this));
     }
   }
 

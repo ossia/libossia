@@ -40,15 +40,15 @@ enum class object_class
 
 struct object_base;
 
-class t_matcher
+class matcher
 {
 public:
-  t_matcher(ossia::net::node_base* n, object_base* p); // constructor
-  ~t_matcher();
-  t_matcher(const t_matcher&) = delete;
-  t_matcher(t_matcher&& other);
-  t_matcher& operator=(const t_matcher&) = delete;
-  t_matcher& operator=(t_matcher&& other);
+  matcher(ossia::net::node_base* n, object_base* p); // constructor
+  ~matcher();
+  matcher(const matcher&) = delete;
+  matcher(matcher&& other);
+  matcher& operator=(const matcher&) = delete;
+  matcher& operator=(matcher&& other);
 
   void output_value(ossia::value v);
   ossia::net::node_base* get_node() const { return node; }
@@ -56,7 +56,7 @@ public:
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
   void set_parent_addr();
 
-  inline bool operator==(const t_matcher& rhs)
+  inline bool operator==(const matcher& rhs)
   { return (get_node() == rhs.node); }
 
   void set_dead(){ m_dead = true; }
@@ -125,8 +125,8 @@ public:
   std::shared_ptr<ossia::net::generic_device> m_device{};
   // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
-  std::vector<std::shared_ptr<t_matcher>> m_matchers{};
-  std::vector<t_matcher*> m_node_selection{};
+  std::vector<std::shared_ptr<matcher>> m_matchers{};
+  std::vector<matcher*> m_node_selection{};
   std::optional<ossia::traversal::path> m_selection_path{};
   static void class_setup(t_class*c);
 
@@ -140,16 +140,16 @@ public:
   void set_hidden();
   void set_recall_safe();
 
-  std::vector<std::shared_ptr<t_matcher>> find_parent_nodes();
+  std::vector<std::shared_ptr<matcher>> find_parent_nodes();
 
-  static void get_description(object_base* x, std::vector<t_matcher*> nodes);
-  static void get_tags(object_base* x, std::vector<t_matcher*> nodes);
-  static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
-  static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
-  static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
+  static void get_description(object_base* x, std::vector<matcher*> nodes);
+  static void get_tags(object_base* x, std::vector<matcher*> nodes);
+  static void get_priority(object_base* x, std::vector<matcher*> nodes);
+  static void get_hidden(object_base* x, std::vector<matcher*> nodes);
+  static void get_zombie(object_base*x, std::vector<matcher*> nodes);
   static void get_mess_cb(object_base* x, t_symbol* s);
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
-  static void get_recall_safe(object_base*x, std::vector<t_matcher*> nodes);
+  static void get_recall_safe(object_base*x, std::vector<matcher*> nodes);
 
   // default attributes
   t_symbol* m_name{};
@@ -186,7 +186,7 @@ public:
 
   static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
-  static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
+  static void get_address(object_base *x,  std::vector<matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
   void highlight();

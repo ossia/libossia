@@ -30,7 +30,7 @@ struct explorer : object_base, search_filter
   explorer(long argc, t_atom* argv);
   ~explorer();
 
-  bool register_node(std::vector<std::shared_ptr<t_matcher>>& node);
+  bool register_node(std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
 

@@ -18,7 +18,7 @@ ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 
 #pragma mark t_matcher
 
-t_matcher::t_matcher(t_matcher&& other)
+matcher::matcher(matcher&& other)
 {
   node = other.node;
   other.node = nullptr;
@@ -58,7 +58,7 @@ t_matcher::t_matcher(t_matcher&& other)
   }
 }
 
-t_matcher& t_matcher::operator=(t_matcher&& other)
+matcher& matcher::operator=(matcher&& other)
 {
   node = other.node;
   other.node = nullptr;
@@ -100,7 +100,7 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
   return *this;
 }
 
-t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
+matcher::matcher(ossia::net::node_base* n, object_base* p) :
   node{n}, owner{p}, callbackit{std::nullopt}
 {
   if (owner)
@@ -151,7 +151,7 @@ void purge_parent(ossia::net::node_base* node)
   }
 }
 
-t_matcher::~t_matcher()
+matcher::~matcher()
 {
   if(node && owner)
   {
@@ -244,7 +244,7 @@ t_matcher::~t_matcher()
   }
 }
 
-void t_matcher::output_value(ossia::value v)
+void matcher::output_value(ossia::value v)
 {
   auto param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
@@ -283,7 +283,7 @@ void t_matcher::output_value(ossia::value v)
   }
 }
 
-void t_matcher::set_parent_addr()
+void matcher::set_parent_addr()
 {
   if (!m_dead && node && owner && owner->m_parent_node){
     // TODO how to deal with multiple parents ?
@@ -427,7 +427,7 @@ void object_base::loadbang(object_base* x)
   else
   {
     register_children_in_patcher_recursively(root_patcher, nullptr,
-                                           {std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)});
+                                           {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)});
     ossia_max::instance().patchers[root_patcher].loadbanged = true;
   }
 }
@@ -455,12 +455,12 @@ void object_base::is_deleted(const ossia::net::node_base& n)
     }
     m_node_selection.erase(ossia::remove_if(
       m_node_selection,
-      [&] (const t_matcher* m) {
+      [&] (const matcher* m) {
         return (m->get_node() == &n) && !m->is_locked();
     }), m_node_selection.end());
     m_matchers.erase(ossia::remove_if(
       m_matchers,
-      [&] (const std::shared_ptr<t_matcher>& m) {
+      [&] (const std::shared_ptr<matcher>& m) {
         return (m->get_node() == &n) && !m->is_locked();
     }), m_matchers.end());
     m_is_deleted = false;
@@ -483,7 +483,7 @@ void object_base::set_description()
 
 void object_base::set_recall_safe()
 {
-  for (t_matcher* m : m_node_selection)
+  for (matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::set_recall_safe(*node, m_recall_safe);
@@ -558,7 +558,7 @@ t_max_err object_base::notify(object_base *x, t_symbol*,
   return 0;
 }
 
-void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_recall_safe(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -574,7 +574,7 @@ void object_base::get_recall_safe(object_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("recall_safe"));
 }
 
-void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_tags(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -602,7 +602,7 @@ void object_base::get_tags(object_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("tags"));
 }
 
-void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_description(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -629,7 +629,7 @@ void object_base::get_description(object_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("description"));
 }
 
-void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_priority(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -651,7 +651,7 @@ void object_base::get_priority(object_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("priority"));
 }
 
-void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_hidden(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -666,7 +666,7 @@ void object_base::get_hidden(object_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("invisible"));
 }
 
-void object_base::get_zombie(object_base*x, std::vector<t_matcher*> nodes)
+void object_base::get_zombie(object_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -741,7 +741,7 @@ void object_base::get_mess_cb(object_base* x, t_symbol* s){
     object_post((t_object*)x,"no attribute %s", s->s_name);
 }
 
-void object_base::get_address(object_base *x, std::vector<t_matcher*> nodes)
+void object_base::get_address(object_base *x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -794,7 +794,7 @@ void object_base::push_parameter_value(ossia::net::parameter_base* param, const 
   }
 }
 
-std::vector<std::shared_ptr<t_matcher>> object_base::find_parent_nodes()
+std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
 {
   switch(m_otype)
   {
@@ -835,11 +835,11 @@ std::vector<std::shared_ptr<t_matcher>> object_base::find_parent_nodes()
     case ossia::net::address_scope::global:
     {
       auto nodes = find_global_nodes(std::string(m_name->s_name));
-      std::vector<std::shared_ptr<t_matcher>> matchers;
+      std::vector<std::shared_ptr<matcher>> matchers;
       matchers.reserve(nodes.size());
       for(auto n : nodes)
       {
-        matchers.push_back(std::make_shared<t_matcher>(n, nullptr));
+        matchers.push_back(std::make_shared<matcher>(n, nullptr));
       }
       return matchers;
     }

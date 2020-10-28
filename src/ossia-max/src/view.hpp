@@ -15,8 +15,8 @@ public:
 
   using is_view = std::true_type;
 
-  bool register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes);
-  bool do_registration(const std::vector<std::shared_ptr<t_matcher>>& nodes);
+  bool register_node(const std::vector<std::shared_ptr<matcher>>& nodes);
+  bool do_registration(const std::vector<std::shared_ptr<matcher>>& nodes);
   bool unregister();
 
   static void register_children(view* x);

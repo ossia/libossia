@@ -174,7 +174,7 @@ void parameter_base::set_minmax()
     return;
   }
 
-  for (t_matcher* m : m_node_selection)
+  for (matcher* m : m_node_selection)
   {
     if(!m->is_zombie())
     {
@@ -247,7 +247,7 @@ void parameter_base::set_unit()
 
 void parameter_base::set_mute()
 {
-  for (t_matcher* m : m_node_selection)
+  for (matcher* m : m_node_selection)
   {
     if(!m->is_zombie())
     {
@@ -520,7 +520,7 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
 
 }
 
-void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_domain(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -549,7 +549,7 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("max"));
 }
 
-void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_bounding_mode(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -568,7 +568,7 @@ void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*>
   lock_and_touch(x, gensym("clip"));
 }
 
-void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_default(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -599,7 +599,7 @@ void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes
 
 }
 
-void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_type(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -619,7 +619,7 @@ void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("type"));
 }
 
-void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_access_mode(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -639,7 +639,7 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
   lock_and_touch(x, gensym("mode"));
 }
 
-void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_critical(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -659,7 +659,7 @@ void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> node
   lock_and_touch(x, gensym("critical"));
 }
 
-void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_repetition_filter(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -679,7 +679,7 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_match
   lock_and_touch(x, gensym("repetitions"));
 }
 
-void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_enable(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -698,7 +698,7 @@ void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("enable"));
 }
 
-void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_unit(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -719,7 +719,7 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("unit"));
 }
 
-void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_mute(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -739,7 +739,7 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
   lock_and_touch(x, gensym("mute"));
 }
 
-void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_queue_length(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {
@@ -755,7 +755,7 @@ void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> 
   lock_and_touch(x, gensym("queue_length"));
 }
 
-void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_rate(parameter_base*x, std::vector<matcher*> nodes)
 {
   for (auto m : nodes)
   {

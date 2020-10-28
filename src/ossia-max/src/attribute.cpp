@@ -78,7 +78,7 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
   return 0;
 }
 
-bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& node)
+bool attribute::register_node(const std::vector<std::shared_ptr<matcher>>& node)
 {
   if (m_mute) return false;
 
@@ -115,7 +115,7 @@ bool attribute::register_node(const std::vector<std::shared_ptr<t_matcher>>& nod
   return res;
 }
 
-bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers)
+bool attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   m_registered = true;
 
@@ -145,13 +145,13 @@ bool attribute::do_registration(const std::vector<std::shared_ptr<t_matcher>>& m
 
     for (auto n : nodes){
       if (n->get_parameter()){
-        m_matchers.emplace_back(std::make_shared<t_matcher>(n,this));
+        m_matchers.emplace_back(std::make_shared<matcher>(n,this));
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
         auto node = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
         if (node){
-          m_matchers.emplace_back(std::make_shared<t_matcher>(node, this));
+          m_matchers.emplace_back(std::make_shared<matcher>(node, this));
         }
       }
     }
@@ -199,7 +199,7 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
           pos = name.find('/',pos+1);
         }
       }
-      m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
       fill_selection();
     }
   }

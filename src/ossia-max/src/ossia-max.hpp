@@ -271,10 +271,10 @@ std::vector<object_base*> find_children_to_register(
  * @param matchers vector of t_matcher to register against
  */
 void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller,
-                                             const std::vector<std::shared_ptr<t_matcher>>& matchers);
+                                             const std::vector<std::shared_ptr<matcher>>& matchers);
 
 
-std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(t_object* patcher, bool look_for_model_view = true);
+std::vector<std::shared_ptr<matcher>> find_parent_nodes_recursively(t_object* patcher, bool look_for_model_view = true);
 /**
  * @brief             Convenient method to easily get the patcher where a box
  * is

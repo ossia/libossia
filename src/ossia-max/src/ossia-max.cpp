@@ -148,8 +148,8 @@ void ossia_max::register_nodes(ossia_max*)
 
     to_be_initialized.push_back(patcher);
 
-    std::vector<std::shared_ptr<t_matcher>> matchers{
-        std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+    std::vector<std::shared_ptr<matcher>> matchers{
+        std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
     register_children_in_patcher_recursively(patcher, nullptr, matchers);
 
     // finally rise a flag to mark this patcher loadbangded
@@ -368,7 +368,7 @@ std::vector<object_base*> find_children_to_register(
 }
 
 void register_children_in_patcher_recursively(t_object* patcher, object_base* caller,
-                                             const std::vector<std::shared_ptr<t_matcher>>& matchers)
+                                             const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   std::vector<object_base*> objects_to_register;
 
@@ -406,7 +406,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
-          std::vector<std::shared_ptr<t_matcher>> matchers{std::make_shared<t_matcher>(&dev->m_device->get_root_node(), object)};
+          std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
           return register_children_in_patcher_recursively(patcher, object, matchers);
         }
       }
@@ -487,10 +487,10 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   }
 }
 
-std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
+std::vector<std::shared_ptr<matcher>> find_parent_nodes_recursively(
     t_object* patcher, bool look_for_model_view)
 {
-  std::vector<std::shared_ptr<t_matcher>> matchers{};
+  std::vector<std::shared_ptr<matcher>> matchers{};
 
   // TODO : to avoid iterating over all objects in patcher (which could be very long)
   // we could keep a list of objects in a given patcher and then query that database instead
@@ -523,7 +523,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
-          matchers = {std::make_shared<t_matcher>(&dev->m_device->get_root_node(), object)};
+          matchers = {std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
         }
       }
 
@@ -541,7 +541,7 @@ std::vector<std::shared_ptr<t_matcher>> find_parent_nodes_recursively(
     }
   }
 
-  return {std::make_shared<t_matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+  return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
 }
 
 t_object* get_patcher(t_object* object)

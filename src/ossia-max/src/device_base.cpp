@@ -42,6 +42,9 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
 
 void device_base::on_attribute_modified_callback(ossia::net::node_base& node, const std::string& attribute)
 {
+  // FIXME : review this notification dispatch
+  //
+  /*
   if (node.get_parameter())
   {
     for ( auto param : ossia_max::instance().parameters.reference() )
@@ -90,6 +93,7 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
       }
     }
   }
+*/
 }
 
 void device_base::on_node_renamed_callback(
@@ -139,7 +143,7 @@ void device_base::connect_slots()
     m_device->on_node_created.connect<&device_base::on_node_created_callback>(this);
     m_device->on_node_removing.connect<&device_base::on_node_removing_callback>(this);
 
-    m_matchers.emplace_back(std::make_shared<t_matcher>(&m_device->get_root_node(), nullptr));
+    m_matchers.emplace_back(std::make_shared<matcher>(&m_device->get_root_node(), nullptr));
     // This is to handle [get address( message only
     // so is it really needed ?
     assert(!m_matchers.empty());

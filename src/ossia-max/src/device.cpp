@@ -193,7 +193,7 @@ void device::destroy(device* x)
 
 void device::register_children(device* x)
 {
-  std::vector<std::shared_ptr<t_matcher>> matchers{std::make_shared<t_matcher>(&x->m_device->get_root_node(), x)};
+  std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
   return register_children_in_patcher_recursively(x->m_patcher, x, matchers);
 }
 

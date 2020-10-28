@@ -235,7 +235,7 @@ void remote::get_mute(remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-bool remote::register_node(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
+bool remote::register_node(const std::vector<std::shared_ptr<matcher>>& matchers, bool output_value)
 {
   if(m_mute) return false;
 
@@ -335,7 +335,7 @@ void remote::on_device_deleted(const net::node_base& root)
   }
 }
 
-bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matchers, bool output_value)
+bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers, bool output_value)
 {
   object_post(&m_object, "register remote");
 
@@ -383,14 +383,14 @@ bool remote::do_registration(const std::vector<std::shared_ptr<t_matcher>>& matc
         continue;
 
       if (n->get_parameter()){
-        m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
+        m_matchers.emplace_back(std::make_shared<matcher>(n, this));
       } else {
         // if there is a node without address it might be a model
         // then look if that node have an eponyme child
         n = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
 
         if (n && n->get_parameter()){
-          m_matchers.emplace_back(std::make_shared<t_matcher>(n, this));
+          m_matchers.emplace_back(std::make_shared<matcher>(n, this));
         } else {
           continue;
         }
@@ -466,7 +466,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
           pos = name.find('/',pos+1);
         }
       }
-      m_matchers.emplace_back(std::make_shared<t_matcher>(&node,this));
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
       fill_selection();
     }
   }
@@ -481,7 +481,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
     // assume all matchers have the same bounding_mode
     assert(!x->m_matchers.empty());
 
-    std::shared_ptr<ossia::max::t_matcher> good_one{};
+    std::shared_ptr<ossia::max::matcher> good_one{};
 
     for(auto& m : x->m_matchers)
     {

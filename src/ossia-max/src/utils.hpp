@@ -77,7 +77,7 @@ t_symbol* access_mode2symbol(ossia::access_mode mode);
  * @param node
  * @return
  */
-std::vector<ossia::max::t_matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
+std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 
@@ -219,8 +219,8 @@ void ossia_register(T* x)
   if (!x->m_name)
     return;
 
-  std::vector<std::shared_ptr<t_matcher>> tmp;
-  std::vector<std::shared_ptr<t_matcher>>* matchers = &tmp;
+  std::vector<std::shared_ptr<matcher>> tmp;
+  std::vector<std::shared_ptr<matcher>>* matchers = &tmp;
   std::vector<ossia::net::node_base*> nodes;
 
   if (x->m_addr_scope == ossia::net::address_scope::global)
@@ -250,7 +250,7 @@ void ossia_register(T* x)
     tmp.reserve(nodes.size());
     for (auto n : nodes)
     {
-      tmp.emplace_back(std::make_shared<t_matcher>(n, (object_base*)nullptr));
+      tmp.emplace_back(std::make_shared<matcher>(n, (object_base*)nullptr));
     }
   }
   else
@@ -304,7 +304,7 @@ void ossia_register(T* x)
     if(matchers == &tmp
        && x->m_addr_scope != ossia::net::address_scope::global)
     {
-      tmp.push_back(std::make_shared<t_matcher>(&ossia_max::get_default_device()->get_root_node(),
+      tmp.push_back(std::make_shared<matcher>(&ossia_max::get_default_device()->get_root_node(),
                       (object_base*) nullptr));
     }
   }

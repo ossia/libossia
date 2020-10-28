@@ -31,20 +31,20 @@ public:
   static void class_setup(t_class*c);
 
   static void get_mess_cb(parameter_base* x, t_symbol* s);
-  static void get_unit(parameter_base*x, std::vector<t_matcher*> nodes);
-  static void get_rate(parameter_base*x, std::vector<t_matcher*> nodes);
-  static void get_mute(parameter_base*x, std::vector<t_matcher*> nodes);
-  static void get_domain(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_min(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_max(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_bounding_mode(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_default(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_type(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_critical(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_unit(parameter_base*x, std::vector<matcher*> nodes);
+  static void get_rate(parameter_base*x, std::vector<matcher*> nodes);
+  static void get_mute(parameter_base*x, std::vector<matcher*> nodes);
+  static void get_domain(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_min(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_max(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_bounding_mode(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_default(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_type(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_access_mode(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_repetition_filter(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_critical(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_enable(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_queue_length(parameter_base*x, std::vector<matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};

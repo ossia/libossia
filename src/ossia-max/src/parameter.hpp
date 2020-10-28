@@ -13,8 +13,8 @@ class parameter final : public parameter_base
 public:
   using is_parameter = std::true_type;
 
-  bool register_node(const std::vector<std::shared_ptr<t_matcher>>& node);
-  bool do_registration(const std::vector<std::shared_ptr<t_matcher>>& node);
+  bool register_node(const std::vector<std::shared_ptr<matcher>>& node);
+  bool do_registration(const std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
   void save_values();
 
