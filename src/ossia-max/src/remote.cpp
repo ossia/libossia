@@ -339,9 +339,27 @@ bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& matche
 {
   object_post(&m_object, "register remote");
 
-  m_registered = true;
-
   std::string name = m_name->s_name;
+
+  // FIXME review absolute and global scope registering
+
+  if(!m_registered)
+  {
+    m_registered = true;
+
+    switch(m_addr_scope)
+    {
+      case ossia::net::address_scope::absolute:
+      case ossia::net::address_scope::global:
+        object_error(&m_object, "remote with glboal/absolute path are not supported yet");
+        return true;
+      default:
+          ;
+    }
+  }
+
+  m_matchers.clear();
+  m_matchers.reserve(matchers.size());
 
   for (auto& m : matchers)
   {
@@ -443,6 +461,8 @@ bool remote::unregister()
     dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
   }
   m_devices.clear();
+
+  m_registered = false;
 
   return true;
 }

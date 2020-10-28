@@ -108,7 +108,7 @@ void object_base::loadbang(object_base* x)
     return;
 
   t_object* patcher = x->m_patcher;
-  t_object* root_patcher{};
+  t_object* root_patcher = patcher;
 
   while(patcher && !ossia_max::instance().patchers[patcher].loadbanged)
   {
@@ -134,11 +134,19 @@ void object_base::loadbang(object_base* x)
           static_cast<attribute*>(x)->do_registration(matchers);
           break;
         case object_class::model:
-          static_cast<model*>(x)->do_registration(matchers);
+        {
+          auto obj = static_cast<model*>(x);
+          obj->do_registration(matchers);
+          register_children_in_patcher_recursively(root_patcher, obj, obj->m_matchers);
           break;
+        }
         case object_class::view:
-          static_cast<view*>(x)->do_registration(matchers);
+        {
+          auto obj = static_cast<view*>(x);
+          obj->do_registration(matchers);
+          register_children_in_patcher_recursively(root_patcher, obj, obj->m_matchers);
           break;
+        }
         default:
           break;
       }
@@ -539,12 +547,12 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
       t_object* patcher{};
       switch(m_otype)
       {
+        case object_class::model:
+        case object_class::view:
+          look_for_model_view = false;
         case object_class::param:
         case object_class::remote:
         case object_class::attribute:
-          look_for_model_view &= true;
-        case object_class::model:
-        case object_class::view:
           patcher = m_patcher;
           break;
         default:

@@ -156,9 +156,27 @@ bool model::register_node(const std::vector<std::shared_ptr<matcher>>& matchers)
 
 bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
-  m_registered = true;
-
   ossia::string_view name(m_name->s_name);
+
+  // FIXME support absolute and global address scope
+
+  if(!m_registered)
+  {
+    m_registered = true;
+
+    switch(m_addr_scope)
+    {
+      case ossia::net::address_scope::absolute:
+      case ossia::net::address_scope::global:
+        object_error(&m_object, "model with glboal/absolute path are not supported yet");
+        return true;
+      default:
+          ;
+    }
+  }
+
+  m_matchers.clear();
+  m_matchers.reserve(matchers.size());
 
   for (auto& m : matchers)
   {
@@ -309,6 +327,8 @@ bool model::unregister()
   auto nodes = find_parent_nodes();
   auto patcher = m_patcher;
   register_children_in_patcher_recursively(patcher, this, nodes);
+
+  m_registered = false;
 
   return true;
 }

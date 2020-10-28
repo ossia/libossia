@@ -203,6 +203,7 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
   {
     m_registered = true;
 
+    // FIXME refactor absolute and global address scope handling
     switch(m_addr_scope)
     {
       case ossia::net::address_scope::absolute:
@@ -213,6 +214,9 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
           ;
     }
   }
+
+  m_matchers.clear();
+  m_matchers.reserve(matchers.size());
 
   for (auto& m : matchers)
   {
@@ -269,18 +273,9 @@ bool parameter::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
-  /*
-  for (auto remote : ossia_max::instance().nr_remotes.copy())
-  {
-    ossia_register(remote);
-  }
-  for (auto attribute : ossia_max::instance().nr_attributes.copy())
-  {
-    ossia_register(attribute);
-  }
-  */
-
   ossia_max::instance().nr_parameters.push_back(this);
+
+  m_registered = false;
 
   return true;
 }

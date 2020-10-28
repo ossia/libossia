@@ -176,7 +176,25 @@ bool view::register_node(const std::vector<std::shared_ptr<matcher>>& nodes)
 
 bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
-  m_registered = true;
+  // FIXME review absolute and global scope registering
+
+  if(!m_registered)
+  {
+    m_registered = true;
+
+    switch(m_addr_scope)
+    {
+      case ossia::net::address_scope::absolute:
+      case ossia::net::address_scope::global:
+        object_error(&m_object, "remote with glboal/absolute path are not supported yet");
+        return true;
+      default:
+          ;
+    }
+  }
+
+  m_matchers.clear();
+  m_matchers.reserve(matchers.size());
 
   for (auto& m : matchers)
   {
@@ -269,6 +287,8 @@ bool view::unregister()
   ossia_max::instance().nr_views.push_back(this);
 
   register_children(this);
+
+  m_registered = false;
 
   return true;
 }

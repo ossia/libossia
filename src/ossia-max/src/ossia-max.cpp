@@ -540,6 +540,7 @@ std::vector<std::shared_ptr<matcher>> find_parent_nodes_recursively(
     {
       return matchers;
     }
+    look_for_model_view = true;
   }
 
   return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
