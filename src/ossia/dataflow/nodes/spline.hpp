@@ -3,7 +3,7 @@
 #include <ossia/dataflow/port.hpp>
 
 // Courtesy of tinyspline library, MIT license.
-#include <ossia/editor/automation/tinysplinecpp.h>
+#include <ossia/editor/automation/tinyspline_util.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 
 namespace ossia::nodes
@@ -63,35 +63,33 @@ public:
     return "spline";
   }
 
+
   void set_spline(const spline_data& t)
   {
-    m_spline = tinyspline::BSpline(3, 2, t.points.size(), TS_CLAMPED);
-
-    ts_bspline_set_ctrlp(
-        m_spline.data(),
-        reinterpret_cast<const tinyspline::real*>(t.points.data()),
-        m_spline.data());
+    m_spline.set_points(reinterpret_cast<const tsReal*>(t.points.data()), t.points.size());
   }
 
 private:
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    ossia::value_port& vp = *value_out;
-    const double pos = t.position();
+    if(!m_spline)
+      return;
 
-    auto p = m_spline.evaluate(pos >= 0. ? pos : 0.);
-    auto d = p.data();
+    ossia::value_port& vp = *value_out;
+    const double pos = [&] { double p = t.position(); return p >= 0. ? p : 0.; }();
+
+    auto [res_x, res_y] = m_spline.evaluate(pos);
+
     const auto tick_start = e.physical_start(t);
 
     vp.write_value(
         ossia::make_vec(
-            m_x + m_scaleX * d->result[0], m_y + m_scaleY * d->result[1]),
+            m_x + m_scaleX * res_x, m_y + m_scaleY * res_y),
         tick_start);
   }
 
   ossia::value_outlet value_out;
-  tinyspline::BSpline m_spline;
+  ts::spline<2> m_spline;
   double m_x{}, m_y{}, m_scaleX{1.}, m_scaleY{1.};
 };
 }

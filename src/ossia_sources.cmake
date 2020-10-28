@@ -193,7 +193,6 @@ set(SRCS
 
 set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.h"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/curve_value_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_abstract.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
@@ -247,8 +246,7 @@ set(OSSIA_EDITOR_HEADERS
   )
 
 set(OSSIA_EDITOR_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinysplinecpp.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"
