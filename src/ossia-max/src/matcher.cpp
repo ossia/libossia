@@ -1,0 +1,298 @@
+#include <ossia-max/src/matcher.hpp>
+#include <ossia-max/src/object_base.hpp>
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/utils.hpp>
+
+#include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/preset/preset.hpp>
+#include <ossia/network/value/value_conversion.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+
+#include <regex>
+
+namespace ossia
+{
+namespace max
+{
+
+matcher::matcher(ossia::net::node_base* n, object_base* p) :
+    node{n}, owner{p}, callbackit{std::nullopt}
+{
+  if (owner)
+  {
+    switch(owner->m_otype)
+    {
+      case object_class::remote:
+      case object_class::param:
+        if (auto param = node->get_parameter())
+          callbackit = param->add_callback(
+              [=](const ossia::value& v) { output_value(v); });
+        break;
+      default:
+        break;
+    }
+
+    node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
+  }
+
+  set_parent_addr();
+}
+
+matcher::matcher(matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  owner = other.owner;
+  other.owner = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = std::nullopt;
+
+  m_addr = other.m_addr;
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
+  {
+    if(auto param = node->get_parameter())
+    {
+      if (callbackit)
+        param->remove_callback(*callbackit);
+
+      if (owner)
+      {
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
+
+        set_parent_addr();
+      }
+    }
+  }
+}
+
+matcher& matcher::operator=(matcher&& other)
+{
+  node = other.node;
+  other.node = nullptr;
+
+  owner = other.owner;
+  other.owner = nullptr;
+
+  callbackit = other.callbackit;
+  other.callbackit = std::nullopt;
+
+  m_addr = other.m_addr;
+  m_dead = other.m_dead;
+
+  if(node && !m_dead)
+  {
+    if(auto param = node->get_parameter())
+    {
+      if (callbackit)
+        param->remove_callback(*callbackit);
+
+      if (owner && !owner->m_is_deleted)
+      {
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
+
+        set_parent_addr();
+      }
+    }
+  }
+
+  return *this;
+}
+
+
+void purge_parent(ossia::net::node_base* node)
+{
+  // remove parent node recursively if they are not used anymore
+  if (auto pn = node->get_parent())
+  {
+    pn->remove_child(*node);
+    if (pn->get_parent() && pn->children().size() == 0)
+    {
+      bool remove_me = true;
+      for (auto model : ossia_max::instance().models.copy())
+      {
+        for (const auto& m : model->m_matchers)
+        {
+          if (m->get_node() == pn)
+          {
+            remove_me = false;
+            break;
+          }
+        }
+        if(!remove_me)
+          break;
+      }
+      if (remove_me)
+        purge_parent(pn);
+    }
+  }
+}
+
+matcher::~matcher()
+{
+  if(node && owner)
+  {
+    // purge selection
+    ossia::remove_one(owner->m_node_selection,this);
+
+    if (   owner->m_otype == object_class::param
+        || owner->m_otype == object_class::model )
+    {
+      if (!owner->m_is_deleted)
+      {
+        auto param = node->get_parameter();
+        if (param && callbackit) param->remove_callback(*callbackit);
+        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
+
+        for (auto remote : ossia_max::instance().remotes.copy())
+        {
+          auto matchers_copy = remote->m_matchers;
+          for (auto m : matchers_copy)
+          {
+            if(m && *m == *this)
+            {
+              if(m->is_locked())
+              {
+                m->set_zombie();
+              }
+              else
+              {
+                ossia::remove_erase(remote->m_matchers,m);
+              }
+            }
+          }
+          // ossia::remove_erase_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
+        }
+
+        for (auto attribute : ossia_max::instance().attributes.copy())
+        {
+          ossia::remove_erase_if(attribute->m_matchers, [this] (auto& other) { return *other == *this; });
+        }
+
+        purge_parent(node);
+      }
+      // if the vector is empty
+      // remote should be quarantinized
+      if (owner->m_matchers.size() == 0)
+      {
+        switch(owner->m_otype)
+        {
+          case object_class::model:
+            ossia_max::instance().nr_models.push_back((model*) owner);
+            break;
+          case object_class::param:
+            ossia_max::instance().nr_parameters.push_back((parameter*) owner);
+            break;
+          default:
+              ;
+        }
+      }
+    } else {
+
+      if (!owner->m_is_deleted && !m_zombie)
+      {
+        auto param = node->get_parameter();
+        if (param && callbackit) param->remove_callback(*callbackit);
+        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
+      }
+
+      // if there vector is empty
+      // remote should be quarantinized
+      if (owner->m_matchers.size() == 0)
+      {
+        switch(owner->m_otype)
+        {
+          case object_class::attribute:
+            ossia_max::instance().nr_attributes.push_back((attribute*) owner);
+            break;
+          case object_class::remote:
+            ossia_max::instance().nr_remotes.push_back((remote*) owner);
+            break;
+          case object_class::view:
+            ossia_max::instance().nr_views.push_back((view*) owner);
+            break;
+          default:
+              ;
+        }
+      }
+    }
+    node = nullptr;
+    owner = nullptr;
+  }
+}
+
+void matcher::output_value(ossia::value v)
+{
+  auto param = node->get_parameter();
+  auto filtered = ossia::net::filter_value(
+      param->get_domain(),
+      std::move(v),
+      param->get_bounding());
+
+  // FIXME filter_value return false but an invalid filtered value
+  if(!param->filter_value(filtered) && filtered.valid())
+  {
+    auto x = (parameter_base*) owner;
+
+    ossia::value val;
+    if ( x->m_ounit == std::nullopt )
+    {
+      val = std::move(filtered);
+    }
+    else
+    {
+      val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit);
+    }
+
+    auto it = find(owner->m_set_pool, val);
+    if (it != owner->m_set_pool.end())
+    {
+      owner->m_set_pool.erase(it);
+      return;
+    }
+
+    if(owner->m_dumpout)
+      outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
+
+    value_visitor<object_base> vm;
+    vm.x = (object_base*)owner;
+    val.apply(vm);
+  }
+}
+
+void matcher::set_parent_addr()
+{
+  if (!m_dead && node && owner && owner->m_parent_node){
+    // TODO how to deal with multiple parents ?
+    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *owner->m_parent_node);
+    A_SETSYM(&m_addr, gensym(addr.c_str()));
+  }
+  else
+  {
+    A_SETSYM(&m_addr, gensym("."));
+  }
+}
+
+} // namespace max
+} // namespace ossia

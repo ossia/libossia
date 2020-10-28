@@ -1,0 +1,54 @@
+#pragma once
+
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/value/value.hpp>
+#include <ossia/network/base/value_callback.hpp>
+#include <ext.h>
+
+namespace ossia
+{
+namespace max
+{
+
+class object_base;
+
+class matcher
+{
+public:
+  matcher(ossia::net::node_base* n, object_base* p); // constructor
+  ~matcher();
+  matcher(const matcher&) = delete;
+  matcher(matcher&& other);
+  matcher& operator=(const matcher&) = delete;
+  matcher& operator=(matcher&& other);
+
+  void output_value(ossia::value v);
+  ossia::net::node_base* get_node() const { return node; }
+  object_base* get_parent() const { return owner; }   // return the max object that holds this
+  const t_atom* get_atom_addr_ptr() const { return &m_addr; }
+  void set_parent_addr();
+
+  inline bool operator==(const matcher& rhs)
+  { return (get_node() == rhs.node); }
+
+  void set_dead(){ m_dead = true; }
+  void set_zombie(){ m_zombie = true; }
+  bool is_zombie() const { return  m_zombie; }
+  bool is_locked() const { return m_lock; }
+  bool is_dead() const { return m_dead; }
+
+private:
+  ossia::net::node_base* node{};
+  object_base* owner{};
+
+  std::optional<ossia::callback_container<ossia::value_callback>::iterator>
+      callbackit = std::nullopt;
+
+  bool m_dead{}; // true when Max object is being deleted
+  bool m_zombie{}; // true if node is deleted, t_matcher should be deleted asap
+  bool m_lock{};
+  t_atom m_addr{};
+};
+
+} // namespace max
+} // namespace ossia

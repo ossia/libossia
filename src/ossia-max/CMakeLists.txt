@@ -72,6 +72,8 @@ set(PROJECT_SRCS
     src/fuzzysearch.cpp
     src/logger.hpp
     src/logger.cpp
+    src/matcher.cpp
+    src/matcher.hpp
     src/model.hpp
     src/model.cpp
     src/monitor.cpp
