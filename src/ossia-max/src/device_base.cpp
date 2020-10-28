@@ -42,58 +42,30 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
 
 void device_base::on_attribute_modified_callback(ossia::net::node_base& node, const std::string& attribute)
 {
-  // FIXME : review this notification dispatch
-  //
-  /*
-  if (node.get_parameter())
+  auto& matchers = ossia_max::instance().s_node_matchers_map[&node];
+
+  for(const auto& m : matchers)
   {
-    for ( auto param : ossia_max::instance().parameters.reference() )
+    auto obj = m->get_parent();
+    switch(obj->m_otype)
     {
-      for ( auto& m : param->m_matchers )
+      case object_class::attribute:
+      case object_class::param:
+      case object_class::remote:
       {
-        if ( m->get_node() == &node )
-          parameter::update_attribute((ossia::max::parameter*)m->get_parent(),attribute, &node);
+        auto oc = static_cast<ossia::max::parameter_base*>(obj);
+        oc->update_attribute(oc, attribute, &node);
+        break;
       }
-    }
-
-    for ( auto remote : ossia_max::instance().remotes.reference() )
-    {
-      for ( auto& m : remote->m_matchers )
-      {
-        if ( m->get_node() == &node )
-          remote::update_attribute((ossia::max::remote*)m->get_parent(),attribute, &node);
-      }
-    }
-
-    for ( auto attr : ossia_max::instance().attributes.reference() )
-    {
-      for ( auto& m : attr->m_matchers )
-      {
-        if ( m->get_node() == &node )
-          attribute::update_attribute((ossia::max::attribute*)m->get_parent(),attribute, &node);
-      }
-    }
-  } else {
-    for ( auto model : ossia_max::instance().models.reference() )
-    {
-      for ( auto& m : model->m_matchers )
-      {
-        if ( m->get_node() == &node )
-          node_base::update_attribute((node_base*)m->get_parent(),attribute, &node);
-      }
-    }
-
-    for ( auto view : ossia_max::instance().views.reference() )
-    {
-      for ( auto& m : view->m_matchers )
-      {
-        if ( m->get_node() == &node )
-          node_base::update_attribute((node_base*)m->get_parent(),attribute, &node);
+      case object_class::model:
+      case object_class::view:
+      case object_class::device:
+      case object_class::client:
+        break;
+      default:
           ;
-      }
     }
   }
-*/
 }
 
 void device_base::on_node_renamed_callback(

@@ -138,6 +138,16 @@ public:
     return impl.empty();
   }
 
+  auto begin() const
+  {
+    return impl.begin();
+  }
+
+  auto end() const
+  {
+    return impl.end();
+  }
+
 private:
   ossia::ptr_set<T> impl;
 };

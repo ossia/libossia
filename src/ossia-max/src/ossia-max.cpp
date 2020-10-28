@@ -18,9 +18,10 @@
 
 using namespace ossia::max;
 
-void* ossia_max::browse_clock;
-ZeroconfOscqueryListener ossia_max::zeroconf_oscq_listener;
-ZeroconfMinuitListener ossia_max::zeroconf_minuit_listener;
+void* ossia_max::s_browse_clock;
+ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
+ZeroconfMinuitListener ossia_max::s_zeroconf_minuit_listener;
+std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> ossia_max::s_node_matchers_map{};
 
 // ossia-max library constructor
 ossia_max::ossia_max():
@@ -48,8 +49,8 @@ ossia_max::ossia_max():
   m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
 #endif
 
-  browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
-  clock_delay(ossia_max::browse_clock, 100.);
+  s_browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
+  clock_delay(ossia_max::s_browse_clock, 100.);
 
   post("OSSIA library for Max is loaded");
   post("build SHA : %s", ossia::get_commit_sha().c_str());
@@ -571,9 +572,9 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
 
 void ossia_max::discover_network_devices(ossia_max*)
 {
-  ossia_max::zeroconf_oscq_listener.browse();
-  ossia_max::zeroconf_minuit_listener.browse();
-  clock_delay(ossia_max::browse_clock, 100.);
+  ossia_max::s_zeroconf_oscq_listener.browse();
+  ossia_max::s_zeroconf_minuit_listener.browse();
+  clock_delay(ossia_max::s_browse_clock, 100.);
 }
 
 } // max namespace

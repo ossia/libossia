@@ -36,6 +36,8 @@ matcher::matcher(ossia::net::node_base* n, object_base* p) :
   }
 
   set_parent_addr();
+
+  ossia_max::instance().s_node_matchers_map[n].push_back(this);
 }
 
 matcher::matcher(matcher&& other)
@@ -237,6 +239,8 @@ matcher::~matcher()
         }
       }
     }
+
+    ossia_max::instance().s_node_matchers_map[node].remove_all(this);
     node = nullptr;
     owner = nullptr;
   }

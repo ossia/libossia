@@ -6,9 +6,6 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark t_model structure declaration
-
 class model : public node_base
 {
 public:

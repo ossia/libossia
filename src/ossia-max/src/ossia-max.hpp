@@ -168,6 +168,8 @@ public:
   ossia::safe_set<attribute*> nr_attributes;
   ossia::safe_set<monitor*> nr_monitors;
 
+  static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
+
   bool registering_nodes=false;
 
   // this is used at loadbang to mark a patcher loaded
@@ -223,10 +225,10 @@ public:
 
   RootMap root_patcher;
   void* m_reg_clock{};
-  static void* browse_clock;
+  static void* s_browse_clock;
 
-  static ZeroconfOscqueryListener zeroconf_oscq_listener;
-  static ZeroconfMinuitListener   zeroconf_minuit_listener;
+  static ZeroconfOscqueryListener s_zeroconf_oscq_listener;
+  static ZeroconfMinuitListener   s_zeroconf_minuit_listener;
 
 private:
   ossia_max();

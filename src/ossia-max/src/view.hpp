@@ -6,9 +6,6 @@ namespace ossia
 namespace max
 {
 
-#pragma mark -
-#pragma mark t_view structure declaration
-
 class view : public object_base // FIXME why view doesn't inherite from ossia::max::node_base ??
 {
 public:
@@ -28,6 +25,4 @@ public:
 } // max namespace
 } // ossia namespace
 
-#pragma mark -
-#pragma mark ossia_view class declaration
 
