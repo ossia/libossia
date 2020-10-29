@@ -76,6 +76,9 @@ namespace ossia
 namespace max
 {
 
+Nano::Signal<void(client*)> client::on_client_connected;
+Nano::Signal<void(client*)> client::on_client_disconnected;
+
 void* client::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
@@ -148,9 +151,7 @@ void client::destroy(client* x)
   disconnect(x);
   outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
-#if OSSIA_MAX_AUTOREGISTER
-  register_quarantinized();
-#endif
+
   x->~client();
 }
 
@@ -368,6 +369,7 @@ void client::connect(client* x)
 
     x->connect_slots();
     client::update(x);
+    client::on_client_connected(x);
     clock_unset(x->m_clock);
   }
   else
@@ -451,6 +453,7 @@ void client::disconnect(client* x)
     x->unregister_children();
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
+    client::on_client_disconnected(x);
   }
   clock_unset(x->m_clock); // avoid automatic reconnection
 }

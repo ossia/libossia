@@ -251,11 +251,6 @@ void object_namespace(object_base* x);
 #pragma mark Utilities
 
 /**
- * @brief register_quarantinized Try to register all quarantinized objects
- */
-void register_quarantinized();
-
-/**
  * @brief Find all objects [classname] in the current patcher.
  * @param patcher : patcher in which we are looking for objects
  * @param classname : name of the object to search (ossia.model or ossia.view)

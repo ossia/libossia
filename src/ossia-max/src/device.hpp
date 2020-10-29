@@ -27,11 +27,13 @@ public:
   static void get_protocols(device* x);
   static void stop_expose(device*x, int index);
   static void get_mess_cb(device* x, t_symbol* s);
+  static void assist(ossia::max::device*, void*, long, long, char*);
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
 
-  static void assist(ossia::max::device*, void*, long, long, char*);
+  static   Nano::Signal<void(device*)> on_device_created; // The device being created
+  static   Nano::Signal<void(device*)> on_device_removing; // The device being removed
 };
 
 namespace protocol_settings

@@ -224,29 +224,6 @@ namespace max
 #pragma mark -
 #pragma mark Utilities
 
-void register_quarantinized()
-{
-  for (auto model : ossia_max::instance().models.copy())
-  {
-    ossia_register(model);
-  }
-
-  for (auto parameter : ossia_max::instance().parameters.copy())
-  {
-    ossia_register(parameter);
-  }
-
-  for (auto view : ossia_max::instance().views.copy())
-  {
-    ossia_register(view);
-  }
-
-  for (auto remote : ossia_max::instance().remotes.copy())
-  {
-    ossia_register(remote);
-  }
-}
-
 std::vector<object_base*> find_children_to_register(
     t_object* caller, t_object* root_patcher, t_symbol* search_symbol, bool search_dev)
 {

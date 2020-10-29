@@ -90,6 +90,9 @@ namespace ossia
 namespace max
 {
 
+Nano::Signal<void(device*)> device::on_device_created{};
+Nano::Signal<void(device*)> device::on_device_removing{};
+
 void* device::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();
@@ -143,6 +146,8 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
       device::register_children(x);
 #endif
     ossia_library.devices.push_back(x);
+
+    on_device_created(x);
   }
 
   return (x);
@@ -180,14 +185,13 @@ void device::destroy(device* x)
   }
 
   x->disconnect_slots();
+  on_device_removing(x);
 
   x->m_device = nullptr;
 
   outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
-#if OSSIA_MAX_AUTOREGISTER
-  register_quarantinized();
-#endif
+
   x->~device();
 }
 
