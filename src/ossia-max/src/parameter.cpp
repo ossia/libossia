@@ -203,13 +203,20 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
   {
     m_registered = true;
 
-    // FIXME refactor absolute and global address scope handling
     switch(m_addr_scope)
     {
-      case ossia::net::address_scope::absolute:
       case ossia::net::address_scope::global:
-        object_error(&m_object, "parameter with glboal/absolute path are not supported yet");
+      {
+        auto global_address = std::string(m_name->s_name);
+        auto pos = global_address.find(':');
+        auto dev_name = global_address.substr(0,pos);
+        if(ossia::traversal::is_pattern(dev_name))
+        {
+
+        }
+        ossia::traversal::make_path(global_address);
         return true;
+      }
       default:
           ;
     }
@@ -220,31 +227,9 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
 
   for (auto& m : matchers)
   {
-    auto node = m->get_node();
-    m_parent_node = node;
-
-    auto params = ossia::net::find_or_create_parameter(
-          *node, m_name->s_name, m_type->s_name);
-
-    for (auto p : params)
+    if(!create_node_from_matcher(m))
     {
-      if (!p)
-      {
-        object_error(
-              (t_object*)this,
-              "type should one of: float, symbol, int, vec2f, "
-              "vec3f, vec4f, bool, list, char");
-
-        return false;
-      }
-
-      ossia::net::set_priority(p->get_node(), m_priority);
-
-      ossia::net::set_disabled(p->get_node(), !m_enable);
-
-      ossia::net::set_hidden(p->get_node(), m_invisible);
-
-      m_matchers.emplace_back(std::make_shared<matcher>(&p->get_node(), this));
+      return false;
     }
   }
 
@@ -266,6 +251,41 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
     push_default_value(this);                  // default value will be sent at the end of the global registration
 
   return (!m_matchers.empty() || m_is_pattern);
+}
+
+bool parameter::create_node_from_matcher(const std::shared_ptr<matcher>& m)
+{
+  auto node = m->get_node();
+  m_parent_node = node;
+  std::string address(m_name->s_name);
+
+  if(m_addr_scope == ossia::net::address_scope::absolute)
+  {
+    node = &node->get_device().get_root_node();
+  }
+
+  auto params = ossia::net::find_or_create_parameter(
+      *node, address, m_type->s_name);
+
+  for (auto p : params)
+  {
+    if (!p)
+    {
+      object_error(
+          (t_object*)this,
+          "type should one of: float, symbol, int, vec2f, "
+          "vec3f, vec4f, bool, list, char");
+
+      return false;
+    }
+
+    ossia::net::set_priority(p->get_node(), m_priority);
+    ossia::net::set_disabled(p->get_node(), !m_enable);
+    ossia::net::set_hidden(p->get_node(), m_invisible);
+
+    m_matchers.emplace_back(std::make_shared<matcher>(&p->get_node(), this));
+  }
+  return true;
 }
 
 bool parameter::unregister()
@@ -295,6 +315,13 @@ void parameter::save_values()
     }
   }
 }
+
+void parameter::on_device_created_callback(ossia::max::device* dev)
+{
+  // TODO match the device name with m_name prefix
+  // the create_node_from_matcher
+}
+
 
 } // max namespace
 } // ossia namespace

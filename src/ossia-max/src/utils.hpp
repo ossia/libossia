@@ -205,141 +205,6 @@ static inline T* find_parent_box_alive(
   return parent;
 }
 
-template<typename T>
-void ossia_register(T* x)
-{
-  if(x->m_dead)
-    return; // object will be removed soon
-
-  if (x->m_reg_clock)
-  {
-    clock_unset(x->m_reg_clock);
-  }
-
-  if (!x->m_name)
-    return;
-
-  std::vector<std::shared_ptr<matcher>> tmp;
-  std::vector<std::shared_ptr<matcher>>* matchers = &tmp;
-  std::vector<ossia::net::node_base*> nodes;
-
-  if (x->m_addr_scope == ossia::net::address_scope::global)
-  {
-    std::string addr = x->m_name->s_name;
-
-    if(x->m_otype == object_class::param || x->m_otype == object_class::model)
-    {
-       size_t pos = 0;
-       while( pos != std::string::npos && nodes.empty())
-       {
-         // remove the last part which should be created
-         pos = addr.find_last_of('/');
-         if( pos < addr.size() )
-         {
-           addr = addr.substr(0,pos);
-         }
-         nodes = ossia::max::find_global_nodes(addr+"/");
-       }
-       addr += '/';
-    }
-    else
-    {
-      nodes = ossia::max::find_global_nodes(addr);
-    }
-
-    tmp.reserve(nodes.size());
-    for (auto n : nodes)
-    {
-      tmp.emplace_back(std::make_shared<matcher>(n, (object_base*)nullptr));
-    }
-  }
-  else
-  {
-    std::pair<int,ossia::max::device*> device{};
-    device.second =
-        find_parent_box_alive<ossia::max::device>(x, 0, &device.first);
-
-    std::pair<int,ossia::max::client*> client{};
-    client.second =
-        find_parent_box_alive<ossia::max::client>(x, 0, &client.first);
-
-    std::pair<int,ossia::max::model*> model{};
-    std::pair<int,ossia::max::view*> view{};
-    int start_level{};
-
-    if ( x->m_otype == object_class::view || x->m_otype == object_class::model)
-    {
-      start_level = 1;
-    }
-
-    if (x->m_addr_scope == ossia::net::address_scope::relative)
-    {
-      // then try to locate a parent view or model
-      if (x->m_otype == object_class::view || x->m_otype == object_class::remote)
-      {
-        view.second = find_parent_box_alive<ossia::max::view>(
-              x, start_level, &view.first);
-      }
-
-      if (!view.second)
-      {
-        model.second = find_parent_box_alive<ossia::max::model>(
-              x, start_level, &model.first);
-      }
-    }
-
-    std::vector<std::pair<int, object_base*>> vec{device, client, model, view};
-    // sort pair by ascending order : closest one first
-    std::sort(vec.begin(), vec.end());
-
-    for(auto& p : vec)
-    {
-      if(p.second)
-      {
-        matchers = &p.second->m_matchers;
-        break;
-      }
-    }
-
-    if(matchers == &tmp
-       && x->m_addr_scope != ossia::net::address_scope::global)
-    {
-      tmp.push_back(std::make_shared<matcher>(&ossia_max::get_default_device()->get_root_node(),
-                      (object_base*) nullptr));
-    }
-  }
-
-  // TODO we should exclude object that have not been loadbanged yet for performance
-  // when adding an abstraction with model and parameter in subpatcher,
-  // then the deeper object will be loadbanged first and should not register to its parent which has not been loadbanged yet
-  // in that case, we should leave the object unregistered and wait for parent to register its child
-  x->register_node(*matchers);
-}
-
-template<typename T>
-void ossia_check_and_register(T* x)
-{
-  auto& map = ossia_max::instance().root_patcher;
-  auto it = map.find(x->m_patcher_hierarchy.back());
-
-  if(it != map.end())
-  {
-    ossia_max::root_descriptor& descriptor = it->second;
-    if(descriptor.is_loadbanged)
-    {
-      ossia_register<T>(x);
-      return;
-    }
-  }
-
-  if(!x->m_reg_clock)
-    x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
-  else
-    clock_unset(x->m_reg_clock);
-
-  clock_delay(x->m_reg_clock, 1);
-}
-
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)
 {
@@ -347,7 +212,8 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
   x->unregister();
-  ossia_register(x);
+  auto matchers = x->find_parent_nodes();
+  x->do_registration(matchers);
 }
 
 struct domain_visitor {

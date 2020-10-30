@@ -15,7 +15,6 @@ public:
   bool register_node(const std::vector<std::shared_ptr<matcher>>& nodes);
   bool do_registration(const std::vector<std::shared_ptr<matcher>>& nodes);
   bool unregister();
-  void register_children();
   void save_children_state();
 
   static void* create(t_symbol*, long, t_atom*);

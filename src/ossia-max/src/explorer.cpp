@@ -60,7 +60,9 @@ extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
   if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
   {
     x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    ossia_check_and_register(x);
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
   }
   return x;
 }
@@ -115,7 +117,8 @@ void explorer::parse_args(t_symbol* s, long argc, t_atom* argv)
 void explorer::execute_method(explorer* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  ossia_register(x);
+  auto matchers = x->find_parent_nodes();
+  x->register_node(matchers);
 }
 
 bool explorer::register_node(std::vector<std::shared_ptr<matcher>>& matchers)

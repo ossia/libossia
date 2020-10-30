@@ -60,7 +60,9 @@ extern "C" void* ossia_search_new(t_symbol*, long argc, t_atom* argv)
   if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
   {
     x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    ossia_check_and_register(x);
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
   }
   return x;
 }
@@ -115,32 +117,26 @@ void search::parse_args(t_symbol* s, long argc, t_atom* argv)
 void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  ossia_register(x);
-}
-
-bool search::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
-{
-  update_path();
+  auto matchers = x->find_parent_nodes();
 
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)
-                         { return !filter(*m->get_node()); });
+                         { return !x->filter(*m->get_node()); });
 
-  if(m_method == s_search)
+  if(x->m_method == s_search)
   {
     // only return given nodes addresses
     t_atom a;
     A_SETLONG(&a, matchers.size());
-    outlet_anything(m_dumpout, s_size, 1, &a);
+    outlet_anything(x->m_dumpout, s_size, 1, &a);
     for(const auto& m : matchers)
     {
       std::string addr = ossia::net::address_string_from_node(*m->get_node());
       A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(m_dumpout, s_result, 1, &a);
+      outlet_anything(x->m_dumpout, s_result, 1, &a);
     }
   }
-  else if(m_method == s_open)
+  else if(x->m_method == s_open)
   {
-
     auto open_parent = [](object_base* x, ossia::net::node_base* node)
     {
       for ( auto& om : x->m_matchers )
@@ -211,11 +207,8 @@ bool search::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
           open_parent(view, node);
         }
       }
-
     }
   }
-
-  return true;
 }
 
 bool search::unregister()

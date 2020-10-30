@@ -162,9 +162,12 @@ t_max_err remote::notify(remote *x, t_symbol *s,
     else if ( attrname == gensym("mute") )
     {
       if (x->m_mute)
-        x->unregister();
+        x->m_matchers.clear();
       else
-        ossia_register(x);
+      {
+        auto matchers = x->find_parent_nodes();
+        x->do_registration(matchers);
+      }
     }
     else
       parameter_base::notify(x, s, msg, sender, data);

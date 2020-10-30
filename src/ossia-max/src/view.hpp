@@ -16,7 +16,6 @@ public:
   bool do_registration(const std::vector<std::shared_ptr<matcher>>& nodes);
   bool unregister();
 
-  static void register_children(view* x);
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::view*);
 

@@ -235,30 +235,6 @@ bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers
   return (!m_matchers.empty() || m_is_pattern);
 }
 
-void view::register_children(view* x)
-{
-  std::vector<object_base*> children_view = find_children_to_register(
-      &x->m_object, x->m_patcher, gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      ossia::max::view* view = (ossia::max::view*)child;
-
-      if (view == x)
-        continue;
-
-      ossia_register(view);
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      ossia::max::remote* remote = (ossia::max::remote*)child;
-      ossia_register(remote);
-    }
-  }
-}
-
 bool view::unregister()
 {
   m_matchers.clear();
@@ -286,7 +262,7 @@ bool view::unregister()
 
   ossia_max::instance().nr_views.push_back(this);
 
-  register_children(this);
+  // register_children(this);
 
   m_registered = false;
 

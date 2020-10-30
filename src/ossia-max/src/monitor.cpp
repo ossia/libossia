@@ -72,7 +72,9 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
   if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
   {
     x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    ossia_check_and_register(x);
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
   }
   return x;
 }
@@ -143,30 +145,23 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  ossia_register(x);
-}
-
-bool monitor::register_node(const std::vector<std::shared_ptr<matcher>>& matchers)
-{
-  update_path();
+  auto matchers = x->find_parent_nodes();
 
   for(const auto& n : matchers)
   {
-    m_devices.insert(&n->get_node()->get_device());
+    x->m_devices.insert(&n->get_node()->get_device());
   }
 
-  for(const auto& dev : m_devices)
+  for(const auto& dev : x->m_devices)
   {
     // TODO register other signals according to attributes' values
-    dev->on_node_created.connect<&monitor::on_node_created_callback>(this);
-    dev->on_node_removing.connect<&monitor::on_node_removing_callback>(this);
-    dev->on_node_renamed.connect<&monitor::on_node_renamed_callback>(this);
-    dev->on_parameter_created.connect<&monitor::on_parameter_created_callback>(this);
-    dev->on_parameter_removing.connect<&monitor::on_parameter_removing_callback>(this);
-    dev->get_root_node().about_to_be_deleted.connect<&monitor::on_device_deleted>(this);
+    dev->on_node_created.connect<&monitor::on_node_created_callback>(x);
+    dev->on_node_removing.connect<&monitor::on_node_removing_callback>(x);
+    dev->on_node_renamed.connect<&monitor::on_node_renamed_callback>(x);
+    dev->on_parameter_created.connect<&monitor::on_parameter_created_callback>(x);
+    dev->on_parameter_removing.connect<&monitor::on_parameter_removing_callback>(x);
+    dev->get_root_node().about_to_be_deleted.connect<&monitor::on_device_deleted>(x);
   }
-
-  return true;
 }
 
 bool monitor::unregister()
