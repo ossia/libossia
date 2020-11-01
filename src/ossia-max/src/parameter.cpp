@@ -121,14 +121,14 @@ void parameter::assist(parameter* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "All purpose input");
+    sprintf(s, "Parameter input");
   }
   else
   {
     switch(a)
     {
       case 0:
-        sprintf(s, "Data output");
+        sprintf(s, "Parameter value");
         break;
       case 1:
         sprintf(s, "Dumpout");

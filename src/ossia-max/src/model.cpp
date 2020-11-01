@@ -116,11 +116,11 @@ void model::assist(model* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "I am inlet %ld", a);
+    sprintf(s, "Model input", a);
   }
   else
   {
-    sprintf(s, "I am outlet %ld", a);
+    sprintf(s, "Dumpout", a);
   }
 }
 

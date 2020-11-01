@@ -120,20 +120,20 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "I am inlet %ld", a);
+    sprintf(s, "Remote input", a);
   }
   else
   {
     switch(a)
     {
     case 0:
-      sprintf(s, "deferred outlet with set prefix (for connecting to UI object), %ld", a);
+      sprintf(s, "Remote parameter deferred value (with set prefix for UI connection)", a);
         break;
       case 1:
-        sprintf(s, "raw outlet, %ld", a);
+        sprintf(s, "Remote parameter value", a);
         break;
       case 2:
-        sprintf(s, "dump outlet, %ld", a);
+        sprintf(s, "Dumpout", a);
         break;
       default:
         break;

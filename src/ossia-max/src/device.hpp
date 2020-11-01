@@ -31,7 +31,7 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
 
-
+  static void assist(ossia::max::device*, void*, long, long, char*);
 };
 
 namespace protocol_settings

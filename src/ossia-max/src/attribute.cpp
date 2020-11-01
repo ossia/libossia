@@ -45,14 +45,14 @@ void attribute::assist(attribute* x, void* b, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "All purpose input");
+    sprintf(s, "Remote parameter attribute messages");
   }
   else
   {
     switch(a)
     {
       case 0:
-        sprintf(s, "Dumpout");
+        sprintf(s, "Remote parameter attribute value");
         break;
       default:
         ;

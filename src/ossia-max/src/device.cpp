@@ -485,7 +485,7 @@ void device::get_mess_cb(device* x, t_symbol* s)
     device_base::get_mess_cb(x,s);
 }
 
-void device::stop_expose(device*x, int index)
+void device::stop_expose(device* x, int index)
 {
   auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
       x->m_device->get_protocol());
@@ -507,6 +507,18 @@ void device::stop_expose(device*x, int index)
   }
   else
     object_error((t_object*)x, "Index %d out of bound.", index);
+}
+
+void device::assist(device* x, void*, long m, long a, char* s)
+{
+  if (m == ASSIST_INLET)
+  {
+    sprintf(s, "Device messages input");
+  }
+  else
+  {
+    sprintf(s, "Dumpout");
+  }
 }
 
 } // max namespace

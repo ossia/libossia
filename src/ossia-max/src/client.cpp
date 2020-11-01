@@ -161,7 +161,7 @@ void client::assist(client*, void*, long m, long a, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "All purpose input");
+    sprintf(s, "Client messages input");
   }
   else
   {
