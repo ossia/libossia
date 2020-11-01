@@ -576,7 +576,28 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
 
 void object_base::update_path()
 {
-  std::string name = object_path_absolute(this);
+  std::string name;
+
+  switch(m_addr_scope)
+  {
+    case ossia::net::address_scope::absolute:
+    {
+      name = std::string(m_name->s_name);
+      break;
+    }
+    case ossia::net::address_scope::global:
+    {
+      std::string path(m_name->s_name);
+      auto pos = path.find(':');
+      name = path.substr(pos+1);
+      break;
+    }
+    case ossia::net::address_scope::relative:
+    {
+      name = object_path_absolute();
+      break;
+    }
+  }
 
   m_is_pattern = ossia::traversal::is_pattern(name);
 
@@ -588,6 +609,70 @@ void object_base::update_path()
   {
     m_path = std::nullopt;
   }
+}
+
+
+std::string object_base::object_path_absolute()
+{
+  // FIXME review this to optimize: we don't need to distinguish view over model
+  // finding parent node should be enough
+  // also we should use the new find
+  std::vector<std::string> vs;
+  vs.reserve(8);
+
+  vs.push_back(m_name->s_name);
+
+  ossia::max::view* view = nullptr;
+  ossia::max::model* model = nullptr;
+
+  int start_level = 0;
+  int view_level = 0;
+  int model_level = 0;
+
+  if (m_otype == object_class::view)
+    start_level = 1;
+
+  view = find_parent_box_alive<ossia::max::view>(this, start_level, &view_level);
+
+  if (m_otype == object_class::model
+      || m_otype == object_class::remote)
+  {
+    model =  find_parent_box_alive<ossia::max::model>(this, start_level, &model_level);
+  }
+
+  t_object* object = nullptr;
+  ossia::max::view* tmp = nullptr;
+
+  // FIXME this will fail as soon as https://github.com/ossia/libossia/issues/208 is implemented
+  // or if model and view are mixed in the same hierarchy
+
+  while (view)
+  {
+    vs.push_back(view->m_name->s_name);
+    tmp = view;
+    view = find_parent_box_alive<ossia::max::view>(tmp, 1, &view_level);
+  }
+
+  ossia::max::model* tmp_model = nullptr;
+  while (model)
+  {
+    vs.push_back(model->m_name->s_name);
+    tmp_model = model;
+    model
+        = find_parent_box_alive<ossia::max::model>(tmp_model, 1, &model_level);
+  }
+
+  fmt::memory_buffer fullpath;
+  auto rit = vs.rbegin();
+  for (; rit != vs.rend(); ++rit)
+  {
+    fmt::format_to(fullpath, "/{}", *rit);
+  }
+
+  if (vs.empty())
+    fmt::format_to(fullpath, "/");
+
+  return std::string(fullpath.data(), fullpath.size());
 }
 
 } // max namespace
