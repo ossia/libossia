@@ -384,8 +384,13 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
-          std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
-          return register_children_in_patcher_recursively(patcher, object, matchers);
+          if(dev->m_device)
+          {
+            std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
+            return register_children_in_patcher_recursively(patcher, object, matchers);
+          }
+          else
+            return;
         }
       }
     }
@@ -501,7 +506,12 @@ std::vector<std::shared_ptr<matcher>> find_parent_nodes_recursively(
         if (!object->m_dead)
         {
           auto dev = static_cast<device_base*>(object);
-          matchers = {std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
+          if(dev->m_device)
+          {
+            matchers = {std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
+          }
+          else
+            return {};
         }
       }
 

@@ -177,9 +177,9 @@ void node_base::push_default_value(node_base* x)
 void node_base::class_setup(t_class* c)
 {
   object_base::class_setup(c);
-  class_addmethod(c, (method) node_base::set,           "set",       A_GIMME, 0);
-  class_addmethod(c, (method) node_base::get_namespace, "namespace", A_NOTHING,  0);
-  class_addmethod(c, (method) node_base::preset,        "preset",    A_GIMME, 0);
+  class_addmethod(c, (method) node_base::set,                "set",       A_GIMME, 0);
+  class_addmethod(c, (method) node_base::get_namespace,      "namespace", A_NOTHING,  0);
+  class_addmethod(c, (method) node_base::preset,             "preset",    A_GIMME, 0);
   class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
 }
 
