@@ -115,65 +115,6 @@ void view::destroy(view* x)
   x->~view();
 }
 
-bool view::register_node(const std::vector<std::shared_ptr<matcher>>& nodes)
-{
-  bool res = do_registration(nodes);
-
-  if (res)
-  {
-    ossia_max::instance().nr_views.remove_all(this);
-
-    std::vector<object_base*> children_view = find_children_to_register(
-        &m_object, m_patcher, gensym("ossia.view"));
-
-    for (auto child : children_view)
-    {
-      if (child->m_otype == object_class::view)
-      {
-        ossia::max::view* view = (ossia::max::view*)child;
-        view->register_node(m_matchers);
-      }
-      else if (child->m_otype == object_class::remote)
-      {
-        ossia::max::remote* remote = (ossia::max::remote*)child;
-        remote->register_node(m_matchers, false);
-      }
-    }
-
-    // once registered, gather all matchers and sort them by priority
-    std::vector<std::shared_ptr<matcher>> matchers;
-    for(const auto& child : children_view)
-    {
-      matchers.insert(matchers.end(), child->m_matchers.begin(), child->m_matchers.end());
-    }
-
-    ossia::sort(matchers, [&](const std::shared_ptr<matcher>& a, const std::shared_ptr<matcher>& b)
-    {
-      return ossia::net::get_priority(*a->get_node()) > ossia::net::get_priority(*b->get_node());
-    });
-
-    // then output their value
-    for(auto m : matchers)
-    {
-      auto p = m->get_node()->get_parameter();
-      if(p)
-      {
-        auto v = p->value();
-        if(v.valid())
-        {
-          m->output_value(v);
-        }
-      }
-    }
-  }
-  else
-  {
-    ossia_max::instance().nr_views.push_back(this);
-  }
-
-  return res;
-}
-
 bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   // FIXME review absolute and global scope registering

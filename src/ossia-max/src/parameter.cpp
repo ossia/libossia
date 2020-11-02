@@ -180,21 +180,6 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   return 0;
 }
 
-bool parameter::register_node(const std::vector<std::shared_ptr<matcher>>& nodes)
-{
-  bool res = do_registration(nodes);
-  if (res)
-  {
-    ossia_max::instance().nr_parameters.remove_all(this);
-  }
-  else
-  {
-    ossia_max::instance().nr_parameters.push_back(this);
-  }
-
-  return res;
-}
-
 bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   object_post(&m_object, "register parameter");

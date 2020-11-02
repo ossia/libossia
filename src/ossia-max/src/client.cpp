@@ -38,10 +38,6 @@ extern "C" void ossia_client_setup()
   device_base::class_setup(c);
 
   class_addmethod(
-      c, (method)client::register_children,
-      "register", A_NOTHING, 0);
-
-  class_addmethod(
       c, (method)client::update,
       "update", A_NOTHING, 0);
 
@@ -390,26 +386,6 @@ void client::get_devices(client* x)
 
 }
 
-void client::register_children(client* x)
-{
-  std::vector<object_base*> children_view = find_children_to_register(
-      &x->m_object, x->m_patcher, gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      ossia::max::view* view = (ossia::max::view*)child;
-      view->register_node(x->m_matchers);
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->register_node(x->m_matchers);
-    }
-  }
-}
-
 void client::unregister_children()
 {
 
@@ -436,14 +412,6 @@ void client::update(client* x)
   if (x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
-
-    const auto& map = ossia_max::instance().root_patcher;
-    auto it = map.find(x->m_patcher_hierarchy.back());
-
-    // register children only if root patcher have been loadbanged
-    // else the patcher itself will trigger a registration on loadbang
-    if(it != map.end() && it->second.is_loadbanged)
-      client::register_children(x);
   }
 }
 

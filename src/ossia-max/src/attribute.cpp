@@ -78,43 +78,6 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
   return 0;
 }
 
-bool attribute::register_node(const std::vector<std::shared_ptr<matcher>>& node)
-{
-  if (m_mute) return false;
-
-  update_path();
-
-  bool res = do_registration(node);
-  if (res)
-  {
-    ossia_max::instance().nr_attributes.remove_all(this);
-  }
-  else
-  {
-    ossia_max::instance().nr_attributes.push_back(this);
-  }
-
-  if (!node.empty() && m_is_pattern){
-
-    // assume all nodes refer to the same device
-    auto& dev = node[0]->get_node()->get_device();
-    if (&dev != m_dev)
-    {
-      if (m_dev) {
-          m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
-          m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(this);
-      }
-      m_dev = &dev;
-      m_dev->on_parameter_created.connect<&attribute::on_parameter_created_callback>(this);
-      m_dev->get_root_node().about_to_be_deleted.connect<&attribute::on_device_deleted>(this);
-
-      ossia_max::instance().nr_attributes.remove_all(this);
-    }
-  }
-
-  return res;
-}
-
 bool attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   m_registered = true;

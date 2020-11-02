@@ -13,7 +13,6 @@ class attribute : public parameter_base
 public:
   using is_attribute = std::true_type;
 
-  bool register_node(const std::vector<std::shared_ptr<matcher>>& node);
   bool do_registration(const std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
 

@@ -27,7 +27,6 @@ struct search : object_base, search_filter
   search(long argc, t_atom* argv);
   ~search();
 
-  bool register_node(std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
   void parse_args(t_symbol* s, long argc, t_atom* argv);
 
