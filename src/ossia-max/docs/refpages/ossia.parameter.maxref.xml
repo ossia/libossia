@@ -299,7 +299,7 @@
 				Set priority
 			</digest>
 			<description>
-				The <at>priority</at> attribute allows on to order how several values of a same hierarchical level can be recalled 
+				The <at>priority</at> attribute allows one to order how several values of a same hierarchical level can be recalled. The higher the number, the higher the priority. Higher prioritized parameters are recalled first.
 			</description>
 		</attribute>
 
