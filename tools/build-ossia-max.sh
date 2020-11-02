@@ -8,6 +8,11 @@
 set -ex
 export LANG=en_US.UTF-8
 
+# install deps
+command -v brew > /dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+command -v greadlink > /dev/null 2>&1 || brew install coreutils
+command -v ninja > /dev/null 2>&1 || brew install ninja
+
 OSSIA_BUILD_TYPE=debug
 
 for var in "$@"
