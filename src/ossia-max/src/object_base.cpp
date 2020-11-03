@@ -522,6 +522,99 @@ void object_base::push_parameter_value(ossia::net::parameter_base* param, const 
   }
 }
 
+object_base* object_base::find_parent_object()
+{
+  switch(m_otype)
+  {
+    case object_class::device:
+    case object_class::client:
+      return nullptr;
+    default:
+        ;
+  }
+
+  bool look_for_model_view = true;
+  switch(m_addr_scope)
+  {
+    case ossia::net::address_scope::absolute:
+      look_for_model_view = false;
+    case ossia::net::address_scope::relative:
+    {
+      switch(m_otype)
+      {
+        case object_class::model:
+        case object_class::view:
+          look_for_model_view = false;
+          break;
+        default:
+          break;
+      }
+      return find_parent_object_recursively(m_patcher, look_for_model_view);
+    }
+    case ossia::net::address_scope::global:
+    {
+      return nullptr;
+    }
+  }
+}
+
+object_base* object_base::find_parent_object_recursively(
+    t_object* patcher, bool look_for_model_view)
+{
+
+  object_base* candidate{};
+  // TODO : to avoid iterating over all objects in patcher (which could be very long)
+  // we could keep a list of objects in a given patcher and then query that database instead
+  // with std::map<t_object* patcher, ossia_objects> where ossia_objects is a structured list of all ossia object in the patcher
+  while(patcher)
+  {
+    // 1: look for device, client, model and view objects into the patcher
+    t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
+    while (next_box)
+    {
+      object_base* object = (object_base*) jbox_get_object(next_box);
+
+      t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
+
+      if(look_for_model_view)
+      {
+        if ( curr_classname == gensym("ossia.model")
+            || curr_classname == gensym("ossia.view"))
+        {
+          return object;
+        }
+      }
+
+      // if there is a client or device in the current patcher
+      // return only that object
+      if ( curr_classname == gensym("ossia.device")
+          || curr_classname == gensym("ossia.client"))
+      {
+        // TODO should we check for that ?
+        // if yes, then do it always, if no, forget it for ever
+        // ignore dying object
+        if (!object->m_dead)
+        {
+          candidate = object;
+        }
+      }
+
+      next_box = object_attr_getobj(next_box, _sym_nextobject);
+    }
+
+    if(candidate)
+    {
+      return candidate;
+    }
+
+    // look into parent patcher
+    patcher = ossia::max::get_patcher(patcher);
+    look_for_model_view = m_addr_scope == ossia::net::address_scope::relative;
+  }
+
+  return nullptr;
+}
+
 std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
 {
   switch(m_otype)
@@ -544,21 +637,42 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
       look_for_model_view = false;
     case ossia::net::address_scope::relative:
     {
-      t_object* patcher{};
       switch(m_otype)
       {
         case object_class::model:
         case object_class::view:
           look_for_model_view = false;
-        case object_class::param:
-        case object_class::remote:
-        case object_class::attribute:
-          patcher = m_patcher;
           break;
         default:
           break;
       }
-      return find_parent_nodes_recursively(patcher, look_for_model_view);
+      auto parent = find_parent_object_recursively(m_patcher, look_for_model_view);
+      if(parent)
+      {
+        switch(parent->m_otype)
+        {
+          case object_class::device:
+          case object_class::client:
+          {
+            auto dev = static_cast<device_base*>(parent);
+            if(dev->m_device)
+            {
+              return {std::make_shared<matcher>(&dev->m_device->get_root_node(), parent)};
+            }
+            else
+              return {};
+          }
+          case object_class::model:
+          case object_class::view:
+            return parent->m_matchers;
+          default:
+            return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+        }
+      }
+      else
+      {
+        return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+      }
     }
     case ossia::net::address_scope::global:
     {
@@ -581,15 +695,9 @@ void object_base::update_path()
   switch(m_addr_scope)
   {
     case ossia::net::address_scope::absolute:
-    {
-      name = std::string(m_name->s_name);
-      break;
-    }
     case ossia::net::address_scope::global:
     {
-      std::string path(m_name->s_name);
-      auto pos = path.find(':');
-      name = path.substr(pos+1);
+      name = std::string(m_name->s_name);
       break;
     }
     case ossia::net::address_scope::relative:
@@ -600,66 +708,22 @@ void object_base::update_path()
   }
 
   m_is_pattern = ossia::traversal::is_pattern(name);
-
-  if(m_is_pattern)
-  {
-    m_path = ossia::traversal::make_path(name);
-  }
-  else
-  {
-    m_path = std::nullopt;
-  }
+  m_path = ossia::traversal::make_path(name);
 }
 
 
 std::string object_base::make_global_pattern()
 {
-  // FIXME review this to optimize: we don't need to distinguish view over model
-  // finding parent node should be enough
-  // also we should use the new find
   std::vector<std::string> vs;
   vs.reserve(8);
 
   vs.push_back(m_name->s_name);
 
-  ossia::max::view* view = nullptr;
-  ossia::max::model* model = nullptr;
-
-  int start_level = 0;
-  int view_level = 0;
-  int model_level = 0;
-
-  if (m_otype == object_class::view)
-    start_level = 1;
-
-  view = find_parent_box_alive<ossia::max::view>(this, start_level, &view_level);
-
-  if (m_otype == object_class::model
-      || m_otype == object_class::remote)
+  object_base* parent = find_parent_object();
+  while(parent)
   {
-    model =  find_parent_box_alive<ossia::max::model>(this, start_level, &model_level);
-  }
-
-  t_object* object = nullptr;
-  ossia::max::view* tmp = nullptr;
-
-  // FIXME this will fail as soon as https://github.com/ossia/libossia/issues/208 is implemented
-  // or if model and view are mixed in the same hierarchy
-
-  while (view)
-  {
-    vs.push_back(view->m_name->s_name);
-    tmp = view;
-    view = find_parent_box_alive<ossia::max::view>(tmp, 1, &view_level);
-  }
-
-  ossia::max::model* tmp_model = nullptr;
-  while (model)
-  {
-    vs.push_back(model->m_name->s_name);
-    tmp_model = model;
-    model
-        = find_parent_box_alive<ossia::max::model>(tmp_model, 1, &model_level);
+    vs.push_back(std::string(parent->m_name->s_name));
+    parent = find_parent_object();
   }
 
   fmt::memory_buffer fullpath;

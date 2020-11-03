@@ -470,69 +470,6 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   }
 }
 
-std::vector<std::shared_ptr<matcher>> find_parent_nodes_recursively(
-    t_object* patcher, bool look_for_model_view)
-{
-  std::vector<std::shared_ptr<matcher>> matchers{};
-
-  // TODO : to avoid iterating over all objects in patcher (which could be very long)
-  // we could keep a list of objects in a given patcher and then query that database instead
-  // with std::map<t_object* patcher, ossia_objects> where ossia_objects is a structured list of all ossia object in the patcher
-  while(patcher)
-  {
-    // 1: look for device, client, model and view objects into the patcher
-    t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
-    while (next_box)
-    {
-      object_base* object = (object_base*) jbox_get_object(next_box);
-
-      t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
-
-      if(look_for_model_view)
-      {
-        if ( curr_classname == gensym("ossia.model")
-          || curr_classname == gensym("ossia.view"))
-        {
-          return object->m_matchers;
-        }
-      }
-
-      // if there is a client or device in the current patcher
-      // return only that object
-      if ( curr_classname == gensym("ossia.device")
-        || curr_classname == gensym("ossia.client"))
-      {
-        // ignore dying object
-        if (!object->m_dead)
-        {
-          auto dev = static_cast<device_base*>(object);
-          if(dev->m_device)
-          {
-            matchers = {std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
-          }
-          else
-            return {};
-        }
-      }
-
-      next_box = object_attr_getobj(next_box, _sym_nextobject);
-    }
-
-    if(matchers.empty())
-    {
-      // look into parent patcher
-      patcher = ossia::max::get_patcher(patcher);
-    }
-    else
-    {
-      return matchers;
-    }
-    look_for_model_view = true;
-  }
-
-  return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
-}
-
 t_object* get_patcher(t_object* object)
 {
   t_object* patcher = nullptr;

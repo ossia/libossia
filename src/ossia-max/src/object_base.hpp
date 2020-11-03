@@ -107,6 +107,12 @@ public:
 
   std::vector<std::shared_ptr<matcher>> find_parent_nodes();
 
+  object_base* find_parent_object();
+
+  // return the first parent ossia object, nullptr otherwise
+  object_base* find_parent_object_recursively(t_object* patcher, bool look_for_model_view);
+
+
   static void get_description(object_base* x, std::vector<matcher*> nodes);
   static void get_tags(object_base* x, std::vector<matcher*> nodes);
   static void get_priority(object_base* x, std::vector<matcher*> nodes);
