@@ -594,7 +594,7 @@ void object_base::update_path()
     }
     case ossia::net::address_scope::relative:
     {
-      name = object_path_absolute();
+      name = make_global_pattern();
       break;
     }
   }
@@ -612,7 +612,7 @@ void object_base::update_path()
 }
 
 
-std::string object_base::object_path_absolute()
+std::string object_base::make_global_pattern()
 {
   // FIXME review this to optimize: we don't need to distinguish view over model
   // finding parent node should be enough

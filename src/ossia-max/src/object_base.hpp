@@ -101,7 +101,9 @@ public:
   void set_priority();
   void set_hidden();
   void set_recall_safe();
-  std::string object_path_absolute();
+
+  // return the global path of the object with pattern
+  std::string make_global_pattern();
 
   std::vector<std::shared_ptr<matcher>> find_parent_nodes();
 
