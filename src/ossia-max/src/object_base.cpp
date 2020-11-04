@@ -571,55 +571,19 @@ object_base* object_base::find_parent_object()
 object_base* object_base::find_parent_object_recursively(
     t_object* patcher, bool look_for_model_view)
 {
-
-  object_base* candidate{};
-  // TODO : to avoid iterating over all objects in patcher (which could be very long)
-  // we could keep a list of objects in a given patcher and then query that database instead
-  // with std::map<t_object* patcher, ossia_objects> where ossia_objects is a structured list of all ossia object in the patcher
+  assert(m_addr_scope != ossia::net::address_scope::global);
   while(patcher)
   {
-    // 1: look for device, client, model and view objects into the patcher
-    t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
-    while (next_box)
+    auto& pat_desc = ossia_max::instance().patchers[patcher];
+    for(auto ptr : std::vector<object_base*>{pat_desc.model, pat_desc.view, pat_desc.device, pat_desc.client })
     {
-      object_base* object = (object_base*) jbox_get_object(next_box);
-
-      t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
-
-      if(look_for_model_view)
+      if(ptr && ptr != this)
       {
-        if ( curr_classname == gensym("ossia.model")
-            || curr_classname == gensym("ossia.view"))
-        {
-          return object;
-        }
+        return ptr;
       }
-
-      // if there is a client or device in the current patcher
-      // return only that object
-      if ( curr_classname == gensym("ossia.device")
-          || curr_classname == gensym("ossia.client"))
-      {
-        // TODO should we check for that ?
-        // if yes, then do it always, if no, forget it for ever
-        // ignore dying object
-        if (!object->m_dead)
-        {
-          candidate = object;
-        }
-      }
-
-      next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
 
-    if(candidate)
-    {
-      return candidate;
-    }
-
-    // look into parent patcher
-    patcher = ossia::max::get_patcher(patcher);
-    look_for_model_view = m_addr_scope == ossia::net::address_scope::relative;
+    patcher = pat_desc.parent_patcher;
   }
 
   return nullptr;
