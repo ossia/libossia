@@ -141,29 +141,26 @@ bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matcher
 {
   ossia::string_view name(m_name->s_name);
 
-  // FIXME support absolute and global address scope
+  m_registered = true;
 
-  if(!m_registered)
-  {
-    m_registered = true;
-
-    switch(m_addr_scope)
-    {
-      case ossia::net::address_scope::absolute:
-      case ossia::net::address_scope::global:
-        object_error(&m_object, "model with glboal/absolute path are not supported yet");
-        return true;
-      default:
-          ;
-    }
-  }
-
+  // FIXME in case of address with pattern, we shouldn't clear m_matchers here
+  // instead we should rely on device node_deleting signal to delete relevant matchers
   m_matchers.clear();
   m_matchers.reserve(matchers.size());
 
   for (auto& m : matchers)
   {
     auto node = m->get_node();
+    if (m_addr_scope == ossia::net::address_scope::absolute)
+    {
+      // get root node
+      node = &node->get_device().get_root_node();
+      // and remove starting '/'
+      name = name.substr(1);
+
+      auto pos = name.rfind('/');
+      auto parent_address = name.substr(0, pos);
+    }
     m_parent_node = node;
 
     if (node->find_child(name))

@@ -258,22 +258,10 @@ bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& matche
 
   std::string name = m_name->s_name;
 
-  // FIXME review absolute and global scope registering
+  m_registered = true;
 
-  if(!m_registered)
-  {
-    m_registered = true;
-
-    switch(m_addr_scope)
-    {        
-      case ossia::net::address_scope::global:
-        object_error(&m_object, "remote with glboal path are not supported yet");
-        return true;
-      default:
-          ;
-    }
-  }
-
+  // FIXME in case of address with pattern, we shouldn't clear m_matchers here
+  // instead we should rely on device node_deleting signal to delete relevant matchers
   m_matchers.clear();
   m_matchers.reserve(matchers.size());
 
@@ -342,6 +330,10 @@ bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& matche
           }
         }
       }
+
+      // no need to iterate over all matchers when object have global address
+      if(m_addr_scope == ossia::net::address_scope::global)
+        break;
     }
   }
 

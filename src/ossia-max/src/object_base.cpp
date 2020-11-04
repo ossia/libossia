@@ -116,10 +116,10 @@ void object_base::loadbang(object_base* x)
     patcher = get_patcher(patcher);
   }
 
+  auto matchers = x->find_parent_nodes();
+
   if(ossia_max::instance().patchers[root_patcher].loadbanged)
   {
-    auto matchers = x->find_parent_nodes();
-
     if(!matchers.empty())
     {
       switch(x->m_otype)
@@ -154,8 +154,7 @@ void object_base::loadbang(object_base* x)
   }
   else
   {
-    register_children_in_patcher_recursively(root_patcher, nullptr,
-                                           {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)});
+    register_children_in_patcher_recursively(root_patcher, nullptr, matchers);
     ossia_max::instance().patchers[root_patcher].loadbanged = true;
   }
 }
