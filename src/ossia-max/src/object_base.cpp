@@ -19,6 +19,17 @@ ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 object_base::object_base()
 {
   m_patcher = ossia::max::get_patcher(&m_object);
+
+  auto patcher = m_patcher;
+  auto parent = ossia::max::get_patcher(patcher);
+  ossia_max::instance().patchers[patcher].parent_patcher = parent;
+
+  while(parent)
+  {
+    patcher = parent;
+    parent = get_patcher(patcher);
+    ossia_max::instance().patchers[patcher].parent_patcher = parent;
+  }
 }
 
 object_base::~object_base()

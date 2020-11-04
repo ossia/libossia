@@ -179,8 +179,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = x->m_patcher;
-    ossia_max::instance().patchers[patcher].attributes.push_back(x);
+    ossia_max::instance().patchers[x->m_patcher].attributes.push_back(x);
 
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);

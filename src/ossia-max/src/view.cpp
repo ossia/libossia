@@ -45,13 +45,15 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
   {
     auto patcher = x->m_patcher;
     if( ossia_max::instance().patchers[patcher].models.empty()
-        && ossia_max::instance().patchers[patcher].views.empty())
+     && ossia_max::instance().patchers[patcher].views.empty())
     {
       ossia_max::instance().patchers[patcher].views.push_back(x);
     }
     else
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
+      object_free(x);
+      x->~view();
       return nullptr;
     }
 

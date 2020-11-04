@@ -82,6 +82,8 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    ossia_max::instance().patchers[x->m_patcher].clients.push_back(x);
+
     // make outlets
     x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump client state
@@ -388,7 +390,6 @@ void client::get_devices(client* x)
 
 void client::unregister_children()
 {
-
   std::vector<object_base*> children_view = find_children_to_register(
       &m_object, m_patcher, gensym("ossia.view"));
 

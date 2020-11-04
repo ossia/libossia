@@ -48,9 +48,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = x->m_patcher;
-    ossia_max::instance().patchers[patcher].parameters.push_back(x);
-    ossia_max::instance().patchers[patcher].parent_patcher = ossia::max::get_patcher(patcher);
+    ossia_max::instance().patchers[x->m_patcher].parameters.push_back(x);
 
     // make outlets
     x->m_dumpout
@@ -102,14 +100,8 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // if this is the first object in patcher, this patcher has not been loadbanged
-    // and we should register the object,
-    // if we are loading a patcher, matcher should be empty and registration does nothing
-
-    std::cout << "patchers: " << patcher << " contains "
-              << ossia_max::instance().patchers[patcher].size() << " ossia objects" << std::endl;
-
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    // in that case, the second loadbang is inhibited by the first
     x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
     clock_set(x->m_reg_clock, 1);
 

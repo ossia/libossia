@@ -57,8 +57,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = x->m_patcher;
-    ossia_max::instance().patchers[patcher].remotes.push_back(x);
+    ossia_max::instance().patchers[x->m_patcher].remotes.push_back(x);
 
     x->m_otype = object_class::remote;
 

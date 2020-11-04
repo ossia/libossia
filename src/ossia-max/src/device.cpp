@@ -100,6 +100,8 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    ossia_max::instance().patchers[x->m_patcher].devices.push_back(x);
+
     // make outlets
     x->m_dumpout
         = outlet_new(x, NULL); // anything outlet to dump device state
