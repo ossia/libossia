@@ -44,10 +44,10 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     auto patcher = x->m_patcher;
-    if( ossia_max::instance().patchers[patcher].models.empty()
-     && ossia_max::instance().patchers[patcher].views.empty())
+    if( ossia_max::instance().patchers[patcher].model
+     && ossia_max::instance().patchers[patcher].view)
     {
-      ossia_max::instance().patchers[patcher].views.push_back(x);
+      ossia_max::instance().patchers[patcher].view = x;
     }
     else
     {
@@ -102,7 +102,7 @@ void view::destroy(view* x)
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
-    pat_desc.views.remove_all(x);
+    pat_desc.view = nullptr;
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);

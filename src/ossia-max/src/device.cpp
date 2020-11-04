@@ -100,7 +100,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    ossia_max::instance().patchers[x->m_patcher].devices.push_back(x);
+    ossia_max::instance().patchers[x->m_patcher].device = x;
 
     // make outlets
     x->m_dumpout
@@ -157,6 +157,17 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
 void device::destroy(device* x)
 {
+  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    pat_desc.device = nullptr;
+    if(pat_desc.empty())
+    {
+      ossia_max::instance().patchers.erase(pat_it);
+    }
+  }
+
   x->m_dead = true;
   x->m_matchers.clear();
 
