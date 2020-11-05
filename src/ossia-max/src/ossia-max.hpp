@@ -92,8 +92,7 @@ public:
     return instance().m_device;
   }
 
-  static void register_nodes(ossia_max* x);
-  static void poll_all_queues(ossia_max* x);
+  // static void register_nodes(ossia_max* x);
   static void discover_network_devices(ossia_max* x);
 
   template<typename T>
@@ -188,10 +187,10 @@ public:
     ossia::safe_set<parameter*> parameters{};
     ossia::safe_set<remote*>    remotes{};
     ossia::safe_set<attribute*> attributes{};
-    ossia::safe_set<model*>     models{};
-    ossia::safe_set<view*>      views{};
-    ossia::safe_set<device*>    devices{};
-    ossia::safe_set<client*>    clients{};
+    model*     model{};
+    view*      view{};
+    device*    device{};
+    client*    client{};
 
     t_object* parent_patcher;
     ossia::safe_set<t_object*> subpatchers;
@@ -203,10 +202,10 @@ public:
       return parameters.empty()
              && remotes.empty()
              && attributes.empty()
-             && models.empty()
-             && views.empty()
-             && devices.empty()
-             && clients.empty();
+             && model  != nullptr
+             && view   != nullptr
+             && device != nullptr
+             && client != nullptr;
     }
 
     auto size() const
@@ -214,10 +213,10 @@ public:
       return parameters.size()
            + remotes.size()
            + attributes.size()
-           + models.size()
-           + views.size()
-           + devices.size()
-           + clients.size();
+           + model?1:0
+           + view?1:0
+           + device?1:0
+           + client?1:0;
     }
 
   };

@@ -146,17 +146,9 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
                                                                x->m_name->s_name);
     x->connect_slots();
 
-    const auto& map = ossia_max::instance().root_patcher;
-#if OSSIA_MAX_AUTOREGISTER
-    auto it = map.find(x->m_patcher_hierarchy.back());
-
-    // register object only if root patcher have been loadbanged
-    // else the patcher itself will trig a registration on loadbang
-    // TODO have a setting for this ?
-    if(it != map.end() && it->second.is_loadbanged)
-      device::register_children(x);
-#endif
-    ossia_library.devices.push_back(x);
+    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
+    clock_set(x->m_reg_clock, 1);
 
     on_device_created(x);
   }
@@ -175,6 +167,16 @@ void device::destroy(device* x)
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);
+    }
+    else
+    {
+      auto parent_object = x->find_parent_object_recursively(pat_desc.parent_patcher, true);
+      std::vector<std::shared_ptr<matcher>> matchers{};
+      if(parent_object)
+        matchers = parent_object->m_matchers;
+      else
+        matchers.push_back(std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr));
+      register_children_in_patcher_recursively(x->m_patcher, nullptr, matchers);
     }
   }
 

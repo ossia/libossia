@@ -45,10 +45,6 @@ ossia_max::ossia_max():
   clients.reserve(8);
   explorers.reserve(128);
 
-#if OSSIA_MAX_AUTOREGISTER
-  m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
-#endif
-
   s_browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
   clock_delay(ossia_max::s_browse_clock, 100.);
 
@@ -126,7 +122,7 @@ std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
 
   return list;
 }
-
+/*
 void ossia_max::register_nodes(ossia_max*)
 {
   auto& inst = ossia_max::instance();
@@ -215,6 +211,7 @@ void ossia_max::register_nodes(ossia_max*)
     }
   }
 }
+*/
 
 namespace ossia
 {
@@ -357,63 +354,43 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
     root_patcher = caller->m_patcher;
 
   // 1: look for device, client, model and view objects into the patcher
-  t_object* next_box = object_attr_getobj(patcher, _sym_firstobject);
-  while (next_box)
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
+
+  if(root_patcher != patcher)
   {
-    object_base* object = (object_base*) jbox_get_object(next_box);
-
-    if(object != caller)
+    device_base* db = pat_desc.device?static_cast<device_base*>(pat_desc.device):
+                                      static_cast<device_base*>(pat_desc.client);
+    if(db && db != caller)
     {
-      t_symbol* curr_classname = object_attr_getsym(next_box, _sym_maxclass);
-
-      if ( curr_classname == gensym("ossia.model")
-        || curr_classname == gensym("ossia.view"))
+      if(db->m_device)
       {
-        auto ob = static_cast<object_base*>(object);
-        if(!ob->m_dead)
-          objects_to_register.push_back(object);
+        std::vector<std::shared_ptr<matcher>> dev_matchers{std::make_shared<matcher>(&db->m_device->get_root_node(), db)};
+        return register_children_in_patcher_recursively(patcher, db, dev_matchers);
       }
-      // if where are not in the caller patcher and
-      // there is a client or device in the current patcher
-      // return only that object
-      if ( root_patcher != patcher
-          && (curr_classname == gensym("ossia.device")
-           || curr_classname == gensym("ossia.client")))
-      {
-        // ignore dying object
-        if (!object->m_dead)
-        {
-          auto dev = static_cast<device_base*>(object);
-          if(dev->m_device)
-          {
-            std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&dev->m_device->get_root_node(), object)};
-            return register_children_in_patcher_recursively(patcher, object, matchers);
-          }
-          else
-            return;
-        }
-      }
+      else
+        return;
     }
-    next_box = object_attr_getobj(next_box, _sym_nextobject);
   }
 
-  // 2: if there is an ossia.model / ossia.view in the current patch, return it
-  if (!objects_to_register.empty())
+  node_base* nb = pat_desc.model?static_cast<node_base*>(pat_desc.model):
+                                 static_cast<node_base*>(pat_desc.view);
+
+  if(nb && nb != caller)
   {
-    for(auto obj : objects_to_register)
+    if(nb->m_addr_scope == ossia::net::address_scope::relative)
     {
-      switch(obj->m_otype)
+      switch(nb->m_otype)
       {
         case object_class::model:
         {
-          auto mdl = static_cast<model*>(obj);
+          auto mdl = static_cast<model*>(nb);
           mdl->do_registration(matchers);
           register_children_in_patcher_recursively(patcher, mdl, mdl->m_matchers);
           break;
         }
         case object_class::view:
         {
-          auto vw = static_cast<view*>(obj);
+          auto vw = static_cast<view*>(nb);
           vw->do_registration(matchers);
           register_children_in_patcher_recursively(patcher, vw, vw->m_matchers);
           break;
@@ -422,51 +399,72 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
           break;
       }
     }
-  }
-  else
-  {
-    // iterate again looking for device/client/model/view in its subpatchers
-    // and for parameters/remote/attribute in the current patcher
-    next_box = object_attr_getobj(patcher, _sym_firstobject);
-
-    while (next_box)
+    else
     {
-      t_object* object = jbox_get_object(next_box);
-      t_symbol* classname = object_classname(object);
-
-      // jpatcher or bpatcher case, look for object in those
-      if (classname == _sym_jpatcher || classname == _sym_bpatcher)
+      auto nodes = nb->find_parent_nodes();
+      switch(nb->m_otype)
       {
-        register_children_in_patcher_recursively(object, caller, matchers);
-      }
-      else if (classname == gensym("poly~"))
-      {
-        long idx = 0;
-        t_object* subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
-        while(subpatcher)
+        case object_class::model:
         {
-          register_children_in_patcher_recursively(subpatcher, caller, matchers);
-          subpatcher = (t_object*)object_method(object, gensym("subpatcher"), idx++, 0);
+          auto mdl = static_cast<model*>(nb);
+          mdl->do_registration(nodes);
+          break;
         }
+        case object_class::view:
+        {
+          auto vw = static_cast<view*>(nb);
+          vw->do_registration(nodes);
+          break;
+        }
+        default:
+          break;
       }
-      else if (classname == gensym("ossia.parameter"))
-      {
-        auto param = (ossia::max::parameter*) jbox_get_object(next_box);
-        param->do_registration(matchers);
-      }
-      else if (classname == gensym("ossia.remote"))
-      {
-        auto rem = (ossia::max::remote*) jbox_get_object(next_box);
-        rem->do_registration(matchers);
-      }
-      else if (classname == gensym("ossia.attribute"))
-      {
-        auto attr = (ossia::max::attribute*) jbox_get_object(next_box);
-        attr->do_registration(matchers);
-      }
-
-      next_box = object_attr_getobj(next_box, _sym_nextobject);
     }
+    return;
+  }
+
+  for(auto param : pat_desc.parameters)
+  {
+    if(param->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      param->do_registration(matchers);
+    }
+    else
+    {
+      auto nodes = param->find_parent_nodes();
+      param->do_registration(nodes);
+    }
+  }
+
+  for(auto rem : pat_desc.remotes)
+  {
+    if(rem->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      rem->do_registration(matchers);
+    }
+    else
+    {
+      auto nodes = rem->find_parent_nodes();
+      rem->do_registration(nodes);
+    }
+  }
+
+  for(auto attr : pat_desc.attributes)
+  {
+    if(attr->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      attr->do_registration(matchers);
+    }
+    else
+    {
+      auto nodes = attr->find_parent_nodes();
+      attr->do_registration(nodes);
+    }
+  }
+
+  for(auto subpatcher : pat_desc.subpatchers)
+  {
+    register_children_in_patcher_recursively(subpatcher, caller, matchers);
   }
 }
 

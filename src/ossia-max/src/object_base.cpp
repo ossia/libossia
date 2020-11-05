@@ -130,7 +130,10 @@ void object_base::loadbang(object_base* x)
 
   auto matchers = x->find_parent_nodes();
 
-  if(ossia_max::instance().patchers[root_patcher].loadbanged)
+  // if patcher has been loadbanged, then register only that object and its children
+  if(ossia_max::instance().patchers[root_patcher].loadbanged
+  && x->m_otype != object_class::device
+  && x->m_otype != object_class::client )
   {
     if(!matchers.empty())
     {
@@ -166,6 +169,7 @@ void object_base::loadbang(object_base* x)
   }
   else
   {
+    // if patcher has not been loadbanged, register all object in patcher
     register_children_in_patcher_recursively(root_patcher, nullptr, matchers);
   }
 }
@@ -690,6 +694,8 @@ std::string object_base::make_global_pattern()
 {
   std::vector<std::string> vs;
   vs.reserve(8);
+
+  // TODO ossia object tree instead
 
   vs.push_back(m_name->s_name);
 
