@@ -1,12 +1,12 @@
 #pragma once
-#include <ossia-max/src/object_base.hpp>
+#include <ossia-max/src/node_base.hpp>
 
 namespace ossia
 {
 namespace max
 {
 
-class view : public object_base // FIXME why view doesn't inherite from ossia::max::node_base ??
+class view : public node_base
 {
 public:
 

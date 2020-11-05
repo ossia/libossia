@@ -82,11 +82,18 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    ossia_max::instance().patchers[x->m_patcher].client = x;
+    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    if(!pat_desc.client && !pat_desc.device)
+      pat_desc.client = x;
+    else
+    {
+      error("You can put only one [ossia.device] or [ossia.client] per patcher");
+      object_free(x);
+      return nullptr;
+    }
 
     // make outlets
-    x->m_dumpout
-        = outlet_new(x, NULL); // anything outlet to dump client state
+    x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump client state
 
     x->m_device = 0;
 
@@ -140,7 +147,8 @@ void client::destroy(client* x)
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
-    pat_desc.client = nullptr;
+    if(pat_desc.client == x)
+      pat_desc.client = nullptr;
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);
@@ -150,15 +158,12 @@ void client::destroy(client* x)
   x->m_dead = true;
   x->m_matchers.clear();
 
-  clock_free((t_object*)x->m_clock);
-
-
-  // No more needed since all children
-  // are connected to node.about_to_be_deleted
-  // x->unregister_children();
+  if(x->m_clock)
+    clock_free((t_object*)x->m_clock);
 
   disconnect(x);
-  outlet_delete(x->m_dumpout);
+  if(x->m_dumpout)
+    outlet_delete(x->m_dumpout);
   ossia_max::instance().clients.remove_all(x);
 
   x->~client();
@@ -438,7 +443,8 @@ void client::disconnect(client* x)
     x->m_oscq_protocol = nullptr;
     client::on_client_disconnected(x);
   }
-  clock_unset(x->m_clock); // avoid automatic reconnection
+  if(x->m_clock)
+    clock_unset(x->m_clock); // avoid automatic reconnection
 }
 
 void client::poll_message(client* x)

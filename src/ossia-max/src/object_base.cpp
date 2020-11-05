@@ -26,6 +26,7 @@ object_base::object_base()
 
   while(parent)
   {
+    ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
     patcher = parent;
     parent = get_patcher(patcher);
     ossia_max::instance().patchers[patcher].parent_patcher = parent;
@@ -166,7 +167,6 @@ void object_base::loadbang(object_base* x)
   else
   {
     register_children_in_patcher_recursively(root_patcher, nullptr, matchers);
-    ossia_max::instance().patchers[root_patcher].loadbanged = true;
   }
 }
 

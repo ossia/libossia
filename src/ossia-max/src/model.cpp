@@ -51,17 +51,15 @@ void* model::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto patcher = x->m_patcher;
-    if( ossia_max::instance().patchers[patcher].model
-     && ossia_max::instance().patchers[patcher].view)
+    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    if( !pat_desc.model && !pat_desc.view)
     {
-      ossia_max::instance().patchers[patcher].model = x;
+      pat_desc.model = x;
     }
     else
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       object_free(x);
-      x->~model();
       return nullptr;
     }
 
@@ -111,7 +109,8 @@ void model::destroy(model* x)
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
-    pat_desc.model = nullptr;
+    if(pat_desc.model == x)
+      pat_desc.model = nullptr;
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);
@@ -121,7 +120,8 @@ void model::destroy(model* x)
   x->m_dead = true;
   x->unregister();
   ossia_max::instance().models.remove_all(x);
-  outlet_delete(x->m_dumpout);
+  if(x->m_dumpout)
+    outlet_delete(x->m_dumpout);
   x->~model();
 }
 

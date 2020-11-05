@@ -100,11 +100,20 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    ossia_max::instance().patchers[x->m_patcher].device = x;
+    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    if(!pat_desc.device && !pat_desc.client)
+    {
+      pat_desc.device= x;
+    }
+    else
+    {
+      error("You can put only one [ossia.device] or [ossia.client] per patcher");
+      object_free(x);
+      return nullptr;
+    }
 
     // make outlets
-    x->m_dumpout
-        = outlet_new(x, NULL); // anything outlet to dump device state
+    x->m_dumpout = outlet_new(x, NULL); // anything outlet to dump device state
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
@@ -161,7 +170,8 @@ void device::destroy(device* x)
   if(pat_it != ossia_max::instance().patchers.end())
   {
     auto& pat_desc = pat_it->second;
-    pat_desc.device = nullptr;
+    if(pat_desc.device == x)
+      pat_desc.device = nullptr;
     if(pat_desc.empty())
     {
       ossia_max::instance().patchers.erase(pat_it);
@@ -202,7 +212,8 @@ void device::destroy(device* x)
 
   x->m_device = nullptr;
 
-  outlet_delete(x->m_dumpout);
+  if(x->m_dumpout)
+    outlet_delete(x->m_dumpout);
   ossia_max::instance().devices.remove_all(x);
 
   x->~device();

@@ -97,7 +97,8 @@ void device_base::on_node_removing_callback(ossia::net::node_base& node)
   t_atom a[2];
   A_SETSYM(a, gensym("removed"));
   A_SETSYM(a+1, gensym(addr.c_str()));
-  outlet_anything(m_dumpout, gensym("node"), 2, a);
+  if(m_dumpout)
+    outlet_anything(m_dumpout, gensym("node"), 2, a);
 }
 
 void device_base::connect_slots()
