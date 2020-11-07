@@ -2,14 +2,15 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x86",
+			"major" : 8,
+			"minor" : 2,
+			"revision" : 0,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 38.0, 78.0, 1612.0, 960.0 ],
+		"classnamespace" : "box",
+		"rect" : [ 34.0, 78.0, 1612.0, 960.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -36,17 +37,17 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-15",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "inlet",
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 1348.0, 35.0, 30.0, 30.0 ],
-					"style" : ""
+					"patching_rect" : [ 1348.0, 35.0, 30.0, 30.0 ]
 				}
 
 			}
@@ -54,12 +55,11 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-17",
-					"index" : 2,
+					"index" : 0,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 156.0, 917.0, 30.0, 30.0 ],
-					"style" : ""
+					"patching_rect" : [ 156.0, 917.0, 30.0, 30.0 ]
 				}
 
 			}
@@ -67,12 +67,11 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-16",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 107.0, 917.0, 30.0, 30.0 ],
-					"style" : ""
+					"patching_rect" : [ 107.0, 917.0, 30.0, 30.0 ]
 				}
 
 			}
@@ -84,7 +83,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 254.0, 312.0, 46.0, 22.0 ],
-					"style" : "",
 					"text" : "cycle~"
 				}
 
@@ -97,7 +95,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 363.0, 241.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -110,7 +107,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 363.0, 206.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -123,7 +119,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 254.0, 366.0, 225.0, 22.0 ],
-					"style" : "",
 					"text" : "*~"
 				}
 
@@ -137,7 +132,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 363.0, 110.0, 629.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.parameter modulation/ratio @default 4 @type float @range 0.001 10 @description \"Modulator frequency ratio\""
 				}
 
@@ -150,7 +144,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 460.0, 327.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -163,7 +156,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 460.0, 286.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -176,7 +168,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 254.0, 278.0, 33.0, 22.0 ],
-					"style" : "",
 					"text" : "*~"
 				}
 
@@ -190,7 +181,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 105.0, 50.0, 627.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.parameter carrier/frequency @default 440 @type hz @description \"Carrier frequency \" @min 20 @max 20000"
 				}
 
@@ -203,7 +193,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 253.0, 241.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -216,7 +205,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 253.0, 206.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -229,7 +217,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 107.0, 421.0, 46.0, 22.0 ],
-					"style" : "",
 					"text" : "cycle~"
 				}
 
@@ -242,7 +229,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 105.0, 241.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -255,7 +241,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 105.0, 206.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -268,9 +253,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 692.0, 150.0, 528.0, 22.0 ],
-					"style" : "",
-					"text" : "ossia.parameter ramptime @default 20 @type ms @description \"Modulator frequency ramp time\""
+					"patching_rect" : [ 692.0, 150.0, 666.0, 22.0 ],
+					"text" : "ossia.parameter ramptime @default 20 @type ms @description \"Modulator frequency ramp time\" @range 0 5000 @clip low"
 				}
 
 			}
@@ -283,7 +267,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 460.0, 245.0, 686.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.parameter modulation/index @default 10 @type float @range 0 1000 @clip low @description \"Modulator frequency ratio\""
 				}
 
@@ -296,7 +279,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 187.0, 583.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -309,7 +291,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 187.0, 559.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -322,7 +303,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 187.0, 535.0, 55.0, 22.0 ],
-					"style" : "",
 					"text" : "dbtoa 0."
 				}
 
@@ -335,7 +315,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 107.0, 622.0, 99.0, 22.0 ],
-					"style" : "",
 					"text" : "*~"
 				}
 
@@ -349,7 +328,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 187.0, 511.0, 531.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.parameter gain @default -12 @type db @range -100 0 @clip both @description \"Main gain\""
 				}
 
@@ -362,7 +340,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "float" ],
 					"patching_rect" : [ 281.5, 648.0, 31.0, 22.0 ],
-					"style" : "",
 					"text" : "+ 1."
 				}
 
@@ -375,7 +352,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "float" ],
 					"patching_rect" : [ 281.5, 681.0, 29.5, 22.0 ],
-					"style" : "",
 					"text" : "/ 8."
 				}
 
@@ -388,7 +364,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "signal", "bang" ],
 					"patching_rect" : [ 281.5, 736.0, 50.0, 22.0 ],
-					"style" : "",
 					"text" : "line~ 0."
 				}
 
@@ -401,7 +376,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 281.5, 709.0, 73.0, 22.0 ],
-					"style" : "",
 					"text" : "pack 0. 100"
 				}
 
@@ -414,7 +388,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 281.5, 765.0, 37.0, 22.0 ],
-					"style" : "",
 					"text" : "cos~"
 				}
 
@@ -427,7 +400,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 337.0, 765.0, 52.0, 22.0 ],
-					"style" : "",
 					"text" : "+~ 0.75"
 				}
 
@@ -440,7 +412,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 337.0, 804.0, 37.0, 22.0 ],
-					"style" : "",
 					"text" : "cos~"
 				}
 
@@ -453,7 +424,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 107.0, 853.0, 33.0, 22.0 ],
-					"style" : "",
 					"text" : "*~"
 				}
 
@@ -466,7 +436,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 156.0, 853.0, 33.0, 22.0 ],
-					"style" : "",
 					"text" : "*~"
 				}
 
@@ -479,7 +448,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
 					"patching_rect" : [ 107.0, 484.0, 61.0, 22.0 ],
-					"style" : "",
 					"text" : "onepole~"
 				}
 
@@ -492,9 +460,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 149.0, 453.0, 520.0, 22.0 ],
-					"style" : "",
-					"text" : "ossia.parameter cutoff/frequency @default 5000 @type hz @description \"Cutoff filter frequency\""
+					"patching_rect" : [ 149.0, 453.0, 618.0, 22.0 ],
+					"text" : "ossia.parameter cutoff/frequency @default 5000 @type hz @description \"Cutoff filter frequency\" @range 20 20000"
 				}
 
 			}
@@ -507,7 +474,6 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 281.5, 611.0, 529.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.parameter pan @default 0 @type float @range -1 1 @clip both @description \"Pan position\""
 				}
 
@@ -521,7 +487,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1348.0, 80.0, 162.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.model #1"
 				}
 
@@ -839,7 +804,17 @@
 				}
 
 			}
- ]
+ ],
+		"dependency_cache" : [ 			{
+				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.parameter.mxo",
+				"type" : "iLaX"
+			}
+ ],
+		"autosave" : 0
 	}
 
 }
