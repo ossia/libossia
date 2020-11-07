@@ -90,9 +90,6 @@ namespace ossia
 namespace max
 {
 
-Nano::Signal<void(device*)> device::on_device_created{};
-Nano::Signal<void(device*)> device::on_device_removing{};
-
 void* device::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto& ossia_library = ossia_max::instance();

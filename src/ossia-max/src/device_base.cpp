@@ -7,6 +7,8 @@ namespace ossia
 {
 namespace max
 {
+Nano::Signal<void(device_base*)> device_base::on_device_created{};
+Nano::Signal<void(device_base*)> device_base::on_device_removing{};
 
 void device_base::on_parameter_created_callback(const ossia::net::parameter_base& param)
 {

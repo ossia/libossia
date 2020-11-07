@@ -31,9 +31,6 @@ public:
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
-
-  static   Nano::Signal<void(device*)> on_device_created; // The device being created
-  static   Nano::Signal<void(device*)> on_device_removing; // The device being removed
 };
 
 namespace protocol_settings

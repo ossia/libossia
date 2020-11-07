@@ -23,6 +23,8 @@ public:
   void connect_slots();
   void disconnect_slots();
 
+  static   Nano::Signal<void(device_base*)> on_device_created; // The device being created
+  static   Nano::Signal<void(device_base*)> on_device_removing; // The device being removed
 };
 
 } // namespace max

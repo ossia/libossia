@@ -71,9 +71,6 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::client*);
 
-  static Nano::Signal<void(client*)> on_client_connected; // The client being connected
-  static Nano::Signal<void(client*)> on_client_disconnected; // The client being disconnected
-
   int m_argc{};
   t_atom* m_argv{};
 
