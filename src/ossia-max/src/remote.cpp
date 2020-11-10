@@ -211,10 +211,10 @@ void remote::set_unit()
           m_unit = gensym("");
           break;
         } else {
-          outlet_anything(m->get_parent()->m_dumpout,gensym("address"),1, m->get_atom_addr_ptr());
+          outlet_anything(m->get_owner()->m_dumpout,gensym("address"),1, m->get_atom_addr_ptr());
           t_atom a;
           A_SETSYM(&a, m_unit);
-          outlet_anything(m->get_parent()->m_dumpout,gensym("unit"),   1, &a);
+          outlet_anything(m->get_owner()->m_dumpout,gensym("unit"),   1, &a);
           m->output_value(m->get_node()->get_parameter()->value());
         }
       }
@@ -304,7 +304,7 @@ void remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent
       // avoid to register the same node twice
       for (auto& m_m : m_matchers)
       {
-        if ( m_m->get_node() == n && m_m->get_parent() == this )
+        if ( m_m->get_node() == n && m_m->get_owner() == this )
         {
           continue_flag = true;
           break;

@@ -48,7 +48,7 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
 
   for(const auto& m : matchers)
   {
-    auto obj = m->get_parent();
+    auto obj = m->get_owner();
     if(obj)
     {
       switch(obj->m_otype)

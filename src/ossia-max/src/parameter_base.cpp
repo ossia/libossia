@@ -808,7 +808,7 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
-    auto xparam = (parameter_base*)m->get_parent();
+    auto xparam = (parameter_base*)m->get_owner();
 
     if ( xparam->m_ounit != std::nullopt )
     {
@@ -916,7 +916,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
     return;
 
   auto target = atom_getsym(&argv[0])->s_name;
-  object_base* parent{};
+  object_base* owner{};
   ossia::net::node_base* node{};
   if (!x->m_mute)
   {
@@ -926,12 +926,12 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       auto addr = ossia::net::address_string_from_node(*cur);
       if(boost::algorithm::ends_with(addr, target)) {
         node = cur;
-        parent = m->get_parent();
+        owner = m->get_owner();
         break;
       }
     }
 
-    if(!node || !parent)
+    if(!node || !owner)
       return;
 
     auto param = node->get_parameter();
@@ -959,7 +959,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       }
 
       ossia::value vv;
-      parameter_base* xparam = (parameter_base*)parent;
+      parameter_base* xparam = (parameter_base*)owner;
       if ( xparam->m_ounit != std::nullopt )
       {
         auto src_unit = *xparam->m_ounit;
@@ -997,7 +997,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
             object_error((t_object*)x, "value type not handled");
         }
       }
-      parameter_base* xparam = (parameter_base*) parent;
+      parameter_base* xparam = (parameter_base*) owner;
       auto src_unit = *xparam->m_ounit;
       auto dst_unit = param->get_unit();
 
