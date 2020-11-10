@@ -166,8 +166,8 @@ public:
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
   std::vector<ossia::value> m_set_pool;
 
-protected:
   std::optional<ossia::traversal::path> m_path;
+protected:
   std::map<std::string, ossia::value> m_value_map;
 
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;

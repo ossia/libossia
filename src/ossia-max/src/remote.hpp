@@ -7,6 +7,8 @@ namespace ossia
 namespace max
 {
 
+class device_base;
+
 #pragma mark -
 #pragma mark t_remote structure declaration
 
@@ -18,12 +20,14 @@ public:
   bool do_registration(const std::vector<std::shared_ptr<matcher>>& node, bool output_value = true);
   bool unregister();
 
-  ossia::safe_set<ossia::net::generic_device*> m_devices{};
+  ossia::safe_set<ossia::net::device_base*> m_devices{};
 
   void set_unit();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
-  void on_device_deleted(const ossia::net::node_base&);
+
+  void on_device_created(ossia::max::device_base* device);
+  void on_device_removing(ossia::max::device_base* device);
 
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);

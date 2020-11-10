@@ -58,6 +58,8 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     ossia_max::instance().patchers[x->m_patcher].remotes.push_back(x);
+    device_base::on_device_created.connect<&remote::on_device_created>(x);
+    device_base::on_device_removing.connect<&remote::on_device_removing>(x);
 
     x->m_otype = object_class::remote;
 
@@ -119,6 +121,10 @@ void remote::destroy(remote* x)
   outlet_delete(x->m_dumpout);
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);
+
+  device_base::on_device_created.disconnect<&remote::on_device_created>(x);
+  device_base::on_device_removing.disconnect<&remote::on_device_removing>(x);
+
   x->~remote();
 }
 
@@ -237,52 +243,59 @@ void remote::get_mute(remote*x)
   outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
 }
 
-void remote::on_device_deleted(const net::node_base& root)
+void remote::on_device_removing(device_base* obj)
 {
-  for(auto dev : m_devices.reference())
+  auto dev = obj->m_device.get();
+  if(m_devices.contains(dev))
   {
-    if(&dev->get_root_node() == &root)
-    {
-      dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
-      dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
-      m_devices.remove_all(dev);
-      break;
-    }
+    dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+    m_devices.remove_all(dev);
   }
 }
 
-bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers, bool output_value)
+void remote::on_device_created(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  if(!m_devices.contains(dev))
+  {
+    dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
+    m_devices.push_back(dev);
+  }
+}
+
+bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent_matchers, bool output_value)
 {
   object_post(&m_object, "register remote");
 
   std::string name = m_name->s_name;
 
+  if(!m_path)
+    update_path();
+
   m_registered = true;
 
-  // FIXME in case of address with pattern, we shouldn't clear m_matchers here
-  // instead we should rely on device node_deleting signal to delete relevant matchers
-  m_matchers.clear();
-  m_matchers.reserve(matchers.size());
+  if(!m_is_pattern)
+    m_matchers.clear();
 
-  for (auto& m : matchers)
+  m_matchers.reserve(m_matchers.size() + parent_matchers.size());
+
+  for (auto& m : parent_matchers)
   {
     auto node = m->get_node();
-    if (m_addr_scope == ossia::net::address_scope::absolute)
-    {
-      // get root node
-      node = &node->get_device().get_root_node();
-      // and remove starting '/'
-      name = name.substr(1);
-    }
 
     m_parent_node = node;
 
-    std::vector<ossia::net::node_base*> nodes{};
+    auto nodes = ossia::net::find_nodes(*node, name);
 
-    if (m_addr_scope == ossia::net::address_scope::global)
-      nodes = ossia::max::find_global_nodes(name);
-    else
-      nodes = ossia::net::find_nodes(*node, name);
+    if(nodes.empty())
+    {
+      auto dev = &node->get_device();
+      if(!m_devices.contains(dev))
+      {
+        m_devices.push_back(dev);
+        dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
+      }
+    }
 
     m_matchers.reserve(m_matchers.size() + nodes.size());
 
@@ -365,7 +378,6 @@ bool remote::unregister()
   for(auto dev : m_devices.reference())
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
-    dev->get_root_node().about_to_be_deleted.disconnect<&remote::on_device_deleted>(this);
   }
   m_devices.clear();
 

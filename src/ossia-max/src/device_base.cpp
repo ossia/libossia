@@ -49,23 +49,26 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
   for(const auto& m : matchers)
   {
     auto obj = m->get_parent();
-    switch(obj->m_otype)
+    if(obj)
     {
-      case object_class::attribute:
-      case object_class::param:
-      case object_class::remote:
+      switch(obj->m_otype)
       {
-        auto oc = static_cast<ossia::max::parameter_base*>(obj);
-        oc->update_attribute(oc, attribute, &node);
-        break;
+        case object_class::attribute:
+        case object_class::param:
+        case object_class::remote:
+        {
+          auto oc = static_cast<ossia::max::parameter_base*>(obj);
+          oc->update_attribute(oc, attribute, &node);
+          break;
+        }
+        case object_class::model:
+        case object_class::view:
+        case object_class::device:
+        case object_class::client:
+          break;
+        default:
+            ;
       }
-      case object_class::model:
-      case object_class::view:
-      case object_class::device:
-      case object_class::client:
-        break;
-      default:
-          ;
     }
   }
 }

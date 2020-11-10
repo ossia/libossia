@@ -579,7 +579,18 @@ object_base* object_base::find_parent_object_recursively(
   while(patcher)
   {
     auto& pat_desc = ossia_max::instance().patchers[patcher];
-    for(auto ptr : std::vector<object_base*>{pat_desc.model, pat_desc.view, pat_desc.device, pat_desc.client })
+    auto vec = std::vector<object_base*>{};
+    if(m_addr_scope == ossia::net::address_scope::relative
+        && look_for_model_view)
+    {
+      vec = std::vector<object_base*> {pat_desc.model, pat_desc.view, pat_desc.device, pat_desc.client};
+    }
+    else
+    {
+      vec = std::vector<object_base*> {pat_desc.device, pat_desc.client};
+    }
+
+    for(auto ptr : vec)
     {
       if(ptr && ptr != this)
       {
@@ -659,7 +670,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
       matchers.reserve(nodes.size());
       for(auto n : nodes)
       {
-        matchers.push_back(std::make_shared<matcher>(n, nullptr));
+        matchers.push_back(std::make_shared<matcher>(n->get_parent(), nullptr));
       }
       return matchers;
     }
@@ -703,7 +714,7 @@ std::string object_base::make_global_pattern()
   while(parent)
   {
     vs.push_back(std::string(parent->m_name->s_name));
-    parent = find_parent_object();
+    parent = parent->find_parent_object();
   }
 
   fmt::memory_buffer fullpath;

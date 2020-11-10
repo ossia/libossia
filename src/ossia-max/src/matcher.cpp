@@ -37,7 +37,7 @@ matcher::matcher(ossia::net::node_base* n, object_base* p) :
 
   set_parent_addr();
 
-  ossia_max::instance().s_node_matchers_map[n].push_back(this);
+  ossia_max::instance().s_node_matchers_map[node].push_back(this);
 }
 
 matcher::matcher(matcher&& other)
@@ -78,6 +78,9 @@ matcher::matcher(matcher&& other)
       }
     }
   }
+
+  ossia_max::instance().s_node_matchers_map[node].remove_all(&other);
+  ossia_max::instance().s_node_matchers_map[node].push_back(this);
 }
 
 matcher& matcher::operator=(matcher&& other)
@@ -118,6 +121,9 @@ matcher& matcher::operator=(matcher&& other)
       }
     }
   }
+
+  ossia_max::instance().s_node_matchers_map[node].remove_all(&other);
+  ossia_max::instance().s_node_matchers_map[node].push_back(this);
 
   return *this;
 }
@@ -287,10 +293,35 @@ void matcher::output_value(ossia::value v)
 
 void matcher::set_parent_addr()
 {
+  std::string addr = ossia::net::address_string_from_node(*node);
+  A_SETSYM(&m_addr, gensym(addr.c_str()));
+
   if (!m_dead && node && owner && owner->m_parent_node){
-    // TODO how to deal with multiple parents ?
-    std::string addr = ossia::net::relative_address_string_from_nodes(*node, *owner->m_parent_node);
-    A_SETSYM(&m_addr, gensym(addr.c_str()));
+    if(owner->m_addr_scope == ossia::net::address_scope::relative)
+    {
+      auto parent = owner->find_parent_object();
+      if(parent && parent->m_path)
+      {
+        std::string parent_pattern = parent->m_path->pattern;
+        int parent_count = std::count(parent_pattern.begin(), parent_pattern.end(), '/');
+
+        std::string owner_pattern = owner->m_path->pattern;
+        int owner_count = std::count(owner_pattern.begin(), owner_pattern.end(), '/');
+        int slashes_to_keep = parent_count - owner_count;
+        size_t pos = 0;
+        int found = 0;
+        std::string  tmp = addr;
+
+        while(pos != std::string::npos && found < slashes_to_keep)
+        {
+          pos = tmp.rfind("/");
+          tmp = tmp.substr(0, pos);
+        }
+
+        std::string subaddr = addr.substr(pos);
+        A_SETSYM(&m_addr, gensym(subaddr.c_str()));
+      }
+    }
   }
   else
   {

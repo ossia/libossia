@@ -151,16 +151,7 @@ bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matcher
   for (auto& m : matchers)
   {
     auto node = m->get_node();
-    if (m_addr_scope == ossia::net::address_scope::absolute)
-    {
-      // get root node
-      node = &node->get_device().get_root_node();
-      // and remove starting '/'
-      name = name.substr(1);
 
-      auto pos = name.rfind('/');
-      auto parent_address = name.substr(0, pos);
-    }
     m_parent_node = node;
 
     if (node->find_child(name))

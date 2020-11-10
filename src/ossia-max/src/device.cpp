@@ -146,6 +146,7 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
     x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
     clock_set(x->m_reg_clock, 1);
+    ossia_max::instance().devices.push_back(x);
 
     on_device_created(x);
   }
