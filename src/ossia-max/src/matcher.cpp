@@ -296,7 +296,7 @@ void matcher::set_parent_addr()
   std::string addr = ossia::net::address_string_from_node(*node);
   A_SETSYM(&m_addr, gensym(addr.c_str()));
 
-  if (!m_dead && node && owner && owner->m_parent_node){
+  if (!m_dead && node && owner){
     if(owner->m_addr_scope == ossia::net::address_scope::relative)
     {
       auto parent = owner->find_parent_object();

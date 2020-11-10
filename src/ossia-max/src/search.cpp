@@ -217,7 +217,5 @@ bool search::unregister()
 
   ossia_max::instance().searchs.push_back(this);
 
-  m_parent_node = nullptr;
-
   return true;
 }

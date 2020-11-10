@@ -231,7 +231,6 @@ void parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
 bool parameter::create_node_from_matcher(const std::shared_ptr<matcher>& m)
 {
   auto node = m->get_node();
-  m_parent_node = node;
   std::string address(m_name->s_name);
 
   if(m_addr_scope == ossia::net::address_scope::absolute)

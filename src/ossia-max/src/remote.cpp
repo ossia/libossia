@@ -283,8 +283,6 @@ void remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent
   {
     auto node = m->get_node();
 
-    m_parent_node = node;
-
     auto nodes = ossia::net::find_nodes(*node, name);
 
     if(nodes.empty())
@@ -369,8 +367,6 @@ void remote::unregister()
 
   ossia_max::instance().nr_remotes.push_back(this);
 
-  m_parent_node = nullptr;
-
   for(auto dev : m_devices.reference())
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
@@ -390,12 +386,10 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
     {
       if(m_addr_scope == net::address_scope::relative)
       {
-        m_parent_node = node.get_parent();
         std::string name(m_name->s_name);
         size_t pos = name.find('/', 0);
         while(pos != std::string::npos)
         {
-          m_parent_node = node.get_parent();
           pos = name.find('/',pos+1);
         }
       }

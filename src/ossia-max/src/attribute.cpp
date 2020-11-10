@@ -95,8 +95,6 @@ void attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
       name = name.substr(1);
     }
 
-    m_parent_node = node;
-
     std::vector<ossia::net::node_base*> nodes{};
 
     if (m_addr_scope == net::address_scope::global)
@@ -129,7 +127,6 @@ void attribute::unregister()
 
   ossia_max::instance().nr_attributes.push_back(this);
 
-  m_parent_node = nullptr;
   if(m_dev)
   {
     m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
@@ -148,12 +145,10 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
     {
       if(m_addr_scope == net::address_scope::relative)
       {
-        m_parent_node = node.get_parent();
         std::string name(m_name->s_name);
         size_t pos = name.find('/', 0);
         while(pos != std::string::npos)
         {
-          m_parent_node = node.get_parent();
           pos = name.find('/',pos+1);
         }
       }

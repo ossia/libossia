@@ -152,8 +152,6 @@ void model::do_registration(const std::vector<std::shared_ptr<matcher>>& matcher
   {
     auto node = m->get_node();
 
-    m_parent_node = node;
-
     if (node->find_child(name))
     {
       // TODO : check if node has a parameter
@@ -218,18 +216,12 @@ void model::save_children_state()
     // shouldn't it be fine to get matcher's owner and cast it according to it's m_otype ?
     for(auto x : ossia_max::instance().parameters.reference() )
     {
-      if(x->m_parent_node == m->get_node())
-      {
-        x->save_values();
-      }
+      x->save_values();
     }
 
     for(auto x : ossia_max::instance().models.reference() )
     {
-      if(x->m_parent_node == m->get_node())
-      {
-        x->save_children_state();
-      }
+      x->save_children_state();
     }
   }
 }

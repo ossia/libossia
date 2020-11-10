@@ -86,7 +86,6 @@ public:
   float m_rate{10};
 
   std::shared_ptr<ossia::net::generic_device> m_device{};
-  ossia::net::node_base* m_parent_node{};
   std::vector<std::shared_ptr<matcher>> m_matchers{};
   std::vector<matcher*> m_node_selection{};
   std::optional<ossia::traversal::path> m_selection_path{};

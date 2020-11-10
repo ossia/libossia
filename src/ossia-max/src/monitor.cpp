@@ -170,8 +170,6 @@ bool monitor::unregister()
 
   ossia_max::instance().nr_monitors.push_back(this);
 
-  m_parent_node = nullptr;
-
   stop_monitoring();
   return true;
 }

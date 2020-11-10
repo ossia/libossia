@@ -172,7 +172,5 @@ bool explorer::unregister()
 {
   m_matchers.clear();
 
-  m_parent_node = nullptr;
-
   return true;
 }

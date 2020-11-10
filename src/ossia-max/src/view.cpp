@@ -153,8 +153,6 @@ void view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers
       name = name.substr(1);
     }
 
-    m_parent_node = _node;
-
     std::vector<ossia::net::node_base*> nodes{};
 
     if (m_addr_scope == ossia::net::address_scope::global)
