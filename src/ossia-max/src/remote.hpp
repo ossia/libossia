@@ -17,8 +17,8 @@ class remote : public parameter_base
 public:
   using is_remote = std::true_type;
 
-  bool do_registration(const std::vector<std::shared_ptr<matcher>>& node, bool output_value = true);
-  bool unregister();
+  void do_registration(const std::vector<std::shared_ptr<matcher>>& node, bool output_value = true);
+  void unregister();
 
   ossia::safe_set<ossia::net::device_base*> m_devices{};
 

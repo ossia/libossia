@@ -263,7 +263,7 @@ void remote::on_device_created(device_base* obj)
   }
 }
 
-bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent_matchers, bool output_value)
+void remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent_matchers, bool output_value)
 {
   object_post(&m_object, "register remote");
 
@@ -350,13 +350,9 @@ bool remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent
   }
 
   fill_selection();
-
-  // do not put it in quarantine if it's a pattern
-  // and even if it can't find any matching node
-  return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool remote::unregister()
+void remote::unregister()
 {
   auto copy = m_matchers;
   for (auto& m : copy)
@@ -382,8 +378,6 @@ bool remote::unregister()
   m_devices.clear();
 
   m_registered = false;
-
-  return true;
 }
 
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)

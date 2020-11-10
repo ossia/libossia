@@ -78,7 +78,7 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
   return 0;
 }
 
-bool attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   m_registered = true;
 
@@ -121,13 +121,9 @@ bool attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
   }
 
   fill_selection();
-
-  // do not put it in quarantine if it's a pattern
-  // and even if it can't find any matching node
-  return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool attribute::unregister()
+void attribute::unregister()
 {
   m_matchers.clear();
 
@@ -140,7 +136,6 @@ bool attribute::unregister()
     m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(this);
   }
   m_dev = nullptr;
-  return true;
 }
 
 void attribute::on_parameter_created_callback(const ossia::net::parameter_base& param)

@@ -118,7 +118,7 @@ void view::destroy(view* x)
   x->~view();
 }
 
-bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   // FIXME review absolute and global scope registering
 
@@ -131,7 +131,7 @@ bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers
       case ossia::net::address_scope::absolute:
       case ossia::net::address_scope::global:
         object_error(&m_object, "remote with glboal/absolute path are not supported yet");
-        return true;
+        return;
       default:
           ;
     }
@@ -175,11 +175,9 @@ bool view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers
   }
 
   fill_selection();
-
-  return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool view::unregister()
+void view::unregister()
 {
   m_matchers.clear();
 
@@ -209,8 +207,6 @@ bool view::unregister()
   // register_children(this);
 
   m_registered = false;
-
-  return true;
 }
 
 } // max namespace

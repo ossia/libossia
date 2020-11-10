@@ -172,7 +172,7 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   return 0;
 }
 
-bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   object_post(&m_object, "register parameter");
 
@@ -192,7 +192,7 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
 
         }
         ossia::traversal::make_path(global_address);
-        return true;
+        return;
       }
       default:
           ;
@@ -206,7 +206,7 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
   {
     if(!create_node_from_matcher(m))
     {
-      return false;
+      return;
     }
   }
 
@@ -226,8 +226,6 @@ bool parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& mat
 
   if(!ossia_max::instance().registering_nodes) // don't push default value when registering at loadbang
     push_default_value(this);                  // default value will be sent at the end of the global registration
-
-  return (!m_matchers.empty() || m_is_pattern);
 }
 
 bool parameter::create_node_from_matcher(const std::shared_ptr<matcher>& m)
@@ -296,7 +294,7 @@ void parameter::save_values()
 void parameter::on_device_created_callback(ossia::max::device* dev)
 {
   // TODO match the device name with m_name prefix
-  // the create_node_from_matcher
+  // then create_node_from_matcher
 }
 
 

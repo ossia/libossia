@@ -137,7 +137,7 @@ void model::assist(model* x, void* b, long m, long a, char* s)
   }
 }
 
-bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void model::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
 {
   ossia::string_view name(m_name->s_name);
 
@@ -196,11 +196,9 @@ bool model::do_registration(const std::vector<std::shared_ptr<matcher>>& matcher
     set_hidden();
     set_recall_safe();
   }
-
-  return (!m_matchers.empty() || m_is_pattern);
 }
 
-bool model::unregister()
+void model::unregister()
 {
   save_children_state();
   m_matchers.clear();
@@ -210,8 +208,6 @@ bool model::unregister()
   register_children_in_patcher_recursively(patcher, this, nodes);
 
   m_registered = false;
-
-  return true;
 }
 
 void model::save_children_state()
