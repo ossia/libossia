@@ -15,7 +15,6 @@ public:
   using is_device = std::true_type;
 
   static void register_children(device*);
-  void unregister_children();
   static void loadbang(device*);
 
   std::vector<std::vector<t_atom>> m_protocols;

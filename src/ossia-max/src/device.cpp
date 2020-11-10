@@ -225,44 +225,6 @@ void device::register_children(device* x)
   return register_children_in_patcher_recursively(x->m_patcher, x, matchers);
 }
 
-void device::unregister_children()
-{
-  std::vector<object_base*> children_model = find_children_to_register(
-      &m_object, m_patcher, gensym("ossia.model"));
-
-
-  for (auto child : children_model)
-  {
-    if (child->m_otype == object_class::model)
-    {
-      ossia::max::model* model = (ossia::max::model*)child;
-      model->unregister();
-    }
-    else if (child->m_otype == object_class::param)
-    {
-      ossia::max::parameter* parameter = (ossia::max::parameter*)child;
-      parameter->unregister();
-    }
-  }
-
-  std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, m_patcher, gensym("ossia.view"));
-
-  for (auto child : children_view)
-  {
-    if (child->m_otype == object_class::view)
-    {
-      ossia::max::view* view = (ossia::max::view*)child;
-      view->unregister();
-    }
-    else if (child->m_otype == object_class::remote)
-    {
-      ossia::max::remote* remote = (ossia::max::remote*)child;
-      remote->unregister();
-    }
-  }
-}
-
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
   if (argc && argv->a_type == A_SYM)
