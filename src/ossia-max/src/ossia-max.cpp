@@ -343,7 +343,7 @@ std::vector<object_base*> find_children_to_register(
 }
 
 void register_children_in_patcher_recursively(t_object* patcher, object_base* caller,
-                                             const std::vector<std::shared_ptr<matcher>>& matchers)
+                                             const std::vector<std::shared_ptr<matcher>>& parent_matchers)
 {
   std::vector<object_base*> objects_to_register;
 
@@ -384,14 +384,14 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
         case object_class::model:
         {
           auto mdl = static_cast<model*>(nb);
-          mdl->do_registration(matchers);
+          mdl->do_registration(parent_matchers);
           register_children_in_patcher_recursively(patcher, mdl, mdl->m_matchers);
           break;
         }
         case object_class::view:
         {
           auto vw = static_cast<view*>(nb);
-          vw->do_registration(matchers);
+          vw->do_registration(parent_matchers);
           register_children_in_patcher_recursively(patcher, vw, vw->m_matchers);
           break;
         }
@@ -401,7 +401,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
     }
     else
     {
-      auto nodes = nb->find_parent_nodes();
+      auto nodes = nb->find_or_create_nodes();
       switch(nb->m_otype)
       {
         case object_class::model:
@@ -427,7 +427,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     if(param->m_addr_scope == ossia::net::address_scope::relative)
     {
-      param->do_registration(matchers);
+      param->do_registration(parent_matchers);
     }
     else
     {
@@ -440,7 +440,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     if(rem->m_addr_scope == ossia::net::address_scope::relative)
     {
-      rem->do_registration(matchers);
+      rem->do_registration(parent_matchers);
     }
     else
     {
@@ -453,7 +453,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     if(attr->m_addr_scope == ossia::net::address_scope::relative)
     {
-      attr->do_registration(matchers);
+      attr->do_registration(parent_matchers);
     }
     else
     {
@@ -464,7 +464,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
 
   for(auto subpatcher : pat_desc.subpatchers)
   {
-    register_children_in_patcher_recursively(subpatcher, caller, matchers);
+    register_children_in_patcher_recursively(subpatcher, caller, parent_matchers);
   }
 }
 
