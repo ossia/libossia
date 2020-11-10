@@ -118,7 +118,10 @@ void model::destroy(model* x)
   }
 
   x->m_dead = true;
-  x->unregister();
+  x->save_children_state();
+  x->m_matchers.clear();
+  x->m_registered = false;
+
   ossia_max::instance().models.remove_all(x);
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);
@@ -196,33 +199,33 @@ void model::do_registration(const std::vector<std::shared_ptr<matcher>>& matcher
   }
 }
 
-void model::unregister()
+void save_children_recursively(t_object* patcher)
 {
-  save_children_state();
-  m_matchers.clear();
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
 
-  auto nodes = find_parent_nodes();
-  auto patcher = m_patcher;
-  register_children_in_patcher_recursively(patcher, this, nodes);
+  for(auto x : pat_desc.parameters)
+  {
+    x->save_values();
+  }
 
-  m_registered = false;
+  for(auto subpatch : pat_desc.subpatchers)
+  {
+    save_children_recursively(subpatch);
+  }
 }
 
 void model::save_children_state()
 {
-  for(auto& m : m_matchers)
-  {
-    // FIXME : why iterating over all parameters here ?
-    // shouldn't it be fine to get matcher's owner and cast it according to it's m_otype ?
-    for(auto x : ossia_max::instance().parameters.reference() )
-    {
-      x->save_values();
-    }
+  auto& pat_desc = ossia_max::instance().patchers[m_patcher];
 
-    for(auto x : ossia_max::instance().models.reference() )
-    {
-      x->save_children_state();
-    }
+  for(auto x : pat_desc.parameters)
+  {
+    x->save_values();
+  }
+
+  for(auto subpatch : pat_desc.subpatchers)
+  {
+    save_children_recursively(subpatch);
   }
 }
 
