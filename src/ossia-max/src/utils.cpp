@@ -58,11 +58,19 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
   std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
 
-  for (auto device : instance.devices.reference())
-  {
-    auto dev = device->m_device;
-    if (!dev) continue;
+  std::vector<ossia::net::generic_device*> devs;
+  devs.reserve(instance.devices.size());
+  devs.push_back(instance.get_default_device().get());
 
+  for (auto device_obj : instance.devices.reference())
+  {
+    auto dev = device_obj->m_device;
+    if (dev)
+      devs.push_back(dev.get());
+  }
+
+  for(auto dev : devs)
+  {
     std::string name = dev->get_name();
 
     bool match;
