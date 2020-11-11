@@ -269,8 +269,7 @@ void register_children_in_patcher_recursively(t_object* root_patcher, object_bas
 
 
 /**
- * @brief             Convenient method to easily get the patcher where a box
- * is
+ * @brief Convenient method to easily get the patcher where a box is
  */
 t_object* get_patcher(t_object* object);
 

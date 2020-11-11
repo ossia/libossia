@@ -57,6 +57,9 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
     x->m_device->set_name(x->m_name->s_name);
   }
 
+  // inhibit loadbang for ossia object
+  x->m_registered = true;
+
   return (x);
 }
 

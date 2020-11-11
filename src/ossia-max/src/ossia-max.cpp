@@ -371,6 +371,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
     {
       if(db->m_device)
       {
+        db->m_registered = true;
         return register_children_in_patcher_recursively(patcher, db);
       }
       else
