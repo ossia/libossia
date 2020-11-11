@@ -162,8 +162,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
   }
   else
   {
-    auto parent_nodes = find_parent_nodes();
-
     switch(m_otype)
     {
       case object_class::attribute:
@@ -174,7 +172,11 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         {
           if(param->m_name == m_name)
           {
-            matchers = param->m_matchers;
+            matchers.reserve(param->m_matchers.size());
+            for(const auto& m : param->m_matchers)
+            {
+              matchers.push_back(std::make_shared<matcher>(m->get_node(), this));
+            }
             break;
           }
         }
@@ -184,6 +186,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       }
       case object_class::view:
       {
+        auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
           auto nodes = ossia::net::find_nodes(*pn->get_node(), m_name->s_name);
@@ -195,6 +198,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       }
       case object_class::param:
       {
+        auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
           auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
@@ -209,6 +213,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       }
       case object_class::model:
       {
+        auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
           auto nodes = ossia::net::create_nodes(*pn->get_node(), m_name->s_name);
@@ -285,6 +290,9 @@ void object_base::loadbang(object_base* x)
 void object_base::is_deleted(const ossia::net::node_base& n)
 {
     m_is_deleted = true;
+    // TODO why is it necessary to iterate over m_node_selection AND m_matchers ?
+    // the former is a subset of the later
+    // isn't it enough to call fill_selection() after ?
     for(auto nd : m_node_selection)
     {
       if(nd->get_node() == &n)
