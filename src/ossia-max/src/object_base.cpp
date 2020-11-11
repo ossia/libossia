@@ -7,6 +7,7 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <regex>
 
 namespace ossia
@@ -114,6 +115,104 @@ void object_base::reset_color(object_base* x)
   x->m_highlight_clock=nullptr;
 }
 
+std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
+{
+  std::vector<std::shared_ptr<matcher>> matchers;
+
+  if(m_addr_scope == ossia::net::address_scope::global)
+  {
+    switch(m_otype)
+    {
+      case object_class::attribute:
+      case object_class::remote:
+      case object_class::view:
+      {
+        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), false);
+        matchers.reserve(nodes.size());
+        for(auto n : nodes)
+        {
+          matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+        }
+        break;
+      }
+      case object_class::param:
+      {
+        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), true);
+        matchers.reserve(nodes.size());
+        for(auto n : nodes)
+        {
+          ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
+          matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+        }
+        break;
+      }
+      case object_class::model:
+      {
+        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), true);
+        matchers.reserve(nodes.size());
+        for(auto n : nodes)
+        {
+          matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+        }
+        break;
+      }
+      default:
+          ;
+    }
+  }
+  else
+  {
+    auto parent_nodes = find_parent_nodes();
+
+    switch(m_otype)
+    {
+      case object_class::attribute:
+      case object_class::remote:
+      case object_class::view:
+      {
+        for(auto pn : parent_nodes)
+        {
+          auto nodes = ossia::net::find_nodes(*pn->get_node(), m_name->s_name);
+          matchers.reserve(matchers.size()+nodes.size());
+          for(auto n : nodes)
+            matchers.push_back(std::make_shared<matcher>(n, this));
+        }
+        break;
+      }
+      case object_class::param:
+      {
+        for(auto pn : parent_nodes)
+        {
+          auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
+                                                             static_cast<parameter*>(this)->m_type->s_name);
+          matchers.reserve(matchers.size()+params.size());
+          for(auto p : params)
+          {
+            matchers.push_back(std::make_shared<matcher>(&p->get_node(), this));
+          }
+        }
+        break;
+      }
+      case object_class::model:
+      {
+        for(auto pn : parent_nodes)
+        {
+          auto nodes = ossia::net::create_nodes(*pn->get_node(), m_name->s_name);
+          matchers.reserve(matchers.size()+nodes.size());
+          for(auto n : nodes)
+          {
+            matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+          }
+        }
+        break;
+      }
+      default:
+          ;
+    }
+  }
+  return matchers;
+}
+
 void object_base::loadbang(object_base* x)
 {
   if(x->m_registered)
@@ -128,49 +227,44 @@ void object_base::loadbang(object_base* x)
     patcher = get_patcher(patcher);
   }
 
-  auto matchers = x->find_parent_nodes();
-
   // if patcher has been loadbanged, then register only that object and its children
   if(ossia_max::instance().patchers[root_patcher].loadbanged
   && x->m_otype != object_class::device
   && x->m_otype != object_class::client )
   {
-    if(!matchers.empty())
+    switch(x->m_otype)
     {
-      switch(x->m_otype)
+      case object_class::param:
+        static_cast<parameter*>(x)->do_registration();
+        break;
+      case object_class::remote:
+        static_cast<remote*>(x)->do_registration();
+        break;
+      case object_class::attribute:
+        static_cast<attribute*>(x)->do_registration();
+        break;
+      case object_class::model:
       {
-        case object_class::param:
-          static_cast<parameter*>(x)->do_registration(matchers);
-          break;
-        case object_class::remote:
-          static_cast<remote*>(x)->do_registration(matchers);
-          break;
-        case object_class::attribute:
-          static_cast<attribute*>(x)->do_registration(matchers);
-          break;
-        case object_class::model:
-        {
-          auto obj = static_cast<model*>(x);
-          obj->do_registration(matchers);
-          register_children_in_patcher_recursively(root_patcher, obj, obj->m_matchers);
-          break;
-        }
-        case object_class::view:
-        {
-          auto obj = static_cast<view*>(x);
-          obj->do_registration(matchers);
-          register_children_in_patcher_recursively(root_patcher, obj, obj->m_matchers);
-          break;
-        }
-        default:
-          break;
+        auto obj = static_cast<model*>(x);
+        obj->do_registration();
+        register_children_in_patcher_recursively(root_patcher, obj);
+        break;
       }
+      case object_class::view:
+      {
+        auto obj = static_cast<view*>(x);
+        obj->do_registration();
+        register_children_in_patcher_recursively(root_patcher, obj);
+        break;
+      }
+      default:
+        break;
     }
   }
   else
   {
-    // if patcher has not been loadbanged, register all object in patcher
-    register_children_in_patcher_recursively(root_patcher, nullptr, matchers);
+    // if patcher has not been loadbanged, register all objects in that patcher
+    register_children_in_patcher_recursively(root_patcher, nullptr);
   }
 }
 
@@ -606,6 +700,8 @@ object_base* object_base::find_parent_object_recursively(
 
 std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
 {
+  assert(m_addr_scope != ossia::net::address_scope::global);
+
   switch(m_otype)
   {
     case object_class::device:
@@ -663,18 +759,8 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
         return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
       }
     }
-    case ossia::net::address_scope::global:
-    {
-      auto nodes = find_global_nodes(std::string(m_name->s_name));
-      std::vector<std::shared_ptr<matcher>> matchers;
-      matchers.reserve(nodes.size());
-      for(auto n : nodes)
-      {
-        matchers.push_back(std::make_shared<matcher>(n->get_parent(), nullptr));
-      }
-      return matchers;
-    }
   }
+  return {};
 }
 
 void object_base::update_path()

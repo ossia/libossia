@@ -262,12 +262,10 @@ std::vector<object_base*> find_children_to_register(
 
 /**
  * @brief register_objects_in_patcher_recursively : iterate over all patcher's objects and register them one by one recursively
- * @param root_patcher starting patcher
- * @param caller object that calls the function
- * @param matchers vector of t_matcher to register against
+ * @param root_patcher: starting patcher
+ * @param caller: object that calls the function
  */
-void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller,
-                                             const std::vector<std::shared_ptr<matcher>>& parent_matchers);
+void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller);
 
 
 /**

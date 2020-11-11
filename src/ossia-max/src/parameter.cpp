@@ -172,44 +172,13 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
   return 0;
 }
 
-void parameter::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void parameter::do_registration()
 {
-  object_post(&m_object, "register parameter");
+  m_registered = true;
 
-  if(!m_registered)
-  {
-    m_registered = true;
+  m_matchers = find_or_create_matchers();
 
-    switch(m_addr_scope)
-    {
-      case ossia::net::address_scope::global:
-      {
-        auto global_address = std::string(m_name->s_name);
-        auto pos = global_address.find(':');
-        auto dev_name = global_address.substr(0,pos);
-        if(ossia::traversal::is_pattern(dev_name))
-        {
-
-        }
-        ossia::traversal::make_path(global_address);
-        return;
-      }
-      default:
-          ;
-    }
-  }
-
-  m_matchers.clear();
-  m_matchers.reserve(matchers.size());
-
-  for (auto& m : matchers)
-  {
-    if(!create_node_from_matcher(m))
-    {
-      return;
-    }
-  }
-
+  m_selection_path.reset();
   fill_selection();
 
   set_description();

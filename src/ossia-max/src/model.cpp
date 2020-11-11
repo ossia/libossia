@@ -140,63 +140,22 @@ void model::assist(model* x, void* b, long m, long a, char* s)
   }
 }
 
-void model::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void model::do_registration()
 {
   ossia::string_view name(m_name->s_name);
 
   m_registered = true;
 
-  // FIXME in case of address with pattern, we shouldn't clear m_matchers here
-  // instead we should rely on device node_deleting signal to delete relevant matchers
-  m_matchers.clear();
-  m_matchers.reserve(matchers.size());
+  m_matchers = find_or_create_matchers();
 
-  for (auto& m : matchers)
-  {
-    auto node = m->get_node();
+  m_selection_path.reset();
+  fill_selection();
 
-    if (node->find_child(name))
-    {
-      // TODO : check if node has a parameter
-      // in that case it is an ø.param, with no doubts
-      // then remove it (and associated ø.param
-      // and ø.remote will be unregistered automatically)
-
-      // we have to check if a node with the same name already exists to avoid
-      // auto-incrementing name
-      std::vector<object_base*> obj = find_children_to_register(
-            &m_object, m_patcher, gensym("ossia.model"));
-      for (auto v : obj)
-      {
-        if (v->m_otype == object_class::param)
-        {
-          parameter* param = (parameter*)v;
-          if (ossia::string_view(param->m_name->s_name) == name)
-          {
-            // if we already have a parameter of that
-            // name, unregister it
-            // we will register it again after node creation
-            param->unregister();
-            continue;
-          }
-        }
-      }
-    }
-
-    auto m_nodes = ossia::net::create_nodes(*node, name);
-    for (auto n : m_nodes)
-    {
-      m_matchers.emplace_back(std::make_shared<matcher>(n, this));
-    }
-
-    fill_selection();
-
-    set_priority();
-    set_description();
-    set_tags();
-    set_hidden();
-    set_recall_safe();
-  }
+  set_priority();
+  set_description();
+  set_tags();
+  set_hidden();
+  set_recall_safe();
 }
 
 void save_children_recursively(t_object* patcher)

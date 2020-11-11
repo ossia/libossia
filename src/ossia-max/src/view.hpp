@@ -12,7 +12,7 @@ public:
 
   using is_view = std::true_type;
 
-  void do_registration(const std::vector<std::shared_ptr<matcher>>& nodes);
+  void do_registration();
   void unregister();
 
   static void* create(t_symbol*, long, t_atom*);

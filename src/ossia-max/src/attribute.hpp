@@ -13,7 +13,7 @@ class attribute : public parameter_base
 public:
   using is_attribute = std::true_type;
 
-  void do_registration(const std::vector<std::shared_ptr<matcher>>& node);
+  void do_registration();
   void unregister();
 
   ossia::net::device_base* m_dev{};

@@ -42,13 +42,10 @@ bool find_peer(object_base* x)
     return false;
 }
 
-std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
+std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create)
 {
-  std::vector<ossia::net::node_base*> nodes{};
-  nodes.reserve(4);
-  ossia_max& instance = ossia_max::instance();
   size_t pos = addr.find(":");
-  if (pos == std::string::npos) return nodes;
+  if (pos == std::string::npos) return {};
 
   ossia::string_view prefix = addr.substr(0,pos);
   // remove 'device_name:/' prefix
@@ -58,6 +55,7 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
   std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
 
+  ossia_max& instance = ossia_max::instance();
   std::vector<ossia::net::generic_device*> devs;
   devs.reserve(instance.devices.size());
   devs.push_back(instance.get_default_device().get());
@@ -68,6 +66,16 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
     if (dev)
       devs.push_back(dev.get());
   }
+
+  for(auto client_obj : instance.clients.reference())
+  {
+    auto dev = client_obj->m_device;
+    if (dev)
+      devs.push_back(dev.get());
+  }
+
+  std::vector<ossia::net::node_base*> nodes{};
+  nodes.reserve(4);
 
   for(auto dev : devs)
   {
@@ -80,57 +88,33 @@ std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr)
         match = std::regex_match(name, pattern);
       } catch (std::exception& e) {
         error("'%s' bad regex: %s", prefix.data(), e.what());
-        return nodes;
+        return {};
       }
     } else match = (name == prefix);
 
     if (match)
     {
-      if (is_osc_name_pattern)
+      if(create)
       {
-        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
-        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+        auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), new_nodes.begin(), new_nodes.end());
       }
       else
       {
-        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-        if (node) nodes.push_back(node);
+        if (is_osc_name_pattern)
+        {
+          auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+          nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+        }
+        else
+        {
+          auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+          if (node) nodes.push_back(node);
+        }
       }
     }
   }
 
-  for (auto client : instance.clients.reference())
-  {
-    auto dev = client->m_device;
-    if (!dev) continue;
-
-    std::string name = dev->get_name();
-
-    bool match;
-    if(is_prefix_pattern)
-    {
-      try {
-        match = std::regex_match(name, pattern);
-      } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.data(), e.what());
-        return nodes;
-      }
-    } else match = (name == prefix);
-
-    if (match)
-    {
-      if (is_osc_name_pattern)
-      {
-        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
-        nodes.insert(nodes.end(), tmp.begin(), tmp.end());
-      }
-      else
-      {
-        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-        if (node) nodes.push_back(node);
-      }
-    }
-  }
   return nodes;
 }
 

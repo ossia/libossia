@@ -342,8 +342,15 @@ std::vector<object_base*> find_children_to_register(
   return found;
 }
 
-void register_children_in_patcher_recursively(t_object* patcher, object_base* caller,
-                                             const std::vector<std::shared_ptr<matcher>>& parent_matchers)
+template<class T> void register_objects_by_type(const ossia::safe_set<T>& objs)
+{
+  for(auto obj : objs)
+  {
+    obj->do_registration();
+  }
+}
+
+void register_children_in_patcher_recursively(t_object* patcher, object_base* caller)
 {
   std::vector<object_base*> objects_to_register;
 
@@ -364,8 +371,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
     {
       if(db->m_device)
       {
-        std::vector<std::shared_ptr<matcher>> dev_matchers{std::make_shared<matcher>(&db->m_device->get_root_node(), db)};
-        return register_children_in_patcher_recursively(patcher, db, dev_matchers);
+        return register_children_in_patcher_recursively(patcher, db);
       }
       else
         return;
@@ -377,94 +383,35 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
 
   if(nb && nb != caller)
   {
-    if(nb->m_addr_scope == ossia::net::address_scope::relative)
+    switch(nb->m_otype)
     {
-      switch(nb->m_otype)
+      case object_class::model:
       {
-        case object_class::model:
-        {
-          auto mdl = static_cast<model*>(nb);
-          mdl->do_registration(parent_matchers);
-          register_children_in_patcher_recursively(patcher, mdl, mdl->m_matchers);
-          break;
-        }
-        case object_class::view:
-        {
-          auto vw = static_cast<view*>(nb);
-          vw->do_registration(parent_matchers);
-          register_children_in_patcher_recursively(patcher, vw, vw->m_matchers);
-          break;
-        }
-        default:
-          break;
+        auto mdl = static_cast<model*>(nb);
+        mdl->do_registration();
+        register_children_in_patcher_recursively(patcher, mdl);
+        break;
       }
-    }
-    else
-    {
-      auto nodes = nb->find_or_create_nodes();
-      switch(nb->m_otype)
+      case object_class::view:
       {
-        case object_class::model:
-        {
-          auto mdl = static_cast<model*>(nb);
-          mdl->do_registration(nodes);
-          break;
-        }
-        case object_class::view:
-        {
-          auto vw = static_cast<view*>(nb);
-          vw->do_registration(nodes);
-          break;
-        }
-        default:
-          break;
+        auto vw = static_cast<view*>(nb);
+        vw->do_registration();
+        register_children_in_patcher_recursively(patcher, vw);
+        break;
       }
+      default:
+        break;
     }
     return;
   }
 
-  for(auto param : pat_desc.parameters)
-  {
-    if(param->m_addr_scope == ossia::net::address_scope::relative)
-    {
-      param->do_registration(parent_matchers);
-    }
-    else
-    {
-      auto nodes = param->find_parent_nodes();
-      param->do_registration(nodes);
-    }
-  }
-
-  for(auto rem : pat_desc.remotes)
-  {
-    if(rem->m_addr_scope == ossia::net::address_scope::relative)
-    {
-      rem->do_registration(parent_matchers);
-    }
-    else
-    {
-      auto nodes = rem->find_parent_nodes();
-      rem->do_registration(nodes);
-    }
-  }
-
-  for(auto attr : pat_desc.attributes)
-  {
-    if(attr->m_addr_scope == ossia::net::address_scope::relative)
-    {
-      attr->do_registration(parent_matchers);
-    }
-    else
-    {
-      auto nodes = attr->find_parent_nodes();
-      attr->do_registration(nodes);
-    }
-  }
+  register_objects_by_type(pat_desc.parameters);
+  register_objects_by_type(pat_desc.remotes);
+  register_objects_by_type(pat_desc.attributes);
 
   for(auto subpatcher : pat_desc.subpatchers)
   {
-    register_children_in_patcher_recursively(subpatcher, caller, parent_matchers);
+    register_children_in_patcher_recursively(subpatcher, caller);
   }
 }
 

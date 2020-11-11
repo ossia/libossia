@@ -171,7 +171,7 @@ t_max_err remote::notify(remote *x, t_symbol *s,
       else
       {
         auto matchers = x->find_parent_nodes();
-        x->do_registration(matchers);
+        x->do_registration();
       }
     }
     else
@@ -263,91 +263,36 @@ void remote::on_device_created(device_base* obj)
   }
 }
 
-void remote::do_registration(const std::vector<std::shared_ptr<matcher>>& parent_matchers, bool output_value)
+void remote::do_registration(bool output_value)
 {
   object_post(&m_object, "register remote");
 
   std::string name = m_name->s_name;
 
-  if(!m_path)
-    update_path();
+  update_path();
 
   m_registered = true;
 
-  if(!m_is_pattern)
-    m_matchers.clear();
+  m_matchers=find_or_create_matchers();
 
-  m_matchers.reserve(m_matchers.size() + parent_matchers.size());
+  m_selection_path.reset();
+  fill_selection();
 
-  for (auto& m : parent_matchers)
+  if(output_value)
   {
-    auto node = m->get_node();
-
-    auto nodes = ossia::net::find_nodes(*node, name);
-
-    if(nodes.empty())
+    for(const auto& m : m_matchers)
     {
-      auto dev = &node->get_device();
-      if(!m_devices.contains(dev))
+      auto param = m->get_node()->get_parameter();
+      if(param && param->get_value_type() != ossia::val_type::IMPULSE)
       {
-        m_devices.push_back(dev);
-        dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
-      }
-    }
-
-    m_matchers.reserve(m_matchers.size() + nodes.size());
-
-    for (auto n : nodes){
-
-      bool continue_flag = false;
-
-      // avoid to register the same node twice
-      for (auto& m_m : m_matchers)
-      {
-        if ( m_m->get_node() == n && m_m->get_owner() == this )
+        auto v = m->get_node()->get_parameter()->value();
+        if(v.valid())
         {
-          continue_flag = true;
-          break;
+          m->output_value(v);
         }
       }
-
-      if (continue_flag)
-        continue;
-
-      if (n->get_parameter()){
-        m_matchers.emplace_back(std::make_shared<matcher>(n, this));
-      } else {
-        // if there is a node without address it might be a model
-        // then look if that node have an eponyme child
-        n = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
-
-        if (n && n->get_parameter()){
-          m_matchers.emplace_back(std::make_shared<matcher>(n, this));
-        } else {
-          continue;
-        }
-      }
-
-      if (output_value && n->get_parameter()->get_value_type()
-          != ossia::val_type::IMPULSE)
-      {
-        for(const auto& m : m_matchers)
-        {
-          auto v = m->get_node()->get_parameter()->value();
-          if(v.valid())
-          {
-            m->output_value(v);
-          }
-        }
-      }
-
-      // no need to iterate over all matchers when object have global address
-      if(m_addr_scope == ossia::net::address_scope::global)
-        break;
     }
   }
-
-  fill_selection();
 }
 
 void remote::unregister()

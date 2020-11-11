@@ -31,9 +31,10 @@ bool find_peer(object_base *x);
 /**
  * @brief find_global_node: find node matching address with a 'device:' prefix
  * @param addr : address string
+ * @param create: should create new nodes if they doesn't exist
  * @return pointer to the node
  */
-std::vector<ossia::net::node_base*> find_global_nodes(ossia::string_view addr);
+std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create);
 
 /**
  * @brief get_parameter_type: return address type (relative, absolute or globale)
@@ -211,7 +212,7 @@ void address_mess_cb(T* x, t_symbol* address)
   x->update_path();
   x->m_matchers.clear();
   auto matchers = x->find_parent_nodes();
-  x->do_registration(matchers);
+  x->do_registration();
 }
 
 struct domain_visitor {

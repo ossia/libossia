@@ -118,60 +118,13 @@ void view::destroy(view* x)
   x->~view();
 }
 
-void view::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void view::do_registration()
 {
-  // FIXME review absolute and global scope registering
+  m_registered = true;
 
-  if(!m_registered)
-  {
-    m_registered = true;
+  m_matchers = find_or_create_matchers();
 
-    switch(m_addr_scope)
-    {
-      case ossia::net::address_scope::absolute:
-      case ossia::net::address_scope::global:
-        object_error(&m_object, "remote with glboal/absolute path are not supported yet");
-        return;
-      default:
-          ;
-    }
-  }
-
-  m_matchers.clear();
-  m_matchers.reserve(matchers.size());
-
-  for (auto& m : matchers)
-  {
-    auto _node = m->get_node();
-    std::string name = m_name->s_name;
-
-    if (m_addr_scope == ossia::net::address_scope::absolute)
-    {
-      // get root node
-      _node = &_node->get_device().get_root_node();
-      // and remove starting '/'
-      name = name.substr(1);
-    }
-
-    std::vector<ossia::net::node_base*> nodes{};
-
-    if (m_addr_scope == ossia::net::address_scope::global)
-      nodes = ossia::max::find_global_nodes(name);
-    else
-      nodes = ossia::net::find_nodes(*_node, name);
-
-    m_matchers.reserve(m_matchers.size() + nodes.size());
-
-    for (auto n : nodes)
-    {
-      // we may have found a node with the same name
-      // but with a parameter, in that case it's an ø.param
-      // then forget it
-      if (!n->get_parameter())
-        m_matchers.emplace_back(std::make_shared<matcher>(n, this));
-    }
-  }
-
+  m_selection_path.reset();
   fill_selection();
 }
 

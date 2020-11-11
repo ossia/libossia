@@ -78,46 +78,13 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
   return 0;
 }
 
-void attribute::do_registration(const std::vector<std::shared_ptr<matcher>>& matchers)
+void attribute::do_registration()
 {
   m_registered = true;
 
-  std::string name = m_name->s_name;
+  m_matchers = find_or_create_matchers();
 
-  for (auto& m : matchers)
-  {
-    auto node = m->get_node();
-    if (m_addr_scope == net::address_scope::absolute)
-    {
-      // get root node
-      node = &node->get_device().get_root_node();
-      // and remove starting '/'
-      name = name.substr(1);
-    }
-
-    std::vector<ossia::net::node_base*> nodes{};
-
-    if (m_addr_scope == net::address_scope::global)
-      nodes = ossia::max::find_global_nodes(name);
-    else
-      nodes = ossia::net::find_nodes(*node, name);
-
-    m_matchers.reserve(m_matchers.size() + nodes.size());
-
-    for (auto n : nodes){
-      if (n->get_parameter()){
-        m_matchers.emplace_back(std::make_shared<matcher>(n,this));
-      } else {
-        // if there is a node without address it might be a model
-        // then look if that node have an eponyme child
-        auto node = ossia::net::find_node(*n, fmt::format("{}/{}", name, name));
-        if (node){
-          m_matchers.emplace_back(std::make_shared<matcher>(node, this));
-        }
-      }
-    }
-  }
-
+  m_selection_path.reset();
   fill_selection();
 }
 
