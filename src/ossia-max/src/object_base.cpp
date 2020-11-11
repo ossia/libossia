@@ -168,6 +168,20 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
     {
       case object_class::attribute:
       case object_class::remote:
+      {
+        auto& pat_desc = ossia_max::instance().patchers[m_patcher];
+        for(auto param : pat_desc.parameters)
+        {
+          if(param->m_name == m_name)
+          {
+            matchers = param->m_matchers;
+            break;
+          }
+        }
+        // if we found some parameter matching, then take it, otherwise go on with find_nodes
+        if(!matchers.empty())
+          break;
+      }
       case object_class::view:
       {
         for(auto pn : parent_nodes)
