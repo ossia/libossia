@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/state/destination_qualifiers.hpp>
+#include <ossia/network/common/destination_qualifiers.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 
 #include <boost/spirit/include/qi_symbols.hpp>

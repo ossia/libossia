@@ -5,7 +5,7 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
 
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 
 namespace std
 {

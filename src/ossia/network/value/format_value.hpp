@@ -1,5 +1,5 @@
 #pragma once
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/algorithm/string/replace.hpp>

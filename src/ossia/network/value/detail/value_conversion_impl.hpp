@@ -9,7 +9,7 @@
 #include <boost/spirit/home/x3.hpp>
 #include <boost/type_traits/function_traits.hpp>
 
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 namespace ossia
 {
 
@@ -393,13 +393,13 @@ struct value_converter<std::array<float, N>>
 template <typename T>
 T convert(const ossia::value& val)
 {
-  return val.apply(detail::value_converter<T>{T{}});
+  return val.apply(detail::value_converter<T>{{T{}}});
 }
 
 template <typename T>
 T convert(const T& cur, const ossia::value& val)
 {
-  return val.apply(detail::value_converter<T>{cur});
+  return val.apply(detail::value_converter<T>{{cur}});
 }
 
 // Used to convert List in Vec2f, Vec3f, Vec4f...

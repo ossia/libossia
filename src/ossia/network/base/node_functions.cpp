@@ -515,29 +515,29 @@ std::string canonicalize_str(std::string str)
 
     for (auto it = rit; it != rend; ++it)
     {
-      auto str = it->str();
-      str = str.substr(1, str.size() - 2);
+      auto theStr = it->str();
+      theStr = theStr.substr(1, theStr.size() - 2);
       std::bitset<128> bits;
 
-      for (int i = 0, N = str.size(); i < N;)
+      for (int i = 0, N = theStr.size(); i < N;)
       {
         if ((N - i) > 2)
         {
-          if (str[i + 1] == '-' && (int)str[i + 2] > (int)str[i])
+          if (theStr[i + 1] == '-' && (int)theStr[i + 2] > (int)theStr[i])
           {
-            for (int ch = (int)str[i]; ch <= (int)str[i + 2]; ++ch)
+            for (int ch = (int)theStr[i]; ch <= (int)theStr[i + 2]; ++ch)
               bits[ch] = true;
             i += 2;
           }
           else
           {
-            bits[(int)str[i]] = true;
+            bits[(int)theStr[i]] = true;
             i++;
           }
         }
         else
         {
-          bits[(int)str[i]] = true;
+          bits[(int)theStr[i]] = true;
           i++;
         }
       }
