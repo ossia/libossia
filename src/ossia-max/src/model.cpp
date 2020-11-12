@@ -122,6 +122,8 @@ void model::destroy(model* x)
   x->m_matchers.clear();
   x->m_registered = false;
 
+  register_children_in_patcher_recursively(x->m_patcher, x->find_parent_object());
+
   ossia_max::instance().models.remove_all(x);
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);

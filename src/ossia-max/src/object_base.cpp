@@ -717,7 +717,7 @@ object_base* object_base::find_parent_object_recursively(
 
     for(auto ptr : vec)
     {
-      if(ptr && ptr != this)
+      if(ptr && ptr != this && !ptr->m_dead)
       {
         return ptr;
       }
