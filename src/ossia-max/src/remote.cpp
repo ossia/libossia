@@ -67,6 +67,8 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       if(!x->m_devices.contains(dev))
       {
         dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(x);
+        dev->on_parameter_removing.connect<&remote::on_parameter_removing_callback>(x);
+
         x->m_devices.push_back(dev);
       }
     }
@@ -339,6 +341,21 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
     m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
     fill_selection();
   }
+}
+
+void remote::on_parameter_removing_callback(const ossia::net::parameter_base& addr)
+{
+  auto& node = addr.get_node();
+  bool refill = false;
+  ossia::remove_one_if(m_matchers, [&](const std::shared_ptr<matcher>& m){
+    if (m->get_node() == &node)
+    {
+      refill = true;
+      return true;
+    } else {
+      return false;
+    }});
+  if(refill) fill_selection();
 }
 
 void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)
