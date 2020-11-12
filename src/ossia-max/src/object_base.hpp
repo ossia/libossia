@@ -165,13 +165,22 @@ public:
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
   std::vector<ossia::value> m_set_pool;
 
-  std::optional<ossia::traversal::path> m_path;
+  ossia::traversal::path get_path()
+  {
+    if(!m_path)
+      update_path();
+    return *m_path;
+  }
+
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
 
   std::map<std::string, ossia::value> m_value_map;
 
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;
+
+private:
+  std::optional<ossia::traversal::path> m_path;
 };
 
 #pragma mark -

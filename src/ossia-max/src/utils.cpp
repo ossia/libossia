@@ -42,22 +42,11 @@ bool find_peer(object_base* x)
     return false;
 }
 
-std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create)
+std::vector<ossia::net::generic_device*> get_all_devices()
 {
-  size_t pos = addr.find(":");
-  if (pos == std::string::npos) return {};
-
-  ossia::string_view prefix = addr.substr(0,pos);
-  // remove 'device_name:/' prefix
-  ossia::string_view osc_name = addr.substr(pos+2);
-
-  bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
-  bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
-
   ossia_max& instance = ossia_max::instance();
   std::vector<ossia::net::generic_device*> devs;
-  devs.reserve(instance.devices.size());
+  devs.reserve(instance.devices.size() + instance.clients.size() + 1);
   devs.push_back(instance.get_default_device().get());
 
   for (auto device_obj : instance.devices.reference())
@@ -73,6 +62,24 @@ std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_vi
     if (dev)
       devs.push_back(dev.get());
   }
+
+  return devs;
+}
+
+std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create)
+{
+  size_t pos = addr.find(":");
+  if (pos == std::string::npos) return {};
+
+  ossia::string_view prefix = addr.substr(0,pos);
+  // remove 'device_name:/' prefix
+  ossia::string_view osc_name = addr.substr(pos+2);
+
+  bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
+  bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
+  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
+
+  std::vector<ossia::net::generic_device*> devs = get_all_devices();
 
   std::vector<ossia::net::node_base*> nodes{};
   nodes.reserve(4);

@@ -293,39 +293,43 @@ void matcher::output_value(ossia::value v)
 
 void matcher::set_parent_addr()
 {
-  std::string addr = ossia::net::address_string_from_node(*node);
-  A_SETSYM(&m_addr, gensym(addr.c_str()));
-
   if (!m_dead && node && owner){
-    if(owner->m_addr_scope == ossia::net::address_scope::relative)
+    std::string addr = ossia::net::address_string_from_node(*node);
+
+    std::cout << "this address: " << addr << std::endl;
+
+    switch(owner->m_addr_scope)
     {
-      auto parent = owner->find_parent_object();
-      if(parent && parent->m_path)
+      case ossia::net::address_scope::relative:
       {
-        std::string parent_pattern = parent->m_path->pattern;
-        int parent_count = std::count(parent_pattern.begin(), parent_pattern.end(), '/');
-
-        std::string owner_pattern = owner->m_path->pattern;
-        int owner_count = std::count(owner_pattern.begin(), owner_pattern.end(), '/');
-        int slashes_to_keep = parent_count - owner_count;
-        size_t pos = 0;
-        int found = 0;
-        std::string  tmp = addr;
-
-        while(pos != std::string::npos && found < slashes_to_keep)
+        auto parent = owner->find_parent_object();
+        if(parent)
         {
-          pos = tmp.rfind("/");
-          tmp = tmp.substr(0, pos);
-        }
+          for(const auto& m : parent->m_matchers)
+          {
+            auto node_addr = ossia::net::address_string_from_node(*m->get_node());
+            std::cout << "node address: " << node_addr << std::endl;
 
-        std::string subaddr = addr.substr(pos);
-        A_SETSYM(&m_addr, gensym(subaddr.c_str()));
+            if(addr.rfind(node_addr,0) == 0)
+            {
+              addr = addr.substr(node_addr.size()+1); // +1 to remove the '/' prefix
+              break;
+            }
+          }
+        }
+        break;
       }
+      case ossia::net::address_scope::absolute:
+      {
+        auto pos = addr.find(":");
+        addr = addr.substr(pos+1);
+        break;
+      }
+      default:
+          ;
     }
-  }
-  else
-  {
-    A_SETSYM(&m_addr, gensym("."));
+
+    A_SETSYM(&m_addr, gensym(addr.c_str()));
   }
 }
 

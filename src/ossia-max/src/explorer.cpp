@@ -123,8 +123,6 @@ void explorer::execute_method(explorer* x, t_symbol* s, long argc, t_atom* argv)
 
 bool explorer::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
 {
-  update_path();
-
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)
                          { return !filter(*m->get_node()); });
 

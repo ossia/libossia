@@ -28,6 +28,14 @@ namespace max
  */
 bool find_peer(object_base *x);
 
+
+/**
+ * @brief get_all_devices: iterate over all ossia.device and ossia.client to get their generic_device
+ * @return a list of all known generic_devices*
+ */
+std::vector<ossia::net::generic_device*> get_all_devices();
+
+
 /**
  * @brief find_global_node: find node matching address with a 'device:' prefix
  * @param addr : address string

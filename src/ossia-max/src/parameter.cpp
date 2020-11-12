@@ -174,6 +174,8 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
 
 void parameter::do_registration()
 {
+  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
+
   m_registered = true;
 
   m_matchers = find_or_create_matchers();

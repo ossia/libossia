@@ -80,6 +80,8 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
 
 void attribute::do_registration()
 {
+  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
+
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
@@ -106,22 +108,19 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 {
   auto& node = param.get_node();
 
-  if ( m_path )
+  if( ossia::traversal::match(get_path(), node) )
   {
-    if( ossia::traversal::match(*m_path, node) )
+    if(m_addr_scope == net::address_scope::relative)
     {
-      if(m_addr_scope == net::address_scope::relative)
+      std::string name(m_name->s_name);
+      size_t pos = name.find('/', 0);
+      while(pos != std::string::npos)
       {
-        std::string name(m_name->s_name);
-        size_t pos = name.find('/', 0);
-        while(pos != std::string::npos)
-        {
-          pos = name.find('/',pos+1);
-        }
+        pos = name.find('/',pos+1);
       }
-      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-      fill_selection();
     }
+    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+    fill_selection();
   }
 }
 

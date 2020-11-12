@@ -201,6 +201,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
+          std::cout << "object " << m_name->s_name << " registering under node " << pn->get_node()->get_name() << std::endl;
           auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
                                                              static_cast<parameter*>(this)->m_type->s_name);
           matchers.reserve(matchers.size()+params.size());
@@ -234,8 +235,14 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
 void object_base::loadbang(object_base* x)
 {
+  if(!x->m_path)
+    x->update_path();
+
   if(x->m_registered)
     return;
+
+  static int count = 0;
+  std::cout << "loadbang " << x << " " << static_cast<int>(x->m_otype) << " " << x->m_name->s_name << " " << count++ << std::endl;
 
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
@@ -283,6 +290,8 @@ void object_base::loadbang(object_base* x)
   else
   {
     // if patcher has not been loadbanged, register all objects in that patcher
+    // this happens when the patcher is loaded or instanciated as an abstraction
+    // and also when it is pasted / duplicated
     register_children_in_patcher_recursively(root_patcher, nullptr);
   }
 }
@@ -771,14 +780,14 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
           }
           case object_class::model:
           case object_class::view:
-            return parent->m_matchers;
+            return parent->m_matchers; // should we duplicate matcher and set owner here to this ???
           default:
-            return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+            return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), this)};
         }
       }
       else
       {
-        return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+        return {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), this)};
       }
     }
   }
@@ -792,6 +801,21 @@ void object_base::update_path()
   switch(m_addr_scope)
   {
     case ossia::net::address_scope::absolute:
+    {
+      std::string dev_name = "*:";
+      auto parent = static_cast<device_base*>(find_parent_object());
+      if(parent)
+      {
+        if(parent->m_device)
+          dev_name = parent->m_device->get_name() + ":";
+      }
+      else
+      {
+        dev_name = ossia_max::instance().get_default_device()->get_name();
+      }
+      name = dev_name + ":" + std::string(m_name->s_name);
+      break;
+    }
     case ossia::net::address_scope::global:
     {
       name = std::string(m_name->s_name);
@@ -812,30 +836,40 @@ void object_base::update_path()
 std::string object_base::make_global_pattern()
 {
   std::vector<std::string> vs;
-  vs.reserve(8);
+  vs.reserve(32);
 
-  // TODO ossia object tree instead
-
+  assert(m_name);
   vs.push_back(m_name->s_name);
 
   object_base* parent = find_parent_object();
   while(parent)
   {
-    vs.push_back(std::string(parent->m_name->s_name));
+    assert(parent->m_name);
+    if(parent->m_otype == object_class::device
+    || parent->m_otype == object_class::client)
+    {
+      auto dev = static_cast<device_base*>(parent);
+      if(dev->m_device)
+      {
+        device_name = dev->m_device->get_name();
+        break;
+      }
+    }
+    vs.push_back(parent->m_name->s_name);
     parent = parent->find_parent_object();
   }
 
-  fmt::memory_buffer fullpath;
+  fmt::memory_buffer absolute_path;
   auto rit = vs.rbegin();
   for (; rit != vs.rend(); ++rit)
   {
-    fmt::format_to(fullpath, "/{}", *rit);
+    fmt::format_to(absolute_path, "/{}", *rit);
   }
 
   if (vs.empty())
-    fmt::format_to(fullpath, "/");
+    fmt::format_to(absolute_path, "/");
 
-  return std::string(fullpath.data(), fullpath.size());
+  return device_name + ":" + std::string(absolute_path.data(), absolute_path.size());
 }
 
 } // max namespace

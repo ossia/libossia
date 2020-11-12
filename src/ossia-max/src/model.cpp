@@ -142,6 +142,8 @@ void model::assist(model* x, void* b, long m, long a, char* s)
 
 void model::do_registration()
 {
+  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
+
   ossia::string_view name(m_name->s_name);
 
   m_registered = true;

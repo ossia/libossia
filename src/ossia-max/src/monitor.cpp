@@ -201,17 +201,15 @@ void monitor::on_parameter_removing_callback(const ossia::net::parameter_base& p
 
 void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
 {
-  if ( m_path )
+
+  if( ossia::traversal::match(get_path(), node) )
   {
-    if( ossia::traversal::match(*m_path, node) )
-    {
-      t_atom a[3];
-      A_SETSYM(a, s_parameter);
-      A_SETSYM(a+1, s_created);
-      std::string address = ossia::net::osc_parameter_string_with_device(node);
-      A_SETSYM(a+2, gensym(address.c_str()));
-      outlet_anything(m_dumpout, s_monitor, 3, a);
-    }
+    t_atom a[3];
+    A_SETSYM(a, s_parameter);
+    A_SETSYM(a+1, s_created);
+    std::string address = ossia::net::osc_parameter_string_with_device(node);
+    A_SETSYM(a+2, gensym(address.c_str()));
+    outlet_anything(m_dumpout, s_monitor, 3, a);
   }
   else
   {

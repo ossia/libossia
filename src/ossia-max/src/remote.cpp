@@ -61,6 +61,16 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     device_base::on_device_created.connect<&remote::on_device_created>(x);
     device_base::on_device_removing.connect<&remote::on_device_removing>(x);
 
+    std::vector<ossia::net::generic_device*> devs = get_all_devices();
+    for(auto dev : devs)
+    {
+      if(!x->m_devices.contains(dev))
+      {
+        dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(x);
+        x->m_devices.push_back(dev);
+      }
+    }
+
     x->m_otype = object_class::remote;
 
     // make outlets:
@@ -265,11 +275,8 @@ void remote::on_device_created(device_base* obj)
 
 void remote::do_registration(bool output_value)
 {
-  object_post(&m_object, "register remote");
-
+  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
   std::string name = m_name->s_name;
-
-  update_path();
 
   m_registered = true;
 
@@ -324,23 +331,13 @@ void remote::unregister()
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
+  auto oscaddr = ossia::net::address_string_from_node(node);
 
-  if ( m_path )
+  std::cout << "oscaddr: " << oscaddr << std::endl;
+  if ( ossia::traversal::match(get_path(), node) )
   {
-    if ( ossia::traversal::match(*m_path, node) )
-    {
-      if(m_addr_scope == net::address_scope::relative)
-      {
-        std::string name(m_name->s_name);
-        size_t pos = name.find('/', 0);
-        while(pos != std::string::npos)
-        {
-          pos = name.find('/',pos+1);
-        }
-      }
-      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-      fill_selection();
-    }
+    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+    fill_selection();
   }
 }
 
