@@ -317,6 +317,11 @@ void matcher::set_parent_addr()
             }
           }
         }
+        else
+        {
+          auto pos = addr.find(":");
+          addr = addr.substr(pos+2);
+        }
         break;
       }
       case ossia::net::address_scope::absolute:
