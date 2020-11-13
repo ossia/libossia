@@ -679,15 +679,6 @@ object_base* object_base::find_parent_object()
       look_for_model_view = false;
     case ossia::net::address_scope::relative:
     {
-      switch(m_otype)
-      {
-        case object_class::model:
-        case object_class::view:
-          look_for_model_view = false;
-          break;
-        default:
-          break;
-      }
       return find_parent_object_recursively(m_patcher, look_for_model_view);
     }
     case ossia::net::address_scope::global:
@@ -753,15 +744,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
       look_for_model_view = false;
     case ossia::net::address_scope::relative:
     {
-      switch(m_otype)
-      {
-        case object_class::model:
-        case object_class::view:
-          look_for_model_view = false;
-          break;
-        default:
-          break;
-      }
       auto parent = find_parent_object_recursively(m_patcher, look_for_model_view);
       if(parent)
       {
@@ -840,6 +822,8 @@ std::string object_base::make_global_pattern()
 
   assert(m_name);
   vs.push_back(m_name->s_name);
+
+  std::string device_name = ossia_max::instance().get_default_device()->get_name();
 
   object_base* parent = find_parent_object();
   while(parent)
