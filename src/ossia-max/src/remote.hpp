@@ -25,7 +25,6 @@ public:
   void set_unit();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
-  void on_parameter_removing_callback(const ossia::net::parameter_base& addr);
 
   void on_device_created(ossia::max::device_base* device);
   void on_device_removing(ossia::max::device_base* device);

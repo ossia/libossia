@@ -253,6 +253,9 @@ void object_base::loadbang(object_base* x)
     patcher = get_patcher(patcher);
   }
 
+  // FIXME since we have a path (which is a full path to ossia-max object including pattern matching)
+  // then we can use that to find matchers in do_registration() instead of looking for parent nodes
+
   // if patcher has been loadbanged, then register only that object and its children
   if(ossia_max::instance().patchers[root_patcher].loadbanged
   && x->m_otype != object_class::device
