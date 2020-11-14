@@ -789,7 +789,7 @@ void object_base::update_path()
       if(parent)
       {
         if(parent->m_device)
-          dev_name = parent->m_device->get_name() + ":";
+          dev_name = parent->m_device->get_name();
       }
       else
       {
