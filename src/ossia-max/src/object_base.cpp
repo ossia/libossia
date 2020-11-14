@@ -296,7 +296,7 @@ void object_base::loadbang(object_base* x)
   }
 }
 
-void object_base::is_deleted(const ossia::net::node_base& n)
+void object_base::on_node_removing(const ossia::net::node_base& n)
 {
     m_is_deleted = true;
     // TODO why is it necessary to iterate over m_node_selection AND m_matchers ?

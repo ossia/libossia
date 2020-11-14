@@ -32,7 +32,7 @@ matcher::matcher(ossia::net::node_base* n, object_base* p) :
         break;
     }
 
-    node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
+    node->about_to_be_deleted.connect<&object_base::on_node_removing>(owner);
   }
 
   set_parent_addr();
@@ -171,7 +171,7 @@ matcher::~matcher()
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
+        node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
 
         for (auto remote : ossia_max::instance().remotes.copy())
         {
@@ -222,7 +222,7 @@ matcher::~matcher()
       {
         auto param = node->get_parameter();
         if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<&object_base::is_deleted>(owner);
+        node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
       }
 
       // if there vector is empty
