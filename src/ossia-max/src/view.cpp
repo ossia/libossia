@@ -137,7 +137,7 @@ bool view::register_node(const std::vector<std::shared_ptr<t_matcher>>& nodes)
       if(p)
       {
         auto v = p->value();
-        if(v.valid())
+        if(v.valid() && v.get_type() != ossia::val_type::IMPULSE)
         {
           m->output_value(v);
         }
