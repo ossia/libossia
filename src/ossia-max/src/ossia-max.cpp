@@ -346,6 +346,7 @@ template<class T> void register_objects_by_type(const ossia::safe_set<T>& objs)
 {
   for(auto obj : objs)
   {
+    obj->update_path();
     obj->do_registration();
   }
 }
@@ -384,6 +385,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
 
   if(nb && nb != caller)
   {
+    nb->update_path();
     switch(nb->m_otype)
     {
       case object_class::model:
