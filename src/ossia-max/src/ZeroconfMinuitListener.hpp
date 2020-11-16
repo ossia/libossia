@@ -28,7 +28,8 @@ class ZeroconfMinuitListener final : servus::Listener
     // and process it at scheduled interval triggered by Max clock
     void instanceAdded(const std::string& instance) final override;
     void instanceRemoved(const std::string& instance) final override;
-    void addDevice(const std::string& instance);
+    void add_instance(const std::string& instance);
+    void remove_instance(const std::string& instance);
 
     enum ConnectionEvent
     {

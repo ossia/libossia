@@ -78,7 +78,11 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
       s_connection_events.clear();
     }
 
-    service.browse(0);
+    try {
+      service.browse(0);
+    }  catch (const std::exception& e) {
+      std::cerr << "error while browsing  oscquery devices: " << e.what() << std::endl;
+    }
   }
 
   void ZeroconfOscqueryListener::addInstance(const std::string& instance)
