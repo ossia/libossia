@@ -274,7 +274,6 @@ void remote::on_device_created(device_base* obj)
 
 void remote::do_registration(bool output_value)
 {
-  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
   std::string name = m_name->s_name;
 
   m_registered = true;

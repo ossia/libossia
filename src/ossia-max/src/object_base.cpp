@@ -241,9 +241,6 @@ void object_base::loadbang(object_base* x)
   if(x->m_registered)
     return;
 
-  static int count = 0;
-  std::cout << "loadbang " << x << " " << static_cast<int>(x->m_otype) << " " << x->m_name->s_name << " " << count++ << std::endl;
-
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
 
