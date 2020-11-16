@@ -844,6 +844,9 @@ std::string object_base::make_global_pattern()
   }
 
   fmt::memory_buffer absolute_path;
+
+  fmt::format_to(absolute_path, "{}:", device_name);
+
   auto rit = vs.rbegin();
   for (; rit != vs.rend(); ++rit)
   {
@@ -853,7 +856,7 @@ std::string object_base::make_global_pattern()
   if (vs.empty())
     fmt::format_to(absolute_path, "/");
 
-  return device_name + ":" + std::string(absolute_path.data(), absolute_path.size());
+  return std::string(absolute_path.data(), absolute_path.size());
 }
 
 } // max namespace
