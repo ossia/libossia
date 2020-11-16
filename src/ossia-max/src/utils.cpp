@@ -342,5 +342,119 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
       return ossia::value(list);
     }
 }
+
+
+template<class T> void register_objects_by_type(const ossia::safe_set<T>& objs)
+{
+  for(auto obj : objs)
+  {
+    obj->update_path();
+    obj->do_registration();
+  }
+}
+
+void register_children_in_patcher_recursively(t_object* patcher, object_base* caller)
+{
+
+  static int count = 0;
+  count++;
+  std::vector<object_base*> objects_to_register;
+
+  ossia_max::instance().patchers[patcher].loadbanged = true;
+
+  t_object* root_patcher{};
+  if(caller)
+    root_patcher = caller->m_patcher;
+
+  // 1: look for device, client, model and view objects into the patcher
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
+
+  if(root_patcher != patcher)
+  {
+    device_base* db = pat_desc.device?static_cast<device_base*>(pat_desc.device):
+                                      static_cast<device_base*>(pat_desc.client);
+    if(db && db != caller)
+    {
+      if(db->m_device)
+      {
+        db->m_registered = true;
+        return register_children_in_patcher_recursively(patcher, db);
+      }
+      else
+        return;
+    }
+  }
+
+  node_base* nb = pat_desc.model?static_cast<node_base*>(pat_desc.model):
+                                 static_cast<node_base*>(pat_desc.view);
+
+  if(nb && nb != caller)
+  {
+    nb->update_path();
+    switch(nb->m_otype)
+    {
+      case object_class::model:
+      {
+        auto mdl = static_cast<model*>(nb);
+        mdl->do_registration();
+        register_children_in_patcher_recursively(patcher, mdl);
+        break;
+      }
+      case object_class::view:
+      {
+        auto vw = static_cast<view*>(nb);
+        vw->do_registration();
+        register_children_in_patcher_recursively(patcher, vw);
+        break;
+      }
+      default:
+        break;
+    }
+    return;
+  }
+
+  register_objects_by_type(pat_desc.parameters);
+  register_objects_by_type(pat_desc.remotes);
+  register_objects_by_type(pat_desc.attributes);
+
+  for(auto subpatcher : pat_desc.subpatchers)
+  {
+    register_children_in_patcher_recursively(subpatcher, caller);
+  }
+  count--;
+
+  // when the first call end, fire all values (when there is some)
+  if(count = 0)
+  {
+
+  }
+}
+
+t_object* get_patcher(t_object* object)
+{
+  t_object* patcher = nullptr;
+  auto err = object_obex_lookup(object, gensym("#P"), &patcher);
+
+  auto bpatcher = object_attr_getobj(object, _sym_parentpatcher);
+
+  if(patcher != nullptr && err == MAX_ERR_NONE)
+    return patcher;
+  else
+    return bpatcher;
+}
+
+// FIXME move that to utils.cpp
+std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
+{
+  std::vector<std::string> tags;
+
+  for(int i=0;i<size;i++)
+  {
+    tags.push_back(tags_symbol[i]->s_name);
+  }
+
+  return tags;
+}
+
 } // namespace max
 } // namespace ossia

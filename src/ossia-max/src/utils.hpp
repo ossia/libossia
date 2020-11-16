@@ -21,6 +21,36 @@ namespace ossia
 namespace max
 {
 
+void object_namespace(object_base* x);
+
+/**
+ * @brief Find all objects [classname] in the current patcher.
+ * @param patcher : patcher in which we are looking for objects
+ * @param classname : name of the object to search (ossia.model or ossia.view)
+ * @return std::vector<object_base*> containing pointer to object_base struct of the
+ * corresponding classname
+ */
+std::vector<object_base*> find_children_to_register(
+    t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
+
+
+/**
+ * @brief register_objects_in_patcher_recursively : iterate over all patcher's objects and register them one by one recursively
+ * @param root_patcher: starting patcher
+ * @param caller: object that calls the function
+ */
+void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller);
+
+
+/**
+ * @brief Convenient method to easily get the patcher where a box is
+ */
+t_object* get_patcher(t_object* object);
+
+/**
+ */
+std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
+
 /**
  * @brief get_all_devices: iterate over all ossia.device and ossia.client to get their generic_device
  * @return a list of all known generic_devices*
@@ -79,6 +109,8 @@ t_symbol* access_mode2symbol(ossia::access_mode mode);
 std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
+
+void fire_all_values_by_priority(t_object* patcher);
 
 // put templates after prototype so we can use them
 template<typename T>
