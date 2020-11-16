@@ -164,6 +164,10 @@ if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
 endif()
 
 add_definitions(-DFMT_HEADER_ONLY=1)
+if(MSVC)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+endif()
 
 include(ExternalProject)
 # rapidfuzz
@@ -175,3 +179,4 @@ ExternalProject_add(rapidfuzz-cpp
 
 ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)
 set(RAPIDFUZZ_INCLUDE_DIR ${INSTALL_DIR}/include)
+
