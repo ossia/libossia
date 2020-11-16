@@ -38,6 +38,7 @@ cd ${OSSIA_BUILD_FOLDER}
 cmake -GNinja .. \
   -DCMAKE_BUILD_TYPE=${OSSIA_BUILD_TYPE} \
   -DOSSIA_MAX_INSTALL_FOLDER="${HOME}/Documents/Max 8/Packages/ossia" \
-  -DOSSIA_MAX_ONLY=1
+  -DOSSIA_MAX_ONLY=1 \
+  -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
 ninja 
 ninja install
