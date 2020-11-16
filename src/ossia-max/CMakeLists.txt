@@ -66,10 +66,16 @@ set(PROJECT_SRCS
     src/device.cpp
     src/device_base.hpp
     src/device_base.cpp
+    src/explorer.hpp
+    src/explorer.cpp
+    src/fuzzysearch.hpp
+    src/fuzzysearch.cpp
     src/logger.hpp
     src/logger.cpp
     src/model.hpp
     src/model.cpp
+    src/monitor.cpp
+    src/monitor.hpp
     src/node_base.cpp
     src/node_base.hpp
     src/parameter.hpp
@@ -78,6 +84,12 @@ set(PROJECT_SRCS
     src/parameter_base.cpp
     src/remote.hpp
     src/remote.cpp
+    src/router.cpp
+    src/router.hpp
+    src/search.hpp
+    src/search.cpp
+    src/search_filter.hpp
+    src/search_filter.cpp
     src/utils.hpp
     src/utils.cpp
     src/view.hpp
@@ -92,6 +104,7 @@ set(PROJECT_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
+
 # add_custom_target just to display sources files in qtcreator
 add_custom_target(source SOURCES ${PROJECT_SRCS})
 use_gold(${PROJECT_NAME})
@@ -138,7 +151,22 @@ function(setup_max_external theTarget)
 endfunction()
 
 # Shim externals to allow objects to be found by Max search box
-set(OSSIA_EXT_LIST ossia.attribute ossia.parameter ossia.model ossia.view ossia.remote ossia.device ossia.client ossia.logger ossia.ossia)
+set(OSSIA_EXT_LIST
+    ossia.attribute
+    ossia.parameter
+    ossia.model
+    ossia.view
+    ossia.remote
+    ossia.device
+    ossia.client
+    ossia.logger
+    ossia.ossia
+    ossia.explorer
+    ossia.router
+    ossia.fuzzysearch
+    ossia.search
+    ossia.monitor
+)
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
     string(REPLACE "." "_" ossia_lib_name ${ossiaExt})

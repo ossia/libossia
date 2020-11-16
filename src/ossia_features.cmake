@@ -316,3 +316,6 @@ if(OSSIA_EDITOR)
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
+
+add_dependencies(ossia rapidfuzz-cpp)
+target_include_directories(ossia PRIVATE ${RAPIDFUZZ_INCLUDE_DIR})

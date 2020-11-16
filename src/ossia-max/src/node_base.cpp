@@ -123,12 +123,12 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 
 void node_base::get_namespace(node_base* x)
 {
-  t_symbol* prependsym = gensym("namespace");
+  const static t_symbol* prependsym = gensym("namespace");
   std::vector<ossia::net::node_base*> list;
   for (auto& m : x->m_matchers)
   {
     auto n = m->get_node();
-    list = ossia::net::list_all_child(n);
+    list = ossia::net::list_all_children(n);
 
     int pos = ossia::net::osc_parameter_string(*n).length();
     if (pos > 1) pos++; // root node always have '/' osc_address,
@@ -158,7 +158,7 @@ void node_base::push_default_value(node_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m->get_node();
-    list = ossia::net::list_all_child(n);
+    list = ossia::net::list_all_children(n);
 
     for (ossia::net::node_base* child : list)
     {

@@ -41,8 +41,16 @@ t_matcher::t_matcher(t_matcher&& other)
 
       if (owner)
       {
-        callbackit = param->add_callback(
-              [=] (const ossia::value& v) { output_value(v); });
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
 
         set_parent_addr();
       }
@@ -73,8 +81,16 @@ t_matcher& t_matcher::operator=(t_matcher&& other)
 
       if (owner && !owner->m_is_deleted)
       {
-        callbackit = param->add_callback(
-              [=] (const ossia::value& v) { output_value(v); });
+        switch(owner->m_otype)
+        {
+          case object_class::remote:
+          case object_class::param:
+            callbackit = param->add_callback(
+                [=] (const ossia::value& v) { output_value(v); });
+            break;
+          default:
+            break;
+        }
 
         set_parent_addr();
       }
@@ -89,9 +105,17 @@ t_matcher::t_matcher(ossia::net::node_base* n, object_base* p) :
 {
   if (owner)
   {
-    if (auto param = node->get_parameter())
-      callbackit = param->add_callback(
-            [=](const ossia::value& v) { output_value(v); });
+    switch(owner->m_otype)
+    {
+      case object_class::remote:
+      case object_class::param:
+        if (auto param = node->get_parameter())
+          callbackit = param->add_callback(
+              [=](const ossia::value& v) { output_value(v); });
+        break;
+      default:
+        break;
+    }
 
     node->about_to_be_deleted.connect<&object_base::is_deleted>(owner);
   }
@@ -287,6 +311,11 @@ object_base::object_base()
 
 object_base::~object_base()
 {
+  if(m_highlight_clock)
+  {
+    clock_unset(m_highlight_clock);
+    object_free(m_highlight_clock);
+  }
   auto& root_map = ossia_max::instance().root_patcher;
   const auto& it = root_map.find(m_patcher_hierarchy.back());
 
@@ -316,6 +345,49 @@ void object_base::get_hierarchy()
 
   // remove duplicates
   vec.erase( std::unique( vec.begin(), vec.end() ), vec.end() );
+}
+
+void object_base::highlight()
+{
+  if(m_highlight_clock)
+    return;
+
+  t_object *box{};
+
+  // get the object's wrapping box
+  t_max_err err = object_obex_lookup(this, gensym("#B"), (t_object **)&box);
+  if (err != MAX_ERR_NONE)
+    return;
+
+  err = jbox_get_color(box, &m_color);
+  if(err != MAX_ERR_NONE)
+    return;
+
+  // invert the color
+  t_jrgba new_color;
+  new_color.alpha = 1.0;
+  new_color.red   = 1.0;
+  new_color.green = 0.0;
+  new_color.blue  = 0.0;
+
+  jbox_set_color(box, &new_color);
+
+  m_highlight_clock = clock_new(this, (method) object_base::reset_color);
+  clock_delay(m_highlight_clock, 2000);
+}
+
+void object_base::reset_color(object_base* x)
+{
+  t_object *box{};
+
+  // get the object's wrapping box
+  t_max_err err = object_obex_lookup(x, gensym("#B"), (t_object **)&box);
+  if (err != MAX_ERR_NONE)
+    return;
+
+  jbox_set_color(box, &x->m_color);
+  object_free(x->m_highlight_clock);
+  x->m_highlight_clock=nullptr;
 }
 
 void object_base::loadbang(object_base* x)

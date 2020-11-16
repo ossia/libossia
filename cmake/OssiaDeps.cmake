@@ -15,6 +15,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       hopscotch-map
       multi_index
       nano-signal-slot
+      rapidfuzz-cpp
       rapidjson
       readerwriterqueue
       rnd
@@ -163,3 +164,18 @@ if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
 endif()
 
 add_definitions(-DFMT_HEADER_ONLY=1)
+if(MSVC)
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+endif()
+
+include(ExternalProject)
+# rapidfuzz
+ExternalProject_add(rapidfuzz-cpp
+    SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/rapidfuzz-cpp"
+    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rapidfuzz-cpp
+    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+)
+ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)
+set(RAPIDFUZZ_INCLUDE_DIR ${INSTALL_DIR}/include)
+

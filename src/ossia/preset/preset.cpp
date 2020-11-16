@@ -1274,7 +1274,7 @@ void ossia::presets::apply_preset(
 ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
 {
   ossia::presets::preset cue;
-  auto nodes = ossia::net::list_all_child(&node);
+  auto nodes = ossia::net::list_all_children(&node);
   for (auto n : nodes)
   {
     if (auto param = n->get_parameter())

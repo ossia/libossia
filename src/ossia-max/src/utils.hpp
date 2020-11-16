@@ -156,7 +156,7 @@ T* find_parent_box(
   ossia::remove_one(objects, x);
 
   // and sort objects by hierarchy size
-  // because the first parent have potentially the same hierarchy depth
+  // because the first parent might have the same hierarchy depth
   ossia::sort(objects, [](auto o1, auto o2){
     return o1->m_patcher_hierarchy.size() > o2->m_patcher_hierarchy.size();});
 
@@ -309,6 +309,10 @@ void ossia_register(T* x)
     }
   }
 
+  // TODO we should exclude object that have not been loadbanged yet for performance
+  // when adding an abstraction with model and parameter in subpatcher,
+  // then the deeper object will be loadbanged first and should not register to its parent which has not been loadbanged yet
+  // in that case, we should leave the object unregistered and wait for parent to register its child
   x->register_node(*matchers);
 }
 
@@ -318,8 +322,20 @@ void ossia_check_and_register(T* x)
   auto& map = ossia_max::instance().root_patcher;
   auto it = map.find(x->m_patcher_hierarchy.back());
 
+  if(it != map.end())
+  {
+    ossia_max::root_descriptor& descriptor = it->second;
+    if(descriptor.is_loadbanged)
+    {
+      ossia_register<T>(x);
+      return;
+    }
+  }
+
   if(!x->m_reg_clock)
     x->m_reg_clock = clock_new(x, (method) ossia_register<T>);
+  else
+    clock_unset(x->m_reg_clock);
 
   clock_delay(x->m_reg_clock, 1);
 }

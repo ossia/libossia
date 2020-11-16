@@ -25,14 +25,15 @@ ZeroconfMinuitListener ossia_max::zeroconf_minuit_listener;
 // ossia-max library constructor
 ossia_max::ossia_max():
     m_localProtocol{new ossia::net::local_protocol},
-    m_device{std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device"},
+    m_device{std::make_shared<ossia::net::generic_device>(
+        std::unique_ptr<ossia::net::protocol_base>(m_localProtocol), "ossia_max_device")},
     m_log_sink{std::make_shared<max_msp_log_sink>()}
 {
   m_log_sink.get()->set_level(spdlog::level::err);
   ossia::context c{{m_log_sink}};
   common_symbols_init();
 
-  m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
+  m_device->on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
   parameters.reserve(2048);
   remotes.reserve(1024);
@@ -41,6 +42,7 @@ ossia_max::ossia_max():
   views.reserve(512);
   devices.reserve(8);
   clients.reserve(8);
+  explorers.reserve(128);
 
 #if OSSIA_MAX_AUTOREGISTER
   m_reg_clock = clock_new(this, (method) ossia_max::register_nodes);
@@ -56,7 +58,7 @@ ossia_max::ossia_max():
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
+  m_device->on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
 
   for (auto x : devices.copy())
   {
@@ -138,6 +140,7 @@ void ossia_max::register_nodes(ossia_max*)
   fill_nr_vector(inst.views, inst.nr_views);
   fill_nr_vector(inst.remotes, inst.nr_remotes);
   fill_nr_vector(inst.attributes, inst.nr_attributes);
+  fill_nr_vector(inst.explorers, inst.nr_explorers);
   auto dev_obj_list   = sort_by_depth(inst.nr_devices);
   auto mod_obj_list   = sort_by_depth(inst.nr_models);
   auto param_obj_list = sort_by_depth(inst.nr_parameters);
@@ -145,6 +148,7 @@ void ossia_max::register_nodes(ossia_max*)
   auto view_obj_list = sort_by_depth(inst.nr_views);
   auto rem_obj_list = sort_by_depth(inst.nr_remotes);
   auto att_obj_list = sort_by_depth(inst.nr_attributes);
+  auto exp_obj_list = sort_by_depth(inst.nr_explorers);
 
   std::vector<t_object*> to_be_initialized;
 
@@ -214,7 +218,7 @@ void ossia_max::register_nodes(ossia_max*)
   inst.registering_nodes = false;
 
   // push default value for all devices
-  std::vector<ossia::net::generic_device*> dev_list;
+  std::vector<std::shared_ptr<ossia::net::generic_device>> dev_list;
   dev_list.reserve(inst.devices.size() + 1);
   for(auto dev : inst.devices.reference())
   {
@@ -222,7 +226,8 @@ void ossia_max::register_nodes(ossia_max*)
   }
   dev_list.push_back(inst.get_default_device());
 
-  ossia::sort(dev_list, [&](ossia::net::generic_device* a, ossia::net::generic_device* b)
+  ossia::sort(dev_list, [&](std::shared_ptr<ossia::net::generic_device> a,
+                            std::shared_ptr<ossia::net::generic_device> b)
   {
     auto prio_a = ossia::net::get_priority(a->get_root_node());
     auto prio_b = ossia::net::get_priority(b->get_root_node());
@@ -238,7 +243,7 @@ void ossia_max::register_nodes(ossia_max*)
 
   for (auto dev : dev_list)
   {
-    auto list = ossia::net::list_all_child(&dev->get_root_node());
+    auto list = ossia::net::list_all_children(&dev->get_root_node());
 
     for (ossia::net::node_base* child : list)
     {
@@ -287,6 +292,9 @@ template void object_quarantining<attribute>(attribute*);
 template void object_quarantining<model>(model*);
 template void object_quarantining<remote>(remote*);
 template void object_quarantining<view>(view*);
+template void object_quarantining<explorer>(explorer*);
+template void object_quarantining<search>(search*);
+template void object_quarantining<monitor>(monitor*);
 
 template <typename T>
 void object_dequarantining(T* x)
@@ -299,6 +307,7 @@ template void object_dequarantining<parameter>(parameter*);
 template void object_dequarantining<model>(model*);
 template void object_dequarantining<remote>(remote*);
 template void object_dequarantining<view>(view*);
+template void object_dequarantining<explorer>(explorer*);
 
 template <typename T>
 bool object_is_quarantined(T* x)

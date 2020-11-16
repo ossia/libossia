@@ -33,7 +33,9 @@ enum class object_class
   view,
   device,
   client,
-  attribute
+  attribute,
+  explorer,
+  unregistered = 255
 };
 
 struct object_base;
@@ -50,7 +52,7 @@ public:
 
   void output_value(ossia::value v);
   ossia::net::node_base* get_node() const { return node; }
-  object_base* get_parent() const { return owner; }
+  object_base* get_parent() const { return owner; }   // return the max object that holds this
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
   void set_parent_addr();
 
@@ -114,10 +116,12 @@ public:
   void* m_clock{};
   void* m_reg_clock{}; // registration clock that should be initialized by constructor
                        // and canceled by loadbang method
+  void* m_highlight_clock{}; // clock to reset color after some amount of time
+                             // to highlight the object in the patcher
 
   float m_rate{10};
 
-  ossia::net::generic_device* m_device{};
+  std::shared_ptr<ossia::net::generic_device> m_device{};
   // std::vector<ossia::net::node_base*> m_nodes{};
   ossia::net::node_base* m_parent_node{};
   std::vector<std::shared_ptr<t_matcher>> m_matchers{};
@@ -145,7 +149,6 @@ public:
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_recall_safe(object_base*x, std::vector<t_matcher*> nodes);
 
-
   // default attributes
   t_symbol* m_name{};
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
@@ -157,6 +160,7 @@ public:
 
   long m_tags_size{};
   long m_description_size{};
+  t_jrgba m_color{};
 
   std::vector<search_result> m_found_parameters{};
   std::vector<search_result> m_found_models{};
@@ -171,8 +175,8 @@ public:
   bool m_loadbanged{}; // true if object received a loadbang
 
   std::mutex m_bind_mutex;
+  // TODO check where this is filled
   std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher
-
 
   static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
@@ -183,6 +187,9 @@ public:
   static void get_address(object_base *x,  std::vector<t_matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
+  void highlight();
+  static void reset_color(object_base* x);
+
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
   std::vector<ossia::value> m_set_pool;
 

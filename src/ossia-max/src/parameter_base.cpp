@@ -94,11 +94,13 @@ void parameter_base::set_access_mode()
       ossia::net::node_base* node = m->get_node();
       auto param = node->get_parameter();
 
-      std::string access_mode = m_access_mode->s_name;
-      boost::algorithm::to_lower(access_mode);
-      m_access_mode = gensym(access_mode.c_str());
+      std::string access_mode_str = m_access_mode->s_name;
+      boost::algorithm::to_lower(access_mode_str);
+      m_access_mode = gensym(access_mode_str.c_str());
 
-      param->set_access(symbol2access_mode(m_access_mode));
+      auto access_mode = symbol2access_mode(m_access_mode);
+      param->set_access(access_mode);
+      ossia::net::set_access_mode(*node, access_mode);
     }
   }
 }

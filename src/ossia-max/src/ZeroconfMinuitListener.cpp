@@ -14,11 +14,10 @@ namespace ossia
 {
 namespace max
 {
-std::vector<ossia::net::minuit_connection_data> ZeroconfMinuitListener::m_devices;
-std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> ZeroconfMinuitListener::m_zombie_devices;
+std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::s_devices;
 
-std::mutex ZeroconfMinuitListener::m_mutex;
-std::vector<std::string> ZeroconfMinuitListener::m_embryo_devices;
+std::mutex ZeroconfMinuitListener::s_mutex;
+std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> ZeroconfMinuitListener::s_connection_events;
 
 // TODO add support for Minuit discovery
   ZeroconfMinuitListener::ZeroconfMinuitListener()
@@ -39,15 +38,21 @@ std::vector<std::string> ZeroconfMinuitListener::m_embryo_devices;
 
   void ZeroconfMinuitListener::instanceAdded(const std::string& instance)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
-    m_embryo_devices.push_back(instance);
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+    s_connection_events.push_back({ZeroconfMinuitListener::ADDED, instance});
   }
 
-  void ZeroconfMinuitListener::process_new_devices(const std::string& instance)
+  void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
   {
-    for (const auto& dev : m_devices)
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+    s_connection_events.push_back({ZeroconfMinuitListener::REMOVED, instance});
+  }
+
+  void ZeroconfMinuitListener::addDevice(const std::string& instance)
+  {
+    for (const auto& dev : s_devices)
     {
-      if (dev.name == instance)
+      if (dev->get_name() == instance)
         return;
     }
 
@@ -81,12 +86,18 @@ std::vector<std::string> ZeroconfMinuitListener::m_embryo_devices;
 
     try
     {
-      ossia::net::minuit_connection_data dat;
-      dat.name = instance;
-      dat.host = ip;
-      dat.remote_port = boost::lexical_cast<int>(port);
+      ossia::net::minuit_connection_data data;
+      data.name = instance;
+      data.host = ip;
+      data.remote_port = boost::lexical_cast<int>(port);
 
-      m_devices.push_back(std::move(dat));
+      auto clt = std::make_unique<ossia::net::generic_device>(
+          std::make_unique<ossia::net::minuit_protocol>(
+              instance, ip,
+              boost::lexical_cast<int>(port), (rand() % 64512) + 1024),
+          instance);
+
+      s_devices.push_back(std::move(clt));
     }
     catch (...)
     {
@@ -95,68 +106,60 @@ std::vector<std::string> ZeroconfMinuitListener::m_embryo_devices;
     }
   }
 
-  void ZeroconfMinuitListener::instanceRemoved(const std::string& instance)
-  {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
-    auto it = ossia::find_if(m_devices, [&](const auto& d) {
-      return d.name == instance;
-    });
-
-    if (it != m_devices.end())
-    {
-      m_zombie_devices.push_back(it);
-    }
-  }
-
-  ossia::net::minuit_connection_data* ZeroconfMinuitListener::find_device(
+  std::shared_ptr<ossia::net::generic_device> ZeroconfMinuitListener::find_device(
       const std::string& instance)
   {
-    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::m_mutex);
+    std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
     {
-      auto it = ossia::find_if(m_devices, [&](const auto& d) {
-        return d.name == instance + " Minuit server";
+      auto it = ossia::find_if(s_devices, [&](const auto& d) {
+        return d->get_name() == instance + " Minuit server";
       });
 
-      if (it != m_devices.end())
+      if (it != s_devices.end())
       {
-        return &(*it);
+        return *it;
       }
-      m_mutex.unlock();
+      s_mutex.unlock();
     }
-    return nullptr;
+    return {};
 
   }
 
   void ZeroconfMinuitListener::browse()
   {
-    ZeroconfMinuitListener::m_mutex.lock();
-
-    // FIXME we should take receiving order into account
-    // a device that is first removed, then added
-    // will currently be removed
-    for(const auto& s : m_embryo_devices)
     {
-      process_new_devices(s);
-    }
-    m_embryo_devices.clear();
+      std::lock_guard lock(s_mutex);
 
-    for(auto it : m_zombie_devices)
-    {
-      for (auto client : ossia_max::instance().clients.reference())
+      for(const auto& s : s_connection_events)
       {
-        if(client->is_zeroconf() && client->m_device->get_name() == it->name)
+        switch(s.first)
         {
-          auto dev = client->m_device;
-          ossia::max::client::client::disconnect(client);
-          delete dev; // FIXME this is ugly
-          clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
+          case ZeroconfMinuitListener::ConnectionEvent::ADDED:
+            addDevice(s.second);
+            break;
+          case ZeroconfMinuitListener::ConnectionEvent::REMOVED:
+            break;
+
+            std::lock_guard<std::mutex> lock(ZeroconfMinuitListener::s_mutex);
+            auto it = ossia::find_if(s_devices, [&](const auto& d) {
+              return d->get_name() == s.second;
+            });
+
+            if (it != s_devices.end())
+            {
+              for (auto client : ossia_max::instance().clients.reference())
+              {
+                if(client->is_zeroconf() && client->m_device->get_name() == it->get()->get_name())
+                {
+                  ossia::max::client::client::disconnect(client);
+                  clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
+                }
+              }
+            }
         }
       }
-
-      m_devices.erase(it);
+      s_connection_events.clear();
     }
-    m_zombie_devices.clear();
-    ZeroconfMinuitListener::m_mutex.unlock();
 
     service.browse(0);
   }

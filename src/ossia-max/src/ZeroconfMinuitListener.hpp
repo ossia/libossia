@@ -18,21 +18,29 @@ class ZeroconfMinuitListener final : servus::Listener
     ZeroconfMinuitListener();
     ~ZeroconfMinuitListener() override;
 
-    static ossia::net::minuit_connection_data* find_device(const std::string& name);
+    static std::shared_ptr<ossia::net::generic_device> find_device(const std::string& name);
+    static std::vector<std::shared_ptr<ossia::net::generic_device>> get_devices() { return s_devices; }
 
     void browse();
 
   private:
+    // since Max is not thread safe, we put connection events (from Servus thread) in a vector
+    // and process it at scheduled interval triggered by Max clock
     void instanceAdded(const std::string& instance) final override;
     void instanceRemoved(const std::string& instance) final override;
-    void process_new_devices(const std::string& instance);
+    void addDevice(const std::string& instance);
 
-    static std::vector<ossia::net::minuit_connection_data> m_devices;
-    static std::vector<std::vector<ossia::net::minuit_connection_data>::iterator> m_zombie_devices;
-    static std::vector<std::string> m_embryo_devices;
+    enum ConnectionEvent
+    {
+      ADDED = 0,
+      REMOVED
+    };
+
+    static std::vector<std::shared_ptr<ossia::net::generic_device>> s_devices;
+    static std::vector<std::pair<ConnectionEvent, std::string>> s_connection_events;
 
     servus::Servus service;
-    static std::mutex m_mutex;
+    static std::mutex s_mutex;
 };
 
 } // namespace pd

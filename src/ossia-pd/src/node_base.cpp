@@ -135,7 +135,7 @@ void ossia::pd::node_base::get_namespace(object_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
-    list = ossia::net::list_all_child(n);
+    list = ossia::net::list_all_children(n);
 
     int pos = ossia::net::osc_parameter_string(*n).length();
     if (pos > 1) pos++; // root node always have '/' osc_address,
@@ -165,7 +165,7 @@ void node_base::push_default_value(node_base* x)
   for (auto& m : x->m_matchers)
   {
     auto n = m.get_node();
-    list = ossia::net::list_all_child(n);
+    list = ossia::net::list_all_children(n);
 
     for (ossia::net::node_base* child : list)
     {

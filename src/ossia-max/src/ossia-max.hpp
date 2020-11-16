@@ -22,12 +22,18 @@
 #include "client.hpp"
 #include "ossia_object.hpp"
 #include "logger.hpp"
+#include "explorer.hpp"
+#include "monitor.hpp"
+#include "search.hpp"
+#include "router.hpp"
+#include "fuzzysearch.hpp"
 
 #include "ZeroconfOscqueryListener.hpp"
 #include "ZeroconfMinuitListener.hpp"
 
 extern "C"
 {
+    OSSIA_MAX_EXPORT void ossia_router_setup();
     OSSIA_MAX_EXPORT void ossia_attribute_setup();
     OSSIA_MAX_EXPORT void ossia_client_setup();
     OSSIA_MAX_EXPORT void ossia_device_setup();
@@ -37,6 +43,7 @@ extern "C"
     OSSIA_MAX_EXPORT void ossia_remote_setup();
     OSSIA_MAX_EXPORT void ossia_view_setup();
     OSSIA_MAX_EXPORT void ossia_ossia_setup();
+    OSSIA_MAX_EXPORT void ossia_explorer_setup();
 }
 
 namespace ossia
@@ -74,16 +81,15 @@ struct max_msp_log_sink final :
 
     void set_pattern(const std::string &pattern) override { }
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
-
 };
 
 class ossia_max
 {
 public:
   static ossia_max& instance();
-  static ossia::net::generic_device* get_default_device()
+  static const std::shared_ptr<ossia::net::generic_device>& get_default_device()
   {
-    return &instance().m_device;
+    return instance().m_device;
   }
 
   static void register_nodes(ossia_max* x);
@@ -101,6 +107,11 @@ public:
     if(std::is_same<T, attribute>::value) return ossia_attribute_class;
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
     if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
+    if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
+    if(std::is_same<T, ossia::max::monitor>::value) return ossia_monitor_class;
+    if(std::is_same<T, ossia::max::search>::value) return ossia_search_class;
+    if(std::is_same<T, ossia::max::router>::value) return ossia_router_class;
+    if(std::is_same<T, ossia::max::fuzzysearch>::value) return ossia_fuzzysearch_class;
     return nullptr;
   }
 
@@ -120,9 +131,14 @@ public:
     }
   }
 
+  t_class* ossia_router_class{};
   t_class* ossia_client_class{};
   t_class* ossia_attribute_class{};
   t_class* ossia_device_class{};
+  t_class* ossia_explorer_class{};
+  t_class* ossia_monitor_class{};
+  t_class* ossia_search_class{};
+  t_class* ossia_fuzzysearch_class{};
   t_class* ossia_logger_class{};
   t_class* ossia_model_class{};
   t_class* ossia_parameter_class{};
@@ -138,6 +154,9 @@ public:
   ossia::safe_vector<device*> devices;
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<attribute*> attributes;
+  ossia::safe_vector<explorer*> explorers;
+  ossia::safe_vector<monitor*> monitors;
+  ossia::safe_vector<search*> searchs;
 
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
@@ -147,12 +166,16 @@ public:
   ossia::safe_set<device*> nr_devices;
   ossia::safe_set<client*> nr_clients;
   ossia::safe_set<attribute*> nr_attributes;
+  ossia::safe_set<explorer*> nr_explorers;
 
   ossia::safe_set<model*> model_quarantine;
   ossia::safe_set<view*> view_quarantine;
   ossia::safe_set<parameter*> parameter_quarantine;
   ossia::safe_set<remote*> remote_quarantine;
   ossia::safe_set<attribute*> attribute_quarantine;
+  ossia::safe_set<explorer*> explorer_quarantine;
+  ossia::safe_set<monitor*> monitor_quarantine;
+  ossia::safe_set<search*> search_quarantine;
 
   bool registering_nodes=false;
 
@@ -180,7 +203,7 @@ private:
   ~ossia_max();
 
   ossia::net::local_protocol* m_localProtocol{};
-  ossia::net::generic_device m_device;
+  std::shared_ptr<ossia::net::generic_device> m_device;
   string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
   std::shared_ptr<max_msp_log_sink> m_log_sink;
 };

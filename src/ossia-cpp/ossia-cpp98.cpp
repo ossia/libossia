@@ -565,7 +565,7 @@ std::vector<node> node::get_namespace() const
   std::vector<node> res;
   if(m_node)
   {
-    auto list = ossia::net::list_all_child(m_node);
+    auto list = ossia::net::list_all_children(m_node);
     for (auto child : list)
     {
       res.push_back(child);

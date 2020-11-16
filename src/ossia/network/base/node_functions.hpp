@@ -158,12 +158,26 @@ operator<<(std::ostream&, const ossia::net::parameter_base&);
 void expand_ranges(std::string& str);
 
 /**
- * @brief list_all_child : list all child nodes recursively
+ * @brief list_all_children : list all child nodes recursively
  * @param node : starting point
- * @return list : vector of child sorted by name then by priority
+ * @return list : vector of children sorted by name then by priority
  */
 OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
-list_all_child(ossia::net::node_base* node);
+list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
+
+
+OSSIA_EXPORT struct fuzzysearch_result
+{
+  double score;
+  std::string oscname;
+  ossia::net::node_base* node;
+};
+
+OSSIA_EXPORT
+void fuzzysearch(std::vector<ossia::net::node_base*> node,
+                 const std::vector<std::string>& patterns,
+                 std::vector<fuzzysearch_result>& results);
+
 }
 }
