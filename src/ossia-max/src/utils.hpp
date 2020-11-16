@@ -219,8 +219,13 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
   x->m_matchers.clear();
-  auto matchers = x->find_parent_nodes();
   x->do_registration();
+
+  if(x->m_otype == object_class::view
+  || x->m_otype == object_class::model)
+  {
+    register_children_in_patcher_recursively(x->m_patcher, x);
+  }
 }
 
 struct domain_visitor {
