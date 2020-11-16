@@ -119,13 +119,6 @@ void* device::create(t_symbol* name, long argc, t_atom* argv)
     x->m_name = gensym("Max");
     x->m_otype = object_class::device;
 
-    if (ossia::max::find_peer(x))
-    {
-      error("You can have only one [ossia.device] or [ossia.client] per patcher.");
-      device::destroy(x);
-      return nullptr;
-    }
-
     if (argc && argv)
     {
       if (atom_gettype(argv) == A_SYM)

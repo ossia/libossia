@@ -99,13 +99,6 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     x->m_poll_clock = clock_new(x, (method)client::poll_message);
     x->m_clock = clock_new(x, (method) client::connect);
 
-    if (ossia::max::find_peer(x))
-    {
-      error("You can have only one [ossia.device] or [ossia.client] per patcher.");
-      client::destroy(x);
-      return nullptr;
-    }
-
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 

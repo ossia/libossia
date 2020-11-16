@@ -22,14 +22,6 @@ namespace max
 {
 
 /**
- * @brief find_peers: find object of the same class in the patcher
- * @param x : object we are looking for friend
- * @return true if we find one, false otherwise
- */
-bool find_peer(object_base *x);
-
-
-/**
  * @brief get_all_devices: iterate over all ossia.device and ossia.client to get their generic_device
  * @return a list of all known generic_devices*
  */

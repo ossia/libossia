@@ -63,13 +63,6 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
-    if(find_peer(x))
-    {
-      error("You can put only one [ossia.model] or [ossia.view] per patcher");
-      view::destroy(x);
-      return nullptr;
-    }
-
     // check name argument
     x->m_name = _sym_nothing;
     if (attrstart && argv)
