@@ -147,7 +147,7 @@ bool explorer::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
   }
 
   ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
-    return !filter(*m);
+    return filter(*m);
   });
 
   t_atom a;

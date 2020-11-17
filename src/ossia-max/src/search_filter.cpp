@@ -14,7 +14,7 @@ bool search_filter::filter(const ossia::net::node_base& node)
     bool match = true;
     const auto& tags_opt = ossia::net::get_tags(node.get_extended_attributes());
     if(!tags_opt.has_value())
-      return false;
+      return true;
 
     const std::vector<std::string>& tags = *tags_opt;
 
@@ -29,7 +29,7 @@ bool search_filter::filter(const ossia::net::node_base& node)
       }
     }
     if(!match)
-      return false;
+      return true;
   }
 
   if(m_filter_visible > 0)
@@ -38,10 +38,10 @@ bool search_filter::filter(const ossia::net::node_base& node)
     switch(m_filter_visible)
     {
       case 1:
-        if(hidden) return false;
+        if(hidden) return true;
         break;
       case 2:
-        if(!hidden) return false;
+        if(!hidden) return true;
         break;
       default:
           ;
@@ -52,7 +52,7 @@ bool search_filter::filter(const ossia::net::node_base& node)
   {
     const auto& access_opt = ossia::net::get_access_mode(node);
     if(!access_opt.has_value())
-      return false;
+      return true;
     bool match = false;
     for(int i = 0; i<m_filter_modes_size; i++)
     {
@@ -63,10 +63,10 @@ bool search_filter::filter(const ossia::net::node_base& node)
       }
     }
     if(!match)
-      return false;
+      return true;
   }
 
-  return true;
+  return false;
 }
 
 } // namespace max

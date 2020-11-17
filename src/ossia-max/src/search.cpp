@@ -120,7 +120,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
   auto matchers = x->find_parent_nodes();
 
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)
-                         { return !x->filter(*m->get_node()); });
+                         { return x->filter(*m->get_node()); });
 
   if(x->m_method == s_search)
   {

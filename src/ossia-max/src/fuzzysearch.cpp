@@ -106,7 +106,7 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, x->m_matches);
 
   ossia::remove_erase_if(x->m_matches, [&](const ossia::net::fuzzysearch_result& m){
-    return !x->filter(*m.node);
+    return x->filter(*m.node);
   });
 
   for(const auto& m : x->m_matches)
