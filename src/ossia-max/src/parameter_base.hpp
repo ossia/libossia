@@ -14,6 +14,8 @@ public:
 
   parameter_base();
 
+  void output_all_values();
+
   // attribute setting method
   void set_access_mode();
   void set_repetition_filter();

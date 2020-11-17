@@ -1177,5 +1177,26 @@ parameter_base::parameter_base()
   m_unit = gensym("");
 }
 
+void parameter_base::output_all_values()
+{
+  // TODO unify this with fire_all_values_recursively() (cf utils.cpp)
+  using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
+
+  std::vector<node_priority> priority_graph;
+  priority_graph.reserve(m_matchers.size());
+
+  for(const auto& m : m_matchers)
+  {
+    auto node = m->get_node();
+    if(node)
+    {
+      auto prio = get_priority_list(node);
+      priority_graph.push_back({m.get(), prio});
+    }
+  }
+
+  fire_values_by_priority(priority_graph);
+}
+
 } // namespace max
 } // namespace ossia

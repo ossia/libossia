@@ -272,7 +272,7 @@ void remote::on_device_created(device_base* obj)
   }
 }
 
-void remote::do_registration(bool output_value)
+void remote::do_registration()
 {
   std::string name = m_name->s_name;
 
@@ -282,22 +282,6 @@ void remote::do_registration(bool output_value)
 
   m_selection_path.reset();
   fill_selection();
-
-  if(output_value)
-  {
-    for(const auto& m : m_matchers)
-    {
-      auto param = m->get_node()->get_parameter();
-      if(param && param->get_value_type() != ossia::val_type::IMPULSE)
-      {
-        auto v = m->get_node()->get_parameter()->value();
-        if(v.valid())
-        {
-          m->output_value(v);
-        }
-      }
-    }
-  }
 }
 
 void remote::unregister()

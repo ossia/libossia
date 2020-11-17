@@ -17,7 +17,7 @@ class remote : public parameter_base
 public:
   using is_remote = std::true_type;
 
-  void do_registration(bool output_value = true);
+  void do_registration();
   void unregister();
 
   ossia::safe_set<ossia::net::device_base*> m_devices{};

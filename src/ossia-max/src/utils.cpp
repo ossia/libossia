@@ -93,6 +93,110 @@ std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_vi
   return nodes;
 }
 
+std::vector<parameter_base*> list_all_objects_recursively(t_object* patcher)
+{
+  std::vector<parameter_base*> objects(128);
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
+
+  objects.insert(objects.end(), pat_desc.parameters.begin(), pat_desc.parameters.end());
+  objects.insert(objects.end(), pat_desc.remotes.begin(), pat_desc.remotes.end());
+
+  for(auto subpat : pat_desc.subpatchers)
+  {
+    auto subpatcher_objects = list_all_objects_recursively(subpat);
+    objects.insert(objects.end(), subpatcher_objects.begin(), subpatcher_objects.end());
+  }
+  return objects;
+}
+
+// return a vector of all priority from top to bottom (root node)
+std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node)
+{
+  std::vector<float> priorities;
+  priorities.reserve(32);
+
+  while(node)
+  {
+    auto prio = ossia::net::get_priority(*node);
+    if(prio)
+    {
+      priorities.push_back(*prio);
+    }
+    else
+    {
+      priorities.push_back(0);
+    }
+    node = node->get_parent();
+  }
+
+  std::reverse(priorities.begin(), priorities.end());
+
+  return priorities;
+}
+
+using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
+
+void fire_values_by_priority(std::vector<node_priority>& priority_graph)
+{
+  // sort vector against all priorities (lexicographical ordering)
+  ossia::sort(priority_graph, [&](const node_priority& prioa, const node_priority& priob){
+    int l = std::min(prioa.second.size(), priob.second.size());
+    for(int i = 0; i < l; i++){
+      if( prioa.second[i] > priob.second[i]) return true;   // a is greater than b
+      if( priob.second[i] > prioa.second[i]) return false;  // b is greater than a
+    }
+    if ( prioa.second.size() > l) return false;   // a is longer than b
+    return true;                                  // b is longer than a
+  });
+
+  // fire values by descending priority order
+  for(const auto& p : priority_graph)
+  {
+    auto matcher = p.first;
+    auto node = matcher->get_node();
+    auto param = node->get_parameter();
+    if(param)
+    {
+      auto mode = param->get_access();
+
+      // TODO filter before sort to save some overhead
+      if( param->get_value_type() != ossia::val_type::IMPULSE
+          && mode != ossia::access_mode::GET
+          && mode != ossia::access_mode::SET)
+      {
+        matcher->output_value(param->value());
+      }
+    }
+  }
+}
+
+void fire_all_values_by_priority(t_object* patcher)
+{
+  auto all_objects = list_all_objects_recursively(patcher);
+
+  std::vector<node_priority> priority_graph;
+  priority_graph.reserve(all_objects.size());
+
+  for(const auto obj : all_objects)
+  {
+    // FIXME : why are there some nullptr ?
+    if(!obj)
+      continue;
+
+    for(const auto& m : obj->m_matchers)
+    {
+      auto node = m->get_node();
+      if(node)
+      {
+        auto prio = get_priority_list(node);
+        priority_graph.push_back({m.get(), prio});
+      }
+    }
+  }
+
+  fire_values_by_priority(priority_graph);
+}
+
 ossia::net::address_scope get_address_scope(ossia::string_view addr)
 {
   ossia::net::address_scope type = ossia::net::address_scope::relative;
@@ -355,11 +459,6 @@ template<class T> void register_objects_by_type(const ossia::safe_set<T>& objs)
 
 void register_children_in_patcher_recursively(t_object* patcher, object_base* caller)
 {
-
-  static int count = 0;
-  count++;
-  std::vector<object_base*> objects_to_register;
-
   ossia_max::instance().patchers[patcher].loadbanged = true;
 
   t_object* root_patcher{};
@@ -421,15 +520,9 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     register_children_in_patcher_recursively(subpatcher, caller);
   }
-  count--;
-
-  // when the first call end, fire all values (when there is some)
-  if(count = 0)
-  {
-
-  }
 }
 
+// TODO put ptcher in cache, it won't change during object's life
 t_object* get_patcher(t_object* object)
 {
   t_object* patcher = nullptr;
@@ -443,7 +536,6 @@ t_object* get_patcher(t_object* object)
     return bpatcher;
 }
 
-// FIXME move that to utils.cpp
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
 {
   std::vector<std::string> tags;

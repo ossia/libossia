@@ -274,6 +274,7 @@ void object_base::loadbang(object_base* x)
         auto obj = static_cast<model*>(x);
         obj->do_registration();
         register_children_in_patcher_recursively(root_patcher, obj);
+        fire_all_values_by_priority(root_patcher);
         break;
       }
       case object_class::view:
@@ -281,6 +282,7 @@ void object_base::loadbang(object_base* x)
         auto obj = static_cast<view*>(x);
         obj->do_registration();
         register_children_in_patcher_recursively(root_patcher, obj);
+        fire_all_values_by_priority(root_patcher);
         break;
       }
       default:
@@ -293,6 +295,7 @@ void object_base::loadbang(object_base* x)
     // this happens when the patcher is loaded or instanciated as an abstraction
     // and also when it is pasted / duplicated
     register_children_in_patcher_recursively(root_patcher, nullptr);
+    fire_all_values_by_priority(root_patcher);
   }
 }
 

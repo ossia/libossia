@@ -382,6 +382,7 @@ void client::connect(client* x)
 
     std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
     register_children_in_patcher_recursively(get_patcher(&x->m_object), x);
+    fire_all_values_by_priority(get_patcher(&x->m_object));
   }
   else
   {

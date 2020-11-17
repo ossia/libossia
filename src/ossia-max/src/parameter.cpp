@@ -181,6 +181,9 @@ void parameter::do_registration()
   m_selection_path.reset();
   fill_selection();
 
+  set_priority();
+  set_hidden();
+  set_enable();
   set_description();
   set_tags();
   set_access_mode();
@@ -195,40 +198,6 @@ void parameter::do_registration()
 
   if(!ossia_max::instance().registering_nodes) // don't push default value when registering at loadbang
     push_default_value(this);                  // default value will be sent at the end of the global registration
-}
-
-bool parameter::create_node_from_matcher(const std::shared_ptr<matcher>& m)
-{
-  auto node = m->get_node();
-  std::string address(m_name->s_name);
-
-  if(m_addr_scope == ossia::net::address_scope::absolute)
-  {
-    node = &node->get_device().get_root_node();
-  }
-
-  auto params = ossia::net::find_or_create_parameter(
-      *node, address, m_type->s_name);
-
-  for (auto p : params)
-  {
-    if (!p)
-    {
-      object_error(
-          (t_object*)this,
-          "type should one of: float, symbol, int, vec2f, "
-          "vec3f, vec4f, bool, list, char");
-
-      return false;
-    }
-
-    ossia::net::set_priority(p->get_node(), m_priority);
-    ossia::net::set_disabled(p->get_node(), !m_enable);
-    ossia::net::set_hidden(p->get_node(), m_invisible);
-
-    m_matchers.emplace_back(std::make_shared<matcher>(&p->get_node(), this));
-  }
-  return true;
 }
 
 bool parameter::unregister()

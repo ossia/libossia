@@ -110,6 +110,16 @@ std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const oss
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 
+// return a list of nodes priority from root to node
+std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node);
+
+using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
+// sort priority graph
+// and output their values though dumpout
+void fire_values_by_priority(std::vector<node_priority>& priority_graph);
+
+// look for all object in a patcher (recursively)
+// gather all refered nodes,
 void fire_all_values_by_priority(t_object* patcher);
 
 // put templates after prototype so we can use them
@@ -249,6 +259,7 @@ void address_mess_cb(T* x, t_symbol* address)
   || x->m_otype == object_class::model)
   {
     register_children_in_patcher_recursively(x->m_patcher, x);
+    fire_all_values_by_priority(get_patcher(&x->m_object));
   }
 }
 
