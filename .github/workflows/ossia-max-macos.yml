@@ -1,0 +1,17 @@
+name: ossia-max-macos
+
+on:
+  push:
+    branches: [ $default-branch ]
+  pull_request:
+    branches: [ $default-branch ]
+
+jobs:
+  build:
+
+    runs-on: [self-hosted, macOS]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: build
+      run: ./tools/build-ossia-max.sh
