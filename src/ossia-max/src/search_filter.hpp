@@ -3,7 +3,7 @@
 #include "ext.h"
 #include <ossia/network/base/node.hpp>
 
-#define MAX_NUM_ITEMS 256
+static const constexpr int MAX_NUM_ITEMS = 256;
 
 namespace ossia {
 namespace max {
@@ -13,7 +13,7 @@ struct search_filter
   long m_filter_types_size{};
   t_symbol* m_filter_tags[MAX_NUM_ITEMS];
   long m_filter_tags_size{};
-  t_symbol* m_filter_modes[MAX_NUM_ITEMS];
+  t_symbol* m_filter_modes[3];
   long m_filter_modes_size{};
   long m_filter_visible{0};
 
@@ -28,7 +28,7 @@ struct search_filter
     CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, T, m_filter_tags, m_filter_tags_size, MAX_NUM_ITEMS);
     CLASS_ATTR_LABEL(c, "tags", 0, "Filter by tags");
 
-    CLASS_ATTR_SYM_VARSIZE(c, "mode", 0, T, m_filter_modes, m_filter_modes_size, MAX_NUM_ITEMS);
+    CLASS_ATTR_SYM_VARSIZE(c, "mode", 0, T, m_filter_modes, m_filter_modes_size, 3);
     CLASS_ATTR_LABEL(c, "mode", 0, "Filter by access mode");
 
     CLASS_ATTR_LONG(c, "visible", 0, T, m_filter_visible);

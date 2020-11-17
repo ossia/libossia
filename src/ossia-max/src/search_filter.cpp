@@ -53,17 +53,14 @@ bool search_filter::filter(const ossia::net::node_base& node)
     const auto& access_opt = ossia::net::get_access_mode(node);
     if(!access_opt.has_value())
       return true;
-    bool match = false;
     for(int i = 0; i<m_filter_modes_size; i++)
     {
       if(symbol2access_mode(m_filter_modes[i]) == *access_opt)
       {
-        match = true;
+        return false;
         break;
       }
     }
-    if(!match)
-      return true;
   }
 
   return false;

@@ -143,6 +143,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
       {
         if ( om->get_node() == node )
         {
+          // TODO use get_patcher() here instead
           t_object *jp{};
 
           // get the object's parent patcher
@@ -164,6 +165,8 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
       {
         // if node has a paremeter, search only for ossia.parameter,
         // ossia.remote & ossia.attribute object
+
+        // TODO refactor to use ossia_max::s_node_matchers_map instead
         for ( auto param : ossia_max::instance().parameters.reference() )
         {
           open_parent(param, node);

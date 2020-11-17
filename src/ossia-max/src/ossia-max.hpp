@@ -180,7 +180,6 @@ public:
     unsigned long inc(){ return ++count;}
     unsigned long dec(){ return --count;}
   };
-
   typedef std::map<t_object*, root_descriptor> RootMap;
 
   struct patcher_descriptor{
@@ -195,7 +194,7 @@ public:
     t_object* parent_patcher;
     ossia::safe_set<t_object*> subpatchers;
 
-    bool loadbanged; // true if patcher have been loadbanged already
+    bool loadbanged{}; // true if patcher have been loadbanged already
 
     bool empty() const
     {
@@ -213,12 +212,11 @@ public:
       return parameters.size()
            + remotes.size()
            + attributes.size()
-           + model?1:0
-           + view?1:0
-           + device?1:0
-           + client?1:0;
+           + (model?1:0)
+           + (view?1:0)
+           + (device?1:0)
+           + (client?1:0);
     }
-
   };
   std::map<t_object*, patcher_descriptor> patchers;
 

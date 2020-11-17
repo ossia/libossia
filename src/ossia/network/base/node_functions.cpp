@@ -676,7 +676,6 @@ void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
 
     results.reserve(results.size() + children.size());
 
-#pragma omp parallel for
     for(const auto& n : children)
     {
       std::string oscaddress = ossia::net::osc_parameter_string_with_device(*n);
@@ -688,6 +687,8 @@ void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
       results.push_back({percent * 100., oscaddress, n});
     }
 
+    // TODO in the future, when we'll use C++20
+    // ranges::sort(results, std::greater{}, &fuzzysearch_result::score);
     ossia::sort(results, [](const fuzzysearch_result& left, const fuzzysearch_result& right){
       return left.score > right.score;
     });

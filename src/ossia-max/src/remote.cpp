@@ -103,6 +103,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
+    // TODO put the following in a template and use it in all objects
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
     x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
     clock_set(x->m_reg_clock, 1);
@@ -315,7 +316,6 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
   auto& node = addr.get_node();
   auto oscaddr = ossia::net::address_string_from_node(node);
 
-  std::cout << "oscaddr: " << oscaddr << std::endl;
   if ( ossia::traversal::match(get_path(), node) )
   {
     m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
