@@ -35,6 +35,7 @@ struct search : object_base, search_filter
   static t_max_err notify(search *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   static void assist(search* x, void* b, long m, long a, char* s);
 
+  // TODO group all those static symbols in a separate class (see https://github.com/ossia/libossia/issues/617)
   static t_symbol* s_search;
   static t_symbol* s_size;
   static t_symbol* s_result;

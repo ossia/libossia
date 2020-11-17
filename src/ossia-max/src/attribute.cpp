@@ -110,15 +110,6 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 
   if( ossia::traversal::match(get_path(), node) )
   {
-    if(m_addr_scope == net::address_scope::relative)
-    {
-      std::string name(m_name->s_name);
-      size_t pos = name.find('/', 0);
-      while(pos != std::string::npos)
-      {
-        pos = name.find('/',pos+1);
-      }
-    }
     m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
     fill_selection();
   }
