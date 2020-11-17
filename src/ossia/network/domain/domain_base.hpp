@@ -92,8 +92,8 @@ struct OSSIA_EXPORT domain
   template <typename T>
   std::optional<T> maybe_min() const
   {
-    auto v = get_min();
-    auto u = v.target<T>();
+    auto val = get_min();
+    auto u = val.target<T>();
     if (u)
       return *u;
     else
@@ -103,8 +103,8 @@ struct OSSIA_EXPORT domain
   template <typename T>
   std::optional<T> maybe_max() const
   {
-    auto v = get_max();
-    auto u = v.target<T>();
+    auto val = get_max();
+    auto u = val.target<T>();
     if (u)
       return *u;
     else

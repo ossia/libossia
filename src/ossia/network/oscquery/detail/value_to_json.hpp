@@ -4,7 +4,7 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 #include <oscpack/osc/OscTypes.h>
 namespace ossia
 {

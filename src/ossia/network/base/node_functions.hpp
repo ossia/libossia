@@ -167,7 +167,7 @@ std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
 
 
-OSSIA_EXPORT struct fuzzysearch_result
+struct OSSIA_EXPORT fuzzysearch_result
 {
   double score;
   std::string oscname;

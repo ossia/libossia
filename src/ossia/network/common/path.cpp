@@ -72,8 +72,8 @@ void get_all_children_rec(
 
     get_all_children_rec(sub, inserted);
 
-    for (auto node : sub)
-      vec.push_back(node);
+    for (auto child : sub)
+      vec.push_back(child);
 
     sub.clear();
   }

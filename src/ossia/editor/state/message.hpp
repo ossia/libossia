@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia/editor/state/destination_qualifiers.hpp>
+#include <ossia/network/common/destination_qualifiers.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/network/value/value.hpp>
 

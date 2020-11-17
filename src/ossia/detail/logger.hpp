@@ -4,7 +4,7 @@
 
 // They have to be in this order
 #define SPDLOG_FINAL final
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 #include <spdlog/logger.h>
 
 /**

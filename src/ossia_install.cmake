@@ -114,7 +114,7 @@ install(FILES
 
 # Install used libraries headers
 if(NOT OSSIA_CPP_ONLY AND NOT OSSIA_C_ONLY)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/RtMidi17/rtmidi17"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/RtMidi17/include/rtmidi17"
         DESTINATION include
         COMPONENT Devel
         ${3RDPARTY_INSTALL_PATTERN}

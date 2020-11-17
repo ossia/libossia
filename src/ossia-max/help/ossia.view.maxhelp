@@ -2,13 +2,14 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 4,
+			"major" : 8,
+			"minor" : 2,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
+		"classnamespace" : "box",
 		"rect" : [ 100.0, 100.0, 1096.0, 768.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
@@ -38,6 +39,7 @@
 		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-4",
@@ -45,9 +47,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 444.0, 319.0, 100.0, 22.0 ],
-					"style" : "",
-					"text" : "ossia.device"
+					"patching_rect" : [ 444.0, 319.0, 154.0, 22.0 ],
+					"text" : "ossia.device view_maxhelp"
 				}
 
 			}
@@ -61,13 +62,14 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
+							"major" : 8,
+							"minor" : 2,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
+						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -96,6 +98,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [  ],
 						"lines" : [  ]
 					}
@@ -105,11 +108,9 @@
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
-						"style" : "",
 						"tags" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p ?"
 				}
 
@@ -124,14 +125,15 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
+							"major" : 8,
+							"minor" : 2,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1096.0, 742.0 ],
+						"classnamespace" : "box",
+						"rect" : [ 100.0, 126.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -159,6 +161,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bgmode" : 0,
@@ -176,13 +179,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
+											"major" : 8,
+											"minor" : 2,
+											"revision" : 0,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 479.0, 164.0, 608.0, 638.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -210,6 +214,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
@@ -219,7 +224,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 15.0, 95.0, 125.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.view my_model"
 												}
 
@@ -231,7 +235,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-													"style" : "",
 													"text" : "This view is embedded in a bpatcher. ",
 													"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 												}
@@ -245,7 +248,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-													"style" : "",
 													"text" : "A view binding to 'my_model'"
 												}
 
@@ -267,13 +269,14 @@
 													"patcher" : 													{
 														"fileversion" : 1,
 														"appversion" : 														{
-															"major" : 7,
-															"minor" : 3,
-															"revision" : 4,
+															"major" : 8,
+															"minor" : 2,
+															"revision" : 0,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
 ,
+														"classnamespace" : "box",
 														"rect" : [ 829.0, 408.0, 132.0, 480.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
@@ -301,6 +304,7 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
+														"assistshowspatchername" : 0,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-7",
@@ -308,7 +312,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 58.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "This view is embedded in a bpatcher. ",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -323,7 +326,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 9.0, 310.0, 47.0 ],
-																	"style" : "",
 																	"text" : "A view binding to 'my_model/submodel.2'"
 																}
 
@@ -337,8 +339,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -351,8 +352,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -364,7 +364,6 @@
 																	"numoutlets" : 3,
 																	"outlettype" : [ "", "", "" ],
 																	"patching_rect" : [ 15.0, 205.0, 164.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.remote another_param"
 																}
 
@@ -378,7 +377,6 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 15.0, 95.0, 131.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.view submodel.2"
 																}
 
@@ -423,13 +421,14 @@
 													"patcher" : 													{
 														"fileversion" : 1,
 														"appversion" : 														{
-															"major" : 7,
-															"minor" : 3,
-															"revision" : 4,
+															"major" : 8,
+															"minor" : 2,
+															"revision" : 0,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
 ,
+														"classnamespace" : "box",
 														"rect" : [ 726.0, 431.0, 132.0, 480.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
@@ -457,6 +456,7 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
+														"assistshowspatchername" : 0,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-7",
@@ -464,7 +464,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 58.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "This view is embedded in a bpatcher. ",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -479,7 +478,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 9.0, 209.0, 47.0 ],
-																	"style" : "",
 																	"text" : "A view binding to 'my_model/submodel.1'"
 																}
 
@@ -493,8 +491,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -507,8 +504,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -520,7 +516,6 @@
 																	"numoutlets" : 3,
 																	"outlettype" : [ "", "", "" ],
 																	"patching_rect" : [ 15.0, 205.0, 164.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.remote another_param"
 																}
 
@@ -534,7 +529,6 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 15.0, 95.0, 131.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.view submodel.1"
 																}
 
@@ -579,13 +573,14 @@
 													"patcher" : 													{
 														"fileversion" : 1,
 														"appversion" : 														{
-															"major" : 7,
-															"minor" : 3,
-															"revision" : 4,
+															"major" : 8,
+															"minor" : 2,
+															"revision" : 0,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
 ,
+														"classnamespace" : "box",
 														"rect" : [ 699.0, 306.0, 452.0, 498.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
@@ -613,6 +608,7 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
+														"assistshowspatchername" : 0,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-3",
@@ -620,7 +616,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 38.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "by using pattern-matching expressions",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -633,7 +628,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 58.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "This view is embedded in a bpatcher. ",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -647,7 +641,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 9.0, 186.0, 27.0 ],
-																	"style" : "",
 																	"text" : "A view binding to both"
 																}
 
@@ -661,8 +654,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 265.0, 11.5, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 265.0, 11.5, 50.0, 22.0 ]
 																}
 
 															}
@@ -675,8 +667,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 265.0, 99.5, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 265.0, 99.5, 50.0, 22.0 ]
 																}
 
 															}
@@ -688,7 +679,6 @@
 																	"numoutlets" : 3,
 																	"outlettype" : [ "", "", "" ],
 																	"patching_rect" : [ 265.0, 56.5, 164.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.remote another_param"
 																}
 
@@ -702,7 +692,6 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 15.0, 95.0, 153.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.view submodel.{1..2}"
 																}
 
@@ -766,13 +755,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
+											"major" : 8,
+											"minor" : 2,
+											"revision" : 0,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 761.0, 363.0, 640.0, 480.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -800,6 +790,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-3",
@@ -808,7 +799,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 15.0, 95.0, 133.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.model my_model"
 												}
 
@@ -820,7 +810,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-													"style" : "",
 													"text" : "This model is embedded in a bpatcher. ",
 													"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 												}
@@ -834,7 +823,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-													"style" : "",
 													"text" : "A model named 'my_model'"
 												}
 
@@ -856,13 +844,14 @@
 													"patcher" : 													{
 														"fileversion" : 1,
 														"appversion" : 														{
-															"major" : 7,
-															"minor" : 3,
-															"revision" : 4,
+															"major" : 8,
+															"minor" : 2,
+															"revision" : 0,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
 ,
+														"classnamespace" : "box",
 														"rect" : [ 829.0, 408.0, 640.0, 480.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
@@ -890,6 +879,7 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
+														"assistshowspatchername" : 0,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-7",
@@ -897,7 +887,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "This model is embedded in a bpatcher. ",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -911,7 +900,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-																	"style" : "",
 																	"text" : "A model named 'submodel.2'"
 																}
 
@@ -925,8 +913,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -939,8 +926,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -952,7 +938,6 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "" ],
 																	"patching_rect" : [ 15.0, 205.0, 181.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.parameter another_param"
 																}
 
@@ -965,7 +950,6 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 15.0, 95.0, 140.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.model submodel.2"
 																}
 
@@ -1010,13 +994,14 @@
 													"patcher" : 													{
 														"fileversion" : 1,
 														"appversion" : 														{
-															"major" : 7,
-															"minor" : 3,
-															"revision" : 4,
+															"major" : 8,
+															"minor" : 2,
+															"revision" : 0,
 															"architecture" : "x64",
 															"modernui" : 1
 														}
 ,
+														"classnamespace" : "box",
 														"rect" : [ 726.0, 431.0, 640.0, 480.0 ],
 														"bglocked" : 0,
 														"openinpresentation" : 0,
@@ -1044,6 +1029,7 @@
 														"tags" : "",
 														"style" : "",
 														"subpatcher_template" : "",
+														"assistshowspatchername" : 0,
 														"boxes" : [ 															{
 																"box" : 																{
 																	"id" : "obj-7",
@@ -1051,7 +1037,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-																	"style" : "",
 																	"text" : "This model is embedded in a bpatcher. ",
 																	"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 																}
@@ -1065,7 +1050,6 @@
 																	"numinlets" : 1,
 																	"numoutlets" : 0,
 																	"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-																	"style" : "",
 																	"text" : "A model named 'submodel.1'"
 																}
 
@@ -1079,8 +1063,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 160.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -1093,8 +1076,7 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "bang" ],
 																	"parameter_enable" : 0,
-																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ],
-																	"style" : ""
+																	"patching_rect" : [ 15.0, 248.0, 50.0, 22.0 ]
 																}
 
 															}
@@ -1106,7 +1088,6 @@
 																	"numoutlets" : 2,
 																	"outlettype" : [ "", "" ],
 																	"patching_rect" : [ 15.0, 205.0, 181.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.parameter another_param"
 																}
 
@@ -1119,7 +1100,6 @@
 																	"numoutlets" : 1,
 																	"outlettype" : [ "" ],
 																	"patching_rect" : [ 15.0, 95.0, 140.0, 22.0 ],
-																	"style" : "",
 																	"text" : "ossia.model submodel.1"
 																}
 
@@ -1191,11 +1171,9 @@
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
-						"style" : "",
 						"tags" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p \"Nested views\""
 				}
 
@@ -1210,14 +1188,15 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
+							"major" : 8,
+							"minor" : 2,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 100.0, 126.0, 1096.0, 742.0 ],
+						"classnamespace" : "box",
+						"rect" : [ 0.0, 26.0, 1096.0, 742.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -1245,6 +1224,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"showontab" : 1,
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-6",
@@ -1252,7 +1232,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 491.0, 709.0, 571.0, 20.0 ],
-									"style" : "",
 									"text" : " NB: there's an ossia.device in the root patcher to make sure we don't have duplicates with other patchers"
 								}
 
@@ -1270,7 +1249,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 471.0, 198.0, 180.0, 64.0 ],
-									"style" : "",
 									"text" : "Model address the view is binding to can be dynamically set",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
@@ -1285,7 +1263,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 693.0, 446.0, 224.0, 21.0 ],
-									"style" : "",
 									"text" : "automatically bind to submodel/a_param",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
@@ -1304,7 +1281,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 471.0, 446.0, 186.0, 92.0 ],
-									"style" : "",
 									"text" : "ossia.remote placed within the scope defined by ossia.view automatically bind to the addressed parameter",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
@@ -1318,7 +1294,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 798.0, 219.0, 137.0, 22.0 ],
-									"style" : "",
 									"text" : "address another_model"
 								}
 
@@ -1331,7 +1306,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 659.0, 219.0, 109.0, 22.0 ],
-									"style" : "",
 									"text" : "address submodel"
 								}
 
@@ -1353,13 +1327,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
+											"major" : 8,
+											"minor" : 2,
+											"revision" : 0,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 852.0, 463.0, 640.0, 480.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -1387,6 +1362,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"format" : 6,
@@ -1396,8 +1372,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 15.0, 145.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 15.0, 145.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1410,8 +1385,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 15.0, 233.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 15.0, 233.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1423,7 +1397,6 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 15.0, 190.0, 147.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.parameter a_param"
 												}
 
@@ -1435,7 +1408,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-													"style" : "",
 													"text" : "This model is embedded in a bpatcher. ",
 													"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 												}
@@ -1449,7 +1421,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-													"style" : "",
 													"text" : "A model named 'another_model'"
 												}
 
@@ -1463,8 +1434,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 176.0, 145.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 176.0, 145.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1477,8 +1447,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 176.0, 233.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 176.0, 233.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1490,7 +1459,6 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 176.0, 190.0, 181.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.parameter another_param"
 												}
 
@@ -1503,7 +1471,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 15.0, 95.0, 158.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.model another_model"
 												}
 
@@ -1562,13 +1529,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
+											"major" : 8,
+											"minor" : 2,
+											"revision" : 0,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 699.0, 377.0, 428.0, 349.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -1596,6 +1564,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"comment" : "",
@@ -1605,8 +1574,7 @@
 													"numinlets" : 0,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
-													"patching_rect" : [ 15.0, 83.0, 30.0, 30.0 ],
-													"style" : ""
+													"patching_rect" : [ 15.0, 83.0, 30.0, 30.0 ]
 												}
 
 											}
@@ -1619,8 +1587,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 33.0, 249.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 33.0, 249.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1633,7 +1600,6 @@
 													"numoutlets" : 3,
 													"outlettype" : [ "", "", "" ],
 													"patching_rect" : [ 33.0, 206.0, 130.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.remote a_param"
 												}
 
@@ -1645,7 +1611,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-													"style" : "",
 													"text" : "This view is embedded in a bpatcher. ",
 													"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 												}
@@ -1659,7 +1624,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-													"style" : "",
 													"text" : "A view binding to 'submodel' model"
 												}
 
@@ -1673,8 +1637,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 194.0, 249.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 194.0, 249.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1687,7 +1650,6 @@
 													"numoutlets" : 3,
 													"outlettype" : [ "", "", "" ],
 													"patching_rect" : [ 194.0, 206.0, 164.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.remote another_param"
 												}
 
@@ -1701,7 +1663,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 15.0, 127.0, 121.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.view submodel"
 												}
 
@@ -1769,13 +1730,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
+											"major" : 8,
+											"minor" : 2,
+											"revision" : 0,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 852.0, 463.0, 640.0, 480.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -1803,6 +1765,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"format" : 6,
@@ -1812,8 +1775,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 15.0, 145.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 15.0, 145.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1826,8 +1788,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 15.0, 233.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 15.0, 233.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1839,7 +1800,6 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 15.0, 190.0, 147.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.parameter a_param"
 												}
 
@@ -1851,7 +1811,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 42.0, 226.0, 20.0 ],
-													"style" : "",
 													"text" : "This model is embedded in a bpatcher. ",
 													"textcolor" : [ 0.32549, 0.345098, 0.372549, 1.0 ]
 												}
@@ -1865,7 +1824,6 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 15.0, 9.0, 291.0, 27.0 ],
-													"style" : "",
 													"text" : "A model named 'submodel'"
 												}
 
@@ -1879,8 +1837,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 176.0, 145.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 176.0, 145.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1893,8 +1850,7 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "bang" ],
 													"parameter_enable" : 0,
-													"patching_rect" : [ 176.0, 233.0, 50.0, 22.0 ],
-													"style" : ""
+													"patching_rect" : [ 176.0, 233.0, 50.0, 22.0 ]
 												}
 
 											}
@@ -1906,7 +1862,6 @@
 													"numoutlets" : 2,
 													"outlettype" : [ "", "" ],
 													"patching_rect" : [ 176.0, 190.0, 181.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.parameter another_param"
 												}
 
@@ -1919,7 +1874,6 @@
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 15.0, 95.0, 130.0, 22.0 ],
-													"style" : "",
 													"text" : "ossia.model submodel"
 												}
 
@@ -2010,11 +1964,9 @@
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
-						"style" : "",
 						"tags" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p Basic"
 				}
 

@@ -8,7 +8,7 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/format_value.hpp>
 #include <ossia/detail/optional.hpp>
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 #include <ossia_export.h>
 
 /**

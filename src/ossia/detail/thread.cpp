@@ -58,7 +58,7 @@ std::string get_module_path()
   return "";
 }
 }
-#else
+#elif __has_include(<ossia/../../3rdparty/whereami/src/whereami.c>)
 #include <ossia/../../3rdparty/whereami/src/whereami.h>
 #include <ossia/../../3rdparty/whereami/src/whereami.c>
 namespace ossia
@@ -95,5 +95,19 @@ std::string get_module_path()
   return path;
 }
 }
+#else
+namespace ossia
+{
+std::string get_exe_path()
+{
+  std::string path;
+  return path;
+}
 
+std::string get_module_path()
+{
+  std::string path;
+  return path;
+}
+}
 #endif

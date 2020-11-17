@@ -80,7 +80,7 @@ private:
   template <typename... Args>
   void subfunc(const ossia::value& arg1, Args&&... args)
   {
-    arg1.apply(ValueWriter{p});
+    arg1.apply(ValueWriter{{p}});
     subfunc(args...);
   }
 

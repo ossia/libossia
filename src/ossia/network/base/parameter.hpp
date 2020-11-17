@@ -44,11 +44,11 @@ struct full_parameter_data;
 class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 {
 public:
-  parameter_base(ossia::net::node_base& n) : m_node{n}
+  explicit parameter_base(ossia::net::node_base& n) : m_node{n}
   {
   }
-  parameter_base(const parameter_base&) = delete;
-  parameter_base(parameter_base&&) = delete;
+  explicit parameter_base(const parameter_base&) = delete;
+  explicit parameter_base(parameter_base&&) = delete;
   parameter_base& operator=(const parameter_base&) = delete;
   parameter_base& operator=(parameter_base&&) = delete;
 

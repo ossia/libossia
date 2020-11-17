@@ -194,7 +194,7 @@ bool osc_protocol::push_bundle(
       if (val.valid())
       {
         str << oscpack::BeginMessageN(addr.get_node().osc_address());
-        val.apply(osc_outbound_visitor{str});
+        val.apply(osc_outbound_visitor{{str}});
         str << oscpack::EndMessage();
       }
     }
@@ -228,7 +228,7 @@ bool osc_protocol::push_raw_bundle(
       if (val.valid())
       {
         str << oscpack::BeginMessageN(addr.address);
-        val.apply(osc_outbound_visitor{str});
+        val.apply(osc_outbound_visitor{{str}});
         str << oscpack::EndMessage();
       }
     }

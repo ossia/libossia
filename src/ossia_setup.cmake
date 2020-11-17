@@ -113,7 +113,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
 
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RtMidi17>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/RtMidi17/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
 
       $<INSTALL_INTERFACE:include>

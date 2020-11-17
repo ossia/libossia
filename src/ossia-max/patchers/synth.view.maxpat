@@ -2,13 +2,14 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x86",
+			"major" : 8,
+			"minor" : 2,
+			"revision" : 0,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
+		"classnamespace" : "box",
 		"rect" : [ 537.0, 56.0, 505.0, 960.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
@@ -36,6 +37,7 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontface" : 1,
@@ -47,7 +49,6 @@
 					"patching_rect" : [ 98.0, 279.5, 38.0, 18.0 ],
 					"presentation" : 1,
 					"presentation_rect" : [ 9.0, 131.0, 38.0, 18.0 ],
-					"style" : "",
 					"text" : "Ramp"
 				}
 
@@ -61,8 +62,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 53.0, 7.0, 30.0, 30.0 ],
-					"style" : ""
+					"patching_rect" : [ 53.0, 7.0, 30.0, 30.0 ]
 				}
 
 			}
@@ -74,20 +74,20 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 431.0, 97.5, 44.0, 47.0 ],
+					"patching_rect" : [ 431.0, 97.5, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 239.0, 9.0, 44.0, 47.0 ],
+					"presentation_rect" : [ 239.0, 9.0, 44.0, 48.0 ],
 					"prototypename" : "amount",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Index",
-							"parameter_shortname" : "Index",
-							"parameter_type" : 0,
 							"parameter_mmax" : 1000.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 5,
-							"parameter_speedlim" : 0.0
+							"parameter_shortname" : "Index",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 5
 						}
 
 					}
@@ -104,21 +104,21 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 242.0, 97.5, 44.0, 47.0 ],
+					"patching_rect" : [ 242.0, 97.5, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 177.0, 9.0, 44.0, 47.0 ],
+					"presentation_rect" : [ 177.0, 9.0, 44.0, 48.0 ],
 					"prototypename" : "amount",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Ratio",
-							"parameter_shortname" : "Ratio",
-							"parameter_type" : 0,
-							"parameter_mmin" : 0.001,
 							"parameter_mmax" : 10.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 5,
-							"parameter_speedlim" : 0.0
+							"parameter_mmin" : 0.001,
+							"parameter_shortname" : "Ratio",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 5
 						}
 
 					}
@@ -142,15 +142,15 @@
 					"prototypename" : "time",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "live.numbox",
-							"parameter_shortname" : "live.numbox",
-							"parameter_type" : 0,
 							"parameter_mmax" : 1000.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 2,
+							"parameter_shortname" : "live.numbox",
+							"parameter_speedlim" : 0.0,
 							"parameter_steps" : 41,
-							"parameter_speedlim" : 0.0
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 2
 						}
 
 					}
@@ -168,21 +168,21 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 360.5, 191.0, 44.0, 53.0 ],
+					"patching_rect" : [ 360.5, 191.0, 44.0, 54.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 239.0, 99.0, 44.0, 53.0 ],
+					"presentation_rect" : [ 239.0, 99.0, 44.0, 54.0 ],
 					"prototypename" : "pan",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Pan",
-							"parameter_shortname" : "Pan",
-							"parameter_type" : 0,
-							"parameter_mmin" : -1.0,
 							"parameter_mmax" : 1.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 6,
-							"parameter_speedlim" : 0.0
+							"parameter_mmin" : -1.0,
+							"parameter_shortname" : "Pan",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 1
 						}
 
 					}
@@ -200,21 +200,21 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 242.0, 191.0, 44.0, 47.0 ],
+					"patching_rect" : [ 242.0, 191.0, 44.0, 48.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 177.0, 99.0, 44.0, 47.0 ],
+					"presentation_rect" : [ 177.0, 99.0, 44.0, 48.0 ],
 					"prototypename" : "gain",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Gain",
-							"parameter_shortname" : "Gain",
-							"parameter_type" : 0,
-							"parameter_mmin" : -70.0,
 							"parameter_mmax" : 0.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 4,
-							"parameter_speedlim" : 0.0
+							"parameter_mmin" : -70.0,
+							"parameter_shortname" : "Gain",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 4
 						}
 
 					}
@@ -232,21 +232,21 @@
 					"orientation" : 1,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 53.0, 201.0, 142.0, 40.0 ],
+					"patching_rect" : [ 53.0, 201.0, 142.0, 41.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 6.0, 67.0, 153.0, 40.0 ],
+					"presentation_rect" : [ 6.0, 67.0, 153.0, 41.0 ],
 					"prototypename" : "freq",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_exponent" : 4.0,
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Cutoff",
-							"parameter_shortname" : "Cutoff",
-							"parameter_type" : 0,
 							"parameter_mmax" : 10000.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 3,
-							"parameter_exponent" : 4.0,
-							"parameter_speedlim" : 0.0
+							"parameter_shortname" : "Cutoff",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 3
 						}
 
 					}
@@ -264,21 +264,21 @@
 					"orientation" : 1,
 					"outlettype" : [ "", "float" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 53.0, 101.0, 142.0, 40.0 ],
+					"patching_rect" : [ 53.0, 101.0, 142.0, 41.0 ],
 					"presentation" : 1,
-					"presentation_rect" : [ 6.0, 16.0, 153.0, 40.0 ],
+					"presentation_rect" : [ 6.0, 16.0, 153.0, 41.0 ],
 					"prototypename" : "freq",
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
+							"parameter_exponent" : 4.0,
+							"parameter_initial" : [ 0 ],
 							"parameter_linknames" : 1,
 							"parameter_longname" : "Carrier frequency",
-							"parameter_shortname" : "Carrier frequency",
-							"parameter_type" : 0,
 							"parameter_mmax" : 10000.0,
-							"parameter_initial" : [ 0 ],
-							"parameter_unitstyle" : 3,
-							"parameter_exponent" : 4.0,
-							"parameter_speedlim" : 0.0
+							"parameter_shortname" : "Carrier frequency",
+							"parameter_speedlim" : 0.0,
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 3
 						}
 
 					}
@@ -296,7 +296,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 242.0, 149.0, 168.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote modulation/ratio"
 				}
 
@@ -310,7 +309,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 53.0, 149.0, 173.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote carrier/frequency"
 				}
 
@@ -324,7 +322,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 53.0, 298.0, 133.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote ramptime"
 				}
 
@@ -338,7 +335,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 431.0, 149.0, 173.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote modulation/index"
 				}
 
@@ -352,7 +348,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 242.0, 243.0, 105.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote gain"
 				}
 
@@ -366,7 +361,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 53.0, 243.0, 168.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote cutoff/frequency"
 				}
 
@@ -380,7 +374,6 @@
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
 					"patching_rect" : [ 360.5, 243.0, 103.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.remote pan"
 				}
 
@@ -394,7 +387,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 53.0, 39.0, 83.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.view #1"
 				}
 
@@ -514,13 +506,18 @@
 			}
  ],
 		"parameters" : 		{
+			"obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ],
 			"obj-2" : [ "Cutoff", "Cutoff", 0 ],
-			"obj-8" : [ "Ratio", "Ratio", 0 ],
-			"obj-4" : [ "Gain", "Gain", 0 ],
-			"obj-7" : [ "live.numbox", "live.numbox", 0 ],
 			"obj-3" : [ "Index", "Index", 0 ],
+			"obj-4" : [ "Gain", "Gain", 0 ],
 			"obj-6" : [ "Pan", "Pan", 0 ],
-			"obj-1" : [ "Carrier frequency", "Carrier frequency", 0 ]
+			"obj-7" : [ "live.numbox", "live.numbox", 0 ],
+			"obj-8" : [ "Ratio", "Ratio", 0 ],
+			"parameterbanks" : 			{
+
+			}
+,
+			"inherited_shortname" : 1
 		}
 ,
 		"dependency_cache" : [ 			{
