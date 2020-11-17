@@ -10,7 +10,7 @@ namespace ossia
 namespace max
 {
 
-class object_base;
+struct object_base;
 
 class matcher
 {

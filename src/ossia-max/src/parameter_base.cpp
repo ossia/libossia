@@ -879,12 +879,9 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     std::vector<ossia::value> list;
     list.reserve(argc+1);
 
-    bool start_with_symbol = false;
-
     if ( s && s != gensym("list") && s != gensym("set")  )
     {
       list.push_back(std::string(s->s_name));
-      start_with_symbol = true;
     }
 
     for (; argc > 0; argc--, argv++)

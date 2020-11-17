@@ -229,7 +229,6 @@ std::vector<object_base*> find_children_to_register(
                                : gensym("ossia.remote");
 
   std::vector<object_base*> found;
-  bool found_model = false;
   bool found_view = false;
 
   // 1: look for [classname] objects into the patcher
@@ -255,12 +254,9 @@ std::vector<object_base*> find_children_to_register(
       }
 
       // if we're looking for ossia.view but found a model, remind it
-      if ( search_symbol == gensym("ossia.view")
-           && curr_classname == gensym("ossia.model") )
-        found_model = true;
-      else if ( search_symbol == gensym("ossia.model")
-                && curr_classname == gensym("ossia.view") )
-        found_view = true;
+      if ( search_symbol == gensym("ossia.model")
+              && curr_classname == gensym("ossia.view") )
+      found_view = true;
 
       // if there is a client or device in the current patcher
       // return only that object
