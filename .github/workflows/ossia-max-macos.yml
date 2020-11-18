@@ -17,6 +17,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: build
       run: ./tools/build-ossia-max.sh clean silent
+    - name: Archive Max Package
       with:
         name: ossia-max-macos
         path: artifacts/ossia
