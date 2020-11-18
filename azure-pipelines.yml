@@ -26,6 +26,7 @@ stages:
           submodules: true
 
         - bash: |
+            sudo apt update -qq
             sudo apt install -qq -y build-essential g++ ninja-build wget
             wget https://github.com/jcelerier/cninja/releases/download/v3.7.2/cninja-v3.7.2-Linux.tar.gz
             tar xaf cninja-*-Linux.tar.gz
@@ -76,7 +77,8 @@ stages:
           artifact: libossia-device-bench
 
         - script: |
-            apt install libbenchmark-dev libbenchmark-tools
+            apt update -qq
+            apt install -qq libbenchmark-dev libbenchmark-tools
             cp -rf /azp/agent/_work/1/libossia-device-bench/* .
             mkdir results
             chmod +x ossia_DeviceBenchmark
@@ -105,6 +107,7 @@ stages:
           submodules: true
 
         - bash: |
+            sudo apt update -qq
             sudo apt install -qq -y build-essential g++ ninja-build libavahi-client-dev
           displayName: Dependencies
 
@@ -227,6 +230,7 @@ stages:
           submodules: true
 
         - bash: |
+            sudo apt update -qq
             sudo apt install -qq -y build-essential g++ ninja-build openjdk-8-jdk-headless libavahi-client-dev
           displayName: Dependencies
 
