@@ -268,6 +268,8 @@ void remote::on_device_created(device_base* obj)
   auto dev = obj->m_device.get();
   if(!m_devices.contains(dev))
   {
+    // no need to connect to on_node_removing because ossia::max::matcher
+    // already connect to it
     dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
     m_devices.push_back(dev);
   }

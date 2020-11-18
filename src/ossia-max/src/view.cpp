@@ -54,6 +54,8 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
       object_free(x);
       return nullptr;
     }
+    device_base::on_device_created.connect<&view::on_device_created>(x);
+    device_base::on_device_removing.connect<&view::on_device_removing>(x);
 
     x->m_otype = object_class::view;
 
@@ -148,9 +150,40 @@ void view::unregister()
 
   ossia_max::instance().nr_views.push_back(this);
 
-  // register_children(this);
-
   m_registered = false;
+}
+
+void view::on_node_created_callback(ossia::net::node_base& node)
+{
+  auto oscaddr = ossia::net::address_string_from_node(node);
+
+  if ( ossia::traversal::match(get_path(), node) )
+  {
+    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+    fill_selection();
+  }
+}
+
+void view::on_device_removing(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  if(m_devices.contains(dev))
+  {
+    dev->on_node_created.disconnect<&view::on_node_created_callback>(this);
+    m_devices.remove_all(dev);
+  }
+}
+
+void view::on_device_created(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  if(!m_devices.contains(dev))
+  {
+    // no need to connect to on_node_removing because ossia::max::matcher
+    // already connect to it
+    dev->on_node_created.connect<&view::on_node_created_callback>(this);
+    m_devices.push_back(dev);
+  }
 }
 
 } // max namespace

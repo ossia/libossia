@@ -9,9 +9,6 @@ namespace max
 
 class device_base;
 
-#pragma mark -
-#pragma mark t_remote structure declaration
-
 class remote : public parameter_base
 {
 public:
