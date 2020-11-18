@@ -3,7 +3,8 @@
 # Simple script to configure and build ossia-max
 # Available command optional arguments:
 #    release : build in release mode
-#    clean_build : remove any previous build folder and start from scratch
+#    clean : remove any previous build folder and start from scratch
+#    silent : silently install all needed dependencies
 
 set -ex
 export LANG=en_US.UTF-8
@@ -47,6 +48,13 @@ SCRIPT_FOLDER=`dirname $(greadlink -f $0)`
 REPO_ROOT=${SCRIPT_FOLDER}/../
 OSSIA_BUILD_FOLDER=${REPO_ROOT}/build-ossia-max
 
+if [[ $CI ]]
+then
+  INSTALL_FOLDER="${REPO_ROOT}/artifacts/ossia"
+else
+  INSTALL_FOLDER="${HOME}/Documents/Max 8/Packages/ossia"
+fi
+
 if [[ -n ${OSSIA_CLEAN_BUILD} ]]
 then
   rm -rf ${OSSIA_BUILD_FOLDER}
@@ -56,7 +64,7 @@ mkdir -p ${OSSIA_BUILD_FOLDER}
 cd ${OSSIA_BUILD_FOLDER}
 cmake -GNinja .. \
   -DCMAKE_BUILD_TYPE=${OSSIA_BUILD_TYPE} \
-  -DOSSIA_MAX_INSTALL_FOLDER="${HOME}/Documents/Max 8/Packages/ossia" \
+  -DOSSIA_MAX_INSTALL_FOLDER="${INSTALL_FOLDER}" \
   -DOSSIA_MAX_ONLY=1 \
   -DCMAKE_OSX_DEPLOYMENT_TARGET=10.13
 ninja 

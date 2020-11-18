@@ -16,4 +16,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build
-      run: ./tools/build-ossia-max.sh
+      run: ./tools/build-ossia-max.sh clean silent
+      with:
+        name: ossia-max-macos
+        path: artifacts/ossia
