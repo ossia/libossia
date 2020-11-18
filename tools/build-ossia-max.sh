@@ -8,21 +8,40 @@
 set -ex
 export LANG=en_US.UTF-8
 
-# install deps
-command -v brew > /dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
-command -v greadlink > /dev/null 2>&1 || brew install coreutils
-command -v ninja > /dev/null 2>&1 || brew install ninja
-
-OSSIA_BUILD_TYPE=debug
-
 for var in "$@"
 do
   if [[ $var = clean ]]; then
     OSSIA_CLEAN_BUILD=1
   elif	[[ $var = release ]]; then
   	OSSIA_BUILD_TYPE=release
+  elif  [[ $var = silent ]]; then
+    OSSIA_SILENT_INSTALL=true
   fi
 done
+
+ask_permission()
+{
+if [[ $OSSIA_SILENT_INSTALL ]]
+then 
+  echo 1; return;
+fi
+
+while true; do
+    read -p "'$1' is missing, do you want to install it?" yn
+    case $yn in
+        [Yy]* ) echo 1; break;;
+        [Nn]* ) echo 0; break;;
+        * ) echo "Please answer yes or no.";;
+    esac
+done
+}
+
+# install deps
+command -v brew > /dev/null 2>&1 || [ $(ask_permission brew) -eq 1 ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+command -v greadlink > /dev/null 2>&1 || [ $(ask_permission coreutils) -eq 1 ] && brew install coreutils
+command -v ninja > /dev/null 2>&1 ||  [ $(ask_permission ninja) -eq 1 ] && brew install ninja
+
+OSSIA_BUILD_TYPE=debug
 
 SCRIPT_FOLDER=`dirname $(greadlink -f $0)`
 REPO_ROOT=${SCRIPT_FOLDER}/../
