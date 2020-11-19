@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia-max/src/object_base.hpp>
 #include "search_filter.hpp"
+#include <set>
 
 namespace ossia
 {
