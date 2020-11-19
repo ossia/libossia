@@ -35,7 +35,7 @@ fi
 
 mkdir -p ${OSSIA_BUILD_FOLDER}
 cd ${OSSIA_BUILD_FOLDER}
-cmake -GNinja .. \
+cmake -GNinja "${REPO_ROOT}" \
   -DCMAKE_BUILD_TYPE=${OSSIA_BUILD_TYPE} \
   -DOSSIA_MAX_INSTALL_FOLDER="${HOME}/Documents/Max 8/Packages/ossia" \
   -DOSSIA_MAX_ONLY=1 \
