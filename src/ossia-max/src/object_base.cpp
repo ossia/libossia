@@ -186,6 +186,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
           break;
       }
       case object_class::view:
+      case object_class::explorer:
       {
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
@@ -202,7 +203,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
-          std::cout << "object " << m_name->s_name << " registering under node " << pn->get_node()->get_name() << std::endl;
           auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
                                                              static_cast<parameter*>(this)->m_type->s_name);
           matchers.reserve(matchers.size()+params.size());

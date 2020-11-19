@@ -30,7 +30,7 @@ extern "C" void ossia_explorer_setup()
 
   auto& c = ossia_library.ossia_explorer_class;
   class_addmethod(
-      c, (method)explorer::execute_method,
+      c, (method)explorer::explore_mess_cb$,
       "explore", A_GIMME, 0);
   class_addmethod(
       c, (method)explorer::assist,
@@ -51,19 +51,13 @@ extern "C" void ossia_explorer_setup()
 extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<explorer>(argc, argv);
+  x->m_otype = object_class::explorer;
   x->m_dumpout = outlet_new(x, NULL);
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
   ossia_max::instance().explorers.push_back(x);
 
-  if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
-  {
-    x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
-  }
   return x;
 }
 
@@ -103,34 +97,52 @@ explorer::~explorer()
   outlet_delete(m_dumpout);
 }
 
-void explorer::parse_args(t_symbol* s, long argc, t_atom* argv)
+void explorer::explore_mess_cb$(explorer* x, t_symbol* s, long argc, t_atom* argv)
 {
-  m_method = s;
-  m_name = nullptr;
+  x->m_name = nullptr;
   if(argc > 0 && argv->a_type == A_SYM)
   {
-    m_name = argv->a_w.w_sym;
-    m_addr_scope = ossia::net::get_address_scope(m_name->s_name);
+    x->m_name = argv->a_w.w_sym;
+    x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   }
-}
 
-void explorer::execute_method(explorer* x, t_symbol* s, long argc, t_atom* argv)
-{
-  x->parse_args(s, argc, argv);
-  auto matchers = x->find_parent_nodes();
-  x->register_node(matchers);
-}
+  std::vector<std::shared_ptr<matcher>> matchers;
 
-bool explorer::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
-{
+  if(x->m_name == nullptr)
+  {
+    auto obj = x->find_parent_object();
+    if(obj)
+    {
+      matchers = obj->m_matchers;
+      x->m_addr_scope = obj->m_addr_scope;
+      x->m_name = obj->m_name;
+    }
+    else
+    {
+      matchers = {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+      x->m_name = gensym("/");
+      x->m_addr_scope = ossia::net::address_scope::absolute;
+    }
+  }
+  else
+  {
+    matchers = x->find_or_create_matchers();
+    if(matchers.empty())
+    {
+      matchers = {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+    }
+  }
+
+  std::cout << "matchers size: " << matchers.size() << std::endl;
+
   // get namespace of given nodes
   std::vector<ossia::net::node_base*> nodes;
   for(const auto& m : matchers)
   {
     auto node = m->get_node();
-    std::string address(m_name->s_name);
+    std::string address(x->m_name->s_name);
     std::vector<ossia::net::node_base*> found_nodes;
-    if(m_addr_scope == ossia::net::address_scope::global)
+    if(x->m_addr_scope == ossia::net::address_scope::global)
     {
       found_nodes = {node};
     }
@@ -141,26 +153,28 @@ bool explorer::register_node(std::vector<std::shared_ptr<matcher>>& matchers)
 
     for(const auto& n : found_nodes)
     {
-      auto vec = ossia::net::list_all_children(n, m_depth);
+      auto vec = ossia::net::list_all_children(n, x->m_depth);
       nodes.insert(nodes.end(), vec.begin(), vec.end());
     }
   }
 
+  std::cout << "nodes count before filtering: " << nodes.size() << std::endl;
+
   ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
-    return filter(*m);
+    return x->filter(*m);
   });
+
+  std::cout << "nodes count after filtering: " << nodes.size() << std::endl;
 
   t_atom a;
   A_SETLONG(&a, nodes.size());
-  outlet_anything(m_dumpout, s_size, 1, &a);
+  outlet_anything(x->m_dumpout, s_size, 1, &a);
   for(const auto& n : nodes)
   {
     auto s = ossia::net::address_string_from_node(*n);
     A_SETSYM(&a, gensym(s.c_str()));
-    outlet_anything(m_dumpout, s_namespace, 1, &a);
+    outlet_anything(x->m_dumpout, s_namespace, 1, &a);
   }
-
-  return true;
 }
 
 bool explorer::unregister()
@@ -169,3 +183,4 @@ bool explorer::unregister()
 
   return true;
 }
+
