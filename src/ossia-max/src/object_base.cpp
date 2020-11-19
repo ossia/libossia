@@ -263,9 +263,11 @@ void object_base::loadbang(object_base* x)
     {
       case object_class::param:
         static_cast<parameter*>(x)->do_registration();
+        static_cast<parameter*>(x)->output_all_values();
         break;
       case object_class::remote:
         static_cast<remote*>(x)->do_registration();
+        static_cast<remote*>(x)->output_all_values();
         break;
       case object_class::attribute:
         static_cast<attribute*>(x)->do_registration();
