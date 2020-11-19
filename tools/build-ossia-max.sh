@@ -20,6 +20,9 @@ do
   fi
 done
 
+
+if [ -z ${CI+x} ];
+then
 ask_permission()
 {
 if [[ $OSSIA_SILENT_INSTALL ]]
@@ -41,6 +44,7 @@ done
 command -v brew > /dev/null 2>&1 || [ $(ask_permission brew) -eq 1 ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 command -v greadlink > /dev/null 2>&1 || [ $(ask_permission coreutils) -eq 1 ] && brew install coreutils
 command -v ninja > /dev/null 2>&1 ||  [ $(ask_permission ninja) -eq 1 ] && brew install ninja
+fi # CI
 
 OSSIA_BUILD_TYPE=debug
 
@@ -48,11 +52,11 @@ SCRIPT_FOLDER=`dirname $(greadlink -f $0)`
 REPO_ROOT=${SCRIPT_FOLDER}/../
 OSSIA_BUILD_FOLDER=${REPO_ROOT}/build-ossia-max
 
-if [[ $CI ]]
+if [ -z ${CI+x} ];
 then
-  INSTALL_FOLDER="${REPO_ROOT}/artifacts/ossia"
-else
   INSTALL_FOLDER="${HOME}/Documents/Max 8/Packages/ossia"
+else
+  INSTALL_FOLDER="${REPO_ROOT}/artifacts/ossia"
 fi
 
 if [[ -n ${OSSIA_CLEAN_BUILD} ]]
