@@ -33,6 +33,10 @@ endif()
 
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 
+
+ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
+ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
+
 if(MSVC AND NOT OSSIA_STATIC)
   add_custom_command(TARGET ossia_PresetTest POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:ossia> $<TARGET_FILE_DIR:ossia_PresetTest>
@@ -72,8 +76,6 @@ if(OSSIA_EDITOR)
   ossia_add_test(TimeIntervalTest            "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeIntervalTest.cpp")
   ossia_add_test(TimeEventTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeEventTest.cpp")
   ossia_add_test(TimeSyncTest                "${CMAKE_CURRENT_SOURCE_DIR}/Editor/TimeSyncTest.cpp")
-  ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
-  ossia_add_test(DataspaceTest               "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceTest.cpp")
   ossia_add_test(DataspaceMergeTest          "${CMAKE_CURRENT_SOURCE_DIR}/Editor/DataspaceMergeTest.cpp")
 endif()
 
