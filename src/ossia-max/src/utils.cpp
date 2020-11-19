@@ -95,7 +95,8 @@ std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_vi
 
 std::vector<parameter_base*> list_all_objects_recursively(t_object* patcher)
 {
-  std::vector<parameter_base*> objects(128);
+  std::vector<parameter_base*> objects;
+  objects.reserve(128);
   auto& pat_desc = ossia_max::instance().patchers[patcher];
 
   objects.insert(objects.end(), pat_desc.parameters.begin(), pat_desc.parameters.end());
@@ -139,7 +140,7 @@ using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
 void fire_values_by_priority(std::vector<node_priority>& priority_graph)
 {
   // sort vector against all priorities (lexicographical ordering)
-  ossia::sort(priority_graph, [&](const node_priority& prioa, const node_priority& priob){
+  ossia::sort(priority_graph, [](const node_priority& prioa, const node_priority& priob){
     int l = std::min(prioa.second.size(), priob.second.size());
     for(int i = 0; i < l; i++){
       if( prioa.second[i] > priob.second[i]) return true;   // a is greater than b
@@ -179,9 +180,7 @@ void fire_all_values_by_priority(t_object* patcher)
 
   for(const auto obj : all_objects)
   {
-    // FIXME : why are there some nullptr ?
-    if(!obj)
-      continue;
+    assert(obj != nullptr);
 
     for(const auto& m : obj->m_matchers)
     {
@@ -193,6 +192,18 @@ void fire_all_values_by_priority(t_object* patcher)
       }
     }
   }
+
+  std::cout << "priority graph size: " << priority_graph.size() << std::endl;
+  for(const auto& np : priority_graph)
+  {
+    std::cout << np.first << ": ";
+    for(const auto& p : np.second)
+    {
+      std::cout << p << " ";
+    }
+    std::cout << "\n";
+  }
+  std::cout << std::flush;
 
   fire_values_by_priority(priority_graph);
 }
