@@ -4,6 +4,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include "ossia-max.hpp"
 #include <regex>
+#include <algorithm> // std::lexicographical_compare
 
 namespace ossia
 {
@@ -135,25 +136,19 @@ std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node)
   return priorities;
 }
 
-using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
-
 void fire_values_by_priority(std::vector<node_priority>& priority_graph)
 {
-  // sort vector against all priorities (lexicographical ordering)
-  ossia::sort(priority_graph, [](const node_priority& prioa, const node_priority& priob){
-    int l = std::min(prioa.second.size(), priob.second.size());
-    for(int i = 0; i < l; i++){
-      if( prioa.second[i] > priob.second[i]) return true;   // a is greater than b
-      if( priob.second[i] > prioa.second[i]) return false;  // b is greater than a
-    }
-    if ( prioa.second.size() > l) return false;   // a is longer than b
-    return true;                                  // b is longer than a
+  // sort vector against all priorities
+  std::sort(priority_graph.begin(), priority_graph.end(), [](const node_priority& a, const node_priority& b){
+    return std::lexicographical_compare(
+        b.priorities.begin(), b.priorities.end(),
+        a.priorities.begin(), a.priorities.end());
   });
 
   // fire values by descending priority order
   for(const auto& p : priority_graph)
   {
-    auto matcher = p.first;
+    auto matcher = p.obj;
     auto node = matcher->get_node();
     auto param = node->get_parameter();
     if(param)
@@ -176,6 +171,7 @@ void fire_all_values_by_priority(t_object* patcher)
   auto all_objects = list_all_objects_recursively(patcher);
 
   std::vector<node_priority> priority_graph;
+  std::cout << "there are " << all_objects.size() << " objects in patcher" << std::endl;
   priority_graph.reserve(all_objects.size());
 
   for(const auto obj : all_objects)
@@ -188,7 +184,7 @@ void fire_all_values_by_priority(t_object* patcher)
       if(node)
       {
         auto prio = get_priority_list(node);
-        priority_graph.push_back({m.get(), prio});
+        priority_graph.push_back({m, prio});
       }
     }
   }
@@ -196,8 +192,8 @@ void fire_all_values_by_priority(t_object* patcher)
   std::cout << "priority graph size: " << priority_graph.size() << std::endl;
   for(const auto& np : priority_graph)
   {
-    std::cout << np.first << ": ";
-    for(const auto& p : np.second)
+    std::cout << np.obj << ": ";
+    for(const auto& p : np.priorities)
     {
       std::cout << p << " ";
     }
