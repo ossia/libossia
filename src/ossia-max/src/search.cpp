@@ -52,18 +52,12 @@ extern "C" void* ossia_search_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<search>(argc, argv);
   x->m_dumpout = outlet_new(x, NULL);
+  x->m_otype = object_class::search;
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
   ossia_max::instance().searchs.push_back(x);
 
-  if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
-  {
-    x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
-  }
   return x;
 }
 
@@ -103,20 +97,19 @@ search::~search()
   outlet_delete(m_dumpout);
 }
 
-void search::parse_args(t_symbol* s, long argc, t_atom* argv)
-{
-  m_method = s;
-  m_name = nullptr;
-  if(argc > 0 && argv->a_type == A_SYM)
-  {
-    m_name = argv->a_w.w_sym;
-    m_addr_scope = ossia::net::get_address_scope(m_name->s_name);
-  }
-}
-
 void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 {
-  x->parse_args(s, argc, argv);
+  x->m_name = nullptr;
+  if(argc > 0 && argv->a_type == A_SYM)
+  {
+    x->m_name = argv->a_w.w_sym;
+  }
+  else
+  {
+    x->m_name = gensym("/");
+  }
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+
   auto matchers = x->find_parent_nodes();
 
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)

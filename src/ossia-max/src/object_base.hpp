@@ -36,7 +36,9 @@ enum class object_class
   client,
   attribute,
   explorer,
-  unregistered = 255
+  search,
+  monitor,
+  fuzzysearch
 };
 
 struct object_base;

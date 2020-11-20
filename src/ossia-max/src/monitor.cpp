@@ -64,6 +64,7 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<monitor>(argc, argv);
   x->m_dumpout = outlet_new(x, NULL);
+  x->m_otype = object_class::monitor;
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 

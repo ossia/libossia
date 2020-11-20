@@ -28,7 +28,6 @@ struct search : object_base, search_filter
   ~search();
 
   bool unregister();
-  void parse_args(t_symbol* s, long argc, t_atom* argv);
 
   static void execute_method(ossia::max::search* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max::search* x);

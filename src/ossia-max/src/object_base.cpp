@@ -127,6 +127,9 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       case object_class::remote:
       case object_class::view:
       case object_class::explorer:
+      case object_class::fuzzysearch:
+      case object_class::monitor:
+      case object_class::search:
       {
         auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), false);
         matchers.reserve(nodes.size());
