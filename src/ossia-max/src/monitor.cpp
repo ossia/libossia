@@ -64,6 +64,7 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<monitor>(argc, argv);
   x->m_dumpout = outlet_new(x, NULL);
+  x->m_otype = object_class::monitor;
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
@@ -145,7 +146,7 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  auto matchers = x->find_parent_nodes();
+  auto matchers = x->find_or_create_matchers();
 
   for(const auto& n : matchers)
   {

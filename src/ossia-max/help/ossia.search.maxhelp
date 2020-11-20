@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 7,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 59.0, 106.0, 640.0, 480.0 ],
+		"rect" : [ 59.0, 106.0, 734.0, 636.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,42 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-8",
+					"linecount" : 4,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 282.0, 437.0, 321.0, 60.0 ],
+					"text" : "\"open <address>\" message works like \"search\"  except instead of sending list through dumpout, it open the patchers containing objects connected to address and highlight them  "
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"linecount" : 6,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 272.0, 340.0, 299.0, 87.0 ],
+					"text" : "\"search <address>\" will search return a list of objects connected to <address>.\n<address> could be relative, absolute or global and could contains pattern\nit returns as many list as objects found in the form :\nresult <object class name> <address>"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-3",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 303.0, 306.0, 294.0, 33.0 ],
+					"text" : "oissia.search let you search for objects in the patcher connected to a node that matches a pattern"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-4",
 					"linecount" : 2,
@@ -82,18 +118,6 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 336.0, 125.0, 145.0, 22.0 ],
 					"text" : "open mydevice:/fancy/oof"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-16",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 138.0, 117.0, 150.0, 33.0 ],
-					"text" : "NOT WORKING YET\nNEED TEST AND DEBUG"
 				}
 
 			}

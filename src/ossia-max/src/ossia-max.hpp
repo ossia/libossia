@@ -44,6 +44,9 @@ extern "C"
     OSSIA_MAX_EXPORT void ossia_view_setup();
     OSSIA_MAX_EXPORT void ossia_ossia_setup();
     OSSIA_MAX_EXPORT void ossia_explorer_setup();
+    OSSIA_MAX_EXPORT void ossia_search_setup();
+    OSSIA_MAX_EXPORT void ossia_monitor_setup();
+    OSSIA_MAX_EXPORT void ossia_fuzzysearch_setup();
 }
 
 namespace ossia
