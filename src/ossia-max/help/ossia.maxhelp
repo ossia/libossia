@@ -40,12 +40,118 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-51",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 672.0, 466.5, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-49",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 824.0, 408.5, 94.0, 22.0 ],
+					"text" : "print udpreceive"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-48",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 824.0, 378.5, 97.0, 22.0 ],
+					"text" : "udpreceive 4321"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-47",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 244.5, 718.0, 183.0, 22.0 ],
+					"text" : "expose osc 127.0.0.1 4321 1234"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-45",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 111.0, 801.0, 32.0, 22.0 ],
+					"text" : "print"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-44",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 183.0, 749.0, 41.0, 22.0 ],
+					"text" : "stop 0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-38",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 165.0, 718.0, 77.0, 22.0 ],
+					"text" : "get protocols"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-20",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 672.0, 353.0, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-17",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 672.0, 495.0, 159.0, 22.0 ],
+					"text" : "osc /foo/bar 36.15 minitel $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-42",
 					"linecount" : 2,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 735.0, 471.0, 248.0, 33.0 ],
+					"patching_rect" : [ 735.0, 546.0, 248.0, 33.0 ],
 					"text" : "once connected, ossia object returns unhandle osc messages through dump outlet"
 				}
 
@@ -56,7 +162,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 797.0, 381.0, 150.0, 20.0 ],
+					"patching_rect" : [ 726.0, 353.0, 150.0, 20.0 ],
 					"text" : "send some osc message"
 				}
 
@@ -68,8 +174,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 672.0, 381.0, 121.0, 22.0 ],
-					"text" : "/some/address 1.2 er"
+					"patching_rect" : [ 672.0, 381.0, 138.0, 22.0 ],
+					"text" : "/some/address 1.2 er $1"
 				}
 
 			}
@@ -79,7 +185,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 672.0, 413.0, 138.0, 22.0 ],
+					"patching_rect" : [ 672.0, 408.5, 138.0, 22.0 ],
 					"text" : "udpsend 127.0.0.1 1234"
 				}
 
@@ -91,8 +197,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 672.0, 522.0, 188.0, 22.0 ],
-					"text" : "/some/address 1.2 er"
+					"patching_rect" : [ 672.0, 597.0, 188.0, 22.0 ],
+					"text" : "/some/address 1.2 er 32"
 				}
 
 			}
@@ -103,7 +209,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 672.0, 482.0, 58.0, 22.0 ],
+					"patching_rect" : [ 672.0, 557.0, 58.0, 22.0 ],
 					"text" : "route osc"
 				}
 
@@ -115,7 +221,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 672.0, 453.0, 37.0, 22.0 ],
+					"patching_rect" : [ 672.0, 528.0, 37.0, 22.0 ],
 					"text" : "ossia"
 				}
 
@@ -656,7 +762,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 266.0, 489.0, 60.0, 22.0 ],
+					"patching_rect" : [ 266.0, 459.0, 60.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -678,7 +784,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 334.0, 482.0, 212.0, 35.0 ],
+					"patching_rect" : [ 334.0, 452.0, 212.0, 35.0 ],
 					"text" : "Save or recall presets",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -694,7 +800,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 177.0, 654.5, 280.0, 35.0 ],
+					"patching_rect" : [ 177.0, 624.5, 280.0, 35.0 ],
 					"text" : "Get a list of available protocols in Max console",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -710,7 +816,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 230.0, 439.0, 212.0, 35.0 ],
+					"patching_rect" : [ 230.0, 409.0, 212.0, 35.0 ],
 					"text" : "Set or get the global device name",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -778,7 +884,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 127.0, 546.0, 113.0, 22.0 ]
+					"patching_rect" : [ 127.0, 516.0, 113.0, 22.0 ]
 				}
 
 			}
@@ -791,7 +897,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 124.0, 691.0, 118.0, 22.0 ],
+					"patching_rect" : [ 124.0, 661.0, 118.0, 22.0 ],
 					"text" : "expose oscquery"
 				}
 
@@ -805,7 +911,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 111.0, 661.0, 58.0, 22.0 ],
+					"patching_rect" : [ 111.0, 631.0, 58.0, 22.0 ],
 					"text" : "expose"
 				}
 
@@ -1025,7 +1131,7 @@
 						"lines" : [  ]
 					}
 ,
-					"patching_rect" : [ 62.0, 586.0, 90.0, 22.0 ],
+					"patching_rect" : [ 62.0, 556.0, 90.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -1046,7 +1152,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 62.0, 402.0, 74.0, 22.0 ],
+					"patching_rect" : [ 62.0, 372.0, 74.0, 22.0 ],
 					"text" : "namespace"
 				}
 
@@ -1060,7 +1166,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 183.0, 459.0, 41.0, 22.0 ],
+					"patching_rect" : [ 183.0, 429.0, 41.0, 22.0 ],
 					"text" : "name"
 				}
 
@@ -1073,7 +1179,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 62.0, 546.0, 58.0, 22.0 ],
+					"patching_rect" : [ 62.0, 516.0, 58.0, 22.0 ],
 					"text" : "print"
 				}
 
@@ -1085,7 +1191,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 62.0, 518.0, 178.0, 22.0 ],
+					"patching_rect" : [ 62.0, 488.0, 178.0, 22.0 ],
 					"text" : "route namespace name"
 				}
 
@@ -1099,7 +1205,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 106.0, 430.0, 119.0, 22.0 ],
+					"patching_rect" : [ 106.0, 400.0, 119.0, 22.0 ],
 					"text" : "name funny_name"
 				}
 
@@ -1113,7 +1219,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 151.0, 721.0, 238.0, 22.0 ],
+					"patching_rect" : [ 151.0, 691.0, 238.0, 22.0 ],
 					"text" : "expose oscquery 1234 9876"
 				}
 
@@ -1128,7 +1234,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 111.0, 757.0, 39.0, 22.0 ],
+					"patching_rect" : [ 111.0, 771.0, 39.0, 22.0 ],
 					"text" : "ossia"
 				}
 
@@ -1143,7 +1249,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 62.0, 489.0, 58.0, 22.0 ],
+					"patching_rect" : [ 62.0, 459.0, 58.0, 22.0 ],
 					"text" : "ossia"
 				}
 
@@ -1183,7 +1289,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 31.0, 634.0, 320.0, 20.0 ],
+					"patching_rect" : [ 31.0, 604.0, 320.0, 20.0 ],
 					"text" : "The global namespace can be exposed over the network :"
 				}
 
@@ -1196,7 +1302,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 262.0, 690.0, 463.0, 21.0 ],
+					"patching_rect" : [ 262.0, 660.0, 463.0, 21.0 ],
 					"text" : "Expose using oscquery protocol and default ports (OSC port 9999 and WS port 5678)",
 					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
@@ -1210,7 +1316,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 393.0, 721.0, 387.0, 21.0 ],
+					"patching_rect" : [ 393.0, 691.0, 387.0, 21.0 ],
 					"text" : "Expose using oscquery protocol with OSC port 1234 and WS port 9876",
 					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
@@ -1267,7 +1373,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 29.0, 835.0, 747.0, 33.0 ],
+					"patching_rect" : [ 28.0, 846.0, 747.0, 33.0 ],
 					"text" : "When exposed via OSCquery, one can query the namespace and properties from a web browser, e.g. http://localhost:5678 if you used the default ports More queries are possible in this way, e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE"
 				}
 
@@ -1282,7 +1388,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 142.0, 395.5, 369.0, 35.0 ],
+					"patching_rect" : [ 142.0, 365.5, 369.0, 35.0 ],
 					"text" : "Get the namespace (all adresses registered to the global device)",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -1325,6 +1431,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-45", 0 ],
+					"source" : [ "obj-13", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-9", 0 ],
 					"source" : [ "obj-14", 0 ]
 				}
@@ -1339,6 +1452,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-17", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-2", 0 ]
 				}
@@ -1346,8 +1466,22 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-21", 0 ],
+					"source" : [ "obj-20", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-19", 0 ],
 					"source" : [ "obj-21", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-38", 0 ]
 				}
 
 			}
@@ -1362,6 +1496,34 @@
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-41", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-44", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-47", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-49", 0 ],
+					"source" : [ "obj-48", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-51", 0 ]
 				}
 
 			}
@@ -1382,7 +1544,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-37", 1 ],
-					"midpoints" : [ 151.0, 541.5, 230.5, 541.5 ],
+					"midpoints" : [ 151.0, 511.5, 230.5, 511.5 ],
 					"source" : [ "obj-9", 1 ]
 				}
 
