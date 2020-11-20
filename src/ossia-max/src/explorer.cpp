@@ -133,8 +133,6 @@ void explorer::explore_mess_cb$(explorer* x, t_symbol* s, long argc, t_atom* arg
     }
   }
 
-  std::cout << "matchers size: " << matchers.size() << std::endl;
-
   // get namespace of given nodes
   std::vector<ossia::net::node_base*> nodes;
   for(const auto& m : matchers)
@@ -158,13 +156,9 @@ void explorer::explore_mess_cb$(explorer* x, t_symbol* s, long argc, t_atom* arg
     }
   }
 
-  std::cout << "nodes count before filtering: " << nodes.size() << std::endl;
-
   ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
     return x->filter(*m);
   });
-
-  std::cout << "nodes count after filtering: " << nodes.size() << std::endl;
 
   t_atom a;
   A_SETLONG(&a, nodes.size());
