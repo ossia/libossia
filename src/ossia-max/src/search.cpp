@@ -110,35 +110,61 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
   }
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
 
-  auto matchers = x->find_parent_nodes();
+  auto matchers = x->find_or_create_matchers();
 
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)
                          { return x->filter(*m->get_node()); });
 
-  if(x->m_method == s_search)
+  if(s == s_search)
   {
-    // only return given nodes addresses
-    t_atom a;
-    A_SETLONG(&a, matchers.size());
-    outlet_anything(x->m_dumpout, s_size, 1, &a);
-    for(const auto& m : matchers)
+    std::vector<matcher*> condidates;
+    condidates.reserve(128);
+
+    for(const auto& match : matchers)
     {
-      std::string addr = ossia::net::address_string_from_node(*m->get_node());
-      A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, s_result, 1, &a);
+      auto node = match->get_node();
+      auto all = ossia_max::s_node_matchers_map[node].reference();
+
+      for(const auto& c : all)
+      {
+        if(c->get_owner() != x)
+        {
+          condidates.push_back(c);
+        }
+      }
+    }
+
+    // only return given nodes addresses
+    t_atom a[2];
+    A_SETLONG(a, condidates.size());
+    outlet_anything(x->m_dumpout, s_size, 1, a);
+
+    for(const auto& m : condidates)
+    {
+      object_base* obj = m->get_owner();
+      if(obj != x)
+      {
+        std::string addr = ossia::net::address_string_from_node(*m->get_node());
+        A_SETSYM(a, object_classname(m->get_owner()));
+        A_SETSYM(a+1, gensym(addr.c_str()));
+        outlet_anything(x->m_dumpout, s_result, 2, a);
+      }
     }
   }
-  else if(x->m_method == s_open)
+  else if(s == s_open)
   {
     for(const auto& m : matchers)
     {
       auto node = m->get_node();
-
-      auto matchers = ossia_max::s_node_matchers_map[node].reference();
-      for(const auto& m : matchers)
+      auto candidates = ossia_max::s_node_matchers_map[node].reference();
+      for(const auto& m : candidates)
       {
-        typedmess(&m->get_owner()->m_object, gensym("front"), 0, NULL);	// opens the subpatcher
-        m->get_owner()->highlight();
+        object_base* obj = m->get_owner();
+        if(obj != x)
+        {
+          typedmess(get_patcher(&obj->m_object), gensym("front"), 0, NULL);	// opens the subpatcher
+          obj->highlight();
+        }
       }
     }
   }

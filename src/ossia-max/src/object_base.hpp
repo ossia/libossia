@@ -105,9 +105,6 @@ public:
 
   // return the global path of the object with pattern
   std::string make_global_pattern();
-
-  std::vector<std::shared_ptr<matcher>> find_parent_nodes();
-
   object_base* find_parent_object();
 
   // return the first parent ossia object, nullptr otherwise
@@ -181,6 +178,7 @@ protected:
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 
 private:
+  std::vector<std::shared_ptr<matcher>> find_parent_nodes();
   std::optional<ossia::traversal::path> m_path;
 };
 

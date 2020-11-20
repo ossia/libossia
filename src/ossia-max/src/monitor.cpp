@@ -146,7 +146,7 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  auto matchers = x->find_parent_nodes();
+  auto matchers = x->find_or_create_matchers();
 
   for(const auto& n : matchers)
   {

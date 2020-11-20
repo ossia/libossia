@@ -127,7 +127,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       case object_class::remote:
       case object_class::view:
       case object_class::explorer:
-      case object_class::fuzzysearch:
       case object_class::monitor:
       case object_class::search:
       {
@@ -190,6 +189,8 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       }
       case object_class::view:
       case object_class::explorer:
+      case object_class::monitor:
+      case object_class::search:
       {
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
