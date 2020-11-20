@@ -296,8 +296,6 @@ void matcher::set_parent_addr()
   if (!m_dead && node && owner){
     std::string addr = ossia::net::address_string_from_node(*node);
 
-    std::cout << "this address: " << addr << std::endl;
-
     switch(owner->m_addr_scope)
     {
       case ossia::net::address_scope::relative:
@@ -308,7 +306,6 @@ void matcher::set_parent_addr()
           for(const auto& m : parent->m_matchers)
           {
             auto node_addr = ossia::net::address_string_from_node(*m->get_node());
-            std::cout << "node address: " << node_addr << std::endl;
 
             if(addr.rfind(node_addr,0) == 0)
             {

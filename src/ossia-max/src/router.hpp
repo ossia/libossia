@@ -5,6 +5,7 @@
 #undef post
 
 #include <vector>
+#include <string>
 
 namespace ossia
 {

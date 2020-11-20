@@ -144,7 +144,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 215.0, 680.0, 183.0, 22.0 ],
-					"text" : "ossia.parameter foo @priority 12"
+					"text" : "ossia.parameter foo @priority 15"
 				}
 
 			}
@@ -156,43 +156,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 866.0, 786.0, 237.0, 22.0 ],
-					"text" : "/foo"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
-					"id" : "obj-13",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 205.0, 569.0, 81.0, 22.0 ],
-					"text" : "test.terminate"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-10",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 205.0, 533.0, 55.0, 22.0 ],
-					"text" : "del 1000"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-9",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 205.0, 501.0, 58.0, 22.0 ],
-					"text" : "loadbang"
+					"text" : "/foo a_param yap another_param"
 				}
 
 			}
@@ -1094,7 +1058,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 95.0, 196.0, 22.0 ],
-									"text" : "ossia.model submodel @priority 10"
+									"text" : "ossia.model submodel @priority 12"
 								}
 
 							}
@@ -1144,20 +1108,13 @@
  ]
 					}
 ,
-					"patching_rect" : [ 23.0, 9.0, 286.0, 410.0 ],
+					"patching_rect" : [ 22.0, 9.0, 286.0, 410.0 ],
 					"viewvisibility" : 1
 				}
 
 			}
  ],
 		"lines" : [ 			{
-				"patchline" : 				{
-					"destination" : [ "obj-13", 0 ],
-					"source" : [ "obj-10", 0 ]
-				}
-
-			}
-, 			{
 				"patchline" : 				{
 					"destination" : [ "obj-15", 1 ],
 					"order" : 0,
@@ -1331,13 +1288,6 @@
 				}
 
 			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-10", 0 ],
-					"source" : [ "obj-9", 0 ]
-				}
-
-			}
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.model.mxo",
@@ -1353,10 +1303,6 @@
 			}
 , 			{
 				"name" : "ossia.remote.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
 				"type" : "iLaX"
 			}
 , 			{

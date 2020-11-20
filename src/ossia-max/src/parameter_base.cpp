@@ -1180,8 +1180,6 @@ parameter_base::parameter_base()
 void parameter_base::output_all_values()
 {
   // TODO unify this with fire_all_values_recursively() (cf utils.cpp)
-  using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
-
   std::vector<node_priority> priority_graph;
   priority_graph.reserve(m_matchers.size());
 
@@ -1191,7 +1189,7 @@ void parameter_base::output_all_values()
     if(node)
     {
       auto prio = get_priority_list(node);
-      priority_graph.push_back({m.get(), prio});
+      priority_graph.push_back({m, prio});
     }
   }
 

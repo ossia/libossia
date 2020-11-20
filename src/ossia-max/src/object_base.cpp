@@ -126,6 +126,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       case object_class::attribute:
       case object_class::remote:
       case object_class::view:
+      case object_class::explorer:
       {
         auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), false);
         matchers.reserve(nodes.size());
@@ -185,6 +186,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
           break;
       }
       case object_class::view:
+      case object_class::explorer:
       {
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
@@ -201,7 +203,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         auto parent_nodes = find_parent_nodes();
         for(auto pn : parent_nodes)
         {
-          std::cout << "object " << m_name->s_name << " registering under node " << pn->get_node()->get_name() << std::endl;
           auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
                                                              static_cast<parameter*>(this)->m_type->s_name);
           matchers.reserve(matchers.size()+params.size());
@@ -262,9 +263,11 @@ void object_base::loadbang(object_base* x)
     {
       case object_class::param:
         static_cast<parameter*>(x)->do_registration();
+        static_cast<parameter*>(x)->output_all_values();
         break;
       case object_class::remote:
         static_cast<remote*>(x)->do_registration();
+        static_cast<remote*>(x)->output_all_values();
         break;
       case object_class::attribute:
         static_cast<attribute*>(x)->do_registration();

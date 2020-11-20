@@ -7,6 +7,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include "search_filter.hpp"
+#include <set>
 
 namespace ossia
 {
