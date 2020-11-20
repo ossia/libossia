@@ -57,6 +57,8 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
     x->m_device->set_name(x->m_name->s_name);
   }
 
+  x->connect_slots();
+
   // inhibit loadbang for ossia object
   x->m_registered = true;
 
@@ -69,6 +71,8 @@ void ossia_object::destroy(ossia_object *x)
   x->m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(x);
 
   ossia_max::instance().devices.remove_all(x);
+
+  x->disconnect_slots();
 
   outlet_delete(x->m_dumpout);
   x->~ossia_object();
