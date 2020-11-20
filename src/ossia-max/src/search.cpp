@@ -137,78 +137,15 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
   }
   else if(x->m_method == s_open)
   {
-    auto open_parent = [](object_base* x, ossia::net::node_base* node)
-    {
-      for ( auto& om : x->m_matchers )
-      {
-        if ( om->get_node() == node )
-        {
-          // TODO use get_patcher() here instead
-          t_object *jp{};
-
-          // get the object's parent patcher
-          object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
-
-          if (jp)
-            typedmess(jp, gensym("front"), 0, NULL);	// opens the subpatcher
-
-          x->highlight();
-        }
-      }
-    };
-
     for(const auto& m : matchers)
     {
       auto node = m->get_node();
 
-      if(node->get_parameter())
+      auto matchers = ossia_max::s_node_matchers_map[node].reference();
+      for(const auto& m : matchers)
       {
-        // if node has a paremeter, search only for ossia.parameter,
-        // ossia.remote & ossia.attribute object
-
-        // TODO refactor to use ossia_max::s_node_matchers_map instead
-        for ( auto param : ossia_max::instance().parameters.reference() )
-        {
-          open_parent(param, node);
-        }
-
-        for ( auto remote : ossia_max::instance().remotes.reference() )
-        {
-          open_parent(remote, node);
-        }
-
-        for ( auto attr : ossia_max::instance().attributes.reference() )
-        {
-          open_parent(attr, node);
-        }
-      }
-      else if(!node->get_parent())
-      {
-        // if node doesn't have a parent node, then search only
-        // ossia.device and ossia.client objects
-        for ( auto dev : ossia_max::instance().devices.reference() )
-        {
-          open_parent(dev, node);
-        }
-
-        for ( auto client : ossia_max::instance().clients.reference() )
-        {
-          open_parent(client, node);
-        }
-      }
-      else
-      {
-        // if node has a parent but no paremeter,
-        // search only for ossia.model and ossia.view object
-        for ( auto model : ossia_max::instance().models.reference() )
-        {
-          open_parent(model, node);
-        }
-
-        for ( auto view : ossia_max::instance().views.reference() )
-        {
-          open_parent(view, node);
-        }
+        typedmess(&m->get_owner()->m_object, gensym("front"), 0, NULL);	// opens the subpatcher
+        m->get_owner()->highlight();
       }
     }
   }
