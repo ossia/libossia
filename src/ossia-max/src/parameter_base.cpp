@@ -850,6 +850,8 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if (s && s == gensym("set"))
     set_flag = true;
 
+  // TODO use atom2value here
+
   if (argc == 0 && s)
   {
     just_push(x, std::string(s->s_name), set_flag);

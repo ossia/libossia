@@ -13,6 +13,7 @@
 #include "ossia/network/minuit/minuit.hpp"
 #include <ossia/network/local/local.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
@@ -55,8 +56,21 @@ extern "C" void ossia_device_setup()
       "ossia.device", (method)device::create, (method)device::destroy,
       (short)sizeof(device), 0L, A_GIMME, 0);
 
-  device_base::class_setup(c);
+  device::class_setup(c);
+  class_register(CLASS_BOX, c);
 
+  auto& ossia_library = ossia_max::instance();
+  ossia_library.ossia_device_class = c;
+}
+
+namespace ossia
+{
+namespace max
+{
+
+void device::class_setup(t_class *c)
+{
+  device_base::class_setup(c);
   class_addmethod(
       c, (method)device::register_children,
       "register", A_NOTHING, 0);
@@ -70,25 +84,18 @@ extern "C" void ossia_device_setup()
       c, (method)device::name,
       "name", A_GIMME, 0);
   class_addmethod(
-        c, (method) device::stop_expose,
-        "stop", A_LONG, 0);
+      c, (method) device::stop_expose,
+      "stop", A_LONG, 0);
   class_addmethod(
-        c, (method) device::get_mess_cb,
-        "get", A_SYM, 0);
+      c, (method) device::get_mess_cb,
+      "get", A_SYM, 0);
   class_addmethod(
       c, (method) device::notify,
       "notify", A_CANT, 0);
-
-  class_register(CLASS_BOX, c);
-
-  auto& ossia_library = ossia_max::instance();
-  ossia_library.ossia_device_class = c;
+  class_addmethod(
+      c, (method) device::send_raw_osc,
+      "osc", A_GIMME, 0);
 }
-
-namespace ossia
-{
-namespace max
-{
 
 void* device::create(t_symbol* name, long argc, t_atom* argv)
 {
@@ -472,6 +479,28 @@ void device::assist(device* x, void*, long m, long a, char* s)
   else
   {
     sprintf(s, "Dumpout");
+  }
+}
+
+void device::send_raw_osc(device *x, t_symbol *s, int argc, t_atom *argv)
+{
+  if(argc < 1)
+  {
+    object_error(&x->m_object, "osc message need at least an address as symbol argument.");
+    return;
+  }
+
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                       x->m_device->get_protocol()).get_protocols();
+
+  ossia::net::full_parameter_data fpd;
+  fpd.address = argv->a_w.w_sym->s_name;
+  argc--; argv++;
+  fpd.set_value(atom2value(nullptr, argc, argv));
+
+  for(auto& p : protocols)
+  {
+    p->push_raw(fpd);
   }
 }
 
