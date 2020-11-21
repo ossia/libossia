@@ -1663,8 +1663,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 604.0, 392.0, 68.0, 22.0 ],
-									"text" : "getdevices"
+									"patching_rect" : [ 604.0, 392.0, 69.0, 22.0 ],
+									"text" : "get devices"
 								}
 
 							}
