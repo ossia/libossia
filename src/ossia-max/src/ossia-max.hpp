@@ -160,6 +160,7 @@ public:
   ossia::safe_vector<monitor*> monitors;
   ossia::safe_vector<search*> searchs;
 
+  // TODO remove all those nr* vectors, should not be needed
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
   ossia::safe_set<remote*> nr_remotes;
@@ -174,6 +175,7 @@ public:
 
   bool registering_nodes=false;
 
+  // TODO this should not be needed anymore
   // this is used at loadbang to mark a patcher loaded
   // and trigger its registration
   struct root_descriptor{
