@@ -7,6 +7,8 @@
 #include "remote.hpp"
 #include "view.hpp"
 #include "utils.hpp"
+#include "ZeroconfMinuitListener.hpp"
+#include "ZeroconfOscqueryListener.hpp"
 
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
@@ -395,7 +397,27 @@ void client::connect(client* x)
 
 void client::get_devices(client* x)
 {
- // TODO
+  auto minuit_devices = ZeroconfMinuitListener::get_devices();
+  auto oscq_devices = ZeroconfOscqueryListener::get_devices();
+
+  t_atom a;
+  A_SETLONG(&a, minuit_devices.size() + oscq_devices.size());
+  outlet_anything(x->m_dumpout, gensym("devices"), 1, &a);
+
+  std::array<t_atom, 2> av;
+  for(const auto& dev : minuit_devices)
+  {
+    A_SETSYM(av.data(), gensym("minuit"));
+    A_SETSYM(av.data()+1, gensym(dev->get_name().c_str()));
+    outlet_anything(x->m_dumpout, gensym("device"), 2, av.data());
+  }
+
+  for(const auto& dev : oscq_devices)
+  {
+    A_SETSYM(av.data(), gensym("oscquery"));
+    A_SETSYM(av.data()+1, gensym(dev->get_name().c_str()));
+    outlet_anything(x->m_dumpout, gensym("device"), 2, av.data());
+  }
 }
 
 void client::unregister_children()
