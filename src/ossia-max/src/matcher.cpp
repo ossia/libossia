@@ -309,7 +309,7 @@ void matcher::set_parent_addr()
 
             if(addr.rfind(node_addr,0) == 0)
             {
-              addr = addr.substr(node_addr.size()+1); // +1 to remove the '/' prefix
+              addr = addr.substr(node_addr.size());
               break;
             }
           }
@@ -317,7 +317,7 @@ void matcher::set_parent_addr()
         else
         {
           auto pos = addr.find(":");
-          addr = addr.substr(pos+2);
+          addr = addr.substr(pos+1);
         }
         break;
       }
