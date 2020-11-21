@@ -119,13 +119,20 @@ struct node_priority
   std::vector<ossia::net::priority> priorities;
 };
 
-// sort priority graph
-// and output their values though dumpout
-void fire_values_by_priority(std::vector<node_priority>& priority_graph);
+/**
+ * @brief fire_values_by_priority: sort graph by priority ond output values
+ * @param priority_graph: vector of node_priority to sort and fire
+ * @param only_default: only output default values
+ */
+void fire_values_by_priority(std::vector<node_priority>& priority_graph, bool only_default);
 
-// look for all object in a patcher (recursively)
-// gather all refered nodes,
-void fire_all_values_by_priority(t_object* patcher);
+
+/**
+* @brief fire_all_values_by_priority: output every parameter's values by priority order
+* @param patcher: the patcher in which to look for object
+* @param only_default: output only default value
+*/
+void output_all_values(t_object* patcher, bool only_default);
 
 // put templates after prototype so we can use them
 template<typename T>
@@ -264,7 +271,7 @@ void address_mess_cb(T* x, t_symbol* address)
   || x->m_otype == object_class::model)
   {
     register_children_in_patcher_recursively(x->m_patcher, x);
-    fire_all_values_by_priority(get_patcher(&x->m_object));
+    output_all_values(get_patcher(&x->m_object), true);
   }
 }
 

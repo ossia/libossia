@@ -136,8 +136,26 @@ std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node)
   return priorities;
 }
 
-void fire_values_by_priority(std::vector<node_priority>& priority_graph)
+void fire_values_by_priority(std::vector<node_priority>& priority_graph, bool only_default = false)
 {
+  // keep only BI and not impulse (with default value, optionally)
+  ossia::remove_erase_if(priority_graph, [only_default](const node_priority& np){
+    auto param = np.obj->get_node()->get_parameter();
+    if(param
+    && param->get_access() == ossia::access_mode::BI
+    && param->get_value_type() != ossia::val_type::IMPULSE)
+    {
+      if(only_default)
+      {
+        auto val = param->get_default_value();
+        if(!val)
+          return true;
+      }
+      return false;
+    }
+    return true;
+  });
+
   // sort vector against all priorities
   std::sort(priority_graph.begin(), priority_graph.end(), [](const node_priority& a, const node_priority& b){
     return std::lexicographical_compare(
@@ -153,12 +171,13 @@ void fire_values_by_priority(std::vector<node_priority>& priority_graph)
     auto param = node->get_parameter();
     if(param)
     {
-      auto mode = param->get_access();
-
-      // TODO filter before sort to save some overhead
-      if( param->get_value_type() != ossia::val_type::IMPULSE
-          && mode != ossia::access_mode::GET
-          && mode != ossia::access_mode::SET)
+      if(only_default)
+      {
+        auto val = param->get_default_value();
+        if(val)
+          matcher->output_value(*val);
+      }
+      else
       {
         matcher->output_value(param->value());
       }
@@ -166,7 +185,7 @@ void fire_values_by_priority(std::vector<node_priority>& priority_graph)
   }
 }
 
-void fire_all_values_by_priority(t_object* patcher)
+void output_all_values(t_object* patcher, bool only_default)
 {
   auto all_objects = list_all_objects_recursively(patcher);
 
@@ -201,7 +220,7 @@ void fire_all_values_by_priority(t_object* patcher)
   }
   std::cout << std::flush;
 
-  fire_values_by_priority(priority_graph);
+  fire_values_by_priority(priority_graph, only_default);
 }
 
 ossia::net::address_scope get_address_scope(ossia::string_view addr)

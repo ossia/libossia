@@ -178,7 +178,7 @@ void device::destroy(device* x)
       else
         matchers.push_back(std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr));
       register_children_in_patcher_recursively(get_patcher(&x->m_object), nullptr);
-      fire_all_values_by_priority(get_patcher(&x->m_object));
+      output_all_values(get_patcher(&x->m_object), true);
     }
   }
 
@@ -228,7 +228,7 @@ void device::register_children(device* x)
 {
   std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
   register_children_in_patcher_recursively(get_patcher(&x->m_object), x);
-  fire_all_values_by_priority(get_patcher(&x->m_object));
+  output_all_values(get_patcher(&x->m_object), true);
 }
 
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)

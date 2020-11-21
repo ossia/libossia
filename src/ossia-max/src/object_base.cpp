@@ -267,11 +267,11 @@ void object_base::loadbang(object_base* x)
     {
       case object_class::param:
         static_cast<parameter*>(x)->do_registration();
-        static_cast<parameter*>(x)->output_all_values();
+        static_cast<parameter*>(x)->output_default_values();
         break;
       case object_class::remote:
         static_cast<remote*>(x)->do_registration();
-        static_cast<remote*>(x)->output_all_values();
+        static_cast<remote*>(x)->output_default_values();
         break;
       case object_class::attribute:
         static_cast<attribute*>(x)->do_registration();
@@ -281,7 +281,7 @@ void object_base::loadbang(object_base* x)
         auto obj = static_cast<model*>(x);
         obj->do_registration();
         register_children_in_patcher_recursively(root_patcher, obj);
-        fire_all_values_by_priority(root_patcher);
+        output_all_values(root_patcher, true);
         break;
       }
       case object_class::view:
@@ -289,7 +289,7 @@ void object_base::loadbang(object_base* x)
         auto obj = static_cast<view*>(x);
         obj->do_registration();
         register_children_in_patcher_recursively(root_patcher, obj);
-        fire_all_values_by_priority(root_patcher);
+        output_all_values(root_patcher, true);
         break;
       }
       default:
@@ -302,7 +302,7 @@ void object_base::loadbang(object_base* x)
     // this happens when the patcher is loaded or instanciated as an abstraction
     // and also when it is pasted / duplicated
     register_children_in_patcher_recursively(root_patcher, nullptr);
-    fire_all_values_by_priority(root_patcher);
+    output_all_values(root_patcher, true);
   }
 }
 

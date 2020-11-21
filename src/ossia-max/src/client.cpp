@@ -381,7 +381,7 @@ void client::connect(client* x)
     clock_unset(x->m_clock);
 
     register_children_in_patcher_recursively(get_patcher(&x->m_object), x);
-    fire_all_values_by_priority(get_patcher(&x->m_object));
+    output_all_values(get_patcher(&x->m_object), true);
   }
   else
   {
@@ -395,7 +395,7 @@ void client::connect(client* x)
 
 void client::get_devices(client* x)
 {
-
+ // TODO
 }
 
 void client::unregister_children()
