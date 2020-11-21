@@ -28,6 +28,7 @@ public:
   static void get_mess_cb(device* x, t_symbol* s);
   static void assist(ossia::max::device*, void*, long, long, char*);
   static void send_raw_osc(device* x, t_symbol* s, int argc, t_atom* argv);
+  static void resend_all_values(device* x, t_symbol* s);
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);

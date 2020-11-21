@@ -95,6 +95,9 @@ void device::class_setup(t_class *c)
   class_addmethod(
       c, (method) device::send_raw_osc,
       "osc", A_GIMME, 0);
+  class_addmethod(
+      c, (method) device::resend_all_values,
+      "send_all_values", A_GIMME, 0);
 }
 
 void* device::create(t_symbol* name, long argc, t_atom* argv)
@@ -501,6 +504,30 @@ void device::send_raw_osc(device *x, t_symbol *s, int argc, t_atom *argv)
   for(auto& p : protocols)
   {
     p->push_raw(fpd);
+  }
+}
+
+void device::resend_all_values(device *x, t_symbol *s)
+{
+  auto children = ossia::net::list_all_children(&x->m_device->get_root_node());
+
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                        x->m_device->get_protocol()).get_protocols();
+
+  for(auto& p : protocols)
+  {
+    p.get();
+    if(dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
+    {
+      for(const auto& c : children)
+      {
+        auto param = c->get_parameter();
+        if(param)
+        {
+          p->push(*param, param->value());
+        }
+      }
+    }
   }
 }
 
