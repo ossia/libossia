@@ -114,6 +114,7 @@ std::vector<parameter_base*> list_all_objects_recursively(t_object* patcher)
 // return a vector of all priority from top to bottom (root node)
 std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node)
 {
+  // TODO cache that and reset on tree changed
   std::vector<float> priorities;
   priorities.reserve(32);
 
@@ -190,7 +191,6 @@ void output_all_values(t_object* patcher, bool only_default)
   auto all_objects = list_all_objects_recursively(patcher);
 
   std::vector<node_priority> priority_graph;
-  std::cout << "there are " << all_objects.size() << " objects in patcher" << std::endl;
   priority_graph.reserve(all_objects.size());
 
   for(const auto obj : all_objects)
@@ -207,18 +207,6 @@ void output_all_values(t_object* patcher, bool only_default)
       }
     }
   }
-
-  std::cout << "priority graph size: " << priority_graph.size() << std::endl;
-  for(const auto& np : priority_graph)
-  {
-    std::cout << np.obj << ": ";
-    for(const auto& p : np.priorities)
-    {
-      std::cout << p << " ";
-    }
-    std::cout << "\n";
-  }
-  std::cout << std::flush;
 
   fire_values_by_priority(priority_graph, only_default);
 }
