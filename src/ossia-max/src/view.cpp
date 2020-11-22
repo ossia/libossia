@@ -91,6 +91,9 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
 void view::destroy(view* x)
 {
+  device_base::on_device_created.disconnect<&view::on_device_created>(x);
+  device_base::on_device_removing.disconnect<&view::on_device_removing>(x);
+
   auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
