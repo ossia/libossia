@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -71,7 +71,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 706.0, 207.0, 180.0, 22.0 ],
-					"text" : "spat/source.1/position"
+					"text" : "/spat/source.1/position"
 				}
 
 			}
@@ -85,7 +85,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 668.5, 403.0, 235.0, 35.0 ],
-					"presentation_linecount" : 2,
 					"text" : "test.assert address_output_after_instances_creation"
 				}
 
@@ -124,9 +123,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 623.0, 251.0, 133.0, 35.0 ],
-					"presentation_linecount" : 2,
-					"text" : "zl.compare spat/source.1/position"
+					"patching_rect" : [ 623.0, 251.0, 149.0, 35.0 ],
+					"text" : "zl.compare /spat/source.1/position"
 				}
 
 			}
@@ -189,9 +187,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 441.0, 251.0, 133.0, 35.0 ],
-					"presentation_linecount" : 2,
-					"text" : "zl.compare spat/source.1/position"
+					"patching_rect" : [ 441.0, 251.0, 132.0, 35.0 ],
+					"text" : "zl.compare /spat/source.1/position"
 				}
 
 			}
@@ -253,7 +250,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 490.0, 403.0, 146.0, 35.0 ],
-					"presentation_linecount" : 2,
 					"text" : "test.assert address_output_on_load"
 				}
 
@@ -277,7 +273,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -357,8 +353,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 33.0, 173.0, 50.0, 35.0 ],
-									"presentation_linecount" : 2,
-									"text" : "0.28 0 1"
+									"text" : "0.38 0 1"
 								}
 
 							}
