@@ -14,7 +14,7 @@ public:
 
   parameter_base();
 
-  void output_default_values();
+  void output_values(bool only_default);
 
   // attribute setting method
   void set_access_mode();

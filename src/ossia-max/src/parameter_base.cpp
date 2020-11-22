@@ -1179,7 +1179,7 @@ parameter_base::parameter_base()
   m_unit = gensym("");
 }
 
-void parameter_base::output_default_values()
+void parameter_base::output_values(bool only_default)
 {
   // TODO unify this with fire_all_values_recursively() (cf utils.cpp)
   std::vector<node_priority> priority_graph;
@@ -1195,7 +1195,7 @@ void parameter_base::output_default_values()
     }
   }
 
-  fire_values_by_priority(priority_graph, true);
+  fire_values_by_priority(priority_graph, only_default);
 }
 
 } // namespace max

@@ -148,6 +148,14 @@ void fire_values_by_priority(std::vector<node_priority>& priority_graph, bool on
     {
       if(only_default)
       {
+        auto owner = np.obj->get_owner();
+        assert(owner != nullptr);
+
+        if(owner->m_otype == object_class::remote)
+        {
+          return false; // always output value for remote
+        }
+
         auto val = param->get_default_value();
         if(!val)
           return true;
@@ -172,7 +180,7 @@ void fire_values_by_priority(std::vector<node_priority>& priority_graph, bool on
     auto param = node->get_parameter();
     if(param)
     {
-      if(only_default)
+      if(only_default && p.obj->get_owner()->m_otype == object_class::param)
       {
         auto val = param->get_default_value();
         if(val)
