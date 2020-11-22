@@ -305,11 +305,13 @@ void matcher::set_parent_addr()
         {
           for(const auto& m : parent->m_matchers)
           {
-            auto node_addr = ossia::net::address_string_from_node(*m->get_node());
+            std::string node_addr = ossia::net::address_string_from_node(*m->get_node());
+
+            size_t offset = node_addr.back() == '/' ? 0 : 1;
 
             if(addr.rfind(node_addr,0) == 0)
             {
-              addr = addr.substr(node_addr.size());
+              addr = addr.substr(node_addr.size()+offset);
               break;
             }
           }
@@ -317,7 +319,7 @@ void matcher::set_parent_addr()
         else
         {
           auto pos = addr.find(":");
-          addr = addr.substr(pos+1);
+          addr = addr.substr(pos+2);
         }
         break;
       }
