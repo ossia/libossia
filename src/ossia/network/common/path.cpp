@@ -33,6 +33,7 @@ void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
 void get_parent(std::vector<ossia::net::node_base*>& vec)
 {
   std::vector<ossia::net::node_base*> old = std::move(vec);
+  vec.clear();
 
   tsl::hopscotch_set<ossia::net::node_base*> inserted;
   for (auto ptr : old)

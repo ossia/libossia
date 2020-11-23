@@ -10,25 +10,16 @@ namespace ossia::nodes
 {
 struct spline_point
 {
-  double x() const
-  {
-    return m_x;
-  }
-  double y() const
-  {
-    return m_y;
-  }
-
-  double m_x;
-  double m_y;
+  double x;
+  double y;
 
   friend bool operator==(const spline_point& lhs, const spline_point& rhs)
   {
-    return lhs.m_x == rhs.m_x && lhs.m_y == rhs.m_y;
+    return lhs.x == rhs.x && lhs.y == rhs.y;
   }
   friend bool operator!=(const spline_point& lhs, const spline_point& rhs)
   {
-    return lhs.m_x != rhs.m_x || lhs.m_y != rhs.m_y;
+    return lhs.x != rhs.x || lhs.y != rhs.y;
   }
 };
 
@@ -41,6 +32,36 @@ struct spline_data
     return lhs.points == rhs.points;
   }
   friend bool operator!=(const spline_data& lhs, const spline_data& rhs)
+  {
+    return lhs.points != rhs.points;
+  }
+};
+
+struct spline3d_point
+{
+  double x;
+  double y;
+  double z;
+
+  friend bool operator==(const spline3d_point& lhs, const spline3d_point& rhs)
+  {
+    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
+  }
+  friend bool operator!=(const spline3d_point& lhs, const spline3d_point& rhs)
+  {
+    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z;
+  }
+};
+
+struct spline3d_data
+{
+  std::vector<spline3d_point> points;
+
+  friend bool operator==(const spline3d_data& lhs, const spline3d_data& rhs)
+  {
+    return lhs.points == rhs.points;
+  }
+  friend bool operator!=(const spline3d_data& lhs, const spline3d_data& rhs)
   {
     return lhs.points != rhs.points;
   }
