@@ -576,6 +576,10 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_STYLE(c, "recall_safe", 0, "onoff");
   CLASS_ATTR_LABEL(c, "recall_safe", 0, "Recall safe");
 
+  CLASS_ATTR_LONG(c, "trim_addr", 0, object_base, m_trim_addr);
+  CLASS_ATTR_STYLE(c, "trim_addr", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "trim_addr", 0, "Trim address reported by dumpout for convenience (default ON)");
+
   class_addmethod(c, (method) object_base::select_mess_cb,  "select",   A_GIMME, 0);
   class_addmethod(c, (method) object_base::select_mess_cb,  "unselect", A_GIMME, 0);
   class_addmethod(c, (method) object_base::loadbang,        "loadbang", A_CANT,  0);

@@ -26,7 +26,7 @@ public:
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_owner() const { return owner; }   // return the max object that holds this
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
-  void set_parent_addr();
+  void set_addr_symbol();
 
   inline bool operator==(const matcher& rhs)
   { return (get_node() == rhs.node); }

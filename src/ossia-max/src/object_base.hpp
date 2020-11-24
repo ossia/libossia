@@ -127,6 +127,7 @@ public:
   long m_invisible{};
   long m_defer_set{1};
   long m_recall_safe{};
+  long m_trim_addr{1};
   t_object* m_patcher{};
 
   long m_tags_size{};

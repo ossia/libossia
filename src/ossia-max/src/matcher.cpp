@@ -35,7 +35,7 @@ matcher::matcher(ossia::net::node_base* n, object_base* p) :
     node->about_to_be_deleted.connect<&object_base::on_node_removing>(owner);
   }
 
-  set_parent_addr();
+  set_addr_symbol();
 
   ossia_max::instance().s_node_matchers_map[node].push_back(this);
 }
@@ -74,7 +74,7 @@ matcher::matcher(matcher&& other)
             break;
         }
 
-        set_parent_addr();
+        set_addr_symbol();
       }
     }
   }
@@ -117,7 +117,7 @@ matcher& matcher::operator=(matcher&& other)
             break;
         }
 
-        set_parent_addr();
+        set_addr_symbol();
       }
     }
   }
@@ -291,46 +291,49 @@ void matcher::output_value(ossia::value v)
   }
 }
 
-void matcher::set_parent_addr()
+void matcher::set_addr_symbol()
 {
   if (!m_dead && node && owner){
     std::string addr = ossia::net::address_string_from_node(*node);
 
-    switch(owner->m_addr_scope)
+    if(owner->m_trim_addr > 0)
     {
-      case ossia::net::address_scope::relative:
+      switch(owner->m_addr_scope)
       {
-        auto parent = owner->find_parent_object();
-        if(parent)
+        case ossia::net::address_scope::relative:
         {
-          for(const auto& m : parent->m_matchers)
+          auto parent = owner->find_parent_object();
+          if(parent)
           {
-            std::string node_addr = ossia::net::address_string_from_node(*m->get_node());
-
-            size_t offset = node_addr.back() == '/' ? 0 : 1;
-
-            if(addr.rfind(node_addr,0) == 0)
+            for(const auto& m : parent->m_matchers)
             {
-              addr = addr.substr(node_addr.size()+offset);
-              break;
+              std::string node_addr = ossia::net::address_string_from_node(*m->get_node());
+
+              size_t offset = node_addr.back() == '/' ? 0 : 1;
+
+              if(addr.rfind(node_addr,0) == 0)
+              {
+                addr = addr.substr(node_addr.size()+offset);
+                break;
+              }
             }
           }
+          else
+          {
+            auto pos = addr.find(":");
+            addr = addr.substr(pos+2);
+          }
+          break;
         }
-        else
+        case ossia::net::address_scope::absolute:
         {
           auto pos = addr.find(":");
-          addr = addr.substr(pos+2);
+          addr = addr.substr(pos+1);
+          break;
         }
-        break;
+        default:
+            ;
       }
-      case ossia::net::address_scope::absolute:
-      {
-        auto pos = addr.find(":");
-        addr = addr.substr(pos+1);
-        break;
-      }
-      default:
-          ;
     }
 
     A_SETSYM(&m_addr, gensym(addr.c_str()));
