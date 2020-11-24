@@ -195,6 +195,15 @@ void parameter::do_registration()
   set_rate();
   set_repetition_filter();
   set_recall_safe();
+
+  for(const auto& m : m_matchers)
+  {
+    auto param = m->get_node()->get_parameter();
+    auto val = param->get_default_value();
+    if(val)
+      // push quiet here because will be fired later following priority
+      param->push_value_quiet(*val);
+  }
 }
 
 bool parameter::unregister()
