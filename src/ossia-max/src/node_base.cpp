@@ -22,7 +22,8 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
   {
     case object_class::client:
     case object_class::device:
-      node = &x->m_device->get_root_node();
+      if(x->m_device)
+        node = &x->m_device->get_root_node();
       break;
     case object_class::model:
     case object_class::view:
