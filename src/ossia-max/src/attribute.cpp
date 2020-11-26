@@ -90,6 +90,7 @@ void attribute::do_registration()
 
 void attribute::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().nr_attributes.push_back(this);

@@ -172,6 +172,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 
 bool search::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().searchs.push_back(this);

@@ -172,6 +172,7 @@ void explorer::explore_mess_cb$(explorer* x, t_symbol* s, long argc, t_atom* arg
 
 bool explorer::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   return true;

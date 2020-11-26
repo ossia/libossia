@@ -119,6 +119,7 @@ void model::destroy(model* x)
 
   x->m_dead = true;
   x->save_children_state();
+  x->m_node_selection.clear();
   x->m_matchers.clear();
   x->m_registered = false;
 

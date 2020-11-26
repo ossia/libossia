@@ -178,7 +178,10 @@ t_max_err remote::notify(remote *x, t_symbol *s,
     else if ( attrname == gensym("mute") )
     {
       if (x->m_mute)
+      {
+        x->m_node_selection.clear();
         x->m_matchers.clear();
+      }
       else
       {
         x->do_registration();

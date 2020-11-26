@@ -128,6 +128,7 @@ void view::do_registration()
 
 void view::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   std::vector<object_base*> children_view = find_children_to_register(

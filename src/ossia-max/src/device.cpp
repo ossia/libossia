@@ -183,6 +183,7 @@ void device::destroy(device* x)
   }
 
   x->m_dead = true;
+  x->m_node_selection.clear();
   x->m_matchers.clear();
 
   // This is no more needed since all children

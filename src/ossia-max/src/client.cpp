@@ -152,6 +152,7 @@ void client::destroy(client* x)
   }
 
   x->m_dead = true;
+  x->m_node_selection.clear();
   x->m_matchers.clear();
 
   if(x->m_clock)
@@ -452,6 +453,7 @@ void client::disconnect(client* x)
 {
   if (x->m_device)
   {
+    x->m_node_selection.clear();
     x->m_matchers.clear();
     x->disconnect_slots();
     x->unregister_children();

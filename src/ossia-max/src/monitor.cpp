@@ -158,6 +158,7 @@ void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 
 bool monitor::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().nr_monitors.push_back(this);

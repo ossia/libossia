@@ -264,6 +264,7 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_name = address;
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
+  x->m_node_selection.clear();
   x->m_matchers.clear();
   x->do_registration();
 
