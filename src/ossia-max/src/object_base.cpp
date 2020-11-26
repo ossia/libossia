@@ -431,6 +431,13 @@ t_max_err object_base::notify(object_base *x, t_symbol*,
       x->set_tags();
     else if ( attrname == gensym("recall_safe") )
       x->set_recall_safe();
+    else if ( attrname == gensym("trim_addr") )
+    {
+      for(const auto& m : x->m_matchers)
+      {
+        m->set_addr_symbol();
+      }
+    }
   }
   return 0;
 }
