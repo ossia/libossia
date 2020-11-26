@@ -29,7 +29,7 @@ extern "C" void ossia_explorer_setup()
 
   auto& c = ossia_library.ossia_explorer_class;
   class_addmethod(
-      c, (method)explorer::explore_mess_cb$,
+      c, (method)explorer::explore_mess_cb,
       "explore", A_GIMME, 0);
   class_addmethod(
       c, (method)explorer::assist,
@@ -96,7 +96,7 @@ explorer::~explorer()
   outlet_delete(m_dumpout);
 }
 
-void explorer::explore_mess_cb$(explorer* x, t_symbol* s, long argc, t_atom* argv)
+void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->m_name = nullptr;
   if(argc > 0 && argv->a_type == A_SYM)
