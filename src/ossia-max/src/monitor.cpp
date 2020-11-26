@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia-max/src/monitor.hpp>
-#include <ossia/detail/thread.hpp>
 
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
@@ -44,14 +43,6 @@ extern "C" void ossia_monitor_setup()
       "notify", A_CANT, 0);
 
   search_filter::setup_attribute<monitor>(c);
-  /*
-  CLASS_ATTR_SYM(c, "sort", 0, monitor, m_sort);
-  CLASS_ATTR_LABEL(c, "sort", 0, "Sort method");
-
-  CLASS_ATTR_LONG(c, "highlight", 0, monitor, m_highlight);
-  CLASS_ATTR_LABEL(c, "highlight", 0, "Highlight objects returned by search");
-  CLASS_ATTR_FILTER_CLIP(c, "highlight", 0, 1);
-  */
 
   CLASS_ATTR_LONG(c, "depth", 0, monitor, m_depth);
   CLASS_ATTR_LABEL(c, "depth", 0, "Limit exploration depth");

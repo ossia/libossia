@@ -3,7 +3,6 @@
 #include <ossia-max/src/router.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia-max/src/ossia-max.hpp>
-#include <ossia/detail/thread.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
 
