@@ -559,13 +559,15 @@ void parameter_base::get_bounding_mode(parameter_base*x, std::vector<matcher*> n
       continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    if(param)
+    {
+      x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
+      t_atom a;
+      A_SETSYM(&a,x->m_bounding_mode);
 
-    x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
-    t_atom a;
-    A_SETSYM(&a,x->m_bounding_mode);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("clip"));
 }
@@ -609,14 +611,16 @@ void parameter_base::get_type(parameter_base*x, std::vector<matcher*> nodes)
       continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    if(param)
+    {
+      x->m_type = val_type2symbol(param->get_value_type());
 
-    x->m_type = val_type2symbol(param->get_value_type());
+      t_atom a;
+      A_SETSYM(&a,x->m_type);
 
-    t_atom a;
-    A_SETSYM(&a,x->m_type);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("type"));
 }
@@ -629,14 +633,16 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<matcher*> nod
       continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    if(param)
+    {
+      x->m_access_mode = access_mode2symbol(param->get_access());
 
-    x->m_access_mode = access_mode2symbol(param->get_access());
+      t_atom a;
+      A_SETSYM(&a, x->m_access_mode);
 
-    t_atom a;
-    A_SETSYM(&a, x->m_access_mode);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("mode"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("mode"));
 }
@@ -650,13 +656,16 @@ void parameter_base::get_critical(parameter_base*x, std::vector<matcher*> nodes)
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-    x->m_critical = param->get_critical();
+    if(param)
+    {
+      x->m_critical = param->get_critical();
 
-    t_atom a;
-    A_SETLONG(&a, x->m_critical);
+      t_atom a;
+      A_SETLONG(&a, x->m_critical);
 
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("critical"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("critical"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("critical"));
 }
@@ -670,13 +679,16 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<matcher
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
 
-    x->m_repetitions = !param->get_repetition_filter();
+    if(param)
+    {
+      x->m_repetitions = !param->get_repetition_filter();
 
-    t_atom a;
-    A_SETLONG(&a, x->m_repetitions);
+      t_atom a;
+      A_SETLONG(&a, x->m_repetitions);
 
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("repetitions"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("repetitions"));
 }
@@ -689,13 +701,17 @@ void parameter_base::get_enable(parameter_base*x, std::vector<matcher*> nodes)
       continue;
 
     auto param = m->get_node()->get_parameter();
-    x->m_enable = !param->get_disabled();
 
-    t_atom a;
-    A_SETLONG(&a,x->m_enable);
+    if(param)
+    {
+      x->m_enable = !param->get_disabled();
 
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
+      t_atom a;
+      A_SETLONG(&a,x->m_enable);
+
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("enable"));
 }
@@ -708,15 +724,17 @@ void parameter_base::get_unit(parameter_base*x, std::vector<matcher*> nodes)
       continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    if(param)
+    {
+      std::string_view unit = ossia::get_pretty_unit_text(param->get_unit());
+      x->m_unit = gensym(unit.data());
 
-    std::string_view unit = ossia::get_pretty_unit_text(param->get_unit());
-    x->m_unit = gensym(unit.data());
+      t_atom a;
+      A_SETSYM(&a, x->m_unit);
 
-    t_atom a;
-    A_SETSYM(&a, x->m_unit);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("unit"));
 }
@@ -729,14 +747,16 @@ void parameter_base::get_mute(parameter_base*x, std::vector<matcher*> nodes)
       continue;
 
     ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    if(param)
+    {
+      x->m_mute = param->get_muted();
 
-    x->m_mute = param->get_muted();
+      t_atom a;
+      A_SETLONG(&a, x->m_mute);
 
-    t_atom a;
-    A_SETLONG(&a, x->m_mute);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+      outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
+      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+    }
   }
   lock_and_touch(x, gensym("mute"));
 }
