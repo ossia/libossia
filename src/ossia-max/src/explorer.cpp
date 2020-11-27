@@ -136,23 +136,8 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
   std::vector<ossia::net::node_base*> nodes;
   for(const auto& m : matchers)
   {
-    auto node = m->get_node();
-    std::string address(x->m_name->s_name);
-    std::vector<ossia::net::node_base*> found_nodes;
-    if(x->m_addr_scope == ossia::net::address_scope::global)
-    {
-      found_nodes = {node};
-    }
-    else
-    {
-      found_nodes = ossia::net::find_nodes(*node, address);
-    }
-
-    for(const auto& n : found_nodes)
-    {
-      auto vec = ossia::net::list_all_children(n, x->m_depth);
-      nodes.insert(nodes.end(), vec.begin(), vec.end());
-    }
+    auto vec = ossia::net::list_all_children(m->get_node(), x->m_depth);
+    nodes.insert(nodes.end(), vec.begin(), vec.end());
   }
 
   ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
