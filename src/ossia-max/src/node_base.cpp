@@ -125,30 +125,33 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 void node_base::get_namespace(node_base* x)
 {
   const static t_symbol* prependsym = gensym("namespace");
-  std::vector<ossia::net::node_base*> list;
   for (auto& m : x->m_matchers)
   {
     auto n = m->get_node();
-    list = ossia::net::list_all_children(n);
+    std::vector<ossia::net::node_base*> children = ossia::net::list_all_children(n);
+
+    ossia::remove_erase_if(children, [](const auto& n){
+      return n->get_parameter() == nullptr; });
+
+    t_atom a;
+    A_SETLONG(&a, children.size());
+    outlet_anything(x->m_dumpout, gensym("namespace_size"), 1, &a);
 
     int pos = ossia::net::osc_parameter_string(*n).length();
     if (pos > 1) pos++; // root node always have '/' osc_address,
                         // while subnode doesn't ends with '/' (e.g. '/foo')
-    for (ossia::net::node_base* child : list)
+    for (ossia::net::node_base* child : children)
     {
-      if (child->get_parameter())
-      {
-        ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-        ossia::value val = child->get_parameter()->value();
+      ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
+      ossia::value val = child->get_parameter()->value();
 
-        std::vector<t_atom> va;
-        value2atom vm{va};
+      std::vector<t_atom> va;
+      value2atom vm{va};
 
-        name.apply(vm);
-        val.apply(vm);
+      name.apply(vm);
+      val.apply(vm);
 
-        outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
-      }
+      outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
     }
   }
 }
@@ -181,7 +184,7 @@ void node_base::class_setup(t_class* c)
   class_addmethod(c, (method) node_base::set,                "set",       A_GIMME, 0);
   class_addmethod(c, (method) node_base::get_namespace,      "namespace", A_NOTHING,  0);
   class_addmethod(c, (method) node_base::preset,             "preset",    A_GIMME, 0);
-  class_addmethod(c, (method) node_base::push_default_value, "reset", A_NOTHING, 0);
+  class_addmethod(c, (method) node_base::push_default_value, "reset",     A_NOTHING, 0);
 }
 
 void node_base::set(node_base* x, t_symbol*, int argc, t_atom* argv)
