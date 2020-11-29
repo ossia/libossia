@@ -1,7 +1,7 @@
 #!/bin/bash -ex
 # Note : to make the tests work under travis, they have to be changed in order not to require QApplication but only QCoreApplication
 
-source codesign_functions.sh
+source ${0%/*}/codesign_functions.sh
 
 case "$TRAVIS_OS_NAME" in
   linux)
