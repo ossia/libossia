@@ -460,6 +460,8 @@ void client::disconnect(client* x)
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
     client::on_device_removing(x);
+
+    outlet_anything(x->m_dumpout, gensym("disconnected"), 0, nullptr);
   }
   if(x->m_clock)
     clock_unset(x->m_clock); // avoid automatic reconnection
