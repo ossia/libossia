@@ -17,10 +17,6 @@ public:
   static void register_children(device*);
   static void loadbang(device*);
 
-  std::vector<std::vector<t_atom>> m_protocols;
-
-  //static void* create(t_symbol* name, int argc, t_atom* argv);
-  //static void destroy(device* x);
   static void expose(device* x, t_symbol*, long argc, t_atom* argv);
   static void name(device* x, t_symbol*, long argc, t_atom* argv);
   static void get_protocols(device* x);

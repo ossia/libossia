@@ -66,7 +66,6 @@ ossia_max::~ossia_max()
     {
       multiplex.stop_expose_to(*proto);
     }
-    x->m_protocols.clear();
     x->disconnect_slots();
   }
   for (auto x : views.copy()){

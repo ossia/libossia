@@ -259,14 +259,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport));
-
-        std::vector<t_atom> a;
-        a.resize(4);
-        A_SETSYM(&a[0], gensym("Minuit"));
-        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
-        A_SETFLOAT(&a[2], settings.remoteport);
-        A_SETFLOAT(&a[3], settings.localport);
-        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -301,13 +293,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         oscq_proto->set_echo(true);
 
         multiplex.expose_to(std::move(oscq_proto));
-
-        std::vector<t_atom> a;
-        a.resize(3);
-        A_SETSYM(&a[0], gensym("oscquery"));
-        A_SETFLOAT(&a[1], settings.oscport);
-        A_SETFLOAT(&a[2], settings.wsport);
-        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -341,14 +326,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       {
         multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport));
-
-        std::vector<t_atom> a;
-        a.resize(4);
-        A_SETSYM(&a[0], gensym("osc"));
-        A_SETSYM(&a[1], gensym(settings.remoteip.c_str()));
-        A_SETFLOAT(&a[2], settings.remoteport);
-        A_SETFLOAT(&a[3], settings.localport);
-        x->m_protocols.push_back(a);
       }
       catch (const std::exception& e)
       {
@@ -424,20 +401,50 @@ void device::name(device *x, t_symbol* s, long argc, t_atom* argv){
 
 void device::get_protocols(device* x)
 {
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                        x->m_device->get_protocol()).get_protocols();
+
+  int index = 0;
+
   t_atom a;
-  A_SETLONG(&a,x->m_protocols.size());
+  A_SETLONG(&a,protocols.size());
   outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
 
-  int j=0;
-  for (auto& v : x->m_protocols)
+  for(auto& p : protocols)
   {
-    t_atom ar[5];
-    A_SETLONG(ar,j);
-    for (int i = 0 ; i<v.size() ; i++)
-      ar[i+1] = v[i];
+    std::vector<t_atom> vec;
+    p.get();
+    if(auto osc = dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
+    {
+      vec.resize(5);
+      auto data=vec.begin();
+      A_SETLONG(data++, index++);
+      A_SETSYM(data++, gensym("osc"));
+      A_SETSYM(data++, gensym(osc->get_ip().c_str()));
+      A_SETLONG(data++, osc->get_remote_port());
+      A_SETLONG(data++, osc->get_local_port());
+    }
+    else if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
+    {
+      vec.resize(4);
+      auto data=vec.begin();
+      A_SETLONG(data++, index++);
+      A_SETSYM(data++, gensym("oscquery"));
+      A_SETLONG(data++, oscq->get_osc_port());
+      A_SETLONG(data++, oscq->get_ws_port());
+    }
+    else if(auto minuit = dynamic_cast<const ossia::net::minuit_protocol*>(p.get()))
+    {
+      vec.resize(5);
+      auto data=vec.begin();
+      A_SETLONG(data++, index++);
+      A_SETSYM(data++, gensym("minuit"));
+      A_SETSYM(data++, gensym(minuit->get_ip().c_str()));
+      A_SETLONG(data++, minuit->get_remote_port());
+      A_SETLONG(data++, minuit->get_local_port());
+    }
 
-    outlet_anything(x->m_dumpout, gensym("protocol"), v.size()+1, ar);
-    j++;
+    outlet_anything(x->m_dumpout, gensym("protocol"), vec.size(), vec.data());
   }
 }
 
@@ -455,7 +462,7 @@ void device::stop_expose(device* x, int index)
       x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < x->m_protocols.size() && index < protos.size() )
+  if ( index < protos.size() )
   {
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
       if(dynamic_cast<ossia::phidget_protocol*>(protos[index].get()))
@@ -467,7 +474,9 @@ void device::stop_expose(device* x, int index)
       }
 #endif
     multiplex.stop_expose_to(*protos[index]);
-    x->m_protocols.erase(x->m_protocols.begin() + index);
+    t_atom a;
+    A_SETLONG(&a, index);
+    outlet_anything(x->m_dumpout, gensym("stop_expose"), 1, &a);
   }
   else
     object_error((t_object*)x, "Index %d out of bound.", index);
