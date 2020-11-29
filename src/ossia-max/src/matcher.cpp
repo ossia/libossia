@@ -254,6 +254,13 @@ matcher::~matcher()
 
 void matcher::output_value(ossia::value v)
 {
+  if(owner->m_otype == object_class::param || owner->m_otype == object_class::remote)
+  {
+    auto pbase = static_cast<parameter_base*>(owner);
+    if(pbase->m_set_flag)
+      return;
+  }
+
   auto param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
       param->get_domain(),
@@ -273,13 +280,6 @@ void matcher::output_value(ossia::value v)
     else
     {
       val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit);
-    }
-
-    auto it = find(owner->m_set_pool, val);
-    if (it != owner->m_set_pool.end())
-    {
-      owner->m_set_pool.erase(it);
-      return;
     }
 
     if(owner->m_dumpout)

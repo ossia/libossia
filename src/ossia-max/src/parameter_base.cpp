@@ -275,14 +275,14 @@ void parameter_base::push_default_value(parameter_base* x)
         auto it = x->m_value_map.find(node->get_name());
         if(it != x->m_value_map.end())
         {
-          x->push_parameter_value(param, it->second, false);
+          x->push_parameter_value(param, it->second);
         }
         else
         {
           auto def_val = ossia::net::get_default_value(*node);
           if (def_val)
           {
-            x->push_parameter_value(param, *def_val, false);
+            x->push_parameter_value(param, *def_val);
           }
         }
       }
@@ -821,7 +821,7 @@ std::optional<std::array<float, N>> to_array(t_atom* argv)
   return arr;
 }
 
-void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
+void convert_or_push(parameter_base* x, ossia::value&& v)
 {
   for (auto m : x->m_node_selection)
   {
@@ -838,16 +838,16 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
-      x->push_parameter_value(param, converted, set_flag);
+      x->push_parameter_value(param, converted);
     }
     else
     {
-      x->push_parameter_value(param, v, set_flag);
+      x->push_parameter_value(param, v);
     }
   }
 }
 
-void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
+void just_push(parameter_base* x, ossia::value&& v)
 {
   for (auto& m :  x->m_node_selection)
   {
@@ -856,7 +856,7 @@ void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
-    x->push_parameter_value(param, v, set_flag);
+    x->push_parameter_value(param, v);
   }
 }
 
@@ -865,16 +865,14 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if (x->m_mute)
     return;
 
-  bool set_flag = false;
-
   if (s && s == gensym("set"))
-    set_flag = true;
+    x->m_set_flag = true;
 
   // TODO use atom2value here
 
   if (argc == 0 && s)
   {
-    just_push(x, std::string(s->s_name), set_flag);
+    just_push(x, std::string(s->s_name));
   }
   else if (argc == 1 && s &&
            ( s == gensym("float") || s == gensym("list") || ( s == gensym("int"))))
@@ -883,13 +881,13 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     switch(argv->a_type)
     {
       case A_SYM:
-        just_push(x, std::string(atom_getsym(argv)->s_name), set_flag);
+        just_push(x, std::string(atom_getsym(argv)->s_name));
         break;
       case A_FLOAT:
-        convert_or_push(x, ossia::value(atom_getfloat(argv)), set_flag);
+        convert_or_push(x, ossia::value(atom_getfloat(argv)));
         break;
       case A_LONG:
-        convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)), set_flag);
+        convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)));
         break;
       default:
         return;
@@ -924,10 +922,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       }
     }
     if(list.size() == 1)
-      convert_or_push(x, std::move(list[0]), set_flag);
+      convert_or_push(x, std::move(list[0]));
     else
-      convert_or_push(x, std::move(list), set_flag);
+      convert_or_push(x, std::move(list));
   }
+  x->m_set_flag = false;
 }
 
 
@@ -990,7 +989,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
       } else
         vv = v;
 
-      x->push_parameter_value(param, std::move(vv), false);
+      x->push_parameter_value(param, std::move(vv));
     }
     else
     {
@@ -1024,7 +1023,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
 
       ossia::convert(list, src_unit, dst_unit);
 
-      x->push_parameter_value(param, std::move(list), false);
+      x->push_parameter_value(param, std::move(list));
     }
 
   }
@@ -1038,7 +1037,7 @@ void parameter_base::bang(parameter_base* x)
 
     if (param->get_value_type() == ossia::val_type::IMPULSE)
     {
-      x->push_parameter_value(param, ossia::impulse{}, false);
+      x->push_parameter_value(param, ossia::impulse{});
     }
     else
     {
@@ -1046,17 +1045,6 @@ void parameter_base::bang(parameter_base* x)
     }
   }
 }
-
-/*
-void parameter_base::output_value(parameter_base* x)
-{
-  auto it = std::remove_if(x->m_matchers.begin(), x->m_matchers.end(), [](const auto& m)
-  {
-    return m->is_zombie();
-  });
-  x->m_matchers.erase(it, x->m_matchers.end());
-}
-*/
 
 void parameter_base::in_float(parameter_base* x, double f)
 {

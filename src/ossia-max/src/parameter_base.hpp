@@ -69,6 +69,8 @@ public:
   long m_min_size{};
   long m_max_size{};
 
+  bool m_set_flag{};
+
   /**
    * @brief t_obj_base::push : push a value to a node
    * @param x : caller that holds the node to push to

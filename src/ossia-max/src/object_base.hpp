@@ -161,8 +161,8 @@ public:
   void highlight();
   static void reset_color(object_base* x);
 
-  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
-  std::vector<ossia::value> m_set_pool;
+  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
+//  std::vector<ossia::value> m_set_pool;
 
   ossia::traversal::path get_path()
   {

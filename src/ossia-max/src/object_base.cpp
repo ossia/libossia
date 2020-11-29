@@ -677,14 +677,11 @@ void object_base::lock_and_touch(object_base* x, t_symbol* s)
   x->m_lock = false;
 }
 
-void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag)
+void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val)
 {
   if(!param_locks.contains(param))
   {
     param_locks.push_back(param);
-    if(set_flag)
-      m_set_pool.push_back(ossia::convert(val, param->get_value_type()));
-
     param->push_value(val);
     param_locks.remove_all(param);
   }
