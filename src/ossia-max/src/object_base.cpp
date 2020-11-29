@@ -198,7 +198,15 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
           auto nodes = ossia::net::find_nodes(*pn->get_node(), m_name->s_name);
           matchers.reserve(matchers.size()+nodes.size());
           for(auto n : nodes)
+          {
+            if(m_otype == object_class::attribute
+             ||m_otype == object_class::remote)
+            {
+              if(n->get_parameter() != nullptr)
+                continue;
+            }
             matchers.push_back(std::make_shared<matcher>(n, this));
+          }
         }
         break;
       }
