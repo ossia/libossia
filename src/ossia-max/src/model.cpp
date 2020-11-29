@@ -45,7 +45,7 @@ namespace ossia
 namespace max
 {
 
-void* model::create(t_symbol* name, long argc, t_atom* argv)
+void* model::create(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<model>();
 
@@ -132,15 +132,15 @@ void model::destroy(model* x)
   x->~model();
 }
 
-void model::assist(model* x, void* b, long m, long a, char* s)
+void model::assist(model*, void*, long m, long, char* s)
 {
   if (m == ASSIST_INLET)
   {
-    sprintf(s, "Model input", a);
+    sprintf(s, "Model input");
   }
   else
   {
-    sprintf(s, "Dumpout", a);
+    sprintf(s, "Dumpout");
   }
 }
 

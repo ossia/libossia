@@ -100,9 +100,8 @@ void device::class_setup(t_class *c)
       "send_all_values", A_GIMME, 0);
 }
 
-void* device::create(t_symbol* name, long argc, t_atom* argv)
+void* device::create(t_symbol*, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia_max::instance();
   auto x = make_ossia<device>();
 
   if (x)
