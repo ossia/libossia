@@ -256,9 +256,24 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        multiplex.expose_to(std::make_unique<ossia::net::minuit_protocol>(
+        auto minuit_proto = std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
-            settings.localport));
+            settings.localport);
+
+        t_atom a[4];
+        A_SETSYM(a, gensym("minuit"));
+        A_SETSYM(a, gensym(minuit_proto->get_ip().c_str()));
+        A_SETLONG(a+2, minuit_proto->get_remote_port());
+        A_SETLONG(a+3, minuit_proto->get_local_port());
+
+        multiplex.expose_to(std::move(minuit_proto));
+
+        outlet_anything(x->m_dumpout, gensym("expose"), 3, a);
+        object_post(
+            (t_object*)x,
+            "Connected with Minuit protocol to %s on port %u and listening on "
+            "port %u",
+            settings.remoteip.c_str(), settings.remoteport, settings.localport);
       }
       catch (const std::exception& e)
       {
@@ -266,12 +281,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
-
-      object_post(
-          (t_object*)x,
-          "Connected with Minuit protocol to %s on port %u and listening on "
-          "port %u",
-          settings.remoteip.c_str(), settings.remoteport, settings.localport);
     }
     else if (protocol == "oscquery")
     {
@@ -292,7 +301,19 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
               settings.oscport, settings.wsport);
         oscq_proto->set_echo(true);
 
+        t_atom a[3];
+        A_SETSYM(a, gensym("oscquery"));
+        A_SETLONG(a+1, oscq_proto->get_osc_port());
+        A_SETLONG(a+2, oscq_proto->get_ws_port());
+
         multiplex.expose_to(std::move(oscq_proto));
+
+        outlet_anything(x->m_dumpout, gensym("expose"), 3, a);
+        object_post(
+            (t_object*)x,
+            "Connected with oscquery protocol with OSC port %u and WS port %u, "
+            "listening on port %u",
+            settings.oscport, settings.wsport, settings.oscport);
       }
       catch (const std::exception& e)
       {
@@ -300,12 +321,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
-
-      object_post(
-          (t_object*)x,
-          "Connected with oscquery protocol with OSC port %u and WS port %u, "
-          "listening on port %u",
-          settings.oscport, settings.wsport, settings.oscport);
     }
     else if (protocol == "osc")
     {
@@ -324,8 +339,23 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 
       try
       {
-        multiplex.expose_to(std::make_unique<ossia::net::osc_protocol>(
-            settings.remoteip, settings.remoteport, settings.localport));
+        auto proto = std::make_unique<ossia::net::osc_protocol>(
+            settings.remoteip, settings.remoteport, settings.localport);
+
+        t_atom a[4];
+        A_SETSYM(a, gensym("osc"));
+        A_SETSYM(a+1,gensym(proto->get_ip().c_str()));
+        A_SETLONG(a+2, proto->get_remote_port());
+        A_SETLONG(a+3, proto->get_local_port());
+
+        multiplex.expose_to(std::move(proto));
+
+        outlet_anything(x->m_dumpout, gensym("expose"),4, a);
+        object_post(
+            (t_object*)x,
+            "Connected with OSC protocol to %s on port %u and listening on port "
+            "%u",
+            settings.remoteip.c_str(), settings.remoteport, settings.localport);
       }
       catch (const std::exception& e)
       {
@@ -333,12 +363,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
-
-      object_post(
-          (t_object*)x,
-          "Connected with OSC protocol to %s on port %u and listening on port "
-          "%u",
-          settings.remoteip.c_str(), settings.remoteport, settings.localport);
     }
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
