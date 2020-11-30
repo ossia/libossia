@@ -126,7 +126,7 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 {
   stop_monitoring();
   m_method = s;
-  m_name = nullptr;
+  m_name = _sym_nothing;
   if(argc > 0 && argv->a_type == A_SYM)
   {
     m_name = argv->a_w.w_sym;

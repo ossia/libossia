@@ -98,7 +98,7 @@ explorer::~explorer()
 
 void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv)
 {
-  x->m_name = nullptr;
+  x->m_name = _sym_nothing;
   if(argc > 0 && argv->a_type == A_SYM)
   {
     x->m_name = argv->a_w.w_sym;
@@ -107,7 +107,7 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
 
   std::vector<std::shared_ptr<matcher>> matchers;
 
-  if(x->m_name == nullptr)
+  if(x->m_name == _sym_nothing)
   {
     auto obj = x->find_parent_object();
     if(obj)
