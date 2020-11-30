@@ -25,6 +25,10 @@ extern "C" void ossia_model_setup()
 
   node_base::class_setup(c);
 
+  CLASS_ATTR_LONG( c, "autoname", 0, model, m_autoname);
+  CLASS_ATTR_STYLE(c, "autoname", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "autoname", 0, "Autoname");
+
   class_addmethod(
       c, (method)model::assist,
         "assist", A_CANT, 0);
@@ -77,13 +81,27 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (argc > 0 && attrstart > 0 )
+    if(x->m_autoname)
+    {
+      auto parent_patcher = get_patcher(&x->m_object);
+      auto varname = static_cast<t_atom*>(object_attr_get(parent_patcher, _sym_varname));
+      if(varname && varname->a_type == A_SYM)
+      {
+        x->m_name = varname->a_w.w_sym;
+      }
+    }
+
+    if (x->m_name == _sym_nothing && argc > 0 && attrstart > 0 )
     {
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
-        x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
+    }
+
+    if(x->m_name && x->m_name != _sym_nothing)
+    {
+      x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
     }
 
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.

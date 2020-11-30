@@ -12,6 +12,8 @@ public:
 
   using is_model = std::true_type;
 
+  long m_autoname;
+
   void do_registration();
   void save_children_state();
 
