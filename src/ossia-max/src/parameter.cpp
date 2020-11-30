@@ -76,11 +76,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
       }
     }
 
-    if (x->m_name == _sym_nothing)
-    {
-      return x;
-    }
-
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 

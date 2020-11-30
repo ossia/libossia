@@ -82,13 +82,6 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
       }
     }
 
-    if (x->m_name == _sym_nothing)
-    {
-      object_error((t_object*)x, "needs a name as first argument");
-      x->m_name = gensym("untitledModel");
-      return x;
-    }
-
     // process attr args, if any
     long attrstart = attr_args_offset(argc, argv);
     attr_args_process(x, argc - attrstart, argv + attrstart);
