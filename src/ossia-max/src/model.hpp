@@ -16,6 +16,7 @@ public:
 
   void do_registration();
   void save_children_state();
+  void autorename();
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::model*);

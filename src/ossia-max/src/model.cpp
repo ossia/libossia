@@ -81,15 +81,6 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if(x->m_autoname)
-    {
-      auto parent_patcher = get_patcher(&x->m_object);
-      auto varname = static_cast<t_atom*>(object_attr_get(parent_patcher, _sym_varname));
-      if(varname && varname->a_type == A_SYM)
-      {
-        x->m_name = varname->a_w.w_sym;
-      }
-    }
 
     if (x->m_name == _sym_nothing && argc > 0 && attrstart > 0 )
     {
@@ -200,6 +191,29 @@ void model::save_children_state()
   for(auto subpatch : pat_desc.subpatchers)
   {
     save_children_recursively(subpatch);
+  }
+}
+
+void model::autorename()
+{
+  if(m_autoname)
+  {
+    auto parent_patcher = get_patcher(&m_object);
+    if(parent_patcher)
+    {
+      t_box *parent_patcher_box;
+      t_max_err err = object_obex_lookup(parent_patcher, gensym("#B"), (t_object **)&parent_patcher_box);
+
+      if(err == MAX_ERR_NONE)
+      {
+        t_symbol* varname = (t_symbol*)object_attr_get(parent_patcher_box,  gensym("varname"));
+        if(varname)
+        {
+          m_name = varname;
+          m_addr_scope = ossia::net::get_address_scope(m_name->s_name);
+        }
+      }
+    }
   }
 }
 
