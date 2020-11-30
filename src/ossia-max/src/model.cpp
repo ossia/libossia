@@ -172,17 +172,7 @@ void save_children_recursively(t_object* patcher)
 
 void model::save_children_state()
 {
-  auto& pat_desc = ossia_max::instance().patchers[m_patcher];
-
-  for(auto x : pat_desc.parameters)
-  {
-    x->save_values();
-  }
-
-  for(auto subpatch : pat_desc.subpatchers)
-  {
-    save_children_recursively(subpatch);
-  }
+  save_children_recursively(m_patcher);
 }
 
 } // max namespace
