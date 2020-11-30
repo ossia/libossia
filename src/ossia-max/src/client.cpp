@@ -383,8 +383,8 @@ void client::connect(client* x)
     client::on_device_created(x);
     clock_unset(x->m_clock);
 
-    register_children_in_patcher_recursively(get_patcher(&x->m_object), x);
-    output_all_values(get_patcher(&x->m_object), true);
+    register_children_in_patcher_recursively(x->m_patcher, x);
+    output_all_values(x->m_patcher, true);
   }
   else
   {

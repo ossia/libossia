@@ -272,7 +272,7 @@ void address_mess_cb(T* x, t_symbol* address)
   || x->m_otype == object_class::model)
   {
     register_children_in_patcher_recursively(x->m_patcher, x);
-    output_all_values(get_patcher(&x->m_object), x->m_otype == object_class::model);
+    output_all_values(x->m_patcher, x->m_otype == object_class::model);
   }
 }
 

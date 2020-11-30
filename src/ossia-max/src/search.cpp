@@ -162,7 +162,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
         object_base* obj = m->get_owner();
         if(obj != x)
         {
-          typedmess(get_patcher(&obj->m_object), gensym("front"), 0, NULL);	// opens the subpatcher
+          typedmess(obj->m_patcher, gensym("front"), 0, NULL);	// opens the subpatcher
           obj->highlight();
         }
       }
