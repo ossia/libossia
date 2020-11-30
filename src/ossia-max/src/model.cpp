@@ -71,9 +71,13 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
     x->m_description = _sym_nothing;
     x->m_tags_size = 0;
 
+    // process attr args, if any
+    long attrstart = attr_args_offset(argc, argv);
+    attr_args_process(x, argc - attrstart, argv + attrstart);
+
     // check name argument
     x->m_name = _sym_nothing;
-    if (argc > 0 && argv)
+    if (argc > 0 && attrstart > 0 )
     {
       if (atom_gettype(argv) == A_SYM)
       {
@@ -81,10 +85,6 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
     }
-
-    // process attr args, if any
-    long attrstart = attr_args_offset(argc, argv);
-    attr_args_process(x, argc - attrstart, argv + attrstart);
 
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
     x->m_reg_clock = clock_new(x, (method) object_base::loadbang);

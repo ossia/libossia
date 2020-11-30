@@ -67,7 +67,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (attrstart && argv)
+    if (attrstart > 0 && argv)
     {
       if (atom_gettype(argv) == A_SYM)
       {
