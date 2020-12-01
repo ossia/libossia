@@ -43,6 +43,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    critical_enter(0);
     auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
     if( !pat_desc.model && !pat_desc.view)
     {
@@ -52,6 +53,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       object_free(x);
+      critical_exit(0);
       return nullptr;
     }
     device_base::on_device_created.connect<&view::on_device_created>(x);
@@ -82,15 +84,17 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
     x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
     clock_set(x->m_reg_clock, 1);
-  }
 
-  ossia_max::instance().views.push_back(x);
+    ossia_max::instance().views.push_back(x);
+    critical_exit(0);
+  }
 
   return (x);
 }
 
 void view::destroy(view* x)
 {
+  critical_enter(0);
   device_base::on_device_created.disconnect<&view::on_device_created>(x);
   device_base::on_device_removing.disconnect<&view::on_device_removing>(x);
 
@@ -114,6 +118,7 @@ void view::destroy(view* x)
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);
   x->~view();
+  critical_exit(0);
 }
 
 void view::do_registration()

@@ -106,6 +106,7 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
 
   if (x)
   {
+    critical_enter(0);
     auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
     if(!pat_desc.device && !pat_desc.client)
     {
@@ -115,6 +116,7 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.device] or [ossia.client] per patcher");
       object_free(x);
+      critical_exit(0);
       return nullptr;
     }
 
@@ -151,6 +153,8 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
     ossia_max::instance().devices.push_back(x);
 
     on_device_created(x);
+
+    critical_exit(0);
   }
 
   return (x);
@@ -158,6 +162,7 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
 
 void device::destroy(device* x)
 {
+  critical_enter(0);
   auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
@@ -221,6 +226,7 @@ void device::destroy(device* x)
   ossia_max::instance().devices.remove_all(x);
 
   x->~device();
+  critical_exit(0);
 }
 
 // TODO do we still need this function ?

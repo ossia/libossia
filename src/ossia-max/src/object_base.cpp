@@ -243,6 +243,7 @@ void object_base::loadbang(object_base* x)
   if(x->m_registered)
     return;
 
+  critical_enter(0);
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
 
@@ -301,6 +302,7 @@ void object_base::loadbang(object_base* x)
     register_children_in_patcher_recursively(root_patcher, nullptr);
     output_all_values(root_patcher, true);
   }
+  critical_exit(0);
 }
 
 void object_base::on_node_removing(const ossia::net::node_base& n)

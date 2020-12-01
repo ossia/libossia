@@ -81,6 +81,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
+    critical_enter(0);
     auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
     if(!pat_desc.client && !pat_desc.device)
       pat_desc.client = x;
@@ -88,6 +89,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.device] or [ossia.client] per patcher");
       object_free(x);
+      critical_exit(0);
       return nullptr;
     }
 
@@ -132,6 +134,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     clock_set(x->m_reg_clock, 1);
 
     ossia_library.clients.push_back(x);
+    critical_exit(0);
   }
 
   return (x);
@@ -139,6 +142,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
 
 void client::destroy(client* x)
 {
+  critical_enter(0);
   auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
@@ -164,6 +168,7 @@ void client::destroy(client* x)
   ossia_max::instance().clients.remove_all(x);
 
   x->~client();
+  critical_exit(0);
 }
 
 #pragma mark -

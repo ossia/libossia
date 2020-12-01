@@ -51,6 +51,7 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
   if (x)
   {
+    critical_enter(0);
     auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
     if( !pat_desc.model && !pat_desc.view)
     {
@@ -60,6 +61,7 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       object_free(x);
+      critical_exit(0);
       return nullptr;
     }
 
@@ -91,6 +93,7 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
     clock_set(x->m_reg_clock, 1);
 
     ossia_max::instance().models.push_back(x);
+    critical_exit(0);
   }
 
   return (x);
@@ -98,6 +101,7 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
 void model::destroy(model* x)
 {
+  critical_enter(0);
   auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
   if(pat_it != ossia_max::instance().patchers.end())
   {
@@ -123,6 +127,7 @@ void model::destroy(model* x)
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);
   x->~model();
+  critical_exit(0);
 }
 
 void model::assist(model*, void*, long m, long, char* s)

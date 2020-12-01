@@ -1,6 +1,12 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include "ext.h"
+#include "ext_obex.h"
+#ifdef MAC_VERSION
+#include "Multiprocessing.h" // should be included before "ext_critical.h"
+#endif
+#include "ext_critical.h"
+
 #include "matcher.hpp"
 
 #include <ossia/detail/safe_vec.hpp>
