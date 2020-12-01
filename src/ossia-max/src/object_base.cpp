@@ -41,17 +41,6 @@ object_base::~object_base()
     clock_unset(m_highlight_clock);
     object_free(m_highlight_clock);
   }
-  auto& root_map = ossia_max::instance().root_patcher;
-  const auto& it = root_map.find(m_patcher_hierarchy.back());
-
-  if(it != root_map.end())
-  {
-    it->second.dec();
-    if(it->second.count == 0)
-    {
-        root_map.erase(it);
-    }
-  }
 }
 
 void object_base::get_hierarchy()

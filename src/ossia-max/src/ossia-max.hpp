@@ -175,18 +175,6 @@ public:
 
   bool registering_nodes=false;
 
-  // TODO this should not be needed anymore
-  // this is used at loadbang to mark a patcher loaded
-  // and trigger its registration
-  struct root_descriptor{
-    bool is_loadbanged{};
-    unsigned long count{}; // number of object under this root
-
-    unsigned long inc(){ return ++count;}
-    unsigned long dec(){ return --count;}
-  };
-  typedef std::map<t_object*, root_descriptor> RootMap;
-
   struct patcher_descriptor{
     ossia::safe_set<parameter*> parameters{};
     ossia::safe_set<remote*>    remotes{};
@@ -225,7 +213,6 @@ public:
   };
   std::map<t_object*, patcher_descriptor> patchers;
 
-  RootMap root_patcher;
   void* m_reg_clock{};
   static void* s_browse_clock;
 
