@@ -103,6 +103,7 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
   {
     x->m_name = argv->a_w.w_sym;
     x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+    x->update_path();
   }
 
   std::vector<std::shared_ptr<matcher>> matchers;
