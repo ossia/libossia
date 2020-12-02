@@ -830,6 +830,10 @@ void convert_or_push(parameter_base* x, ossia::value&& v)
 
     auto node = m->get_node();
     auto param = node->get_parameter();
+    // FIXME we should have checked that before
+    if(!param)
+      return;
+
     auto xparam = (parameter_base*)m->get_owner();
 
     if ( xparam->m_ounit != std::nullopt )

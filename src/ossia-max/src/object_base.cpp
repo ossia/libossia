@@ -108,144 +108,61 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 {
   std::vector<std::shared_ptr<matcher>> matchers;
 
-  if(m_addr_scope == ossia::net::address_scope::global)
+  switch(m_otype)
   {
-    switch(m_otype)
+    case object_class::attribute:
+    case object_class::remote:
+    case object_class::view:
+    case object_class::explorer:
+    case object_class::monitor:
+    case object_class::search:
     {
-      case object_class::attribute:
-      case object_class::remote:
-      case object_class::view:
-      case object_class::explorer:
-      case object_class::monitor:
-      case object_class::search:
+      auto nodes = find_or_create_global_nodes(get_path().pattern, false);
+      matchers.reserve(nodes.size());
+      for(auto n : nodes)
       {
-        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), false);
-        matchers.reserve(nodes.size());
-        for(auto n : nodes)
-        {
-          matchers.push_back(std::make_shared<matcher>(n, this));
-        }
-        break;
+        matchers.push_back(std::make_shared<matcher>(n, this));
       }
-      case object_class::param:
-      {
-        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), true);
-        matchers.reserve(nodes.size());
-        for(auto n : nodes)
-        {
-          ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
-          matchers.push_back(std::make_shared<matcher>(n, this));
-        }
-        break;
-      }
-      case object_class::model:
-      {
-        auto nodes = find_or_create_global_nodes(std::string(m_name->s_name), true);
-        matchers.reserve(nodes.size());
-        for(auto n : nodes)
-        {
-          matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
-        }
-        break;
-      }
-      default:
-          ;
+      break;
     }
-  }
-  else
-  {
-    switch(m_otype)
+    case object_class::param:
     {
-      case object_class::attribute:
-      case object_class::remote:
+      auto nodes = find_or_create_global_nodes(get_path().pattern, true);
+      matchers.reserve(nodes.size());
+      for(auto n : nodes)
       {
-        auto& pat_desc = ossia_max::instance().patchers[m_patcher];
-        for(auto param : pat_desc.parameters)
-        {
-          if(param->m_name == m_name)
-          {
-            matchers.reserve(param->m_matchers.size());
-            for(const auto& m : param->m_matchers)
-            {
-              matchers.push_back(std::make_shared<matcher>(m->get_node(), this));
-            }
-            break;
-          }
-        }
-        // if we found some parameter matching, then take it, otherwise go on with find_nodes
-        if(!matchers.empty())
-          break;
+        ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
+        matchers.push_back(std::make_shared<matcher>(n, this));
       }
-      case object_class::view:
-      case object_class::explorer:
-      case object_class::monitor:
-      case object_class::search:
-      {
-        auto parent_nodes = find_parent_nodes();
-        for(auto pn : parent_nodes)
-        {
-          auto nodes = ossia::net::find_nodes(*pn->get_node(), m_name->s_name);
-          matchers.reserve(matchers.size()+nodes.size());
-          for(auto n : nodes)
-          {
-            if(m_otype == object_class::attribute
-             ||m_otype == object_class::remote)
-            {
-              if(n->get_parameter() == nullptr)
-                continue;
-            }
-            matchers.push_back(std::make_shared<matcher>(n, this));
-          }
-        }
-        break;
-      }
-      case object_class::param:
-      {
-        auto parent_nodes = find_parent_nodes();
-        for(auto pn : parent_nodes)
-        {
-          auto params = ossia::net::find_or_create_parameter(*pn->get_node(), m_name->s_name,
-                                                             static_cast<parameter*>(this)->m_type->s_name);
-          matchers.reserve(matchers.size()+params.size());
-          for(auto p : params)
-          {
-            matchers.push_back(std::make_shared<matcher>(&p->get_node(), this));
-          }
-        }
-        break;
-      }
-      case object_class::model:
-      {
-        auto parent_nodes = find_parent_nodes();
-        for(auto pn : parent_nodes)
-        {
-          auto nodes = ossia::net::create_nodes(*pn->get_node(), m_name->s_name);
-          matchers.reserve(matchers.size()+nodes.size());
-          for(auto n : nodes)
-          {
-            matchers.push_back(std::make_shared<matcher>(n, this));
-          }
-        }
-        break;
-      }
-      default:
-          ;
+      break;
     }
+    case object_class::model:
+    {
+      auto nodes = find_or_create_global_nodes(get_path().pattern, true);
+      matchers.reserve(nodes.size());
+      for(auto n : nodes)
+      {
+        matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+      }
+      break;
+    }
+    default:
+        ;
   }
   return matchers;
 }
 
 void object_base::loadbang(object_base* x)
 {
-  if(!x->m_path)
-    x->update_path();
-
   if(x->m_registered)
     return;
 
   critical_enter(0);
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
+
+  if(!x->m_path)
+    x->update_path();
 
   while(patcher && !ossia_max::instance().patchers[patcher].loadbanged)
   {

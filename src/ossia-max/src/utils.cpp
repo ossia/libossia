@@ -540,7 +540,6 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   }
 }
 
-// TODO put ptcher in cache, it won't change during object's life
 t_object* get_patcher(t_object* object)
 {
   t_object* patcher = nullptr;
