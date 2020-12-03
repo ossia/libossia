@@ -159,7 +159,7 @@ void purge_parent(ossia::net::node_base* node)
 
 matcher::~matcher()
 {
-  if(node && owner)
+  if(owner)
   {
     // purge selection
     ossia::remove_one(owner->m_node_selection,this);
@@ -245,11 +245,10 @@ matcher::~matcher()
         }
       }
     }
-
-    ossia_max::instance().s_node_matchers_map[node].remove_all(this);
-    node = nullptr;
     owner = nullptr;
   }
+  ossia_max::instance().s_node_matchers_map[node].remove_all(this);
+  node = nullptr;
 }
 
 void matcher::output_value(ossia::value v)
