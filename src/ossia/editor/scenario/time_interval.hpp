@@ -75,8 +75,6 @@ public:
   void tick(ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
   void tick_offset(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
   void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
-  // void tick_offset(ossia::time_value, double ratio, ossia::time_value
-  // offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position

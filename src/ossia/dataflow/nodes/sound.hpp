@@ -305,7 +305,7 @@ protected:
 
 struct resampler
 {
-  void reset(time_value date, ossia::audio_stretch_mode mode, std::size_t channels, std::size_t fileSampleRate)
+  void reset(int64_t date, ossia::audio_stretch_mode mode, std::size_t channels, std::size_t fileSampleRate)
   {
     // TODO use the date parameter to buffer ! else transport won't work
     switch(mode)
@@ -314,11 +314,11 @@ struct resampler
       {
         if(auto s = std::get_if<ossia::raw_stretcher>(&m_stretch))
         {
-          s->next_sample_to_read = date.impl;
+          s->next_sample_to_read = date;
         }
         else
         {
-          m_stretch.emplace<raw_stretcher>(date.impl);
+          m_stretch.emplace<raw_stretcher>(date);
         }
         break;
       }
@@ -327,22 +327,22 @@ struct resampler
         if(auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
         {
-          s->next_sample_to_read = date.impl;
+          s->next_sample_to_read = date;
         }
         else
         {
-          m_stretch.emplace<repitch_stretcher>(channels, 1024, date.impl);
+          m_stretch.emplace<repitch_stretcher>(channels, 1024, date);
         }
         break;
       }
       case audio_stretch_mode::RubberBandStandard:
       {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate, date.impl);
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate, date);
         break;
       }
       case audio_stretch_mode::RubberBandPercussive:
       {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate, date.impl);
+        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate, date);
         break;
       }
     }

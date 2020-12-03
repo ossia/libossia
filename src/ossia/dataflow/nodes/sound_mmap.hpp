@@ -77,7 +77,7 @@ public:
           break;
       }
     }
-    m_resampler.reset(0_tv, m_mode, m_handle.channels(), m_handle.sampleRate());
+    m_resampler.reset(0, m_mode, m_handle.channels(), m_handle.sampleRate());
   }
 
   void set_native_tempo(double v)
@@ -90,13 +90,15 @@ public:
     if(m_mode != mode)
     {
       m_mode = mode;
-      m_resampler.reset(0_tv, m_mode, channels(), m_handle.sampleRate());
+      m_resampler.reset(0, m_mode, channels(), m_handle.sampleRate());
     }
   }
 
   void reset_resampler(time_value date) override
   {
-    m_resampler.reset(date, m_mode, channels(), m_handle.sampleRate());
+    m_resampler.reset(
+          to_sample(date, m_handle.sampleRate()),
+          m_mode, channels(), m_handle.sampleRate());
   }
 
   void fetch_audio(int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept

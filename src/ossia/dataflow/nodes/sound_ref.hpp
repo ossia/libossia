@@ -39,13 +39,15 @@ public:
     if(m_mode != mode)
     {
       m_mode = mode;
-      m_resampler.reset(0_tv, m_mode, channels(), m_fileSampleRate);
+      m_resampler.reset(0, m_mode, channels(), m_fileSampleRate);
     }
   }
 
   void reset_resampler(time_value date) override
   {
-    m_resampler.reset(date, m_mode, channels(), m_fileSampleRate);
+    m_resampler.reset(
+          to_sample(date, m_fileSampleRate),
+          m_mode, channels(), m_fileSampleRate);
   }
 
   // Used for testing only
@@ -57,7 +59,7 @@ public:
     {
       m_fileSampleRate = 44100;
       m_data.assign(m_handle->data.begin(), m_handle->data.end());
-      m_resampler.reset(0_tv, audio_stretch_mode::None, m_handle->data.size(), m_fileSampleRate);
+      m_resampler.reset(0, audio_stretch_mode::None, m_handle->data.size(), m_fileSampleRate);
     }
   }
 
@@ -69,7 +71,7 @@ public:
     {
       m_fileSampleRate = sampleRate;
       m_data.assign(m_handle->data.begin(), m_handle->data.end());
-      m_resampler.reset(0_tv, m_mode, channels, m_fileSampleRate);
+      m_resampler.reset(0, m_mode, channels, m_fileSampleRate);
     }
   }
 

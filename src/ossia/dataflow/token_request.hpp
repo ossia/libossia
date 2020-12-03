@@ -10,6 +10,12 @@ namespace ossia
 {
 using quarter_note = double;
 
+inline constexpr int64_t to_sample(ossia::time_value t, double rate) noexcept
+{
+  const double samples_per_flicks = rate / ossia::flicks_per_second<double>;
+  return (rate > 0 && !t.infinite()) ? std::round(t.impl * samples_per_flicks) : 0;
+}
+
 struct token_request
 {
   constexpr token_request() noexcept = default;
