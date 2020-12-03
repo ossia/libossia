@@ -13,7 +13,8 @@
 
 #include <ossia/preset/preset.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
-#include<array>
+#include <array>
+
 namespace opp
 {
 
@@ -1430,7 +1431,13 @@ node& node::set_access(access_mode v)
 {
   if (m_param)
   {
-    m_param->set_access(static_cast<ossia::access_mode>(v));
+    auto ov = ossia::access_mode::BI;
+    if (v == access_mode::Get) {
+      ov = ossia::access_mode::GET;
+    } else if (v == access_mode::Set) {
+      ov = ossia::access_mode::SET;
+    }
+    m_param->set_access(ov);
   }
   return *this;
 }
@@ -1439,7 +1446,14 @@ access_mode node::get_access() const
 {
   if (m_param)
   {
-    return static_cast<opp::access_mode>(m_param->get_access());
+    switch(m_param->get_access()) {
+      case ossia::access_mode::SET:
+        return access_mode::Set;
+      case ossia::access_mode::GET:
+        return access_mode::Get;
+      case ossia::access_mode::BI:
+        return access_mode::Bi;
+    }
   }
   return {};
 }
