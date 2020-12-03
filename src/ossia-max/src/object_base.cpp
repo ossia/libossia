@@ -152,6 +152,12 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
   return matchers;
 }
 
+void object_base::closebang(object_base* x)
+{
+  ossia_max::instance().patchers.erase(x->m_patcher);
+  x->m_dead = true;
+}
+
 void object_base::loadbang(object_base* x)
 {
   if(x->m_registered)
@@ -503,9 +509,10 @@ void object_base::class_setup(t_class*c)
   CLASS_ATTR_STYLE(c, "trim_addr", 0, "onoff");
   CLASS_ATTR_LABEL(c, "trim_addr", 0, "Trim address reported by dumpout for convenience (default ON)");
 
-  class_addmethod(c, (method) object_base::select_mess_cb,  "select",   A_GIMME, 0);
-  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect", A_GIMME, 0);
-  class_addmethod(c, (method) object_base::loadbang,        "loadbang", A_CANT,  0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME, 0);
+  class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_GIMME, 0);
+  class_addmethod(c, (method) object_base::loadbang,        "loadbang",  A_CANT,  0);
+  class_addmethod(c, (method) object_base::closebang,       "closebang", A_CANT,  0);
 }
 
 void object_base::fill_selection()

@@ -163,12 +163,12 @@ public:
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
+  static void closebang(object_base* x);
   static void loadbang(object_base* x);
   void highlight();
   static void reset_color(object_base* x);
 
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
-//  std::vector<ossia::value> m_set_pool;
 
   ossia::traversal::path get_path()
   {

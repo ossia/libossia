@@ -461,7 +461,6 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
   }
 }
 
-
 template<class T> void register_objects_by_type(const ossia::safe_set<T>& objs)
 {
   for(auto obj : objs)

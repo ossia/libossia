@@ -33,7 +33,6 @@ void object_namespace(object_base* x);
 std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
-
 /**
  * @brief register_objects_in_patcher_recursively : iterate over all patcher's objects and register them one by one recursively
  * @param root_patcher: starting patcher
