@@ -461,6 +461,7 @@ void client::disconnect(client* x)
     x->m_node_selection.clear();
     x->m_matchers.clear();
     x->disconnect_slots();
+    // FIXME it should not be necessary to unregister_children because they should listen to on_node_removing signal
     x->unregister_children();
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
