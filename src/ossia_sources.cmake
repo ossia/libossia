@@ -654,3 +654,11 @@ set(OSSIA_GFX_HEADERS
 set(OSSIA_GFX_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/gfx/texture_parameter.cpp"
 )
+
+set(OSSIA_EXECLOG_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/execution_log.hpp"
+)
+
+set(OSSIA_EXECLOG_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/execution_log.cpp"
+)

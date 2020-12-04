@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <csignal>
 #include <boost/config.hpp>
 namespace ossia
 {
@@ -30,6 +31,10 @@ void time_interval::tick_impl(
 {
   m_tick_offset = offset;
   m_date = new_date;
+
+#if defined(OSSIA_EXECUTION_LOG)
+  auto log = g_exec_log.interval_start_run_tick(name, old_date, new_date, offset);
+#endif
 
   if(old_date < 0_tv || new_date < 0_tv)
     return;
@@ -307,6 +312,15 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
       time_process& p = *timeProcess;
       if (p.enabled())
       {
+#if defined(OSSIA_EXECUTION_LOG)
+        auto log = g_exec_log.process_state(p.node->label());
+        const auto mts = 48000. / ossia::flicks_per_second<double>;
+        if(tok.physical_write_duration(mts) > 5000)
+        {
+          std::raise(SIGTRAP);
+
+        }
+#endif
         p.state(tok);
       }
     }

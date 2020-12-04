@@ -315,6 +315,12 @@ if(OSSIA_EDITOR)
   target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 endif()
 
+if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
+  if(OSSIA_EDITOR)
+    target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
+  endif()
+endif()
+
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 
 add_dependencies(ossia rapidfuzz-cpp)
