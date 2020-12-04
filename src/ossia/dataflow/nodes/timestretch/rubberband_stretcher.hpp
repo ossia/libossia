@@ -16,15 +16,22 @@ struct rubberband_stretcher
       std::size_t channels,
       std::size_t sampleRate,
       int64_t pos)
-    : m_rubberBand{sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt}
+    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt)}
     , next_sample_to_read{pos}
+    , options{opt}
 
   {
 
   }
 
-  RubberBand::RubberBandStretcher m_rubberBand;
+  rubberband_stretcher(const rubberband_stretcher&) = delete;
+  rubberband_stretcher& operator=(const rubberband_stretcher&) = delete;
+  rubberband_stretcher(rubberband_stretcher&&) = default;
+  rubberband_stretcher& operator=(rubberband_stretcher&&) = default;
+
+  std::unique_ptr<RubberBand::RubberBandStretcher> m_rubberBand;
   int64_t next_sample_to_read = 0;
+  RubberBand::RubberBandStretcher::PresetOption options{};
 
   template<typename T>
   void run(
@@ -39,9 +46,9 @@ struct rubberband_stretcher
       const int64_t samples_offset,
       ossia::audio_port& ap) noexcept
   {
-    if(tempo_ratio != m_rubberBand.getTimeRatio())
+    if(tempo_ratio != m_rubberBand->getTimeRatio())
     {
-      m_rubberBand.setTimeRatio(tempo_ratio);
+      m_rubberBand->setTimeRatio(tempo_ratio);
     }
 
     if (t.forward())
@@ -55,17 +62,17 @@ struct rubberband_stretcher
         output[i] = (float*) alloca(sizeof(float) * samples_to_write);
       }
 
-      while (m_rubberBand.available() < samples_to_write)
+      while (m_rubberBand->available() < samples_to_write)
       {
         audio_fetcher.fetch_audio(next_sample_to_read, samples_to_read, input);
 
-        m_rubberBand.process(input, samples_to_read, false);
+        m_rubberBand->process(input, samples_to_read, false);
 
         next_sample_to_read += samples_to_read;
         samples_to_read = 16;
       }
 
-      m_rubberBand.retrieve(output, std::min((int)samples_to_write, m_rubberBand.available()));
+      m_rubberBand->retrieve(output, std::min((int)samples_to_write, m_rubberBand->available()));
 
       for (std::size_t i = 0; i < chan; i++)
       {

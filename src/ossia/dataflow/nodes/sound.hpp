@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/pod_vector.hpp>
@@ -230,87 +230,69 @@ struct at_end
   ~at_end() { func(); }
 };
 
-class sound_node : public ossia::nonowning_graph_node
-{
-public:
-  void set_loop_info(ossia::time_value loop_duration, ossia::time_value start_offset, bool loops)
-  {
-    m_loop_duration = loop_duration;
-    m_start_offset = start_offset;
-    m_loops = loops;
-  }
-  virtual void reset_resampler(time_value date) = 0;
-
-protected:
-  double update_stretch(const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
-  {
-    double stretch_ratio = 1.;
-    double model_ratio = 1.;
-    switch(m_mode)
-    {
-      case ossia::audio_stretch_mode::None:
-        model_ratio = ossia::root_tempo / t.tempo;
-      default:
-        model_ratio = ossia::root_tempo / this->tempo;
-        stretch_ratio = this->tempo / t.tempo;
-        break;
-    }
-
-    m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
-    m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * model_ratio;
-    return stretch_ratio;
-  }
-
-  time_value m_prev_date{};
-
-  time_value m_loop_duration{};
-  time_value m_start_offset{};
-
-  double tempo{};
-
-  int64_t m_loop_duration_samples{};
-  int64_t m_start_offset_samples{};
-
-  audio_stretch_mode m_mode{};
-  bool m_loops{};
-};
-
-class sound_process
-    : public ossia::node_process
-{
-public:
-  using ossia::node_process::node_process;
-protected:
-  void state(const ossia::token_request& req) override
-  {
-    // TODO here we should also pass the execution state so that we can
-    // leverage the timing info & transform loop_duration / start_offset in samples right here...
-    static_cast<sound_node&>(*this->node).set_loop_info(m_loop_duration, m_start_offset, m_loops);
-
-    // Start offset and looping are done manually inside the sound nodes
-    // since it is much more efficient in this case
-    // (see fetch_audio)
-    node->request(req);
-  }
-
-  void offset_impl(time_value date) override
-  {
-    static_cast<sound_node&>(*this->node).reset_resampler(date);
-  }
-  void transport_impl(time_value date) override
-  {
-    static_cast<sound_node&>(*this->node).reset_resampler(date);
-  }
-};
-
 struct resampler
 {
+  int64_t next_sample_to_read() const noexcept
+  {
+    switch(m_stretch.index())
+    {
+      case 0:
+      {
+        auto s = std::get_if<ossia::raw_stretcher>(&m_stretch);
+        assert(s);
+        return s->next_sample_to_read;
+      }
+      case 1:
+      {
+        auto s = std::get_if<rubberband_stretcher>(&m_stretch);
+        assert(s);
+        return s->next_sample_to_read;
+      }
+      case 2:
+      {
+        auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
+        assert(s);
+        return s->next_sample_to_read;
+      }
+    }
+    return 0;
+  }
+
+  void transport(int64_t date)
+  {
+    switch(m_stretch.index())
+    {
+      case 0:
+      {
+        auto s = std::get_if<ossia::raw_stretcher>(&m_stretch);
+        assert(s);
+        s->next_sample_to_read = date;
+        break;
+      }
+      case 1:
+      {
+        auto s = std::get_if<rubberband_stretcher>(&m_stretch);
+        assert(s);
+        s->m_rubberBand->reset();
+        s->next_sample_to_read = date;
+        break;
+      }
+      case 2:
+      {
+        auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
+        assert(s);
+        s->next_sample_to_read = date;
+        break;
+      }
+    }
+  }
+
   void reset(int64_t date, ossia::audio_stretch_mode mode, std::size_t channels, std::size_t fileSampleRate)
   {
     // TODO use the date parameter to buffer ! else transport won't work
     switch(mode)
     {
-      case audio_stretch_mode::None:
+      case ossia::audio_stretch_mode::None:
       {
         if(auto s = std::get_if<ossia::raw_stretcher>(&m_stretch))
         {
@@ -322,7 +304,28 @@ struct resampler
         }
         break;
       }
-      case audio_stretch_mode::Repitch:
+
+      case ossia::audio_stretch_mode::RubberBandStandard:
+      case ossia::audio_stretch_mode::RubberBandPercussive:
+      {
+        using preset_t = RubberBand::RubberBandStretcher::PresetOption;
+        const auto preset = mode == audio_stretch_mode::RubberBandStandard
+            ? preset_t::DefaultOptions
+            : preset_t::PercussiveOptions;
+
+        if(auto s = std::get_if<rubberband_stretcher>(&m_stretch); s && s->options == preset)
+        {
+          s->m_rubberBand->reset();
+          s->next_sample_to_read = date;
+        }
+        else
+        {
+          m_stretch.emplace<rubberband_stretcher>(preset, channels, fileSampleRate, date);
+        }
+        break;
+      }
+
+      case ossia::audio_stretch_mode::Repitch:
       {
         if(auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
@@ -331,18 +334,9 @@ struct resampler
         }
         else
         {
+          // FIXME why 1024 here ?!
           m_stretch.emplace<repitch_stretcher>(channels, 1024, date);
         }
-        break;
-      }
-      case audio_stretch_mode::RubberBandStandard:
-      {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate, date);
-        break;
-      }
-      case audio_stretch_mode::RubberBandPercussive:
-      {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate, date);
         break;
       }
     }
@@ -385,4 +379,89 @@ struct resampler
 
   std::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
 };
+
+
+
+class sound_node : public ossia::nonowning_graph_node
+{
+public:
+  void set_loop_info(ossia::time_value loop_duration, ossia::time_value start_offset, bool loops)
+  {
+    m_loop_duration = loop_duration;
+    m_start_offset = start_offset;
+    m_loops = loops;
+  }
+
+  void set_resampler(ossia::resampler&& r)
+  {
+    auto date = m_resampler.next_sample_to_read();
+    m_resampler = std::move(r);
+    m_resampler.transport(date);
+  }
+
+  virtual void transport(time_value date) = 0;
+
+protected:
+  double update_stretch(const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
+  {
+    double stretch_ratio = 1.;
+    double model_ratio = 1.;
+    switch(m_resampler.m_stretch.index())
+    {
+      case 0:
+        model_ratio = ossia::root_tempo / t.tempo;
+      default:
+        model_ratio = ossia::root_tempo / this->tempo;
+        stretch_ratio = this->tempo / t.tempo;
+        break;
+    }
+
+    m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
+    m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * model_ratio;
+    return stretch_ratio;
+  }
+
+  time_value m_prev_date{};
+
+  time_value m_loop_duration{};
+  time_value m_start_offset{};
+
+  double tempo{};
+
+  int64_t m_loop_duration_samples{};
+  int64_t m_start_offset_samples{};
+
+  ossia::resampler m_resampler{};
+
+  bool m_loops{};
+};
+
+class sound_process final
+    : public ossia::node_process
+{
+public:
+  using ossia::node_process::node_process;
+protected:
+  void state(const ossia::token_request& req) override
+  {
+    // TODO here we should also pass the execution state so that we can
+    // leverage the timing info & transform loop_duration / start_offset in samples right here...
+    static_cast<sound_node&>(*this->node).set_loop_info(m_loop_duration, m_start_offset, m_loops);
+
+    // Start offset and looping are done manually inside the sound nodes
+    // since it is much more efficient in this case
+    // (see fetch_audio)
+    node->request(req);
+  }
+
+  void offset_impl(time_value date) override
+  {
+    static_cast<sound_node&>(*this->node).transport(date);
+  }
+  void transport_impl(time_value date) override
+  {
+    static_cast<sound_node&>(*this->node).transport(date);
+  }
+};
+
 }

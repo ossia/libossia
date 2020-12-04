@@ -24,10 +24,16 @@ struct repitch_stretcher
     {
       other.resampler = nullptr;
     }
+    resample_channel& operator=(resample_channel&& other) noexcept
+    {
+      resampler = other.resampler;
+      data = std::move(other.data);
+      other.resampler = nullptr;
+      return *this;
+    }
 
     resample_channel(const resample_channel&) = delete;
     resample_channel& operator=(const resample_channel&) = delete;
-    resample_channel& operator=(resample_channel&&) = delete;
 
     ~resample_channel()
     {
