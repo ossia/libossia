@@ -2,16 +2,15 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 5,
-			"architecture" : "x86",
+			"major" : 8,
+			"minor" : 1,
+			"revision" : 8,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 612.0, 77.0, 655.0, 544.0 ],
-		"bgcolor" : [ 0.878431, 0.878431, 0.858824, 1.0 ],
-		"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
+		"classnamespace" : "box",
+		"rect" : [ 666.0, 171.0, 655.0, 544.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -38,6 +37,7 @@
 		"tags" : "",
 		"style" : "velvet",
 		"subpatcher_template" : "noTB_dark",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-18",
@@ -46,7 +46,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 407.0, 189.0, 150.0, 33.0 ],
-					"style" : "",
 					"text" : "several message types can be sent:"
 				}
 
@@ -58,7 +57,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 261.0, 417.0, 55.0, 20.0 ],
-					"style" : "",
 					"text" : "seconds"
 				}
 
@@ -70,7 +68,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 109.0, 385.0, 174.0, 20.0 ],
-					"style" : "",
 					"text" : "send an 'alive' message every "
 				}
 
@@ -82,7 +79,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 84.0, 335.0, 143.0, 20.0 ],
-					"style" : "",
 					"text" : "give a name to this client"
 				}
 
@@ -94,7 +90,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 61.0, 276.0, 246.0, 20.0 ],
-					"style" : "",
 					"text" : "set the appropriate host IP and port:"
 				}
 
@@ -107,7 +102,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 407.5, 163.0, 22.0 ],
-					"style" : "",
 					"text" : "debug My debugmessage"
 				}
 
@@ -120,7 +114,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 367.5, 163.0, 22.0 ],
-					"style" : "",
 					"text" : "critical My critical message"
 				}
 
@@ -133,7 +126,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 328.5, 163.0, 22.0 ],
-					"style" : "",
 					"text" : "warning My warnin message"
 				}
 
@@ -146,7 +138,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 293.5, 139.0, 22.0 ],
-					"style" : "",
 					"text" : "info My info message"
 				}
 
@@ -159,7 +150,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 261.5, 139.0, 22.0 ],
-					"style" : "",
 					"text" : "trace My trace message"
 				}
 
@@ -172,7 +162,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 407.0, 225.5, 136.0, 22.0 ],
-					"style" : "",
 					"text" : "error My error message"
 				}
 
@@ -185,8 +174,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 61.0, 173.5, 246.0, 74.0 ],
-					"style" : "",
-					"text" : "follow the instructions at https://github.com/ossia/libossia/tree/master/docs/Examples/Common \n\nto setup a log server"
+					"text" : "follow the instructions at https://github.com/ossia/libossia/tree/master/examples/Common\n\nto setup a log server"
 				}
 
 			}
@@ -213,9 +201,8 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 61.0, 464.0, 100.0, 22.0 ],
-					"style" : "",
-					"text" : "ossia.logger"
+					"patching_rect" : [ 61.0, 464.0, 219.0, 22.0 ],
+					"text" : "ossia.logger @host ws://127.0.0.1:8765"
 				}
 
 			}
@@ -227,8 +214,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 84.0, 361.0, 150.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 84.0, 361.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -240,8 +226,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 109.0, 416.0, 150.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 109.0, 416.0, 150.0, 22.0 ]
 				}
 
 			}
@@ -253,8 +238,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 61.0, 305.0, 264.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 61.0, 305.0, 264.0, 22.0 ]
 				}
 
 			}
@@ -354,6 +338,8 @@
 				"multi" : 0
 			}
  ],
+		"bgcolor" : [ 0.878431, 0.878431, 0.858824, 1.0 ],
+		"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 		"bgfillcolor_type" : "gradient",
 		"bgfillcolor_color1" : [ 0.238168, 0.193585, 0.215291, 1.0 ],
 		"bgfillcolor_color2" : [ 0.117536, 0.116592, 0.144338, 1.0 ],
