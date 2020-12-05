@@ -39,7 +39,7 @@ extern "C" void ossia_logger_setup()
 
   CLASS_ATTR_LONG(c, "heartbeat", 0, logger, m_ival);
   CLASS_ATTR_LABEL(c, "heartbeat", 0, "Heartbeat interval, in seconds");
-  CLASS_ATTR_FILTER_CLIP(c, "heartbeat", 1, 1000);
+  CLASS_ATTR_FILTER_CLIP(c, "heartbeat", 0, 1000);
 
 
   class_register(CLASS_BOX, ossia_library.ossia_logger_class);
@@ -51,6 +51,9 @@ extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
 
   if(x)
   {
+    x->m_polling_clock = clock_new(x, (method) logger::check_connection_status);
+    x->m_dumpout = outlet_new(x, nullptr);
+
     // default attributes
     x->m_host = gensym("ws://127.0.0.1:1337");
     x->m_appname = gensym("max");
@@ -131,6 +134,9 @@ void logger::free(logger* x)
 {
   if (x)
   {
+    clock_unset(x->m_polling_clock);
+    clock_free((t_object*)x->m_polling_clock);
+    outlet_delete(x->m_dumpout);
     x->~logger();
   }
 }
@@ -155,11 +161,11 @@ void logger::assist(logger *x, void *b, long m, long a, char *s)
 
 void logger::reset()
 {
+  clock_unset(m_polling_clock);
   object_post(&m_object, "logger reset %s %s", m_host->s_name, m_appname->s_name);
+
   m_log.reset();
   m_beat.reset();
-  m_con.reset();
-
   if(!m_host)
     return;
   if(!m_appname)
@@ -167,23 +173,57 @@ void logger::reset()
 
   ossia::string_view host = m_host->s_name;
   std::string appname = m_appname->s_name;
-  m_con = std::make_shared<ossia::websocket_threaded_connection>(std::string(host));
 
-  object_post(&m_object, "logger connected");
-  m_log = std::make_shared<spdlog::logger>(
-       "max_logger", std::make_shared<websocket_log_sink>(m_con, appname));
+  {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    m_con.reset();
+
+    m_con = std::make_shared<ossia::websocket_threaded_connection>(std::string(host));
+
+    object_post(&m_object, "logger connected");
+    m_log = std::make_shared<spdlog::logger>(
+        "max_logger", std::make_shared<websocket_log_sink>(m_con, appname));
+  }
+
+  check_connection_status(this);
 
   object_post(&m_object, "logger created");
-  m_beat = std::make_shared<websocket_heartbeat>(
-        m_con,
-        appname,
-        std::chrono::seconds(ossia::clamp((int)m_ival, (int)0, (int)1000)));
+  if(m_ival > 0)
+  {
+    m_beat = std::make_shared<websocket_heartbeat>(
+          m_con,
+          appname,
+          std::chrono::seconds(ossia::clamp((int)m_ival, (int)0, (int)1000)));
 
-  object_post(&m_object, "heartbeat connected");
-  m_beat->send_init({
-                        {"pid", ossia::get_pid()}
-                      , {"cmd", ossia::get_exe_path()}
-                    });
+    object_post(&m_object, "heartbeat connected");
+    m_beat->send_init({
+                          {"pid", ossia::get_pid()}
+                        , {"cmd", ossia::get_exe_path()}
+                      });
 
-  object_post(&m_object, "heartbeat init");
+    object_post(&m_object, "heartbeat init");
+  }
+}
+
+void logger::check_connection_status(logger *x)
+{
+  std::lock_guard<std::mutex> lock(x->m_mutex);
+  if(x->m_con && x->m_con->socket.connected())
+  {
+    if(x->m_status == DISCONNECTED)
+    {
+      x->m_status = CONNECTED;
+      t_atom a;
+      A_SETLONG(&a, 1);
+      outlet_anything(x->m_dumpout, gensym("connected"), 1, &a);
+    }
+  }
+  else if(x->m_status == CONNECTED)
+  {
+    x->m_status = DISCONNECTED;
+    t_atom a;
+    A_SETLONG(&a, 0);
+    outlet_anything(x->m_dumpout, gensym("connected"), 1, &a);
+  }
+  clock_delay(x->m_polling_clock, 100);
 }
