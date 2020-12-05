@@ -47,7 +47,34 @@ extern "C" void ossia_logger_setup()
 
 extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
 {
-  return make_ossia<logger>(argc, argv);
+  auto x = make_ossia<logger>();
+
+  if(x)
+  {
+    // default attributes
+    x->m_host = gensym("ws://127.0.0.1:1337");
+    x->m_appname = gensym("max");
+    x->m_ival = 5;
+
+    // parse arguments
+    long attrstart = attr_args_offset(argc, argv);
+
+    attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    if (attrstart > 0 && argv)
+    {
+      if (atom_gettype(argv) == A_SYM)
+      {
+        x->m_appname = atom_getsym(argv);
+      }
+    }
+
+    object_attach_byptr_register(x, x, CLASS_BOX);
+
+    x->reset();
+  }
+
+  return x;
 }
 
 void logger::in_anything(logger* x, t_symbol* s, long argc, t_atom* argv)
@@ -125,17 +152,6 @@ void logger::assist(logger *x, void *b, long m, long a, char *s)
 
 #pragma mark -
 #pragma mark t_logger structure functions
-
-logger::logger(long argc, t_atom *argv)
-{
-  m_host = gensym("ws://127.0.0.1:1337");
-  m_appname = gensym("max");
-  m_ival = 5;
-
-  object_attach_byptr_register(this, this, CLASS_BOX);
-
-  reset();
-}
 
 void logger::reset()
 {

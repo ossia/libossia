@@ -21,8 +21,6 @@ struct logger
   t_symbol* m_exec;
   long m_ival{};
 
-  logger(long argc, t_atom* argv);
-
   void reset();
 
   static void in_anything(ossia::max::logger* x, t_symbol* s, long argc, t_atom* argv);
