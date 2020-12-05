@@ -29,6 +29,7 @@ namespace
 
 fft::fft(std::size_t newSize) noexcept
 {
+  m_size = newSize;
   m_input = alloc_real(newSize);
   m_output = alloc_complex(newSize / 2 + 1);
   m_fw = create_plan(newSize, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
