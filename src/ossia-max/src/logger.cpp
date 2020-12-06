@@ -4,7 +4,7 @@
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia/detail/thread.hpp>
-
+#include <git_info.h>
 
 using namespace ossia::max;
 
@@ -40,7 +40,6 @@ extern "C" void ossia_logger_setup()
   CLASS_ATTR_LONG(c, "heartbeat", 0, logger, m_ival);
   CLASS_ATTR_LABEL(c, "heartbeat", 0, "Heartbeat interval, in seconds");
   CLASS_ATTR_FILTER_CLIP(c, "heartbeat", 0, 1000);
-
 
   class_register(CLASS_BOX, ossia_library.ossia_logger_class);
 }
@@ -205,6 +204,7 @@ void logger::reset()
     m_beat->send_init({
                           {"pid", ossia::get_pid()}
                         , {"cmd", ossia::get_exe_path()}
+                        , {"version", ossia::get_commit_sha()}
                       });
 
     object_post(&m_object, "heartbeat init");

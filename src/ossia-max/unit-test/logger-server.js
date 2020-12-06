@@ -18,29 +18,38 @@ var current_patcher = '';
 wss.on('connection', function(ws) {
     ws.on('message', function(message) {
         var json = JSON.parse(message);
-        if(json.operation == "assert")
+        switch(json.operation)
         {
-            switch(json.status)
+            case 'assert':
             {
-                case 'norun':
-                    norun++;
-                    break;
-                case 'fail':
-                    fail++;
-                    assert_failed++;
-                    failed_tests.add(current_patcher);
-                    break;
-                case 'success':
-                    assert_success++;
-                    success++;
-                    break;
+                switch(json.status)
+                {
+                    case 'norun':
+                        norun++;
+                        break;
+                    case 'fail':
+                        fail++;
+                        assert_failed++;
+                        failed_tests.add(current_patcher);
+                        break;
+                    case 'success':
+                        assert_success++;
+                        success++;
+                        break;
 
+                }
+                console.log("\t> Asert: " + json.status + " - " + json.name);
+                break;
             }
-            console.log("\t> Asert: " + json.status + " - " + json.name);
-        }
-        else
-        {
-            console.log('received: %s', message);
+            case 'initWatchdog':
+            {
+                console.log('Using libossia version ' + json.version);
+                break;
+            }
+            default:
+            {
+                console.log('received: %s', message);
+            }
         }
     });
 });
