@@ -44,6 +44,7 @@ ossia_max::ossia_max():
   devices.reserve(8);
   clients.reserve(8);
   explorers.reserve(128);
+  oasserts.reserve(32);
 
   s_browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
   clock_delay(ossia_max::s_browse_clock, 100.);

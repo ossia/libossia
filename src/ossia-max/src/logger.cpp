@@ -47,6 +47,7 @@ extern "C" void ossia_logger_setup()
 
 extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
 {
+  critical_enter(0);
   auto x = make_ossia<logger>();
 
   if(x)
@@ -75,7 +76,9 @@ extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     x->reset();
+    ossia_max::instance().loggers.push_back(x);
   }
+  critical_exit(0);
 
   return x;
 }
@@ -132,13 +135,16 @@ void logger::in_anything(logger* x, t_symbol* s, long argc, t_atom* argv)
 
 void logger::free(logger* x)
 {
+  critical_enter(0);
   if (x)
   {
+    ossia_max::instance().loggers.remove_all(x);
     clock_unset(x->m_polling_clock);
     clock_free((t_object*)x->m_polling_clock);
     outlet_delete(x->m_dumpout);
     x->~logger();
   }
+  critical_exit(0);
 }
 
 t_max_err logger::notify(

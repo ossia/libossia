@@ -52,6 +52,8 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SRCS
+    src/assert.hpp
+    src/assert.cpp
     src/ossia-max.cpp
     src/ossia-max.hpp
     src/object_base.cpp
@@ -168,6 +170,7 @@ set(OSSIA_EXT_LIST
     ossia.fuzzysearch
     ossia.search
     ossia.monitor
+    ossia.assert
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
