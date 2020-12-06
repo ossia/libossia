@@ -168,7 +168,20 @@ rapidjson::StringBuffer oassert::create_report()
   writer.String(name.data(), name.size());
 
   writer.Key("status");
-  writer.Int(static_cast<int>(m_status));
+  std::string status;
+  switch(m_status)
+  {
+    case NORUN:
+      status = "norun";
+      break;
+    case FAIL:
+      status = "fail";
+      break;
+    case SUCCESS:
+      status = "success";
+      break;
+  }
+  writer.String(status);
 
   writer.EndObject();
 
