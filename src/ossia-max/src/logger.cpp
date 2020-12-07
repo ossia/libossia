@@ -149,7 +149,10 @@ void logger::free(logger* x)
 t_max_err logger::notify(
     logger* x, t_symbol *s, t_symbol *msg, void *sender, void *data)
 {
-  x->reset();
+  if(msg == gensym("attr_modified"))
+  {
+    x->reset();
+  }
   return 0;
 }
 
