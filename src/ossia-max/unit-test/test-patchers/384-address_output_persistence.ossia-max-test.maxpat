@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 169.0, 272.0, 938.0, 477.0 ],
+		"rect" : [ 169.0, 272.0, 980.0, 561.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,18 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-19",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 623.0, 490.0, 257.0, 22.0 ],
+					"text" : "ossia.test-logger \"Address output\" @autoquit 0"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"bgcolor" : [ 0.439216, 0.74902, 0.254902, 1.0 ],
 					"id" : "obj-14",
@@ -77,7 +89,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
 					"id" : "obj-8",
 					"linecount" : 2,
 					"maxclass" : "newobj",
@@ -85,7 +97,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 668.5, 403.0, 235.0, 35.0 ],
-					"text" : "test.assert address_output_after_instances_creation"
+					"text" : "ossia.assert address_output_after_instances_creation"
 				}
 
 			}
@@ -230,19 +242,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
-					"id" : "obj-6",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 623.0, 371.0, 81.0, 22.0 ],
-					"text" : "test.terminate"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
 					"id" : "obj-5",
 					"linecount" : 2,
 					"maxclass" : "newobj",
@@ -250,7 +250,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 490.0, 403.0, 146.0, 35.0 ],
-					"text" : "test.assert address_output_on_load"
+					"text" : "ossia.assert address_output_on_load"
 				}
 
 			}
@@ -497,7 +497,7 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-6", 0 ],
+					"destination" : [ "obj-19", 0 ],
 					"source" : [ "obj-17", 0 ]
 				}
 
@@ -563,6 +563,13 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
@@ -571,15 +578,15 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.assert.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.remote.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
 				"type" : "iLaX"
 			}
  ],

@@ -4,7 +4,7 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -64,7 +64,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -149,14 +149,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 533.0, 160.0, 22.0 ],
-									"text" : "test.assert string_param_set"
+									"text" : "ossia.assert string_param_set"
 								}
 
 							}
@@ -319,14 +320,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 540.0, 163.0, 22.0 ],
-									"text" : "test.assert string_remote_set"
+									"text" : "ossia.assert string_remote_set"
 								}
 
 							}
@@ -586,7 +588,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -671,14 +673,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 443.0, 160.0, 22.0 ],
-									"text" : "test.assert string_param_set"
+									"text" : "ossia.assert string_param_set"
 								}
 
 							}
@@ -841,14 +844,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 450.0, 163.0, 22.0 ],
-									"text" : "test.assert string_remote_set"
+									"text" : "ossia.assert string_remote_set"
 								}
 
 							}
@@ -1243,7 +1247,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1328,7 +1332,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -1336,7 +1340,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 448.0, 177.0, 35.0 ],
-									"text" : "test.assert list_param_set_vec4f"
+									"text" : "ossia.assert list_param_set_vec4f"
 								}
 
 							}
@@ -1500,14 +1504,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_vec4f"
+									"text" : "ossia.assert list_remote_set_vec4f"
 								}
 
 							}
@@ -1754,7 +1759,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1839,14 +1844,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 420.5, 448.0, 183.0, 22.0 ],
-									"text" : "test.assert list_param_set_vec2f"
+									"text" : "ossia.assert list_param_set_vec2f"
 								}
 
 							}
@@ -2009,14 +2015,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_vec2f"
+									"text" : "ossia.assert list_remote_set_vec2f"
 								}
 
 							}
@@ -2262,7 +2269,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2359,14 +2366,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 448.0, 183.0, 22.0 ],
-									"text" : "test.assert list_param_set_vec3f"
+									"text" : "ossia.assert list_param_set_vec3f"
 								}
 
 							}
@@ -2529,14 +2537,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_vec3f"
+									"text" : "ossia.assert list_remote_set_vec3f"
 								}
 
 							}
@@ -2792,18 +2801,6 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
-					"id" : "obj-1",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 50.0, 547.536591000000044, 83.0, 22.0 ],
-					"text" : "test.terminate"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-52",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -2814,7 +2811,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2889,11 +2886,11 @@
 									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
 									"id" : "obj-22",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 527.0, 447.0, 207.0, 22.0 ],
-									"text" : "test.equals 36.6 @single_precision 1"
+									"text" : "ossia.equals 36.6 @single_precision 1"
 								}
 
 							}
@@ -2960,14 +2957,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 602.0, 177.0, 22.0 ],
-									"text" : "test.assert list_param_set_list5"
+									"text" : "ossia.assert list_param_set_list5"
 								}
 
 							}
@@ -2991,7 +2989,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 331.0, 96.5, 22.0 ],
-									"text" : "45 a f d g 36.6"
+									"text" : "108."
 								}
 
 							}
@@ -3112,7 +3110,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 22.0 ],
-									"text" : "a b c 4 d"
+									"text" : "108."
 								}
 
 							}
@@ -3130,14 +3128,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 493.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_list5"
+									"text" : "ossia.assert list_remote_set_list5"
 								}
 
 							}
@@ -3425,7 +3423,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3510,14 +3508,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 448.0, 177.0, 22.0 ],
-									"text" : "test.assert list_param_set_list4"
+									"text" : "ossia.assert list_param_set_list4"
 								}
 
 							}
@@ -3536,12 +3535,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 331.0, 87.0, 22.0 ],
-									"text" : "45 65 55 85"
+									"text" : "-1234 5678 2585 10235"
 								}
 
 							}
@@ -3658,13 +3658,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 35.0 ],
-									"text" : "-1234 5678 2585 10235"
+									"text" : "108."
 								}
 
 							}
@@ -3682,14 +3681,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_list4"
+									"text" : "ossia.assert list_remote_set_list4"
 								}
 
 							}
@@ -3936,7 +3935,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4021,14 +4020,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 448.0, 177.0, 22.0 ],
-									"text" : "test.assert list_param_set_list3"
+									"text" : "ossia.assert list_param_set_list3"
 								}
 
 							}
@@ -4047,13 +4047,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
-									"linecount" : 2,
+									"linecount" : 3,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 331.0, 51.5, 35.0 ],
-									"text" : "45 65. 55."
+									"text" : "-1234 5678 2585"
 								}
 
 							}
@@ -4169,13 +4169,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 78.0, 35.0 ],
-									"text" : "-1234 5678 2585"
+									"text" : "108."
 								}
 
 							}
@@ -4193,14 +4192,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_list3"
+									"text" : "ossia.assert list_remote_set_list3"
 								}
 
 							}
@@ -4447,7 +4446,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4532,14 +4531,15 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-9",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 420.5, 451.0, 177.0, 22.0 ],
-									"text" : "test.assert list_param_set_list2"
+									"text" : "ossia.assert list_param_set_list2"
 								}
 
 							}
@@ -4558,12 +4558,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-11",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 420.5, 341.0, 51.5, 22.0 ],
-									"text" : "45 65."
+									"text" : "-1234 5678"
 								}
 
 							}
@@ -4679,13 +4680,12 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 50.0, 35.0 ],
-									"text" : "-1234 5678"
+									"text" : "108."
 								}
 
 							}
@@ -4703,14 +4703,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 448.0, 186.0, 22.0 ],
-									"text" : "test.assert list_remote_set_list2"
+									"text" : "ossia.assert list_remote_set_list2"
 								}
 
 							}
@@ -4956,7 +4956,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 5,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4992,6 +4992,19 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"format" : 6,
+									"id" : "obj-15",
+									"maxclass" : "flonum",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 553.0, 347.0, 50.0, 22.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-25",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
@@ -5007,11 +5020,11 @@
 									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
 									"id" : "obj-24",
 									"maxclass" : "newobj",
-									"numinlets" : 2,
+									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 491.5, 378.0, 205.0, 22.0 ],
-									"text" : "test.equals 22.3 @single_precision 1"
+									"text" : "ossia.equals 22.3 @single_precision 1"
 								}
 
 							}
@@ -5058,9 +5071,9 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.5, 378.0, 87.0, 22.0 ],
-									"text" : "test.equals 34."
+									"outlettype" : [ "int" ],
+									"patching_rect" : [ 386.5, 378.0, 43.0, 22.0 ],
+									"text" : "== 34."
 								}
 
 							}
@@ -5078,14 +5091,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-9",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.5, 491.0, 177.0, 22.0 ],
-									"text" : "test.assert list_param_set_float"
+									"patching_rect" : [ 386.5, 491.0, 183.0, 22.0 ],
+									"text" : "ossia.assert list_param_set_float"
 								}
 
 							}
@@ -5109,7 +5122,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 316.0, 93.5, 22.0 ],
-									"text" : "34. 22.3"
+									"text" : "-1."
 								}
 
 							}
@@ -5219,9 +5232,9 @@
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 104.0, 413.0, 117.0, 23.0 ],
-									"text" : "test.equals -1234."
+									"outlettype" : [ "int" ],
+									"patching_rect" : [ 104.0, 413.0, 64.0, 23.0 ],
+									"text" : "== -1234."
 								}
 
 							}
@@ -5232,8 +5245,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 104.0, 383.0, 50.0, 22.0 ],
-									"text" : "-1234."
+									"patching_rect" : [ 104.0, 383.0, 85.0, 22.0 ],
+									"text" : "108."
 								}
 
 							}
@@ -5251,14 +5264,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 104.0, 473.0, 180.0, 22.0 ],
-									"text" : "test.assert list_remote_set_float"
+									"patching_rect" : [ 104.0, 473.0, 187.0, 22.0 ],
+									"text" : "ossia.assert list_remote_set_float"
 								}
 
 							}
@@ -5357,7 +5370,16 @@
 							}
 , 							{
 								"patchline" : 								{
+									"destination" : [ "obj-15", 0 ],
+									"order" : 0,
+									"source" : [ "obj-23", 1 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
 									"destination" : [ "obj-24", 0 ],
+									"order" : 1,
 									"source" : [ "obj-23", 1 ]
 								}
 
@@ -5523,13 +5545,6 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
-					"destination" : [ "obj-1", 0 ],
-					"source" : [ "obj-11", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-10", 0 ],
 					"source" : [ "obj-11", 1 ]
 				}
@@ -5688,11 +5703,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.assert.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -5701,10 +5712,6 @@
 			}
 , 			{
 				"name" : "ossia.model.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "oscar.mxo",
 				"type" : "iLaX"
 			}
  ],

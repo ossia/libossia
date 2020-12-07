@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 843.0, 293.0, 640.0, 480.0 ],
+		"rect" : [ 917.0, 424.0, 640.0, 480.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,18 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-17",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 394.0, 391.0, 220.0, 22.0 ],
+					"text" : "ossia.logger \"Register object only once\""
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"checkedcolor" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-42",
@@ -239,42 +251,6 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
-					"id" : "obj-22",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 497.0, 132.0, 83.0, 22.0 ],
-					"text" : "test.terminate"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-21",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 497.0, 101.0, 57.0, 22.0 ],
-					"text" : "del 1000"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-20",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 497.0, 65.0, 60.0, 22.0 ],
-					"text" : "loadbang"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-19",
 					"maxclass" : "newobj",
 					"numinlets" : 0,
@@ -409,14 +385,14 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
 					"id" : "obj-8",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 324.0, 322.0, 66.0, 22.0 ],
-					"text" : "test.assert"
+					"patching_rect" : [ 324.0, 322.0, 73.0, 22.0 ],
+					"text" : "ossia.assert"
 				}
 
 			}
@@ -546,20 +522,6 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-21", 0 ],
-					"source" : [ "obj-20", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-22", 0 ],
-					"source" : [ "obj-21", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-34", 0 ],
 					"source" : [ "obj-23", 0 ]
 				}
@@ -624,22 +586,22 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "param-test-for-369.maxpat",
-				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
-				"patcherrelativepath" : ".",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"patcherrelativepath" : "../../max-test",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "model-test-for-369.maxpat",
-				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
-				"patcherrelativepath" : ".",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"patcherrelativepath" : "../../max-test",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "submodel-test-for-369.maxpat",
-				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
-				"patcherrelativepath" : ".",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"patcherrelativepath" : "../../max-test",
 				"type" : "JSON",
 				"implicit" : 1
 			}
@@ -648,7 +610,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.assert.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -656,7 +618,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.logger.mxo",
 				"type" : "iLaX"
 			}
  ],
