@@ -167,7 +167,7 @@ void logger::assist(logger *x, void *b, long m, long a, char *s)
 void logger::reset()
 {
   clock_unset(m_polling_clock);
-  object_post(&m_object, "logger reset %s %s", m_host->s_name, m_appname->s_name);
+  object_post(&m_object, "logger connect to %s with name %s", m_host->s_name, m_appname->s_name);
 
   m_log.reset();
   m_beat.reset();
@@ -185,14 +185,12 @@ void logger::reset()
 
     m_con = std::make_shared<ossia::websocket_threaded_connection>(std::string(host));
 
-    object_post(&m_object, "logger connected");
     m_log = std::make_shared<spdlog::logger>(
         "max_logger", std::make_shared<websocket_log_sink>(m_con, appname));
   }
 
   check_connection_status(this);
 
-  object_post(&m_object, "logger created");
   if(m_ival > 0)
   {
     m_beat = std::make_shared<websocket_heartbeat>(
@@ -200,14 +198,12 @@ void logger::reset()
           appname,
           std::chrono::seconds(ossia::clamp((int)m_ival, (int)0, (int)1000)));
 
-    object_post(&m_object, "heartbeat connected");
     m_beat->send_init({
                           {"pid", ossia::get_pid()}
                         , {"cmd", ossia::get_exe_path()}
                         , {"version", ossia::get_commit_sha()}
                       });
 
-    object_post(&m_object, "heartbeat init");
   }
 }
 
