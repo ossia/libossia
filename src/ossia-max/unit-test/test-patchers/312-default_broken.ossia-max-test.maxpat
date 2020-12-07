@@ -532,7 +532,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1092.5, 180.0, 126.0, 35.0 ],
-					"text" : "test.equals 23.4 @single_precision 1"
+					"text" : "ossia.equals 23.4 @single_precision 1"
 				}
 
 			}
@@ -795,7 +795,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 274.5, 156.0, 126.0, 35.0 ],
-					"text" : "test.equals 23.4 @single_precision 1"
+					"text" : "ossia.equals 23.4 @single_precision 1"
 				}
 
 			}
