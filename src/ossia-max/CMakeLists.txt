@@ -68,6 +68,7 @@ set(PROJECT_SRCS
     src/device.cpp
     src/device_base.hpp
     src/device_base.cpp
+    src/equals.cpp
     src/explorer.hpp
     src/explorer.cpp
     src/fuzzysearch.hpp
@@ -171,6 +172,7 @@ set(OSSIA_EXT_LIST
     ossia.search
     ossia.monitor
     ossia.assert
+    ossia.equals
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})
