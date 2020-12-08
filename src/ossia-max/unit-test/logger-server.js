@@ -70,30 +70,27 @@ async function main()
 
     console.log('Directory path: ' + directory_path);
 
-    const forLoop = async _ => {
-        console.log("forLoop");
-        for(let index = 0; index < files.length; index++)
+    for(let index = 0; index < files.length; index++)
+    {
+        file = files[index];
+        if(file.endsWith(".ossia-max-test.maxpat"))
         {
-            file = files[index];
-            if(file.endsWith(".ossia-max-test.maxpat"))
+            console.log("Open " + file);
+            total_tests_count++;
+            patcher_path = path.join(directory_path, file);
+            current_patcher = file;
+            assert_failed = 0;
+            assert_success = 0;
+            await exec('open -W -n ' + patcher_path);
+            if(assert_failed + assert_success == 0)
             {
-                console.log("Open " + file);
-                total_tests_count++;
-                patcher_path = path.join(directory_path, file);
-                current_patcher = file;
-                assert_failed = 0;
-                assert_success = 0;
-                await exec('open -W -n ' + patcher_path);
-                if(assert_failed + assert_success == 0)
-                {
-                    failed_tests.add(current_patcher);
-                }
-                console.log("");
+                failed_tests.add(current_patcher);
             }
+            console.log("");
         }
-        report_and_exit();
     }
-    forLoop();
+    report_and_exit();
+
 
     // console.log("start max");
     // patcher_path = path.join(directory_path, '179-priority_when_binding_view.ossia-max-test.maxpat');
@@ -134,10 +131,11 @@ function report_and_exit()
     console.log("Tests:");
     console.log("Total\tFailed");
     console.log(total_tests_count + "\t" + failed_tests.size);
-    console.log("list of failed tests:");
+    console.log("\nList of failed tests:");
     failed_tests.forEach(function(file) {
         console.log(file);
     });
+    console.log();
 
     process.exit(failed_tests.size);
 }
