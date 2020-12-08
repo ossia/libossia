@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 5,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 874.0, 119.0, 869.0, 842.0 ],
+		"rect" : [ 486.0, 153.0, 869.0, 842.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,12 +40,36 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-11",
+					"maxclass" : "button",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 175.111098999999996, 42.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-7",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 58.0, 576.0, 194.0, 22.0 ],
+					"text" : "ossia.test-logger \"Poly registration\""
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-27",
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 279.5, 482.0, 29.5, 22.0 ],
+					"patching_rect" : [ 277.5, 547.0, 29.5, 22.0 ],
 					"text" : "$1"
 				}
 
@@ -57,7 +81,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 363.5, 460.0, 29.5, 22.0 ],
+					"patching_rect" : [ 361.5, 525.0, 29.5, 22.0 ],
 					"text" : "$1"
 				}
 
@@ -69,7 +93,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "int", "int" ],
-					"patching_rect" : [ 387.0, 338.0, 32.0, 22.0 ],
+					"patching_rect" : [ 385.0, 403.0, 32.0, 22.0 ],
 					"text" : "t 0 1"
 				}
 
@@ -81,7 +105,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 134.0, 364.0, 57.0, 22.0 ],
+					"patching_rect" : [ 132.0, 429.0, 57.0, 22.0 ],
 					"text" : "del 1000"
 				}
 
@@ -93,21 +117,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 492.0, 634.0, 309.0, 33.0 ],
+					"patching_rect" : [ 468.0, 691.0, 309.0, 33.0 ],
 					"text" : "it only works if you open max by double clicking on the patcher file in the finder..."
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"bgcolor" : [ 1.0, 0.0, 0.0, 1.0 ],
-					"id" : "obj-36",
-					"linecount" : 2,
-					"maxclass" : "comment",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 476.0, 567.0, 287.0, 33.0 ],
-					"text" : "This doesn't work on 2019.06.24 with 84e9552bb4bebb8812d86ef941c7d0fcde2d487a"
 				}
 
 			}
@@ -118,21 +129,21 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 439.0, 493.0, 207.0, 33.0 ],
+					"patching_rect" : [ 437.0, 558.0, 207.0, 33.0 ],
 					"text" : "This patcher tests if a newly created poly~ is correctly registered"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-30",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 279.5, 626.0, 174.0, 22.0 ],
-					"text" : "test.assert namespace_priority"
+					"patching_rect" : [ 277.5, 691.0, 181.0, 22.0 ],
+					"text" : "ossia.assert namespace_priority"
 				}
 
 			}
@@ -143,7 +154,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "int", "int" ],
-					"patching_rect" : [ 279.5, 301.0, 40.0, 22.0 ],
+					"patching_rect" : [ 277.5, 366.0, 40.0, 22.0 ],
 					"text" : "t l 0 1"
 				}
 
@@ -156,7 +167,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 279.5, 579.0, 24.0, 24.0 ]
+					"patching_rect" : [ 277.5, 644.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -167,7 +178,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
-					"patching_rect" : [ 279.5, 547.0, 29.5, 22.0 ],
+					"patching_rect" : [ 277.5, 612.0, 29.5, 22.0 ],
 					"text" : "* 1"
 				}
 
@@ -179,7 +190,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
-					"patching_rect" : [ 316.25, 547.0, 29.5, 22.0 ],
+					"patching_rect" : [ 314.25, 612.0, 29.5, 22.0 ],
 					"text" : "i"
 				}
 
@@ -191,7 +202,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 279.5, 518.0, 69.0, 22.0 ],
+					"patching_rect" : [ 277.5, 583.0, 69.0, 22.0 ],
 					"text" : "zl.compare"
 				}
 
@@ -203,7 +214,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "" ],
-					"patching_rect" : [ 279.5, 392.0, 103.0, 22.0 ],
+					"patching_rect" : [ 277.5, 457.0, 103.0, 22.0 ],
 					"text" : "t b l"
 				}
 
@@ -215,7 +226,7 @@
 					"numinlets" : 5,
 					"numoutlets" : 4,
 					"outlettype" : [ "int", "", "", "int" ],
-					"patching_rect" : [ 279.5, 420.0, 61.0, 22.0 ],
+					"patching_rect" : [ 277.5, 485.0, 61.0, 22.0 ],
 					"text" : "counter"
 				}
 
@@ -272,7 +283,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 4,
 					"outlettype" : [ "", "", "", "" ],
-					"patching_rect" : [ 279.5, 448.0, 50.5, 22.0 ],
+					"patching_rect" : [ 277.5, 513.0, 50.5, 22.0 ],
 					"saved_object_attributes" : 					{
 						"embed" : 1,
 						"precision" : 6
@@ -289,20 +300,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 279.5, 364.0, 103.0, 22.0 ],
+					"patching_rect" : [ 277.5, 429.0, 103.0, 22.0 ],
 					"text" : "route namespace"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"color" : [ 0.7, 0.4, 0.3, 1.0 ],
-					"id" : "obj-10",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 0,
-					"patching_rect" : [ 134.0, 408.0, 83.0, 22.0 ],
-					"text" : "test.terminate"
 				}
 
 			}
@@ -313,7 +312,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 432.999969000000021, 102.0, 34.0, 22.0 ],
+					"patching_rect" : [ 430.999969000000021, 167.0, 34.0, 22.0 ],
 					"text" : "t b b"
 				}
 
@@ -325,20 +324,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 363.5, 268.0, 101.0, 22.0 ],
+					"patching_rect" : [ 440.5, 357.0, 101.0, 22.0 ],
 					"text" : "script delete poly"
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-38",
-					"maxclass" : "newobj",
-					"numinlets" : 1,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111098999999996, 8.0, 58.0, 22.0 ],
-					"text" : "loadbang"
 				}
 
 			}
@@ -350,7 +337,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 496.0, 231.0, 299.0, 35.0 ],
+					"patching_rect" : [ 494.0, 296.0, 299.0, 35.0 ],
 					"text" : "script newobject newobj @text \"poly~ default_in_poly\" @varname poly @patching_position 270 134"
 				}
 
@@ -362,7 +349,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111098999999996, 73.0, 57.0, 22.0 ],
+					"patching_rect" : [ 175.111098999999996, 138.0, 57.0, 22.0 ],
 					"text" : "del 1000"
 				}
 
@@ -374,7 +361,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 177.111098999999996, 38.0, 274.888885000000016, 22.0 ],
+					"patching_rect" : [ 175.111098999999996, 103.0, 274.888885000000016, 22.0 ],
 					"text" : "t b b"
 				}
 
@@ -386,7 +373,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 177.111098999999996, 107.0, 34.0, 22.0 ],
+					"patching_rect" : [ 175.111098999999996, 172.0, 34.0, 22.0 ],
 					"text" : "t b b",
 					"varname" : "trigger"
 				}
@@ -399,7 +386,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 496.0, 368.0, 67.0, 22.0 ],
+					"patching_rect" : [ 494.0, 433.0, 67.0, 22.0 ],
 					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
 					"text" : "thispatcher"
 				}
@@ -412,7 +399,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 217.111098999999996, 167.0, 73.0, 22.0 ],
+					"patching_rect" : [ 215.111098999999996, 232.0, 73.0, 22.0 ],
 					"text" : "namespace"
 				}
 
@@ -424,18 +411,18 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 279.5, 334.0, 39.0, 22.0 ],
+					"patching_rect" : [ 277.5, 399.0, 39.0, 22.0 ],
 					"text" : "ossia"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-28",
+					"id" : "obj-1",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 270.0, 134.0, 122.0, 22.0 ],
+					"patching_rect" : [ 268.0, 199.0, 122.0, 22.0 ],
 					"text" : "poly~ default_in_poly",
 					"varname" : "poly"
 				}
@@ -443,6 +430,13 @@
 			}
  ],
 		"lines" : [ 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-11", 0 ]
+				}
+
+			}
+, 			{
 				"patchline" : 				{
 					"destination" : [ "obj-20", 0 ],
 					"source" : [ "obj-12", 0 ]
@@ -521,7 +515,7 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-10", 0 ],
+					"destination" : [ "obj-7", 0 ],
 					"source" : [ "obj-20", 0 ]
 				}
 
@@ -630,13 +624,6 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-13", 0 ],
-					"source" : [ "obj-38", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
 					"destination" : [ "obj-9", 0 ],
 					"source" : [ "obj-4", 0 ]
 				}
@@ -658,6 +645,14 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"midpoints" : [ 67.5, 608.0, 44.0, 608.0, 44.0, 89.0, 184.611098999999996, 89.0 ],
+					"source" : [ "obj-7", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-27", 0 ],
 					"source" : [ "obj-9", 0 ]
 				}
@@ -666,8 +661,15 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "default_in_poly.maxpat",
-				"bootpath" : "~/dev/ossia/libossia/src/ossia-max/max-test",
-				"patcherrelativepath" : ".",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/max-test",
+				"patcherrelativepath" : "../../max-test",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
@@ -676,11 +678,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.assert.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.equals.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -692,7 +694,7 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "oscar.mxo",
+				"name" : "ossia.logger.mxo",
 				"type" : "iLaX"
 			}
  ],
