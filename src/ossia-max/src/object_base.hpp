@@ -86,8 +86,6 @@ public:
   object_class m_otype{};
 
   void* m_clock{};
-  void* m_reg_clock{}; // registration clock that should be initialized by constructor
-                       // and canceled by loadbang method
   void* m_highlight_clock{}; // clock to reset color after some amount of time
                              // to highlight the object in the patcher
 

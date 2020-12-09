@@ -65,8 +65,7 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
   {
     x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
   }
   return x;
 }

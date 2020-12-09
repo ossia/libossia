@@ -96,10 +96,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    // in that case, the second loadbang is inhibited by the first
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
+    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_max::instance().parameters.push_back(x);
     critical_exit(0);
