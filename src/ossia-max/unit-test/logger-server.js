@@ -65,10 +65,19 @@ const { report } = require('process');
 
 async function main()
 { 
-    const directory_path = path.join(__dirname, 'test-patchers');
-    files = fs.readdirSync(directory_path);
-
+    directory_path = __dirname;
     console.log('Directory path: ' + directory_path);
+
+    args = process.argv.slice(2);
+    if(args.length > 0)
+    {
+        files = args;
+    }
+    else
+    {
+        directory_path = path.join(__dirname, 'test-patchers');
+        files = fs.readdirSync(directory_path);    
+    }
 
     for(let index = 0; index < files.length; index++)
     {
