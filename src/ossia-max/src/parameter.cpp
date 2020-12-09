@@ -196,9 +196,17 @@ void parameter::do_registration()
   {
     auto param = m->get_node()->get_parameter();
     auto val = param->get_default_value();
+    auto it = m_value_map.find(m->get_node()->get_name());
+    if(it != m_value_map.end())
+    {
+      val = it->second;
+      m_value_map.erase(it);
+    }
     if(val)
+    {
       // push quiet here because will be fired later following priority
       param->push_value_quiet(*val);
+    }
   }
 }
 

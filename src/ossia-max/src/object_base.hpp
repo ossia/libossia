@@ -163,6 +163,7 @@ public:
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void closebang(object_base* x);
   static void loadbang(object_base* x);
+  void save_children_state();
   void highlight();
   static void reset_color(object_base* x);
 
@@ -177,8 +178,6 @@ public:
 
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
-
-  std::map<std::string, ossia::value> m_value_map;
 
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 

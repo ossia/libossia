@@ -18,7 +18,6 @@ extern "C" void ossia_model_setup()
 {
   auto& ossia_library = ossia_max::instance();
 
-  // instantiate the ossia.parameter class
   t_class* c = class_new(
       "ossia.model", (method)model::create, (method)model::destroy,
       (long)sizeof(ossia::max::model), 0L, A_GIMME, 0);
@@ -156,26 +155,6 @@ void model::do_registration()
   set_tags();
   set_hidden();
   set_recall_safe();
-}
-
-void save_children_recursively(t_object* patcher)
-{
-  auto& pat_desc = ossia_max::instance().patchers[patcher];
-
-  for(auto x : pat_desc.parameters)
-  {
-    x->save_values();
-  }
-
-  for(auto subpatch : pat_desc.subpatchers)
-  {
-    save_children_recursively(subpatch);
-  }
-}
-
-void model::save_children_state()
-{
-  save_children_recursively(m_patcher);
 }
 
 } // max namespace

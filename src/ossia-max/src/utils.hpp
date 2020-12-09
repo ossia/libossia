@@ -260,6 +260,7 @@ static inline T* find_parent_box_alive(
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)
 {
+  x->save_children_state();
   x->m_name = address;
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
@@ -271,7 +272,7 @@ void address_mess_cb(T* x, t_symbol* address)
   || x->m_otype == object_class::model)
   {
     register_children_in_patcher_recursively(x->m_patcher, x);
-    output_all_values(x->m_patcher, x->m_otype == object_class::model);
+    output_all_values(x->m_patcher, false);
   }
 }
 

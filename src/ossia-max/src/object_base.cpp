@@ -797,5 +797,35 @@ std::string object_base::make_global_pattern()
   return std::string(absolute_path.data(), absolute_path.size());
 }
 
+void save_children_recursively(t_object* patcher)
+{
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
+
+  for(auto x : pat_desc.parameters)
+  {
+    x->save_values();
+  }
+
+  for(auto subpatch : pat_desc.subpatchers)
+  {
+    save_children_recursively(subpatch);
+  }
+}
+
+void object_base::save_children_state()
+{
+  switch(m_otype)
+  {
+    case object_class::model:
+      save_children_recursively(m_patcher);
+      break;
+    case object_class::param:
+      static_cast<parameter*>(this)->save_values();
+      break;
+    default:
+        ;
+  }
+}
+
 } // max namespace
 } // ossia namespace

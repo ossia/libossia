@@ -13,7 +13,6 @@ public:
   using is_model = std::true_type;
 
   void do_registration();
-  void save_children_state();
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::model*);
