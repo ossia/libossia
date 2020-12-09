@@ -1,6 +1,7 @@
 const { Console } = require('console');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
+const getAppDataPath = require("appdata-path");
 
 var WebSocketServer = require('ws').Server
 var wss = new WebSocketServer({port: 1337});
@@ -8,12 +9,16 @@ var wss = new WebSocketServer({port: 1337});
 var norun = 0;
 var success = 0;
 var fail = 0;
-var failed_tests = new Set();
+var failed_tests = [];
 var total_tests_count = 0;
 
 var assert_failed = 0;
 var assert_success = 0;
 var current_patcher = '';
+var prefs_rawdata;
+var overdrive = 0;
+
+var max_prefs_file = "";
 
 wss.on('connection', function(ws) {
     ws.on('message', function(message) {
@@ -30,7 +35,7 @@ wss.on('connection', function(ws) {
                     case 'fail':
                         fail++;
                         assert_failed++;
-                        failed_tests.add(current_patcher);
+                        failed_tests.push(current_patcher);
                         break;
                     case 'success':
                         assert_success++;
@@ -61,12 +66,15 @@ wss.on('close', function close() {
 //requiring path and fs modules
 const path = require('path');
 const fs = require('fs');
-const { report } = require('process');
+const { report, exit } = require('process');
 
 async function main()
 { 
     directory_path = __dirname;
     console.log('Directory path: ' + directory_path);
+    max_prefs_file = path.join(getAppDataPath(), "Cycling '74/Max 8/Settings/maxpreferences.maxpref");
+
+    read_max_prefs();
 
     args = process.argv.slice(2);
     if(args.length > 0)
@@ -79,36 +87,33 @@ async function main()
         files = fs.readdirSync(directory_path);    
     }
 
-    for(let index = 0; index < files.length; index++)
+    for(overdrive = 0; overdrive<2; overdrive++)
     {
-        file = files[index];
-        if(file.endsWith(".ossia-max-test.maxpat"))
+        for(let index = 0; index < files.length; index++)
         {
-            console.log("Open " + file);
-            total_tests_count++;
-            patcher_path = path.join(directory_path, file);
-            current_patcher = file;
-            assert_failed = 0;
-            assert_success = 0;
-            await exec('open -W -n ' + patcher_path);
-            if(assert_failed + assert_success == 0)
+            file = files[index];
+            if(file.endsWith(".ossia-max-test.maxpat"))
             {
-                failed_tests.add(current_patcher);
+                console.log("Open " + file);
+                total_tests_count++;
+                patcher_path = path.join(directory_path, file);
+                current_patcher = file;
+                assert_failed = 0;
+                assert_success = 0;
+                await exec('open -W -n ' + patcher_path);
+                if(assert_failed + assert_success == 0)
+                {
+                    failed_tests.add(current_patcher);
+                }
+                console.log("");
             }
-            console.log("");
         }
+        report_and_exit();
     }
-    report_and_exit();
+   
+    restore_max_prefs();
+    process.exit(failed_tests.size);
 
-
-    // console.log("start max");
-    // patcher_path = path.join(directory_path, '179-priority_when_binding_view.ossia-max-test.maxpat');
-    // console.log("open " + patcher_path)
-    // await exec("open -W -n " + patcher_path);
-    // patcher_path = path.join(directory_path, '312-default_broken.ossia-max-test.maxpat');
-    // console.log("open " + patcher_path)
-    // await exec("open -W -n " + patcher_path);
-    // console.log("max ends");
 }
 
 function launch_max(patcher_path)
@@ -132,21 +137,44 @@ function report_and_exit()
     console.log('======');
     console.log('Report');
     console.log('======\n');
+    console.log('Overdrive: ' + overdrive);
     console.log("Assertions:");
     console.log("Total\tSuccess\tFail\tNorun");
     var total = success + fail + norun;
-    console.log(total + "\t" + success + "\t" + fail + "\t" + norun);
+    console.log(total + "\t" 
+    + success + "(" + 100 * success  / total + "%)\t" 
+    + fail + "(" + 100 * fail  / total + "%)\t"
+     + norun + "(" + 100 * norun  / total + "%)");
     
     console.log("Tests:");
     console.log("Total\tFailed");
-    console.log(total_tests_count + "\t" + failed_tests.size);
+    console.log(total_tests_count + "\t" + failed_tests.length + " (" + 100 * failed_tests.length / total_tests_count + "%)");
     console.log("\nList of failed tests:");
     failed_tests.forEach(function(file) {
         console.log(file);
     });
     console.log();
+}
 
-    process.exit(failed_tests.size);
+function read_max_prefs()
+{
+    prefs_rawdata = fs.readFileSync(max_prefs_file);
+    prefs = JSON.parse(prefs_rawdata);
+
+    // disable window restoratin on load
+    prefs["preferences"]["restorewindows"] = 0;
+    write_max_prefs();
+}
+
+function write_max_prefs()
+{
+    var data = JSON.stringify(prefs);
+    fs.writeFileSync(max_prefs_file, data);
+}
+
+function restore_max_prefs()
+{
+    fs.writeFileSync(max_prefs_file, prefs_rawdata);
 }
 
 main();
