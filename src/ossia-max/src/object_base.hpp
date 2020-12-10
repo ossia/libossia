@@ -179,6 +179,8 @@ public:
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
 
+  std::map<std::string, ossia::value> m_value_map;
+
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 
 private:
