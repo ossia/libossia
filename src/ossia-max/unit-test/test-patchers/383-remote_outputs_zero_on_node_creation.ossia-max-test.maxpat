@@ -54,11 +54,11 @@
 				"box" : 				{
 					"id" : "obj-11",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 233.0, 21.0, 314.0, 22.0 ],
-					"text" : "ossia.test-logger \"remote don't output 0 on node creation\""
+					"patching_rect" : [ 233.0, 21.0, 382.0, 22.0 ],
+					"text" : "ossia.test-logger \"remote don't output 0 on node creation\" @autoquit 1"
 				}
 
 			}
@@ -571,8 +571,8 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/patchers",
+				"patcherrelativepath" : "../../patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}

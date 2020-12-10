@@ -297,7 +297,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 324.0, 351.0, 121.0, 22.0 ],
-									"text" : "test.assert submodel"
+									"text" : "ossia.assert submodel"
 								}
 
 							}
@@ -643,7 +643,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 324.0, 351.0, 122.0, 22.0 ],
-					"text" : "test.assert model_#1"
+					"text" : "ossia.assert model_#1"
 				}
 
 			}

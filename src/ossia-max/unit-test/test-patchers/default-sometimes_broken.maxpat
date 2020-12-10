@@ -149,7 +149,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 127.0, 210.0, 207.0, 22.0 ],
 					"style" : "",
-					"text" : "test.equals 1.23 @single_precision 1"
+					"text" : "ossia.equals 1.23 @single_precision 1"
 				}
 
 			}
@@ -213,7 +213,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 254.0, 400.0, 92.0, 22.0 ],
 					"style" : "",
-					"text" : "test.assert float"
+					"text" : "ossia.assert float"
 				}
 
 			}

@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 87.0, 1612.0, 435.0 ],
+		"rect" : [ 84.0, 115.0, 1612.0, 435.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -44,9 +44,9 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 947.0, 286.0, 222.0, 22.0 ],
-					"text" : "ossia.logger \"Set parameter recursively\""
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 556.0, 333.0, 313.0, 22.0 ],
+					"text" : "ossia.test-logger \"Set parameter recursively\" @autoquit 1"
 				}
 
 			}
@@ -859,6 +859,13 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}

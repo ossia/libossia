@@ -362,11 +362,11 @@
 				"box" : 				{
 					"id" : "obj-19",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 114.0, 125.0, 198.0, 22.0 ],
-					"text" : "ossia.test-logger \"Repetetition filter\""
+					"patching_rect" : [ 114.0, 125.0, 267.0, 22.0 ],
+					"text" : "ossia.test-logger \"Repetetition filter\" @autoquit 1"
 				}
 
 			}

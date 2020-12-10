@@ -4158,7 +4158,7 @@
 				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 117.0, 172.0, 162.0, 22.0 ],
@@ -4171,6 +4171,14 @@
 				"patchline" : 				{
 					"destination" : [ "obj-3", 0 ],
 					"source" : [ "obj-1", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"midpoints" : [ 126.5, 445.0, 90.0, 445.0, 90.0, 149.0, 126.5, 149.0 ],
+					"source" : [ "obj-11", 0 ]
 				}
 
 			}

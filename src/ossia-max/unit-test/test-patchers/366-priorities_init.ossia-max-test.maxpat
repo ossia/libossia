@@ -42,11 +42,11 @@
 				"box" : 				{
 					"id" : "obj-13",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 751.0, 602.0, 234.0, 22.0 ],
-					"text" : "ossia.test-logger \"Default value by priority\""
+					"patching_rect" : [ 751.0, 602.0, 302.0, 22.0 ],
+					"text" : "ossia.test-logger \"Default value by priority\" @autoquit 1"
 				}
 
 			}

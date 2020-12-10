@@ -42,11 +42,11 @@
 				"box" : 				{
 					"id" : "obj-6",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 1412.0, 64.0, 97.0, 22.0 ],
-					"text" : "ossia.test-logger"
+					"patching_rect" : [ 1283.0, 66.0, 269.0, 22.0 ],
+					"text" : "ossia.test-logger \"Default value test\" @autoquit 1"
 				}
 
 			}
@@ -528,7 +528,7 @@
 					"id" : "obj-42",
 					"linecount" : 2,
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1092.5, 180.0, 126.0, 35.0 ],
@@ -649,7 +649,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 					"id" : "obj-61",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -791,7 +791,7 @@
 					"id" : "obj-5",
 					"linecount" : 2,
 					"maxclass" : "newobj",
-					"numinlets" : 1,
+					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 274.5, 156.0, 126.0, 35.0 ],
@@ -1907,8 +1907,8 @@
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/unit-test/test-patchers",
-				"patcherrelativepath" : ".",
+				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/patchers",
+				"patcherrelativepath" : "../../patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
@@ -1918,6 +1918,10 @@
 			}
 , 			{
 				"name" : "ossia.assert.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.equals.mxo",
 				"type" : "iLaX"
 			}
 , 			{

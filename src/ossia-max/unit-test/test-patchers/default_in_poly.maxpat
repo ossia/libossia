@@ -111,7 +111,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 371.5, 361.5, 94.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_floatnr"
+					"text" : "ossia.assert default_floatnr"
 				}
 
 			}
@@ -140,7 +140,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 349.5, 250.0, 126.0, 35.0 ],
 					"style" : "",
-					"text" : "test.equals 23.4 @single_precision 1"
+					"text" : "ossia.equals 23.4 @single_precision 1"
 				}
 
 			}
@@ -220,7 +220,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 1055.0, 831.5, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_list2"
+					"text" : "ossia.assert default_list2"
 				}
 
 			}
@@ -275,7 +275,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 857.0, 788.5, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_list2"
+					"text" : "ossia.assert default_list2"
 				}
 
 			}
@@ -317,7 +317,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 723.0, 733.5, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_list2"
+					"text" : "ossia.assert default_list2"
 				}
 
 			}
@@ -359,7 +359,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 547.0, 688.5, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_vec4f"
+					"text" : "ossia.assert default_vec4f"
 				}
 
 			}
@@ -414,7 +414,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 398.0, 649.0, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_vec3f"
+					"text" : "ossia.assert default_vec3f"
 				}
 
 			}
@@ -469,7 +469,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 267.0, 603.0, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_vec2f"
+					"text" : "ossia.assert default_vec2f"
 				}
 
 			}
@@ -550,7 +550,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 675.5, 417.0, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_string"
+					"text" : "ossia.assert default_string"
 				}
 
 			}
@@ -592,7 +592,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 548.0, 371.5, 88.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_bool"
+					"text" : "ossia.assert default_bool"
 				}
 
 			}
@@ -607,7 +607,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 227.0, 277.5, 77.0, 35.0 ],
 					"style" : "",
-					"text" : "test.assert default_int"
+					"text" : "ossia.assert default_int"
 				}
 
 			}

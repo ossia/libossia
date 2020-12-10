@@ -119,7 +119,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 324.0, 352.0, 94.0, 22.0 ],
-					"text" : "test.assert #1"
+					"text" : "ossia.assert #1"
 				}
 
 			}

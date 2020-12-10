@@ -54,11 +54,11 @@
 				"box" : 				{
 					"id" : "obj-12",
 					"maxclass" : "newobj",
-					"numinlets" : 0,
+					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 375.0, 295.0, 205.0, 22.0 ],
-					"text" : "ossia.test-logger \"Set with empty list\""
+					"patching_rect" : [ 375.0, 295.0, 273.0, 22.0 ],
+					"text" : "ossia.test-logger \"Set with empty list\" @autoquit 1"
 				}
 
 			}

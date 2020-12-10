@@ -86,7 +86,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 185.0, 348.0, 239.0, 22.0 ],
 					"style" : "",
-					"text" : "test.assert remote_value_somewhere_else"
+					"text" : "ossia.assert remote_value_somewhere_else"
 				}
 
 			}

@@ -156,7 +156,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 386.5, 533.0, 160.0, 22.0 ],
+									"patching_rect" : [ 386.5, 533.0, 160.0, 35.0 ],
 									"text" : "ossia.assert string_param_set"
 								}
 
@@ -327,7 +327,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 103.5, 540.0, 163.0, 22.0 ],
+									"patching_rect" : [ 103.5, 540.0, 163.0, 35.0 ],
 									"text" : "ossia.assert string_remote_set"
 								}
 
@@ -1094,7 +1094,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 167.0, 31.0, 276.0, 33.0 ],
+					"patching_rect" : [ 143.0, 52.0, 276.0, 33.0 ],
 					"text" : "works on 2019.06.20 with  14b1a13be174832e3b5a80909a8c6ddf5b52005d"
 				}
 
@@ -2794,8 +2794,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 50.0, 18.0, 60.0, 22.0 ],
-					"text" : "loadbang"
+					"patching_rect" : [ 50.0, 18.0, 201.0, 22.0 ],
+					"text" : "ossia.test-logger \"Set message test\""
 				}
 
 			}
@@ -2885,8 +2885,9 @@
 								"box" : 								{
 									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
 									"id" : "obj-22",
+									"linecount" : 2,
 									"maxclass" : "newobj",
-									"numinlets" : 1,
+									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 527.0, 447.0, 207.0, 22.0 ],
@@ -2957,7 +2958,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -2989,7 +2990,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 386.5, 331.0, 96.5, 22.0 ],
-									"text" : "108."
+									"text" : "45 a f d g 36.6"
 								}
 
 							}
@@ -3110,7 +3111,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 22.0 ],
-									"text" : "108."
+									"text" : "a b c 4 d"
 								}
 
 							}
@@ -3663,7 +3664,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 87.0, 35.0 ],
-									"text" : "108."
+									"text" : "45 a f d g 36.6"
 								}
 
 							}
@@ -4169,12 +4170,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 78.0, 35.0 ],
-									"text" : "108."
+									"text" : "45 a f d g 36.6"
 								}
 
 							}
@@ -4680,12 +4682,13 @@
 , 							{
 								"box" : 								{
 									"id" : "obj-20",
+									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 103.5, 331.0, 50.0, 35.0 ],
-									"text" : "108."
+									"text" : "45 a f d g 36.6"
 								}
 
 							}
@@ -5019,8 +5022,9 @@
 								"box" : 								{
 									"color" : [ 0.7, 0.4, 0.3, 1.0 ],
 									"id" : "obj-24",
+									"linecount" : 2,
 									"maxclass" : "newobj",
-									"numinlets" : 1,
+									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 491.5, 378.0, 205.0, 22.0 ],
@@ -5246,7 +5250,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 104.0, 383.0, 85.0, 22.0 ],
-									"text" : "108."
+									"text" : "45 a f d g 36.6"
 								}
 
 							}
@@ -5264,7 +5268,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -5552,6 +5556,14 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-2", 0 ],
+					"midpoints" : [ 59.5, 549.0, 32.0, 549.0, 32.0, 7.0, 59.5, 7.0 ],
+					"source" : [ "obj-11", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-4", 0 ],
 					"source" : [ "obj-2", 0 ]
 				}
@@ -5699,6 +5711,13 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
@@ -5712,6 +5731,14 @@
 			}
 , 			{
 				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.equals.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
 				"type" : "iLaX"
 			}
  ],
