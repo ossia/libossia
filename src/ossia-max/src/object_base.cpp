@@ -485,7 +485,7 @@ void object_base::get_zombie(object_base*x, std::vector<matcher*> nodes)
 
 void object_base::class_setup(t_class*c)
 {
-  CLASS_ATTR_LONG(c, "priority", 0, object_base, m_priority);
+  CLASS_ATTR_FLOAT(c, "priority", 0, object_base, m_priority);
   CLASS_ATTR_LABEL(c, "priority", 0, "Priority");
 
   CLASS_ATTR_SYM(c, "description", 0, object_base, m_description);

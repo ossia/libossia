@@ -127,7 +127,7 @@ public:
   t_symbol* m_name{};
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_description{};
-  long m_priority{};
+  float m_priority{};
   long m_invisible{};
   long m_defer_set{1};
   long m_recall_safe{};
