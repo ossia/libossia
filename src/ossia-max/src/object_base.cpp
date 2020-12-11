@@ -142,7 +142,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       matchers.reserve(nodes.size());
       for(auto n : nodes)
       {
-        matchers.push_back(std::make_shared<matcher>(n->get_parent(), this));
+        matchers.push_back(std::make_shared<matcher>(n, this));
       }
       break;
     }
