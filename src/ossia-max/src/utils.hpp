@@ -116,6 +116,13 @@ struct node_priority
 {
   std::shared_ptr<matcher> obj{};
   std::vector<ossia::net::priority> priorities;
+
+  friend std::ostream &operator<<( std::ostream &output, const node_priority &n ) {
+    output << object_classname(n.obj->get_owner())->s_name << "\t" << n.obj->get_node()->get_name() << "\t";
+    for(auto p : n.priorities)
+      output << p << " ";
+    return output;
+  }
 };
 
 /**
