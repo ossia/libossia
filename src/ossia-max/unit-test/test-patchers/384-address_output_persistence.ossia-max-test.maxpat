@@ -46,7 +46,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 623.0, 490.0, 257.0, 22.0 ],
-					"text" : "ossia.test-logger \"Address output\" @autoquit 0"
+					"text" : "ossia.test-logger \"Address output\" @autoquit 1"
 				}
 
 			}
@@ -89,7 +89,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-8",
 					"linecount" : 2,
 					"maxclass" : "newobj",
@@ -242,7 +242,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-5",
 					"linecount" : 2,
 					"maxclass" : "newobj",

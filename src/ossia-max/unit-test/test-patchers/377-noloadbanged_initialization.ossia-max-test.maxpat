@@ -40,6 +40,30 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-33",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 177.111098999999996, 98.0, 54.0, 22.0 ],
+					"text" : "deferlow"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-24",
+					"maxclass" : "button",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 70.0, 41.0, 24.0, 24.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-3",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -210,13 +234,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-19",
-					"linecount" : 5,
+					"linecount" : 4,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 495.0, 261.0, 243.0, 76.0 ],
-					"text" : "script newobject newobj @text \"ossia.parameter toto @default 123\" @varname param @patching_position 270 134, script connect trigger 2 param 0, script connect param 0 buf 0"
+					"patching_rect" : [ 495.0, 261.0, 282.0, 62.0 ],
+					"text" : "script newobject newobj @text \"ossia.parameter toto @default 123\" @varname param @patching_position 270 180, script connect trigger 2 param 0, script connect param 0 buf 0"
 				}
 
 			}
@@ -231,18 +255,6 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 272.0, 381.0, 24.0, 24.0 ],
 					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
-					"id" : "obj-17",
-					"maxclass" : "newobj",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 177.111098999999996, 103.0, 37.0, 22.0 ],
-					"text" : "del 1"
 				}
 
 			}
@@ -297,7 +309,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-10",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -361,15 +373,15 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-17", 0 ],
-					"source" : [ "obj-13", 0 ]
+					"destination" : [ "obj-21", 0 ],
+					"source" : [ "obj-13", 1 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-21", 0 ],
-					"source" : [ "obj-13", 1 ]
+					"destination" : [ "obj-33", 0 ],
+					"source" : [ "obj-13", 0 ]
 				}
 
 			}
@@ -393,13 +405,6 @@
 				"patchline" : 				{
 					"destination" : [ "obj-5", 0 ],
 					"source" : [ "obj-16", 0 ]
-				}
-
-			}
-, 			{
-				"patchline" : 				{
-					"destination" : [ "obj-12", 0 ],
-					"source" : [ "obj-17", 0 ]
 				}
 
 			}
@@ -448,6 +453,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-24", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-26", 0 ]
 				}
@@ -464,6 +476,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-31", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-12", 0 ],
+					"source" : [ "obj-33", 0 ]
 				}
 
 			}

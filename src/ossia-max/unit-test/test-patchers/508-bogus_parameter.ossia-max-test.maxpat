@@ -254,14 +254,14 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 172.0, 38.0, 200.0, 22.0 ],
-					"text" : "ossia.test-logger \"Boggus paramter\""
+					"patching_rect" : [ 172.0, 38.0, 269.0, 22.0 ],
+					"text" : "ossia.test-logger \"Boggus paramter\" @autoquit 1"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-42",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
