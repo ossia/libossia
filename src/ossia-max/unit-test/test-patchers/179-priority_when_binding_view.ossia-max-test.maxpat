@@ -46,7 +46,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 348.0, 721.0, 187.0, 22.0 ],
-					"text" : "another_param a_param yap /foo"
+					"text" : "/foo a_param yap another_param"
 				}
 
 			}
@@ -100,7 +100,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-9",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -119,7 +119,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
 					"patching_rect" : [ 876.0, 721.0, 249.0, 22.0 ],
-					"text" : "zl.compare another_param a_param yap /foo"
+					"text" : "zl.compare another_param yap a_param /foo"
 				}
 
 			}
