@@ -1,5 +1,6 @@
 #pragma once
 #include <cinttypes>
+#include <cstddef>
 #include <ossia_export.h>
 
 using fftw_plan = struct fftw_plan_s*;
