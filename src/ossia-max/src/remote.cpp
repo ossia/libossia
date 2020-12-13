@@ -290,6 +290,8 @@ void remote::do_registration()
 
   m_selection_path.reset();
   fill_selection();
+
+  set_unit();
 }
 
 void remote::unregister()
