@@ -223,6 +223,7 @@ void parameter_base::set_minmax()
 
 void parameter_base::set_unit()
 {
+  assert(m_otype != object_class::remote);
   for (auto m : m_node_selection)
   {
     if(!m->is_zombie())
@@ -718,6 +719,7 @@ void parameter_base::get_enable(parameter_base*x, std::vector<matcher*> nodes)
 
 void parameter_base::get_unit(parameter_base*x, std::vector<matcher*> nodes)
 {
+  assert(x->m_otype != object_class::remote);
   for (auto m : nodes)
   {
     if(m->is_zombie() || m->is_dead())
@@ -836,9 +838,9 @@ void convert_or_push(parameter_base* x, ossia::value&& v)
 
     auto xparam = (parameter_base*)m->get_owner();
 
-    if ( xparam->m_ounit != std::nullopt )
+    if ( xparam->m_local_unit != std::nullopt )
     {
-      const auto& src_unit = *xparam->m_ounit;
+      const auto& src_unit = *xparam->m_local_unit;
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
@@ -984,9 +986,9 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
 
       ossia::value vv;
       parameter_base* xparam = (parameter_base*)owner;
-      if ( xparam->m_ounit != std::nullopt )
+      if ( xparam->m_local_unit != std::nullopt )
       {
-        auto src_unit = *xparam->m_ounit;
+        auto src_unit = *xparam->m_local_unit;
         auto dst_unit = param->get_unit();
 
         vv = ossia::convert(v, src_unit, dst_unit);
@@ -1022,7 +1024,7 @@ void parameter_base::push_one(parameter_base* x, t_symbol* s, int argc, t_atom* 
         }
       }
       parameter_base* xparam = (parameter_base*) owner;
-      auto src_unit = *xparam->m_ounit;
+      auto src_unit = *xparam->m_local_unit;
       auto dst_unit = param->get_unit();
 
       ossia::convert(list, src_unit, dst_unit);

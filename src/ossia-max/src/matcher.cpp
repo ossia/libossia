@@ -272,13 +272,13 @@ void matcher::output_value(ossia::value v)
     auto x = (parameter_base*) owner;
 
     ossia::value val;
-    if ( x->m_ounit == std::nullopt )
+    if ( x->m_local_unit == std::nullopt )
     {
       val = std::move(filtered);
     }
     else
     {
-      val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_ounit);
+      val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_local_unit);
     }
 
     if(owner->m_dumpout)

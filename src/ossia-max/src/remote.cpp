@@ -202,11 +202,11 @@ void remote::set_unit()
   {
     ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
     if (unit)
-      m_ounit = unit;
+      m_local_unit = unit;
     else
     {
       object_error((t_object*)this, "wrong unit: %s", m_unit->s_name);
-      m_ounit = std::nullopt;
+      m_local_unit = std::nullopt;
       m_unit = gensym("");
       return;
     }
@@ -217,26 +217,35 @@ void remote::set_unit()
            != ossia::val_type::IMPULSE)
       {
         auto dst_unit = m->get_node()->get_parameter()->get_unit();
-        if (!ossia::check_units_convertible(*m_ounit,dst_unit)){
-          auto src = ossia::get_pretty_unit_text(*m_ounit);
-          auto dst = ossia::get_pretty_unit_text(dst_unit);
-          object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
-                       src.data(), dst.data() );
-          m_ounit = std::nullopt;
-          m_unit = gensym("");
-          break;
-        } else {
-          outlet_anything(m->get_owner()->m_dumpout,gensym("address"),1, m->get_atom_addr_ptr());
-          t_atom a;
-          A_SETSYM(&a, m_unit);
-          outlet_anything(m->get_owner()->m_dumpout,gensym("unit"),   1, &a);
-          m->output_value(m->get_node()->get_parameter()->value());
+        if (dst_unit)
+        {
+          if(ossia::check_units_convertible(*m_local_unit,dst_unit))
+          {
+            outlet_anything(m->get_owner()->m_dumpout,gensym("address"),1, m->get_atom_addr_ptr());
+            t_atom a;
+            A_SETSYM(&a, m_unit);
+            outlet_anything(m->get_owner()->m_dumpout,gensym("unit"),   1, &a);
+            m->output_value(m->get_node()->get_parameter()->value());
+          }
+          else
+          {
+            auto src = ossia::get_pretty_unit_text(*m_local_unit);
+            auto dst = ossia::get_pretty_unit_text(dst_unit);
+            object_error((t_object*)this, "sorry I don't know how to convert '%s' into '%s'",
+                         src.data(), dst.data() );
+            m_local_unit = std::nullopt;
+            break;
+          }
+        }
+        else
+        {
+          m_local_unit = std::nullopt;
         }
       }
     }
 
   } else {
-    m_ounit = std::nullopt;
+    m_local_unit = std::nullopt;
   }
 }
 
@@ -329,6 +338,7 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
   {
     m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
     fill_selection();
+    set_unit();
   }
 }
 
@@ -357,9 +367,9 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
       ossia::net::node_base* node = good_one->get_node();
       ossia::net::parameter_base* param = node->get_parameter();
 
-      if (x->m_ounit && !ossia::check_units_convertible(param->get_unit(), *x->m_ounit))
+      if (x->m_local_unit && !ossia::check_units_convertible(param->get_unit(), *x->m_local_unit))
       {
-        x->m_ounit = param->get_unit();
+        x->m_local_unit = param->get_unit();
         std::string_view unit = ossia::get_pretty_unit_text(param->get_unit());
         x->m_unit = gensym(unit.data());
       }

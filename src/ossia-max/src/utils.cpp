@@ -382,6 +382,7 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
   }
 }
 
+// TODO wrap this in a member method and rename it get_matchers(node_base* n);
 std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node)
 {
   std::vector<ossia::max::matcher*> matchers;
