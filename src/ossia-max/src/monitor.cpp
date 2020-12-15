@@ -217,7 +217,7 @@ void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* t
   }
 }
 
-void monitor::on_device_deleted(const net::node_base & node)
+void monitor::on_device_deleted(const ossia::net::node_base & node)
 {
   auto it = m_devices.find(&node.get_device());
   if(it != m_devices.end())
