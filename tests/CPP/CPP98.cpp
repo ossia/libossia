@@ -336,8 +336,8 @@ TEST_CASE ("various", "[various]")
 TEST_CASE ("remove_children", "[remove_children]")
 {
   opp::oscquery_server server("bugtest");
-	auto foo = server.get_root_node().create_child("foo");
-	auto bar = foo.create_child("bar");
+  auto foo = server.get_root_node().create_child("foo");
+  auto bar = foo.create_child("bar");
   auto resp = foo.create_int("resp");
   resp.set_value(0);
 
