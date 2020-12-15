@@ -24,7 +24,7 @@ do
   fi
 done
 
-SCRIPT_FOLDER=`dirname $(greadlink -f $0)`
+SCRIPT_FOLDER=`dirname "$(greadlink -f "$0")"`
 REPO_ROOT=${SCRIPT_FOLDER}/../
 OSSIA_BUILD_FOLDER=${REPO_ROOT}/build-ossia-max
 
