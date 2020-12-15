@@ -340,6 +340,19 @@ TEST_CASE ("remove_children", "[remove_children]")
   auto bar = foo.create_child("bar");
   auto resp = foo.create_int("resp");
   resp.set_value(0);
+  REQUIRE(resp.has_parameter());
+  bar.create_int("baz").set_value(1);
+  bar.remove_children();
+  REQUIRE(resp.has_parameter());
+}
+
+TEST_CASE ("remove_children_observed", "[remove_children_observed]")
+{
+  opp::oscquery_server server("bugtest");
+  auto foo = server.get_root_node().create_child("foo");
+  auto bar = foo.create_child("bar");
+  auto resp = foo.create_int("resp");
+  resp.set_value(0);
 
   opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
 
