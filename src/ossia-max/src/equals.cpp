@@ -37,8 +37,7 @@ static t_class		*s_ossiaequals_class = NULL;
 
 /************************************************************************/
 
-extern "C" {
-void ossia_equals_setup(void)
+extern "C" void ossia_equals_setup()
 {
   t_class *c = class_new("ossia.equals", (method)ossiaequals_new, (method)ossiaequals_free, sizeof(t_ossiaequals), (method)NULL, A_GIMME, 0);
 
@@ -50,7 +49,6 @@ void ossia_equals_setup(void)
 
   class_register(CLASS_BOX, c);
   s_ossiaequals_class = c;
-}
 }
 
 /************************************************************************/
