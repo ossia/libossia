@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/nodes/spline/spline2d.hpp>
+#include <ossia/dataflow/nodes/spline/spline3d.hpp>
 
 // Courtesy of tinyspline library, MIT license.
 #include <ossia/editor/automation/tinyspline_util.hpp>
@@ -8,64 +10,7 @@
 
 namespace ossia::nodes
 {
-struct spline_point
-{
-  double x;
-  double y;
 
-  friend bool operator==(const spline_point& lhs, const spline_point& rhs)
-  {
-    return lhs.x == rhs.x && lhs.y == rhs.y;
-  }
-  friend bool operator!=(const spline_point& lhs, const spline_point& rhs)
-  {
-    return lhs.x != rhs.x || lhs.y != rhs.y;
-  }
-};
-
-struct spline_data
-{
-  std::vector<spline_point> points;
-
-  friend bool operator==(const spline_data& lhs, const spline_data& rhs)
-  {
-    return lhs.points == rhs.points;
-  }
-  friend bool operator!=(const spline_data& lhs, const spline_data& rhs)
-  {
-    return lhs.points != rhs.points;
-  }
-};
-
-struct spline3d_point
-{
-  double x;
-  double y;
-  double z;
-
-  friend bool operator==(const spline3d_point& lhs, const spline3d_point& rhs)
-  {
-    return lhs.x == rhs.x && lhs.y == rhs.y && lhs.z == rhs.z;
-  }
-  friend bool operator!=(const spline3d_point& lhs, const spline3d_point& rhs)
-  {
-    return lhs.x != rhs.x || lhs.y != rhs.y || lhs.z != rhs.z;
-  }
-};
-
-struct spline3d_data
-{
-  std::vector<spline3d_point> points;
-
-  friend bool operator==(const spline3d_data& lhs, const spline3d_data& rhs)
-  {
-    return lhs.points == rhs.points;
-  }
-  friend bool operator!=(const spline3d_data& lhs, const spline3d_data& rhs)
-  {
-    return lhs.points != rhs.points;
-  }
-};
 
 class spline final : public ossia::nonowning_graph_node
 {

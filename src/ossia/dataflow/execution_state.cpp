@@ -6,6 +6,8 @@
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/dataflow/dataflow.hpp>
+#include <ossia/dataflow/exec_state_facade.hpp>
+#include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>

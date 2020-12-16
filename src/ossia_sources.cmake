@@ -670,3 +670,11 @@ set(OSSIA_FFT_HEADERS
 set(OSSIA_FFT_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fft.cpp"
 )
+
+set(OSSIA_EXPR_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/math_expression.hpp"
+)
+
+set(OSSIA_EXPR_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/math_expression.cpp"
+)

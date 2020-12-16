@@ -2,6 +2,7 @@
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/common/path.hpp>

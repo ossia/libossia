@@ -51,6 +51,13 @@ function(ossia_link_jack)
   endif()
 endfunction()
 
+# This one is put first because it is *long* to build
+# so we want to parallelize it with the rest
+if(OSSIA_MATH_EXPRESSION)
+  target_sources(ossia PRIVATE ${OSSIA_EXPR_HEADERS} ${OSSIA_EXPR_SRCS})
+  target_include_directories(ossia PRIVATE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/exprtk>")
+endif()
+
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
   target_link_libraries(ossia PRIVATE RtMidi17)
@@ -322,6 +329,7 @@ if(FFTW3_INCLUDEDIR AND FFTW3_LIBRARY)
   target_link_libraries(ossia PRIVATE ${FFTW3_LIBRARY})
   target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
 endif()
+
 
 if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
   if(OSSIA_EDITOR)

@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/dataflow/connection.hpp>
-#include <ossia/dataflow/port.hpp>
 
 namespace ossia
 {
