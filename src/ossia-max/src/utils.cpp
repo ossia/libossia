@@ -37,7 +37,7 @@ std::vector<ossia::net::generic_device*> get_all_devices()
 
 std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create)
 {
-  size_t pos = addr.find(":");
+  size_t pos = addr.find(":/");
   if (pos == std::string::npos) return {};
 
   ossia::string_view prefix = addr.substr(0,pos);

@@ -766,6 +766,7 @@ std::string object_base::make_global_pattern()
   object_base* parent = find_parent_object();
   while(parent)
   {
+    // TODO no need to iterate over all parents, take the first one's path and append this m_name to it.
     assert(parent->m_name);
     if(parent->m_otype == object_class::device
     || parent->m_otype == object_class::client)
@@ -778,12 +779,24 @@ std::string object_base::make_global_pattern()
       }
     }
     vs.push_back(parent->m_name->s_name);
+    if(parent->m_addr_scope == ossia::net::address_scope::global)
+    {
+      device_name = "";
+      break;
+    }
     parent = parent->find_parent_object();
   }
 
   fmt::memory_buffer absolute_path;
 
-  fmt::format_to(absolute_path, "{}:", device_name);
+
+  if(device_name != "")
+    fmt::format_to(absolute_path, "{}:", device_name);
+  else
+  {
+    fmt::format_to(absolute_path, "{}", vs.back());
+    vs.pop_back();
+  }
 
   auto rit = vs.rbegin();
   for (; rit != vs.rend(); ++rit)
