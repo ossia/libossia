@@ -52,6 +52,11 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
     if(argv[argc].a_type == A_SYM)
     {
       std::string pattern(argv[argc].a_w.w_sym->s_name);
+      if(pattern[0] == '/')
+      {
+        pattern = pattern.substr(1);
+      }
+
       x->m_patterns.push_back(pattern);
 
       x->m_outlets.push_back(outlet_new(x, nullptr));
@@ -69,6 +74,11 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 {
   std::string address(s->s_name);
 
+  if(address[0] == '/')
+  {
+    address = address.substr(1);
+  }
+
   long inlet = proxy_getinlet((t_object*)x);
 
   if(inlet > 0)
@@ -83,14 +93,15 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
     {
       const auto& pattern = x->m_patterns[i];
 
-      if(boost::algorithm::starts_with(address, pattern))
+      if(boost::algorithm::starts_with(address, pattern)
+          && (address.size() == pattern.size() || address[pattern.size()] == '/'))
       {
         int offset = pattern.size();
 
         std::string sub = address.substr(offset);
-        if(sub.size() > 0)
+        if(sub.size() > 1)
         {
-          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
+          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()+1), argc, argv);
         }
         else
         {
