@@ -392,7 +392,7 @@ node& node::operator=(const node& other)
 
   m_node = other.m_node;
   m_param = other.m_param;
-
+    
   init();
 
   return *this;
@@ -436,11 +436,14 @@ void node::cleanup(const ossia::net::node_base&)
   m_param = nullptr;
 }
 
-void node::cleanup_parameter(const ossia::net::parameter_base&)
-{
-  if(m_node)
-    m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
-  m_param = nullptr;
+void node::cleanup_parameter(const ossia::net::parameter_base& param)
+{ 
+  //make sure the cleaned up parameter belongs to this node
+  if (m_param && m_param == &param) {
+    if (m_node) 
+      m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
+    m_param = nullptr;
+  }
 }
 
 node::~node()
