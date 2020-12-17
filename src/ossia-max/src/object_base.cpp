@@ -163,6 +163,9 @@ void object_base::loadbang(object_base* x)
   if(x->m_registered)
     return;
 
+  if(!x->m_name || x->m_name == _sym_nothing)
+    return;
+
   critical_enter(0);
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
