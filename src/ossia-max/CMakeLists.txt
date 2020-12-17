@@ -30,25 +30,6 @@ elseif(WIN32)
   endif()
 endif()
 
-if(APPLE)
-    FIND_PATH(FILE_H_DIR Files.h
-        HINTS
-        /Library/Developer/CommandLineTools//SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers
-        /System/Library/Frameworks/
-        /System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers/
-        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers
-        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.12.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers
-        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.11.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers
-        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers
-        /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/CarbonCore.framework/Versions/A/Headers)
-    message( STATUS " Files.h have been found here : ${FILE_H_DIR}")
-    if( ${FILE_H_DIR} EQUAL "FILE_H_DIR-NOT_FOUND")
-        message( STATUS "  Files.h NOT FOUND !!" )
-    else()
-        include_directories("${FILE_H_DIR}")
-    endif()
-endif()
-
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set(PROJECT_SRCS
@@ -257,56 +238,5 @@ install(
 )
 
 if(OSSIA_MAX_TEST)
-    set(OSSIA_MAX_TEST_PATCHERS
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/179-priority_when_binding_view.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/312-default_broken.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/355-repetition_filter_issue.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/366-priorities_init.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/367-set_message_with_empty_list.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/368-set_broken.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/369-register_object_only_once.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/377-noloadbanged_initialization.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/379-list_test.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/383-remote_outputs_zero_on_node_creation.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/384-address_output_persistence.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/387-attribute-propagation.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/415-poly_reset.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/441-multi_load.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/447-delete_node_during_registration.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/499-min_max_range.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/503-patcher_registration.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/506-poly-registering.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/507-dynamic_registering_under_device_object.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bogus_parameter_on_bpatcher_deletion.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/513-impulse_test.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/549-string_range.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/554-set_parameter_recurse.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/559-ghost_doublon.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/545-bind_remote_without_args.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/542-mute.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/543-double_namespace.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/565-range_values_order.maxtest.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/573-set_unit_from_ossia.attribute.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/575-send_list.maxpat
-
-        # test dependencies
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/559-master_subpatcher.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/default-sometimes_broken.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/subpatcher_for_503.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/model-test-for-369.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/param-test-for-369.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/submodel-test-for-369.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/default_in_poly.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/507_sub_bpatch.maxpat
-        ${CMAKE_CURRENT_LIST_DIR}/max-test/508-bpatcher.maxpat
-        )
-    install(
-        FILES
-          ${OSSIA_MAX_TEST_PATCHERS}
-        DESTINATION
-          "${OSSIA_MAX_INSTALL_FOLDER}/patchers/tests"
-        COMPONENT
-          ${PROJECT_NAME}
-          )
+    # TODO setup custom test target to run node.js
 endif(OSSIA_MAX_TEST)
