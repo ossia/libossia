@@ -387,7 +387,7 @@ void remote::get_mess_cb(remote* x, t_symbol* s)
 {
   if ( s == gensym("unit") )
     remote::get_unit(x);
-  if ( s == gensym("mute") )
+  else if ( s == gensym("mute") )
     remote::get_mute(x);
   else
     parameter_base::get_mess_cb(x,s);
