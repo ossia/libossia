@@ -6,6 +6,7 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 
 namespace ossia
 {
@@ -20,13 +21,14 @@ struct router
   t_object m_object;
 
   router(long argc, t_atom* argv);
+  void add_pattern(std::string pattern);
 
   static void free(ossia::max::router* x);
   static void in_anything(ossia::max::router* x, t_symbol* s, long argc, t_atom* argv);
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
-  std::vector<std::string> m_patterns{};
+  std::vector<std::regex> m_patterns{};
   std::vector<void*> m_outlets{};
   void* m_inlet{};
 

@@ -5,6 +5,7 @@
 #include <ossia-max/src/ossia-max.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <regex>
 
 using namespace ossia::max;
 
@@ -52,12 +53,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
     if(argv[argc].a_type == A_SYM)
     {
       std::string pattern(argv[argc].a_w.w_sym->s_name);
-      if(pattern[0] == '/')
-      {
-        pattern = pattern.substr(1);
-      }
-
-      x->m_patterns.push_back(pattern);
+      x->add_pattern(pattern);
 
       x->m_outlets.push_back(outlet_new(x, nullptr));
     }
@@ -68,6 +64,22 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   }
 
   return x;
+}
+
+void router::add_pattern(std::string pattern)
+{
+  if(pattern[0] == '/')
+  {
+    pattern = pattern.substr(1);
+  }
+  ossia::net::expand_ranges(pattern);
+  pattern = ossia::traversal::substitute_characters(pattern);
+
+  try {
+    m_patterns.push_back(std::regex("^/?" + pattern + "(/|$)"));
+  } catch (std::exception& e) {
+    error("'%s' bad regex: %s", pattern.data(), e.what());
+  }
 }
 
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
@@ -84,30 +96,28 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   if(inlet > 0)
   {
     x->m_patterns.clear();
-    x->m_patterns.push_back(address);
+    x->add_pattern(address);
   }
   else
   {
     bool match = false;
     for(int i = 0 ; i < x->m_patterns.size(); i++)
     {
-      const auto& pattern = x->m_patterns[i];
+      const auto &pattern_regex = x->m_patterns[i];
 
-      if(boost::algorithm::starts_with(address, pattern)
-          && (address.size() == pattern.size() || address[pattern.size()] == '/'))
+      std::smatch smatch;
+      if(std::regex_search(address, smatch, pattern_regex))
       {
-        int offset = pattern.size();
-
-        std::string sub = address.substr(offset);
-        if(sub.size() > 1)
+        match = true;
+        std::string suffix(smatch.suffix());
+        if( suffix.size() > 0)
         {
-          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()+1), argc, argv);
+          outlet_anything(x->m_outlets[i+1], gensym(suffix.c_str()), argc, argv);
         }
         else
         {
           outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
         }
-        match = true;
       }
     }
 
