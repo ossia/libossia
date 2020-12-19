@@ -12,6 +12,7 @@ export LANG=en_US.UTF-8
 command -v brew > /dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 command -v greadlink > /dev/null 2>&1 || brew install coreutils
 command -v ninja > /dev/null 2>&1 || brew install ninja
+command -v cmake > /dev/null 2>&1 || brew install cmake
 
 OSSIA_BUILD_TYPE=debug
 
