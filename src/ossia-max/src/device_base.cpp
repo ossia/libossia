@@ -53,15 +53,17 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
     {
       switch(obj->m_otype)
       {
-        case object_class::attribute:
         case object_class::remote:
         {
+          auto rmt = static_cast<ossia::max::remote*>(obj);
           // only break for 'unit' attribute
-          if( attribute == ossia::net::text_unit() ){
-            static_cast<ossia::max::remote*>(obj)->set_unit();
+          if( attribute == ossia::net::text_unit()
+           || attribute == ossia::net::text_extended_type()){
+            rmt->set_unit();
             break;
           }
         }
+        case object_class::attribute:
         case object_class::param:
         {
           auto oc = static_cast<ossia::max::parameter_base*>(obj);
