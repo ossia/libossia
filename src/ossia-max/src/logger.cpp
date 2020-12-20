@@ -8,9 +8,6 @@
 
 using namespace ossia::max;
 
-#pragma mark -
-#pragma mark ossia_logger class methods
-
 extern "C" void ossia_logger_setup()
 {
   auto& ossia_library = ossia_max::instance();

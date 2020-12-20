@@ -7,6 +7,7 @@
 //	cycling '74
 //
 #include "equals.hpp"
+#include <ossia-max/src/ossia-max.hpp>
 
 // class variables
 static t_class		*s_ossiaequals_class = NULL;
@@ -15,7 +16,10 @@ using namespace ossia::max;
 
 extern "C" void ossia_equals_setup()
 {
-  t_class *c = class_new("ossia.equals",
+  auto& ossia_library = ossia_max::instance();
+
+  // instantiate the ossia.logger class
+  t_class* c = class_new("ossia.equals",
                          (method)ossia_equals_new,
                          (method)equals::free,
                          sizeof(equals),
@@ -28,7 +32,7 @@ extern "C" void ossia_equals_setup()
   CLASS_ATTR_LONG(c, "single_precision", 0, equals, x_single_precision);
 
   class_register(CLASS_BOX, c);
-  s_ossiaequals_class = c;
+  ossia_library.ossia_equals_class = c;
 }
 
 extern "C" void* ossia_equals_new(t_symbol *s, long argc, t_atom *argv)

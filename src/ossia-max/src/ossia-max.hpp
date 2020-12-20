@@ -152,6 +152,7 @@ public:
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
   t_class* ossia_assert_class{};
+  t_class* ossia_equals_class{};
 
   // keep list of all objects
   ossia::safe_vector<parameter*> parameters;
