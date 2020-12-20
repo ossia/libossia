@@ -93,8 +93,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 497.0, 58.0, 234.0, 22.0 ],
-					"text" : "ossia.test-logger \"Remote unit conversion\""
+					"patching_rect" : [ 497.0, 58.0, 303.0, 22.0 ],
+					"text" : "ossia.test-logger \"Remote unit conversion\" @autoquit 1"
 				}
 
 			}
@@ -126,7 +126,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
+					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 					"id" : "obj-16",
 					"maxclass" : "newobj",
 					"numinlets" : 1,

@@ -155,8 +155,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 438.0, 315.0, 73.0, 22.0 ],
-					"text" : "ossia.assert"
+					"patching_rect" : [ 438.0, 315.0, 153.0, 22.0 ],
+					"text" : "ossia.assert \"unit changed\""
 				}
 
 			}
@@ -227,7 +227,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 181.0, 188.0, 125.0, 22.0 ],
-					"text" : "address tempo"
+					"text" : "unit time.ms"
 				}
 
 			}
