@@ -50,6 +50,7 @@ set(PROJECT_SRCS
     src/device_base.hpp
     src/device_base.cpp
     src/equals.cpp
+    src/equals.hpp
     src/explorer.hpp
     src/explorer.cpp
     src/fuzzysearch.hpp
