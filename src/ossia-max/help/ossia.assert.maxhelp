@@ -40,19 +40,6 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
-					"id" : "obj-26",
-					"linecount" : 2,
-					"maxclass" : "message",
-					"numinlets" : 2,
-					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 78.0, 300.0, 54.0, 35.0 ],
-					"text" : ";\rmax quit"
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-23",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -129,9 +116,9 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
-					"outlettype" : [ "" ],
-					"patching_rect" : [ 192.0, 102.0, 197.0, 22.0 ],
-					"text" : "ossia.logger TestTest @heartbeat 0"
+					"outlettype" : [ "bang" ],
+					"patching_rect" : [ 192.0, 102.0, 144.0, 22.0 ],
+					"text" : "ossia.test-logger TestTest"
 				}
 
 			}
@@ -242,7 +229,8 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-26", 0 ],
+					"destination" : [ "obj-4", 0 ],
+					"midpoints" : [ 201.5, 249.0, 166.0, 249.0, 166.0, 87.0, 201.5, 87.0 ],
 					"source" : [ "obj-21", 0 ]
 				}
 
@@ -299,6 +287,13 @@
 			}
  ],
 		"dependency_cache" : [ 			{
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
+			}
+, 			{
 				"name" : "ossia.assert.mxo",
 				"type" : "iLaX"
 			}
