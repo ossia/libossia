@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/audio/audio_engine.hpp>
 #include <thread>
+
 namespace ossia
 {
 class dummy_engine final : public audio_engine
@@ -35,20 +36,33 @@ public:
       clk::time_point start = clk::now();
       auto orig_start = start;
       auto end = start;
+      uint64_t iter_total = 0;
       int64_t ns_total = 0;
       int64_t ns_delta = 0;
       while (m_active)
       {
+        iter_total++;
         // TODO condition variables for the sleeping instead
         // linux : https://stackoverflow.com/questions/24051863/how-to-implement-highly-accurate-timers-in-linux-userspace
         // win : https://stackoverflow.com/a/13413019/1495627
         // mac : https://stackoverflow.com/a/52905687/1495627
         // other: naive way
-        std::this_thread::sleep_for(std::chrono::microseconds(us_per_buffer));
+        auto time_to_sleep = std::chrono::microseconds(us_per_buffer);
+        auto actual_next = start + time_to_sleep;
+        auto now = start;
+        auto elapsed = (now - orig_start);
+        auto expected_next_elapsed = clk::duration(iter_total * us_per_buffer);
+        auto delta = expected_next_elapsed - elapsed;
+        double delta_p = (expected_next_elapsed.count() - elapsed.count() / 1000.);
+        if(delta_p > 0)
+        {
+          std::this_thread::sleep_for(std::chrono::microseconds((int)delta_p));
+        }
         end = clk::now();
         tick_start();
         if (stop_processing)
         {
+          start = clk::now();
           tick_clear();
           continue;
         }
