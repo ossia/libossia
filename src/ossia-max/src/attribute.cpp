@@ -126,7 +126,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
   if (x)
   {
     critical_enter(0);
-    ossia_max::instance().patchers[x->m_patcher].attributes.push_back(x);
+    ossia_max::get_patcher_descriptor(x->m_patcher).attributes.push_back(x);
 
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);
@@ -164,17 +164,6 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 void attribute::destroy(attribute* x)
 {
   critical_enter(0);
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    pat_desc.attributes.remove_all(x);
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
-
   x->m_dead = true;
   x->unregister();
 

@@ -39,8 +39,8 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
   status[0] = argv[0];
 
   if ( argc < 2
-       || argv[0].a_type != A_SYM
-       || argv[1].a_type != A_SYM )
+    || argv[0].a_type != A_SYM
+    || argv[1].a_type != A_SYM )
   {
     object_error((t_object*)x, "Wrong argument number to 'preset' message"
                 "needs 2 symbol arguments: <load|save> <filename>");

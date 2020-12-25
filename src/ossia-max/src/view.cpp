@@ -44,7 +44,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     critical_enter(0);
-    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
     if( !pat_desc.model && !pat_desc.view)
     {
       pat_desc.view = x;
@@ -95,18 +95,6 @@ void view::destroy(view* x)
   critical_enter(0);
   device_base::on_device_created.disconnect<&view::on_device_created>(x);
   device_base::on_device_removing.disconnect<&view::on_device_removing>(x);
-
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    if(pat_desc.view  == x)
-      pat_desc.view = nullptr;
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
 
   x->m_dead = true;
   x->unregister();

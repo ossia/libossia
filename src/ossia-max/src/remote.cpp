@@ -58,7 +58,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
   if (x)
   {
     critical_enter(0);
-    ossia_max::instance().patchers[x->m_patcher].remotes.push_back(x);
+    ossia_max::get_patcher_descriptor(x->m_patcher).remotes.push_back(x);
     device_base::on_device_created.connect<&remote::on_device_created>(x);
     device_base::on_device_removing.connect<&remote::on_device_removing>(x);
 
@@ -115,16 +115,6 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 void remote::destroy(remote* x)
 {
   critical_enter(0);
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    pat_desc.remotes.remove_all(x);
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
 
   x->m_dead = true;
   x->unregister();

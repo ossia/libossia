@@ -107,7 +107,7 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
   if (x)
   {
     critical_enter(0);
-    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
     if(!pat_desc.device && !pat_desc.client)
     {
       pat_desc.device= x;
@@ -162,29 +162,6 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
 void device::destroy(device* x)
 {
   critical_enter(0);
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    if(pat_desc.device == x)
-      pat_desc.device = nullptr;
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-    else
-    {
-      auto parent_object = x->find_parent_object_recursively(pat_desc.parent_patcher, true);
-      std::vector<std::shared_ptr<matcher>> matchers{};
-      if(parent_object)
-        matchers = parent_object->m_matchers;
-      else
-        matchers.push_back(std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr));
-      register_children_in_patcher_recursively(x->m_patcher, nullptr);
-      output_all_values(x->m_patcher, true);
-    }
-  }
-
   x->m_dead = true;
   x->m_node_selection.clear();
   x->m_matchers.clear();

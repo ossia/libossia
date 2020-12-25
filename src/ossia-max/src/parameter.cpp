@@ -49,7 +49,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
   if (x)
   {
     critical_enter(0);
-    ossia_max::instance().patchers[x->m_patcher].parameters.push_back(x);
+    ossia_max::get_patcher_descriptor(x->m_patcher).parameters.push_back(x);
 
     // make outlets
     x->m_dumpout
@@ -108,17 +108,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 void parameter::destroy(parameter* x)
 {
   critical_enter(0);
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    pat_desc.parameters.remove_all(x);
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
-
   x->m_dead = true;
   x->unregister();
   ossia_max::instance().parameters.remove_all(x);

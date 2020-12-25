@@ -89,6 +89,43 @@ struct max_msp_log_sink final :
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 };
 
+struct patcher_descriptor{
+  ossia::safe_set<parameter*> parameters{};
+  ossia::safe_set<remote*>    remotes{};
+  ossia::safe_set<attribute*> attributes{};
+  model*     model{};
+  view*      view{};
+  device*    device{};
+  client*    client{};
+
+  t_object* parent_patcher{};
+  ossia::safe_set<t_object*> subpatchers{};
+
+  bool loadbanged{}; // true if patcher have been loadbanged already
+
+  bool empty() const
+  {
+    return parameters.empty()
+           && remotes.empty()
+           && attributes.empty()
+           && model  != nullptr
+           && view   != nullptr
+           && device != nullptr
+           && client != nullptr;
+  }
+
+  auto size() const
+  {
+    return parameters.size()
+           + remotes.size()
+           + attributes.size()
+           + (model?1:0)
+           + (view?1:0)
+           + (device?1:0)
+           + (client?1:0);
+  }
+};
+
 class ossia_max
 {
 public:
@@ -153,8 +190,10 @@ public:
   t_class* ossia_ossia_class{};
   t_class* ossia_assert_class{};
   t_class* ossia_equals_class{};
+  static t_class* ossia_patcher_listener_class;
 
   // keep list of all objects
+  // TODO is it still needed ?
   ossia::safe_vector<parameter*> parameters;
   ossia::safe_vector<remote*> remotes;
   ossia::safe_vector<model*> models;
@@ -168,7 +207,7 @@ public:
   ossia::safe_vector<logger*> loggers;
   ossia::safe_vector<oassert*> oasserts;
 
-  // TODO remove all those nr* vectors, should not be needed
+  // TODO remove all those nr* vectors, should not be needed anymore
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
   ossia::safe_set<remote*> nr_remotes;
@@ -181,45 +220,14 @@ public:
 
   static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
 
+  // TODO is this still needed ?
   bool registering_nodes=false;
 
-  struct patcher_descriptor{
-    ossia::safe_set<parameter*> parameters{};
-    ossia::safe_set<remote*>    remotes{};
-    ossia::safe_set<attribute*> attributes{};
-    model*     model{};
-    view*      view{};
-    device*    device{};
-    client*    client{};
-
-    t_object* parent_patcher;
-    ossia::safe_set<t_object*> subpatchers;
-
-    bool loadbanged{}; // true if patcher have been loadbanged already
-
-    bool empty() const
-    {
-      return parameters.empty()
-             && remotes.empty()
-             && attributes.empty()
-             && model  != nullptr
-             && view   != nullptr
-             && device != nullptr
-             && client != nullptr;
-    }
-
-    auto size() const
-    {
-      return parameters.size()
-           + remotes.size()
-           + attributes.size()
-           + (model?1:0)
-           + (view?1:0)
-           + (device?1:0)
-           + (client?1:0);
-    }
-  };
   std::map<t_object*, patcher_descriptor> patchers;
+
+  static void create_patcher_hierarchy(t_object* patcher);
+  static patcher_descriptor& get_patcher_descriptor(t_object* patcher);
+  static void remove_patcher_descriptor(t_object* patcher);
 
   void* m_reg_clock{};
   static void* s_browse_clock;
@@ -235,6 +243,8 @@ private:
   std::shared_ptr<ossia::net::generic_device> m_device;
   string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
   std::shared_ptr<max_msp_log_sink> m_log_sink;
+
+  t_object* m_patcher_listener;
 };
 
 template<typename T, typename... Args>

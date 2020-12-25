@@ -20,18 +20,7 @@ ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 object_base::object_base()
 {
   m_patcher = ossia::max::get_patcher(&m_object);
-
-  auto patcher = m_patcher;
-  auto parent = ossia::max::get_patcher(patcher);
-  ossia_max::instance().patchers[patcher].parent_patcher = parent;
-
-  while(parent)
-  {
-    ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
-    patcher = parent;
-    parent = get_patcher(patcher);
-    ossia_max::instance().patchers[patcher].parent_patcher = parent;
-  }
+  ossia_max::create_patcher_hierarchy(m_patcher);
 }
 
 object_base::~object_base()
@@ -40,6 +29,57 @@ object_base::~object_base()
   {
     clock_unset(m_highlight_clock);
     object_free(m_highlight_clock);
+  }
+
+  auto pat_it = ossia_max::instance().patchers.find(m_patcher);
+  if(pat_it != ossia_max::instance().patchers.end())
+  {
+    auto& pat_desc = pat_it->second;
+    switch(m_otype)
+    {
+      case object_class::attribute:
+        pat_desc.attributes.remove_all(
+            static_cast<attribute*>(this));
+        break;
+      case object_class::client:
+        if(pat_desc.client == this)
+          pat_desc.client = nullptr;
+        break;
+      case object_class::device:
+        if(pat_desc.device == this)
+          pat_desc.device = nullptr;
+        if(!pat_desc.empty())
+        {
+          auto parent_object = find_parent_object_recursively(pat_desc.parent_patcher, true);
+          std::vector<std::shared_ptr<matcher>> matchers{};
+          if(parent_object)
+            matchers = parent_object->m_matchers;
+          else
+            matchers.push_back(std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr));
+          register_children_in_patcher_recursively(m_patcher, nullptr);
+          output_all_values(m_patcher, true);
+        }
+        pat_desc.device = nullptr;
+        break;
+      case object_class::model:
+        if(pat_desc.model == this)
+          pat_desc.model = nullptr;
+        break;
+      case object_class::param:
+        pat_desc.parameters.remove_all(
+            static_cast<parameter*>(this));
+        break;
+      case object_class::remote:
+        pat_desc.remotes.remove_all(
+            static_cast<remote*>(this));
+        break;
+      case object_class::view:
+        if(pat_desc.view == this)
+          pat_desc.view = nullptr;
+        break;
+      default:
+          ;
+    }
   }
 }
 
@@ -154,7 +194,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
 void object_base::closebang(object_base* x)
 {
-  ossia_max::instance().patchers.erase(x->m_patcher);
   x->m_dead = true;
 }
 
