@@ -290,6 +290,7 @@ if(OSSIA_DATAFLOW)
     endif()
   endif()
 
+  #SDL support
   set(SDL_BUILDING_LIBRARY TRUE)
   ossia_find_sdl()
   if(SDL_LIB)
@@ -298,6 +299,16 @@ if(OSSIA_DATAFLOW)
 
   target_link_libraries(ossia PRIVATE samplerate)
   target_link_libraries(ossia PRIVATE rubberband)
+  
+  # FFT support
+  find_path(FFTW3_INCLUDEDIR fftw3.h)
+  find_library(FFTW3_LIBRARY fftw3)
+  if(FFTW3_INCLUDEDIR AND FFTW3_LIBRARY)
+    target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
+    target_link_libraries(ossia PRIVATE ${FFTW3_LIBRARY})
+    target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
+  endif()
+
   if(APPLE)
       find_library(Foundation_FK Foundation)
       find_library(AVFoundation_FK AVFoundation)
@@ -317,28 +328,17 @@ if(OSSIA_DATAFLOW)
           ${CoreServices_FK}
       )
   endif()
-endif()
 
-if(OSSIA_GFX)
-  target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
-endif()
-
-if(OSSIA_EDITOR)
-  target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
-endif()
-
-find_path(FFTW3_INCLUDEDIR fftw3.h)
-find_library(FFTW3_LIBRARY fftw3)
-if(FFTW3_INCLUDEDIR AND FFTW3_LIBRARY)
-  target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
-  target_link_libraries(ossia PRIVATE ${FFTW3_LIBRARY})
-  target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
-endif()
-
-
-if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
+  if(OSSIA_GFX)
+    target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
+  endif()
+  
   if(OSSIA_EDITOR)
-    target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
+    target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
+
+    if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
+      target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
+    endif()
   endif()
 endif()
 
