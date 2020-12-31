@@ -43,109 +43,48 @@ inline oscpack::OutboundPacketStream& operator<<(
   return p;
 }
 
-template <typename ValueWriter, int BufferSize = 2048>
-class MessageGenerator
-{
-public:
-  MessageGenerator() = default;
-
-  template <typename... T>
-  const oscpack::OutboundPacketStream&
-  operator()(ossia::string_view name, const T&... args)
-  {
-    p << oscpack::BeginMessageN(name);
-    subfunc(args...);
-    p << oscpack::EndMessage();
-    return p;
-  }
-
-  template <typename Val_T>
-  const oscpack::OutboundPacketStream&
-  operator()(const std::string& name, const std::vector<Val_T>& values)
-  {
-    p << oscpack::BeginMessageN(name) << values << oscpack::EndMessage();
-    return p;
-  }
-
-  const oscpack::OutboundPacketStream& stream() const
-  {
-    return p;
-  }
-
-private:
-  void subfunc()
-  {
-  }
-
-  template <typename... Args>
-  void subfunc(const ossia::value& arg1, Args&&... args)
-  {
-    arg1.apply(ValueWriter{{p}});
-    subfunc(args...);
-  }
-
-  template <typename Arg1, typename... Args>
-  void subfunc(Arg1&& arg1, Args&&... args)
-  {
-    static_assert(
-        !std::is_pointer<
-            std::remove_cv_t<std::remove_reference_t<Arg1>>>::value,
-        "Do not send raw string literals");
-    p << arg1;
-    subfunc(args...);
-  }
-
-  alignas(128) std::array<char, BufferSize> buffer;
-  oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
-};
-
-// TODO have a queue of dynamic messages
 template <typename ValueWriter>
-class DynamicMessageGenerator
+class osc_message_generator
 {
 public:
-  DynamicMessageGenerator() = default;
+  osc_message_generator(oscpack::OutboundPacketStream& stream)
+    : p{stream} {
 
-  template <typename... T>
+  }
+
   const oscpack::OutboundPacketStream&
-  operator()(ossia::string_view name, const T&... args)
+  operator()(ossia::string_view name, const char* v) = delete;
+
+  void write(const char* arg) {
+    p << std::string_view(arg);
+  }
+
+  template<typename Arg>
+  void write(const Arg& arg) {
+    p << arg;
+  }
+  void write(const ossia::value& v) { v.apply(ValueWriter{{p}}); };
+  void write(const std::vector<ossia::value>& v) { ValueWriter{{p}}(v); };
+
+  template<typename... Args>
+  const oscpack::OutboundPacketStream&
+  operator()(ossia::string_view name, const Args&... args)
   {
     p << oscpack::BeginMessageN(name);
-    subfunc(args...);
+    (write(args), ...);
     p << oscpack::EndMessage();
     return p;
   }
 
-  template <typename Val_T>
-  const oscpack::OutboundPacketStream&
-  operator()(const std::string& name, const std::vector<Val_T>& values)
-  {
-    p << oscpack::BeginMessageN(name) << values << oscpack::EndMessage();
-    return p;
-  }
 
   const oscpack::OutboundPacketStream& stream() const
   {
     return p;
   }
 
-private:
-  void subfunc()
-  {
-  }
-
-  template <typename Arg1, typename... Args>
-  void subfunc(Arg1&& arg1, Args&&... args)
-  {
-    static_assert(
-        !std::is_pointer<
-            std::remove_cv_t<std::remove_reference_t<Arg1>>>::value,
-        "Do not send raw string literals");
-    p << arg1;
-    subfunc(args...);
-  }
-
-  std::unique_ptr<char[]> buffer{std::make_unique<char[]>(1024 * 1024)};
-  oscpack::OutboundPacketStream p{buffer.get(), 1024 * 1024};
+  oscpack::OutboundPacketStream& p;
 };
+
+
+
 }
