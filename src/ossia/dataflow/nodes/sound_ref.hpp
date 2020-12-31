@@ -29,10 +29,6 @@ public:
   {
     upmix = v;
   }
-  void set_native_tempo(double v)
-  {
-    tempo = v;
-  }
 
   void transport(time_value date) override
   {

@@ -399,6 +399,11 @@ public:
     m_resampler.transport(date);
   }
 
+  void set_native_tempo(double v)
+  {
+    tempo = v;
+  }
+
   virtual void transport(time_value date) = 0;
 
 protected:
@@ -406,14 +411,16 @@ protected:
   {
     double stretch_ratio = 1.;
     double model_ratio = 1.;
-    switch(m_resampler.m_stretch.index())
-    {
-      case 0:
-        model_ratio = ossia::root_tempo / t.tempo;
-      default:
-        model_ratio = ossia::root_tempo / this->tempo;
-        stretch_ratio = this->tempo / t.tempo;
-        break;
+    if(tempo != 0.) {
+      switch(m_resampler.m_stretch.index())
+      {
+        case 0:
+          model_ratio = ossia::root_tempo / t.tempo;
+        default:
+          model_ratio = ossia::root_tempo / this->tempo;
+          stretch_ratio = this->tempo / t.tempo;
+          break;
+      }
     }
 
     m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
