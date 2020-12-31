@@ -292,19 +292,19 @@ bool minuit_protocol::push(const ossia::net::parameter_base& addr, const ossia::
 
 bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
-
+  using namespace std::literals;
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::ListenRequest);
 
   if (enable)
   {
-    this->m_sender->send(act, address, "enable");
+    this->m_sender->send(act, address, "enable"sv);
     m_listening.insert(
         std::make_pair(address.get_node().osc_address(), &address));
   }
   else
   {
-    this->m_sender->send(act, address, "disable");
+    this->m_sender->send(act, address, "disable"sv);
     m_listening.erase(address.get_node().osc_address());
   }
 
