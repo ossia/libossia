@@ -416,6 +416,7 @@ protected:
       {
         case 0:
           model_ratio = ossia::root_tempo / t.tempo;
+        break;
         default:
           model_ratio = ossia::root_tempo / this->tempo;
           stretch_ratio = this->tempo / t.tempo;
