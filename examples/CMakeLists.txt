@@ -54,26 +54,26 @@ if(OSSIA_PROTOCOL_OSCQUERY)
     ossia_add_example(qt_colors "${CMAKE_CURRENT_SOURCE_DIR}/Qt/Colors/main.cpp")
     target_link_libraries(ossia_qt_colors_example PRIVATE ${QT_PREFIX}::Widgets)
   endif()
+  #ossia_add_example(preset_device_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/DeviceExample.cpp")
+  #ossia_add_example(preset_parsing_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/ParsingExample.cpp")
+  ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PrintNamespace.cpp")
+
+  find_package(OpenCV
+    COMPONENTS
+    core
+    videoio
+    imgcodecs
+    imgproc)
+
+  if(OpenCV_FOUND)
+    ossia_add_example(jpeg_streamer "${CMAKE_CURRENT_SOURCE_DIR}/Web/JpegStreamer.cpp")
+    target_link_libraries(ossia_jpeg_streamer_example PRIVATE ${OpenCV_LIBS})
+
+    ossia_add_example(double_ws_server "${CMAKE_CURRENT_SOURCE_DIR}/Web/DoubleWSServer.cpp")
+    target_link_libraries(ossia_double_ws_server_example PRIVATE ${OpenCV_LIBS})
+  endif()
 endif()
 
-#ossia_add_example(preset_device_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/DeviceExample.cpp")
-#ossia_add_example(preset_parsing_example "${CMAKE_CURRENT_SOURCE_DIR}/Preset/ParsingExample.cpp")
-ossia_add_example(preset_print_namespace "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PrintNamespace.cpp")
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
 ossia_add_example(fuzzysearch "${CMAKE_CURRENT_SOURCE_DIR}/Common/FuzzySearch.cpp")
-
-find_package(OpenCV
-  COMPONENTS
-  core
-  videoio
-  imgcodecs
-  imgproc)
-
-if(OpenCV_FOUND)
-  ossia_add_example(jpeg_streamer "${CMAKE_CURRENT_SOURCE_DIR}/Web/JpegStreamer.cpp")
-  target_link_libraries(ossia_jpeg_streamer_example PRIVATE ${OpenCV_LIBS})
-
-  ossia_add_example(double_ws_server "${CMAKE_CURRENT_SOURCE_DIR}/Web/DoubleWSServer.cpp")
-  target_link_libraries(ossia_double_ws_server_example PRIVATE ${OpenCV_LIBS})
-endif()
