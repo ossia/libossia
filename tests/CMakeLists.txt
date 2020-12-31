@@ -161,7 +161,7 @@ if(OSSIA_BENCHMARKS)
       target_compile_options(ossia_${TESTNAME} PUBLIC -O3 -march=native)
     endif()
 
-    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia benchmark::benchmark)
+    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia benchmark::benchmark Catch2::Catch2WithMain)
 
     # add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
   endFunction()
