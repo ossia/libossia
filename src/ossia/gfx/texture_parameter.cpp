@@ -2,6 +2,8 @@
 
 namespace ossia::gfx
 {
+texture_input_parameter::~texture_input_parameter() { }
+
 texture_parameter::~texture_parameter() { }
 
 void texture_parameter::pull_value() { }

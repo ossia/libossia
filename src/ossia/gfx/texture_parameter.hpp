@@ -8,7 +8,6 @@ class OSSIA_EXPORT texture_parameter : public ossia::net::parameter_base
 {
 public:
   using parameter_base::parameter_base;
-  virtual void pull_texture(ossia::gfx::port_index idx) = 0;
   virtual ~texture_parameter();
 
   void pull_value() override;
@@ -26,5 +25,14 @@ public:
   ossia::net::parameter_base& set_domain(const ossia::domain&) override;
   ossia::bounding_mode get_bounding() const override;
   ossia::net::parameter_base& set_bounding(ossia::bounding_mode) override;
+};
+
+class OSSIA_EXPORT texture_input_parameter : public texture_parameter
+{
+public:
+  using texture_parameter::texture_parameter;
+  virtual ~texture_input_parameter();
+
+  virtual void pull_texture(ossia::gfx::port_index idx) = 0;
 };
 }
