@@ -1,4 +1,4 @@
-#define CATCH_CONFIG_MAIN
+
 #define DR_WAV_IMPLEMENTATION 1
 #include <catch.hpp>
 #include <ossia/dataflow/execution_state.hpp>

@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
@@ -12,6 +12,8 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
+
+#include <iostream>
 
 TEST_CASE ("test_device", "test_device")
 {

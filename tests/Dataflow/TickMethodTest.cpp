@@ -1,7 +1,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/dataflow/graph/tick_methods.hpp>
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 
 TEST_CASE ("test_cuts", "test_cuts")

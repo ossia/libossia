@@ -4,7 +4,7 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#define CATCH_CONFIG_MAIN
+
 #include "catch.hpp"
 #include <iostream>
 #include <string>

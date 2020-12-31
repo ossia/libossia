@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>
@@ -8,6 +8,7 @@
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element.hpp>
 
+#include <iostream>
 #include "TestUtils.hpp"
 
 void debug(const ossia::value& t) { std::cerr << ossia::value_to_pretty_string(t); }
