@@ -114,17 +114,27 @@ if(OSSIA_QML)
 
   if(OSSIA_PROTOCOL_HTTP)
     ossia_add_test(HttpTest              "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpTest.cpp")
+    ossia_add_test(HttpQMLTest              "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpQMLTest.cpp")
   endif()
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
   # ossia_add_test(HttpRequestTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpRequestTest.cpp")
   ossia_add_test(OSCQueryTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTest.cpp")
+  ossia_add_test(OSCQueryDeviceTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryDeviceTest.cpp")
   ossia_add_test(OSCQueryColorTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryColorTest.cpp")
   if(OSSIA_CPP)
     ossia_add_test(OSCQueryTreeCallbackTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTreeCallbackTest.cpp")
     ossia_add_test(OSCQueryValueCallbackTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryValueCallbackTest.cpp")
   endif()
+endif()
+
+if(OSSIA_PROTOCOL_MIDI)
+  ossia_add_test(MIDITest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/MIDITest.cpp")
+endif()
+
+if(OSSIA_PROTOCOL_MINUIT)
+  ossia_add_test(MinuitTest             "${CMAKE_CURRENT_SOURCE_DIR}/Network/MinuitTest.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_PHIDGETS)
