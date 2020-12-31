@@ -17,6 +17,11 @@ void protocol_base::request(parameter_base&)
 {
 }
 
+bool protocol_base::push(const parameter_base& param, value&& v)
+{
+  return push(param, (const value&) v);
+}
+
 bool protocol_base::push(const parameter_base& p)
 {
   return push(p, p.value());

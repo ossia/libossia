@@ -173,16 +173,16 @@ parameter_base& alias_path::push_value()
   return *this;
 }
 
-parameter_base& alias_path::set_value(const ossia::value& v)
+ossia::value alias_path::set_value(const ossia::value& v)
 {
   do_for_nodes([&](ossia::net::node_base& n) {
     if (auto p = n.get_parameter())
       p->set_value(v);
   });
-  return *this;
+  return v;
 }
 
-parameter_base& alias_path::set_value(ossia::value&& v)
+ossia::value alias_path::set_value(ossia::value&& v)
 {
   return set_value(v);
 }

@@ -58,7 +58,7 @@ net::parameter_base& device_parameter::push_value()
   return *this;
 }
 
-net::parameter_base& device_parameter::set_value(const ossia::value& val)
+ossia::value device_parameter::set_value(const ossia::value& val)
 {
   if (val.valid())
   {
@@ -67,10 +67,10 @@ net::parameter_base& device_parameter::set_value(const ossia::value& val)
     device_update_value();
   }
 
-  return *this;
+  return m_current_value;
 }
 
-net::parameter_base& device_parameter::set_value(ossia::value&& val)
+ossia::value device_parameter::set_value(ossia::value&& val)
 {
   return set_value(val);
 }

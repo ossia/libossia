@@ -126,8 +126,8 @@ public:
   std::vector<ossia::value>
   value(const std::vector<ossia::destination_index>&) const;
 
-  virtual parameter_base& set_value(const ossia::value&) = 0;
-  virtual parameter_base& set_value(ossia::value&&) = 0;
+  virtual ossia::value set_value(const ossia::value&) = 0;
+  virtual ossia::value set_value(ossia::value&&) = 0;
 
   //! Reimplement to provide a way that does not call the observers.
   virtual void set_value_quiet(const ossia::value& v)

@@ -56,6 +56,7 @@ public:
    * @brief Send a value to the network.
    */
   virtual bool push(const parameter_base&, const ossia::value& v) = 0;
+  virtual bool push(const parameter_base&, ossia::value&& v);
   bool push(const parameter_base& p);
 
   /**

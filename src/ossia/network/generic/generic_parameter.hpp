@@ -54,8 +54,8 @@ public:
 
   const ossia::value& getValue() const;
   ossia::value value() const final override;
-  generic_parameter& set_value(const ossia::value&) override;
-  generic_parameter& set_value(ossia::value&&) override;
+  ossia::value set_value(const ossia::value&) override;
+  ossia::value set_value(ossia::value&&) override;
 
   /** Set a value without sending notifications **/
   void set_value_quiet(const ossia::value&) override;

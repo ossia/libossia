@@ -14,9 +14,9 @@ net::parameter_base& texture_parameter::push_value() { return *this; }
 
 value texture_parameter::value() const { return {}; }
 
-net::parameter_base& texture_parameter::set_value(const ossia::value&) { return *this; }
+ossia::value texture_parameter::set_value(const ossia::value&) { return {}; }
 
-net::parameter_base& texture_parameter::set_value(ossia::value&&) { return *this; }
+ossia::value texture_parameter::set_value(ossia::value&&) { return {}; }
 
 val_type texture_parameter::get_value_type() const { return {}; }
 
