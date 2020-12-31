@@ -8,6 +8,8 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
 
 using namespace ossia;
@@ -64,6 +66,7 @@ TEST_CASE ("test_double_float", "test_double_float")
 
 TEST_CASE ("test_float_float", "test_float_float")
 {
+  using Approx = Catch::Approx;
   auto c = std::make_shared<curve<float, float>>();
   REQUIRE(c != nullptr);
 
