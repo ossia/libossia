@@ -310,16 +310,35 @@ set(OSSIA_CPP_SRCS
 
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_udp.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bidir.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
   )
 set(OSSIA_OSC_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_udp.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.cpp"
   )
+
+if(NOT WIN32)
+  set(OSSIA_OSC_HEADERS
+    ${OSSIA_OSC_HEADERS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_unix.hpp"
+  )
+  set(OSSIA_OSC_SRCS
+    ${OSSIA_OSC_SRCS}
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_unix.cpp"
+  )
+endif()
 
 set(OSSIA_MINUIT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"

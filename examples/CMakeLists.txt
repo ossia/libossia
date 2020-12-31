@@ -32,6 +32,11 @@ if(OSSIA_PROTOCOL_OSC)
   ossia_add_example(network_osc_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_echo.cpp")
   ossia_add_example(network_osc_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_send.cpp")
   ossia_add_example(network_rate_limiter "${CMAKE_CURRENT_SOURCE_DIR}/Network/RateLimiter.cpp")
+
+  if(NOT WIN32)
+    ossia_add_example(network_osc_unix_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_echo.cpp")
+    ossia_add_example(network_osc_unix_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_send.cpp")
+  endif()
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
