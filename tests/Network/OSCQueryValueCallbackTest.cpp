@@ -8,6 +8,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;
