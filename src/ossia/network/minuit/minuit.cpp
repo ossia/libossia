@@ -401,10 +401,11 @@ void minuit_protocol::on_received_message(
 }
 
 void minuit_protocol::update_zeroconf()
+try
 {
   m_zcServer = make_zeroconf_server(
       m_localName + " Minuit server", "_minuit._tcp", m_localName, m_localPort,
       m_remotePort);
-}
+} catch(...) {}
 }
 }
