@@ -57,6 +57,7 @@ endif()
 
 if(OSSIA_TESTING)
   enable_testing()
+  add_subdirectory(3rdparty/Catch2)
   add_subdirectory(tests)
 endif()
 
