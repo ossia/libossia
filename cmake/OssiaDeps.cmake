@@ -54,6 +54,10 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} wiiuse)
   endif()
 
+  if(OSSIA_TESTING)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} Catch2)
+  endif()
+
   execute_process(COMMAND git submodule sync --recursive
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
 
