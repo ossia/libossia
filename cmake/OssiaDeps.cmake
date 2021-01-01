@@ -72,24 +72,6 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
-if(WIN32)
-  message(STATUS "Downloading audio sdk to ${OSSIA_3RDPARTY_FOLDER}/win-audio-sdk.zip")
-  if("${OSSIA_SDK}" STREQUAL "")
-    set(OSSIA_SDK "ossia-sdk" CACHE INTERNAL "")
-  endif()
-
-  if (NOT EXISTS "${OSSIA_SDK}")
-    file(MAKE_DIRECTORY ${OSSIA_SDK})
-    file(DOWNLOAD
-      https://github.com/ossia/sdk/releases/download/sdk10/win-audio-sdk.zip
-      ${OSSIA_SDK}/win-audio-sdk.zip)
-
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
-      WORKING_DIRECTORY ${OSSIA_SDK})
-  endif()
-endif()
-
 set(BOOST_MINOR_MINIMAL 67)
 set(BOOST_MINOR_LATEST 75)
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
