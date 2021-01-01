@@ -20,16 +20,19 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
     }
 }
 
-cd  C:\projects\libossia
-# git submodule update --init --recursive
-# if ( $env:APPVEYOR_BUILD_TYPE -eq "max" ){
-#   appveyor DownloadFile https://cycling74.s3.amazonaws.com/download/max-sdk-7.3.3.zip
-#   7z x max-sdk-7.3.3.zip -y
-# }
-
 cd c:\projects\libossia\3rdparty
-appveyor DownloadFile https://github.com/ossia/sdk/releases/download/sdk11/score-sdk-windows-llvm.7z
-7z x score-sdk-windows-llvm.7z
+
+# Download portaudio, ffmpeg
+if ( $env:configuration -eq "Debug" )
+{
+  appveyor DownloadFile https://github.com/ossia/sdk/releases/download/sdk18/sdk-msvc-debug.zip
+  7z x sdk-msvc-debug.zip
+}
+else
+{
+  appveyor DownloadFile https://github.com/ossia/sdk/releases/download/sdk18/sdk-msvc-release.zip
+  7z x sdk-msvc-release.zip
+}
 cd ..
 
 mkdir build
