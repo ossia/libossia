@@ -615,7 +615,7 @@ def get_versions():
 
       if [[ "$BUILD_TYPE" == "Release" ]]; then
         if [[ "$OSSIA_STATIC" == "1" ]]; then
-          zip -r ${ARTIFACTS_DIR}/libossia-native-macos-static.zip libossia
+          zip -r ${ARTIFACTS_DIR}/libossia-native-macos-static.zip "$TRAVIS_BUILD_DIR/libossia"
         else
           release_macos_folder "$TRAVIS_BUILD_DIR/libossia" "libossia-native-osx.zip" "io.ossia.ossia-native"
         fi
