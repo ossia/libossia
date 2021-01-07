@@ -70,23 +70,30 @@ std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_vi
 
     if (match)
     {
-      if(create)
+      bool should_create = create;
+      if (is_osc_name_pattern)
       {
-        auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
-        nodes.insert(nodes.end(), new_nodes.begin(), new_nodes.end());
+        auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        if(nodes.size() > 0)
+        {
+          should_create = false;
+          nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+        }
       }
       else
       {
-        if (is_osc_name_pattern)
+        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        if (node)
         {
-          auto tmp = ossia::net::find_nodes(dev->get_root_node(), osc_name);
-          nodes.insert(nodes.end(), tmp.begin(), tmp.end());
+          should_create = false;
+          nodes.push_back(node);
         }
-        else
-        {
-          auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
-          if (node) nodes.push_back(node);
-        }
+      }
+
+      if(should_create)
+      {
+        auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
+        nodes.insert(nodes.end(), new_nodes.begin(), new_nodes.end());
       }
     }
   }
