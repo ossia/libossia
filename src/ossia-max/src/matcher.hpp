@@ -38,6 +38,7 @@ public:
   bool is_dead() const { return m_dead; }
 
 private:
+  // TODO rename those as m_node/m_owner/m_callbackit
   ossia::net::node_base* node{};
   object_base* owner{};
 
