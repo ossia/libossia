@@ -128,37 +128,10 @@ matcher& matcher::operator=(matcher&& other)
   return *this;
 }
 
-
-void purge_parent(ossia::net::node_base* node)
-{
-  // remove parent node recursively if they are not used anymore
-  if (auto pn = node->get_parent())
-  {
-    pn->remove_child(*node);
-    if (pn->get_parent() && pn->children().size() == 0)
-    {
-      bool remove_me = true;
-      for (auto model : ossia_max::instance().models.copy())
-      {
-        for (const auto& m : model->m_matchers)
-        {
-          if (m->get_node() == pn)
-          {
-            remove_me = false;
-            break;
-          }
-        }
-        if(!remove_me)
-          break;
-      }
-      if (remove_me)
-        purge_parent(pn);
-    }
-  }
-}
-
 matcher::~matcher()
 {
+  auto& map = ossia_max::instance().s_node_matchers_map;
+  map[node].remove_all(this);
   if(owner)
   {
     // purge selection
@@ -173,81 +146,37 @@ matcher::~matcher()
         if (param && callbackit) param->remove_callback(*callbackit);
         node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
 
-        for (auto remote : ossia_max::instance().remotes.copy())
+        if(owner->m_otype == object_class::param)
         {
-          auto matchers_copy = remote->m_matchers;
-          for (auto m : matchers_copy)
-          {
-            if(m && *m == *this)
-            {
-              if(m->is_locked())
-              {
-                m->set_zombie();
-              }
-              else
-              {
-                ossia::remove_erase(remote->m_matchers,m);
-              }
-            }
-          }
-          // ossia::remove_erase_if(remote->m_matchers, [this] (auto& other) { return *other == *this; });
+          node->remove_parameter();
         }
 
-        for (auto attribute : ossia_max::instance().attributes.copy())
+        auto _node = node;
+        auto parent = _node->get_parent();
+        while(parent)
         {
-          ossia::remove_erase_if(attribute->m_matchers, [this] (auto& other) { return *other == *this; });
-        }
+          if(_node->children().size()> 0)
+            break;
 
-        purge_parent(node);
-      }
-      // if the vector is empty
-      // remote should be quarantinized
-      if (owner->m_matchers.size() == 0)
-      {
-        switch(owner->m_otype)
-        {
-          case object_class::model:
-            ossia_max::instance().nr_models.push_back((model*) owner);
+          parent->remove_child(_node->get_name());
+
+          if(parent->get_parameter())
             break;
-          case object_class::param:
-            ossia_max::instance().nr_parameters.push_back((parameter*) owner);
+
+          if(map.find(parent) != map.end())
             break;
-          default:
-              ;
+
+          _node = parent;
+          parent = parent->get_parent();
         }
       }
     } else {
-
-      if (!owner->m_is_deleted && !m_zombie)
-      {
-        auto param = node->get_parameter();
-        if (param && callbackit) param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
-      }
-
-      // if there vector is empty
-      // remote should be quarantinized
-      if (owner->m_matchers.size() == 0)
-      {
-        switch(owner->m_otype)
-        {
-          case object_class::attribute:
-            ossia_max::instance().nr_attributes.push_back((attribute*) owner);
-            break;
-          case object_class::remote:
-            ossia_max::instance().nr_remotes.push_back((remote*) owner);
-            break;
-          case object_class::view:
-            ossia_max::instance().nr_views.push_back((view*) owner);
-            break;
-          default:
-              ;
-        }
-      }
+      auto param = node->get_parameter();
+      if (param && callbackit) param->remove_callback(*callbackit);
+      node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
     }
     owner = nullptr;
   }
-  ossia_max::instance().s_node_matchers_map[node].remove_all(this);
   node = nullptr;
 }
 
