@@ -56,15 +56,6 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
  */
 std::vector<ossia::net::generic_device*> get_all_devices();
 
-
-/**
- * @brief find_global_node: find node matching address with a 'device:' prefix
- * @param addr : address string
- * @param create: should create new nodes if they doesn't exist
- * @return pointer to the node
- */
-std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create);
-
 /**
  * @brief get_parameter_type: return address type (relative, absolute or globale)
  * @param addr: the address to process
