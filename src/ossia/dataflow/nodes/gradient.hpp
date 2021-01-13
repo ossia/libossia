@@ -56,18 +56,18 @@ public:
     {
       if (!tween)
       {
-        auto addr
-            = m_outlets[0]->address.target<ossia::net::parameter_base*>();
-        if (addr && *addr)
-        {
-          // TODO if the curve is in another unit, we have to convert it to the
-          // correct unit.
-          tween = ossia::argb{ossia::convert<ossia::vec4f>((*addr)->value())};
-        }
-        else
-        {
-          tween = ossia::argb{beg->second};
-        }
+//         auto addr
+//             = m_outlets[0]->address.target<ossia::net::parameter_base*>();
+//         if (addr && *addr)
+//         {
+//           // TODO if the curve is in another unit, we have to convert it to the
+//           // correct unit.
+//           tween = ossia::argb{ossia::convert<ossia::vec4f>((*addr)->value())};
+//         }
+//         else
+//         {
+//           tween = ossia::argb{beg->second};
+//         }
       }
       out.write_value(
           ease_color(0., *tween, beg->first, beg->second, position)

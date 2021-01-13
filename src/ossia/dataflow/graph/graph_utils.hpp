@@ -119,7 +119,7 @@ struct OSSIA_EXPORT graph_util
   static void pull_from_parameter(inlet& in, execution_state& e)
   {
     apply_to_destination(
-        in.address, e.exec_devices(),
+        in.addresses, e.exec_devices(),
         [&](ossia::net::parameter_base* addr, bool) {
           if (in.scope & port::scope_t::local)
           {
@@ -417,10 +417,10 @@ struct OSSIA_EXPORT graph_util
       return any_of_inlet(sink, [&] (auto& inlet) {
         bool ok = false;
         apply_to_destination(
-            outlet.address, devices,
+            outlet.addresses, devices,
             [&](ossia::net::parameter_base* p1, bool) {
               apply_to_destination(
-                  inlet.address, devices,
+                  inlet.addresses, devices,
                   [&](ossia::net::parameter_base* p2, bool) {
                     if (p1 == p2)
                       ok = true;

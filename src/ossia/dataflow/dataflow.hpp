@@ -12,16 +12,16 @@ struct do_nothing_for_nodes {
 };
 
 template <typename Fun, typename NodeFun, typename DeviceList_T>
-bool apply_to_destination(
-    const destination_t& address, const DeviceList_T& devices, Fun f, NodeFun nf)
+bool apply_to_destination_impl(
+    const destination_t& address, const DeviceList_T& devices, const Fun& f, const NodeFun& nf, bool default_unique = true)
 {
   switch (address.which())
   {
     // ossia::net::parameter_base*
     case 0:
     {
-      f(*address.target<ossia::net::parameter_base*>(), true);
-      return true;
+      f(*address.target<ossia::net::parameter_base*>(), default_unique);
+      return default_unique;
     }
 
     // ossia::traversal::path
@@ -41,18 +41,42 @@ bool apply_to_destination(
           f(addr, unique);
         else
           nf(n, unique);
-      return unique;
+      return unique && default_unique;
     }
 
     // ossia::net::node_base*
     case 2:
     {
-      nf(*address.target<ossia::net::node_base*>(), true);
-      return true;
+      nf(*address.target<ossia::net::node_base*>(), default_unique);
+      return default_unique;
     }
     default:
     {
+      return default_unique;
+    }
+  }
+}
+
+
+template <typename T, typename... Args>
+bool apply_to_destination(
+    const T& addresses, Args&&... args)
+{
+  switch(addresses.size())
+  {
+    case 0:
+    {
       return true;
+    }
+    case 1:
+    {
+      return apply_to_destination_impl(addresses[0], std::forward<Args>(args)..., true);
+    }
+    default:
+    {
+      for(const destination_t& addr : addresses)
+        apply_to_destination_impl(addr, std::forward<Args>(args)..., false);
+      return false;
     }
   }
 }

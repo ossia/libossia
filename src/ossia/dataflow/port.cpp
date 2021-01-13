@@ -139,7 +139,7 @@ struct outlet_inserter
 void outlet::write(execution_state& e)
 {
   apply_to_destination(
-      address, e.exec_devices(),
+      addresses, e.exec_devices(),
       [&](ossia::net::parameter_base* addr, bool unique) {
         if (unique)
         {

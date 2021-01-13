@@ -95,7 +95,7 @@ static constexpr auto& get_inlet_accessor(const ossia::inlets& inl) noexcept
   else if constexpr (cat == ossia::safe_nodes::inlet_kind::value_in)
       return *inl[N]->target<ossia::value_port>();
   else if constexpr (cat == ossia::safe_nodes::inlet_kind::address_in)
-      return inl[N]->address;
+      return inl[N]->addresses;
   else
     throw;
 }
@@ -188,6 +188,7 @@ public:
       m_inlets.push_back(std::addressof(port));
 
     if constexpr(info::control_count > 0)
+    {
     for (auto& port : this->control_in_ports)
     {
       (*port).is_event = true;
@@ -200,6 +201,7 @@ public:
         ctrl_info.setup_exec(this->control_in_ports[ctrl_i]);
         ctrl_i++;
       });
+    }
     }
 
     if constexpr(info::audio_out_count > 0)
@@ -215,8 +217,19 @@ public:
       m_outlets.push_back(std::addressof(port));
 
     if constexpr(info::control_out_count > 0)
+    {
     for (auto& port : this->control_out_ports)
       m_outlets.push_back(std::addressof(port));
+/* TODO
+    {
+      int ctrl_i = 0;
+      for_each_in_tuple(Node_T::Metadata::control_outs, [&] (auto& ctrl_info) {
+        ctrl_info.setup_exec(this->control_out_ports[ctrl_i]);
+        ctrl_i++;
+      });
+    }
+*/
+    }
   }
 
   template <std::size_t N>
@@ -253,7 +266,9 @@ public:
     static_assert(info::control_out_count > 0);
     static_assert(N < info::control_out_count);
 
-    return std::get<N>(this->control_outs_tuple);
+    auto& vec = std::get<N>(this->control_outs_tuple);
+    vec.clear();
+    return vec;
   }
 
   template <bool Validate, std::size_t N, typename Vec, typename Vp>

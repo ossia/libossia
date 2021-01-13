@@ -35,12 +35,12 @@ protected:
   inlet() noexcept = default;
 
   inlet(destination_t dest) noexcept
-      : address{std::move(dest)}
+      : addresses{std::move(dest)}
   {
   }
 
   inlet(ossia::net::parameter_base& addr) noexcept
-      : address{&addr}
+      : addresses{destination_t{&addr}}
   {
   }
 
@@ -85,7 +85,7 @@ public:
   virtual void pre_process();
   virtual void post_process();
 
-  destination_t address;
+  ossia::small_vector<destination_t, 1> addresses;
   ossia::small_vector<graph_edge*, 2> sources;
   ossia::small_vector<value_inlet*, 2> child_inlets;
 
@@ -99,12 +99,12 @@ struct OSSIA_EXPORT outlet : public port
 protected:
   outlet() noexcept = default;
   outlet(destination_t dest) noexcept
-      : address{std::move(dest)}
+      : addresses{std::move(dest)}
   {
   }
 
   outlet(ossia::net::parameter_base& addr) noexcept
-      : address{&addr}
+      : addresses{destination_t{&addr}}
   {
   }
 
@@ -151,7 +151,7 @@ public:
   auto& cables() noexcept { return targets; }
   auto& cables() const noexcept { return targets; }
 
-  destination_t address;
+  ossia::small_vector<destination_t, 1> addresses;
   ossia::small_vector<graph_edge*, 2> targets;
   ossia::small_vector<value_inlet*, 2> child_inlets;
 

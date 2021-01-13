@@ -152,7 +152,7 @@ bool graph_node::has_port_inputs() const noexcept
 bool graph_node::has_global_inputs() const noexcept
 {
   return any_of_inlet(*this, [&](const inlet& inlet) {
-    return (inlet.scope & port::scope_t::global) && bool(inlet.address);
+    return (inlet.scope & port::scope_t::global) && !inlet.addresses.empty();
   });
 }
 
@@ -165,12 +165,11 @@ bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 
       // TODO optimize by stopping when found
       apply_to_destination(
-          inlet.address, st.exec_devices(),
-          [&](ossia::net::parameter_base* addr, bool) {
-            if (!b || st.in_local_scope(*addr))
-              b = true;
-          }, do_nothing_for_nodes{});
-
+            inlet.addresses, st.exec_devices(),
+            [&](ossia::net::parameter_base* addr, bool) {
+        if (!b || st.in_local_scope(*addr))
+          b = true;
+      }, do_nothing_for_nodes{});
       if (b)
         return true;
 

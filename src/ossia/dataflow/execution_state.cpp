@@ -311,40 +311,46 @@ void execution_state::register_port(const inlet& port)
   {
     if (vp->is_event)
     {
-      if (auto addr = port.address.target<ossia::net::parameter_base*>())
+      for(auto& address : port.addresses)
       {
-        register_parameter(**addr);
-      }
-      else if (auto p = port.address.target<ossia::traversal::path>())
-      {
-        std::vector<ossia::net::node_base*> roots{};
+        if (auto addr = address.target<ossia::net::parameter_base*>())
+        {
+          register_parameter(**addr);
+        }
+        else if (auto p = address.target<ossia::traversal::path>())
+        {
+          std::vector<ossia::net::node_base*> roots{};
 
-        for (auto n : m_devices_exec)
-          roots.push_back(&n->get_root_node());
+          for (auto n : m_devices_exec)
+            roots.push_back(&n->get_root_node());
 
-        ossia::traversal::apply(*p, roots);
-        for (auto n : roots)
-          if (auto param = n->get_parameter())
-            register_parameter(*param);
+          ossia::traversal::apply(*p, roots);
+          for (auto n : roots)
+            if (auto param = n->get_parameter())
+              register_parameter(*param);
+        }
       }
     }
   }
   else if (port.target<ossia::midi_port>())
   {
-    if (auto addr = port.address.target<ossia::net::node_base*>())
+    for(auto& address : port.addresses)
     {
-      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
-              &(*addr)->get_device().get_protocol()))
+      if (auto addr = address.target<ossia::net::node_base*>())
       {
-        register_midi_parameter(*midi_addr);
+        if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+                &(*addr)->get_device().get_protocol()))
+        {
+          register_midi_parameter(*midi_addr);
+        }
       }
-    }
-    else if (auto addr = port.address.target<ossia::net::parameter_base*>())
-    {
-      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
-              &(*addr)->get_node().get_device().get_protocol()))
+      else if (auto addr = address.target<ossia::net::parameter_base*>())
       {
-        register_midi_parameter(*midi_addr);
+        if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+                &(*addr)->get_node().get_device().get_protocol()))
+        {
+          register_midi_parameter(*midi_addr);
+        }
       }
     }
   }
@@ -362,40 +368,46 @@ void execution_state::unregister_port(const inlet& port)
   {
     if (vp->is_event)
     {
-      if (auto addr = port.address.target<ossia::net::parameter_base*>())
+      for(auto& address : port.addresses)
       {
-        unregister_parameter(**addr);
-      }
-      else if (auto p = port.address.target<ossia::traversal::path>())
-      {
-        std::vector<ossia::net::node_base*> roots{};
+        if (auto addr = address.target<ossia::net::parameter_base*>())
+        {
+          unregister_parameter(**addr);
+        }
+        else if (auto p = address.target<ossia::traversal::path>())
+        {
+          std::vector<ossia::net::node_base*> roots{};
 
-        for (auto n : m_devices_exec)
-          roots.push_back(&n->get_root_node());
+          for (auto n : m_devices_exec)
+            roots.push_back(&n->get_root_node());
 
-        ossia::traversal::apply(*p, roots);
-        for (auto n : roots)
-          if (auto param = n->get_parameter())
-            unregister_parameter(*param);
+          ossia::traversal::apply(*p, roots);
+          for (auto n : roots)
+            if (auto param = n->get_parameter())
+              unregister_parameter(*param);
+        }
       }
     }
   }
   else if (port.target<ossia::midi_port>())
   {
-    if (auto addr = port.address.target<ossia::net::node_base*>())
+    for(auto& address : port.addresses)
     {
-      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
-            &(*addr)->get_device().get_protocol()))
+      if (auto addr = address.target<ossia::net::node_base*>())
       {
-        unregister_midi_parameter(*midi_addr);
+        if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+              &(*addr)->get_device().get_protocol()))
+        {
+          unregister_midi_parameter(*midi_addr);
+        }
       }
-    }
-    else if (auto addr = port.address.target<ossia::net::parameter_base*>())
-    {
-      if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
-            &(*addr)->get_node().get_device().get_protocol()))
+      else if (auto addr = address.target<ossia::net::parameter_base*>())
       {
-        unregister_midi_parameter(*midi_addr);
+        if (auto midi_addr = dynamic_cast<ossia::net::midi::midi_protocol*>(
+              &(*addr)->get_node().get_device().get_protocol()))
+        {
+          unregister_midi_parameter(*midi_addr);
+        }
       }
     }
   }
