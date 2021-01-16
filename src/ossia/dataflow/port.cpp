@@ -12,7 +12,7 @@ namespace ossia
 
 namespace
 {
-struct push_data
+struct global_outlet_write
 {
   ossia::net::parameter_base& dest;
   void operator()(const value_port& p) const
@@ -58,39 +58,8 @@ void process_port_values(
     process_control_value(value.value, source.domain, addr_dom);
   }
 }
-}
 
-inlet::~inlet()
-{
-
-}
-
-outlet::~outlet()
-{
-
-}
-
-void inlet::pre_process()
-{
-
-}
-
-void inlet::post_process()
-{
-
-}
-
-void outlet::pre_process()
-{
-
-}
-
-void outlet::post_process()
-{
-
-}
-
-struct outlet_inserter
+struct local_outlet_write
 {
   ossia::execution_state& e;
   ossia::net::parameter_base* addr;
@@ -135,6 +104,38 @@ struct outlet_inserter
     e.insert(*addr, std::move(data));
   }
 };
+}
+
+inlet::~inlet()
+{
+
+}
+
+outlet::~outlet()
+{
+
+}
+
+void inlet::pre_process()
+{
+
+}
+
+void inlet::post_process()
+{
+
+}
+
+void outlet::pre_process()
+{
+
+}
+
+void outlet::post_process()
+{
+
+}
+
 
 void outlet::write(execution_state& e)
 {
@@ -147,22 +148,22 @@ void outlet::write(execution_state& e)
           // TODO we don't really care about moves anyways
           if (scope & port::scope_t::local)
           {
-            visit(outlet_inserter{e, addr});
+            visit(local_outlet_write{e, addr});
           }
           else if (scope & port::scope_t::global)
           {
-            visit(push_data{*addr});
+            visit(global_outlet_write{*addr});
           }
         }
         else
         {
           if (scope & port::scope_t::local)
           {
-            visit(outlet_inserter{e, addr});
+            visit(local_outlet_write{e, addr});
           }
           else if (scope & port::scope_t::global)
           {
-            ((const outlet&)(*this)).visit(push_data{*addr});
+            ((const outlet&)(*this)).visit(global_outlet_write{*addr});
           }
         }
   }, do_nothing_for_nodes{});

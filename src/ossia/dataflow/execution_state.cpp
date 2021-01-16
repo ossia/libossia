@@ -707,7 +707,7 @@ void execution_state::commit_ordered()
   commit_common();
 }
 
-void execution_state::find_and_copy(net::parameter_base& addr, inlet& in)
+void execution_state::copy_from_local(net::parameter_base& addr, inlet& in)
 {
   bool ok = in.visit(local_pull_visitor{*this, &addr});
   if (!ok)

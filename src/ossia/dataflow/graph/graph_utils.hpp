@@ -123,7 +123,7 @@ struct OSSIA_EXPORT graph_util
         [&](ossia::net::parameter_base* addr, bool) {
           if (in.scope & port::scope_t::local)
           {
-            e.find_and_copy(*addr, in);
+            e.copy_from_local(*addr, in);
           }
           else if (in.scope & port::scope_t::global)
           {
