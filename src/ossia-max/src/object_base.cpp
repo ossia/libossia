@@ -150,9 +150,9 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
   size_t pos = addr.find(":/");
   if (pos == std::string::npos) return {};
 
-  ossia::string_view prefix = addr.substr(0,pos);
+  std::string prefix = addr.substr(0,pos);
   // remove 'device_name:/' prefix
-  ossia::string_view osc_name = addr.substr(pos+2);
+  std::string osc_name = addr.substr(pos+2);
 
   bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
