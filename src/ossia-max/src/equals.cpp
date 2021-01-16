@@ -9,9 +9,6 @@
 #include "equals.hpp"
 #include <ossia-max/src/ossia-max.hpp>
 
-// class variables
-static t_class		*s_ossiaequals_class = NULL;
-
 using namespace ossia::max;
 
 extern "C" void ossia_equals_setup()
@@ -37,22 +34,27 @@ extern "C" void ossia_equals_setup()
 
 extern "C" void* ossia_equals_new(t_symbol *s, long argc, t_atom *argv)
 {
-  equals	*x = (equals*)object_alloc(s_ossiaequals_class);
-  long attrstart = attr_args_offset((short)argc, argv);
+  equals	*x = (equals*)object_alloc(ossia_max::instance().ossia_equals_class);
 
-  if (attrstart)
-    x->x_operand = atom_getfloat(argv);
+  if(x)
+  {
+    long attrstart = attr_args_offset((short)argc, argv);
 
-  x->x_outlet = outlet_new(x, NULL);
-  x->x_inlet = proxy_new(x, 1, NULL);
-  x->x_tolerance = 2;
+    if (attrstart)
+      x->x_operand = atom_getfloat(argv);
+
+    x->x_outlet = outlet_new(x, NULL);
+    x->x_inlet = proxy_new(x, 1, NULL);
+    x->x_tolerance = 2;
 #ifdef C74_X64
-  x->x_single_precision = false;
+    x->x_single_precision = false;
 #else
-  x->x_single_precision = true;
+    x->x_single_precision = true;
 #endif
 
-  attr_args_process(x, (short)argc, argv);
+    attr_args_process(x, (short)argc, argv);
+  }
+
   return x;
 }
 
