@@ -4,6 +4,17 @@ elseif(TARGET boost)
   target_link_libraries(ossia PUBLIC boost)
 endif()
 
+### Core language features ###
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles(
+[=[
+#include <shared_mutex>
+
+int main(){ std::shared_mutex t; }
+]=]
+    OSSIA_SHARED_MUTEX_AVAILABLE
+)
+
 ### Protocol setup ###
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
   set(OSSIA_PROTOCOL_AUDIO FALSE CACHE INTERNAL "")

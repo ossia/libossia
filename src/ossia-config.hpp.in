@@ -1,4 +1,6 @@
 #pragma once
+// ABI-breaking language features
+#cmakedefine OSSIA_SHARED_MUTEX_AVAILABLE
 
 // Protocols supported by the build
 #cmakedefine OSSIA_PROTOCOL_AUDIO
