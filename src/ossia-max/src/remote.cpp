@@ -334,13 +334,9 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 
 void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
-  // @mute and @unit attributes are specific to each remote
-  // it makes no sens to sens to change when an attribute changes
-
   if ( attribute == ossia::net::text_unit()) {
-    // assume all matchers have the same bounding_mode
-    assert(!x->m_matchers.empty());
-
+    // TODO review this: why taking only one parameter into account,
+    // what about controlling several parameters with different units with the same ossia.remote ?
     std::shared_ptr<ossia::max::matcher> good_one{};
 
     for(auto& m : x->m_matchers)
@@ -365,7 +361,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
       }
     }
 
-  }  else if ( attribute == ossia::net::text_extended_type() ){
+  } else if ( attribute == ossia::net::text_extended_type() ){
     auto matchers = make_matchers_vector(x,node);
     get_type(x, matchers);
   } else {
