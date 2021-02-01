@@ -164,6 +164,12 @@ auto transform(Vector&& v, OutputIterator it, Fun f)
   return std::transform(v.begin(), v.end(), it, f);
 }
 
+template <typename Array1, typename Array2>
+auto equal(const Array1& v, const Array2& v2) noexcept
+{
+  return std::equal(std::begin(v), std::end(v), std::begin(v2));
+}
+
 template <typename Vector1, typename Vector2>
 void copy(const Vector1& source, Vector2& destination)
 {
