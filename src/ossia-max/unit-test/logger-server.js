@@ -103,7 +103,7 @@ async function main()
                 await exec('open -W -n ' + patcher_path);
                 if(assert_failed + assert_success == 0)
                 {
-                    failed_tests.add(current_patcher);
+                    failed_tests.push(current_patcher);
                 }
                 console.log("");
             }
