@@ -43,7 +43,7 @@ wss.on('connection', function(ws) {
                         break;
 
                 }
-                console.log("\t> Asert: " + json.status + " - " + json.name);
+                console.log("\t> Assert: " + json.status + " - " + json.name);
                 break;
             }
             case 'initWatchdog':
