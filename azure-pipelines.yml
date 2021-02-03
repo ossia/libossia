@@ -412,37 +412,6 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-max-macos
 
-      - job: MaxWin32
-        displayName: ossia-max (Win32)
-        pool:
-          vmImage: 'windows-2019'
-
-        steps:
-        - checkout: self
-          submodules: true
-
-        - script: |
-            cinst -y ninja
-
-        - script: |
-            pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-            for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
-            popd
-            call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
-
-            cd $(System.DefaultWorkingDirectory)
-            mkdir build
-            cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-            cmake --build .
-            cmake --build . --target install
-          displayName: Build
-
-        - task: PublishPipelineArtifact@1
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/build/install
-            artifactName: libossia-max-win32
-
       - job: MaxWin64
         displayName: ossia-max (Win64)
         pool:
@@ -590,10 +559,6 @@ stages:
           vmImage: 'ubuntu-20.04'
 
         steps:
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-max-win32
-            path: $(System.DefaultWorkingDirectory)
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-max-win64
