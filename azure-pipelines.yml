@@ -433,7 +433,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
