@@ -433,9 +433,9 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     device_base* db = pat_desc.device?static_cast<device_base*>(pat_desc.device):
                                       static_cast<device_base*>(pat_desc.client);
-    if(db && db != caller)
+    if(db && db != caller && !db->m_dead)
     {
-      if(db->m_device && !db->m_dead)
+      if(db->m_device)
       {
         db->m_registered = true;
         return register_children_in_patcher_recursively(patcher, db);
@@ -448,9 +448,9 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   node_base* nb = pat_desc.model?static_cast<node_base*>(pat_desc.model):
                                  static_cast<node_base*>(pat_desc.view);
 
-  if(nb && nb != caller)
+  if(nb && nb != caller && !nb->m_dead)
   {
-    if(!nb->m_dead && nb->m_name && nb->m_name != _sym_nothing)
+    if(nb->m_name && nb->m_name != _sym_nothing)
     {
       nb->m_node_selection.clear();
       nb->m_matchers.clear();
