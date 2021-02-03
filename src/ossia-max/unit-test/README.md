@@ -8,6 +8,13 @@ Please disable the "Restore Windows on Launch" Max's option to prevent Max from 
 
 Each patcher runs under a fresh opened Max application.
 
+Dependencies
+============
+
+Before running the tests for the first time, you should install some dependencies with : 
+
+    npm install
+
 Run the tests
 =============
 
