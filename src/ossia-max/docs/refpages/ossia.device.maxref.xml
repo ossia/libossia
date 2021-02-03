@@ -41,18 +41,7 @@
 
 	<!--METHODS-->	
 	<methodlist>
-		<method name="namespace">
-			<arglist/>
-			<digest>
-				Output list of all parameters and their current values
-			</digest>
-			<description>
-				Sending the <m>namespace</m> message to the leftmost inlet outputs the list of all parameters registered under this node, and their current value
-			</description>
-		</method>
-	</methodlist>
 
-	<methodlist>
 		<method name="expose">
 			<arglist>
 				<arg name="protocol-name" optional="1" type="list" />
@@ -79,6 +68,16 @@
 			</description>
 		</method>
 
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the <m>namespace</m> message to the leftmost inlet outputs the list of all parameters registered under this node, and their current value
+			</description>
+		</method>
+		
 		<method name="preset">
 			<arglist>
 				<arg name="save or load" optional="0" type="symbol" />
