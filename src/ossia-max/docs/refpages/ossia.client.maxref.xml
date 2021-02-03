@@ -150,6 +150,14 @@
 				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
 			</description>
 		</attribute>
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
+			</description>
+		</attribute>
 
 	</attributelist>	
 

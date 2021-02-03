@@ -223,6 +223,14 @@
 				The <at>mute</at> attribute (off by default) allows to prevent the bound parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
 			</description>
 		</attribute>
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
+			</description>
+		</attribute>
 
 		<attribute name="type" get="1" set="1" type="symbol" size="1">
 			<digest>
