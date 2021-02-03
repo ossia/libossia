@@ -423,31 +423,28 @@ void device::get_protocols(device* x)
     if(auto osc = dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
     {
       vec.resize(5);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("osc"));
-      A_SETSYM(data++, gensym(osc->get_ip().c_str()));
-      A_SETLONG(data++, osc->get_remote_port());
-      A_SETLONG(data++, osc->get_local_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("osc"));
+      A_SETSYM(&vec[2], gensym(osc->get_ip().c_str()));
+      A_SETLONG(&vec[3], osc->get_remote_port());
+      A_SETLONG(&vec[4], osc->get_local_port());
     }
     else if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
     {
       vec.resize(4);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("oscquery"));
-      A_SETLONG(data++, oscq->get_osc_port());
-      A_SETLONG(data++, oscq->get_ws_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("oscquery"));
+      A_SETLONG(&vec[2], oscq->get_osc_port());
+      A_SETLONG(&vec[3], oscq->get_ws_port());
     }
     else if(auto minuit = dynamic_cast<const ossia::net::minuit_protocol*>(p.get()))
     {
       vec.resize(5);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("minuit"));
-      A_SETSYM(data++, gensym(minuit->get_ip().c_str()));
-      A_SETLONG(data++, minuit->get_remote_port());
-      A_SETLONG(data++, minuit->get_local_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("minuit"));
+      A_SETSYM(&vec[2], gensym(minuit->get_ip().c_str()));
+      A_SETLONG(&vec[3], minuit->get_remote_port());
+      A_SETLONG(&vec[4], minuit->get_local_port());
     }
 
     outlet_anything(x->m_dumpout, gensym("protocol"), vec.size(), vec.data());
