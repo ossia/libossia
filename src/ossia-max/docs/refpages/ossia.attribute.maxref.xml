@@ -140,7 +140,16 @@
 				<attribute name="label" get="1" set="1" type="symbol" size="1" value="Clip Mode" />
 			</attributelist>
 		</attribute>
-
+		<attribute name="critical" get="1" set="1" type="int" size="1">
+			<digest>
+				Mark parameter as critical
+			</digest>
+			<description>
+				The <at>critical</at> attribute allows to use a sending method that ensure data is received.
+				Not all protocol support this feature.
+				With OSCQuery, for example, a critical parameter value will be send through websocket (so with TCP/IP delivery check) instead of OSC (which transit over UDP that doesn't have such a verification mechanism).
+			</description>
+		</attribute>  
 		<attribute name="default" get="1" set="1" type="int" size="1">
 			<digest>
 				Bound parameter default value
@@ -159,16 +168,7 @@
 			</description>
 		</attribute>
 
-		<attribute name="critical" get="1" set="1" type="int" size="1">
-			<digest>
-				Mark parameter as critical
-			</digest>
-			<description>
-				The <at>critical</at> attribute allows to use a sending method that ensure data is received.
-				Not all protocol support this feature.
-				With OSCQuery, for example, a critical parameter value will be send through websocket (so with TCP/IP delivery check) instead of OSC (which transit over UDP that doesn't have such a verification mechanism).
-			</description>
-		</attribute>  
+
 		
 		<attribute name="enable" get="1" set="1" type="int" size="1">
 			<digest>
@@ -223,33 +223,6 @@
 				The <at>mute</at> attribute (off by default) allows to prevent the bound parameter from outputting local (i.e. fed from the input) values - Remotely sent values will still come out
 			</description>
 		</attribute>
-		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
-			<digest>
-				Output absolute or relative address path
-			</digest>
-			<description>
-				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
-			</description>
-		</attribute>
-
-		<attribute name="type" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Bound parameter value type
-			</digest>
-			<description>
-				The <at>type</at> attribute defines the type of the bound parameter value. Possible types are:
-				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
-			</description>
-		</attribute>
-
-		<attribute name="unit" get="1" set="1" type="symbol" size="1">
-			<digest>
-				Unit used by the bound parameter
-			</digest>
-			<description>
-				The <at>unit</at> attribute defines the unit used by the bound parameter. Values will get output according to this unit.
-			</description>
-		</attribute>
 
 		<attribute name="priority" get="1" set="1" type="int" size="1">
 			<digest>
@@ -300,7 +273,33 @@
 				The <at>tags</at> attribute allows to associate a variable number of tags to the bound parameter. This helps documenting the parameter.
 			</description>
 		</attribute>
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
+			</description>
+		</attribute>
 
+		<attribute name="type" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Bound parameter value type
+			</digest>
+			<description>
+				The <at>type</at> attribute defines the type of the bound parameter value. Possible types are:
+				<li><m>float</m> (default)</li><li><m>int</m></li><li><m>bool</m> </li> <li><m>tuple</m> </li> <li><m>symbol</m></li><li><m>impulse</m></li>
+			</description>
+		</attribute>
+
+		<attribute name="unit" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Unit used by the bound parameter
+			</digest>
+			<description>
+				The <at>unit</at> attribute defines the unit used by the bound parameter. Values will get output according to this unit.
+			</description>
+		</attribute>
 	</attributelist>
 
 

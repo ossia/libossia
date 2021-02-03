@@ -100,15 +100,6 @@
 	
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="host" get="1" set="1" type="atom" size="1">
-			<digest>
-				URL of the log server
-			</digest>
-			<description>
-				The <at>@host</at> attribute allows to define the URL of the log server to feed.
-			</description>
-		</attribute>
-
 		<attribute name="appname" get="1" set="1" type="atom" size="1">
 			<digest>
 				Name of this application
@@ -126,6 +117,16 @@
 				The <at>@heartbeat</at> attribute allows determine at which rate (in seconds) the "alive" message will be sent to the log server.
 			</description>
 		</attribute>
+		
+		<attribute name="host" get="1" set="1" type="atom" size="1">
+			<digest>
+				URL of the log server
+			</digest>
+			<description>
+				The <at>@host</at> attribute allows to define the URL of the log server to feed.
+			</description>
+		</attribute>
+		
 	</attributelist>
 	
 
