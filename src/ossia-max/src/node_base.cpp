@@ -125,6 +125,14 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
 void node_base::get_namespace(node_base* x)
 {
   const static t_symbol* prependsym = gensym("namespace");
+
+  if(x->m_matchers.empty())
+  {
+    t_atom a;
+    A_SETLONG(&a, 0);
+    outlet_anything(x->m_dumpout, gensym("namespace_size"), 1, &a);
+  }
+
   for (auto& m : x->m_matchers)
   {
     auto n = m->get_node();
