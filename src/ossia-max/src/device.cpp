@@ -401,10 +401,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     else if(protocol == "leapmotion")
     {
         multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
-        std::vector<t_atom> a;
-        a.resize(1);
-        A_SETSYM(&a[0], gensym("LeapMotion"));
-        x->m_protocols.push_back(a);
     }
 #endif
 
