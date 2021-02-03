@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<?xml-stylesheet href="./_c74_ref.xsl" type="text/xsl"?>
+
+<c74object name="ossia.parameter" module="Ossia" category="Ossia">
+
+	<digest>
+		Search through the namespace using fuzzy search matching
+	</digest>
+
+	<description>
+		ossia.fuzzysearch allows to search for addresses in the namespace matching defined chain of characters</description>
+	<discussion>
+  </discussion>
+	
+	<!--METADATA-->
+	<metadatalist>
+		<metadata name="author">Ossia</metadata>
+		<metadata name="tag">Ossia</metadata>
+		<metadata name="tag">Network</metadata>
+		<metadata name="tag">Query</metadata>
+		<metadata name="tag">Exploration</metadata>
+	</metadatalist>
+
+	
+	<!--INLETS-->
+	<inletlist>
+		<inlet id="0" name="Value input" type="any">
+			<digest>Value to set the parameter to.</digest>
+			<description>Value to set the parameter to.</description>
+		</inlet>
+	</inletlist>
+
+
+	<!--OUTLETS-->
+	<outletlist>
+		<outlet id="0" name="Query results" type="any">
+			<digest>Addresses matching query</digest>
+			<description>Addresses mating query</description>
+		</outlet>
+	</outletlist>
+	
+	<!--ARGUMENTS-->
+	<objarglist>
+	</objarglist>
+
+	<!--METHODS-->	
+	<methodlist>
+		 
+		<method name="search">
+			<arglist>
+				<arg name="string" type="atom" optional="0"/>
+			</arglist>
+			<digest>
+				Textual pattern to search
+			</digest>
+			<description>
+				The <m>search</m> message followed a string allows to search through the namespace addresses matching the string defined as argument
+			</description>
+		</method>
+
+	</methodlist>
+
+
+	<!--ATTRIBUTES-->
+	<attributelist>
+		
+		<attribute name="mode" get="1" set="1" type="symbol" size="1">
+			<digest>
+				Search for addresses based on their <a>mode</a> attribute
+			</digest>
+			<description>
+			</description>
+			
+			<attributelist>
+				<attribute name="get" get="1" set="1" type="symbol" size="1" value="get" />
+				<attribute name="set" get="1" set="1" type="symbol" size="1" value="set" />
+				<attribute name="bi" get="1" set="1" type="symbol" size="1" value="bi" />
+			</attributelist>
+		</attribute>
+		<attribute name="visible" get="1" set="1" type="int" size="1">
+			<digest>
+				Search for addresses based on their <a>visibility</a> attribute
+			</digest>
+			<description>
+			</description>
+		</attribute>
+		
+		<attribute name="tag" get="1" set="1" type="atom" size="1">
+			<digest>
+				Search for addresses based on their <a>tags</a> attribute
+			</digest>
+			<description>
+			</description>
+		</attribute>	
+		
+	</attributelist>
+
+
+
+	<!--SEEALSO-->
+	<seealsolist>
+		<seealso name="ossia.model"/>
+		<seealso name="ossia.view"/>
+		<seealso name="ossia.remote"/>
+	</seealsolist>
+
+	
+</c74object>
