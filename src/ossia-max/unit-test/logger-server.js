@@ -43,7 +43,7 @@ wss.on('connection', function(ws) {
                         break;
 
                 }
-                console.log("\t> Asert: " + json.status + " - " + json.name);
+                console.log("\t> Assert: " + json.status + " - " + json.name);
                 break;
             }
             case 'initWatchdog':
@@ -103,7 +103,7 @@ async function main()
                 await exec('open -W -n ' + patcher_path);
                 if(assert_failed + assert_success == 0)
                 {
-                    failed_tests.add(current_patcher);
+                    failed_tests.push(current_patcher);
                 }
                 console.log("");
             }

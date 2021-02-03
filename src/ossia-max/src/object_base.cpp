@@ -151,8 +151,8 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
   if (pos == std::string::npos) return {};
 
   std::string prefix = addr.substr(0,pos);
-  // remove 'device_name:/' prefix
-  std::string osc_name = addr.substr(pos+2);
+  // remove 'device_name:' prefix
+  std::string osc_name = addr.substr(pos+1);
 
   bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
   bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
@@ -183,11 +183,11 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
       if (is_osc_name_pattern)
       {
-        auto nodes = ossia::net::find_nodes(dev->get_root_node(), osc_name);
+        nodes = ossia::net::find_nodes(*dev, osc_name);
       }
       else
       {
-        auto node = ossia::net::find_node(dev->get_root_node(),osc_name);
+        auto node = ossia::net::find_node(*dev,osc_name);
         if (node)
         {
           nodes.push_back(node);
@@ -196,8 +196,8 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
       // For ossia.parameter:
       //    if we find a node, then we check if it already has a parameter.
-      //        If no, return the node and a parameter will be created later
-      //        If yes, return a new node (with incremeted suffix)
+      //        If no, create a parameter
+      //        If yes, return a new node with incremeted suffix with a parameter
       //    else we create a new node and a parameter
       // For ossia.model: if we found a node, duplicate it, otherwise create it.
       // For others: if we found a node, return it.

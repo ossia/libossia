@@ -259,7 +259,7 @@ stages:
 
         - bash: |
             brew install ninja
-            brew cask install adoptopenjdk/openjdk/adoptopenjdk8
+            brew install --cask adoptopenjdk/openjdk/adoptopenjdk8
           displayName: Dependencies
 
         - bash: |
@@ -348,6 +348,132 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-java-win32
 
+      - job: MaxMacOS
+        displayName: ossia-max (macOS)
+        pool:
+          vmImage: 'macos-10.15'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_MAX_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              find ossia-max-package/ -name '*.dylib' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+              find ossia-max-package/ -name '*.mxo' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+
+              zip ossia-max.zip ossia-max-package/
+              xcrun altool \
+                   --notarize-app \
+                   -t osx \
+                   -f "ossia-max.zip" \
+                   --primary-bundle-id "io.ossia.ossia-max" \
+                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+            )
+
+          displayName: Build
+          env:
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-max-macos
+
+      - job: MaxWin32
+        displayName: ossia-max (Win32)
+        pool:
+          vmImage: 'windows-2019'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - script: |
+            cinst -y ninja
+
+        - script: |
+            pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+            for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+            popd
+            call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+          displayName: Build
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-max-win32
+
+      - job: MaxWin64
+        displayName: ossia-max (Win64)
+        pool:
+          vmImage: 'windows-2019'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - script: |
+            cinst -y ninja
+
+        - script: |
+            pushd "C:\Program Files\Microsoft Visual Studio\Installer\"
+            for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+            popd
+            call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+          displayName: Build
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-max-win64
+
   - stage: Assemble
     condition: and(succeeded(), eq(variables.isGitTag, true))
 
@@ -432,8 +558,8 @@ stages:
 
             pushd java-linux
             cp -rf ../java-macos/darwin .
-            cp -rf ../java-win32/win32-x86-64 .            
-            
+            cp -rf ../java-win32/win32-x86-64 .
+
             unzip -n ossia-java.jar
             rm ossia-java.jar
             zip -r ossia-java.jar darwin win32-x86-64 linux-x86-64 io META-INF
@@ -458,3 +584,47 @@ stages:
             tag: '$(gitTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
+      
+      - job: Max
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-max-win32
+            path: $(System.DefaultWorkingDirectory)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-max-win64
+            path: $(System.DefaultWorkingDirectory)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-max-macos
+            path: $(System.DefaultWorkingDirectory)
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+
+            pushd ossia-max-package
+            zip -r ossia-max.zip ossia
+
+            mv ossia-max.zip $(System.DefaultWorkingDirectory)/ossia-max.zip
+            popd
+          displayName: Package
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
+            artifactName: ossia-max
+
+        - task: GitHubRelease@1
+          inputs:
+            gitHubConnection: github.com_jcelerier
+            repositoryName: ossia/libossia
+            action: 'edit'
+            target: '$(Build.SourceVersion)'
+            tagSource: 'gitTag'
+            tag: '$(gitTag)'
+            assetUploadMode: 'replace'
+            assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
