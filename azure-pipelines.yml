@@ -425,7 +425,7 @@ stages:
             cinst -y ninja
 
         - script: |
-            pushd "C:\Program Files\Microsoft Visual Studio\Installer\"
+            pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
             for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
             popd
             call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -433,7 +433,7 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_ONLY_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
             cmake --build .
             cmake --build . --target install
           displayName: Build
