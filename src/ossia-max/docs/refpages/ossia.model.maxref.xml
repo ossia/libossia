@@ -39,7 +39,7 @@
 
 	<!--ARGUMENTS-->
 	<objarglist>
-		<objarg name="node name" optional="0" type="symbol">
+		<objarg name="Name" optional="0" type="symbol">
 			<digest>
 				Name in ossia namespace
 			</digest>

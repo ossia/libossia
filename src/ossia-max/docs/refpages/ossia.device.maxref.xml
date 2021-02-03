@@ -39,6 +39,18 @@
 		</outlet>
 	</outletlist>
 
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="Name" optional="0" type="symbol">
+			<digest>
+				Name in ossia namespace
+			</digest>
+			<description>
+				<o>ossia.device</o> requires an argument defining the device name on the network
+			</description>
+		</objarg>
+	</objarglist>	
+	
 	<!--METHODS-->	
 	<methodlist>
 
