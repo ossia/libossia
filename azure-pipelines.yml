@@ -399,6 +399,7 @@ stages:
                    -f "ossia-max.zip" \
                    --primary-bundle-id "io.ossia.ossia-max" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-max.zip
             )
 
           displayName: Build
@@ -409,7 +410,7 @@ stages:
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
             artifactName: libossia-max-macos
 
       - job: MaxWin64
@@ -440,7 +441,7 @@ stages:
 
         - task: PublishPipelineArtifact@1
           inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
             artifactName: libossia-max-win64
 
   - stage: Assemble
