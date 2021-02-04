@@ -81,7 +81,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 316.5, 69.0, 56.0, 22.0 ],
+					"patching_rect" : [ 355.0, 65.0, 56.0, 22.0 ],
 					"text" : "freebang"
 				}
 
@@ -93,7 +93,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "stop", "bang", "bang" ],
-					"patching_rect" : [ 236.5, 61.0, 58.0, 22.0 ],
+					"patching_rect" : [ 275.0, 65.0, 58.0, 22.0 ],
 					"text" : "t stop b b"
 				}
 
@@ -312,7 +312,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 316.5, 109.0, 218.0, 22.0 ],
+					"patching_rect" : [ 355.0, 113.0, 218.0, 22.0 ],
 					"text" : "script delete param, script delete model"
 				}
 
@@ -324,7 +324,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 316.5, 144.0, 67.0, 22.0 ],
+					"patching_rect" : [ 355.0, 148.0, 67.0, 22.0 ],
 					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
 					"text" : "thispatcher"
 				}
@@ -526,7 +526,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 					"id" : "obj-41",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -619,7 +619,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 693.0, 556.0, 146.0, 22.0 ],
-					"text" : "mod/foo 0."
+					"text" : "foo 0."
 				}
 
 			}
