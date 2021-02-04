@@ -3,7 +3,7 @@
 #include <ossia-config.hpp>
 #endif
 
-#if __has_include(<ossia-config.hpp>)
+#if __has_include(<ossia_export.h>)
 #include <ossia_export.h>
 #else
 #define OSSIA_EXPORT
