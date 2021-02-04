@@ -64,6 +64,7 @@ public:
 
   bool
   observe(ossia::net::parameter_base& parameter_base, bool enable) override;
+  bool echo_incoming_message(const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&, const ossia::value& v) override;
 
 private:
   void on_received_message(
@@ -91,6 +92,8 @@ private:
   std::atomic_bool m_learning{}; /// if the device is currently learning from
                                  /// inbound messages.
   std::optional<std::string> m_expose{};
+
+  message_origin_identifier m_id;
 };
 }
 }

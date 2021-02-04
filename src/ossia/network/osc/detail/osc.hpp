@@ -461,51 +461,20 @@ inline ossia::value to_value(
     return current.apply(osc_inbound_impulse_visitor{});
 }
 
-inline bool update_value(
+inline ossia::value get_filtered_value(
     ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
-  auto res = filter_value(
+  return filter_value(
       addr.get_domain(), ossia::net::to_value(addr.value(), beg_it, end_it, N),
       addr.get_bounding());
-
-  if (res.valid())
-  {
-    addr.set_value(std::move(res));
-    return true;
-  }
-  return false;
 }
 
-inline bool update_value(
+inline ossia::value get_filtered_value(
     ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
 {
-  return update_value(
-      addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
-}
-
-inline bool update_value_quiet(
-    ossia::net::parameter_base& addr,
-    oscpack::ReceivedMessageArgumentIterator beg_it,
-    oscpack::ReceivedMessageArgumentIterator end_it, int N)
-{
-  auto res = filter_value(
-      addr.get_domain(), ossia::net::to_value(addr.value(), beg_it, end_it, N),
-      addr.get_bounding());
-
-  if (res.valid())
-  {
-    addr.set_value_quiet(std::move(res));
-    return true;
-  }
-  return false;
-}
-
-inline bool update_value_quiet(
-    ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
-{
-  return update_value_quiet(
+  return get_filtered_value(
       addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
 }
 

@@ -251,7 +251,8 @@ void joystick_protocol_manager::event_loop()
 
 joystick_protocol::joystick_protocol(
     const int32_t joystick_id, const int joystick_index)
-    : m_joystick_id(joystick_id)
+  : protocol_base{flags{}}
+  , m_joystick_id(joystick_id)
 {
 
   auto& mgr = joystick_protocol_manager::get_instance();

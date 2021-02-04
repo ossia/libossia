@@ -26,10 +26,11 @@ namespace net
 namespace midi
 {
 midi_protocol::midi_protocol()
+  : protocol_base{flags{}}
 #if !defined(__EMSCRIPTEN__)
-    : m_input{std::make_unique<rtmidi::midi_in>(
-          rtmidi::API::UNSPECIFIED, "ossia-in")}
-    , m_output
+  , m_input{std::make_unique<rtmidi::midi_in>(
+        rtmidi::API::UNSPECIFIED, "ossia-in")}
+  , m_output
 {
   std::make_unique<rtmidi::midi_out>(rtmidi::API::UNSPECIFIED, "ossia-out")
 }

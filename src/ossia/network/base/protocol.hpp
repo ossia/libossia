@@ -19,6 +19,14 @@ class node_base;
 class device_base;
 struct full_parameter_data;
 
+class protocol_base;
+struct message_origin_identifier
+{
+  ossia::net::protocol_base& protocol;
+  uintptr_t identifier{};
+};
+
+
 /**
  * @brief The protocol_base class
  *
@@ -33,6 +41,17 @@ struct full_parameter_data;
 class OSSIA_EXPORT protocol_base
 {
 public:
+  enum flags {
+    SupportsMultiplex = (1 << 0)
+  };
+
+  explicit protocol_base(flags f): m_flags{f} { }
+  protocol_base() = delete;
+  protocol_base(const protocol_base&) = delete;
+  protocol_base(protocol_base&&) = delete;
+  protocol_base& operator=(const protocol_base&) = delete;
+  protocol_base& operator=(protocol_base&&) = delete;
+
   virtual ~protocol_base();
 
   /**
@@ -58,6 +77,13 @@ public:
   virtual bool push(const parameter_base&, const ossia::value& v) = 0;
   virtual bool push(const parameter_base&, ossia::value&& v);
   bool push(const parameter_base& p);
+
+  /**
+   * @brief called when some protocol on the same device received a message.
+   *
+   * This can be used to echo the message to other protocols on the same device.
+   */
+  virtual bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v);
 
   /**
    * @brief Send many values in one go if the protocol supports it
@@ -139,7 +165,10 @@ public:
   {
   }
 
+  flags get_flags() const noexcept { return m_flags;}
+  bool test_flag(flags f) const noexcept { return m_flags & f;}
 protected:
+  const flags m_flags{};
   network_logger m_logger;
 };
 }

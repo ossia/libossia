@@ -222,6 +222,7 @@ public:
 };
 
 leapmotion_protocol::leapmotion_protocol()
+    : protocol_base{flags{SupportsMultiplex}}
 {
 }
 
