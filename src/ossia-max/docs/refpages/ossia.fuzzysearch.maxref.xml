@@ -87,7 +87,7 @@
 			</description>
 		</attribute>
 		
-		<attribute name="tag" get="1" set="1" type="atom" size="1">
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
 			<digest>
 				Search for addresses based on their <a>tags</a> attribute
 			</digest>
@@ -95,7 +95,8 @@
 				Search for addresses based on their <a>tags</a> attribute. Adding filtering based on the <a>tags</a> attribute gets combined with string sent as argument to the <m>search</m> input message.
 			</description>
 		</attribute>	
-		
+
+
 	</attributelist>
 
 
