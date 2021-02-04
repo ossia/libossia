@@ -83,6 +83,7 @@ void attribute::do_registration()
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
   m_selection_path.reset();
   fill_selection();
@@ -113,6 +114,8 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
     if( path && ossia::traversal::match(*path, node) )
     {
       m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      int size = m_matchers.size();
+      m_matchers[size-1]->m_index = size;
       fill_selection();
     }
   }

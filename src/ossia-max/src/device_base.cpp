@@ -131,6 +131,8 @@ void device_base::connect_slots()
     m_device->on_node_removing.connect<&device_base::on_node_removing_callback>(this);
 
     m_matchers.emplace_back(std::make_shared<matcher>(&m_device->get_root_node(), nullptr));
+    int size = m_matchers.size();
+    m_matchers[size-1]->m_index = size;
     // This is to handle [get address( message only
     // so is it really needed ?
     assert(!m_matchers.empty());

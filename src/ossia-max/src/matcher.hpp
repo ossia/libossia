@@ -37,6 +37,8 @@ public:
   bool is_locked() const { return m_lock; }
   bool is_dead() const { return m_dead; }
 
+  int m_index{0};
+
 private:
   // TODO rename those as m_node/m_owner/m_callbackit
   ossia::net::node_base* node{};

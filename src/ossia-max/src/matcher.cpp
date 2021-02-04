@@ -151,23 +151,30 @@ matcher::~matcher()
           node->remove_parameter();
         }
 
-        auto _node = node;
-        auto parent = _node->get_parent();
-        while(parent)
+        auto parent = node->get_parent();
+        if(owner->m_otype == object_class::model)
         {
-          if(_node->children().size()> 0)
-            break;
+          parent->remove_child(node->get_name());
+        }
+        else
+        {
+          auto _node = node;
+          while(parent)
+          {
+            if(_node->children().size() > 0)
+              break;
 
-          parent->remove_child(_node->get_name());
+            parent->remove_child(_node->get_name());
 
-          if(parent->get_parameter())
-            break;
+            if(parent->get_parameter())
+              break;
 
-          if(map.find(parent) != map.end())
-            break;
+            if(map.find(parent) != map.end())
+              break;
 
-          _node = parent;
-          parent = parent->get_parent();
+            _node = parent;
+            parent = parent->get_parent();
+          }
         }
       }
     } else {
@@ -211,7 +218,12 @@ void matcher::output_value(ossia::value v)
     }
 
     if(owner->m_dumpout)
-      outlet_anything(owner->m_dumpout,gensym("address"),1,&m_addr);
+    {
+      t_atom a[2];
+      a[0] = m_addr;
+      A_SETLONG(a+1, m_index);
+      outlet_anything(owner->m_dumpout,gensym("address"),2,a);
+    }
 
     value_visitor<object_base> vm;
     vm.x = (object_base*)owner;

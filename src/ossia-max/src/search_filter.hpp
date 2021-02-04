@@ -9,8 +9,8 @@ namespace ossia {
 namespace max {
 struct search_filter
 {
-  t_symbol* m_filter_types[MAX_NUM_ITEMS];
-  long m_filter_types_size{};
+  t_symbol* m_filter_type[MAX_NUM_ITEMS];
+  long m_filter_type_size{};
   t_symbol* m_filter_tags[MAX_NUM_ITEMS];
   long m_filter_tags_size{};
   t_symbol* m_filter_modes[3];
@@ -22,8 +22,8 @@ struct search_filter
   template<typename T>
   static void setup_attribute(t_class* c)
   {
-    CLASS_ATTR_SYM_VARSIZE(c, "types", 0, T, m_filter_types, m_filter_types_size, MAX_NUM_ITEMS);
-    CLASS_ATTR_LABEL(c, "types", 0, "Types of object to search");
+    CLASS_ATTR_SYM_VARSIZE(c, "type", 0, T, m_filter_type, m_filter_type_size, MAX_NUM_ITEMS);
+    CLASS_ATTR_LABEL(c, "type", 0, "Type of object to search");
 
     CLASS_ATTR_SYM_VARSIZE(c, "tags", 0, T, m_filter_tags, m_filter_tags_size, MAX_NUM_ITEMS);
     CLASS_ATTR_LABEL(c, "tags", 0, "Filter by tags");
