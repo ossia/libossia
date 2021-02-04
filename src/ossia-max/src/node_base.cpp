@@ -122,9 +122,11 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
   }
 }
 
-void node_base::get_namespace(node_base* x)
+void node_base::get_namespace(node_base* x, t_symbol* s, long argc, t_atom* argv)
 {
   const static t_symbol* prependsym = gensym("namespace");
+
+  bool only_parameter = argc == 0;
 
   if(x->m_matchers.empty())
   {
@@ -138,8 +140,11 @@ void node_base::get_namespace(node_base* x)
     auto n = m->get_node();
     std::vector<ossia::net::node_base*> children = ossia::net::list_all_children(n);
 
-    ossia::remove_erase_if(children, [](const auto& n){
-      return n->get_parameter() == nullptr; });
+    if(only_parameter)
+    {
+      ossia::remove_erase_if(children, [](const auto& n){
+        return n->get_parameter() == nullptr; });
+    }
 
     t_atom a;
     A_SETLONG(&a, children.size());
@@ -151,13 +156,17 @@ void node_base::get_namespace(node_base* x)
     for (ossia::net::node_base* child : children)
     {
       ossia::value name = ossia::net::osc_parameter_string(*child).substr(pos);
-      ossia::value val = child->get_parameter()->value();
 
       std::vector<t_atom> va;
       value2atom vm{va};
-
       name.apply(vm);
-      val.apply(vm);
+
+      auto param = child->get_parameter();
+      if(param)
+      {
+        ossia::value val = child->get_parameter()->value();
+        val.apply(vm);
+      }
 
       outlet_anything(x->m_dumpout, prependsym, va.size(), va.data());
     }
@@ -190,7 +199,7 @@ void node_base::class_setup(t_class* c)
 {
   object_base::class_setup(c);
   class_addmethod(c, (method) node_base::set,                "set",       A_GIMME, 0);
-  class_addmethod(c, (method) node_base::get_namespace,      "namespace", A_NOTHING,  0);
+  class_addmethod(c, (method) node_base::get_namespace,      "namespace", A_GIMME,  0);
   class_addmethod(c, (method) node_base::preset,             "preset",    A_GIMME, 0);
   class_addmethod(c, (method) node_base::push_default_value, "reset",     A_NOTHING, 0);
 }
