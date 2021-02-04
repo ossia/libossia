@@ -236,21 +236,26 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         settings.localport = atom_getfloat(argv++);
       }
 
+      bool connected = true;
+
+      t_atom a[5];
+      A_SETSYM(a+1, gensym("minuit"));
+      A_SETSYM(a+2, gensym(settings.remoteip.c_str()));
+      A_SETLONG(a+3, settings.remoteport);
+      A_SETLONG(a+4, settings.localport);
+
       try
       {
         auto minuit_proto = std::make_unique<ossia::net::minuit_protocol>(
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport);
 
-        t_atom a[4];
-        A_SETSYM(a, gensym("minuit"));
-        A_SETSYM(a, gensym(minuit_proto->get_ip().c_str()));
-        A_SETLONG(a+2, minuit_proto->get_remote_port());
-        A_SETLONG(a+3, minuit_proto->get_local_port());
-
         multiplex.expose_to(std::move(minuit_proto));
 
-        outlet_anything(x->m_dumpout, gensym("expose"), 3, a);
+        A_SETSYM(a+2, gensym(minuit_proto->get_ip().c_str()));
+        A_SETLONG(a+3, minuit_proto->get_remote_port());
+        A_SETLONG(a+4, minuit_proto->get_local_port());
+
         object_post(
             (t_object*)x,
             "Connected with Minuit protocol to %s on port %u and listening on "
@@ -259,10 +264,13 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
+        connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
         object_error((t_object*)x, "libossia error: '%s'", e.what());
-        return;
       }
+
+      A_SETLONG(a, connected?1:0);
+      outlet_anything(x->m_dumpout, gensym("expose"), 5, a);
     }
     else if (protocol == "oscquery")
     {
@@ -277,20 +285,25 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         settings.wsport = atom_getlong(argv++);
       }
 
+      bool connected = true;
+
+      t_atom a[4];
+      A_SETSYM(a+1, gensym("oscquery"));
+      A_SETLONG(a+2, settings.oscport);
+      A_SETLONG(a+3, settings.wsport);
+
       try
       {
         auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
               settings.oscport, settings.wsport);
         oscq_proto->set_echo(true);
 
-        t_atom a[3];
-        A_SETSYM(a, gensym("oscquery"));
-        A_SETLONG(a+1, oscq_proto->get_osc_port());
-        A_SETLONG(a+2, oscq_proto->get_ws_port());
-
         multiplex.expose_to(std::move(oscq_proto));
 
-        outlet_anything(x->m_dumpout, gensym("expose"), 3, a);
+        A_SETSYM(a+1, gensym("oscquery"));
+        A_SETLONG(a+2, oscq_proto->get_osc_port());
+        A_SETLONG(a+3, oscq_proto->get_ws_port());
+
         object_post(
             (t_object*)x,
             "Connected with oscquery protocol with OSC port %u and WS port %u, "
@@ -299,10 +312,14 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
+        connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
         object_error((t_object*)x, "libossia error: '%s'", e.what());
-        return;
       }
+
+      A_SETLONG(a, connected?1:0);
+      outlet_anything(x->m_dumpout, gensym("expose"), 4, a);
+
     }
     else if (protocol == "osc")
     {
@@ -319,20 +336,25 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         settings.localport = atom_getlong(argv++);
       }
 
+      bool connected = true;
+
+      t_atom a[5];
+      A_SETSYM(a+1,  gensym("osc"));
+      A_SETSYM(a+2,  gensym(settings.remoteip.c_str()));
+      A_SETLONG(a+3, settings.remoteport);
+      A_SETLONG(a+4, settings.localport);
+
       try
       {
         auto proto = std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport);
 
-        t_atom a[4];
-        A_SETSYM(a, gensym("osc"));
-        A_SETSYM(a+1,gensym(proto->get_ip().c_str()));
-        A_SETLONG(a+2, proto->get_remote_port());
-        A_SETLONG(a+3, proto->get_local_port());
+        A_SETSYM(a+2,  gensym(proto->get_ip().c_str()));
+        A_SETLONG(a+3, proto->get_remote_port());
+        A_SETLONG(a+4, proto->get_local_port());
 
         multiplex.expose_to(std::move(proto));
 
-        outlet_anything(x->m_dumpout, gensym("expose"),4, a);
         object_post(
             (t_object*)x,
             "Connected with OSC protocol to %s on port %u and listening on port "
@@ -341,10 +363,14 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       }
       catch (const std::exception& e)
       {
+        connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
         object_error((t_object*)x, "libossia error: '%s'", e.what());
         return;
       }
+
+      A_SETLONG(a, connected?1:0);
+      outlet_anything(x->m_dumpout, gensym("expose"), 5, a);
     }
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
@@ -375,10 +401,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     else if(protocol == "leapmotion")
     {
         multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
-        std::vector<t_atom> a;
-        a.resize(1);
-        A_SETSYM(&a[0], gensym("LeapMotion"));
-        x->m_protocols.push_back(a);
     }
 #endif
 
@@ -423,31 +445,28 @@ void device::get_protocols(device* x)
     if(auto osc = dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
     {
       vec.resize(5);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("osc"));
-      A_SETSYM(data++, gensym(osc->get_ip().c_str()));
-      A_SETLONG(data++, osc->get_remote_port());
-      A_SETLONG(data++, osc->get_local_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("osc"));
+      A_SETSYM(&vec[2], gensym(osc->get_ip().c_str()));
+      A_SETLONG(&vec[3], osc->get_remote_port());
+      A_SETLONG(&vec[4], osc->get_local_port());
     }
     else if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
     {
       vec.resize(4);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("oscquery"));
-      A_SETLONG(data++, oscq->get_osc_port());
-      A_SETLONG(data++, oscq->get_ws_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("oscquery"));
+      A_SETLONG(&vec[2], oscq->get_osc_port());
+      A_SETLONG(&vec[3], oscq->get_ws_port());
     }
     else if(auto minuit = dynamic_cast<const ossia::net::minuit_protocol*>(p.get()))
     {
       vec.resize(5);
-      auto data=vec.begin();
-      A_SETLONG(data++, index++);
-      A_SETSYM(data++, gensym("minuit"));
-      A_SETSYM(data++, gensym(minuit->get_ip().c_str()));
-      A_SETLONG(data++, minuit->get_remote_port());
-      A_SETLONG(data++, minuit->get_local_port());
+      A_SETLONG(&vec[0], index++);
+      A_SETSYM(&vec[1], gensym("minuit"));
+      A_SETSYM(&vec[2], gensym(minuit->get_ip().c_str()));
+      A_SETLONG(&vec[3], minuit->get_remote_port());
+      A_SETLONG(&vec[4], minuit->get_local_port());
     }
 
     outlet_anything(x->m_dumpout, gensym("protocol"), vec.size(), vec.data());

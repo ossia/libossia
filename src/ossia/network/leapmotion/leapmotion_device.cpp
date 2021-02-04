@@ -129,16 +129,20 @@ public:
   void onServiceDisconnect(const Controller&) override
   {
   }
+
+#if defined(_WIN32)
   void onServiceChange(const Controller&) override
   {
   }
   void onDeviceFailure(const Controller&) override
   {
   }
+
   void onLogMessage(
       const Controller&, Leap::MessageSeverity severity, int64_t t,
       const char* msg) override
   {
+
     switch (severity)
     {
       case Leap::MESSAGE_CRITICAL:
@@ -154,6 +158,7 @@ public:
         ossia::logger().error("[LeapMotion Error] {} : {}", t, msg);
     }
   }
+#endif
 
   struct hand
   {
@@ -225,7 +230,9 @@ void leapmotion_protocol::set_device(net::device_base& dev)
   listener = std::make_unique<leap_listener>(dev);
   controller = std::make_unique<Leap::Controller>();
   controller->addListener(*listener);
+#if defined(_WIN32)
   controller->setPolicy(Leap::Controller::POLICY_ALLOW_PAUSE_RESUME);
+#endif
   controller->setPolicy(Leap::Controller::POLICY_BACKGROUND_FRAMES);
 }
 

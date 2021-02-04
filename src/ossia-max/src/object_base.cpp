@@ -146,156 +146,160 @@ void object_base::reset_color(object_base* x)
 
 std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 {
-  std::string addr = get_path().pattern;
-  size_t pos = addr.find(":/");
-  if (pos == std::string::npos) return {};
-
-  std::string prefix = addr.substr(0,pos);
-  // remove 'device_name:' prefix
-  std::string osc_name = addr.substr(pos+1);
-
-  bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
-  bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-  std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
-
-  std::vector<ossia::net::generic_device*> devs = get_all_devices();
   std::vector<std::shared_ptr<matcher>> matchers;
 
-  for(auto dev : devs)
+  update_path();
+  for(auto& addr : m_paths)
   {
-    std::string name = dev->get_name();
+    size_t pos = addr.find(":/");
+    if (pos == std::string::npos) return {};
 
-    bool match;
-    if(is_prefix_pattern)
+    std::string prefix = addr.substr(0,pos);
+    // remove 'device_name:' prefix
+    std::string osc_name = addr.substr(pos+1);
+
+    bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
+    bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
+    std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
+
+    std::vector<ossia::net::generic_device*> devs = get_all_devices();
+
+    for(auto dev : devs)
     {
-      try {
-        match = std::regex_match(name, pattern);
-      } catch (std::exception& e) {
-        error("'%s' bad regex: %s", prefix.data(), e.what());
-        return {};
-      }
-    } else match = (name == prefix);
+      std::string name = dev->get_name();
 
-    // If we found a matching device, then we look for nodes
-    if (match)
-    {
-      std::vector<ossia::net::node_base*> nodes{};
+      bool match;
+      if(is_prefix_pattern)
+      {
+        try {
+          match = std::regex_match(name, pattern);
+        } catch (std::exception& e) {
+          error("'%s' bad regex: %s", prefix.data(), e.what());
+          return {};
+        }
+      } else match = (name == prefix);
 
-      if (is_osc_name_pattern)
+      // If we found a matching device, then we look for nodes
+      if (match)
       {
-        nodes = ossia::net::find_nodes(*dev, osc_name);
-      }
-      else
-      {
-        auto node = ossia::net::find_node(*dev,osc_name);
-        if (node)
-        {
-          nodes.push_back(node);
-        }
-      }
+        std::vector<ossia::net::node_base*> nodes{};
 
-      // For ossia.parameter:
-      //    if we find a node, then we check if it already has a parameter.
-      //        If no, create a parameter
-      //        If yes, return a new node with incremeted suffix with a parameter
-      //    else we create a new node and a parameter
-      // For ossia.model: if we found a node, duplicate it, otherwise create it.
-      // For others: if we found a node, return it.
-      switch(m_otype)
-      {
-        case object_class::attribute:
-        case object_class::remote:
+        if (is_osc_name_pattern)
         {
-          matchers.reserve(nodes.size());
-          for(auto n : nodes)
-          {
-            if(auto p = n->get_parameter())
-            {
-              matchers.push_back(std::make_shared<matcher>(n, this));
-            }
-          }
-          break;
+          nodes = ossia::net::find_nodes(*dev, osc_name);
         }
-        case object_class::view:
-        case object_class::explorer:
-        case object_class::monitor:
-        case object_class::search:
+        else
         {
-          matchers.reserve(nodes.size());
-          for(auto n : nodes)
+          auto node = ossia::net::find_node(*dev,osc_name);
+          if (node)
           {
-            matchers.push_back(std::make_shared<matcher>(n, this));
+            nodes.push_back(node);
           }
-          break;
         }
-        case object_class::param:
+
+        // For ossia.parameter:
+        //    if we find a node, then we check if it already has a parameter.
+        //        If no, create a parameter
+        //        If yes, return a new node with incremeted suffix with a parameter
+        //    else we create a new node and a parameter
+        // For ossia.model: if we found a node, duplicate it, otherwise create it.
+        // For others: if we found a node, return it.
+        switch(m_otype)
         {
-          if(nodes.empty())
-          {
-            auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
-            matchers.reserve(new_nodes.size());
-            for(auto n : new_nodes)
-            {
-              ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
-              matchers.push_back(std::make_shared<matcher>(n, this));
-            }
-          }
-          else
+          case object_class::attribute:
+          case object_class::remote:
           {
             matchers.reserve(nodes.size());
             for(auto n : nodes)
             {
-              if(n->get_parameter())
+              if(auto p = n->get_parameter())
+              {
+                matchers.push_back(std::make_shared<matcher>(n, this));
+              }
+            }
+            break;
+          }
+          case object_class::view:
+          case object_class::explorer:
+          case object_class::monitor:
+          case object_class::search:
+          {
+            matchers.reserve(nodes.size());
+            for(auto n : nodes)
+            {
+              matchers.push_back(std::make_shared<matcher>(n, this));
+            }
+            break;
+          }
+          case object_class::param:
+          {
+            if(nodes.empty())
+            {
+              auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
+              matchers.reserve(new_nodes.size());
+              for(auto n : new_nodes)
+              {
+                ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
+                matchers.push_back(std::make_shared<matcher>(n, this));
+              }
+            }
+            else
+            {
+              matchers.reserve(nodes.size());
+              for(auto n : nodes)
+              {
+                if(n->get_parameter())
+                {
+                  n = &ossia::net::create_node(*(n->get_parent()), n->get_name());
+                }
+                ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
+                matchers.push_back(std::make_shared<matcher>(n, this));
+              }
+            }
+            break;
+          }
+          case object_class::model:
+          {
+            if(nodes.empty())
+            {
+              auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
+              matchers.reserve(new_nodes.size());
+              for(auto n : new_nodes)
+              {
+                matchers.push_back(std::make_shared<matcher>(n, this));
+              }
+            }
+            else
+            {
+              matchers.reserve(nodes.size());
+              for(auto n : nodes)
               {
                 n = &ossia::net::create_node(*(n->get_parent()), n->get_name());
+                matchers.push_back(std::make_shared<matcher>(n, this));
               }
-              ossia::try_setup_parameter(static_cast<parameter*>(this)->m_type->s_name, *n);
-              matchers.push_back(std::make_shared<matcher>(n, this));
             }
+            break;
           }
-          break;
+          default:
+              ;
         }
+      }
+    }
+
+    if(matchers.empty())
+    {
+      switch(m_otype)
+      {
+        case object_class::param:
         case object_class::model:
         {
-          if(nodes.empty())
-          {
-            auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
-            matchers.reserve(new_nodes.size());
-            for(auto n : new_nodes)
-            {
-              matchers.push_back(std::make_shared<matcher>(n, this));
-            }
-          }
-          else
-          {
-            matchers.reserve(nodes.size());
-            for(auto n : nodes)
-            {
-              n = &ossia::net::create_node(*(n->get_parent()), n->get_name());
-              matchers.push_back(std::make_shared<matcher>(n, this));
-            }
-          }
+          auto name = std::string(prefix);
+          object_error(&m_object, "Can't find a device with name: %s", name.c_str());
           break;
         }
         default:
-            ;
+          ;
       }
-    }
-  }
-
-  if(matchers.empty())
-  {
-    switch(m_otype)
-    {
-      case object_class::param:
-      case object_class::model:
-      {
-        auto name = std::string(prefix);
-        object_error(&m_object, "Can't find a device with name: %s", name.c_str());
-        break;
-      }
-      default:
-        ;
     }
   }
 
@@ -318,9 +322,6 @@ void object_base::loadbang(object_base* x)
   critical_enter(0);
   t_object* patcher = x->m_patcher;
   t_object* root_patcher = patcher;
-
-  if(!x->m_path)
-    x->update_path();
 
   while(patcher && !ossia_max::instance().patchers[patcher].loadbanged)
   {
@@ -866,100 +867,75 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
   return {};
 }
 
-void object_base::update_path()
+
+
+void object_base::make_global_paths()
 {
-  std::string name;
-
-  switch(m_addr_scope)
-  {
-    case ossia::net::address_scope::absolute:
-    {
-      std::string dev_name = "*:";
-      auto parent = static_cast<device_base*>(find_parent_object());
-      if(parent)
-      {
-        if(parent->m_device)
-          dev_name = parent->m_device->get_name();
-      }
-      else
-      {
-        dev_name = ossia_max::instance().get_default_device()->get_name();
-      }
-      name = dev_name + ":" + std::string(m_name->s_name);
-      break;
-    }
-    case ossia::net::address_scope::global:
-    {
-      name = std::string(m_name->s_name);
-      break;
-    }
-    case ossia::net::address_scope::relative:
-    {
-      name = make_global_pattern();
-      break;
-    }
-  }
-
-  m_is_pattern = ossia::traversal::is_pattern(name);
-  m_path = ossia::traversal::make_path(name);
-}
-
-
-std::string object_base::make_global_pattern()
-{
-  std::vector<std::string> vs;
-  vs.reserve(32);
-
   assert(m_name);
-  vs.push_back(m_name->s_name);
-
-  std::string device_name = ossia_max::instance().get_default_device()->get_name();
 
   object_base* parent = find_parent_object();
-  while(parent)
+  if(parent)
   {
-    // TODO no need to iterate over all parents, take the first one's path and append this m_name to it.
     assert(parent->m_name);
     if(parent->m_otype == object_class::device
-    || parent->m_otype == object_class::client)
+        || parent->m_otype == object_class::client)
     {
       auto dev = static_cast<device_base*>(parent);
       if(dev->m_device)
       {
-        device_name = dev->m_device->get_name();
-        break;
+        m_paths.push_back(dev->m_device->get_name() + ":/" + std::string(m_name->s_name));
       }
     }
-    vs.push_back(parent->m_name->s_name);
-    if(parent->m_addr_scope == ossia::net::address_scope::global)
+    else
     {
-      device_name = "";
-      break;
+      for(auto& m : parent->m_matchers)
+      {
+        auto p = ossia::net::address_string_from_node(*m->get_node());
+        std::cout << p << std::endl;
+        m_paths.push_back(p + "/" + std::string(m_name->s_name));
+      }
     }
-    parent = parent->find_parent_object();
   }
-
-  fmt::memory_buffer absolute_path;
-
-
-  if(device_name != "")
-    fmt::format_to(absolute_path, "{}:", device_name);
   else
   {
-    fmt::format_to(absolute_path, "{}", vs.back());
-    vs.pop_back();
+    std::string device_name = ossia_max::instance().get_default_device()->get_name();
+    m_paths.push_back(device_name + ":/" + std::string(m_name->s_name));
   }
+}
 
-  auto rit = vs.rbegin();
-  for (; rit != vs.rend(); ++rit)
+void object_base::update_path()
+{
+  m_paths.clear();
+  m_paths.reserve(32);
+  switch(m_addr_scope)
   {
-    fmt::format_to(absolute_path, "/{}", *rit);
+    case ossia::net::address_scope::absolute:
+    {
+      std::string base_name = "*:";
+      auto parent = static_cast<device_base*>(find_parent_object());
+      if(parent)
+      {
+        if(parent->m_device)
+          base_name = parent->m_device->get_name();
+      }
+      else
+      {
+        base_name = ossia_max::instance().get_default_device()->get_name();
+      }
+      m_paths.push_back(base_name + ":" + std::string(m_name->s_name));
+      break;
+    }
+    case ossia::net::address_scope::global:
+    {
+      m_paths.push_back(std::string(m_name->s_name));
+      break;
+    }
+    case ossia::net::address_scope::relative:
+    {
+      make_global_paths();
+      break;
+    }
   }
-
-  if (vs.empty())
-    fmt::format_to(absolute_path, "/");
-
-  return std::string(absolute_path.data(), absolute_path.size());
 }
 
 void save_children_recursively(t_object* patcher)

@@ -324,11 +324,15 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
   auto& node = addr.get_node();
   auto oscaddr = ossia::net::address_string_from_node(node);
 
-  if ( ossia::traversal::match(get_path(), node) )
+  for(auto& p : m_paths)
   {
-    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-    fill_selection();
-    set_unit();
+    auto path = ossia::traversal::make_path(p);
+    if ( path && ossia::traversal::match(*path, node) )
+    {
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      fill_selection();
+      set_unit();
+    }
   }
 }
 
