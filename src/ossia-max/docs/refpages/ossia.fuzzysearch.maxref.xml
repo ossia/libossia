@@ -25,8 +25,8 @@
 	<!--INLETS-->
 	<inletlist>
 		<inlet id="0" name="Value input" type="any">
-			<digest>Value to set the parameter to.</digest>
-			<description>Value to set the parameter to.</description>
+			<digest>Set the string to search through the namespace</digest>
+			<description>Set the string to search through the namespace</description>
 		</inlet>
 	</inletlist>
 
@@ -69,6 +69,7 @@
 				Search for addresses based on their <a>mode</a> attribute
 			</digest>
 			<description>
+				Search for addresses based on their <a>mode</a> attribute. Adding filtering based on the <a>mode</a> attribute gets combined with string sent as argument to the <m>search</m> input message.
 			</description>
 			
 			<attributelist>
@@ -79,9 +80,10 @@
 		</attribute>
 		<attribute name="visible" get="1" set="1" type="int" size="1">
 			<digest>
-				Search for addresses based on their <a>visibility</a> attribute
+				Search for addresses based on their <a>invisible</a> attribute
 			</digest>
 			<description>
+				Search for addresses based on their <a>invisible</a> attribute. Adding filtering based on the <a>invisible</a> attribute gets combined with string sent as argument to the <m>search</m> input message.
 			</description>
 		</attribute>
 		
@@ -90,6 +92,7 @@
 				Search for addresses based on their <a>tags</a> attribute
 			</digest>
 			<description>
+				Search for addresses based on their <a>tags</a> attribute. Adding filtering based on the <a>tags</a> attribute gets combined with string sent as argument to the <m>search</m> input message.
 			</description>
 		</attribute>	
 		
@@ -99,9 +102,9 @@
 
 	<!--SEEALSO-->
 	<seealsolist>
-		<seealso name="ossia.model"/>
-		<seealso name="ossia.view"/>
-		<seealso name="ossia.remote"/>
+		<seealso name="ossia"/>
+		<seealso name="ossia.search"/>
+		<seealso name="ossia.monitor"/>
 	</seealsolist>
 
 	
