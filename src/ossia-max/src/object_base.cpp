@@ -412,6 +412,7 @@ void object_base::on_node_removing(const ossia::net::node_base& n)
       [&] (const std::shared_ptr<matcher>& m) {
         return (m->get_node() == &n) && !m->is_locked();
     }), m_matchers.end());
+    set_matchers_index();
     m_is_deleted = false;
 }
 
@@ -967,6 +968,16 @@ void object_base::save_children_state()
         ;
   }
 }
+
+void object_base::set_matchers_index()
+{
+  int idx = 1;
+  for(auto& m : m_matchers)
+  {
+    m->m_index = idx++;
+  }
+}
+
 
 } // max namespace
 } // ossia namespace

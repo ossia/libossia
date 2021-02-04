@@ -162,6 +162,7 @@ void parameter::do_registration()
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
   m_selection_path.reset();
   fill_selection();

@@ -163,6 +163,7 @@ public:
   static void reset_color(object_base* x);
 
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
+  void set_matchers_index();
 
   std::vector<std::string> m_paths{};
 
