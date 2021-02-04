@@ -250,17 +250,11 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport);
 
-        multiplex.expose_to(std::move(minuit_proto));
-
         A_SETSYM(a+2, gensym(minuit_proto->get_ip().c_str()));
         A_SETLONG(a+3, minuit_proto->get_remote_port());
         A_SETLONG(a+4, minuit_proto->get_local_port());
 
-        object_post(
-            (t_object*)x,
-            "Connected with Minuit protocol to %s on port %u and listening on "
-            "port %u",
-            settings.remoteip.c_str(), settings.remoteport, settings.localport);
+        multiplex.expose_to(std::move(minuit_proto));
       }
       catch (const std::exception& e)
       {
@@ -298,17 +292,11 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
               settings.oscport, settings.wsport);
         oscq_proto->set_echo(true);
 
-        multiplex.expose_to(std::move(oscq_proto));
-
         A_SETSYM(a+1, gensym("oscquery"));
         A_SETLONG(a+2, oscq_proto->get_osc_port());
         A_SETLONG(a+3, oscq_proto->get_ws_port());
 
-        object_post(
-            (t_object*)x,
-            "Connected with oscquery protocol with OSC port %u and WS port %u, "
-            "listening on port %u",
-            settings.oscport, settings.wsport, settings.oscport);
+        multiplex.expose_to(std::move(oscq_proto));
       }
       catch (const std::exception& e)
       {
@@ -354,12 +342,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         A_SETLONG(a+4, proto->get_local_port());
 
         multiplex.expose_to(std::move(proto));
-
-        object_post(
-            (t_object*)x,
-            "Connected with OSC protocol to %s on port %u and listening on port "
-            "%u",
-            settings.remoteip.c_str(), settings.remoteport, settings.localport);
       }
       catch (const std::exception& e)
       {
