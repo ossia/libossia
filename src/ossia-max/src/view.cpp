@@ -152,7 +152,7 @@ void view::on_node_created_callback(ossia::net::node_base& node)
 {
   auto oscaddr = ossia::net::address_string_from_node(node);
 
-  for(auto& p : m_paths)
+  for(auto p : m_paths)
   {
     auto path = ossia::traversal::make_path(p);
     if ( path && ossia::traversal::match(*path, node) )
