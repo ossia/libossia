@@ -1,4 +1,5 @@
 #pragma once
+#if __has_include(<samplerate.h>)
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/audio_port.hpp>
@@ -140,3 +141,13 @@ struct repitch_stretcher
   }
 };
 }
+
+#else
+
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+
+namespace ossia
+{
+using repitch_stretcher = raw_stretcher;
+}
+#endif

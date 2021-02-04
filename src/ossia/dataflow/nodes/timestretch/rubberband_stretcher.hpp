@@ -1,4 +1,5 @@
 #pragma once
+#if __has_include(<RubberBandStretcher.h>)
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/audio_port.hpp>
@@ -89,3 +90,12 @@ struct rubberband_stretcher
   }
 };
 }
+
+#else
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+
+namespace ossia
+{
+using rubberband_stretcher = raw_stretcher;
+}
+#endif
