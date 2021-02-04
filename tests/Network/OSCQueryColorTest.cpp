@@ -48,7 +48,11 @@ TEST_CASE ("test_osc_receive_rgba8", "test_osc_receive_rgba8")
 
   ossia::net::listened_parameters p;
   network_logger l;
-  ossia::net::handle_osc_message<true>(m, p, dev.device, l);
+
+  ossia::net::on_input_message<true>(
+        m.AddressPattern(),
+        ossia::net::osc_message_applier{{serv.get_protocol()}, m},
+        p,  dev.device, l);
 
   REQUIRE(dev.vec4f_addr->value() == ossia::value{ossia::make_vec(0, 59, 111, 255)});
 }

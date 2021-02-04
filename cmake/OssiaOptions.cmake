@@ -294,3 +294,7 @@ if(MSVC)
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
   endif()
 endif()
+
+if(NOT OSSIA_DATAFLOW)
+  set(OSSIA_EDITOR 0)
+endif()
