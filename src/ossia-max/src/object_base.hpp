@@ -73,7 +73,6 @@ public:
   void* m_dumpout{};
 
   //flags
-  bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
@@ -105,7 +104,6 @@ public:
   void set_recall_safe();
 
   // return the global path of the object with pattern
-  std::string make_global_pattern();
   object_base* find_parent_object();
 
   // return the first parent ossia object, nullptr otherwise
@@ -166,12 +164,7 @@ public:
 
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
 
-  ossia::traversal::path get_path()
-  {
-    if(!m_path)
-      update_path();
-    return *m_path;
-  }
+  std::vector<std::string> m_paths;
 
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
@@ -182,7 +175,7 @@ protected:
 
 private:
   std::vector<std::shared_ptr<matcher>> find_parent_nodes();
-  std::optional<ossia::traversal::path> m_path;
+  void make_global_paths();
 };
 
 #pragma mark -

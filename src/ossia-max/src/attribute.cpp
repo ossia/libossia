@@ -107,10 +107,14 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 {
   auto& node = param.get_node();
 
-  if( ossia::traversal::match(get_path(), node) )
+  for(auto p : m_paths)
   {
-    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-    fill_selection();
+    auto path = ossia::traversal::make_path(p);
+    if( path && ossia::traversal::match(*path, node) )
+    {
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      fill_selection();
+    }
   }
 }
 
@@ -167,7 +171,16 @@ void attribute::destroy(attribute* x)
   x->m_dead = true;
   x->unregister();
 
-  if(x->m_is_pattern && x->m_dev)
+  bool is_pattern;
+
+  for(auto& p : x->m_paths)
+  {
+    is_pattern = ossia::traversal::is_pattern(p);
+    if(is_pattern)
+      break;
+  }
+
+  if(is_pattern && x->m_dev)
   {
     x->m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(x);
     x->m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(x);

@@ -47,6 +47,12 @@ void register_children_in_patcher_recursively(t_object* root_patcher, object_bas
 t_object* get_patcher(t_object* object);
 
 /**
+ * @brief update_path_recursively: update children path recursively
+ * @param patcher
+ */
+void update_path_recursively(t_object* patcher);
+
+/**
  */
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
 

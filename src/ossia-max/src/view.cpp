@@ -152,10 +152,14 @@ void view::on_node_created_callback(ossia::net::node_base& node)
 {
   auto oscaddr = ossia::net::address_string_from_node(node);
 
-  if ( ossia::traversal::match(get_path(), node) )
+  for(auto& p : m_paths)
   {
-    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-    fill_selection();
+    auto path = ossia::traversal::make_path(p);
+    if ( path && ossia::traversal::match(*path, node) )
+    {
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      fill_selection();
+    }
   }
 }
 

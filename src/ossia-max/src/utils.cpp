@@ -501,6 +501,31 @@ t_object* get_patcher(t_object* object)
     return bpatcher;
 }
 
+void update_path_recursively(t_object* patcher)
+{
+  auto& pat_desc = ossia_max::instance().patchers[patcher];
+
+  for(auto x : pat_desc.parameters)
+  {
+    x->update_path();
+  }
+
+  for(auto x : pat_desc.remotes)
+  {
+    x->update_path();
+  }
+
+  for(auto x : pat_desc.attributes)
+  {
+    x->update_path();
+  }
+
+  for(auto subpatch : pat_desc.subpatchers)
+  {
+    update_path_recursively(subpatch);
+  }
+}
+
 std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size)
 {
   std::vector<std::string> tags;

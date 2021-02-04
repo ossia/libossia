@@ -193,26 +193,31 @@ void monitor::on_parameter_removing_callback(const ossia::net::parameter_base& p
 
 void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
 {
-
-  if( ossia::traversal::match(get_path(), node) )
+  for(auto& p : m_paths)
   {
-    t_atom a[3];
-    A_SETSYM(a, s_parameter);
-    A_SETSYM(a+1, s_created);
-    std::string address = ossia::net::osc_parameter_string_with_device(node);
-    A_SETSYM(a+2, gensym(address.c_str()));
-    outlet_anything(m_dumpout, s_monitor, 3, a);
-  }
-  else
-  {
-    std::string address = ossia::net::osc_parameter_string_with_device(node);
-    if( boost::algorithm::ends_with(address, m_name->s_name) )
+    auto path = ossia::traversal::make_path(p);
     {
-      t_atom a[3];
-      A_SETSYM(a, s_parameter);
-      A_SETSYM(a+1, s_created);
-      A_SETSYM(a+2, gensym(address.c_str()));
-      outlet_anything(m_dumpout, s_monitor, 3, a);
+      if( path && ossia::traversal::match(*path, node) )
+      {
+        t_atom a[3];
+        A_SETSYM(a, s_parameter);
+        A_SETSYM(a+1, s_created);
+        std::string address = ossia::net::osc_parameter_string_with_device(node);
+        A_SETSYM(a+2, gensym(address.c_str()));
+        outlet_anything(m_dumpout, s_monitor, 3, a);
+      }
+      else
+      {
+        std::string address = ossia::net::osc_parameter_string_with_device(node);
+        if( address == p )
+        {
+          t_atom a[3];
+          A_SETSYM(a, s_parameter);
+          A_SETSYM(a+1, s_created);
+          A_SETSYM(a+2, gensym(address.c_str()));
+          outlet_anything(m_dumpout, s_monitor, 3, a);
+        }
+      }
     }
   }
 }
