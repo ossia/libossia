@@ -241,7 +241,7 @@ bool oscquery_server_protocol::echo_incoming_message(
     const net::parameter_base& addr,
     const ossia::value& val)
 {
-  bool ok = &id.protocol != this;
+  bool not_this_protocol = &id.protocol != this;
   // we know that the value is valid
   // Push to all clients except ours
   auto critical = addr.get_critical();
@@ -249,12 +249,9 @@ bool oscquery_server_protocol::echo_incoming_message(
   {
     lock_t lock(m_clientsMutex);
     // No need to echo if we just have one client, the most common case
-    if(m_clients.size() <= 1)
-      return true;
-
     for (auto& client : m_clients)
     {
-      if (ok || !is_same(client, id)) {
+      if (not_this_protocol || !is_same(client, id)) {
         if (client.sender)
         {
           ossia::oscquery::osc_writer::send_message(
@@ -272,13 +269,10 @@ bool oscquery_server_protocol::echo_incoming_message(
   else
   {
     lock_t lock(m_clientsMutex);
-    // No need to echo if we just have one client, the most common case
-    if(m_clients.size() <= 1)
-      return true;
 
     for (auto& client : m_clients)
     {
-      if (ok || !is_same(client, id)) {
+      if (not_this_protocol || !is_same(client, id)) {
         m_websocketServer->send_binary_message(
               client.connection, osc_writer::send_message(addr, val, m_logger));
       }
