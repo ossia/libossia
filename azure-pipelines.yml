@@ -445,7 +445,15 @@ stages:
             artifactName: libossia-max-win64
 
   - stage: Assemble
-    condition: and(succeeded(), eq(variables.isGitTag, true))
+    condition: succeeded()
+
+    variables:
+      - name: releaseTag
+        value:
+        ${{ if eq(variables.isGitTag, true) }}:
+          '$(gitTag)'
+        ${{ if eq(variables.isGitTag, false) }}:
+          nightly-build
 
     jobs:
       - job: Unity3D
@@ -485,14 +493,14 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
 
-        - task: GitHubRelease@1
+        - task: GitHubRelease@0
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: manual
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
 
@@ -544,14 +552,14 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
-        - task: GitHubRelease@1
+        - task: GitHubRelease@0
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: manual
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
       
@@ -584,13 +592,13 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
             artifactName: ossia-max
 
-        - task: GitHubRelease@1
+        - task: GitHubRelease@0
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: manual
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
