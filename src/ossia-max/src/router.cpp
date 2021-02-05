@@ -44,16 +44,19 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
 
   if(argc == 0)
   {
-    x->m_inlet = proxy_new(x, 2, 0L);
+    x->m_inlets.push_back(proxy_new(x, 2, 0L));
     x->m_outlets.push_back(outlet_new(x, nullptr));
   }
 
+  int inlet_id = 0;
+  x->m_patterns.resize(argc);
   while(argc--)
   {
     if(argv[argc].a_type == A_SYM)
     {
       std::string pattern(argv[argc].a_w.w_sym->s_name);
-      x->add_pattern(pattern);
+      x->change_pattern(inlet_id++, pattern);
+      x->m_inlets.push_back(proxy_new(x, argc+1, 0L));
 
       x->m_outlets.push_back(outlet_new(x, nullptr));
     }
@@ -66,7 +69,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   return x;
 }
 
-void router::add_pattern(std::string pattern)
+void router::change_pattern(int index, std::string pattern)
 {
   if(pattern[0] == '/')
   {
@@ -75,8 +78,10 @@ void router::add_pattern(std::string pattern)
   ossia::net::expand_ranges(pattern);
   pattern = ossia::traversal::substitute_characters(pattern);
 
+  assert(index < m_patterns.size());
+
   try {
-    m_patterns.push_back(std::regex("^/?" + pattern + "(/|$)"));
+    m_patterns[index] = std::regex("^/?" + pattern + "(/|$)");
   } catch (std::exception& e) {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
@@ -95,15 +100,14 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 
   if(inlet > 0)
   {
-    x->m_patterns.clear();
-    x->add_pattern(address);
+    x->change_pattern(x->m_inlets.size() - inlet, address);
   }
   else
   {
     bool match = false;
     for(int i = 0 ; i < x->m_patterns.size(); i++)
     {
-      const auto &pattern_regex = x->m_patterns[i];
+      const auto& pattern_regex = x->m_patterns[i];
 
       std::smatch smatch;
       if(std::regex_search(address, smatch, pattern_regex))
@@ -132,8 +136,8 @@ void router::free(router* x)
   {
     for(auto out : x->m_outlets)
       outlet_delete(out);
-    if(x->m_inlet)
-      proxy_delete(x->m_inlet);
+    for(auto in : x->m_inlets)
+      proxy_delete(in);
     x->~router();
   }
 }
