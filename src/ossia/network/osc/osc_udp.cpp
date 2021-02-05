@@ -30,7 +30,9 @@ osc_udp_protocol::osc_udp_protocol(
     network_context_ptr ctx,
     std::string_view local_host,  uint16_t local_port,
     std::string_view remote_host, uint16_t remote_port)
-    : m_localHost{local_host}
+    : protocol_base{flags{}}
+    , m_id{*this}
+    , m_localHost{local_host}
     , m_remoteHost{remote_host}
     , m_localPort{local_port}
     , m_remotePort{remote_port}
@@ -141,7 +143,10 @@ void osc_udp_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    handle_osc_message<false>(m, m_listening, *m_device, m_logger);
+    ossia::net::on_input_message<false>(
+          m.AddressPattern(),
+          ossia::net::osc_message_applier{m_id, m},
+          m_listening, *m_device, m_logger);
   }
   else
   {
