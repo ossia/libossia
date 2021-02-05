@@ -579,13 +579,9 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
+            echo $(releaseTag)
             cd $(System.DefaultWorkingDirectory)
-
-            pushd ossia-max-package
             zip -r ossia-max.zip ossia
-
-            mv ossia-max.zip $(System.DefaultWorkingDirectory)/ossia-max.zip
-            popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
