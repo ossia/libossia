@@ -315,6 +315,7 @@ set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_protocol_common.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.hpp"
