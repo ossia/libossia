@@ -30,6 +30,8 @@ struct osc_unix_protocol::impl
 
 osc_unix_protocol::osc_unix_protocol(
     mode m, network_context_ptr ctx, std::string_view socket_name)
+  : protocol_base{flags{}}
+  , m_id{*this}
 {
   m_localSocket = fmt::format("/tmp/{}.server.socket", socket_name);
   m_remoteSocket = fmt::format("/tmp/{}.client.socket", socket_name);
@@ -167,7 +169,10 @@ void osc_unix_protocol::on_received_message(
 {
   if (!m_learning)
   {
-    handle_osc_message<false>(m, m_listening, *m_device, m_logger);
+    ossia::net::on_input_message<false>(
+          m.AddressPattern(),
+          ossia::net::osc_message_applier{m_id, m},
+          m_listening, *m_device, m_logger);
   }
   else
   {

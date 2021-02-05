@@ -68,6 +68,7 @@ private:
 
   struct impl;
   impl* m_impl{};
+  message_origin_identifier m_id;
   listened_parameters m_listening;
 
   ossia::net::device_base* m_device{};
