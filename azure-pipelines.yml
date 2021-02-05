@@ -446,6 +446,7 @@ stages:
 
   - stage: Assemble
     condition: succeeded()
+    # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     variables:
       - name: releaseTag
@@ -493,13 +494,13 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
 
-        - task: GitHubRelease@0
+        - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: manual
+            tagSource: userSpecifiedTag
             tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
@@ -552,13 +553,13 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
-        - task: GitHubRelease@0
+        - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: manual
+            tagSource: userSpecifiedTag
             tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
@@ -592,13 +593,13 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
             artifactName: ossia-max
 
-        - task: GitHubRelease@0
+        - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: manual
+            tagSource: userSpecifiedTag
             tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
