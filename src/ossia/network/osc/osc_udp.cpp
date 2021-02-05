@@ -10,15 +10,10 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/osc/detail/osc_value_write_visitor.hpp>
-#include <ossia/network/osc/detail/bidir.hpp>
-#include <ossia/network/osc/detail/message_generator.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/value/value.hpp>
+#include <ossia/network/osc/detail/osc_protocol_common.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 struct osc_udp_protocol::impl
 {
@@ -42,15 +37,7 @@ osc_udp_protocol::osc_udp_protocol(
       {m_remoteHost, m_remotePort, ctx->context}
   };
 
-  m_impl->from_client.open();
-  m_impl->to_client.connect();
-
-  m_impl->from_client.receive([this] (const char* data, std::size_t sz)
-    {
-      auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-      osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
-    }
-  );
+  osc_protocol_common::init(*this);
 }
 
 osc_udp_protocol::~osc_udp_protocol()
@@ -81,83 +68,50 @@ bool osc_udp_protocol::pull(ossia::net::parameter_base& address)
 
 bool osc_udp_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
+  return osc_protocol_common::push(*this, addr, v);
+}
 
-  auto val = filter_value(addr, v);
-  if (val.valid())
-  {
-    val.apply(osc_value_send_visitor<udp_socket>{addr.get_node().osc_address(), m_impl->to_client});
-    return true;
-  }
-  return false;
+bool osc_udp_protocol::push(const ossia::net::parameter_base& addr, ossia::value&& v)
+{
+  return osc_protocol_common::push(*this, addr, std::move(v));
 }
 
 bool osc_udp_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
-    return false;
+  return osc_protocol_common::push_raw(*this, addr);
+}
 
-  auto val = filter_value(addr, addr.value());
-  if (val.valid())
-  {
-    val.apply(osc_value_send_visitor<udp_socket>{addr.address, m_impl->to_client});
-    return true;
-  }
-  return false;
+bool osc_udp_protocol::echo_incoming_message(
+    const message_origin_identifier& id, const parameter_base& addr, const value& val)
+{
+  return osc_protocol_common::echo_incoming_message(*this, id, addr, val);
 }
 
 bool osc_udp_protocol::push_bundle(
     const std::vector<const parameter_base*>& addresses)
 {
-  if(auto data = make_bundle(addresses)) {
-    m_impl->to_client.send(data->stream.Data(), data->stream.Size());
-    return true;
-  }
-  return false;
+  return osc_protocol_common::push_bundle(*this, addresses);
 }
 
 bool osc_udp_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  if(auto data = make_raw_bundle(addresses)) {
-    m_impl->to_client.send(data->stream.Data(), data->stream.Size());
-    return true;
-  }
-  return false;
+  return osc_protocol_common::push_raw_bundle(*this, addresses);
 }
 
 bool osc_udp_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
-  if (enable)
-    m_listening.insert(
-        std::make_pair(address.get_node().osc_address(), &address));
-  else
-    m_listening.erase(address.get_node().osc_address());
-
-  return true;
+  return osc_protocol_common::observe(*this, address, enable);
 }
 
 void osc_udp_protocol::on_received_message(
     const oscpack::ReceivedMessage& m)
 {
-  if (!m_learning)
-  {
-    ossia::net::on_input_message<false>(
-          m.AddressPattern(),
-          ossia::net::osc_message_applier{m_id, m},
-          m_listening, *m_device, m_logger);
-  }
-  else
-  {
-    ossia::net::osc_learn(&m_device->get_root_node(), m);
-  }
+  return osc_protocol_common::on_received_message(*this, m);
 }
-
 
 void osc_udp_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-}
 }
 }

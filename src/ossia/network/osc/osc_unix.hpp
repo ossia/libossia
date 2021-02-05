@@ -23,12 +23,16 @@ namespace ossia
 {
 namespace net
 {
+struct osc_protocol_common;
+class unix_socket;
 struct network_context;
 using network_context_ptr = std::shared_ptr<network_context>;
 
 class OSSIA_EXPORT osc_unix_protocol final : public ossia::net::protocol_base
 {
+  friend struct osc_protocol_common;
 public:
+  using socket_type = unix_socket;
   enum mode {
     server, client
   };
@@ -59,9 +63,11 @@ public:
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
 
+  bool echo_incoming_message(
+      const message_origin_identifier& id, const parameter_base& addr, const value& val) override;
+
 private:
-  void on_received_message(
-      const oscpack::ReceivedMessage& m);
+  void on_received_message(const oscpack::ReceivedMessage& m);
   void on_learn(const oscpack::ReceivedMessage& m);
   void set_device(ossia::net::device_base& dev) override;
 
