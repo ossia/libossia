@@ -79,6 +79,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter_data.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/message_origin_identifier.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/listening.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.hpp"
