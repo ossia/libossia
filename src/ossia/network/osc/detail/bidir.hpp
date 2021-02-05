@@ -12,7 +12,7 @@
 #include <asio/local/datagram_protocol.hpp>
 #include <asio/ip/udp.hpp>
 #include <array>
-namespace ossia
+namespace ossia::net
 {
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 class unix_socket
