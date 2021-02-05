@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
 
 #include <ossia_export.h>
@@ -20,11 +21,6 @@ class device_base;
 struct full_parameter_data;
 
 class protocol_base;
-struct message_origin_identifier
-{
-  ossia::net::protocol_base& protocol;
-  uintptr_t identifier{};
-};
 
 
 /**
