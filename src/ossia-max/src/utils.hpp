@@ -272,11 +272,20 @@ void address_mess_cb(T* x, t_symbol* address)
   x->m_matchers.clear();
   x->do_registration();
 
-  if(x->m_otype == object_class::view
-  || x->m_otype == object_class::model)
+  switch(x->m_otype)
   {
-    register_children_in_patcher_recursively(x->m_patcher, x);
-    output_all_values(x->m_patcher, false);
+    case object_class::view:
+    case object_class::model:
+      register_children_in_patcher_recursively(x->m_patcher, x);
+      output_all_values(x->m_patcher, false);
+      break;
+    case object_class::param:
+      for(const auto& m : x->m_matchers)
+      {
+        auto param = m->get_node()->get_parameter();
+        param->push_value(param->value());
+      }
+      break;
   }
 }
 
