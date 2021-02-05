@@ -111,7 +111,7 @@ std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node)
 
 struct node_priority
 {
-  std::shared_ptr<matcher> obj{};
+  matcher* obj{};
   std::vector<ossia::net::priority> priorities;
 
   friend std::ostream &operator<<( std::ostream &output, const node_priority &n ) {

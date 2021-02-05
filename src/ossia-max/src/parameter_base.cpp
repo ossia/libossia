@@ -1199,13 +1199,13 @@ void parameter_base::output_values(bool only_default)
   std::vector<node_priority> priority_graph;
   priority_graph.reserve(m_matchers.size());
 
-  for(const auto& m : m_matchers)
+  for(auto& m : m_matchers)
   {
     auto node = m->get_node();
     if(node)
     {
       auto prio = get_priority_list(node);
-      priority_graph.push_back({m, prio});
+      priority_graph.push_back({m.get(), prio});
     }
   }
 
