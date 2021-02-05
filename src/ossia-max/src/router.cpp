@@ -82,17 +82,11 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
 
 void router::change_pattern(int index, std::string pattern)
 {
-  if(pattern[0] == '/')
-  {
-    pattern = pattern.substr(1);
-  }
   ossia::net::expand_ranges(pattern);
   pattern = ossia::traversal::substitute_characters(pattern);
 
-  assert(index < m_patterns.size());
-
   try {
-    m_patterns[index] = std::regex("^/?" + pattern + "(/|$)");
+    m_patterns[index] = std::regex("^" + pattern);
   } catch (std::exception& e) {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
@@ -101,11 +95,6 @@ void router::change_pattern(int index, std::string pattern)
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 {
   std::string address(s->s_name);
-
-  if(address[0] == '/')
-  {
-    address = address.substr(1);
-  }
 
   long inlet = proxy_getinlet((t_object*)x);
 
