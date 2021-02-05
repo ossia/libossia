@@ -19,6 +19,7 @@ namespace max
 struct router
 {
   t_object m_object;
+  long m_truncate{1};
 
   router(long argc, t_atom* argv);
   void change_pattern(int index, std::string pattern);
