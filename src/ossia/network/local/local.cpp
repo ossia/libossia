@@ -10,6 +10,22 @@ namespace ossia
 {
 namespace net
 {
+static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
+{
+  for (auto& cld : n.children())
+  {
+    if (auto addr = cld->get_parameter())
+    {
+      if (!addr->callbacks_empty())
+      {
+        proto.observe_quietly(*addr, true);
+      }
+    }
+    observe_rec(proto, *cld);
+  }
+}
+
+
 multiplex_protocol::multiplex_protocol()
   : protocol_base{flags{}}
 {
@@ -74,21 +90,16 @@ void multiplex_protocol::stop()
 void multiplex_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-}
-
-static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
-{
-  for (auto& cld : n.children())
+  for(auto& p : m_protocols_to_register)
   {
-    if (auto addr = cld->get_parameter())
-    {
-      if (!addr->callbacks_empty())
-      {
-        proto.observe_quietly(*addr, true);
-      }
-    }
-    observe_rec(proto, *cld);
+    p->set_device(*m_device);
+
+    // Expose all the adresses with callbacks
+    observe_rec(*p, m_device->get_root_node());
+
+    m_protocols.push_back(std::move(p));
   }
+  m_protocols_to_register.clear();
 }
 
 void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
@@ -101,21 +112,26 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
        return;
     }
 
-    p->set_device(*m_device);
+    if(m_device)
+    {
+      p->set_device(*m_device);
 
-    // Expose all the adresses with callbacks
-    observe_rec(*p, m_device->get_root_node());
+      // Expose all the adresses with callbacks
+      observe_rec(*p, m_device->get_root_node());
 
-    m_protocols.push_back(std::move(p));
+      m_protocols.push_back(std::move(p));
+    }
+    else
+    {
+      m_protocols_to_register.push_back(std::move(p));
+    }
   }
 }
 
 void multiplex_protocol::stop_expose_to(const protocol_base& p)
 {
-  m_protocols.erase(
-      ossia::remove_if(
-          m_protocols, [&](const auto& ptr) { return ptr.get() == &p; }),
-      m_protocols.end());
+  ossia::remove_erase_if(m_protocols_to_register, [&](const auto& ptr) { return ptr.get() == &p; });
+  ossia::remove_erase_if(m_protocols, [&](const auto& ptr) { return ptr.get() == &p; });
 }
 
 void ossia::net::multiplex_protocol::clear()

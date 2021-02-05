@@ -212,7 +212,7 @@ bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 bool osc_protocol::echo_incoming_message(
     const message_origin_identifier& id, const parameter_base& addr, const value& val)
 {
-  if(&id.protocol == this && id.identifier != (uintptr_t)(m_sender.get()))
+  if(&id.protocol == this && id.identifier == (uintptr_t)(m_sender.get()))
     return true;
 
   m_sender->send(addr, val);

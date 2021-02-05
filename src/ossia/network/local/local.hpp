@@ -27,17 +27,11 @@ public:
   multiplex_protocol& operator=(const multiplex_protocol&) = delete;
   multiplex_protocol& operator=(multiplex_protocol&&) = delete;
 
-  multiplex_protocol(std::unique_ptr<protocol_base> arg)
-    : multiplex_protocol{}
-  {
-    expose_to(std::move(arg));
-  }
-
   template <typename... Args>
-  multiplex_protocol(Args&&... args, std::unique_ptr<protocol_base> arg)
-      : multiplex_protocol{std::forward<Args>(args)...}
+  explicit multiplex_protocol(Args&&... args)
+      : multiplex_protocol{}
   {
-    expose_to(std::move(arg));
+    (expose_to(std::move(args)), ...);
   }
 
   virtual ~multiplex_protocol();
@@ -70,6 +64,7 @@ public:
 
 private:
   std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols;
+  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols_to_register;
   ossia::net::device_base* m_device{};
 };
 
