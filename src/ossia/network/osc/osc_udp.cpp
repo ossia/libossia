@@ -38,8 +38,8 @@ osc_udp_protocol::osc_udp_protocol(
     , m_remotePort{remote_port}
 {
   m_impl = new impl{
-      .from_client{m_localHost, m_localPort, ctx->context},
-      .to_client{m_remoteHost, m_remotePort, ctx->context}
+      {m_localHost, m_localPort, ctx->context},
+      {m_remoteHost, m_remotePort, ctx->context}
   };
 
   m_impl->from_client.open();
