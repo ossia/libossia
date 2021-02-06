@@ -511,17 +511,6 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
 
-        - task: GitHubRelease@1
-          inputs:
-            gitHubConnection: github.com_jcelerier
-            repositoryName: ossia/libossia
-            action: 'edit'
-            target: '$(Build.SourceVersion)'
-            tagSource: userSpecifiedTag
-            tag: '$(releaseTag)'
-            assetUploadMode: 'replace'
-            assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
-
       - job: Java
         pool:
           vmImage: 'ubuntu-20.04'
@@ -571,18 +560,6 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
-        - task: GitHubRelease@1
-          inputs:
-            gitHubConnection: github.com_jcelerier
-            repositoryName: ossia/libossia
-            action: 'edit'
-            target: '$(Build.SourceVersion)'
-            tagSource: userSpecifiedTag
-            tag: '$(releaseTag)'
-            assetUploadMode: 'replace'
-            assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
-      
-
   - stage: GithubRelease
     jobs:
       - job: GithubRelease
@@ -594,6 +571,14 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-max
+            path: Assets
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-java
+            path: Assets
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-unity3d
             path: Assets
 
         - bash: |
