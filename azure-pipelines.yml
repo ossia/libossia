@@ -449,11 +449,10 @@ stages:
     # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     variables:
-    - name: releaseTag
       $[ if eq(variables['isGitTag'], true) ]:
-        value: '$(gitTag)'
+        releaseTag: '$(gitTag)'
       $[ if eq(variables['isGitTag'], false) ]:
-        value: latest-ci-build
+        releaseTag: latest-ci-build
 
     jobs:
       - job: Unity3D
