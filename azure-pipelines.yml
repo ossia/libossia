@@ -16,6 +16,71 @@ variables:
 stages:
   - stage: Build
     jobs:
+      - job: MaxMacOS
+        displayName: ossia-max (macOS)
+        pool:
+          vmImage: 'macos-10.15'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_MAX_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              find ossia-max-package/ -name '*.dylib' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+              find ossia-max-package/ -name '*.mxo' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+
+              zip ossia-max.zip ossia-max-package/
+              xcrun altool \
+                   --notarize-app \
+                   -t osx \
+                   -f "ossia-max.zip" \
+                   --primary-bundle-id "io.ossia.ossia-max" \
+                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-max.zip
+            )
+
+          displayName: Build
+          env:
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
+            artifactName: libossia-max-macos
+
       - job: MaxWin64
         displayName: ossia-max (Win64)
         pool:
