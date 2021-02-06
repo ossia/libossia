@@ -141,6 +141,8 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
             artifactName: ossia-max
 
+  - stage: GithubRelease
+    jobs:
       - job: GithubRelease
         pool:
           vmImage: 'ubuntu-20.04'
