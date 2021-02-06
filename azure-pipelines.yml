@@ -577,6 +577,17 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
+            if [[ "$isGitTAG" -eq "true" ]]
+            then
+              RELEASE_NAME=$gitTag
+            else
+              RELEASE_NAME="latest-ci-build"
+            fi
+            echo "##vso[task.setvariable variable=releaseName;]$RELEASE_NAME"
+            echo "releaseName value is $(releaseName)"
+          displayName: Set Release Name
+
+        - bash: |
             echo "Release Tag: ${releaseTag}, gitTag: ${gitTag}"
             cd $(System.DefaultWorkingDirectory)
             zip -r ossia-max.zip ossia
@@ -594,6 +605,6 @@ stages:
             action: 'edit'
             target: '$(Build.SourceVersion)'
             tagSource: userSpecifiedTag
-            tag: '$(releaseTag)'
+            tag: '$(releaseName)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
