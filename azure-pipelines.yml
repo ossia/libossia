@@ -132,14 +132,14 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
-            if [[ "$isGitTAG" -eq "true" ]]
+            if [ "$isGitTag" -eq "true" ]:
             then
-              RELEASE_NAME=$gitTag
+              RELEASE_NAME=${gitTag}
             else
               RELEASE_NAME="latest-ci-build"
             fi
             echo "##vso[task.setvariable variable=releaseName;]$RELEASE_NAME"
-            echo "releaseName value is $(releaseName)"
+            echo "releaseName value is ${releaseName}"
           displayName: Set Release Name
 
         - bash: |
