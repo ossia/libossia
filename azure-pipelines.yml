@@ -153,7 +153,7 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-max
-            path: $(System.ArtifactStagingDirectory)
+            path: Assets
 
         - bash: |
             if [ "$isGitTag" = "True" ]
@@ -174,4 +174,5 @@ stages:
             tagSource: userSpecifiedTag
             tag: '$(releaseName)'
             assetUploadMode: 'replace'
+            assets: 'Assets/*'
             isPreRelease: true
