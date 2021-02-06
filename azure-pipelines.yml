@@ -51,12 +51,6 @@ stages:
     condition: succeeded()
     # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
-    variables:
-      $[ if eq(variables['isGitTag'], true) ]:
-        releaseTag: '$(gitTag)'
-      $[ if eq(variables['isGitTag'], false) ]:
-        releaseTag: latest-ci-build
-
     jobs:
       - job: Max
         pool:
