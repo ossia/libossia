@@ -152,9 +152,9 @@ stages:
             path: $(System.ArtifactStagingDirectory)
 
         - bash: |
-            if [[ "$isGitTag" -eq "true" ]]
+            if [ "$isGitTag" = "True" ]
             then
-              RELEASE_NAME=${gitTag}
+              RELEASE_NAME="$(gitTag)"
             else
               RELEASE_NAME="latest-ci-build"
             fi
