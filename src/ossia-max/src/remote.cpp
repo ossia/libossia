@@ -122,6 +122,12 @@ void remote::destroy(remote* x)
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);
 
+  for(auto dev : x->m_devices)
+  {
+    dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(x);
+  }
+  x->m_devices.clear();
+
   device_base::on_device_created.disconnect<&remote::on_device_created>(x);
   device_base::on_device_removing.disconnect<&remote::on_device_removing>(x);
 
@@ -321,7 +327,6 @@ void remote::unregister()
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
   auto& node = addr.get_node();
-  auto oscaddr = ossia::net::address_string_from_node(node);
 
   for(auto& p : m_paths)
   {
