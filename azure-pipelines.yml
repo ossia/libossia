@@ -117,7 +117,7 @@ stages:
     # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     jobs:
-      - job: Max
+      - job: AssembleMax
         pool:
           vmImage: 'ubuntu-20.04'
 
@@ -132,6 +132,26 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            zip -r ossia-max.zip ossia
+          displayName: Package
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
+            artifactName: ossia-max
+
+      - job: GithubRelease
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        steps:
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-max
+            path: $(System.ArtifactStagingDirectory)
+
+        - bash: |
             if [[ "$isGitTag" -eq "true" ]]
             then
               RELEASE_NAME=${gitTag}
@@ -142,17 +162,6 @@ stages:
             echo "releaseName value is ${releaseName}"
           displayName: Set Release Name
 
-        - bash: |
-            echo "Release Tag: ${releaseTag}, gitTag: ${gitTag}"
-            cd $(System.DefaultWorkingDirectory)
-            zip -r ossia-max.zip ossia
-          displayName: Package
-
-        - task: PublishPipelineArtifact@1
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
-            artifactName: ossia-max
-
         - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
@@ -162,4 +171,3 @@ stages:
             tagSource: userSpecifiedTag
             tag: '$(releaseName)'
             assetUploadMode: 'replace'
-            assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
