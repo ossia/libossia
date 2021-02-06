@@ -19,9 +19,10 @@ namespace max
 struct router
 {
   t_object m_object;
+  long m_truncate{1};
 
   router(long argc, t_atom* argv);
-  void add_pattern(std::string pattern);
+  void change_pattern(int index, std::string pattern);
 
   static void free(ossia::max::router* x);
   static void in_anything(ossia::max::router* x, t_symbol* s, long argc, t_atom* argv);
@@ -30,7 +31,7 @@ struct router
 
   std::vector<std::regex> m_patterns{};
   std::vector<void*> m_outlets{};
-  void* m_inlet{};
+  std::vector<void*> m_inlets{};
 
 };
 } // max namespace

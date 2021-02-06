@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 535.0, 175.0, 1351.0, 710.0 ],
+		"rect" : [ 66.0, 205.0, 1013.0, 710.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -40,13 +40,48 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-16",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 358.0, 53.0, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-8",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 741.0, 289.0, 71.0, 22.0 ],
+					"text" : "namespace"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 741.0, 349.0, 32.0, 22.0 ],
+					"text" : "print"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-17",
 					"maxclass" : "button",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 233.0, 59.0, 24.0, 24.0 ]
+					"patching_rect" : [ 54.0, 56.0, 24.0, 24.0 ]
 				}
 
 			}
@@ -57,7 +92,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "bang" ],
-					"patching_rect" : [ 233.0, 21.0, 382.0, 22.0 ],
+					"patching_rect" : [ 54.0, 18.0, 382.0, 22.0 ],
 					"text" : "ossia.test-logger \"remote don't output 0 on node creation\" @autoquit 1"
 				}
 
@@ -70,7 +105,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 472.0, 526.0, 276.0, 33.0 ],
+					"patching_rect" : [ 293.0, 523.0, 276.0, 33.0 ],
 					"text" : "works on 2019.06.21 with  3c9fef2af48a2152cf40ca603d14840dfaabc576"
 				}
 
@@ -82,7 +117,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "bang", "bang" ],
-					"patching_rect" : [ 212.0, 364.0, 34.0, 22.0 ],
+					"patching_rect" : [ 33.0, 361.0, 34.0, 22.0 ],
 					"text" : "t b b"
 				}
 
@@ -94,7 +129,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 227.0, 549.0, 98.0, 22.0 ],
+					"patching_rect" : [ 48.0, 546.0, 98.0, 22.0 ],
 					"text" : "script delete abs"
 				}
 
@@ -106,7 +141,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 4,
 					"outlettype" : [ "bang", "bang", "bang", "int" ],
-					"patching_rect" : [ 233.0, 91.0, 59.0, 22.0 ],
+					"patching_rect" : [ 54.0, 88.0, 59.0, 22.0 ],
 					"text" : "t b b b 74"
 				}
 
@@ -118,7 +153,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 256.666655999999989, 588.0, 396.0, 22.0 ],
+					"patching_rect" : [ 77.666655999999989, 585.0, 396.0, 22.0 ],
 					"text" : "script newobject newobj @text \"fm_synth fmjevousaime\" @varname abs"
 				}
 
@@ -130,7 +165,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 256.666655999999989, 649.0, 67.0, 22.0 ],
+					"patching_rect" : [ 77.666655999999989, 646.0, 67.0, 22.0 ],
 					"save" : [ "#N", "thispatcher", ";", "#Q", "end", ";" ],
 					"text" : "thispatcher"
 				}
@@ -161,7 +196,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 1062.0, 278.0, 640.0, 480.0 ],
+						"rect" : [ 807.0, 278.0, 640.0, 480.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -227,7 +262,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
+									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 									"id" : "obj-8",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
@@ -282,8 +317,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 385.0, 6.0, 126.0, 22.0 ],
-									"text" : "ossia.view /my_model"
+									"patching_rect" : [ 158.0, 78.0, 123.0, 22.0 ],
+									"text" : "ossia.view my_model"
 								}
 
 							}
@@ -340,7 +375,7 @@
  ]
 					}
 ,
-					"patching_rect" : [ 504.5, 286.0, 544.0, 206.0 ],
+					"patching_rect" : [ 107.5, 296.0, 318.0, 195.0 ],
 					"viewvisibility" : 1
 				}
 
@@ -400,6 +435,18 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-7",
+									"maxclass" : "number",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 29.0, 64.0, 50.0, 22.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"comment" : "",
 									"id" : "obj-3",
 									"index" : 1,
@@ -407,7 +454,7 @@
 									"numinlets" : 0,
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
-									"patching_rect" : [ 166.0, 23.0, 30.0, 30.0 ]
+									"patching_rect" : [ 29.0, 21.0, 30.0, 30.0 ]
 								}
 
 							}
@@ -418,7 +465,7 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 192.0, 128.0, 50.0, 22.0 ],
+									"patching_rect" : [ 55.0, 126.0, 50.0, 22.0 ],
 									"text" : "74"
 								}
 
@@ -431,7 +478,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 166.0, 128.0, 24.0, 24.0 ]
+									"patching_rect" : [ 29.0, 126.0, 24.0, 24.0 ]
 								}
 
 							}
@@ -442,7 +489,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 166.0, 99.0, 185.0, 22.0 ],
+									"patching_rect" : [ 29.0, 97.0, 185.0, 22.0 ],
 									"text" : "ossia.parameter an_int @type int"
 								}
 
@@ -454,7 +501,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 385.0, 6.0, 131.0, 22.0 ],
+									"patching_rect" : [ 100.0, 21.0, 131.0, 22.0 ],
 									"text" : "ossia.model my_model"
 								}
 
@@ -478,15 +525,22 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-2", 0 ],
+									"destination" : [ "obj-7", 0 ],
 									"source" : [ "obj-3", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-2", 0 ],
+									"source" : [ "obj-7", 0 ]
 								}
 
 							}
  ]
 					}
 ,
-					"patching_rect" : [ 508.5, 104.0, 572.0, 168.0 ],
+					"patching_rect" : [ 121.5, 105.0, 271.0, 170.0 ],
 					"viewvisibility" : 1
 				}
 
@@ -498,13 +552,20 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 726.0, 21.0, 110.0, 22.0 ],
+					"patching_rect" : [ 741.0, 321.0, 110.0, 22.0 ],
 					"text" : "ossia.device blabla"
 				}
 
 			}
  ],
 		"lines" : [ 			{
+				"patchline" : 				{
+					"destination" : [ "obj-6", 0 ],
+					"source" : [ "obj-1", 0 ]
+				}
+
+			}
+, 			{
 				"patchline" : 				{
 					"destination" : [ "obj-17", 0 ],
 					"source" : [ "obj-11", 0 ]
@@ -529,6 +590,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-13", 0 ],
 					"source" : [ "obj-15", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-2", 0 ],
+					"source" : [ "obj-16", 0 ]
 				}
 
 			}
@@ -563,16 +631,23 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-3", 0 ],
-					"midpoints" : [ 255.833333333333343, 275.5, 514.0, 275.5 ],
+					"midpoints" : [ 76.833333333333343, 272.5, 117.0, 272.5 ],
 					"source" : [ "obj-4", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-1", 0 ],
+					"source" : [ "obj-8", 0 ]
 				}
 
 			}
  ],
 		"dependency_cache" : [ 			{
 				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/dev/OSSIA/libossia/src/ossia-max/patchers",
-				"patcherrelativepath" : "../../patchers",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}

@@ -29,6 +29,10 @@ extern "C" void ossia_router_setup()
       c, (method)router::assist,
       "assist", A_CANT, 0);
 
+  CLASS_ATTR_LONG(c, "truncate", 0, router, m_truncate);
+  CLASS_ATTR_STYLE(c, "truncate", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "truncate", 0, "Truncate matching part of address (default on)");
+
   class_register(CLASS_BOX, ossia_library.ossia_router_class);
 }
 
@@ -42,41 +46,47 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   // extra outlet for non matching addresses
   x->m_outlets.push_back(outlet_new(x, nullptr));
 
+  long attrstart = attr_args_offset(argc, argv);
+  attr_args_process(x, argc - attrstart, argv + attrstart);
+
+  argc = attrstart;
+
   if(argc == 0)
   {
-    x->m_inlet = proxy_new(x, 2, 0L);
+    x->m_inlets.push_back(proxy_new(x, 2, 0L));
     x->m_outlets.push_back(outlet_new(x, nullptr));
   }
-
-  while(argc--)
+  else
   {
-    if(argv[argc].a_type == A_SYM)
+    int inlet_id = 0;
+    x->m_patterns.resize(argc);
+    while(argc--)
     {
-      std::string pattern(argv[argc].a_w.w_sym->s_name);
-      x->add_pattern(pattern);
+      if(argv[argc].a_type == A_SYM)
+      {
+        std::string pattern(argv[argc].a_w.w_sym->s_name);
+        x->change_pattern(inlet_id++, pattern);
+        x->m_inlets.push_back(proxy_new(x, argc+1, 0L));
 
-      x->m_outlets.push_back(outlet_new(x, nullptr));
-    }
-    else
-    {
-      object_error(&x->m_object, "wrong arg type, should be symbol");
+        x->m_outlets.push_back(outlet_new(x, nullptr));
+      }
+      else
+      {
+        object_error(&x->m_object, "wrong arg type, should be symbol");
+      }
     }
   }
 
   return x;
 }
 
-void router::add_pattern(std::string pattern)
+void router::change_pattern(int index, std::string pattern)
 {
-  if(pattern[0] == '/')
-  {
-    pattern = pattern.substr(1);
-  }
   ossia::net::expand_ranges(pattern);
   pattern = ossia::traversal::substitute_characters(pattern);
 
   try {
-    m_patterns.push_back(std::regex("^/?" + pattern + "(/|$)"));
+    m_patterns[index] = std::regex("^" + pattern);
   } catch (std::exception& e) {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
@@ -86,33 +96,29 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 {
   std::string address(s->s_name);
 
-  if(address[0] == '/')
-  {
-    address = address.substr(1);
-  }
-
   long inlet = proxy_getinlet((t_object*)x);
 
   if(inlet > 0)
   {
-    x->m_patterns.clear();
-    x->add_pattern(address);
+    x->change_pattern(x->m_inlets.size() - inlet, address);
   }
   else
   {
     bool match = false;
     for(int i = 0 ; i < x->m_patterns.size(); i++)
     {
-      const auto &pattern_regex = x->m_patterns[i];
+      const auto& pattern_regex = x->m_patterns[i];
 
       std::smatch smatch;
       if(std::regex_search(address, smatch, pattern_regex))
       {
         match = true;
-        std::string suffix(smatch.suffix());
-        if( suffix.size() > 0)
+        std::string newaddress = address;
+        if(x->m_truncate)
+          newaddress = smatch.suffix();
+        if( newaddress.size() > 0)
         {
-          outlet_anything(x->m_outlets[i+1], gensym(suffix.c_str()), argc, argv);
+          outlet_anything(x->m_outlets[i+1], gensym(newaddress.c_str()), argc, argv);
         }
         else
         {
@@ -132,8 +138,8 @@ void router::free(router* x)
   {
     for(auto out : x->m_outlets)
       outlet_delete(out);
-    if(x->m_inlet)
-      proxy_delete(x->m_inlet);
+    for(auto in : x->m_inlets)
+      proxy_delete(in);
     x->~router();
   }
 }

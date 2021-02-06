@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 2,
-			"revision" : 0,
+			"minor" : 1,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -50,8 +50,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -123,7 +123,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-30",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -149,7 +149,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-32",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -175,7 +175,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-34",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -201,7 +201,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-36",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -227,7 +227,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-15",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -253,7 +253,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-18",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -279,7 +279,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-21",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -305,7 +305,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-27",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -331,7 +331,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-9",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -358,14 +358,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-8",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 472.0, 262.0, 238.0, 22.0 ],
-									"text" : "ossia.assert letter_interval/namespace/size"
+									"patching_rect" : [ 472.0, 262.0, 202.0, 22.0 ],
+									"text" : "ossia.assert nested/namespace/size"
 								}
 
 							}
@@ -401,7 +401,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 407.0, 87.0, 159.0, 22.0 ],
-									"text" : "rate 10."
+									"text" : "address whatever5 12"
 								}
 
 							}
@@ -457,7 +457,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-17",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -483,7 +483,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-13",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -509,7 +509,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-23",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -552,8 +552,8 @@
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 109.0, 100.0, 75.0, 22.0 ],
-									"text" : "address toto"
+									"patching_rect" : [ 109.0, 100.0, 71.0, 22.0 ],
+									"text" : "namespace"
 								}
 
 							}
@@ -837,7 +837,6 @@
 					}
 ,
 					"patching_rect" : [ 875.0, 486.0, 201.0, 40.0 ],
-					"presentation_linecount" : 2,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -895,8 +894,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1704,8 +1703,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2092,7 +2091,6 @@
 					}
 ,
 					"patching_rect" : [ 875.0, 398.0, 182.0, 24.0 ],
-					"presentation_linecount" : 2,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -2115,8 +2113,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2580,7 +2578,6 @@
 					}
 ,
 					"patching_rect" : [ 875.0, 365.0, 181.0, 24.0 ],
-					"presentation_linecount" : 2,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -2603,8 +2600,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3027,7 +3024,6 @@
 					}
 ,
 					"patching_rect" : [ 875.0, 326.0, 178.0, 24.0 ],
-					"presentation_linecount" : 2,
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -3050,8 +3046,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3582,8 +3578,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"minor" : 1,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3966,7 +3962,7 @@
 					"numoutlets" : 4,
 					"outlettype" : [ "list", "", "", "" ],
 					"patching_rect" : [ 367.0, 192.0, 333.0, 479.0 ],
-					"rows" : 26
+					"rows" : 38
 				}
 
 			}
@@ -4162,7 +4158,7 @@
 		"dependency_cache" : [ 			{
 				"name" : "ossia.test-logger.maxpat",
 				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}

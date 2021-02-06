@@ -59,6 +59,16 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     device_base::on_device_created.connect<&view::on_device_created>(x);
     device_base::on_device_removing.connect<&view::on_device_removing>(x);
 
+    std::vector<ossia::net::generic_device*> devs = get_all_devices();
+    for(auto dev : devs)
+    {
+      if(!x->m_devices.contains(dev))
+      {
+        dev->on_node_created.connect<&view::on_node_created_callback>(x);
+        x->m_devices.push_back(dev);
+      }
+    }
+
     x->m_otype = object_class::view;
 
     // make outlets
@@ -93,6 +103,13 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 void view::destroy(view* x)
 {
   critical_enter(0);
+
+  for(auto dev : x->m_devices)
+  {
+    dev->on_node_created.disconnect<&view::on_node_created_callback>(x);
+  }
+  x->m_devices.clear();
+
   device_base::on_device_created.disconnect<&view::on_device_created>(x);
   device_base::on_device_removing.disconnect<&view::on_device_removing>(x);
 
@@ -151,8 +168,6 @@ void view::unregister()
 
 void view::on_node_created_callback(ossia::net::node_base& node)
 {
-  auto oscaddr = ossia::net::address_string_from_node(node);
-
   for(auto p : m_paths)
   {
     auto path = ossia::traversal::make_path(p);
@@ -162,6 +177,7 @@ void view::on_node_created_callback(ossia::net::node_base& node)
       int size = m_matchers.size();
       m_matchers[size-1]->m_index = size;
       fill_selection();
+      register_children_in_patcher_recursively(m_patcher, this);
     }
   }
 }

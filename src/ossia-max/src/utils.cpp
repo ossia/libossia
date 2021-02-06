@@ -145,7 +145,7 @@ void output_all_values(t_object* patcher, bool only_default)
       if(node)
       {
         auto prio = get_priority_list(node);
-        priority_graph.push_back({m, prio});
+        priority_graph.push_back({m.get(), prio});
       }
     }
   }

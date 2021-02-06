@@ -445,7 +445,14 @@ stages:
             artifactName: libossia-max-win64
 
   - stage: Assemble
-    condition: and(succeeded(), eq(variables.isGitTag, true))
+    condition: succeeded()
+    # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
+
+    variables:
+      $[ if eq(variables['isGitTag'], true) ]:
+        releaseTag: '$(gitTag)'
+      $[ if eq(variables['isGitTag'], false) ]:
+        releaseTag: latest-ci-build
 
     jobs:
       - job: Unity3D
@@ -491,8 +498,8 @@ stages:
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: userSpecifiedTag
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
 
@@ -550,8 +557,8 @@ stages:
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: userSpecifiedTag
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
       
@@ -570,13 +577,9 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
+            echo "Release Tag: ${releaseTag}, gitTag: ${gitTag}"
             cd $(System.DefaultWorkingDirectory)
-
-            pushd ossia-max-package
             zip -r ossia-max.zip ossia
-
-            mv ossia-max.zip $(System.DefaultWorkingDirectory)/ossia-max.zip
-            popd
           displayName: Package
 
         - task: PublishPipelineArtifact@1
@@ -590,7 +593,7 @@ stages:
             repositoryName: ossia/libossia
             action: 'edit'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: userSpecifiedTag
+            tag: '$(releaseTag)'
             assetUploadMode: 'replace'
             assets: $(System.DefaultWorkingDirectory)/ossia-max.zip
