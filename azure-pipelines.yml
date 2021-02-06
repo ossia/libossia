@@ -132,7 +132,7 @@ stages:
             path: $(System.DefaultWorkingDirectory)
 
         - bash: |
-            if [ "$isGitTag" -eq "true" ]
+            if [[ "$isGitTag" -eq "true" ]]
             then
               RELEASE_NAME=${gitTag}
             else
