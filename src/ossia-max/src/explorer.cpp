@@ -14,6 +14,7 @@ using namespace ossia::max;
 #pragma mark -
 #pragma mark ossia_explorer class methods
 
+// TODO put all symlbol into an ossia::sym class
 t_symbol* explorer::s_explore = gensym("explore");
 t_symbol* explorer::s_size = gensym("size");
 t_symbol* explorer::s_namespace = gensym("namespace");
@@ -150,9 +151,20 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
   outlet_anything(x->m_dumpout, s_size, 1, &a);
   for(const auto& n : nodes)
   {
-    auto s = ossia::net::address_string_from_node(*n);
-    A_SETSYM(&a, gensym(s.c_str()));
-    outlet_anything(x->m_dumpout, s_namespace, 1, &a);
+    ossia::value name = ossia::net::osc_parameter_string(*n);
+
+    std::vector<t_atom> va;
+    value2atom vm{va};
+    name.apply(vm);
+
+    auto param = n->get_parameter();
+    if(param)
+    {
+      ossia::value val = n->get_parameter()->value();
+      val.apply(vm);
+    }
+
+    outlet_anything(x->m_dumpout, s_namespace, va.size(), va.data());
   }
 }
 
