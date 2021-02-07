@@ -570,7 +570,8 @@ stages:
           vmImage: 'ubuntu-20.04'
 
         steps:
-        - checkout: none
+        - checkout: self
+          submodules: false
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-max
