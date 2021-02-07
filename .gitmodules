@@ -118,3 +118,6 @@
 [submodule "3rdparty/Catch2"]
 	path = 3rdparty/Catch2
 	url = https://github.com/catchorg/Catch2
+[submodule "3rdparty/ios-cmake"]
+	path = 3rdparty/ios-cmake
+	url = https://github.com/avilleret/ios-cmake.git

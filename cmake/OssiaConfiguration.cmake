@@ -16,6 +16,28 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
 
+# iOS 
+include(${OSSIA_3RDPARTY_FOLDER}/ios-cmake/helper-macros.cmake)
+
+if(PLATFORM)
+    set(TARGET_ARCH ios)
+    # Add some sanitary checks that the toolchain is actually working!
+    include(CheckCXXSymbolExists)
+    check_cxx_symbol_exists(kqueue sys/event.h HAVE_KQUEUE)
+    if(NOT HAVE_KQUEUE)
+      message(FATAL_ERROR "kqueue NOT found!")
+    endif()
+    
+    # Hook up XCTest for the supported plaforms (all but WatchOS)
+    if(NOT PLATFORM MATCHES ".*WATCHOS.*")
+      # Use the standard find_package, broken between 3.14.0 and 3.14.4 at least for XCtest...
+      find_package(XCTest REQUIRED)
+      # Fallback: Try to find XCtest as host package via toochain macro (should always work)
+      # find_host_package(XCTest REQUIRED)
+    endif()
+    set(OSSIA_STATIC ON) # build only static lib for iOS
+endif()
+
 if(UNIX AND NOT APPLE)
   find_program(LSB_RELEASE lsb_release)
   if(LSB_RELEASE)
