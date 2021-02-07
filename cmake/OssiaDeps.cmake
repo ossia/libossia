@@ -28,6 +28,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       websocketpp
       whereami
       ../cmake/cmake-modules
+      ios-cmake
   )
 
   if(OSSIA_DATAFLOW)
