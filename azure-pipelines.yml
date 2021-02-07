@@ -614,3 +614,7 @@ stages:
             assetUploadMode: 'replace'
             assets: 'Assets/*'
             isPreRelease: true
+
+        - bash: |
+            git push --follow-tags --force
+          displayName: Push Tag
