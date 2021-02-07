@@ -26,8 +26,10 @@ Build Status
 ============
 * Linux, OS X : [![Build Status](https://travis-ci.org/ossia/libossia.svg)](https://travis-ci.org/ossia/libossia)
 * Windows : [![Build status](https://ci.appveyor.com/api/projects/status/ut3o8p64lib3ie1w?svg=true)](https://ci.appveyor.com/project/JeanMichalCelerier/libossia)
-* Java & Unity3D : [![Azure Pipelines](https://img.shields.io/azure-devops/build/ossia/f914424f-63a4-43f7-b424-67c9dc58ae05/1)](https://dev.azure.com/ossia/libossia/_build?definitionId=1)
+* Max, Java & Unity3D : [![Azure Pipelines](https://img.shields.io/azure-devops/build/ossia/f914424f-63a4-43f7-b424-67c9dc58ae05/1)](https://dev.azure.com/ossia/libossia/_build?definitionId=1)
 * Coveralls : [![Coverage Status](https://coveralls.io/repos/github/ossia/libossia/badge.svg?branch=master)](https://coveralls.io/github/ossia/libossia?branch=master)
+
+Latest ci builds are available [here](https://github.com/ossia/libossia/releases/tag/latest-ci-build). But please note that those are only for testing purpose.
 
 License
 =======
