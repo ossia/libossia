@@ -181,7 +181,7 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 bool osc_protocol::push_bundle(
     const std::vector<const parameter_base*>& addresses)
 {
-  if(auto data = make_bundle(addresses)) {
+  if(auto data = make_bundle_server(addresses)) {
     m_sender->socket().Send(data->stream.Data(), data->stream.Size());
     return true;
   }
@@ -191,7 +191,7 @@ bool osc_protocol::push_bundle(
 bool osc_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  if(auto data = make_raw_bundle(addresses)) {
+  if(auto data = make_raw_bundle_server(addresses)) {
     m_sender->socket().Send(data->stream.Data(), data->stream.Size());
     return true;
   }

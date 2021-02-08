@@ -24,20 +24,18 @@ namespace ossia
 namespace net
 {
 struct osc_protocol_common;
+struct osc_protocol_client;
+struct osc_protocol_server;
 class unix_socket;
 struct network_context;
 using network_context_ptr = std::shared_ptr<network_context>;
 
-class OSSIA_EXPORT osc_unix_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT osc_unix_protocol : public ossia::net::protocol_base
 {
   friend struct osc_protocol_common;
 public:
   using socket_type = unix_socket;
-  enum mode {
-    server, client
-  };
   osc_unix_protocol(
-      mode m,
       network_context_ptr ctx,
       std::string_view socket_name);
 
@@ -52,28 +50,20 @@ public:
   osc_unix_protocol& set_learning(bool);
 
   bool update(ossia::net::node_base& node_base) override;
-
   bool pull(ossia::net::parameter_base& parameter_base) override;
-
-  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
-  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
-  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
-
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
-
   bool echo_incoming_message(
       const message_origin_identifier& id, const parameter_base& addr, const value& val) override;
 
-private:
+protected:
   void on_received_message(const oscpack::ReceivedMessage& m);
   void on_learn(const oscpack::ReceivedMessage& m);
   void set_device(ossia::net::device_base& dev) override;
 
-
   struct impl;
   impl* m_impl{};
+
+  ossia::net::network_context_ptr m_ctx;
   message_origin_identifier m_id;
   listened_parameters m_listening;
 
@@ -82,6 +72,35 @@ private:
   std::string m_remoteSocket;
 
   std::atomic_bool m_learning{};
+};
+
+class OSSIA_EXPORT osc_unix_server final
+    : public osc_unix_protocol
+{
+public:
+  osc_unix_server(
+      network_context_ptr ctx,
+      std::string_view socket_name);
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
+};
+
+class OSSIA_EXPORT osc_unix_client final
+    : public osc_unix_protocol
+{
+public:
+  osc_unix_client(
+      network_context_ptr ctx,
+      std::string_view socket_name);
+
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
 };
 }
 }
