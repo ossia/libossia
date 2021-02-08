@@ -195,7 +195,7 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
 {
   static constexpr auto text()
   {
-    constexpr_return(ossia::make_string_array("midinote"));
+    constexpr_return(ossia::make_string_array("midinote", "midipitch", "pitch"));
   }
 
   static strong_value<neutral_unit>
