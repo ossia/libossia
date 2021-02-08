@@ -31,6 +31,8 @@ else() # Linux
   )
 endif()
 
+configure_file( ${CMAKE_CURRENT_LIST_DIR}/package.json.in ${CMAKE_BINARY_DIR}/package.json @ONLY)
+
 install(
   DIRECTORY .
   DESTINATION ${OSSIA_UNITY_PACKAGE_FOLDER}/Scripts
@@ -38,12 +40,10 @@ install(
 )
 
 install(
-  FILES README.md
-  DESTINATION ${OSSIA_UNITY_PACKAGE_FOLDER}/
-)
-
-install(
-  FILES "${CMAKE_CURRENT_LIST_DIR}/../../LICENSE"
+  FILES 
+    "${CMAKE_CURRENT_LIST_DIR}/README.md"
+    "${CMAKE_BINARY_DIR}/package.json"
+    "${CMAKE_CURRENT_LIST_DIR}/../../LICENSE"
   DESTINATION ${OSSIA_UNITY_PACKAGE_FOLDER}/
 )
 
