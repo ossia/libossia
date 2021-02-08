@@ -24,30 +24,15 @@ struct osc_unix_protocol::impl
 };
 
 osc_unix_protocol::osc_unix_protocol(
-    mode m, network_context_ptr ctx, std::string_view socket_name)
+      network_context_ptr ctx
+    , std::string_view socket_name)
   : protocol_base{flags{}}
+  , m_ctx{std::move(ctx)}
   , m_id{*this}
+
 {
   m_localSocket = fmt::format("/tmp/{}.server.socket", socket_name);
   m_remoteSocket = fmt::format("/tmp/{}.client.socket", socket_name);
-  switch(m)
-  {
-  case mode::server:
-    m_impl = new impl{
-        .from_client{m_localSocket, ctx->context},
-        .to_client{m_remoteSocket, ctx->context}
-    };
-    break;
-
-  case mode::client:
-    m_impl = new impl{
-        .from_client{m_remoteSocket, ctx->context},
-        .to_client{m_localSocket, ctx->context}
-    };
-    break;
-  }
-
-  osc_protocol_common::init(*this);
 }
 
 osc_unix_protocol::~osc_unix_protocol()
@@ -76,37 +61,10 @@ bool osc_unix_protocol::pull(ossia::net::parameter_base& address)
   return false;
 }
 
-bool osc_unix_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
-{
-  return osc_protocol_common::push(*this, addr, v);
-}
-
-bool osc_unix_protocol::push(const ossia::net::parameter_base& addr, ossia::value&& v)
-{
-  return osc_protocol_common::push(*this, addr, std::move(v));
-}
-
-bool osc_unix_protocol::push_raw(const ossia::net::full_parameter_data& addr)
-{
-  return osc_protocol_common::push_raw(*this, addr);
-}
-
 bool osc_unix_protocol::echo_incoming_message(
     const message_origin_identifier& id, const parameter_base& addr, const value& val)
 {
   return osc_protocol_common::echo_incoming_message(*this, id, addr, val);
-}
-
-bool osc_unix_protocol::push_bundle(
-    const std::vector<const parameter_base*>& addresses)
-{
-  return osc_protocol_common::push_bundle(*this, addresses);
-}
-
-bool osc_unix_protocol::push_raw_bundle(
-    const std::vector<ossia::net::full_parameter_data>& addresses)
-{
-  return osc_protocol_common::push_raw_bundle(*this, addresses);
 }
 
 bool osc_unix_protocol::observe(ossia::net::parameter_base& address, bool enable)
@@ -124,4 +82,88 @@ void osc_unix_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
 }
+
+
+
+// Server implementation
+osc_unix_server::osc_unix_server(
+    network_context_ptr ctx
+    , std::string_view socket_name)
+  : osc_unix_protocol{std::move(ctx), socket_name}
+{
+  m_impl = new impl{
+      .from_client{m_localSocket, m_ctx->context},
+      .to_client{m_remoteSocket, m_ctx->context}
+  };
+  osc_protocol_common::init(*this);
+}
+
+bool osc_unix_server::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  return osc_protocol_server::push(*this, addr, v);
+}
+
+bool osc_unix_server::push(const ossia::net::parameter_base& addr, ossia::value&& v)
+{
+  return osc_protocol_server::push(*this, addr, std::move(v));
+}
+
+bool osc_unix_server::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  return osc_protocol_server::push_raw(*this, addr);
+}
+
+bool osc_unix_server::push_bundle(
+    const std::vector<const parameter_base*>& addresses)
+{
+  return osc_protocol_server::push_bundle(*this, *m_impl, addresses);
+}
+
+bool osc_unix_server::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
+{
+  return osc_protocol_server::push_raw_bundle(*this, *m_impl, addresses);
+}
+
+// Client implementation
+osc_unix_client::osc_unix_client(
+    network_context_ptr ctx
+    , std::string_view socket_name)
+  : osc_unix_protocol{std::move(ctx), socket_name}
+{
+  m_impl = new impl{
+      .from_client{m_remoteSocket, m_ctx->context},
+      .to_client{m_localSocket, m_ctx->context}
+  };
+  osc_protocol_common::init(*this);
+}
+
+
+bool osc_unix_client::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  return osc_protocol_client::push(*this, addr, v);
+}
+
+bool osc_unix_client::push(const ossia::net::parameter_base& addr, ossia::value&& v)
+{
+  return osc_protocol_client::push(*this, addr, std::move(v));
+}
+
+bool osc_unix_client::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  return osc_protocol_client::push_raw(*this, addr);
+}
+
+bool osc_unix_client::push_bundle(
+    const std::vector<const parameter_base*>& addresses)
+{
+  return osc_protocol_client::push_bundle(*this, *m_impl, addresses);
+}
+
+bool osc_unix_client::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
+{
+  return osc_protocol_client::push_raw_bundle(*this, *m_impl, addresses);
+}
+
 }

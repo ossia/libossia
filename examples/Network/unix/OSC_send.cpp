@@ -15,8 +15,7 @@ int main(int argc, char** argv)
 
 
   ossia::net::generic_device device{
-        std::make_unique<ossia::net::osc_unix_protocol>(
-              ossia::net::osc_unix_protocol::client, ctx, "ossia_echo"),
+        std::make_unique<ossia::net::osc_unix_client>(ctx, "ossia_echo"),
         "P"};
 
   ossia::net::full_parameter_data dat;
