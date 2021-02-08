@@ -170,15 +170,16 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/macos/ossia.dylib
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/macos/ossia.dylib
 
-              zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
+              zip ossia-unity.zip ossia/Plugins/macos/ossia.dylib
               xcrun altool \
                    --notarize-app \
                    -t osx \
                    -f "ossia-unity.zip" \
                    --primary-bundle-id "io.ossia.ossia-unity" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
             )
 
           displayName: Build
@@ -233,15 +234,16 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ios/ossia.a
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/ios/ossia.a
 
-              zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
+              zip ossia-unity.zip ossia/Plugins/ios/ossia.a
               xcrun altool \
                     --notarize-app \
                     -t ios \
                     -f "ossia-unity.zip" \
                     --primary-bundle-id "io.ossia.ossia-unity" \
                     -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
             )
 
           displayName: Build
@@ -372,6 +374,7 @@ stages:
                    -f "ossia-java.zip" \
                    --primary-bundle-id "io.ossia.ossia-java" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-java.zip
             )
 
           displayName: Build
@@ -555,23 +558,24 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-win32
-            path: $(System.DefaultWorkingDirectory)/unity3d-win32
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-macos
-            path: $(System.DefaultWorkingDirectory)/unity3d-macos
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-linux
-            path: $(System.DefaultWorkingDirectory)/unity3d-linux
+            path: $(System.DefaultWorkingDirectory)/package
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-unity3d-ios
+            path: $(System.DefaultWorkingDirectory)/package
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
-            mkdir -p ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/ossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
 
-            pushd ./unity3d-linux/ossia-unity/
+            pushd $(System.DefaultWorkingDirectory)/package
             zip -r ossia-unity3d.zip *
 
             mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
