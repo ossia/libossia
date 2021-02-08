@@ -12,32 +12,32 @@ if(APPLE)
   )
   install(
       TARGETS ossia
-      LIBRARY DESTINATION ossia-unity/Assets/Plugins/
+      LIBRARY DESTINATION "ossia/Plugins/${OSSIA_PLATFORM}"
   )
 elseif(WIN32)
   install(
       TARGETS ossia
-      RUNTIME DESTINATION "ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}"
+      RUNTIME DESTINATION "ossia/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}"
   )
 else() # Linux
   install(
       TARGETS ossia
-      LIBRARY DESTINATION "ossia-unity/Assets/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}"
+      LIBRARY DESTINATION "ossia/Plugins/${OSSIA_UNITY_PLUGIN_FOLDER}"
   )
 endif()
 
 install(
   DIRECTORY .
-  DESTINATION ossia-unity/Assets/ossia
+  DESTINATION ossia/Scripts
   FILES_MATCHING PATTERN *.cs
 )
 
 install(
   FILES "README.md"
-  DESTINATION ossia-unity/Assets/
+  DESTINATION ossia/
 )
 
 install(
   FILES "${CMAKE_CURRENT_LIST_DIR}/../../LICENSE"
-  DESTINATION ossia-unity/Assets
+  DESTINATION ossia/
 )

@@ -20,7 +20,7 @@ check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
 include(${OSSIA_3RDPARTY_FOLDER}/ios-cmake/helper-macros.cmake)
 
 if(PLATFORM)
-    set(TARGET_ARCH ios)
+    set(OSSIA_PLATFORM ios)
     # Add some sanitary checks that the toolchain is actually working!
     include(CheckCXXSymbolExists)
     check_cxx_symbol_exists(kqueue sys/event.h HAVE_KQUEUE)
@@ -36,6 +36,8 @@ if(PLATFORM)
       # find_host_package(XCTest REQUIRED)
     endif()
     set(OSSIA_STATIC ON) # build only static lib for iOS
+else()
+    set(OSSIA_PLATFORM macos)
 endif()
 
 if(UNIX AND NOT APPLE)
