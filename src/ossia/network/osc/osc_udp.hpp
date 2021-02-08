@@ -16,11 +16,13 @@ class ReceivedMessage;
 namespace ossia::net
 {
 struct osc_protocol_common;
+struct osc_protocol_client;
+struct osc_protocol_server;
 class udp_socket;
 struct network_context;
 using network_context_ptr = std::shared_ptr<network_context>;
 
-class OSSIA_EXPORT osc_udp_protocol final
+class OSSIA_EXPORT osc_udp_protocol
     : public ossia::net::protocol_base
 {
   friend struct osc_protocol_common;
@@ -42,20 +44,11 @@ public:
   osc_udp_protocol& set_learning(bool);
 
   bool update(ossia::net::node_base& node_base) override;
-
   bool pull(ossia::net::parameter_base& parameter_base) override;
-
-  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
-  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
-  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
-  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
-
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
-
   bool echo_incoming_message(const message_origin_identifier& id, const parameter_base& addr, const value& val) override;
 
-private:
+protected:
   void on_received_message(const oscpack::ReceivedMessage& m);
   void on_learn(const oscpack::ReceivedMessage& m);
   void set_device(ossia::net::device_base& dev) override;
@@ -63,6 +56,7 @@ private:
   struct impl;
   impl* m_impl{};
 
+  ossia::net::network_context_ptr m_ctx;
   message_origin_identifier m_id;
   listened_parameters m_listening;
 
@@ -73,5 +67,29 @@ private:
   uint16_t m_remotePort{};
 
   std::atomic_bool m_learning{};
+};
+
+class OSSIA_EXPORT osc_udp_server final
+    : public osc_udp_protocol
+{
+public:
+  using osc_udp_protocol::osc_udp_protocol;
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
+};
+
+class OSSIA_EXPORT osc_udp_client final
+    : public osc_udp_protocol
+{
+public:
+  using osc_udp_protocol::osc_udp_protocol;
+  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+  bool push(const ossia::net::parameter_base& parameter_base, ossia::value&& v) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<full_parameter_data>&) override;
 };
 }

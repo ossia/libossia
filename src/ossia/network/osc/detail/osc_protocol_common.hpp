@@ -28,9 +28,6 @@ struct osc_protocol_common
   template<typename T, typename Value_T>
   static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
   {
-    if (addr.get_access() == ossia::access_mode::GET)
-      return false;
-
     auto val = filter_value(addr, std::forward<Value_T>(v));
     if (val.valid())
     {
@@ -43,9 +40,6 @@ struct osc_protocol_common
   template<typename T>
   static bool push_raw(T& self, const ossia::net::full_parameter_data& addr)
   {
-    if (addr.get_access() == ossia::access_mode::GET)
-      return false;
-
     auto val = filter_value(addr, addr.value());
     if (val.valid())
     {
@@ -67,28 +61,6 @@ struct osc_protocol_common
 
     val.apply(osc_value_send_visitor<typename T::socket_type>{addr.get_node().osc_address(), self.m_impl->to_client});
     return true;
-  }
-
-  template<typename T>
-  static bool push_bundle(T& self,
-      const std::vector<const parameter_base*>& addresses)
-  {
-    if(auto data = make_bundle(addresses)) {
-      self.m_impl->to_client.send(data->stream.Data(), data->stream.Size());
-      return true;
-    }
-    return false;
-  }
-
-  template<typename T>
-  static bool push_raw_bundle(T& self,
-      const std::vector<ossia::net::full_parameter_data>& addresses)
-  {
-    if(auto data = make_raw_bundle(addresses)) {
-      self.m_impl->to_client.send(data->stream.Data(), data->stream.Size());
-      return true;
-    }
-    return false;
   }
 
   template<typename T>
@@ -117,6 +89,89 @@ struct osc_protocol_common
     {
       ossia::net::osc_learn(&self.m_device->get_root_node(), m);
     }
+  }
+};
+
+// Client can't push to GET addresses
+struct osc_protocol_client
+{
+  template<typename T, typename Value_T>
+  static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
+  {
+    if (addr.get_access() == ossia::access_mode::GET)
+      return false;
+
+    return osc_protocol_common::push(self, addr, std::forward<Value_T>(v));
+  }
+
+  template<typename T>
+  static bool push_raw(T& self, const ossia::net::full_parameter_data& addr)
+  {
+    if (addr.get_access() == ossia::access_mode::GET)
+      return false;
+
+    return osc_protocol_common::push_raw(self, addr);
+  }
+
+
+  template<typename T, typename Impl>
+  static bool push_bundle(T& self, Impl& impl,
+      const std::vector<const parameter_base*>& addresses)
+  {
+    if(auto data = make_bundle_client(addresses)) {
+      impl.to_client.send(data->stream.Data(), data->stream.Size());
+      return true;
+    }
+    return false;
+  }
+
+  template<typename T, typename Impl>
+  static bool push_raw_bundle(T& self, Impl& impl,
+      const std::vector<ossia::net::full_parameter_data>& addresses)
+  {
+    if(auto data = make_raw_bundle_client(addresses)) {
+      impl.to_client.send(data->stream.Data(), data->stream.Size());
+      return true;
+    }
+    return false;
+  }
+};
+
+// Servers can push to GET addresses
+struct osc_protocol_server
+{
+  template<typename T, typename Value_T>
+  static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
+  {
+    return osc_protocol_common::push(self, addr, std::forward<Value_T>(v));
+  }
+
+  template<typename T>
+  static bool push_raw(T& self, const ossia::net::full_parameter_data& addr)
+  {
+    return osc_protocol_common::push_raw(self, addr);
+  }
+
+  template<typename T, typename Impl>
+  static bool push_bundle(T& self, Impl& impl,
+                          const std::vector<const parameter_base*>& addresses)
+  {
+    if(auto data = make_bundle_server(addresses)) {
+      impl.to_client.send(data->stream.Data(), data->stream.Size());
+      return true;
+    }
+    return false;
+  }
+
+  template<typename T, typename Impl>
+  static bool push_raw_bundle(T& self, Impl& impl,
+                              const std::vector<ossia::net::full_parameter_data>& addresses)
+  {
+    if(auto data = make_raw_bundle_server(addresses)) {
+      impl.to_client.send(data->stream.Data(), data->stream.Size());
+      return true;
+    }
+    return false;
   }
 };
 

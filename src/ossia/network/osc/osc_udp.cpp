@@ -26,6 +26,7 @@ osc_udp_protocol::osc_udp_protocol(
     std::string_view local_host,  uint16_t local_port,
     std::string_view remote_host, uint16_t remote_port)
     : protocol_base{flags{}}
+    , m_ctx{std::move(ctx)}
     , m_id{*this}
     , m_localHost{local_host}
     , m_remoteHost{remote_host}
@@ -33,8 +34,8 @@ osc_udp_protocol::osc_udp_protocol(
     , m_remotePort{remote_port}
 {
   m_impl = new impl{
-      {m_localHost, m_localPort, ctx->context},
-      {m_remoteHost, m_remotePort, ctx->context}
+      {m_localHost, m_localPort, m_ctx->context},
+      {m_remoteHost, m_remotePort, m_ctx->context}
   };
 
   osc_protocol_common::init(*this);
@@ -66,37 +67,10 @@ bool osc_udp_protocol::pull(ossia::net::parameter_base& address)
   return false;
 }
 
-bool osc_udp_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
-{
-  return osc_protocol_common::push(*this, addr, v);
-}
-
-bool osc_udp_protocol::push(const ossia::net::parameter_base& addr, ossia::value&& v)
-{
-  return osc_protocol_common::push(*this, addr, std::move(v));
-}
-
-bool osc_udp_protocol::push_raw(const ossia::net::full_parameter_data& addr)
-{
-  return osc_protocol_common::push_raw(*this, addr);
-}
-
 bool osc_udp_protocol::echo_incoming_message(
     const message_origin_identifier& id, const parameter_base& addr, const value& val)
 {
   return osc_protocol_common::echo_incoming_message(*this, id, addr, val);
-}
-
-bool osc_udp_protocol::push_bundle(
-    const std::vector<const parameter_base*>& addresses)
-{
-  return osc_protocol_common::push_bundle(*this, addresses);
-}
-
-bool osc_udp_protocol::push_raw_bundle(
-    const std::vector<ossia::net::full_parameter_data>& addresses)
-{
-  return osc_protocol_common::push_raw_bundle(*this, addresses);
 }
 
 bool osc_udp_protocol::observe(ossia::net::parameter_base& address, bool enable)
@@ -114,4 +88,61 @@ void osc_udp_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
 }
+
+// Server implementation
+bool osc_udp_server::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  return osc_protocol_server::push(*this, addr, v);
+}
+
+bool osc_udp_server::push(const ossia::net::parameter_base& addr, ossia::value&& v)
+{
+  return osc_protocol_server::push(*this, addr, std::move(v));
+}
+
+bool osc_udp_server::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  return osc_protocol_server::push_raw(*this, addr);
+}
+
+bool osc_udp_server::push_bundle(
+    const std::vector<const parameter_base*>& addresses)
+{
+  return osc_protocol_server::push_bundle(*this, *m_impl, addresses);
+}
+
+bool osc_udp_server::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
+{
+  return osc_protocol_server::push_raw_bundle(*this, *m_impl, addresses);
+}
+
+// Client implementation
+bool osc_udp_client::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  return osc_protocol_client::push(*this, addr, v);
+}
+
+bool osc_udp_client::push(const ossia::net::parameter_base& addr, ossia::value&& v)
+{
+  return osc_protocol_client::push(*this, addr, std::move(v));
+}
+
+bool osc_udp_client::push_raw(const ossia::net::full_parameter_data& addr)
+{
+  return osc_protocol_client::push_raw(*this, addr);
+}
+
+bool osc_udp_client::push_bundle(
+    const std::vector<const parameter_base*>& addresses)
+{
+  return osc_protocol_client::push_bundle(*this, *m_impl, addresses);
+}
+
+bool osc_udp_client::push_raw_bundle(
+    const std::vector<ossia::net::full_parameter_data>& addresses)
+{
+  return osc_protocol_client::push_raw_bundle(*this, *m_impl, addresses);
+}
+
 }

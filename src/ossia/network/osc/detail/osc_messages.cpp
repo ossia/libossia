@@ -1,8 +1,10 @@
 #include <ossia/network/osc/detail/osc_messages.hpp>
+#include <ossia/detail/logger.hpp>
 
 namespace ossia::net
 {
-
+namespace
+{
 template <std::size_t N>
 static bool is_vec(std::vector<ossia::value>& t)
 {
@@ -11,64 +13,127 @@ static bool is_vec(std::vector<ossia::value>& t)
          });
 }
 
-std::optional<buffer_packed_osc_stream> make_raw_bundle(const std::vector<full_parameter_data> &addresses)
+std::string_view get_address(const ossia::net::parameter_base& addr)
 {
-  try
-  {
-    auto buffer{std::make_unique<char[]>(max_osc_message_size)};
-    oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
-    str << oscpack::BeginBundleImmediate();
-    for (const auto& addr : addresses)
-    {
-      if (addr.get_access() == ossia::access_mode::GET)
-        continue;
-
-      ossia::value val = filter_value(addr, addr.value());
-      if (val.valid())
-      {
-        str << oscpack::BeginMessageN(addr.address);
-        val.apply(osc_outbound_visitor{{str}});
-        str << oscpack::EndMessage();
-      }
-    }
-    str << oscpack::EndBundle();
-    return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
-  }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    return {};
-  }
+  return addr.get_node().osc_address();
+}
+std::string_view get_address(const ossia::net::full_parameter_data& addr)
+{
+  return addr.address;
 }
 
-std::optional<buffer_packed_osc_stream> make_bundle(const std::vector<const parameter_base *> &addresses)
+struct bundle_common_policy
 {
-  try
+  template<typename Addr_T>
+  void operator()(oscpack::OutboundPacketStream& str, ossia::value& val, const Addr_T& addr)
   {
-    auto buffer{std::make_unique<char[]>(max_osc_message_size)};
-    oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
-    str << oscpack::BeginBundleImmediate();
-    for (auto a : addresses)
+    if (val = filter_value(addr, addr.value()); val.valid())
     {
-      const ossia::net::parameter_base& addr = *a;
-      if (addr.get_access() == ossia::access_mode::GET)
-        continue;
-
-      ossia::value val = filter_value(addr, addr.value());
-      if (val.valid())
-      {
-        str << oscpack::BeginMessageN(addr.get_node().osc_address());
-        val.apply(osc_outbound_visitor{{str}});
-        str << oscpack::EndMessage();
-      }
+      str << oscpack::BeginMessageN(get_address(addr));
+      val.apply(osc_outbound_visitor{{str}});
+      str << oscpack::EndMessage();
     }
-    str << oscpack::EndBundle();
-    return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
   }
-  catch (const oscpack::OutOfBufferMemoryException&)
+};
+struct bundle_client_policy
+{
+  template<typename Addr_T>
+  void operator()(oscpack::OutboundPacketStream& str, ossia::value& val, const Addr_T& addr)
   {
-    return {};
+    if (addr.get_access() == ossia::access_mode::GET)
+      return;
+
+    bundle_common_policy{}(str, val, addr);
   }
+};
+
+using bundle_server_policy = bundle_common_policy;
+
+
+template<typename Policy_T>
+std::optional<buffer_packed_osc_stream> make_raw_bundle(Policy_T add_element_to_bundle, const std::vector<full_parameter_data> &addresses)
+try
+{
+  auto buffer{std::make_unique<char[]>(max_osc_message_size)};
+  oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
+  str << oscpack::BeginBundleImmediate();
+
+  ossia::value val;
+  for (const auto& addr : addresses)
+  {
+    add_element_to_bundle(str, val, addr);
+  }
+  str << oscpack::EndBundle();
+  return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
 }
+catch (const oscpack::OutOfBufferMemoryException&)
+{
+  ossia::logger().error("make_raw_bundle_client: message too large (limit is {} bytes)", max_osc_message_size);
+  return {};
+}
+catch (const std::runtime_error& e)
+{
+  ossia::logger().error("make_raw_bundle_client: {}", e.what());
+  return {};
+}
+catch (...)
+{
+  ossia::logger().error("make_raw_bundle_client: unknown error");
+  return {};
+}
+
+template<typename Policy_T>
+std::optional<buffer_packed_osc_stream> make_bundle(Policy_T add_element_to_bundle, const std::vector<const parameter_base *> &addresses)
+try
+{
+  auto buffer{std::make_unique<char[]>(max_osc_message_size)};
+  oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
+  str << oscpack::BeginBundleImmediate();
+
+  ossia::value val;
+  for (auto a : addresses)
+  {
+    const ossia::net::parameter_base& addr = *a;
+    add_element_to_bundle(str, val, addr);
+  }
+  str << oscpack::EndBundle();
+  return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
+}
+catch (const oscpack::OutOfBufferMemoryException&)
+{
+  ossia::logger().error("make_bundle_client: message too large (limit is {} bytes)", max_osc_message_size);
+  return {};
+}
+catch (const std::runtime_error& e)
+{
+  ossia::logger().error("make_bundle_client: {}", e.what());
+  return {};
+}
+catch (...)
+{
+  ossia::logger().error("make_bundle_client: unknown error");
+  return {};
+}
+}
+
+std::optional<buffer_packed_osc_stream> make_raw_bundle_client(const std::vector<full_parameter_data> &addresses)
+{
+  return make_raw_bundle(bundle_client_policy{}, addresses);
+}
+std::optional<buffer_packed_osc_stream> make_raw_bundle_server(const std::vector<full_parameter_data> &addresses)
+{
+  return make_raw_bundle(bundle_server_policy{}, addresses);
+}
+
+std::optional<buffer_packed_osc_stream> make_bundle_client(const std::vector<const parameter_base *> &addresses)
+{
+  return make_bundle(bundle_client_policy{}, addresses);
+}
+std::optional<buffer_packed_osc_stream> make_bundle_server(const std::vector<const parameter_base *> &addresses)
+{
+  return make_bundle(bundle_server_policy{}, addresses);
+}
+
 
 void osc_learn(node_base *n, const oscpack::ReceivedMessage &m)
 {

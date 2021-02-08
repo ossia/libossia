@@ -13,8 +13,7 @@ int main(int argc, char** argv)
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   ossia::net::generic_device device{
-        std::make_unique<ossia::net::osc_unix_protocol>(
-              ossia::net::osc_unix_protocol::server, ctx, "ossia_echo"),
+        std::make_unique<ossia::net::osc_unix_server>(ctx, "ossia_echo"),
         "P"};
 
   auto cb = [&] (ossia::string_view v, const ossia::value& val) {
