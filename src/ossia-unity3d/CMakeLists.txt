@@ -9,7 +9,6 @@ endif()
 if(APPLE)
   set_target_properties(ossia PROPERTIES
       PREFIX ""
-      SUFFIX ".bundle"
   )
   install(
       TARGETS ossia
