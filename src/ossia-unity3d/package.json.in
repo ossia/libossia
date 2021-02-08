@@ -1,5 +1,5 @@
 {
-  "name": "io.ossia",
+  "name": "io.ossia.ossia-unity",
   "displayName": "ossia",
   "version": "@GIT_TAG@",
   "unity": "2018.3",
