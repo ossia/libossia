@@ -170,7 +170,7 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ossia.bundle
+              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/macos/ossia.dylib
 
               zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
               xcrun altool \
@@ -233,15 +233,15 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ossia.bundle
+              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ios/ossia.a
 
               zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
               xcrun altool \
-                   --notarize-app \
-                   -t osx \
-                   -f "ossia-unity.zip" \
-                   --primary-bundle-id "io.ossia.ossia-unity" \
-                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+                    --notarize-app \
+                    -t ios \
+                    -f "ossia-unity.zip" \
+                    --primary-bundle-id "io.ossia.ossia-unity" \
+                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
             )
 
           displayName: Build
