@@ -690,5 +690,6 @@ stages:
             isPreRelease: true
 
         - bash: |
+            git checkout '$(Build.SourceBranchName)'
             git push --follow-tags --force
           displayName: Push Tag
