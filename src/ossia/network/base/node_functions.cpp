@@ -2,6 +2,7 @@
 
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/path.hpp>
 

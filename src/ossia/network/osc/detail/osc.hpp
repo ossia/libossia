@@ -2,6 +2,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/osc/detail/osc_1_0_policy.hpp>
 #include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/network/value/value.hpp>
 
@@ -326,8 +327,7 @@ struct osc_inbound_visitor
         return std::string{
             boost::lexical_cast<std::string>(cur_it->AsDoubleUnchecked())};
       case oscpack::CHAR_TYPE_TAG:
-        return std::string{
-            boost::lexical_cast<std::string>(cur_it->AsCharUnchecked())};
+        return std::string(1, cur_it->AsCharUnchecked());
       case oscpack::TRUE_TYPE_TAG:
         return std::string{"true"};
       case oscpack::FALSE_TYPE_TAG:
@@ -480,7 +480,7 @@ inline ossia::value get_filtered_value(
 
 struct osc_write_domain_visitor
 {
-  ossia::net::osc_outbound_visitor vis;
+  ossia::net::osc_1_0_outbound_stream_visitor vis;
   template <typename T>
   void operator()(const T& dom)
   {

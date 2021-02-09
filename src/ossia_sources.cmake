@@ -84,6 +84,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/listening.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/osc_address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.hpp"
@@ -172,6 +173,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/osc_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.cpp"
@@ -320,14 +322,20 @@ set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_common_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_0_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_extended_policy.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bidir.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_writer.hpp"
   )
 set(OSSIA_OSC_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_udp.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_writer.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.cpp"
   )
 

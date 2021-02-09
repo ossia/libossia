@@ -16,6 +16,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <iostream>
 #include <memory>
