@@ -24,6 +24,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -105,6 +106,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -134,6 +136,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             brew install ninja
@@ -167,15 +170,16 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ossia.bundle
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/macos/ossia.dylib
 
-              zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
+              zip ossia-unity.zip ossia/Plugins/macos/ossia.dylib
               xcrun altool \
                    --notarize-app \
                    -t osx \
                    -f "ossia-unity.zip" \
                    --primary-bundle-id "io.ossia.ossia-unity" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
             )
 
           displayName: Build
@@ -189,6 +193,70 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-unity3d-macos
 
+      - job: Unity3DIOs
+        displayName: Unity3D (iOS)
+        pool:
+          vmImage: 'macos-10.15'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
+            cmake --build .
+            cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/ios/ossia.a
+
+              zip ossia-unity.zip ossia/Plugins/ios/ossia.a
+              xcrun altool \
+                    --notarize-app \
+                    -t ios \
+                    -f "ossia-unity.zip" \
+                    --primary-bundle-id "io.ossia.ossia-unity" \
+                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
+            )
+
+          displayName: Build
+          env:
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-unity3d-ios
+
       - job: Unity3DWin32
         displayName: Unity3D (Win32)
         pool:
@@ -197,6 +265,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - script: |
             cinst -y ninja
@@ -228,6 +297,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -256,6 +326,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             brew install ninja
@@ -303,6 +374,7 @@ stages:
                    -f "ossia-java.zip" \
                    --primary-bundle-id "io.ossia.ossia-java" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-java.zip
             )
 
           displayName: Build
@@ -324,6 +396,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - script: |
             cinst -y ninja
@@ -356,6 +429,7 @@ stages:
         steps:
         - checkout: self
           submodules: false
+          fetchDepth: 1
 
         - bash: |
             brew install ninja
@@ -421,6 +495,7 @@ stages:
         steps:
         - checkout: self
           submodules: false
+          fetchDepth: 1
 
         - script: |
             cinst -y ninja
@@ -483,23 +558,24 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-win32
-            path: $(System.DefaultWorkingDirectory)/unity3d-win32
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-macos
-            path: $(System.DefaultWorkingDirectory)/unity3d-macos
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-linux
-            path: $(System.DefaultWorkingDirectory)/unity3d-linux
+            path: $(System.DefaultWorkingDirectory)/package
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-unity3d-ios
+            path: $(System.DefaultWorkingDirectory)/package
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
-            mkdir -p ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/ossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
 
-            pushd ./unity3d-linux/ossia-unity/
+            pushd $(System.DefaultWorkingDirectory)/package
             zip -r ossia-unity3d.zip *
 
             mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
@@ -572,6 +648,7 @@ stages:
         steps:
         - checkout: self
           submodules: false
+          fetchDepth: 1
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-max
@@ -617,5 +694,6 @@ stages:
             isPreRelease: true
 
         - bash: |
+            git checkout '$(Build.SourceBranchName)'
             git push --follow-tags --force
           displayName: Push Tag
