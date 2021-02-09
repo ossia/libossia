@@ -23,17 +23,6 @@ struct buffer_packed_osc_stream
     oscpack::OutboundPacketStream stream;
 };
 
-std::optional<buffer_packed_osc_stream> make_raw_bundle_client(
-    const std::vector<ossia::net::full_parameter_data>& addresses);
-
-std::optional<buffer_packed_osc_stream> make_bundle_client(
-    const std::vector<const parameter_base*>& addresses);
-
-std::optional<buffer_packed_osc_stream> make_raw_bundle_server(
-    const std::vector<ossia::net::full_parameter_data>& addresses);
-
-std::optional<buffer_packed_osc_stream> make_bundle_server(
-    const std::vector<const parameter_base*>& addresses);
 
 void osc_learn(ossia::net::node_base* n, const oscpack::ReceivedMessage& m);
 
