@@ -70,6 +70,7 @@ public:
   long m_max_size{};
 
   bool m_set_flag{};
+  bool m_inlet_locked{};
 
   /**
    * @brief t_obj_base::push : push a value to a node

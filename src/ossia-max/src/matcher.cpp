@@ -196,6 +196,11 @@ void matcher::output_value(ossia::value v)
       return;
   }
 
+  if(owner->m_otype == object_class::remote && static_cast<parameter_base*>(owner)->m_inlet_locked)
+  {
+    return;
+  }
+
   auto param = node->get_parameter();
   auto filtered = ossia::net::filter_value(
       param->get_domain(),

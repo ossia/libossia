@@ -685,7 +685,7 @@ void object_base::fill_selection()
 }
 
 void object_base::get_mess_cb(object_base* x, t_symbol* s){
-  if (s == gensym("address"))
+  if (s == gensym("global_address"))
     get_address(x,x->m_node_selection);
   else if (s == gensym("tags"))
     get_tags(x,x->m_node_selection);

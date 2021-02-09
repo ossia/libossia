@@ -874,6 +874,8 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if (s && s == gensym("set"))
     x->m_set_flag = true;
 
+  x->m_inlet_locked = true;
+
   // TODO use atom2value here
 
   if (argc == 0 && s)
@@ -896,7 +898,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         convert_or_push(x, static_cast<int32_t>(atom_getlong(argv)));
         break;
       default:
-        return;
+        ;
     }
   }
   else
@@ -933,6 +935,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       convert_or_push(x, std::move(list));
   }
   x->m_set_flag = false;
+  x->m_inlet_locked = false;
 }
 
 

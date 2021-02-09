@@ -1,0 +1,11 @@
+{
+  "name": "io.ossia.ossia-unity",
+  "displayName": "ossia",
+  "version": "@GIT_TAG@",
+  "unity": "2018.3",
+  "description": "OSSIA library, version @GIT_TAG_EXTENDED@ (latest commit @GIT_SHA@ on @GIT_DATE@)",
+  "keywords": [ "osc", "oscquery", "remote", "control" ],
+  "category": "network",
+  "dependencies": {
+  }
+}
