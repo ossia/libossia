@@ -70,7 +70,7 @@ public:
     });
   }
 
-  void send(const char* data, std::size_t sz)
+  void write(const char* data, std::size_t sz)
   {
     m_socket.send_to(asio::buffer(data, sz), m_endpoint);
   }
@@ -135,7 +135,7 @@ public:
     });
   }
 
-  void send(const char* data, std::size_t sz)
+  void write(const char* data, std::size_t sz)
   {
     m_socket.send_to(asio::buffer(data, sz), m_endpoint);
   }

@@ -12,6 +12,7 @@
 
 #include <ossia/detail/config.hpp>
 #include <ossia/network/local/local.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/common/debug.hpp>

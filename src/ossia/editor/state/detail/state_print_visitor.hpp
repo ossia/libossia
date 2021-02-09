@@ -3,6 +3,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/value.hpp>
 

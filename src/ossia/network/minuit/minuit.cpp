@@ -33,7 +33,7 @@ minuit_protocol::minuit_protocol(
     , m_ip{remote_ip}
     , m_remotePort{remote_port}
     , m_localPort{local_port}
-    , m_sender{std::make_unique<osc::sender<osc_outbound_visitor>>(
+    , m_sender{std::make_unique<osc::sender<osc_1_0_outbound_stream_visitor>>(
           m_logger, remote_ip, remote_port)}
     , m_receiver{std::make_unique<osc::receiver>(
           local_port,
@@ -77,7 +77,7 @@ const std::string& minuit_protocol::get_ip() const
 minuit_protocol& minuit_protocol::set_ip(std::string ip)
 {
   m_ip = ip;
-  m_sender = std::make_unique<osc::sender<osc_outbound_visitor>>(
+  m_sender = std::make_unique<osc::sender<osc_1_0_outbound_stream_visitor>>(
       m_logger, m_ip, m_remotePort);
 
   update_zeroconf();
@@ -93,7 +93,7 @@ uint16_t minuit_protocol::get_remote_port() const
 minuit_protocol& minuit_protocol::set_remote_port(uint16_t in_port)
 {
   m_remotePort = in_port;
-  m_sender = std::make_unique<osc::sender<osc_outbound_visitor>>(
+  m_sender = std::make_unique<osc::sender<osc_1_0_outbound_stream_visitor>>(
       m_logger, m_ip, m_remotePort);
 
   update_zeroconf();
@@ -378,7 +378,7 @@ void minuit_protocol::get_refreshed(ossia::string_view addr)
   }
 }
 
-osc::sender<osc_outbound_visitor>& minuit_protocol::sender() const
+osc::sender<osc_1_0_outbound_stream_visitor>& minuit_protocol::sender() const
 {
   return *m_sender;
 }

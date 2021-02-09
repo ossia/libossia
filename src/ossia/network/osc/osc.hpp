@@ -24,7 +24,7 @@ namespace ossia
 {
 namespace net
 {
-struct osc_outbound_visitor;
+struct osc_1_0_outbound_stream_visitor;
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
@@ -78,7 +78,7 @@ private:
 
   listened_parameters m_listening;
 
-  std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
+  std::unique_ptr<osc::sender<osc_1_0_outbound_stream_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;
 
   net::zeroconf_server m_zeroconfServer;

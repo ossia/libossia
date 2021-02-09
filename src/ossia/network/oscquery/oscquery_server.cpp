@@ -6,6 +6,7 @@
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/common/node_visitor.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
@@ -16,6 +17,7 @@
 #include <ossia/network/oscquery/detail/get_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
+#include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/oscquery/detail/server.hpp>
@@ -143,14 +145,22 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       {
         if (client.sender)
         {
+          if (m_logger.outbound_logger)
+          {
+            m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
+          }
           ossia::oscquery::osc_writer::send_message(
-              addr, val, m_logger, client.sender->socket());
+              addr, val, client.sender->socket());
         }
         else
         {
+          if (m_logger.outbound_logger)
+          {
+            m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
+          }
           m_websocketServer->send_binary_message(
               client.connection,
-              osc_writer::send_message(addr, val, m_logger));
+              osc_writer::to_message(addr, val));
         }
       }
     }
@@ -159,8 +169,12 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       lock_t lock(m_clientsMutex);
       for (auto& client : m_clients)
       {
+        if (m_logger.outbound_logger)
+        {
+          m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
+        }
         m_websocketServer->send_binary_message(
-            client.connection, osc_writer::send_message(addr, val, m_logger));
+            client.connection, osc_writer::to_message(addr, val));
       }
     }
 
@@ -254,14 +268,22 @@ bool oscquery_server_protocol::echo_incoming_message(
       if (not_this_protocol || !is_same(client, id)) {
         if (client.sender)
         {
+          if (m_logger.outbound_logger)
+          {
+            m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+          }
           ossia::oscquery::osc_writer::send_message(
-                addr, val, m_logger, client.sender->socket());
+                addr, val, client.sender->socket());
         }
         else
         {
+          if (m_logger.outbound_logger)
+          {
+            m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+          }
           m_websocketServer->send_binary_message(
                 client.connection,
-                osc_writer::send_message(addr, val, m_logger));
+                osc_writer::to_message(addr, val));
         }
       }
     }
@@ -273,8 +295,14 @@ bool oscquery_server_protocol::echo_incoming_message(
     for (auto& client : m_clients)
     {
       if (not_this_protocol || !is_same(client, id)) {
+
+        if (m_logger.outbound_logger)
+        {
+          m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+        }
+
         m_websocketServer->send_binary_message(
-              client.connection, osc_writer::send_message(addr, val, m_logger));
+              client.connection, osc_writer::to_message(addr, val));
       }
     }
   }

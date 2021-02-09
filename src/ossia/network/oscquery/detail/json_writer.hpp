@@ -112,29 +112,5 @@ private:
       const std::vector<ossia::string_view>& attributes);
 };
 
-// TODO this export is only needed for tests...
-struct OSSIA_EXPORT osc_writer
-{
-  static std::string send_message(
-      const ossia::net::parameter_base&, const ossia::value&,
-      const ossia::net::network_logger&);
-  static std::string send_message(
-      const ossia::net::full_parameter_data&, const ossia::value&,
-      const ossia::net::network_logger&);
-  static void send_message(
-      const ossia::net::parameter_base&, const ossia::value&,
-      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
-  static void send_message(
-      const ossia::net::full_parameter_data&, const ossia::value&,
-      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
-
-  static void write_value(
-      std::string_view address, const value& v, const unit_t& u,
-      oscpack::UdpTransmitSocket& socket);
-  static std::string write_value(
-      std::string_view address,
-      const value& v,
-      const unit_t& u);
-};
 }
 }

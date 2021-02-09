@@ -9,6 +9,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/preset/exception.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia/detail/algorithms.hpp>

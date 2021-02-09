@@ -11,6 +11,7 @@
 #include <ossia/network/value/value_comparison.hpp>
 #include <ossia/network/value/value_traits.hpp>
 #include <ossia/network/value/format_value.hpp>
+#include <ossia/network/base/osc_address.hpp>
 
 #include <boost/algorithm/string/replace.hpp>
 

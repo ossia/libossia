@@ -196,5 +196,6 @@ inline bool operator!=(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs != &rhs;
 }
+
 }
 }
