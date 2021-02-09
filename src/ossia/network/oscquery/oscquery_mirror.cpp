@@ -10,6 +10,7 @@
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
@@ -269,12 +270,20 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
     auto critical = addr.get_critical();
     if ((!critical || !m_hasWS) && m_oscSender)
     {
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+      }
       ossia::oscquery::osc_writer::send_message(
-          addr, val, m_logger, m_oscSender->socket());
+          addr, val, m_oscSender->socket());
     }
     else if (m_hasWS)
     {
-      ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+      }
+      ws_send_binary_message(osc_writer::to_message(addr, val));
     }
 
     if (m_logger.outbound_listened_logger)
@@ -293,13 +302,21 @@ bool oscquery_mirror_protocol::echo_incoming_message(
   auto critical = addr.get_critical();
   if ((!critical || !m_hasWS) && m_oscSender)
   {
+    if (m_logger.outbound_logger)
+    {
+      m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+    }
     ossia::oscquery::osc_writer::send_message(
-          addr, val, m_logger, m_oscSender->socket());
+          addr, val, m_oscSender->socket());
     return true;
   }
   else if (m_hasWS)
   {
-    ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+    if (m_logger.outbound_logger)
+    {
+      m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+    }
+    ws_send_binary_message(osc_writer::to_message(addr, val));
     return true;
   }
   return false;
@@ -318,12 +335,20 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
     auto critical = addr.get_critical();
     if ((!critical || !m_hasWS) && m_oscSender)
     {
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.address, val);
+      }
       ossia::oscquery::osc_writer::send_message(
-          addr, val, m_logger, m_oscSender->socket());
+          addr, val, m_oscSender->socket());
     }
     else if (m_hasWS)
     {
-      ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.address, val);
+      }
+      ws_send_binary_message(osc_writer::to_message(addr, val));
     }
     return true;
   }

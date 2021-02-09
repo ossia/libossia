@@ -92,17 +92,17 @@ void osc_udp_protocol::set_device(device_base& dev)
 // Server implementation
 bool osc_udp_server::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  return osc_protocol_server::push(*this, addr, v);
+  return osc_protocol_common::push(*this, addr, v);
 }
 
 bool osc_udp_server::push(const ossia::net::parameter_base& addr, ossia::value&& v)
 {
-  return osc_protocol_server::push(*this, addr, std::move(v));
+  return osc_protocol_common::push(*this, addr, std::move(v));
 }
 
 bool osc_udp_server::push_raw(const ossia::net::full_parameter_data& addr)
 {
-  return osc_protocol_server::push_raw(*this, addr);
+  return osc_protocol_common::push_raw(*this, addr);
 }
 
 bool osc_udp_server::push_bundle(
@@ -120,17 +120,26 @@ bool osc_udp_server::push_raw_bundle(
 // Client implementation
 bool osc_udp_client::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  return osc_protocol_client::push(*this, addr, v);
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  return osc_protocol_common::push(*this, addr, v);
 }
 
 bool osc_udp_client::push(const ossia::net::parameter_base& addr, ossia::value&& v)
 {
-  return osc_protocol_client::push(*this, addr, std::move(v));
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  return osc_protocol_common::push(*this, addr, std::move(v));
 }
 
 bool osc_udp_client::push_raw(const ossia::net::full_parameter_data& addr)
 {
-  return osc_protocol_client::push_raw(*this, addr);
+  if (addr.get_access() == ossia::access_mode::GET)
+    return false;
+
+  return osc_protocol_common::push_raw(*this, addr);
 }
 
 bool osc_udp_client::push_bundle(

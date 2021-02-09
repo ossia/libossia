@@ -1,4 +1,5 @@
 #include <ossia/network/osc/detail/osc_messages.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/detail/logger.hpp>
 
 namespace ossia::net
@@ -13,15 +14,6 @@ static bool is_vec(std::vector<ossia::value>& t)
          });
 }
 
-std::string_view get_address(const ossia::net::parameter_base& addr)
-{
-  return addr.get_node().osc_address();
-}
-std::string_view get_address(const ossia::net::full_parameter_data& addr)
-{
-  return addr.address;
-}
-
 struct bundle_common_policy
 {
   template<typename Addr_T>
@@ -29,8 +21,8 @@ struct bundle_common_policy
   {
     if (val = filter_value(addr, addr.value()); val.valid())
     {
-      str << oscpack::BeginMessageN(get_address(addr));
-      val.apply(osc_outbound_visitor{{str}});
+      str << oscpack::BeginMessageN(osc_address(addr));
+      val.apply(osc_1_0_outbound_stream_visitor{{str}});
       str << oscpack::EndMessage();
     }
   }

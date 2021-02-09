@@ -22,7 +22,7 @@ namespace ossia
 {
 namespace net
 {
-using sender_t = osc::sender<osc_outbound_visitor>;
+using sender_t = osc::sender<osc_1_0_outbound_stream_visitor>;
 
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port,
