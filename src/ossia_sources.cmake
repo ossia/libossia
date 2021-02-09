@@ -312,7 +312,7 @@ set(OSSIA_CPP_SRCS
 
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_udp.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_factory.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
@@ -329,25 +329,12 @@ set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_writer.hpp"
   )
 set(OSSIA_OSC_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_udp.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_writer.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_factory.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.cpp"
   )
-
-if(NOT WIN32)
-  set(OSSIA_OSC_HEADERS
-    ${OSSIA_OSC_HEADERS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_unix.hpp"
-  )
-  set(OSSIA_OSC_SRCS
-    ${OSSIA_OSC_SRCS}
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_unix.cpp"
-  )
-endif()
 
 set(OSSIA_MINUIT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/minuit.hpp"
@@ -401,6 +388,7 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/domain_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_units.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
@@ -411,6 +399,7 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.cpp"

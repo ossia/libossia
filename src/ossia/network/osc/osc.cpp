@@ -6,6 +6,7 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/osc/detail/bundle.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/osc_messages.hpp>
@@ -181,7 +182,7 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 bool osc_protocol::push_bundle(
     const std::vector<const parameter_base*>& addresses)
 {
-  if(auto data = make_bundle_server(addresses)) {
+  if(auto data = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
     m_sender->socket().Send(data->stream.Data(), data->stream.Size());
     return true;
   }
@@ -191,7 +192,7 @@ bool osc_protocol::push_bundle(
 bool osc_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  if(auto data = make_raw_bundle_server(addresses)) {
+  if(auto data = make_raw_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
     m_sender->socket().Send(data->stream.Data(), data->stream.Size());
     return true;
   }
