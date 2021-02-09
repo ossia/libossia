@@ -157,6 +157,16 @@ struct osc_utilities
     }
   }
 
+  static std::string get_blob(oscpack::ReceivedMessageArgumentIterator it)
+  {
+    const void* data{};
+    oscpack::osc_bundle_element_size_t size{};
+    it->AsBlobUnchecked(data, size);
+    if(size > 0)
+      return std::string{(const char*)data, (std::size_t)size};
+    return std::string{};
+  }
+
   static ossia::value create_value(oscpack::ReceivedMessageArgumentIterator it)
   {
     switch (it->TypeTag())
@@ -181,6 +191,8 @@ struct osc_utilities
         return std::string{it->AsStringUnchecked()};
       case oscpack::SYMBOL_TYPE_TAG:
         return std::string{it->AsSymbolUnchecked()};
+      case oscpack::BLOB_TYPE_TAG:
+        return get_blob(it);
       case oscpack::RGBA_COLOR_TYPE_TAG:
       {
         auto c = it->AsRgbaColorUnchecked();
@@ -222,6 +234,8 @@ struct osc_utilities
           t.push_back(std::string{it->AsStringUnchecked()}); break;
         case oscpack::SYMBOL_TYPE_TAG:
           t.push_back(std::string{it->AsSymbolUnchecked()}); break;
+        case oscpack::BLOB_TYPE_TAG:
+          t.push_back(get_blob(it));
         case oscpack::RGBA_COLOR_TYPE_TAG:
         {
           auto c = it->AsRgbaColorUnchecked();
@@ -242,7 +256,7 @@ struct osc_utilities
           return t;
         }
         default:
-          t.push_back( ossia::impulse{});
+          t.push_back(ossia::impulse{});
           break;
       }
     }
