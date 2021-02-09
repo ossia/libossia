@@ -45,6 +45,7 @@ install(
     "${CMAKE_CURRENT_LIST_DIR}/README.md"
     "${CMAKE_BINARY_DIR}/package.json"
     "${CMAKE_CURRENT_LIST_DIR}/../../LICENSE"
+    "${CMAKE_CURRENT_LIST_DIR}/.npmrc"
   DESTINATION ${OSSIA_UNITY_PACKAGE_FOLDER}/
 )
 
