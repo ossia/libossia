@@ -519,12 +519,12 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
             artifactName: libossia-max-win64
 
-  - stage: Assemble
+  - stage: Package
     condition: succeeded()
     # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     jobs:
-      - job: AssembleMax
+      - job: Max
         pool:
           vmImage: 'ubuntu-20.04'
 
@@ -636,7 +636,7 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
-  - stage: GithubRelease
+  - stage: Deploy
     # TODO check if it runs on tag and pull request automatically
     condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
@@ -697,3 +697,32 @@ stages:
             git checkout '$(Build.SourceBranchName)'
             git push --follow-tags --force
           displayName: Push Tag
+
+      - job: GithubRelease
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        # condition: startsWith(variables['build.sourceBranch'], 'refs/tags/')  
+        
+        steps:
+        - checkout: self
+          submodules: false
+          fetchDepth: 1
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-unity3d
+            path: Assets
+
+        - task: DownloadSecureFile@1
+          name: user_npmrc
+          displayName: 'Download CA certificate'
+          inputs:
+            secureFile: 'unity3d-user-npmrc'
+
+        - bash:
+            cp '$(user_npmrc.secureFilePath)' ~/.npmrc
+            cd Assets
+            unzip ossia-unity3d.zip
+            cd ossia
+            npm install
+            npm publish
