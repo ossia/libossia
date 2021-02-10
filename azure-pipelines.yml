@@ -267,14 +267,17 @@ stages:
           inputs:
             artifact: ossia-max
             path: Assets
+          continueOnError: true
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-java
             path: Assets
+          continueOnError: true
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: ossia-unity3d
             path: Assets
+          continueOnError: true
 
         - bash: |
             if [ "$isGitTag" = "True" ]
