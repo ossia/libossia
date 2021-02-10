@@ -11,9 +11,9 @@ struct osc_protocol_configuration
 {
   // Note: only UDP and UNIX implemented for now
 
-  enum { UDP, UNIX, TCP, SERIAL }   transport{UDP};
-  enum { SERVER, CLIENT }           mode{SERVER};
-  enum { OSC1_0, OSC1_1, EXTENDED } version{OSC1_0};
+  enum { UDP, UNIX, TCP, SERIAL, WEBSOCKETS } transport{UDP};
+  enum { SERVER, CLIENT }                     mode{SERVER};
+  enum { OSC1_0, OSC1_1, EXTENDED }           version{OSC1_0};
 
   // host: the unix socket name. Pair of sockets will be created in /tmp/
   using unix_configuration = fd_configuration;
