@@ -382,11 +382,11 @@ stages:
             isPreRelease: true
 
         - bash: |
-            git checkout '$(Build.SourceBranchName)'
+            git checkout origin '$(Build.SourceBranchName)'
             git push --follow-tags --force
           displayName: Push Tag
 
-      - job: GithubRelease
+      - job: NpmRelease
         pool:
           vmImage: 'ubuntu-20.04'
 
