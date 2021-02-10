@@ -212,31 +212,6 @@ stages:
     # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     jobs:
-      - job: Max
-        pool:
-          vmImage: 'ubuntu-20.04'
-
-        steps:
-        - checkout: none
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-max-win64
-            path: $(System.DefaultWorkingDirectory)
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-max-macos
-            path: $(System.DefaultWorkingDirectory)
-
-        - bash: |
-            cd $(System.DefaultWorkingDirectory)
-            zip -r ossia-max.zip ossia
-          displayName: Package
-
-        - task: PublishPipelineArtifact@1
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
-            artifactName: ossia-max
-
       - job: Unity3D
         pool:
           vmImage: 'ubuntu-20.04'
@@ -274,55 +249,6 @@ stages:
           inputs:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
-
-      - job: Java
-        pool:
-          vmImage: 'ubuntu-20.04'
-
-        steps:
-        - checkout: none
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-java-win32
-            path: $(System.DefaultWorkingDirectory)/java-win32
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-java-macos
-            path: $(System.DefaultWorkingDirectory)/java-macos
-        - task: DownloadPipelineArtifact@2
-          inputs:
-            artifact: libossia-java-linux
-            path: $(System.DefaultWorkingDirectory)/java-linux
-
-        - bash: |
-            cd $(System.DefaultWorkingDirectory)
-
-            pushd java-macos
-            unzip -n ossia-java.jar
-            popd
-
-            pushd java-win32
-            unzip -n ossia-java.jar
-            mv win32-x86-64/ossia_x64.dll win32-x86-64/ossia.dll
-            popd
-
-            pushd java-linux
-            cp -rf ../java-macos/darwin .
-            cp -rf ../java-win32/win32-x86-64 .
-
-            unzip -n ossia-java.jar
-            rm ossia-java.jar
-            zip -r ossia-java.jar darwin win32-x86-64 linux-x86-64 io META-INF
-            zip -r ossia-java.zip ossia-java.jar jna.jar
-
-            mv ossia-java.zip $(System.DefaultWorkingDirectory)/ossia-java.zip
-            popd
-          displayName: Package
-
-        - task: PublishPipelineArtifact@1
-          inputs:
-            targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
-            artifactName: ossia-java
 
   - stage: Deploy
     # TODO check if it runs on tag and pull request automatically
