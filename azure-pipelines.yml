@@ -252,7 +252,7 @@ stages:
 
   - stage: Deploy
     # TODO check if it runs on tag and pull request automatically
-    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+    # condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
 
     jobs:
       - job: GithubRelease
