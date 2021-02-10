@@ -185,6 +185,8 @@ std::unique_ptr<ossia::net::protocol_base> make_osc_protocol_impl(network_contex
           return std::make_unique<osc_generic_protocol<client_type, unix_socket>>(std::move(ctx), std::get<fd_configuration>(config.configuration));
         case conf::SERIAL:
           return {}; // TODO
+        case conf::WEBSOCKETS:
+          return {}; // TODO
           break;
         default:
           break;
@@ -204,6 +206,8 @@ std::unique_ptr<ossia::net::protocol_base> make_osc_protocol_impl(network_contex
           return std::make_unique<osc_generic_protocol<client_type, unix_socket>>(std::move(ctx), std::get<fd_configuration>(config.configuration));
         case conf::SERIAL:
           return {}; // TODO
+        case conf::WEBSOCKETS:
+          return {}; // TODO
           break;
         default:
           break;
@@ -211,6 +215,8 @@ std::unique_ptr<ossia::net::protocol_base> make_osc_protocol_impl(network_contex
       break;
     }
   }
+
+  return{};
 }
 
 std::unique_ptr<ossia::net::protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config)
@@ -228,6 +234,8 @@ std::unique_ptr<ossia::net::protocol_base> make_osc_protocol(network_context_ptr
     default:
       break;
   }
+
+  return{};
 }
 
 }
