@@ -435,7 +435,6 @@ bool oscquery_mirror_asio_protocol::observe(
   {
     auto str = address.get_node().osc_address();
 
-    fmt::print("{}: {} {}", str, enable, m_hasWS);
     if (m_hasWS)
       ws_send_message(json_writer::listen(str));
 
@@ -679,7 +678,6 @@ void oscquery_mirror_asio_protocol::on_osc_message(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  std::cerr << m << std::endl;
 
   ossia::net::on_input_message<true>(
         m.AddressPattern(),

@@ -1,5 +1,5 @@
-#include <ossia/network/osc/osc_factory.hpp>
-#include <ossia/network/osc/osc_generic_protocol.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
+#include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
 namespace ossia::net
 {
