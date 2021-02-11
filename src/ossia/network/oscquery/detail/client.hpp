@@ -101,7 +101,6 @@ public:
     return m_connected;
   }
 
-  // This function returns if the connection is stopped / fails.
   void connect(const std::string& uri)
   {
     websocketpp::lib::error_code ec;
@@ -118,11 +117,22 @@ public:
     m_hdl = con->get_handle();
     m_client.connect(con);
     m_connected = true;
+  }
+
+  void finish_connection()
+  {
+    m_connected = false;
+    m_client.reset(); // In order to be able to reconnect afterwards.
+  }
+
+  // This function returns if the connection is stopped / fails.
+  void connect_and_run(const std::string& uri)
+  {
+    connect(uri);
 
     m_client.run();
 
-    m_connected = false;
-    m_client.reset(); // In order to be able to reconnect afterwards.
+    finish_connection();
   }
 
   void send_message(const std::string& request)

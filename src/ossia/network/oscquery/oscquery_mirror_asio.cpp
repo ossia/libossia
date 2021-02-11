@@ -590,6 +590,7 @@ host_info oscquery_mirror_asio_protocol::get_host_info() const noexcept
 
 void oscquery_mirror_asio_protocol::reconnect()
 {
+    // TODO ws: disconnect / close / finish_connection
   init();
 }
 
@@ -601,7 +602,7 @@ void oscquery_mirror_asio_protocol::process_raw_osc_data(const char* data, std::
 }
 void oscquery_mirror_asio_protocol::init()
 {
-  m_oscServer = std::make_unique<osc_receiver_impl>(ossia::net::udp_socket{"localhost", (uint16_t)m_osc_port, this->m_ctx->context});
+  m_oscServer = std::make_unique<osc_receiver_impl>(ossia::net::udp_socket{"127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context});
   m_oscServer->socket.open();
   m_oscServer->socket.receive([this] (const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
 
@@ -751,14 +752,17 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
             m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
           if (m_host_info.osc_transport == host_info::UDP)
           {
-            uint16_t local_port = uint16_t(*m_host_info.osc_port);
-            m_oscSender = std::make_unique<osc_sender_impl>(ossia::net::udp_socket{asio_to_ip(*m_host_info.osc_ip), uint16_t(*m_host_info.osc_port), this->m_ctx->context});
-            m_oscSender->socket.open();
+            const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
+            uint16_t server_port = uint16_t(*m_host_info.osc_port);
+            m_oscSender = std::make_unique<osc_sender_impl>(ossia::net::udp_socket{server_host, server_port, this->m_ctx->context});
+            m_oscSender->socket.connect();
+            uint16_t local_server_port = m_oscServer->socket.m_socket.local_endpoint().port();
+            uint16_t local_sender_port = m_oscSender->socket.m_socket.local_endpoint().port();
 
             // Send to the server the local receiver port
             if (m_host_info.extensions["OSC_STREAMING"])
             {
-              ws_send_message(json_writer::start_osc_streaming(m_oscServer->port(), m_oscSender->localPort()));
+              ws_send_message(json_writer::start_osc_streaming(local_server_port, local_sender_port));
             }
           }
           else

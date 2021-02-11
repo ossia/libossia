@@ -143,6 +143,7 @@ private:
   bool on_text_ws_message(connection_handler hdl, const std::string& message);
   bool on_binary_ws_message(connection_handler hdl, const std::string& message);
   void on_osc_message(const oscpack::ReceivedMessage& m);
+  void process_raw_osc_data(const char* data, std::size_t sz);
 
   // Output
   void osc_send_message(const net::parameter_base& addr, const ossia::value& val);
