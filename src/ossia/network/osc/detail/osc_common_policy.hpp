@@ -15,6 +15,7 @@ namespace ossia::net
 struct osc_common_outbound_dynamic_policy
 {
   oscpack::OutboundPacketStream& p;
+  const ossia::unit_t& unit;
 
   void operator()(int32_t i) const
   {
@@ -51,11 +52,6 @@ struct osc_common_outbound_dynamic_policy
     p << vec[0] << vec[1] << vec[2] << vec[3];
   }
 
-  void operator()(const ossia::rgba8& u) const
-  {
-    (*this)(u.dataspace_value);
-  }
-
   void operator()() const
   {
   }
@@ -66,6 +62,7 @@ struct osc_common_outbound_dynamic_policy
 // Mirrors ossia::net::osc_outbound_array_visitor
 struct osc_common_outbound_static_policy
 {
+  const ossia::unit_t& unit;
   std::size_t operator()(char* buffer, float v) const noexcept
   {
     buffer[0] = ',';
@@ -158,11 +155,6 @@ struct osc_common_outbound_static_policy
     boost::endian::endian_store<float, 4, boost::endian::order::big>((unsigned char*) buffer + 20, v[3]);
 
     return 24;
-  }
-
-  std::size_t operator()(char* buffer, ossia::rgba8 v) const noexcept
-  {
-    return (*this)(buffer, v.dataspace_value);
   }
 };
 

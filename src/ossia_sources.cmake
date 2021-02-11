@@ -367,6 +367,7 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/host_info.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor_impl.hpp"
@@ -394,6 +395,7 @@ set(OSSIA_OSCQUERY_HEADERS
 set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror_asio.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.cpp"
