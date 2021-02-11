@@ -619,7 +619,7 @@ void oscquery_mirror_protocol::init()
     try
     {
       started = true;
-      m_websocketClient->connect(m_queryHost);
+      m_websocketClient->connect_and_run(m_queryHost);
     }
     catch (...)
     {

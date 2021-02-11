@@ -12,7 +12,7 @@
 #include <memory>
 #include <functional>
 #include <ossia/network/context.hpp>
-#if 0
+
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -34,12 +34,11 @@ int main()
   // Explore the tree of B
   {
     auto fut = device.get_protocol().update_async(device);
-    for(int i = 0; i < 10; i++)
+    assert(!fut.valid());
+
+    while(!fut.valid())
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
         ctx->context.poll_one();
-        if(fut.valid())
-          break;
     }
   }
 
@@ -98,5 +97,3 @@ void explore(const ossia::net::node_base& node)
     explore(*child);
   }
 }
-#endif
-int main(){}

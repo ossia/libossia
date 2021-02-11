@@ -25,7 +25,7 @@ struct websocket_threaded_connection
       {
         while (running)
         {
-          socket.connect(ip);
+          socket.connect_and_run(ip);
           if (running)
           {
             // Try to reconnect
