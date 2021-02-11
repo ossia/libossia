@@ -20,9 +20,11 @@ using namespace std;
 void explore(const node_base& node);
 void printDomain(const domain& d);
 void printValueCallback(const value& v);
+
+auto ctx = std::make_shared<ossia::net::network_context>();
+
 int main()
 {
-  auto ctx = std::make_shared<ossia::net::network_context>();
 
   // Create a protocol that will connect to the given websocket address
   auto protocol = new ossia::oscquery::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
@@ -34,9 +36,8 @@ int main()
   // Explore the tree of B
   {
     auto fut = device.get_protocol().update_async(device);
-    assert(!fut.valid());
 
-    while(!fut.valid())
+    while(fut.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
     {
         ctx->context.poll_one();
     }
@@ -45,12 +46,7 @@ int main()
   // Display the tree in console
   explore(device.get_root_node());
 
-  while(true)
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    ctx->context.poll_one();
-    protocol->run_commands();
-  }
+  ctx->context.run();
 
   ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
 
@@ -64,9 +60,6 @@ int main()
 
   // Wait a bit to get a reply
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
-
-  // This will apply the changes to the tree.
-  protocol->run_commands();
 
   // Wait a bit
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -88,7 +81,12 @@ void explore(const ossia::net::node_base& node)
       });
 
       // update the value
-      addr->pull_value();
+      auto fut = addr->pull_value_async();
+
+      while(fut.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
+      {
+          ctx->context.poll_one();
+      }
     }
 
     using namespace fmt;

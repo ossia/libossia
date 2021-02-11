@@ -23,26 +23,17 @@ public:
   std::function<void()> onClose;
   std::function<void()> onFail;
 
-  //! \tparam Function that will be called when the client receives a server
-  //! message.
-  template <typename MessageHandler>
-  websocket_client(MessageHandler&& onMessage) : m_open{false}
+  websocket_client()
+    : m_open{false}
   {
     m_client.clear_access_channels(websocketpp::log::alevel::all);
     m_client.clear_error_channels(websocketpp::log::elevel::all);
-    m_client.init_asio();
 
     m_client.set_open_handler([this](connection_handler hdl) {
       scoped_lock guard(m_lock);
       m_open = true;
       onOpen();
     });
-
-    m_client.set_message_handler(
-        [handler = std::move(onMessage)](
-            connection_handler hdl, client_t::message_ptr msg) {
-          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
-        });
 
     m_client.set_close_handler([this](connection_handler hdl) {
       {
@@ -61,6 +52,33 @@ public:
       if (onFail)
         onFail();
     });
+  }
+  //! \tparam Function that will be called when the client receives a server
+  //! message.
+  template <typename MessageHandler>
+  websocket_client(MessageHandler&& onMessage)
+    : websocket_client{}
+  {
+    m_client.init_asio();
+
+    m_client.set_message_handler(
+        [handler = std::move(onMessage)](
+            connection_handler hdl, client_t::message_ptr msg) {
+          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
+        });
+  }
+
+  template <typename MessageHandler>
+  websocket_client(asio::io_context& ctx, MessageHandler&& onMessage)
+    : websocket_client{}
+  {
+    m_client.init_asio(&ctx);
+
+    m_client.set_message_handler(
+        [handler = std::move(onMessage)](
+            connection_handler hdl, client_t::message_ptr msg) {
+          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
+        });
   }
 
   ~websocket_client()

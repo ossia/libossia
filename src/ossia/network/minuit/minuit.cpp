@@ -259,9 +259,9 @@ bool minuit_protocol::pull(ossia::net::parameter_base& address)
 {
   auto fut = pull_async(address);
 
-  fut.wait_for(std::chrono::milliseconds(25));
+  auto res = fut.wait_for(std::chrono::milliseconds(25));
 
-  return fut.valid();
+  return res == std::future_status::ready;
 }
 
 bool minuit_protocol::push_raw(const full_parameter_data& addr)
