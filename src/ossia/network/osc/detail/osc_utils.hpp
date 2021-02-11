@@ -85,7 +85,7 @@ static inline bool is_rgba(const ossia::net::full_parameter_data& b) noexcept
   return b.unit == ossia::rgba8_u{};
 }
 
-static inline constexpr oscpack::RgbaColor to_rgba(const ossia::rgba8& u) noexcept
+static inline constexpr oscpack::RgbaColor to_osc_rgba(const ossia::rgba8& u) noexcept
 {
   uint32_t r = (uint32_t)u.dataspace_value[0] << 24;
   uint32_t g = (uint32_t)u.dataspace_value[1] << 16;

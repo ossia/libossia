@@ -32,7 +32,7 @@ struct osc_value_send_visitor
     char* buffer = (char*) alloca(sz);
     std::size_t i = write_string(address_pattern, buffer);
 
-    i += static_policy{}(buffer + i, v);
+    i += static_policy{parameter.get_unit()}(buffer + i, v);
 
     socket.write(buffer, i);
   }
@@ -45,9 +45,9 @@ struct osc_value_send_visitor
       std::size_t i = write_string(address_pattern, buffer);
 
       if(is_blob(parameter))
-        i += static_policy{}(buffer + i, oscpack::Blob(v.data(), v.size()));
+        i += static_policy{parameter.get_unit()}(buffer + i, oscpack::Blob(v.data(), v.size()));
       else
-        i += static_policy{}(buffer + i, v);
+        i += static_policy{parameter.get_unit()}(buffer + i, v);
 
       socket.write(buffer, i);
     }
@@ -59,9 +59,9 @@ struct osc_value_send_visitor
       std::size_t i = write_string(address_pattern, buffer.data());
 
       if(is_blob(parameter))
-        i += static_policy{}(buffer.data() + i, oscpack::Blob(v.data(), v.size()));
+        i += static_policy{parameter.get_unit()}(buffer.data() + i, oscpack::Blob(v.data(), v.size()));
       else
-        i += static_policy{}(buffer.data() + i, v);
+        i += static_policy{parameter.get_unit()}(buffer.data() + i, v);
 
       socket.write(buffer.data(), i);
     }
@@ -78,7 +78,7 @@ struct osc_value_send_visitor
         oscpack::OutboundPacketStream p{buf.data(), buf.size()};
 
         p << oscpack::BeginMessageN(address_pattern);
-        dynamic_policy{{p}}(v);
+        dynamic_policy{{p, parameter.get_unit()}}(v);
         p << oscpack::EndMessage();
 
         socket.write(p.Data(), p.Size());

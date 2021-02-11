@@ -63,8 +63,8 @@ public:
   void write(const Arg& arg) {
     p << arg;
   }
-  void write(const ossia::value& v) { v.apply(ValueWriter{{p}}); };
-  void write(const std::vector<ossia::value>& v) { ValueWriter{{p}}(v); };
+  void write(const ossia::value& v) { v.apply(ValueWriter{{p, ossia::unit_t{}}}); };
+  void write(const std::vector<ossia::value>& v) { ValueWriter{{p, ossia::unit_t{}}}(v); };
 
   template<typename... Args>
   const oscpack::OutboundPacketStream&
