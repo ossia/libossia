@@ -49,10 +49,8 @@ public:
   void request(net::parameter_base&) override;
   bool push(const net::parameter_base&, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool
-  push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>&) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
@@ -67,31 +65,6 @@ public:
   {
     return *m_device;
   }
-
-  /**
-   * @brief Run the commands registered in th event queue
-   *
-   * The data structures are not protected by locks since it may hurt
-   * the performance on a tree, and hard to get right.
-   * Instead, all the edition operations on a device should happen on a single
-   * thread.
-   * When edition operations are received from the network, they are put in a
-   * queue.
-   *
-   * Run this function regularly in order to get the update of the device, for
-   * instance in the event loop of your application.
-   */
-  void run_commands();
-
-  /**
-   * @brief Provide a callback for whenever an edition command is received
-   *
-   * This is an alternative way to calling runCommands() : a function
-   * can be provided; it will be called every time a new command is received,
-   * after it has been pushed.
-   * This can be used to put the command in the application's main loop.
-   */
-  void set_command_callback(std::function<void()>);
 
   /**
    * @brief Request a new node from the server
@@ -179,11 +152,6 @@ private:
 
   std::promise<void> m_namespacePromise;
 
-  struct get_osc_promise
-  {
-    std::promise<void> promise;
-    ossia::net::parameter_base* address{};
-  };
   struct get_ws_promise
   {
     get_ws_promise() = default;
@@ -199,11 +167,8 @@ private:
     std::promise<void> promise;
     std::string address{};
   };
-  using promises_map = locked_map<string_map<get_osc_promise>>;
 
   ossia::spsc_queue<get_ws_promise> m_getWSPromises;
-  ossia::spsc_queue<std::function<void()>> m_functionQueue;
-  std::function<void()> m_commandCallback;
 
   std::string m_queryHost;
   std::string m_queryPort;

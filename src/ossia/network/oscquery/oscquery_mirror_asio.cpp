@@ -28,13 +28,13 @@ namespace ossia
 {
 namespace oscquery
 {
-struct oscquery_mirror_asio_protocol::osc_sender_impl
+struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_socket
 {
-  ossia::net::udp_socket socket;
+  using udp_socket::udp_socket;
 };
-struct oscquery_mirror_asio_protocol::osc_receiver_impl
+struct oscquery_mirror_asio_protocol::osc_receiver_impl : ossia::net::udp_socket
 {
-  ossia::net::udp_socket socket;
+  using udp_socket::udp_socket;
 };
 
 struct http_async_answer
@@ -60,6 +60,29 @@ struct http_async_error
   }
 };
 
+template<typename T>
+auto wait_for_future(const std::future<T>& fut, std::chrono::milliseconds timeout, asio::io_context& ctx)
+{
+  std::future_status status = fut.wait_for(std::chrono::seconds(0));
+
+  auto t0 = std::chrono::steady_clock::now();
+
+  while(status != std::future_status::ready)
+  {
+    ctx.poll_one();
+    if((status = fut.wait_for(std::chrono::seconds(0))) == std::future_status::ready)
+      return status;
+
+    auto t1 = std::chrono::steady_clock::now();
+    if(std::chrono::duration_cast<std::chrono::seconds>(t1 - t0) > timeout)
+    {
+      return status;
+      break;
+    }
+  }
+
+  return status;
+}
 using http_async_request = http_get_request<http_async_answer, http_async_error>;
 
 struct http_async_client_context
@@ -126,7 +149,7 @@ void oscquery_mirror_asio_protocol::cleanup_connections()
 {
   try
   {
-    m_oscServer->socket.close([]{});
+    m_oscServer->close([]{});
   }
   catch (...)
   {
@@ -211,13 +234,15 @@ oscquery_mirror_asio_protocol::~oscquery_mirror_asio_protocol()
   stop();
 }
 
+
 bool oscquery_mirror_asio_protocol::pull(net::parameter_base& address)
 {
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  auto fut = pull_async(address);
-  auto status = fut.wait_for(std::chrono::milliseconds(3000));
+
+  using namespace std::literals;
+  auto status = wait_for_future(pull_async(address), 3s, m_ctx->context);
 
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();
@@ -257,7 +282,7 @@ void oscquery_mirror_asio_protocol::osc_send_message(const net::parameter_base& 
 {
   using namespace ossia::net;
   using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, osc_extended_policy, udp_socket>;
-  send_visitor vis{addr, addr.get_node().osc_address(), this->m_oscSender->socket};
+  send_visitor vis{addr, addr.get_node().osc_address(), *this->m_oscSender};
   val.apply(vis);
 }
 
@@ -265,7 +290,7 @@ void oscquery_mirror_asio_protocol::osc_send_message(const net::full_parameter_d
 {
   using namespace ossia::net;
   using send_visitor = osc_value_send_visitor<ossia::net::full_parameter_data, osc_extended_policy, udp_socket>;
-  send_visitor vis{addr, addr.address, this->m_oscSender->socket};
+  send_visitor vis{addr, addr.address, *this->m_oscSender};
   val.apply(vis);
 }
 
@@ -410,6 +435,7 @@ bool oscquery_mirror_asio_protocol::observe(
   {
     auto str = address.get_node().osc_address();
 
+    fmt::print("{}: {} {}", str, enable, m_hasWS);
     if (m_hasWS)
       ws_send_message(json_writer::listen(str));
 
@@ -441,8 +467,8 @@ bool oscquery_mirror_asio_protocol::observe_quietly(
 
 bool oscquery_mirror_asio_protocol::update(net::node_base& b)
 {
-  auto fut = update_async(b);
-  auto status = fut.wait_for(std::chrono::seconds(3));
+  using namespace std::literals;
+  auto status = wait_for_future(update_async(b), 3s, m_ctx->context);
   return status == std::future_status::ready;
 }
 
@@ -505,23 +531,6 @@ void oscquery_mirror_asio_protocol::set_device(net::device_base& dev)
         if (p.callback_count() > 0)
           observe(p, true);
       });
-}
-
-void oscquery_mirror_asio_protocol::run_commands()
-{
-  bool ok = false;
-  std::function<void()> cmd;
-  do
-  {
-    ok = m_functionQueue.try_dequeue(cmd);
-    if (ok && cmd)
-      cmd();
-  } while (ok);
-}
-
-void oscquery_mirror_asio_protocol::set_command_callback(std::function<void()> cb)
-{
-  m_commandCallback = std::move(cb);
 }
 
 void oscquery_mirror_asio_protocol::request_remove_node(net::node_base& self)
@@ -590,7 +599,7 @@ host_info oscquery_mirror_asio_protocol::get_host_info() const noexcept
 
 void oscquery_mirror_asio_protocol::reconnect()
 {
-    // TODO ws: disconnect / close / finish_connection
+  stop();
   init();
 }
 
@@ -602,11 +611,10 @@ void oscquery_mirror_asio_protocol::process_raw_osc_data(const char* data, std::
 }
 void oscquery_mirror_asio_protocol::init()
 {
-  m_oscServer = std::make_unique<osc_receiver_impl>(ossia::net::udp_socket{"127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context});
-  m_oscServer->socket.open();
-  m_oscServer->socket.receive([this] (const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
+  m_oscServer = std::make_unique<osc_receiver_impl>("127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context);
 
   m_websocketClient = std::make_unique<websocket_client>(
+      m_ctx->context,
       [this](connection_handler hdl, websocketpp::frame::opcode::value op,
           std::string& msg) {
         switch (op)
@@ -628,37 +636,21 @@ void oscquery_mirror_asio_protocol::init()
 
   start_http();
 
-  m_hasWS = true;
-  std::atomic_bool started{false};
-
+  m_hasWS = false;
   try
   {
-    started = true;
     m_websocketClient->connect(m_queryHost);
+    m_hasWS = true;
   }
   catch (...)
   {
     // Websocket does not connect, so let's try http requests
-    // m_websocketClient.reset(); // TODO unsafe non-atomic access
-  }
-  m_hasWS = false;
-
-  //m_websocketClient.reset(); TODO
-  if(!query_connected())
-  {
-    {
-      cleanup_connections();
-      throw ossia::connection_error{
-          "oscquery_mirror_asio_protocol::oscquery_mirror_asio_protocol: "
-          "Could not connect to "
-          + m_queryHost};
-    }
   }
 
   http_send_message("/?HOST_INFO");
-  /*
-  m_oscServer->run();
-  */
+
+  m_oscServer->open();
+  m_oscServer->receive([this] (const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
 }
 
 void oscquery_mirror_asio_protocol::start_http()
@@ -687,6 +679,7 @@ void oscquery_mirror_asio_protocol::on_osc_message(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
+  std::cerr << m << std::endl;
 
   ossia::net::on_input_message<true>(
         m.AddressPattern(),
@@ -713,6 +706,15 @@ std::string asio_to_ip(std::string uri)
     uri.erase(pos, uri.size());
 
   return uri;
+}
+
+bool oscquery_mirror_asio_protocol::on_binary_ws_message(
+    oscquery_mirror_asio_protocol::connection_handler hdl,
+    const std::string& message)
+{
+  process_raw_osc_data(message.data(), message.size());
+
+  return {};
 }
 
 bool oscquery_mirror_asio_protocol::on_text_ws_message(
@@ -754,10 +756,10 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
           {
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
             uint16_t server_port = uint16_t(*m_host_info.osc_port);
-            m_oscSender = std::make_unique<osc_sender_impl>(ossia::net::udp_socket{server_host, server_port, this->m_ctx->context});
-            m_oscSender->socket.connect();
-            uint16_t local_server_port = m_oscServer->socket.m_socket.local_endpoint().port();
-            uint16_t local_sender_port = m_oscSender->socket.m_socket.local_endpoint().port();
+            m_oscSender = std::make_unique<osc_sender_impl>(server_host, server_port, this->m_ctx->context);
+            m_oscSender->connect();
+            uint16_t local_server_port = m_oscServer->m_socket.local_endpoint().port();
+            uint16_t local_sender_port = rand();
 
             // Send to the server the local receiver port
             if (m_host_info.extensions["OSC_STREAMING"])
@@ -861,62 +863,41 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
             if (dat.IsString())
             {
               std::string full_path{dat.GetString(), dat.GetStringLength()};
-
-              m_functionQueue.enqueue([this, f = std::move(full_path), doc = std::move(data)] {
-                json_parser::parse_path_added(
-                    m_device->get_root_node(), f, *doc);
-              });
+              json_parser::parse_path_added(
+                    m_device->get_root_node(), full_path, *data);
             }
           }
-          if (m_commandCallback)
-            m_commandCallback();
           break;
         }
 
         case message_type::PathRenamed:
         {
-          m_functionQueue.enqueue([this, doc = std::move(data)] {
-            json_parser::parse_path_renamed(m_device->get_root_node(), *doc);
-          });
-          if (m_commandCallback)
-            m_commandCallback();
+          json_parser::parse_path_renamed(m_device->get_root_node(), *data);
           break;
         }
 
         case message_type::PathChanged:
         {
-          m_functionQueue.enqueue([this, doc = std::move(data)] {
-            json_parser::parse_path_changed(m_device->get_root_node(), *doc);
-          });
-          if (m_commandCallback)
-            m_commandCallback();
+          json_parser::parse_path_changed(m_device->get_root_node(), *data);
           break;
         }
 
         case message_type::PathRemoved:
         {
-          m_functionQueue.enqueue([this, doc = std::move(data)] {
-            json_parser::parse_path_removed(m_device->get_root_node(), *doc, m_zombie_on_remove);
-          });
-          if (m_commandCallback)
-            m_commandCallback();
+            json_parser::parse_path_removed(m_device->get_root_node(), *data, m_zombie_on_remove);
           break;
         }
 
         case message_type::AttributesChanged:
         {
-          m_functionQueue.enqueue([this, doc = std::move(data),message] {
-            ossia::net::parameter_base* request_value = nullptr;
-            json_parser::parse_attributes_changed(
-                m_device->get_root_node(), *doc, request_value);
-            // TODO investigate why those are called twice in OSCQueryValueCallbackTest
-            if(request_value)
-            {
-              pull_async(*request_value);
-            }
-          });
-          if (m_commandCallback)
-            m_commandCallback();
+          ossia::net::parameter_base* request_value = nullptr;
+          json_parser::parse_attributes_changed(
+                m_device->get_root_node(), *data, request_value);
+          // TODO investigate why those are called twice in OSCQueryValueCallbackTest
+          if(request_value)
+          {
+            pull_async(*request_value);
+          }
           break;
         }
         default:
@@ -943,13 +924,5 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
   return true;
 }
 
-bool oscquery_mirror_asio_protocol::on_binary_ws_message(
-    oscquery_mirror_asio_protocol::connection_handler hdl,
-    const std::string& message)
-{
-  process_raw_osc_data(message.data(), message.size());
-
-  return {};
-}
 }
 }
