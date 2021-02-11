@@ -53,23 +53,20 @@ struct osc_extended_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
 
   void operator()(vec4f vec) const
   {
-    if(m_depth > 0)
-    { p << oscpack::BeginArray(); }
+    if(unit == ossia::rgba8_u{})
+    {
+      p << to_osc_rgba({vec});
+    }
+    else
+    {
+      if(m_depth > 0)
+      { p << oscpack::BeginArray(); }
 
-    p << vec[0] << vec[1] << vec[2] << vec[3];
+      p << vec[0] << vec[1] << vec[2] << vec[3];
 
-    if(m_depth > 0)
-    { p << oscpack::EndArray(); }
-  }
-
-  void operator()(const oscpack::RgbaColor& u) const
-  {
-    p << u;
-  }
-
-  void operator()(const ossia::rgba8& u) const
-  {
-    p << to_rgba(u);
+      if(m_depth > 0)
+      { p << oscpack::EndArray(); }
+    }
   }
 
   // Arrays are flattened
@@ -137,9 +134,16 @@ struct osc_extended_outbound_static_policy : osc_common_outbound_static_policy
     return 8;
   }
 
-  std::size_t operator()(char* buffer, const ossia::rgba8& u) const
+  std::size_t operator()(char* buffer, vec4f t) const noexcept
   {
-    return (*this)(buffer, to_rgba(u));
+    if(unit == ossia::rgba8_u{})
+    {
+      return (*this)(buffer, to_osc_rgba({t}));
+    }
+    else
+    {
+      return osc_common_outbound_static_policy::operator()(buffer, t);
+    }
   }
 };
 

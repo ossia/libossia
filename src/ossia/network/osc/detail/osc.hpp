@@ -569,7 +569,7 @@ operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::domain& dom)
 {
-  ossia::apply(ossia::net::osc_write_domain_visitor{{{p}}}, dom);
+  ossia::apply(ossia::net::osc_write_domain_visitor{ossia::net::osc_1_0_outbound_stream_visitor{p, ossia::unit_t{}}}, dom);
 
   return p;
 }

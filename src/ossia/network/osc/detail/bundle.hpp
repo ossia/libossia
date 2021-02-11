@@ -21,7 +21,7 @@ struct bundle_common_policy
     if (val = filter_value(addr, addr.value()); val.valid())
     {
       str << oscpack::BeginMessageN(osc_address(addr));
-      val.apply(typename OscPolicy::dynamic_policy{{str}});
+      val.apply(typename OscPolicy::dynamic_policy{{str, addr.get_unit()}});
       str << oscpack::EndMessage();
     }
   }
