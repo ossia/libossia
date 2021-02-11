@@ -3,7 +3,7 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/debug.hpp>
-#include <ossia/network/oscquery/oscquery_mirror_asio.hpp>
+#include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
 #include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/osc_address.hpp>
@@ -21,10 +21,9 @@ void explore(const node_base& node);
 void printDomain(const domain& d);
 void printValueCallback(const value& v);
 
-auto ctx = std::make_shared<ossia::net::network_context>();
-
 int main()
 {
+  auto ctx = std::make_shared<ossia::net::network_context>();
 
   // Create a protocol that will connect to the given websocket address
   auto protocol = new ossia::oscquery::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
@@ -35,12 +34,7 @@ int main()
 
   // Explore the tree of B
   {
-    auto fut = device.get_protocol().update_async(device);
-
-    while(fut.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
-    {
-        ctx->context.poll_one();
-    }
+    device.get_protocol().update(device);
   }
 
   // Display the tree in console
@@ -81,12 +75,7 @@ void explore(const ossia::net::node_base& node)
       });
 
       // update the value
-      auto fut = addr->pull_value_async();
-
-      while(fut.wait_for(std::chrono::seconds(0)) != std::future_status::ready)
-      {
-          ctx->context.poll_one();
-      }
+      addr->pull_value();
     }
 
     using namespace fmt;

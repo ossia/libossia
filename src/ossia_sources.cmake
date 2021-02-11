@@ -313,7 +313,6 @@ set(OSSIA_CPP_SRCS
 
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_factory.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
@@ -330,11 +329,15 @@ set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_generic_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_factory.hpp"
   )
 set(OSSIA_OSC_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc_factory.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_factory.cpp"
   )
 
 set(OSSIA_MINUIT_HEADERS
@@ -368,7 +371,6 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/host_info.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor_impl.hpp"
@@ -391,12 +393,13 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/domain_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_units.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror_asio.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.cpp"
@@ -406,6 +409,8 @@ set(OSSIA_OSCQUERY_SRCS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.cpp"
     )
 
 set(OSSIA_HTTP_HEADERS

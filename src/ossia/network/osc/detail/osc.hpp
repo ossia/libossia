@@ -235,7 +235,7 @@ struct osc_utilities
         case oscpack::SYMBOL_TYPE_TAG:
           t.push_back(std::string{it->AsSymbolUnchecked()}); break;
         case oscpack::BLOB_TYPE_TAG:
-          t.push_back(get_blob(it));
+          t.push_back(get_blob(it)); break;
         case oscpack::RGBA_COLOR_TYPE_TAG:
         {
           auto c = it->AsRgbaColorUnchecked();

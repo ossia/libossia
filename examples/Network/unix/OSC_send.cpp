@@ -1,4 +1,4 @@
-#include <ossia/network/osc/osc_factory.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_device.hpp>
