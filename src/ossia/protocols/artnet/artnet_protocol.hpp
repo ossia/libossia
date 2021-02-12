@@ -5,10 +5,9 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/context.hpp>
-#include <asio/high_resolution_timer.hpp>
+#include <ossia/detail/timer.hpp>
 #include <array>
 #include <cstdint>
-#include <thread>
 
 #define DMX_CHANNEL_COUNT 512
 
@@ -19,7 +18,8 @@ namespace ossia
 namespace net
 {
 
-class OSSIA_EXPORT artnet_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT artnet_protocol final
+    : public ossia::net::protocol_base
 {
 public:
   struct dmx_buffer
@@ -49,9 +49,7 @@ private:
   ossia::net::network_context_ptr m_context;
 
   using clock = std::chrono::high_resolution_clock;
-  asio::high_resolution_timer m_timer;
-  clock::time_point m_prev_time{};
-  std::chrono::milliseconds m_delay{};
+  ossia::timer m_timer;
   dmx_buffer m_buffer;
 
   ossia::net::device_base* m_device{};

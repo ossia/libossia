@@ -25,8 +25,8 @@ public:
       QObject& obj, QMetaProperty p, ossia::net::device_base& aDevice,
       node_base& aParent);
 
-  void set_value_quiet(const ossia::value&) final override;
-  void set_value_quiet(ossia::value&&) final override;
+  ossia::value set_value_quiet(const ossia::value&) final override;
+  ossia::value set_value_quiet(ossia::value&&) final override;
   ossia::net::parameter_base* get_parameter() const final override;
   ossia::net::parameter_base*
   create_parameter(ossia::val_type type) final override;
