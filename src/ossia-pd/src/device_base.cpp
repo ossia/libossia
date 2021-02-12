@@ -1,6 +1,7 @@
 #include "device_base.hpp"
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
