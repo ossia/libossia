@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "qml_signal.hpp"
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
