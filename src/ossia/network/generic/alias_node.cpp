@@ -187,15 +187,16 @@ ossia::value alias_path::set_value(ossia::value&& v)
   return set_value(v);
 }
 
-void alias_path::set_value_quiet(const ossia::value& v)
+ossia::value alias_path::set_value_quiet(const ossia::value& v)
 {
   do_for_nodes([&](ossia::net::node_base& n) {
     if (auto p = n.get_parameter())
       p->set_value_quiet(v);
   });
+  return v;
 }
 
-void alias_path::set_value_quiet(ossia::value&& v)
+ossia::value alias_path::set_value_quiet(ossia::value&& v)
 {
   return set_value_quiet(v);
 }
