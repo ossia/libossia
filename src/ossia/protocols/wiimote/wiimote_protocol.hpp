@@ -4,7 +4,7 @@
 #include <ossia/network/common/device_parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-#include <ossia/network/wiimote/wiimote_parameter.hpp>
+#include <ossia/protocols/wiimote/wiimote_parameter.hpp>
 
 #include <array>
 #include <cstdint>

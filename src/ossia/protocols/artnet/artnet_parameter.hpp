@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
-#include <ossia/network/artnet/artnet_protocol.hpp>
+#include <ossia/protocols/artnet/artnet_protocol.hpp>
 #include <ossia/network/common/device_parameter.hpp>
 
 #include <artnet/artnet.h>
