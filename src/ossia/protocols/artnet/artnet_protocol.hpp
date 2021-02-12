@@ -4,7 +4,8 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
-
+#include <ossia/network/context.hpp>
+#include <asio/high_resolution_timer.hpp>
 #include <array>
 #include <cstdint>
 #include <thread>
@@ -30,7 +31,7 @@ public:
     bool dirty;
   };
 
-  artnet_protocol(const unsigned int update_frequency);
+  artnet_protocol(ossia::net::network_context_ptr, const unsigned int update_frequency);
   ~artnet_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
@@ -43,11 +44,14 @@ public:
   bool update(ossia::net::node_base&) override;
 
 private:
-  static void update_function(artnet_protocol* instance);
+  void update_function();
 
-  std::thread m_update_thread;
-  bool m_running;
-  const unsigned int m_update_frequency;
+  ossia::net::network_context_ptr m_context;
+
+  using clock = std::chrono::high_resolution_clock;
+  asio::high_resolution_timer m_timer;
+  clock::time_point m_prev_time{};
+  std::chrono::milliseconds m_delay{};
   dmx_buffer m_buffer;
 
   ossia::net::device_base* m_device{};

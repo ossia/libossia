@@ -427,50 +427,50 @@ set(OSSIA_SERIAL_SRCS
 )
 
 set(OSSIA_PHIDGETS_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/detail/sensors.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter_data.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_parameter_data.hpp")
 
 set(OSSIA_PHIDGETS_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.cpp")
 
 set(OSSIA_LEAPMOTION_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.hpp")
 
 set(OSSIA_LEAPMOTION_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp")
 
 set(OSSIA_JOYSTICK_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.cpp")
 
 set(OSSIA_LIBMAPPER_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/libmapper/libmapper_protocol.hpp")
 
 set(OSSIA_LIBMAPPER_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/libmapper/libmapper_protocol.cpp")
 
 set(OSSIA_WIIMOTE_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_protocol.hpp")
 
 set(OSSIA_WIIMOTE_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_protocol.cpp")
 
 set(OSSIA_ARTNET_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.hpp")
 
 set(OSSIA_ARTNET_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.cpp")
 
 
 set(OSSIA_WS_CLIENT_HEADERS
