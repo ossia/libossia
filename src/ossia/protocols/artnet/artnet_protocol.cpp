@@ -35,7 +35,7 @@ artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const unsi
     throw std::runtime_error(
         "DMX 512 update frequencie must be in the range [0, 44] Hz");
 
-  m_delay = std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(update_frequency))};
+  m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(update_frequency))});
 
   //  44  hz limit apply because we send 512 byte frames.
   //  It seem to be possible to send only some value and thus
@@ -57,7 +57,7 @@ artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const unsi
 
 artnet_protocol::~artnet_protocol()
 {
-  m_timer.cancel();
+  m_timer.stop();
   artnet_destroy(m_node);
 }
 
@@ -71,8 +71,7 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
     device_parameter::create_device_parameter<artnet_parameter>(
         root, fmt::format("Channel-{}", i + 1), 0, &m_buffer, i);
 
-  m_timer.expires_from_now(m_delay);
-  m_timer.async_wait([this] (asio::error_code){ this->update_function(); });
+  m_timer.start([this] { this->update_function(); });
 }
 
 bool artnet_protocol::pull(net::parameter_base& param)
@@ -107,9 +106,6 @@ void artnet_protocol::update_function()
     m_buffer.send(m_node);
     m_buffer.dirty = false;
   }
-
-  m_timer.expires_from_now(m_delay);
-  m_timer.async_wait([this] (asio::error_code) { this->update_function(); });
 }
 }
 

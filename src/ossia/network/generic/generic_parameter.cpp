@@ -149,42 +149,54 @@ ossia::value generic_parameter::set_value(ossia::value&& val)
   return copy;
 }
 
-void generic_parameter::set_value_quiet(const ossia::value& val)
+ossia::value generic_parameter::set_value_quiet(const ossia::value& val)
 {
-  using namespace ossia;
-  if (!val.valid())
-    return;
+  ossia::value copy;
 
-  lock_t lock(m_valueMutex);
-  if (m_value.v.which() == val.v.which())
+  if (val.valid())
   {
-    m_previousValue = std::move(m_value); // TODO also implement me for MIDI
-    m_value = val;
+    lock_t lock(m_valueMutex);
+    if (m_value.v.which() == val.v.which())
+    {
+      // TODO assess whether we would avoid an allocation on the return
+      // if doing copy = std::move(m_previousValue)
+      m_previousValue = std::move(m_value); // TODO also implement me for MIDI
+      m_value = val;
+      copy = val;
+    }
+    else
+    {
+      m_previousValue = std::move(m_value);
+      m_value = ossia::convert(val, m_previousValue);
+      copy = m_value;
+    }
   }
-  else
-  {
-    m_previousValue = std::move(m_value);
-    m_value = ossia::convert(val, m_previousValue);
-  }
+
+  return copy;
 }
 
-void generic_parameter::set_value_quiet(ossia::value&& val)
+ossia::value generic_parameter::set_value_quiet(ossia::value&& val)
 {
   using namespace ossia;
-  if (!val.valid())
-    return;
+  ossia::value copy;
+  if (val.valid())
+  {
+    lock_t lock(m_valueMutex);
+    if (m_value.v.which() == val.v.which())
+    {
+      m_previousValue = std::move(m_value); // TODO also implement me for MIDI
+      m_value = std::move(val);
+      copy = m_value;
+    }
+    else
+    {
+      m_previousValue = std::move(m_value);
+      m_value = ossia::convert(std::move(val), m_previousValue);
+      copy = m_value;
+    }
+  }
 
-  lock_t lock(m_valueMutex);
-  if (m_value.v.which() == val.v.which())
-  {
-    m_previousValue = std::move(m_value); // TODO also implement me for MIDI
-    m_value = std::move(val);
-  }
-  else
-  {
-    m_previousValue = std::move(m_value);
-    m_value = ossia::convert(std::move(val), m_previousValue);
-  }
+  return copy;
 }
 
 void generic_parameter::set_value_quiet(const destination& destination)

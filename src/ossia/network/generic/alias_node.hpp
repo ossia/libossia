@@ -72,8 +72,8 @@ private:
   parameter_base& push_value() override;
   ossia::value set_value(const ossia::value&) override;
   ossia::value set_value(ossia::value&&) override;
-  void set_value_quiet(const ossia::value& v) override;
-  void set_value_quiet(ossia::value&& v) override;
+  ossia::value set_value_quiet(const ossia::value& v) override;
+  ossia::value set_value_quiet(ossia::value&& v) override;
   val_type get_value_type() const override;
   parameter_base& set_value_type(val_type) override;
   access_mode get_access() const override;
