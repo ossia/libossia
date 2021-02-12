@@ -1,6 +1,7 @@
 #include <ossia-pd/src/node_base.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia-pd/src/utils.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 

@@ -12,6 +12,7 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/common/path.hpp>
 
