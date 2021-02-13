@@ -54,8 +54,9 @@ struct json_query_answerer
     return rapidjson::StringBuffer{};
   }
 
+  template <typename Protocol>
   static json_writer::string_t handle_start_streaming(
-      oscquery_server_protocol& proto,
+      Protocol& proto,
       const oscquery_server_protocol::connection_handler& hdl,
       const rapidjson::Document& doc)
   {
@@ -89,9 +90,10 @@ struct json_query_answerer
     return open_osc_sender(proto, hdl, remote_server, remote_sender);
   }
 
+  template <typename Protocol>
   static json_writer::string_t open_osc_sender(
-      oscquery_server_protocol& proto,
-      const oscquery_server_protocol::connection_handler& hdl, int port,
+      Protocol& proto,
+      const typename Protocol::connection_handler& hdl, int port,
       int remotePort)
   {
     // First we find for a corresponding client
@@ -117,9 +119,10 @@ struct json_query_answerer
     return {};
   }
 
+  template <typename Protocol>
   static json_writer::string_t handle_listen(
-      oscquery_server_protocol& proto,
-      const oscquery_server_protocol::connection_handler& hdl,
+      Protocol& proto,
+      const typename Protocol::connection_handler& hdl,
       const rapidjson::Document& doc)
   {
     // First we find for a corresponding client
@@ -141,9 +144,10 @@ struct json_query_answerer
     return {};
   }
 
+  template <typename Protocol>
   static json_writer::string_t handle_ignore(
-      oscquery_server_protocol& proto,
-      const oscquery_server_protocol::connection_handler& hdl,
+      Protocol& proto,
+      const typename Protocol::connection_handler& hdl,
       const rapidjson::Document& doc)
   {
     // First we find for a corresponding client

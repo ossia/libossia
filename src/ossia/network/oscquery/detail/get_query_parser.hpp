@@ -24,8 +24,9 @@ namespace oscquery
 class get_query_answerer
 {
 public:
+  template<typename OscqueryProtocol>
   static json_writer::string_t handle_listen(
-      oscquery_server_protocol& proto,
+      OscqueryProtocol& proto,
       const oscquery_server_protocol::connection_handler& hdl,
       ossia::net::node_base& node, ossia::string_view path,
       const std::string& listen_text)
@@ -60,8 +61,9 @@ public:
     }
   }
 
+  template<typename OscqueryProtocol>
   auto operator()(
-      oscquery_server_protocol& proto,
+      OscqueryProtocol& proto,
       const oscquery_server_protocol::connection_handler& hdl)
   {
     return [&proto, &hdl](
@@ -152,7 +154,7 @@ public:
         }
         else
         {
-          return oscquery::json_writer::query_host_info(proto);
+          return oscquery::json_writer::query_host_info(proto.get_device().get_name(), proto.get_osc_port());
         }
       }
       return {};

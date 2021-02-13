@@ -47,6 +47,7 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_example(network_oscquery_various "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_various.cpp")
   ossia_add_example(network_oscquery_bridge "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_bridge.cpp")
   ossia_add_example(network_oscquery_exploration_asio "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSCQuery_exploration_asio.cpp")
+  ossia_add_example(network_oscquery_publication_asio "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSCQuery_publication_asio.cpp")
 
   ossia_add_example(pd_controller "${CMAKE_CURRENT_SOURCE_DIR}/Network/PdController.cpp")
   if(OSSIA_PROTOCOL_LEAPMOTION)

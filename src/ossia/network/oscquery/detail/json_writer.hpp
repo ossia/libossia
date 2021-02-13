@@ -24,7 +24,7 @@ public:
   //! Sends the port at which a server opens its OSC port
   static string_t device_info(int port);
 
-  static string_t query_host_info(const oscquery_server_protocol&);
+  static string_t query_host_info(const std::string& name, const int osc_port);
 
   // Format interface
   // Queries
