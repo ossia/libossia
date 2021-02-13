@@ -4,7 +4,6 @@
 
 #include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/execution_state.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
 
 namespace ossia
 {

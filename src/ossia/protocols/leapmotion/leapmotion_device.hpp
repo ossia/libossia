@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/context.hpp>
 
 namespace Leap
 {
@@ -12,7 +13,7 @@ namespace ossia
 class OSSIA_EXPORT leapmotion_protocol final : public ossia::net::protocol_base
 {
 public:
-  leapmotion_protocol();
+  leapmotion_protocol(ossia::net::network_context_ptr);
   ~leapmotion_protocol();
 
 private:
@@ -23,6 +24,7 @@ private:
   bool observe(net::parameter_base&, bool) override;
   bool update(net::node_base& node_base) override;
 
+  ossia::net::network_context_ptr m_context;
   class leap_listener;
   std::unique_ptr<leap_listener> listener;
   std::unique_ptr<Leap::Controller> controller;

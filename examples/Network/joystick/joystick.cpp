@@ -30,5 +30,5 @@ int main()
     fmt::print("{}: {}\n", ossia::net::osc_address(param), param.value());
   };
   source_dev.on_message.connect(on_message);
-  ctx->context.run();
+  ctx->run();
 }

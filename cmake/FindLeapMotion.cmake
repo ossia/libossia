@@ -10,13 +10,13 @@ endif()
 find_path(LeapMotion_INCLUDE_DIRS
     Leap.h
     HINTS
-        ${LEAP_SDK}/include
+        "${LEAP_SDK}/include"
         "C:/LeapSDK/include")
 find_library(LeapMotion_LIBRARIES
     NAMES leap Leap
     HINTS
-        ${LEAP_SDK}/lib
-        ${LEAP_SDK}/lib/${LeapMotion_ARCH_SUFFIX}
+        "${LEAP_SDK}/lib"
+        "${LEAP_SDK}/lib/${LeapMotion_ARCH_SUFFIX}"
         "C:/LeapSDK/lib/${LeapMotion_ARCH_SUFFIX}"
 )
 
@@ -27,14 +27,16 @@ endif()
 
 get_filename_component(LeapMotion_LIB_FOLDER ${LeapMotion_LIBRARIES} DIRECTORY)
 if(WIN32)
-  set(LeapMotion_DLLS ${LeapMotion_LIB_FOLDER}/Leap.dll)
+  set(LeapMotion_DLLS "${LeapMotion_LIB_FOLDER}/Leap.dll")
+elseif(APPLE)
+  set(LeapMotion_DLLS "${LeapMotion_LIB_FOLDER}/libLeap.dylib")
 else()
-  set(LeapMotion_DLLS ${LeapMotion_LIB_FOLDER}/libLeap.dylib)
+  set(LeapMotion_DLLS "${LeapMotion_LIB_FOLDER}/libLeap.so")
 endif()
 add_library(LeapMotion SHARED IMPORTED)
-set_property(TARGET LeapMotion PROPERTY IMPORTED_LOCATION ${LeapMotion_DLLS})
-set_property(TARGET LeapMotion PROPERTY IMPORTED_IMPLIB ${LeapMotion_LIBRARIES})
-target_include_directories(LeapMotion INTERFACE ${LeapMotion_INCLUDE_DIRS})
+set_property(TARGET LeapMotion PROPERTY IMPORTED_LOCATION "${LeapMotion_DLLS}")
+set_property(TARGET LeapMotion PROPERTY IMPORTED_IMPLIB "${LeapMotion_LIBRARIES}")
+target_include_directories(LeapMotion INTERFACE "${LeapMotion_INCLUDE_DIRS}")
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(
