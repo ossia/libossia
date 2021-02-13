@@ -117,23 +117,21 @@ public:
   std::mutex m_joystick_protocols_mutex;
 };
 
+
+// TODO refactor this so that each protocol gets callback only related to its own joystick instead
 struct joystick_event_processor
 {
-  static inline int instance_count = 0;
+  static inline std::atomic_int instance_count = 0;
   joystick_event_processor(joystick_protocol_manager& manager, asio::io_context& ctx)
     : m_manager{manager}
     , m_timer{ctx}
   {
-    int cur = instance_count++;
-    if(cur == 0)
-      start_event_loop();
+    start_event_loop();
   }
 
   ~joystick_event_processor()
   {
-    instance_count--;
-    if(instance_count == 0)
-      stop_event_loop();
+    stop_event_loop();
   }
 
   static joystick_event_processor& instance(joystick_protocol_manager& manager, asio::io_context& ctx)
@@ -144,9 +142,8 @@ struct joystick_event_processor
 
   void start_event_loop()
   {
-    if (m_event_loop_running)
+    if (instance_count++ > 0)
       return;
-    m_event_loop_running = true;
 
     using namespace std::literals;
     m_timer.set_delay(4ms);
@@ -155,11 +152,10 @@ struct joystick_event_processor
 
   void stop_event_loop()
   {
-    if (!m_event_loop_running)
+    if (--instance_count > 0)
       return;
 
-    m_event_loop_running = false;
-
+    using namespace std::literals;
     // To be sure to quit the event loop
     SDL_Event ev;
     ev.type = SDL_FIRSTEVENT;
@@ -228,7 +224,6 @@ struct joystick_event_processor
         break;
 
       default:
-        ossia::logger().info("Received unknown event of type {} (is not joy event)", ev.type);
         break;
     }
   }
@@ -246,10 +241,6 @@ struct joystick_event_processor
 
   joystick_protocol_manager& m_manager;
   ossia::timer m_timer;
-
-  bool m_event_loop_running{false};
 };
-
-////
 
 }
