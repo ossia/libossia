@@ -14,10 +14,13 @@ class leapmotion_protocol::leap_listener final : public Leap::Listener
 {
   using Controller = Leap::Controller;
   using Vector = Leap::Vector;
+  asio::io_context& ctx;
   ossia::net::device_base& dev;
 
 public:
-  leap_listener(ossia::net::device_base& device) : dev{device}
+  leap_listener(asio::io_context& ctx, ossia::net::device_base& device)
+    : ctx{ctx}
+    , dev{device}
   {
   }
 
@@ -38,11 +41,10 @@ public:
   void onExit(const Controller&) override
   {
   }
-  void onFrame(const Controller& controller) override
+
+  void processFrame(const Leap::Frame& frame)
   {
     using namespace Leap;
-    // Get the most recent frame and report some basic information
-    const Frame frame = controller.frame();
     bool left_active = false, right_active = false;
     const auto& hands = frame.hands();
     for (const auto& hand : hands)
@@ -112,6 +114,12 @@ public:
     this->num_hands.push_value(hands.count());
     this->left.active.push_value(left_active);
     this->right.active.push_value(right_active);
+  }
+
+  void onFrame(const Controller& controller) override
+  {
+    // Get the most recent frame and report some basic information
+    ctx.post([this, frame = controller.frame()] { processFrame(frame);  });
   }
 
   void onFocusGained(const Controller&) override
@@ -221,14 +229,15 @@ public:
       *ossia::create_parameter(dev.get_root_node(), "/num_hands", "int")};
 };
 
-leapmotion_protocol::leapmotion_protocol()
+leapmotion_protocol::leapmotion_protocol(ossia::net::network_context_ptr ptr)
     : protocol_base{flags{SupportsMultiplex}}
+    , m_context{std::move(ptr)}
 {
 }
 
 void leapmotion_protocol::set_device(net::device_base& dev)
 {
-  listener = std::make_unique<leap_listener>(dev);
+  listener = std::make_unique<leap_listener>(m_context->context, dev);
   controller = std::make_unique<Leap::Controller>();
   controller->addListener(*listener);
 #if defined(_WIN32)

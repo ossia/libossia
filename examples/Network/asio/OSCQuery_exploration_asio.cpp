@@ -40,7 +40,7 @@ int main()
   // Display the tree in console
   explore(device.get_root_node());
 
-  ctx->context.run();
+  ctx->run();
 
   ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
 
