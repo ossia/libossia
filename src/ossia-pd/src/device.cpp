@@ -249,7 +249,6 @@ void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
       {
         auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
               settings.oscport, settings.wsport);
-        oscq_proto->set_echo(true);
 
         multiplex.expose_to(std::move(oscq_proto));
 

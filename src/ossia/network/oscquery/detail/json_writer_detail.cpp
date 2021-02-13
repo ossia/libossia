@@ -498,7 +498,7 @@ json_writer::string_t json_writer::device_info(int port)
 }
 
 json_writer::string_t
-json_writer::query_host_info(const oscquery_server_protocol& proto)
+json_writer::query_host_info(const std::string& name, const int osc_port)
 {
 
   string_t buf;
@@ -506,9 +506,9 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
 
   wr.StartObject();
   wr.Key("NAME");
-  wr.String(proto.get_device().get_name());
+  wr.String(name);
   wr.Key("OSC_PORT");
-  wr.Int(proto.get_osc_port());
+  wr.Int(osc_port);
   wr.Key("OSC_TRANSPORT");
   wr.String("UDP");
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
+#include <ossia/network/context_functions.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
@@ -31,18 +32,26 @@ class websocket_server;
 namespace oscquery
 {
 struct oscquery_client;
+class query_answerer;
+class get_query_answerer;
+struct json_query_answerer;
+}
+namespace oscquery_asio
+{
+using oscquery_client = ossia::oscquery::oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base
 {
-  friend class query_answerer;
-  friend class get_query_answerer;
-  friend struct json_query_answerer;
+  friend class ossia::oscquery::query_answerer;
+  friend class ossia::oscquery::get_query_answerer;
+  friend struct ossia::oscquery::json_query_answerer;
 
 public:
   using connection_handler = std::weak_ptr<void>;
-  oscquery_server_protocol(uint16_t osc_port = 1234, uint16_t ws_port = 5678);
+  oscquery_server_protocol(ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234, uint16_t ws_port = 5678);
   ~oscquery_server_protocol() override;
+
 
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
@@ -57,7 +66,7 @@ public:
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
-  void run_commands();
+
   void set_device(net::device_base& dev) override;
   void stop() override;
   ossia::net::device_base& get_device() const
@@ -80,7 +89,7 @@ public:
 
 private:
   // List of connected clients
-  oscquery_client* find_client(const connection_handler& hdl);
+  ossia::oscquery::oscquery_client* find_client(const connection_handler& hdl);
 
   void
   add_node(ossia::string_view path, const string_map<std::string>& parameters);
@@ -88,8 +97,8 @@ private:
   void rename_node(ossia::string_view node, const std::string& new_name);
 
   // OSC callback
-  void
-  on_OSCMessage(const oscpack::ReceivedMessage& m, oscpack::IpEndpointName ip);
+  void on_osc_message(const oscpack::ReceivedMessage& m);
+  void process_raw_osc_data(const char* data, std::size_t sz);
 
   // Websocket callbacks
   void on_connectionOpen(const connection_handler& hdl);
@@ -99,8 +108,7 @@ private:
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
   void on_parameterChanged(const ossia::net::parameter_base&);
-  void
-  on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   template <typename T>
@@ -111,10 +119,13 @@ private:
   // which will set appropriate error codes.
   ossia::net::server_reply
   on_WSrequest(const connection_handler& hdl, const std::string& message);
-  ossia::net::server_reply on_BinaryWSrequest(
+  ossia::net::server_reply on_binary_ws_message(
       const connection_handler& hdl, const std::string& message);
 
-  std::unique_ptr<osc::receiver> m_oscServer;
+  ossia::net::network_context_ptr m_context;
+
+  struct osc_receiver_impl;
+  std::unique_ptr<osc_receiver_impl> m_oscServer;
   std::unique_ptr<ossia::net::websocket_server> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServerWS;
@@ -124,12 +135,9 @@ private:
   net::listened_parameters m_listening;
 
   // The clients connected to this server
-  std::vector<oscquery_client> m_clients;
+  std::vector<ossia::oscquery::oscquery_client> m_clients;
 
   ossia::net::device_base* m_device{};
-
-  // Where the websocket server lives
-  std::thread m_serverThread;
 
   // To lock m_clients
   mutex_t m_clientsMutex;
@@ -138,27 +146,6 @@ private:
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
 
-  bool m_echo{};
-
-  // TODO could we make an intermediate base class for oscquery_{server,mirror}
-  // that hold that function queue and other shared members/methods ?
-
-  // function queue to hold ws callback
-  // and avoid tree to be modified on another thread
-  ossia::spsc_queue<std::function<void()>> m_functionQueue;
 };
 }
-
-class OSSIA_EXPORT oscquery_device
-{
-public:
-  oscquery_device(
-      uint16_t osc_port = 1234, uint16_t ws_port = 5678,
-      std::string name = "oscquery");
-
-  ~oscquery_device();
-
-  ossia::net::generic_device device;
-  ossia::oscquery::oscquery_server_protocol& protocol;
-};
 }
