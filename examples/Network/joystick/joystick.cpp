@@ -17,7 +17,7 @@ int main()
 
   fmt::print("Using joystick {}\n", ossia::net::joystick_info::get_joystick_name(0));
 
-  auto ctx = std::make_shared<ossia::net::network_context>();
+  auto ctx = ossia::net::create_network_context();
   ossia::net::generic_device source_dev{
     std::make_unique<ossia::net::multiplex_protocol>(
           std::make_unique<ossia::net::joystick_protocol>(ctx, 0, 0),
@@ -30,5 +30,5 @@ int main()
     fmt::print("{}: {}\n", ossia::net::osc_address(param), param.value());
   };
   source_dev.on_message.connect(on_message);
-  ctx->run();
+  ossia::net::run_network_context(*ctx);
 }

@@ -1,9 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_node.hpp>
-#include <ossia/network/midi/midi_parameter.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_node.hpp>
+#include <ossia/protocols/midi/midi_parameter.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 
 namespace ossia::net::midi
 {

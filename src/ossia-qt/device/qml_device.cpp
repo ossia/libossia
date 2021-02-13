@@ -20,7 +20,7 @@
 
 #include <ossia/network/common/debug.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
-#include <ossia/network/midi/midi.hpp>
+#include <ossia/protocols/midi/midi.hpp>
 #endif
 #if defined(OSSIA_PROTOCOL_OSC)
 #include <ossia/network/osc/osc.hpp>
@@ -41,9 +41,10 @@ namespace qt
 
 qml_device::qml_device(QObject* parent)
     : QObject{parent}
-    , m_device{std::make_unique<ossia::net::generic_device>(
-          m_name.toUtf8().toStdString())}
+    , m_context{ossia::net::create_network_context()}
+    , m_device{std::make_unique<ossia::net::generic_device>(m_name.toUtf8().toStdString())}
 {
+  startTimer(4);
 }
 
 net::device_base& qml_device::device()
@@ -255,6 +256,7 @@ bool qml_device::openMIDIInputDevice(int port)
   {
     using namespace ossia::net::midi;
     auto proto = new midi_protocol{
+        m_context,
         midi_info{midi_info::Type::Input, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
@@ -286,7 +288,7 @@ bool qml_device::openMIDIOutputDevice(int port)
   {
     using namespace ossia::net::midi;
     auto proto
-        = new midi_protocol{midi_info{midi_info::Type::Output, {}, port}};
+        = new midi_protocol{m_context, midi_info{midi_info::Type::Output, {}, port}};
     auto dev = std::make_unique<midi_device>(
         std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->create_full_tree();
@@ -315,8 +317,8 @@ QVariantMap qml_device::getMIDIInputDevices() const
 
 #if defined(OSSIA_PROTOCOL_MIDI)
   using namespace ossia::net::midi;
-  midi_protocol p;
-  for (const auto& info : p.scan())
+
+  for (const auto& info : midi_protocol::scan())
   {
     if (info.type == midi_info::Type::Input)
       lst.insert(QString::fromStdString(info.device), info.port);
@@ -332,8 +334,8 @@ QVariantMap qml_device::getMIDIOutputDevices() const
 
 #if defined(OSSIA_PROTOCOL_MIDI)
   using namespace ossia::net::midi;
-  midi_protocol p;
-  for (const auto& info : p.scan())
+
+  for (const auto& info : midi_protocol::scan())
   {
     if (info.type == midi_info::Type::Output)
       lst.insert(QString::fromStdString(info.device), info.port);
@@ -611,6 +613,11 @@ void qml_device::setReadPreset(bool readPreset)
 
 qml_device::~qml_device()
 {
+}
+
+void qml_device::timerEvent(QTimerEvent* ev)
+{
+  ossia::net::poll_network_context(*m_context);
 }
 
 void qml_device::savePreset(const QUrl& file)

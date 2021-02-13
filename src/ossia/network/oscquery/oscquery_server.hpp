@@ -3,7 +3,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/oscquery/detail/server_reply.hpp>
+#include <ossia/network/websocket/server_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 
@@ -24,9 +24,12 @@ class IpEndpointName;
 }
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 class websocket_server;
+}
+namespace oscquery
+{
 struct oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
@@ -120,13 +123,13 @@ private:
   void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
-  ossia::oscquery::server_reply
+  ossia::net::server_reply
   on_WSrequest(const connection_handler& hdl, const std::string& message);
-  ossia::oscquery::server_reply on_BinaryWSrequest(
+  ossia::net::server_reply on_BinaryWSrequest(
       const connection_handler& hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
-  std::unique_ptr<websocket_server> m_websocketServer;
+  std::unique_ptr<ossia::net::websocket_server> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServerWS;
   net::zeroconf_server m_zeroconfServerOSC;
@@ -157,7 +160,6 @@ private:
   // function queue to hold ws callback
   // and avoid tree to be modified on another thread
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
-
 };
 }
 

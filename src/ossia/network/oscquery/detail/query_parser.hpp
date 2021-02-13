@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/oscquery/detail/attributes.hpp>
-#include <ossia/network/oscquery/detail/http_query_parser.hpp>
+#include <ossia/network/http/http_query_parser.hpp>
 
 namespace ossia
 {
@@ -40,7 +40,7 @@ public:
     }
 
     std::string clean_path;
-    url_decode(path, clean_path);
+    ossia::net::url_decode(path, clean_path);
     return mapper(clean_path, parse_http_methods(queries));
   }
 

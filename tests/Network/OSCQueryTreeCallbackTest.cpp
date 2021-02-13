@@ -9,6 +9,7 @@
 
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 #include "TestUtils.hpp"

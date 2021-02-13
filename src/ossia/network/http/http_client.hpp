@@ -10,7 +10,7 @@
 
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 using tcp = asio::ip::tcp;
 

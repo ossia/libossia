@@ -4,8 +4,9 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/midi/detail/channel.hpp>
+#include <ossia/protocols/midi/detail/channel.hpp>
 #include <ossia/network/value/value.hpp>
+#include <ossia/network/context_functions.hpp>
 
 #include <ossia/detail/lockfree_queue.hpp>
 
@@ -44,14 +45,14 @@ struct OSSIA_EXPORT midi_info
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
 public:
-  midi_protocol();
-  midi_protocol(midi_info);
+  explicit midi_protocol(ossia::net::network_context_ptr);
+  explicit midi_protocol(ossia::net::network_context_ptr, midi_info);
   ~midi_protocol();
 
   bool set_info(midi_info);
   midi_info get_info() const;
 
-  std::vector<midi_info> scan();
+  static std::vector<midi_info> scan();
 
   void push_value(const libremidi::message&);
 
@@ -72,6 +73,7 @@ public:
 
 private:
   ossia::spsc_queue<libremidi::message> messages;
+  ossia::net::network_context_ptr m_context;
   std::unique_ptr<libremidi::midi_in> m_input;
   std::unique_ptr<libremidi::midi_out> m_output;
 

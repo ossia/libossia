@@ -1,6 +1,6 @@
 #pragma once
 
-#include <ossia/network/context.hpp>
+#include <ossia/network/context_functions.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/device_parameter.hpp>

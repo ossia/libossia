@@ -7,8 +7,8 @@
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 
 #include <ossia/detail/lockfree_queue.hpp>
 

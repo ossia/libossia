@@ -13,9 +13,9 @@
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/message_queue.hpp>
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/dataflow/typed_value.hpp>
 
 namespace ossia

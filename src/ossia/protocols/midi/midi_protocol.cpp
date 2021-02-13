@@ -1,9 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/detail/midi_impl.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 
 #include <libremidi/message.hpp>
 #include <libremidi/libremidi.hpp>
@@ -13,14 +13,16 @@ namespace net
 {
 namespace midi
 {
-midi_protocol::midi_protocol()
+midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx)
   : protocol_base{flags{}}
+  , m_context{ctx}
   , m_input{std::make_unique<libremidi::midi_in>(libremidi::API::UNSPECIFIED, "ossia-in")}
   , m_output{std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")}
 {
 }
 
-midi_protocol::midi_protocol(midi_info m) : midi_protocol()
+midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info m)
+  : midi_protocol{std::move(ctx)}
 {
   set_info(m);
 }
@@ -30,6 +32,13 @@ midi_protocol::~midi_protocol()
   try
   {
     m_input->close_port();
+  }
+  catch (...)
+  {
+    logger().error("midi_protocol::~midi_protocol() error");
+  }
+  try
+  {
     m_output->close_port();
   }
   catch (...)
@@ -515,7 +524,7 @@ std::vector<midi_info> midi_protocol::scan()
   std::vector<midi_info> vec;
 
   {
-    libremidi::midi_in& in = *m_input;
+    libremidi::midi_in in;
     auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
@@ -524,7 +533,7 @@ std::vector<midi_info> midi_protocol::scan()
   }
 
   {
-    libremidi::midi_out& out = *m_output;
+    libremidi::midi_out out;
     auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
