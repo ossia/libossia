@@ -1,11 +1,11 @@
 #pragma once
 #include <ossia/editor/state/message.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/midi/detail/channel.hpp>
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_node.hpp>
-#include <ossia/network/midi/midi_parameter.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/detail/channel.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_node.hpp>
+#include <ossia/protocols/midi/midi_parameter.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 #include <ossia/network/value/value.hpp>
 
 #include <iostream>

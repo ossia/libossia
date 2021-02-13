@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/json.hpp>
 
-namespace ossia::oscquery
+namespace ossia::net
 {
 
 struct server_reply

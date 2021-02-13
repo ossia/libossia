@@ -16,7 +16,7 @@
  */
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 
 // See

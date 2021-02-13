@@ -1928,6 +1928,57 @@ void ossia_mq_free(ossia_mq_t);
 
 /** @}*/
 
+
+
+/***************************/
+/*** Network context API ***/
+/***************************/
+
+/** @defgroup CNC Network context
+ * @brief Event loop to process messages.
+ *
+ * Usage:
+ *
+ * \code
+ * ossia_network_context_t ctx = ossia_network_context_create(device);
+ *
+ * ...
+ * ossia_protocol_osc_create(ctx, ...);
+ * ...
+ *
+ * // callbacks due to incoming messages will be called
+ * // in the thread where this is being run
+ * ossia_network_context_poll(ctx);
+ *
+ * ...
+ *
+ * ossia_network_context_free(mq);
+ * \endcode
+ *
+ *  @{
+ */
+
+typedef void* ossia_network_context_t;
+/**
+ * @brief Create a new network context.
+ */
+OSSIA_EXPORT
+ossia_network_context_t ossia_network_context_create();
+
+/**
+ * @brief Free a network context.
+ */
+OSSIA_EXPORT
+void ossia_network_context_free(ossia_network_context_t);
+
+/**
+ * @brief Process the network events currently pending.
+ */
+OSSIA_EXPORT
+void ossia_network_context_poll(ossia_network_context_t);
+
+/** @}*/
+
 #if defined(__cplusplus)
 }
 #endif

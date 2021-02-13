@@ -12,7 +12,6 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/value/value.hpp>
-#include <ossia/network/context.hpp>
 #include <ossia/network/osc/detail/osc_protocol_common.hpp>
 #include <ossia/network/osc/detail/configuration.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>

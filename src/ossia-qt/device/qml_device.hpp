@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/network/context_functions.hpp>
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
@@ -41,6 +42,8 @@ class OSSIA_EXPORT qml_device : public QObject
 public:
   qml_device(QObject* parent = nullptr);
   ~qml_device();
+
+  void timerEvent(QTimerEvent* ev);
 
   ossia::net::device_base& device();
   const ossia::net::device_base& device() const;
@@ -113,6 +116,8 @@ private:
   void clearEmptyElements();
 
   QString m_name{"device"};
+  ossia::net::network_context_ptr m_context;
+
   std::unique_ptr<ossia::net::device_base> m_device;
 
   qpointer_set<qml_node> m_nodes;

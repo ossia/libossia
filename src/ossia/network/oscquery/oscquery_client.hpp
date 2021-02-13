@@ -4,7 +4,7 @@
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/websocket/server.hpp>
 
 namespace osc
 {
@@ -21,7 +21,7 @@ namespace oscquery
 {
 struct oscquery_client
 {
-  websocket_server::connection_handler connection;
+  ossia::net::websocket_server::connection_handler connection;
   mutex_t listeningMutex;
   string_map<ossia::net::parameter_base*> listening;
 
@@ -49,7 +49,7 @@ public:
     return *this;
   }
 
-  oscquery_client(websocket_server::connection_handler h)
+  oscquery_client(ossia::net::websocket_server::connection_handler h)
       : connection{std::move(h)}
   {
   }
@@ -71,7 +71,7 @@ public:
     listeningMutex.unlock();
   }
 
-  bool operator==(const websocket_server::connection_handler& h) const
+  bool operator==(const ossia::net::websocket_server::connection_handler& h) const
   {
     return !connection.expired() && connection.lock() == h.lock();
   }

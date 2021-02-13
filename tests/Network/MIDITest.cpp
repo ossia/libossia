@@ -7,7 +7,7 @@
 #include "ProtocolTestUtils.hpp"
 
 #if defined(OSSIA_PROTOCOL_MIDI)
-#include <ossia/network/midi/midi.hpp>
+#include <ossia/protocols/midi/midi.hpp>
 #endif
 
 #ifdef OSSIA_PROTOCOL_MIDI
@@ -15,11 +15,10 @@ TEST_CASE ("test_midi", "test_midi")
   {
     using namespace ossia::net::midi;
     try {
-      auto proto = std::make_unique<midi_protocol>();
-      auto res = proto->scan();
-      for(auto e : res)
+      auto ctx = ossia::net::create_network_context();
+      for(auto e : midi_protocol::scan())
       {
-        ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(e));
+        ossia::net::midi::midi_device dev(std::make_unique<midi_protocol>(ctx, e));
         dev.set_name("dada");
         dev.create_full_tree();
       }

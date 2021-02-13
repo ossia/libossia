@@ -20,7 +20,7 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
-#include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/websocket/server.hpp>
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
 {
@@ -57,7 +57,7 @@ oscquery_server_protocol::oscquery_server_protocol(
               const oscpack::IpEndpointName& ip) {
             this->on_OSCMessage(m, ip);
           })}
-    , m_websocketServer{std::make_unique<websocket_server>()}
+    , m_websocketServer{std::make_unique<ossia::net::websocket_server>()}
     , m_oscPort{(uint16_t)m_oscServer->port()}
     , m_wsPort{ws_port}
 {
@@ -76,7 +76,7 @@ oscquery_server_protocol::oscquery_server_protocol(
             auto res = on_WSrequest(hdl, str);
 
             if (!res.data.empty()
-                && res.type != server_reply::data_type::binary
+                && res.type != ossia::net::server_reply::data_type::binary
                 && m_logger.outbound_logger)
               m_logger.outbound_logger->info("OSCQuery WS Out: {}", res.data);
 
@@ -87,7 +87,7 @@ oscquery_server_protocol::oscquery_server_protocol(
             return on_BinaryWSrequest(hdl, str);
           }
           default:
-            return oscquery::server_reply{};
+            return ossia::net::server_reply{};
         }
       });
 }
@@ -764,7 +764,7 @@ void oscquery_server_protocol::update_zeroconf()
   }
 }
 
-ossia::oscquery::server_reply oscquery_server_protocol::on_WSrequest(
+ossia::net::server_reply oscquery_server_protocol::on_WSrequest(
     const connection_handler& hdl, const std::string& message)
 {
   if (m_logger.inbound_logger)
@@ -776,7 +776,7 @@ ossia::oscquery::server_reply oscquery_server_protocol::on_WSrequest(
   }
   else if (message[0] == '/')
   {
-    return query_parser::parse_http_request(
+    return ossia::oscquery::query_parser::parse_http_request(
         message, get_query_answerer{}(*this, hdl));
   }
   else
@@ -795,7 +795,7 @@ ossia::oscquery::server_reply oscquery_server_protocol::on_WSrequest(
   return {};
 }
 
-server_reply oscquery_server_protocol::on_BinaryWSrequest(
+ossia::net::server_reply oscquery_server_protocol::on_BinaryWSrequest(
     const oscquery_server_protocol::connection_handler& hdl,
     const std::string& message)
 {

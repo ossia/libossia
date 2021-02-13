@@ -1,14 +1,10 @@
-
 #include "wiimote_protocol.hpp"
+
+#include <ossia/network/context.hpp>
 #include <wiiuse.h>
 
-
-namespace ossia
+namespace ossia::net
 {
-namespace net
-{
-
-////
 
 wiimote_protocol::wiimote_protocol(
     ossia::net::network_context_ptr ptr,
@@ -320,6 +316,5 @@ void wiimote_protocol::handle_wiimote_event(const unsigned int wiimote_id)
     parameters.nunchuk_button_z->device_value_change_event(
         IS_PRESSED(nunchuk, NUNCHUK_BUTTON_Z));
   }
-}
 }
 }

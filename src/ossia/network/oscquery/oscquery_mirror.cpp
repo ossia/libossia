@@ -9,9 +9,9 @@
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/websocket/client.hpp>
+#include <ossia/network/http/http_client.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
-#include <ossia/network/oscquery/detail/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
@@ -46,7 +46,7 @@ struct http_error
   }
 };
 
-using http_request = http_get_request<http_answer, http_error>;
+using http_request = ossia::net::http_get_request<http_answer, http_error>;
 
 struct http_client_context
 {
@@ -591,7 +591,7 @@ void oscquery_mirror_protocol::init()
       [this](const oscpack::ReceivedMessage& m,
           const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); });
 
-  m_websocketClient = std::make_unique<websocket_client>(
+  m_websocketClient = std::make_unique<ossia::net::websocket_client>(
       [this](connection_handler hdl, websocketpp::frame::opcode::value op,
           std::string& msg) {
         switch (op)

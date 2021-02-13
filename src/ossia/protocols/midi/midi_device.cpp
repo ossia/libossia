@@ -3,8 +3,8 @@
 #include "midi_device.hpp"
 
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/detail/midi_impl.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 
 namespace ossia::net::midi
 {

@@ -8,14 +8,40 @@ using namespace ossia;
 
 
 #if defined(OSSIA_PROTOCOL_OSC) && !defined_WIN32
-#include <ossia/network/osc/osc_unix.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
+
+auto make_unix_client(ossia::net::network_context_ptr ctx)
+{
+  using conf = ossia::net::osc_protocol_configuration;
+  return ossia::net::make_osc_protocol(ctx,
+                                       {
+                                         conf::UNIX,
+                                         conf::CLIENT,
+                                         conf::OSC1_1,
+                                         ossia::net::fd_configuration{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}
+                                       });
+}
+
+auto make_unix_server(ossia::net::network_context_ptr ctx)
+{
+  using conf = ossia::net::osc_protocol_configuration;
+  return ossia::net::make_osc_protocol(ctx,
+                                       {
+                                         conf::UNIX,
+                                         conf::SERVER,
+                                         conf::OSC1_1,
+                                         ossia::net::fd_configuration{"/tmp/ossia_echo.client.socket","/tmp/ossia_echo.server.socket"}
+                                       });
+}
 
 TEST_CASE ("test_comm_osc_unix_simple", "test_comm_osc_unix_simple")
 {
-  using proto = ossia::net::osc_unix_protocol;
+  using namespace ossia::net;
+
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(proto::server, ctx, "ossia_test"), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(proto::client, ctx, "ossia_test"), "b"};
+
+  ossia::net::generic_device server{make_unix_server(ctx), "a"};
+  ossia::net::generic_device client{make_unix_client(ctx), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -43,10 +69,11 @@ TEST_CASE ("test_comm_osc_unix_simple", "test_comm_osc_unix_simple")
 
 TEST_CASE ("test_comm_osc_unix_big", "test_comm_osc_unix_big")
 {
-  using proto = ossia::net::osc_unix_protocol;
+  using namespace ossia::net;
+
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(proto::server, ctx, "ossia_test"), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(proto::client, ctx, "ossia_test"), "b"};
+  ossia::net::generic_device server{make_unix_server(ctx), "a"};
+  ossia::net::generic_device client{make_unix_client(ctx), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -72,11 +99,13 @@ TEST_CASE ("test_comm_osc_unix_big", "test_comm_osc_unix_big")
 
 TEST_CASE ("test_comm_osc_unix", "test_comm_osc_unix")
 {
+  using namespace ossia::net;
+
   auto ctx = std::make_shared<ossia::net::network_context>();
-  using proto = ossia::net::osc_unix_protocol;
+
   test_comm_generic_async(
-        [=] { return std::make_unique<proto>(proto::server, ctx, "ossia_test"); },
-        [=] { return std::make_unique<proto>(proto::client, ctx, "ossia_test"); },
+        [=] { return make_unix_server(ctx); },
+        [=] { return make_unix_client(ctx); },
   *ctx);
 }
 

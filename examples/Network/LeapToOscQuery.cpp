@@ -4,7 +4,7 @@
 
 int main()
 {
-  auto ctx = std::make_shared<ossia::net::network_context>();
+  auto ctx = ossia::net::create_network_context();
   auto proto = std::make_unique<ossia::net::multiplex_protocol>();
   auto& multiplex = *proto;
   ossia::net::generic_device leap{std::move(proto), "leapmotion"};
@@ -12,5 +12,5 @@ int main()
   multiplex.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(15554, 1349));
   multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>(ctx));
 
-  ctx->run();
+  ossia::net::run_network_context(*ctx);
 }

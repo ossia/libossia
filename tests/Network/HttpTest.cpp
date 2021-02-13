@@ -10,7 +10,7 @@
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/detail/http_query_parser.hpp>
+#include <ossia/network/http/http_query_parser.hpp>
 #include "TestUtils.hpp"
 
 using namespace ossia;
@@ -18,28 +18,28 @@ using namespace ossia::net;
 TEST_CASE ("test_http", "test_http")
 {
   {
-    auto res = ossia::oscquery::parse_http_methods_encoded("foo=bar");
+    auto res = ossia::net::parse_http_methods_encoded("foo=bar");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("foo") != res.end());
     REQUIRE(res.find("foo").value() == "bar");
   }
 
   {
-    auto res = ossia::oscquery::parse_http_methods_encoded("LISTEN=1");
+    auto res = ossia::net::parse_http_methods_encoded("LISTEN=1");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("LISTEN") != res.end());
     REQUIRE(res.find("LISTEN").value() == "1");
   }
 
   {
-    auto res = ossia::oscquery::parse_http_methods_encoded("VALUE");
+    auto res = ossia::net::parse_http_methods_encoded("VALUE");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("VALUE") != res.end());
     REQUIRE(res.find("VALUE").value() == "");
   }
 
   {
-    auto res = ossia::oscquery::parse_http_methods_encoded("foo=bar&baz=blu");
+    auto res = ossia::net::parse_http_methods_encoded("foo=bar&baz=blu");
     REQUIRE(res.size() == 2);
     REQUIRE(res.find("foo") != res.end());
     REQUIRE(res.find("foo").value() == "bar");
