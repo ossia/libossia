@@ -74,7 +74,6 @@ void joystick_protocol::set_device(ossia::net::device_base& dev)
 
   //  Register The Protocol
   m_manager.register_protocol(*this);
-  m_processor.start_event_loop();
 }
 
 bool joystick_protocol::pull(net::parameter_base& param)
@@ -106,7 +105,6 @@ void joystick_protocol::stop()
 {
   if (m_joystick != nullptr)
   {
-    m_processor.stop_event_loop();
     m_manager.unregister_protocol(*this);
     SDL_JoystickClose(m_joystick);
     m_joystick = nullptr;

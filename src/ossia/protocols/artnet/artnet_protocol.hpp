@@ -48,7 +48,6 @@ private:
 
   ossia::net::network_context_ptr m_context;
 
-  using clock = std::chrono::high_resolution_clock;
   ossia::timer m_timer;
   dmx_buffer m_buffer;
 
