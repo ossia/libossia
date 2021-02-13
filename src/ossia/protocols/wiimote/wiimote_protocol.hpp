@@ -1,8 +1,10 @@
 #pragma once
+#include <ossia/network/context.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/device_parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/detail/timer.hpp>
 
 #include <ossia/protocols/wiimote/wiimote_parameter.hpp>
 
@@ -41,7 +43,9 @@ class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
   };
 
 public:
-  wiimote_protocol(const bool enable_ir);
+  wiimote_protocol(
+      ossia::net::network_context_ptr ptr,
+      const bool enable_ir);
   ~wiimote_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
@@ -57,19 +61,18 @@ private:
   void create_wiimote_parameters(const unsigned int wiimote_id);
   void close_event_loop();
 
-  static void wiimote_event_loop(wiimote_protocol* self);
-  static void
-  handle_wiimote_event(wiimote_protocol* self, const unsigned int wiimote_id);
+  void process_events();
+  void handle_wiimote_event(const unsigned int wiimote_id);
 
   std::array<wiimote_parameters, MAX_WIIMOTES_COUNT> m_wiimotes_parameters;
 
-  bool m_running;
-  bool m_ready;
-  const bool m_enable_ir;
-  std::thread m_event_thread;
+  ossia::timer m_timer;
+  bool m_running{};
+  bool m_ready{};
+  const bool m_enable_ir{};
 
   struct wiimote_t** m_wiimotes{};
-  unsigned int m_wiimote_count;
+  unsigned int m_wiimote_count{};
   ossia::net::device_base* m_device{};
 };
 }

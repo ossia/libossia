@@ -1,5 +1,6 @@
 #pragma once
 #include <asio/high_resolution_timer.hpp>
+#include <ossia/detail/logger.hpp>
 
 namespace ossia
 {
@@ -29,7 +30,10 @@ public:
     m_timer.expires_from_now(m_delay);
     m_timer.async_wait([this, ff = std::move(f)] (asio::error_code ec) {
       if(ec)
+      {
+        ossia::logger().error("timer error: {}", ec.message());
         return;
+      }
 
       ff();
       this->start(std::move(ff));

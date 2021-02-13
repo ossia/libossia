@@ -10,9 +10,14 @@ namespace net
 
 ////
 
-wiimote_protocol::wiimote_protocol(const bool enable_ir)
+wiimote_protocol::wiimote_protocol(
+    ossia::net::network_context_ptr ptr,
+    const bool enable_ir)
   : protocol_base{flags{}}
-  , m_running(false), m_ready(false), m_enable_ir(enable_ir)
+  , m_timer{ptr->context}
+  , m_running{}
+  , m_ready{}
+  , m_enable_ir(enable_ir)
 {
   m_wiimotes = wiiuse_init(MAX_WIIMOTES_COUNT);
 
@@ -36,17 +41,14 @@ wiimote_protocol::wiimote_protocol(const bool enable_ir)
 
 wiimote_protocol::~wiimote_protocol()
 {
-  m_running = false;
-  if (m_event_thread.joinable())
-    m_event_thread.join();
+  close_event_loop();
   wiiuse_cleanup(m_wiimotes, MAX_WIIMOTES_COUNT);
 }
 
 void wiimote_protocol::close_event_loop()
 {
   m_running = false;
-  if (m_event_thread.joinable())
-    m_event_thread.join();
+  m_timer.stop();
 }
 
 void wiimote_protocol::set_device(ossia::net::device_base& dev)
@@ -62,7 +64,7 @@ void wiimote_protocol::set_device(ossia::net::device_base& dev)
   m_ready = true;
   m_running = true;
 
-  m_event_thread = std::thread(wiimote_event_loop, this);
+  m_timer.start([this] { this->process_events(); });
 }
 
 bool wiimote_protocol::pull(net::parameter_base& param)
@@ -226,52 +228,40 @@ void wiimote_protocol::create_wiimote_parameters(const unsigned int wiimote_id)
   }
 }
 
-void wiimote_protocol::wiimote_event_loop(wiimote_protocol* self)
+void wiimote_protocol::process_events()
 {
-  const unsigned int wiimote_count = self->m_wiimote_count;
-
-  while (self->m_running)
+  const unsigned int wiimote_count = m_wiimote_count;
+  while (m_running)
   {
+    if (wiiuse_poll(m_wiimotes, wiimote_count) <= 0)
+      continue;
 
-    // std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-    const int ret = wiiuse_poll(self->m_wiimotes, wiimote_count);
-
-    if (ret > 0)
+    for (unsigned int i = 0; i < wiimote_count; ++i)
     {
-
-      for (unsigned int i = 0; i < wiimote_count; ++i)
+      switch (m_wiimotes[i]->event)
       {
+        case WIIUSE_EVENT:
+          handle_wiimote_event(i);
+          break;
 
-        const WIIUSE_EVENT_TYPE ev_type = self->m_wiimotes[i]->event;
-
-        switch (ev_type)
-        {
-
-          case WIIUSE_EVENT:
-            handle_wiimote_event(self, i);
-            break;
-
-          default:
-            break;
-        }
+        default:
+          break;
       }
     }
   }
 }
 
-void wiimote_protocol::handle_wiimote_event(
-    wiimote_protocol* self, const unsigned int wiimote_id)
+void wiimote_protocol::handle_wiimote_event(const unsigned int wiimote_id)
 {
-  wiimote_parameters& parameters = self->m_wiimotes_parameters[wiimote_id];
+  wiimote_parameters& parameters = m_wiimotes_parameters[wiimote_id];
 
-  wiimote_t* wiimote = self->m_wiimotes[wiimote_id];
+  wiimote_t* wiimote = m_wiimotes[wiimote_id];
 
   //-
 
   for (auto& cpl : parameters.button_parameters)
     cpl.second->device_value_change_event(
-        IS_PRESSED(self->m_wiimotes[wiimote_id], cpl.first));
+        IS_PRESSED(m_wiimotes[wiimote_id], cpl.first));
 
   // Update wiimote axis
 
@@ -281,7 +271,7 @@ void wiimote_protocol::handle_wiimote_event(
   parameters.wiimote_gravity->device_value_change_event(std::array<float, 3>{
       wiimote->gforce.x, wiimote->gforce.y, wiimote->gforce.z});
 
-  if (self->m_enable_ir)
+  if (m_enable_ir)
   {
     //  Update Ir cursor
 
@@ -308,10 +298,10 @@ void wiimote_protocol::handle_wiimote_event(
   }
 
   // If a nunchuk is pluged
-  if (self->m_wiimotes[wiimote_id]->exp.type == EXP_NUNCHUK)
+  if (m_wiimotes[wiimote_id]->exp.type == EXP_NUNCHUK)
   {
     struct nunchuk_t* nunchuk
-        = (nunchuk_t*)&(self->m_wiimotes[wiimote_id]->exp.nunchuk);
+        = (nunchuk_t*)&(m_wiimotes[wiimote_id]->exp.nunchuk);
 
     // Update nunchuk parameters
 
