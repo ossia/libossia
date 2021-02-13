@@ -28,8 +28,5 @@ int main(int argc, char** argv)
   };
   device.on_unhandled_message.connect(&cb);
 
-  {
-    ctx->context.run();
-    ctx->context.reset();
-  }
+  ctx->run();
 }
