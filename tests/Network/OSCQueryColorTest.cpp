@@ -10,6 +10,7 @@
 #include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <boost/endian/conversion.hpp>
 #include "TestUtils.hpp"
@@ -24,8 +25,7 @@ TEST_CASE ("test_osc_writer_send_rgba8", "test_osc_writer_send_rgba8")
 
   dev.vec4f_addr->set_unit(ossia::rgba8_u{});
 
-  network_logger l;
-  auto res = ossia::oscquery::osc_writer::send_message(*dev.vec4f_addr, ossia::make_vec(0, 59, 111, 255), l);
+  auto res = ossia::oscquery::osc_writer::to_message(*dev.vec4f_addr, ossia::make_vec(0, 59, 111, 255));
 
   uint32_t exp = boost::endian::native_to_big((0 << 24) + (59 << 16) + (111 << 8) + 255);
   const char* data = reinterpret_cast<const char*>(&exp);

@@ -24,14 +24,14 @@ namespace ossia
 {
 namespace net
 {
+class websocket_client;
 struct parameter_data;
 struct network_context;
 using network_context_ptr = std::shared_ptr<network_context>;
 }
-namespace oscquery
+namespace oscquery_asio
 {
 struct osc_outbound_visitor;
-class websocket_client;
 struct http_async_client_context;
 struct http_responder;
 
@@ -100,7 +100,7 @@ public:
   void set_disconnect_callback(std::function<void()>);
   void set_fail_callback(std::function<void()>);
 
-  host_info get_host_info() const noexcept;
+  ossia::oscquery::host_info get_host_info() const noexcept;
 
   void reconnect();
 private:
@@ -142,7 +142,7 @@ private:
   struct osc_receiver_impl;
   std::unique_ptr<osc_receiver_impl> m_oscServer;
 
-  std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;
+  std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
   std::atomic_bool m_hasWS{};
 
   // Listening status of the local software
@@ -176,7 +176,7 @@ private:
   int m_osc_port{};
 
   std::unique_ptr<http_async_client_context> m_http;
-  host_info m_host_info;
+  ossia::oscquery::host_info m_host_info;
 
   ossia::net::message_origin_identifier m_id;
 

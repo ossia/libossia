@@ -3,6 +3,7 @@
 #include "leapmotion_device.hpp"
 
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>

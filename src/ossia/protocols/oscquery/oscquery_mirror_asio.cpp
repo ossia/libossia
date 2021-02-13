@@ -10,8 +10,8 @@
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/detail/http_client.hpp>
+#include <ossia/network/websocket/client.hpp>
+#include <ossia/network/http/http_client.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
@@ -26,7 +26,7 @@
 #include <boost/algorithm/string/erase.hpp>
 namespace ossia
 {
-namespace oscquery
+namespace oscquery_asio
 {
 struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_socket
 {
@@ -83,7 +83,7 @@ auto wait_for_future(const std::future<T>& fut, std::chrono::milliseconds timeou
 
   return status;
 }
-using http_async_request = http_get_request<http_async_answer, http_async_error>;
+using http_async_request = ossia::net::http_get_request<http_async_answer, http_async_error>;
 
 struct http_async_client_context
 {
@@ -266,7 +266,7 @@ oscquery_mirror_asio_protocol::pull_async(net::parameter_base& address)
           address.get_node().osc_address(),
           get_promise{std::move(promise), &address}));
   */
-  text += detail::query_value();
+  text += ossia::oscquery::detail::query_value();
   http_send_message(text);
   return fut;
 }
@@ -274,7 +274,7 @@ oscquery_mirror_asio_protocol::pull_async(net::parameter_base& address)
 void oscquery_mirror_asio_protocol::request(net::parameter_base& address)
 {
   auto text = address.get_node().osc_address();
-  text += detail::query_value();
+  text += ossia::oscquery::detail::query_value();
   http_send_message(text);
 }
 
@@ -318,7 +318,7 @@ bool oscquery_mirror_asio_protocol::push(const net::parameter_base& addr, const 
       {
         m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
       }
-      ws_send_binary_message(osc_writer::to_message(addr, val));
+      ws_send_binary_message(ossia::oscquery::osc_writer::to_message(addr, val));
     }
 
     if (m_logger.outbound_listened_logger)
@@ -351,7 +351,7 @@ bool oscquery_mirror_asio_protocol::echo_incoming_message(
     {
       m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
     }
-    ws_send_binary_message(osc_writer::to_message(addr, val));
+    ws_send_binary_message(ossia::oscquery::osc_writer::to_message(addr, val));
     return true;
   }
   return false;
@@ -382,7 +382,7 @@ bool oscquery_mirror_asio_protocol::push_raw(const net::full_parameter_data& add
       {
         m_logger.outbound_logger->info("Out: {} {}", addr.address, val);
       }
-      ws_send_binary_message(osc_writer::to_message(addr, val));
+      ws_send_binary_message(ossia::oscquery::osc_writer::to_message(addr, val));
     }
     return true;
   }
@@ -436,7 +436,7 @@ bool oscquery_mirror_asio_protocol::observe(
     auto str = address.get_node().osc_address();
 
     if (m_hasWS)
-      ws_send_message(json_writer::listen(str));
+      ws_send_message(ossia::oscquery::json_writer::listen(str));
 
     m_listening.insert(std::make_pair(std::move(str), &address));
   }
@@ -445,7 +445,7 @@ bool oscquery_mirror_asio_protocol::observe(
     const auto& str = address.get_node().osc_address();
 
     if (m_hasWS)
-      ws_send_message(json_writer::ignore(str));
+      ws_send_message(ossia::oscquery::json_writer::ignore(str));
 
     m_listening.erase(str);
   }
@@ -540,7 +540,7 @@ void oscquery_mirror_asio_protocol::request_remove_node(net::node_base& self)
     req.reserve(64);
     req = parent->osc_address();
     req += '?';
-    req += detail::remove_node();
+    req += ossia::oscquery::detail::remove_node();
     req += '=';
     req += self.get_name();
 
@@ -554,7 +554,7 @@ void oscquery_mirror_asio_protocol::request_rename_node(net::node_base& node, co
   req.reserve(64);
   req = node.osc_address();
   req += '?';
-  req += detail::rename_node();
+  req += ossia::oscquery::detail::rename_node();
   req += '=';
   req += new_name;
 
@@ -591,7 +591,7 @@ void oscquery_mirror_asio_protocol::set_fail_callback(std::function<void()> f)
   }
 }
 
-host_info oscquery_mirror_asio_protocol::get_host_info() const noexcept
+ossia::oscquery::host_info oscquery_mirror_asio_protocol::get_host_info() const noexcept
 {
   return m_host_info;
 }
@@ -612,7 +612,7 @@ void oscquery_mirror_asio_protocol::init()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>("127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context);
 
-  m_websocketClient = std::make_unique<websocket_client>(
+  m_websocketClient = std::make_unique<ossia::net::websocket_client>(
       m_ctx->context,
       [this](connection_handler hdl, websocketpp::frame::opcode::value op,
           std::string& msg) {
@@ -664,7 +664,7 @@ void oscquery_mirror_asio_protocol::request_add_node(
   req.reserve(64);
   req += parent.osc_address();
   req += '?';
-  req += detail::add_node();
+  req += ossia::oscquery::detail::add_node();
   req += '=';
   req += dat.name;
 
@@ -718,6 +718,9 @@ bool oscquery_mirror_asio_protocol::on_binary_ws_message(
 bool oscquery_mirror_asio_protocol::on_text_ws_message(
     oscquery_mirror_asio_protocol::connection_handler, const std::string& message)
 {
+  using json_parser = ossia::oscquery::json_parser;
+  using message_type = ossia::oscquery::message_type;
+  using host_info = ossia::oscquery::host_info;
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
@@ -762,7 +765,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
             // Send to the server the local receiver port
             if (m_host_info.extensions["OSC_STREAMING"])
             {
-              ws_send_message(json_writer::start_osc_streaming(local_server_port, local_sender_port));
+              ws_send_message(ossia::oscquery::json_writer::start_osc_streaming(local_server_port, local_sender_port));
             }
           }
           else
@@ -808,7 +811,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
               else
               {
                 m_device->on_unhandled_message(
-                    p.address, detail::ReadValue(*obj_value));
+                    p.address, ossia::oscquery::detail::ReadValue(*obj_value));
               }
             }
             else
@@ -845,7 +848,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
               }
 
               m_device->on_unhandled_message(
-                  std::string(path), detail::ReadValue(it->value));
+                  std::string(path), ossia::oscquery::detail::ReadValue(it->value));
             }
           }
 
@@ -854,7 +857,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
 
         case message_type::PathAdded:
         {
-          auto dat_it = data->FindMember(detail::data());
+          auto dat_it = data->FindMember(ossia::oscquery::detail::data());
           if (dat_it != data->MemberEnd())
           {
             auto& dat = dat_it->value;

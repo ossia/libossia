@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <ossia/network/context.hpp>
+#include <ossia/network/context_functions.hpp>
 
 namespace Leap
 {

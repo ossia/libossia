@@ -19,12 +19,11 @@ constexpr int max_osc_message_size = 65536;
 
 struct buffer_packed_osc_stream
 {
-    std::unique_ptr<char[]> buffer;
-    oscpack::OutboundPacketStream stream;
+  std::unique_ptr<char[]> buffer;
+  oscpack::OutboundPacketStream stream;
 };
 
-
+OSSIA_EXPORT
 void osc_learn(ossia::net::node_base* n, const oscpack::ReceivedMessage& m);
-
 
 }

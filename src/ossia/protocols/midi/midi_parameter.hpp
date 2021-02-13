@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/midi/detail/channel.hpp>
+#include <ossia/protocols/midi/detail/channel.hpp>
 
 #include <boost/lexical_cast.hpp>
 namespace ossia::net

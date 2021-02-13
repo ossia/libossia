@@ -66,7 +66,7 @@ public:
   {
     return [&proto, &hdl](
                ossia::string_view path,
-               string_map<std::string>&& parameters) -> server_reply {
+               string_map<std::string>&& parameters) -> ossia::net::server_reply {
       // Here we handle the url elements relative to oscquery
       if (parameters.size() == 0)
       {

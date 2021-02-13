@@ -11,7 +11,7 @@
 
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 
 //! Low-level Websocket client for OSCQuery

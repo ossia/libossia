@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/midi/midi_node.hpp>
+#include <ossia/protocols/midi/midi_node.hpp>
 
 namespace ossia::net::midi
 {

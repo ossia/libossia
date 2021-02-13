@@ -75,6 +75,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_variant_impl.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_scope.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter_data.hpp"
@@ -160,6 +162,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"
@@ -296,6 +299,7 @@ set(OSSIA_C_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_node.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_device.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_network_context.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_value.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_domain.cpp"
 
@@ -352,41 +356,43 @@ set(OSSIA_MINUIT_SRCS
   )
 
 set(OSSIA_MIDI_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/channel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/midi_impl.hpp"
     )
 
 set(OSSIA_MIDI_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_parameter.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.cpp")
 
 set(OSSIA_OSCQUERY_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/server_reply.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_query_parser.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/host_info.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/client.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/http_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/http_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/get_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"

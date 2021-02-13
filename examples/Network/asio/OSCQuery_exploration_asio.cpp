@@ -4,7 +4,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
-#include <ossia/network/oscquery/detail/http_client.hpp>
+#include <ossia/network/http/http_client.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
@@ -26,7 +26,7 @@ int main()
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   // Create a protocol that will connect to the given websocket address
-  auto protocol = new ossia::oscquery::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
+  auto protocol = new ossia::oscquery_asio::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
   protocol->set_logger(network_logger{ossia::logger_ptr(), ossia::logger_ptr()});
 
   // Create a device that wil attach to this protocol

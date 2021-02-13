@@ -4,7 +4,7 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/oscquery/detail/server_reply.hpp>
+#include <ossia/network/websocket/server_reply.hpp>
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/http/request.hpp>
@@ -14,7 +14,7 @@
 #endif
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 
 //! Low-level websocket & http server for oscquery
@@ -110,7 +110,7 @@ public:
 
       try
       {
-        ossia::oscquery::server_reply str
+        ossia::net::server_reply str
             = h(hdl, websocketpp::frame::opcode::TEXT,
                 con->get_uri()->get_resource());
 
@@ -194,7 +194,7 @@ public:
   }
 
   void send_message(
-      connection_handler hdl, const ossia::oscquery::server_reply& message)
+      connection_handler hdl, const ossia::net::server_reply& message)
   {
     auto con = m_server.get_con_from_hdl(hdl);
     switch (message.type)

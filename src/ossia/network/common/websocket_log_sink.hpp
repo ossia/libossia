@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/json.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/websocket/client.hpp>
 
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
@@ -60,7 +60,7 @@ struct websocket_threaded_connection
       thread.join();
   }
 
-  ossia::oscquery::websocket_client socket;
+  ossia::net::websocket_client socket;
   std::atomic_bool running{};
   std::thread thread;
 };
