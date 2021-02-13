@@ -2021,42 +2021,6 @@ node oscquery_server::get_root_node() const
   return m_dev ? node{&m_dev->get_root_node()} : node{};
 }
 
-void oscquery_server::set_echo(bool echo)
-{
-  try
-    {
-      if(m_dev)
-      {
-      using ossia::oscquery::oscquery_server_protocol;
-      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol())){
-       proto->set_echo(echo);
-      }
-    }
-  }
-  catch(const std::exception& e)
-  {
-    std::cerr << "Error while setting oscquery protocol 'echo' attribute: " << e.what() << std::endl;
-  }
-}
-
-bool oscquery_server::get_echo()
-{
-  try
-  {
-    if(m_dev)
-    {
-      using ossia::oscquery::oscquery_server_protocol;
-      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
-        return proto->echo();
-    }
-  }
-  catch(const std::exception& e)
-  {
-    std::cerr << "Error while getting oscquery protocol 'echo' attribute: " << e.what() << std::endl;
-  }
-  return false;
-}
-
 void oscquery_server::set_connection_callback(connection_callback c, void* ctx)
 {
   m_con = c;

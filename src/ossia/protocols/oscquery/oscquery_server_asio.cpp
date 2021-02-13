@@ -1,16 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include "oscquery_server.hpp"
+#include "oscquery_server_asio.hpp"
 
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/common/node_visitor.hpp>
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/osc/detail/bidir.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_packet_processor.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
@@ -24,9 +27,13 @@
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
 {
-namespace oscquery
+namespace oscquery_asio
 {
 
+struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_socket
+{
+  using udp_socket::udp_socket;
+};
 
 static uintptr_t client_identifier(const std::vector<oscquery_client>& clts, const oscpack::IpEndpointName& ip)
 {
@@ -49,17 +56,14 @@ static bool is_same(const oscquery_client& clt, const ossia::net::message_origin
 }
 
 oscquery_server_protocol::oscquery_server_protocol(
+    ossia::net::network_context_ptr ctx,
     uint16_t osc_port, uint16_t ws_port)
   : protocol_base{flags{SupportsMultiplex}}
-  , m_oscServer{std::make_unique<osc::receiver>(
-          osc_port,
-          [this](const oscpack::ReceivedMessage& m,
-              const oscpack::IpEndpointName& ip) {
-            this->on_OSCMessage(m, ip);
-          })}
-    , m_websocketServer{std::make_unique<ossia::net::websocket_server>()}
-    , m_oscPort{(uint16_t)m_oscServer->port()}
-    , m_wsPort{ws_port}
+  , m_context{std::move(ctx)}
+  , m_oscServer{std::make_unique<osc_receiver_impl>("127.0.0.1", osc_port, m_context->context)}
+  , m_websocketServer{std::make_unique<ossia::net::websocket_server>(m_context->context)}
+  , m_oscPort{osc_port}
+  , m_wsPort{ws_port}
 {
   m_clients.reserve(2);
   m_websocketServer->set_open_handler(
@@ -73,7 +77,7 @@ oscquery_server_protocol::oscquery_server_protocol(
         {
           case websocketpp::frame::opcode::value::TEXT:
           {
-            auto res = on_WSrequest(hdl, str);
+            auto res = on_text_ws_message(hdl, str);
 
             if (!res.data.empty()
                 && res.type != ossia::net::server_reply::data_type::binary
@@ -84,7 +88,7 @@ oscquery_server_protocol::oscquery_server_protocol(
           }
           case websocketpp::frame::opcode::value::BINARY:
           {
-            return on_BinaryWSrequest(hdl, str);
+            return on_binary_ws_message(hdl, str);
           }
           default:
             return ossia::net::server_reply{};
@@ -160,7 +164,7 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
           }
           m_websocketServer->send_binary_message(
               client.connection,
-              osc_writer::to_message(addr, val));
+              ossia::oscquery::osc_writer::to_message(addr, val));
         }
       }
     }
@@ -174,7 +178,7 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
           m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
         }
         m_websocketServer->send_binary_message(
-            client.connection, osc_writer::to_message(addr, val));
+            client.connection, ossia::oscquery::osc_writer::to_message(addr, val));
       }
     }
 
@@ -283,7 +287,7 @@ bool oscquery_server_protocol::echo_incoming_message(
           }
           m_websocketServer->send_binary_message(
                 client.connection,
-                osc_writer::to_message(addr, val));
+                ossia::oscquery::osc_writer::to_message(addr, val));
         }
       }
     }
@@ -302,7 +306,7 @@ bool oscquery_server_protocol::echo_incoming_message(
         }
 
         m_websocketServer->send_binary_message(
-              client.connection, osc_writer::to_message(addr, val));
+              client.connection, ossia::oscquery::osc_writer::to_message(addr, val));
       }
     }
   }
@@ -335,18 +339,6 @@ bool oscquery_server_protocol::observe_quietly(
 bool oscquery_server_protocol::update(net::node_base&)
 {
   return false;
-}
-
-void oscquery_server_protocol::run_commands()
-{
-  bool ok = false;
-  std::function<void()> cmd;
-  do
-  {
-    ok = m_functionQueue.try_dequeue(cmd);
-    if (ok && cmd)
-      cmd();
-  } while (ok);
 }
 
 void oscquery_server_protocol::set_device(net::device_base& dev)
@@ -399,28 +391,19 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
       });
 
   m_websocketServer->listen(m_wsPort);
-  m_serverThread = std::thread{[&] {
-    try
-    {
-      m_websocketServer->run();
-    }
-    catch (const std::exception& e)
-    {
-      ossia::logger().error("Error in websocket processing: {}", e.what());
-    }
-    catch (...)
-    {
-      ossia::logger().error("Error in websocket processing");
-    }
-  }};
-  m_oscServer->run();
+
+  m_oscServer->open();
+  m_oscServer->receive([this] (const char* data, std::size_t sz) {
+    std::cerr << m_oscServer->m_endpoint.address() << " : " << m_oscServer->m_endpoint.port() << std::endl;
+    process_raw_osc_data(data, sz);
+  });
 }
 
 void oscquery_server_protocol::stop()
 {
   try
   {
-    m_oscServer->stop();
+    m_oscServer->close([]{});
   }
   catch (...)
   {
@@ -452,8 +435,6 @@ void oscquery_server_protocol::stop()
   {
     logger().error("Error when stopping WS server");
   }
-  if (m_serverThread.joinable())
-    m_serverThread.join();
 }
 
 oscquery_client*
@@ -474,10 +455,10 @@ template <typename Attr>
 static auto make_setter_pair(Attr)
 {
   return std::make_pair(
-      detail::metadata<Attr>::key(),
+      ossia::oscquery::detail::metadata<Attr>::key(),
       [](const std::pair<const std::string, std::string>& str,
          ossia::net::parameter_data& addr) {
-        query_parser::parse(Attr{}, str.second, addr);
+        ossia::oscquery::query_parser::parse(Attr{}, str.second, addr);
       });
 }
 
@@ -490,7 +471,7 @@ static auto& querySetterMap()
     using namespace ossia::net;
 
     // Remaining metadata
-    ossia::for_each_tagged(detail::all_attributes{}, [&](auto attr) {
+    ossia::for_each_tagged(ossia::oscquery::detail::all_attributes{}, [&](auto attr) {
       using type = typename decltype(attr)::type;
       attr_impl.insert(make_setter_pair(type{}));
     });
@@ -508,7 +489,7 @@ void oscquery_server_protocol::add_node(
   net::parameter_data address;
   auto& map = querySetterMap();
 
-  const auto& name_it = parameters.find(detail::add_node());
+  const auto& name_it = parameters.find(ossia::oscquery::detail::add_node());
   if (name_it != parameters.end())
   {
     address.name = name_it.value();
@@ -527,32 +508,32 @@ void oscquery_server_protocol::add_node(
     }
   }
 
-  m_functionQueue.enqueue([this, parent_path_str = std::string(parent_path), addr = std::move(address)]{
-    m_device->on_add_node_requested(
-      parent_path_str, addr );
-  });
+  m_device->on_add_node_requested(std::string(parent_path), address);
 }
 
 void oscquery_server_protocol::remove_node(
     ossia::string_view path, const std::string& node)
 {
-  m_functionQueue.enqueue([this, path_str = std::string(path), node_cp = node]{
-    m_device->on_remove_node_requested(path_str, node_cp);
-  });
+  m_device->on_remove_node_requested(std::string(path), node);
 }
 
 void oscquery_server_protocol::rename_node(
     ossia::string_view path, const std::string& new_name)
 {
-  m_functionQueue.enqueue([this, path_str = std::string(path), name = new_name]{
-    m_device->on_rename_node_requested(path_str, name);
-  });
+  m_device->on_rename_node_requested(std::string(path), new_name);
 }
 
-void oscquery_server_protocol::on_OSCMessage(
-    const oscpack::ReceivedMessage& m, oscpack::IpEndpointName ip) try
+void oscquery_server_protocol::process_raw_osc_data(const char* data, std::size_t sz)
 {
-  auto id = ossia::net::message_origin_identifier{*this, client_identifier(m_clients, ip)};
+  auto on_message = [this] (auto&& msg) { this->on_osc_message(msg); };
+  ossia::net::osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+}
+
+void oscquery_server_protocol::on_osc_message(
+    const oscpack::ReceivedMessage& m) try
+{
+  // TODO
+  auto id = ossia::net::message_origin_identifier{*this, client_identifier(m_clients, {})};
   ossia::net::on_input_message<true>(
         m.AddressPattern(),
         ossia::net::osc_message_applier{id, m},
@@ -610,7 +591,7 @@ void oscquery_server_protocol::on_connectionClosed(
 
 void oscquery_server_protocol::on_nodeCreated(const net::node_base& n) try
 {
-  const auto mess = json_writer::path_added(n);
+  const auto mess = ossia::oscquery::json_writer::path_added(n);
 
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
@@ -629,7 +610,7 @@ catch (...)
 
 void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n) try
 {
-  const auto mess = json_writer::path_removed(n.osc_address());
+  const auto mess = ossia::oscquery::json_writer::path_removed(n.osc_address());
 
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
@@ -654,7 +635,7 @@ void oscquery_server_protocol::on_parameterChanged(const ossia::net::parameter_b
 void oscquery_server_protocol::on_attributeChanged(
     const net::node_base& n, ossia::string_view attr) try
 {
-  const auto mess = json_writer::attributes_changed(n, attr);
+  const auto mess = ossia::oscquery::json_writer::attributes_changed(n, attr);
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
@@ -697,7 +678,7 @@ void oscquery_server_protocol::on_nodeRenamed(
       }
     }
   }
-  const auto mess = json_writer::path_renamed(old_addr, n.osc_address());
+  const auto mess = ossia::oscquery::json_writer::path_renamed(old_addr, n.osc_address());
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
@@ -744,7 +725,7 @@ void oscquery_server_protocol::update_zeroconf()
   }
 }
 
-ossia::net::server_reply oscquery_server_protocol::on_WSrequest(
+ossia::net::server_reply oscquery_server_protocol::on_text_ws_message(
     const connection_handler& hdl, const std::string& message)
 {
   if (m_logger.inbound_logger)
@@ -757,7 +738,7 @@ ossia::net::server_reply oscquery_server_protocol::on_WSrequest(
   else if (message[0] == '/')
   {
     return ossia::oscquery::query_parser::parse_http_request(
-        message, get_query_answerer{}(*this, hdl));
+        message, ossia::oscquery::get_query_answerer{}(*this, hdl));
   }
   else
   {
@@ -766,7 +747,7 @@ ossia::net::server_reply oscquery_server_protocol::on_WSrequest(
 
     if (!doc.HasParseError())
     {
-      auto s = json_query_answerer{}(*this, hdl, doc);
+      auto s = ossia::oscquery::json_query_answerer{}(*this, hdl, doc);
       return std::string{};
     }
   }
@@ -775,40 +756,13 @@ ossia::net::server_reply oscquery_server_protocol::on_WSrequest(
   return {};
 }
 
-ossia::net::server_reply oscquery_server_protocol::on_BinaryWSrequest(
+ossia::net::server_reply oscquery_server_protocol::on_binary_ws_message(
     const oscquery_server_protocol::connection_handler& hdl,
     const std::string& message)
 {
-  auto handler
-      = [this](const oscpack::ReceivedMessage& m,
-            const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); };
-  osc::listener<decltype(handler)> h{handler};
-  auto clt = find_client(hdl);
-  if (clt)
-  {
-    // TODO use proper ip / port
-    h.ProcessPacket(message.data(), message.size(), {});
-  }
-  else
-  {
-    h.ProcessPacket(message.data(), message.size(), {});
-  }
-
+  // TODO here we know where the message comes from, can be used for id
+  process_raw_osc_data(message.data(), message.size());
   return {};
 }
-}
-
-oscquery_device::oscquery_device(
-    uint16_t osc_port, uint16_t ws_port, std::string name)
-    : device{std::make_unique<oscquery::oscquery_server_protocol>(
-                 osc_port, ws_port),
-             name}
-    , protocol{static_cast<oscquery::oscquery_server_protocol&>(
-          device.get_protocol())}
-{
-}
-
-oscquery_device::~oscquery_device()
-{
 }
 }

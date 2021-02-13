@@ -29,18 +29,28 @@ public:
     m_server.init_asio();
     m_server.set_reuse_addr(true);
     m_server.clear_access_channels(websocketpp::log::alevel::all);
-    m_server.set_socket_init_handler(
-        [](websocketpp::connection_hdl, asio::ip::tcp::socket& s) {
-          asio::ip::tcp::no_delay option(true);
-          try
-          {
-            s.set_option(option);
-          }
-          catch (...)
-          {
-            ossia::logger().trace("Could not set TCP nodelay option");
-          }
-        });
+    m_server.set_socket_init_handler(init_handler);
+  }
+
+  websocket_server(asio::io_context& ctx)
+  {
+    m_server.init_asio(&ctx);
+    m_server.set_reuse_addr(true);
+    m_server.clear_access_channels(websocketpp::log::alevel::all);
+    m_server.set_socket_init_handler(init_handler);
+  }
+
+  static void init_handler(websocketpp::connection_hdl, asio::ip::tcp::socket& s)
+  {
+    asio::ip::tcp::no_delay option(true);
+    try
+    {
+      s.set_option(option);
+    }
+    catch (...)
+    {
+      ossia::logger().trace("Could not set TCP nodelay option");
+    }
   }
 
   template <typename Handler>

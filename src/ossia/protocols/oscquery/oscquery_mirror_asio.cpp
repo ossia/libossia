@@ -606,8 +606,8 @@ void oscquery_mirror_asio_protocol::process_raw_osc_data(const char* data, std::
 {
   auto on_message = [this] (auto&& msg) { this->on_osc_message(msg); };
   ossia::net::osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
-
 }
+
 void oscquery_mirror_asio_protocol::init()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>("127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context);
