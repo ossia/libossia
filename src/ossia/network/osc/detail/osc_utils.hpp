@@ -1,9 +1,13 @@
 #pragma once
-#include <string_view>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+
 #include <oscpack/osc/OscTypes.h>
+
+#include <string_view>
+#include <any>
+
 namespace ossia::net
 {
 // 0 -> 4 ; 1 -> 4; 2 -> 4; 3 -> 4;

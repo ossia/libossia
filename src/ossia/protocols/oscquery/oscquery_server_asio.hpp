@@ -31,18 +31,18 @@ class websocket_server;
 }
 namespace oscquery
 {
-struct oscquery_client;
 class query_answerer;
 class get_query_answerer;
 struct json_query_answerer;
 }
 namespace oscquery_asio
 {
-using oscquery_client = ossia::oscquery::oscquery_client;
+struct oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base
 {
+  friend struct oscquery_client;
   friend class ossia::oscquery::query_answerer;
   friend class ossia::oscquery::get_query_answerer;
   friend struct ossia::oscquery::json_query_answerer;
@@ -51,7 +51,6 @@ public:
   using connection_handler = std::weak_ptr<void>;
   oscquery_server_protocol(ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234, uint16_t ws_port = 5678);
   ~oscquery_server_protocol() override;
-
 
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
@@ -89,7 +88,7 @@ public:
 
 private:
   // List of connected clients
-  ossia::oscquery::oscquery_client* find_client(const connection_handler& hdl);
+  oscquery_client* find_client(const connection_handler& hdl);
 
   void
   add_node(ossia::string_view path, const string_map<std::string>& parameters);
@@ -118,7 +117,7 @@ private:
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
   ossia::net::server_reply
-  on_WSrequest(const connection_handler& hdl, const std::string& message);
+  on_text_ws_message(const connection_handler& hdl, const std::string& message);
   ossia::net::server_reply on_binary_ws_message(
       const connection_handler& hdl, const std::string& message);
 
@@ -135,7 +134,7 @@ private:
   net::listened_parameters m_listening;
 
   // The clients connected to this server
-  std::vector<ossia::oscquery::oscquery_client> m_clients;
+  std::vector<oscquery_client> m_clients;
 
   ossia::net::device_base* m_device{};
 
