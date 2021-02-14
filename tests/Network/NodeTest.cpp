@@ -321,9 +321,10 @@ TEST_CASE ("test_attributes", "test_attributes")
   auto tg = t != n.get_extended_attributes().end();
   REQUIRE(tg);
   std::cerr << ((ossia::any)t.value()).type().name();
-  tags tgs = ossia::any_cast<tags>(t.value());
-  REQUIRE(!tgs.empty());
-  REQUIRE((tgs == the_tags));
+  const tags* tgs = ossia::any_cast<tags>(&t.value());
+  REQUIRE(tgs);
+  REQUIRE(!tgs->empty());
+  REQUIRE((*tgs == the_tags));
 
 
   REQUIRE((bool)get_tags(n));
