@@ -239,15 +239,16 @@ struct resampler
   {
     switch(m_stretch.index())
     {
+      default:
       case RawStretcher:
       {
-        auto& s = std::get<RawStretcher>(m_stretch);
+        auto& s = *std::get_if<RawStretcher>(&m_stretch);
         return s.next_sample_to_read;
       }
 #if __has_include(<RubberBandStretcher.h>)
       case RubberbandStretcher:
       {
-        auto& s = std::get<RubberbandStretcher>(m_stretch);
+        auto& s = *std::get_if<RubberbandStretcher>(&m_stretch);
         return s.next_sample_to_read;
       }
 #endif
@@ -255,7 +256,7 @@ struct resampler
 #if __has_include(<samplerate.h>)
       case RepitchStretcher:
       {
-        auto& s = std::get<RepitchStretcher>(m_stretch);
+        auto& s = *std::get_if<RepitchStretcher>(&m_stretch);
         return s.next_sample_to_read;
       }
 #endif
@@ -267,16 +268,17 @@ struct resampler
   {
     switch(m_stretch.index())
     {
+      default:
       case RawStretcher:
       {
-        auto& s = std::get<RawStretcher>(m_stretch);
+        auto& s = *std::get_if<RawStretcher>(&m_stretch);
         s.next_sample_to_read = date;
         break;
       }
 #if __has_include(<RubberBandStretcher.h>)
       case RubberbandStretcher:
       {
-        auto& s = std::get<RubberbandStretcher>(m_stretch);
+        auto& s = *std::get_if<RubberbandStretcher>(&m_stretch);
         s.m_rubberBand->reset();
         s.next_sample_to_read = date;
         break;
@@ -285,7 +287,7 @@ struct resampler
 #if __has_include(<samplerate.h>)
       case RepitchStretcher:
       {
-        auto& s = std::get<RepitchStretcher>(m_stretch);
+        auto& s = *std::get_if<RepitchStretcher>(&m_stretch);
         s.next_sample_to_read = date;
         break;
       }
@@ -337,7 +339,7 @@ struct resampler
 #if __has_include(<samplerate.h>)
       case ossia::audio_stretch_mode::Repitch:
       {
-        if(auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
+        if(auto s = std::get_if<RepitchStretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
         {
           s->next_sample_to_read = date;
@@ -368,21 +370,28 @@ struct resampler
   {
     switch(m_stretch.index())
     {
+      default:
       case RawStretcher:
       {
-        std::get<RawStretcher>(m_stretch).run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
+        std::get_if<RawStretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         return;
       }
+
+#if __has_include(<RubberBandStretcher.h>)
       case RubberbandStretcher:
       {
-        std::get<RubberbandStretcher>(m_stretch).run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
+        std::get_if<RubberbandStretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         break;
       }
+#endif
+
+#if __has_include(<samplerate.h>)
       case RepitchStretcher:
       {
-        std::get<RepitchStretcher>(m_stretch).run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
+        std::get_if<RepitchStretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
         break;
       }
+#endif
     }
   }
 
