@@ -26,7 +26,8 @@ void device_base::apply_incoming_message(
 {
   auto v = param.set_value(std::move(value));
   on_message(param);
-  m_protocol->echo_incoming_message(id, param, v);
+  if(m_echo)
+    m_protocol->echo_incoming_message(id, param, v);
 }
 
 void device_base::apply_incoming_message_quiet(
@@ -36,7 +37,8 @@ void device_base::apply_incoming_message_quiet(
 {
   auto v = param.set_value_quiet(std::move(value));
   on_message(param);
-  m_protocol->echo_incoming_message(id, param, v);
+  if(m_echo)
+    m_protocol->echo_incoming_message(id, param, v);
 }
 }
 }
