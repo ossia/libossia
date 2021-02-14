@@ -25,6 +25,7 @@ int main()
     ),
     "joystick"
   };
+  source_dev.set_echo(true);
 
   auto on_message = [] (const ossia::net::parameter_base& param) {
     fmt::print("{}: {}\n", ossia::net::osc_address(param), param.value());

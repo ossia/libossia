@@ -85,6 +85,16 @@ public:
     return get_root_node().get_name();
   }
 
+  bool has_echo()
+  {
+    return m_echo;
+  }
+
+  void set_echo(bool echo)
+  {
+    m_echo = echo;
+  }
+
   void apply_incoming_message(
       const message_origin_identifier& id,
       ossia::net::parameter_base& param,
@@ -127,7 +137,8 @@ public:
 
 protected:
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
-  device_capabilities m_capabilities;
+  device_capabilities m_capabilities{};
+  bool m_echo{false};
 };
 
 template <typename T>
