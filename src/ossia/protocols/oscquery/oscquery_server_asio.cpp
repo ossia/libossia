@@ -13,8 +13,10 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/osc/detail/bidir.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/osc/detail/osc_1_1_extended_policy.hpp>
 #include <ossia/network/osc/detail/osc_packet_processor.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
+#include <ossia/network/osc/detail/osc_value_write_visitor.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/get_query_parser.hpp>
@@ -23,6 +25,7 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
+#include <ossia/protocols/oscquery/oscquery_client_asio.hpp>
 #include <ossia/network/websocket/server.hpp>
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
@@ -137,6 +140,9 @@ void oscquery_server_protocol::request(net::parameter_base&)
 template <typename T>
 bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
 {
+  using namespace ossia::net;
+  using send_visitor = osc_value_send_visitor<T, osc_extended_policy, udp_socket>;
+
   auto val = net::filter_value(addr, v);
   if (val.valid())
   {
@@ -147,14 +153,15 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       lock_t lock(m_clientsMutex);
       for (auto& client : m_clients)
       {
-        if (client.sender)
+        if (client.socket)
         {
           if (m_logger.outbound_logger)
           {
             m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
           }
-          ossia::oscquery::osc_writer::send_message(
-              addr, val, client.sender->socket());
+
+          send_visitor vis{addr, ossia::net::osc_address(addr), *client.socket};
+          val.apply(vis);
         }
         else
         {
@@ -259,6 +266,9 @@ bool oscquery_server_protocol::echo_incoming_message(
     const net::parameter_base& addr,
     const ossia::value& val)
 {
+  using namespace ossia::net;
+  using send_visitor = osc_value_send_visitor<net::parameter_base, osc_extended_policy, udp_socket>;
+
   bool not_this_protocol = &id.protocol != this;
   // we know that the value is valid
   // Push to all clients except ours
@@ -270,14 +280,14 @@ bool oscquery_server_protocol::echo_incoming_message(
     for (auto& client : m_clients)
     {
       if (not_this_protocol || !is_same(client, id)) {
-        if (client.sender)
+        if (client.socket)
         {
           if (m_logger.outbound_logger)
           {
             m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
           }
-          ossia::oscquery::osc_writer::send_message(
-                addr, val, client.sender->socket());
+          send_visitor vis{addr, ossia::net::osc_address(addr), *client.socket};
+          val.apply(vis);
         }
         else
         {

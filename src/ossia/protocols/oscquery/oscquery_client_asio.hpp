@@ -1,24 +1,14 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+#include <ossia/network/osc/detail/bidir.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/websocket/server.hpp>
 
-namespace osc
-{
-template <typename T>
-class sender;
-}
-namespace ossia
-{
-namespace net
-{
-class parameter_base;
-}
-namespace oscquery
+namespace ossia::oscquery_asio
 {
 struct oscquery_client
 {
@@ -27,7 +17,7 @@ struct oscquery_client
   string_map<ossia::net::parameter_base*> listening;
 
   std::string client_ip;
-  std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> sender;
+  std::unique_ptr<ossia::net::udp_socket> socket;
   int remote_sender_port{};
 
 public:
@@ -36,7 +26,7 @@ public:
       : connection{std::move(other.connection)}
       , listening{std::move(other.listening)}
       , client_ip{std::move(other.client_ip)}
-      , sender{std::move(other.sender)}
+      , socket{std::move(other.socket)}
   {
     // FIXME http://stackoverflow.com/a/29988626/1495627
   }
@@ -46,7 +36,7 @@ public:
     connection = std::move(other.connection);
     listening = std::move(other.listening);
     client_ip = std::move(other.client_ip);
-    sender = std::move(other.sender);
+    socket = std::move(other.socket);
     return *this;
   }
 
@@ -77,11 +67,10 @@ public:
     return !connection.expired() && connection.lock() == h.lock();
   }
 
-  void open_osc_sender(const ossia::oscquery::oscquery_server_protocol& proto, uint16_t port)
+  void open_osc_sender(ossia::oscquery_asio::oscquery_server_protocol& proto, uint16_t port)
   {
-    sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
-        proto.get_logger(), client_ip, port);
+    socket = std::make_unique<ossia::net::udp_socket>(client_ip, port, proto.m_context->context);
   }
 };
-}
+
 }

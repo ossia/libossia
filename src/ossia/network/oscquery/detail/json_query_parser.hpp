@@ -109,7 +109,7 @@ struct json_query_answerer
     if (port != 0)
     {
       // Then we set-up the sender
-      clt->open_osc_sender(proto.get_logger(), port);
+      clt->open_osc_sender(proto, port);
       if (remotePort != 0)
       {
         clt->remote_sender_port = remotePort;
