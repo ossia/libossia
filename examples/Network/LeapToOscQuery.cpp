@@ -8,6 +8,7 @@ int main()
   auto proto = std::make_unique<ossia::net::multiplex_protocol>();
   auto& multiplex = *proto;
   ossia::net::generic_device leap{std::move(proto), "leapmotion"};
+  leap.set_echo(true);
 
   multiplex.expose_to(std::make_unique<ossia::oscquery::oscquery_server_protocol>(15554, 1349));
   multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>(ctx));

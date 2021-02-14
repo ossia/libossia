@@ -12,6 +12,7 @@ int main()
                 std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
                 std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 5567, 5568)),
     "my_device"};
+  device.set_echo(true);
 
   // Create a few float parameters
   std::vector<parameter_base*> my_params;

@@ -290,7 +290,7 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       {
         auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
               settings.oscport, settings.wsport);
-        oscq_proto->set_echo(true);
+        x->m_device->set_echo(true);
 
         A_SETSYM(a+1, gensym("oscquery"));
         A_SETLONG(a+2, oscq_proto->get_osc_port());
