@@ -182,8 +182,9 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 bool osc_protocol::push_bundle(
     const std::vector<const parameter_base*>& addresses)
 {
-  if(auto data = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
-    m_sender->socket().Send(data->stream.Data(), data->stream.Size());
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+    m_sender->socket().Send(bundle->data.data(), bundle->data.size());
+    ossia::buffer_pool::instance().release(std::move(bundle->data));
     return true;
   }
   return false;
@@ -192,8 +193,9 @@ bool osc_protocol::push_bundle(
 bool osc_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  if(auto data = make_raw_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
-    m_sender->socket().Send(data->stream.Data(), data->stream.Size());
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+    m_sender->socket().Send(bundle->data.data(), bundle->data.size());
+    ossia::buffer_pool::instance().release(std::move(bundle->data));
     return true;
   }
   return false;

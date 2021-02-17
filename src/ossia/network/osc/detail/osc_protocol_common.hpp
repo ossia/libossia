@@ -121,23 +121,12 @@ struct osc_protocol_client : osc_protocol_common<OscVersion>
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
-  template<typename T, typename Impl>
-  static bool push_bundle(T& self, Impl& socket,
-      const std::vector<const parameter_base*>& addresses)
+  template<typename T, typename Impl, typename Addresses>
+  static bool push_bundle(T& self, Impl& socket, const Addresses& addresses)
   {
-    if(auto data = make_bundle(bundle_client_policy<OscVersion>{}, addresses)) {
-      socket.write(data->stream.Data(), data->stream.Size());
-      return true;
-    }
-    return false;
-  }
-
-  template<typename T, typename Impl>
-  static bool push_raw_bundle(T& self, Impl& socket,
-      const std::vector<ossia::net::full_parameter_data>& addresses)
-  {
-    if(auto data = make_raw_bundle(bundle_client_policy<OscVersion>{}, addresses)) {
-      socket.write(data->stream.Data(), data->stream.Size());
+    if(auto bundle = make_bundle(bundle_client_policy<OscVersion>{}, addresses)) {
+      socket.write(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
       return true;
     }
     return false;
@@ -160,23 +149,12 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
-  template<typename T, typename Impl>
-  static bool push_bundle(T& self, Impl& socket,
-                          const std::vector<const parameter_base*>& addresses)
+  template<typename T, typename Impl, typename Addresses>
+  static bool push_bundle(T& self, Impl& socket, const Addresses& addresses)
   {
-    if(auto data = make_bundle(bundle_server_policy<OscVersion>{}, addresses)) {
-      socket.write(data->stream.Data(), data->stream.Size());
-      return true;
-    }
-    return false;
-  }
-
-  template<typename T, typename Impl>
-  static bool push_raw_bundle(T& self, Impl& socket,
-                              const std::vector<ossia::net::full_parameter_data>& addresses)
-  {
-    if(auto data = make_raw_bundle(bundle_server_policy<OscVersion>{},addresses)) {
-      socket.write(data->stream.Data(), data->stream.Size());
+    if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addresses)) {
+      socket.write(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
       return true;
     }
     return false;

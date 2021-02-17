@@ -15,7 +15,7 @@
 namespace ossia::net
 {
 
-constexpr int max_osc_message_size = 65536;
+constexpr int max_osc_message_size = 65507;
 
 struct buffer_packed_osc_stream
 {

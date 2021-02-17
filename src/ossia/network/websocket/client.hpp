@@ -187,7 +187,7 @@ public:
     }
   }
 
-  void send_binary_message(const std::string& request)
+  void send_binary_message(std::string_view request)
   {
     if (!m_open)
       return;

@@ -113,6 +113,8 @@ private:
   template <typename T>
   bool push_impl(const T& addr, const ossia::value& v);
 
+  bool write_impl(std::string_view data, bool critical);
+
   void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
@@ -135,6 +137,7 @@ private:
 
   // The clients connected to this server
   std::vector<oscquery_client> m_clients;
+  std::atomic_int m_clientCount{};
 
   ossia::net::device_base* m_device{};
 
