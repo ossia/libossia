@@ -2,6 +2,7 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/osc/detail/bidir.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
@@ -17,7 +18,7 @@ struct oscquery_client
   string_map<ossia::net::parameter_base*> listening;
 
   std::string client_ip;
-  std::unique_ptr<ossia::net::udp_socket> socket;
+  std::unique_ptr<ossia::net::udp_socket> osc_socket;
   int remote_sender_port{};
 
 public:
@@ -26,7 +27,7 @@ public:
       : connection{std::move(other.connection)}
       , listening{std::move(other.listening)}
       , client_ip{std::move(other.client_ip)}
-      , socket{std::move(other.socket)}
+      , osc_socket{std::move(other.osc_socket)}
   {
     // FIXME http://stackoverflow.com/a/29988626/1495627
   }
@@ -36,7 +37,7 @@ public:
     connection = std::move(other.connection);
     listening = std::move(other.listening);
     client_ip = std::move(other.client_ip);
-    socket = std::move(other.socket);
+    osc_socket = std::move(other.osc_socket);
     return *this;
   }
 
@@ -69,8 +70,9 @@ public:
 
   void open_osc_sender(ossia::oscquery_asio::oscquery_server_protocol& proto, uint16_t port)
   {
-    socket = std::make_unique<ossia::net::udp_socket>(client_ip, port, proto.m_context->context);
+    osc_socket = std::make_unique<ossia::net::udp_socket>(client_ip, port, proto.m_context->context);
   }
+
 };
 
 }

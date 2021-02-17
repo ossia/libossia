@@ -429,6 +429,7 @@ void oscquery_server_protocol::stop()
 
   try
   {
+    lock_t lock(m_clientsMutex);
     // close client-connections before stopping
     auto it = m_clients.begin();
     while (it != m_clients.end())
