@@ -38,6 +38,8 @@ struct http_responder;
 class OSSIA_EXPORT oscquery_mirror_asio_protocol final
     : public ossia::net::protocol_base
 {
+  struct osc_sender_impl;
+  struct osc_receiver_impl;
 public:
   oscquery_mirror_asio_protocol(
       ossia::net::network_context_ptr ctx,
@@ -65,6 +67,11 @@ public:
   {
     return *m_device;
   }
+
+  bool ws_connected() const noexcept { return m_hasWS; }
+  bool osc_connected() const noexcept { return bool(m_oscSender); }
+  osc_sender_impl& osc_sender() const noexcept { return *m_oscSender; }
+  ossia::net::websocket_client& ws_client() const noexcept { return *m_websocketClient; }
 
   /**
    * @brief Request a new node from the server
@@ -108,7 +115,11 @@ private:
   using connection_handler = std::weak_ptr<void>;
 
   void init();
+
   void start_http();
+  void start_websockets();
+  void start_osc();
+
   void cleanup_connections();
 
 
@@ -119,14 +130,10 @@ private:
   void process_raw_osc_data(const char* data, std::size_t sz);
 
   // Output
-  void osc_send_message(const net::parameter_base& addr, const ossia::value& val);
-  void osc_send_message(const net::full_parameter_data& addr, const ossia::value& val);
-
   void http_send_message(const std::string& str);
   void http_send_message(const rapidjson::StringBuffer& str);
 
   void ws_send_message(const std::string& str);
-  void ws_send_binary_message(const std::string& str);
   void ws_send_message(const rapidjson::StringBuffer& str);
 
   // ZeroConf
@@ -137,9 +144,7 @@ private:
 
   ossia::net::network_context_ptr m_ctx;
 
-  struct osc_sender_impl;
   std::unique_ptr<osc_sender_impl> m_oscSender;
-  struct osc_receiver_impl;
   std::unique_ptr<osc_receiver_impl> m_oscServer;
 
   std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
@@ -151,24 +156,6 @@ private:
   ossia::net::device_base* m_device{};
 
   std::promise<void> m_namespacePromise;
-
-  struct get_ws_promise
-  {
-    get_ws_promise() = default;
-    get_ws_promise(const get_ws_promise&) = delete;
-    get_ws_promise(get_ws_promise&&) noexcept = default;
-    get_ws_promise& operator=(const get_ws_promise&) = delete;
-    get_ws_promise& operator=(get_ws_promise&&) noexcept = default;
-
-    get_ws_promise(std::promise<void>&& p, const std::string& addr)
-        : promise{std::move(p)}, address{addr}
-    {
-    }
-    std::promise<void> promise;
-    std::string address{};
-  };
-
-  ossia::spsc_queue<get_ws_promise> m_getWSPromises;
 
   std::string m_queryHost;
   std::string m_queryPort;

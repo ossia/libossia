@@ -4,6 +4,7 @@
 #include <ossia/network/osc/detail/osc_messages.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/buffer_pool.hpp>
 #include <oscpack/osc/OscOutboundPacketStream.h>
 
 #include <optional>
@@ -43,55 +44,39 @@ struct bundle_client_policy
 template<typename OscPolicy>
 using bundle_server_policy = bundle_common_policy<OscPolicy>;
 
+static inline auto& access_parameter(const ossia::net::parameter_base* p) { return *p; }
+static inline auto& access_parameter(const ossia::net::full_parameter_data& p) { return p; }
 
-template<typename NetworkPolicy>
-std::optional<buffer_packed_osc_stream> make_raw_bundle(NetworkPolicy add_element_to_bundle, const std::vector<full_parameter_data> &addresses)
+struct bundle
+{
+  ossia::buffer_pool::buffer data;
+  bool critical{};
+};
+
+template<typename NetworkPolicy, typename Addresses>
+std::optional<bundle> make_bundle(NetworkPolicy add_element_to_bundle, const Addresses &addresses)
 try
 {
-  auto buffer{std::make_unique<char[]>(max_osc_message_size)};
-  oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
-  str << oscpack::BeginBundleImmediate();
-
-  ossia::value val;
-  for (const auto& addr : addresses)
+  bundle ret{ossia::buffer_pool::instance().acquire(max_osc_message_size), false};
   {
-    add_element_to_bundle(str, val, addr);
-  }
-  str << oscpack::EndBundle();
-  return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
-}
-catch (const oscpack::OutOfBufferMemoryException&)
-{
-  ossia::logger().error("make_raw_bundle_client: message too large (limit is {} bytes)", max_osc_message_size);
-  return {};
-}
-catch (const std::runtime_error& e)
-{
-  ossia::logger().error("make_raw_bundle_client: {}", e.what());
-  return {};
-}
-catch (...)
-{
-  ossia::logger().error("make_raw_bundle_client: unknown error");
-  return {};
-}
+    oscpack::OutboundPacketStream str(ret.data.data(), max_osc_message_size);
+    str << oscpack::BeginBundleImmediate();
 
-template<typename NetworkPolicy>
-std::optional<buffer_packed_osc_stream> make_bundle(NetworkPolicy add_element_to_bundle, const std::vector<const parameter_base *> &addresses)
-try
-{
-  auto buffer{std::make_unique<char[]>(max_osc_message_size)};
-  oscpack::OutboundPacketStream str(buffer.get(), max_osc_message_size);
-  str << oscpack::BeginBundleImmediate();
+    ossia::value val;
+    for (const auto& a : addresses)
+    {
+      auto& param = access_parameter(a);
+      ret.critical |= param.get_critical();
+      add_element_to_bundle(str, val, param);
+    }
+    str << oscpack::EndBundle();
+    ret.data.resize(str.Size());
 
-  ossia::value val;
-  for (auto a : addresses)
-  {
-    const ossia::net::parameter_base& addr = *a;
-    add_element_to_bundle(str, val, addr);
+    // TODO useless condition for now.
+    // But if we know that we are going through ws we can increase the size beyond 65k.
+    // ret.critical |= str.Size() > max_osc_message_size;
   }
-  str << oscpack::EndBundle();
-  return buffer_packed_osc_stream{std::move(buffer), std::move(str)};
+  return ret;
 }
 catch (const oscpack::OutOfBufferMemoryException&)
 {

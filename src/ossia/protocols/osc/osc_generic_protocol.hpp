@@ -139,7 +139,7 @@ public:
   bool push_raw_bundle(
       const std::vector<ossia::net::full_parameter_data>& addresses) override
   {
-    return OscMode::push_raw_bundle(*this, to_client, addresses);
+    return OscMode::push_bundle(*this, to_client, addresses);
   }
 
   void on_received_message(const oscpack::ReceivedMessage& m)

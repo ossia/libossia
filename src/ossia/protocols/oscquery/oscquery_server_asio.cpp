@@ -23,6 +23,7 @@
 #include <ossia/network/oscquery/detail/json_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
+#include <ossia/network/oscquery/detail/oscquery_protocol_common.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/protocols/oscquery/oscquery_client_asio.hpp>
@@ -137,12 +138,55 @@ void oscquery_server_protocol::request(net::parameter_base&)
   // Do nothing
 }
 
+struct ws_client_socket
+{
+  ossia::net::websocket_server& server;
+  ossia::net::websocket_server::connection_handler& connection;
+
+  void send_binary_message(std::string_view s)
+  {
+    server.send_binary_message(connection, s);
+  }
+};
+
+bool oscquery_server_protocol::write_impl(std::string_view data, bool critical)
+{
+  // Push to all clients
+  if (!critical)
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      if (client.osc_socket)
+      {
+        client.osc_socket->write(data.data(), data.size());
+      }
+      else
+      {
+        m_websocketServer->send_binary_message(client.connection, data);
+      }
+    }
+  }
+  else
+  {
+    lock_t lock(m_clientsMutex);
+    for (auto& client : m_clients)
+    {
+      m_websocketServer->send_binary_message(client.connection, data);
+    }
+  }
+
+  return true;
+}
+
 template <typename T>
 bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
 {
   using namespace ossia::net;
-  using send_visitor = osc_value_send_visitor<T, osc_extended_policy, udp_socket>;
+  using namespace ossia::oscquery;
+  using proto = oscquery_protocol_common<osc_extended_policy>;
 
+  // TODO if we have multiple clients, likely better to generate the message once....
   auto val = net::filter_value(addr, v);
   if (val.valid())
   {
@@ -153,15 +197,14 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
       lock_t lock(m_clientsMutex);
       for (auto& client : m_clients)
       {
-        if (client.socket)
+        if (client.osc_socket)
         {
           if (m_logger.outbound_logger)
           {
             m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
           }
 
-          send_visitor vis{addr, ossia::net::osc_address(addr), *client.socket};
-          val.apply(vis);
+          proto::osc_send_message(*this, *client.osc_socket, addr, val);
         }
         else
         {
@@ -169,9 +212,8 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
           {
             m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
           }
-          m_websocketServer->send_binary_message(
-              client.connection,
-              ossia::oscquery::osc_writer::to_message(addr, val));
+
+          proto::ws_send_binary_message(*this, ws_client_socket{*m_websocketServer, client.connection}, addr, val);
         }
       }
     }
@@ -184,8 +226,7 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
         {
           m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
         }
-        m_websocketServer->send_binary_message(
-            client.connection, ossia::oscquery::osc_writer::to_message(addr, val));
+        proto::ws_send_binary_message(*this, ws_client_socket{*m_websocketServer, client.connection}, addr, val);
       }
     }
 
@@ -207,58 +248,27 @@ bool oscquery_server_protocol::push_raw(const net::full_parameter_data& addr)
 bool oscquery_server_protocol::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& addresses)
 {
-  // TODO
-  /*
-  json_bundle_builder b;
-  for(auto a : addresses)
-  {
-    const ossia::net::parameter_base& addr = *a;
-    ossia::value val = net::filter_value(addr);
-    if (val.valid())
-    {
-      b.add_message(addr, val);
-    }
-  }
+  using namespace ossia::net;
+  using OscVersion = osc_extended_policy;
 
-  const auto str = b.finish();
-
+  if(auto bundle = ossia::net::make_bundle(ossia::net::bundle_client_policy<OscVersion>{}, addresses))
   {
-    lock_t lock(m_clientsMutex);
-    for (auto& client : m_clients)
-    {
-      m_websocketServer->send_message(client.connection, str);
-    }
+    return write_impl(std::string_view{bundle->data.data(), bundle->data.size()}, bundle->critical);
   }
-  */
-  return true;
+  return false;
 }
 
 bool oscquery_server_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  // TODO
-  /*
-  json_bundle_builder b;
-  for(const auto& addr : addresses)
-  {
-    ossia::value val = net::filter_value(addr);
-    if (val.valid())
-    {
-      b.add_message(addr, val);
-    }
-  }
+  using namespace ossia::net;
+  using OscVersion = osc_extended_policy;
 
-  const auto str = b.finish();
-
+  if(auto bundle = ossia::net::make_bundle(ossia::net::bundle_client_policy<OscVersion>{}, addresses))
   {
-    lock_t lock(m_clientsMutex);
-    for (auto& client : m_clients)
-    {
-      m_websocketServer->send_message(client.connection, str);
-    }
+    return write_impl(std::string_view{bundle->data.data(), bundle->data.size()}, bundle->critical);
   }
-  */
-  return true;
+  return false;
 }
 
 bool oscquery_server_protocol::echo_incoming_message(
@@ -280,13 +290,13 @@ bool oscquery_server_protocol::echo_incoming_message(
     for (auto& client : m_clients)
     {
       if (not_this_protocol || !is_same(client, id)) {
-        if (client.socket)
+        if (client.osc_socket)
         {
           if (m_logger.outbound_logger)
           {
             m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
           }
-          send_visitor vis{addr, ossia::net::osc_address(addr), *client.socket};
+          send_visitor vis{addr, ossia::net::osc_address(addr), *client.osc_socket};
           val.apply(vis);
         }
         else
@@ -422,6 +432,7 @@ void oscquery_server_protocol::stop()
 
   try
   {
+    lock_t lock(m_clientsMutex);
     // close client-connections before stopping
     auto it = m_clients.begin();
     while (it != m_clients.end())
@@ -430,6 +441,7 @@ void oscquery_server_protocol::stop()
       con->close(websocketpp::close::status::going_away, "Server shutdown");
       it = m_clients.erase(it);
     }
+    m_clientCount = 0;
   }
   catch (...)
   {
@@ -572,6 +584,7 @@ void oscquery_server_protocol::on_connectionOpen(
     lock_t lock(m_clientsMutex);
     m_clients.emplace_back(hdl);
     m_clients.back().client_ip = std::move(ip);
+    m_clientCount++;
   }
 
   onClientConnected(con->get_remote_endpoint());
@@ -592,6 +605,7 @@ void oscquery_server_protocol::on_connectionClosed(
   auto it = ossia::find(m_clients, hdl);
   if (it != m_clients.end())
   {
+    --m_clientCount;
     m_clients.erase(it);
   }
 
