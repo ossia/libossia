@@ -85,7 +85,7 @@ struct osc_protocol_common
   template<typename T>
   static void on_received_message(T& self, const oscpack::ReceivedMessage& m)
   {
-    if (!self.m_learning)
+    if (!self.learning())
     {
       ossia::net::on_input_message<false>(
             m.AddressPattern(),
