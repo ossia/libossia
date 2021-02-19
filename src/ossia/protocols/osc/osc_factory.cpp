@@ -20,7 +20,7 @@ static fd_configuration get_fd_configuration(osc_protocol_configuration&& conf)
 }
 
 template<typename OscVersion>
-std::unique_ptr<ossia::net::protocol_base> make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& config)
+std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& config)
 {
   using conf = osc_protocol_configuration;
 
@@ -77,7 +77,7 @@ std::unique_ptr<ossia::net::protocol_base> make_osc_protocol_impl(network_contex
   return {};
 }
 
-std::unique_ptr<ossia::net::protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config)
+std::unique_ptr<osc_protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config)
 {
   using conf = osc_protocol_configuration;
 
