@@ -280,7 +280,7 @@ void device::expose(device* x, t_symbol*, int argc, t_atom* argv)
       if (argc == 3 && argv[0].a_type == A_SYMBOL && argv[1].a_type == A_FLOAT
           && argv[2].a_type == A_FLOAT)
       {
-        settings.remoteip = atom_getsymbol(argv)->s_name;
+        settings.remoteip = atom_getsymbol(argv++)->s_name;
         settings.remoteport = atom_getfloat(argv++);
         settings.localport = atom_getfloat(argv++);
       }
