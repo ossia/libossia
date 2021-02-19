@@ -167,5 +167,27 @@ protected:
   const flags m_flags{};
   network_logger m_logger;
 };
+
+template<typename T>
+class can_learn
+    : public T
+{
+public:
+  using T::T;
+
+  bool learning() const noexcept
+  {
+    return m_learning;
+  }
+
+  void set_learning(bool v) noexcept
+  {
+    m_learning = v;
+  }
+
+private:
+  std::atomic_bool m_learning{};
+};
+
 }
 }

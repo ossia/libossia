@@ -27,6 +27,7 @@ struct osc_protocol_configuration
   std::variant<fd_configuration, socket_configuration> configuration;
 };
 
+using osc_protocol_base = can_learn<protocol_base>;
 OSSIA_EXPORT
-std::unique_ptr<protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config);
+std::unique_ptr<osc_protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config);
 }

@@ -27,7 +27,7 @@ namespace ossia::net
 {
 template<typename OscMode, typename Socket>
 class osc_generic_protocol
-    : public ossia::net::protocol_base
+    : public can_learn<ossia::net::protocol_base>
 {
 public:
   using socket_type = Socket;
@@ -37,7 +37,7 @@ public:
       network_context_ptr ctx,
       std::string_view local_host,  uint16_t local_port,
       std::string_view remote_host, uint16_t remote_port)
-    : protocol_base{flags{}}
+    : can_learn<ossia::net::protocol_base>{flags{}}
     , m_ctx{std::move(ctx)}
     , m_id{*this}
     , from_client{local_host, local_port, m_ctx->context}
@@ -50,7 +50,7 @@ public:
   osc_generic_protocol(
       network_context_ptr ctx,
       std::string_view local_fd, std::string_view remote_fd)
-    : protocol_base{flags{}}
+    : can_learn<ossia::net::protocol_base>{flags{}}
     , m_ctx{std::move(ctx)}
     , m_id{*this}
     , from_client{local_fd, m_ctx->context}
@@ -81,17 +81,6 @@ public:
 
   ~osc_generic_protocol() override
   {
-  }
-
-  bool learning() const
-  {
-    return m_learning;
-  }
-
-  osc_generic_protocol& set_learning(bool v)
-  {
-    m_learning = v;
-    return *this;
   }
 
   bool update(ossia::net::node_base& node_base) override
@@ -161,7 +150,5 @@ public:
 
   Socket from_client;
   Socket to_client;
-
-  std::atomic_bool m_learning{};
 };
 }
