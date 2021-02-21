@@ -54,7 +54,7 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
       argc--;
       argv++;
 
-      A_SETFLOAT(status+1, 0);
+      A_SETLONG(status+1, 0);
       status[2] = argv[0];
 
       std::string filename = argv[0].a_w.w_sym->s_name;
@@ -74,7 +74,7 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
           auto json = ossia::presets::make_json_preset(*node);
           ossia::presets::write_file(json, filename);
         }
-        A_SETFLOAT(status+1, 1);
+        A_SETLONG(status+1, 1);
 
       } catch (std::ifstream::failure e) {
         object_error((t_object*)x,"Can't open file %s, error: %s", argv[0].a_w.w_sym->s_name, e.what());
