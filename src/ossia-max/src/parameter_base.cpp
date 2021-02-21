@@ -515,12 +515,8 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_unit(x,x->m_node_selection);
   else if ( s == gensym("rate") )
     parameter_base::get_rate(x,x->m_node_selection);
-  else if ( s == gensym("queue_length") )
-    parameter_base::get_queue_length(x,x->m_node_selection);
   else
     object_base::get_mess_cb(x,s);
-
-
 }
 
 void parameter_base::get_domain(parameter_base*x, std::vector<matcher*> nodes)
@@ -761,22 +757,6 @@ void parameter_base::get_mute(parameter_base*x, std::vector<matcher*> nodes)
     }
   }
   lock_and_touch(x, gensym("mute"));
-}
-
-void parameter_base::get_queue_length(parameter_base*x, std::vector<matcher*> nodes)
-{
-  for (auto m : nodes)
-  {
-    if(m->is_zombie() || m->is_dead())
-      continue;
-
-    t_atom a;
-    A_SETLONG(&a, x->m_queue_length);
-
-    outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-    outlet_anything(x->m_dumpout, gensym("queue_length"), 1, &a);
-  }
-  lock_and_touch(x, gensym("queue_length"));
 }
 
 void parameter_base::get_rate(parameter_base*x, std::vector<matcher*> nodes)
@@ -1119,10 +1099,6 @@ void parameter_base::class_setup(t_class* c)
   CLASS_ATTR_STYLE(
         c, "mute", 0, "onoff");
   CLASS_ATTR_LABEL(c, "mute", 0, "Mute Output");
-
-  CLASS_ATTR_LONG(
-        c, "queue_length", 0, parameter_base, m_queue_length);
-  CLASS_ATTR_LABEL(c, "queue_length", 0, "Message queue length");
 
   CLASS_ATTR_SYM(
         c, "type", 0, parameter_base, m_type);

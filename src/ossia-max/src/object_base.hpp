@@ -77,7 +77,6 @@ public:
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
   bool m_registered{}; // true if register_node() have been called at least once
-  long m_queue_length{64};
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
 
