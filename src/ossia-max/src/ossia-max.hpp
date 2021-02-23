@@ -103,6 +103,8 @@ struct patcher_descriptor{
 
   bool loadbanged{}; // true if patcher have been loadbanged already
 
+  long poly_index{-1}; // 0 when not in a poly~, instance index otherwise, -1 uninitialized
+
   bool empty() const
   {
     return parameters.empty()
@@ -123,6 +125,14 @@ struct patcher_descriptor{
            + (view?1:0)
            + (device?1:0)
            + (client?1:0);
+  }
+
+  bool has_no_master_node()
+  {
+    return model == nullptr
+          && view == nullptr
+          && device ==  nullptr
+          && client == nullptr;
   }
 };
 
@@ -225,7 +235,6 @@ public:
 
   std::map<t_object*, patcher_descriptor> patchers;
 
-  static void create_patcher_hierarchy(t_object* patcher);
   static patcher_descriptor& get_patcher_descriptor(t_object* patcher);
   static void remove_patcher_descriptor(t_object* patcher);
 

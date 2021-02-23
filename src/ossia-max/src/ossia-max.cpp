@@ -116,20 +116,6 @@ ossia_max& ossia_max::instance()
   return library_instance;
 }
 
-void ossia_max::create_patcher_hierarchy(t_object* patcher)
-{
-  auto parent = ossia::max::get_patcher(patcher);
-  ossia_max::instance().patchers[patcher].parent_patcher = parent;
-
-  while(parent)
-  {
-    ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
-    patcher = parent;
-    parent = ossia::max::get_patcher(patcher);
-    ossia_max::instance().patchers[patcher].parent_patcher = parent;
-  }
-}
-
 patcher_descriptor& ossia_max::get_patcher_descriptor(t_object* patcher)
 {
   auto& map = ossia_max::instance().patchers;

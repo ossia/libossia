@@ -175,7 +175,9 @@ protected:
 
 private:
   std::vector<std::shared_ptr<matcher>> find_parent_nodes();
-  void make_global_paths();
+  void create_patcher_hierarchy();
+  long poly_index();
+  void make_global_paths(const std::string& name);
 };
 
 #pragma mark -

@@ -40,6 +40,12 @@ std::vector<object_base*> find_children_to_register(
  */
 void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller);
 
+/**
+ * @brief get_poly_index : return the instance number if patcher is loaded by a poly~, 0 otherwise
+ * @param caller: object that calls the function
+ * @return poly~ instance number or 0
+ */
+long get_poly_index(t_object* patcher);
 
 /**
  * @brief Convenient method to easily get the patcher where a box is

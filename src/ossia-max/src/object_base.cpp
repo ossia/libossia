@@ -19,8 +19,7 @@ ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
 
 object_base::object_base()
 {
-  m_patcher = ossia::max::get_patcher(&m_object);
-  ossia_max::create_patcher_hierarchy(m_patcher);
+  create_patcher_hierarchy();
 }
 
 object_base::~object_base()
@@ -868,12 +867,48 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
   return {};
 }
 
-
-
-void object_base::make_global_paths()
+void object_base::create_patcher_hierarchy()
 {
-  assert(m_name);
+  m_patcher = ossia::max::get_patcher(&m_object);
+  auto patcher = m_patcher;
+  auto parent = ossia::max::get_patcher(patcher);
+  ossia_max::instance().patchers[patcher].parent_patcher = parent;
+  //ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
 
+  while(parent)
+  {
+    ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
+    auto patcher = parent;
+
+    // no need to go up further if we already know patcher hierarchy from that point
+    if(ossia_max::instance().patchers.find(patcher) != ossia_max::instance().patchers.end())
+      break;
+
+    parent = ossia::max::get_patcher(patcher);
+    ossia_max::instance().patchers[patcher].parent_patcher = parent;
+    //ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
+  }
+}
+
+unsigned long object_base::poly_index()
+{
+  auto patcher = m_patcher;
+  // FIXME a model inside a poly doesn't get the proper instance number
+  while(patcher && ossia_max::instance().patchers[patcher].has_no_master_node())
+  {
+    auto index = ossia_max::instance().patchers[patcher].poly_index;
+    if(index < 0)
+      ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
+
+    if(index > 0)
+      return index;
+    patcher = ossia_max::instance().patchers[patcher].parent_patcher;
+  }
+  return 0;
+}
+
+void object_base::make_global_paths(const std::string& name)
+{
   object_base* parent = find_parent_object();
   if(parent)
   {
@@ -884,7 +919,7 @@ void object_base::make_global_paths()
       auto dev = static_cast<device_base*>(parent);
       if(dev->m_device)
       {
-        m_paths.push_back(dev->m_device->get_name() + ":/" + std::string(m_name->s_name));
+        m_paths.push_back(dev->m_device->get_name() + ":/" + name);
       }
     }
     else
@@ -893,14 +928,14 @@ void object_base::make_global_paths()
       {
         auto p = ossia::net::address_string_from_node(*m->get_node());
         std::cout << p << std::endl;
-        m_paths.push_back(p + "/" + std::string(m_name->s_name));
+        m_paths.push_back(p + "/" + name);
       }
     }
   }
   else
   {
     std::string device_name = ossia_max::instance().get_default_device()->get_name();
-    m_paths.push_back(device_name + ":/" + std::string(m_name->s_name));
+    m_paths.push_back(device_name + ":/" + name);
   }
 }
 
@@ -908,6 +943,25 @@ void object_base::update_path()
 {
   m_paths.clear();
   m_paths.reserve(32);
+
+  auto name = std::string(m_name->s_name);
+
+  // check if we already have an instance number and override it or just append it
+  std::regex regex("\\.[0-9]+$");
+  std::smatch smatch;
+  auto index = poly_index();
+  if(index > 0)
+  {
+    if( std::regex_search(name, smatch, regex) )
+    {
+      name = std::string(smatch.prefix()) + "." + std::to_string(index);
+    }
+    else
+    {
+      name += "." + std::to_string(index);
+    }
+  }
+
   switch(m_addr_scope)
   {
     case ossia::net::address_scope::absolute:
@@ -923,17 +977,17 @@ void object_base::update_path()
       {
         base_name = ossia_max::instance().get_default_device()->get_name();
       }
-      m_paths.push_back(base_name + ":" + std::string(m_name->s_name));
+      m_paths.push_back(base_name + ":" + name);
       break;
     }
     case ossia::net::address_scope::global:
     {
-      m_paths.push_back(std::string(m_name->s_name));
+      m_paths.push_back(name);
       break;
     }
     case ossia::net::address_scope::relative:
     {
-      make_global_paths();
+      make_global_paths(name);
       break;
     }
   }

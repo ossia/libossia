@@ -454,6 +454,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
     {
       nb->m_node_selection.clear();
       nb->m_matchers.clear();
+      // FIXME update_path shouldn't be needed here since it is called in find_or_create_matchers() during registration
       nb->update_path();
       switch(nb->m_otype)
       {
@@ -486,6 +487,28 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   {
     register_children_in_patcher_recursively(subpatcher, caller);
   }
+}
+
+long get_poly_index(t_object* patcher)
+{
+  // check if object is inside a poly~ and retrieve voice number to update name
+  if (patcher)
+  {
+    t_object *assoc = nullptr;
+    object_method(patcher, gensym("getassoc"), &assoc);
+    if (assoc) {
+      // post("found %s", object_classname(assoc)->s_name);
+      // voices = object_attr_getlong(assoc, gensym("voices"));
+      // post("total amount of voices: %ld", voices);
+      method m = zgetfn(assoc, gensym("getindex"));
+      if(m)
+      {
+        long index = (long)(*m)(assoc, patcher);
+        return index;
+      }
+    }
+  }
+  return 0;
 }
 
 t_object* get_patcher(t_object* object)
