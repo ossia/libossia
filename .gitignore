@@ -47,3 +47,5 @@ OSSIA/ossia-python/pyossia.egg-info*
 OSSIA/ossia-node/build
 OSSIA/ossia-node/node_modules
 3rdparty/*sdk*
+3rdparty/CicmWrapper/
+3rdparty/pure-data/
