@@ -6,6 +6,7 @@
 namespace ossia
 {
 audio_protocol::audio_protocol()
+  : protocol_base{flags{}}
 {
 }
 

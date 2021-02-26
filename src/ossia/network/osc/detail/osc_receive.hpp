@@ -14,23 +14,77 @@ namespace ossia
 {
 namespace net
 {
-template <bool SilentUpdate>
-inline void handle_osc_message(
-    const oscpack::ReceivedMessage& m,
-    const ossia::net::listened_parameters& listening,
-    ossia::net::device_base& dev, network_logger& logger)
+
+struct osc_message_applier
 {
-  auto addr_txt = m.AddressPattern();
+  message_origin_identifier id;
+  const oscpack::ReceivedMessage& m;
+  void on_listened_value(
+      ossia::net::parameter_base& the_addr,
+      ossia::net::device_base& dev,
+      network_logger& logger
+      )
+  {
+    if (auto v = net::get_filtered_value(the_addr, m); v.valid())
+    {
+      dev.apply_incoming_message(id, the_addr, std::move(v));
+    }
+
+    if (logger.inbound_listened_logger)
+      logger.inbound_listened_logger->info("In: {0}", m);
+  }
+
+  void on_value(
+      ossia::net::parameter_base& the_addr,
+      ossia::net::device_base& dev
+      )
+  {
+    if (auto v = net::get_filtered_value(the_addr, m); v.valid())
+    {
+      dev.apply_incoming_message(id, the_addr, std::move(v));
+    }
+  }
+
+  void on_value_quiet(
+      ossia::net::parameter_base& the_addr,
+      ossia::net::device_base& dev
+      )
+  {
+    if (auto v = net::get_filtered_value(the_addr, m); v.valid())
+    {
+      dev.apply_incoming_message_quiet(id, the_addr, std::move(v));
+    }
+  }
+
+  void on_unhandled(ossia::net::device_base& dev)
+  {
+    dev.on_unhandled_message(
+        m.AddressPattern(),
+          net::osc_utilities::create_any(
+            m.ArgumentsBegin(), m.ArgumentsEnd(),
+            m.ArgumentCount()));
+  }
+
+  void log(network_logger& logger)
+  {
+    if (logger.inbound_logger)
+      logger.inbound_logger->info("In: {0}", m);
+  }
+};
+
+template<bool SilentUpdate, typename F>
+void on_input_message(
+    std::string_view addr_txt,
+    F&& f,
+    const ossia::net::listened_parameters& listening,
+    ossia::net::device_base& dev,
+    network_logger& logger)
+{
   auto addr = listening.find(addr_txt);
 
   if (addr && *addr)
   {
-    auto& the_addr = **addr;
-    if (net::update_value(the_addr, m))
-      dev.on_message(the_addr);
-
-    if (logger.inbound_listened_logger)
-      logger.inbound_listened_logger->info("In: {0}", m);
+    f.on_listened_value(**addr, dev, logger);
   }
   else
   {
@@ -39,16 +93,10 @@ inline void handle_osc_message(
     {
       if (auto base_addr = n->get_parameter())
       {
-        if (SilentUpdate)
-        {
-          if (update_value_quiet(*base_addr, m))
-            dev.on_message(*base_addr);
-        }
+        if constexpr (!SilentUpdate)
+          f.on_value(*base_addr, dev);
         else
-        {
-          if (update_value(*base_addr, m))
-            dev.on_message(*base_addr);
-        }
+          f.on_value_quiet(*base_addr, dev);
       }
     }
     else
@@ -60,29 +108,19 @@ inline void handle_osc_message(
         if (auto addr = n->get_parameter())
         {
           if (!SilentUpdate || listening.find(n->osc_address()))
-          {
-            if (net::update_value(*addr, m))
-              dev.on_message(*addr);
-          }
+            f.on_value(*addr, dev);
           else
-          {
-            if (net::update_value_quiet(*addr, m))
-              dev.on_message(*addr);
-          }
+            f.on_value_quiet(*addr, dev);
         }
       }
 
       if (nodes.empty())
-      {
-        dev.on_unhandled_message(
-            addr_txt, net::osc_utilities::create_any(
-                          m.ArgumentsBegin(), m.ArgumentsEnd(), m.ArgumentCount()));
-      }
+        f.on_unhandled(dev);
     }
   }
 
-  if (logger.inbound_logger)
-    logger.inbound_logger->info("In: {0}", m);
+  f.log(logger);
 }
+
 }
 }

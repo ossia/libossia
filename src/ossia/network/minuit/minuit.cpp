@@ -28,7 +28,8 @@ static auto get_time()
 minuit_protocol::minuit_protocol(
     const std::string& local_name, const std::string& remote_ip,
     uint16_t remote_port, uint16_t local_port)
-    : m_localName{local_name}
+    : protocol_base{flags{SupportsMultiplex}}
+    , m_localName{local_name}
     , m_ip{remote_ip}
     , m_remotePort{remote_port}
     , m_localPort{local_port}
@@ -40,6 +41,7 @@ minuit_protocol::minuit_protocol(
               const oscpack::IpEndpointName& ip) {
             this->on_received_message(m, ip);
           })}
+    , m_id{*this, (uintptr_t)m_sender.get()}
     , m_lastSentMessage{get_time()}
     , m_lastRecvMessage{get_time()}
 {
@@ -388,7 +390,10 @@ void minuit_protocol::on_received_message(
 
   if (!address.empty() && address[0] == '/')
   {
-    ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
+    ossia::net::on_input_message<true>(
+          m.AddressPattern(),
+          ossia::net::osc_message_applier{m_id, m},
+          m_listening, *m_device, m_logger);
   }
   else
   {

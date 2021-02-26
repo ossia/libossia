@@ -89,7 +89,8 @@ struct rate_limiter
 rate_limiting_protocol::rate_limiting_protocol(
     rate_limiting_protocol::duration d
     , std::unique_ptr<protocol_base> arg)
-  : m_duration{d}
+  : protocol_base{flags{SupportsMultiplex}}
+  , m_duration{d}
   , m_protocol{std::move(arg)}
 
 {

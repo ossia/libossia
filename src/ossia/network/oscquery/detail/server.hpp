@@ -225,6 +225,13 @@ public:
         message.data(), message.size(), websocketpp::frame::opcode::binary);
   }
 
+  void send_binary_message(connection_handler hdl, std::string_view message)
+  {
+    auto con = m_server.get_con_from_hdl(hdl);
+    con->send(
+          message.data(), message.size(), websocketpp::frame::opcode::binary);
+  }
+
   server_t& impl()
   {
     return m_server;

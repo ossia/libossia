@@ -23,6 +23,7 @@ struct device_capabilities
   bool change_tree = false;
 };
 
+struct message_origin_identifier;
 /**
  * @brief Root of a device tree
  *
@@ -83,6 +84,16 @@ public:
   {
     return get_root_node().get_name();
   }
+
+  void apply_incoming_message(
+      const message_origin_identifier& id,
+      ossia::net::parameter_base& param,
+      ossia::value&& value);
+
+  void apply_incoming_message_quiet(
+      const message_origin_identifier& id,
+      ossia::net::parameter_base& param,
+      ossia::value&& value);
 
   Nano::Signal<void(node_base&)>
       on_node_created; // The node being created

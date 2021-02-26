@@ -53,6 +53,8 @@ public:
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
+  bool echo_incoming_message(
+      const ossia::net::message_origin_identifier& id, const ossia::net::parameter_base& addr, const value& val) override;
 
   std::future<void> update_async(net::node_base& b) override;
 
@@ -148,6 +150,8 @@ private:
 
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
+  void start_http();
+
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;
   std::unique_ptr<ossia::oscquery::websocket_client> m_websocketClient;
@@ -194,7 +198,9 @@ private:
 
   std::unique_ptr<http_client_context> m_http;
   host_info m_host_info;
-  void start_http();
+
+  ossia::net::message_origin_identifier m_id;
+
 
   bool m_zombie_on_remove{true};
 };

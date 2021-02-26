@@ -11,7 +11,8 @@ namespace net
 ////
 
 wiimote_protocol::wiimote_protocol(const bool enable_ir)
-    : m_running(false), m_ready(false), m_enable_ir(enable_ir)
+  : protocol_base{flags{}}
+  , m_running(false), m_ready(false), m_enable_ir(enable_ir)
 {
   m_wiimotes = wiiuse_init(MAX_WIIMOTES_COUNT);
 
