@@ -5,10 +5,7 @@
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
-#if defined(__EMSCRIPTEN__)
-#define GSL_USE_STD_BYTE 0
-#endif
-#include <gsl/span>
+#include <ossia/detail/span.hpp>
 
 namespace ossia
 {

@@ -17,11 +17,12 @@ int main(){ std::shared_mutex t; }
 
 ### Protocol setup ###
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
-  set(OSSIA_PROTOCOL_AUDIO FALSE CACHE INTERNAL "")
-  set(OSSIA_PROTOCOL_MIDI FALSE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_AUDIO TRUE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_MIDI TRUE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_HTTP FALSE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_WEBSOCKETS FALSE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_SERIAL FALSE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_ARTNET FALSE CACHE INTERNAL "")
 endif()
 
 if(NOT OSSIA_QML)
@@ -277,11 +278,15 @@ if(OSSIA_DNSSD)
 endif()
 
 if(OSSIA_DATAFLOW)
-  set(OSSIA_PARALLEL 1)
+  if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    set(OSSIA_PARALLEL 1)
+    target_include_directories(ossia PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
+    )
+  endif()
 
   target_include_directories(ossia PUBLIC
     $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
-    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
   )
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
@@ -310,7 +315,7 @@ if(OSSIA_DATAFLOW)
 
   target_link_libraries(ossia PRIVATE samplerate)
   target_link_libraries(ossia PRIVATE rubberband)
-  
+
   # FFT support
   find_path(FFTW3_INCLUDEDIR fftw3.h)
   find_library(FFTW3_LIBRARY fftw3)
@@ -343,7 +348,7 @@ if(OSSIA_DATAFLOW)
   if(OSSIA_GFX)
     target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
   endif()
-  
+
   if(OSSIA_EDITOR)
     target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 
