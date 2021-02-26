@@ -4,11 +4,14 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/local/local.hpp>
 
+#include <ossia/detail/logger.hpp>
+
 namespace ossia
 {
 namespace net
 {
 multiplex_protocol::multiplex_protocol()
+  : protocol_base{flags{}}
 {
 }
 
@@ -54,6 +57,14 @@ bool multiplex_protocol::update(ossia::net::node_base& node)
   return false;
 }
 
+bool multiplex_protocol::echo_incoming_message(const message_origin_identifier& id, const parameter_base& param, const value& v)
+{
+  bool b = true;
+  for (auto& proto : m_protocols)
+    b &= proto->echo_incoming_message(id, param, v);
+  return b;
+}
+
 void multiplex_protocol::stop()
 {
   for (auto& proto : m_protocols)
@@ -84,6 +95,12 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
 {
   if (p)
   {
+    if(!p->test_flag(SupportsMultiplex))
+    {
+       ossia::logger().error("Cannot multiplex a protocol of type: {}", typeid(*p).name());
+       return;
+    }
+
     p->set_device(*m_device);
 
     // Expose all the adresses with callbacks

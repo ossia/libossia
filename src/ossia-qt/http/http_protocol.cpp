@@ -16,7 +16,8 @@ namespace ossia
 namespace net
 {
 http_protocol::http_protocol(QByteArray code)
-    : m_engine{new QQmlEngine}
+    : protocol_base{flags{}}
+    , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
     , m_access{new QNetworkAccessManager}
     , m_code{code}
@@ -91,6 +92,8 @@ bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
 
 bool http_protocol::push(const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
+  // TODO dynamic_cast or whatever
+  assert(dynamic_cast<const http_parameter*>(&parameter_base));
   auto& addr = static_cast<const http_parameter&>(parameter_base);
 
   if (!addr.data().request.isEmpty())

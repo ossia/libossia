@@ -26,7 +26,8 @@ serial_wrapper::~serial_wrapper()
 
 serial_protocol::serial_protocol(
     const QByteArray& code, const QSerialPortInfo& bot)
-    : m_engine{new QQmlEngine}
+    : protocol_base{flags{}}
+    , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
     , m_serialPort{bot}
     , m_code{code}

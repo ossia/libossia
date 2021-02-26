@@ -26,10 +26,12 @@ using sender_t = osc::sender<osc_outbound_visitor>;
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port,
     std::optional<std::string> expose)
-    : m_ip{std::move(ip)}
+    : protocol_base{flags{SupportsMultiplex}}
+    , m_ip{std::move(ip)}
     , m_remote_port{remote_port}
     , m_local_port{local_port}
     , m_expose{std::move(expose)}
+    , m_id{*this, {}}
 {
   update_sender();
   update_receiver();
@@ -85,6 +87,7 @@ osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 void osc_protocol::update_sender()
 {
   m_sender = std::make_unique<sender_t>(m_logger, m_ip, m_remote_port);
+  m_id.identifier = (uintptr_t)m_sender.get();
 }
 
 void osc_protocol::update_receiver()
@@ -254,12 +257,25 @@ bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
   return true;
 }
 
+bool osc_protocol::echo_incoming_message(
+    const message_origin_identifier& id, const parameter_base& addr, const value& val)
+{
+  if(&id.protocol == this && id.identifier != (uintptr_t)(m_sender.get()))
+    return true;
+
+  m_sender->send(addr, val);
+  return true;
+}
+
 void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
   if (!m_learning)
   {
-    handle_osc_message<false>(m, m_listening, *m_device, m_logger);
+    ossia::net::on_input_message<false>(
+          m.AddressPattern(),
+          ossia::net::osc_message_applier{m_id, m},
+          m_listening, *m_device, m_logger);
   }
   else
   {

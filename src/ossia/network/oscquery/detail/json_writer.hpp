@@ -127,6 +127,14 @@ struct OSSIA_EXPORT osc_writer
   static void send_message(
       const ossia::net::full_parameter_data&, const ossia::value&,
       const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
+
+  static void write_value(
+      std::string_view address, const value& v, const unit_t& u,
+      oscpack::UdpTransmitSocket& socket);
+  static std::string write_value(
+      std::string_view address,
+      const value& v,
+      const unit_t& u);
 };
 }
 }

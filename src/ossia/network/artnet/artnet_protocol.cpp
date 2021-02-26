@@ -29,7 +29,9 @@ int artnet_protocol::dmx_buffer::send(artnet_node node)
 ////
 
 artnet_protocol::artnet_protocol(const unsigned int update_frequency)
-    : m_running(true), m_update_frequency(update_frequency)
+  : protocol_base{flags{}}
+  , m_running(true),
+    m_update_frequency(update_frequency)
 {
   if (update_frequency < 1 || update_frequency > 44)
     throw std::runtime_error(

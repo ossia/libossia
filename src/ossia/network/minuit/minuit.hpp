@@ -110,6 +110,8 @@ private:
 
   zeroconf_server m_zcServer;
 
+  message_origin_identifier m_id;
+
   std::atomic<long long> m_lastSentMessage;
   std::atomic<long long> m_lastRecvMessage;
 };
