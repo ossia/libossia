@@ -48,6 +48,8 @@ public:
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
+  bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v) override;
+
   void stop() override;
   void set_device(ossia::net::device_base& dev) override;
 

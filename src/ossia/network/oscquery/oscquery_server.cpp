@@ -24,9 +24,32 @@ namespace ossia
 {
 namespace oscquery
 {
+
+
+static uintptr_t client_identifier(const std::vector<oscquery_client>& clts, const oscpack::IpEndpointName& ip)
+{
+  if(clts.size() == 1)
+    return (uintptr_t) clts[0].connection.lock().get();
+
+  for (const oscquery_client& c : clts)
+  {
+    if(c.remote_sender_port == ip.port)
+    {
+      return (uintptr_t) c.connection.lock().get();
+    }
+  }
+  return {};
+}
+
+static bool is_same(const oscquery_client& clt, const ossia::net::message_origin_identifier& id)
+{
+  return (uintptr_t)clt.connection.lock().get() == id.identifier;
+}
+
 oscquery_server_protocol::oscquery_server_protocol(
     uint16_t osc_port, uint16_t ws_port)
-    : m_oscServer{std::make_unique<osc::receiver>(
+  : protocol_base{flags{SupportsMultiplex}}
+  , m_oscServer{std::make_unique<osc::receiver>(
           osc_port,
           [this](const oscpack::ReceivedMessage& m,
               const oscpack::IpEndpointName& ip) {
@@ -36,6 +59,7 @@ oscquery_server_protocol::oscquery_server_protocol(
     , m_oscPort{(uint16_t)m_oscServer->port()}
     , m_wsPort{ws_port}
 {
+  m_clients.reserve(2);
   m_websocketServer->set_open_handler(
       [&](connection_handler hdl) { on_connectionOpen(hdl); });
   m_websocketServer->set_close_handler(
@@ -209,6 +233,58 @@ bool oscquery_server_protocol::push_raw_bundle(
     }
   }
   */
+  return true;
+}
+
+bool oscquery_server_protocol::echo_incoming_message(
+    const net::message_origin_identifier& id,
+    const net::parameter_base& addr,
+    const ossia::value& val)
+{
+  bool ok = &id.protocol != this;
+  // we know that the value is valid
+  // Push to all clients except ours
+  auto critical = addr.get_critical();
+  if (!critical)
+  {
+    lock_t lock(m_clientsMutex);
+    // No need to echo if we just have one client, the most common case
+    if(m_clients.size() <= 1)
+      return true;
+
+    for (auto& client : m_clients)
+    {
+      if (ok || !is_same(client, id)) {
+        if (client.sender)
+        {
+          ossia::oscquery::osc_writer::send_message(
+                addr, val, m_logger, client.sender->socket());
+        }
+        else
+        {
+          m_websocketServer->send_binary_message(
+                client.connection,
+                osc_writer::send_message(addr, val, m_logger));
+        }
+      }
+    }
+  }
+  else
+  {
+    lock_t lock(m_clientsMutex);
+    // No need to echo if we just have one client, the most common case
+    if(m_clients.size() <= 1)
+      return true;
+
+    for (auto& client : m_clients)
+    {
+      if (ok || !is_same(client, id)) {
+        m_websocketServer->send_binary_message(
+              client.connection, osc_writer::send_message(addr, val, m_logger));
+      }
+    }
+  }
+
   return true;
 }
 
@@ -454,7 +530,11 @@ void oscquery_server_protocol::rename_node(
 void oscquery_server_protocol::on_OSCMessage(
     const oscpack::ReceivedMessage& m, oscpack::IpEndpointName ip) try
 {
-  ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
+  auto id = ossia::net::message_origin_identifier{*this, client_identifier(m_clients, ip)};
+  ossia::net::on_input_message<true>(
+        m.AddressPattern(),
+        ossia::net::osc_message_applier{id, m},
+        m_listening, *m_device, m_logger);
 
   if (m_echo)
   {
@@ -471,7 +551,7 @@ void oscquery_server_protocol::on_OSCMessage(
       else
       {
         m_websocketServer->send_binary_message(
-            c.connection, std::string(m.data(), m.size()));
+            c.connection, std::string_view(m.data(), m.size()));
       }
     }
   }

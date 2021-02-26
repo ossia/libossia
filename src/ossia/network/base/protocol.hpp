@@ -79,6 +79,13 @@ public:
   bool push(const parameter_base& p);
 
   /**
+   * @brief called when some protocol on the same device received a message.
+   *
+   * This can be used to echo the message to other protocols on the same device.
+   */
+  virtual bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v);
+
+  /**
    * @brief Send many values in one go if the protocol supports it
    */
   virtual bool

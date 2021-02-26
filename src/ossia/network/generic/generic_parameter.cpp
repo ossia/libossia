@@ -106,6 +106,8 @@ generic_parameter::set_value(const ossia::value& val)
     lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
+      // TODO assess whether we would avoid an allocation on the return
+      // if doing copy = std::move(m_previousValue)
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
       m_value = val;
       copy = val;

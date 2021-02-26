@@ -77,10 +77,12 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
-    : m_queryHost{std::move(host)}
+    : protocol_base{flags{SupportsMultiplex}}
+    , m_queryHost{std::move(host)}
     , m_httpHost{m_queryHost}
     , m_osc_port{local_osc_port}
     , m_http{std::make_unique<http_client_context>()}
+    , m_id{*this, {}}
 {
   auto port_idx = m_queryHost.find_last_of(':');
   if (port_idx != std::string::npos)
@@ -281,6 +283,28 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
   }
   return false;
 }
+
+bool oscquery_mirror_protocol::echo_incoming_message(
+    const ossia::net::message_origin_identifier& id, const ossia::net::parameter_base& addr, const value& val)
+{
+  if(&id.protocol == this && id.identifier == (uintptr_t)this->m_websocketClient.get())
+    return true;
+
+  auto critical = addr.get_critical();
+  if ((!critical || !m_hasWS) && m_oscSender)
+  {
+    ossia::oscquery::osc_writer::send_message(
+          addr, val, m_logger, m_oscSender->socket());
+    return true;
+  }
+  else if (m_hasWS)
+  {
+    ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+    return true;
+  }
+  return false;
+}
+
 
 bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
 {
@@ -557,6 +581,7 @@ void oscquery_mirror_protocol::init()
             break;
         }
       });
+  m_id.identifier = (uintptr_t) m_websocketClient.get();
 
   m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
   m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
@@ -570,7 +595,6 @@ void oscquery_mirror_protocol::init()
     {
       started = true;
       m_websocketClient->connect(m_queryHost);
-
     }
     catch (...)
     {
@@ -630,7 +654,11 @@ void oscquery_mirror_protocol::on_OSCMessage(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
+
+  ossia::net::on_input_message<true>(
+        m.AddressPattern(),
+        ossia::net::osc_message_applier{m_id, m},
+        m_listening, *m_device, m_logger);
 
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();

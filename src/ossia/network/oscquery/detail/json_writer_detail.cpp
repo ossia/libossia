@@ -775,7 +775,7 @@ json_writer::string_t json_writer::attributes_changed_array(
 }
 
 std::string
-write_value(std::string_view address, const value& v, const unit_t& u)
+osc_writer::write_value(std::string_view address, const value& v, const unit_t& u)
 {
   std::string buffer;
   buffer.resize(1024);
@@ -810,7 +810,7 @@ write_value(std::string_view address, const value& v, const unit_t& u)
   return buffer;
 }
 
-void write_value(
+void osc_writer::write_value(
     std::string_view address, const value& v, const unit_t& u,
     oscpack::UdpTransmitSocket& socket)
 {

@@ -14,12 +14,9 @@ namespace net
 namespace midi
 {
 midi_protocol::midi_protocol()
-    : m_input{std::make_unique<libremidi::midi_in>(
-          libremidi::API::UNSPECIFIED, "ossia-in")}
-    , m_output
-{
-  std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")
-}
+  : protocol_base{flags{}}
+  , m_input{std::make_unique<libremidi::midi_in>(libremidi::API::UNSPECIFIED, "ossia-in")}
+  , m_output{std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")}
 {
 }
 
