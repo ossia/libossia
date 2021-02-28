@@ -64,6 +64,12 @@ function(ossia_link_jack)
 endfunction()
 
 function(ossia_find_sdl)
+  if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    target_compile_options(ossia PRIVATE -s USE_SDL=2)
+    add_link_options("SHELL:-s USE_SDL=2")
+    return()
+  endif()
+
   if(SDL_LIB)
     return()
   endif()
