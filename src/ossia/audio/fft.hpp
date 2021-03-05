@@ -7,7 +7,6 @@ using fftw_plan = struct fftw_plan_s*;
 using fftwf_plan = struct fftwf_plan_s*;
 namespace ossia
 {
-#define FFTW_DOUBLE_ONLY
 class OSSIA_EXPORT fft
 {
 public:
