@@ -6,19 +6,7 @@
 #include <ossia/network/midi/midi_protocol.hpp>
 
 #include <libremidi/message.hpp>
-#if !defined(__EMSCRIPTEN__)
 #include <libremidi/libremidi.hpp>
-#else
-namespace libremidi
-{
-class midi_in
-{
-};
-class midi_out
-{
-};
-}
-#endif
 namespace ossia
 {
 namespace net
@@ -26,14 +14,12 @@ namespace net
 namespace midi
 {
 midi_protocol::midi_protocol()
-#if !defined(__EMSCRIPTEN__)
     : m_input{std::make_unique<libremidi::midi_in>(
           libremidi::API::UNSPECIFIED, "ossia-in")}
     , m_output
 {
   std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")
 }
-#endif
 {
 }
 
@@ -44,7 +30,6 @@ midi_protocol::midi_protocol(midi_info m) : midi_protocol()
 
 midi_protocol::~midi_protocol()
 {
-#if !defined(__EMSCRIPTEN__)
   try
   {
     m_input->close_port();
@@ -54,12 +39,10 @@ midi_protocol::~midi_protocol()
   {
     logger().error("midi_protocol::~midi_protocol() error");
   }
-#endif
 }
 
 bool midi_protocol::set_info(midi_info m)
 {
-#if !defined(__EMSCRIPTEN__)
   try
   {
     // Close current ports
@@ -98,9 +81,6 @@ bool midi_protocol::set_info(midi_info m)
     logger().error("midi_protocol::~setInfo() error");
     return false;
   }
-#else
-  return false;
-#endif
 }
 
 midi_info midi_protocol::get_info() const
@@ -110,7 +90,6 @@ midi_info midi_protocol::get_info() const
 
 bool midi_protocol::pull(parameter_base& address)
 {
-#if !defined(__EMSCRIPTEN__)
   midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
   if (m_info.type != midi_info::Type::Input)
     return false;
@@ -187,14 +166,10 @@ bool midi_protocol::pull(parameter_base& address)
     default:
       return false;
   }
-#else
-  return false;
-#endif
 }
 
 bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
 {
-#if !defined(__EMSCRIPTEN__)
   try
   {
     const midi_parameter& adrs = dynamic_cast<const midi_parameter&>(address);
@@ -300,9 +275,6 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
     ossia::logger().error("Error when pushing midi message");
     return false; // TODO log error.
   }
-#else
-  return false;
-#endif
 }
 
 bool midi_protocol::push_raw(const full_parameter_data& parameter_base)
@@ -544,7 +516,6 @@ void midi_protocol::on_learn(const libremidi::message& mess)
 std::vector<midi_info> midi_protocol::scan()
 {
   std::vector<midi_info> vec;
-#if !defined(__EMSCRIPTEN__)
 
   {
     libremidi::midi_in& in = *m_input;
@@ -563,15 +534,12 @@ std::vector<midi_info> midi_protocol::scan()
       vec.emplace_back(midi_info::Type::Output, out.get_port_name(i), i);
     }
   }
-#endif
   return vec;
 }
 
 void midi_protocol::push_value(const libremidi::message& m)
 {
-#if !defined(__EMSCRIPTEN__)
   m_output->send_message(m);
-#endif
 }
 
 void midi_protocol::enable_registration()
