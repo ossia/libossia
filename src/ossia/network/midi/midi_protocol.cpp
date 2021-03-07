@@ -5,11 +5,11 @@
 #include <ossia/network/midi/midi_device.hpp>
 #include <ossia/network/midi/midi_protocol.hpp>
 
-#include <rtmidi17/message.hpp>
+#include <libremidi/message.hpp>
 #if !defined(__EMSCRIPTEN__)
-#include <rtmidi17/rtmidi17.hpp>
+#include <libremidi/libremidi.hpp>
 #else
-namespace rtmidi
+namespace libremidi
 {
 class midi_in
 {
@@ -27,11 +27,11 @@ namespace midi
 {
 midi_protocol::midi_protocol()
 #if !defined(__EMSCRIPTEN__)
-    : m_input{std::make_unique<rtmidi::midi_in>(
-          rtmidi::API::UNSPECIFIED, "ossia-in")}
+    : m_input{std::make_unique<libremidi::midi_in>(
+          libremidi::API::UNSPECIFIED, "ossia-in")}
     , m_output
 {
-  std::make_unique<rtmidi::midi_out>(rtmidi::API::UNSPECIFIED, "ossia-out")
+  std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")
 }
 #endif
 {
@@ -206,7 +206,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
     {
       case address_info::Type::NoteOn_N:
       {
-        m_output->send_message(rtmidi::message::note_on(
+        m_output->send_message(libremidi::message::note_on(
             adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
@@ -214,14 +214,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::NoteOn:
       {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(rtmidi::message::note_on(
+        m_output->send_message(libremidi::message::note_on(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::NoteOff_N:
       {
-        m_output->send_message(rtmidi::message::note_off(
+        m_output->send_message(libremidi::message::note_off(
             adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
@@ -229,14 +229,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::NoteOff:
       {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(rtmidi::message::note_off(
+        m_output->send_message(libremidi::message::note_off(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::CC_N:
       {
-        m_output->send_message(rtmidi::message::control_change(
+        m_output->send_message(libremidi::message::control_change(
             adrinfo.channel, adrinfo.note, v.get<int32_t>()));
         return true;
       }
@@ -244,14 +244,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::CC:
       {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(rtmidi::message::control_change(
+        m_output->send_message(libremidi::message::control_change(
             adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
         return true;
       }
 
       case address_info::Type::PC:
       {
-        m_output->send_message(rtmidi::message::program_change(
+        m_output->send_message(libremidi::message::program_change(
             adrinfo.channel, v.get<int32_t>()));
         return true;
       }
@@ -259,13 +259,13 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::PC_N:
       {
         m_output->send_message(
-            rtmidi::message::program_change(adrinfo.channel, adrinfo.note));
+            libremidi::message::program_change(adrinfo.channel, adrinfo.note));
         return true;
       }
 
       case address_info::Type::PB:
       {
-        m_output->send_message(rtmidi::message::pitch_bend(
+        m_output->send_message(libremidi::message::pitch_bend(
             adrinfo.channel, v.get<int32_t>()));
         return true;
       }
@@ -274,7 +274,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       {
         if (auto vec = v.target<std::vector<ossia::value>>())
         {
-          rtmidi::message m;
+          libremidi::message m;
           m.bytes.reserve(vec->size());
           for (const auto& val : *vec)
           {
@@ -379,7 +379,7 @@ void midi_protocol::value_callback(parameter_base& param, const value& val)
   m_dev->on_message(param);
 }
 
-void midi_protocol::midi_callback(const rtmidi::message& mess)
+void midi_protocol::midi_callback(const libremidi::message& mess)
 {
   if(m_logger.inbound_logger)
   {
@@ -402,7 +402,7 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
   midi_channel& c = m_channels[chan - 1];
   switch (mess.get_message_type())
   {
-    case rtmidi::message_type::NOTE_ON:
+    case libremidi::message_type::NOTE_ON:
       c.note_on.first = mess.bytes[1];
       c.note_on.second = mess.bytes[2];
       c.note_on_N[c.note_on.first] = c.note_on.second;
@@ -418,7 +418,7 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
         value_callback(*ptr, val);
       }
       break;
-    case rtmidi::message_type::NOTE_OFF:
+    case libremidi::message_type::NOTE_OFF:
       c.note_off.first = mess.bytes[1];
       c.note_off.second = mess.bytes[2];
       c.note_off_N[c.note_off.first] = c.note_off.second;
@@ -434,7 +434,7 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
         value_callback(*ptr, val);
       }
       break;
-    case rtmidi::message_type::CONTROL_CHANGE:
+    case libremidi::message_type::CONTROL_CHANGE:
       c.cc.first = mess.bytes[1];
       c.cc.second = mess.bytes[2];
       c.cc_N[c.cc.first] = c.cc.second;
@@ -450,7 +450,7 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
         value_callback(*ptr, val);
       }
       break;
-    case rtmidi::message_type::PROGRAM_CHANGE:
+    case libremidi::message_type::PROGRAM_CHANGE:
       c.pc = mess.bytes[1];
       if (auto ptr = c.callback_pc)
       {
@@ -461,7 +461,7 @@ void midi_protocol::midi_callback(const rtmidi::message& mess)
         value_callback(*ptr, ossia::impulse{});
       }
       break;
-    case rtmidi::message_type::PITCH_BEND:
+    case libremidi::message_type::PITCH_BEND:
       c.pb = mess.bytes[2] * 128 + mess.bytes[1];
       if (auto ptr = c.callback_pb)
       {
@@ -484,7 +484,7 @@ midi_node* find_or_create (ossia::string_view name, midi_device& dev, midi_node&
   return dynamic_cast<midi_node*>(n);
 }
 
-void midi_protocol::on_learn(const rtmidi::message& mess)
+void midi_protocol::on_learn(const libremidi::message& mess)
 {
   const midi_size_t chan = mess.get_channel();
   if (chan == 0)
@@ -494,7 +494,7 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
 
   switch (mess.get_message_type())
   {
-    case rtmidi::message_type::NOTE_ON:
+    case libremidi::message_type::NOTE_ON:
     {
       auto node = find_or_create<generic_node>("on", *m_dev, *channel_node, address_info{chan, address_info::Type::NoteOn, 0});
 
@@ -503,7 +503,7 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
       break;
     }
 
-    case rtmidi::message_type::NOTE_OFF:
+    case libremidi::message_type::NOTE_OFF:
     {
       auto node = find_or_create<generic_node>("off", *m_dev, *channel_node, address_info{chan, address_info::Type::NoteOff, 0});
 
@@ -512,7 +512,7 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
       break;
     }
 
-    case rtmidi::message_type::CONTROL_CHANGE:
+    case libremidi::message_type::CONTROL_CHANGE:
     {
       auto node = find_or_create<generic_node>("control", *m_dev, *channel_node, address_info{chan, address_info::Type::CC, 0});
 
@@ -521,7 +521,7 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
       break;
     }
 
-    case rtmidi::message_type::PROGRAM_CHANGE:
+    case libremidi::message_type::PROGRAM_CHANGE:
     {
       auto node = find_or_create<generic_node>("program", *m_dev, *channel_node, address_info{chan, address_info::Type::PC, 0});
 
@@ -530,7 +530,7 @@ void midi_protocol::on_learn(const rtmidi::message& mess)
       break;
     }
 
-    case rtmidi::message_type::PITCH_BEND:
+    case libremidi::message_type::PITCH_BEND:
     {
       find_or_create<generic_node>("pitchbend", *m_dev, *channel_node, address_info{chan, address_info::Type::PB, 0});
       break;
@@ -547,7 +547,7 @@ std::vector<midi_info> midi_protocol::scan()
 #if !defined(__EMSCRIPTEN__)
 
   {
-    rtmidi::midi_in& in = *m_input;
+    libremidi::midi_in& in = *m_input;
     auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
@@ -556,7 +556,7 @@ std::vector<midi_info> midi_protocol::scan()
   }
 
   {
-    rtmidi::midi_out& out = *m_output;
+    libremidi::midi_out& out = *m_output;
     auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
@@ -567,7 +567,7 @@ std::vector<midi_info> midi_protocol::scan()
   return vec;
 }
 
-void midi_protocol::push_value(const rtmidi::message& m)
+void midi_protocol::push_value(const libremidi::message& m)
 {
 #if !defined(__EMSCRIPTEN__)
   m_output->send_message(m);

@@ -174,7 +174,7 @@ private:
     for (const note_data& note : m_toStop)
     {
       mp.messages.push_back(
-          rtmidi::message::note_off(m_channel, note.pitch, 0));
+          libremidi::message::note_off(m_channel, note.pitch, 0));
       mp.messages.back().timestamp = tick_start;
     }
     m_toStop.clear();
@@ -184,7 +184,7 @@ private:
       for (auto& note : m_playingnotes)
       {
         mp.messages.push_back(
-            rtmidi::message::note_off(m_channel, note.pitch, 0));
+            libremidi::message::note_off(m_channel, note.pitch, 0));
         mp.messages.back().timestamp = tick_start;
       }
 
@@ -205,7 +205,7 @@ private:
         {
           auto& note = *it;
           mp.messages.push_back(
-              rtmidi::message::note_on(m_channel, note.pitch, note.velocity));
+              libremidi::message::note_on(m_channel, note.pitch, note.velocity));
           mp.messages.back().timestamp = tick_start;
           m_playingnotes.insert(note);
           it = m_notes.erase(it);
@@ -224,7 +224,7 @@ private:
 
           if (t.in_range({end_time}))
           {
-            mp.messages.push_back(rtmidi::message::note_off(
+            mp.messages.push_back(libremidi::message::note_off(
                 m_channel, note.pitch, 0));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(end_time, samplesratio);
@@ -246,7 +246,7 @@ private:
           if (start_time >= t.prev_date && start_time < t.date)
           {
             // Send note_on
-            mp.messages.push_back(rtmidi::message::note_on(
+            mp.messages.push_back(libremidi::message::note_on(
                 m_channel, note.pitch, note.velocity));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(start_time, samplesratio);

@@ -13,7 +13,7 @@
 #include <ossia/detail/lockfree_queue.hpp>
 
 #if defined(OSSIA_SMALL_VECTOR)
-#include <rtmidi17/message.hpp>
+#include <libremidi/message.hpp>
 #endif
 
 #include <cstdint>
@@ -149,7 +149,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
       m_valueState;
   ossia::fast_hash_map<ossia::audio_parameter*, audio_port> m_audioState;
   ossia::fast_hash_map<
-      ossia::net::parameter_base*, value_vector<rtmidi::message>>
+      ossia::net::parameter_base*, value_vector<libremidi::message>>
       m_midiState;
 
   mutable shared_mutex_t mutex;
@@ -180,7 +180,7 @@ private:
   ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>>
       m_receivedValues;
   ossia::ptr_map<
-      ossia::net::midi::midi_protocol*, std::pair<int, value_vector<rtmidi::message>>>
+      ossia::net::midi::midi_protocol*, std::pair<int, value_vector<libremidi::message>>>
       m_receivedMidi;
 
   ossia::mono_state m_monoState;

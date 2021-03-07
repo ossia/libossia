@@ -261,26 +261,26 @@ struct faust_node_utils
   {
     // TODO offset !!!
 
-    for(const rtmidi::message& mess : midi_in.messages)
+    for(const libremidi::message& mess : midi_in.messages)
     {
       switch(mess.get_message_type())
       {
-        case rtmidi::message_type::NOTE_ON:
+        case libremidi::message_type::NOTE_ON:
         {
           dsp.keyOn(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::NOTE_OFF:
+        case libremidi::message_type::NOTE_OFF:
         {
           dsp.keyOff(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::CONTROL_CHANGE:
+        case libremidi::message_type::CONTROL_CHANGE:
         {
           dsp.ctrlChange(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::PITCH_BEND:
+        case libremidi::message_type::PITCH_BEND:
         {
           dsp.pitchWheel(mess[0], mess.bytes[2] * 128 + mess.bytes[1]);
           break;

@@ -31,7 +31,7 @@ if(NOT OSSIA_QML)
   set(OSSIA_PROTOCOL_SERIAL FALSE CACHE INTERNAL "")
 endif()
 
-if(NOT TARGET RtMidi17)
+if(NOT TARGET libremidi)
   set(OSSIA_PROTOCOL_MIDI OFF CACHE INTERNAL "")
 endif()
 
@@ -94,7 +94,7 @@ endif()
 
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
-  target_link_libraries(ossia PRIVATE RtMidi17)
+  target_link_libraries(ossia PRIVATE libremidi)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 
   ossia_link_jack()
