@@ -243,12 +243,8 @@ case "$TRAVIS_OS_NAME" in
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
-        echo "#! /usr/bin/env python
-# -*- coding: utf-8 -*-
+        export WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
 
-def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
         $CMAKE_BIN -DCMAKE_TOOLCHAIN_FILE="$PWD/../cmake/toolchain/arm-linux-gnueabihf.cmake" \
                    -DPYTHON_INCLUDE_DIR=${RPI_ROOT_PATH}/usr/include/python${PYTHON_VERSION} \
                    -DCMAKE_BUILD_TYPE=Release \
@@ -310,14 +306,16 @@ def get_versions():
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
-        echo "#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
-
-        docker run --rm -v `pwd`:/ $DOCKER_IMAGE $PRE_CMD ci/build-wheels.sh
+        export WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        echo "WHEEL_TAG_VERSION: $WHEEL_TAG_VERSION"
+        docker run --rm \
+          -v `pwd`:/ \
+          -e WHEEL_TAG_VERSION \
+          -e PyPiUser \
+          -e PyPiWord \
+          $DOCKER_IMAGE \
+          $PRE_CMD \
+          ci/build-wheels.sh
 
         ls wheelhouse/
         cp wheelhouse/*.whl ${ARTIFACTS_DIR}/
@@ -327,12 +325,8 @@ def get_versions():
         # _version.py is not valid in a non-git folder
         # When making a wheel, we write the git tag which it has been build from
         # request the version
-        WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
-        echo "#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-def get_versions():
-  return {'version':'${WHEEL_TAG_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
+        export WHEEL_TAG_VERSION=$(echo -e "import sys\nsys.path.append('${TRAVIS_BUILD_DIR}/src/ossia-python/')\nfrom pyossia._version import get_versions\nget_versions()['version']" | ${PYTHON_BIN})
+        echo "WHEEL_TAG_VERSION: $WHEEL_TAG_VERSION"
         $CMAKE_BIN -DCMAKE_C_COMPILER="$CC" \
           -DCMAKE_CXX_COMPILER="$CXX" \
           -DCMAKE_BUILD_TYPE=Release \
@@ -522,19 +516,14 @@ def get_versions():
       echo List TRAVIS_BUILD_DIR content
       cd $TRAVIS_BUILD_DIR
       ls
-      
+
       release_macos_folder "$TRAVIS_BUILD_DIR/ossia-max-package/ossia" "ossia-max-osx.zip" "io.ossia.ossia-max"
 
     elif [[ "$BUILD_TYPE" == "python" ]]; then
       # _version.py is not valid in a non-git folder
       # When making a wheel, we write the git tag from which it has been build
-      PEP440_VERSION=$(echo $TRAVIS_TAG | sed s/^[^0-9]*//g)
-
-      echo "#! /usr/bin/env python
-# -*- coding: utf-8 -*-
-
-def get_versions():
-  return {'version':'${PEP440_VERSION}'}" > ${TRAVIS_BUILD_DIR}/src/ossia-python/pyossia/_version.py
+      export PEP440_VERSION=$(echo $TRAVIS_TAG | sed s/^[^0-9]*//g)
+      echo "PEP440_VERSION: $PEP440_VERSION"
       $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release \
                  -DCMAKE_PREFIX_PATH="$CMAKE_PREFIX_PATH" \
                  -DCMAKE_INSTALL_PREFIX="$TRAVIS_BUILD_DIR" \
@@ -571,7 +560,7 @@ def get_versions():
                  ..
       $CMAKE_BIN --build . -- -j2
       $CMAKE_BIN --build . --target install
-      
+
       release_macos_folder "$TRAVIS_BUILD_DIR/ossia-qml/Ossia" "ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     elif [[  "$BUILD_TYPE" == "ossia-cpp" ]]; then

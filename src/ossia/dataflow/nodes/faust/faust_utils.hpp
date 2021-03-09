@@ -418,18 +418,6 @@ public:
   {
     fPolyDSP->progChange(channel, pgm);
   }
-
-  /*
-  // Group API
-  void setGroup(bool group)
-  {
-    fPolyDSP->setGroup(group);
-  }
-  bool getGroup()
-  {
-    return fPolyDSP->getGroup();
-  }
-  */
 };
 
 struct custom_dsp_poly_factory : public dsp_factory {

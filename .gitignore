@@ -49,3 +49,6 @@ OSSIA/ossia-node/node_modules
 3rdparty/*sdk*
 3rdparty/CicmWrapper/
 3rdparty/pure-data/
+build
+build*
+
