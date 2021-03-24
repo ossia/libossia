@@ -143,10 +143,10 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    const auto a = self.dataspace_value[0] * deg_to_rad;
+    const auto a = self.dataspace_value[0] * float(deg_to_rad);
     const auto d = self.dataspace_value[1];
 
-    return {(float)(std::sin(a) * d), (float)(std::cos(a) * d), 0.};
+    return {(float)(std::sin(a) * d), (float)(std::cos(a) * d), 0.f};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -154,7 +154,7 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
     const auto x = self.dataspace_value[0];
     const auto y = self.dataspace_value[1];
 
-    return {(float)(std::atan2(y, x) * rad_to_deg),
+    return {(float)(std::atan2(y, x) * float(rad_to_deg)),
             (float)(ossia::norm(x, y))};
   }
 

@@ -55,12 +55,12 @@ struct bark_u : public timing_unit<bark_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / (600. * std::sinh(self.dataspace_value / 6.));
+    return 1.0f / (600.f * std::sinh(self.dataspace_value / 6.f));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 6. * ossia::asinh(1.0 / (self.dataspace_value * 600.0));
+    return 6.f * ossia::asinh(1.0f / (self.dataspace_value * 600.0f));
   }
   static ossia::domain domain()
   {
@@ -83,12 +83,12 @@ struct bpm_u : public timing_unit<bpm_u>
   static constexpr strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 60.0 / self.dataspace_value;
+    return 60.0f / self.dataspace_value;
   }
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 60.0 / self.dataspace_value;
+    return 60.0f / self.dataspace_value;
   }
   static ossia::domain_base<float> domain()
   {
@@ -111,15 +111,15 @@ struct cent_u : public timing_unit<cent_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 1.
-           / (440.0 * ossia::exp2((self.dataspace_value - 6900.0) / 1200.0));
+    return 1.f
+           / (440.0f * ossia::exp2((self.dataspace_value - 6900.0f) / 1200.0f));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 6900.0
-           + 1200.0 * std::log(1. / (440.0 * self.dataspace_value))
-                 / ossia::ln_2;
+    return 6900.0f
+           + 1200.0f * std::log(1.f / (440.0f * self.dataspace_value))
+                 / float(ossia::ln_2);
   }
 
   static ossia::domain_base<float> domain()
@@ -143,12 +143,12 @@ struct frequency_u : public timing_unit<frequency_u>
   static constexpr strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / self.dataspace_value;
+    return 1.0f / self.dataspace_value;
   }
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 1.0 / self.dataspace_value;
+    return 1.0f / self.dataspace_value;
   }
 
   static ossia::domain_base<float> domain()
@@ -172,12 +172,12 @@ struct mel_u : public timing_unit<mel_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 1.0 / (700.0 * (std::pow(10, self.dataspace_value / 2595.0) - 1.0));
+    return 1.0f / (700.0f * (std::pow(10.f, self.dataspace_value / 2595.0f) - 1.0f));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 2595.0 * std::log10(1 + 1.0 / (self.dataspace_value * 700.0));
+    return 2595.0f * std::log10(1.f + 1.0f / (self.dataspace_value * 700.0f));
   }
 
   static ossia::domain_base<float> domain()
@@ -201,12 +201,12 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 1. / (440.0 * ossia::exp2((self.dataspace_value - 69.0) / 12.0));
+    return 1.f / (440.0f * ossia::exp2((self.dataspace_value - 69.0f) / 12.0f));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 69.0 - 12.0 * std::log(440.0 * self.dataspace_value) / ossia::ln_2;
+    return 69.0f - 12.0f * std::log(440.0f * self.dataspace_value) / float(ossia::ln_2);
   }
 
   static ossia::domain_base<float> domain()
@@ -230,12 +230,12 @@ struct millisecond_u : public timing_unit<millisecond_u>
   static constexpr strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return 0.001 * self.dataspace_value;
+    return 0.001f * self.dataspace_value;
   }
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 1000.0 * self.dataspace_value;
+    return 1000.0f * self.dataspace_value;
   }
 
   static ossia::domain domain()
@@ -284,7 +284,8 @@ struct sample_u : public timing_unit<sample_u>
   }
 };
 
-static const double exp_69_12 = ossia::exp2(69. / 12.);
+template<typename T>
+static const T exp_69_12 = ossia::exp2(69. / 12.);
 struct playback_speed_u : public timing_unit<playback_speed_u>
 {
   static constexpr auto text()
@@ -295,12 +296,12 @@ struct playback_speed_u : public timing_unit<playback_speed_u>
   static strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return exp_69_12 / (440.0 * self.dataspace_value);
+    return exp_69_12<float> / (440.0f * self.dataspace_value);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return exp_69_12 / (440.0 * self.dataspace_value);
+    return exp_69_12<float> / (440.0f * self.dataspace_value);
   }
 
   static ossia::domain_base<float> domain()
