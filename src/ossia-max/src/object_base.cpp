@@ -886,23 +886,63 @@ void object_base::create_patcher_hierarchy()
 
     parent = ossia::max::get_patcher(patcher);
     ossia_max::instance().patchers[patcher].parent_patcher = parent;
-    //ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
   }
 }
 
 unsigned long object_base::poly_index()
 {
+  switch(m_otype)
+  {
+    case object_class::client:
+    case object_class::device:
+      return 0;
+    default:
+        ;
+  }
+
+  switch(m_addr_scope)
+  {
+    case ossia::net::address_scope::absolute:
+    case ossia::net::address_scope::global:
+      return 0;
+    default:
+        ;
+  }
+
   auto patcher = m_patcher;
   // FIXME a model inside a poly doesn't get the proper instance number
-  while(patcher && ossia_max::instance().patchers[patcher].has_no_master_node())
+  while(patcher)
   {
-    auto index = ossia_max::instance().patchers[patcher].poly_index;
+    auto& desc = ossia_max::instance().patchers[patcher];
+
+    switch(m_otype)
+    {
+      case object_class::remote:
+      case object_class::view:
+        if((desc.view && desc.view != this)
+        || (desc.client && desc.client != this))
+        {
+          return 0;
+        }
+      case object_class::param:
+      case object_class::model:
+        if((desc.model && desc.model != this)
+        || (desc.device && desc.device != this))
+        {
+          return 0;
+        }
+      default:
+          ;
+    }
+
+    long index = desc.poly_index;
     if(index < 0)
-      ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
+      desc.poly_index = get_poly_index(patcher);
 
     if(index > 0)
       return index;
-    patcher = ossia_max::instance().patchers[patcher].parent_patcher;
+    patcher = desc.parent_patcher;
+
   }
   return 0;
 }
