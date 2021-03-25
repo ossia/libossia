@@ -292,6 +292,14 @@ void address_mess_cb(T* x, t_symbol* address)
         param->push_value(param->value());
       }
       break;
+    case object_class::remote:
+      for(const auto& m : x->m_matchers)
+      {
+        auto param = m->get_node()->get_parameter();
+        auto val = param->value();
+        m->output_value(val);
+      }
+      break;
   }
 }
 
