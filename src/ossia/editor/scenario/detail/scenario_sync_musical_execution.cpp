@@ -75,6 +75,7 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
     switch (timeEvent->get_status())
     {
       // check if NONE TimeEvent is ready to become PENDING
+      case time_event::status::FINISHED:
       case time_event::status::NONE:
       {
         bool minimalDurationReached = true;
@@ -82,12 +83,17 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
         for (const std::shared_ptr<ossia::time_interval>& timeInterval :
              timeEvent->previous_time_intervals())
         {
+          // ignore graphal intervals for the sake of allowing them to repeat
+          if(timeInterval->graphal)
+            continue;
+
           const auto& ev = timeInterval->get_start_event();
+          // previous TimeIntervals with a FINISHED start event are ignored
+          // (that is used in cyclic graphs)
+
           // previous TimeIntervals with a DISPOSED start event are ignored
-          // as well as those in NONE (that is used in cyclic graphs : they haven't executed
-          // yet so that's ok
-          if (ev.get_status() == time_event::status::DISPOSED
-           || ev.get_status() == time_event::status::NONE)
+          if (ev.get_status() == time_event::status::DISPOSED ||
+              ev.get_status() == time_event::status::FINISHED)
           {
             continue;
           }
@@ -129,6 +135,7 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
       case time_event::status::DISPOSED:
         activeCount--;
         break;
+
     }
   }
 
