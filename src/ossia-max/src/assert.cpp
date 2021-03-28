@@ -157,7 +157,7 @@ void oassert::closebang(oassert *x)
 rapidjson::StringBuffer oassert::create_report()
 {
   rapidjson::StringBuffer buffer;
-  rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+  ossia::json_writer writer{buffer};
   writer.StartObject();
 
   writer.Key("operation");

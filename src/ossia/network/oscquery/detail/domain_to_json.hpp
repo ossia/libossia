@@ -9,32 +9,32 @@ namespace oscquery
 namespace detail
 {
 inline void
-write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, int v)
+write_json(ossia::json_writer& writer, int v)
 {
   writer.Int(v);
 }
 inline void
-write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, double v)
+write_json(ossia::json_writer& writer, double v)
 {
   writer.Double(v);
 }
 inline void
-write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, float v)
+write_json(ossia::json_writer& writer, float v)
 {
   writer.Double(v);
 }
 inline void
-write_json(rapidjson::Writer<rapidjson::StringBuffer>& writer, bool v)
+write_json(ossia::json_writer& writer, bool v)
 {
   writer.Bool(v);
 }
 inline void write_json(
-    rapidjson::Writer<rapidjson::StringBuffer>& writer, const std::string& v)
+    ossia::json_writer& writer, const std::string& v)
 {
   writer.String(v);
 }
 inline void write_json(
-    rapidjson::Writer<rapidjson::StringBuffer>& writer, const ossia::value& v)
+    ossia::json_writer& writer, const ossia::value& v)
 {
   v.apply(value_to_json{writer, {}});
 }
@@ -42,7 +42,7 @@ inline void write_json(
 //! Write a domain to json.
 struct domain_to_json
 {
-  rapidjson::Writer<rapidjson::StringBuffer>& writer;
+  ossia::json_writer& writer;
   void operator()()
   {
     writer.Null();

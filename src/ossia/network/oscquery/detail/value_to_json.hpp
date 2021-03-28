@@ -16,7 +16,7 @@ namespace detail
 // TODO base64 encode
 struct value_to_json
 {
-  rapidjson::Writer<rapidjson::StringBuffer>& writer;
+  ossia::json_writer& writer;
   const ossia::unit_t& unit;
   void operator()(impulse) const
   {

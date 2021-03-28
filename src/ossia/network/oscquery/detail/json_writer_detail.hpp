@@ -11,7 +11,7 @@ namespace detail
 //! Implementation of the JSON serialisation mechanism for oscquery
 struct json_writer_impl
 {
-  using writer_t = rapidjson::Writer<rapidjson::StringBuffer>;
+  using writer_t = ossia::json_writer;
   writer_t& writer;
 
   void writeKey(ossia::string_view k) const;

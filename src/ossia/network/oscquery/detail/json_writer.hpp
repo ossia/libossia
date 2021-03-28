@@ -19,7 +19,7 @@ class OSSIA_EXPORT json_writer
 public:
   // Initialisation
   using string_t = rapidjson::StringBuffer;
-  using writer_t = rapidjson::Writer<string_t>;
+  using writer_t = ossia::json_writer;
 
   //! Sends the port at which a server opens its OSC port
   static string_t device_info(int port);
