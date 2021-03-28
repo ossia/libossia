@@ -13,7 +13,6 @@ struct artnet_visitor
   void operator()(int v) const noexcept
   {
     buf.data[channel] = v;
-    std::cerr << channel << " :  " << v << std::endl;
     buf.dirty = true;
   }
   void operator()(float v) const noexcept
