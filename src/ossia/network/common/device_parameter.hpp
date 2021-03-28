@@ -11,7 +11,7 @@
 namespace ossia::net
 {
 
-class device_parameter : public ossia::net::parameter_base
+class OSSIA_EXPORT device_parameter : public ossia::net::parameter_base
 {
 
 public:
@@ -22,7 +22,7 @@ public:
 
   virtual ~device_parameter();
 
-  //  Must be called when the hardware send a new value 
+  //  Must be called when the hardware send a new value
   //  (typicaly from an event loop)
   //  This will NOT call device_update_value() in order to avoid loop
   void device_value_change_event(const ossia::value& value);
@@ -64,12 +64,12 @@ public:
   template <class ParamType = device_parameter, class... T>
   static ParamType* create_device_parameter(
       ossia::net::node_base& root_node, const std::string& path,
-      const ossia::value& initial_value, const T&... ctor_args)
+      const ossia::value& initial_value, T&&... ctor_args)
   {
     static_assert(std::is_base_of<device_parameter, ParamType>::value);
 
     auto& param_node = ossia::net::create_node(root_node, path);
-    auto param = std::make_unique<ParamType>(param_node, ctor_args...);
+    auto param = std::make_unique<ParamType>(param_node, std::forward<T>(ctor_args)...);
 
     ParamType* ret = param.get();
 
