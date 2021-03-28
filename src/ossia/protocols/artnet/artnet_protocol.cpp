@@ -26,16 +26,17 @@ int artnet_protocol::dmx_buffer::send(artnet_node node)
 }
 
 ////
-artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const unsigned int update_frequency)
+artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const artnet_protocol_config& conf)
   : protocol_base{flags{}}
   , m_context{ctx}
   , m_timer{ctx->context}
+  , m_autocreate{conf.autocreate}
 {
-  if (update_frequency < 1 || update_frequency > 44)
+  if (conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error(
-        "DMX 512 update frequencie must be in the range [0, 44] Hz");
+        "DMX 512 update frequency must be in the range [1, 44] Hz");
 
-  m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(update_frequency))});
+  m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 
   //  44  hz limit apply because we send 512 byte frames.
   //  It seem to be possible to send only some value and thus
@@ -65,11 +66,13 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  auto& root = dev.get_root_node();
-
-  for (unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-    device_parameter::create_device_parameter<artnet_parameter>(
-        root, fmt::format("Channel-{}", i + 1), 0, &m_buffer, i);
+  if(m_autocreate)
+  {
+    auto& root = dev.get_root_node();
+    for (unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
+      device_parameter::create_device_parameter<artnet_parameter>(
+          root, fmt::format("Channel-{}", i + 1), 0, m_buffer, i);
+  }
 
   m_timer.start([this] { this->update_function(); });
 }
