@@ -18,6 +18,12 @@ namespace ossia
 namespace net
 {
 
+struct artnet_protocol_config
+{
+  unsigned int frequency{};
+  bool autocreate{true};
+};
+
 class OSSIA_EXPORT artnet_protocol final
     : public ossia::net::protocol_base
 {
@@ -31,7 +37,7 @@ public:
     bool dirty;
   };
 
-  artnet_protocol(ossia::net::network_context_ptr, const unsigned int update_frequency);
+  artnet_protocol(ossia::net::network_context_ptr, const artnet_protocol_config& conf);
   ~artnet_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
@@ -43,6 +49,7 @@ public:
 
   bool update(ossia::net::node_base&) override;
 
+  dmx_buffer& buffer() noexcept { return m_buffer; }
 private:
   void update_function();
 
@@ -53,6 +60,8 @@ private:
 
   ossia::net::device_base* m_device{};
   artnet_node m_node;
+
+  bool m_autocreate{};
 };
 }
 }
