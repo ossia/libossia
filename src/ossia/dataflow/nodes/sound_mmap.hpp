@@ -102,7 +102,18 @@ public:
 
     ossia::mutable_audio_span<float> source(channels);
 
-    void* frame_data = alloca(sizeof(double) * samples_to_write * channels);
+    double* frame_data{};
+    if(samples_to_write * channels > 10000)
+    {
+      m_safetyBuffer.resize(samples_to_write * channels);
+      frame_data = m_safetyBuffer.data();
+      // TODO detect if we happen to be in this case often, and if so, garbage collect at some point
+    }
+    else
+    {
+      frame_data = (double*) alloca(sizeof(double) * samples_to_write * channels);
+    }
+
     if(m_loops)
     {
       for(int k = 0; k < samples_to_write; k++)
@@ -178,7 +189,18 @@ public:
 
     ossia::mutable_audio_span<float> source(channels);
 
-    void* frame_data = alloca(sizeof(double) * samples_to_write * channels);
+    double* frame_data{};
+    if(samples_to_write * channels > 10000)
+    {
+      m_safetyBuffer.resize(samples_to_write * channels);
+      frame_data = m_safetyBuffer.data();
+      // TODO detect if we happen to be in this case often, and if so, garbage collect at some point
+    }
+    else
+    {
+      frame_data = (double*) alloca(sizeof(double) * samples_to_write * channels);
+    }
+
     if(m_loops)
     {
       for(int k = 0; k < samples_to_write; k++)
@@ -320,7 +342,7 @@ private:
 
   using read_fn_t = void(*)(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples);
   read_fn_t m_converter{};
-  std::vector<char> m_safetyBuffer;
+  std::vector<double> m_safetyBuffer;
   std::vector<std::vector<float>> m_resampleBuffer;
 };
 
