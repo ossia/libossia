@@ -104,7 +104,7 @@ private:
     dylib_loader library;
 
     libpulse()
-        :library("libpulse.so")
+        :library("libpulse.so.0")
     {
         // in terms of regex:
         // decltype\(&::([a-z_]+)\) [a-z_]+{};
