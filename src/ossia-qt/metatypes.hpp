@@ -11,6 +11,7 @@
 #include <ossia-qt/value_metatypes.hpp>
 #include <ossia-qt/device_metatype.hpp>
 
+/*
 #if defined(OSSIA_EDITOR)
 Q_DECLARE_METATYPE(ossia::state)
 Q_DECLARE_METATYPE(ossia::state_element)
@@ -18,6 +19,7 @@ Q_DECLARE_METATYPE(ossia::state_element)
 W_REGISTER_ARGTYPE(ossia::state)
 W_REGISTER_ARGTYPE(ossia::state_element)
 #endif
+*/
 
 Q_DECLARE_METATYPE(ossia::net::parameter_base*)
 Q_DECLARE_METATYPE(ossia::net::node_base*)

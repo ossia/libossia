@@ -5,6 +5,7 @@
 #include <wobjectimpl.h>
 #include <QString>
 #include <QStringBuilder>
+#include <qobjectdefs.h>
 #include <algorithm>
 #include <string>
 #include <vector>
@@ -78,7 +79,11 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
   }
 
   const auto root_len = root_name.size();
+#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
   for (const QString& n_name : brethren)
+#else
+  for (QStringView n_name : brethren)
+#endif
   {
     if (n_name == name)
     {
@@ -102,7 +107,7 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
     {
       // Instance
       bool b = false;
-      int n = n_name.midRef(root_len + 1).toInt(&b);
+      int n = n_name.mid(root_len + 1).toInt(&b);
       if (b)
         instance_num.push_back(n);
     }
