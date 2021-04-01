@@ -1519,28 +1519,36 @@ node& node::set_accepted_values(std::vector<value> v)
 {
   if (m_param)
   {
-    auto dom = m_param->get_domain();
-
     std::vector<ossia::value> vals;
     for (const auto& val : v)
       vals.push_back(*val.m_val);
 
-    ossia::set_values(dom, std::move(vals));
+    if(auto dom = m_param->get_domain())
+    {
+      ossia::set_values(dom, std::move(vals));
+      m_param->set_domain(std::move(dom));
+    } 
+    else 
+    {
+      m_param->set_domain(ossia::make_domain(vals));
+    }
 
-    m_param->set_domain(std::move(dom));
   }
   return *this;
 }
 
 std::vector<value> node::get_accepted_values() const
 {
+  std::vector<opp::value> out;
   if (m_param)
   {
     auto dom = m_param->get_domain();
-    // TODO
-    return {};
+    auto v = ossia::get_values(dom);
+    for (const auto& val : v) {
+      out.push_back(opp::value(v));
+    }
   }
-  return {};
+  return out;
 }
 
 node& node::set_bounding(bounding_mode v)
