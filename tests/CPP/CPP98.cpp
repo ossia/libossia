@@ -386,3 +386,31 @@ TEST_CASE ("remove_children_observed", "[remove_children_observed]")
   REQUIRE(remote_dev.get_root_node().find_child("/foo/resp"));
   REQUIRE(remote_dev.get_root_node().find_child("/foo/resp").get_value().to_int() == 2);
 }
+
+TEST_CASE ("accepted_values", "[accepted_values]")
+{
+  opp::oscquery_server server("bugtest");
+  auto foo = server.get_root_node().create_int("foo");
+  std::vector<opp::value> accepted;
+  for (auto v: {1, 2, 3})
+    accepted.push_back(v);
+  foo.set_accepted_values(accepted);
+  foo.set_bounding(opp::bounding_mode::Clip);
+  foo.set_value(2);
+
+  opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
+
+  // Request an update of the device.
+  remote_dev.refresh();
+  opp::node r_foo = remote_dev.get_root_node().find_child("/foo");
+  REQUIRE(r_foo);
+
+  REQUIRE(r_foo.get_bounding() == opp::bounding_mode::Clip);
+
+  auto r_v = r_foo.get_value();
+  REQUIRE(r_v.is_int());
+  REQUIRE(r_v.to_int() == 2);
+
+  auto r_accepted = r_foo.get_accepted_values();
+  REQUIRE(r_accepted.size() == accepted.size());
+}
