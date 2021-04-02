@@ -80,6 +80,7 @@ unit_t parse_pretty_unit(ossia::string_view text)
     return t;
   }();
 
+  // TODO find case insensitive
   auto it = map.find(boost::to_lower_copy(std::string(text)));
   if (it != map.end())
     return it->second;
