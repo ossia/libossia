@@ -78,6 +78,13 @@ void json_writer_impl::writeValue(const domain& d) const
   ossia::apply(domain_to_json{writer}, d);
 }
 
+void json_writer_impl::writeValue(const unit_t& d) const
+{
+  // Already written somewhere else ?
+  auto text = ossia::get_pretty_unit_text(d);
+  writer.String(text.data(), text.size());
+}
+
 void json_writer_impl::writeValue(const net::tags& tags) const
 {
   writer.StartArray();
