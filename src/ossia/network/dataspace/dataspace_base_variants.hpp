@@ -5175,7 +5175,7 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
+  void destruct_impl() noexcept
   {
     switch (m_type)
     {
@@ -5188,12 +5188,12 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
+  int which() const noexcept
   {
     return m_type;
   }
 
-  operator bool() const
+  operator bool() const noexcept
   {
     return m_type != npos;
   }
@@ -5208,46 +5208,46 @@ public:
 
   template <typename T>
   static Type matching_type();
-  unit_variant() : m_type{Npos}
+  unit_variant() noexcept : m_type{Npos}
   {
   }
-  ~unit_variant()
+  ~unit_variant() noexcept
   {
     destruct_impl();
   }
-  unit_variant(ossia::distance_u v) : m_type{Type0}
+  unit_variant(ossia::distance_u v) noexcept : m_type{Type0}
   {
     new (&m_impl.m_value0) ossia::distance_u{v};
   }
-  unit_variant(ossia::position_u v) : m_type{Type1}
+  unit_variant(ossia::position_u v) noexcept : m_type{Type1}
   {
     new (&m_impl.m_value1) ossia::position_u{v};
   }
-  unit_variant(ossia::speed_u v) : m_type{Type2}
+  unit_variant(ossia::speed_u v) noexcept : m_type{Type2}
   {
     new (&m_impl.m_value2) ossia::speed_u{v};
   }
-  unit_variant(ossia::orientation_u v) : m_type{Type3}
+  unit_variant(ossia::orientation_u v) noexcept : m_type{Type3}
   {
     new (&m_impl.m_value3) ossia::orientation_u{v};
   }
-  unit_variant(ossia::angle_u v) : m_type{Type4}
+  unit_variant(ossia::angle_u v) noexcept : m_type{Type4}
   {
     new (&m_impl.m_value4) ossia::angle_u{v};
   }
-  unit_variant(ossia::color_u v) : m_type{Type5}
+  unit_variant(ossia::color_u v) noexcept : m_type{Type5}
   {
     new (&m_impl.m_value5) ossia::color_u{v};
   }
-  unit_variant(ossia::gain_u v) : m_type{Type6}
+  unit_variant(ossia::gain_u v) noexcept : m_type{Type6}
   {
     new (&m_impl.m_value6) ossia::gain_u{v};
   }
-  unit_variant(ossia::timing_u v) : m_type{Type7}
+  unit_variant(ossia::timing_u v) noexcept : m_type{Type7}
   {
     new (&m_impl.m_value7) ossia::timing_u{v};
   }
-  unit_variant(const unit_variant& other) : m_type{other.m_type}
+  unit_variant(const unit_variant& other) noexcept : m_type{other.m_type}
   {
     switch (m_type)
     {
@@ -5279,7 +5279,7 @@ public:
         break;
     }
   }
-  unit_variant(unit_variant&& other) : m_type{other.m_type}
+  unit_variant(unit_variant&& other) noexcept : m_type{other.m_type}
   {
     switch (m_type)
     {
@@ -5318,7 +5318,7 @@ public:
         break;
     }
   }
-  unit_variant& operator=(const unit_variant& other)
+  unit_variant& operator=(const unit_variant& other) noexcept
   {
     destruct_impl();
     m_type = other.m_type;
@@ -5353,7 +5353,7 @@ public:
     }
     return *this;
   }
-  unit_variant& operator=(unit_variant&& other)
+  unit_variant& operator=(unit_variant&& other) noexcept
   {
     destruct_impl();
     m_type = other.m_type;
