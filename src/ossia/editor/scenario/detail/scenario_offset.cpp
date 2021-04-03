@@ -40,7 +40,7 @@ static void process_timesync_dates(time_sync& t, DateMap& map)
 }
 
 void process_offset(
-    time_sync& timesync, ossia::time_value offset, past_events_map& pastEvents)
+    time_sync& timesync, ossia::time_value offset, past_events_map& pastEvents, ossia::flat_set<ossia::time_event*>& seen_events)
 {
   time_value date = timesync.get_date();
   auto get_event_status = [](const time_event& event) {
@@ -59,8 +59,11 @@ void process_offset(
     }
   };
 
-  for (auto& ev_ptr : timesync.get_time_events())
+  for (const std::shared_ptr<ossia::time_event>& ev_ptr : timesync.get_time_events())
   {
+    if(seen_events.insert(ev_ptr.get()).second == false)
+      continue;
+
     auto& event = *ev_ptr;
     time_event::status eventStatus;
 
@@ -118,7 +121,7 @@ void process_offset(
       for (const auto& timeInterval : event.next_time_intervals())
       {
         process_offset(
-            timeInterval->get_end_event().get_time_sync(), offset, pastEvents);
+            timeInterval->get_end_event().get_time_sync(), offset, pastEvents, seen_events);
       }
     }
   }
@@ -138,6 +141,8 @@ void scenario::transport_impl(ossia::time_value offset)
   // offset state
   past_events_map pastEvents;
   pastEvents.container.reserve(this->m_intervals.size() * 1.5);
+  ossia::flat_set<ossia::time_event*> seen_events;
+  seen_events.container.reserve(pastEvents.container.size());
 
   m_runningIntervals.clear();
 
@@ -191,7 +196,7 @@ void scenario::transport_impl(ossia::time_value offset)
   }
 
   // propagate offset from the first TimeSync
-  process_offset(*m_nodes[0], offset, pastEvents);
+  process_offset(*m_nodes[0], offset, pastEvents, seen_events);
 
   // offset all TimeIntervals
   for (const auto& timeInterval : m_intervals)
@@ -235,6 +240,8 @@ void scenario::offset_impl(ossia::time_value offset)
   // offset state
   past_events_map pastEvents;
   pastEvents.container.reserve(this->m_intervals.size() * 1.5);
+  ossia::flat_set<ossia::time_event*> seen_events;
+  seen_events.container.reserve(pastEvents.container.size());
 
   m_runningIntervals.clear();
 
@@ -288,7 +295,7 @@ void scenario::offset_impl(ossia::time_value offset)
   }
 
   // propagate offset from the first TimeSync
-  process_offset(*m_nodes[0], offset, pastEvents);
+  process_offset(*m_nodes[0], offset, pastEvents, seen_events);
 
   // build offset state from all ordered past events
   if (unmuted())
