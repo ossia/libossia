@@ -7,6 +7,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply_type.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/buffer_pool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/closest_element.hpp"
@@ -40,9 +41,11 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/span.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
@@ -239,6 +242,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_signature.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/quantification.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/mapper_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
@@ -316,6 +320,8 @@ set(OSSIA_CPP_SRCS
 
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bundle.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/configuration.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
@@ -397,6 +403,7 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/domain_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_units.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_protocol_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
@@ -452,7 +459,9 @@ set(OSSIA_LEAPMOTION_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_manager.hpp"
+  )
 
 set(OSSIA_JOYSTICK_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.cpp")
@@ -495,6 +504,8 @@ set(OSSIA_QT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device_metatype.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/matching_type.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time_value.hpp"
   )
 
 set(OSSIA_QT_SRCS
