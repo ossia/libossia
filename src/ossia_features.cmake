@@ -366,9 +366,7 @@ if(OSSIA_DATAFLOW)
   if(OSSIA_EDITOR)
     target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 
-    if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
-      target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
-    endif()
+    target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
   endif()
 endif()
 

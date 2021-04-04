@@ -65,6 +65,7 @@ endif()
 
 if(OSSIA_EDITOR)
   install_headers_rec("${OSSIA_EDITOR_HEADERS}")
+  install_headers_rec("${OSSIA_EXECLOG_HEADERS}")
 endif()
 if(OSSIA_PROTOCOL_OSC)
   install_headers_rec("${OSSIA_OSC_HEADERS}")
@@ -233,7 +234,9 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include/tsl"
 install(
   FILES
      "${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectdefs.h"
+     "${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectcpp.h"
      "${OSSIA_3RDPARTY_FOLDER}/verdigris/src/wobjectimpl.h"
+     "${OSSIA_3RDPARTY_FOLDER}/verdigris/src/verdigris"
   DESTINATION include/
   COMPONENT Devel
 )
@@ -250,6 +253,13 @@ install(
       FILES
         "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/concurrentqueue.h"
         "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/blockingconcurrentqueue.h"
+      DESTINATION include/
+      COMPONENT Devel
+)
+
+install(
+      FILES
+        "${OSSIA_3RDPARTY_FOLDER}/Flicks/flicks.h"
       DESTINATION include/
       COMPONENT Devel
 )
