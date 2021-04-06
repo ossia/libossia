@@ -574,14 +574,14 @@ struct osc_write_domain_visitor
 
 namespace oscpack
 {
-/*
+
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 {
   val.apply(ossia::net::osc_outbound_visitor{p});
   return p;
 }
-*/
+
 
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::domain& dom)
