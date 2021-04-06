@@ -8,6 +8,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply_type.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <bitset>
 namespace ossia{
@@ -211,8 +212,15 @@ public:
       m_outlets.push_back(std::addressof(port));
 
     if constexpr(info::value_out_count > 0)
-    for (auto& port : this->value_out_ports)
+    for (std::size_t i = 0; i < info::value_out_count; i++)
+    {
+      auto& port = value_out_ports[i];
+      if(auto& type = Node_T::Metadata::value_outs[i].type; !type.empty())
+      {
+        port->type = ossia::parse_dataspace(type);
+      }
       m_outlets.push_back(std::addressof(port));
+    }
 
     if constexpr(info::control_out_count > 0)
     for (auto& port : this->control_out_ports)

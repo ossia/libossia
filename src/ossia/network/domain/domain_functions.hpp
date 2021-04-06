@@ -5,7 +5,7 @@
 
 #include <ossia_export.h>
 
-#include <gsl/span>
+#include <ossia/detail/span.hpp>
 
 #include <utility>
 #include <optional>

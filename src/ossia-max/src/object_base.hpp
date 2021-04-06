@@ -1,6 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include "ext.h"
+#include "ext_obex.h"
+#include "ext_critical.h"
+
 #include "matcher.hpp"
 
 #include <ossia/detail/safe_vec.hpp>
@@ -36,7 +39,9 @@ enum class object_class
   client,
   attribute,
   explorer,
-  unregistered = 255
+  search,
+  monitor,
+  fuzzysearch
 };
 
 struct object_base;
@@ -68,18 +73,14 @@ public:
   void* m_dumpout{};
 
   //flags
-  bool m_is_pattern{};
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
   bool m_registered{}; // true if register_node() have been called at least once
-  long m_queue_length{64};
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
 
   void* m_clock{};
-  void* m_reg_clock{}; // registration clock that should be initialized by constructor
-                       // and canceled by loadbang method
   void* m_highlight_clock{}; // clock to reset color after some amount of time
                              // to highlight the object in the patcher
 
@@ -102,10 +103,6 @@ public:
   void set_recall_safe();
 
   // return the global path of the object with pattern
-  std::string make_global_pattern();
-
-  std::vector<std::shared_ptr<matcher>> find_parent_nodes();
-
   object_base* find_parent_object();
 
   // return the first parent ossia object, nullptr otherwise
@@ -124,10 +121,11 @@ public:
   t_symbol* m_name{};
   t_symbol* m_tags[OSSIA_MAX_MAX_ATTR_SIZE] = {{}};
   t_symbol* m_description{};
-  long m_priority{};
+  float m_priority{};
   long m_invisible{};
   long m_defer_set{1};
   long m_recall_safe{};
+  long m_trim_addr{1};
   t_object* m_patcher{};
 
   long m_tags_size{};
@@ -157,29 +155,29 @@ public:
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
+  static void closebang(object_base* x);
   static void loadbang(object_base* x);
+  void save_children_state();
   void highlight();
   static void reset_color(object_base* x);
 
-  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val, bool set_flag);
-  std::vector<ossia::value> m_set_pool;
+  void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
+  void set_matchers_index();
 
-  ossia::traversal::path get_path()
-  {
-    if(!m_path)
-      update_path();
-    return *m_path;
-  }
+  std::vector<std::string> m_paths{};
 
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
 
-  std::map<std::string, ossia::value> m_value_map;
+  std::map<std::string, ossia::value> m_value_map{};
 
   static ossia::safe_set<ossia::net::parameter_base*> param_locks;
 
 private:
-  std::optional<ossia::traversal::path> m_path;
+  std::vector<std::shared_ptr<matcher>> find_parent_nodes();
+  void create_patcher_hierarchy();
+  unsigned long poly_index();
+  void make_global_paths(const std::string& name);
 };
 
 #pragma mark -

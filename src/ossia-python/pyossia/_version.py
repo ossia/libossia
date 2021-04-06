@@ -483,6 +483,12 @@ def get_versions():
     # py2exe/bbfreeze/non-CPython implementations don't do __file__, in which
     # case we can only use expanded keywords.
 
+    if 'PEP440_VERSION' in os.environ:
+        return { 'version' : os.environ['PEP440_VERSION'] }
+
+    if 'WHEEL_TAG_VERSION' in os.environ:
+        return { 'version' : os.environ['WHEEL_TAG_VERSION'] }
+
     cfg = get_config()
     verbose = cfg.verbose
 

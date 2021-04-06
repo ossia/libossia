@@ -44,7 +44,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
             connect(
                 m_websocket, &QWebSocket::binaryMessageReceived, this,
                 [=](const QByteArray& arr) {
-                  qDebug() << "array" << arr;
+                  //qDebug() << "array" << arr;
                   QVariant ret;
                   QMetaObject::invokeMethod(
                       m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
@@ -54,7 +54,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
             connect(
                 m_websocket, &QWebSocket::textMessageReceived, this,
                 [=](const QString& mess) {
-                  qDebug() << "text" << mess;
+                  //qDebug() << "text" << mess;
                   QVariant ret;
                   QMetaObject::invokeMethod(
                       m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
@@ -150,9 +150,9 @@ void ws_generic_client_protocol::slot_push(
   {
     if (dat.isString())
     {
-      qDebug() << "sending"
-               << dat.toString().replace(
-                      "$val", qt::value_to_js_string(addr.value()));
+//      qDebug() << "sending"
+//               << dat.toString().replace(
+//                      "$val", qt::value_to_js_string(addr.value()));
       m_websocket->sendTextMessage(dat.toString().replace(
           "$val", qt::value_to_js_string(addr.value())));
     }
@@ -185,9 +185,9 @@ void ws_generic_client_protocol::apply_reply(QJSValue arr)
 
     if (auto addr = n->get_parameter())
     {
-      qDebug() << "Applied value"
-               << QString::fromStdString(value_to_pretty_string(
-                      qt::value_from_js(addr->value(), v)));
+//      qDebug() << "Applied value"
+//               << QString::fromStdString(value_to_pretty_string(
+//                      qt::value_from_js(addr->value(), v)));
       addr->push_value(qt::value_from_js(addr->value(), v));
     }
   }

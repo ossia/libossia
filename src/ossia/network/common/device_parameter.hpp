@@ -34,8 +34,8 @@ public:
   ossia::net::parameter_base& push_value(ossia::value&& val) override;
   ossia::net::parameter_base& push_value() override;
 
-  ossia::net::parameter_base& set_value(const ossia::value& val) override;
-  ossia::net::parameter_base& set_value(ossia::value&& v) override;
+  ossia::value set_value(const ossia::value& val) override;
+  ossia::value set_value(ossia::value&& v) override;
 
   ossia::val_type get_value_type() const override;
   ossia::net::parameter_base& set_value_type(ossia::val_type) override

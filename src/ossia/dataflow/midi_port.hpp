@@ -1,5 +1,5 @@
 #pragma once
-#include <rtmidi17/message.hpp>
+#include <libremidi/message.hpp>
 #include <ossia/dataflow/value_vector.hpp>
 
 namespace ossia
@@ -9,11 +9,11 @@ struct midi_port
 {
   static const constexpr int which = 1;
 
-  value_vector<rtmidi::message> messages;
+  value_vector<libremidi::message> messages;
 
-  using message = rtmidi::message;
-  using message_type = rtmidi::message_type;
-  using midi_bytes = rtmidi::midi_bytes;
+  using message = libremidi::message;
+  using message_type = libremidi::message_type;
+  using midi_bytes = libremidi::midi_bytes;
 
 
   message& note_on(uint8_t channel, uint8_t note, uint8_t velocity) noexcept
@@ -59,32 +59,26 @@ struct midi_port
 private:
   static uint8_t make_command(const message_type type, const int channel) noexcept
   {
-    return (uint8_t)((uint8_t)type | rtmidi::clamp(channel, 0, channel - 1));
+    return (uint8_t)((uint8_t)type | libremidi::clamp(channel, 0, channel - 1));
   }
 
   message& create(uint8_t b0, uint8_t b1) noexcept
   {
-#if BOOST_VERSION >= 107200
-    return messages.emplace_back(b0, b1);
-#else
-    messages.emplace_back(b0, b1);
-    return messages.back();
-#endif
+    auto& m = messages.emplace_back();
+    m.bytes = {b0, b1};
+    return m;
   }
   message& create(uint8_t b0, uint8_t b1, uint8_t b2) noexcept
   {
-#if BOOST_VERSION >= 107200
-    return messages.emplace_back(b0, b1, b2);
-#else
-    messages.emplace_back(b0, b1, b2);
-    return messages.back();
-#endif
+    auto& m = messages.emplace_back();
+    m.bytes = {b0, b1, b2};
+    return m;
   }
 };
 
 struct midi_delay_line
 {
-  std::vector<value_vector<rtmidi::message>> messages;
+  std::vector<value_vector<libremidi::message>> messages;
 };
 
 }

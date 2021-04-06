@@ -4,13 +4,25 @@ elseif(TARGET boost)
   target_link_libraries(ossia PUBLIC boost)
 endif()
 
+### Core language features ###
+include(CheckCXXSourceCompiles)
+check_cxx_source_compiles(
+[=[
+#include <shared_mutex>
+
+int main(){ std::shared_mutex t; }
+]=]
+    OSSIA_SHARED_MUTEX_AVAILABLE
+)
+
 ### Protocol setup ###
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
-  set(OSSIA_PROTOCOL_AUDIO FALSE CACHE INTERNAL "")
-  set(OSSIA_PROTOCOL_MIDI FALSE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_AUDIO TRUE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_MIDI TRUE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_HTTP FALSE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_WEBSOCKETS FALSE CACHE INTERNAL "")
   set(OSSIA_PROTOCOL_SERIAL FALSE CACHE INTERNAL "")
+  set(OSSIA_PROTOCOL_ARTNET FALSE CACHE INTERNAL "")
 endif()
 
 if(NOT OSSIA_QML)
@@ -19,7 +31,7 @@ if(NOT OSSIA_QML)
   set(OSSIA_PROTOCOL_SERIAL FALSE CACHE INTERNAL "")
 endif()
 
-if(NOT TARGET RtMidi17)
+if(NOT TARGET libremidi)
   set(OSSIA_PROTOCOL_MIDI OFF CACHE INTERNAL "")
 endif()
 
@@ -51,9 +63,38 @@ function(ossia_link_jack)
   endif()
 endfunction()
 
+function(ossia_find_sdl)
+  if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    target_compile_options(ossia PRIVATE -s USE_SDL=2)
+    add_link_options("SHELL:-s USE_SDL=2")
+    return()
+  endif()
+
+  if(SDL_LIB)
+    return()
+  endif()
+
+  find_package(SDL2 CONFIG)
+  if(TARGET SDL2::SDL2)
+    set(SDL_LIB SDL2::SDL2 PARENT_SCOPE)
+  elseif(TARGET SDL2::SDL2-static)
+    set(SDL_LIB SDL2::SDL2-static PARENT_SCOPE)
+  elseif(SDL2_LIBRARIES AND SDL2_INCLUDE_DIRS)
+    set(SDL_LIB "${SDL2_LIBRARIES}" PARENT_SCOPE)
+    target_include_directories(ossia PUBLIC "${SDL2_INCLUDE_DIRS}")
+  endif()
+endfunction()
+
+# This one is put first because it is *long* to build
+# so we want to parallelize it with the rest
+if(OSSIA_MATH_EXPRESSION)
+  target_sources(ossia PRIVATE ${OSSIA_EXPR_HEADERS} ${OSSIA_EXPR_SRCS})
+  target_include_directories(ossia PRIVATE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/exprtk>")
+endif()
+
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
-  target_link_libraries(ossia PRIVATE RtMidi17)
+  target_link_libraries(ossia PRIVATE libremidi)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 
   ossia_link_jack()
@@ -147,19 +188,11 @@ if(OSSIA_PROTOCOL_LEAPMOTION)
 endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
-  find_package(SDL2 CONFIG)
-  if(TARGET SDL2::SDL2-static)
+  ossia_find_sdl()
+
+  if(SDL_LIB)
     target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
-    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
-  elseif(TARGET SDL2::SDL2)
-    target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_link_libraries(ossia PRIVATE SDL2::SDL2)
-    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
-  elseif(SDL2_LIBRARIES AND SDL2_INCLUDE_DIRS)
-    target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_include_directories(ossia PRIVATE "${SDL2_INCLUDE_DIRS}")
-    target_link_libraries(ossia PRIVATE "${SDL2_LIBRARIES}")
+    target_link_libraries(ossia PRIVATE "${SDL_LIB}")
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
   else()
     set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL FORCE)
@@ -217,7 +250,11 @@ if(OSSIA_QT)
   target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
 
   if(OSSIA_QML)
-    qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
+    if(TARGET Qt::Core)
+      qt_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
+    elseif(TARGET Qt5::Core)
+      qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
+    endif()
     target_sources(ossia PRIVATE ${cur_moc})
 
     target_sources(ossia PRIVATE ${OSSIA_QTQML_HEADERS} ${OSSIA_QTQML_SRCS})
@@ -244,48 +281,64 @@ if(OSSIA_DNSSD)
 endif()
 
 if(OSSIA_DATAFLOW)
-  set(OSSIA_PARALLEL 1)
+  if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    set(OSSIA_PARALLEL 1)
+    target_include_directories(ossia PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
+    )
+  endif()
 
   target_include_directories(ossia PUBLIC
     $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
-    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
   )
 
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
+  # JACK support
   ossia_link_jack()
-  if(NOT (OSSIA_CI AND WIN32))
-    if(TARGET portaudio_static)
-      target_link_libraries(ossia PUBLIC portaudio_static)
-    elseif(TARGET portaudio)
-      target_link_libraries(ossia PUBLIC portaudio)
-    else()
-      find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
-      if(PORTAUDIO_LIBRARY)
-        target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
-      endif()
-    endif()
-  endif()
 
-  set(SDL_BUILDING_LIBRARY TRUE)
-
-  find_package(SDL2 CONFIG)
-  if(TARGET SDL2::SDL2-static)
-    target_link_libraries(ossia PRIVATE SDL2::SDL2-static)
-  elseif(TARGET SDL2::SDL2)
-    target_link_libraries(ossia PRIVATE SDL2::SDL2)
+  # PortAudio support
+  if(TARGET portaudio)
+    target_link_libraries(ossia PUBLIC portaudio)
+  elseif(TARGET portaudio_static)
+    target_link_libraries(ossia PUBLIC portaudio_static)
   else()
-    # Used for audio support in emscripten
-    find_package(SDL)
-    if(SDL_FOUND)
-      target_include_directories(ossia PUBLIC ${SDL_INCLUDE_DIR})
-      target_link_libraries(ossia PUBLIC ${SDL_LIBRARY})
+    find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
+    if(PORTAUDIO_LIBRARY)
+      target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
     endif()
   endif()
 
+  #SDL support
+  set(SDL_BUILDING_LIBRARY TRUE)
+  ossia_find_sdl()
+  if(SDL_LIB)
+    target_link_libraries(ossia PUBLIC "${SDL_LIB}")
+  endif()
 
   target_link_libraries(ossia PRIVATE samplerate)
   target_link_libraries(ossia PRIVATE rubberband)
+
+  # FFT support
+  find_path(FFTW3_INCLUDEDIR fftw3.h)
+  if(FFTW3_INCLUDEDIR)
+    find_library(FFTW3_LIBRARY fftw3)
+    find_library(FFTW3F_LIBRARY fftw3f)
+    if(FFTW3_LIBRARY)
+      set(OSSIA_FFT DOUBLE CACHE INTERNAL "")
+      target_compile_definitions(ossia PUBLIC FFTW_DOUBLE_ONLY)
+      target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
+      target_link_libraries(ossia PRIVATE ${FFTW3_LIBRARY})
+      target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
+    elseif(FFTW3F_LIBRARY)
+      set(OSSIA_FFT SINGLE CACHE INTERNAL "")
+      target_compile_definitions(ossia PUBLIC FFTW_SINGLE_ONLY)
+      target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
+      target_link_libraries(ossia PRIVATE ${FFTW3F_LIBRARY})
+      target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
+    endif()
+  endif()
+
   if(APPLE)
       find_library(Foundation_FK Foundation)
       find_library(AVFoundation_FK AVFoundation)
@@ -305,14 +358,18 @@ if(OSSIA_DATAFLOW)
           ${CoreServices_FK}
       )
   endif()
-endif()
 
-if(OSSIA_GFX)
-  target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
-endif()
+  if(OSSIA_GFX)
+    target_sources(ossia PRIVATE ${OSSIA_GFX_HEADERS} ${OSSIA_GFX_SRCS})
+  endif()
 
-if(OSSIA_EDITOR)
-  target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
+  if(OSSIA_EDITOR)
+    target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
+
+    if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
+      target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
+    endif()
+  endif()
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")

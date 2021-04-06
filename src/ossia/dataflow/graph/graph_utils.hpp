@@ -8,6 +8,8 @@
 #include <ossia/dataflow/graph/graph_ordering.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/dataflow/for_each_port.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/ptr_set.hpp>
@@ -165,10 +167,10 @@ struct OSSIA_EXPORT graph_util
   static void init_node(graph_node& n, execution_state& e)
   {
     // Clear the outputs of the node
-    n.for_each_outlet([&] (auto& port) { init_outlet(port, e); });
+    for_each_outlet(n, [&] (auto& port) { init_outlet(port, e); });
 
     // Copy from environment and previous ports to inputs
-    n.for_each_inlet([&] (auto& port) { init_inlet(port, e); });
+    for_each_inlet(n, [&] (auto& port) { init_inlet(port, e); });
   }
 
   /// Teardown : what happens just after a node has executed
@@ -201,10 +203,10 @@ struct OSSIA_EXPORT graph_util
   {
     // Copy from output ports to environment
     // Clear the outputs of the node
-    n.for_each_outlet([&] (auto& port) { teardown_outlet(port, e); });
+    for_each_outlet(n, [&] (auto& port) { teardown_outlet(port, e); });
 
     // Copy from environment and previous ports to inputs
-    n.for_each_inlet([&] (auto& port) { teardown_inlet(port, e); });
+    for_each_inlet(n, [&] (auto& port) { teardown_inlet(port, e); });
   }
 
   /*
@@ -279,9 +281,9 @@ struct OSSIA_EXPORT graph_util
       return false;
     };
 
-    if(node->any_of_inlet(test_disable_inlet))
+    if(any_of_inlet(*node, test_disable_inlet))
       return true;
-    if(node->any_of_outlet(test_disable_outlet))
+    if(any_of_outlet(*node, test_disable_outlet))
       return true;
 
     return false;
@@ -374,7 +376,7 @@ struct OSSIA_EXPORT graph_util
   // These methods are only accessed by ossia::graph
   static bool can_execute(graph_node& node, const execution_state&)
   {
-    return node.all_of_inlet([](const auto& inlet) {
+    return all_of_inlet(node, [](const auto& inlet) {
       // A port can execute if : - it has source ports and all its source ports
       // have executed
 
@@ -402,7 +404,7 @@ struct OSSIA_EXPORT graph_util
       n.disable();
 
       // TODO why is this necessary - outputs are cleared anyways ?!
-      n.for_each_outlet([] (auto& out) { out.visit(clear_data{}); });
+      for_each_outlet(n, [] (auto& out) { out.visit(clear_data{}); });
     }
   }
 
@@ -411,8 +413,8 @@ struct OSSIA_EXPORT graph_util
       ossia::graph_node& source, ossia::graph_node& sink,
       const DevicesT& devices)
   {
-    return source.any_of_outlet([&] (auto& outlet) {
-      return sink.any_of_inlet([&] (auto& inlet) {
+    return any_of_outlet(source, [&] (auto& outlet) {
+      return any_of_inlet(sink, [&] (auto& inlet) {
         bool ok = false;
         apply_to_destination(
             outlet.address, devices,
@@ -495,12 +497,12 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
   void remove_node(const node_ptr& n) final override
   {
-    n->for_each_inlet([&] (auto& port) {
+    for_each_inlet(*n, [&] (auto& port) {
       auto s = port.sources;
       for (auto edge : s)
         disconnect(edge);
     });
-    n->for_each_outlet([&] (auto& port) {
+    for_each_outlet(*n, [&] (auto& port) {
       auto s = port.targets;
       for (auto edge : s)
         disconnect(edge);

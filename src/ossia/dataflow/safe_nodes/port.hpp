@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cstdint>
-
 #include <string_view>
 
 namespace ossia::safe_nodes
@@ -69,9 +68,16 @@ struct value_in
 struct value_out
 {
   const std::string_view name;
+  const std::string_view type;
 
   template <std::size_t N>
   constexpr value_out(const char (&name)[N]) : name{name, N-1}
+  {
+  }
+
+  constexpr value_out(std::string_view name, std::string_view t)
+    : name{name}
+    , type{t}
   {
   }
 };

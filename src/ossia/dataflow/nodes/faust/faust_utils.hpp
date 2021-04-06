@@ -133,6 +133,8 @@ struct faust_exec_ui final : UI
       const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
   {
     fx.root_outputs().push_back(new ossia::value_outlet);
+    fx.displays.push_back(
+          {fx.root_outputs().back()->template target<ossia::value_port>(), zone});
   }
 
   void addVerticalBargraph(
@@ -174,6 +176,15 @@ struct faust_node_utils
       {
         *ctrl.second = ossia::convert<float>(dat.back().value);
       }
+    }
+  }
+
+  template <typename Node>
+  static void copy_displays(Node& self, int64_t ts)
+  {
+    for (auto ctrl : self.displays)
+    {
+      ctrl.first->write_value(*ctrl.second, ts);
     }
   }
 
@@ -250,26 +261,26 @@ struct faust_node_utils
   {
     // TODO offset !!!
 
-    for(const rtmidi::message& mess : midi_in.messages)
+    for(const libremidi::message& mess : midi_in.messages)
     {
       switch(mess.get_message_type())
       {
-        case rtmidi::message_type::NOTE_ON:
+        case libremidi::message_type::NOTE_ON:
         {
           dsp.keyOn(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::NOTE_OFF:
+        case libremidi::message_type::NOTE_OFF:
         {
           dsp.keyOff(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::CONTROL_CHANGE:
+        case libremidi::message_type::CONTROL_CHANGE:
         {
           dsp.ctrlChange(mess[0], mess[1], mess[2]);
           break;
         }
-        case rtmidi::message_type::PITCH_BEND:
+        case libremidi::message_type::PITCH_BEND:
         {
           dsp.pitchWheel(mess[0], mess.bytes[2] * 128 + mess.bytes[1]);
           break;
@@ -287,7 +298,8 @@ struct faust_node_utils
   {
     if (tk.forward())
     {
-      int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const int64_t st = tk.physical_start(e.modelToSamples());
+      const int64_t d = tk.physical_write_duration(e.modelToSamples());
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
@@ -306,6 +318,8 @@ struct faust_node_utils
       init_output(self, d, n_out, outputs_, output_n);
       dsp.compute(d, input_n, output_n);
       copy_output(self, d, n_out, outputs_, output_n, audio_out);
+
+      copy_displays(self, st);
     }
   }
 
@@ -315,7 +329,8 @@ struct faust_node_utils
   {
     if (tk.forward())
     {
-      int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const int64_t st = tk.physical_start(e.modelToSamples());
+      const int64_t d = tk.physical_write_duration(e.modelToSamples());
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& midi_in = self.root_inputs()[1]->template cast<ossia::midi_port>();
@@ -339,6 +354,8 @@ struct faust_node_utils
       init_output(self, d, n_out, outputs_, output_n);
       dsp.compute(d, input_n, output_n);
       copy_output(self, d, n_out, outputs_, output_n, audio_out);
+
+      copy_displays(self, st);
     }
   }
 };
@@ -400,16 +417,6 @@ public:
   void progChange(int channel, int pgm)
   {
     fPolyDSP->progChange(channel, pgm);
-  }
-
-  // Group API
-  void setGroup(bool group)
-  {
-    fPolyDSP->setGroup(group);
-  }
-  bool getGroup()
-  {
-    return fPolyDSP->getGroup();
   }
 };
 

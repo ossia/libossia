@@ -24,6 +24,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -105,6 +106,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -134,6 +136,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             brew install ninja
@@ -167,15 +170,16 @@ stages:
 
             (
               cd install
-              codesign --force --timestamp --sign "ossia.io" ossia-unity/Assets/Plugins/ossia.bundle
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/macos/ossia.dylib
 
-              zip ossia-unity.zip ossia-unity/Assets/Plugins/ossia.bundle
+              zip ossia-unity.zip ossia/Plugins/macos/ossia.dylib
               xcrun altool \
                    --notarize-app \
                    -t osx \
                    -f "ossia-unity.zip" \
                    --primary-bundle-id "io.ossia.ossia-unity" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
             )
 
           displayName: Build
@@ -189,6 +193,70 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-unity3d-macos
 
+      - job: Unity3DIOs
+        displayName: Unity3D (iOS)
+        pool:
+          vmImage: 'macos-10.15'
+
+        steps:
+        - checkout: self
+          submodules: true
+
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
+            cmake --build .
+            cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              codesign --force --timestamp --sign "ossia.io" ossia/Plugins/ios/ossia.a
+
+              zip ossia-unity.zip ossia/Plugins/ios/ossia.a
+              xcrun altool \
+                    --notarize-app \
+                    -t ios \
+                    -f "ossia-unity.zip" \
+                    --primary-bundle-id "io.ossia.ossia-unity" \
+                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-unity.zip
+            )
+
+          displayName: Build
+          env:
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install
+            artifactName: libossia-unity3d-ios
+
       - job: Unity3DWin32
         displayName: Unity3D (Win32)
         pool:
@@ -197,6 +265,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - script: |
             cinst -y ninja
@@ -228,6 +297,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             sudo apt update -qq
@@ -256,10 +326,11 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - bash: |
             brew install ninja
-            brew cask install adoptopenjdk/openjdk/adoptopenjdk8
+            brew install --cask adoptopenjdk/openjdk/adoptopenjdk8
           displayName: Dependencies
 
         - bash: |
@@ -303,6 +374,7 @@ stages:
                    -f "ossia-java.zip" \
                    --primary-bundle-id "io.ossia.ossia-java" \
                    -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-java.zip
             )
 
           displayName: Build
@@ -324,6 +396,7 @@ stages:
         steps:
         - checkout: self
           submodules: true
+          fetchDepth: 1
 
         - script: |
             cinst -y ninja
@@ -348,10 +421,134 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/build/install
             artifactName: libossia-java-win32
 
+      - job: MaxMacOS
+        displayName: ossia-max (macOS)
+        pool:
+          vmImage: 'macos-10.15'
+
+        steps:
+        - checkout: self
+          submodules: false
+          fetchDepth: 1
+
+        - bash: |
+            brew install ninja
+          displayName: Dependencies
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_MAX_ONLY=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+
+            # Setup codesigning
+            # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+            (
+              set +x
+              KEY_CHAIN=build.keychain
+              echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+              security create-keychain -p azure $KEY_CHAIN
+              security default-keychain -s $KEY_CHAIN
+              security unlock-keychain -p azure $KEY_CHAIN
+              security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+              security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+              rm -rf *.p12
+            )
+
+            security unlock-keychain -p azure build.keychain
+
+            (
+              cd install
+              find ossia-max-package/ -name '*.dylib' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+              find ossia-max-package/ -name '*.mxo' -exec codesign --force --timestamp --sign "ossia.io" {} \;
+
+              zip ossia-max.zip ossia-max-package/
+              xcrun altool \
+                   --notarize-app \
+                   -t osx \
+                   -f "ossia-max.zip" \
+                   --primary-bundle-id "io.ossia.ossia-max" \
+                   -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
+              rm ossia-max.zip
+            )
+
+          displayName: Build
+          env:
+            MAC_CERT_B64: $(MAC_CERT_B64)
+            MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
+            MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
+            artifactName: libossia-max-macos
+
+      - job: MaxWin64
+        displayName: ossia-max (Win64)
+        pool:
+          vmImage: 'windows-2019'
+
+        steps:
+        - checkout: self
+          submodules: false
+          fetchDepth: 1
+
+        - script: |
+            cinst -y ninja
+
+        - script: |
+            pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+            for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+            popd
+            call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+            cd $(System.DefaultWorkingDirectory)
+            mkdir build
+            cd build
+            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+            cmake --build .
+            cmake --build . --target install
+          displayName: Build
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/build/install/ossia-max-package
+            artifactName: libossia-max-win64
+
   - stage: Assemble
-    condition: and(succeeded(), eq(variables.isGitTag, true))
+    condition: succeeded()
+    # see https://github.com/microsoft/azure-pipelines-tasks/tree/master/Tasks/GitHubReleaseV1
 
     jobs:
+      - job: AssembleMax
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        steps:
+        - checkout: none
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-max-win64
+            path: $(System.DefaultWorkingDirectory)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-max-macos
+            path: $(System.DefaultWorkingDirectory)
+
+        - bash: |
+            cd $(System.DefaultWorkingDirectory)
+            zip -r ossia-max.zip ossia
+          displayName: Package
+
+        - task: PublishPipelineArtifact@1
+          inputs:
+            targetPath: $(System.DefaultWorkingDirectory)/ossia-max.zip
+            artifactName: ossia-max
+
       - job: Unity3D
         pool:
           vmImage: 'ubuntu-20.04'
@@ -361,23 +558,24 @@ stages:
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-win32
-            path: $(System.DefaultWorkingDirectory)/unity3d-win32
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-macos
-            path: $(System.DefaultWorkingDirectory)/unity3d-macos
+            path: $(System.DefaultWorkingDirectory)/package
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-unity3d-linux
-            path: $(System.DefaultWorkingDirectory)/unity3d-linux
+            path: $(System.DefaultWorkingDirectory)/package
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: libossia-unity3d-ios
+            path: $(System.DefaultWorkingDirectory)/package
 
         - bash: |
             cd $(System.DefaultWorkingDirectory)
-            mkdir -p ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-macos/ossia-unity/Assets/Plugins/ossia.bundle ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
-            cp -rf ./unity3d-win32/ossia-unity/Assets/Plugins/x86_64/ossia.dll ./unity3d-linux/ossia-unity/Assets/Plugins/x86_64/
 
-            pushd ./unity3d-linux/ossia-unity/
+            pushd $(System.DefaultWorkingDirectory)/package
             zip -r ossia-unity3d.zip *
 
             mv ossia-unity3d.zip $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
@@ -389,22 +587,12 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
             artifactName: ossia-unity3d
 
-        - task: GitHubRelease@1
-          inputs:
-            gitHubConnection: github.com_jcelerier
-            repositoryName: ossia/libossia
-            action: 'edit'
-            target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
-            assetUploadMode: 'replace'
-            assets: $(System.DefaultWorkingDirectory)/ossia-unity3d.zip
-
       - job: Java
         pool:
           vmImage: 'ubuntu-20.04'
 
         steps:
+        - checkout: none
         - task: DownloadPipelineArtifact@2
           inputs:
             artifact: libossia-java-win32
@@ -432,8 +620,8 @@ stages:
 
             pushd java-linux
             cp -rf ../java-macos/darwin .
-            cp -rf ../java-win32/win32-x86-64 .            
-            
+            cp -rf ../java-win32/win32-x86-64 .
+
             unzip -n ossia-java.jar
             rm ossia-java.jar
             zip -r ossia-java.jar darwin win32-x86-64 linux-x86-64 io META-INF
@@ -448,13 +636,64 @@ stages:
             targetPath: $(System.DefaultWorkingDirectory)/ossia-java.zip
             artifactName: ossia-java
 
+  - stage: GithubRelease
+    # TODO check if it runs on tag and pull request automatically
+    condition: and(succeeded(), eq(variables['build.sourceBranch'], 'refs/heads/master'))
+
+    jobs:
+      - job: GithubRelease
+        pool:
+          vmImage: 'ubuntu-20.04'
+
+        steps:
+        - checkout: self
+          submodules: false
+          fetchDepth: 1
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-max
+            path: Assets
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-java
+            path: Assets
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            artifact: ossia-unity3d
+            path: Assets
+
+        - bash: |
+            if [ "$isGitTag" = "True" ]
+            then
+              RELEASE_NAME="$(gitTag)"
+            else
+              RELEASE_NAME="latest-ci-build"
+            fi
+            echo "##vso[task.setvariable variable=releaseName;]$RELEASE_NAME"
+          displayName: Set Release Name
+        
+        - task: GitHubRelease@1
+          continueOnError: true
+          inputs:
+            gitHubConnection: github.com_jcelerier
+            repositoryName: ossia/libossia
+            action: 'delete'
+            tagSource: userSpecifiedTag
+            tag: '$(releaseName)'
+
         - task: GitHubRelease@1
           inputs:
             gitHubConnection: github.com_jcelerier
             repositoryName: ossia/libossia
-            action: 'edit'
+            action: 'create'
             target: '$(Build.SourceVersion)'
-            tagSource: 'gitTag'
-            tag: '$(gitTag)'
+            tagSource: userSpecifiedTag
+            tag: '$(releaseName)'
             assetUploadMode: 'replace'
-            assets: $(System.DefaultWorkingDirectory)/ossia-java.zip
+            assets: 'Assets/*'
+            isPreRelease: true
+
+#        - bash: |
+#            git checkout '$(Build.SourceBranchName)'
+#            git push --follow-tags --force
+#          displayName: Push Tag

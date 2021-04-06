@@ -56,12 +56,14 @@ void audio_parameter::pull_value()
 
 ossia::net::parameter_base& audio_parameter::push_value(const ossia::value& v)
 {
-  return set_value(v);
+  set_value(v);
+  return *this;
 }
 
 ossia::net::parameter_base& audio_parameter::push_value(ossia::value&& v)
 {
-  return set_value(v);
+  set_value(v);
+  return *this;
 }
 
 net::parameter_base& audio_parameter::push_value()
@@ -74,7 +76,7 @@ value audio_parameter::value() const
   return m_gain;
 }
 
-net::parameter_base& audio_parameter::set_value(const ossia::value& v)
+ossia::value audio_parameter::set_value(const ossia::value& v)
 {
   auto flt = ossia::convert<float>(v);
   auto vol = ossia::clamp(flt, 0.f, 1.f);
@@ -83,10 +85,10 @@ net::parameter_base& audio_parameter::set_value(const ossia::value& v)
     m_gain = vol;
     send(vol);
   }
-  return *this;
+  return m_gain;
 }
 
-net::parameter_base& audio_parameter::set_value(ossia::value&& v)
+ossia::value audio_parameter::set_value(ossia::value&& v)
 {
   return set_value(v);
 }

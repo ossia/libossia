@@ -72,7 +72,13 @@ public:
   full_parameter_data& operator=(const full_parameter_data&) = default;
   full_parameter_data& operator=(full_parameter_data&&) = default;
 
-  full_parameter_data(std::string n) : address{std::move(n)}
+  explicit full_parameter_data(std::string n) : address{std::move(n)}
+  {
+  }
+
+  full_parameter_data(std::string n, ossia::value v)
+    : address{std::move(n)}
+    , val{std::move(v)}
   {
   }
 

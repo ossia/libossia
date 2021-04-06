@@ -8,7 +8,7 @@
 
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/token_request.hpp>
-#include <ossia/dataflow/port.hpp>
+#include <ossia/dataflow/exec_state_facade.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -63,28 +63,6 @@ public:
   }
 };
 */
-
-class audio_parameter;
-struct OSSIA_EXPORT exec_state_facade
-{
-  ossia::execution_state* impl{};
-  int sampleRate() const noexcept;
-  int bufferSize() const noexcept;
-  double modelToSamples() const noexcept;
-  double samplesToModel() const noexcept;
-  int64_t samplesSinceStart() const noexcept;
-  double startDate() const noexcept;
-  double currentDate() const noexcept;
-  ossia::net::node_base* find_node(std::string_view name) const noexcept;
-
-  int64_t physical_start(const token_request& t) const noexcept;
-
-  void insert(ossia::net::parameter_base& dest, const typed_value& v);
-  void insert(ossia::net::parameter_base& dest, typed_value&& v);
-  void insert(ossia::audio_parameter& dest, const audio_port& v);
-  void insert(ossia::net::parameter_base& dest, const midi_port& v);
-  void insert(const ossia::state& v);
-};
 
 class OSSIA_EXPORT graph_node
 {
@@ -181,109 +159,6 @@ public:
 
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
-
-
-
-  template<typename Fin>
-  void for_each_inlet(Fin&& fin) const noexcept
-  {
-    for(auto port : m_inlets)
-    {
-      fin(*port);
-      for(auto sub : port->child_inlets)
-      {
-        fin(*sub);
-      }
-    }
-    for(auto port : m_outlets)
-    {
-      for(auto sub : port->child_inlets)
-      {
-        fin(*sub);
-      }
-    }
-  }
-
-  template<typename Fin>
-  bool any_of_inlet(Fin&& fin) const noexcept
-  {
-    for(auto port : m_inlets)
-    {
-      if(fin(*port))
-        return true;
-
-      for(auto sub : port->child_inlets)
-      {
-        if(fin(*sub))
-          return true;
-      }
-    }
-    for(auto port : m_outlets)
-    {
-      for(auto sub : port->child_inlets)
-      {
-        if(fin(*sub))
-          return true;
-      }
-    }
-    return false;
-  }
-
-  template<typename Fin>
-  bool all_of_inlet(Fin&& fin) const noexcept
-  {
-    for(auto port : m_inlets)
-    {
-      if(!fin(*port))
-        return false;
-
-      for(auto sub : port->child_inlets)
-      {
-        if(!fin(*sub))
-          return false;
-      }
-    }
-    for(auto port : m_outlets)
-    {
-      for(auto sub : port->child_inlets)
-      {
-        if(!fin(*sub))
-          return false;
-      }
-    }
-    return true;
-  }
-
-  template<typename Fout>
-  void for_each_outlet(Fout&& fout) const noexcept
-  {
-    for(auto port : m_outlets)
-    {
-      fout(*port);
-    }
-  }
-
-  template<typename Fout>
-  bool any_of_outlet(Fout&& fout) const noexcept
-  {
-    for(auto port : m_outlets)
-    {
-      if(fout(*port))
-        return true;
-    }
-    return false;
-  }
-
-  template<typename Fout>
-  bool all_of_outlet(Fout&& fout) const noexcept
-  {
-    for(auto port : m_outlets)
-    {
-      if(!fout(*port))
-        return false;
-    }
-    return true;
-  }
 
 protected:
   inlets m_inlets;

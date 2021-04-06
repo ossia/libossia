@@ -14,7 +14,7 @@ public:
 
   parameter_base();
 
-  void output_all_values();
+  void output_values(bool only_default);
 
   // attribute setting method
   void set_access_mode();
@@ -46,7 +46,6 @@ public:
   static void get_repetition_filter(parameter_base* x, std::vector<matcher*> nodes);
   static void get_critical(parameter_base* x, std::vector<matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<matcher*> nodes);
-  static void get_queue_length(parameter_base*x, std::vector<matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};
@@ -61,13 +60,16 @@ public:
   long m_enable{1};
   long m_critical{0};
   t_symbol* m_unit{};
-  std::optional<ossia::unit_t> m_ounit;
+  std::optional<ossia::unit_t> m_local_unit;
 
   // size of size-variable attribute
   long m_default_size{};
   long m_range_size{};
   long m_min_size{};
   long m_max_size{};
+
+  bool m_set_flag{};
+  bool m_inlet_locked{};
 
   /**
    * @brief t_obj_base::push : push a value to a node

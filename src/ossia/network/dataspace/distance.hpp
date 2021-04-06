@@ -50,15 +50,15 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
     constexpr_return(ossia::make_string_array("px", "pixels"));
   }
   using value_type = float;
-  double ppm{}; // pixels per meter
+  float ppm{}; // pixels per meter
 
-  void set_ppcm(double v)
+  void set_ppcm(float v)
   {
-    ppm = v * 100.;
+    ppm = v * 100.f;
   }
-  void set_dpi(double v)
+  void set_dpi(float v)
   {
-    ppm = v / 254.;
+    ppm = v / 254.f;
   }
   strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {

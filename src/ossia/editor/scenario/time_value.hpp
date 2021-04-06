@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/flicks.hpp>
 #if defined(__APPLE__)
 #include <mach/time_value.h>
 #endif
@@ -312,6 +313,12 @@ OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2) noex
   if (t1.infinite() || t2.infinite())
     return Infinite;
   return time_value{t1.impl > t2.impl ? t1.impl - t2.impl : t2.impl - t1.impl};
+}
+
+inline constexpr int64_t to_sample(ossia::time_value t, double rate) noexcept
+{
+  const double samples_per_flicks = rate / ossia::flicks_per_second<double>;
+  return (rate > 0 && !t.infinite()) ? std::round(t.impl * samples_per_flicks) : 0;
 }
 
 }

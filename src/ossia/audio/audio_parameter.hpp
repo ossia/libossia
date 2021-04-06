@@ -1,15 +1,11 @@
 #pragma once
 
 #include <ossia/dataflow/audio_port.hpp>
-#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
-#if defined(__EMSCRIPTEN__)
-#define GSL_USE_STD_BYTE 0
-#endif
-#include <gsl/span>
+#include <ossia/detail/span.hpp>
 
 namespace ossia
 {
@@ -32,8 +28,8 @@ public:
   net::parameter_base& push_value(ossia::value&&) override;
   net::parameter_base& push_value() override;
   ossia::value value() const override;
-  net::parameter_base& set_value(const ossia::value&) override;
-  net::parameter_base& set_value(ossia::value&&) override;
+  ossia::value set_value(const ossia::value&) override;
+  ossia::value set_value(ossia::value&&) override;
   val_type get_value_type() const override;
   net::parameter_base& set_value_type(val_type) override;
   access_mode get_access() const override;

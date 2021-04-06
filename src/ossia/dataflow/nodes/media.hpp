@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <ossia/detail/small_vector.hpp>
-#include <gsl/span>
+#include <ossia/detail/span.hpp>
 
 namespace ossia
 {

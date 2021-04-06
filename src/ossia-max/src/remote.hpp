@@ -9,9 +9,6 @@ namespace max
 
 class device_base;
 
-#pragma mark -
-#pragma mark t_remote structure declaration
-
 class remote : public parameter_base
 {
 public:
@@ -28,6 +25,7 @@ public:
 
   void on_device_created(ossia::max::device_base* device);
   void on_device_removing(ossia::max::device_base* device);
+  void update_unit();
 
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);

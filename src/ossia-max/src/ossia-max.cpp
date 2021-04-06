@@ -22,6 +22,26 @@ void* ossia_max::s_browse_clock;
 ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_max::s_zeroconf_minuit_listener;
 std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> ossia_max::s_node_matchers_map{};
+t_class* ossia_max::ossia_patcher_listener_class;
+
+void patcher_listener_notify(t_object* x, t_symbol *s,
+                             t_symbol *msg, t_object *sender, void *data)
+{
+  if(msg == gensym("willfree"))
+  {
+    ossia_max::remove_patcher_descriptor(sender);
+  }
+}
+
+void patcher_listener_free(t_object *x)
+{
+  object_unregister(x);
+}
+
+void *patcher_listener_new()
+{
+  return (t_object *)object_alloc(ossia_max::ossia_patcher_listener_class);
+}
 
 // ossia-max library constructor
 ossia_max::ossia_max():
@@ -44,9 +64,16 @@ ossia_max::ossia_max():
   devices.reserve(8);
   clients.reserve(8);
   explorers.reserve(128);
+  oasserts.reserve(32);
 
   s_browse_clock = clock_new(this, (method) ossia_max::discover_network_devices);
   clock_delay(ossia_max::s_browse_clock, 100.);
+
+  ossia_patcher_listener_class = class_new("ossia.patcher_listener", (method)patcher_listener_new, (method)patcher_listener_free, sizeof(t_object), 0L, A_CANT, 0);
+  class_addmethod(ossia_patcher_listener_class, (method)patcher_listener_notify,			"notify", 0);
+  class_register(CLASS_NOBOX, ossia_patcher_listener_class);
+
+  m_patcher_listener = (t_object*) object_new(CLASS_NOBOX, gensym("ossia.patcher_listener"), nullptr);
 
   post("OSSIA library for Max is loaded");
   post("build SHA : %s", ossia::get_commit_sha().c_str());
@@ -66,7 +93,6 @@ ossia_max::~ossia_max()
     {
       multiplex.stop_expose_to(*proto);
     }
-    x->m_protocols.clear();
     x->disconnect_slots();
   }
   for (auto x : views.copy()){
@@ -88,6 +114,40 @@ ossia_max& ossia_max::instance()
 {
   static ossia_max library_instance;
   return library_instance;
+}
+
+patcher_descriptor& ossia_max::get_patcher_descriptor(t_object* patcher)
+{
+  auto& map = ossia_max::instance().patchers;
+  auto it = map.find(patcher);
+  if(it != map.end())
+  {
+    object_attach_byptr_register(
+        ossia_max::instance().m_patcher_listener,
+        patcher, CLASS_NOBOX);
+  }
+
+  return map[patcher];
+}
+
+void ossia_max::remove_patcher_descriptor(t_object* patcher)
+{
+  auto& map = ossia_max::instance().patchers;
+
+  auto it = map.find(patcher);
+  if(it != map.end())
+  {
+    auto parent = it->second.parent_patcher;
+    if(parent)
+    {
+      auto parent_it = map.find(parent);
+      if(parent_it != map.end())
+      {
+        parent_it->second.subpatchers.remove_all(patcher);
+      }
+    }
+    map.erase(it);
+  }
 }
 
 template<typename T>
@@ -122,96 +182,6 @@ std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
 
   return list;
 }
-/*
-void ossia_max::register_nodes(ossia_max*)
-{
-  auto& inst = ossia_max::instance();
-
-  inst.registering_nodes = true;
-
-  std::vector<t_object*> to_be_initialized;
-
-
-  // we iterate through all objects in the patcher from the top to the bottom
-  // registering ossia.device, ossia.client, ossia.model and ossia.parameter
-  // remote and view will be registered
-  auto& map = inst.root_patcher;
-  for (auto it = map.begin(); it != map.end(); it++)
-  {
-    if(it->second.is_loadbanged)
-      continue;
-
-    t_object* patcher = it->first;
-
-    to_be_initialized.push_back(patcher);
-
-    std::vector<std::shared_ptr<matcher>> matchers{
-        std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
-    register_children_in_patcher_recursively(patcher, nullptr, matchers);
-
-    // finally rise a flag to mark this patcher loadbangded
-    it->second.is_loadbanged = true;
-  }
-
-  inst.registering_nodes = false;
-
-  // push default value for all devices
-  std::vector<std::shared_ptr<ossia::net::generic_device>> dev_list;
-  dev_list.reserve(inst.devices.size() + 1);
-  for(auto dev : inst.devices.reference())
-  {
-    dev_list.push_back(dev->m_device);
-  }
-  dev_list.push_back(inst.get_default_device());
-
-  ossia::sort(dev_list, [&](std::shared_ptr<ossia::net::generic_device> a,
-                            std::shared_ptr<ossia::net::generic_device> b)
-  {
-    auto prio_a = ossia::net::get_priority(a->get_root_node());
-    auto prio_b = ossia::net::get_priority(b->get_root_node());
-
-    if(!prio_a)
-      prio_a = 0.;
-
-    if(!prio_b)
-      prio_b = 0.;
-
-    return *prio_a > *prio_b;
-  });
-
-  for (auto dev : dev_list)
-  {
-    auto list = ossia::net::list_all_children(&dev->get_root_node());
-
-    for (ossia::net::node_base* child : list)
-    {
-      if (auto param = child->get_parameter())
-      {
-        auto val = ossia::net::get_default_value(*child);
-        if(val)
-        {
-          for(auto param : ossia_max::instance().parameters.reference())
-          {
-            for (auto& m : param->m_matchers)
-            {
-              if ( m->get_node() == child )
-              {
-                auto op = static_cast<parameter*>(m->get_parent());
-                auto patcher = op->m_patcher_hierarchy.back();
-                if(ossia::contains(to_be_initialized,patcher))
-                {
-                  param->push_parameter_value(child->get_parameter(), *val, false);
-                  break;
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-*/
 
 namespace ossia
 {

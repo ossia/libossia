@@ -1279,7 +1279,8 @@ ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
   {
     if (auto param = n->get_parameter())
     {
-      if (param->get_value_type() != ossia::val_type::IMPULSE)
+      if (param->get_value_type() != ossia::val_type::IMPULSE
+          && param->get_access() == ossia::access_mode::BI )
       {
         std::string key = "/" + n->get_name();
         key.reserve(100);
@@ -1380,7 +1381,8 @@ void make_json_from_node(rapidjson::Document& d, ossia::net::node_base* node)
 
   if (auto param = node->get_parameter())
   {
-    if (param->get_value_type() != ossia::val_type::IMPULSE)
+    if (param->get_value_type() != ossia::val_type::IMPULSE
+        && param->get_access() == ossia::access_mode::BI )
     {
       rapidjson::Value v
           = param->value().apply(value_to_json_preset_value{d.GetAllocator()});

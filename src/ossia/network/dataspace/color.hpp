@@ -73,15 +73,15 @@ struct OSSIA_EXPORT rgba8_u : public color_unit<rgba8_u>
   to_neutral(strong_value<concrete_type> self)
   {
     return make_vec(
-        self.dataspace_value[3] / 255., self.dataspace_value[0] / 255.,
-        self.dataspace_value[1] / 255., self.dataspace_value[2] / 255.);
+        self.dataspace_value[3] / 255.f, self.dataspace_value[0] / 255.f,
+        self.dataspace_value[1] / 255.f, self.dataspace_value[2] / 255.f);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return make_vec(
-        self.dataspace_value[1] * 255., self.dataspace_value[2] * 255.,
-        self.dataspace_value[3] * 255., self.dataspace_value[0] * 255.);
+        self.dataspace_value[1] * 255.f, self.dataspace_value[2] * 255.f,
+        self.dataspace_value[3] * 255.f, self.dataspace_value[0] * 255.f);
   }
 
   static ossia::vecf_domain<4> domain()
@@ -228,15 +228,15 @@ struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
   to_neutral(strong_value<concrete_type> self)
   {
     return make_vec(
-        self.dataspace_value[0] / 255., self.dataspace_value[1] / 255.,
-        self.dataspace_value[2] / 255., self.dataspace_value[3] / 255.);
+        self.dataspace_value[0] / 255.f, self.dataspace_value[1] / 255.f,
+        self.dataspace_value[2] / 255.f, self.dataspace_value[3] / 255.f);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return make_vec(
-        self.dataspace_value[0] * 255., self.dataspace_value[1] * 255.,
-        self.dataspace_value[2] * 255., self.dataspace_value[3] * 255.);
+        self.dataspace_value[0] * 255.f, self.dataspace_value[1] * 255.f,
+        self.dataspace_value[2] * 255.f, self.dataspace_value[3] * 255.f);
   }
 
   static ossia::vecf_domain<4> domain()
@@ -322,17 +322,17 @@ struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
   to_neutral(strong_value<concrete_type> self)
   {
     return make_vec(
-        1., (255. - self.dataspace_value[0]) / 255.,
-        (255. - self.dataspace_value[1]) / 255.,
-        (255. - self.dataspace_value[2]) / 255.);
+        1.f, (255.f - self.dataspace_value[0]) / 255.f,
+        (255.f - self.dataspace_value[1]) / 255.f,
+        (255.f - self.dataspace_value[2]) / 255.f);
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
     return make_vec(
-        255. * (1. - self.dataspace_value[1]),
-        255. * (1. - self.dataspace_value[2]),
-        255. * (1. - self.dataspace_value[3]));
+        255.f * (1.f - self.dataspace_value[1]),
+        255.f * (1.f - self.dataspace_value[2]),
+        255.f * (1.f - self.dataspace_value[3]));
   }
 
   static ossia::vecf_domain<3> domain()

@@ -1,7 +1,7 @@
 #include <ossia/detail/config.hpp>
 #include <iterator>
 #include <ossia/dataflow/token_request.hpp>
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include "../Editor/TestUtils.hpp"
 TEST_CASE ("test_loops_integer", "test_loops_integer")

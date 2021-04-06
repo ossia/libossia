@@ -4,8 +4,10 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#define CATCH_CONFIG_MAIN
+
 #include "catch.hpp"
+#include <catch2/catch_approx.hpp>
+
 #include <iostream>
 #include <string>
 #include <rapidjson/document.h>
@@ -472,7 +474,7 @@ TEST_CASE ("Types conversion") {
   SECTION ("Float") {
     REQUIRE(d.HasMember("float"));
     REQUIRE(d["float"].IsDouble());
-    REQUIRE(d["float"].GetDouble() == Approx(3.566f).epsilon(0.001));
+    REQUIRE(d["float"].GetDouble() == Catch::Approx(3.566f).epsilon(0.001));
   }
 }
 

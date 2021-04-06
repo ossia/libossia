@@ -94,7 +94,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
   {
     buffer.Clear();
 
-    rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+    ossia::json_writer writer{buffer};
 
     writer.StartObject();
 
@@ -185,7 +185,7 @@ public:
         if (init && conn->socket.connected())
         {
           buffer.Clear();
-          rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+          ossia::json_writer writer{buffer};
           writer.StartObject();
 
           writer.Key("operation");
@@ -231,7 +231,7 @@ public:
   send_init(const std::map<std::string, eggs::variant<std::string, int>>& map)
   {
     rapidjson::StringBuffer buffer;
-    rapidjson::Writer<rapidjson::StringBuffer> writer{buffer};
+    ossia::json_writer writer{buffer};
     writer.StartObject();
 
     writer.Key("operation");
@@ -245,7 +245,7 @@ public:
 
     struct
     {
-      rapidjson::Writer<rapidjson::StringBuffer>& writer;
+      ossia::json_writer& writer;
       void operator()(const std::string& s)
       {
         writer.String(s);

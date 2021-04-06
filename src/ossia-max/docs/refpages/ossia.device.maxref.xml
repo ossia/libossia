@@ -39,20 +39,21 @@
 		</outlet>
 	</outletlist>
 
-	<!--METHODS-->	
-	<methodlist>
-		<method name="namespace">
-			<arglist/>
+	<!--ARGUMENTS-->
+	<objarglist>
+		<objarg name="Name" optional="0" type="symbol">
 			<digest>
-				Output list of all parameters and their current values
+				Name in ossia namespace
 			</digest>
 			<description>
-				Sending the <m>namespace</m> message to the leftmost inlet outputs the list of all parameters registered under this node, and their current value
+				<o>ossia.device</o> requires an argument defining the device name on the network
 			</description>
-		</method>
-	</methodlist>
-
+		</objarg>
+	</objarglist>	
+	
+	<!--METHODS-->	
 	<methodlist>
+
 		<method name="expose">
 			<arglist>
 				<arg name="protocol-name" optional="1" type="list" />
@@ -79,6 +80,16 @@
 			</description>
 		</method>
 
+		<method name="namespace">
+			<arglist/>
+			<digest>
+				Output list of all parameters and their current values
+			</digest>
+			<description>
+				Sending the <m>namespace</m> message to the leftmost inlet outputs the list of all parameters registered under this node, and their current value
+			</description>
+		</method>
+		
 		<method name="preset">
 			<arglist>
 				<arg name="save or load" optional="0" type="symbol" />
@@ -106,14 +117,6 @@
 
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="tags" get="1" set="1" type="atom" size="1">
-			<digest>
-				Tags associated with this node
-			</digest>
-			<description>
-				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
-			</description>
-		</attribute>
 
 		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
@@ -121,6 +124,15 @@
 			</digest>
 			<description>
 				The <at>description</at> attribute allows to give a textual description for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
+			<digest>
+				Hide device on the network
+			</digest>
+			<description>
+				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
 			</description>
 		</attribute>
 
@@ -132,12 +144,22 @@
 				The <at>priority</at> attribute allows to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
-		<attribute name="invisible" get="1" set="1" type="int" size="1">
+		
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
 			<digest>
-				Hide device on the network
+				Tags associated with this node
 			</digest>
 			<description>
-				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
+				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+		
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
 			</description>
 		</attribute>
 

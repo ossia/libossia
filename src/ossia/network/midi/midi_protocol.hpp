@@ -9,11 +9,11 @@
 
 #include <ossia/detail/lockfree_queue.hpp>
 
-#include <rtmidi17/message.hpp>
+#include <libremidi/message.hpp>
 #include <array>
 #include <atomic>
 #include <cassert>
-namespace rtmidi
+namespace libremidi
 {
 class midi_in;
 class midi_out;
@@ -53,7 +53,7 @@ public:
 
   std::vector<midi_info> scan();
 
-  void push_value(const rtmidi::message&);
+  void push_value(const libremidi::message&);
 
   template <typename T>
   void clone_value(T& port)
@@ -71,9 +71,9 @@ public:
   void set_learning(bool);
 
 private:
-  ossia::spsc_queue<rtmidi::message> messages;
-  std::unique_ptr<rtmidi::midi_in> m_input;
-  std::unique_ptr<rtmidi::midi_out> m_output;
+  ossia::spsc_queue<libremidi::message> messages;
+  std::unique_ptr<libremidi::midi_in> m_input;
+  std::unique_ptr<libremidi::midi_out> m_output;
 
   std::array<midi_channel, 16> m_channels;
 
@@ -95,7 +95,7 @@ private:
   void
   value_callback(ossia::net::parameter_base& param, const ossia::value& val);
 
-  void midi_callback(const rtmidi::message&);
-  void on_learn(const rtmidi::message& m);
+  void midi_callback(const libremidi::message&);
+  void on_learn(const libremidi::message& m);
 };
 }

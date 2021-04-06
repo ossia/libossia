@@ -6,6 +6,7 @@
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
+#include <ossia/dataflow/for_each_port.hpp>
 #include <ossia/detail/algorithms.hpp>
 
 namespace ossia
@@ -143,21 +144,21 @@ std::string graph_node::label() const noexcept
 
 bool graph_node::has_port_inputs() const noexcept
 {
-  return any_of_inlet([](const inlet& inlet) {
+  return any_of_inlet(*this, [](const inlet& inlet) {
     return !inlet.sources.empty();
   });
 }
 
 bool graph_node::has_global_inputs() const noexcept
 {
-  return any_of_inlet([&](const inlet& inlet) {
+  return any_of_inlet(*this, [&](const inlet& inlet) {
     return (inlet.scope & port::scope_t::global) && bool(inlet.address);
   });
 }
 
 bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 {
-  return any_of_inlet([&](const inlet& inlet) {
+  return any_of_inlet(*this, [&](const inlet& inlet) {
     if (inlet.scope & port::scope_t::local)
     {
       bool b = false;
@@ -182,13 +183,13 @@ bool graph_node::has_local_inputs(const execution_state& st) const noexcept
 
 void graph_node::clear() noexcept
 {
-  for_each_inlet([] (auto& port) {
+  for_each_inlet(*this, [] (auto& port) {
     for (ossia::graph_edge* e : port.cables())
     {
       e->clear();
     }
   });
-  for_each_outlet([] (auto& port) {
+  for_each_outlet(*this, [] (auto& port) {
     for (ossia::graph_edge* e : port.cables())
     {
       e->clear();

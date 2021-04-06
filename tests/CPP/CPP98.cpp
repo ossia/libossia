@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 #include <iostream>
@@ -331,4 +331,58 @@ TEST_CASE ("various", "[various]")
   if (n1)root.remove_child(n1.get_name());
   if (n2)root.remove_child(n2.get_name());
   if (n3)root.remove_child(n3.get_name());
+}
+
+TEST_CASE ("remove_children", "[remove_children]")
+{
+  opp::oscquery_server server("bugtest");
+  auto foo = server.get_root_node().create_child("foo");
+  auto bar = foo.create_child("bar");
+  auto resp = foo.create_int("resp");
+  resp.set_value(0);
+  REQUIRE(resp.has_parameter());
+  bar.create_int("baz").set_value(1);
+  bar.remove_children();
+  REQUIRE(resp.has_parameter());
+}
+
+TEST_CASE ("remove_children_observed", "[remove_children_observed]")
+{
+  opp::oscquery_server server("bugtest");
+  auto foo = server.get_root_node().create_child("foo");
+  auto bar = foo.create_child("bar");
+  auto resp = foo.create_int("resp");
+  resp.set_value(0);
+
+  opp::oscquery_mirror remote_dev("remote", "ws://127.0.0.1:5678");
+
+  //test remote
+  remote_dev.refresh();
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/bar"));
+  REQUIRE(!remote_dev.get_root_node().find_child("/foo/bar/baz"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp").get_value().to_int() == 0);
+
+  //add new child, update another item
+  bar.create_int("baz").set_value(1);
+  resp.set_value(1);
+
+  //test remote
+  remote_dev.refresh();
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/bar/baz"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/bar/baz").get_value().to_int() == 1);
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp").get_value().to_int() == 1);
+
+  //remove that child, add another, update values
+  bar.remove_children();
+  bar.create_int("baz").set_value(2);
+  resp.set_value(2);
+
+  //test remote
+  remote_dev.refresh();
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/bar/baz"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/bar/baz").get_value().to_int() == 2);
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp"));
+  REQUIRE(remote_dev.get_root_node().find_child("/foo/resp").get_value().to_int() == 2);
 }

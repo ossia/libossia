@@ -6,6 +6,7 @@
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flicks.hpp>
 #include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/scenario/execution_log.hpp>
 #include <ossia_export.h>
 #include <smallfun.hpp>
 
@@ -75,8 +76,6 @@ public:
   void tick(ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
   void tick_offset(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
   void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
-  // void tick_offset(ossia::time_value, double ratio, ossia::time_value
-  // offset);
 
   /*! to get the interval execution back
    \param const #TimeValue position
@@ -205,6 +204,10 @@ public:
   void set_tempo_curve(std::optional<tempo_curve> curve);
   void set_time_signature_map(std::optional<time_signature_map> map);
   void set_quarter_duration(double tu);
+
+#if defined(OSSIA_EXECUTION_LOG)
+  std::string name;
+#endif
 
   bool graphal{};
 private:

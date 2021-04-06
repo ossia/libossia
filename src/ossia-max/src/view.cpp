@@ -43,7 +43,8 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
   if (x)
   {
-    auto& pat_desc = ossia_max::instance().patchers[x->m_patcher];
+    critical_enter(0);
+    auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
     if( !pat_desc.model && !pat_desc.view)
     {
       pat_desc.view = x;
@@ -52,7 +53,20 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     {
       error("You can put only one [ossia.model] or [ossia.view] per patcher");
       object_free(x);
+      critical_exit(0);
       return nullptr;
+    }
+    device_base::on_device_created.connect<&view::on_device_created>(x);
+    device_base::on_device_removing.connect<&view::on_device_removing>(x);
+
+    std::vector<ossia::net::generic_device*> devs = get_all_devices();
+    for(auto dev : devs)
+    {
+      if(!x->m_devices.contains(dev))
+      {
+        dev->on_node_created.connect<&view::on_node_created_callback>(x);
+        x->m_devices.push_back(dev);
+      }
     }
 
     x->m_otype = object_class::view;
@@ -77,29 +91,27 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
-  }
+    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
 
-  ossia_max::instance().views.push_back(x);
+    ossia_max::instance().views.push_back(x);
+    critical_exit(0);
+  }
 
   return (x);
 }
 
 void view::destroy(view* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
+  critical_enter(0);
+
+  for(auto dev : x->m_devices)
   {
-    auto& pat_desc = pat_it->second;
-    if(pat_desc.view  == x)
-      pat_desc.view = nullptr;
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
+    dev->on_node_created.disconnect<&view::on_node_created_callback>(x);
   }
+  x->m_devices.clear();
+
+  device_base::on_device_created.disconnect<&view::on_device_created>(x);
+  device_base::on_device_removing.disconnect<&view::on_device_removing>(x);
 
   x->m_dead = true;
   x->unregister();
@@ -109,6 +121,7 @@ void view::destroy(view* x)
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);
   x->~view();
+  critical_exit(0);
 }
 
 void view::do_registration()
@@ -116,6 +129,7 @@ void view::do_registration()
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
   m_selection_path.reset();
   fill_selection();
@@ -123,6 +137,7 @@ void view::do_registration()
 
 void view::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   std::vector<object_base*> children_view = find_children_to_register(
@@ -148,9 +163,45 @@ void view::unregister()
 
   ossia_max::instance().nr_views.push_back(this);
 
-  // register_children(this);
-
   m_registered = false;
+}
+
+void view::on_node_created_callback(ossia::net::node_base& node)
+{
+  for(auto p : m_paths)
+  {
+    auto path = ossia::traversal::make_path(p);
+    if ( path && ossia::traversal::match(*path, node) )
+    {
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      int size = m_matchers.size();
+      m_matchers[size-1]->m_index = size;
+      fill_selection();
+      register_children_in_patcher_recursively(m_patcher, this);
+    }
+  }
+}
+
+void view::on_device_removing(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  if(m_devices.contains(dev))
+  {
+    dev->on_node_created.disconnect<&view::on_node_created_callback>(this);
+    m_devices.remove_all(dev);
+  }
+}
+
+void view::on_device_created(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  if(!m_devices.contains(dev))
+  {
+    // no need to connect to on_node_removing because ossia::max::matcher
+    // already connect to it
+    dev->on_node_created.connect<&view::on_node_created_callback>(this);
+    m_devices.push_back(dev);
+  }
 }
 
 } // max namespace

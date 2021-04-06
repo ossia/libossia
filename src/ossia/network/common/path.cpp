@@ -33,6 +33,7 @@ void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
 void get_parent(std::vector<ossia::net::node_base*>& vec)
 {
   std::vector<ossia::net::node_base*> old = std::move(vec);
+  vec.clear();
 
   tsl::hopscotch_set<ossia::net::node_base*> inserted;
   for (auto ptr : old)
@@ -157,12 +158,9 @@ struct regex_cache
   std::mutex mutex;
 };
 
-std::regex make_regex(std::string& part)
+std::string substitute_characters(const std::string& part)
 {
-  // Perform the various regex-like replacements
-  // note: seriously, don't do this with regex if possible
-  net::expand_ranges(part);
-  std::string res = "^";
+  std::string res;
   res.reserve(part.size() + 16);
 
   static const auto qmark
@@ -190,6 +188,16 @@ std::regex make_regex(std::string& part)
     else
       res += part[i];
   }
+  return res;
+}
+
+std::regex make_regex(std::string& part)
+{
+  // Perform the various regex-like replacements
+  // note: seriously, don't do this with regex if possible
+  net::expand_ranges(part);
+  std::string res = "^";
+  res += substitute_characters(part);
   res += "$";
 
   return std::regex{res};

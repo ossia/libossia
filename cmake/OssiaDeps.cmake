@@ -28,6 +28,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       websocketpp
       whereami
       ../cmake/cmake-modules
+      ios-cmake
   )
 
   if(OSSIA_DATAFLOW)
@@ -39,7 +40,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   endif()
 
   if(OSSIA_PROTOCOL_MIDI)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} RtMidi17)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} libremidi)
   endif()
 
   if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
@@ -52,6 +53,10 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 
   if(OSSIA_PROTOCOL_WIIMOTE)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} wiiuse)
+  endif()
+
+  if(OSSIA_TESTING)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} Catch2)
   endif()
 
   execute_process(COMMAND git submodule sync --recursive
@@ -68,26 +73,8 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
-if(WIN32)
-  message(STATUS "Downloading audio sdk to ${OSSIA_3RDPARTY_FOLDER}/win-audio-sdk.zip")
-  if("${OSSIA_SDK}" STREQUAL "")
-    set(OSSIA_SDK "ossia-sdk" CACHE INTERNAL "")
-  endif()
-
-  if (NOT EXISTS "${OSSIA_SDK}")
-    file(MAKE_DIRECTORY ${OSSIA_SDK})
-    file(DOWNLOAD
-      https://github.com/ossia/sdk/releases/download/sdk10/win-audio-sdk.zip
-      ${OSSIA_SDK}/win-audio-sdk.zip)
-
-    execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf win-audio-sdk.zip
-      WORKING_DIRECTORY ${OSSIA_SDK})
-  endif()
-endif()
-
 set(BOOST_MINOR_MINIMAL 67)
-set(BOOST_MINOR_LATEST 73)
+set(BOOST_MINOR_LATEST 75)
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
 if (NOT Boost_FOUND)
   set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
@@ -96,11 +83,11 @@ if (NOT Boost_FOUND)
 
     if(WIN32)
       message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
-      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.zip)
+      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk17/${BOOST_VERSION}.zip)
       set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
     else()
       message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk12/${BOOST_VERSION}.tar.gz)
+      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk17/${BOOST_VERSION}.tar.gz)
       set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
     endif()
 
@@ -121,10 +108,10 @@ set_property(TARGET boost PROPERTY
              INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
 
 if(OSSIA_PROTOCOL_MIDI)
-  set(RTMIDI17_EXAMPLES OFF CACHE "" INTERNAL)
-  set(RTMIDI17_HEADER_ONLY ON CACHE "" INTERNAL)
+  set(LIBREMIDI_EXAMPLES OFF CACHE "" INTERNAL)
+  set(LIBREMIDI_HEADER_ONLY ON CACHE "" INTERNAL)
   set(WEAKJACK_FOLDER "${OSSIA_3RDPARTY_FOLDER}")
-  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/RtMidi17" EXCLUDE_FROM_ALL)
+  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libremidi" EXCLUDE_FROM_ALL)
 endif()
 
 if(OSSIA_DATAFLOW)
@@ -174,7 +161,15 @@ include(ExternalProject)
 ExternalProject_add(rapidfuzz-cpp
     SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/rapidfuzz-cpp"
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rapidfuzz-cpp
-    CMAKE_ARGS -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+    CMAKE_ARGS
+      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+      -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
+      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
 )
 
 ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)

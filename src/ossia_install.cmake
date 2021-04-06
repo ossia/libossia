@@ -37,7 +37,7 @@ if(OSSIA_QML)
 endif()
 
 
-if(NOT OSSIA_QML_ONLY)
+if(NOT OSSIA_QML_ONLY AND NOT OSSIA_UNITY3D_ONLY AND NOT OSSIA_MAX_ONLY)
 # Default case, C / C++ library
 # Install
 install(TARGETS ossia
@@ -114,7 +114,7 @@ install(FILES
 
 # Install used libraries headers
 if(NOT OSSIA_CPP_ONLY AND NOT OSSIA_C_ONLY)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/RtMidi17/include/rtmidi17"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/libremidi"
         DESTINATION include
         COMPONENT Devel
         ${3RDPARTY_INSTALL_PATTERN}

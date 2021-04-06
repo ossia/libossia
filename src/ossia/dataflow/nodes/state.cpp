@@ -1,4 +1,5 @@
 #include <ossia/dataflow/nodes/state.hpp>
+#include <ossia/dataflow/port.hpp>
 #include <ossia/detail/apply.hpp>
 
 namespace ossia::nodes

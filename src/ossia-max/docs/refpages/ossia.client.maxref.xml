@@ -116,14 +116,6 @@
 	
 	<!--ATTRIBUTES-->
 	<attributelist>
-		<attribute name="tags" get="1" set="1" type="atom" size="1">
-			<digest>
-				Tags associated with this node
-			</digest>
-			<description>
-				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
-			</description>
-		</attribute>
 
 		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
@@ -134,6 +126,15 @@
 			</description>
 		</attribute>
 
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
+			<digest>
+				Hide device on the network
+			</digest>
+			<description>
+				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
+			</description>
+		</attribute>
+		
 		<attribute name="priority" get="1" set="1" type="int" size="1">
 			<digest>
 				Set priority
@@ -142,12 +143,22 @@
 				The <at>priority</at> attribute allows to order how several values of a same hierarchical level can be recalled 
 			</description>
 		</attribute>
-		<attribute name="invisible" get="1" set="1" type="int" size="1">
+		
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
 			<digest>
-				Hide device on the network
+				Tags associated with this node
 			</digest>
 			<description>
-				The <at>invisible</at> attribute allows to hide device on the network. Note that this attribute cannot be changed once the device has been exposed on the network
+				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+		
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
 			</description>
 		</attribute>
 

@@ -1,7 +1,3 @@
-if(NOT WIN32)
-  # only supported on windows
-  return()
-endif()
 
 # LEAP_SDK : should point to for instance
 # LeapDeveloperKit_3.2.1+45911_win/LeapSDK
@@ -17,8 +13,9 @@ find_path(LeapMotion_INCLUDE_DIRS
         ${LEAP_SDK}/include
         "C:/LeapSDK/include")
 find_library(LeapMotion_LIBRARIES
-    NAMES Leap.lib
+    NAMES leap Leap
     HINTS
+        ${LEAP_SDK}/lib
         ${LEAP_SDK}/lib/${LeapMotion_ARCH_SUFFIX}
         "C:/LeapSDK/lib/${LeapMotion_ARCH_SUFFIX}"
 )
@@ -29,8 +26,11 @@ if(NOT LeapMotion_LIBRARIES)
 endif()
 
 get_filename_component(LeapMotion_LIB_FOLDER ${LeapMotion_LIBRARIES} DIRECTORY)
-set(LeapMotion_DLLS ${LeapMotion_LIB_FOLDER}/Leap.dll)
-
+if(WIN32)
+  set(LeapMotion_DLLS ${LeapMotion_LIB_FOLDER}/Leap.dll)
+else()
+  set(LeapMotion_DLLS ${LeapMotion_LIB_FOLDER}/libLeap.dylib)
+endif()
 add_library(LeapMotion SHARED IMPORTED)
 set_property(TARGET LeapMotion PROPERTY IMPORTED_LOCATION ${LeapMotion_DLLS})
 set_property(TARGET LeapMotion PROPERTY IMPORTED_IMPLIB ${LeapMotion_LIBRARIES})

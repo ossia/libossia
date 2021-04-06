@@ -229,7 +229,7 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for (const rtmidi::message& val : p.messages)
+      for (const libremidi::message& val : p.messages)
       {
         switch (val.bytes.size())
         {
@@ -259,7 +259,7 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
     }
   } vis{logger, i};
 
-  n.for_each_inlet([&] (auto& in) { in.visit(vis); });
+  for_each_inlet(n, [&] (auto& in) { in.visit(vis); });
 }
 
 void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
@@ -283,7 +283,7 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for (const rtmidi::message& val : p.messages)
+      for (const libremidi::message& val : p.messages)
       {
         switch (val.bytes.size())
         {
@@ -312,7 +312,7 @@ void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
     }
   } vis{logger, i};
 
-  n.for_each_outlet([&] (auto& out) { out.visit(vis); });
+  for_each_outlet(n, [&] (auto& out) { out.visit(vis); });
 }
 graph_interface::~graph_interface()
 {

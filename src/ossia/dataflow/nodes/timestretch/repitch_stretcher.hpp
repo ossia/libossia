@@ -1,4 +1,5 @@
 #pragma once
+#if __has_include(<samplerate.h>)
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/audio_port.hpp>
@@ -24,10 +25,16 @@ struct repitch_stretcher
     {
       other.resampler = nullptr;
     }
+    resample_channel& operator=(resample_channel&& other) noexcept
+    {
+      resampler = other.resampler;
+      data = std::move(other.data);
+      other.resampler = nullptr;
+      return *this;
+    }
 
     resample_channel(const resample_channel&) = delete;
     resample_channel& operator=(const resample_channel&) = delete;
-    resample_channel& operator=(resample_channel&&) = delete;
 
     ~resample_channel()
     {
@@ -134,3 +141,13 @@ struct repitch_stretcher
   }
 };
 }
+
+#else
+
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+
+namespace ossia
+{
+using repitch_stretcher = raw_stretcher;
+}
+#endif

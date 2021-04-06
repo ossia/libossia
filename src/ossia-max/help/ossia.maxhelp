@@ -2,14 +2,15 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 4,
-			"architecture" : "x86",
+			"major" : 8,
+			"minor" : 1,
+			"revision" : 8,
+			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 117.0, 82.0, 938.0, 938.0 ],
+		"classnamespace" : "box",
+		"rect" : [ 112.0, 98.0, 1051.0, 929.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -36,7 +37,196 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-51",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 672.0, 466.5, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-49",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 824.0, 408.5, 94.0, 22.0 ],
+					"text" : "print udpreceive"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-48",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 824.0, 378.5, 97.0, 22.0 ],
+					"text" : "udpreceive 4321"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-47",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 244.5, 718.0, 183.0, 22.0 ],
+					"text" : "expose osc 127.0.0.1 4321 1234"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-45",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 111.0, 801.0, 32.0, 22.0 ],
+					"text" : "print"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-44",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 183.0, 749.0, 41.0, 22.0 ],
+					"text" : "stop 0"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-38",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 165.0, 718.0, 77.0, 22.0 ],
+					"text" : "get protocols"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-20",
+					"maxclass" : "number",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 672.0, 353.0, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-17",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 672.0, 495.0, 159.0, 22.0 ],
+					"text" : "osc /foo/bar 36.15 minitel $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-42",
+					"linecount" : 2,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 735.0, 546.0, 248.0, 33.0 ],
+					"text" : "once connected, ossia object returns unhandle osc messages through dump outlet"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-34",
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 726.0, 353.0, 150.0, 20.0 ],
+					"text" : "send some osc message"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-21",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 672.0, 381.0, 138.0, 22.0 ],
+					"text" : "/some/address 1.2 er $1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-19",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 672.0, 408.5, 138.0, 22.0 ],
+					"text" : "udpsend 127.0.0.1 1234"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-18",
+					"maxclass" : "message",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 672.0, 597.0, 188.0, 22.0 ],
+					"text" : "/some/address 1.2 er 32"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-15",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 672.0, 557.0, 58.0, 22.0 ],
+					"text" : "route osc"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 672.0, 528.0, 37.0, 22.0 ],
+					"text" : "ossia"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-41",
 					"maxclass" : "newobj",
@@ -46,13 +236,14 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"major" : 8,
+							"minor" : 1,
+							"revision" : 8,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
+						"classnamespace" : "box",
 						"rect" : [ 978.0, 101.0, 647.0, 502.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -80,6 +271,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-9",
@@ -88,7 +280,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 336.0, 424.0, 215.0, 33.0 ],
-									"style" : "",
 									"text" : "values for parameters with recall_safe attribute set to 1 will not be recalled"
 								}
 
@@ -101,7 +292,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 332.0, 459.0, 245.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter no_recall @recall_safe 1"
 								}
 
@@ -114,8 +304,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 374.0, 24.0, 24.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 374.0, 24.0, 24.0 ]
 								}
 
 							}
@@ -127,8 +316,7 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 305.0, 24.0, 24.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 305.0, 24.0, 24.0 ]
 								}
 
 							}
@@ -140,7 +328,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 336.0, 339.5, 231.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter test-bool @default 0"
 								}
 
@@ -153,8 +340,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 156.5, 50.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 156.5, 50.0, 22.0 ]
 								}
 
 							}
@@ -166,8 +352,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 93.0, 50.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 93.0, 50.0, 22.0 ]
 								}
 
 							}
@@ -180,8 +365,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 260.5, 50.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 260.5, 50.0, 22.0 ]
 								}
 
 							}
@@ -194,8 +378,7 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "bang" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 201.5, 50.0, 22.0 ],
-									"style" : ""
+									"patching_rect" : [ 336.0, 201.5, 50.0, 22.0 ]
 								}
 
 							}
@@ -207,7 +390,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 336.0, 229.5, 231.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter test-float @default 122.1"
 								}
 
@@ -220,7 +402,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 336.0, 123.5, 204.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter test-int @default 12"
 								}
 
@@ -233,7 +414,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 233.0, 203.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test2.json"
 								}
 
@@ -246,7 +426,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 217.0, 171.5, 78.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test1.json"
 								}
 
@@ -259,7 +438,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 94.0, 196.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test2.json"
 								}
 
@@ -272,7 +450,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 78.0, 164.5, 78.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test1.json"
 								}
 
@@ -284,7 +461,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 258.0, 37.5, 50.0, 20.0 ],
-									"style" : "",
 									"text" : "presets"
 								}
 
@@ -301,7 +477,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 189.0, 30.0, 50.0, 50.0 ],
-									"style" : "",
 									"text" : "recall",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
@@ -319,7 +494,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 51.0, 30.0, 46.0, 50.0 ],
-									"style" : "",
 									"text" : "save",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
@@ -332,7 +506,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 106.0, 37.5, 39.0, 20.0 ],
-									"style" : "",
 									"text" : "and"
 								}
 
@@ -345,7 +518,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 63.0, 119.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test2.txt"
 								}
 
@@ -358,7 +530,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 176.0, 85.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test1.txt"
 								}
 
@@ -372,7 +543,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 176.0, 298.5, 73.0, 35.0 ],
-									"style" : "",
 									"text" : "prepend preset load"
 								}
 
@@ -385,7 +555,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 203.0, 119.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test2.txt"
 								}
 
@@ -399,7 +568,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
 									"patching_rect" : [ 176.0, 257.0, 82.0, 35.0 ],
-									"style" : "",
 									"text" : "conformpath max boot"
 								}
 
@@ -413,7 +581,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 42.0, 298.5, 73.0, 35.0 ],
-									"style" : "",
 									"text" : "prepend preset save"
 								}
 
@@ -426,7 +593,6 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 42.0, 85.5, 72.0, 22.0 ],
-									"style" : "",
 									"text" : "~/test1.txt"
 								}
 
@@ -440,7 +606,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "int" ],
 									"patching_rect" : [ 42.0, 257.0, 82.0, 35.0 ],
-									"style" : "",
 									"text" : "conformpath max boot"
 								}
 
@@ -453,8 +618,7 @@
 									"maxclass" : "outlet",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 84.5, 393.5, 30.0, 30.0 ],
-									"style" : ""
+									"patching_rect" : [ 84.5, 393.5, 30.0, 30.0 ]
 								}
 
 							}
@@ -598,16 +762,14 @@
  ]
 					}
 ,
-					"patching_rect" : [ 266.0, 489.0, 60.0, 22.0 ],
+					"patching_rect" : [ 266.0, 459.0, 60.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
-						"style" : "",
 						"tags" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p presets"
 				}
 
@@ -622,8 +784,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 334.0, 482.0, 212.0, 35.0 ],
-					"style" : "",
+					"patching_rect" : [ 334.0, 452.0, 212.0, 35.0 ],
 					"text" : "Save or recall presets",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -639,8 +800,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 177.0, 654.5, 280.0, 35.0 ],
-					"style" : "",
+					"patching_rect" : [ 177.0, 624.5, 280.0, 35.0 ],
 					"text" : "Get a list of available protocols in Max console",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -656,8 +816,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 230.0, 439.0, 212.0, 35.0 ],
-					"style" : "",
+					"patching_rect" : [ 230.0, 409.0, 212.0, 35.0 ],
 					"text" : "Set or get the global device name",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -674,8 +833,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 10.5, 249.0, 14.0, 14.0 ],
 					"proportion" : 0.39,
-					"shape" : 3,
-					"style" : ""
+					"shape" : 3
 				}
 
 			}
@@ -697,7 +855,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 27.0, 245.0, 599.0, 22.0 ],
-					"style" : "",
 					"text" : "See the OSSIA overview patcher from the extras menu for more information about various objects of the library",
 					"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
 				}
@@ -727,8 +884,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 127.0, 546.0, 113.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 127.0, 516.0, 113.0, 22.0 ]
 				}
 
 			}
@@ -741,8 +897,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 124.0, 691.0, 118.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 124.0, 661.0, 118.0, 22.0 ],
 					"text" : "expose oscquery"
 				}
 
@@ -756,8 +911,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 111.0, 661.0, 58.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 111.0, 631.0, 58.0, 22.0 ],
 					"text" : "expose"
 				}
 
@@ -773,13 +927,14 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
-							"revision" : 4,
-							"architecture" : "x86",
+							"major" : 8,
+							"minor" : 1,
+							"revision" : 8,
+							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
+						"classnamespace" : "box",
 						"rect" : [ 1259.0, 100.0, 356.0, 200.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
@@ -807,6 +962,7 @@
 						"tags" : "",
 						"style" : "",
 						"subpatcher_template" : "",
+						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-1",
@@ -855,13 +1011,14 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 7,
-											"minor" : 3,
-											"revision" : 4,
-											"architecture" : "x86",
+											"major" : 8,
+											"minor" : 1,
+											"revision" : 8,
+											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
+										"classnamespace" : "box",
 										"rect" : [ 1260.0, 323.0, 358.0, 226.0 ],
 										"bglocked" : 0,
 										"openinpresentation" : 0,
@@ -889,6 +1046,7 @@
 										"tags" : "",
 										"style" : "",
 										"subpatcher_template" : "",
+										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-1",
@@ -949,7 +1107,6 @@
 										"description" : "",
 										"digest" : "",
 										"globalpatchername" : "",
-										"style" : "",
 										"tags" : ""
 									}
 ,
@@ -974,16 +1131,14 @@
 						"lines" : [  ]
 					}
 ,
-					"patching_rect" : [ 62.0, 586.0, 90.0, 22.0 ],
+					"patching_rect" : [ 62.0, 556.0, 90.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
 						"globalpatchername" : "",
-						"style" : "",
 						"tags" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p some_nodes"
 				}
 
@@ -997,8 +1152,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 62.0, 402.0, 74.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 62.0, 372.0, 74.0, 22.0 ],
 					"text" : "namespace"
 				}
 
@@ -1012,8 +1166,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 183.0, 459.0, 41.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 183.0, 429.0, 41.0, 22.0 ],
 					"text" : "name"
 				}
 
@@ -1026,8 +1179,7 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 62.0, 546.0, 58.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 62.0, 516.0, 58.0, 22.0 ],
 					"text" : "print"
 				}
 
@@ -1039,8 +1191,7 @@
 					"numinlets" : 3,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 62.0, 518.0, 178.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 62.0, 488.0, 178.0, 22.0 ],
 					"text" : "route namespace name"
 				}
 
@@ -1054,8 +1205,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 106.0, 430.0, 119.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 106.0, 400.0, 119.0, 22.0 ],
 					"text" : "name funny_name"
 				}
 
@@ -1069,8 +1219,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 151.0, 721.0, 238.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 151.0, 691.0, 238.0, 22.0 ],
 					"text" : "expose oscquery 1234 9876"
 				}
 
@@ -1085,8 +1234,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 111.0, 757.0, 39.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 111.0, 771.0, 39.0, 22.0 ],
 					"text" : "ossia"
 				}
 
@@ -1101,8 +1249,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 62.0, 489.0, 58.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 62.0, 459.0, 58.0, 22.0 ],
 					"text" : "ossia"
 				}
 
@@ -1117,7 +1264,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 27.0, 123.0, 743.0, 33.0 ],
-					"style" : "",
 					"text" : "ossia-Max is the implementation of libossia for Max - several other implementations of libossia are available for various environments, such as openFrameworks, C'74's Max, python, Qt, plain C, etc... for more info, see: https://ossia.github.io"
 				}
 
@@ -1131,7 +1277,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 27.0, 338.0, 299.0, 20.0 ],
-					"style" : "",
 					"text" : "The ossia object allows to manage this general device"
 				}
 
@@ -1144,8 +1289,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 31.0, 634.0, 320.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 31.0, 604.0, 320.0, 20.0 ],
 					"text" : "The global namespace can be exposed over the network :"
 				}
 
@@ -1158,8 +1302,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 262.0, 690.0, 463.0, 21.0 ],
-					"style" : "",
+					"patching_rect" : [ 262.0, 660.0, 463.0, 21.0 ],
 					"text" : "Expose using oscquery protocol and default ports (OSC port 9999 and WS port 5678)",
 					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
@@ -1173,8 +1316,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 393.0, 721.0, 387.0, 21.0 ],
-					"style" : "",
+					"patching_rect" : [ 393.0, 691.0, 387.0, 21.0 ],
 					"text" : "Expose using oscquery protocol with OSC port 1234 and WS port 9876",
 					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 				}
@@ -1190,7 +1332,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 27.0, 201.0, 866.0, 33.0 ],
-					"style" : "",
 					"text" : "This tree-based architecture (coined \"device\" in the OSSIA terminology) can then be exposed under several protocols, some of which allow this architecture, and the properties and values of its nodes, to be explored and queried. For now, protocols available are plain OSC, OSCquery, and Minuit - more are to come"
 				}
 
@@ -1205,7 +1346,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 27.0, 302.0, 718.0, 33.0 ],
-					"style" : "",
 					"text" : "All the nodes (models & params, see subpatch above) that haven't been explicitly registered under an [ossia.device] object, are automatically declared under a general device"
 				}
 
@@ -1220,7 +1360,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 27.0, 164.0, 708.0, 33.0 ],
-					"style" : "",
 					"text" : "libossia allows to declare the architecture of a patcher's functions as a tree of nodes and parameters. These nodes/parameters can have attributes, which allow to declare some of their properties, such as their values, types, units, ranges, etc..."
 				}
 
@@ -1234,8 +1373,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 29.0, 790.0, 747.0, 33.0 ],
-					"style" : "",
+					"patching_rect" : [ 28.0, 846.0, 747.0, 33.0 ],
 					"text" : "When exposed via OSCquery, one can query the namespace and properties from a web browser, e.g. http://localhost:5678 if you used the default ports More queries are possible in this way, e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE"
 				}
 
@@ -1250,8 +1388,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 142.0, 395.5, 369.0, 35.0 ],
-					"style" : "",
+					"patching_rect" : [ 142.0, 365.5, 369.0, 35.0 ],
 					"text" : "Get the namespace (all adresses registered to the global device)",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -1265,8 +1402,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 28.0, 854.0, 351.0, 20.0 ],
-					"style" : "",
+					"patching_rect" : [ 28.0, 884.0, 351.0, 20.0 ],
 					"text" : "Please report bugs on: https://github.com/ossia/libossia/issues"
 				}
 
@@ -1295,8 +1431,29 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-45", 0 ],
+					"source" : [ "obj-13", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-9", 0 ],
 					"source" : [ "obj-14", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-18", 1 ],
+					"source" : [ "obj-15", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-17", 0 ]
 				}
 
 			}
@@ -1309,8 +1466,64 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-21", 0 ],
+					"source" : [ "obj-20", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-19", 0 ],
+					"source" : [ "obj-21", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-38", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-15", 0 ],
+					"source" : [ "obj-4", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-41", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-44", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-47", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-49", 0 ],
+					"source" : [ "obj-48", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-17", 0 ],
+					"source" : [ "obj-51", 0 ]
 				}
 
 			}
@@ -1331,7 +1544,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-37", 1 ],
-					"midpoints" : [ 151.0, 541.5, 230.5, 541.5 ],
+					"midpoints" : [ 151.0, 511.5, 230.5, 511.5 ],
 					"source" : [ "obj-9", 1 ]
 				}
 

@@ -144,8 +144,8 @@ public:
   const ossia::value& getValue() const;
 
   ossia::value value() const final override;
-  parameter_base& set_value(const ossia::value& v) final override;
-  parameter_base& set_value(ossia::value&& v) final override;
+  ossia::value set_value(const ossia::value& v) final override;
+  ossia::value set_value(ossia::value&& v) final override;
 
   ossia::val_type get_value_type() const final override;
   parameter_base& set_value_type(ossia::val_type) final override;

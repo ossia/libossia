@@ -144,7 +144,7 @@ struct copy_data
     operator()(out.messages, in);
   }
 
-  void operator()(const value_vector<rtmidi::message>& out, midi_port& in)
+  void operator()(const value_vector<libremidi::message>& out, midi_port& in)
   {
     // Called in copy_data_pos, when copying from a delay line to a port
     for (const auto& data : out)

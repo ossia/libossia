@@ -33,7 +33,6 @@ void object_namespace(object_base* x);
 std::vector<object_base*> find_children_to_register(
     t_object* object, t_object* patcher, t_symbol* classname, bool search_dev = false);
 
-
 /**
  * @brief register_objects_in_patcher_recursively : iterate over all patcher's objects and register them one by one recursively
  * @param root_patcher: starting patcher
@@ -41,11 +40,23 @@ std::vector<object_base*> find_children_to_register(
  */
 void register_children_in_patcher_recursively(t_object* root_patcher, object_base* caller);
 
+/**
+ * @brief get_poly_index : return the instance number if patcher is loaded by a poly~, 0 otherwise
+ * @param caller: object that calls the function
+ * @return poly~ instance number or 0
+ */
+long get_poly_index(t_object* patcher);
 
 /**
  * @brief Convenient method to easily get the patcher where a box is
  */
 t_object* get_patcher(t_object* object);
+
+/**
+ * @brief update_path_recursively: update children path recursively
+ * @param patcher
+ */
+void update_path_recursively(t_object* patcher);
 
 /**
  */
@@ -56,15 +67,6 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
  * @return a list of all known generic_devices*
  */
 std::vector<ossia::net::generic_device*> get_all_devices();
-
-
-/**
- * @brief find_global_node: find node matching address with a 'device:' prefix
- * @param addr : address string
- * @param create: should create new nodes if they doesn't exist
- * @return pointer to the node
- */
-std::vector<ossia::net::node_base*> find_or_create_global_nodes(ossia::string_view addr, bool create);
 
 /**
  * @brief get_parameter_type: return address type (relative, absolute or globale)
@@ -113,14 +115,33 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 // return a list of nodes priority from root to node
 std::vector<ossia::net::priority> get_priority_list(ossia::net::node_base* node);
 
-using node_priority = std::pair<matcher*, std::vector<ossia::net::priority>>;
-// sort priority graph
-// and output their values though dumpout
-void fire_values_by_priority(std::vector<node_priority>& priority_graph);
+struct node_priority
+{
+  matcher* obj{};
+  std::vector<ossia::net::priority> priorities;
 
-// look for all object in a patcher (recursively)
-// gather all refered nodes,
-void fire_all_values_by_priority(t_object* patcher);
+  friend std::ostream &operator<<( std::ostream &output, const node_priority &n ) {
+    output << object_classname(n.obj->get_owner())->s_name << "\t" << n.obj->get_node()->get_name() << "\t";
+    for(auto p : n.priorities)
+      output << p << " ";
+    return output;
+  }
+};
+
+/**
+ * @brief fire_values_by_priority: sort graph by priority ond output values
+ * @param priority_graph: vector of node_priority to sort and fire
+ * @param only_default: only output default values
+ */
+void fire_values_by_priority(std::vector<node_priority>& priority_graph, bool only_default);
+
+
+/**
+* @brief fire_all_values_by_priority: output every parameter's values by priority order
+* @param patcher: the patcher in which to look for object
+* @param only_default: output only default value
+*/
+void output_all_values(t_object* patcher, bool only_default);
 
 // put templates after prototype so we can use them
 template<typename T>
@@ -249,17 +270,36 @@ static inline T* find_parent_box_alive(
 template <typename T>
 void address_mess_cb(T* x, t_symbol* address)
 {
+  x->save_children_state();
   x->m_name = address;
   x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
   x->update_path();
+  x->m_node_selection.clear();
   x->m_matchers.clear();
   x->do_registration();
 
-  if(x->m_otype == object_class::view
-  || x->m_otype == object_class::model)
+  switch(x->m_otype)
   {
-    register_children_in_patcher_recursively(x->m_patcher, x);
-    fire_all_values_by_priority(get_patcher(&x->m_object));
+    case object_class::view:
+    case object_class::model:
+      register_children_in_patcher_recursively(x->m_patcher, x);
+      output_all_values(x->m_patcher, false);
+      break;
+    case object_class::param:
+      for(const auto& m : x->m_matchers)
+      {
+        auto param = m->get_node()->get_parameter();
+        param->push_value(param->value());
+      }
+      break;
+    case object_class::remote:
+      for(const auto& m : x->m_matchers)
+      {
+        auto param = m->get_node()->get_parameter();
+        auto val = param->value();
+        m->output_value(val);
+      }
+      break;
   }
 }
 

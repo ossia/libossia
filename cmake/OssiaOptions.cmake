@@ -69,10 +69,6 @@ option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/cmake/cmake-modules;")
 set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
-if(NOT OSSIA_SDK)
-  set(OSSIA_SDK "${OSSIA_3RDPARTY_FOLDER}/win_audio_sdk")
-endif()
-
 set(CMAKE_PREFIX_PATH
   "${OSSIA_SDK}/SDL2"
   "${OSSIA_SDK}/SDL2/cmake"

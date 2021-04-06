@@ -164,6 +164,12 @@ auto transform(Vector&& v, OutputIterator it, Fun f)
   return std::transform(v.begin(), v.end(), it, f);
 }
 
+template <typename Array1, typename Array2>
+auto equal(const Array1& v, const Array2& v2) noexcept
+{
+  return std::equal(std::begin(v), std::end(v), std::begin(v2));
+}
+
 template <typename Vector1, typename Vector2>
 void copy(const Vector1& source, Vector2& destination)
 {
@@ -206,6 +212,25 @@ void for_each_in_tuple(const std::tuple<Ts...>& tuple, F&& func)
 
 template <class F>
 void for_each_in_tuple(const std::tuple<>& tuple, const F& func)
+{
+}
+
+template <class F, class... Ts, std::size_t... Is>
+void for_each_in_tuple(
+    std::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
+{
+  (std::forward<F>(func)(std::get<Is>(tuple)), ...);
+}
+
+template <class F, class... Ts>
+void for_each_in_tuple(std::tuple<Ts...>& tuple, F&& func)
+{
+  for_each_in_tuple(
+        tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <class F>
+void for_each_in_tuple(std::tuple<>& tuple, const F& func)
 {
 }
 

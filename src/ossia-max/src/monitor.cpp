@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia-max/src/monitor.hpp>
-#include <ossia/detail/thread.hpp>
 
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
@@ -44,14 +43,6 @@ extern "C" void ossia_monitor_setup()
       "notify", A_CANT, 0);
 
   search_filter::setup_attribute<monitor>(c);
-  /*
-  CLASS_ATTR_SYM(c, "sort", 0, monitor, m_sort);
-  CLASS_ATTR_LABEL(c, "sort", 0, "Sort method");
-
-  CLASS_ATTR_LONG(c, "highlight", 0, monitor, m_highlight);
-  CLASS_ATTR_LABEL(c, "highlight", 0, "Highlight objects returned by search");
-  CLASS_ATTR_FILTER_CLIP(c, "highlight", 0, 1);
-  */
 
   CLASS_ATTR_LONG(c, "depth", 0, monitor, m_depth);
   CLASS_ATTR_LABEL(c, "depth", 0, "Limit exploration depth");
@@ -64,6 +55,7 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<monitor>(argc, argv);
   x->m_dumpout = outlet_new(x, NULL);
+  x->m_otype = object_class::monitor;
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
@@ -73,8 +65,7 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
   {
     x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
     // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
   }
   return x;
 }
@@ -134,7 +125,7 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 {
   stop_monitoring();
   m_method = s;
-  m_name = nullptr;
+  m_name = _sym_nothing;
   if(argc > 0 && argv->a_type == A_SYM)
   {
     m_name = argv->a_w.w_sym;
@@ -145,7 +136,7 @@ void monitor::parse_args(t_symbol* s, long argc, t_atom* argv)
 void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 {
   x->parse_args(s, argc, argv);
-  auto matchers = x->find_parent_nodes();
+  auto matchers = x->find_or_create_matchers();
 
   for(const auto& n : matchers)
   {
@@ -166,6 +157,7 @@ void monitor::execute_method(monitor* x, t_symbol* s, long argc, t_atom* argv)
 
 bool monitor::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().nr_monitors.push_back(this);
@@ -201,31 +193,36 @@ void monitor::on_parameter_removing_callback(const ossia::net::parameter_base& p
 
 void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
 {
-
-  if( ossia::traversal::match(get_path(), node) )
+  for(auto& p : m_paths)
   {
-    t_atom a[3];
-    A_SETSYM(a, s_parameter);
-    A_SETSYM(a+1, s_created);
-    std::string address = ossia::net::osc_parameter_string_with_device(node);
-    A_SETSYM(a+2, gensym(address.c_str()));
-    outlet_anything(m_dumpout, s_monitor, 3, a);
-  }
-  else
-  {
-    std::string address = ossia::net::osc_parameter_string_with_device(node);
-    if( boost::algorithm::ends_with(address, m_name->s_name) )
+    auto path = ossia::traversal::make_path(p);
     {
-      t_atom a[3];
-      A_SETSYM(a, s_parameter);
-      A_SETSYM(a+1, s_created);
-      A_SETSYM(a+2, gensym(address.c_str()));
-      outlet_anything(m_dumpout, s_monitor, 3, a);
+      if( path && ossia::traversal::match(*path, node) )
+      {
+        t_atom a[3];
+        A_SETSYM(a, s_parameter);
+        A_SETSYM(a+1, s_created);
+        std::string address = ossia::net::osc_parameter_string_with_device(node);
+        A_SETSYM(a+2, gensym(address.c_str()));
+        outlet_anything(m_dumpout, s_monitor, 3, a);
+      }
+      else
+      {
+        std::string address = ossia::net::osc_parameter_string_with_device(node);
+        if( address == p )
+        {
+          t_atom a[3];
+          A_SETSYM(a, s_parameter);
+          A_SETSYM(a+1, s_created);
+          A_SETSYM(a+2, gensym(address.c_str()));
+          outlet_anything(m_dumpout, s_monitor, 3, a);
+        }
+      }
     }
   }
 }
 
-void monitor::on_device_deleted(const net::node_base & node)
+void monitor::on_device_deleted(const ossia::net::node_base & node)
 {
   auto it = m_devices.find(&node.get_device());
   if(it != m_devices.end())

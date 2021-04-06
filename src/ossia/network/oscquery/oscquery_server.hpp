@@ -80,6 +80,11 @@ public:
     return m_oscPort;
   }
 
+  int get_ws_port() const
+  {
+    return m_wsPort;
+  }
+
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 

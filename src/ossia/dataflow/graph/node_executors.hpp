@@ -8,8 +8,7 @@ struct node_exec
   execution_state*& g;
   graph_node& node;
 
-  template <typename T>
-  void operator()(const T&)
+  void operator()()
   try
   {
     if (node.enabled())
@@ -29,8 +28,7 @@ struct node_exec_bench
   graph_node& node;
   bench_map& perf;
 
-  template <typename T>
-  void operator()(const T&)
+  void operator()()
   try
   {
     if (perf.measure)
@@ -64,8 +62,7 @@ struct node_exec_logger
   spdlog::logger& logger;
   graph_node& node;
 
-  template <typename T>
-  void operator()(const T&)
+  void operator()()
   try
   {
     if (node.enabled())
@@ -90,8 +87,7 @@ struct node_exec_logger_bench
   spdlog::logger& logger;
   graph_node& node;
 
-  template <typename T>
-  void operator()(const T&)
+  void operator()()
   try
   {
     if (perf.measure)

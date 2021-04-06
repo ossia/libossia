@@ -305,19 +305,19 @@ public:
   friend OSSIA_EXPORT bool operator>=(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<=(const value& lhs, const value& rhs);
-
-  template <typename ostream_t>
-  friend ostream_t& operator<<(ostream_t& os, const ossia::value& c)
+/*
+  friend std::ostream& operator<<(std::ostream& os, const ossia::value& c)
   {
     // TODO OPTIMIZEME
     return os << value_to_pretty_string(c);
   }
-  template <typename istream_t>
-  friend istream_t& operator>>(istream_t& is, const ossia::value& c)
+
+  friend std::istream& operator>>(std::istream& is, const ossia::value& c)
   {
     // TODO
     return is;
   }
+  */
 };
 
 inline ossia::value init_value(ossia::val_type type)

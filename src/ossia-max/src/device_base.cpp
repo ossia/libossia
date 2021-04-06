@@ -53,9 +53,18 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
     {
       switch(obj->m_otype)
       {
+        case object_class::remote:
+        {
+          auto rmt = static_cast<ossia::max::remote*>(obj);
+          // only break for 'unit' attribute
+          if( attribute == ossia::net::text_unit()
+           || attribute == ossia::net::text_extended_type()){
+            rmt->set_unit();
+            break;
+          }
+        }
         case object_class::attribute:
         case object_class::param:
-        case object_class::remote:
         {
           auto oc = static_cast<ossia::max::parameter_base*>(obj);
           oc->update_attribute(oc, attribute, &node);
@@ -122,6 +131,8 @@ void device_base::connect_slots()
     m_device->on_node_removing.connect<&device_base::on_node_removing_callback>(this);
 
     m_matchers.emplace_back(std::make_shared<matcher>(&m_device->get_root_node(), nullptr));
+    int size = m_matchers.size();
+    m_matchers[size-1]->m_index = size;
     // This is to handle [get address( message only
     // so is it really needed ?
     assert(!m_matchers.empty());

@@ -1,11 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <regex>
 #include <iostream>
+#include <set>
+
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <boost/algorithm/string/replace.hpp>

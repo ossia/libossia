@@ -15,6 +15,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <regex>
 
 #include <rapidfuzz/fuzz.hpp>
 
@@ -625,14 +626,30 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
-  // first sort by name
-  ossia::sort(children, [](auto n1, auto n2) {
+  std::regex pattern("\\.[0-9]+");
+
+  // first sort by name taking care of instance number; i.e. foo.3 before foo.11
+  ossia::sort(children, [&](auto n1, auto n2) {
     std::string s1 = n1->get_name();
     std::string s2 = n2->get_name();
 
     boost::algorithm::to_lower(s1);
     boost::algorithm::to_lower(s2);
 
+    std::smatch asmatch, bsmatch;
+    if(std::regex_search(s1, asmatch, pattern) && std::regex_search(s2, bsmatch, pattern))
+    {
+      if(asmatch.prefix() == bsmatch.prefix())
+      {
+        int aidx = std::stoi(asmatch.str(0).substr(1));
+        int bidx = std::stoi(bsmatch.str(0).substr(1));
+        return aidx < bidx;
+      }
+      else
+      {
+        return asmatch.prefix() < bsmatch.prefix();
+      }
+    }
     return s1 < s2;
   });
 

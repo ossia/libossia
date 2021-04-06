@@ -2,14 +2,15 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
-			"revision" : 5,
+			"major" : 8,
+			"minor" : 1,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 441.0, 393.0, 640.0, 480.0 ],
+		"classnamespace" : "box",
+		"rect" : [ 1166.0, 472.0, 443.0, 473.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -36,14 +37,40 @@
 		"tags" : "",
 		"style" : "",
 		"subpatcher_template" : "",
+		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-14",
+					"maxclass" : "flonum",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 8.0, 355.0, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"format" : 6,
+					"id" : "obj-11",
+					"maxclass" : "flonum",
+					"numinlets" : 1,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "bang" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 8.0, 268.0, 50.0, 22.0 ]
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-6",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 30.0, 164.0, 34.0, 22.0 ],
-					"style" : "",
 					"text" : "print"
 				}
 
@@ -64,7 +91,6 @@
 					"parameter_enable" : 0,
 					"patching_rect" : [ 74.5, 53.0, 24.0, 24.0 ],
 					"rounded" : 180.0,
-					"style" : "",
 					"text" : "2",
 					"textcolor" : [ 1.0, 1.0, 1.0, 0.698039 ],
 					"textoncolor" : [ 1.0, 1.0, 1.0, 1.0 ],
@@ -86,7 +112,6 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 225.0, 32.0, 190.0, 64.0 ],
-					"style" : "",
 					"text" : "Expose ossia.device through oscquery protocole using default ports",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
@@ -100,7 +125,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 115.0, 53.0, 101.0, 22.0 ],
-					"style" : "",
 					"text" : "expose oscquery"
 				}
 
@@ -114,8 +138,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 8.0, 412.0, 50.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 8.0, 416.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -128,8 +151,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 8.0, 339.0, 50.0, 22.0 ],
-					"style" : ""
+					"patching_rect" : [ 8.0, 326.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -141,7 +163,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 8.0, 242.0, 175.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.model my_distant_model"
 				}
 
@@ -153,8 +174,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 8.0, 372.0, 117.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 8.0, 389.0, 117.0, 22.0 ],
 					"text" : "ossia.parameter bar"
 				}
 
@@ -166,8 +186,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 8.0, 311.0, 117.0, 22.0 ],
-					"style" : "",
+					"patching_rect" : [ 8.0, 298.0, 117.0, 22.0 ],
 					"text" : "ossia.parameter foo"
 				}
 
@@ -181,8 +200,7 @@
 					"numinlets" : 0,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 8.0, 8.0, 30.0, 30.0 ],
-					"style" : ""
+					"patching_rect" : [ 8.0, 8.0, 30.0, 30.0 ]
 				}
 
 			}
@@ -194,7 +212,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 8.0, 109.0, 157.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.device distant_device"
 				}
 
@@ -211,6 +228,20 @@
 				"patchline" : 				{
 					"destination" : [ "obj-1", 0 ],
 					"source" : [ "obj-10", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-3", 0 ],
+					"source" : [ "obj-11", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
+					"source" : [ "obj-14", 0 ]
 				}
 
 			}

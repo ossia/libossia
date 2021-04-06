@@ -7,6 +7,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include "search_filter.hpp"
+#include <set>
 
 namespace ossia
 {
@@ -22,7 +23,6 @@ struct fuzzysearch : search_filter
   t_symbol* m_scope{};
   std::set<ossia::net::node_base*> m_roots{};
   void* m_outlet{};
-  std::vector<ossia::net::fuzzysearch_result> m_matches{};
 
   fuzzysearch(long argc, t_atom* argv);
 

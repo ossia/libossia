@@ -27,6 +27,7 @@
 #include "search.hpp"
 #include "router.hpp"
 #include "fuzzysearch.hpp"
+#include "assert.hpp"
 
 #include "ZeroconfOscqueryListener.hpp"
 #include "ZeroconfMinuitListener.hpp"
@@ -44,6 +45,11 @@ extern "C"
     OSSIA_MAX_EXPORT void ossia_view_setup();
     OSSIA_MAX_EXPORT void ossia_ossia_setup();
     OSSIA_MAX_EXPORT void ossia_explorer_setup();
+    OSSIA_MAX_EXPORT void ossia_search_setup();
+    OSSIA_MAX_EXPORT void ossia_monitor_setup();
+    OSSIA_MAX_EXPORT void ossia_fuzzysearch_setup();
+    OSSIA_MAX_EXPORT void ossia_assert_setup();
+    OSSIA_MAX_EXPORT void ossia_equals_setup();
 }
 
 namespace ossia
@@ -83,6 +89,53 @@ struct max_msp_log_sink final :
     void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 };
 
+struct patcher_descriptor{
+  ossia::safe_set<parameter*> parameters{};
+  ossia::safe_set<remote*>    remotes{};
+  ossia::safe_set<attribute*> attributes{};
+  model*     model{};
+  view*      view{};
+  device*    device{};
+  client*    client{};
+
+  t_object* parent_patcher{};
+  ossia::safe_set<t_object*> subpatchers{};
+
+  bool loadbanged{}; // true if patcher have been loadbanged already
+
+  long poly_index{-1}; // 0 when not in a poly~, instance index otherwise, -1 uninitialized
+
+  bool empty() const
+  {
+    return parameters.empty()
+           && remotes.empty()
+           && attributes.empty()
+           && model  != nullptr
+           && view   != nullptr
+           && device != nullptr
+           && client != nullptr;
+  }
+
+  auto size() const
+  {
+    return parameters.size()
+           + remotes.size()
+           + attributes.size()
+           + (model?1:0)
+           + (view?1:0)
+           + (device?1:0)
+           + (client?1:0);
+  }
+
+  bool has_no_master_node()
+  {
+    return model == nullptr
+          && view == nullptr
+          && device ==  nullptr
+          && client == nullptr;
+  }
+};
+
 class ossia_max
 {
 public:
@@ -111,6 +164,7 @@ public:
     if(std::is_same<T, ossia::max::search>::value) return ossia_search_class;
     if(std::is_same<T, ossia::max::router>::value) return ossia_router_class;
     if(std::is_same<T, ossia::max::fuzzysearch>::value) return ossia_fuzzysearch_class;
+    if(std::is_same<T, ossia::max::oassert>::value) return ossia_assert_class;
     return nullptr;
   }
 
@@ -144,8 +198,12 @@ public:
   t_class* ossia_remote_class{};
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
+  t_class* ossia_assert_class{};
+  t_class* ossia_equals_class{};
+  static t_class* ossia_patcher_listener_class;
 
   // keep list of all objects
+  // TODO is it still needed ?
   ossia::safe_vector<parameter*> parameters;
   ossia::safe_vector<remote*> remotes;
   ossia::safe_vector<model*> models;
@@ -156,7 +214,10 @@ public:
   ossia::safe_vector<explorer*> explorers;
   ossia::safe_vector<monitor*> monitors;
   ossia::safe_vector<search*> searchs;
+  ossia::safe_vector<logger*> loggers;
+  ossia::safe_vector<oassert*> oasserts;
 
+  // TODO remove all those nr* vectors, should not be needed anymore
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
   ossia::safe_set<remote*> nr_remotes;
@@ -169,58 +230,14 @@ public:
 
   static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
 
+  // TODO is this still needed ?
   bool registering_nodes=false;
 
-  // this is used at loadbang to mark a patcher loaded
-  // and trigger its registration
-  struct root_descriptor{
-    bool is_loadbanged{};
-    unsigned long count{}; // number of object under this root
-
-    unsigned long inc(){ return ++count;}
-    unsigned long dec(){ return --count;}
-  };
-  typedef std::map<t_object*, root_descriptor> RootMap;
-
-  struct patcher_descriptor{
-    ossia::safe_set<parameter*> parameters{};
-    ossia::safe_set<remote*>    remotes{};
-    ossia::safe_set<attribute*> attributes{};
-    model*     model{};
-    view*      view{};
-    device*    device{};
-    client*    client{};
-
-    t_object* parent_patcher;
-    ossia::safe_set<t_object*> subpatchers;
-
-    bool loadbanged{}; // true if patcher have been loadbanged already
-
-    bool empty() const
-    {
-      return parameters.empty()
-             && remotes.empty()
-             && attributes.empty()
-             && model  != nullptr
-             && view   != nullptr
-             && device != nullptr
-             && client != nullptr;
-    }
-
-    auto size() const
-    {
-      return parameters.size()
-           + remotes.size()
-           + attributes.size()
-           + (model?1:0)
-           + (view?1:0)
-           + (device?1:0)
-           + (client?1:0);
-    }
-  };
   std::map<t_object*, patcher_descriptor> patchers;
 
-  RootMap root_patcher;
+  static patcher_descriptor& get_patcher_descriptor(t_object* patcher);
+  static void remove_patcher_descriptor(t_object* patcher);
+
   void* m_reg_clock{};
   static void* s_browse_clock;
 
@@ -235,6 +252,8 @@ private:
   std::shared_ptr<ossia::net::generic_device> m_device;
   string_map<std::shared_ptr<ossia::websocket_threaded_connection>> m_connections;
   std::shared_ptr<max_msp_log_sink> m_log_sink;
+
+  t_object* m_patcher_listener;
 };
 
 template<typename T, typename... Args>

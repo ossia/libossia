@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
+#include <spdlog/sinks/sink.h>
 #include <verdigris>
 
 #include <QMetaType>

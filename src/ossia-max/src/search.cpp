@@ -52,18 +52,12 @@ extern "C" void* ossia_search_new(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<search>(argc, argv);
   x->m_dumpout = outlet_new(x, NULL);
+  x->m_otype = object_class::search;
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
   ossia_max::instance().searchs.push_back(x);
 
-  if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
-  {
-    x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
-  }
   return x;
 }
 
@@ -103,111 +97,73 @@ search::~search()
   outlet_delete(m_dumpout);
 }
 
-void search::parse_args(t_symbol* s, long argc, t_atom* argv)
-{
-  m_method = s;
-  m_name = nullptr;
-  if(argc > 0 && argv->a_type == A_SYM)
-  {
-    m_name = argv->a_w.w_sym;
-    m_addr_scope = ossia::net::get_address_scope(m_name->s_name);
-  }
-}
-
 void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 {
-  x->parse_args(s, argc, argv);
-  auto matchers = x->find_parent_nodes();
+  x->m_name = _sym_nothing;
+  if(argc > 0 && argv->a_type == A_SYM)
+  {
+    x->m_name = argv->a_w.w_sym;
+  }
+  else
+  {
+    x->m_name = gensym("/");
+  }
+  x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
+
+  auto matchers = x->find_or_create_matchers();
 
   ossia::remove_erase_if(matchers, [&](const std::shared_ptr<matcher>& m)
                          { return x->filter(*m->get_node()); });
 
-  if(x->m_method == s_search)
+  if(s == s_search)
   {
-    // only return given nodes addresses
-    t_atom a;
-    A_SETLONG(&a, matchers.size());
-    outlet_anything(x->m_dumpout, s_size, 1, &a);
-    for(const auto& m : matchers)
+    std::vector<matcher*> condidates;
+    condidates.reserve(128);
+
+    for(const auto& match : matchers)
     {
-      std::string addr = ossia::net::address_string_from_node(*m->get_node());
-      A_SETSYM(&a, gensym(addr.c_str()));
-      outlet_anything(x->m_dumpout, s_result, 1, &a);
-    }
-  }
-  else if(x->m_method == s_open)
-  {
-    auto open_parent = [](object_base* x, ossia::net::node_base* node)
-    {
-      for ( auto& om : x->m_matchers )
+      auto node = match->get_node();
+      auto all = ossia_max::s_node_matchers_map[node].reference();
+
+      for(const auto& c : all)
       {
-        if ( om->get_node() == node )
+        if(c->get_owner() != x)
         {
-          // TODO use get_patcher() here instead
-          t_object *jp{};
-
-          // get the object's parent patcher
-          object_obex_lookup(x, gensym("#P"), (t_object **)&jp);
-
-          if (jp)
-            typedmess(jp, gensym("front"), 0, NULL);	// opens the subpatcher
-
-          x->highlight();
+          condidates.push_back(c);
         }
       }
-    };
+    }
 
+    // only return given nodes addresses
+    t_atom a[2];
+    A_SETLONG(a, condidates.size());
+    outlet_anything(x->m_dumpout, s_size, 1, a);
+
+    for(const auto& m : condidates)
+    {
+      object_base* obj = m->get_owner();
+      if(obj != x)
+      {
+        std::string addr = ossia::net::address_string_from_node(*m->get_node());
+        A_SETSYM(a, object_classname(m->get_owner()));
+        A_SETSYM(a+1, gensym(addr.c_str()));
+        outlet_anything(x->m_dumpout, s_result, 2, a);
+      }
+    }
+  }
+  else if(s == s_open)
+  {
     for(const auto& m : matchers)
     {
       auto node = m->get_node();
-
-      if(node->get_parameter())
+      auto candidates = ossia_max::s_node_matchers_map[node].reference();
+      for(const auto& m : candidates)
       {
-        // if node has a paremeter, search only for ossia.parameter,
-        // ossia.remote & ossia.attribute object
-
-        // TODO refactor to use ossia_max::s_node_matchers_map instead
-        for ( auto param : ossia_max::instance().parameters.reference() )
+        object_base* obj = m->get_owner();
+        if(obj != x)
         {
-          open_parent(param, node);
-        }
-
-        for ( auto remote : ossia_max::instance().remotes.reference() )
-        {
-          open_parent(remote, node);
-        }
-
-        for ( auto attr : ossia_max::instance().attributes.reference() )
-        {
-          open_parent(attr, node);
-        }
-      }
-      else if(!node->get_parent())
-      {
-        // if node doesn't have a parent node, then search only
-        // ossia.device and ossia.client objects
-        for ( auto dev : ossia_max::instance().devices.reference() )
-        {
-          open_parent(dev, node);
-        }
-
-        for ( auto client : ossia_max::instance().clients.reference() )
-        {
-          open_parent(client, node);
-        }
-      }
-      else
-      {
-        // if node has a parent but no paremeter,
-        // search only for ossia.model and ossia.view object
-        for ( auto model : ossia_max::instance().models.reference() )
-        {
-          open_parent(model, node);
-        }
-
-        for ( auto view : ossia_max::instance().views.reference() )
-        {
-          open_parent(view, node);
+          typedmess(obj->m_patcher, gensym("front"), 0, NULL);	// opens the subpatcher
+          obj->highlight();
         }
       }
     }
@@ -216,6 +172,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 
 bool search::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().searchs.push_back(this);

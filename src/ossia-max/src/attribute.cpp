@@ -80,11 +80,10 @@ t_max_err attribute::notify(attribute *x, t_symbol *s,
 
 void attribute::do_registration()
 {
-  std::cout << "register " << this << " " << static_cast<int>(m_otype) << " " << m_name->s_name << std::endl;
-
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
   m_selection_path.reset();
   fill_selection();
@@ -92,6 +91,7 @@ void attribute::do_registration()
 
 void attribute::unregister()
 {
+  m_node_selection.clear();
   m_matchers.clear();
 
   ossia_max::instance().nr_attributes.push_back(this);
@@ -108,10 +108,16 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 {
   auto& node = param.get_node();
 
-  if( ossia::traversal::match(get_path(), node) )
+  for(auto p : m_paths)
   {
-    m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-    fill_selection();
+    auto path = ossia::traversal::make_path(p);
+    if( path && ossia::traversal::match(*path, node) )
+    {
+      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
+      int size = m_matchers.size();
+      m_matchers[size-1]->m_index = size;
+      fill_selection();
+    }
   }
 }
 
@@ -126,7 +132,8 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 
   if (x)
   {
-    ossia_max::instance().patchers[x->m_patcher].attributes.push_back(x);
+    critical_enter(0);
+    ossia_max::get_patcher_descriptor(x->m_patcher).attributes.push_back(x);
 
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);
@@ -153,9 +160,9 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
+    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+
+    critical_exit(0);
   }
 
   return (x);
@@ -163,21 +170,20 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 
 void attribute::destroy(attribute* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    pat_desc.attributes.remove_all(x);
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
-
+  critical_enter(0);
   x->m_dead = true;
   x->unregister();
 
-  if(x->m_is_pattern && x->m_dev)
+  bool is_pattern;
+
+  for(auto& p : x->m_paths)
+  {
+    is_pattern = ossia::traversal::is_pattern(p);
+    if(is_pattern)
+      break;
+  }
+
+  if(is_pattern && x->m_dev)
   {
     x->m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(x);
     x->m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(x);
@@ -185,6 +191,7 @@ void attribute::destroy(attribute* x)
 
   outlet_delete(x->m_dumpout);
   x->~attribute();
+  critical_exit(0);
 }
 
 } // pd namespace

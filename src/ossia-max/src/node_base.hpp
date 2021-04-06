@@ -19,7 +19,7 @@ public:
    * @note only relevant for client, device, model and view objects.
    * @param x
    */
-  static void get_namespace(node_base* x);
+  static void get_namespace(node_base* x, t_symbol* s, long argc, t_atom* argv);
 
 };
 

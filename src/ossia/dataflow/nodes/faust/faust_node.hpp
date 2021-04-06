@@ -10,6 +10,7 @@ class faust_fx final : public ossia::graph_node
 
 public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
+  ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> displays;
   faust_fx(std::shared_ptr<llvm_dsp> dsp)
     : m_dsp{std::move(dsp)}
   {
@@ -41,6 +42,7 @@ class faust_synth final : public ossia::graph_node
 
 public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
+  ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> displays;
   faust_synth(std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> dsp)
     : m_dsp{std::move(dsp)}
   {

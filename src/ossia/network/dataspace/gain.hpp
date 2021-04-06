@@ -20,57 +20,62 @@ struct gain_unit
 /** Utility functions taken from Jamoma TTBase.h **/
 namespace detail
 {
-const constexpr double DecibelHeadroom = 96.;
-const double GainMidiPower
-    = std::log(ossia::log1p(12. / DecibelHeadroom) / std::log(127. / 100.))
-      / std::log(2.);
-const double GainMidiPowPow2 = ossia::exp2(GainMidiPower);
+template<typename T>
+const constexpr T DecibelHeadroom = 96.;
+
+template<typename T>
+const T GainMidiPower
+    = std::log(ossia::log1p(T(12.) / DecibelHeadroom<T>) / std::log(T(127. / 100.)))
+      / std::log(T(2.));
+
+template<typename T>
+const T GainMidiPowPow2 = ossia::exp2(GainMidiPower<T>);
 
 template <typename T>
 T LinearGainToDecibels(const T value)
 {
-  return value >= 0. ? 20.0 * std::log10(value) : 0.;
+  return value >= T(0.) ? T(20.0) * std::log10(value) : T(0.);
 }
 
 template <typename T>
 T LinearGainToDecibelsClipped(const T value)
 {
-  return value <= 0. ? -DecibelHeadroom
-                     : clamp_min(20.0 * std::log10(value), -DecibelHeadroom);
+  return value <= T(0.) ? -DecibelHeadroom<T>
+                     : clamp_min(T(20.0) * std::log10(value), -DecibelHeadroom<T>);
 }
 
 template <typename T>
 T DecibelsToLinearGain(const T value)
 {
-  return std::pow(10., value * 0.05);
+  return std::pow(T(10.), value * T(0.05));
 }
 
 template <typename T>
 T DecibelsToLinearGainClipped(const T value)
 {
-  return value <= -DecibelHeadroom ? 0. : DecibelsToLinearGain(value);
+  return value <= -DecibelHeadroom<T> ? T(0.) : DecibelsToLinearGain(value);
 }
 
 template <typename T>
 T MidiToLinearGain(const T value)
 {
-  return value <= 0.
-             ? 0.
+  return value <= T(0.)
+             ? T(0.)
              : DecibelsToLinearGainClipped(
-                   DecibelHeadroom
-                   * (std::pow(value / 100., ossia::exp2(GainMidiPower))
-                      - 1.));
+                   DecibelHeadroom<T>
+                   * (std::pow(value / T(100.), GainMidiPowPow2<T>)
+                      - T(1.)));
 }
 
 template <typename T>
 T DecibelsToMidi(const T value)
 {
-  return value <= -DecibelHeadroom
-             ? 0.
-             : 100.
+  return value <= -DecibelHeadroom<T>
+             ? T(0.)
+             : T(100.)
                    * std::exp(
-                         ossia::log1p(value / DecibelHeadroom)
-                         / GainMidiPowPow2);
+                         ossia::log1p(value / DecibelHeadroom<T>)
+                         / GainMidiPowPow2<T>);
 }
 
 template <typename T>
@@ -182,7 +187,7 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return 20.0 * (std::log10(self.dataspace_value));
+    return 20.0f * std::log10(self.dataspace_value);
   }
 
   static ossia::domain_base<float> domain()

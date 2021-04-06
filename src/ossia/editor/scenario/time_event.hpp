@@ -42,7 +42,8 @@ public:
     NONE,
     PENDING,
     HAPPENED,
-    DISPOSED
+    DISPOSED,
+    FINISHED
   };
 
   /**

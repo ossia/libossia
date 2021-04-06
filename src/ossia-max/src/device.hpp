@@ -17,19 +17,18 @@ public:
   static void register_children(device*);
   static void loadbang(device*);
 
-  std::vector<std::vector<t_atom>> m_protocols;
-
-  //static void* create(t_symbol* name, int argc, t_atom* argv);
-  //static void destroy(device* x);
   static void expose(device* x, t_symbol*, long argc, t_atom* argv);
   static void name(device* x, t_symbol*, long argc, t_atom* argv);
   static void get_protocols(device* x);
   static void stop_expose(device*x, int index);
   static void get_mess_cb(device* x, t_symbol* s);
   static void assist(ossia::max::device*, void*, long, long, char*);
+  static void send_raw_osc(device* x, t_symbol* s, int argc, t_atom* argv);
+  static void resend_all_values(device* x, t_symbol* s);
 
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max::device*);
+  static void class_setup(t_class* c);
 };
 
 namespace protocol_settings
@@ -65,20 +64,20 @@ static void print_protocol_help()
   post(
       "Minuit <remoteip> <remoteport> <localport> :\n"
       "\tremoteip (symbol): ip of target device\n"
-      "\tremoteport (float): port on which packet should be send\n"
-      "\tlocalport (float): port to which this device is listening");
+      "\tremoteport (int): port on which packet should be send\n"
+      "\tlocalport (int): port to which this device is listening");
 
   post(
       "oscquery <oscport> <wsport> :\n"
-      "\toscport (float) : post on which osc packet are sent\n"
-      "\twsport (float) : WebSocket port on which distant application will "
+      "\toscport (int) : port on which osc packet are sent\n"
+      "\twsport (int) : WebSocket port on which distant application will "
       "connect.");
 
   post(
       "osc <remoteip> <remoteport> <localpoort>\n"
       "\tremoteip (symbol): ip of target device\n"
-      "\tremoteport (float): port on which packet should be send\n"
-      "\tlocalport (port): port this device is listening.");
+      "\tremoteport (int): port on which packet should be send\n"
+      "\tlocalport (int): port this device is listening.");
 }
 
 } // protocol_setting namespace

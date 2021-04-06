@@ -6,6 +6,8 @@
 #include <ossia/audio/audio_protocol.hpp>
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/dataflow/dataflow.hpp>
+#include <ossia/dataflow/exec_state_facade.hpp>
+#include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
@@ -114,7 +116,7 @@ struct global_pull_visitor
     auto it = state.m_receivedMidi.find(midi);
     if (it != state.m_receivedMidi.end())
     {
-      for (const rtmidi::message& v : it->second.second)
+      for (const libremidi::message& v : it->second.second)
       {
         val.messages.push_back(v);
       }
@@ -167,14 +169,14 @@ struct global_pull_node_visitor
     {
       if(channel == -1)
       {
-        for (const rtmidi::message& v : it->second.second)
+        for (const libremidi::message& v : it->second.second)
         {
           val.messages.push_back(v);
         }
       }
       else
       {
-        for (const rtmidi::message& v : it->second.second)
+        for (const libremidi::message& v : it->second.second)
         {
           if(v.get_channel() == channel)
             val.messages.push_back(v);
@@ -915,7 +917,7 @@ static bool is_in(
 static bool is_in(
     net::parameter_base& other,
     const ossia::fast_hash_map<
-        ossia::net::parameter_base*, value_vector<rtmidi::message>>& container)
+        ossia::net::parameter_base*, value_vector<libremidi::message>>& container)
 {
   auto it = container.find(&other);
   if (it == container.end())

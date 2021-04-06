@@ -9,10 +9,7 @@ extern "C" void ossia_ossia_setup()
       "ossia", (method)ossia_object::create, (method)ossia_object::destroy,
       (long)sizeof(ossia::max::ossia_object), 0L, A_GIMME, 0);
 
-  node_base::class_setup(c);
-  class_addmethod(c, (method)device::expose, "expose", A_GIMME, 0);
-  class_addmethod(c, (method)device::name, "name", A_GIMME, 0);
-  class_addmethod(c, (method)ossia_object::notify,"notify", A_CANT, 0);
+  device::class_setup(c);
 
   CLASS_ATTR_SYM(
         c, "log_level", 0, ossia_object, m_log_level);
@@ -45,10 +42,6 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
   x->m_device = ossia_library.get_default_device();
   x->m_otype = object_class::device;
   x->m_name = gensym(x->m_device->get_name().c_str());
-  x->m_matchers.emplace_back(std::make_shared<matcher>(&x->m_device->get_root_node(), (object_base*)nullptr));
-
-  x->m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(x);
 
   x->m_log_level = gensym("error");
 
@@ -56,6 +49,8 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
     x->m_name = argv[0].a_w.w_sym;
     x->m_device->set_name(x->m_name->s_name);
   }
+
+  x->connect_slots();
 
   // inhibit loadbang for ossia object
   x->m_registered = true;
@@ -65,10 +60,9 @@ void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 
 void ossia_object::destroy(ossia_object *x)
 {
-  x->m_device->on_parameter_created.disconnect<&device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(x);
-
   ossia_max::instance().devices.remove_all(x);
+
+  x->disconnect_slots();
 
   outlet_delete(x->m_dumpout);
   x->~ossia_object();

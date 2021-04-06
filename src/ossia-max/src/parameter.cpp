@@ -48,7 +48,8 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
   if (x)
   {
-    ossia_max::instance().patchers[x->m_patcher].parameters.push_back(x);
+    critical_enter(0);
+    ossia_max::get_patcher_descriptor(x->m_patcher).parameters.push_back(x);
 
     // make outlets
     x->m_dumpout
@@ -67,18 +68,13 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (attrstart && argv)
+    if (attrstart > 0 && argv)
     {
       if (atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
-    }
-
-    if (x->m_name == _sym_nothing)
-    {
-      return x;
     }
 
     // process attr args, if any
@@ -100,12 +96,10 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
-    // in that case, the second loadbang is inhibited by the first
-    x->m_reg_clock = clock_new(x, (method) object_base::loadbang);
-    clock_set(x->m_reg_clock, 1);
+    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_max::instance().parameters.push_back(x);
+    critical_exit(0);
   }
 
   return x;
@@ -113,23 +107,14 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
 void parameter::destroy(parameter* x)
 {
-  auto pat_it = ossia_max::instance().patchers.find(x->m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
-  {
-    auto& pat_desc = pat_it->second;
-    pat_desc.parameters.remove_all(x);
-    if(pat_desc.empty())
-    {
-      ossia_max::instance().patchers.erase(pat_it);
-    }
-  }
-
+  critical_enter(0);
   x->m_dead = true;
   x->unregister();
   ossia_max::instance().parameters.remove_all(x);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
   x->~parameter();
+  critical_exit(0);
 }
 
 void parameter::assist(parameter* x, void* b, long m, long a, char* s)
@@ -177,6 +162,7 @@ void parameter::do_registration()
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
   m_selection_path.reset();
   fill_selection();
@@ -196,8 +182,22 @@ void parameter::do_registration()
   set_repetition_filter();
   set_recall_safe();
 
-  if(!ossia_max::instance().registering_nodes) // don't push default value when registering at loadbang
-    push_default_value(this);                  // default value will be sent at the end of the global registration
+  for(const auto& m : m_matchers)
+  {
+    auto param = m->get_node()->get_parameter();
+    auto val = param->get_default_value();
+    auto it = m_value_map.find(m->get_node()->get_name());
+    if(it != m_value_map.end())
+    {
+      val = it->second;
+      m_value_map.erase(it);
+    }
+    if(val)
+    {
+      // push quiet here because will be fired later following priority
+      param->push_value_quiet(*val);
+    }
+  }
 }
 
 bool parameter::unregister()

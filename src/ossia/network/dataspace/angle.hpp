@@ -56,12 +56,12 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
   static constexpr strong_value<neutral_unit>
   to_neutral(strong_value<concrete_type> self)
   {
-    return {self.dataspace_value * ossia::deg_to_rad};
+    return {self.dataspace_value * float(ossia::deg_to_rad)};
   }
 
   static constexpr value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return self.dataspace_value * ossia::rad_to_deg;
+    return self.dataspace_value * float(ossia::rad_to_deg);
   }
 
   static ossia::domain_base<float> domain()

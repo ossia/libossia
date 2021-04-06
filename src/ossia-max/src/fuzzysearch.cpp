@@ -90,7 +90,10 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
     }
     for(const auto& clt : ossia_max::instance().clients.reference())
     {
-      x->m_roots.insert(&clt->m_device->get_root_node());
+      if(clt->m_device)
+      {
+        x->m_roots.insert(&clt->m_device->get_root_node());
+      }
     }
     x->m_roots.insert(&ossia_max::instance().get_default_device()->get_root_node());
   }
@@ -103,13 +106,19 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
 
   }
 
-  ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, x->m_matches);
+  std::vector<ossia::net::fuzzysearch_result> matches{};
 
-  ossia::remove_erase_if(x->m_matches, [&](const ossia::net::fuzzysearch_result& m){
+  ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, matches);
+
+  ossia::remove_erase_if(matches, [&](const ossia::net::fuzzysearch_result& m){
     return x->filter(*m.node);
   });
 
-  for(const auto& m : x->m_matches)
+  t_atom size;
+  A_SETLONG(&size, matches.size());
+  outlet_anything(x->m_outlet, gensym("size"), 1, &size);
+
+  for(const auto& m : matches)
   {
     t_atom a[2];
     A_SETFLOAT(a, m.score);

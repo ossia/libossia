@@ -1,6 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#define CATCH_CONFIG_MAIN
+
 #include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
@@ -8,6 +8,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;

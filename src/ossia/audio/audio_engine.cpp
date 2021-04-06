@@ -39,6 +39,8 @@ void audio_engine::stop()
   int timeout = 5000;
   req_stop++;
   stop_processing = true;
+
+#if !defined(__EMSCRIPTEN__)
   while (ack_stop != req_stop && running() && timeout > 0)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -49,6 +51,7 @@ void audio_engine::stop()
 
   if(timeout <= 0)
     throw std::runtime_error("Audio thread not responding");
+#endif
 }
 
 void audio_engine::start()
@@ -67,14 +70,13 @@ void audio_engine::gc()
 void audio_engine::set_tick(audio_engine::fun_type&& t)
 {
   int timeout = 5000;
-
   if(t.allocated())
     tick_funlist.enqueue(std::move(t));
   else
     tick_funlist.enqueue(default_audio_tick{});
 
   req_tick++;
-
+#if !defined(__EMSCRIPTEN__)
   while (ack_tick != req_tick && running() && timeout > 0)
   {
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -82,9 +84,9 @@ void audio_engine::set_tick(audio_engine::fun_type&& t)
   }
 
   std::atomic_thread_fence(std::memory_order_seq_cst);
-
   if(timeout <= 0)
     throw std::runtime_error("Audio thread not responding");
+#endif
 }
 
 void audio_engine::load_audio_tick()
@@ -106,8 +108,8 @@ ossia::audio_engine* make_audio_engine(
   ossia::audio_engine* p{};
 
 #if defined(__EMSCRIPTEN__)
-  rate = 44100;
-  bs = 8192;
+  rate = 48000;
+  bs = 1024;
   inputs = 0;
   outputs = 2;
   return new ossia::sdl_protocol{rate, bs};

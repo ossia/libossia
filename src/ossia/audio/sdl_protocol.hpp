@@ -1,10 +1,10 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#if __has_include(<SDL/SDL_audio.h>) && !defined(OSSIA_PROTOCOL_JOYSTICK)
+#if __has_include(<SDL2/SDL_audio.h>)
 #include <ossia/audio/audio_engine.hpp>
 
-#include <SDL/SDL.h>
-#include <SDL/SDL_audio.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_audio.h>
 #define OSSIA_AUDIO_SDL 1
 
 namespace ossia
@@ -19,13 +19,15 @@ public:
   {
     SDL_Init(SDL_INIT_AUDIO);
     m_desired.freq = rate;
-    m_desired.format = AUDIO_S16SYS;
+    m_desired.format = AUDIO_F32SYS;
     m_desired.channels = outputs;
     m_desired.samples = bs;
     m_desired.callback = SDLCallback;
     m_desired.userdata = this;
 
-    if (SDL_OpenAudio(&m_desired, &m_obtained) < 0)
+    m_deviceId = SDL_OpenAudioDevice(nullptr, 0, &m_desired, &m_obtained, 0);
+    std::cerr << "SDL: " << m_deviceId << " :" << SDL_GetError() << std::endl;
+    if (m_deviceId < 2)
     {
       using namespace std::literals;
       throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
@@ -36,73 +38,75 @@ public:
     this->effective_inputs = 0;
     this->effective_outputs = m_obtained.channels;
 
-    SDL_PauseAudio(0);
+    std::cerr
+        << "SDL: " << m_obtained.freq << " ; "
+        << m_obtained.samples << " ; "
+        << m_obtained.size << " ; "
+        << SDL_AUDIO_ISFLOAT(m_obtained.format) << " ; "
+        << SDL_AUDIO_BITSIZE(m_obtained.format) << " ; "
+        << (int)m_obtained.channels << std::endl
+           ;
+    SDL_PauseAudioDevice(m_deviceId, 0);
   }
 
   ~sdl_protocol() override
   {
     stop();
-    SDL_CloseAudio();
+    SDL_CloseAudioDevice(m_deviceId);
     SDL_Quit();
   }
 
   bool running() const override
   {
-    return SDL_GetAudioStatus() == SDL_AUDIO_PLAYING;
+    return SDL_GetAudioDeviceStatus(m_deviceId) == SDL_AUDIO_PLAYING;
   }
 
 private:
-  static void SDLCallback(void* userData, Uint8* data, int nframes)
+  static void SDLCallback(void* userData, Uint8* data, int bytes)
   {
     auto& self = *static_cast<sdl_protocol*>(userData);
     self.tick_start();
 
-    auto samples = reinterpret_cast<int16_t*>(data);
+    auto audio_out = reinterpret_cast<float*>(data);
+    const int out_chan = self.m_obtained.channels;
+    const int frames = self.m_obtained.samples;
+    assert(out_chan > 0);
+    assert(frames > 0);
+    assert(frames * out_chan * sizeof(float) == bytes);
 
-    const auto n_samples = nframes / self.outputs;
     if (self.stop_processing)
     {
       self.tick_clear();
-      for (int i = 0; i < n_samples; i++)
-      {
-        samples[i] = 0;
-      }
+      memset(data, 0, bytes);
       return;
     }
 
     {
-      auto float_data = (float*)alloca(sizeof(float) * nframes);
-      auto float_output = (float**)alloca(sizeof(float*) * self.outputs);
+      auto float_data = (float*)alloca(sizeof(float) * frames * out_chan);
+      memset(float_data, 0, sizeof(sizeof(float) * frames * out_chan));
 
-      for (int i = 0; i < self.outputs; i++)
+      auto float_output = (float**)alloca(sizeof(float*) * out_chan);
+
+      for (int c = 0; c < out_chan; c++)
       {
-        float_output[i] = float_data + i * n_samples;
+        float_output[c] = float_data + c * frames;
       }
 
       // if one day there's input... samples[j++] / 32768.;
-      int k = 0;
-      for (int j = 0; j < n_samples;)
-      {
-        float_output[0][k] = 0.; j++;
-        float_output[1][k] = 0.; j++;
-        k++;
-      }
 
       // TODO time in seconds !
-      ossia::audio_tick_state ts{nullptr, float_output, (int)self.inputs, (int)self.outputs, uint64_t(nframes / self.outputs), 0};
+      ossia::audio_tick_state ts{nullptr, float_output, 0, out_chan, (uint64_t)frames, 0};
       self.audio_tick(ts);
 
-      k = 0;
-      for (int j = 0; j < n_samples;)
-      {
-        samples[j++] = float_output[0][k] * 32768.;
-        samples[j++] = float_output[1][k] * 32768.;
-        k++;
-      }
+      for (int j = 0; j < frames; j++)
+        for (int c = 0; c < out_chan; c++)
+          *audio_out++ = float_output[c][j];
+
       self.tick_end();
     }
   }
 
+  SDL_AudioDeviceID m_deviceId{};
   SDL_AudioSpec m_desired, m_obtained;
 };
 }

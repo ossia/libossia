@@ -4,10 +4,12 @@
 #include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/transitive_closure.hpp>
+#include <ossia/editor/scenario/execution_log.hpp>
 #include <ossia/detail/flat_map.hpp>
 
 #include <boost/circular_buffer.hpp>
 #include <boost/graph/transitive_closure.hpp>
+
 
 #include <ossia-config.hpp>
 
@@ -103,6 +105,11 @@ public:
       disable_strict_nodes_rec(m_enabled_cache, m_disabled_cache);
 
       tick_fun(*this, update_fun, e, m_all_nodes);
+
+#if defined(OSSIA_EXECUTION_LOG)
+      auto log = g_exec_log.log_executed_nodes(m_graph, m_all_nodes);
+#endif
+
 
       finish_nodes(m_nodes);
     }

@@ -26,7 +26,7 @@ public:
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_owner() const { return owner; }   // return the max object that holds this
   const t_atom* get_atom_addr_ptr() const { return &m_addr; }
-  void set_parent_addr();
+  void set_addr_symbol();
 
   inline bool operator==(const matcher& rhs)
   { return (get_node() == rhs.node); }
@@ -37,7 +37,10 @@ public:
   bool is_locked() const { return m_lock; }
   bool is_dead() const { return m_dead; }
 
+  int m_index{0};
+
 private:
+  // TODO rename those as m_node/m_owner/m_callbackit
   ossia::net::node_base* node{};
   object_base* owner{};
 

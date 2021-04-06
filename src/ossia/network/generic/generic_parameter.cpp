@@ -62,9 +62,8 @@ void generic_parameter::request_value()
 ossia::net::generic_parameter&
 generic_parameter::push_value(const ossia::value& value)
 {
-  set_value(value);
-
-  m_protocol.push(*this, m_value);
+  if(auto res = set_value(value); res.valid())
+    m_protocol.push(*this, std::move(res));
 
   return *this;
 }
@@ -72,16 +71,15 @@ generic_parameter::push_value(const ossia::value& value)
 ossia::net::generic_parameter&
 generic_parameter::push_value(ossia::value&& value)
 {
-  set_value(std::move(value));
-
-  m_protocol.push(*this, m_value);
+  if(auto res = set_value(std::move(value)); res.valid())
+    m_protocol.push(*this, std::move(res));
 
   return *this;
 }
 
 ossia::net::generic_parameter& generic_parameter::push_value()
 {
-  m_protocol.push(*this, m_value);
+  m_protocol.push(*this, value());
 
   return *this;
 }
@@ -98,20 +96,19 @@ ossia::value generic_parameter::value() const
   return m_value;
 }
 
-ossia::net::generic_parameter&
+ossia::value
 generic_parameter::set_value(const ossia::value& val)
 {
-  if (!val.valid())
-    return *this;
-
   ossia::value copy;
+
+  if (val.valid())
   {
     lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
       m_value = val;
-      copy = m_value;
+      copy = val;
     }
     else
     {
@@ -120,18 +117,16 @@ generic_parameter::set_value(const ossia::value& val)
       copy = m_value;
     }
   }
-
   send(copy);
-  return *this;
+
+  return copy;
 }
 
-ossia::net::generic_parameter& generic_parameter::set_value(ossia::value&& val)
+ossia::value generic_parameter::set_value(ossia::value&& val)
 {
   using namespace ossia;
-  if (!val.valid())
-    return *this;
-
   ossia::value copy;
+  if (val.valid())
   {
     lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
@@ -149,7 +144,7 @@ ossia::net::generic_parameter& generic_parameter::set_value(ossia::value&& val)
   }
 
   send(copy);
-  return *this;
+  return copy;
 }
 
 void generic_parameter::set_value_quiet(const ossia::value& val)

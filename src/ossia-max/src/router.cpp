@@ -3,9 +3,9 @@
 #include <ossia-max/src/router.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia-max/src/ossia-max.hpp>
-#include <ossia/detail/thread.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
+#include <regex>
 
 using namespace ossia::max;
 
@@ -29,6 +29,10 @@ extern "C" void ossia_router_setup()
       c, (method)router::assist,
       "assist", A_CANT, 0);
 
+  CLASS_ATTR_LONG(c, "truncate", 0, router, m_truncate);
+  CLASS_ATTR_STYLE(c, "truncate", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "truncate", 0, "Truncate matching part of address (default on)");
+
   class_register(CLASS_BOX, ossia_library.ossia_router_class);
 }
 
@@ -42,28 +46,50 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   // extra outlet for non matching addresses
   x->m_outlets.push_back(outlet_new(x, nullptr));
 
+  long attrstart = attr_args_offset(argc, argv);
+  attr_args_process(x, argc - attrstart, argv + attrstart);
+
+  argc = attrstart;
+
   if(argc == 0)
   {
-    x->m_inlet = proxy_new(x, 2, 0L);
+    x->m_inlets.push_back(proxy_new(x, 2, 0L));
     x->m_outlets.push_back(outlet_new(x, nullptr));
   }
-
-  while(argc--)
+  else
   {
-    if(argv[argc].a_type == A_SYM)
+    int inlet_id = 0;
+    x->m_patterns.resize(argc);
+    while(argc--)
     {
-      std::string pattern(argv[argc].a_w.w_sym->s_name);
-      x->m_patterns.push_back(pattern);
+      if(argv[argc].a_type == A_SYM)
+      {
+        std::string pattern(argv[argc].a_w.w_sym->s_name);
+        x->change_pattern(inlet_id++, pattern);
+        x->m_inlets.push_back(proxy_new(x, argc+1, 0L));
 
-      x->m_outlets.push_back(outlet_new(x, nullptr));
-    }
-    else
-    {
-      object_error(&x->m_object, "wrong arg type, should be symbol");
+        x->m_outlets.push_back(outlet_new(x, nullptr));
+      }
+      else
+      {
+        object_error(&x->m_object, "wrong arg type, should be symbol");
+      }
     }
   }
 
   return x;
+}
+
+void router::change_pattern(int index, std::string pattern)
+{
+  ossia::net::expand_ranges(pattern);
+  pattern = ossia::traversal::substitute_characters(pattern);
+
+  try {
+    m_patterns[index] = std::regex("^" + pattern);
+  } catch (std::exception& e) {
+    error("'%s' bad regex: %s", pattern.data(), e.what());
+  }
 }
 
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
@@ -74,30 +100,30 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 
   if(inlet > 0)
   {
-    x->m_patterns.clear();
-    x->m_patterns.push_back(address);
+    x->change_pattern(x->m_inlets.size() - inlet, address);
   }
   else
   {
     bool match = false;
     for(int i = 0 ; i < x->m_patterns.size(); i++)
     {
-      const auto& pattern = x->m_patterns[i];
+      const auto& pattern_regex = x->m_patterns[i];
 
-      if(boost::algorithm::starts_with(address, pattern))
+      std::smatch smatch;
+      if(std::regex_search(address, smatch, pattern_regex))
       {
-        int offset = pattern.size();
-
-        std::string sub = address.substr(offset);
-        if(sub.size() > 0)
+        match = true;
+        std::string newaddress = address;
+        if(x->m_truncate)
+          newaddress = smatch.suffix();
+        if( newaddress.size() > 0)
         {
-          outlet_anything(x->m_outlets[i+1], gensym(sub.c_str()), argc, argv);
+          outlet_anything(x->m_outlets[i+1], gensym(newaddress.c_str()), argc, argv);
         }
         else
         {
           outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
         }
-        match = true;
       }
     }
 
@@ -112,8 +138,8 @@ void router::free(router* x)
   {
     for(auto out : x->m_outlets)
       outlet_delete(out);
-    if(x->m_inlet)
-      proxy_delete(x->m_inlet);
+    for(auto in : x->m_inlets)
+      proxy_delete(in);
     x->~router();
   }
 }

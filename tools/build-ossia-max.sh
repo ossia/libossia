@@ -44,11 +44,12 @@ done
 command -v brew > /dev/null 2>&1 || [ $(ask_permission brew) -eq 1 ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 command -v greadlink > /dev/null 2>&1 || [ $(ask_permission coreutils) -eq 1 ] && brew install coreutils
 command -v ninja > /dev/null 2>&1 ||  [ $(ask_permission ninja) -eq 1 ] && brew install ninja
+command -v cmake > /dev/null 2>&1 || brew install cmake
 fi # CI
 
 OSSIA_BUILD_TYPE=debug
 
-SCRIPT_FOLDER=`dirname $(greadlink -f $0)`
+SCRIPT_FOLDER=`dirname "$(greadlink -f "$0")"`
 REPO_ROOT=${SCRIPT_FOLDER}/../
 OSSIA_BUILD_FOLDER=${REPO_ROOT}/build-ossia-max
 
@@ -66,7 +67,7 @@ fi
 
 mkdir -p ${OSSIA_BUILD_FOLDER}
 cd ${OSSIA_BUILD_FOLDER}
-cmake -GNinja .. \
+cmake -GNinja "${REPO_ROOT}" \
   -DCMAKE_BUILD_TYPE=${OSSIA_BUILD_TYPE} \
   -DOSSIA_MAX_INSTALL_FOLDER="${INSTALL_FOLDER}" \
   -DOSSIA_MAX_ONLY=1 \

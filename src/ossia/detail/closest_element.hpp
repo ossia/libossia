@@ -108,7 +108,6 @@ auto closest_next_element(
 {
   using namespace std;
   using namespace ossia::detail;
-  auto start_it = it;
   auto next_it = it + 1;
   while(next_it != end)
   {
