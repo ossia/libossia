@@ -36,8 +36,8 @@ else
   $ossia_sdk_archive = "sdk-msvc-release.zip"
 }
 
-$WebClient = New-Object System.Net.WebClient
-$WebClient.DownloadFile("https://github.com/ossia/sdk/releases/download/sdk18/$ossia_sdk_archive","$repoRoot\3rdparty\")
+Invoke-WebRequest -Uri "https://github.com/ossia/sdk/releases/download/sdk18/$ossia_sdk_archive" -OutFile "$repoRoot\3rdparty\$ossia_sdk_archive"
+7z x $ossia_sdk_archive
 
 cd ..
 
