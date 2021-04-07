@@ -3,7 +3,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/dataflow/token_request.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 #include <string>

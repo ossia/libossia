@@ -4,7 +4,7 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <functional>
 #include <memory>

@@ -16,7 +16,7 @@
 #include <ossia/network/dataspace/detail/make_value.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 //#include <ossia/network/value/detail/value_conversion_impl.hpp>

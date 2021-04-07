@@ -1,7 +1,7 @@
 #pragma once
 #include <cinttypes>
 #include <cstddef>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 using fftw_plan = struct fftw_plan_s*;
 using fftwf_plan = struct fftwf_plan_s*;

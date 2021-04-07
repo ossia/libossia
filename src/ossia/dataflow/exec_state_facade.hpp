@@ -1,7 +1,7 @@
 #pragma once
 #include <cinttypes>
 #include <string_view>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

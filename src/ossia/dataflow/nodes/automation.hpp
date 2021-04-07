@@ -6,7 +6,7 @@
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file automation.hpp

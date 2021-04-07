@@ -3,7 +3,7 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/math.hpp>
 #include <vector>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 namespace ossia
 {
 

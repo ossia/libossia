@@ -4,7 +4,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/flicks.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <atomic>
 #include <memory>

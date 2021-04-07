@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

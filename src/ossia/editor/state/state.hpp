@@ -3,7 +3,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 /**

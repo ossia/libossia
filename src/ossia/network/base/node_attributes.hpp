@@ -8,7 +8,7 @@
 #include <ossia/network/value/value.hpp>
 
 #include <tsl/hopscotch_map.h>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <string>
 #include <vector>
