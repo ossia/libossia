@@ -44,6 +44,12 @@ done
 command -v brew > /dev/null 2>&1 || [ $(ask_permission brew) -eq 1 ] && /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
 command -v greadlink > /dev/null 2>&1 || [ $(ask_permission coreutils) -eq 1 ] && brew install coreutils
 command -v ninja > /dev/null 2>&1 ||  [ $(ask_permission ninja) -eq 1 ] && brew install ninja
+command -v cmake > /dev/null 2>&1 || [ $(ask_permission ninja) -eq 1 ] && brew install cmake
+else
+# install without asking persmission on CI
+command -v brew > /dev/null 2>&1 || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+command -v greadlink > /dev/null 2>&1 || brew install coreutils
+command -v ninja > /dev/null 2>&1 || brew install ninja
 command -v cmake > /dev/null 2>&1 || brew install cmake
 fi # CI
 
