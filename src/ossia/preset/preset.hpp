@@ -3,7 +3,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/preset/exception.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <fstream>
 #include <functional>

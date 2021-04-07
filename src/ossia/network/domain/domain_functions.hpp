@@ -1,9 +1,8 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value_base.hpp>
-
-#include <ossia_export.h>
 
 #include <ossia/detail/span.hpp>
 

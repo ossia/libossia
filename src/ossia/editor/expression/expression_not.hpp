@@ -2,7 +2,7 @@
 
 #include <ossia/editor/expression/expression_fwd.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 

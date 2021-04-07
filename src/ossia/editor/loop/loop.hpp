@@ -6,7 +6,7 @@
 #include <ossia/editor/scenario/time_process.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file loop.hpp

@@ -4,7 +4,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 

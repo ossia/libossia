@@ -3,7 +3,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 
 #include <nano_signal_slot.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

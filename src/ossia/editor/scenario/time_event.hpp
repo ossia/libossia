@@ -3,7 +3,7 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <cstdint>
 #include <memory>

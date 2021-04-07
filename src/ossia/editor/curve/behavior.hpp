@@ -3,7 +3,7 @@
 
 #include <ossia/editor/curve/curve_abstract.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 #include <vector>

@@ -5,7 +5,7 @@
 #include <ossia/network/phidgets/phidgets_parameter_data.hpp>
 
 #include <readerwriterqueue.h>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

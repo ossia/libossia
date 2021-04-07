@@ -4,7 +4,6 @@
 #if defined(__APPLE__)
 #include <mach/time_value.h>
 #endif
-#include <ossia_export.h>
 
 #include <cinttypes>
 #include <limits>
