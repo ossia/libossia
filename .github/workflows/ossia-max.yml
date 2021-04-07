@@ -39,3 +39,8 @@ jobs:
       with:
         name: ossia-max-windows
         path: artifacts/ossia
+    - name: Upload logs
+      uses: actions/upload-artifact@v2
+      with:
+        name: logs
+        path: "*.log"
