@@ -7,7 +7,7 @@
 #include <ossia/detail/flicks.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 #include <smallfun.hpp>
 
 #include <memory>

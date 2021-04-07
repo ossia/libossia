@@ -10,7 +10,7 @@
 
 #include <boost/graph/adjacency_list.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 namespace ossia
 {
 class graph;

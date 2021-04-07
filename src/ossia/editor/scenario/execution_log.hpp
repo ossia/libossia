@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia-config.hpp>
+#include <ossia/detail/config.hpp>
 
 #if 0//!defined(NDEBUG)
 #define OSSIA_EXECUTION_LOG 1

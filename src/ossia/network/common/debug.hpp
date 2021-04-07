@@ -9,7 +9,7 @@
 #include <ossia/network/value/format_value.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/fmt.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file ossia/network/common/debug.hpp

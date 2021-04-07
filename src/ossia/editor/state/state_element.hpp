@@ -4,7 +4,7 @@
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file state_element.hpp

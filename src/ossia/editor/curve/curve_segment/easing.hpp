@@ -2,7 +2,7 @@
 #include <ossia/detail/math.hpp>
 
 #include <cmath>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
   \file easing.hpp

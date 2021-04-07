@@ -5,7 +5,7 @@
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/mapper/detail/mapper_visitor.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 /**
  * \file mapper.hpp
  */

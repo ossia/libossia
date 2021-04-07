@@ -9,7 +9,7 @@
 #include <ossia/network/value/destination.hpp>
 #include <ossia/detail/std_fwd.hpp>
 #include <nano_signal_slot.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <ciso646>
 #include <functional>
