@@ -23,6 +23,9 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    env:
+      APPVEYOR_BUILD_TYPE: max
+      configuration: Release
     steps:
     - uses: actions/checkout@v2
     - name: Configure environment
