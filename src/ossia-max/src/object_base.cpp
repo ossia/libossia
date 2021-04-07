@@ -880,12 +880,12 @@ void object_base::create_patcher_hierarchy()
     ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
     auto patcher = parent;
 
+    parent = ossia::max::get_patcher(patcher);
+    ossia_max::instance().patchers[patcher].parent_patcher = parent;
+
     // no need to go up further if we already know patcher hierarchy from that point
     if(ossia_max::instance().patchers.find(patcher) != ossia_max::instance().patchers.end())
       break;
-
-    parent = ossia::max::get_patcher(patcher);
-    ossia_max::instance().patchers[patcher].parent_patcher = parent;
   }
 }
 
