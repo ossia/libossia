@@ -1,4 +1,4 @@
-name: ossia-max-macos
+name: ossia-max
 
 on: push
 
@@ -9,10 +9,8 @@ on: push
 #     branches: [ $default-branch ]
 
 jobs:
-  build:
-
-    runs-on: [self-hosted, macOS]
-
+  build-macos:
+    runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
     - name: build
@@ -21,4 +19,20 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ossia-max-macos
+        path: artifacts/ossia
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Configure environment
+      run: ./ci/before_build.ps1
+    - name: Build
+      run: ./ci/build.ps1
+    - name: Package
+      run: ./ci/after_build.ps1
+    - name: Archive Max Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-max-windows
         path: artifacts/ossia
