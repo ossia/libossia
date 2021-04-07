@@ -21,8 +21,8 @@ CALLSTACK:$(Get-PSCallStack | Out-String)
 }
 
 $scriptPath = split-path -parent $MyInvocation.MyCommand.Definition
-$repoRoot = $scriptPath\..
-cd $repoRoot\3rdparty
+$repoRoot = "$scriptPath\.."
+cd "$repoRoot\3rdparty"
 
 # Download portaudio, ffmpeg
 if ( $env:configuration -eq "Debug" )
