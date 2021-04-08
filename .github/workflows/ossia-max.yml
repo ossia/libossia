@@ -37,7 +37,7 @@ jobs:
     - name: install deps
       run: cinst -y ninja
     - name : build
-      script: |
+      run: |
         pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
         for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
         popd
