@@ -39,15 +39,14 @@ jobs:
     - name : build
       shell: cmd
       run: |
-        pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-        for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
-        popd
+        for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cd $(GITHUB_WORKSPACE)
+        echo Workspace: %GITHUB_WORKSPACE%
+        cd %GITHUB_WORKSPACE%
         mkdir build
         cd build
-        cmake -GNinja $(GITHUB_WORKSPACE) -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -GNinja %GITHUB_WORKSPACE% -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build .
         cmake --build . --target install
     - name: Archive Max Package
