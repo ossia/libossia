@@ -34,12 +34,21 @@ jobs:
       configuration: Release
     steps:
     - uses: actions/checkout@v2
-    - name: Configure environment
-      run: ./ci/before_build.ps1
-    - name: Build
-      run: ./ci/build.ps1
-    - name: Package
-      run: ./ci/after_build.ps1
+    - name: install deps
+      run: cinst -y ninja
+    - name : build
+      script: |
+        pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
+        for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+        popd
+        call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+        cd $(GITHUB_WORKSPACE)
+        mkdir build
+        cd build
+        cmake -GNinja $(GITHUB_WORKSPACE) -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+        cmake --build . --target install
     - name: Archive Max Package
       uses: actions/upload-artifact@v2
       with:
