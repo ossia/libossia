@@ -20,6 +20,12 @@ jobs:
       with:
         name: ossia-max-macos
         path: artifacts/ossia
+    - name: Upload logs
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: logs
+        path: "*.log"
 
   build-windows:
     runs-on: windows-latest
@@ -40,6 +46,7 @@ jobs:
         name: ossia-max-windows
         path: artifacts/ossia
     - name: Upload logs
+      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: logs
