@@ -89,6 +89,8 @@ public:
    \return std::shared_ptr<#time_sync> */
   time_sync& get_time_sync() const;
 
+  void set_time_sync(time_sync&);
+
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
   const expression& get_expression() const;
@@ -153,7 +155,7 @@ public:
 private:
   time_event::exec_callback m_callback;
 
-  time_sync& m_timesync;
+  time_sync* m_timesync{};
   std::vector<std::shared_ptr<time_process>> m_processes;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};
