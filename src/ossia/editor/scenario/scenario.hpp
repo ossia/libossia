@@ -119,8 +119,7 @@ public:
 private:
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario
-                                    // (the first is the start node, the
-                                    // second is the end node)
+                                    // (the first is the start node)
 
   interval_set m_runningIntervals;
   sync_set m_waitingNodes;

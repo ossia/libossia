@@ -20,7 +20,8 @@ sync_status scenario::trigger_sync_musical(
     sync.entered_evaluation.send();
   }
 
-  if (*sync.m_expression != expressions::expression_true()
+  if (sync.m_expression
+      && *sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
     if (!sync.has_trigger_date() && !sync.is_being_triggered())
