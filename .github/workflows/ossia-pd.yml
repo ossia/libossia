@@ -1,0 +1,63 @@
+name: ossia-pd
+
+on: push
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: brew install ninja
+    - name: Build
+      run: | 
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
+        cmake --build build
+        cmake --build build --target install 
+    - name: Archive Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-pd-macos
+        path: install/ossia-pd-package
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: cinst -y ninja
+    - name : Build
+      shell: cmd
+      run: |
+        for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
+        call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+        echo Workspace: %GITHUB_WORKSPACE%
+        cd %GITHUB_WORKSPACE%
+        mkdir build
+        cd build
+        cmake -GNinja .. -DOSSIA_PD_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake --build .
+        cmake --build . --target install
+    - name: Archive Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-pd-windows
+        path: install/ossia-pd-package/ossia
+
+  build-kinux:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: install deps
+      run: apt-get update -yqq && apt-get upgrade -yqq && apt-get install -yqq ninja-build
+    - name: Build
+      run: | 
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
+        cmake --build build
+        cmake --build build --target install 
+    - name: Archive Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-pd-linux
+        path: install/ossia-pd-package/ossia
