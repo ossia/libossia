@@ -32,7 +32,6 @@ jobs:
     - name: Install Dependencies
       run: |
         brew install ninja
-
     - name: Build
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
@@ -87,6 +86,9 @@ jobs:
     runs-on: macos-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        brew install ninja
     - name: Build
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
