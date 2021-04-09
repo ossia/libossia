@@ -1,5 +1,7 @@
 name: ossia-unity
 
+on: push
+
 jobs:
   Unity3DLinux:
     runs-on: ubuntu-latest
