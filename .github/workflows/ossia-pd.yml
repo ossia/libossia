@@ -45,12 +45,15 @@ jobs:
         name: ossia-pd-windows
         path: install/ossia-pd-package/ossia
 
-  build-kinux:
+  build-linux:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: install deps
-      run: apt-get update -yqq && apt-get upgrade -yqq && apt-get install -yqq ninja-build
+    - name: Install Dependencies
+      run: | 
+        sudo apt-get update -yqq 
+        sudo apt-get upgrade -yqq
+        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
     - name: Build
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
