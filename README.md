@@ -30,7 +30,7 @@ Documentation
 
 Build Status
 ============
-* [![Build Status](https://github.com/ossia/libossia/actions/workflows/ossia-benchmarks.yml/badge.svg)](https://github.com/ossia/libossia/actions/workflows/ossia-benchmarks.yml)
+* [![Build Status](https://github.com/ossia/libossia/actions/workflows/benchmarks.yml/badge.svg)](https://github.com/ossia/libossia/actions/workflows/benchmarks.yml)
 
 * <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Logo_Max_8_software.jpg/244px-Logo_Max_8_software.jpg" alt="Max" height="20"/> [![Build Status](https://github.com/ossia/libossia/actions/workflows/ossia-max.yml/badge.svg)](https://github.com/ossia/libossia/actions/workflows/ossia-max.yml)
 
