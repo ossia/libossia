@@ -35,7 +35,7 @@ jobs:
 
     - name: Build
       run: |
-        cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install 
 
@@ -79,8 +79,8 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-macos
-        path: install/ossia-pd-package
+        name: ossia-unity-macos
+        path: install
 
   Unity3DIOs:
     name: Unity3D (iOS)
@@ -89,12 +89,9 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build
       run: |
-        cd $(System.DefaultWorkingDirectory)
-        mkdir build
-        cd build
-        cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
-        cmake --build .
-        cmake --build . --target install
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
+        cmake --build build
+        cmake --build build --target install
 
         # Setup codesigning
         # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
@@ -131,6 +128,11 @@ jobs:
         MAC_CERT_B64: $(MAC_CERT_B64)
         MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
         MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
+    - name: Archive Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-unity-ios
+        path: install
 
   Unity3DWin32:
     name: Unity3D (Win32)
@@ -148,14 +150,11 @@ jobs:
         popd
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cd $(System.DefaultWorkingDirectory)
-        mkdir build
-        cd build
-        cmake -GNinja $(Build.SourcesDirectory) -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build .
-        cmake --build . --target install
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+        cmake --build build --target install
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-windows
+        name: ossia-unity-windows
         path: install
