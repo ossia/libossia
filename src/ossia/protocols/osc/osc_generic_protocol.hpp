@@ -40,7 +40,7 @@ public:
     : can_learn<ossia::net::protocol_base>{flags{}}
     , m_ctx{std::move(ctx)}
     , m_id{*this}
-    , from_client{local_host, local_port, m_ctx->context}
+    , from_client{"0.0.0.0", local_port, m_ctx->context}
     , to_client{remote_host, remote_port, m_ctx->context}
   {
     OscMode::init(*this);
