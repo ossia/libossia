@@ -168,7 +168,7 @@ ossia::domain make_domain_from_minmax(
       case 0:
         return {};
       case 1:
-        return ossia::make_domain(min[0], max[0]);
+        return ossia::make_domain(convert(min[0],v), convert(max[0],v));
       case 2:
         return ossia::make_domain(
             convert<ossia::vec2f>(min), convert<ossia::vec2f>(max));

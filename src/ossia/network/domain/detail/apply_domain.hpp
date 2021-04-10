@@ -63,11 +63,18 @@ struct apply_domain_visitor
     return value;
   }
   // Numeric values
-  ossia::value
-  operator()(int32_t value, const domain_base<int32_t>& domain) const;
-  ossia::value operator()(float value, const domain_base<float>& domain) const;
-  ossia::value operator()(char value, const domain_base<char>& domain) const;
-  ossia::value operator()(bool value, const domain_base<bool>& domain) const;
+  ossia::value operator()
+      (int32_t value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()
+      (int32_t value, const domain_base<float>& domain) const;
+  ossia::value operator()
+      (float value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()
+      (float value, const domain_base<float>& domain) const;
+  ossia::value operator()
+      (char value, const domain_base<char>& domain) const;
+  ossia::value operator()
+      (bool value, const domain_base<bool>& domain) const;
 
   // Strings
   OSSIA_INLINE ossia::value operator()(

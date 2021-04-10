@@ -1018,6 +1018,20 @@ operator()(int32_t value, const domain_base<int32_t>& domain) const
 }
 
 value apply_domain_visitor::
+operator()(int32_t value, const domain_base<float>& domain) const
+{
+  auto res = numeric_clamp<domain_base<float>>{domain}(b, float(value));
+  return convert(res, val_type::INT);
+}
+
+value apply_domain_visitor::
+operator()(float value, const domain_base<int32_t>& domain) const
+{
+  auto res = numeric_clamp<domain_base<int32_t>>{domain}(b, int32_t(value));
+  return convert(res, val_type::FLOAT);
+}
+
+value apply_domain_visitor::
 operator()(float value, const domain_base<float>& domain) const
 {
   return numeric_clamp<domain_base<float>>{domain}(b, value);

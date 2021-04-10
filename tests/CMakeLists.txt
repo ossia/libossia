@@ -25,6 +25,7 @@ endFunction()
 ossia_add_test(PresetTest   "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")
 ossia_add_test(AddressTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/AddressTest.cpp")
 ossia_add_test(PathTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/PathTest.cpp")
+ossia_add_test(FilterTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/FilterTest.cpp")
 
 if(NOT OSSIA_CI)
   # this test is too slow to run on CI
