@@ -305,7 +305,7 @@ public:
   friend OSSIA_EXPORT bool operator>=(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<=(const value& lhs, const value& rhs);
-
+/*
   friend std::ostream& operator<<(std::ostream& os, const ossia::value& c)
   {
     // TODO OPTIMIZEME
@@ -317,6 +317,7 @@ public:
     // TODO
     return is;
   }
+  */
 };
 
 inline ossia::value init_value(ossia::val_type type)
