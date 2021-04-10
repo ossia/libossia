@@ -27,6 +27,23 @@ TEST_CASE( "Float domain, float value" )
 }
 
 ////////////////////////////////
+// int domain, int value //
+///////////////////////////////
+
+TEST_CASE( "int domain, int value" )
+{
+  auto domain = make_domain_from_minmax(
+      {-100}, {0}, ossia::val_type::INT);
+  ossia::value v = -12;
+  auto filtered = ossia::net::filter_value(
+      domain, v, ossia::bounding_mode::CLIP);
+
+  REQUIRE(filtered.valid());
+  REQUIRE(filtered == -12);
+  REQUIRE(filtered.get_type() == v.get_type());
+}
+
+////////////////////////////////
 // float domain, int value //
 ///////////////////////////////
 
