@@ -277,7 +277,7 @@ if(OSSIA_QT)
 endif()
 
 if(OSSIA_DNSSD)
-  target_link_libraries(ossia PRIVATE Servus_iface)
+  target_link_libraries(ossia PUBLIC Servus_iface)
 endif()
 
 if(OSSIA_DATAFLOW)
