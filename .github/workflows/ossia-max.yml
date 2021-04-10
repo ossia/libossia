@@ -8,7 +8,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: build
-      run: ./tools/build-ossia-max.sh clean silent
+      run: ./tools/build-ossia-max.sh clean silent release
     - name: Archive Max Package
       uses: actions/upload-artifact@v2
       with:
