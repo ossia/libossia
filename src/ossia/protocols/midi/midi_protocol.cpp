@@ -13,16 +13,20 @@ namespace net
 {
 namespace midi
 {
-midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx)
+static constexpr auto midi_api(libremidi::API api)
+{
+  return (api == libremidi::API::UNSPECIFIED) ? libremidi::default_platform_api() : api;
+}
+midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, libremidi::API api)
   : protocol_base{flags{}}
   , m_context{ctx}
-  , m_input{std::make_unique<libremidi::midi_in>(libremidi::API::UNSPECIFIED, "ossia-in")}
-  , m_output{std::make_unique<libremidi::midi_out>(libremidi::API::UNSPECIFIED, "ossia-out")}
+  , m_input{std::make_unique<libremidi::midi_in>(midi_api(api), "ossia-in")}
+  , m_output{std::make_unique<libremidi::midi_out>(midi_api(api), "ossia-out")}
 {
 }
 
-midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info m)
-  : midi_protocol{std::move(ctx)}
+midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
+  : midi_protocol{std::move(ctx), api}
 {
   set_info(m);
 }
@@ -519,12 +523,14 @@ void midi_protocol::on_learn(const libremidi::message& mess)
   }
 }
 
-std::vector<midi_info> midi_protocol::scan()
+std::vector<midi_info> midi_protocol::scan(libremidi::API api)
 {
+  api = midi_api(api);
+
   std::vector<midi_info> vec;
 
   {
-    libremidi::midi_in in;
+    libremidi::midi_in in{api, ""};
     auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
@@ -533,7 +539,7 @@ std::vector<midi_info> midi_protocol::scan()
   }
 
   {
-    libremidi::midi_out out;
+    libremidi::midi_out out{api, ""};
     auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
