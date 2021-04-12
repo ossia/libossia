@@ -10,6 +10,7 @@
 
 #include <ossia/detail/lockfree_queue.hpp>
 
+#include <libremidi/api.hpp>
 #include <libremidi/message.hpp>
 #include <array>
 #include <atomic>
@@ -45,14 +46,14 @@ struct OSSIA_EXPORT midi_info
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
 public:
-  explicit midi_protocol(ossia::net::network_context_ptr);
-  explicit midi_protocol(ossia::net::network_context_ptr, midi_info);
+  explicit midi_protocol(ossia::net::network_context_ptr, libremidi::API api = libremidi::API::UNSPECIFIED);
+  explicit midi_protocol(ossia::net::network_context_ptr, midi_info, libremidi::API api = libremidi::API::UNSPECIFIED);
   ~midi_protocol();
 
   bool set_info(midi_info);
   midi_info get_info() const;
 
-  static std::vector<midi_info> scan();
+  static std::vector<midi_info> scan(libremidi::API = libremidi::API::UNSPECIFIED);
 
   void push_value(const libremidi::message&);
 
