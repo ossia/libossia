@@ -70,10 +70,17 @@ struct jack_client
   jack_client_t* client{};
 };
 
+struct jack_settings
+{
+  std::vector<std::string> inputs;
+  std::vector<std::string> outputs;
+  bool autoconnect{};
+};
+
 class jack_engine final : public audio_engine
 {
 public:
-  jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs)
+  jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs, std::optional<jack_settings> settings = {})
     : m_client{clt}
   {
     if (!m_client || !(*m_client))
@@ -94,9 +101,13 @@ public:
 
     for (int i = 0; i < inputs; i++)
     {
-      auto in = jack_port_register(
-          client, ("in_" + std::to_string(i + 1)).c_str(),
-          JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+      std::string name;
+      if(settings)
+        name = settings->inputs[i];
+      else
+        name = "in_" + std::to_string(i + 1);
+
+      auto in = jack_port_register(client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
       if(!in)
       {
         jack_deactivate(client);
@@ -107,9 +118,13 @@ public:
     }
     for (int i = 0; i < outputs; i++)
     {
-      auto out = jack_port_register(
-          client, ("out_" + std::to_string(i + 1)).c_str(),
-          JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+      std::string name;
+      if(settings)
+        name = settings->outputs[i];
+      else
+        name = "out_" + std::to_string(i + 1);
+
+      auto out = jack_port_register(client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
       if(!out)
       {
         jack_deactivate(client);
@@ -118,8 +133,6 @@ public:
       }
       output_ports.push_back(out);
     }
-
-    std::cerr << "=== stream start ===\n";
 
     int err = jack_activate(client);
     this->effective_sample_rate = jack_get_sample_rate(client);
@@ -134,28 +147,31 @@ public:
       throw std::runtime_error("Audio error: JACK cannot activate");
     }
 
+    if(settings ? settings->autoconnect : true)
     {
-      auto ports = jack_get_ports(
-          client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsPhysical | JackPortIsOutput);
-      if (ports)
       {
-        for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
-          jack_connect(client, ports[i], jack_port_name(input_ports[i]));
+        auto ports = jack_get_ports(
+            client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
+            JackPortIsPhysical | JackPortIsOutput);
+        if (ports)
+        {
+          for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
+            jack_connect(client, ports[i], jack_port_name(input_ports[i]));
 
-        jack_free(ports);
+          jack_free(ports);
+        }
       }
-    }
-    {
-      auto ports = jack_get_ports(
-          client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsPhysical | JackPortIsInput);
-      if (ports)
       {
-        for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
-          jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
+        auto ports = jack_get_ports(
+            client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
+            JackPortIsPhysical | JackPortIsInput);
+        if (ports)
+        {
+          for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
+            jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
 
-        jack_free(ports);
+          jack_free(ports);
+        }
       }
     }
 
