@@ -70,11 +70,14 @@ struct jack_client
   jack_client_t* client{};
 };
 
+using transport_sync_function = smallfun::function<int(jack_transport_state_t , jack_position_t *), 16>;
 struct jack_settings
 {
   std::vector<std::string> inputs;
   std::vector<std::string> outputs;
   bool autoconnect{};
+  transport_mode transport{};
+  transport_sync_function sync_function;
 };
 
 class jack_engine final : public audio_engine
@@ -88,6 +91,7 @@ public:
       std::cerr << "JACK server not running?" << std::endl;
       throw std::runtime_error("Audio error: no JACK server");
     }
+
     jack_client_t* client = *m_client;
     jack_set_process_callback(client, process, this);
     jack_set_sample_rate_callback(client, [] (jack_nframes_t nframes, void *arg) -> int { return 0; }, this);
@@ -175,6 +179,23 @@ public:
       }
     }
 
+    if(settings && settings->transport != transport_mode::none)
+    {
+      transport = settings->transport;
+      if(transport == transport_mode::master)
+      {
+        jack_set_timebase_callback(client, 0, &jack_engine::timebase_callback, this);
+      }
+
+      this->sync_function = std::move(settings->sync_function);
+      jack_set_sync_callback(
+            client,
+            [] (jack_transport_state_t st, jack_position_t * pos, void * s) -> int {
+        auto& self = (*(jack_engine*) s);
+        return self.sync_function(st, pos);
+      }, this);
+    }
+
     activated = true;
   }
 
@@ -197,7 +218,18 @@ public:
   }
 
 private:
-  static int clearBuffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
+  static void timebase_callback(
+      jack_transport_state_t state,
+      jack_nframes_t nframes,
+      jack_position_t *pos,
+      int new_pos,
+      void *arg)
+  {
+    auto& self = *static_cast<jack_engine*>(arg);
+    pos->valid = jack_position_bits_t{};
+  }
+
+  static int clear_buffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
   {
     for (std::size_t i = 0; i < outputs; i++)
     {
@@ -209,17 +241,19 @@ private:
 
     return 0;
   }
+
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
     self.tick_start();
+
 
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
     if (self.stop_processing)
     {
       self.tick_clear();
-      return clearBuffers(self, nframes, outputs);
+      return clear_buffers(self, nframes, outputs);
     }
 
     auto float_input = (float**)alloca(sizeof(float*) * inputs);
@@ -235,8 +269,39 @@ private:
                           self.output_ports[i], nframes);
     }
 
-    jack_time_t usecs = jack_get_time();
-    ossia::audio_tick_state ts{float_input, float_output, (int)inputs, (int)outputs, nframes, usecs / 1e6};
+
+    jack_position_t pos{};
+    auto transport_state = jack_transport_query(self.m_client->client, &pos);
+    std::optional<transport_status> st;
+    std::optional<uint64_t> transport_frames;
+    if(self.transport != transport_mode::none)
+    {
+      switch(transport_state)
+      {
+        case JackTransportStopped:
+          st = transport_status::stopped;
+          break;
+        case JackTransportStarting:
+        case JackTransportNetStarting:
+          st = transport_status::starting;
+          break;
+        case JackTransportRolling:
+        case JackTransportLooping:
+          st = transport_status::playing;
+          break;
+        default:
+          break;
+      }
+      transport_frames = pos.frame;
+    }
+
+    ossia::audio_tick_state ts{
+      float_input, float_output,
+      (int)inputs, (int)outputs,
+      nframes, pos.usecs / 1e6,
+      transport_frames,
+      st
+    };
     self.audio_tick(ts);
 
     self.tick_end();
@@ -248,6 +313,9 @@ private:
   std::vector<jack_port_t*> output_ports;
 
   bool activated{};
+  transport_mode transport{};
+  transport_sync_function sync_function;
+
 };
 }
 
