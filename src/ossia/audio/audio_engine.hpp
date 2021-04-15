@@ -21,7 +21,7 @@ public:
 
   void gc();
 
-  using fun_type = smallfun::function<void(ossia::audio_tick_state), 256>;
+  using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
   void set_tick(fun_type&& t);
   void load_audio_tick();
 
