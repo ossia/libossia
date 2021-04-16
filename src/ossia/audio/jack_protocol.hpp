@@ -236,17 +236,6 @@ public:
   }
 
 private:
-  static void timebase_callback(
-      jack_transport_state_t state,
-      jack_nframes_t nframes,
-      jack_position_t *pos,
-      int new_pos,
-      void *arg)
-  {
-    auto& self = *static_cast<jack_engine*>(arg);
-    pos->valid = jack_position_bits_t{};
-  }
-
   static int clear_buffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
   {
     for (std::size_t i = 0; i < outputs; i++)
@@ -264,7 +253,6 @@ private:
   {
     auto& self = *static_cast<jack_engine*>(arg);
     self.tick_start();
-
 
     const auto inputs = self.input_ports.size();
     const auto outputs = self.output_ports.size();
@@ -310,7 +298,7 @@ private:
         default:
           break;
       }
-      transport_frames = pos.frame;
+      transport_frames = jack_nframes_t(pos.frame);
     }
 
     ossia::audio_tick_state ts{
