@@ -31,8 +31,7 @@ tick_transport_info time_interval::current_transport_info() const noexcept
 
   t.date = this->m_date;
   t.current_tempo = this->m_current_tempo;
-  t.time_signature = this->m_current_signature;
-  t.time_signature = this->m_current_signature;
+  t.signature = this->m_current_signature;
 
   t.musical_start_last_signature = this->m_musical_start_last_signature;
   t.musical_start_last_bar = this->m_musical_start_last_bar;

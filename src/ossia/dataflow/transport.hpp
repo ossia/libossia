@@ -14,7 +14,7 @@ struct tick_transport_info
 {
   time_value date{};
   double current_tempo{};
-  time_signature time_signature{};
+  time_signature signature{};
 
   quarter_note musical_start_last_signature{};
 
