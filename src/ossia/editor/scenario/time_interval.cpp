@@ -25,6 +25,24 @@ double time_interval::get_speed(time_value date) const noexcept
   }
 }
 
+tick_transport_info time_interval::current_transport_info() const noexcept
+{
+  tick_transport_info t;
+
+  t.date = this->m_date;
+  t.current_tempo = this->m_current_tempo;
+  t.time_signature = this->m_current_signature;
+  t.time_signature = this->m_current_signature;
+
+  t.musical_start_last_signature = this->m_musical_start_last_signature;
+  t.musical_start_last_bar = this->m_musical_start_last_bar;
+  t.musical_start_position = this->m_musical_start_position;
+  t.musical_end_last_bar = this->m_musical_end_last_bar;
+  t.musical_end_position = this->m_musical_end_position;
+
+  return t;
+}
+
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date,
     ossia::time_value offset, const ossia::token_request& parent_request)
