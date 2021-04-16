@@ -3,6 +3,7 @@
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/dataflow/transport.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flicks.hpp>
 #include <ossia/editor/curve/curve.hpp>
@@ -21,7 +22,6 @@ struct token_request;
 class time_event;
 class time_process;
 class graph_node;
-using quarter_note = double;
 
 using time_signature_map = ossia::flat_map<ossia::time_value, time_signature>;
 using tempo_curve = ossia::curve<int64_t, double>;
@@ -70,6 +70,7 @@ public:
   {
     m_parentSpeed = sp;
   }
+  tick_transport_info current_transport_info() const noexcept;
 
   void tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
 

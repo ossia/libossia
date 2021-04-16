@@ -70,6 +70,7 @@ struct jack_client
   jack_client_t* client{};
 };
 
+using transport_timebase_function = smallfun::function<void(int , jack_position_t&), 16>;
 using transport_sync_function = smallfun::function<int(jack_transport_state_t , jack_position_t *), 16>;
 struct jack_settings
 {
@@ -78,6 +79,7 @@ struct jack_settings
   bool autoconnect{};
   transport_mode transport{};
   transport_sync_function sync_function;
+  transport_timebase_function timebase_function;
 };
 
 class jack_engine final : public audio_engine
@@ -115,7 +117,6 @@ public:
       if(!in)
       {
         jack_deactivate(client);
-        jack_client_close(client);
         throw std::runtime_error("Audio error: cannot register JACK input");
       }
       input_ports.push_back(in);
@@ -132,7 +133,6 @@ public:
       if(!out)
       {
         jack_deactivate(client);
-        jack_client_close(client);
         throw std::runtime_error("Audio error: cannot register JACK output");
       }
       output_ports.push_back(out);
@@ -146,7 +146,6 @@ public:
     if (err != 0)
     {
       jack_deactivate(client);
-      jack_client_close(client);
       std::cerr << "JACK error: " << err << std::endl;
       throw std::runtime_error("Audio error: JACK cannot activate");
     }
@@ -182,18 +181,33 @@ public:
     if(settings && settings->transport != transport_mode::none)
     {
       transport = settings->transport;
-      if(transport == transport_mode::master)
+      if(settings->timebase_function.allocated())
       {
-        jack_set_timebase_callback(client, 0, &jack_engine::timebase_callback, this);
+        if(transport == transport_mode::master)
+        {
+          this->timebase_function = std::move(settings->timebase_function);
+          jack_set_timebase_callback(client, 0, [] (
+                                     jack_transport_state_t state,
+                                     jack_nframes_t nframes,
+                                     jack_position_t *pos,
+                                     int new_pos,
+                                     void *s) {
+            auto& self = (*(jack_engine*) s);
+            self.timebase_function(nframes, *pos);
+          }, this);
+        }
       }
 
-      this->sync_function = std::move(settings->sync_function);
-      jack_set_sync_callback(
-            client,
-            [] (jack_transport_state_t st, jack_position_t * pos, void * s) -> int {
-        auto& self = (*(jack_engine*) s);
-        return self.sync_function(st, pos);
-      }, this);
+      if(settings->sync_function.allocated())
+      {
+        this->sync_function = std::move(settings->sync_function);
+        jack_set_sync_callback(
+              client,
+              [] (jack_transport_state_t st, jack_position_t * pos, void * s) -> int {
+          auto& self = (*(jack_engine*) s);
+          return self.sync_function(st, pos);
+        }, this);
+      }
     }
 
     activated = true;
@@ -207,6 +221,10 @@ public:
     {
       jack_client_t* client = *m_client;
       jack_deactivate(client);
+      for(auto port : this->input_ports)
+        jack_port_unregister(client, port);
+      for(auto port : this->output_ports)
+        jack_port_unregister(client, port);
     }
   }
 
@@ -315,7 +333,7 @@ private:
   bool activated{};
   transport_mode transport{};
   transport_sync_function sync_function;
-
+  transport_timebase_function timebase_function;
 };
 }
 

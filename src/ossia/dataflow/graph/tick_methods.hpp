@@ -117,6 +117,7 @@ struct buffer_tick
   ossia::execution_state& st;
   ossia::graph_interface& g;
   ossia::time_interval& itv;
+  ossia::transport_info_fun transport;
 
   void operator()(const ossia::audio_tick_state& st)
   {
@@ -138,6 +139,12 @@ struct buffer_tick
 
     const auto flicks = frameCount * st.samplesToModelRatio;
     const ossia::token_request tok{};
+
+    // Notify the current transport state
+    if (transport.allocated())
+    {
+      transport(itv.current_transport_info());
+    }
 
     // Temporal tick
     {
@@ -177,6 +184,7 @@ struct precise_score_tick
   ossia::execution_state& st;
   ossia::graph_interface& g;
   ossia::time_interval& itv;
+  ossia::transport_info_fun transport;
 
   void operator()(const ossia::audio_tick_state& st)
   {
@@ -219,6 +227,7 @@ public:
   ossia::execution_state& st;
   ossia::graph_interface& g;
   ossia::time_interval& itv;
+  ossia::transport_info_fun transport;
 
   static void do_cuts(
       ossia::flat_set<int64_t>& cuts, token_request_vec& tokens,

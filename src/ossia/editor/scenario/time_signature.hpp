@@ -13,4 +13,6 @@ struct time_signature {
   friend bool operator!=(time_signature lhs, time_signature rhs) noexcept
   { return lhs.upper != rhs.upper || lhs.lower != rhs.lower;}
 };
+
+using quarter_note = double;
 }
