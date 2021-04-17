@@ -28,6 +28,66 @@ struct bar_time {
 };
 }
 
+inline QDataStream& operator<<(QDataStream& i, const ossia::time_signature& sel)
+{
+  return i << sel.upper << sel.lower;
+}
+
+inline QDataStream& operator>>(QDataStream& i, ossia::time_signature& sel)
+{
+  return i >> sel.upper >> sel.lower;
+}
+
+inline QDataStream& operator<<(QDataStream& i, const ossia::bar_time& sel)
+{
+  return i << sel.bars << sel.quarters << sel.semiquavers << sel.cents;
+}
+
+inline QDataStream& operator>>(QDataStream& i, ossia::bar_time& sel)
+{
+  return i >> sel.bars >> sel.quarters >> sel.semiquavers >> sel.cents;
+}
+
+inline QDataStream& operator<<(QDataStream& i, const ossia::token_request& sel)
+{
+  return
+  i << sel.prev_date
+    << sel.date
+    << sel.parent_duration
+    << sel.offset
+    << sel.speed
+    << sel.tempo
+    << sel.signature
+    << sel.musical_start_last_signature
+    << sel.musical_start_last_bar
+    << sel.musical_start_position
+    << sel.musical_end_last_bar
+    << sel.musical_end_position
+    << sel.start_discontinuous
+    << sel.end_discontinuous
+  ;
+}
+
+inline QDataStream& operator>>(QDataStream& i, ossia::token_request& sel)
+{
+  return
+  i >> sel.prev_date
+    >> sel.date
+    >> sel.parent_duration
+    >> sel.offset
+    >> sel.speed
+    >> sel.tempo
+    >> sel.signature
+    >> sel.musical_start_last_signature
+    >> sel.musical_start_last_bar
+    >> sel.musical_start_position
+    >> sel.musical_end_last_bar
+    >> sel.musical_end_position
+    >> sel.start_discontinuous
+    >> sel.end_discontinuous
+  ;
+}
+
 Q_DECLARE_METATYPE(ossia::bar_time)
 W_REGISTER_ARGTYPE(ossia::bar_time)
 
