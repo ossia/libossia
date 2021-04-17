@@ -288,14 +288,12 @@ private:
           st = transport_status::stopped;
           break;
         case JackTransportStarting:
-        case JackTransportNetStarting:
+        default: //case JackTransportNetStarting:  because not yet supported in Debian
           st = transport_status::starting;
           break;
         case JackTransportRolling:
         case JackTransportLooping:
           st = transport_status::playing;
-          break;
-        default:
           break;
       }
       transport_frames = jack_nframes_t(pos.frame);
