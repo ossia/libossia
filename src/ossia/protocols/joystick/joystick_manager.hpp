@@ -126,12 +126,10 @@ struct joystick_event_processor
     : m_manager{manager}
     , m_timer{ctx}
   {
-    start_event_loop();
   }
 
   ~joystick_event_processor()
   {
-    stop_event_loop();
   }
 
   static joystick_event_processor& instance(joystick_protocol_manager& manager, asio::io_context& ctx)
