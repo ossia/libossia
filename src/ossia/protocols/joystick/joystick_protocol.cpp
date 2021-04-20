@@ -28,11 +28,14 @@ joystick_protocol::joystick_protocol(
 
   if (m_joystick == nullptr)
     throw std::runtime_error("Failed to open Joystick");
+
+  m_processor.start_event_loop();
 }
 
 joystick_protocol::~joystick_protocol()
 {
   stop();
+  m_processor.stop_event_loop();
 }
 
 void joystick_protocol::set_device(ossia::net::device_base& dev)
