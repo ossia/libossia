@@ -322,4 +322,13 @@ void remove_duplicates(T& vec) {
   std::sort(vec.begin(), vec.end());
   vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
+
+template<typename Container, typename K, typename Comp, typename... Args>
+auto emplace_sorted(Container& vec, const K& k, Comp&& comp, Args&&... args)
+  -> decltype(auto)
+{
+  auto it = std::lower_bound(vec.begin(), vec.end(), k, std::forward<Comp>(comp));
+  return vec.emplace(it, std::forward<Args>(args)...);
+}
+
 }
