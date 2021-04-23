@@ -7,6 +7,7 @@
 
 namespace ossia
 {
+using musical_sync = double;
 struct bar_time {
   int32_t bars{};
   int16_t quarters{};
@@ -93,3 +94,6 @@ W_REGISTER_ARGTYPE(ossia::bar_time)
 
 Q_DECLARE_METATYPE(ossia::token_request)
 W_REGISTER_ARGTYPE(ossia::token_request)
+
+Q_DECLARE_METATYPE(ossia::time_signature)
+W_REGISTER_ARGTYPE(ossia::time_signature)
