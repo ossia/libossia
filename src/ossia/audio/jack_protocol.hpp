@@ -98,13 +98,6 @@ public:
     jack_set_process_callback(client, process, this);
     jack_set_sample_rate_callback(client, [] (jack_nframes_t nframes, void *arg) -> int { return 0; }, this);
     jack_on_shutdown(client, JackShutdownCallback{}, this);
-    jack_set_error_function([](const char* str) {
-      std::cerr << "JACK ERROR: " << str << std::endl;
-    });
-    jack_set_info_function([](const char* str) {
-      // std::cerr << "JACK INFO: " << str << std::endl;
-    });
-
     for (int i = 0; i < inputs; i++)
     {
       std::string name;
