@@ -331,8 +331,8 @@ auto emplace_sorted(Container& vec, const K& k, Comp&& comp, Args&&... args)
   return vec.emplace(it, std::forward<Args>(args)...);
 }
 
-template<typename Container, typename T>
-auto insert_at_end(Container& dest, std::vector<T>&& src)
+template<typename D, template<typename> typename S, typename T>
+auto insert_at_end(D& dest, S<T>&& src)
 {
   dest.insert(dest.end(), std::make_move_iterator(src.begin()), std::make_move_iterator(src.end()));
 }
