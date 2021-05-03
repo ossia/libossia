@@ -16,7 +16,7 @@ include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
 
-# iOS 
+# iOS
 include(${OSSIA_3RDPARTY_FOLDER}/ios-cmake/helper-macros.cmake)
 
 if(PLATFORM)
@@ -27,7 +27,7 @@ if(PLATFORM)
     if(NOT HAVE_KQUEUE)
       message(FATAL_ERROR "kqueue NOT found!")
     endif()
-    
+
     # Hook up XCTest for the supported plaforms (all but WatchOS)
     if(NOT PLATFORM MATCHES ".*WATCHOS.*")
       # Use the standard find_package, broken between 3.14.0 and 3.14.4 at least for XCtest...
@@ -154,7 +154,7 @@ else()
     )
   endif()
 
-  if(OSSIA_CI)
+  if(OSSIA_CI AND NOT OSSIA_STATIC_EXPORT)
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
   endif()
 
@@ -219,8 +219,8 @@ else()
   endif()
 
   if(OSSIA_CI)
-    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
-          set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
+    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND NOT OSSIA_STATIC_EXPORT)
+      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
     endif()
   endif()
 
