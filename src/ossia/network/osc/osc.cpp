@@ -94,6 +94,10 @@ void osc_protocol::update_sender()
 
 void osc_protocol::update_receiver()
 {
+  if (m_local_port == 0) {
+    m_receiver.reset();
+    return;
+  }
   m_receiver = std::make_unique<osc::receiver>(
       m_local_port, [this](const oscpack::ReceivedMessage& m,
                         const oscpack::IpEndpointName& ip) {
@@ -113,7 +117,7 @@ void osc_protocol::update_receiver()
 
 void osc_protocol::update_zeroconf()
 {
-  if (!m_expose)
+  if (!m_expose || m_local_port == 0)
     return;
   try
   {
