@@ -29,7 +29,7 @@ class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
   osc_protocol(
-      std::string ip, uint16_t remote_port, uint16_t local_port,
+      std::string ip, uint16_t remote_port, uint16_t local_port = 0,
       std::optional<std::string> expose_name = std::nullopt);
 
   osc_protocol(const osc_protocol&) = delete;
