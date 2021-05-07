@@ -117,8 +117,10 @@ void osc_protocol::update_receiver()
 
 void osc_protocol::update_zeroconf()
 {
-  if (!m_expose || m_local_port == 0)
+  if (!m_expose || m_local_port == 0) {
+    m_zeroconfServer = {};
     return;
+  }
   try
   {
     m_zeroconfServer = net::make_zeroconf_server(
