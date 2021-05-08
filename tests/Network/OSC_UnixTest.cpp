@@ -46,13 +46,11 @@ TEST_CASE ("test_comm_osc_unix_simple", "test_comm_osc_unix_simple")
   ossia::value received_from_client;
   ossia::value received_from_server;
   auto on_server_message = [&] (const std::string& s, const ossia::value& v) {
-    std::cerr << "server: " << s << ": " << v << std::endl;
     received_from_client = v;
   };
   server.on_unhandled_message.connect<decltype(on_server_message)>(on_server_message);
 
   auto on_client_message = [&] (const std::string& s, const ossia::value& v) {
-    std::cerr << "client: " << s << ": " << v << std::endl;
     received_from_server = v;
   };
   client.on_unhandled_message.connect<decltype(on_client_message)>(on_client_message);

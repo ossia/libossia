@@ -1,7 +1,8 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <iostream>
+#include <ossia/network/value/format_value.hpp>
+
 int main()
 {
   using namespace ossia;
@@ -15,7 +16,7 @@ int main()
   struct print_callback {
       ossia::net::parameter_base& p;
       void operator()(const ossia::value& v) {
-          std::cout << p.get_node().osc_address() << " : " << v << std::endl;
+        fmt::print("{} : {}\n", p.get_node().osc_address(), v);
       }
   };
   auto p0 = create_parameter(device.get_root_node(), "/play", "bool");
