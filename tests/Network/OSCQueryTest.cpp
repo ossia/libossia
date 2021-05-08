@@ -709,7 +709,6 @@ TEST_CASE ("test_oscquery_http", "test_oscquery_http")
   auto param = node->get_parameter();
   REQUIRE(param);
   auto b = param->value();
-  std::cout << "new value : " << b << " expecting " << d << std::endl;
   ossia::value expected_value{d};
 
   net::full_parameter_data d2; d2.address = "/int"; d2.set_value(546);
@@ -792,7 +791,6 @@ TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  std::cout << "new value : " << a->value() << " expecting " << 4.5f << std::endl;
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<float>() == 4.5f);
 
@@ -840,7 +838,6 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  std::cout << "new value : " << a->value() << " expecting " << val << std::endl;
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 }
@@ -863,7 +860,6 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
   ossia::net::parameter_base* a = n.create_parameter(ossia::val_type::LIST);
 
   a->add_callback([&](const ossia::value& v){
-    std::cout << "receive new value : " << v << std::endl;
     REQUIRE(v == val);
   });
 
@@ -873,8 +869,6 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
   REQUIRE(node);
   auto param = node->get_parameter();
   param->push_value(val);
-  std::cout << "server-side value: " << a->value() << " \n";
-  std::cout << "client-side value: " << param->value() << " \n";
   REQUIRE(param);
   REQUIRE(param->value().get<std::vector<ossia::value>>() == val);
 
@@ -890,7 +884,6 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
-  std::cout << "new value : " << a->value() << " expecting " << val << std::endl;
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 }

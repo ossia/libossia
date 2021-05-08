@@ -616,7 +616,6 @@ TEST_CASE ("test_get_min_max", "test_get_min_max")
 
     // Correct domain
     set_min(d, int{12});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == int{12});
 
     set_max(d, int{25});
@@ -624,7 +623,6 @@ TEST_CASE ("test_get_min_max", "test_get_min_max")
 
     // No value
     set_min(d, float{7});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == value{});
 
     set_max(d, float{42});
@@ -643,28 +641,24 @@ TEST_CASE ("test_get_min_max", "test_get_min_max")
     REQUIRE(get_max(d) == impulse{});
 
     set_min(d, int{12});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == int{12});
 
     set_max(d, int{25});
     REQUIRE(get_max(d) == int{25});
 
     set_min(d, float{7});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == float{7});
 
     set_max(d, float{42});
     REQUIRE(get_max(d) == float{42});
 
     set_min(d, std::string{"foo"});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == std::string{"foo"});
 
     set_max(d, std::string{"bar"});
     REQUIRE(get_max(d) == std::string{"bar"});
 
     set_min(d, std::vector<ossia::value>{float{}, int{}});
-    std::cerr << get_min(d);
     REQUIRE(get_min(d) == (std::vector<ossia::value>{float{}, int{}}));
 
     set_max(d, std::vector<ossia::value>{float{2}, int{3}});

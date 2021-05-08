@@ -161,8 +161,6 @@ int main()
     ossia::execution_state e;
     g->state(e);
     e.commit();
-    std::cerr << "/foo: " << foo->value() << "\t";
-    std::cerr << "/bar: " << bar->value() << "\n";
   }});
 
   // Start execution in a thread

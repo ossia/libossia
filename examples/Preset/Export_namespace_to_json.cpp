@@ -7,6 +7,7 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 #include <iostream>
 #include <memory>
@@ -101,7 +102,7 @@ int main()
     auto preset = ossia::presets::make_preset(device);
     for(auto& p : preset)
     {
-      std::cerr << p.first << " => " << p.second << "\n";
+      fmt::format("{} => {}\n", p.first, p.second);
 
       // Modify it a bit
       if(p.first == "/parameter/my_int")
@@ -121,8 +122,8 @@ int main()
     auto new_preset = ossia::presets::read_json(json_preset);
     ossia::presets::apply_preset(device, new_preset);
 
-    std::cerr << IntAddress->value() << "\n";
-    std::cerr << StringAddress1->value() << "\n";
-    std::cerr << StringAddress2->value() << "\n";
+    fmt::print("{}\n", IntAddress->value());
+    fmt::print("{}\n", StringAddress1->value());
+    fmt::print("{}\n", StringAddress2->value());
 
 }
