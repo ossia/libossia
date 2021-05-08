@@ -333,9 +333,6 @@ TEST_CASE ("Device") {
   auto p = ossia::presets::make_preset(dev);
   REQUIRE(p.size() == 13);
 
-  for(auto& preset : p)
-    std::cerr << preset.first << " : " << preset.second << " \n";
-
   std::string json = ossia::presets::write_json("device", p);
 
   rapidjson::Document d;
