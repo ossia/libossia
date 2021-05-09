@@ -62,14 +62,16 @@ TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
   };
   client.on_unhandled_message.connect<decltype(on_client_message)>(on_client_message);
 
-  server.get_protocol().push_raw({"/from_server", std::string(60000, 'x')});
-  client.get_protocol().push_raw({"/from_client", std::string(60000, 'x')});
+  int n = std::pow(2,15);
+  const std::string long_str(n, 'x');
+  server.get_protocol().push_raw({"/from_server", long_str});
+  client.get_protocol().push_raw({"/from_client", long_str});
 
   ctx->context.run_one();
   ctx->context.run_one();
 
-  REQUIRE(received_from_client ==  ossia::value{std::string(60000, 'x')});
-  REQUIRE(received_from_server ==  ossia::value{std::string(60000, 'x')});
+  REQUIRE(received_from_client ==  ossia::value{long_str});
+  REQUIRE(received_from_server ==  ossia::value{long_str});
 }
 
 TEST_CASE ("test_comm_osc_udp", "test_comm_osc_udp")
