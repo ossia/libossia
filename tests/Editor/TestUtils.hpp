@@ -166,9 +166,9 @@ std::ostream& operator<<(std::ostream& d, const ossia::token_request& t)
 {
   d
     << t.prev_date << " -> "
-    << t.date << " "
-    << t.offset << " "
-    << t.parent_duration << " "
+    << t.date << "; offset: "
+    << t.offset << "; parent: "
+    << t.parent_duration << "; continuity: "
     << t.start_discontinuous << " "
     << t.end_discontinuous;
   return d;
@@ -178,11 +178,9 @@ std::ostream& operator<<(std::ostream& d, const ossia::simple_token_request& t)
 {
   d
       << t.prev_date << " -> "
-      << t.date << " "
-      << t.offset << " "
-      << t.parent_duration << " "
-      << t.start_discontinuous << " "
-      << t.end_discontinuous;
+      << t.date << "; offset: "
+      << t.offset << "; parent: "
+      << t.parent_duration;
   return d;
 }
 

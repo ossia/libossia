@@ -12,7 +12,7 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-
+#include <boost/range/combine.hpp>
 
 namespace ossia
 {
@@ -21,6 +21,42 @@ struct timed_value;
 struct typed_value;
 class state;
 using token_request_vec = ossia::small_vector<token_request, 4>;
+using simple_token_request_vec = ossia::small_vector<simple_token_request, 4>;
+inline bool operator==(const token_request_vec& lhs, const simple_token_request_vec& rhs)
+{
+  if(lhs.size() != rhs.size())
+    return false;
+
+  for(const auto& [lhs, rhs] : boost::combine(lhs, rhs)) {
+    if(lhs == rhs)
+      continue;
+    else
+      return false;
+  }
+  return true;
+}
+
+inline bool operator!=(const token_request_vec& lhs, const simple_token_request_vec& rhs)
+{
+  if(lhs.size() != rhs.size())
+    return true;
+
+  for(const auto& [lhs, rhs] : boost::combine(lhs, rhs)) {
+    if(lhs != rhs)
+      continue;
+    else
+      return false;
+  }
+  return true;
+}
+inline bool operator==(const simple_token_request_vec& lhs, const token_request_vec& rhs)
+{
+  return rhs == lhs;
+}
+inline bool operator!=(const simple_token_request_vec& lhs, const token_request_vec& rhs)
+{
+  return rhs != lhs;
+}
 
 using inlets = ossia::small_vector<inlet_ptr, 2>;
 using outlets = ossia::small_vector<outlet_ptr, 2>;
