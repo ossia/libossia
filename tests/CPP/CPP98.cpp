@@ -154,7 +154,9 @@ TEST_CASE ("preset", "[preset]")
     root.load_preset("test.json");
 
 
-    REQUIRE(n2.get_value().to_float() == 0.6f);
+    // /foor/bar/baz is not saved because it has access_mode == GET
+    // (must be BI to save)
+    REQUIRE(n2.get_value().to_float() == 0.0f);
 
     REQUIRE(n3.get_value().to_float() == -12.56f);
 
