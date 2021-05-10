@@ -26,44 +26,58 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
 
   switch(config.mode)
   {
-    case conf::CLIENT:
+    case conf::MIRROR:
     {
       using client_type = osc_protocol_client<OscVersion>;
       switch(config.transport)
       {
         case conf::UDP:
-          return std::make_unique<osc_generic_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+
         case conf::TCP:
-          return std::make_unique<osc_generic_protocol<client_type, tcp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          if(config.framing == conf::SIZE_PREFIX)
+            return std::make_unique<osc_generic_client_protocol<client_type, tcp_size_prefix_client>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          else
+            return std::make_unique<osc_generic_client_protocol<client_type, tcp_slip_client>>(std::move(ctx), get_socket_configuration(std::move(config)));
+
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX:
-          return std::make_unique<osc_generic_protocol<client_type, unix_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
 #endif
+
         case conf::SERIAL:
           return {}; // TODO
+
         case conf::WEBSOCKETS:
           return {}; // TODO
-          break;
+
         default:
           break;
       }
       break;
     }
-    case conf::SERVER:
+    case conf::HOST:
     {
       using client_type = osc_protocol_server<OscVersion>;
       switch(config.transport)
       {
         case conf::UDP:
-          return std::make_unique<osc_generic_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+
         case conf::TCP:
-          return std::make_unique<osc_generic_protocol<client_type, tcp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          if(config.framing == conf::SIZE_PREFIX)
+            return std::make_unique<osc_generic_server_protocol<client_type, tcp_size_prefix_server>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          else
+            return std::make_unique<osc_generic_server_protocol<client_type, tcp_slip_server>>(std::move(ctx), get_socket_configuration(std::move(config)));
+
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX:
-          return std::make_unique<osc_generic_protocol<client_type, unix_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
 #endif
+
         case conf::SERIAL:
           return {}; // TODO
+
         case conf::WEBSOCKETS:
           return {}; // TODO
           break;

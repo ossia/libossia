@@ -14,13 +14,15 @@
 
 namespace ossia::net
 {
-
-template<typename Parameter, typename OscPolicy, typename Socket>
+template<typename Parameter, typename OscPolicy, typename Writer>
+#if __cpp_lib_concepts >= 201907L
+requires std::is_invocable_v<Writer, const char*, std::size_t>
+#endif
 struct osc_value_send_visitor
 {
   const Parameter& parameter;
   ossia::string_view address_pattern;
-  Socket& socket;
+  Writer writer;
 
   using static_policy = typename OscPolicy::static_policy;
   using dynamic_policy = typename OscPolicy::dynamic_policy;
@@ -34,7 +36,7 @@ struct osc_value_send_visitor
 
     i += static_policy{parameter.get_unit()}(buffer + i, v);
 
-    socket.write(buffer, i);
+    writer(buffer, i);
   }
 
   void operator()(const std::string& v) const noexcept
@@ -49,7 +51,7 @@ struct osc_value_send_visitor
       else
         i += static_policy{parameter.get_unit()}(buffer + i, v);
 
-      socket.write(buffer, i);
+      writer(buffer, i);
     }
     else
     {
@@ -63,7 +65,7 @@ struct osc_value_send_visitor
       else
         i += static_policy{parameter.get_unit()}(buffer.data() + i, v);
 
-      socket.write(buffer.data(), i);
+      writer(buffer.data(), i);
     }
   }
 
@@ -81,7 +83,7 @@ struct osc_value_send_visitor
         dynamic_policy{{p, parameter.get_unit()}}(v);
         p << oscpack::EndMessage();
 
-        socket.write(p.Data(), p.Size());
+        writer(p.Data(), p.Size());
         break;
       }
       catch(...)

@@ -9,11 +9,15 @@ namespace ossia::net
 {
 struct osc_protocol_configuration
 {
-  // Note: only UDP and UNIX implemented for now
-
+  // Note: only UDP, TCP and UNIX implemented for now
   enum { UDP, UNIX, TCP, SERIAL, WEBSOCKETS } transport{UDP};
-  enum { SERVER, CLIENT }                     mode{SERVER};
+
+  enum { HOST, MIRROR }                       mode{HOST};
+
   enum { OSC1_0, OSC1_1, EXTENDED }           version{OSC1_0};
+
+  // Only relevant for TCP / Serial protocols
+  enum { SIZE_PREFIX, SLIP }                  framing{SLIP};
 
   // host: the unix socket name. Pair of sockets will be created in /tmp/
   using unix_configuration = fd_configuration;

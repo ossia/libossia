@@ -473,7 +473,7 @@ void oscquery_mirror_asio_protocol::start_websockets()
 
 void oscquery_mirror_asio_protocol::start_osc()
 {
-  m_oscServer = std::make_unique<osc_receiver_impl>("127.0.0.1", (uint16_t)m_osc_port, this->m_ctx->context);
+  m_oscServer = std::make_unique<osc_receiver_impl>("0.0.0.0", (uint16_t)m_osc_port, this->m_ctx->context);
   m_oscServer->open();
   m_oscServer->receive([this] (const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
 }

@@ -1,203 +1,149 @@
 #pragma once
-#include <asio/io_context.hpp>
-#include <asio/placeholders.hpp>
-#include <asio/local/datagram_protocol.hpp>
-#include <asio/ip/udp.hpp>
-#include <asio/ip/tcp.hpp>
-
+#include <ossia/network/osc/detail/tcp_socket.hpp>
+#include <ossia/network/osc/detail/udp_socket.hpp>
+#include <ossia/network/osc/detail/unix_socket.hpp>
+#include <ossia/network/osc/detail/size_prefix_framing.hpp>
+#include <ossia/network/osc/detail/slip_framing.hpp>
 namespace ossia::net
 {
-#if defined(ASIO_HAS_LOCAL_SOCKETS)
-class unix_socket
+template<typename Socket>
+struct multi_socket_writer
 {
-  using proto = asio::local::datagram_protocol;
-public:
-  unix_socket(std::string_view path, asio::io_context& ctx)
-    : m_context{ctx}
-    , m_endpoint{path}
-    , m_socket{ctx}
+  std::vector<Socket>& sockets;
+  void write_some(const asio::ASIO_CONST_BUFFER& buf)
   {
+    for(auto& sock : sockets)
+    {
+      sock->write(buf);
+    }
   }
-
-  void open()
-  {
-    ::unlink(m_endpoint.path().data());
-
-    m_socket.open();
-    m_socket.bind(m_endpoint);
-  }
-
-  void connect()
-  {
-    m_socket.open();
-    //m_socket.connect(m_endpoint);
-  }
-
-  template<typename F>
-  void close(F f)
-  {
-    m_context.post([this, f] {
-      m_socket.close();
-      f();
-    });
-  }
-
-  template<typename F>
-  void receive(F f)
-  {
-    m_socket.async_receive_from(
-          asio::buffer(m_data),
-          m_endpoint,
-          [this, f](std::error_code ec, std::size_t sz) {
-      if(ec == asio::error::operation_aborted)
-        return;
-
-
-      if (!ec && sz > 0) try {
-        f(m_data, sz);
-      } catch(...) {
-
-      }
-
-      this->receive(f);
-    });
-  }
-
-  void write(const char* data, std::size_t sz)
-  {
-    m_socket.send_to(asio::buffer(data, sz), m_endpoint);
-  }
-
-  asio::io_context& m_context;
-  proto::endpoint m_endpoint;
-  proto::socket m_socket;
-  alignas(16) char m_data[65535];
-};
-#endif
-
-
-class udp_socket
-{
-  using proto = asio::ip::udp;
-public:
-  udp_socket(std::string_view ip, uint16_t port, asio::io_context& ctx)
-    : m_context{ctx}
-    , m_endpoint{asio::ip::make_address(ip), port}
-    , m_socket{ctx}
-  {
-  }
-
-  void open()
-  {
-    m_socket.open(asio::ip::udp::v4());
-    m_socket.bind(m_endpoint);
-  }
-
-  void connect()
-  {
-    m_socket.open(asio::ip::udp::v4());
-  }
-
-  template<typename F>
-  void close(F f)
-  {
-    m_context.post([this, f] {
-      m_socket.close();
-      f();
-    });
-  }
-
-  template<typename F>
-  void receive(F f)
-  {
-    m_socket.async_receive_from(
-          asio::buffer(m_data),
-          m_endpoint,
-          [this, f](std::error_code ec, std::size_t sz) {
-      if(ec == asio::error::operation_aborted)
-        return;
-
-
-      if (!ec && sz > 0) try {
-        f(m_data, sz);
-      } catch(...) {
-
-      }
-
-      this->receive(f);
-    });
-  }
-
-  void write(const char* data, std::size_t sz)
-  {
-    m_socket.send_to(asio::buffer(data, sz), m_endpoint);
-  }
-
-  asio::io_context& m_context;
-  proto::endpoint m_endpoint;
-  proto::socket m_socket;
-  alignas(16) char m_data[65535];
 };
 
-class tcp_socket
+template<typename Base, typename Decode>
+struct framed_listener : public Base
 {
-  using proto = asio::ip::tcp;
-public:
-  tcp_socket(std::string_view ip, uint16_t port, asio::io_context& ctx)
-    : m_context{ctx}
-    , m_endpoint{asio::ip::make_address(ip), port}
-    , m_socket{ctx}
-  {
-  }
-
-  void open()
-  {
-    m_socket.open(asio::ip::tcp::v4());
-    m_socket.bind(m_endpoint);
-  }
-
-  void connect()
-  {
-    m_socket.open(asio::ip::tcp::v4());
-  }
+  using proto = typename Base::proto;
+  using socket = typename proto::socket;
 
   template<typename F>
+  framed_listener(socket&& sock, F f)
+      : Base{std::move(sock)}
+      , decoder{this->m_socket}
+  {
+    decoder.receive(std::move(f));
+  }
+
+  Decode decoder;
+};
+
+template<typename Base, typename Listener, typename Encode>
+struct framed_server : Base
+{
+public:
+  using proto = typename Base::proto;
+  using socket = typename proto::socket;
+  using listener = Listener;
+
+  template<typename... Args>
+  framed_server(Args&&... args)
+      : Base{std::forward<Args>(args)...}
+  {
+
+  }
+
+  template <typename F>
   void close(F f)
   {
-    m_context.post([this, f] {
-      m_socket.close();
+    this->m_context.post([this, f] {
+      for(auto& sock : m_sockets)
+      {
+        sock.close();
+      }
       f();
     });
   }
 
-  template<typename F>
-  void receive(F f)
+  template <typename F>
+  void listen(F f)
   {
-    m_socket.async_receive(
-          asio::buffer(m_data),
-          [this, f](std::error_code ec, std::size_t sz) {
-      if(ec == asio::error::operation_aborted)
-        return;
+    this->m_acceptor.async_accept(
+        [this, f = std::move(f)](std::error_code ec, socket socket) {
+          if (!ec)
+          {
+            m_sockets.push_back(std::make_unique<listener>(std::move(socket), f));
+          }
 
-
-      if (!ec && sz > 0) try {
-        f(m_data, sz);
-      } catch(...) {
-
-      }
-
-      this->receive(f);
+          listen(std::move(f));
     });
   }
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.send(asio::buffer(data, sz));
+    multi_socket_writer<std::unique_ptr<listener>> wr{this->m_sockets};
+    Encode{wr}.write(data, sz);
   }
 
-  asio::io_context& m_context;
-  proto::endpoint m_endpoint;
-  proto::socket m_socket;
-  alignas(16) char m_data[65535];
+  std::vector<std::unique_ptr<listener>> m_sockets;
+};
+
+template<typename Base, typename Decode, typename Encode>
+struct framed_client : Base
+{
+  template<typename... Args>
+  framed_client(Args&&... args)
+      : Base{std::forward<Args>(args)...}
+      , decoder{this->m_socket}
+  {
+
+  }
+
+  template <typename F>
+  void receive(F f) {
+    decoder.receive(std::move(f));
+  }
+
+  void write(const char* data, std::size_t sz)
+  {
+    Encode{this->m_socket}.write(data, sz);
+  }
+
+  Decode decoder;
+};
+
+struct tcp_slip_listener : framed_listener<tcp_listener, slip_decoder<asio::ip::tcp::socket>>
+{
+  using framed_listener::framed_listener;
+};
+struct tcp_size_prefix_listener : framed_listener<tcp_listener, size_prefix_decoder<asio::ip::tcp::socket>>
+{
+  using framed_listener::framed_listener;
+};
+
+struct tcp_size_prefix_server
+    : framed_server<tcp_server, tcp_size_prefix_listener, size_prefix_encoder<multi_socket_writer<std::unique_ptr<tcp_size_prefix_listener>>>> {
+  using framed_server::framed_server;
+};
+struct tcp_slip_server
+    : framed_server<tcp_server, tcp_slip_listener, slip_encoder<multi_socket_writer<std::unique_ptr<tcp_slip_listener>>>> {
+  using framed_server::framed_server;
+};
+
+struct tcp_size_prefix_client
+    : framed_client<tcp_client, size_prefix_decoder<asio::ip::tcp::socket>, size_prefix_encoder<asio::ip::tcp::socket>> {
+  using framed_client::framed_client;
+};
+struct tcp_slip_client
+    : framed_client<tcp_client, slip_decoder<asio::ip::tcp::socket>, slip_encoder<asio::ip::tcp::socket>> {
+  using framed_client::framed_client;
+};
+
+template<typename T>
+struct socket_writer
+{
+  T& socket;
+  void operator()(const char* data, std::size_t sz) const
+  {
+    socket.write(data,sz);
+  }
 };
 }

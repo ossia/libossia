@@ -13,7 +13,7 @@ using namespace ossia;
 TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;
-  using proto = osc_generic_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
   ossia::net::generic_device server{std::make_unique<proto>(ctx, "0.0.0.0", 4478, "127.0.0.1", 9875), "a"};
@@ -44,7 +44,7 @@ TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
 {
   using namespace ossia::net;
-  using proto = osc_generic_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
   ossia::net::generic_device server{std::make_unique<proto>(ctx, "0.0.0.0", 44758, "127.0.0.1", 19875), "a"};
@@ -77,7 +77,7 @@ TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
 TEST_CASE ("test_comm_osc_udp", "test_comm_osc_udp")
 {
   using namespace ossia::net;
-  using proto = osc_generic_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
 

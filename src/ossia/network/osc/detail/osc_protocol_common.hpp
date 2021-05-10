@@ -34,8 +34,8 @@ struct osc_protocol_common
     auto val = filter_value(addr, std::forward<Value_T>(v));
     if (val.valid())
     {
-      using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::socket_type>;
-      send_visitor vis{addr, addr.get_node().osc_address(), self.to_client};
+      using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::writer_type>;
+      send_visitor vis{addr, addr.get_node().osc_address(), self.writer()};
       val.apply(vis);
       return true;
     }
@@ -48,8 +48,8 @@ struct osc_protocol_common
     auto val = filter_value(addr, addr.value());
     if (val.valid())
     {
-      using send_visitor = osc_value_send_visitor<ossia::net::full_parameter_data, OscVersion, typename T::socket_type>;
-      val.apply(send_visitor{addr, addr.address, self.to_client});
+      using send_visitor = osc_value_send_visitor<ossia::net::full_parameter_data, OscVersion, typename T::writer_type>;
+      val.apply(send_visitor{addr, addr.address, self.writer()});
       return true;
     }
     return false;
@@ -65,8 +65,8 @@ struct osc_protocol_common
     if(&id.protocol == &self)
       return true;
 
-    using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::socket_type>;
-    val.apply(send_visitor{addr, addr.get_node().osc_address(), self.to_client});
+    using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::writer_type>;
+    val.apply(send_visitor{addr, addr.get_node().osc_address(), self.writer()});
     return true;
   }
 
@@ -121,11 +121,11 @@ struct osc_protocol_client : osc_protocol_common<OscVersion>
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
-  template<typename T, typename Impl, typename Addresses>
-  static bool push_bundle(T& self, Impl& socket, const Addresses& addresses)
+  template<typename T, typename Writer, typename Addresses>
+  static bool push_bundle(T& self, Writer writer, const Addresses& addresses)
   {
     if(auto bundle = make_bundle(bundle_client_policy<OscVersion>{}, addresses)) {
-      socket.write(bundle->data.data(), bundle->data.size());
+      writer(bundle->data.data(), bundle->data.size());
       ossia::buffer_pool::instance().release(std::move(bundle->data));
       return true;
     }
@@ -149,11 +149,11 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
-  template<typename T, typename Impl, typename Addresses>
-  static bool push_bundle(T& self, Impl& socket, const Addresses& addresses)
+  template<typename T, typename Writer, typename Addresses>
+  static bool push_bundle(T& self, Writer writer, const Addresses& addresses)
   {
     if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addresses)) {
-      socket.write(bundle->data.data(), bundle->data.size());
+      writer(bundle->data.data(), bundle->data.size());
       ossia::buffer_pool::instance().release(std::move(bundle->data));
       return true;
     }
