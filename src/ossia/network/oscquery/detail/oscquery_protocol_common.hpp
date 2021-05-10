@@ -17,8 +17,8 @@ struct oscquery_protocol_common
   static void osc_send_message(Protocol& proto, Socket& socket, const Addr& addr, const ossia::value& val)
   {
     using namespace ossia::net;
-    using send_visitor = osc_value_send_visitor<Addr, OscVersion, udp_socket>;
-    send_visitor vis{addr, ossia::net::osc_address(addr), socket};
+    using send_visitor = osc_value_send_visitor<Addr, OscVersion, socket_writer<udp_socket>>;
+    send_visitor vis{addr, ossia::net::osc_address(addr), {socket}};
     val.apply(vis);
   }
   template<typename Protocol, typename Addr>

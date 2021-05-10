@@ -17,8 +17,9 @@ int main(int argc, char** argv)
   ossia::net::generic_device device{ossia::net::make_osc_protocol(ctx,
           {
             conf::UNIX,
-            conf::CLIENT,
+            conf::MIRROR,
             conf::OSC1_1,
+            conf::SLIP,
             ossia::net::fd_configuration{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}
           }),
         "P"};

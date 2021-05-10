@@ -277,7 +277,8 @@ bool oscquery_server_protocol::echo_incoming_message(
     const ossia::value& val)
 {
   using namespace ossia::net;
-  using send_visitor = osc_value_send_visitor<net::parameter_base, osc_extended_policy, udp_socket>;
+
+  using send_visitor = osc_value_send_visitor<net::parameter_base, osc_extended_policy, socket_writer<udp_socket>>;
 
   bool not_this_protocol = &id.protocol != this;
   // we know that the value is valid
@@ -296,7 +297,7 @@ bool oscquery_server_protocol::echo_incoming_message(
           {
             m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
           }
-          send_visitor vis{addr, ossia::net::osc_address(addr), *client.osc_socket};
+          send_visitor vis{addr, ossia::net::osc_address(addr), {*client.osc_socket}};
           val.apply(vis);
         }
         else

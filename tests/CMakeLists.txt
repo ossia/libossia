@@ -38,6 +38,8 @@ ossia_add_test(OSCTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCTest.cpp")
 if(NOT WIN32)
   ossia_add_test(OSC_UnixTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_UnixTest.cpp")
   ossia_add_test(OSC_UDPTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_UDPTest.cpp")
+  ossia_add_test(OSC_TCP_SlipTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_TCP_SlipTest.cpp")
+  ossia_add_test(OSC_TCP_SizeTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_TCP_SizeTest.cpp")
 endif()
 
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
