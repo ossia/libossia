@@ -14,12 +14,12 @@ TEST_CASE ("test_sound_ref", "test_sound_ref")
   execution_state e;
   e.bufferSize = 9;
 
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 0_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 4_tv, 0_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 4_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 4_tv, 4_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 8_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 1_tv, 8_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 0_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 4_tv, .offset = 0_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 4_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 4_tv, .offset = 4_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 8_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 1_tv, .offset = 8_tv});
 
   for(auto tk : snd.requested_tokens)
   {
@@ -91,12 +91,12 @@ TEST_CASE ("test_sound_mmap", "test_sound_mmap")
   execution_state e;
   e.bufferSize = 9;
 
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 0_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 4_tv, 0_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 4_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 4_tv, 4_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 0_tv, 8_tv});
-  snd.requested_tokens.push_back(simple_token_request{0_tv, 1_tv, 8_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 0_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 4_tv, .offset = 0_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 4_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 4_tv, .offset = 4_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 8_tv});
+  snd.requested_tokens.push_back(simple_token_request{.prev_date = 0_tv, .date = 1_tv, .offset = 8_tv});
 
   for(auto tk : snd.requested_tokens)
   {

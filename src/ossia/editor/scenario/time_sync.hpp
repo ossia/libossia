@@ -18,7 +18,6 @@ class expression_base;
 class state;
 class time_event;
 class scenario;
-class loop;
 /**
  * \brief #time_sync is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
@@ -31,7 +30,6 @@ class loop;
 class OSSIA_EXPORT time_sync final
 {
   friend class ossia::scenario;
-  friend class ossia::loop;
 
 public:
   using iterator = ptr_container<time_event>::iterator;

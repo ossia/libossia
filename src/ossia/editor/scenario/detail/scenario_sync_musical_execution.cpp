@@ -93,15 +93,15 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
           // (that is used in cyclic graphs)
 
           // previous TimeIntervals with a DISPOSED start event are ignored
-          if (ev.get_status() == time_event::status::DISPOSED ||
-              ev.get_status() == time_event::status::FINISHED)
+          if (ev.get_status() == time_event::status::DISPOSED)
           {
             continue;
           }
 
           // previous TimeInterval with a not yet HAPPENED start event
           // can't have reached its minimal duration
-          if (ev.get_status() != time_event::status::HAPPENED)
+          if (ev.get_status() != time_event::status::HAPPENED
+           && ev.get_status() != time_event::status::FINISHED)
           {
             minimalDurationReached = false;
             break;

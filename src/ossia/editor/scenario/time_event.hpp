@@ -19,7 +19,6 @@ class time_interval;
 class time_sync;
 class time_process;
 class scenario;
-class loop;
 /**
  * @brief The time_event class
  *
@@ -33,7 +32,6 @@ class loop;
 class OSSIA_EXPORT time_event
 {
   friend class ossia::scenario;
-  friend class ossia::loop;
 
 public:
   /*! event status */
