@@ -62,7 +62,8 @@ TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
   };
   client.on_unhandled_message.connect<decltype(on_client_message)>(on_client_message);
 
-  int n = std::pow(2,15);
+  // Maximum datagram size on macOS (other OSes have larger defaults)
+  int n = 9216 - 48;
   const std::string long_str(n, 'x');
   server.get_protocol().push_raw({"/from_server", long_str});
   client.get_protocol().push_raw({"/from_client", long_str});
