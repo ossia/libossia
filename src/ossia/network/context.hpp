@@ -1,18 +1,18 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 
-#include <asio/io_context.hpp>
+#include <boost/asio/io_context.hpp>
 #include <memory>
 
 namespace ossia::net
 {
 struct network_context
 {
-  asio::io_context context;
+  boost::asio::io_context context;
 
   void run()
   {
-    using work_guard = asio::executor_work_guard<asio::io_context::executor_type>;
+    using work_guard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
 
     work_guard wg{context.get_executor()};
     try {

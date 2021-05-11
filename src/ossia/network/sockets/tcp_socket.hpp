@@ -1,9 +1,10 @@
 #pragma once
-#include <asio/io_context.hpp>
-#include <asio/ip/tcp.hpp>
-#include <asio/ip/udp.hpp>
-#include <asio/local/datagram_protocol.hpp>
-#include <asio/placeholders.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ip/udp.hpp>
+#include <boost/asio/local/datagram_protocol.hpp>
+#include <boost/asio/placeholders.hpp>
 
 
 namespace ossia::net
@@ -11,7 +12,7 @@ namespace ossia::net
 class tcp_listener
 {
 public:
-  using proto = asio::ip::tcp;
+  using proto = boost::asio::ip::tcp;
   using socket = typename proto::socket;
 
   tcp_listener() = delete;
@@ -30,7 +31,7 @@ public:
     m_socket.close();
   }
 
-  void write(const asio::ASIO_CONST_BUFFER& buf)
+  void write(const boost::asio::const_buffer& buf)
   {
     m_socket.write_some(buf);
   }
@@ -41,31 +42,29 @@ public:
 class tcp_server
 {
 public:
-  using proto = asio::ip::tcp;
+  using proto = boost::asio::ip::tcp;
   using socket = typename proto::socket;
   using listener = tcp_listener;
 
-  tcp_server(
-      std::string_view ip, uint16_t port, asio::io_context& ctx)
+  tcp_server(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context {ctx}
-      , m_acceptor {ctx, proto::endpoint{asio::ip::make_address(ip), port}}
+      , m_acceptor {ctx, proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
   {
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   proto::acceptor m_acceptor;
 };
 
 class tcp_client
 {
 public:
-  using proto = asio::ip::tcp;
+  using proto = boost::asio::ip::tcp;
   using socket = typename proto::socket;
 
-  tcp_client(
-      std::string_view ip, uint16_t port, asio::io_context& ctx)
+  tcp_client(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context {ctx}
-      , m_endpoint {asio::ip::make_address(ip), port}
+      , m_endpoint {boost::asio::ip::make_address(conf.host), conf.port}
       , m_socket {ctx}
   {
   }
@@ -86,10 +85,10 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.write_some(asio::buffer(data, sz));
+    m_socket.write_some(boost::asio::buffer(data, sz));
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
 };

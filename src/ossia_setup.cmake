@@ -10,9 +10,10 @@ target_compile_definitions(ossia
   PUBLIC
     RAPIDJSON_HAS_STDSTRING=1
     TINYSPLINE_DOUBLE_PRECISION
-    ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
+    BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
+    $<$<CONFIG:Debug>:BOOST_ASIO_ENABLE_BUFFER_DEBUGGING>
   )
 
 if(WIN32)
@@ -108,7 +109,6 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
 

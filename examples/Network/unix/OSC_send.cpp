@@ -20,7 +20,7 @@ int main(int argc, char** argv)
             conf::MIRROR,
             conf::OSC1_1,
             conf::SLIP,
-            ossia::net::fd_configuration{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}
+            ossia::net::unix_dgram_configuration{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}
           }),
         "P"};
 

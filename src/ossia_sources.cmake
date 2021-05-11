@@ -57,6 +57,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/node_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/destination_qualifiers.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/configuration.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/tcp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
@@ -68,6 +69,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
@@ -334,7 +336,6 @@ set(OSSIA_CPP_SRCS
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bundle.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/configuration.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"

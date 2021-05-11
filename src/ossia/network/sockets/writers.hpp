@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <asio/buffer.hpp>
+#include <boost/asio/buffer.hpp>
 
 #include <cinttypes>
 #include <vector>
@@ -22,7 +22,7 @@ template<typename Socket>
 struct multi_socket_writer
 {
   std::vector<Socket>& sockets;
-  void write_some(const asio::ASIO_CONST_BUFFER& buf)
+  void write_some(const boost::asio::const_buffer& buf)
   {
     for(auto& sock : sockets)
     {

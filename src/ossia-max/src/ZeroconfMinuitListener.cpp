@@ -1,9 +1,9 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ZeroconfMinuitListener.hpp"
-#include <asio/io_service.hpp>
-#include <asio/ip/basic_resolver.hpp>
-#include <asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/basic_resolver.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 #include <ossia/network/minuit/minuit.hpp>
 #include <boost/lexical_cast.hpp>
@@ -66,10 +66,10 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
 
     try
     {
-      asio::io_service io_service;
-      asio::ip::tcp::resolver resolver(io_service);
-      asio::ip::tcp::resolver::query query(ip, port);
-      asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+      boost::asio::io_service io_service;
+      boost::asio::ip::tcp::resolver resolver(io_service);
+      boost::asio::ip::tcp::resolver::query query(ip, port);
+      boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
       if (iter->endpoint().address().is_loopback())
       {
         ip = "localhost";

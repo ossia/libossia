@@ -15,11 +15,11 @@ class leapmotion_protocol::leap_listener final : public Leap::Listener
 {
   using Controller = Leap::Controller;
   using Vector = Leap::Vector;
-  asio::io_context& ctx;
+  boost::asio::io_context& ctx;
   ossia::net::device_base& dev;
 
 public:
-  leap_listener(asio::io_context& ctx, ossia::net::device_base& device)
+  leap_listener(boost::asio::io_context& ctx, ossia::net::device_base& device)
     : ctx{ctx}
     , dev{device}
   {

@@ -69,7 +69,7 @@ public:
   }
 
   template <typename MessageHandler>
-  websocket_client(asio::io_context& ctx, MessageHandler&& onMessage)
+  websocket_client(boost::asio::io_context& ctx, MessageHandler&& onMessage)
     : websocket_client{}
   {
     m_client.init_asio(&ctx);
@@ -205,7 +205,7 @@ public:
     }
   }
 
-private:
+protected:
   using client_t = websocketpp::client<websocketpp::config::asio_client>;
   using scoped_lock = websocketpp::lib::lock_guard<websocketpp::lib::mutex>;
 

@@ -573,7 +573,7 @@ void oscquery_server_protocol::on_connectionOpen(
 {
   auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
 
-  asio::ip::tcp::socket& sock = con->get_raw_socket();
+  boost::asio::ip::tcp::socket& sock = con->get_raw_socket();
   auto ip = sock.remote_endpoint().address().to_string();
   if (ip.substr(0, 7) == "::ffff:")
     ip = ip.substr(7);

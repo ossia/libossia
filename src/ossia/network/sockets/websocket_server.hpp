@@ -32,7 +32,7 @@ public:
     m_server.set_socket_init_handler(init_handler);
   }
 
-  websocket_server(asio::io_context& ctx)
+  websocket_server(boost::asio::io_context& ctx)
   {
     m_server.init_asio(&ctx);
     m_server.set_reuse_addr(true);
@@ -40,9 +40,9 @@ public:
     m_server.set_socket_init_handler(init_handler);
   }
 
-  static void init_handler(websocketpp::connection_hdl, asio::ip::tcp::socket& s)
+  static void init_handler(websocketpp::connection_hdl, boost::asio::ip::tcp::socket& s)
   {
-    asio::ip::tcp::no_delay option(true);
+    boost::asio::ip::tcp::no_delay option(true);
     try
     {
       s.set_option(option);
@@ -169,7 +169,7 @@ public:
 
   void listen(uint16_t port = 9002)
   {
-    m_server.listen(asio::ip::tcp::v4(), port);
+    m_server.listen(boost::asio::ip::tcp::v4(), port);
     m_server.start_accept();
   }
 
@@ -247,7 +247,7 @@ public:
     return m_server;
   }
 
-private:
+protected:
   server_t m_server;
 };
 }

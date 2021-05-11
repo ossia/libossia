@@ -1,7 +1,6 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general libossia dependencies :")
   set(OSSIA_SUBMODULES
-      asio
       bitset2
       brigand
       chobo-shl

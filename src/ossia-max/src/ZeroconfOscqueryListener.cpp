@@ -1,7 +1,7 @@
 #include "ZeroconfOscqueryListener.hpp"
-#include <asio/io_service.hpp>
-#include <asio/ip/basic_resolver.hpp>
-#include <asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/asio/ip/basic_resolver.hpp>
+#include <boost/asio/ip/tcp.hpp>
 
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 
@@ -102,10 +102,10 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
 
     try
     {
-      asio::io_service io_service;
-      asio::ip::tcp::resolver resolver(io_service);
-      asio::ip::tcp::resolver::query query(ip, port);
-      asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
+      boost::asio::io_service io_service;
+      boost::asio::ip::tcp::resolver resolver(io_service);
+      boost::asio::ip::tcp::resolver::query query(ip, port);
+      boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
       if (iter->endpoint().address().is_loopback())
       {
         ip = "localhost";

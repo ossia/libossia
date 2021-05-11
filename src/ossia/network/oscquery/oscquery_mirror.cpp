@@ -51,8 +51,8 @@ using http_request = ossia::net::http_get_request<http_answer, http_error>;
 struct http_client_context
 {
   std::thread thread;
-  asio::io_service context;
-  std::shared_ptr<asio::io_service::work> worker;
+  boost::asio::io_service context;
+  std::shared_ptr<boost::asio::io_service::work> worker;
 };
 /*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
@@ -654,7 +654,7 @@ void oscquery_mirror_protocol::init()
 
 void oscquery_mirror_protocol::start_http()
 {
-  m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
+  m_http->worker = std::make_shared<boost::asio::io_service::work>(m_http->context);
   m_http->thread = std::thread([this] { m_http->context.run(); });
 }
 

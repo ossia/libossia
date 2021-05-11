@@ -1,20 +1,21 @@
 #pragma once
-#include <asio/io_context.hpp>
-#include <asio/ip/udp.hpp>
-#include <asio/local/datagram_protocol.hpp>
-#include <asio/local/stream_protocol.hpp>
-#include <asio/placeholders.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/udp.hpp>
+#include <boost/asio/local/datagram_protocol.hpp>
+#include <boost/asio/local/stream_protocol.hpp>
+#include <boost/asio/placeholders.hpp>
 
 namespace ossia::net
 {
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
 class unix_datagram_socket
 {
-  using proto = asio::local::datagram_protocol;
+  using proto = boost::asio::local::datagram_protocol;
 
 public:
-  unix_datagram_socket(std::string_view path, asio::io_context& ctx)
-      : m_context {ctx}, m_endpoint {path}, m_socket {ctx}
+  unix_datagram_socket(const fd_configuration& conf, boost::asio::io_context& ctx)
+      : m_context {ctx}, m_endpoint {conf.fd}, m_socket {ctx}
   {
     ::unlink(m_endpoint.path().data());
   }
@@ -44,9 +45,9 @@ public:
   void receive(F f)
   {
     m_socket.async_receive_from(
-        asio::buffer(m_data), m_endpoint,
+        boost::asio::buffer(m_data), m_endpoint,
         [this, f](std::error_code ec, std::size_t sz) {
-          if (ec == asio::error::operation_aborted)
+          if (ec == boost::asio::error::operation_aborted)
             return;
 
           if (!ec && sz > 0)
@@ -64,10 +65,10 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.send_to(asio::buffer(data, sz), m_endpoint);
+    m_socket.send_to(boost::asio::buffer(data, sz), m_endpoint);
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
   alignas(16) char m_data[65535];
@@ -76,7 +77,7 @@ public:
 class unix_stream_listener
 {
 public:
-  using proto = asio::local::stream_protocol;
+  using proto = boost::asio::local::stream_protocol;
   unix_stream_listener() = delete;
   unix_stream_listener(const unix_stream_listener&) = delete;
   unix_stream_listener& operator=(const unix_stream_listener&) = delete;
@@ -92,7 +93,7 @@ public:
     m_socket.close();
   }
 
-  void write(const asio::ASIO_CONST_BUFFER& buf)
+  void write(const boost::asio::ASIO_CONST_BUFFER& buf)
   {
     m_socket.write_some(buf);
   }
@@ -104,34 +105,33 @@ public:
 class unix_stream_server
 {
 public:
-  using proto = asio::local::stream_protocol;
+  using proto = boost::asio::local::stream_protocol;
   using listener = unix_stream_listener;
   [[no_unique_address]]
   struct ensure_reuse {
     explicit ensure_reuse(const proto::endpoint& endpoint) { ::unlink(endpoint.path().data()); }
   } m_ensure_reuse;
 
-  unix_stream_server(
-      proto::endpoint endpoint, asio::io_context& ctx)
-      : m_ensure_reuse{endpoint}
+  unix_stream_server(const fd_configuration& conf, boost::asio::io_context& ctx)
+      : m_ensure_reuse{conf.fd}
       , m_context {ctx}
-      , m_acceptor {ctx, endpoint}
+      , m_acceptor {ctx, conf.fd}
   {
 
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   proto::acceptor m_acceptor;
 };
 
 class unix_stream_client
 {
 public:
-  using proto = asio::local::stream_protocol;
+  using proto = boost::asio::local::stream_protocol;
   using socket = typename proto::socket;
 
-  unix_stream_client(std::string_view path, asio::io_context& ctx)
-      : m_context {ctx}, m_endpoint {path}, m_socket {ctx}
+  unix_stream_client(const fd_configuration& conf, boost::asio::io_context& ctx)
+      : m_context {ctx}, m_endpoint {conf.fd}, m_socket {ctx}
   {
   }
 
@@ -151,10 +151,10 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.write_some(asio::buffer(data, sz));
+    m_socket.write_some(boost::asio::buffer(data, sz));
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
 };

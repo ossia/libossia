@@ -10,11 +10,11 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
+#include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/osc/detail/osc_protocol_common.hpp>
-#include <ossia/network/osc/detail/configuration.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>
 #include <ossia/network/osc/detail/osc_1_1_policy.hpp>
 #include <ossia/network/osc/detail/osc_1_1_extended_policy.hpp>
@@ -34,46 +34,26 @@ public:
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
-  // Constructor for UDP
   osc_generic_bidir_protocol(
-      network_context_ptr ctx,
-      std::string_view local_host,  uint16_t local_port,
-      std::string_view remote_host, uint16_t remote_port)
-    : can_learn<ossia::net::protocol_base>{flags{}}
-    , m_ctx{std::move(ctx)}
-    , m_id{*this}
-    , from_client{"0.0.0.0", local_port, m_ctx->context}
-    , to_client{remote_host, remote_port, m_ctx->context}
-  {
-    OscMode::init(*this);
-  }
-
-  // Constructor for UNIX
-  osc_generic_bidir_protocol(
-      network_context_ptr ctx,
-      std::string_view local_fd, std::string_view remote_fd)
-    : can_learn<ossia::net::protocol_base>{flags{}}
-    , m_ctx{std::move(ctx)}
-    , m_id{*this}
-    , from_client{local_fd, m_ctx->context}
-    , to_client{remote_fd, m_ctx->context}
+      network_context_ptr ctx, const double_fd_configuration& conf)
+      : can_learn<ossia::net::protocol_base>{flags{}}
+      , m_ctx{std::move(ctx)}
+      , m_id{*this}
+      , from_client{conf.first, m_ctx->context}
+      , to_client{conf.second, m_ctx->context}
   {
     OscMode::init(*this);
   }
 
   osc_generic_bidir_protocol(
-      network_context_ptr ctx, const fd_configuration& conf)
-    : osc_generic_bidir_protocol{ctx, conf.read_fd, conf.write_fd}
+      network_context_ptr ctx, const double_socket_configuration& conf)
+      : can_learn<ossia::net::protocol_base>{flags{}}
+      , m_ctx{std::move(ctx)}
+      , m_id{*this}
+      , from_client{conf.local, m_ctx->context}
+      , to_client{conf.remote, m_ctx->context}
   {
-  }
-
-  osc_generic_bidir_protocol(
-      network_context_ptr ctx, const socket_configuration& conf)
-    : osc_generic_bidir_protocol{
-        ctx,
-        conf.local_host, conf.local_port,
-        conf.remote_host, conf.remote_port}
-  {
+    OscMode::init(*this);
   }
 
   osc_generic_bidir_protocol(const osc_generic_bidir_protocol&) = delete;
@@ -167,50 +147,24 @@ public:
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
-  // Constructor for TCP
+  template<typename Configuration>
   osc_generic_server_protocol(
-      network_context_ptr ctx,
-      std::string_view local_host, uint16_t local_port)
+      network_context_ptr ctx, const Configuration& conf)
       : can_learn<ossia::net::protocol_base>{flags{}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
-      , m_server{local_host, local_port, m_ctx->context}
+      , m_server{conf, m_ctx->context}
   {
-    m_server.listen(
-        [this] (const char* data, std::size_t sz) {
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
-    });
+    init();
   }
 
-  // Constructor for UNIX
-  osc_generic_server_protocol(
-      network_context_ptr ctx, std::string_view local_fd)
-      : can_learn<ossia::net::protocol_base>{flags{}}
-      , m_ctx{std::move(ctx)}
-      , m_id{*this}
-      , m_server{local_fd, m_ctx->context}
+  void init()
   {
     m_server.listen(
         [this] (const char* data, std::size_t sz) {
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
         });
-  }
-
-
-  osc_generic_server_protocol(
-      network_context_ptr ctx, const fd_configuration& conf)
-      : osc_generic_server_protocol{ctx, conf.read_fd}
-  {
-  }
-
-  osc_generic_server_protocol(
-      network_context_ptr ctx, const socket_configuration& conf)
-      : osc_generic_server_protocol{
-          ctx,
-          conf.local_host, conf.local_port}
-  {
   }
 
   osc_generic_server_protocol(const osc_generic_server_protocol&) = delete;
@@ -304,14 +258,18 @@ public:
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
-  // Constructor for TCP
+  template<typename Configuration>
   osc_generic_client_protocol(
-      network_context_ptr ctx,
-      std::string_view host,  uint16_t port)
+      network_context_ptr ctx, const Configuration& conf)
       : can_learn<ossia::net::protocol_base>{flags{}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
-      , m_client{host, port, m_ctx->context}
+      , m_client{conf, m_ctx->context}
+  {
+    init();
+  }
+
+  void init()
   {
     m_client.connect();
     m_client.receive(
@@ -319,36 +277,6 @@ public:
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
         });
-  }
-
-  // Constructor for UNIX
-  osc_generic_client_protocol(
-      network_context_ptr ctx, std::string_view remote_fd)
-      : can_learn<ossia::net::protocol_base>{flags{}}
-      , m_ctx{std::move(ctx)}
-      , m_id{*this}
-      , m_client{remote_fd, m_ctx->context}
-  {
-    m_client.connect();
-    m_client.receive(
-        [this] (const char* data, std::size_t sz) {
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
-        });
-  }
-
-  osc_generic_client_protocol(
-      network_context_ptr ctx, const fd_configuration& conf)
-      : osc_generic_client_protocol{ctx, conf.read_fd}
-  {
-  }
-
-  osc_generic_client_protocol(
-      network_context_ptr ctx, const socket_configuration& conf)
-      : osc_generic_client_protocol{
-          ctx,
-          conf.remote_host, conf.remote_port}
-  {
   }
 
   osc_generic_client_protocol(const osc_generic_client_protocol&) = delete;

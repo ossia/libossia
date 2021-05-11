@@ -8,17 +8,19 @@
 using namespace ossia;
 
 
-#if defined(OSSIA_PROTOCOL_OSC) && !defined_WIN32
+#if defined(OSSIA_PROTOCOL_OSC)
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
+using conf = ossia::net::udp_configuration;
+static const conf server_conf = conf{{"0.0.0.0", 4478}, {"127.0.0.1", 9875}};
+static const conf client_conf = conf{{"0.0.0.0", 9875}, {"127.0.0.1", 4478}};
 TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;
   using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
-
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(ctx, "0.0.0.0", 4478, "127.0.0.1", 9875), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(ctx, "0.0.0.0", 9875, "127.0.0.1", 4478), "b"};
+  ossia::net::generic_device server{std::make_unique<proto>(ctx, server_conf), "a"};
+  ossia::net::generic_device client{std::make_unique<proto>(ctx, client_conf), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -48,8 +50,8 @@ TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
   using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(ctx, "0.0.0.0", 44758, "127.0.0.1", 19875), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(ctx, "0.0.0.0", 19875, "127.0.0.1", 44758), "b"};
+  ossia::net::generic_device server{std::make_unique<proto>(ctx, server_conf), "a"};
+  ossia::net::generic_device client{std::make_unique<proto>(ctx, client_conf), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -84,8 +86,8 @@ TEST_CASE ("test_comm_osc_udp", "test_comm_osc_udp")
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   test_comm_generic_async(
-        [=] { return std::make_unique<proto>(ctx, "0.0.0.0", 55678, "127.0.0.1", 33987); },
-        [=] { return std::make_unique<proto>(ctx, "0.0.0.0", 33987, "127.0.0.1", 55678); },
+        [=] { return std::make_unique<proto>(ctx, server_conf); },
+        [=] { return std::make_unique<proto>(ctx, client_conf); },
   *ctx);
 }
 
