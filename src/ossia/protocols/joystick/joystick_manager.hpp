@@ -122,7 +122,7 @@ public:
 struct joystick_event_processor
 {
   static inline std::atomic_int instance_count = 0;
-  joystick_event_processor(joystick_protocol_manager& manager, asio::io_context& ctx)
+  joystick_event_processor(joystick_protocol_manager& manager, boost::asio::io_context& ctx)
     : m_manager{manager}
     , m_timer{ctx}
   {
@@ -132,7 +132,7 @@ struct joystick_event_processor
   {
   }
 
-  static joystick_event_processor& instance(joystick_protocol_manager& manager, asio::io_context& ctx)
+  static joystick_event_processor& instance(joystick_protocol_manager& manager, boost::asio::io_context& ctx)
   {
     static joystick_event_processor instance{manager, ctx};
     return instance;

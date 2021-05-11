@@ -104,10 +104,6 @@
 #define BOOST_SYSTEM_NO_DEPRECATED 1
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
 
-#if !defined(ASIO_STANDALONE)
-#define ASIO_STANDALONE 1
-#endif
-
 #if !defined(BOOST_REGEX_NO_LIB)
 #define BOOST_REGEX_NO_LIB 1
 #endif

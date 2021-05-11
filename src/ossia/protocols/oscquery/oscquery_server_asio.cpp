@@ -64,7 +64,7 @@ oscquery_server_protocol::oscquery_server_protocol(
     uint16_t osc_port, uint16_t ws_port)
   : protocol_base{flags{SupportsMultiplex}}
   , m_context{std::move(ctx)}
-  , m_oscServer{std::make_unique<osc_receiver_impl>("127.0.0.1", osc_port, m_context->context)}
+  , m_oscServer{std::make_unique<osc_receiver_impl>(ossia::net::socket_configuration{"0.0.0.0", osc_port}, m_context->context)}
   , m_websocketServer{std::make_unique<ossia::net::websocket_server>(m_context->context)}
   , m_oscPort{osc_port}
   , m_wsPort{ws_port}
@@ -576,7 +576,7 @@ void oscquery_server_protocol::on_connectionOpen(
 {
   auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
 
-  asio::ip::tcp::socket& sock = con->get_raw_socket();
+  boost::asio::ip::tcp::socket& sock = con->get_raw_socket();
   auto ip = sock.remote_endpoint().address().to_string();
   if (ip.substr(0, 7) == "::ffff:")
     ip = ip.substr(7);

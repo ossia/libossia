@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/pod_vector.hpp>
 
-#include <asio/error.hpp>
-#include <asio/streambuf.hpp>
+#include <boost/asio/error.hpp>
+#include <boost/asio/streambuf.hpp>
 
 namespace ossia::net
 {
@@ -18,7 +18,7 @@ template<typename Socket>
 struct slip_decoder
 {
   Socket& socket;
-  asio::streambuf m_data;
+  boost::asio::streambuf m_data;
   ossia::pod_vector<char> m_decoded;
   enum { waiting, reading_char, reading_esc } m_status{waiting};
 
@@ -32,11 +32,11 @@ struct slip_decoder
   void receive(F f)
   {
     socket.async_read_some(
-        asio::buffer(m_data.prepare(1024)),
-        [this, f = std::move(f)] (std::error_code ec, std::size_t sz) mutable {
-          if (ec == asio::error::operation_aborted)
+        boost::asio::buffer(m_data.prepare(1024)),
+        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
+          if (ec == boost::asio::error::operation_aborted)
             return;
-          if (ec == asio::error::eof)
+          if (ec == boost::asio::error::eof)
             return;
 
           if (sz > 0)
@@ -146,7 +146,7 @@ struct slip_encoder
   // This is tailored for OSC which uses double-ended encoding
   void write(const char* data, std::size_t sz)
   {
-    socket.write_some(asio::buffer(&slip::eot, 1));
+    socket.write_some(boost::asio::buffer(&slip::eot, 1));
 
     const uint8_t* begin = reinterpret_cast<const uint8_t*>(data);
     const uint8_t* end = begin + sz;
@@ -155,7 +155,7 @@ struct slip_encoder
       std::size_t written = this->write(begin, end);
       begin += written;
     }
-    socket.write_some(asio::buffer(&slip::eot, 1));
+    socket.write_some(boost::asio::buffer(&slip::eot, 1));
   }
 
   std::size_t write(const uint8_t* begin, const uint8_t* end) {
@@ -165,13 +165,13 @@ struct slip_encoder
       case slip::eot:
       {
         const uint8_t data[2] = {slip::esc, slip::esc_end};
-        socket.write_some(asio::buffer(data, 2));
+        socket.write_some(boost::asio::buffer(data, 2));
         return 1;
       }
       case slip::esc:
       {
         const uint8_t data[2] = {slip::esc, slip::esc_esc};
-        socket.write_some(asio::buffer(data, 2));
+        socket.write_some(boost::asio::buffer(data, 2));
         return 1;
       }
       default:
@@ -180,7 +180,7 @@ struct slip_encoder
         while(sub_end != end && *sub_end != slip::eot && *sub_end != slip::esc)
           ++sub_end;
 
-        socket.write_some(asio::buffer(begin, sub_end - begin));
+        socket.write_some(boost::asio::buffer(begin, sub_end - begin));
         return sub_end - begin;
       }
     }

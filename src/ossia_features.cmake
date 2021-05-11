@@ -113,7 +113,6 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
-  target_compile_definitions(ossia PUBLIC ASIO_STANDALONE=1)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)

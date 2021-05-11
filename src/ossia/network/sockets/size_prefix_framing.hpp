@@ -1,6 +1,6 @@
 #pragma once
-#include <asio/buffer.hpp>
-#include <asio/error.hpp>
+#include <boost/asio/buffer.hpp>
+#include <boost/asio/error.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
 #include <boost/endian/conversion.hpp>
@@ -26,18 +26,18 @@ struct size_prefix_decoder
   {
     // Receive the size prefix
     socket.async_read_some(
-        asio::buffer(&m_next_packet_size, sizeof(int32_t)),
-        [this, f = std::move(f)] (std::error_code ec, std::size_t sz) mutable {
+        boost::asio::buffer(&m_next_packet_size, sizeof(int32_t)),
+        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
           read_size(std::move(f), ec, sz);
         });
   }
 
   template <typename F>
-  void read_size(F&& f, std::error_code ec, std::size_t sz)
+  void read_size(F&& f, boost::system::error_code ec, std::size_t sz)
   {
-    if (ec == asio::error::operation_aborted)
+    if (ec == boost::asio::error::operation_aborted)
       return;
-    if (ec == asio::error::eof)
+    if (ec == boost::asio::error::eof)
       return;
 
     boost::endian::big_to_native_inplace(m_next_packet_size);
@@ -46,18 +46,18 @@ struct size_prefix_decoder
 
     m_data.resize(m_next_packet_size);
     socket.async_read_some(
-        asio::buffer(m_data.data(), m_next_packet_size),
-        [this, f = std::move(f)] (std::error_code ec, std::size_t sz) mutable {
+        boost::asio::buffer(m_data.data(), m_next_packet_size),
+        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
           read_data(std::move(f), ec, sz);
         });
   }
 
   template <typename F>
-  void read_data(F&& f, std::error_code ec, std::size_t sz)
+  void read_data(F&& f, boost::system::error_code ec, std::size_t sz)
   {
-    if (ec == asio::error::operation_aborted)
+    if (ec == boost::asio::error::operation_aborted)
       return;
-    if (ec == asio::error::eof)
+    if (ec == boost::asio::error::eof)
       return;
 
     if (!ec && sz > 0)
@@ -84,8 +84,8 @@ struct size_prefix_encoder
   {
     int32_t packet_size = sz;
     boost::endian::native_to_big_inplace(packet_size);
-    socket.write_some(asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
-    socket.write_some(asio::buffer(data, sz));
+    socket.write_some(boost::asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
+    socket.write_some(boost::asio::buffer(data, sz));
   }
 };
 

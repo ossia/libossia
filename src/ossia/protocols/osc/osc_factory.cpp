@@ -4,26 +4,11 @@
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/tcp_socket.hpp>
 #include <ossia/network/sockets/unix_socket.hpp>
+#include <ossia/network/sockets/websocket.hpp>
 #include <ossia/network/sockets/framing.hpp>
 
 namespace ossia::net
 {
-static socket_configuration get_socket_configuration(osc_protocol_configuration&& conf)
-{
-  if(auto ptr = std::get_if<socket_configuration>(&conf.configuration))
-    return std::move(*ptr);
-  else
-    throw std::runtime_error("Invalid configuration passed to osc_protocol_configuration, expected a socket_configuration");
-}
-
-static fd_configuration get_fd_configuration(osc_protocol_configuration&& conf)
-{
-  if(auto ptr = std::get_if<fd_configuration>(&conf.configuration))
-    return std::move(*ptr);
-  else
-    throw std::runtime_error("Invalid configuration passed to osc_protocol_configuration, expected a fd_configuration");
-}
-
 template<typename OscVersion>
 std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& config)
 {
@@ -37,32 +22,32 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
       switch(config.transport)
       {
         case conf::UDP:
-          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), std::get<ossia::net::double_socket_configuration>(config.configuration));
 
         case conf::TCP:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_client_protocol<client_type, tcp_size_prefix_client>>(std::move(ctx), get_socket_configuration(std::move(config)));
+            return std::make_unique<osc_generic_client_protocol<client_type, tcp_size_prefix_client>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_client_protocol<client_type, tcp_slip_client>>(std::move(ctx), get_socket_configuration(std::move(config)));
+            return std::make_unique<osc_generic_client_protocol<client_type, tcp_slip_client>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX_DGRAM:
-          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), std::get<ossia::net::double_fd_configuration>(config.configuration));
         case conf::UNIX_STREAM:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_client_protocol<client_type, unix_stream_size_prefix_client>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_client_protocol<client_type, unix_stream_size_prefix_client>>(std::move(ctx), std::get<ossia::net::fd_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_client_protocol<client_type, unix_stream_slip_client>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_client_protocol<client_type, unix_stream_slip_client>>(std::move(ctx), std::get<ossia::net::fd_configuration>(config.configuration));
 #endif
 
         case conf::SERIAL:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
 
         case conf::WEBSOCKETS:
-          return {}; // TODO
+          return std::make_unique<osc_generic_client_protocol<client_type, websocket_simple_client>>(std::move(ctx), std::get<ossia::net::ws_client_configuration>(config.configuration));
 
         default:
           break;
@@ -75,33 +60,34 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
       switch(config.transport)
       {
         case conf::UDP:
-          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), get_socket_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), std::get<ossia::net::double_socket_configuration>(config.configuration));
 
         case conf::TCP:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, tcp_size_prefix_server>>(std::move(ctx), get_socket_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, tcp_size_prefix_server>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, tcp_slip_server>>(std::move(ctx), get_socket_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, tcp_slip_server>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
 
 #if defined(ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX_DGRAM:
-          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), std::get<ossia::net::double_fd_configuration>(config.configuration));
         case conf::UNIX_STREAM:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, unix_stream_size_prefix_server>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, unix_stream_size_prefix_server>>(std::move(ctx), std::get<ossia::net::fd_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, unix_stream_slip_server>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, unix_stream_slip_server>>(std::move(ctx), std::get<ossia::net::fd_configuration>(config.configuration));
 
 #endif
 
         case conf::SERIAL:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
 
         case conf::WEBSOCKETS:
-          return {}; // TODO
+          return std::make_unique<osc_generic_server_protocol<client_type, websocket_simple_server>>(std::move(ctx),std::get<ossia::net::ws_server_configuration>(config.configuration));
+
           break;
         default:
           break;

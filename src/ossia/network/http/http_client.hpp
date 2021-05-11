@@ -3,8 +3,8 @@
 
 #include <ossia/detail/logger.hpp>
 
-#include <asio.hpp>
-#include <asio/placeholders.hpp>
+#include <boost/asio.hpp>
+#include <boost/asio/placeholders.hpp>
 
 #include <utility>
 
@@ -12,7 +12,7 @@ namespace ossia
 {
 namespace net
 {
-using tcp = asio::ip::tcp;
+using tcp = boost::asio::ip::tcp;
 
 template <typename Fun, typename Err>
 class http_get_request
@@ -24,7 +24,7 @@ public:
   using std::enable_shared_from_this<
       http_get_request<Fun, Err>>::shared_from_this;
   http_get_request(
-      Fun f, Err err, asio::io_context& ctx, const std::string& server,
+      Fun f, Err err, boost::asio::io_context& ctx, const std::string& server,
       const std::string& path)
       : m_resolver(ctx)
       , m_socket(ctx)
@@ -55,7 +55,7 @@ public:
     m_resolver.async_resolve(
         server, port,
         [self = this->shared_from_this()](
-            const asio::error_code& err,
+            const boost::system::error_code& err,
             const tcp::resolver::results_type& endpoints) {
           self->handle_resolve(err, endpoints);
         });
@@ -68,14 +68,14 @@ public:
 
 private:
   void handle_resolve(
-      const asio::error_code& err,
+      const boost::system::error_code& err,
       const tcp::resolver::results_type& endpoints)
   {
     if (!err)
     {
-      asio::async_connect(
+      boost::asio::async_connect(
           m_socket, endpoints,
-          [self = shared_from_this()](const asio::error_code& err, auto&&...) {
+          [self = shared_from_this()](const boost::system::error_code& err, auto&&...) {
             self->handle_connect(err);
           });
     }
@@ -86,14 +86,14 @@ private:
     }
   }
 
-  void handle_connect(const asio::error_code& err)
+  void handle_connect(const boost::system::error_code& err)
   {
     if (!err)
     {
-      asio::const_buffer request(m_request.data(), m_request.size());
-      asio::async_write(
+      boost::asio::const_buffer request(m_request.data(), m_request.size());
+      boost::asio::async_write(
           m_socket, request,
-          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
             self->handle_write_request(err, size);
           });
     }
@@ -104,13 +104,13 @@ private:
     }
   }
 
-  void handle_write_request(const asio::error_code& err, std::size_t size)
+  void handle_write_request(const boost::system::error_code& err, std::size_t size)
   {
     if (!err)
     {
-      asio::async_read_until(
+      boost::asio::async_read_until(
           m_socket, m_response, "\r\n",
-          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
             self->handle_read_status_line(err, size);
           });
     }
@@ -121,7 +121,7 @@ private:
     }
   }
 
-  void handle_read_status_line(const asio::error_code& err, std::size_t size)
+  void handle_read_status_line(const boost::system::error_code& err, std::size_t size)
   {
     if (!err)
     {
@@ -145,9 +145,9 @@ private:
       }
 
       // Read the response headers, which are terminated by a blank line.
-      asio::async_read_until(
+      boost::asio::async_read_until(
           m_socket, m_response, "\r\n\r\n",
-          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
             self->handle_read_headers(err, size);
           });
     }
@@ -158,7 +158,7 @@ private:
     }
   }
 
-  void handle_read_headers(const asio::error_code& err, std::size_t size)
+  void handle_read_headers(const boost::system::error_code& err, std::size_t size)
   {
     if (!err)
     {
@@ -169,9 +169,9 @@ private:
         ;
 
       // Start reading remaining data until EOF.
-      asio::async_read(
-          m_socket, m_response, asio::transfer_at_least(1),
-          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+      boost::asio::async_read(
+          m_socket, m_response, boost::asio::transfer_at_least(1),
+          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
             self->handle_read_content(err, size);
           });
     }
@@ -182,28 +182,28 @@ private:
     }
   }
 
-  void handle_read_content(const asio::error_code& err, std::size_t size)
+  void handle_read_content(const boost::system::error_code& err, std::size_t size)
   {
     if (!err)
     {
       // Continue reading remaining data until EOF.
-      asio::async_read(
-          m_socket, m_response, asio::transfer_at_least(1),
-          [self = shared_from_this()](const asio::error_code& err, std::size_t size) {
+      boost::asio::async_read(
+          m_socket, m_response, boost::asio::transfer_at_least(1),
+          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
             self->handle_read_content(err, size);
           });
     }
-    else if (err != asio::error::eof)
+    else if (err != boost::asio::error::eof)
     {
       ossia::logger().error("HTTP Error: {}", err.message());
       m_err(*this);
     }
-    else if (err == asio::error::eof)
+    else if (err == boost::asio::error::eof)
     {
       // Write all of the data that has been read so far.
       const auto& dat = m_response.data();
-      auto begin = asio::buffers_begin(dat);
-      auto end = asio::buffers_end(dat);
+      auto begin = boost::asio::buffers_begin(dat);
+      auto end = boost::asio::buffers_end(dat);
       auto sz = end - begin;
       std::string str;
       str.reserve(
@@ -215,7 +215,7 @@ private:
 
   tcp::resolver m_resolver;
   tcp::socket m_socket;
-  asio::streambuf m_response;
+  boost::asio::streambuf m_response;
   Fun m_fun;
   Err m_err;
 };

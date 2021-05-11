@@ -1,7 +1,8 @@
 #pragma once
-#include <asio/io_context.hpp>
-#include <asio/serial_port.hpp>
-#include <asio/placeholders.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/serial_port.hpp>
+#include <boost/asio/placeholders.hpp>
 
 namespace ossia::net
 {
@@ -10,13 +11,13 @@ template<typename Framing>
 class serial_socket
 {
 public:
-  using proto = asio::serial_port;
-  using socket = asio::serial_port;
-  using encoder = typename Framing::template encoder<asio::serial_port>;
-  using decoder = typename Framing::template decoder<asio::serial_port>;
+  using proto = boost::asio::serial_port;
+  using socket = boost::asio::serial_port;
+  using encoder = typename Framing::template encoder<boost::asio::serial_port>;
+  using decoder = typename Framing::template decoder<boost::asio::serial_port>;
 
-  serial_socket(std::string_view path, asio::io_context& ctx)
-      : m_context {ctx}, m_path(path), m_port{ctx}, m_decoder{this->m_port}
+  serial_socket(const serial_configuration& conf, boost::asio::io_context& ctx)
+      : m_context {ctx}, m_path{conf.port}, m_port{ctx}, m_decoder{this->m_port}
   {
   }
 
@@ -42,9 +43,9 @@ public:
     encoder{this->m_port}.write(data, sz);
   }
 
-  asio::io_context& m_context;
+  boost::asio::io_context& m_context;
   std::string m_path;
-  asio::serial_port m_port;
+  boost::asio::serial_port m_port;
 
   decoder m_decoder;
 };

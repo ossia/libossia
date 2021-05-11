@@ -15,11 +15,11 @@ auto make_client(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::TCP,
+                                         conf::WEBSOCKETS,
                                          conf::MIRROR,
                                          conf::OSC1_1,
-                                         conf::SLIP,
-                                         ossia::net::tcp_configuration{"127.0.0.1", 1234}
+                                         conf::SIZE_PREFIX,
+                                         ossia::net::ws_client_configuration{"ws://127.0.0.1:8086"}
                                        });
 }
 
@@ -28,16 +28,16 @@ auto make_server(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::TCP,
+                                         conf::WEBSOCKETS,
                                          conf::HOST,
                                          conf::OSC1_1,
-                                         conf::SLIP,
-                                         ossia::net::tcp_configuration{"0.0.0.0", 1234}
+                                         conf::SIZE_PREFIX,
+                                         ossia::net::ws_server_configuration{8086}
                                        });
 }
 
 
-TEST_CASE ("test_comm_osc_tcp_server_client", "test_comm_osc_tcp_server_client")
+TEST_CASE ("test_comm_osc_ws_server_client", "test_comm_osc_ws_server_client")
 {
   using namespace ossia::net;
 
@@ -46,7 +46,8 @@ TEST_CASE ("test_comm_osc_tcp_server_client", "test_comm_osc_tcp_server_client")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  ctx->context.poll_one();
+  for(int i = 0; i < 100; i++)
+    ctx->context.poll_one();
 
   ossia::value received_from_server;
   auto on_client_message = [&] (const std::string& s, const ossia::value& v) {
@@ -63,7 +64,7 @@ TEST_CASE ("test_comm_osc_tcp_server_client", "test_comm_osc_tcp_server_client")
   REQUIRE(received_from_server ==  ossia::value{123});
 }
 
-TEST_CASE ("test_comm_osc_tcp_client_server", "test_comm_osc_tcp_client_server")
+TEST_CASE ("test_comm_osc_ws_client_server", "test_comm_osc_ws_client_server")
 {
   using namespace ossia::net;
 
@@ -88,7 +89,7 @@ TEST_CASE ("test_comm_osc_tcp_client_server", "test_comm_osc_tcp_client_server")
 
   REQUIRE(received_from_client ==  ossia::value{456});
 }
-TEST_CASE ("test_comm_osc_tcp_big", "test_comm_osc_tcp_big")
+TEST_CASE ("test_comm_osc_ws_big", "test_comm_osc_ws_big")
 {
   using namespace ossia::net;
 

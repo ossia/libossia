@@ -70,7 +70,7 @@ public:
 
   void open_osc_sender(ossia::oscquery_asio::oscquery_server_protocol& proto, uint16_t port)
   {
-    osc_socket = std::make_unique<ossia::net::udp_socket>(client_ip, port, proto.m_context->context);
+    osc_socket = std::make_unique<ossia::net::udp_socket>(ossia::net::socket_configuration{client_ip, port}, proto.m_context->context);
   }
 
 };

@@ -19,11 +19,11 @@
 #include <memory>
 // https://svn.boost.org/trac10/ticket/3605
 #if defined(_MSC_VER)
-#include <asio/detail/winsock_init.hpp>
+#include <boost/asio/detail/winsock_init.hpp>
 #pragma warning(push)
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
-asio::detail::winsock_init<>::manual manual_winsock_init;
+boost::asio::detail::winsock_init<>::manual manual_winsock_init;
 #pragma warning(pop)
 #endif
 
