@@ -1,5 +1,10 @@
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
+#include <ossia/network/sockets/serial_socket.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/network/sockets/tcp_socket.hpp>
+#include <ossia/network/sockets/unix_socket.hpp>
+#include <ossia/network/sockets/framing.hpp>
 
 namespace ossia::net
 {
@@ -51,7 +56,10 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
 #endif
 
         case conf::SERIAL:
-          return {}; // TODO
+          if(config.framing == conf::SIZE_PREFIX)
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          else
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
 
         case conf::WEBSOCKETS:
           return {}; // TODO
@@ -87,7 +95,10 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
 #endif
 
         case conf::SERIAL:
-          return {}; // TODO
+          if(config.framing == conf::SIZE_PREFIX)
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
+          else
+            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), get_fd_configuration(std::move(config)));
 
         case conf::WEBSOCKETS:
           return {}; // TODO

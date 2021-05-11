@@ -11,7 +11,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/osc/detail/bidir.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/osc_1_1_extended_policy.hpp>
 #include <ossia/network/osc/detail/osc_packet_processor.hpp>
@@ -27,7 +27,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/protocols/oscquery/oscquery_client_asio.hpp>
-#include <ossia/network/websocket/server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
 {

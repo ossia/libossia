@@ -12,6 +12,8 @@ class tcp_listener
 {
 public:
   using proto = asio::ip::tcp;
+  using socket = typename proto::socket;
+
   tcp_listener() = delete;
   tcp_listener(const tcp_listener&) = delete;
   tcp_listener& operator=(const tcp_listener&) = delete;
@@ -40,7 +42,9 @@ class tcp_server
 {
 public:
   using proto = asio::ip::tcp;
+  using socket = typename proto::socket;
   using listener = tcp_listener;
+
   tcp_server(
       std::string_view ip, uint16_t port, asio::io_context& ctx)
       : m_context {ctx}
@@ -56,6 +60,7 @@ class tcp_client
 {
 public:
   using proto = asio::ip::tcp;
+  using socket = typename proto::socket;
 
   tcp_client(
       std::string_view ip, uint16_t port, asio::io_context& ctx)

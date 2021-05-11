@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/network/osc/detail/tcp_socket.hpp>
+#include <asio/buffer.hpp>
+#include <asio/error.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
 #include <boost/endian/conversion.hpp>
@@ -86,6 +87,14 @@ struct size_prefix_encoder
     socket.write_some(asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
     socket.write_some(asio::buffer(data, sz));
   }
+};
+
+struct size_prefix_framing
+{
+  template<typename Socket>
+  using encoder = size_prefix_encoder<Socket>;
+  template<typename Socket>
+  using decoder = size_prefix_decoder<Socket>;
 };
 
 }

@@ -3,11 +3,11 @@
 #include <ossia/detail/string_map.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 #include <ossia/network/context.hpp>
-#include <ossia/network/osc/detail/bidir.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/websocket/server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 
 namespace ossia::oscquery_asio
 {

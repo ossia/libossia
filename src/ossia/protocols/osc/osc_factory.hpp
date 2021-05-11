@@ -9,7 +9,7 @@ namespace ossia::net
 {
 struct osc_protocol_configuration
 {
-  // Note: only UDP, TCP and UNIX implemented for now
+  // TODO: WebSockets
   enum { UDP, UNIX_DGRAM, TCP, UNIX_STREAM, SERIAL, WEBSOCKETS }
   transport{UDP};
 
@@ -20,14 +20,17 @@ struct osc_protocol_configuration
   enum { OSC1_0, OSC1_1, EXTENDED }
   version{OSC1_0};
 
-  // Only relevant for stream protocols (TCP, SERIAL, UNIX_STREAM)
+  // Only relevant for stream protocols (TCP, SERIAL, UNIX_STREAM), unused for UDP, UNIX_DGRAM, WEBSOCKETS
   enum { SIZE_PREFIX, SLIP }
   framing{SLIP};
 
-  // host: the unix socket name. Pair of sockets will be created in /tmp/
-  using unix_configuration = fd_configuration;
+  // read_fd / write_fd: the unix sockets name. First goes host -> mirror, second goes mirror -> host.
+  using unix_dgram_configuration = fd_configuration;
 
-  // host: the serial device name
+  // read_fd: the unix socket name. Full-duplex. write_fd is unused.
+  using unix_stream_configuration = fd_configuration;
+
+  // read_fd: the serial device name ("COM1", "/dev/ttyUSB1"...)
   using serial_configuration = fd_configuration;
 
   using udp_configuration = socket_configuration;

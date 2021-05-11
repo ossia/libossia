@@ -2,7 +2,8 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/osc_address.hpp>
-#include <ossia/network/osc/detail/bidir.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/network/sockets/writers.hpp>
 #include <ossia/network/osc/detail/bundle.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/osc_1_1_extended_policy.hpp>

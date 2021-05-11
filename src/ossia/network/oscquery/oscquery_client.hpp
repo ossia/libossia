@@ -5,7 +5,7 @@
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/websocket/server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 
 namespace osc
 {

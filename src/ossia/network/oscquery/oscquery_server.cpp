@@ -20,7 +20,7 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
-#include <ossia/network/websocket/server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 #include <ossia/detail/algorithms.hpp>
 namespace ossia
 {
