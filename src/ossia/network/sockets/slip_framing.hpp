@@ -31,7 +31,7 @@ struct slip_decoder
   template <typename F>
   void receive(F f)
   {
-    socket.async_receive(
+    socket.async_read_some(
         asio::buffer(m_data.prepare(1024)),
         [this, f = std::move(f)] (std::error_code ec, std::size_t sz) mutable {
           if (ec == asio::error::operation_aborted)
@@ -187,4 +187,12 @@ struct slip_encoder
   }
 };
 
+
+struct slip_framing
+{
+  template<typename Socket>
+  using encoder = slip_encoder<Socket>;
+  template<typename Socket>
+  using decoder = slip_decoder<Socket>;
+};
 }

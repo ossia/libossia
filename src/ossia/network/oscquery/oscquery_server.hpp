@@ -3,7 +3,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/websocket/server_reply.hpp>
+#include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 

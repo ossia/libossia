@@ -3,7 +3,6 @@
 #include <ossia/network/osc/detail/bundle.hpp>
 #include <ossia/network/osc/detail/osc_packet_processor.hpp>
 #include <ossia/network/osc/detail/osc_value_write_visitor.hpp>
-#include <ossia/network/osc/detail/bidir.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>

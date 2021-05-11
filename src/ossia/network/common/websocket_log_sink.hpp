@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/json.hpp>
-#include <ossia/network/websocket/client.hpp>
+#include <ossia/network/sockets/websocket_client.hpp>
 
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>

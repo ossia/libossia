@@ -4,7 +4,7 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/websocket/server_reply.hpp>
+#include <ossia/network/sockets/websocket_reply.hpp>
 
 #include <websocketpp/config/asio_no_tls.hpp>
 #include <websocketpp/http/request.hpp>

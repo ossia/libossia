@@ -9,7 +9,7 @@
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/websocket/client.hpp>
+#include <ossia/network/sockets/websocket_client.hpp>
 #include <ossia/network/http/http_client.hpp>
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>

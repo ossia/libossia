@@ -128,6 +128,7 @@ class unix_stream_client
 {
 public:
   using proto = asio::local::stream_protocol;
+  using socket = typename proto::socket;
 
   unix_stream_client(std::string_view path, asio::io_context& ctx)
       : m_context {ctx}, m_endpoint {path}, m_socket {ctx}

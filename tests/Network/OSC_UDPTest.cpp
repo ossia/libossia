@@ -1,6 +1,7 @@
 
 #include <catch.hpp>
 #include <ossia/network/context.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
 #include "AsyncTestUtils.hpp"
 #include <iostream>
 

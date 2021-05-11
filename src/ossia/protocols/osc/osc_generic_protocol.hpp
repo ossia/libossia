@@ -5,6 +5,7 @@
 
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/sockets/writers.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>

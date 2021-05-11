@@ -57,6 +57,18 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/node_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/destination_qualifiers.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/tcp_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/serial_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/size_prefix_framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/slip_framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/writers.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/misc_visitors.hpp"
@@ -335,7 +347,6 @@ set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_0_policy.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_policy.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_extended_policy.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bidir.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
@@ -378,9 +389,6 @@ set(OSSIA_MIDI_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.cpp")
 
 set(OSSIA_OSCQUERY_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/client.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/server.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/websocket/server_reply.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_query_parser.hpp"
