@@ -21,8 +21,8 @@ void push_all_values_async(
       REQUIRE(local_addr[i][j]->value() == val);
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   for(int i = 0; i < N; i++)
   {
@@ -33,8 +33,8 @@ void push_all_values_async(
       remote_addr[i][j]->push_value(val);
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   int j = 0;
   for(int i = 0; i < N; i++)
@@ -42,8 +42,8 @@ void push_all_values_async(
     local_addr[i][j]->set_value_type((ossia::val_type) i);
     local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
     j++;
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   for(int i = 0; i < N; i++)
   {
@@ -53,8 +53,8 @@ void push_all_values_async(
       remote_addr[i][j]->push_value(ossia::init_value((ossia::val_type) val.get_type()));
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 }
 
 void push_all_values_domain_async(
@@ -72,8 +72,8 @@ void push_all_values_domain_async(
       local_addr[i][j]->push_value(val);
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   for(int i = 0; i < N; i++)
   {
@@ -83,8 +83,8 @@ void push_all_values_domain_async(
       remote_addr[i][j]->push_value(val);
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   int j = 0;
   for(int i = 0; i < N; i++)
@@ -92,8 +92,8 @@ void push_all_values_domain_async(
     local_addr[i][j]->set_value_type((ossia::val_type) i);
     local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
     j++;
+    ctx.context.poll();
   }
-  ctx.context.poll();
 
   for(int i = 0; i < N; i++)
   {
@@ -103,8 +103,8 @@ void push_all_values_domain_async(
       remote_addr[i][j]->push_value(ossia::init_value((ossia::val_type) val.get_type()));
       j++;
     }
+    ctx.context.poll();
   }
-  ctx.context.poll();
 }
 
 

@@ -169,7 +169,7 @@ public:
   // Constructor for TCP
   osc_generic_server_protocol(
       network_context_ptr ctx,
-      std::string_view local_host,  uint16_t local_port)
+      std::string_view local_host, uint16_t local_port)
       : can_learn<ossia::net::protocol_base>{flags{}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
@@ -182,9 +182,25 @@ public:
     });
   }
 
+  // Constructor for UNIX
+  osc_generic_server_protocol(
+      network_context_ptr ctx, std::string_view local_fd)
+      : can_learn<ossia::net::protocol_base>{flags{}}
+      , m_ctx{std::move(ctx)}
+      , m_id{*this}
+      , m_server{local_fd, m_ctx->context}
+  {
+    m_server.listen(
+        [this] (const char* data, std::size_t sz) {
+          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
+          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+        });
+  }
+
+
   osc_generic_server_protocol(
       network_context_ptr ctx, const fd_configuration& conf)
-      : osc_generic_server_protocol{ctx, conf.read_fd, conf.write_fd}
+      : osc_generic_server_protocol{ctx, conf.read_fd}
   {
   }
 
@@ -304,9 +320,25 @@ public:
         });
   }
 
+  // Constructor for UNIX
+  osc_generic_client_protocol(
+      network_context_ptr ctx, std::string_view remote_fd)
+      : can_learn<ossia::net::protocol_base>{flags{}}
+      , m_ctx{std::move(ctx)}
+      , m_id{*this}
+      , m_client{remote_fd, m_ctx->context}
+  {
+    m_client.connect();
+    m_client.receive(
+        [this] (const char* data, std::size_t sz) {
+          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
+          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+        });
+  }
+
   osc_generic_client_protocol(
       network_context_ptr ctx, const fd_configuration& conf)
-      : osc_generic_client_protocol{ctx, conf.read_fd, conf.write_fd}
+      : osc_generic_client_protocol{ctx, conf.read_fd}
   {
   }
 
