@@ -23,7 +23,6 @@ struct websocket_simple_client : websocket_client
 
   void connect()
   {
-    websocket_client::connect(m_host);
   }
 
   template <typename F>
@@ -34,6 +33,8 @@ struct websocket_simple_client : websocket_client
           const auto& data = msg->get_raw_payload();
           handler(data.data(), data.size());
         });
+
+    websocket_client::connect(m_host);
   }
 
   void write(const char* data, std::size_t sz)
@@ -80,6 +81,7 @@ struct websocket_simple_server: ossia::net::websocket_server
           const auto& data = msg->get_raw_payload();
           handler(data.data(), data.size());
         });
+
     websocket_server::listen(m_port);
   }
 

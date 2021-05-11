@@ -46,6 +46,7 @@ TEST_CASE ("test_comm_osc_ws_server_client", "test_comm_osc_ws_server_client")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
+  ctx->context.run_one();
   for(int i = 0; i < 100; i++)
     ctx->context.poll_one();
 
@@ -73,7 +74,9 @@ TEST_CASE ("test_comm_osc_ws_client_server", "test_comm_osc_ws_client_server")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  ctx->context.poll_one();
+  ctx->context.run_one();
+  for(int i = 0; i < 100; i++)
+    ctx->context.poll_one();
 
   ossia::value received_from_client;
   auto on_server_message = [&] (const std::string& s, const ossia::value& v) {
@@ -97,8 +100,9 @@ TEST_CASE ("test_comm_osc_ws_big", "test_comm_osc_ws_big")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  // Connect is async, it runs there
-  ctx->context.poll_one();
+  ctx->context.run_one();
+  for(int i = 0; i < 100; i++)
+    ctx->context.poll_one();
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -125,7 +129,7 @@ TEST_CASE ("test_comm_osc_ws_big", "test_comm_osc_ws_big")
   REQUIRE(received_from_server ==  ossia::value{long_str});
 }
 
-TEST_CASE ("test_comm_osc_tcp", "test_comm_osc_tcp")
+TEST_CASE ("test_comm_osc_ws", "test_comm_osc_ws")
 {
   using namespace ossia::net;
 

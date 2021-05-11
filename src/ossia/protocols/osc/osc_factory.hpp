@@ -9,7 +9,6 @@ namespace ossia::net
 {
 struct osc_protocol_configuration
 {
-  // TODO: WebSockets
   enum { UDP, UNIX_DGRAM, TCP, UNIX_STREAM, SERIAL, WEBSOCKETS }
   transport{UDP};
 

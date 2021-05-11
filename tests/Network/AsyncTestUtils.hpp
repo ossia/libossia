@@ -119,7 +119,9 @@ void test_comm_generic_async(
   remote_data rem{std::move(local_proto), std::move(remote_proto)};
 
   // Connect is async, it runs there
-  ctx.context.poll_one();
+  ctx.context.run_one();
+  for(int i = 0; i < 100; i++)
+    ctx.context.poll_one();
 
   auto& local_addr = rem.local_addr;
   auto& remote_addr = rem.remote_addr;
