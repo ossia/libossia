@@ -12,7 +12,6 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <boost/range/combine.hpp>
 
 namespace ossia
 {
@@ -27,8 +26,11 @@ inline bool operator==(const token_request_vec& lhs, const simple_token_request_
   if(lhs.size() != rhs.size())
     return false;
 
-  for(const auto& [lhs, rhs] : boost::combine(lhs, rhs)) {
-    if(lhs == rhs)
+  auto it1 = lhs.begin();
+  auto it2 = rhs.begin();
+  auto e1 = lhs.end();
+  for(; it1 < e1; ++it1, ++it2) {
+    if(*it1 == *it2)
       continue;
     else
       return false;
@@ -41,8 +43,11 @@ inline bool operator!=(const token_request_vec& lhs, const simple_token_request_
   if(lhs.size() != rhs.size())
     return true;
 
-  for(const auto& [lhs, rhs] : boost::combine(lhs, rhs)) {
-    if(lhs != rhs)
+  auto it1 = lhs.begin();
+  auto it2 = rhs.begin();
+  auto e1 = lhs.end();
+  for(; it1 < e1; ++it1, ++it2) {
+    if(*it1 != *it2)
       continue;
     else
       return false;
