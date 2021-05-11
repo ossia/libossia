@@ -16,7 +16,7 @@ int main(int argc, char** argv)
   ossia::net::generic_device device{
     ossia::net::make_osc_protocol(ctx,
           {
-            conf::UNIX,
+            conf::UNIX_DGRAM,
             conf::HOST,
             conf::OSC1_1,
             conf::SLIP,

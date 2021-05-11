@@ -10,14 +10,19 @@ namespace ossia::net
 struct osc_protocol_configuration
 {
   // Note: only UDP, TCP and UNIX implemented for now
-  enum { UDP, UNIX, TCP, SERIAL, WEBSOCKETS } transport{UDP};
+  enum { UDP, UNIX_DGRAM, TCP, UNIX_STREAM, SERIAL, WEBSOCKETS }
+  transport{UDP};
 
-  enum { HOST, MIRROR }                       mode{HOST};
+  // libossia semantic level: host can change any parameter, mirror can only change BI / SET
+  enum { HOST, MIRROR }
+  mode{HOST};
 
-  enum { OSC1_0, OSC1_1, EXTENDED }           version{OSC1_0};
+  enum { OSC1_0, OSC1_1, EXTENDED }
+  version{OSC1_0};
 
-  // Only relevant for TCP / Serial protocols
-  enum { SIZE_PREFIX, SLIP }                  framing{SLIP};
+  // Only relevant for stream protocols (TCP, SERIAL, UNIX_STREAM)
+  enum { SIZE_PREFIX, SLIP }
+  framing{SLIP};
 
   // host: the unix socket name. Pair of sockets will be created in /tmp/
   using unix_configuration = fd_configuration;
