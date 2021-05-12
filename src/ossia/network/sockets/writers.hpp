@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <boost/asio/buffer.hpp>
+#include <boost/asio/error.hpp>
 
 #include <cinttypes>
 #include <vector>
@@ -28,6 +29,32 @@ struct multi_socket_writer
     {
       sock->write(buf);
     }
+  }
+};
+
+template<typename T, typename F>
+struct stream_processor
+{
+  T& self;
+  F on_message;
+  template<typename... Args>
+  void operator()(Args&&... args) const { this->on_message(std::forward<Args>(args)...); }
+
+  bool validate_stream(boost::system::error_code ec) const
+  {
+    if (ec == boost::asio::error::operation_aborted)
+    {
+      self.on_fail();
+      return false;
+    }
+
+    if (ec == boost::asio::error::eof)
+    {
+      self.on_close();
+      return false;
+    }
+
+    return true;
   }
 };
 }

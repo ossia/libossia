@@ -126,7 +126,8 @@ public:
 
   host_info get_host_info() const noexcept;
 
-  void reconnect();
+  bool connected() const noexcept override { return m_hasWS; }
+  void connect() override;
 private:
   friend struct http_answer;
 
@@ -151,6 +152,8 @@ private:
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   void start_http();
+
+  void on_ws_disconnected() { m_hasWS = false; }
 
   std::unique_ptr<osc::sender<oscquery::osc_outbound_visitor>> m_oscSender;
   std::unique_ptr<osc::receiver> m_oscServer;

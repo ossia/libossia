@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/sockets/configuration.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -6,9 +7,11 @@
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 
+#include <nano_signal_slot.hpp>
+
 namespace ossia::net
 {
-#if defined(ASIO_HAS_LOCAL_SOCKETS)
+#if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
 class unix_datagram_socket
 {
   using proto = boost::asio::local::datagram_protocol;
@@ -17,11 +20,11 @@ public:
   unix_datagram_socket(const fd_configuration& conf, boost::asio::io_context& ctx)
       : m_context {ctx}, m_endpoint {conf.fd}, m_socket {ctx}
   {
-    ::unlink(m_endpoint.path().data());
   }
 
   void open()
   {
+    ::unlink(m_endpoint.path().data());
     m_socket.open();
     m_socket.bind(m_endpoint);
   }
@@ -32,12 +35,11 @@ public:
     // m_socket.connect(m_endpoint);
   }
 
-  template <typename F>
-  void close(F f)
+  void close()
   {
-    m_context.post([this, f] {
+    m_context.post([this] {
       m_socket.close();
-      f();
+      on_close();
     });
   }
 
@@ -46,7 +48,7 @@ public:
   {
     m_socket.async_receive_from(
         boost::asio::buffer(m_data), m_endpoint,
-        [this, f](std::error_code ec, std::size_t sz) {
+        [this, f](boost::system::error_code ec, std::size_t sz) {
           if (ec == boost::asio::error::operation_aborted)
             return;
 
@@ -67,6 +69,8 @@ public:
   {
     m_socket.send_to(boost::asio::buffer(data, sz), m_endpoint);
   }
+
+  Nano::Signal<void()> on_close;
 
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
@@ -93,9 +97,19 @@ public:
     m_socket.close();
   }
 
-  void write(const boost::asio::ASIO_CONST_BUFFER& buf)
+  void write(const boost::asio::const_buffer& buf)
   {
     m_socket.write_some(buf);
+  }
+
+  void on_close()
+  {
+
+  }
+
+  void on_fail()
+  {
+
   }
 
   proto::socket m_socket;
@@ -138,14 +152,19 @@ public:
   void connect()
   {
     m_socket.connect(m_endpoint);
+    on_open();
   }
 
-  template <typename F>
-  void close(F f)
+  bool connected() const
   {
-    m_context.post([this, f] {
+    return m_connected;
+  }
+
+  void close()
+  {
+    m_context.post([this] {
       m_socket.close();
-      f();
+      on_close();
     });
   }
 
@@ -154,9 +173,14 @@ public:
     m_socket.write_some(boost::asio::buffer(data, sz));
   }
 
+  Nano::Signal<void()> on_open;
+  Nano::Signal<void()> on_close;
+  Nano::Signal<void()> on_fail;
+
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
+  bool m_connected{false};
 };
 #endif
 }

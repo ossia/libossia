@@ -14,14 +14,14 @@ namespace ossia
 namespace net
 {
 
-//! Low-level Websocket client for OSCQuery
+//! Low-level Websocket client
 class websocket_client
 {
 public:
   using connection_handler = websocketpp::connection_hdl;
-  Nano::Signal<void()> onOpen;
-  std::function<void()> onClose;
-  std::function<void()> onFail;
+  Nano::Signal<void()> on_open;
+  Nano::Signal<void()> on_close;
+  Nano::Signal<void()> on_fail;
 
   websocket_client()
     : m_open{false}
@@ -32,7 +32,8 @@ public:
     m_client.set_open_handler([this](connection_handler hdl) {
       scoped_lock guard(m_lock);
       m_open = true;
-      onOpen();
+
+      on_open();
     });
 
     m_client.set_close_handler([this](connection_handler hdl) {
@@ -40,8 +41,7 @@ public:
         scoped_lock guard(m_lock);
         m_open = false;
       }
-      if (onClose)
-        onClose();
+      on_close();
     });
 
     m_client.set_fail_handler([this](connection_handler hdl) {
@@ -49,8 +49,7 @@ public:
         scoped_lock guard(m_lock);
         m_open = false;
       }
-      if (onFail)
-        onFail();
+      on_fail();
     });
   }
   //! \tparam Function that will be called when the client receives a server

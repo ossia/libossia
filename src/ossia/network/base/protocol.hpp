@@ -3,7 +3,7 @@
 
 #include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
-
+#include <nano_signal_slot.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <future>
@@ -150,6 +150,12 @@ public:
   {
     return m_logger;
   }
+
+  virtual bool connected() const noexcept;
+  virtual void connect();
+  Nano::Signal<void()> on_connection_open;
+  Nano::Signal<void()> on_connection_closed;
+  Nano::Signal<void()> on_connection_failure;
 
   virtual void start_execution()
   {

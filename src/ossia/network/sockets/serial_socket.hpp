@@ -1,8 +1,11 @@
 #pragma once
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/writers.hpp>
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/placeholders.hpp>
+
+#include <nano_signal_slot.hpp>
 
 namespace ossia::net
 {
@@ -26,15 +29,14 @@ public:
   {
     m_port.open(m_path);
 
-    m_decoder.receive(std::move(f));
+    m_decoder.receive(stream_processor<serial_socket, F>{*this, std::move(f)});
   }
 
-  template <typename F>
-  void close(F f)
+  void close()
   {
-    m_context.post([this, f] {
+    m_context.post([this] {
       m_port.close();
-      f();
+      on_close();
     });
   }
 
@@ -43,10 +45,12 @@ public:
     encoder{this->m_port}.write(data, sz);
   }
 
+  Nano::Signal<void()> on_close;
+  Nano::Signal<void()> on_fail;
+
   boost::asio::io_context& m_context;
   std::string m_path;
   boost::asio::serial_port m_port;
-
   decoder m_decoder;
 };
 }

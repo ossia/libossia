@@ -8,6 +8,7 @@
 
 namespace ossia::net
 {
+
 template<typename Base, typename Framing>
 struct framed_listener : public Base
 {
@@ -20,7 +21,7 @@ struct framed_listener : public Base
       : Base{std::move(sock)}
       , m_decoder{this->m_socket}
   {
-    m_decoder.receive(std::move(f));
+    m_decoder.receive(stream_processor<framed_listener, F>{*this, std::move(f)});
   }
 
   decoder m_decoder;
@@ -95,7 +96,7 @@ struct framed_client : Base
 
   template <typename F>
   void receive(F f) {
-    m_decoder.receive(std::move(f));
+    m_decoder.receive(stream_processor<framed_client, F>{*this, std::move(f)});
   }
 
   void write(const char* data, std::size_t sz)
@@ -125,12 +126,12 @@ struct framed_socket : Base
   void listen(F f)
   {
     Base::open();
-    m_decoder.receive(std::move(f));
+    m_decoder.receive(stream_processor<framed_socket, F>{*this, std::move(f)});
   }
 
   template <typename F>
   void receive(F f) {
-    m_decoder.receive(std::move(f));
+    m_decoder.receive(stream_processor<framed_socket, F>{*this, std::move(f)});
   }
 
   void write(const char* data, std::size_t sz)
@@ -159,7 +160,7 @@ struct tcp_slip_client
   using framed_client::framed_client;
 };
 
-#if defined(ASIO_HAS_LOCAL_SOCKETS)
+#if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
 struct unix_stream_size_prefix_server
     : framed_server<unix_stream_server, size_prefix_framing> {
   using framed_server::framed_server;

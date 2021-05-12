@@ -163,7 +163,7 @@ public:
     m_server.listen(
         [this] (const char* data, std::size_t sz) {
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         });
   }
 
@@ -271,11 +271,15 @@ public:
 
   void init()
   {
+    m_client.on_open.connect(this->on_connection_open);
+    m_client.on_close.connect(this->on_connection_closed);
+    m_client.on_fail.connect(this->on_connection_failure);
+
     m_client.connect();
     m_client.receive(
         [this] (const char* data, std::size_t sz) {
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         });
   }
 
@@ -349,6 +353,16 @@ public:
   auto writer() noexcept
   {
     return writer_type{m_client};
+  }
+
+  bool connected() const noexcept override
+  {
+    return m_client.connected();
+  }
+
+  void connect() override
+  {
+    return m_client.connect();
   }
 
   using ossia::net::protocol_base::m_logger;

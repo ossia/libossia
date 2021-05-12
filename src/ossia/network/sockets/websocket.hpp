@@ -42,15 +42,13 @@ struct websocket_simple_client : websocket_client
     send_binary_message(std::string_view{data, sz});
   }
 
-  template <typename F>
-  void close(F f)
+  bool connected() const noexcept { return m_connected; }
+
+  void close()
   {
-    /*
-    m_context.post([this, f] {
-      m_port.close();
-      f();
+    m_client.get_io_service().post([this] {
+      websocket_client::stop();
     });
-    */
   }
 
   std::string m_host;
@@ -92,15 +90,11 @@ struct websocket_simple_server: ossia::net::websocket_server
       send_binary_message(listener, dat);
   }
 
-  template <typename F>
-  void close(F f)
+  void close()
   {
-    /*
-    m_context.post([this, f] {
-      m_port.close();
-      f();
+    m_server.get_io_service().post([this] {
+      stop();
     });
-    */
   }
 
   std::vector<std::shared_ptr<void>> m_listeners;
