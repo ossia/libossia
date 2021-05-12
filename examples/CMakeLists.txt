@@ -37,6 +37,10 @@ if(OSSIA_PROTOCOL_OSC)
     ossia_add_example(network_osc_unix_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_echo.cpp")
     ossia_add_example(network_osc_unix_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_send.cpp")
   endif()
+
+  ossia_add_example(network_osc_ws_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_echo.cpp")
+  ossia_add_example(network_osc_ws_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_send.cpp")
+
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)

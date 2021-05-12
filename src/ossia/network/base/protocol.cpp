@@ -67,6 +67,10 @@ void protocol_base::set_device(device_base& dev)
 {
 }
 
+bool protocol_base::connected() const noexcept { return true; }
+
+void protocol_base::connect() { }
+
 std::future<void> protocol_base::pull_async(parameter_base&)
 {
   return {};

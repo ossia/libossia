@@ -129,7 +129,7 @@ void oscquery_mirror_asio_protocol::cleanup_connections()
 {
   try
   {
-    m_oscServer->close([]{});
+    m_oscServer->close();
   }
   catch (...)
   {
@@ -384,42 +384,12 @@ void oscquery_mirror_asio_protocol::request_rename_node(net::node_base& node, co
   http_send_message(fmt::format("{}?{}={}", node.osc_address(), ossia::oscquery::detail::rename_node(), new_name));
 }
 
-void oscquery_mirror_asio_protocol::set_disconnect_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onClose = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
-void oscquery_mirror_asio_protocol::set_fail_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onFail = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
 ossia::oscquery::host_info oscquery_mirror_asio_protocol::get_host_info() const noexcept
 {
   return m_host_info;
 }
 
-void oscquery_mirror_asio_protocol::reconnect()
+void oscquery_mirror_asio_protocol::connect()
 {
   stop();
   init();
@@ -428,7 +398,7 @@ void oscquery_mirror_asio_protocol::reconnect()
 void oscquery_mirror_asio_protocol::process_raw_osc_data(const char* data, std::size_t sz)
 {
   auto on_message = [this] (auto&& msg) { this->on_osc_message(msg); };
-  ossia::net::osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+  ossia::net::osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
 }
 
 void oscquery_mirror_asio_protocol::start_http()
@@ -456,8 +426,12 @@ void oscquery_mirror_asio_protocol::start_websockets()
       });
   m_id.identifier = (uintptr_t) m_websocketClient.get();
 
-  m_websocketClient->onClose = [this] { m_hasWS = false; };
-  m_websocketClient->onFail = [this] { m_hasWS = false; };
+  m_websocketClient->on_close.connect<&oscquery_mirror_asio_protocol::on_ws_disconnected>(*this);
+  m_websocketClient->on_fail.connect<&oscquery_mirror_asio_protocol::on_ws_disconnected>(*this);
+
+  m_websocketClient->on_open.connect(this->on_connection_open);
+  m_websocketClient->on_close.connect(this->on_connection_closed);
+  m_websocketClient->on_fail.connect(this->on_connection_failure);
 
   m_hasWS = false;
   try

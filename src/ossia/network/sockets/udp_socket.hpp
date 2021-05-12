@@ -5,6 +5,8 @@
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 
+#include <nano_signal_slot.hpp>
+
 namespace ossia::net
 {
 class udp_socket
@@ -30,12 +32,11 @@ public:
     m_socket.open(boost::asio::ip::udp::v4());
   }
 
-  template <typename F>
-  void close(F f)
+  void close()
   {
-    m_context.post([this, f] {
+    m_context.post([this] {
       m_socket.close();
-      f();
+      on_close();
     });
   }
 
@@ -65,6 +66,8 @@ public:
   {
     m_socket.send_to(boost::asio::buffer(data, sz), m_endpoint);
   }
+
+  Nano::Signal<void()> on_close;
 
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;

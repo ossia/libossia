@@ -30,7 +30,7 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
           else
             return std::make_unique<osc_generic_client_protocol<client_type, tcp_slip_client>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
 
-#if defined(ASIO_HAS_LOCAL_SOCKETS)
+#if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX_DGRAM:
           return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), std::get<ossia::net::double_fd_configuration>(config.configuration));
         case conf::UNIX_STREAM:
@@ -68,7 +68,7 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
           else
             return std::make_unique<osc_generic_server_protocol<client_type, tcp_slip_server>>(std::move(ctx), std::get<ossia::net::socket_configuration>(config.configuration));
 
-#if defined(ASIO_HAS_LOCAL_SOCKETS)
+#if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
         case conf::UNIX_DGRAM:
           return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), std::get<ossia::net::double_fd_configuration>(config.configuration));
         case conf::UNIX_STREAM:

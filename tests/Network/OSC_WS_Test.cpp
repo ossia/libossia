@@ -46,9 +46,7 @@ TEST_CASE ("test_comm_osc_ws_server_client", "test_comm_osc_ws_server_client")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  ctx->context.run_one();
-  for(int i = 0; i < 100; i++)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   ossia::value received_from_server;
   auto on_client_message = [&] (const std::string& s, const ossia::value& v) {
@@ -58,9 +56,7 @@ TEST_CASE ("test_comm_osc_ws_server_client", "test_comm_osc_ws_server_client")
 
   server.get_protocol().push_raw({"/from_server", ossia::value{123}});
 
-  int k = 0;
-  while(received_from_server.get_type() != ossia::val_type::INT && k++ < 100)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   REQUIRE(received_from_server ==  ossia::value{123});
 }
@@ -74,9 +70,7 @@ TEST_CASE ("test_comm_osc_ws_client_server", "test_comm_osc_ws_client_server")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  ctx->context.run_one();
-  for(int i = 0; i < 100; i++)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   ossia::value received_from_client;
   auto on_server_message = [&] (const std::string& s, const ossia::value& v) {
@@ -86,9 +80,7 @@ TEST_CASE ("test_comm_osc_ws_client_server", "test_comm_osc_ws_client_server")
 
   client.get_protocol().push_raw({"/from_client", ossia::value{456}});
 
-  int k = 0;
-  while(received_from_client.get_type() != ossia::val_type::INT && k++ < 100)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   REQUIRE(received_from_client ==  ossia::value{456});
 }
@@ -100,9 +92,7 @@ TEST_CASE ("test_comm_osc_ws_big", "test_comm_osc_ws_big")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  ctx->context.run_one();
-  for(int i = 0; i < 100; i++)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -121,9 +111,7 @@ TEST_CASE ("test_comm_osc_ws_big", "test_comm_osc_ws_big")
   server.get_protocol().push_raw({"/from_server", long_str});
   client.get_protocol().push_raw({"/from_client", long_str});
 
-  int k = 0;
-  while(received_from_client.get_type() != ossia::val_type::STRING && k++ < 100)
-    ctx->context.poll_one();
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   REQUIRE(received_from_client ==  ossia::value{long_str});
   REQUIRE(received_from_server ==  ossia::value{long_str});

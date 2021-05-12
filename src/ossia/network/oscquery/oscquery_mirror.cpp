@@ -544,42 +544,12 @@ void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const s
   http_send_message(std::move(req));
 }
 
-void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onClose = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
-void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onFail = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
 {
   return m_host_info;
 }
 
-void oscquery_mirror_protocol::reconnect()
+void oscquery_mirror_protocol::connect()
 {
   init();
 }
@@ -608,8 +578,13 @@ void oscquery_mirror_protocol::init()
       });
   m_id.identifier = (uintptr_t) m_websocketClient.get();
 
-  m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
-  m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
+
+  m_websocketClient->on_close.connect<&oscquery_mirror_protocol::on_ws_disconnected>(*this);
+  m_websocketClient->on_fail.connect<&oscquery_mirror_protocol::on_ws_disconnected>(*this);
+
+  m_websocketClient->on_open.connect(this->on_connection_open);
+  m_websocketClient->on_close.connect(this->on_connection_closed);
+  m_websocketClient->on_fail.connect(this->on_connection_failure);
 
   start_http();
 

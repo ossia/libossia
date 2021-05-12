@@ -73,7 +73,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
       std::shared_ptr<websocket_threaded_connection> s, std::string send)
       : socket{std::move(s)}, sender{std::move(send)}
   {
-    socket->socket.onOpen.connect<&websocket_log_sink::open_fun>(this);
+    socket->socket.on_open.connect<&websocket_log_sink::open_fun>(this);
   }
 
   void open_fun()
@@ -87,7 +87,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
 
   ~websocket_log_sink() override
   {
-    socket->socket.onOpen.disconnect<&websocket_log_sink::open_fun>(this);
+    socket->socket.on_open.disconnect<&websocket_log_sink::open_fun>(this);
   }
 
   void make_message(const spdlog::details::log_msg& msg)
@@ -210,7 +210,7 @@ public:
       }
     });
 
-    t->socket.onOpen.connect<&websocket_heartbeat::open_fun>(*this);
+    t->socket.on_open.connect<&websocket_heartbeat::open_fun>(*this);
   }
 
   void open_fun()
@@ -221,7 +221,7 @@ public:
 
   ~websocket_heartbeat()
   {
-    conn->socket.onOpen.disconnect<&websocket_heartbeat::open_fun>(*this);
+    conn->socket.on_open.disconnect<&websocket_heartbeat::open_fun>(*this);
     running = false;
     if (thread.joinable())
       thread.join();

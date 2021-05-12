@@ -22,7 +22,7 @@ struct osc_protocol_common
     self.from_client.receive(
           [&self] (const char* data, std::size_t sz) {
         auto on_message = [&self] (auto&& msg) { self.on_received_message(msg); };
-        osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+        osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
       }
     );
   }

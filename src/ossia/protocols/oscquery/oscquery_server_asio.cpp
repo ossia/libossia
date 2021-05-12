@@ -424,7 +424,7 @@ void oscquery_server_protocol::stop()
 {
   try
   {
-    m_oscServer->close([]{});
+    m_oscServer->close();
   }
   catch (...)
   {
@@ -549,7 +549,7 @@ void oscquery_server_protocol::rename_node(
 void oscquery_server_protocol::process_raw_osc_data(const char* data, std::size_t sz)
 {
   auto on_message = [this] (auto&& msg) { this->on_osc_message(msg); };
-  ossia::net::osc_packet_processor<decltype(on_message)>{on_message}({data, sz});
+  ossia::net::osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
 }
 
 void oscquery_server_protocol::on_osc_message(

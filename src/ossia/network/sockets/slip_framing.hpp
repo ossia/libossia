@@ -34,9 +34,7 @@ struct slip_decoder
     socket.async_read_some(
         boost::asio::buffer(m_data.prepare(1024)),
         [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
-          if (ec == boost::asio::error::operation_aborted)
-            return;
-          if (ec == boost::asio::error::eof)
+          if(!f.validate_stream(ec))
             return;
 
           if (sz > 0)

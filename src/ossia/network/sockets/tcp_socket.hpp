@@ -6,6 +6,7 @@
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 
+#include <nano_signal_slot.hpp>
 
 namespace ossia::net
 {
@@ -34,6 +35,16 @@ public:
   void write(const boost::asio::const_buffer& buf)
   {
     m_socket.write_some(buf);
+  }
+
+  void on_close()
+  {
+
+  }
+
+  void on_fail()
+  {
+
   }
 
   proto::socket m_socket;
@@ -72,14 +83,19 @@ public:
   void connect()
   {
     m_socket.connect(m_endpoint);
+    on_open();
   }
 
-  template <typename F>
-  void close(F f)
+  bool connected() const
   {
-    m_context.post([this, f] {
+    return m_connected;
+  }
+
+  void close()
+  {
+    m_context.post([this] {
       m_socket.close();
-      f();
+      on_close();
     });
   }
 
@@ -88,8 +104,13 @@ public:
     m_socket.write_some(boost::asio::buffer(data, sz));
   }
 
+  Nano::Signal<void()> on_open;
+  Nano::Signal<void()> on_close;
+  Nano::Signal<void()> on_fail;
+
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
+  bool m_connected{false};
 };
 }

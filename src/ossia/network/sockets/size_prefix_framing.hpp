@@ -35,9 +35,7 @@ struct size_prefix_decoder
   template <typename F>
   void read_size(F&& f, boost::system::error_code ec, std::size_t sz)
   {
-    if (ec == boost::asio::error::operation_aborted)
-      return;
-    if (ec == boost::asio::error::eof)
+    if(!f.validate_stream(ec))
       return;
 
     boost::endian::big_to_native_inplace(m_next_packet_size);
@@ -55,9 +53,7 @@ struct size_prefix_decoder
   template <typename F>
   void read_data(F&& f, boost::system::error_code ec, std::size_t sz)
   {
-    if (ec == boost::asio::error::operation_aborted)
-      return;
-    if (ec == boost::asio::error::eof)
+    if(!f.validate_stream(ec))
       return;
 
     if (!ec && sz > 0)
