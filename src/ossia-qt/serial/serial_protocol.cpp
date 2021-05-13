@@ -32,7 +32,7 @@ serial_protocol::serial_protocol(
     , m_serialPort{bot}
     , m_code{code}
 {
-  connect(
+  QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
         qDebug() << status;
@@ -53,8 +53,8 @@ serial_protocol::serial_protocol(
             qt::create_device<ossia::net::device_base, serial_node, serial_protocol>(
                 *m_device, ret.value<QJSValue>());
 
-            connect(&m_serialPort, &serial_wrapper::read,
-                    this, &serial_protocol::on_read);
+            QObject::connect(&m_serialPort, &serial_wrapper::read,
+                             this, &serial_protocol::on_read);
             return;
           }
           case QQmlComponent::Status::Loading:

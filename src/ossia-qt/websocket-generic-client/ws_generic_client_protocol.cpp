@@ -22,7 +22,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
     , m_websocket{new QWebSocket{"ossia-api"}}
     , m_code{code}
 {
-  connect(
+  QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
         if (!m_device)
@@ -42,7 +42,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
                 *m_device, ret.value<QJSValue>());
 
             m_websocket->open(addr);
-            connect(
+            QObject::connect(
                 m_websocket, &QWebSocket::binaryMessageReceived, this,
                 [=](const QByteArray& arr) {
                   //qDebug() << "array" << arr;
@@ -52,7 +52,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
                       Q_ARG(QVariant, QString(arr)));
                   apply_reply(ret.value<QJSValue>());
                 });
-            connect(
+            QObject::connect(
                 m_websocket, &QWebSocket::textMessageReceived, this,
                 [=](const QString& mess) {
                   //qDebug() << "text" << mess;
@@ -73,7 +73,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
         }
       });
 
-  connect(
+  QObject::connect(
       this, &ws_generic_client_protocol::sig_push, this,
       &ws_generic_client_protocol::slot_push, Qt::QueuedConnection);
 }
