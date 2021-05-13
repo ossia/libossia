@@ -49,6 +49,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/variant.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/parameter_properties.hpp"
@@ -418,6 +419,7 @@ set(OSSIA_OSCQUERY_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_client_asio.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
