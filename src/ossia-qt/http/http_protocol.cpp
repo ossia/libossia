@@ -22,7 +22,7 @@ http_protocol::http_protocol(QByteArray code)
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
-  connect(m_access, &QNetworkAccessManager::finished,
+  QObject::connect(m_access, &QNetworkAccessManager::finished,
           this, [this] (auto reply) {
         QNetworkReply& rep = *reply;
         auto it = m_replies.find(&rep);
@@ -38,7 +38,7 @@ http_protocol::http_protocol(QByteArray code)
       },
       Qt::QueuedConnection);
 
-  connect(
+  QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
         if (!m_device)
@@ -68,7 +68,7 @@ http_protocol::http_protocol(QByteArray code)
         }
       });
 
-  connect(
+  QObject::connect(
       this, &http_protocol::sig_push, this, &http_protocol::slot_push,
       Qt::QueuedConnection);
 }
