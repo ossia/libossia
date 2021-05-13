@@ -3,7 +3,7 @@
 #include <ossia/network/context_functions.hpp>
 #include <ossia/network/sockets/configuration.hpp>
 
-#include <variant>
+#include <ossia/detail/variant.hpp>
 
 namespace ossia::net
 {
@@ -20,7 +20,7 @@ struct osc_protocol_configuration
   enum { SIZE_PREFIX, SLIP }
   framing{SLIP};
 
-  std::variant<
+  ossia::variant<
         udp_configuration
       , tcp_configuration
       , unix_dgram_configuration

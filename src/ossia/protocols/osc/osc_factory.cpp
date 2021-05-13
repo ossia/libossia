@@ -80,7 +80,8 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
         }
 
       } vis{std::move(ctx), config};
-      return std::visit(vis, std::move(config.transport));
+      using namespace std;
+      return visit(vis, std::move(config.transport));
     }
     case conf::HOST:
     {
@@ -145,7 +146,9 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
           return std::make_unique<osc_generic_server_protocol<client_type, websocket_simple_server>>(std::move(ctx),conf);
         }
       } vis{std::move(ctx), config};
-      return std::visit(vis, std::move(config.transport));
+
+      using namespace std;
+      return visit(vis, std::move(config.transport));
     }
   }
 
