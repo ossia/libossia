@@ -16,27 +16,17 @@ int main(int argc, char** argv)
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{ossia::net::make_osc_protocol(ctx,
           {
-            conf::UNIX_DGRAM,
             conf::MIRROR,
             conf::OSC1_1,
             conf::SLIP,
-            ossia::net::unix_dgram_configuration{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}
+            ossia::net::unix_dgram_configuration{{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}}
           }),
         "P"};
 
   ossia::net::full_parameter_data dat;
 
   {
-    std::string s = "/foo list: [int: 123, float: 4.56]";
-
-    const auto sep = s.find_first_of(' ');
-    if (std::string::npos != sep)
-    {
-      dat.address = s.substr(0, sep);
-      dat.set_value(ossia::parse_pretty_value(s.substr(sep + 1)));
-    }
-
-    device.get_protocol().push_raw(dat);
+    device.get_protocol().push_raw({"/foo", std::vector<ossia::value>{123, 4.56}});
   }
 }
 

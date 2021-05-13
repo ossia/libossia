@@ -12,8 +12,8 @@ using namespace ossia;
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
 using conf = ossia::net::udp_configuration;
-static const conf server_conf = conf{{"0.0.0.0", 4478}, {"127.0.0.1", 9875}};
-static const conf client_conf = conf{{"0.0.0.0", 9875}, {"127.0.0.1", 4478}};
+static const conf server_conf = conf{{{"0.0.0.0", 4478}, {"127.0.0.1", 9875}}};
+static const conf client_conf = conf{{{"0.0.0.0", 9875}, {"127.0.0.1", 4478}}};
 TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;

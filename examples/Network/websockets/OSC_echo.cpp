@@ -15,7 +15,6 @@ int main(int argc, char** argv)
   ossia::net::generic_device device{
     ossia::net::make_osc_protocol(ctx,
           {
-            conf::WEBSOCKETS,
             conf::HOST,
             conf::OSC1_1,
             conf::SLIP,
