@@ -510,6 +510,7 @@ set(OSSIA_WS_CLIENT_SRCS
 set(OSSIA_QT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/invoke.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_utilities.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/name_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
@@ -522,15 +523,14 @@ set(OSSIA_QT_HEADERS
 
 set(OSSIA_QT_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
   )
 set(OSSIA_QTQML_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     )
 
 set(OSSIA_QTQML_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
