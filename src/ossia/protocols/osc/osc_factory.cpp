@@ -42,9 +42,9 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
 
         case conf::SERIAL:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
+            return std::make_unique<osc_generic_client_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
+            return std::make_unique<osc_generic_client_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
 
         case conf::WEBSOCKETS:
           return std::make_unique<osc_generic_client_protocol<client_type, websocket_simple_client>>(std::move(ctx), std::get<ossia::net::ws_client_configuration>(config.configuration));
@@ -81,9 +81,9 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
 
         case conf::SERIAL:
           if(config.framing == conf::SIZE_PREFIX)
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
+            return std::make_unique<osc_generic_client_protocol<client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
           else
-            return std::make_unique<osc_generic_server_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
+            return std::make_unique<osc_generic_client_protocol<client_type, serial_socket<slip_framing>>>(std::move(ctx), std::get<ossia::net::serial_configuration>(config.configuration));
 
         case conf::WEBSOCKETS:
           return std::make_unique<osc_generic_server_protocol<client_type, websocket_simple_server>>(std::move(ctx),std::get<ossia::net::ws_server_configuration>(config.configuration));
