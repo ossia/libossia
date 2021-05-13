@@ -13,7 +13,6 @@ target_compile_definitions(ossia
     BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
-    $<$<CONFIG:Debug>:BOOST_ASIO_ENABLE_BUFFER_DEBUGGING>
   )
 
 if(WIN32)
@@ -32,6 +31,12 @@ if(WIN32)
     else()
       set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
     endif()
+else()
+  # On windows this is already set by the boost headers which gives a macro redefinition warning
+  target_compile_definitions(ossia
+    PUBLIC
+      $<$<CONFIG:Debug>:BOOST_ASIO_ENABLE_BUFFER_DEBUGGING>
+  )
 endif()
 
 find_package(Threads)
