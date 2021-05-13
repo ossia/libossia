@@ -9,9 +9,6 @@ namespace ossia::net
 {
 struct osc_protocol_configuration
 {
-  enum { UDP, UNIX_DGRAM, TCP, UNIX_STREAM, SERIAL, WEBSOCKETS }
-  transport{UDP};
-
   // libossia semantic level: host can change any parameter, mirror can only change BI / SET
   enum { HOST, MIRROR }
   mode{HOST};
@@ -24,17 +21,18 @@ struct osc_protocol_configuration
   framing{SLIP};
 
   std::variant<
-        fd_configuration
-      , socket_configuration
-      , double_fd_configuration
-      , double_socket_configuration
+        udp_configuration
+      , tcp_configuration
+      , unix_dgram_configuration
+      , unix_stream_configuration
       , serial_configuration
       , ws_client_configuration
       , ws_server_configuration
-   > configuration;
+   > transport;
 };
 
 using osc_protocol_base = can_learn<protocol_base>;
+[[nodiscard]]
 OSSIA_EXPORT
 std::unique_ptr<osc_protocol_base> make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config);
 }

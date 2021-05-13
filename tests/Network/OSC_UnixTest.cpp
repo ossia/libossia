@@ -15,11 +15,10 @@ auto make_unix_client(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::UNIX_DGRAM,
                                          conf::MIRROR,
                                          conf::OSC1_1,
                                          conf::SLIP,
-                                         ossia::net::unix_dgram_configuration{{"/tmp/ossia_echo.server.socket"},{"/tmp/ossia_echo.client.socket"}}
+                                         ossia::net::unix_dgram_configuration{{{"/tmp/ossia_echo.server.socket"},{"/tmp/ossia_echo.client.socket"}}}
                                        });
 }
 
@@ -28,11 +27,10 @@ auto make_unix_server(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::UNIX_DGRAM,
                                          conf::HOST,
                                          conf::OSC1_1,
                                          conf::SLIP,
-                                         ossia::net::unix_dgram_configuration{{"/tmp/ossia_echo.client.socket"},{"/tmp/ossia_echo.server.socket"}}
+                                         ossia::net::unix_dgram_configuration{{{"/tmp/ossia_echo.client.socket"},{"/tmp/ossia_echo.server.socket"}}}
                                        });
 }
 

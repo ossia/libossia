@@ -15,7 +15,6 @@ auto make_client(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::WEBSOCKETS,
                                          conf::MIRROR,
                                          conf::OSC1_1,
                                          conf::SIZE_PREFIX,
@@ -28,7 +27,6 @@ auto make_server(ossia::net::network_context_ptr ctx)
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(ctx,
                                        {
-                                         conf::WEBSOCKETS,
                                          conf::HOST,
                                          conf::OSC1_1,
                                          conf::SIZE_PREFIX,
