@@ -151,7 +151,7 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
 }
 
 //! Removes an attribute in an any_map
-inline OSSIA_EXPORT void
+inline void
 set_attribute(any_map& e, ossia::string_view str, std::nullopt_t)
 {
   unset_attribute(e, str);

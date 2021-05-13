@@ -392,7 +392,7 @@ public:
 };
 
 template <>
-OSSIA_EXPORT inline const float* value_variant_type::target() const
+inline const float* value_variant_type::target() const
 {
   if (m_type == Type0)
     return &m_impl.m_value0;

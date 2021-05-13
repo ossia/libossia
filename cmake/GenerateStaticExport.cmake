@@ -41,7 +41,11 @@ macro(_DO_SET_MACRO_VALUES TARGET_LIBRARY)
       set(DEFINE_EXPORT "__declspec(dllexport)")
       set(DEFINE_EXPORT_EXTERN_TEMPLATE "__declspec(dllexport)")
       set(DEFINE_EXPORT_INSTANTIATE_TEMPLATE "__declspec(dllexport)")
-      set(DEFINE_IMPORT "__declspec(dllimport)")
+      if("${_GEH_DLLIMPORT}")
+        set(DEFINE_IMPORT "__declspec(dllimport)")
+      else()
+        set(DEFINE_IMPORT "")
+      endif()
     elseif(COMPILER_HAS_HIDDEN_VISIBILITY)
       set(DEFINE_EXPORT "__attribute__((visibility(\"default\")))")
       set(DEFINE_EXPORT_EXTERN_TEMPLATE "__attribute__((visibility(\"default\")))")
@@ -55,7 +59,7 @@ endmacro()
 
 function(GENERATE_EXPORT_HEADER TARGET_LIBRARY)
   # Option overrides
-  set(options DEFINE_NO_DEPRECATED ALWAYS_EXPORT)
+  set(options DEFINE_NO_DEPRECATED ALWAYS_EXPORT DLLIMPORT)
   set(oneValueArgs PREFIX_NAME BASE_NAME EXPORT_MACRO_NAME EXPORT_FILE_NAME
     DEPRECATED_MACRO_NAME NO_EXPORT_MACRO_NAME STATIC_DEFINE
     NO_DEPRECATED_MACRO_NAME CUSTOM_CONTENT_FROM_VARIABLE INCLUDE_GUARD_NAME)
