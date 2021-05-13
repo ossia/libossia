@@ -124,6 +124,7 @@ auto find_or_create_parameter(
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream&, const ossia::net::parameter_base&);
 
+OSSIA_EXPORT
 void expand_ranges(std::string& str);
 
 /**

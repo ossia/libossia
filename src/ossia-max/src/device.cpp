@@ -423,7 +423,6 @@ void device::get_protocols(device* x)
   for(auto& p : protocols)
   {
     std::vector<t_atom> vec;
-    p.get();
     if(auto osc = dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
     {
       vec.resize(5);
@@ -532,7 +531,6 @@ void device::resend_all_values(device *x, t_symbol *s)
 
   for(auto& p : protocols)
   {
-    p.get();
     if(dynamic_cast<const ossia::net::osc_protocol*>(p.get()))
     {
       for(const auto& c : children)

@@ -777,6 +777,7 @@ object_base* object_base::find_parent_object()
       return nullptr;
     }
   }
+  return nullptr;
 }
 
 object_base* object_base::find_parent_object_recursively(

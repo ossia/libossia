@@ -503,7 +503,8 @@ long get_poly_index(t_object* patcher)
       method m = zgetfn(assoc, gensym("getindex"));
       if(m)
       {
-        long index = (long)(*m)(assoc, patcher);
+        void* res = (*m)(assoc, patcher);
+        long index = reinterpret_cast<std::intptr_t>(res);
         return index;
       }
     }
