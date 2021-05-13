@@ -215,7 +215,18 @@ void scenario::run_interval(
     interval.tick_offset(tick, offset, tk);
   }
   if (interval.get_date() >= interval.get_min_duration())
+  {
     m_endNodes.insert(end_node);
+
+    // Graph intervals always enable what's after them by definition
+    if(interval.graphal)
+    {
+      for(const std::shared_ptr<ossia::time_event>& ev : end_node->get_time_events())
+      {
+        ev->set_status(ossia::time_event::status::PENDING);
+      }
+    }
+  }
 }
 
 void scenario::state_impl(const ossia::token_request& tk)

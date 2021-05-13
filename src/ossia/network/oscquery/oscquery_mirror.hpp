@@ -121,9 +121,6 @@ public:
    */
   bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
-  void set_disconnect_callback(std::function<void()>);
-  void set_fail_callback(std::function<void()>);
-
   host_info get_host_info() const noexcept;
 
   bool connected() const noexcept override { return m_hasWS; }
