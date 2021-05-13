@@ -11,26 +11,41 @@ target_compile_definitions(ossia
     RAPIDJSON_HAS_STDSTRING=1
     TINYSPLINE_DOUBLE_PRECISION
     BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
+    BOOST_ASIO_SEPARATE_COMPILATION=1
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
+if(NOT OSSIA_STATIC)
+  target_compile_definitions(ossia
+    PUBLIC
+      BOOST_ASIO_DYN_LINK=1
+  )
+endif()
 
 if(WIN32)
+  if(MSVC)
     target_compile_definitions(ossia PUBLIC
-        NOMINMAX
-        _CRT_SECURE_NO_WARNINGS
-        WIN32_LEAN_AND_MEAN)
+      _HAS_AUTO_PTR_ETC=1
+      _HAS_DEPRECATED_NEGATORS=1 # boost.graph needs std::not1...
+      _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1
+    )
+  endif()
+  target_compile_definitions(ossia PUBLIC
+    NOMINMAX
+    _CRT_SECURE_NO_WARNINGS
+    WIN32_LEAN_AND_MEAN
+  )
 
-    target_link_libraries(ossia PRIVATE ws2_32 winmm)
-    if(MINGW)
-        target_link_libraries(ossia PRIVATE mswsock)
-    endif()
+  target_link_libraries(ossia PRIVATE ws2_32 winmm)
+  if(MINGW)
+      target_link_libraries(ossia PRIVATE mswsock)
+  endif()
 
-    if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4" OR OSSIA_UNITY3D)
-      set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
-    else()
-      set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
-    endif()
+  if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4" OR OSSIA_UNITY3D)
+    set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
+  else()
+    set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
+  endif()
 else()
   # On windows this is already set by the boost headers which gives a macro redefinition warning
   target_compile_definitions(ossia
