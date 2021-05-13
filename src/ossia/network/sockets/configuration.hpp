@@ -27,6 +27,12 @@ struct double_socket_configuration {
 struct serial_configuration {
   // the serial device name ("COM1", "/dev/ttyUSB1"...)
   std::string port;
+
+  int baud_rate{19200};
+  int character_size{8};
+  enum { no_flow_control, software, hardware } flow_control{no_flow_control};
+  enum { no_parity, odd, even } parity{no_parity};
+  enum { one, onepointfive, two } stop_bits{one};
 };
 
 struct ws_client_configuration {
