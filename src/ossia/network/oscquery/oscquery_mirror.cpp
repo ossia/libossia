@@ -546,6 +546,7 @@ void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const s
 
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
 {
+  std::lock_guard lock{m_host_info_mutex};
   return m_host_info;
 }
 
@@ -712,11 +713,15 @@ bool oscquery_mirror_protocol::on_WSMessage(
           // TODO oscquery_mirror should actually take a host_info
           // as argument - or we should provide a factory function.
           // The ip of the OSC server on the server
-          m_host_info = json_parser::parse_host_info(*data);
-          if (!m_host_info.osc_ip)
-            m_host_info.osc_ip = m_queryHost;
-          if (!m_host_info.osc_port)
-            m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+          auto info = json_parser::parse_host_info(*data);
+          {
+            std::lock_guard lock{m_host_info_mutex};
+            m_host_info = std::move(info);
+            if (!m_host_info.osc_ip)
+              m_host_info.osc_ip = m_queryHost;
+            if (!m_host_info.osc_port)
+              m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+          }
           if (m_host_info.osc_transport == host_info::UDP)
           {
             m_oscSender = std::make_unique<
