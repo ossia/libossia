@@ -17,6 +17,9 @@
 
 #include <iostream>
 #include <memory>
+
+#include <boost/asio/impl/src.hpp>
+
 // https://svn.boost.org/trac10/ticket/3605
 #if defined(_MSC_VER)
 #include <boost/asio/detail/winsock_init.hpp>

@@ -6,9 +6,7 @@
 
 #include <ossia/detail/logger.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 {
@@ -137,6 +135,5 @@ void multiplex_protocol::stop_expose_to(const protocol_base& p)
 void ossia::net::multiplex_protocol::clear()
 {
   m_protocols.clear();
-}
 }
 }
