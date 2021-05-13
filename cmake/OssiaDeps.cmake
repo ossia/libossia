@@ -157,6 +157,7 @@ endif()
 
 include(ExternalProject)
 # rapidfuzz
+
 ExternalProject_add(rapidfuzz-cpp
     SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/rapidfuzz-cpp"
     PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rapidfuzz-cpp
@@ -167,7 +168,6 @@ ExternalProject_add(rapidfuzz-cpp
       -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
       -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      -DCMAKE_CONFIGURATION_TYPES=${CMAKE_CONFIGURATION_TYPES}
       -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
 )
 
