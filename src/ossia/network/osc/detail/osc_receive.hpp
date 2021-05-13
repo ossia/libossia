@@ -32,7 +32,7 @@ struct osc_message_applier
     }
 
     if (logger.inbound_listened_logger)
-      logger.inbound_listened_logger->info("In: {0}", m);
+      logger.inbound_listened_logger->info("[input] {}", m);
   }
 
   void on_value(
@@ -69,7 +69,7 @@ struct osc_message_applier
   void log(network_logger& logger)
   {
     if (logger.inbound_logger)
-      logger.inbound_logger->info("In: {0}", m);
+      logger.inbound_logger->info("[input] {}", m);
   }
 };
 

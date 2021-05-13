@@ -6,6 +6,7 @@
 #include <ossia/network/osc/detail/message_generator.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 namespace ossia::net
 {
@@ -34,8 +35,14 @@ struct osc_protocol_common
     if (val.valid())
     {
       using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::writer_type>;
+
       send_visitor vis{addr, addr.get_node().osc_address(), self.writer()};
       val.apply(vis);
+
+      if(const auto& logger = self.m_logger.outbound_logger)
+      {
+        logger->info("[push] {} {}", addr.get_node().osc_address(), val);
+      }
       return true;
     }
     return false;
@@ -49,6 +56,11 @@ struct osc_protocol_common
     {
       using send_visitor = osc_value_send_visitor<ossia::net::full_parameter_data, OscVersion, typename T::writer_type>;
       val.apply(send_visitor{addr, addr.address, self.writer()});
+
+      if(const auto& logger = self.m_logger.outbound_logger)
+      {
+        logger->info("[push_raw] {} {}", addr.address, val);
+      }
       return true;
     }
     return false;
@@ -66,6 +78,11 @@ struct osc_protocol_common
 
     using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::writer_type>;
     val.apply(send_visitor{addr, addr.get_node().osc_address(), self.writer()});
+
+    if(const auto& logger = self.m_logger.outbound_logger)
+    {
+      logger->info("[echo] {} {}", addr.get_node().osc_address(), val);
+    }
     return true;
   }
 
