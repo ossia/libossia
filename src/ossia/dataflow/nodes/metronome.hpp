@@ -6,7 +6,7 @@
 
 namespace ossia::nodes
 {
-class OSSIA_EXPORT metronome final : public ossia::nonowning_graph_node
+class metronome final : public ossia::nonowning_graph_node
 {
 public:
   metronome()

@@ -4,7 +4,7 @@
 
 namespace ossia::nodes
 {
-class OSSIA_EXPORT merger final : public ossia::graph_node
+class merger final : public ossia::graph_node
 {
   int m_count{};
 public:

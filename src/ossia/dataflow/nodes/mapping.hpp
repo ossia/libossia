@@ -20,7 +20,7 @@ namespace ossia::nodes
  * The driven address is where the output value is sent to.
  */
 
-class OSSIA_EXPORT mapping final : public ossia::nonowning_graph_node
+class mapping final : public ossia::nonowning_graph_node
 {
 public:
   mapping()
