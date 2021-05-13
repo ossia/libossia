@@ -198,7 +198,7 @@ private:
 
   std::unique_ptr<http_client_context> m_http;
   host_info m_host_info;
-  std::mutex m_host_info_mutex;
+  mutable std::mutex m_host_info_mutex;
 
   ossia::net::message_origin_identifier m_id;
 
