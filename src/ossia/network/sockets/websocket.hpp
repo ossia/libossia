@@ -2,6 +2,7 @@
 #include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
+#include <boost/asio/write.hpp>
 /*
 #include <boost/beast/core.hpp>
 #include <boost/beast/websocket.hpp>

@@ -23,6 +23,13 @@ template<typename Socket>
 struct multi_socket_writer
 {
   std::vector<Socket>& sockets;
+  void write(const boost::asio::const_buffer& buf)
+  {
+    for(auto& sock : sockets)
+    {
+      sock->write(buf);
+    }
+  }
   void write_some(const boost::asio::const_buffer& buf)
   {
     for(auto& sock : sockets)

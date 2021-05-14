@@ -1,5 +1,8 @@
 #pragma once
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/network/sockets/writers.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 
 #include <boost/asio/error.hpp>
 #include <boost/asio/streambuf.hpp>
@@ -144,7 +147,7 @@ struct slip_encoder
   // This is tailored for OSC which uses double-ended encoding
   void write(const char* data, std::size_t sz)
   {
-    socket.write_some(boost::asio::buffer(&slip::eot, 1));
+    this->write(socket, boost::asio::buffer(&slip::eot, 1));
 
     const uint8_t* begin = reinterpret_cast<const uint8_t*>(data);
     const uint8_t* end = begin + sz;
@@ -153,7 +156,7 @@ struct slip_encoder
       std::size_t written = this->write(begin, end);
       begin += written;
     }
-    socket.write_some(boost::asio::buffer(&slip::eot, 1));
+    this->write(socket, boost::asio::buffer(&slip::eot, 1));
   }
 
   std::size_t write(const uint8_t* begin, const uint8_t* end) {
@@ -163,13 +166,13 @@ struct slip_encoder
       case slip::eot:
       {
         const uint8_t data[2] = {slip::esc, slip::esc_end};
-        socket.write_some(boost::asio::buffer(data, 2));
+        this->write(socket, boost::asio::buffer(data, 2));
         return 1;
       }
       case slip::esc:
       {
         const uint8_t data[2] = {slip::esc, slip::esc_esc};
-        socket.write_some(boost::asio::buffer(data, 2));
+        this->write(socket, boost::asio::buffer(data, 2));
         return 1;
       }
       default:
@@ -178,10 +181,22 @@ struct slip_encoder
         while(sub_end != end && *sub_end != slip::eot && *sub_end != slip::esc)
           ++sub_end;
 
-        socket.write_some(boost::asio::buffer(begin, sub_end - begin));
+        this->write(socket, boost::asio::buffer(begin, sub_end - begin));
         return sub_end - begin;
       }
     }
+  }
+
+  template<typename T>
+  void write(T& sock, const boost::asio::const_buffer& buf)
+  {
+    boost::asio::write(sock, buf);
+  }
+
+  template<typename T>
+  void write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
+  {
+    sock.write(buf);
   }
 };
 

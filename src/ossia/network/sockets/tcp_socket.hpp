@@ -3,6 +3,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/udp.hpp>
+#include <boost/asio/write.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 
@@ -34,7 +35,7 @@ public:
 
   void write(const boost::asio::const_buffer& buf)
   {
-    m_socket.write_some(buf);
+    boost::asio::write(m_socket, buf);
   }
 
   void on_close()
@@ -101,7 +102,7 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.write_some(boost::asio::buffer(data, sz));
+    boost::asio::write(m_socket, boost::asio::buffer(data, sz));
   }
 
   Nano::Signal<void()> on_open;

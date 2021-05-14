@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/network/sockets/writers.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/write.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
 #include <ossia/detail/pod_vector.hpp>
@@ -43,8 +46,9 @@ struct size_prefix_decoder
       return;
 
     m_data.resize(m_next_packet_size);
-    socket.async_read_some(
+    boost::asio::async_read(socket,
         boost::asio::buffer(m_data.data(), m_next_packet_size),
+        boost::asio::transfer_exactly(m_next_packet_size),
         [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
           read_data(std::move(f), ec, sz);
         });
@@ -80,8 +84,20 @@ struct size_prefix_encoder
   {
     int32_t packet_size = sz;
     boost::endian::native_to_big_inplace(packet_size);
-    socket.write_some(boost::asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
-    socket.write_some(boost::asio::buffer(data, sz));
+    this->write(socket, boost::asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
+    this->write(socket, boost::asio::buffer(data, sz));
+  }
+
+  template<typename T>
+  void write(T& sock, const boost::asio::const_buffer& buf)
+  {
+    boost::asio::write(sock, buf);
+  }
+
+  template<typename T>
+  void write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
+  {
+    sock.write(buf);
   }
 };
 
