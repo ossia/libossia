@@ -4,6 +4,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
 

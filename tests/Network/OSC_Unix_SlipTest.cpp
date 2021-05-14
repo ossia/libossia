@@ -85,11 +85,15 @@ TEST_CASE ("test_comm_osc_unix_big", "test_comm_osc_unix_big")
 {
   using namespace ossia::net;
 
-  auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{make_unix_server(ctx), "a"};
-  ossia::net::generic_device client{make_unix_client(ctx), "b"};
+  auto ctx1 = std::make_shared<ossia::net::network_context>();
+  auto ctx2 = std::make_shared<ossia::net::network_context>();
+  ossia::net::generic_device server{make_unix_server(ctx1), "a"};
+  ossia::net::generic_device client{make_unix_client(ctx2), "b"};
 
-  ctx->context.run_for(std::chrono::milliseconds(100));
+  ctx1->context.run_for(std::chrono::milliseconds(100));
+  ctx2->context.run_for(std::chrono::milliseconds(100));
+  std::thread t1{[=] { ctx1->context.run(); }};
+  std::thread t2{[=] { ctx2->context.run(); }};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -108,10 +112,15 @@ TEST_CASE ("test_comm_osc_unix_big", "test_comm_osc_unix_big")
   server.get_protocol().push_raw({"/from_server", long_str});
   client.get_protocol().push_raw({"/from_client", long_str});
 
-  ctx->context.run_for(std::chrono::milliseconds(100));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 
   REQUIRE(received_from_client ==  ossia::value{long_str});
   REQUIRE(received_from_server ==  ossia::value{long_str});
+
+  ctx1->context.stop();
+  ctx2->context.stop();
+  t1.join();
+  t2.join();
 }
 
 TEST_CASE ("test_comm_osc_unix", "test_comm_osc_unix")
