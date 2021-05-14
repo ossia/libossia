@@ -169,6 +169,8 @@ ExternalProject_add(rapidfuzz-cpp
       -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
       -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
       -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
+      -DCMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}
+      -DCMAKE_OSX_SYSROOT=${CMAKE_OSX_SYSROOT}
 )
 
 ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)
