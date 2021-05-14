@@ -105,6 +105,15 @@ endif()
 if(OSSIA_QT)
   install_headers_rec("${OSSIA_QT_HEADERS}")
 endif()
+
+if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack"
+        DESTINATION include
+        COMPONENT Devel
+        ${3RDPARTY_INSTALL_PATTERN}
+)
+endif()
+
 # Install export header
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/ossia_export.h"
