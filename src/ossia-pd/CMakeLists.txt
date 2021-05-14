@@ -18,7 +18,7 @@ if(OSSIA_PURR_DATA)
   endif()
 else()
   if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/pure-data")
-    execute_process(COMMAND git clone --recursive -j16 https://git.code.sf.net/p/pure-data/pure-data
+    execute_process(COMMAND git clone --recursive -j16 https://github.com/pure-data/pure-data
                     WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
     execute_process(COMMAND git checkout 0.49-0
                     WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/pure-data")
