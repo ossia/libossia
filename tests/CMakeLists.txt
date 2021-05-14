@@ -140,6 +140,7 @@ if(OSSIA_PROTOCOL_OSCQUERY)
     ossia_add_test(OSCQueryTreeCallbackTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryTreeCallbackTest.cpp")
     ossia_add_test(OSCQueryValueCallbackTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryValueCallbackTest.cpp")
   endif()
+  ossia_add_test(MultiplexTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/MultiplexTest.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)
