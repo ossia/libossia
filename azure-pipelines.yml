@@ -210,7 +210,14 @@ stages:
             cd $(System.DefaultWorkingDirectory)
             mkdir build
             cd build
-            cmake -GNinja $(Build.SourcesDirectory) -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 -DCMAKE_OSX_DEPLOYMENT_TARGET=12.0
+            cmake -GNinja $(Build.SourcesDirectory) \
+                  -DOSSIA_UNITY3D_ONLY=1 \
+                  -DCMAKE_INSTALL_PREFIX=install \
+                  -DCMAKE_BUILD_TYPE=Release \
+                  -DCMAKE_TOOLCHAIN_FILE=$(Build.SourcesDirectory)/3rdparty/ios-cmake/ios.toolchain.cmake \
+                  -DPLATFORM=OS64 \
+                  -DENABLE_BITCODE=1 \
+                  -DDEPLOYMENT_TARGET=12.0
             cmake --build .
             cmake --build . --target install
 
