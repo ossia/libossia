@@ -159,7 +159,7 @@ bool osc_protocol::pull(ossia::net::parameter_base& address)
 
 bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
+  if (addr.get_access() == ossia::access_mode::SET)
     return false;
 
   auto val = filter_value(addr, v);
@@ -173,7 +173,7 @@ bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::val
 
 bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
+  if (addr.get_access() == ossia::access_mode::SET)
     return false;
 
   auto val = filter_value(addr, addr.value());
