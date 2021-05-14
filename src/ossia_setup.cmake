@@ -11,16 +11,9 @@ target_compile_definitions(ossia
     RAPIDJSON_HAS_STDSTRING=1
     TINYSPLINE_DOUBLE_PRECISION
     BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
-    BOOST_ASIO_SEPARATE_COMPILATION=1
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
-if(NOT OSSIA_STATIC)
-  target_compile_definitions(ossia
-    PUBLIC
-      BOOST_ASIO_DYN_LINK=1
-  )
-endif()
 
 if(WIN32)
   if(MSVC)
@@ -28,8 +21,20 @@ if(WIN32)
       _HAS_AUTO_PTR_ETC=1
       _HAS_DEPRECATED_NEGATORS=1 # boost.graph needs std::not1...
       _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1
+
+      # Boost.Asio separate compilation only enabled on windows due to
+      # https://github.com/chriskohlhoff/asio/issues/820
+      BOOST_ASIO_SEPARATE_COMPILATION=1
     )
   endif()
+
+  if(NOT OSSIA_STATIC)
+    target_compile_definitions(ossia
+      PUBLIC
+        BOOST_ASIO_DYN_LINK=1
+    )
+  endif()
+
   target_compile_definitions(ossia PUBLIC
     NOMINMAX
     _CRT_SECURE_NO_WARNINGS
