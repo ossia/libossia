@@ -37,7 +37,13 @@ jobs:
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install 
-
+    - name: Code Signing
+      shell: bash
+      env:
+        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      run: |
         # Setup codesigning
         # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
         (
