@@ -11,6 +11,7 @@
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
+#include <ossia/detail/logger.hpp>
 
 static constexpr auto constexpr_abs(float f)
 {
@@ -183,6 +184,32 @@ TEST_CASE ("test_conversions", "test_conversions")
   test_conversions_impl<ossia::time_list>();
 }
 
+
+template<typename dataspace_type>
+struct unit_test_visitor
+{
+  template<typename T>
+  void operator()(T u)
+  {
+      using unit_type = typename T::type;
+      auto unit_text_array = ossia::unit_traits<unit_type>::text();
+
+      for (auto unit_text : unit_text_array)
+      {
+        using dataspace_correct_type =
+            typename ossia::matching_unit_u_list<dataspace_type>::type;
+        auto parsed_unit
+            = ossia::parse_unit(unit_text, dataspace_correct_type {});
+        if (unit_text == "cart3D")
+        {
+          ossia::parse_unit(unit_text, dataspace_correct_type {});
+        }
+        REQUIRE(parsed_unit == unit_type {});
+      }
+  
+  }
+};
+
 TEST_CASE ("test_visitors", "test_visitors")
 {
   // get_unit_text
@@ -205,19 +232,15 @@ TEST_CASE ("test_visitors", "test_visitors")
   REQUIRE(!p1);
   auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
   REQUIRE(!p2);
+  REQUIRE(ossia::cartesian_3d_u{} == ossia::parse_unit("cart3D", ossia::position_u {}));
 
   ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
     using dataspace_type = typename decltype(t)::type;
-    ossia::for_each_tagged(dataspace_type{}, [&] (auto u) {
-      using unit_type = typename decltype(u)::type;
-      auto unit_text_array = ossia::unit_traits<unit_type>::text();
-      for(auto unit_text : unit_text_array)
-      {
         using dataspace_correct_type = typename ossia::matching_unit_u_list<dataspace_type>::type;
-        auto parsed_unit = ossia::parse_unit(unit_text, dataspace_correct_type{});
-        REQUIRE(parsed_unit == unit_type{});
-      }
-    });
+   //  ossia::logger().error(
+   //          "dataspace: {}",
+   //          ossia::get_pretty_unit_text(dataspace_correct_type {}));
+    ossia::for_each_tagged(dataspace_type {}, unit_test_visitor<dataspace_type> {});
   });
 
 }
