@@ -42,7 +42,6 @@ Build Status
 
 * [![Build Status](https://github.com/ossia/libossia/actions/workflows/coverage.yml/badge.svg)](https://github.com/ossia/libossia/actions/workflows/coverage.yml)
 
-
 * Coveralls : [![Coverage Status](https://coveralls.io/repos/github/ossia/libossia/badge.svg?branch=master)](https://coveralls.io/github/ossia/libossia?branch=master)
 
 Latest ci builds are available [here](https://github.com/ossia/libossia/releases/tag/latest-ci-build). But please note that those are only for testing purpose.

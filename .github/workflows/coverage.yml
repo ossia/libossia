@@ -1,4 +1,4 @@
-name: documentation
+name: Coverage
 
 on: push
 
@@ -30,7 +30,7 @@ jobs:
         tar xaf cmake-linux.tgz
         mv cmake-*-x86_64 cmake-latest
 
-        gem install coveralls-lcov
+        sudo gem install coveralls-lcov
 
         sudo apt-get install -yqq python3 python3-pip
         sudo pip3 install --upgrade wheel setuptools
