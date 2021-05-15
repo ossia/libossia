@@ -15,11 +15,9 @@ jobs:
       run: |
         cd docs/Doxygen
         doxygen > doxygen.log
-        ls
-        ls ..
     - name: Deploy Documentation
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/html
+        publish_dir: docs/Doxygen/html
         commit_message: 'Deploy code docs to GitHub Pages, Github Action id: $GITHUB_ACTION \nCommit: $GITHUB_SHA'
