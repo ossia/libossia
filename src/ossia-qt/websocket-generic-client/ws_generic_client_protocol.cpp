@@ -16,12 +16,13 @@ namespace net
 {
 ws_generic_client_protocol::ws_generic_client_protocol(
     const QString& addr, QByteArray code)
-    : m_engine{new QQmlEngine}
+    : protocol_base{flags{}}
+    , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
     , m_websocket{new QWebSocket{"ossia-api"}}
     , m_code{code}
 {
-  connect(
+  QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
         if (!m_device)
@@ -41,7 +42,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
                 *m_device, ret.value<QJSValue>());
 
             m_websocket->open(addr);
-            connect(
+            QObject::connect(
                 m_websocket, &QWebSocket::binaryMessageReceived, this,
                 [=](const QByteArray& arr) {
                   //qDebug() << "array" << arr;
@@ -51,7 +52,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
                       Q_ARG(QVariant, QString(arr)));
                   apply_reply(ret.value<QJSValue>());
                 });
-            connect(
+            QObject::connect(
                 m_websocket, &QWebSocket::textMessageReceived, this,
                 [=](const QString& mess) {
                   //qDebug() << "text" << mess;
@@ -72,7 +73,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
         }
       });
 
-  connect(
+  QObject::connect(
       this, &ws_generic_client_protocol::sig_push, this,
       &ws_generic_client_protocol::slot_push, Qt::QueuedConnection);
 }
@@ -97,6 +98,7 @@ bool ws_generic_client_protocol::pull(ossia::net::parameter_base& parameter_base
 bool ws_generic_client_protocol::push(
     const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
+  assert(dynamic_cast<const ws_generic_client_parameter*>(&parameter_base));
   auto& addr = static_cast<const ws_generic_client_parameter&>(parameter_base);
 
   if (!addr.data().request.isNull())
@@ -114,6 +116,7 @@ bool ws_generic_client_protocol::push_raw(const full_parameter_data& parameter_b
 bool ws_generic_client_protocol::observe(
     ossia::net::parameter_base& addr_base, bool enable)
 {
+  assert(dynamic_cast<const ws_generic_client_parameter*>(&addr_base));
   auto& addr = static_cast<ws_generic_client_parameter&>(addr_base);
   if (enable)
   {

@@ -5,20 +5,15 @@
 #include "json_writer.hpp"
 
 #include <ossia/detail/for_each.hpp>
-#include <ossia/detail/logger.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/osc/detail/message_generator.hpp>
-#include <ossia/network/osc/detail/osc_fwd.hpp>
-#include <ossia/network/oscquery/detail/attributes.hpp>
-#include <ossia/network/oscquery/detail/domain_to_json.hpp>
-#include <ossia/network/oscquery/detail/oscquery_units.hpp>
-#include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/detail/oscquery_units.hpp>
+#include <ossia/network/oscquery/detail/domain_to_json.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/format_value.hpp>
 namespace ossia
@@ -81,6 +76,13 @@ void json_writer_impl::writeValue(access_mode b) const
 void json_writer_impl::writeValue(const domain& d) const
 {
   ossia::apply(domain_to_json{writer}, d);
+}
+
+void json_writer_impl::writeValue(const unit_t& d) const
+{
+  // Already written somewhere else ?
+  auto text = ossia::get_pretty_unit_text(d);
+  writer.String(text.data(), text.size());
 }
 
 void json_writer_impl::writeValue(const net::tags& tags) const
@@ -503,7 +505,7 @@ json_writer::string_t json_writer::device_info(int port)
 }
 
 json_writer::string_t
-json_writer::query_host_info(const oscquery_server_protocol& proto)
+json_writer::query_host_info(const std::string& name, const int osc_port)
 {
 
   string_t buf;
@@ -511,9 +513,9 @@ json_writer::query_host_info(const oscquery_server_protocol& proto)
 
   wr.StartObject();
   wr.Key("NAME");
-  wr.String(proto.get_device().get_name());
+  wr.String(name);
   wr.Key("OSC_PORT");
-  wr.Int(proto.get_osc_port());
+  wr.Int(osc_port);
   wr.Key("OSC_TRANSPORT");
   wr.String("UDP");
 
@@ -774,135 +776,6 @@ json_writer::string_t json_writer::attributes_changed_array(
   return buf;
 }
 
-std::string
-write_value(std::string_view address, const value& v, const unit_t& u)
-{
-  std::string buffer;
-  buffer.resize(1024);
 
-  while (true)
-  {
-    try
-    {
-      oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
-      p << oscpack::BeginMessageN(address);
-      if (!u)
-      {
-        v.apply(oscquery::osc_outbound_visitor{p});
-      }
-      else
-      {
-        ossia::apply_nonnull(
-            [&](const auto& dataspace) {
-              ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
-            },
-            u.v);
-      }
-      p << oscpack::EndMessage();
-      buffer.resize(p.Size());
-      break;
-    }
-    catch (const oscpack::OutOfBufferMemoryException&)
-    {
-      buffer.resize(buffer.size() * 2);
-    }
-  }
-  return buffer;
-}
-
-void write_value(
-    std::string_view address, const value& v, const unit_t& u,
-    oscpack::UdpTransmitSocket& socket)
-{
-  auto send_msg = [&](oscpack::OutboundPacketStream& p) {
-    p << oscpack::BeginMessageN(address);
-    if (!u)
-    {
-      v.apply(oscquery::osc_outbound_visitor{p});
-    }
-    else
-    {
-      ossia::apply_nonnull(
-          [&](const auto& dataspace) {
-            ossia::apply(oscquery::osc_outbound_visitor{p}, v.v, dataspace);
-          },
-          u.v);
-    }
-    p << oscpack::EndMessage();
-    socket.Send(p.Data(), p.Size());
-  };
-
-  try
-  {
-    constexpr int BufferSize = 2048;
-    alignas(128) std::array<char, BufferSize> buffer;
-    oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
-    send_msg(p);
-  }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    while (true)
-    {
-      std::string buffer;
-      buffer.resize(4096);
-      try
-      {
-        oscpack::OutboundPacketStream p{buffer.data(), buffer.size()};
-        send_msg(p);
-        break;
-      }
-      catch (...)
-      {
-        buffer.resize(buffer.size() * 2);
-      }
-    }
-  }
-}
-
-std::string osc_writer::send_message(
-    const net::parameter_base& p, const value& v,
-    const ossia::net::network_logger& logger)
-{
-  if (logger.outbound_logger)
-  {
-    logger.outbound_logger->info("Out: {} {}", p.get_node().osc_address(), v);
-  }
-  return write_value(p.get_node().osc_address(), v, p.get_unit());
-}
-
-std::string osc_writer::send_message(
-    const net::full_parameter_data& p, const value& v,
-    const ossia::net::network_logger& logger)
-{
-  if (logger.outbound_logger)
-  {
-    logger.outbound_logger->info("Out: {} {}", p.address, v);
-  }
-  return write_value(p.address, v, p.unit);
-}
-
-void osc_writer::send_message(
-    const net::parameter_base& p, const value& v,
-    const ossia::net::network_logger& logger,
-    oscpack::UdpTransmitSocket& socket)
-{
-  if (logger.outbound_logger)
-  {
-    logger.outbound_logger->info("Out: {} {}", p.get_node().osc_address(), v);
-  }
-  write_value(p.get_node().osc_address(), v, p.get_unit(), socket);
-}
-
-void osc_writer::send_message(
-    const net::full_parameter_data& p, const value& v,
-    const ossia::net::network_logger& logger,
-    oscpack::UdpTransmitSocket& socket)
-{
-  if (logger.outbound_logger)
-  {
-    logger.outbound_logger->info("Out: {} {}", p.address, v);
-  }
-  write_value(p.address, v, p.unit, socket);
-}
 }
 }

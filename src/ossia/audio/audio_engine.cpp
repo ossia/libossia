@@ -27,6 +27,8 @@ struct default_audio_tick
 
 audio_engine::audio_engine()
 {
+  // audio_engine starts in the "started" state
+  stop_processing = false;
   audio_tick = default_audio_tick{};
 }
 

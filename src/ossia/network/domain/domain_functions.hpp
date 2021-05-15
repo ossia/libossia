@@ -1,9 +1,8 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value_base.hpp>
-
-#include <ossia_export.h>
 
 #include <ossia/detail/span.hpp>
 
@@ -36,8 +35,10 @@ OSSIA_EXPORT void
 set_values(domain& dom, const std::vector<ossia::value>& val);
 OSSIA_EXPORT std::vector<ossia::value> get_values(const ossia::domain& dom);
 
-OSSIA_EXPORT domain
-make_domain(const ossia::value& min, const ossia::value& max);
+// TODO we should find a way to prevent invalid domains here, e.g. min=int, max=float
+OSSIA_EXPORT
+domain make_domain(const ossia::value& lhs, const ossia::value& rhs);
+
 OSSIA_EXPORT domain make_domain(std::vector<std::string> s);
 OSSIA_EXPORT domain make_domain(gsl::span<const char*>);
 

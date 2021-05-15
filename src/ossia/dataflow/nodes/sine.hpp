@@ -15,13 +15,13 @@ struct sin_table
   {
     for (std::size_t i = 0; i < N; ++i)
     {
-      values[i] = t(2. * M_PI * i / N);
+      values[i] = t(ossia::two_pi * i / N);
     }
   }
 
   constexpr double value(double t) const
   {
-    const auto res = int((std::fmod(t, 2. * M_PI) / (2. * M_PI)) * (N - 1));
+    const auto res = int((std::fmod(t, ossia::two_pi) / ossia::two_pi) * (N - 1));
     assert(res >= 0);
     assert(res < (int)N);
     return values[res];
@@ -61,8 +61,7 @@ public:
     }
 
     auto& audio = audio_out->samples;
-    auto N = t.physical_write_duration(st.modelToSamples());
-    int64_t tick_start = t.physical_start(st.modelToSamples());
+    const auto [tick_start, N] = st.timings(t);
 
     if (N > 0)
     {

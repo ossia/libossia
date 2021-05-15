@@ -9,8 +9,9 @@
 #include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
-#include <ossia/network/oscquery/detail/http_client.hpp>
+#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/http/http_client.hpp>
+#include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
@@ -45,13 +46,13 @@ struct http_error
   }
 };
 
-using http_request = http_get_request<http_answer, http_error>;
+using http_request = ossia::net::http_get_request<http_answer, http_error>;
 
 struct http_client_context
 {
   std::thread thread;
-  asio::io_service context;
-  std::shared_ptr<asio::io_service::work> worker;
+  boost::asio::io_service context;
+  std::shared_ptr<boost::asio::io_service::work> worker;
 };
 /*
 auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
@@ -77,10 +78,12 @@ auto wait_for(std::future<void>& fut, std::chrono::milliseconds dur)
 
 oscquery_mirror_protocol::oscquery_mirror_protocol(
     std::string host, uint16_t local_osc_port)
-    : m_queryHost{std::move(host)}
+    : protocol_base{flags{SupportsMultiplex}}
+    , m_queryHost{std::move(host)}
     , m_httpHost{m_queryHost}
     , m_osc_port{local_osc_port}
     , m_http{std::make_unique<http_client_context>()}
+    , m_id{*this, {}}
 {
   auto port_idx = m_queryHost.find_last_of(':');
   if (port_idx != std::string::npos)
@@ -267,12 +270,20 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
     auto critical = addr.get_critical();
     if ((!critical || !m_hasWS) && m_oscSender)
     {
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+      }
       ossia::oscquery::osc_writer::send_message(
-          addr, val, m_logger, m_oscSender->socket());
+          addr, val, m_oscSender->socket());
     }
     else if (m_hasWS)
     {
-      ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+      }
+      ws_send_binary_message(osc_writer::to_message(addr, val));
     }
 
     if (m_logger.outbound_listened_logger)
@@ -281,6 +292,36 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
   }
   return false;
 }
+
+bool oscquery_mirror_protocol::echo_incoming_message(
+    const ossia::net::message_origin_identifier& id, const ossia::net::parameter_base& addr, const value& val)
+{
+  if(&id.protocol == this && id.identifier == (uintptr_t)this->m_websocketClient.get())
+    return true;
+
+  auto critical = addr.get_critical();
+  if ((!critical || !m_hasWS) && m_oscSender)
+  {
+    if (m_logger.outbound_logger)
+    {
+      m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+    }
+    ossia::oscquery::osc_writer::send_message(
+          addr, val, m_oscSender->socket());
+    return true;
+  }
+  else if (m_hasWS)
+  {
+    if (m_logger.outbound_logger)
+    {
+      m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+    }
+    ws_send_binary_message(osc_writer::to_message(addr, val));
+    return true;
+  }
+  return false;
+}
+
 
 bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
 {
@@ -294,12 +335,20 @@ bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
     auto critical = addr.get_critical();
     if ((!critical || !m_hasWS) && m_oscSender)
     {
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.address, val);
+      }
       ossia::oscquery::osc_writer::send_message(
-          addr, val, m_logger, m_oscSender->socket());
+          addr, val, m_oscSender->socket());
     }
     else if (m_hasWS)
     {
-      ws_send_binary_message(osc_writer::send_message(addr, val, m_logger));
+      if (m_logger.outbound_logger)
+      {
+        m_logger.outbound_logger->info("Out: {} {}", addr.address, val);
+      }
+      ws_send_binary_message(osc_writer::to_message(addr, val));
     }
     return true;
   }
@@ -495,42 +544,13 @@ void oscquery_mirror_protocol::request_rename_node(net::node_base& node, const s
   http_send_message(std::move(req));
 }
 
-void oscquery_mirror_protocol::set_disconnect_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onClose = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
-void oscquery_mirror_protocol::set_fail_callback(std::function<void()> f)
-{
-  if(m_hasWS)
-  {
-    if(f)
-    {
-      m_websocketClient->onFail = [fun=std::move(f),&ws=m_hasWS] { ws = false; fun(); };
-    }
-    else
-    {
-      m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
-    }
-  }
-}
-
 host_info oscquery_mirror_protocol::get_host_info() const noexcept
 {
+  std::lock_guard lock{m_host_info_mutex};
   return m_host_info;
 }
 
-void oscquery_mirror_protocol::reconnect()
+void oscquery_mirror_protocol::connect()
 {
   init();
 }
@@ -542,7 +562,7 @@ void oscquery_mirror_protocol::init()
       [this](const oscpack::ReceivedMessage& m,
           const oscpack::IpEndpointName& ip) { this->on_OSCMessage(m, ip); });
 
-  m_websocketClient = std::make_unique<websocket_client>(
+  m_websocketClient = std::make_unique<ossia::net::websocket_client>(
       [this](connection_handler hdl, websocketpp::frame::opcode::value op,
           std::string& msg) {
         switch (op)
@@ -557,9 +577,15 @@ void oscquery_mirror_protocol::init()
             break;
         }
       });
+  m_id.identifier = (uintptr_t) m_websocketClient.get();
 
-  m_websocketClient->onClose = [&ws=m_hasWS] { ws = false; };
-  m_websocketClient->onFail = [&ws=m_hasWS] { ws = false; };
+
+  m_websocketClient->on_close.connect<&oscquery_mirror_protocol::on_ws_disconnected>(*this);
+  m_websocketClient->on_fail.connect<&oscquery_mirror_protocol::on_ws_disconnected>(*this);
+
+  m_websocketClient->on_open.connect(this->on_connection_open);
+  m_websocketClient->on_close.connect(this->on_connection_closed);
+  m_websocketClient->on_fail.connect(this->on_connection_failure);
 
   start_http();
 
@@ -569,8 +595,7 @@ void oscquery_mirror_protocol::init()
     try
     {
       started = true;
-      m_websocketClient->connect(m_queryHost);
-
+      m_websocketClient->connect_and_run(m_queryHost);
     }
     catch (...)
     {
@@ -605,7 +630,7 @@ void oscquery_mirror_protocol::init()
 
 void oscquery_mirror_protocol::start_http()
 {
-  m_http->worker = std::make_shared<asio::io_service::work>(m_http->context);
+  m_http->worker = std::make_shared<boost::asio::io_service::work>(m_http->context);
   m_http->thread = std::thread([this] { m_http->context.run(); });
 }
 
@@ -630,7 +655,11 @@ void oscquery_mirror_protocol::on_OSCMessage(
 #if defined(OSSIA_BENCHMARK)
   auto t1 = std::chrono::high_resolution_clock::now();
 #endif
-  ossia::net::handle_osc_message<true>(m, m_listening, *m_device, m_logger);
+
+  ossia::net::on_input_message<true>(
+        m.AddressPattern(),
+        ossia::net::osc_message_applier{m_id, m},
+        m_listening, *m_device, m_logger);
 
 #if defined(OSSIA_BENCHMARK)
   auto t2 = std::chrono::high_resolution_clock::now();
@@ -684,11 +713,15 @@ bool oscquery_mirror_protocol::on_WSMessage(
           // TODO oscquery_mirror should actually take a host_info
           // as argument - or we should provide a factory function.
           // The ip of the OSC server on the server
-          m_host_info = json_parser::parse_host_info(*data);
-          if (!m_host_info.osc_ip)
-            m_host_info.osc_ip = m_queryHost;
-          if (!m_host_info.osc_port)
-            m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+          auto info = json_parser::parse_host_info(*data);
+          {
+            std::lock_guard lock{m_host_info_mutex};
+            m_host_info = std::move(info);
+            if (!m_host_info.osc_ip)
+              m_host_info.osc_ip = m_queryHost;
+            if (!m_host_info.osc_port)
+              m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+          }
           if (m_host_info.osc_transport == host_info::UDP)
           {
             m_oscSender = std::make_unique<

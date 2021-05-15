@@ -195,7 +195,7 @@ private:
     }
     else
     {
-      if (m_notes.empty())
+      if (m_notes.empty() && m_playingnotes.empty())
         return;
       if (doTransport)
       {

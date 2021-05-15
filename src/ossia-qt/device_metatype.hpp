@@ -1,5 +1,5 @@
 #pragma once
-#include <ossia-config.hpp>
+#include <ossia/detail/config.hpp>
 #include <verdigris>
 namespace ossia::net
 { class device_base; }

@@ -113,7 +113,6 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
-  target_compile_definitions(ossia PUBLIC ASIO_STANDALONE=1)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
@@ -366,13 +365,10 @@ if(OSSIA_DATAFLOW)
   if(OSSIA_EDITOR)
     target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 
-    if(CMAKE_BUILD_TYPE MATCHES ".*Deb.*")
-      target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
-    endif()
+    target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
   endif()
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 
-add_dependencies(ossia rapidfuzz-cpp)
-target_include_directories(ossia PRIVATE ${RAPIDFUZZ_INCLUDE_DIR})
+target_include_directories(ossia PRIVATE "${RAPIDFUZZ_INCLUDE_DIR}")

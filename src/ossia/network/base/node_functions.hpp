@@ -85,37 +85,6 @@ OSSIA_EXPORT node_base* find_or_create_node(
 //! Get a valid name for a given node
 void sanitize_name(std::string& name, const node_base::children_t& brethren);
 
-/*!
- * \brief Get the textual address of a node : aDevice:/an/address
- */
-OSSIA_EXPORT std::string
-address_string_from_node(const ossia::net::node_base&);
-OSSIA_EXPORT std::string
-address_string_from_node(const ossia::net::parameter_base&);
-
-/**
- * @brief Get the address of a node relative to parent
- */
-OSSIA_EXPORT std::string relative_address_string_from_nodes(
-    const ossia::net::node_base& node, const ossia::net::node_base& parent);
-
-/**
- * @brief Get the OSC address of a node: /an/address
- */
-OSSIA_EXPORT std::string
-osc_parameter_string(const ossia::net::parameter_base&);
-OSSIA_EXPORT std::string osc_parameter_string(const ossia::net::node_base&);
-
-/**
- * @brief Get the OSC address of a node with the leading device
- *
- * e.g. /aDevice/an/address
- */
-OSSIA_EXPORT std::string
-osc_parameter_string_with_device(const ossia::net::parameter_base&);
-OSSIA_EXPORT std::string
-osc_parameter_string_with_device(const ossia::net::node_base&);
-
 /**
  * @brief Get the value associated with a destination
  */
@@ -155,6 +124,7 @@ auto find_or_create_parameter(
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream&, const ossia::net::parameter_base&);
 
+OSSIA_EXPORT
 void expand_ranges(std::string& str);
 
 /**

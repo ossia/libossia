@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/json.hpp>
-#include <ossia/network/oscquery/detail/client.hpp>
+#include <ossia/network/sockets/websocket_client.hpp>
 
 #include <eggs/variant.hpp>
 #include <readerwriterqueue.h>
@@ -25,7 +25,7 @@ struct websocket_threaded_connection
       {
         while (running)
         {
-          socket.connect(ip);
+          socket.connect_and_run(ip);
           if (running)
           {
             // Try to reconnect
@@ -60,7 +60,7 @@ struct websocket_threaded_connection
       thread.join();
   }
 
-  ossia::oscquery::websocket_client socket;
+  ossia::net::websocket_client socket;
   std::atomic_bool running{};
   std::thread thread;
 };
@@ -73,7 +73,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
       std::shared_ptr<websocket_threaded_connection> s, std::string send)
       : socket{std::move(s)}, sender{std::move(send)}
   {
-    socket->socket.onOpen.connect<&websocket_log_sink::open_fun>(this);
+    socket->socket.on_open.connect<&websocket_log_sink::open_fun>(this);
   }
 
   void open_fun()
@@ -87,7 +87,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
 
   ~websocket_log_sink() override
   {
-    socket->socket.onOpen.disconnect<&websocket_log_sink::open_fun>(this);
+    socket->socket.on_open.disconnect<&websocket_log_sink::open_fun>(this);
   }
 
   void make_message(const spdlog::details::log_msg& msg)
@@ -210,7 +210,7 @@ public:
       }
     });
 
-    t->socket.onOpen.connect<&websocket_heartbeat::open_fun>(*this);
+    t->socket.on_open.connect<&websocket_heartbeat::open_fun>(*this);
   }
 
   void open_fun()
@@ -221,7 +221,7 @@ public:
 
   ~websocket_heartbeat()
   {
-    conn->socket.onOpen.disconnect<&websocket_heartbeat::open_fun>(*this);
+    conn->socket.on_open.disconnect<&websocket_heartbeat::open_fun>(*this);
     running = false;
     if (thread.joinable())
       thread.join();

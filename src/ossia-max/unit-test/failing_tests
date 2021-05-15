@@ -1,0 +1,13 @@
+179-priority_when_binding_view.ossia-max-test.maxpat
+368-set_broken.ossia-max-test.maxpat
+384-address_output_persistence.ossia-max-test.maxpat
+447-delete_node_during_registration.ossia-max-test.maxpat
+506-poly-registering.ossia-max-test.maxpat
+512-loadbang_value.ossia-max-test.maxpat
+542-mute.ossia-max-test.maxpat
+651-route_substring_issue.ossia-max-test.maxpat
+652-route_wildcard.ossia-max-test.maxpat
+693-brace_expansion_notation.ossia-max-test.maxpat
+710-poly_instance_index.ossia-max-test.maxpat
+remove_object_on_registration.ossia-max-test.maxpat
+view_registration_on_loadbang.ossia-max-test.maxpat

@@ -70,10 +70,22 @@ struct jack_client
   jack_client_t* client{};
 };
 
+using transport_timebase_function = smallfun::function<void(int , jack_position_t&), 16>;
+using transport_sync_function = smallfun::function<int(jack_transport_state_t , jack_position_t *), 16>;
+struct jack_settings
+{
+  std::vector<std::string> inputs;
+  std::vector<std::string> outputs;
+  bool autoconnect{};
+  transport_mode transport{};
+  transport_sync_function sync_function;
+  transport_timebase_function timebase_function;
+};
+
 class jack_engine final : public audio_engine
 {
 public:
-  jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs)
+  jack_engine(std::shared_ptr<jack_client> clt, int inputs, int outputs, std::optional<jack_settings> settings = {})
     : m_client{clt}
   {
     if (!m_client || !(*m_client))
@@ -81,45 +93,43 @@ public:
       std::cerr << "JACK server not running?" << std::endl;
       throw std::runtime_error("Audio error: no JACK server");
     }
+
     jack_client_t* client = *m_client;
     jack_set_process_callback(client, process, this);
     jack_set_sample_rate_callback(client, [] (jack_nframes_t nframes, void *arg) -> int { return 0; }, this);
     jack_on_shutdown(client, JackShutdownCallback{}, this);
-    jack_set_error_function([](const char* str) {
-      std::cerr << "JACK ERROR: " << str << std::endl;
-    });
-    jack_set_info_function([](const char* str) {
-      // std::cerr << "JACK INFO: " << str << std::endl;
-    });
-
     for (int i = 0; i < inputs; i++)
     {
-      auto in = jack_port_register(
-          client, ("in_" + std::to_string(i + 1)).c_str(),
-          JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+      std::string name;
+      if(settings)
+        name = settings->inputs[i];
+      else
+        name = "in_" + std::to_string(i + 1);
+
+      auto in = jack_port_register(client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
       if(!in)
       {
         jack_deactivate(client);
-        jack_client_close(client);
         throw std::runtime_error("Audio error: cannot register JACK input");
       }
       input_ports.push_back(in);
     }
     for (int i = 0; i < outputs; i++)
     {
-      auto out = jack_port_register(
-          client, ("out_" + std::to_string(i + 1)).c_str(),
-          JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+      std::string name;
+      if(settings)
+        name = settings->outputs[i];
+      else
+        name = "out_" + std::to_string(i + 1);
+
+      auto out = jack_port_register(client, name.c_str(), JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
       if(!out)
       {
         jack_deactivate(client);
-        jack_client_close(client);
         throw std::runtime_error("Audio error: cannot register JACK output");
       }
       output_ports.push_back(out);
     }
-
-    std::cerr << "=== stream start ===\n";
 
     int err = jack_activate(client);
     this->effective_sample_rate = jack_get_sample_rate(client);
@@ -129,33 +139,67 @@ public:
     if (err != 0)
     {
       jack_deactivate(client);
-      jack_client_close(client);
       std::cerr << "JACK error: " << err << std::endl;
       throw std::runtime_error("Audio error: JACK cannot activate");
     }
 
+    if(settings ? settings->autoconnect : true)
     {
-      auto ports = jack_get_ports(
-          client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsPhysical | JackPortIsOutput);
-      if (ports)
       {
-        for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
-          jack_connect(client, ports[i], jack_port_name(input_ports[i]));
+        auto ports = jack_get_ports(
+            client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
+            JackPortIsPhysical | JackPortIsOutput);
+        if (ports)
+        {
+          for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
+            jack_connect(client, ports[i], jack_port_name(input_ports[i]));
 
-        jack_free(ports);
+          jack_free(ports);
+        }
+      }
+      {
+        auto ports = jack_get_ports(
+            client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
+            JackPortIsPhysical | JackPortIsInput);
+        if (ports)
+        {
+          for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
+            jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
+
+          jack_free(ports);
+        }
       }
     }
-    {
-      auto ports = jack_get_ports(
-          client, nullptr, JACK_DEFAULT_AUDIO_TYPE,
-          JackPortIsPhysical | JackPortIsInput);
-      if (ports)
-      {
-        for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
-          jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
 
-        jack_free(ports);
+    if(settings && settings->transport != transport_mode::none)
+    {
+      transport = settings->transport;
+      if(settings->timebase_function.allocated())
+      {
+        if(transport == transport_mode::master)
+        {
+          this->timebase_function = std::move(settings->timebase_function);
+          jack_set_timebase_callback(client, 0, [] (
+                                     jack_transport_state_t state,
+                                     jack_nframes_t nframes,
+                                     jack_position_t *pos,
+                                     int new_pos,
+                                     void *s) {
+            auto& self = (*(jack_engine*) s);
+            self.timebase_function(nframes, *pos);
+          }, this);
+        }
+      }
+
+      if(settings->sync_function.allocated())
+      {
+        this->sync_function = std::move(settings->sync_function);
+        jack_set_sync_callback(
+              client,
+              [] (jack_transport_state_t st, jack_position_t * pos, void * s) -> int {
+          auto& self = (*(jack_engine*) s);
+          return self.sync_function(st, pos);
+        }, this);
       }
     }
 
@@ -170,6 +214,10 @@ public:
     {
       jack_client_t* client = *m_client;
       jack_deactivate(client);
+      for(auto port : this->input_ports)
+        jack_port_unregister(client, port);
+      for(auto port : this->output_ports)
+        jack_port_unregister(client, port);
     }
   }
 
@@ -181,7 +229,7 @@ public:
   }
 
 private:
-  static int clearBuffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
+  static int clear_buffers(jack_engine& self, jack_nframes_t nframes, std::size_t outputs)
   {
     for (std::size_t i = 0; i < outputs; i++)
     {
@@ -193,6 +241,7 @@ private:
 
     return 0;
   }
+
   static int process(jack_nframes_t nframes, void* arg)
   {
     auto& self = *static_cast<jack_engine*>(arg);
@@ -203,7 +252,7 @@ private:
     if (self.stop_processing)
     {
       self.tick_clear();
-      return clearBuffers(self, nframes, outputs);
+      return clear_buffers(self, nframes, outputs);
     }
 
     auto float_input = (float**)alloca(sizeof(float*) * inputs);
@@ -219,8 +268,37 @@ private:
                           self.output_ports[i], nframes);
     }
 
-    jack_time_t usecs = jack_get_time();
-    ossia::audio_tick_state ts{float_input, float_output, (int)inputs, (int)outputs, nframes, usecs / 1e6};
+
+    jack_position_t pos{};
+    auto transport_state = jack_transport_query(self.m_client->client, &pos);
+    std::optional<transport_status> st;
+    std::optional<uint64_t> transport_frames;
+    if(self.transport != transport_mode::none)
+    {
+      switch(transport_state)
+      {
+        case JackTransportStopped:
+          st = transport_status::stopped;
+          break;
+        case JackTransportStarting:
+        default: //case JackTransportNetStarting:  because not yet supported in Debian
+          st = transport_status::starting;
+          break;
+        case JackTransportRolling:
+        case JackTransportLooping:
+          st = transport_status::playing;
+          break;
+      }
+      transport_frames = jack_nframes_t(pos.frame);
+    }
+
+    ossia::audio_tick_state ts{
+      float_input, float_output,
+      (int)inputs, (int)outputs,
+      nframes, pos.usecs / 1e6,
+      transport_frames,
+      st
+    };
     self.audio_tick(ts);
 
     self.tick_end();
@@ -232,6 +310,9 @@ private:
   std::vector<jack_port_t*> output_ports;
 
   bool activated{};
+  transport_mode transport{};
+  transport_sync_function sync_function;
+  transport_timebase_function timebase_function;
 };
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <ossia/dataflow/transport.hpp>
 
 #include <smallfun.hpp>
 
@@ -80,13 +81,6 @@ struct tick_setup_options
 };
 
 OSSIA_EXPORT
-std::shared_ptr<bench_map> bench_ptr();
-
-OSSIA_EXPORT
 std::shared_ptr<ossia::graph_interface> make_graph(const graph_setup_options&);
 
-OSSIA_EXPORT
-smallfun::function<void(unsigned long, double), 128> make_tick(
-    const tick_setup_options& settings, ossia::execution_state& st,
-    ossia::graph_interface& e, ossia::time_interval& itv);
 }

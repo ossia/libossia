@@ -4,6 +4,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/value/value.hpp>
 
 #include <boost/algorithm/string/replace.hpp>

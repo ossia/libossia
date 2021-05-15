@@ -143,8 +143,8 @@ using parallel_tc_graph
     = graph_static<parallel_update<tc_update<fast_tc>>, parallel_exec>;
 }
 */
-#endif
 
+/*
 #if __has_include(<taskflow/taskflow.hpp>)
 #include <taskflow/taskflow.hpp>
 namespace ossia
@@ -254,4 +254,9 @@ struct cpptf_exec
 using cpptf_tc_graph
     = graph_static<cpptf_update<tc_update<fast_tc>>, cpptf_exec>;
 }
+#endif
+*/
+
+#include <ossia/dataflow/graph/graph_parallel_impl.hpp>
+
 #endif

@@ -12,9 +12,6 @@ namespace ossia::safe_nodes
 {
 
 template <typename T>
-using timed_vec = ossia::flat_map<int64_t, T>;
-
-template <typename T>
 struct dummy_container
 {
   static constexpr bool is_event = false;

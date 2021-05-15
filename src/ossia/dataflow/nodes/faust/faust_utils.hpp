@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/detail/logger.hpp>
 
 #if __has_include(<faust/dsp/poly-llvm-dsp.h>)
 #include <faust/dsp/poly-llvm-dsp.h>
@@ -267,11 +268,13 @@ struct faust_node_utils
       {
         case libremidi::message_type::NOTE_ON:
         {
+          self.in_flight[mess[1]]++;
           dsp.keyOn(mess[0], mess[1], mess[2]);
           break;
         }
         case libremidi::message_type::NOTE_OFF:
         {
+          self.in_flight[mess[1]]--;
           dsp.keyOff(mess[0], mess[1], mess[2]);
           break;
         }
@@ -292,14 +295,21 @@ struct faust_node_utils
     }
   }
 
+  template <typename Node, typename DspPoly>
+  void all_notes_off(Node& self, DspPoly& dsp)
+  {
+    for(int k = 0; k < 128; k++)
+      while(self.in_flight[k]-- > 0)
+        dsp.keyOff(1, k, 0);
+  }
+
   /// Execution ///
   template <typename Node, typename Dsp>
   static void exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
   {
     if (tk.forward())
     {
-      const int64_t st = tk.physical_start(e.modelToSamples());
-      const int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const auto [st, d] = e.timings(tk);
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
@@ -329,8 +339,7 @@ struct faust_node_utils
   {
     if (tk.forward())
     {
-      const int64_t st = tk.physical_start(e.modelToSamples());
-      const int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const auto [st, d] = e.timings(tk);
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& midi_in = self.root_inputs()[1]->template cast<ossia::midi_port>();

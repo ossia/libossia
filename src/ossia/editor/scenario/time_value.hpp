@@ -4,7 +4,6 @@
 #if defined(__APPLE__)
 #include <mach/time_value.h>
 #endif
-#include <ossia_export.h>
 
 #include <cinttypes>
 #include <limits>
@@ -289,12 +288,12 @@ struct OSSIA_EXPORT time_value
   int64_t impl;
 };
 
-OSSIA_EXPORT constexpr inline time_value operator"" _tv(long double v)noexcept
+constexpr inline time_value operator"" _tv(long double v)noexcept
 {
   return time_value{int64_t(v)};
 }
 
-OSSIA_EXPORT constexpr inline time_value operator"" _tv(unsigned long long v) noexcept
+constexpr inline time_value operator"" _tv(unsigned long long v) noexcept
 {
   return time_value{(int64_t)v};
 }
@@ -303,12 +302,12 @@ const constexpr time_value Infinite{time_value::infinity};
 const constexpr time_value Zero{0};
 const constexpr time_value One{1};
 
-OSSIA_EXPORT constexpr inline time_value abs(time_value t) noexcept
+constexpr inline time_value abs(time_value t) noexcept
 {
   return time_value{t.impl >= 0 ? t.impl : -t.impl};
 }
 
-OSSIA_EXPORT constexpr inline time_value norm(time_value t1, time_value t2) noexcept
+constexpr inline time_value norm(time_value t1, time_value t2) noexcept
 {
   if (t1.infinite() || t2.infinite())
     return Infinite;

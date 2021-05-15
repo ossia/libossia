@@ -15,7 +15,8 @@ public:
   using mapped_type = typename map_type::mapped_type;
   using value_type = typename map_type::value_type;
 
-  std::optional<mapped_type> find(const key_type& path) const
+  template<typename Key>
+  std::optional<mapped_type> find(const Key& path) const
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(path);
@@ -29,7 +30,8 @@ public:
     }
   }
 
-  std::optional<mapped_type> find_and_take(const key_type& path)
+  template<typename Key>
+  std::optional<mapped_type> find_and_take(const Key& path)
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(path);

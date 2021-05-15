@@ -24,12 +24,12 @@ namespace ossia
 {
 namespace net
 {
-struct osc_outbound_visitor;
+struct osc_1_0_outbound_stream_visitor;
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
 {
 public:
   osc_protocol(
-      std::string ip, uint16_t remote_port, uint16_t local_port,
+      std::string ip, uint16_t remote_port, uint16_t local_port = 0,
       std::optional<std::string> expose_name = std::nullopt);
 
   osc_protocol(const osc_protocol&) = delete;
@@ -64,6 +64,7 @@ public:
 
   bool
   observe(ossia::net::parameter_base& parameter_base, bool enable) override;
+  bool echo_incoming_message(const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&, const ossia::value& v) override;
 
 private:
   void on_received_message(
@@ -77,7 +78,7 @@ private:
 
   listened_parameters m_listening;
 
-  std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
+  std::unique_ptr<osc::sender<osc_1_0_outbound_stream_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;
 
   net::zeroconf_server m_zeroconfServer;
@@ -91,6 +92,8 @@ private:
   std::atomic_bool m_learning{}; /// if the device is currently learning from
                                  /// inbound messages.
   std::optional<std::string> m_expose{};
+
+  message_origin_identifier m_id;
 };
 }
 }

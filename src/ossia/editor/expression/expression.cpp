@@ -26,6 +26,15 @@ struct update_visitor
   }
 };
 
+struct reset_visitor
+{
+  template <typename T>
+  void operator()(T& e)
+  {
+    e.reset();
+  }
+};
+
 struct add_callback_visitor
 {
   expression_result_callback cb;
@@ -149,6 +158,11 @@ bool evaluate(const ossia::expressions::expression_base& e)
 void update(const ossia::expressions::expression_base& e)
 {
   return eggs::variants::apply(update_visitor{}, e);
+}
+
+void reset(ossia::expressions::expression_base& e)
+{
+  return eggs::variants::apply(reset_visitor{}, e);
 }
 
 bool operator!=(const expression_base& lhs, const expression_base& rhs)

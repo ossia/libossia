@@ -71,8 +71,10 @@ public:
   t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_owner_addr();
 
-  inline bool operator==(const t_matcher& rhs)
-  { return (get_node() == rhs.node); }
+  inline bool operator==(const t_matcher& rhs) const noexcept
+  { return (this->node == rhs.node); }
+  inline bool operator!=(const t_matcher& rhs) const noexcept
+  { return (this->node != rhs.node); }
 
   std::vector<ossia::value> m_set_pool;
 

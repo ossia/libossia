@@ -37,9 +37,6 @@
 [submodule "3rdparty/pybind11"]
     path = 3rdparty/pybind11
     url = https://github.com/pybind/pybind11
-[submodule "3rdparty/asio"]
-    path = 3rdparty/asio
-    url = https://github.com/chriskohlhoff/asio
 [submodule "3rdparty/websocketpp"]
     path = 3rdparty/websocketpp
     url = https://github.com/jcelerier/websocketpp
@@ -78,7 +75,7 @@
     url = https://github.com/jcelerier/weakjack
 [submodule "3rdparty/concurrentqueue"]
     path = 3rdparty/concurrentqueue
-    url = https://github.com/cameron314/concurrentqueue
+    url = https://github.com/jcelerier/concurrentqueue
 [submodule "3rdparty/libremidi"]
 	path = 3rdparty/libremidi
 	url = https://github.com/jcelerier/libremidi
@@ -121,3 +118,6 @@
 [submodule "3rdparty/ios-cmake"]
 	path = 3rdparty/ios-cmake
 	url = https://github.com/avilleret/ios-cmake.git
+[submodule "3rdparty/mdspan"]
+	path = 3rdparty/mdspan
+	url = https://github.com/kokkos/mdspan

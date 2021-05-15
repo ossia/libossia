@@ -9,13 +9,14 @@
 #include <ossia/dataflow/exec_state_facade.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/message_queue.hpp>
-#include <ossia/network/midi/midi_device.hpp>
-#include <ossia/network/midi/midi_protocol.hpp>
-#include <ossia/network/midi/detail/midi_impl.hpp>
+#include <ossia/protocols/midi/midi_device.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
+#include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/dataflow/typed_value.hpp>
 
 namespace ossia
@@ -192,16 +193,11 @@ struct global_pull_node_visitor
 
 execution_state::~execution_state()
 {
-  for(auto dev : m_devices_exec)
-    dev->get_protocol().stop_execution();
 }
 
 void execution_state::clear_devices()
 {
   m_devices_edit.clear();
-
-  for(auto dev : m_devices_exec)
-    dev->get_protocol().stop_execution();
   m_devices_exec.clear();
 }
 
@@ -409,18 +405,66 @@ void execution_state::unregister_port(const outlet& port)
 void execution_state::apply_device_changes()
 {
   device_operation op;
+  ossia::small_vector<device_operation, 8> flattened;
   while (m_device_change_queue.try_dequeue(op))
+  {
+    flattened.push_back(op);
+  }
+
+  if(flattened.empty())
+    return;
+
+  // We must first check for devices that were registered and unregistered afterwards.
+  // IMPORTANT: here we must *not* use iterators, but indices to prevent invalidation issues.
+  // Likewise, since the size of the vec changes, it must be rechecked at each loop iteration !
+  for(std::size_t i = 0; i < flattened.size(); )
+  {
+    auto& first = flattened[i];
+    if(first.operation == device_operation::REGISTER)
+    {
+      bool erased = false;
+      for(std::size_t j = i + 1; j < flattened.size(); ++j)
+      {
+        if(flattened[j].operation == device_operation::UNREGISTER && flattened[j].device == first.device)
+        {
+          erased = true;
+          flattened.erase(flattened.begin() + j);
+          flattened.erase(flattened.begin() + i);
+
+          break;
+        }
+      }
+
+      if(erased)
+      {
+        // i does not increase here as the previous element was removed
+        continue;
+      }
+      else
+      {
+        ++i;
+        continue;
+      }
+    }
+    else
+    {
+      ++i;
+      continue;
+    }
+  }
+
+  for(auto& op : flattened)
   {
     switch (op.operation)
     {
       case device_operation::REGISTER:
-        op.device->get_protocol().start_execution();
+      {
         m_devices_exec.push_back(op.device);
         m_valueQueues.emplace_back(*op.device);
         break;
+      }
       case device_operation::UNREGISTER:
       {
-        op.device->get_protocol().stop_execution();
         ossia::remove_erase(m_devices_exec, op.device);
         auto it = ossia::find_if(
             m_valueQueues, [&](auto& mq) { return &mq.device == op.device; });
@@ -984,9 +1028,23 @@ exec_state_facade::find_node(std::string_view name) const noexcept
   return impl->find_node(name);
 }
 
-int64_t exec_state_facade::physical_start(const token_request& t) const noexcept
+auto exec_state_facade::timings(const token_request& t) const noexcept -> sample_timings
 {
-  return t.physical_start(impl->modelToSamplesRatio);
+  sample_timings tm;
+  tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
+
+  const auto tick_dur = t.physical_write_duration(impl->modelToSamplesRatio);
+  auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
+  if(max_dur < 0)
+    max_dur = 0;
+
+  tm.length = std::min(tick_dur, max_dur);
+  assert(tm.start_sample >= 0);
+  assert(tm.start_sample < impl->bufferSize);
+  assert(tm.length >= 0);
+  assert(tm.start_sample + tm.length <= impl->bufferSize);
+
+  return tm;
 }
 
 void exec_state_facade::insert(net::parameter_base& dest, const typed_value& v)

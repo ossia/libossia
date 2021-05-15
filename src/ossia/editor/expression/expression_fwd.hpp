@@ -4,7 +4,7 @@
 #include <ossia/detail/callback_container.hpp>
 
 #include <eggs/variant.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <functional>
 

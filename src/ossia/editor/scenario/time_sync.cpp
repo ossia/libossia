@@ -158,14 +158,19 @@ void time_sync::observe_expression(
 
 void time_sync::reset()
 {
+  if(m_expression)
+    expressions::reset(*m_expression);
+
   for (auto& timeEvent : m_timeEvents)
   {
     timeEvent->reset();
   }
 
   m_trigger_date = Infinite;
+  m_status = status::NOT_DONE;
   m_observe = false;
   m_evaluating = false;
+  m_is_being_triggered = false;
 }
 
 void time_sync::cleanup()

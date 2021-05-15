@@ -32,6 +32,17 @@ if(OSSIA_PROTOCOL_OSC)
   ossia_add_example(network_osc_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_echo.cpp")
   ossia_add_example(network_osc_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_send.cpp")
   ossia_add_example(network_rate_limiter "${CMAKE_CURRENT_SOURCE_DIR}/Network/RateLimiter.cpp")
+
+  if(NOT WIN32)
+    ossia_add_example(network_osc_unix_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_echo.cpp")
+    ossia_add_example(network_osc_unix_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_send.cpp")
+  endif()
+
+  ossia_add_example(network_osc_ws_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_echo.cpp")
+  ossia_add_example(network_osc_ws_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_send.cpp")
+
+  ossia_add_example(network_osc_serial_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/serial/OSC_send.cpp")
+  ossia_add_example(network_osc_udp_send_receive "${CMAKE_CURRENT_SOURCE_DIR}/Network/udp/OSC_send_receive.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
@@ -40,6 +51,9 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_example(network_oscquery_exploration "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_exploration.cpp")
   ossia_add_example(network_oscquery_preset "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_preset.cpp")
   ossia_add_example(network_oscquery_various "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_various.cpp")
+  ossia_add_example(network_oscquery_bridge "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_bridge.cpp")
+  ossia_add_example(network_oscquery_exploration_asio "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSCQuery_exploration_asio.cpp")
+  ossia_add_example(network_oscquery_publication_asio "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSCQuery_publication_asio.cpp")
 
   ossia_add_example(pd_controller "${CMAKE_CURRENT_SOURCE_DIR}/Network/PdController.cpp")
   if(OSSIA_PROTOCOL_LEAPMOTION)
@@ -72,6 +86,11 @@ if(OSSIA_PROTOCOL_OSCQUERY)
     ossia_add_example(double_ws_server "${CMAKE_CURRENT_SOURCE_DIR}/Web/DoubleWSServer.cpp")
     target_link_libraries(ossia_double_ws_server_example PRIVATE ${OpenCV_LIBS})
   endif()
+endif()
+
+if(OSSIA_PROTOCOL_JOYSTICK)
+
+  ossia_add_example(joystick "${CMAKE_CURRENT_SOURCE_DIR}/Network/joystick/joystick.cpp")
 endif()
 
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")

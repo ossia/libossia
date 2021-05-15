@@ -4,7 +4,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/detail/flicks.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <atomic>
 #include <memory>
@@ -18,7 +18,6 @@ class expression_base;
 class state;
 class time_event;
 class scenario;
-class loop;
 /**
  * \brief #time_sync is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
@@ -31,7 +30,6 @@ class loop;
 class OSSIA_EXPORT time_sync final
 {
   friend class ossia::scenario;
-  friend class ossia::loop;
 
 public:
   using iterator = ptr_container<time_event>::iterator;
@@ -155,10 +153,9 @@ public:
     return m_status;
   }
 
-  void set_sync_rate(double syncRatio, double quarterDuration) noexcept
+  void set_sync_rate(double syncRatio) noexcept
   {
     m_sync_rate = syncRatio;
-    m_quarter_duration = quarterDuration;
   }
   double get_sync_rate() const noexcept
   {
@@ -196,7 +193,6 @@ private:
   std::optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME
 
   std::atomic_bool trigger_request{};
   time_value m_trigger_date = Infinite;

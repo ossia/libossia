@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/expression/expression_fwd.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 
@@ -43,6 +43,9 @@ public:
     return expr->evaluate();
   }
 
+  void reset() const {
+
+  }
 private:
   void on_first_callback_added() override
   {

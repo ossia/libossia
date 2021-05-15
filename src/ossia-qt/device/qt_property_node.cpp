@@ -103,17 +103,21 @@ void qt_property_node::setValue_slot(const ossia::value& ossia_val)
     m_prop.write(&m_obj, next);
 }
 
-void qt_property_node::set_value_quiet(const ossia::value& ossia_val)
+ossia::value qt_property_node::set_value_quiet(const ossia::value& ossia_val)
 {
-  ossia::net::generic_parameter::set_value_quiet(ossia_val);
+  auto v = ossia::net::generic_parameter::set_value_quiet(ossia_val);
 
   setValue_sig(ossia_val);
+
+  return v;
 }
-void qt_property_node::set_value_quiet(ossia::value&& ossia_val)
+ossia::value qt_property_node::set_value_quiet(ossia::value&& ossia_val)
 {
-  ossia::net::generic_parameter::set_value_quiet(std::move(ossia_val));
+  auto v= ossia::net::generic_parameter::set_value_quiet(std::move(ossia_val));
 
   setValue_sig(ossia_val);
+
+  return v;
 }
 
 net::parameter_base* qt_property_node::get_parameter() const

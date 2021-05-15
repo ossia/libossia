@@ -11,7 +11,7 @@
 #include <ossia/network/value/destination.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <functional>
 #include <map>

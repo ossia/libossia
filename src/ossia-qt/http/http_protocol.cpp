@@ -16,12 +16,13 @@ namespace ossia
 namespace net
 {
 http_protocol::http_protocol(QByteArray code)
-    : m_engine{new QQmlEngine}
+    : protocol_base{flags{}}
+    , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
-  connect(m_access, &QNetworkAccessManager::finished,
+  QObject::connect(m_access, &QNetworkAccessManager::finished,
           this, [this] (auto reply) {
         QNetworkReply& rep = *reply;
         auto it = m_replies.find(&rep);
@@ -37,7 +38,7 @@ http_protocol::http_protocol(QByteArray code)
       },
       Qt::QueuedConnection);
 
-  connect(
+  QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
         if (!m_device)
@@ -67,7 +68,7 @@ http_protocol::http_protocol(QByteArray code)
         }
       });
 
-  connect(
+  QObject::connect(
       this, &http_protocol::sig_push, this, &http_protocol::slot_push,
       Qt::QueuedConnection);
 }
@@ -91,6 +92,8 @@ bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
 
 bool http_protocol::push(const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
+  // TODO dynamic_cast or whatever
+  assert(dynamic_cast<const http_parameter*>(&parameter_base));
   auto& addr = static_cast<const http_parameter&>(parameter_base);
 
   if (!addr.data().request.isEmpty())

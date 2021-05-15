@@ -1,9 +1,11 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/buffer_pool.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
+#include <ossia/network/osc/detail/osc_messages.hpp>
 #include <ossia/network/value/format_value.hpp>
 
 #include <oscpack/ip/UdpSocket.h>
@@ -88,19 +90,22 @@ private:
   template <typename... Args>
   void send_base(Args&&... args)
   {
-    try
-    {
-      oscpack::MessageGenerator<ValueWriter> m;
-
-      send_impl(m(args...));
+    auto buf = m_pool.acquire();
+    while(buf.size() < ossia::net::max_osc_message_size) {
+      try {
+        oscpack::OutboundPacketStream p{buf.data(), buf.size()};
+        oscpack::osc_message_generator<ossia::net::osc_1_0_outbound_stream_visitor> generate_message{p};
+        generate_message(std::forward<Args>(args)...);
+        send_impl(p);
+        break;
+      } catch(...) {
+        auto n = buf.size();
+        buf.clear();
+        buf.resize(n * 2 + 1);
+      }
     }
-    catch (const oscpack::OutOfBufferMemoryException&)
-    {
-      oscpack::DynamicMessageGenerator<ValueWriter> m;
 
-      send_impl(m(args...));
-    }
-
+    m_pool.release(std::move(buf));
     if (m_logger.outbound_logger)
     {
       std::string format_string;
@@ -108,7 +113,7 @@ private:
       format_string += "Out: ";
       for (std::size_t i = 0; i < sizeof...(args); i++)
         format_string += "{} ";
-      m_logger.outbound_logger->info(format_string.c_str(), args...);
+      m_logger.outbound_logger->info(fmt::runtime(format_string), args...);
     }
   }
 
@@ -127,5 +132,7 @@ private:
   oscpack::UdpTransmitSocket m_socket;
   std::string m_ip;
   int m_port;
+
+  ossia::buffer_pool& m_pool = ossia::buffer_pool::instance();
 };
 }

@@ -169,12 +169,5 @@ public:
     return critical;
   }
 };
-
-OSSIA_EXPORT
-inline const std::string&
-osc_parameter_string(const ossia::net::full_parameter_data& d)
-{
-  return d.address;
-}
 }
 }

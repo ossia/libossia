@@ -6,7 +6,7 @@
 #include <ossia/network/value/value.hpp>
 
 #include <eggs/variant.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 
@@ -50,6 +50,7 @@ public:
 
   bool evaluate() const;
   void update() const;
+  void reset();
 
   const val_t& get_first_operand() const;
   comparator get_operator() const;

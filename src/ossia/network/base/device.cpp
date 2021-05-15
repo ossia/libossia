@@ -18,5 +18,27 @@ protocol_base& device_base::get_protocol() const
 {
   return *m_protocol;
 }
+
+void device_base::apply_incoming_message(
+    const message_origin_identifier& id,
+    parameter_base& param,
+    value&& value)
+{
+  auto v = param.set_value(std::move(value));
+  on_message(param);
+  if(m_echo)
+    m_protocol->echo_incoming_message(id, param, v);
+}
+
+void device_base::apply_incoming_message_quiet(
+    const message_origin_identifier& id,
+    parameter_base& param,
+    value&& value)
+{
+  auto v = param.set_value_quiet(std::move(value));
+  on_message(param);
+  if(m_echo)
+    m_protocol->echo_incoming_message(id, param, v);
+}
 }
 }

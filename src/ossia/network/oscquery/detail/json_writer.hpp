@@ -24,7 +24,7 @@ public:
   //! Sends the port at which a server opens its OSC port
   static string_t device_info(int port);
 
-  static string_t query_host_info(const oscquery_server_protocol&);
+  static string_t query_host_info(const std::string& name, const int osc_port);
 
   // Format interface
   // Queries
@@ -112,21 +112,5 @@ private:
       const std::vector<ossia::string_view>& attributes);
 };
 
-// TODO this export is only needed for tests...
-struct OSSIA_EXPORT osc_writer
-{
-  static std::string send_message(
-      const ossia::net::parameter_base&, const ossia::value&,
-      const ossia::net::network_logger&);
-  static std::string send_message(
-      const ossia::net::full_parameter_data&, const ossia::value&,
-      const ossia::net::network_logger&);
-  static void send_message(
-      const ossia::net::parameter_base&, const ossia::value&,
-      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
-  static void send_message(
-      const ossia::net::full_parameter_data&, const ossia::value&,
-      const ossia::net::network_logger&, oscpack::UdpTransmitSocket&);
-};
 }
 }

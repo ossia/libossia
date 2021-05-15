@@ -21,8 +21,8 @@ struct gain_unit
 namespace detail
 {
 template<typename T>
-const constexpr T DecibelHeadroom = 96.;
-
+static const constexpr T DecibelHeadroom = 96.;
+/*
 template<typename T>
 const T GainMidiPower
     = std::log(ossia::log1p(T(12.) / DecibelHeadroom<T>) / std::log(T(127. / 100.)))
@@ -30,6 +30,12 @@ const T GainMidiPower
 
 template<typename T>
 const T GainMidiPowPow2 = ossia::exp2(GainMidiPower<T>);
+*/
+template<typename T>
+static const constexpr T GainMidiPower = -1.02098087016161476192621649;
+
+template<typename T>
+static const constexpr T GainMidiPowPow2 = 0.492781202603372214809951402;
 
 template <typename T>
 T LinearGainToDecibels(const T value)

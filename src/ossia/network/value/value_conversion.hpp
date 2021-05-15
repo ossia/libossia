@@ -1,7 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
-
-#include <ossia_export.h>
 
 #include <vector>
 

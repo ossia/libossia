@@ -30,6 +30,39 @@ namespace
   static const constexpr auto destroy_plan = ::fftw_destroy_plan;
   static const constexpr auto cleanup = ::fftw_cleanup;
   static const constexpr auto alignment_of = ::fftw_alignment_of;
+#else
+#define FFTW_DESTROY_INPUT 0
+#define FFTW_MEASURE 0
+
+auto alloc_real(std::size_t)
+{
+  return nullptr;
+}
+auto alloc_complex(std::size_t)
+{
+  return nullptr;
+}
+auto fft_free(void*)
+{
+}
+auto destroy_plan(void*)
+{
+}
+auto create_plan_r2c(std::size_t, void*, void*, int)
+{
+  return fft::fft_plan{};
+}
+auto create_plan_c2r(std::size_t, void*, void*, int)
+{
+  return fft::fft_plan{};
+}
+auto run_plan_r2c(fft::fft_plan, void*, void*)
+{
+}
+auto run_plan_c2r(fft::fft_plan, void*, void*)
+{
+  return fft::fft_plan{};
+}
 #endif
 }
 
@@ -99,7 +132,12 @@ fft::fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   return m_output;
 }
 
+fft::fft_complex* fft::execute() noexcept
+{
+  run_plan_r2c(m_fw, m_input, m_output);
 
+  return m_output;
+}
 
 rfft::rfft(std::size_t newSize) noexcept
 {
@@ -126,6 +164,13 @@ void rfft::reset(std::size_t newSize)
 rfft::fft_real* rfft::execute(rfft::fft_complex* input) noexcept
 {
   run_plan_c2r(m_fw, input, m_output);
+
+  return m_output;
+}
+
+rfft::fft_real* rfft::execute() noexcept
+{
+  run_plan_c2r(m_fw, m_input, m_output);
 
   return m_output;
 }

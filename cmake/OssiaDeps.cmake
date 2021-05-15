@@ -1,7 +1,6 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general libossia dependencies :")
   set(OSSIA_SUBMODULES
-      asio
       bitset2
       brigand
       chobo-shl
@@ -13,6 +12,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       frozen
       GSL
       hopscotch-map
+      mdspan
       multi_index
       nano-signal-slot
       rapidfuzz-cpp
@@ -74,7 +74,7 @@ endif()
 
 # Download various dependencies
 set(BOOST_MINOR_MINIMAL 67)
-set(BOOST_MINOR_LATEST 75)
+set(BOOST_MINOR_LATEST 76)
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
 if (NOT Boost_FOUND)
   set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
@@ -156,22 +156,5 @@ if(MSVC)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-include(ExternalProject)
-# rapidfuzz
-ExternalProject_add(rapidfuzz-cpp
-    SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/../3rdparty/rapidfuzz-cpp"
-    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/rapidfuzz-cpp
-    CMAKE_ARGS
-      -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
-      -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
-      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
-      -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-      -DCMAKE_CONFIGURATION_TYPES=${CMAKE_BUILD_TYPE}
-      -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
-)
-
-ExternalProject_Get_property(rapidfuzz-cpp INSTALL_DIR)
-set(RAPIDFUZZ_INCLUDE_DIR ${INSTALL_DIR}/include)
+set(RAPIDFUZZ_INCLUDE_DIR "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
 

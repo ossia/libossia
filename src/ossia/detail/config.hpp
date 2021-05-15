@@ -3,7 +3,7 @@
 #include <ossia-config.hpp>
 #endif
 
-#if __has_include(<ossia-config.hpp>)
+#if __has_include(<ossia_export.h>)
 #include <ossia_export.h>
 #else
 #define OSSIA_EXPORT
@@ -97,16 +97,20 @@
 #define RAPIDJSON_HAS_CXX11_RVALUE_REFS 1
 #endif
 
+#if defined(RAPIDJSON_PARSE_DEFAULT_FLAGS)
+#error Include <ossia/detail/json.hpp> to use JSON
+#endif
+#define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseNanAndInfFlag
+
+#if !defined(BOOST_MATH_DISABLE_FLOAT128)
 #define BOOST_MATH_DISABLE_FLOAT128
+#endif
+
 #define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 1
 
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define BOOST_SYSTEM_NO_DEPRECATED 1
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
-
-#if !defined(ASIO_STANDALONE)
-#define ASIO_STANDALONE 1
-#endif
 
 #if !defined(BOOST_REGEX_NO_LIB)
 #define BOOST_REGEX_NO_LIB 1

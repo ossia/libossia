@@ -14,7 +14,7 @@ time_event::time_event(
     time_event::exec_callback callback, time_sync& aTimeSync,
     expression_ptr anExpression)
     : m_callback(callback)
-    , m_timesync(aTimeSync)
+    , m_timesync(&aTimeSync)
     , m_status(time_event::status::NONE)
     , m_expression(std::move(anExpression))
 {
@@ -37,7 +37,7 @@ void time_event::add_time_process(std::shared_ptr<time_process> timeProcess)
   // store a TimeProcess if it is not already stored
   if (find(m_processes, timeProcess) == m_processes.end())
   {
-    if(m_timesync.muted())
+    if(m_timesync->muted())
       timeProcess->mute(true);
     m_processes.push_back(std::move(timeProcess));
   }
@@ -65,7 +65,12 @@ void time_event::tick(ossia::time_value date, ossia::time_value offset)
 }
 time_sync& time_event::get_time_sync() const
 {
-  return m_timesync;
+  return *m_timesync;
+}
+
+void time_event::set_time_sync(time_sync& ts)
+{
+  m_timesync = &ts;
 }
 
 const expression& time_event::get_expression() const

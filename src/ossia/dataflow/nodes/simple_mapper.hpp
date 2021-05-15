@@ -6,7 +6,7 @@
 #include <ossia/editor/curve/curve_segment/easing.hpp>
 #include <ossia/editor/mapper/detail/mapper_visitor.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 namespace ossia
 {
 template <typename Y, typename Easing>

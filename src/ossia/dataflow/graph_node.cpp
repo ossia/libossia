@@ -121,9 +121,37 @@ graph_node::~graph_node()
     delete outl;
 }
 
-void graph_node::prepare(const execution_state& st) const noexcept
+void graph_node::prepare(const execution_state& st) noexcept
 {
+  struct {
+    std::size_t buffer_size{};
+    void operator()(ossia::audio_port& p) const noexcept
+    {
+      if(p.samples.empty())
+        p.samples.resize(2);
+      for(auto& c : p.samples)
+      {
+        c.shrink_to_fit();
+        c.reserve(buffer_size);
+      }
+    }
+    void operator()(ossia::midi_port& p) const noexcept
+    {
+    }
+    void operator()(ossia::value_port& p) const noexcept
+    {
+    }
+  } vis;
+  for(auto& in : this->m_inlets)
+  {
+    in->visit(vis);
+  }
+  for(auto& out : this->m_outlets)
+  {
+    out->visit(vis);
+  }
 }
+
 graph_node::graph_node() noexcept
 {
 }
@@ -198,13 +226,6 @@ void graph_node::clear() noexcept
 
   for (auto outl : m_outlets)
   {
-    /*
-    // Audio outlets add two inlets at the end
-    if(outl->which() == ossia::audio_port::which)
-    {
-      m_inlets.pop_back();
-      m_inlets.pop_back();
-    }*/
     delete outl;
   }
   for (auto inl : m_inlets)

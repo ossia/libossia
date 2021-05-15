@@ -11,6 +11,7 @@
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
+#include <ossia/detail/logger.hpp>
 
 static constexpr auto constexpr_abs(float f)
 {
@@ -23,7 +24,8 @@ static constexpr auto constexpr_min(float f1, float f2)
 static constexpr inline bool fuzzy_equals(float p1, float p2)
 {
   using namespace std;
-  return (constexpr_abs(p1 - p2) * 100000.f <= constexpr_min(constexpr_abs(p1), constexpr_abs(p2)));
+  return (constexpr_abs(p1 - p2) * 100000.f
+          <= constexpr_min(constexpr_abs(p1), constexpr_abs(p2)));
 }
 
 namespace ossia
@@ -183,6 +185,32 @@ TEST_CASE ("test_conversions", "test_conversions")
   test_conversions_impl<ossia::time_list>();
 }
 
+
+template<typename dataspace_type>
+struct unit_test_visitor
+{
+  template<typename T>
+  void operator()(T u)
+  {
+      using unit_type = typename T::type;
+      auto unit_text_array = ossia::unit_traits<unit_type>::text();
+
+      for (auto unit_text : unit_text_array)
+      {
+        using dataspace_correct_type =
+            typename ossia::matching_unit_u_list<dataspace_type>::type;
+        auto parsed_unit
+            = ossia::parse_unit(unit_text, dataspace_correct_type {});
+        if (unit_text == "cart3D")
+        {
+          ossia::parse_unit(unit_text, dataspace_correct_type {});
+        }
+        REQUIRE(parsed_unit == unit_type {});
+      }
+  
+  }
+};
+
 TEST_CASE ("test_visitors", "test_visitors")
 {
   // get_unit_text
@@ -205,19 +233,15 @@ TEST_CASE ("test_visitors", "test_visitors")
   REQUIRE(!p1);
   auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
   REQUIRE(!p2);
+  REQUIRE(ossia::cartesian_3d_u{} == ossia::parse_unit("cart3D", ossia::position_u {}));
 
   ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
     using dataspace_type = typename decltype(t)::type;
-    ossia::for_each_tagged(dataspace_type{}, [&] (auto u) {
-      using unit_type = typename decltype(u)::type;
-      auto unit_text_array = ossia::unit_traits<unit_type>::text();
-      for(auto unit_text : unit_text_array)
-      {
         using dataspace_correct_type = typename ossia::matching_unit_u_list<dataspace_type>::type;
-        auto parsed_unit = ossia::parse_unit(unit_text, dataspace_correct_type{});
-        REQUIRE(parsed_unit == unit_type{});
-      }
-    });
+   //  ossia::logger().error(
+   //          "dataspace: {}",
+   //          ossia::get_pretty_unit_text(dataspace_correct_type {}));
+    ossia::for_each_tagged(dataspace_type {}, unit_test_visitor<dataspace_type> {});
   });
 
 }
@@ -312,7 +336,7 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
   }
 
   {
-    std::cerr <<  ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_u{})).c_str();
+    std::cerr <<  ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_u{})).c_str() << '\n';
     REQUIRE(make_value(int32_t{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
     REQUIRE(make_value(char{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
     REQUIRE(make_value(bool{true}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{1}});
@@ -353,6 +377,22 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
     REQUIRE(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{}) == ossia::value_with_unit{ossia::bgr{make_vec(32.5, 1.3, 1.2)}});
     REQUIRE(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::centimeter_u{}) == ossia::value_with_unit{});
     REQUIRE(convert(ossia::value_with_unit{}, ossia::centimeter_u{}) == ossia::value_with_unit{});
+    // UP
+    REQUIRE(fuzzy_equals(convert(ossia::polar{make_vec(1., half_pi)}, ossia::cartesian_2d_u{}), ossia::value_with_unit{ossia::cartesian_2d{make_vec(0., 1.)}}));
+    // DOWN
+    REQUIRE(convert(ossia::cartesian_2d{make_vec(0., -0.3)}, ossia::polar_u{}) == ossia::value_with_unit{ossia::polar{make_vec(0.3, -half_pi)}});
+    // LEFT
+    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(-1.1, 0., 0.)}, ossia::aed_u{}), ossia::value_with_unit{ossia::aed{make_vec(-90., 0., 1.1)}}));
+    // RIGHT
+    REQUIRE(fuzzy_equals(convert(ossia::aed{make_vec(90., 0., 0.6)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(0.6, 0., 0.)}}));
+    // ABOVE
+    REQUIRE(fuzzy_equals(convert(ossia::azd{make_vec(45., 0.1, 0.)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(0., 0., 0.9)}}));
+    // BELOW
+    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(0., 0., -0.4)}, ossia::azd_u{}), ossia::value_with_unit{ossia::azd{make_vec(0., -0.4, 0.)}}));
+    // OPENGL to CART3D
+    REQUIRE(fuzzy_equals(convert(ossia::opengl{make_vec(1., 1., 1.)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(1., -1., 1.)}}));
+    // CART3D to OPENGL
+    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(1., 1., 1.)}, ossia::opengl_u{}), ossia::value_with_unit{ossia::opengl{make_vec(1., 1., -1.)}}));
   }
 
   {
@@ -388,5 +428,5 @@ TEST_CASE ("convert_benchmark", "convert_benchmark")
   auto t2 = std::chrono::high_resolution_clock::now();
 
   std::cerr << "convert time: "
-           << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / double(N);
+           << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / double(N) << '\n';
 }

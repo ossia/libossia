@@ -3227,9 +3227,15 @@ public:
 
     ossia::polar m_value3;
 
-    ossia::opengl m_value4;
+    ossia::aed m_value4;
 
-    ossia::cylindrical m_value5;
+    ossia::ad m_value5;
+
+    ossia::opengl m_value6;
+
+    ossia::cylindrical m_value7;
+
+    ossia::azd m_value8;
 
     dummy_t m_dummy;
     Impl() : m_dummy{}
@@ -3248,6 +3254,9 @@ public:
     Type3,
     Type4,
     Type5,
+    Type6,
+    Type7,
+    Type8,
     Npos = std::numeric_limits<int8_t>::max()
   };
 
@@ -3307,13 +3316,25 @@ public:
   {
     new (&m_impl.m_value3) ossia::polar{v};
   }
-  position(ossia::opengl v) : m_type{Type4}
+  position(ossia::aed v) : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::opengl{v};
+    new (&m_impl.m_value4) ossia::aed{v};
   }
-  position(ossia::cylindrical v) : m_type{Type5}
+  position(ossia::ad v) : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::cylindrical{v};
+    new (&m_impl.m_value5) ossia::ad{v};
+  }
+  position(ossia::opengl v) : m_type{Type6}
+  {
+    new (&m_impl.m_value6) ossia::opengl{v};
+  }
+  position(ossia::cylindrical v) : m_type{Type7}
+  {
+    new (&m_impl.m_value7) ossia::cylindrical{v};
+  }
+  position(ossia::azd v) : m_type{Type8}
+  {
+    new (&m_impl.m_value8) ossia::azd{v};
   }
   position(const position& other) : m_type{other.m_type}
   {
@@ -3332,11 +3353,20 @@ public:
         new (&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::opengl{other.m_impl.m_value4};
+        new (&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::cylindrical{other.m_impl.m_value5};
+        new (&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
         break;
+      case Type::Type6:
+        new (&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
+        break;
+      case Type::Type7:
+        new (&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
+        break;
+    case Type::Type8:
+      new (&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
+      break;
       default:
         break;
     }
@@ -3361,12 +3391,23 @@ public:
         new (&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::opengl{std::move(other.m_impl.m_value4)};
+        new (&m_impl.m_value4)
+            ossia::aed{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::cylindrical{std::move(other.m_impl.m_value5)};
+        new (&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
         break;
+      case Type::Type6:
+        new (&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
+        break;
+      case Type::Type7:
+        new (&m_impl.m_value7)
+            ossia::cylindrical{std::move(other.m_impl.m_value7)};
+        break;
+    case Type::Type8:
+      new (&m_impl.m_value8)
+          ossia::azd{std::move(other.m_impl.m_value8)};
+      break;
       default:
         break;
     }
@@ -3390,10 +3431,19 @@ public:
         new (&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::opengl{other.m_impl.m_value4};
+        new (&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::cylindrical{other.m_impl.m_value5};
+        new (&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
+        break;
+      case Type::Type6:
+        new (&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
+        break;
+      case Type::Type7:
+        new (&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
+        break;
+      case Type::Type8:
+        new (&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
         break;
       default:
         break;
@@ -3422,11 +3472,22 @@ public:
         new (&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::opengl{std::move(other.m_impl.m_value4)};
+        new (&m_impl.m_value4)
+            ossia::aed{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::cylindrical{std::move(other.m_impl.m_value5)};
+        new (&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
+        break;
+      case Type::Type6:
+        new (&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
+        break;
+      case Type::Type7:
+        new (&m_impl.m_value7)
+            ossia::cylindrical{std::move(other.m_impl.m_value7)};
+        break;
+      case Type::Type8:
+        new (&m_impl.m_value8)
+            ossia::azd{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -3463,17 +3524,38 @@ inline const ossia::polar* position::target() const
   return nullptr;
 }
 template <>
-inline const ossia::opengl* position::target() const
+inline const ossia::aed* position::target() const
 {
   if (m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
-inline const ossia::cylindrical* position::target() const
+inline const ossia::ad* position::target() const
 {
   if (m_type == Type5)
     return &m_impl.m_value5;
+  return nullptr;
+}
+template <>
+inline const ossia::opengl* position::target() const
+{
+  if (m_type == Type6)
+    return &m_impl.m_value6;
+  return nullptr;
+}
+template <>
+inline const ossia::cylindrical* position::target() const
+{
+  if (m_type == Type7)
+    return &m_impl.m_value7;
+  return nullptr;
+}
+template <>
+inline const ossia::azd* position::target() const
+{
+  if (m_type == Type8)
+    return &m_impl.m_value8;
   return nullptr;
 }
 template <>
@@ -3505,17 +3587,38 @@ inline ossia::polar* position::target()
   return nullptr;
 }
 template <>
-inline ossia::opengl* position::target()
+inline ossia::aed* position::target()
 {
   if (m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
-inline ossia::cylindrical* position::target()
+inline ossia::ad* position::target()
 {
   if (m_type == Type5)
     return &m_impl.m_value5;
+  return nullptr;
+}
+template <>
+inline ossia::opengl* position::target()
+{
+  if (m_type == Type6)
+    return &m_impl.m_value6;
+  return nullptr;
+}
+template <>
+inline ossia::cylindrical* position::target()
+{
+  if (m_type == Type7)
+    return &m_impl.m_value7;
+  return nullptr;
+}
+template <>
+inline ossia::azd* position::target()
+{
+  if (m_type == Type8)
+    return &m_impl.m_value8;
   return nullptr;
 }
 template <>
@@ -3547,17 +3650,38 @@ inline const ossia::polar& position::get() const
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline const ossia::opengl& position::get() const
+inline const ossia::aed& position::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline const ossia::cylindrical& position::get() const
+inline const ossia::ad& position::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline const ossia::opengl& position::get() const
+{
+  if (m_type == Type6)
+    return m_impl.m_value6;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline const ossia::cylindrical& position::get() const
+{
+  if (m_type == Type7)
+    return m_impl.m_value7;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline const ossia::azd& position::get() const
+{
+  if (m_type == Type8)
+    return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <>
@@ -3589,17 +3713,38 @@ inline ossia::polar& position::get()
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline ossia::opengl& position::get()
+inline ossia::aed& position::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline ossia::cylindrical& position::get()
+inline ossia::ad& position::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline ossia::opengl& position::get()
+{
+  if (m_type == Type6)
+    return m_impl.m_value6;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline ossia::cylindrical& position::get()
+{
+  if (m_type == Type7)
+    return m_impl.m_value7;
+  throw std::runtime_error("position: bad type");
+}
+template <>
+inline ossia::azd& position::get()
+{
+  if (m_type == Type8)
+    return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <typename Visitor>
@@ -3619,6 +3764,12 @@ auto apply_nonnull(Visitor&& functor, const position& var)
       return functor(var.m_impl.m_value4);
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
+    case position::Type::Type6:
+      return functor(var.m_impl.m_value6);
+    case position::Type::Type7:
+      return functor(var.m_impl.m_value7);
+    case position::Type::Type8:
+      return functor(var.m_impl.m_value8);
     default:
       throw std::runtime_error("position: bad type");
   }
@@ -3640,6 +3791,12 @@ auto apply_nonnull(Visitor&& functor, position& var)
       return functor(var.m_impl.m_value4);
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
+    case position::Type::Type6:
+      return functor(var.m_impl.m_value6);
+    case position::Type::Type7:
+      return functor(var.m_impl.m_value7);
+    case position::Type::Type8:
+      return functor(var.m_impl.m_value8);
     default:
       throw std::runtime_error("position: bad type");
   }
@@ -3661,6 +3818,12 @@ auto apply_nonnull(Visitor&& functor, position&& var)
       return functor(std::move(var.m_impl.m_value4));
     case position::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
+    case position::Type::Type6:
+      return functor(std::move(var.m_impl.m_value6));
+    case position::Type::Type7:
+      return functor(std::move(var.m_impl.m_value7));
+    case position::Type::Type8:
+      return functor(std::move(var.m_impl.m_value8));
     default:
       throw std::runtime_error("position: bad type");
   }
@@ -3682,6 +3845,12 @@ auto apply(Visitor&& functor, const position& var)
       return functor(var.m_impl.m_value4);
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
+    case position::Type::Type6:
+      return functor(var.m_impl.m_value6);
+    case position::Type::Type7:
+      return functor(var.m_impl.m_value7);
+    case position::Type::Type8:
+      return functor(var.m_impl.m_value8);
     default:
       return functor();
   }
@@ -3703,6 +3872,12 @@ auto apply(Visitor&& functor, position& var)
       return functor(var.m_impl.m_value4);
     case position::Type::Type5:
       return functor(var.m_impl.m_value5);
+    case position::Type::Type6:
+      return functor(var.m_impl.m_value6);
+    case position::Type::Type7:
+      return functor(var.m_impl.m_value7);
+    case position::Type::Type8:
+      return functor(var.m_impl.m_value8);
     default:
       return functor();
   }
@@ -3724,6 +3899,12 @@ auto apply(Visitor&& functor, position&& var)
       return functor(std::move(var.m_impl.m_value4));
     case position::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
+    case position::Type::Type6:
+      return functor(std::move(var.m_impl.m_value6));
+    case position::Type::Type7:
+      return functor(std::move(var.m_impl.m_value7));
+    case position::Type::Type8:
+      return functor(std::move(var.m_impl.m_value8));
     default:
       return functor();
   }
@@ -3746,6 +3927,12 @@ inline bool operator==(const position& lhs, const position& rhs)
         return lhs.m_impl.m_value4 == rhs.m_impl.m_value4;
       case position::Type::Type5:
         return lhs.m_impl.m_value5 == rhs.m_impl.m_value5;
+      case position::Type::Type6:
+        return lhs.m_impl.m_value6 == rhs.m_impl.m_value6;
+      case position::Type::Type7:
+        return lhs.m_impl.m_value7 == rhs.m_impl.m_value7;
+      case position::Type::Type8:
+        return lhs.m_impl.m_value8 == rhs.m_impl.m_value8;
       default:
         return true;
     }
@@ -3770,6 +3957,12 @@ inline bool operator!=(const position& lhs, const position& rhs)
       return lhs.m_impl.m_value4 != rhs.m_impl.m_value4;
     case position::Type::Type5:
       return lhs.m_impl.m_value5 != rhs.m_impl.m_value5;
+    case position::Type::Type6:
+      return lhs.m_impl.m_value6 != rhs.m_impl.m_value6;
+    case position::Type::Type7:
+      return lhs.m_impl.m_value7 != rhs.m_impl.m_value7;
+    case position::Type::Type8:
+      return lhs.m_impl.m_value8 != rhs.m_impl.m_value8;
     default:
       return false;
   }
@@ -3839,37 +4032,85 @@ inline bool operator!=(const ossia::polar& lhs, const position& rhs)
 {
   return (rhs.m_type != position::Type::Type3) || (rhs.m_impl.m_value3 != lhs);
 }
-inline bool operator==(const position& lhs, const ossia::opengl& rhs)
+inline bool operator==(const position& lhs, const ossia::aed& rhs)
 {
   return (lhs.m_type == position::Type::Type4) && (lhs.m_impl.m_value4 == rhs);
 }
-inline bool operator==(const ossia::opengl& lhs, const position& rhs)
+inline bool operator==(const ossia::aed& lhs, const position& rhs)
 {
   return (rhs.m_type == position::Type::Type4) && (rhs.m_impl.m_value4 == lhs);
 }
-inline bool operator!=(const position& lhs, const ossia::opengl& rhs)
+inline bool operator!=(const position& lhs, const ossia::aed& rhs)
 {
   return (lhs.m_type != position::Type::Type4) || (lhs.m_impl.m_value4 != rhs);
 }
-inline bool operator!=(const ossia::opengl& lhs, const position& rhs)
+inline bool operator!=(const ossia::aed& lhs, const position& rhs)
 {
   return (rhs.m_type != position::Type::Type4) || (rhs.m_impl.m_value4 != lhs);
 }
-inline bool operator==(const position& lhs, const ossia::cylindrical& rhs)
+inline bool operator==(const position& lhs, const ossia::ad& rhs)
 {
   return (lhs.m_type == position::Type::Type5) && (lhs.m_impl.m_value5 == rhs);
 }
-inline bool operator==(const ossia::cylindrical& lhs, const position& rhs)
+inline bool operator==(const ossia::ad& lhs, const position& rhs)
 {
   return (rhs.m_type == position::Type::Type5) && (rhs.m_impl.m_value5 == lhs);
 }
-inline bool operator!=(const position& lhs, const ossia::cylindrical& rhs)
+inline bool operator!=(const position& lhs, const ossia::ad& rhs)
 {
   return (lhs.m_type != position::Type::Type5) || (lhs.m_impl.m_value5 != rhs);
 }
-inline bool operator!=(const ossia::cylindrical& lhs, const position& rhs)
+inline bool operator!=(const ossia::ad& lhs, const position& rhs)
 {
   return (rhs.m_type != position::Type::Type5) || (rhs.m_impl.m_value5 != lhs);
+}
+inline bool operator==(const position& lhs, const ossia::opengl& rhs)
+{
+  return (lhs.m_type == position::Type::Type6) && (lhs.m_impl.m_value6 == rhs);
+}
+inline bool operator==(const ossia::opengl& lhs, const position& rhs)
+{
+  return (rhs.m_type == position::Type::Type6) && (rhs.m_impl.m_value6 == lhs);
+}
+inline bool operator!=(const position& lhs, const ossia::opengl& rhs)
+{
+  return (lhs.m_type != position::Type::Type6) || (lhs.m_impl.m_value6 != rhs);
+}
+inline bool operator!=(const ossia::opengl& lhs, const position& rhs)
+{
+  return (rhs.m_type != position::Type::Type6) || (rhs.m_impl.m_value6 != lhs);
+}
+inline bool operator==(const position& lhs, const ossia::cylindrical& rhs)
+{
+  return (lhs.m_type == position::Type::Type7) && (lhs.m_impl.m_value7 == rhs);
+}
+inline bool operator==(const ossia::cylindrical& lhs, const position& rhs)
+{
+  return (rhs.m_type == position::Type::Type7) && (rhs.m_impl.m_value7 == lhs);
+}
+inline bool operator!=(const position& lhs, const ossia::cylindrical& rhs)
+{
+  return (lhs.m_type != position::Type::Type7) || (lhs.m_impl.m_value7 != rhs);
+}
+inline bool operator!=(const ossia::cylindrical& lhs, const position& rhs)
+{
+  return (rhs.m_type != position::Type::Type7) || (rhs.m_impl.m_value7 != lhs);
+}
+inline bool operator==(const position& lhs, const ossia::azd& rhs)
+{
+  return (lhs.m_type == position::Type::Type8) && (lhs.m_impl.m_value8 == rhs);
+}
+inline bool operator==(const ossia::azd& lhs, const position& rhs)
+{
+  return (rhs.m_type == position::Type::Type8) && (rhs.m_impl.m_value8 == lhs);
+}
+inline bool operator!=(const position& lhs, const ossia::azd& rhs)
+{
+  return (lhs.m_type != position::Type::Type8) || (lhs.m_impl.m_value8 != rhs);
+}
+inline bool operator!=(const ossia::azd& lhs, const position& rhs)
+{
+  return (rhs.m_type != position::Type::Type8) || (rhs.m_impl.m_value8 != lhs);
 }
 struct speed
 {

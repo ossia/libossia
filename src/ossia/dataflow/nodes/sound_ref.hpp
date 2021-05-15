@@ -129,7 +129,7 @@ public:
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(chan);
+    ap.samples.resize(std::max(this->upmix, chan));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_read == 0)
@@ -144,7 +144,19 @@ public:
     {
       if(t.prev_date < m_prev_date)
       {
-        transport(t.prev_date);
+        // Sentinel: we never played.
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min}) {
+          if(t.prev_date != 0_tv) {
+            transport(t.prev_date);
+          }
+          else {
+            // Otherwise we don't need transport, everything is alreayd at 0
+            m_prev_date = 0_tv;
+          }
+        }
+        else {
+          transport(t.prev_date);
+        }
       }
 
       for (std::size_t i = 0; i < chan; ++i)

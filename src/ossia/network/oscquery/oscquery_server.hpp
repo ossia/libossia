@@ -3,7 +3,7 @@
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/oscquery/detail/server_reply.hpp>
+#include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 
@@ -24,9 +24,12 @@ class IpEndpointName;
 }
 namespace ossia
 {
-namespace oscquery
+namespace net
 {
 class websocket_server;
+}
+namespace oscquery
+{
 struct oscquery_client;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
@@ -41,20 +44,6 @@ public:
   oscquery_server_protocol(uint16_t osc_port = 1234, uint16_t ws_port = 5678);
   ~oscquery_server_protocol() override;
 
-  /**
-   * When the server receives a message, it will propagate it to
-   * other clients. The implementation will try to prevent sending
-   * the message again to its source.
-   */
-  bool echo() const
-  {
-    return m_echo;
-  }
-  void set_echo(bool b)
-  {
-    m_echo = b;
-  }
-
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
   void request(net::parameter_base&) override;
@@ -64,6 +53,7 @@ public:
   push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw_bundle(
       const std::vector<ossia::net::full_parameter_data>&) override;
+  bool echo_incoming_message(const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&, const ossia::value& v) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
@@ -88,6 +78,9 @@ public:
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 
+
+  void disable_zeroconf();
+  void set_zeroconf_servers(net::zeroconf_server oscquery_server,  net::zeroconf_server osc_server);
 private:
   // List of connected clients
   oscquery_client* find_client(const connection_handler& hdl);
@@ -119,13 +112,13 @@ private:
   void update_zeroconf();
   // Exceptions here will be catched by the server
   // which will set appropriate error codes.
-  ossia::oscquery::server_reply
+  ossia::net::server_reply
   on_WSrequest(const connection_handler& hdl, const std::string& message);
-  ossia::oscquery::server_reply on_BinaryWSrequest(
+  ossia::net::server_reply on_BinaryWSrequest(
       const connection_handler& hdl, const std::string& message);
 
   std::unique_ptr<osc::receiver> m_oscServer;
-  std::unique_ptr<websocket_server> m_websocketServer;
+  std::unique_ptr<ossia::net::websocket_server> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServerWS;
   net::zeroconf_server m_zeroconfServerOSC;
@@ -149,6 +142,7 @@ private:
   uint16_t m_wsPort{};
 
   bool m_echo{};
+  bool m_disableZeroconf{};
 
   // TODO could we make an intermediate base class for oscquery_{server,mirror}
   // that hold that function queue and other shared members/methods ?
@@ -156,7 +150,6 @@ private:
   // function queue to hold ws callback
   // and avoid tree to be modified on another thread
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
-
 };
 }
 

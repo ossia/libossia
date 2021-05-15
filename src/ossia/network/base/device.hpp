@@ -3,7 +3,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 
 #include <nano_signal_slot.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {
@@ -23,6 +23,7 @@ struct device_capabilities
   bool change_tree = false;
 };
 
+struct message_origin_identifier;
 /**
  * @brief Root of a device tree
  *
@@ -84,6 +85,26 @@ public:
     return get_root_node().get_name();
   }
 
+  bool has_echo()
+  {
+    return m_echo;
+  }
+
+  void set_echo(bool echo)
+  {
+    m_echo = echo;
+  }
+
+  void apply_incoming_message(
+      const message_origin_identifier& id,
+      ossia::net::parameter_base& param,
+      ossia::value&& value);
+
+  void apply_incoming_message_quiet(
+      const message_origin_identifier& id,
+      ossia::net::parameter_base& param,
+      ossia::value&& value);
+
   Nano::Signal<void(node_base&)>
       on_node_created; // The node being created
   Nano::Signal<void(node_base&)>
@@ -116,7 +137,8 @@ public:
 
 protected:
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
-  device_capabilities m_capabilities;
+  device_capabilities m_capabilities{};
+  bool m_echo{false};
 };
 
 template <typename T>

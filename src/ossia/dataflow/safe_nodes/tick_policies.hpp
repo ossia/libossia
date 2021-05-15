@@ -1,13 +1,12 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/safe_nodes/node.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/timed_vec.hpp>
 
 #include <bitset>
 
 namespace ossia::safe_nodes
 {
-
 template <typename T, typename U>
 auto timestamp(const std::pair<T, U>& p)
 {
@@ -24,7 +23,7 @@ struct precise_tick
   template <typename TickFun, typename... Args>
   void operator()(
       TickFun&& f, const ossia::token_request& req,
-      const ossia::safe_nodes::timed_vec<Args>&... arg)
+      const ossia::timed_vec<Args>&... arg)
   {
     auto iterators = std::make_tuple(arg.begin()...);
     const auto last_iterators = std::make_tuple(--arg.end()...);
@@ -113,7 +112,7 @@ struct default_tick
   template <typename TickFun, typename... Args>
   void operator()(
       TickFun&& f, const ossia::token_request& req,
-      const ossia::safe_nodes::timed_vec<Args>&... arg)
+      const ossia::timed_vec<Args>&... arg)
   {
     f(req, arg...);
   }
@@ -124,7 +123,7 @@ struct last_tick
   template <typename TickFun, typename... Args>
   void operator()(
       TickFun&& f, const ossia::token_request& req,
-      const ossia::safe_nodes::timed_vec<Args>&... arg)
+      const ossia::timed_vec<Args>&... arg)
   {
     // TODO use largest date instead
     std::apply(
@@ -142,7 +141,7 @@ struct first_last_tick
   template <typename TickFun, typename... Args>
   void operator()(
       TickFun&& f, const ossia::token_request& req,
-      const ossia::safe_nodes::timed_vec<Args>&... arg)
+      const ossia::timed_vec<Args>&... arg)
   {
     // TODO use correct dates
     std::apply(

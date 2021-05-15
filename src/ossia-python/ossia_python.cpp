@@ -19,14 +19,16 @@ namespace pybind11
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
+#include <ossia/network/base/osc_address.hpp>
 
+#include <ossia/network/context_functions.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
-#include <ossia/network/midi/midi.hpp>
+#include <ossia/protocols/midi/midi.hpp>
 
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/detail/logger.hpp>
@@ -480,9 +482,22 @@ public:
  */
 std::vector<ossia::net::midi::midi_info> list_midi_devices()
 {
-  ossia::net::midi::midi_protocol midi_protocol{};
-  return midi_protocol.scan();
+  return ossia::net::midi::midi_protocol::scan();
 }
+
+struct ossia_network_context
+{
+  ossia_network_context()
+    : context{ossia::net::create_network_context()}
+  {
+
+  }
+  void poll()
+  {
+    ossia::net::poll_network_context(*context);
+  }
+  ossia::net::network_context_ptr context;
+};
 
 class ossia_midi_device
 {
@@ -490,9 +505,9 @@ class ossia_midi_device
   ossia::net::midi::midi_protocol& m_protocol;
 
 public:
-    ossia_midi_device(std::string name, ossia::net::midi::midi_info d)
-    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(d) },
-    m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
+    ossia_midi_device(ossia_network_context ctx, std::string name, ossia::net::midi::midi_info d)
+    : m_device{ std::make_unique<ossia::net::midi::midi_protocol>(ctx.context, d) }
+    , m_protocol{ static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol()) }
   {
       m_device.set_name(name);
       m_device.create_full_tree();
@@ -557,6 +572,10 @@ PYBIND11_MAKE_OPAQUE(std::vector<ossia::net::node_base*>);
 PYBIND11_MODULE(ossia_python, m)
 {
   m.doc() = "python binding of ossia library";
+
+  py::class_<ossia_network_context>(m, "NetworkContext")
+      .def(py::init<>())
+      .def("poll", &ossia_network_context::poll);
 
   py::class_<ossia_local_device>(m, "LocalDevice")
       .def(py::init<std::string>())
@@ -627,7 +646,7 @@ PYBIND11_MODULE(ossia_python, m)
   m.def("list_midi_devices", &list_midi_devices);
 
   py::class_<ossia_midi_device>(m, "MidiDevice")
-      .def(py::init<std::string, ossia::net::midi::midi_info>())
+      .def(py::init<ossia_network_context, std::string, ossia::net::midi::midi_info>())
       .def("find_node", &ossia_midi_device::find_node,
           py::return_value_policy::reference)
       .def_property_readonly(

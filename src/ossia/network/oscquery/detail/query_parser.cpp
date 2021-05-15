@@ -6,7 +6,7 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/oscquery/detail/http_query_parser.hpp>
+#include <ossia/network/http/http_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
 
@@ -28,7 +28,7 @@ string_map<std::string>
 query_parser::parse_http_methods(ossia::string_view str)
 {
   string_map<std::string> res;
-  auto methods = parse_http_methods_encoded(str);
+  auto methods = ossia::net::parse_http_methods_encoded(str);
 
   for (auto& e : methods)
   {
@@ -36,8 +36,8 @@ query_parser::parse_http_methods(ossia::string_view str)
     key_clean.reserve(16);
     std::string val_clean;
     val_clean.reserve(16);
-    url_decode(e.first, key_clean);
-    url_decode(e.second, val_clean);
+    ossia::net::url_decode(e.first, key_clean);
+    ossia::net::url_decode(e.second, val_clean);
     res.insert(std::make_pair(std::move(key_clean), std::move(val_clean)));
   }
 

@@ -20,7 +20,7 @@ CMake/common
 .cproject
 .project
 .settings*
-/build*
+/build-*
 *.user
 Makefile
 
@@ -50,4 +50,3 @@ OSSIA/ossia-node/node_modules
 3rdparty/CicmWrapper/
 3rdparty/pure-data/
 build
-build*

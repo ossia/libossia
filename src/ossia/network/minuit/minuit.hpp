@@ -28,7 +28,7 @@ namespace ossia
 {
 namespace net
 {
-struct osc_outbound_visitor;
+struct osc_1_0_outbound_stream_visitor;
 class generic_device;
 class OSSIA_EXPORT minuit_protocol final : public ossia::net::protocol_base
 {
@@ -79,7 +79,7 @@ public:
   void get_refresh(ossia::string_view req, const std::string& addr, std::promise<void>&& p);
   void get_refreshed(ossia::string_view req);
 
-  osc::sender<osc_outbound_visitor>& sender() const;
+  osc::sender<osc_1_0_outbound_stream_visitor>& sender() const;
   ossia::minuit::name_table name_table;
 
 private:
@@ -105,10 +105,12 @@ private:
   mutex_t m_getRequestMutex;
   ossia::string_map<std::promise<void>> m_getRequests;
 
-  std::unique_ptr<osc::sender<osc_outbound_visitor>> m_sender;
+  std::unique_ptr<osc::sender<osc_1_0_outbound_stream_visitor>> m_sender;
   std::unique_ptr<osc::receiver> m_receiver;
 
   zeroconf_server m_zcServer;
+
+  message_origin_identifier m_id;
 
   std::atomic<long long> m_lastSentMessage;
   std::atomic<long long> m_lastRecvMessage;

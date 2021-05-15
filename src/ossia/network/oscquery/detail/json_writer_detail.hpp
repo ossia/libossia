@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/detail/json.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-
 namespace ossia
 {
 namespace oscquery
@@ -20,6 +19,7 @@ struct json_writer_impl
   void writeValue(ossia::bounding_mode b) const;
   void writeValue(ossia::access_mode b) const;
   void writeValue(const ossia::domain& d) const;
+  void writeValue(const ossia::unit_t& d) const;
   void writeValue(const ossia::net::tags& tags) const;
   void writeValue(int32_t i) const;
   void writeValue(float i) const;
@@ -51,6 +51,7 @@ struct json_writer_impl
 
   //! Writes a node recursively. Creates a new object.
   void writeNode(const ossia::net::node_base& n);
+
 };
 }
 }

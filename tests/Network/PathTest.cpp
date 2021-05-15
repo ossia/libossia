@@ -10,6 +10,7 @@
 
 #include <ossia/network/common/path.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include "TestUtils.hpp"
 using namespace ossia;

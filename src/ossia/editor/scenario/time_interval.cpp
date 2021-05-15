@@ -25,6 +25,23 @@ double time_interval::get_speed(time_value date) const noexcept
   }
 }
 
+tick_transport_info time_interval::current_transport_info() const noexcept
+{
+  tick_transport_info t;
+
+  t.date = this->m_date;
+  t.current_tempo = this->m_current_tempo;
+  t.signature = this->m_current_signature;
+
+  t.musical_start_last_signature = this->m_musical_start_last_signature;
+  t.musical_start_last_bar = this->m_musical_start_last_bar;
+  t.musical_start_position = this->m_musical_start_position;
+  t.musical_end_last_bar = this->m_musical_end_last_bar;
+  t.musical_end_position = this->m_musical_end_position;
+
+  return t;
+}
+
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date,
     ossia::time_value offset, const ossia::token_request& parent_request)
@@ -75,17 +92,24 @@ void time_interval::tick_impl(
       m_musical_start_position = num_quarters;
     }
 
+    if(new_date.impl > old_date.impl)
     {
-      const double num_quarters = new_date.impl / m_quarter_duration;
+      auto d = new_date - 1_tv;
+      const double num_quarters = d.impl / m_quarter_duration;
 
-      auto [time, sig] = *ossia::last_before(m_timeSignature, new_date);
+      auto [time, sig] = *ossia::last_before(m_timeSignature, d);
 
-      auto quarters_since_last_measure_change = (new_date - time).impl / m_quarter_duration;
+      auto quarters_since_last_measure_change = (d - time).impl / m_quarter_duration;
       auto quarters_in_bar = (4. * (double(sig.upper) / sig.lower));
       auto bars_since_last_measure_change = std::floor(quarters_since_last_measure_change / quarters_in_bar) * quarters_in_bar;
 
       m_musical_end_last_bar = (time.impl / m_quarter_duration + bars_since_last_measure_change);
       m_musical_end_position = num_quarters;
+    }
+    else
+    {
+      m_musical_end_last_bar = m_musical_start_last_bar;
+      m_musical_end_position = m_musical_start_position;
     }
   }
   else
@@ -305,6 +329,7 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
     tok.musical_start_position = this->m_musical_start_position;
     tok.musical_end_last_bar = this->m_musical_end_last_bar;
     tok.musical_end_position = this->m_musical_end_position;
+
     node->request(tok);
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)
@@ -442,7 +467,12 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
 
   // todo what if the interval started
   if (m_running)
+  {
     timeProcess->start();
+    if(m_date != 0_tv) {
+      timeProcess->transport(m_date);
+    }
+  }
 
   if(bool b = node->muted())
     timeProcess->mute(b);

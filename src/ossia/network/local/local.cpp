@@ -4,11 +4,28 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/local/local.hpp>
 
-namespace ossia
+#include <ossia/detail/logger.hpp>
+
+namespace ossia::net
 {
-namespace net
+static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 {
+  for (auto& cld : n.children())
+  {
+    if (auto addr = cld->get_parameter())
+    {
+      if (!addr->callbacks_empty())
+      {
+        proto.observe_quietly(*addr, true);
+      }
+    }
+    observe_rec(proto, *cld);
+  }
+}
+
+
 multiplex_protocol::multiplex_protocol()
+  : protocol_base{flags{}}
 {
 }
 
@@ -54,6 +71,14 @@ bool multiplex_protocol::update(ossia::net::node_base& node)
   return false;
 }
 
+bool multiplex_protocol::echo_incoming_message(const message_origin_identifier& id, const parameter_base& param, const value& v)
+{
+  bool b = true;
+  for (auto& proto : m_protocols)
+    b &= proto->echo_incoming_message(id, param, v);
+  return b;
+}
+
 void multiplex_protocol::stop()
 {
   for (auto& proto : m_protocols)
@@ -63,26 +88,7 @@ void multiplex_protocol::stop()
 void multiplex_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-}
-
-static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
-{
-  for (auto& cld : n.children())
-  {
-    if (auto addr = cld->get_parameter())
-    {
-      if (!addr->callbacks_empty())
-      {
-        proto.observe_quietly(*addr, true);
-      }
-    }
-    observe_rec(proto, *cld);
-  }
-}
-
-void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
-{
-  if (p)
+  for(auto& p : m_protocols_to_register)
   {
     p->set_device(*m_device);
 
@@ -91,19 +97,43 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
 
     m_protocols.push_back(std::move(p));
   }
+  m_protocols_to_register.clear();
+}
+
+void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
+{
+  if (p)
+  {
+    if(!p->test_flag(SupportsMultiplex))
+    {
+       ossia::logger().error("Cannot multiplex a protocol of type: {}", typeid(*p).name());
+       return;
+    }
+
+    if(m_device)
+    {
+      p->set_device(*m_device);
+
+      // Expose all the adresses with callbacks
+      observe_rec(*p, m_device->get_root_node());
+
+      m_protocols.push_back(std::move(p));
+    }
+    else
+    {
+      m_protocols_to_register.push_back(std::move(p));
+    }
+  }
 }
 
 void multiplex_protocol::stop_expose_to(const protocol_base& p)
 {
-  m_protocols.erase(
-      ossia::remove_if(
-          m_protocols, [&](const auto& ptr) { return ptr.get() == &p; }),
-      m_protocols.end());
+  ossia::remove_erase_if(m_protocols_to_register, [&](const auto& ptr) { return ptr.get() == &p; });
+  ossia::remove_erase_if(m_protocols, [&](const auto& ptr) { return ptr.get() == &p; });
 }
 
 void ossia::net::multiplex_protocol::clear()
 {
   m_protocols.clear();
-}
 }
 }

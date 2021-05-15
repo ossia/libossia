@@ -50,6 +50,11 @@ void event_callback(time_event::status newStatus)
       std::cout << "Event PENDING at " << date << " ms" << std::endl;
       break;
     }
+    case time_event::status::FINISHED:
+    {
+      std::cout << "Event FINISHED at " << date << " ms" << std::endl;
+      break;
+    }
     case time_event::status::HAPPENED:
     {
       std::cout << "Event HAPPENED at " << date << " ms" << std::endl;

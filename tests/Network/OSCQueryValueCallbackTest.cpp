@@ -51,17 +51,11 @@ TEST_CASE ("test_oscquery_simple_node_creation_cb", "test_oscquery_simple_node_c
 
   while(!client.is_connected())
   {
-    std::cerr << "damned ! les connexions ne font pas !" << std::endl;
     client.reconnect();
     std::this_thread::sleep_for(100ms);
   }
   {
-    std::cout << "-> Create a parameter for each type" << std::endl;
     auto param_cb = [&](const ossia::value& v) {
-      int i = std::clamp(static_cast<int>(v.get_type()),0,static_cast<int>(type_string.size()-1));
-      std::cout << "receive value type "
-                << type_string[i]
-                << " value : " << v << std::endl;
       CHECK( v == expected_value );
       busy_flag = false;
 

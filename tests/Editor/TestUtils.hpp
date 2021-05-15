@@ -105,6 +105,7 @@ std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
     case ossia::time_event::status::PENDING: s << "pending"; break;
     case ossia::time_event::status::HAPPENED: s << "happened"; break;
     case ossia::time_event::status::DISPOSED: s << "disposed"; break;
+    case ossia::time_event::status::FINISHED: s << "finished"; break;
   }
   return s;
 }
@@ -166,9 +167,9 @@ std::ostream& operator<<(std::ostream& d, const ossia::token_request& t)
 {
   d
     << t.prev_date << " -> "
-    << t.date << " "
-    << t.offset << " "
-    << t.parent_duration << " "
+    << t.date << "; offset: "
+    << t.offset << "; parent: "
+    << t.parent_duration << "; continuity: "
     << t.start_discontinuous << " "
     << t.end_discontinuous;
   return d;
@@ -178,11 +179,9 @@ std::ostream& operator<<(std::ostream& d, const ossia::simple_token_request& t)
 {
   d
       << t.prev_date << " -> "
-      << t.date << " "
-      << t.offset << " "
-      << t.parent_duration << " "
-      << t.start_discontinuous << " "
-      << t.end_discontinuous;
+      << t.date << "; offset: "
+      << t.offset << "; parent: "
+      << t.parent_duration;
   return d;
 }
 

@@ -54,7 +54,7 @@ namespace expressions
  * @return The truth value of the expression
  */
 OSSIA_EXPORT bool evaluate(const expression_base& e);
-OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
+inline bool evaluate(const expression_ptr& e)
 {
   return evaluate(*e);
 }
@@ -67,9 +67,19 @@ OSSIA_EXPORT inline bool evaluate(const expression_ptr& e)
  * refers, in order to check if the value has changed.
  */
 OSSIA_EXPORT void update(const expression_base& e);
-OSSIA_EXPORT inline void update(const expression_ptr& e)
+inline void update(const expression_ptr& e)
 {
   update(*e);
+}
+
+/**
+ * @brief reset
+ * @param e An expression
+ */
+OSSIA_EXPORT void reset(expression_base& e);
+inline void reset(const expression_ptr& e)
+{
+  return reset(*e);
 }
 
 /**
@@ -122,7 +132,7 @@ OSSIA_EXPORT const expression_base& expression_false();
  * @return A "true" expression_bool.
  * @see expression_bool
  */
-OSSIA_EXPORT inline expression_ptr make_expression_true()
+inline expression_ptr make_expression_true()
 {
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_bool>, true);
@@ -133,7 +143,7 @@ OSSIA_EXPORT inline expression_ptr make_expression_true()
  * @return A "false" expression_bool.
  * @see expression_bool
  */
-OSSIA_EXPORT inline expression_ptr make_expression_false()
+inline expression_ptr make_expression_false()
 {
   return std::make_unique<expression_base>(
       eggs::variants::in_place<expression_bool>, false);

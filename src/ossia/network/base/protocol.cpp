@@ -27,6 +27,11 @@ bool protocol_base::push(const parameter_base& p)
   return push(p, p.value());
 }
 
+bool protocol_base::echo_incoming_message(const message_origin_identifier&, const parameter_base&, const value& v)
+{
+  return true;
+}
+
 bool protocol_base::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& v)
 {
@@ -61,6 +66,10 @@ std::future<void> protocol_base::update_async(node_base& node_base)
 void protocol_base::set_device(device_base& dev)
 {
 }
+
+bool protocol_base::connected() const noexcept { return true; }
+
+void protocol_base::connect() { }
 
 std::future<void> protocol_base::pull_async(parameter_base&)
 {

@@ -234,45 +234,6 @@ void for_each_in_tuple(std::tuple<>& tuple, const F& func)
 {
 }
 
-
-template <class F,
-          template<class...> class T1, class... T1s, std::size_t... I1s,
-          template<class...> class T2, class... T2s, std::size_t... I2s>
-void for_each_in_tuples(
-    T1<T1s...>&& t1,
-    T2<T2s...>&& t2,
-    F&& func,
-    std::index_sequence<I1s...>,
-    std::index_sequence<I2s...>
-    )
-{
-  (std::forward<F>(func)
-     (
-        std::get<I1s>(std::forward<T1<T1s...>>(t1)),
-        std::get<I2s>(std::forward<T2<T2s...>>(t2))
-     ),
-   ...);
-}
-
-template <class F,
-          template<class...> class T1, class... T1s,
-          template<class...> class T2, class... T2s>
-void for_each_in_tuples(T1<T1s...>&& t1, T2<T2s...>&& t2, F&& func)
-{
-  for_each_in_tuples(
-        std::forward<T1<T1s...>>(t1),
-        std::forward<T2<T2s...>>(t2),
-        std::forward<F>(func),
-        std::make_index_sequence<sizeof...(T1s)>(),
-        std::make_index_sequence<sizeof...(T2s)>()
-        );
-}
-
-template <class F>
-void for_each_in_tuples(const std::tuple<>& , const std::tuple<>& , const F& )
-{
-}
-
 template <std::size_t N>
 struct num
 {
@@ -322,4 +283,19 @@ void remove_duplicates(T& vec) {
   std::sort(vec.begin(), vec.end());
   vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
+
+template<typename Container, typename K, typename Comp, typename... Args>
+auto emplace_sorted(Container& vec, const K& k, Comp&& comp, Args&&... args)
+  -> decltype(auto)
+{
+  auto it = std::lower_bound(vec.begin(), vec.end(), k, std::forward<Comp>(comp));
+  return vec.emplace(it, std::forward<Args>(args)...);
+}
+
+template<typename D, template<typename, typename> typename S, typename T, typename Alloc>
+auto insert_at_end(D& dest, S<T, Alloc>&& src)
+{
+  dest.insert(dest.end(), std::make_move_iterator(src.begin()), std::make_move_iterator(src.end()));
+}
+
 }

@@ -3,7 +3,7 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <cstdint>
 #include <memory>
@@ -19,7 +19,6 @@ class time_interval;
 class time_sync;
 class time_process;
 class scenario;
-class loop;
 /**
  * @brief The time_event class
  *
@@ -33,17 +32,16 @@ class loop;
 class OSSIA_EXPORT time_event
 {
   friend class ossia::scenario;
-  friend class ossia::loop;
 
 public:
   /*! event status */
   enum class status : uint8_t
   {
-    NONE,
-    PENDING,
-    HAPPENED,
-    DISPOSED,
-    FINISHED
+    NONE     = 0b00000000,
+    PENDING  = 0b00000001,
+    HAPPENED = 0b00000010,
+    DISPOSED = 0b00000011,
+    FINISHED = 0b10000000
   };
 
   /**
@@ -88,6 +86,8 @@ public:
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
   time_sync& get_time_sync() const;
+
+  void set_time_sync(time_sync&);
 
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
@@ -153,7 +153,7 @@ public:
 private:
   time_event::exec_callback m_callback;
 
-  time_sync& m_timesync;
+  time_sync* m_timesync{};
   std::vector<std::shared_ptr<time_process>> m_processes;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};

@@ -7,6 +7,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply_type.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/buffer_pool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/closest_element.hpp"
@@ -20,6 +21,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flicks.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/fmt.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each_in_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"
@@ -32,6 +34,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/murmur3.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/optional.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/packed_struct.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_set.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/pod_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_container.hpp"
@@ -40,11 +43,16 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_flat_map.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/span.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timed_vec.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/variant.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/parameter_properties.hpp"
@@ -52,6 +60,21 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/websocket_log_sink.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/node_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/destination_qualifiers.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/configuration.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/tcp_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/serial_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/null_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/size_prefix_framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/slip_framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/writers.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
@@ -74,14 +97,18 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_variant_impl.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_scope.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter_data.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/message_origin_identifier.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/listening.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/osc_address.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/value_callback.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/name_validation.hpp"
@@ -157,6 +184,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain_base.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/detail/domain_impl.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/clamp.cpp"
@@ -170,6 +198,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_functions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/node_attributes.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/osc_address.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.cpp"
@@ -233,6 +262,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_value.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/time_signature.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/clock.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/scenario/quantification.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/mapper/detail/mapper_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_execution_visitor.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/state/detail/state_flatten_visitor.hpp"
@@ -292,6 +322,7 @@ set(OSSIA_C_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_node.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_device.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_network_context.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_value.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-c/ossia/ossia_domain.cpp"
 
@@ -309,15 +340,31 @@ set(OSSIA_CPP_SRCS
 
 set(OSSIA_OSC_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/bundle.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/message_generator.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/receiver.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_receive.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_protocol_common.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/sender.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_fwd.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_common_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_0_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_1_1_extended_policy.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_packet_processor.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_utils.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_value_write_visitor.hpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_generic_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_factory.hpp"
   )
 set(OSSIA_OSC_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/osc.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/osc/detail/osc_messages.cpp"
+
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/osc/osc_factory.cpp"
   )
 
 set(OSSIA_MINUIT_HEADERS
@@ -332,46 +379,51 @@ set(OSSIA_MINUIT_SRCS
   )
 
 set(OSSIA_MIDI_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/channel.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/detail/midi_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_device.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/channel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/detail/midi_impl.hpp"
     )
 
 set(OSSIA_MIDI_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_device.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_node.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/midi/midi_parameter.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_device.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_node.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/midi/midi_parameter.cpp")
 
 set(OSSIA_OSCQUERY_HEADERS
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_query_parser.hpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/host_info.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/outbound_visitor_impl.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/client.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/http_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/http_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/get_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/server_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_reader_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/value_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/domain_to_json.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_units.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_protocol_common.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_client_asio.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
@@ -382,9 +434,13 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/json_writer_detail.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/html_writer.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/query_parser.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/attributes.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.cpp"
     )
 
 set(OSSIA_HTTP_HEADERS
@@ -401,50 +457,57 @@ set(OSSIA_SERIAL_SRCS
 )
 
 set(OSSIA_PHIDGETS_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/detail/sensors.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/detail/sensors.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_parameter_data.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_parameter_data.hpp")
 
 set(OSSIA_PHIDGETS_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_protocol.cpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/phidgets/phidgets_node.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.cpp")
 
 set(OSSIA_LEAPMOTION_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.hpp")
 
 set(OSSIA_LEAPMOTION_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/leapmotion/leapmotion_device.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_manager.hpp"
+  )
 
 set(OSSIA_JOYSTICK_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/joystick/joystick_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.cpp")
 
 set(OSSIA_LIBMAPPER_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.hpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/libmapper/libmapper_protocol.hpp")
 
 set(OSSIA_LIBMAPPER_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/libmapper/libmapper_protocol.cpp")
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/libmapper/libmapper_protocol.cpp")
 
 set(OSSIA_WIIMOTE_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_protocol.hpp")
 
 set(OSSIA_WIIMOTE_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_parameter.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/wiimote/wiimote_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/wiimote/wiimote_protocol.cpp")
 
 set(OSSIA_ARTNET_HEADERS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.hpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.hpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_buffer.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/e131_protocol.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.hpp"
+  )
 
 set(OSSIA_ARTNET_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_parameter.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/artnet/artnet_protocol.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/e131_protocol.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.cpp"
+)
 
 
 set(OSSIA_WS_CLIENT_HEADERS
@@ -456,25 +519,27 @@ set(OSSIA_WS_CLIENT_SRCS
 set(OSSIA_QT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/invoke.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_utilities.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/name_utils.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/value_metatypes.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/device_metatype.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/matching_type.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time_value.hpp"
   )
 
 set(OSSIA_QT_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qt_logger.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
   )
 set(OSSIA_QTQML_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     )
 
 set(OSSIA_QTQML_SRCS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/js_utilities.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
@@ -585,6 +650,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/control_inlets.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/timed_value.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/transport.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/typed_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_chain_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/fx_node.hpp"
@@ -634,9 +700,11 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_ordering.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_static.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_parallel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_parallel_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_utils.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_interface.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/tick_methods.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/tick_setup.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/node_executors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/breadth_first_search.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/transitive_closure.hpp"

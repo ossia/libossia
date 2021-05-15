@@ -26,7 +26,7 @@ sync_status scenario::quantify_time_sync(time_sync& sync, const ossia::token_req
       for (const auto& cst : ev->previous_time_intervals())
       {
         m_itv_end_map.insert(
-            std::make_pair(cst.get(), cst->get_date() + diff_date));
+            { cst.get(), cst->get_date() + diff_date });
       }
     }
     sync.observe_expression(false);
@@ -96,7 +96,8 @@ sync_status scenario::trigger_sync(
   // update the expression one time
   // then observe and evaluate TimeSync's expression before to trig
   // only if no maximal duration have been reached
-  if (*sync.m_expression != expressions::expression_true()
+  if (sync.m_expression &&
+      *sync.m_expression != expressions::expression_true()
       && !maximalDurationReached)
   {
     if (!sync.has_trigger_date() && !sync.is_being_triggered())
@@ -129,6 +130,11 @@ sync_status scenario::trigger_sync(
 
   // trigger the time sync
   sync.set_is_being_triggered(false);
+
+  if(sync.m_expression)
+  {
+    expressions::reset(*sync.m_expression);
+  }
 
   // now TimeEvents will happen or be disposed.
   // the last added events are necessarily the ones of this node.

@@ -47,6 +47,9 @@ public:
         {
           switch(m_handle.bitsPerSample())
           {
+            case 8:
+              m_converter = read_u8;
+              break;
             case 16:
               m_converter = read_s16;
               break;
@@ -264,7 +267,7 @@ public:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    if(!m_handle)
+    if(!m_handle || !m_converter)
       return;
 
     // TODO do the backwards play head
@@ -275,7 +278,7 @@ public:
     const auto len = m_handle.totalPCMFrameCount();
 
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(channels);
+    ap.samples.resize(std::max((std::size_t)upmix, (std::size_t)channels));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_write <= 0)
@@ -288,7 +291,19 @@ public:
     {
       if(t.prev_date < m_prev_date)
       {
-        transport(t.prev_date);
+        // Sentinel: we never played.
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min}) {
+          if(t.prev_date != 0_tv) {
+            transport(t.prev_date);
+          }
+          else {
+            // Otherwise we don't need transport, everything is alreayd at 0
+            m_prev_date = 0_tv;
+          }
+        }
+        else {
+          transport(t.prev_date);
+        }
       }
 
       for (std::size_t chan = 0; chan < channels; chan++)

@@ -41,6 +41,7 @@ static const std::string rep = "HTTP/1.1 200 OK\r\n"
 
 void http_server()
 {
+  namespace asio = boost::asio;
     using asio::ip::tcp;
   try
   {

@@ -307,26 +307,32 @@ struct token_request
     return false;
   }
 
-  constexpr void reduce_end_time(time_value t) noexcept
+  constexpr void set_end_time(time_value t) noexcept
     //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
     const auto old_date = date;
     date = t;
 
-    double ratio = t.impl / double(old_date.impl);
-    musical_end_position *= ratio;
+    if(old_date.impl > 0)
+    {
+      double ratio = t.impl / double(old_date.impl);
+      musical_end_position *= ratio;
+    }
 
     // TODO what if musical_end_position is now before musical_end_last_bar
   }
 
-  constexpr void increase_start_time(time_value t) noexcept
+  constexpr void set_start_time(time_value t) noexcept
   //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
     const auto old_date = prev_date;
     prev_date = t;
 
-    double ratio = t.impl / double(old_date.impl);
-    musical_start_position *= ratio;
+    if(old_date.impl > 0)
+    {
+      double ratio = t.impl / double(old_date.impl);
+      musical_start_position *= ratio;
+    }
 
     // TODO what if musical_start_position is now after end_position / end_last_bar ?
   }
@@ -386,16 +392,16 @@ inline bool operator!=(const token_request& lhs, const token_request& rhs)
 }
 
 // To be used only for simple examples
-struct simple_token_request : token_request
+struct simple_token_request
 {
-  using token_request::token_request;
-  simple_token_request(ossia::time_value prev_d, ossia::time_value d):
-    simple_token_request{prev_d, d, 0_tv}
+  time_value prev_date{};
+  time_value date{};
+  time_value parent_duration{};
+  time_value offset{};
+
+  operator token_request() const noexcept
   {
-  }
-  simple_token_request(ossia::time_value prev_d, ossia::time_value d, ossia::time_value off):
-    ossia::token_request{prev_d, d, 0_tv, off, 1.0, {4,4}, 120.}
-  {
+    return ossia::token_request{prev_date, date, parent_duration, offset, 1.0, {4,4}, 120.};
   }
 
   friend bool operator==(const token_request& lhs, const simple_token_request& self)

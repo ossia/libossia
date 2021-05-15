@@ -109,7 +109,7 @@ public:
       std::stringstream s;
       oscpack::debug(s, m);
       ossia::logger().error(
-          "osc::listener::ProcessMessage error: '{}': {}", s.str());
+          "osc::listener::ProcessMessage error: '{}'", s.str());
     }
   }
 

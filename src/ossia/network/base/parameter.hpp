@@ -9,7 +9,7 @@
 #include <ossia/network/value/destination.hpp>
 #include <ossia/detail/std_fwd.hpp>
 #include <nano_signal_slot.hpp>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <ciso646>
 #include <functional>
@@ -130,13 +130,13 @@ public:
   virtual ossia::value set_value(ossia::value&&) = 0;
 
   //! Reimplement to provide a way that does not call the observers.
-  virtual void set_value_quiet(const ossia::value& v)
+  virtual ossia::value set_value_quiet(const ossia::value& v)
   {
-    set_value(v);
+    return set_value(v);
   }
-  virtual void set_value_quiet(ossia::value&& v)
+  virtual ossia::value set_value_quiet(ossia::value&& v)
   {
-    set_value(std::move(v));
+    return set_value(std::move(v));
   }
 
   std::optional<ossia::value> get_default_value() const;
@@ -196,5 +196,6 @@ inline bool operator!=(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs != &rhs;
 }
+
 }
 }

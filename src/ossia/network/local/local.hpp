@@ -27,17 +27,11 @@ public:
   multiplex_protocol& operator=(const multiplex_protocol&) = delete;
   multiplex_protocol& operator=(multiplex_protocol&&) = delete;
 
-  multiplex_protocol(std::unique_ptr<protocol_base> arg)
-    : multiplex_protocol{}
-  {
-    expose_to(std::move(arg));
-  }
-
   template <typename... Args>
-  multiplex_protocol(Args&&... args, std::unique_ptr<protocol_base> arg)
-      : multiplex_protocol{std::forward<Args>(args)...}
+  explicit multiplex_protocol(Args&&... args)
+      : multiplex_protocol{}
   {
-    expose_to(std::move(arg));
+    (expose_to(std::move(args)), ...);
   }
 
   virtual ~multiplex_protocol();
@@ -47,6 +41,8 @@ public:
   bool push_raw(const full_parameter_data&) override;
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
+
+  bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v) override;
 
   void stop() override;
   void set_device(ossia::net::device_base& dev) override;
@@ -68,6 +64,7 @@ public:
 
 private:
   std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols;
+  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols_to_register;
   ossia::net::device_base* m_device{};
 };
 

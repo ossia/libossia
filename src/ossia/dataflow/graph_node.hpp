@@ -13,7 +13,6 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
-
 namespace ossia
 {
 class graph;
@@ -21,6 +20,48 @@ struct timed_value;
 struct typed_value;
 class state;
 using token_request_vec = ossia::small_vector<token_request, 4>;
+using simple_token_request_vec = ossia::small_vector<simple_token_request, 4>;
+inline bool operator==(const token_request_vec& lhs, const simple_token_request_vec& rhs)
+{
+  if(lhs.size() != rhs.size())
+    return false;
+
+  auto it1 = lhs.begin();
+  auto it2 = rhs.begin();
+  auto e1 = lhs.end();
+  for(; it1 < e1; ++it1, ++it2) {
+    if(*it1 == *it2)
+      continue;
+    else
+      return false;
+  }
+  return true;
+}
+
+inline bool operator!=(const token_request_vec& lhs, const simple_token_request_vec& rhs)
+{
+  if(lhs.size() != rhs.size())
+    return true;
+
+  auto it1 = lhs.begin();
+  auto it2 = rhs.begin();
+  auto e1 = lhs.end();
+  for(; it1 < e1; ++it1, ++it2) {
+    if(*it1 != *it2)
+      continue;
+    else
+      return false;
+  }
+  return true;
+}
+inline bool operator==(const simple_token_request_vec& lhs, const token_request_vec& rhs)
+{
+  return rhs == lhs;
+}
+inline bool operator!=(const simple_token_request_vec& lhs, const token_request_vec& rhs)
+{
+  return rhs != lhs;
+}
 
 using inlets = ossia::small_vector<inlet_ptr, 2>;
 using outlets = ossia::small_vector<outlet_ptr, 2>;
@@ -89,7 +130,7 @@ public:
     m_end_discontinuous = b;
   }
 
-  virtual void prepare(const execution_state& st) const noexcept;
+  virtual void prepare(const execution_state& st) noexcept;
   virtual bool consumes(const execution_state&) const noexcept;
   virtual void run(const token_request&, exec_state_facade) noexcept;
   virtual std::string label() const noexcept;
@@ -181,4 +222,11 @@ public:
 
   void clear() noexcept override;
 };
+
+template<typename T, typename... Args>
+auto make_node(const execution_state& st, Args&&... args) {
+  auto n = std::make_shared<T>(std::forward<Args>(args)...);
+  n->prepare(st);
+  return n;
+}
 }

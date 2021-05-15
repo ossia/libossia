@@ -42,11 +42,11 @@ private:
       return;
 
     ossia::value_port& vp = *value_out;
-    const double pos = [&] { double p = t.position(); return p >= 0. ? p : 0.; }();
+    const double pos = ossia::clamp(t.position(), 0., 1.);
 
-    auto [res_x, res_y] = m_spline.evaluate(pos);
+    const auto [res_x, res_y] = m_spline.evaluate(pos);
 
-    const auto tick_start = e.physical_start(t);
+    const auto [tick_start, d] = e.timings(t);
 
     vp.write_value(
         ossia::make_vec(
@@ -93,11 +93,11 @@ private:
       return;
 
     ossia::value_port& vp = *value_out;
-    const double pos = [&] { double p = t.position(); return p >= 0. ? p : 0.; }();
+    const double pos = ossia::clamp(t.position(), 0., 1.);
 
-    auto [res_x, res_y, res_z] = m_spline.evaluate(pos);
+    const auto [res_x, res_y, res_z] = m_spline.evaluate(pos);
 
-    const auto tick_start = e.physical_start(t);
+    const auto [tick_start, d] = e.timings(t);
 
     vp.write_value(
         ossia::make_vec(

@@ -63,6 +63,7 @@ void scenario::make_happen(
   for (const std::shared_ptr<ossia::time_interval>& timeInterval :
        event.next_time_intervals())
   {
+    timeInterval->set_parent_speed(tok.speed);
     timeInterval->start();
     timeInterval->tick_current(tick_offset, tok);
     mark_start_discontinuous{}(*timeInterval);
@@ -73,7 +74,7 @@ void scenario::make_happen(
   if (event.m_callback)
     (event.m_callback)(event.m_status);
 
-  event.m_status = time_event::status::FINISHED;
+  reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
 }
 
 void scenario::make_dispose(time_event& event, interval_set& stopped)
@@ -112,14 +113,14 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
       }
     }
 
-    if (dispose)
+    if (dispose && !nextTimeInterval->graphal)
       make_dispose(nextTimeInterval->get_end_event(), stopped);
   }
 
   if (event.m_callback)
     (event.m_callback)(event.m_status);
 
-  event.m_status = time_event::status::FINISHED;
+  reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
 }
 enum progress_mode
 {
@@ -188,8 +189,7 @@ void scenario::run_interval(
         {
           m_overticks.insert(
               node_it,
-              std::make_pair(
-                  end_node, overtick{ot, ot, tk.offset + tick_ms - ot}));
+              { end_node, overtick{ot, ot, tk.offset + tick_ms - ot} });
         }
       }
     }
@@ -215,7 +215,18 @@ void scenario::run_interval(
     interval.tick_offset(tick, offset, tk);
   }
   if (interval.get_date() >= interval.get_min_duration())
+  {
     m_endNodes.insert(end_node);
+
+    // Graph intervals always enable what's after them by definition
+    if(interval.graphal)
+    {
+      for(const std::shared_ptr<ossia::time_event>& ev : end_node->get_time_events())
+      {
+        ev->set_status(ossia::time_event::status::PENDING);
+      }
+    }
+  }
 }
 
 void scenario::state_impl(const ossia::token_request& tk)
@@ -265,7 +276,9 @@ void scenario::state_impl(const ossia::token_request& tk)
       {
         n->observe_expression(true, [n](bool b) {
           if (b)
+          {
             n->start_trigger_request();
+          }
         });
       }
 
@@ -278,18 +291,7 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
         else
         {
-          auto& evs = n->get_time_events();
-          for (auto& e : evs)
-          {
-            const auto st = e->get_status();
-            if (st == ossia::time_event::status::HAPPENED
-                || st == ossia::time_event::status::DISPOSED)
-            {
-              m_sg.reset_component(*n);
-              break;
-            }
-          }
-
+          m_sg.reset_component(*n);
           if(n->is_autotrigger())
             n->m_evaluating = true;
 
@@ -324,6 +326,53 @@ void scenario::state_impl(const ossia::token_request& tk)
 
     m_pendingEvents.clear();
 
+    // Check intervals that have been quantized
+    for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end(); )
+    {
+      auto [itv,ratio] = *it;
+      if(auto date = tk.get_quantification_date(ratio))
+      {
+        if(itv->running())
+        {
+          mark_end_discontinuous{}(*itv);
+          itv->stop();
+        }
+        itv->start();
+        itv->tick_current(*date, tk);
+        //mark_start_discontinuous{}(*itv);
+
+        m_runningIntervals.insert(itv);
+        auto& start_ev = itv->get_start_event();
+        start_ev.set_status(ossia::time_event::status::HAPPENED);
+
+        it = m_itv_to_start.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+    for(auto it = m_itv_to_stop.begin(); it != m_itv_to_stop.end(); )
+    {
+      auto [itv,ratio] = *it;
+      if(auto date = tk.get_quantification_date(ratio))
+      {
+        if(itv->running())
+        {
+          //mark_end_discontinuous{}(*itv);
+          itv->stop();
+        }
+
+        if(auto running_it = m_runningIntervals.find(itv); running_it != m_runningIntervals.end())
+          m_runningIntervals.erase(running_it);
+
+        it = m_itv_to_stop.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
 
     // First check timesyncs already past their min
     // for any that may have a quantization setting

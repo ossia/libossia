@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>

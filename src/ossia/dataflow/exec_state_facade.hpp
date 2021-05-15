@@ -1,7 +1,7 @@
 #pragma once
 #include <cinttypes>
 #include <string_view>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 namespace ossia
 {
@@ -31,7 +31,12 @@ struct OSSIA_EXPORT exec_state_facade
   double currentDate() const noexcept;
   ossia::net::node_base* find_node(std::string_view name) const noexcept;
 
-  int64_t physical_start(const token_request& t) const noexcept;
+  struct sample_timings {
+    int64_t start_sample;
+    int64_t length;
+  };
+
+  sample_timings timings(const token_request& t) const noexcept;
 
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);

@@ -394,8 +394,11 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Listen>
       {
         if (auto addr = node->get_parameter())
         {
-          ossia::net::update_value(
-              *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1);
+          if(auto v = ossia::net::get_filtered_value(
+              *addr, ++mess_it, mess.ArgumentsEnd(), mess.ArgumentCount() - 1); v.valid())
+          {
+            addr->set_value(std::move(v));
+          }
         }
       }
     }
@@ -418,9 +421,12 @@ struct minuit_behavior<minuit_command::Answer, minuit_operation::Listen>
           {
             case minuit_attribute::Value:
             {
-              ossia::net::update_value(
+              if(auto v = ossia::net::get_filtered_value(
                   *addr, mess_it, mess.ArgumentsEnd(),
-                  mess.ArgumentCount() - 1);
+                  mess.ArgumentCount() - 1); v.valid())
+              {
+                addr->set_value(std::move(v));
+              }
               break;
             }
             case minuit_attribute::Type:

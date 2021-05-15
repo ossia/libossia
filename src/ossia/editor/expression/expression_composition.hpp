@@ -3,7 +3,7 @@
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/expression/operators.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 #include <memory>
 
@@ -36,6 +36,7 @@ public:
   bool evaluate() const;
 
   void update() const;
+  void reset();
 
   expression_base& get_first_operand() const;
   binary_operator get_operator() const;

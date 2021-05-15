@@ -1,10 +1,11 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
-#include <ossia/network/oscquery/detail/server.hpp>
+#include <ossia/network/sockets/websocket_server.hpp>
 
 namespace osc
 {
@@ -21,7 +22,7 @@ namespace oscquery
 {
 struct oscquery_client
 {
-  websocket_server::connection_handler connection;
+  ossia::net::websocket_server::connection_handler connection;
   mutex_t listeningMutex;
   string_map<ossia::net::parameter_base*> listening;
 
@@ -49,7 +50,7 @@ public:
     return *this;
   }
 
-  oscquery_client(websocket_server::connection_handler h)
+  oscquery_client(ossia::net::websocket_server::connection_handler h)
       : connection{std::move(h)}
   {
   }
@@ -71,15 +72,15 @@ public:
     listeningMutex.unlock();
   }
 
-  bool operator==(const websocket_server::connection_handler& h) const
+  bool operator==(const ossia::net::websocket_server::connection_handler& h) const
   {
     return !connection.expired() && connection.lock() == h.lock();
   }
 
-  void open_osc_sender(const ossia::net::network_logger& l, uint16_t port)
+  void open_osc_sender(const ossia::oscquery::oscquery_server_protocol& proto, uint16_t port)
   {
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
-        l, client_ip, port);
+        proto.get_logger(), client_ip, port);
   }
 };
 }

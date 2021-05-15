@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/editor/expression/expression_fwd.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file expression_bool.hpp
@@ -33,6 +33,9 @@ public:
     return m_result;
   }
   void update() const
+  {
+  }
+  void reset() const
   {
   }
 };

@@ -1,9 +1,10 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
-
-#include <ossia_export.h>
+#include <nano_signal_slot.hpp>
+#include <ossia/detail/config.hpp>
 
 #include <future>
 #include <memory>
@@ -20,11 +21,6 @@ class device_base;
 struct full_parameter_data;
 
 class protocol_base;
-struct message_origin_identifier
-{
-  ossia::net::protocol_base& protocol;
-  uintptr_t identifier{};
-};
 
 
 /**
@@ -77,6 +73,13 @@ public:
   virtual bool push(const parameter_base&, const ossia::value& v) = 0;
   virtual bool push(const parameter_base&, ossia::value&& v);
   bool push(const parameter_base& p);
+
+  /**
+   * @brief called when some protocol on the same device received a message.
+   *
+   * This can be used to echo the message to other protocols on the same device.
+   */
+  virtual bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v);
 
   /**
    * @brief Send many values in one go if the protocol supports it
@@ -148,6 +151,12 @@ public:
     return m_logger;
   }
 
+  virtual bool connected() const noexcept;
+  virtual void connect();
+  Nano::Signal<void()> on_connection_open;
+  Nano::Signal<void()> on_connection_closed;
+  Nano::Signal<void()> on_connection_failure;
+
   virtual void start_execution()
   {
   }
@@ -164,5 +173,27 @@ protected:
   const flags m_flags{};
   network_logger m_logger;
 };
+
+template<typename T>
+class can_learn
+    : public T
+{
+public:
+  using T::T;
+
+  bool learning() const noexcept
+  {
+    return m_learning;
+  }
+
+  void set_learning(bool v) noexcept
+  {
+    m_learning = v;
+  }
+
+private:
+  std::atomic_bool m_learning{};
+};
+
 }
 }

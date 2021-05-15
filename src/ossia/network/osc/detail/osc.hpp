@@ -2,6 +2,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/osc/detail/osc_1_0_policy.hpp>
 #include <ossia/network/osc/detail/osc_fwd.hpp>
 #include <ossia/network/value/value.hpp>
 
@@ -156,6 +157,16 @@ struct osc_utilities
     }
   }
 
+  static std::string get_blob(oscpack::ReceivedMessageArgumentIterator it)
+  {
+    const void* data{};
+    oscpack::osc_bundle_element_size_t size{};
+    it->AsBlobUnchecked(data, size);
+    if(size > 0)
+      return std::string{(const char*)data, (std::size_t)size};
+    return std::string{};
+  }
+
   static ossia::value create_value(oscpack::ReceivedMessageArgumentIterator it)
   {
     switch (it->TypeTag())
@@ -180,6 +191,8 @@ struct osc_utilities
         return std::string{it->AsStringUnchecked()};
       case oscpack::SYMBOL_TYPE_TAG:
         return std::string{it->AsSymbolUnchecked()};
+      case oscpack::BLOB_TYPE_TAG:
+        return get_blob(it);
       case oscpack::RGBA_COLOR_TYPE_TAG:
       {
         auto c = it->AsRgbaColorUnchecked();
@@ -221,6 +234,8 @@ struct osc_utilities
           t.push_back(std::string{it->AsStringUnchecked()}); break;
         case oscpack::SYMBOL_TYPE_TAG:
           t.push_back(std::string{it->AsSymbolUnchecked()}); break;
+        case oscpack::BLOB_TYPE_TAG:
+          t.push_back(get_blob(it)); break;
         case oscpack::RGBA_COLOR_TYPE_TAG:
         {
           auto c = it->AsRgbaColorUnchecked();
@@ -241,7 +256,7 @@ struct osc_utilities
           return t;
         }
         default:
-          t.push_back( ossia::impulse{});
+          t.push_back(ossia::impulse{});
           break;
       }
     }
@@ -326,8 +341,7 @@ struct osc_inbound_visitor
         return std::string{
             boost::lexical_cast<std::string>(cur_it->AsDoubleUnchecked())};
       case oscpack::CHAR_TYPE_TAG:
-        return std::string{
-            boost::lexical_cast<std::string>(cur_it->AsCharUnchecked())};
+        return std::string(1, cur_it->AsCharUnchecked());
       case oscpack::TRUE_TYPE_TAG:
         return std::string{"true"};
       case oscpack::FALSE_TYPE_TAG:
@@ -461,57 +475,26 @@ inline ossia::value to_value(
     return current.apply(osc_inbound_impulse_visitor{});
 }
 
-inline bool update_value(
+inline ossia::value get_filtered_value(
     ossia::net::parameter_base& addr,
     oscpack::ReceivedMessageArgumentIterator beg_it,
     oscpack::ReceivedMessageArgumentIterator end_it, int N)
 {
-  auto res = filter_value(
+  return filter_value(
       addr.get_domain(), ossia::net::to_value(addr.value(), beg_it, end_it, N),
       addr.get_bounding());
-
-  if (res.valid())
-  {
-    addr.set_value(std::move(res));
-    return true;
-  }
-  return false;
 }
 
-inline bool update_value(
+inline ossia::value get_filtered_value(
     ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
 {
-  return update_value(
-      addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
-}
-
-inline bool update_value_quiet(
-    ossia::net::parameter_base& addr,
-    oscpack::ReceivedMessageArgumentIterator beg_it,
-    oscpack::ReceivedMessageArgumentIterator end_it, int N)
-{
-  auto res = filter_value(
-      addr.get_domain(), ossia::net::to_value(addr.value(), beg_it, end_it, N),
-      addr.get_bounding());
-
-  if (res.valid())
-  {
-    addr.set_value_quiet(std::move(res));
-    return true;
-  }
-  return false;
-}
-
-inline bool update_value_quiet(
-    ossia::net::parameter_base& addr, const oscpack::ReceivedMessage& mess)
-{
-  return update_value_quiet(
+  return get_filtered_value(
       addr, mess.ArgumentsBegin(), mess.ArgumentsEnd(), mess.ArgumentCount());
 }
 
 struct osc_write_domain_visitor
 {
-  ossia::net::osc_outbound_visitor vis;
+  ossia::net::osc_1_0_outbound_stream_visitor vis;
   template <typename T>
   void operator()(const T& dom)
   {
@@ -574,19 +557,19 @@ struct osc_write_domain_visitor
 
 namespace oscpack
 {
-
+/*
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::value& val)
 {
   val.apply(ossia::net::osc_outbound_visitor{p});
   return p;
 }
-
+*/
 
 inline oscpack::OutboundPacketStream&
 operator<<(oscpack::OutboundPacketStream& p, const ossia::domain& dom)
 {
-  ossia::apply(ossia::net::osc_write_domain_visitor{{{p}}}, dom);
+  ossia::apply(ossia::net::osc_write_domain_visitor{ossia::net::osc_1_0_outbound_stream_visitor{p, ossia::unit_t{}}}, dom);
 
   return p;
 }

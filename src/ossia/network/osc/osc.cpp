@@ -6,8 +6,10 @@
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/osc/detail/bundle.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/osc/detail/osc_receive.hpp>
+#include <ossia/network/osc/detail/osc_messages.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/osc.hpp>
@@ -21,15 +23,17 @@ namespace ossia
 {
 namespace net
 {
-using sender_t = osc::sender<osc_outbound_visitor>;
+using sender_t = osc::sender<osc_1_0_outbound_stream_visitor>;
 
 osc_protocol::osc_protocol(
     std::string ip, uint16_t remote_port, uint16_t local_port,
     std::optional<std::string> expose)
-    : m_ip{std::move(ip)}
+    : protocol_base{flags{SupportsMultiplex}}
+    , m_ip{std::move(ip)}
     , m_remote_port{remote_port}
     , m_local_port{local_port}
     , m_expose{std::move(expose)}
+    , m_id{*this, {}}
 {
   update_sender();
   update_receiver();
@@ -85,10 +89,15 @@ osc_protocol& osc_protocol::set_local_port(uint16_t out_port)
 void osc_protocol::update_sender()
 {
   m_sender = std::make_unique<sender_t>(m_logger, m_ip, m_remote_port);
+  m_id.identifier = (uintptr_t)m_sender.get();
 }
 
 void osc_protocol::update_receiver()
 {
+  if (m_local_port == 0) {
+    m_receiver.reset();
+    return;
+  }
   m_receiver = std::make_unique<osc::receiver>(
       m_local_port, [this](const oscpack::ReceivedMessage& m,
                         const oscpack::IpEndpointName& ip) {
@@ -108,8 +117,10 @@ void osc_protocol::update_receiver()
 
 void osc_protocol::update_zeroconf()
 {
-  if (!m_expose)
+  if (!m_expose || m_local_port == 0) {
+    m_zeroconfServer = {};
     return;
+  }
   try
   {
     m_zeroconfServer = net::make_zeroconf_server(
@@ -177,70 +188,23 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 bool osc_protocol::push_bundle(
     const std::vector<const parameter_base*>& addresses)
 {
-  constexpr int N = 1024 * 1024;
-
-  try
-  {
-    auto buffer{std::make_unique<char[]>(N)};
-    oscpack::OutboundPacketStream str(buffer.get(), N);
-    str << oscpack::BeginBundleImmediate();
-    for (auto a : addresses)
-    {
-      const ossia::net::parameter_base& addr = *a;
-      if (addr.get_access() == ossia::access_mode::GET)
-        continue;
-
-      ossia::value val = filter_value(addr, addr.value());
-      if (val.valid())
-      {
-        str << oscpack::BeginMessageN(addr.get_node().osc_address());
-        val.apply(osc_outbound_visitor{{str}});
-        str << oscpack::EndMessage();
-      }
-    }
-    str << oscpack::EndBundle();
-    m_sender->socket().Send(str.Data(), str.Size());
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+    m_sender->socket().Send(bundle->data.data(), bundle->data.size());
+    ossia::buffer_pool::instance().release(std::move(bundle->data));
+    return true;
   }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 bool osc_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  constexpr int N = 1024 * 1024;
-
-  try
-  {
-    auto buffer{std::make_unique<char[]>(N)};
-    oscpack::OutboundPacketStream str(buffer.get(), N);
-    str << oscpack::BeginBundleImmediate();
-    for (const auto& addr : addresses)
-    {
-      if (addr.get_access() == ossia::access_mode::GET)
-        continue;
-
-      ossia::value val = filter_value(addr, addr.value());
-      if (val.valid())
-      {
-        str << oscpack::BeginMessageN(addr.address);
-        val.apply(osc_outbound_visitor{{str}});
-        str << oscpack::EndMessage();
-      }
-    }
-    str << oscpack::EndBundle();
-    m_sender->socket().Send(str.Data(), str.Size());
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+    m_sender->socket().Send(bundle->data.data(), bundle->data.size());
+    ossia::buffer_pool::instance().release(std::move(bundle->data));
+    return true;
   }
-  catch (const oscpack::OutOfBufferMemoryException&)
-  {
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
@@ -254,130 +218,34 @@ bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
   return true;
 }
 
+bool osc_protocol::echo_incoming_message(
+    const message_origin_identifier& id, const parameter_base& addr, const value& val)
+{
+  if(&id.protocol == this && id.identifier == (uintptr_t)(m_sender.get()))
+    return true;
+
+  m_sender->send(addr, val);
+  return true;
+}
+
 void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  if (!m_learning)
+  [[unlikely]]
+  if(m_learning)
   {
-    handle_osc_message<false>(m, m_listening, *m_device, m_logger);
+    auto already_learned = ossia::net::osc_learn(&m_device->get_root_node(), m);
+    if(!already_learned)
+      return;
   }
-  else
-  {
-    on_learn(m);
-  }
+
+  ossia::net::on_input_message<false>(
+      m.AddressPattern(),
+      ossia::net::osc_message_applier{m_id, m},
+      m_listening, *m_device, m_logger);
 }
 
-template <std::size_t N>
-static bool is_vec(std::vector<ossia::value>& t)
-{
-  return t.size() == N && ossia::all_of(t, [](const ossia::value& val) {
-           return val.get_type() == ossia::val_type::FLOAT;
-         });
-}
 
-void osc_protocol::on_learn(const oscpack::ReceivedMessage& m)
-{
-  // TODO put them in a hash map instead.
-  // Find-or-add algorithm
-  ossia::string_view addr = m.AddressPattern();
-  // TODO string -> string_view
-  std::vector<std::string> v = address_parts(addr);
-
-  bool is_new = false;
-  node_base* n = &m_device->get_root_node();
-  for (const auto& part : v)
-  {
-    auto cld = n->find_child(part);
-    if (cld)
-    {
-      n = cld;
-    }
-    else
-    {
-      // Start adding
-      n = n->create_child(part);
-      is_new = true;
-    }
-  }
-
-  if (!is_new)
-    return;
-
-  // Set-up address
-  switch (m.ArgumentCount())
-  {
-    case 0:
-    {
-      n->create_parameter();
-      break;
-    }
-    case 1:
-    {
-      auto val = osc_utilities::create_value(m.ArgumentsBegin());
-      auto addr = n->create_parameter(val.get_type());
-      addr->set_value(val);
-      break;
-    }
-    case 2:
-    {
-      auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
-      if (is_vec<2>(val))
-      {
-        auto addr = n->create_parameter(ossia::val_type::VEC2F);
-        addr->set_value(convert<ossia::vec2f>(val));
-      }
-      else
-      {
-        auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
-      }
-      break;
-    }
-    case 3:
-    {
-      auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
-      if (is_vec<3>(val))
-      {
-        auto addr = n->create_parameter(ossia::val_type::VEC3F);
-        addr->set_value(convert<ossia::vec3f>(val));
-      }
-      else
-      {
-        auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
-      }
-      break;
-    }
-    case 4:
-    {
-      auto val
-          = osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd());
-      if (is_vec<4>(val))
-      {
-        auto addr = n->create_parameter(ossia::val_type::VEC4F);
-        addr->set_value(convert<ossia::vec4f>(val));
-      }
-      else
-      {
-        auto addr = n->create_parameter(ossia::val_type::LIST);
-        addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
-      }
-      break;
-    }
-    default:
-    {
-      auto addr = n->create_parameter(ossia::val_type::LIST);
-      addr->set_value(
-          osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
-      break;
-    }
-  }
-}
 
 void osc_protocol::set_device(device_base& dev)
 {

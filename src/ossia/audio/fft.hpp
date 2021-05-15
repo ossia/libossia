@@ -1,7 +1,7 @@
 #pragma once
 #include <cinttypes>
 #include <cstddef>
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 using fftw_plan = struct fftw_plan_s*;
 using fftwf_plan = struct fftwf_plan_s*;
@@ -18,6 +18,10 @@ public:
   using fft_plan = fftw_plan;
   using fft_real = double;
   using fft_complex = double[2];
+#else
+  struct fft_plan { };
+  using fft_real = double;
+  using fft_complex = double[2];
 #endif
 
   explicit fft(std::size_t newSize) noexcept;
@@ -30,7 +34,9 @@ public:
   void reset(std::size_t newSize);
 
   fft_complex* execute(float* input, std::size_t sz) noexcept;
+  fft_complex* execute() noexcept;
 
+  fft_real* input() const noexcept { return m_input; }
 private:
   fft_plan m_fw = {};
   std::size_t m_size = 0;
@@ -49,6 +55,10 @@ public:
   using fft_plan = fftw_plan;
   using fft_real = double;
   using fft_complex = double[2];
+#else
+  struct fft_plan { };
+  using fft_real = double;
+  using fft_complex = double[2];
 #endif
 
   explicit rfft(std::size_t newSize) noexcept;
@@ -61,6 +71,9 @@ public:
   void reset(std::size_t newSize);
 
   fft_real* execute(fft_complex* input) noexcept;
+  fft_real* execute() noexcept;
+
+  fft_complex* input() const noexcept { return m_input; }
 
 private:
   fft_plan m_fw = {};

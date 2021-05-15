@@ -42,6 +42,10 @@ void scenario::start()
     m_waitingNodes.insert(node);
   }
 
+  for (auto& node: m_nodes)
+  {
+    node->reset();
+  }
 
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)
@@ -126,6 +130,8 @@ void scenario::stop()
   }
 
   m_runningIntervals.clear();
+  m_itv_to_start.clear();
+  m_itv_to_stop.clear();
   m_waitingNodes.clear();
   m_pendingEvents.clear();
   m_maxReachedEvents.clear();
@@ -195,10 +201,15 @@ void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
       }
       m_rootNodes = get_roots();
     }
-    auto it = ossia::find(m_runningIntervals, itv.get());
-    if (it != m_runningIntervals.end())
+    if (auto it = ossia::find(m_runningIntervals, itv.get()); it != m_runningIntervals.end())
       m_runningIntervals.erase(it);
+    if (auto it = ossia::find(m_itv_to_start, itv.get()); it != m_itv_to_start.end())
+      m_itv_to_start.erase(it);
+    if (auto it = ossia::find(m_itv_to_stop, itv.get()); it != m_itv_to_stop.end())
+      m_itv_to_stop.erase(it);
+
     m_itv_end_map.erase(itv.get());
+
     remove_one(m_intervals, itv);
   }
 }
@@ -275,7 +286,6 @@ void scenario::reset_subgraph(
 
 void scenario::mute_impl(bool m)
 {
-  std::cerr << (void*) this << " mute => " << m << std::endl;
   for (auto& itv : get_time_intervals())
   {
     itv->mute(m);
@@ -284,6 +294,15 @@ void scenario::mute_impl(bool m)
   {
     s->mute(m);
   }
+}
+
+void scenario::start_interval(time_interval& itv, double ratio)
+{
+  m_itv_to_start.emplace_back(quantized_interval{&itv, ratio});
+}
+void scenario::stop_interval(time_interval& itv, double ratio)
+{
+  m_itv_to_stop.emplace_back(quantized_interval{&itv, ratio});
 }
 
 void scenario_graph::add_vertice(scenario_graph_vertex timeSync)

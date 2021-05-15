@@ -1,9 +1,29 @@
 #include <ossia/math/math_expression.hpp>
 #include <ossia/detail/logger.hpp>
+#include <rnd/random.hpp>
+#define exprtk_disable_string_capabilities 1
 #include <exprtk.hpp>
 namespace ossia
 {
+
+template <typename T>
+struct rand_gen
+    : public exprtk::ifunction<T>
+{
+  rnd::pcg engine;
+
+  rand_gen() : exprtk::ifunction<T>{2}
+  {
+  }
+
+  T operator()(const T& min, const T& max) noexcept
+  {
+    return std::uniform_real_distribution<>{min, max}(engine);
+  }
+};
+
 struct math_expression::impl {
+  rand_gen<double> random;
   exprtk::symbol_table<double> syms;
   exprtk::expression<double> expr;
   exprtk::parser<double> parser;
@@ -14,7 +34,7 @@ struct math_expression::impl {
 math_expression::math_expression()
   : impl{new struct impl}
 {
-
+  impl->syms.add_function("random", impl->random);
 }
 
 math_expression::~math_expression()

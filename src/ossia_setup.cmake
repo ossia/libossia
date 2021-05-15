@@ -10,31 +10,59 @@ target_compile_definitions(ossia
   PUBLIC
     RAPIDJSON_HAS_STDSTRING=1
     TINYSPLINE_DOUBLE_PRECISION
-    ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
+    BOOST_MATH_DISABLE_FLOAT128=1
+    BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
 
 if(WIN32)
+  if(MSVC)
     target_compile_definitions(ossia PUBLIC
-        NOMINMAX
-        _CRT_SECURE_NO_WARNINGS
-        WIN32_LEAN_AND_MEAN)
+      _HAS_AUTO_PTR_ETC=1
+      _HAS_DEPRECATED_NEGATORS=1 # boost.graph needs std::not1...
+      _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS=1
 
-    target_link_libraries(ossia PRIVATE ws2_32 winmm)
-    if(MINGW)
-        target_link_libraries(ossia PRIVATE mswsock)
-    endif()
+      # Boost.Asio separate compilation only enabled on windows due to
+      # https://github.com/chriskohlhoff/asio/issues/820
+      BOOST_ASIO_SEPARATE_COMPILATION=1
+    )
+  endif()
 
-    if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4" OR OSSIA_UNITY3D)
-      set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
-    else()
-      set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
-    endif()
+  if(NOT OSSIA_STATIC)
+    target_compile_definitions(ossia
+      PUBLIC
+        BOOST_ASIO_DYN_LINK=1
+    )
+  endif()
+
+  target_compile_definitions(ossia PUBLIC
+    NOMINMAX
+    _CRT_SECURE_NO_WARNINGS
+    WIN32_LEAN_AND_MEAN
+  )
+
+  target_link_libraries(ossia PRIVATE ws2_32 winmm)
+  if(MINGW)
+      target_link_libraries(ossia PRIVATE mswsock)
+  endif()
+
+  if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "4" OR OSSIA_UNITY3D)
+    set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia$<$<CONFIG:Debug>:d>")
+  else()
+    set_target_properties(ossia PROPERTIES OUTPUT_NAME "ossia_x64$<$<CONFIG:Debug>:d>")
+  endif()
+else()
+  # On windows this is already set by the boost headers which gives a macro redefinition warning
+  target_compile_definitions(ossia
+    PUBLIC
+      $<$<CONFIG:Debug>:BOOST_ASIO_ENABLE_BUFFER_DEBUGGING>
+  )
 endif()
 
-find_package(Threads)
-target_link_libraries(ossia PUBLIC ${CMAKE_THREAD_LIBS_INIT})
+set(THREADS_PREFER_PTHREAD_FLAG)
+find_package(Threads REQUIRED)
+target_link_libraries(ossia PUBLIC Threads::Threads)
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
@@ -78,7 +106,11 @@ endif()
 set_target_properties(ossia PROPERTIES DEFINE_SYMBOL "OSSIA_EXPORTS")
 
 if(OSSIA_STATIC_EXPORT)
-  generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT)
+  if(NOT OSSIA_NO_DLLIMPORT)
+    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT DLLIMPORT)
+  else()
+    generate_export_header(ossia BASE_NAME OSSIA ALWAYS_EXPORT)
+  endif()
   target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1)
 else()
   generate_export_header(ossia BASE_NAME OSSIA)
@@ -99,18 +131,19 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/frozen/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/asio/asio/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rnd/include>
 
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>

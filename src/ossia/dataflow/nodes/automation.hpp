@@ -6,7 +6,7 @@
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/behavior.hpp>
 
-#include <ossia_export.h>
+#include <ossia/detail/config.hpp>
 
 /**
  * \file automation.hpp
@@ -70,7 +70,7 @@ private:
   {
     if (!m_drive)
       return;
-    const auto tick_start = e.physical_start(t);
+    const auto [tick_start, d] = e.timings(t);
 
     ossia::value_port& vp = *value_out;
     vp.write_value(
@@ -116,7 +116,7 @@ private:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    const auto tick_start = e.physical_start(t);
+    const auto [tick_start, d] = e.timings(t);
 
     ossia::value_port& vp = *value_out;
     vp.write_value(m_drive.value_at(t.position()), tick_start);

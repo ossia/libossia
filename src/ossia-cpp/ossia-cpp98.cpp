@@ -10,6 +10,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/base/osc_address.hpp>
 
 #include <ossia/preset/preset.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
@@ -392,7 +393,7 @@ node& node::operator=(const node& other)
 
   m_node = other.m_node;
   m_param = other.m_param;
-    
+
   init();
 
   return *this;
@@ -437,10 +438,10 @@ void node::cleanup(const ossia::net::node_base&)
 }
 
 void node::cleanup_parameter(const ossia::net::parameter_base& param)
-{ 
+{
   //make sure the cleaned up parameter belongs to this node
   if (m_param && m_param == &param) {
-    if (m_node) 
+    if (m_node)
       m_node->get_device().on_parameter_removing.disconnect<&node::cleanup_parameter>(*this);
     m_param = nullptr;
   }
@@ -1519,28 +1520,36 @@ node& node::set_accepted_values(std::vector<value> v)
 {
   if (m_param)
   {
-    auto dom = m_param->get_domain();
-
     std::vector<ossia::value> vals;
     for (const auto& val : v)
       vals.push_back(*val.m_val);
 
-    ossia::set_values(dom, std::move(vals));
+    if(auto dom = m_param->get_domain())
+    {
+      ossia::set_values(dom, std::move(vals));
+      m_param->set_domain(std::move(dom));
+    } 
+    else 
+    {
+      m_param->set_domain(ossia::make_domain(vals));
+    }
 
-    m_param->set_domain(std::move(dom));
   }
   return *this;
 }
 
 std::vector<value> node::get_accepted_values() const
 {
+  std::vector<opp::value> out;
   if (m_param)
   {
     auto dom = m_param->get_domain();
-    // TODO
-    return {};
+    auto v = ossia::get_values(dom);
+    for (const auto& val : v) {
+      out.push_back(opp::value(v));
+    }
   }
-  return {};
+  return out;
 }
 
 node& node::set_bounding(bounding_mode v)
@@ -2015,13 +2024,10 @@ node oscquery_server::get_root_node() const
 void oscquery_server::set_echo(bool echo)
 {
   try
+  {
+    if(m_dev)
     {
-      if(m_dev)
-      {
-      using ossia::oscquery::oscquery_server_protocol;
-      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol())){
-       proto->set_echo(echo);
-      }
+      m_dev->set_echo(echo);
     }
   }
   catch(const std::exception& e)
@@ -2036,9 +2042,7 @@ bool oscquery_server::get_echo()
   {
     if(m_dev)
     {
-      using ossia::oscquery::oscquery_server_protocol;
-      if(auto proto = dynamic_cast<oscquery_server_protocol*>(&m_dev->get_protocol()))
-        return proto->echo();
+      return m_dev->has_echo();
     }
   }
   catch(const std::exception& e)
