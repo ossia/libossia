@@ -70,16 +70,12 @@ jobs:
           rm ossia-unity.zip
         )
 
-      env:
-        MAC_CERT_B64: $(MAC_CERT_B64)
-        MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
-        MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
-
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
         name: ossia-unity-macos
         path: install
+    environment: 'Apple Certificate'
 
   Unity3DIOs:
     name: Unity3D (iOS)
@@ -127,16 +123,13 @@ jobs:
                 -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
           rm ossia-unity.zip
         )
-      env:
-        MAC_CERT_B64: $(MAC_CERT_B64)
-        MAC_CERT_PASSWORD: $(MAC_CERT_PASSWORD)
-        MAC_ALTOOL_PASSWORD: $(MAC_ALTOOL_PASSWORD)
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
         name: ossia-unity-ios
         path: install
-
+    environment: 'Apple Certificate'
+      
   Unity3DWin32:
     name: Unity3D (Win32)
     runs-on: 'windows-latest'
