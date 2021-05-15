@@ -46,6 +46,10 @@ jobs:
         gcov-9 --version
     - name: Build
       run: |
+        QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
+        set +e
+        source $QT_ENV_SCRIPT
+        set -e
         export CMAKE_BIN=$(readlink -f "$(find cmake-latest/bin -name cmake -type f )")
         ${CMAKE_BIN} -B build -S ${GITHUB_WORKSPACE} \
           -DCMAKE_BUILD_TYPE=Debug \
