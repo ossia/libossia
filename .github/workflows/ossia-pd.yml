@@ -96,10 +96,6 @@ jobs:
         export PATH=/opt/cross-pi-gcc/bin:${PATH}
         export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
 
-        mkdir -p ${ARTIFACTS_DIR}
-        mkdir build
-        cd build
-
         cmake -B build -S ${GITHUB_WORKSPACE} -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/cmake/toolchain/arm-linux-gnueabihf.cmake" \
             -DCMAKE_BUILD_TYPE=Release \
             -DCMAKE_INSTALL_PREFIX=install \
