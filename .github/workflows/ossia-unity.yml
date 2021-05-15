@@ -85,10 +85,23 @@ jobs:
     - name: Install Dependencies
       run: |
         brew install ninja
+    - name: Initialize iOS toolchain
+      run: |
+        cd ${GITHUB_WORKSPACE}
+        git submodule update --init 3rdparty/ios-cmake
     - name: Build
       run: |
         export CMAKE_MAKE_PROGRAM=`command -v ninja`
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake -DPLATFORM=OS64 -DENABLE_BITCODE=1 
+        echo 'CMAKE_MAKE_PROGRAM $CMAKE_MAKE_PROGRAM'
+        cmake -B build -S ${GITHUB_WORKSPACE} \
+          -GNinja \
+          -DOSSIA_UNITY3D_ONLY=1 \
+          -DCMAKE_INSTALL_PREFIX=install \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake \
+          -DPLATFORM=OS64 \
+          -DENABLE_BITCODE=1 \
+          -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
         cmake --build build
         cmake --build build --target install
 
