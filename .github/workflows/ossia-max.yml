@@ -5,6 +5,7 @@ on: push
 jobs:
   build-macos:
     runs-on: macos-latest
+    environment: 'Apple Certificate'
     steps:
     - uses: actions/checkout@v2
     - name: build
