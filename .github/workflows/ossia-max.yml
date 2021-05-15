@@ -38,7 +38,7 @@ jobs:
         (
           cd artifacts
           codesign --force --timestamp --sign "ossia.io" ossia/support/libossia-max.dylib
-          for mxo in ossia/externasl/*.mxo;
+          for mxo in ossia/externals/*.mxo;
           do 
             codesign --force --timestamp --sign "ossia.io" $mxo
           done
