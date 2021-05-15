@@ -1,4 +1,4 @@
-name: documentation
+name: Documentation
 
 on: push
 
@@ -7,44 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-      with:
-        ref: 'gh-pages'
     - name: Install Dependencies
       run: |
         sudo apt-get update -yqq
         sudo apt-get install -yqq doxygen doxygen-doc doxygen-gui graphviz
-    - name: Build documentation
+    - name: Build Documentation
       run: |
+        cd docs/Doxygen
         doxygen > doxygen.log
-        (
-            # inspired from generateDocumentationAndDeploy.sh, Jeroen de Bruijn
-            git checkout --orphan dummy
-            git branch -D gh-pages
-            git checkout --orphan gh-pages
-
-            echo "$(pwd)"
-
-            # Set the push default to simple i.e. push only the current branch.
-            git config --global push.default simple
-            # Pretend to be an user called Github Action CI.
-            git config user.name "Github Action CI"
-            git config user.email "action@github.com"
-
-            rm -rf *
-
-            echo "" > .nojekyll
-            mv ../html .
-
-            if [ -d "html" ] && [ -f "html/index.html" ]; then
-                echo "Commiting..."
-                git add --all
-                git commit -m "Deploy code docs to GitHub Pages, Github Action id: ${GITHUB_ACTION}" -m "Commit: ${GITHUB_SHA}"
-                git push --force "https://${{ github.token }}@${{ github.repository }}"
-            fi
-        )
-    - name: Deploy
+        ls
+        ls ..
+    - name: Deploy Documentation
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public
+        publish_dir: docs/html
         commit_message: 'Deploy code docs to GitHub Pages, Github Action id: $GITHUB_ACTION \nCommit: $GITHUB_SHA'
