@@ -64,3 +64,58 @@ jobs:
       with:
         name: ossia-pd-linux
         path: install/ossia-pd-package/ossia
+
+  build-rpi:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update -yqq 
+        sudo apt-get upgrade -yqq
+        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev wget
+
+        wget -nv https://www.dropbox.com/s/lwchd3va49sd43p/gcc-8.2.0-rpi.tar.bz2
+        tar xf gcc-8.2.0-rpi.tar.bz2
+        sudo mv cross-pi-gcc-8.2.0/ /opt/
+        sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
+
+        sudo ln -s /usr/include/arm-linux-gnueabihf/sys /usr/include/sys
+        sudo ln -s /usr/include/arm-linux-gnueabihf/bits /usr/include/bits
+        sudo ln -s /usr/include/arm-linux-gnueabihf/gnu /usr/include/gnu
+        sudo ln -s /usr/include/arm-linux-gnueabihf/asm /usr/include/asm
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crti.o /usr/lib/crti.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
+    - name: Build
+      run: |
+        export CTEST_OUTPUT_ON_FAILURE=1
+        export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
+        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
+        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
+        export PATH=/opt/cross-pi-gcc/bin:${PATH}
+        export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
+
+        mkdir -p ${ARTIFACTS_DIR}
+        mkdir build
+        cd build
+
+        cmake -B build -S ${GITHUB_WORKSPACE} -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/cmake/toolchain/arm-linux-gnueabihf.cmake" \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DOSSIA_CI=1 \
+            -DOSSIA_PD_ONLY=1 \
+            ..
+
+        cmake --build build
+        cmake --build build --target install
+
+        # cd install/ossia-pd-package
+        # tar -czf ${GITHUB_WORKSPACE}/ossia-pd-linux_arm.tar.gz ossia
+
+        # ${GITHUB_WORKSPACE}/ci/push_deken.sh
+    - name: Archive Package
+      uses: actions/upload-artifact@v2
+      with:
+        name: ossia-pd-rpi
+        path: install/ossia-pd-package/ossia
