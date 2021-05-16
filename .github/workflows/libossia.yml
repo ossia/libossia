@@ -2,28 +2,22 @@ name: libossia
 
 on: push
 
-base_strategy: &base_strategy
-  strategy:
-    matrix:
-      static: [0, 1]
-      build_type: [Release, Debug]
-
-env_base: &env_base
-  env: 
-    STATIC: ${{ matrix.static }}
-    BUILD_TYPE: ${{ matrix.build_type }}
-
 jobs:
   build-macos:
     runs-on: macos-latest
     environment: 'Apple Certificate'
-    <<: *base_strategy
+    strategy:
+      matrix:
+        static: [0, 1]
+        build_type: [Release, Debug]
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: brew install ninja
     - name: Build
-      <<: *env_base
+      env: 
+        STATIC: ${{ matrix.static }}
+        BUILD_TYPE: ${{ matrix.build_type }}
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC -DCMAKE_INSTALL_PREFIX=install
         cmake --build build
@@ -74,14 +68,19 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
-    <<: *base_strategy
+    strategy:
+      matrix:
+        static: [0, 1]
+        build_type: [Release, Debug]
     steps:
     - uses: actions/checkout@v2
     - name: install deps
       run: cinst -y ninja
     - name : Build
       shell: cmd
-      <<: *env_base
+      env: 
+        STATIC: ${{ matrix.static }}
+        BUILD_TYPE: ${{ matrix.build_type }}
       run: |
         for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -101,7 +100,10 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
-    <<: *base_strategy
+    strategy:
+      matrix:
+        static: [0, 1]
+        build_type: [Release, Debug]
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -110,7 +112,9 @@ jobs:
         sudo apt-get upgrade -yqq
         sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
     - name: Build
-      <<: *env_base
+      env: 
+        STATIC: ${{ matrix.static }}
+        BUILD_TYPE: ${{ matrix.build_type }}
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC 
         cmake --build build
@@ -123,7 +127,10 @@ jobs:
 
   build-rpi:
     runs-on: ubuntu-latest
-    <<: *base_strategy
+    strategy:
+      matrix:
+        static: [0, 1]
+        build_type: [Release, Debug]
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -145,7 +152,9 @@ jobs:
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
     - name: Build
-      <<: *env_base
+      env: 
+        STATIC: ${{ matrix.static }}
+        BUILD_TYPE: ${{ matrix.build_type }}
       run: |
         export CTEST_OUTPUT_ON_FAILURE=1
         export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
