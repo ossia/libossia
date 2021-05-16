@@ -2,17 +2,30 @@ name: libossia
 
 on: push
 
+base_strategy: &base_strategy
+  strategy:
+    matrix:
+      static: [0, 1]
+      build_type: [Release, Debug]
+
+env_base: &env_base
+  env: 
+    STATIC: ${{ matrix.static }}
+    BUILD_TYPE: ${{ matrix.build_type }}
+
 jobs:
   build-macos:
     runs-on: macos-latest
     environment: 'Apple Certificate'
+    <<: *base_strategy
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: brew install ninja
     - name: Build
+      <<: *env_base
       run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC -DCMAKE_INSTALL_PREFIX=install
         cmake --build build
         cmake --build build --target install
     - name: Code Signing
@@ -61,12 +74,14 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
+    <<: *base_strategy
     steps:
     - uses: actions/checkout@v2
     - name: install deps
       run: cinst -y ninja
     - name : Build
       shell: cmd
+      <<: *env_base
       run: |
         for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
@@ -75,7 +90,7 @@ jobs:
         cd %GITHUB_WORKSPACE%
         mkdir build
         cd build
-        cmake -GNinja .. -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -GNinja .. -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC 
         cmake --build .
         cmake --build . --target install
     - name: Archive Package
@@ -86,6 +101,7 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
+    <<: *base_strategy
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -94,8 +110,9 @@ jobs:
         sudo apt-get upgrade -yqq
         sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
     - name: Build
+      <<: *env_base
       run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=install
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC 
         cmake --build build
         cmake --build build --target install 
     - name: Archive Package
@@ -106,6 +123,7 @@ jobs:
 
   build-rpi:
     runs-on: ubuntu-latest
+    <<: *base_strategy
     steps:
     - uses: actions/checkout@v2
     - name: Install Dependencies
@@ -127,6 +145,7 @@ jobs:
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
         sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
     - name: Build
+      <<: *env_base
       run: |
         export CTEST_OUTPUT_ON_FAILURE=1
         export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
@@ -137,7 +156,7 @@ jobs:
 
         cmake -B build -S ${GITHUB_WORKSPACE} \
             -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/cmake/toolchain/arm-linux-gnueabihf.cmake" \
-            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC \
             -DCMAKE_INSTALL_PREFIX=install \
             -DOSSIA_CI=1
 
