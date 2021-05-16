@@ -1,4 +1,4 @@
-name: libossia-shared-release
+name: libossia
 
 on: push
 
