@@ -51,7 +51,7 @@ jobs:
           cd install
           for lib in lib/*.{a,dylib,so};
           do 
-            Signing $lib
+            echo Signing $lib
             codesign --force --timestamp --sign "ossia.io" $lib
           done
 
