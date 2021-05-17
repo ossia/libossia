@@ -56,7 +56,7 @@ public:
 
   osc_generic_bidir_protocol(
       network_context_ptr ctx, const send_socket_configuration& send_conf, const receive_socket_configuration& recv_conf)
-      : can_learn<ossia::net::protocol_base>{flags{}}
+      : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
       , from_client{recv_conf, m_ctx->context}
@@ -75,7 +75,7 @@ public:
 
   osc_generic_bidir_protocol(
       network_context_ptr ctx, const send_socket_configuration& send_conf)
-      : can_learn<ossia::net::protocol_base>{flags{}}
+      : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
       , to_client{send_conf, m_ctx->context}
@@ -273,7 +273,7 @@ public:
   template<typename Configuration>
   osc_generic_server_protocol(
       network_context_ptr ctx, const Configuration& conf)
-      : can_learn<ossia::net::protocol_base>{flags{}}
+      : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
       , m_server{conf, m_ctx->context}
