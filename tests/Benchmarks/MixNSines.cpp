@@ -7,6 +7,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <valgrind/callgrind.h>
 #include <cmath>
+#include <ossia/audio/audio_device.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <boost/graph/adjacency_list.hpp>
 #define private public
@@ -34,7 +35,7 @@ void benchmark_main()
 
 
   std::cout << "count\tnormal\tordered\tmerged\n";
-  audio_device device;
+  ossia::audio_device device;
   int64_t count = 0;
 
   int k = 0;

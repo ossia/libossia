@@ -124,7 +124,6 @@ struct setup_dawlike
 
 
     {
-
       auto new_node = std::make_shared<node_empty_mock>();
       nodes.push_back(new_node);
       g.add_node(nodes.back());
