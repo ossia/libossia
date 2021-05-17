@@ -49,9 +49,13 @@ jobs:
 
         (
           cd install
-          codesign --force --timestamp --sign "ossia.io" lib/libossia.dylib
+          for lib in lib/*.{a,dylib,so};
+          do 
+            Signing $lib
+            codesign --force --timestamp --sign "ossia.io" $lib
+          done
 
-          zip ossia-shared-release.zip lib/libossia.dylib
+          zip -r ossia-shared-release.zip lib/
           xcrun altool \
                 --notarize-app \
                 -t osx \
