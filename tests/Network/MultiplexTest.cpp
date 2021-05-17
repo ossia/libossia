@@ -7,8 +7,11 @@
 
 #include <ossia/context.hpp>
 #include <ossia/detail/config.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
 
 #include "TestUtils.hpp"
 #include "ProtocolTestUtils.hpp"
@@ -20,16 +23,40 @@ using namespace ossia::net;
 #include <ossia/network/osc/osc.hpp>
 TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
 {
-  auto shared = 9996;
-  generic_device device{
-    std::make_unique<ossia::net::multiplex_protocol>(
-                std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
-                std::make_unique<ossia::net::osc_protocol>("127.0.0.1", shared, 0)), //send only
-    "my_device"};
+  uint16_t shared = 9996;
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  using conf = ossia::net::osc_protocol_configuration;
+
+  auto osc = ossia::net::make_osc_protocol(
+      ctx,
+      {
+        conf::HOST,
+        conf::OSC1_1,
+        conf::SIZE_PREFIX,
+        ossia::net::udp_configuration{{{"0.0.0.0", 9998}, {"127.0.0.1", shared}}}
+      }
+      );
+  auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
+
+  generic_device device {
+    std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery),
+      "my_device"
+  };
+
   device.set_echo(true);
 
   ossia::net::generic_device remote{
-    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9997, shared), "test_osc"};
+    ossia::net::make_osc_protocol(
+        ctx,
+        {
+          conf::MIRROR,
+          conf::OSC1_1,
+          conf::SIZE_PREFIX,
+          ossia::net::udp_configuration{{{"0.0.0.0", shared}, {"127.0.0.1", 9997}}}
+        }
+        ),
+      "test_osc"};
+
 
   std::string address; 
   ossia::value recv; 
@@ -45,7 +72,7 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
   bi.set(access_mode_attribute{}, access_mode::BI);
   bip->push_value(2084);
 
-  std::this_thread::sleep_for(std::chrono::microseconds(1000));
+  ctx->context.run_one();
   REQUIRE(address == "/foo/bi");
   REQUIRE(recv == ossia::value { 2084 });
 
@@ -56,7 +83,7 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
   get.set(access_mode_attribute{}, access_mode::GET);
   getp->push_value(42);
 
-  std::this_thread::sleep_for(std::chrono::microseconds(1000));
+  ctx->context.run_one();
   REQUIRE(address == "/foo/get");
   REQUIRE(recv == ossia::value { 42 });
 
@@ -68,9 +95,8 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
   setp->push_value(1000);
 
   //shouldn't get anything in the remote
-  std::this_thread::sleep_for(std::chrono::microseconds(1000));
+  ctx->context.run_for(std::chrono::milliseconds(100));
   REQUIRE(address.size() == 0);
   REQUIRE(recv == ossia::value { 42 }); //stays the same
-
 }
 #endif
