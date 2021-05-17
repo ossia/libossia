@@ -89,7 +89,7 @@ jobs:
         cd %GITHUB_WORKSPACE%
         mkdir build
         cd build
-        cmake -GNinja .. -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DOSSIA_STATIC=$STATIC 
+        cmake -GNinja .. -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% 
         cmake --build .
         cmake --build . --target install
     - name: Archive Package
