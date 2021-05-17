@@ -50,11 +50,7 @@ jobs:
 
         (
           cd install
-          for lib in lib/*.{a,dylib,so};
-          do 
-            echo Signing $lib
-            codesign --force --timestamp --sign "ossia.io" $lib
-          done
+          find lib \( -name "*.dylib" -o -name "*.a" -o  -name "*.so" \) -exec echo Signing {} + -exec codesign --force --timestamp --sign "ossia.io" {} +
 
           zip -r ossia-shared-release.zip lib/
           xcrun altool \
