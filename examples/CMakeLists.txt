@@ -42,6 +42,7 @@ if(OSSIA_PROTOCOL_OSC)
   ossia_add_example(network_osc_ws_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_send.cpp")
 
   ossia_add_example(network_osc_serial_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/serial/OSC_send.cpp")
+  ossia_add_example(network_osc_udp_send_receive "${CMAKE_CURRENT_SOURCE_DIR}/Network/udp/OSC_send_receive.cpp")
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)

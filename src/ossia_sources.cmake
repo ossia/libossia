@@ -63,6 +63,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/serial_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/null_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/size_prefix_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/slip_framing.hpp"

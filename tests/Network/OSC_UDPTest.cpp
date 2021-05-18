@@ -12,15 +12,19 @@ using namespace ossia;
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
 using conf = ossia::net::udp_configuration;
-static const conf server_conf = conf{{{"0.0.0.0", 4478}, {"127.0.0.1", 9875}}};
-static const conf client_conf = conf{{{"0.0.0.0", 9875}, {"127.0.0.1", 4478}}};
+using recv_sock = ossia::net::receive_socket_configuration;
+using send_sock = ossia::net::send_socket_configuration;
+static const conf server_conf = conf{{recv_sock{{"0.0.0.0", 4478}}, send_sock{{"127.0.0.1", 9875}}}};
+static const conf client_conf = conf{{recv_sock{{"0.0.0.0", 9875}}, send_sock{{"127.0.0.1", 4478}}}};
 TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
+
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(ctx, server_conf), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(ctx, client_conf), "b"};
+
+  ossia::net::generic_device server{std::make_unique<proto>(ctx, *server_conf.remote, *server_conf.local), "a"};
+  ossia::net::generic_device client{std::make_unique<proto>(ctx, *client_conf.remote, *client_conf.local), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -47,11 +51,12 @@ TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
 {
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::generic_device server{std::make_unique<proto>(ctx, server_conf), "a"};
-  ossia::net::generic_device client{std::make_unique<proto>(ctx, client_conf), "b"};
+
+  ossia::net::generic_device server{std::make_unique<proto>(ctx, *server_conf.remote, *server_conf.local), "a"};
+  ossia::net::generic_device client{std::make_unique<proto>(ctx, *client_conf.remote, *client_conf.local), "b"};
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -81,13 +86,14 @@ TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
 TEST_CASE ("test_comm_osc_udp", "test_comm_osc_udp")
 {
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket>;
+  using namespace ossia::net;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   test_comm_generic_async(
-        [=] { return std::make_unique<proto>(ctx, server_conf); },
-        [=] { return std::make_unique<proto>(ctx, client_conf); },
+        [=] { return std::make_unique<proto>(ctx, *server_conf.remote, *server_conf.local); },
+        [=] { return std::make_unique<proto>(ctx, *client_conf.remote, *client_conf.local); },
   *ctx);
 }
 

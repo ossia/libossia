@@ -1,5 +1,6 @@
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
+#include <ossia/network/sockets/null_socket.hpp>
 #include <ossia/network/sockets/serial_socket.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/tcp_socket.hpp>
@@ -25,7 +26,14 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
         auto operator()(ossia::net::udp_configuration&& conf) const
             -> std::unique_ptr<osc_protocol_base>
         {
-          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), conf);
+          if(conf.remote && conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, udp_socket>>(std::move(ctx), *conf.remote, *conf.local);
+          else if(conf.remote)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, null_socket>>(std::move(ctx), *conf.remote);
+          else if(conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_socket>>(std::move(ctx), *conf.local);
+          else
+            return {};
         }
 
         auto operator()(ossia::net::tcp_configuration&& conf) const
@@ -41,7 +49,14 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
             -> std::unique_ptr<osc_protocol_base>
         {
 #if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
-          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), conf);
+          if(conf.remote && conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket, unix_datagram_socket>>(std::move(ctx), *conf.remote, *conf.local);
+          else if(conf.remote)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket, null_socket>>(std::move(ctx), *conf.remote);
+          else if(conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, unix_datagram_socket>>(std::move(ctx), *conf.local);
+          else
+            return {};
 #endif
           return{};
         }
@@ -92,7 +107,14 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
         auto operator()(ossia::net::udp_configuration&& conf) const
             -> std::unique_ptr<osc_protocol_base>
         {
-          return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket>>(std::move(ctx), conf);
+          if(conf.remote && conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, udp_socket>>(std::move(ctx), *conf.remote, *conf.local);
+          else if(conf.remote)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, null_socket>>(std::move(ctx), *conf.remote);
+          else if(conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_socket>>(std::move(ctx), *conf.local);
+          else
+            return {};
         }
 
         auto operator()(ossia::net::tcp_configuration&& conf) const
@@ -108,7 +130,14 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
             -> std::unique_ptr<osc_protocol_base>
         {
 #if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
-          return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket>>(std::move(ctx), conf);
+          if(conf.remote && conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket, unix_datagram_socket>>(std::move(ctx), *conf.remote, *conf.local);
+          else if(conf.remote)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, unix_datagram_socket, null_socket>>(std::move(ctx), *conf.remote);
+          else if(conf.local)
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, unix_datagram_socket>>(std::move(ctx), *conf.local);
+          else
+            return {};
 #endif
           return{};
         }

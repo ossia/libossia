@@ -14,20 +14,20 @@ int main(int argc, char** argv)
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   using conf = ossia::net::osc_protocol_configuration;
-  ossia::net::generic_device device{ossia::net::make_osc_protocol(ctx,
-          {
-            conf::MIRROR,
-            conf::OSC1_1,
-            conf::SLIP,
-            ossia::net::unix_dgram_configuration{{"/tmp/ossia_echo.server.socket","/tmp/ossia_echo.client.socket"}}
+  ossia::net::generic_device device{
+    ossia::net::make_osc_protocol(ctx,
+          {conf::MIRROR
+         , conf::OSC1_1
+         , conf::SLIP
+         , ossia::net::unix_dgram_configuration{{
+             ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.a.socket"}},
+             ossia::net::send_fd_configuration{{"/tmp/ossia_echo.b.socket"}}}}
           }),
         "P"};
 
   ossia::net::full_parameter_data dat;
 
-  {
-    device.get_protocol().push_raw({"/foo", std::vector<ossia::value>{123, 4.56}});
-  }
+  device.get_protocol().push_raw({"/foo", std::vector<ossia::value>{123, 4.56}});
 }
 
 

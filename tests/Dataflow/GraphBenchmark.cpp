@@ -3,6 +3,7 @@
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include "../Editor/TestUtils.hpp"
 #include <valgrind/callgrind.h>
 #include <ossia/detail/for_each.hpp>
