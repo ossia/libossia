@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <string>
+#include <optional>
 
 namespace ossia::net
 {
@@ -10,22 +11,36 @@ struct fd_configuration
   std::string fd;
 };
 
+struct send_fd_configuration : fd_configuration
+{
+};
+struct receive_fd_configuration : fd_configuration
+{
+};
+
 struct socket_configuration
 {
   std::string host;
   uint16_t port;
 };
 
+struct send_socket_configuration : socket_configuration
+{
+};
+struct receive_socket_configuration : socket_configuration
+{
+};
+
 struct double_fd_configuration
 {
-  fd_configuration first;
-  fd_configuration second;
+  std::optional<receive_fd_configuration> local;
+  std::optional<send_fd_configuration> remote;
 };
 
 struct double_socket_configuration
 {
-  socket_configuration local;
-  socket_configuration remote;
+  std::optional<receive_socket_configuration> local;
+  std::optional<send_socket_configuration> remote;
 };
 
 struct serial_configuration

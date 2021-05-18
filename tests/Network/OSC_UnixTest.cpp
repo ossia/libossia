@@ -18,7 +18,7 @@ auto make_unix_client(ossia::net::network_context_ptr ctx)
                                          conf::MIRROR,
                                          conf::OSC1_1,
                                          conf::SLIP,
-                                         ossia::net::unix_dgram_configuration{{{"/tmp/ossia_echo.server.socket"},{"/tmp/ossia_echo.client.socket"}}}
+                                         ossia::net::unix_dgram_configuration{{ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.b.socket"}}, ossia::net::send_fd_configuration{{"/tmp/ossia_echo.a.socket"}}}}
                                        });
 }
 
@@ -30,7 +30,7 @@ auto make_unix_server(ossia::net::network_context_ptr ctx)
                                          conf::HOST,
                                          conf::OSC1_1,
                                          conf::SLIP,
-                                         ossia::net::unix_dgram_configuration{{{"/tmp/ossia_echo.client.socket"},{"/tmp/ossia_echo.server.socket"}}}
+                                         ossia::net::unix_dgram_configuration{{ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.a.socket"}}, ossia::net::send_fd_configuration{{"/tmp/ossia_echo.b.socket"}}}}
                                        });
 }
 

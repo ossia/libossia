@@ -15,16 +15,17 @@ int main(int argc, char** argv)
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
     ossia::net::make_osc_protocol(ctx,
-          {
-            conf::HOST,
-            conf::OSC1_1,
-            conf::SLIP,
-            ossia::net::unix_dgram_configuration{{"/tmp/ossia_echo.client.socket","/tmp/ossia_echo.server.socket"}}
+          {conf::HOST
+         , conf::OSC1_1
+         , conf::SLIP
+         , ossia::net::unix_dgram_configuration{{
+             ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.b.socket"}},
+             ossia::net::send_fd_configuration{{"/tmp/ossia_echo.a.socket"}}}}
           }),
         "P"};
 
   auto cb = [&] (ossia::string_view v, const ossia::value& val) {
-    std::cout << v << " => " << ossia::value_to_pretty_string(val) << std::endl;
+    ossia::logger().info("{} => {}\n", v, val);
   };
   device.on_unhandled_message.connect(&cb);
 
