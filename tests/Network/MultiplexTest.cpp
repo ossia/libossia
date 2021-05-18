@@ -30,10 +30,12 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
   auto osc = ossia::net::make_osc_protocol(
       ctx,
       {
-        conf::HOST,
-        conf::OSC1_1,
-        conf::SIZE_PREFIX,
-        ossia::net::udp_configuration{{{"0.0.0.0", 9998}, {"127.0.0.1", shared}}}
+        .mode = conf::HOST,
+        .version = conf::OSC1_1,
+        .transport = ossia::net::udp_configuration {{
+          .local = std::nullopt,
+          .remote = ossia::net::send_socket_configuration {{"127.0.0.1", shared}}
+        }}
       }
       );
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
@@ -49,10 +51,12 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
     ossia::net::make_osc_protocol(
         ctx,
         {
-          conf::MIRROR,
-          conf::OSC1_1,
-          conf::SIZE_PREFIX,
-          ossia::net::udp_configuration{{{"0.0.0.0", shared}, {"127.0.0.1", 9997}}}
+          .mode = conf::MIRROR,
+          .version = conf::OSC1_1,
+          .transport = ossia::net::udp_configuration {{
+            .local = ossia::net::receive_socket_configuration {{"0.0.0.0", shared}},
+            .remote = std::nullopt
+          }}
         }
         ),
       "test_osc"};
