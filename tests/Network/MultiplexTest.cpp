@@ -103,4 +103,40 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
   REQUIRE(address.size() == 0);
   REQUIRE(recv == ossia::value { 42 }); //stays the same
 }
+
+TEST_CASE ("test_oscquery_osc_large", "test_oscquery_osc_large")
+{
+  uint16_t shared = 9996;
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  using conf = ossia::net::osc_protocol_configuration;
+
+  auto osc = ossia::net::make_osc_protocol(
+      ctx,
+      {
+        .mode = conf::HOST,
+        .version = conf::OSC1_1,
+        .transport = ossia::net::udp_configuration {{
+          .local = std::nullopt,
+          .remote = ossia::net::send_socket_configuration {{"127.0.0.1", shared}}
+        }}
+      }
+      );
+  auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
+
+  generic_device device {
+    std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery),
+      "my_device"
+  };
+
+  device.set_echo(true);
+
+  //very large should not crash
+  auto& bi = find_or_create_node(device, "/foo/bi");
+  auto bip = bi.create_parameter(ossia::val_type::STRING);
+  bi.set(access_mode_attribute{}, access_mode::BI);
+  std::string s(1048576, '*');
+  bip->push_value(s);
+  ctx->context.run_for(std::chrono::milliseconds(100));
+}
+
 #endif
