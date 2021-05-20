@@ -6,9 +6,8 @@ namespace ossia
 struct node_exec
 {
   execution_state*& g;
-  graph_node& node;
 
-  void operator()()
+  void operator()(graph_node& node)
   try
   {
     if (node.enabled())
@@ -25,10 +24,9 @@ struct node_exec
 struct node_exec_bench
 {
   execution_state*& g;
-  graph_node& node;
   bench_map& perf;
 
-  void operator()()
+  void operator()(graph_node& node)
   try
   {
     if (perf.measure)
@@ -60,9 +58,8 @@ struct node_exec_logger
 {
   execution_state*& g;
   spdlog::logger& logger;
-  graph_node& node;
 
-  void operator()()
+  void operator()(graph_node& node)
   try
   {
     if (node.enabled())
@@ -85,9 +82,8 @@ struct node_exec_logger_bench
   execution_state*& g;
   bench_map& perf;
   spdlog::logger& logger;
-  graph_node& node;
 
-  void operator()()
+  void operator()(graph_node& node)
   try
   {
     if (perf.measure)

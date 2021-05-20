@@ -141,6 +141,7 @@ struct osc_value_write_visitor
 
   void operator()(const std::vector<ossia::value>& v) const noexcept
   {
+    // OPTIMIZEME
     while (result.size() < max_osc_message_size)
     {
       try

@@ -1,13 +1,13 @@
 #pragma once
 #include <concurrentqueue.h>
-
+#include <ossia/detail/pod_vector.hpp>
 namespace ossia
 {
 struct buffer_pool
 {
   template<typename T, size_t MAX_BLOCK_SIZE = 64>
   using mpmc_queue = moodycamel::ConcurrentQueue<T>;
-  using buffer = std::vector<char>;
+  using buffer = ossia::pod_vector<char>;
 
   mpmc_queue<buffer> buffers;
 

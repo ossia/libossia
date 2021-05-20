@@ -92,7 +92,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
   if (sched == ossia::graph_setup_options::StaticBFS)
   {
     using graph_type
-        = graph_static<cpptf_update<bfs_update>, cpptf_exec>;
+        = graph_static<custom_parallel_update<bfs_update>, custom_parallel_exec>;
 
     auto g = std::make_shared<graph_type>();
 
@@ -104,7 +104,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
   else if (sched == ossia::graph_setup_options::StaticTC)
   {
     using graph_type
-        = graph_static<cpptf_update<tc_update<fast_tc>>, cpptf_exec>;
+        = graph_static<custom_parallel_update<tc_update<fast_tc>>, custom_parallel_exec>;
 
     auto g = std::make_shared<graph_type>();
 
@@ -116,7 +116,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
   else if (sched == ossia::graph_setup_options::StaticFixed)
   {
     using graph_type
-        = graph_static<cpptf_update<simple_update>, cpptf_exec>;
+        = graph_static<custom_parallel_update<simple_update>, custom_parallel_exec>;
 
     auto g = std::make_shared<graph_type>();
 

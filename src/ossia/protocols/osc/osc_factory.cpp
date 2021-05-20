@@ -139,7 +139,7 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
           else
             return {};
 #endif
-          return{};
+          return {};
         }
 
         auto operator()(ossia::net::unix_stream_configuration&& conf) const
