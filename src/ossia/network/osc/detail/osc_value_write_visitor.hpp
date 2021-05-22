@@ -29,6 +29,7 @@ struct osc_value_send_visitor
 
   template<typename T>
   void operator()(T v) const noexcept
+  try
   {
     const std::size_t sz = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
     char* buffer = (char*) alloca(sz);
@@ -38,8 +39,16 @@ struct osc_value_send_visitor
 
     writer(buffer, i);
   }
+  catch(const std::exception& e)
+  {
+    ossia::logger().error("osc_value_send_visitor: {}", e.what());
+  }
+  catch(...)
+  {
+    ossia::logger().error("osc_value_send_visitor: unknown error");
+  }
 
-  void operator()(const std::string& v) const noexcept
+  void operator()(const std::string& v) const noexcept try
   {
     const std::size_t sz = pattern_size(address_pattern.size()) + 4 + pattern_size(v.size());
     if(sz < 16384) {
@@ -68,8 +77,16 @@ struct osc_value_send_visitor
       writer(buffer.data(), i);
     }
   }
+  catch(const std::exception& e)
+  {
+    ossia::logger().error("osc_value_send_visitor: {}", e.what());
+  }
+  catch(...)
+  {
+    ossia::logger().error("osc_value_send_visitor: unknown error");
+  }
 
-  void operator()(const std::vector<ossia::value>& v) const noexcept
+  void operator()(const std::vector<ossia::value>& v) const noexcept try
   {
     auto& pool = buffer_pool::instance();
     auto buf = pool.acquire();
@@ -95,6 +112,14 @@ struct osc_value_send_visitor
     }
 
     pool.release(std::move(buf));
+  }
+  catch(const std::exception& e)
+  {
+    ossia::logger().error("osc_value_send_visitor: {}", e.what());
+  }
+  catch(...)
+  {
+    ossia::logger().error("osc_value_send_visitor: unknown error");
   }
 
   void operator()()
@@ -163,7 +188,6 @@ struct osc_value_write_visitor
       }
     }
   }
-
   void operator()()
   {
 
