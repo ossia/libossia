@@ -18,7 +18,7 @@
 #include <iostream>
 #include <memory>
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 #include <boost/asio/impl/src.hpp>
 #endif
 
@@ -30,6 +30,8 @@
 #pragma init_seg(lib)
 boost::asio::detail::winsock_init<>::manual manual_winsock_init;
 #pragma warning(pop)
+#elif defined(_WIN32)
+#include <boost/asio/detail/winsock_init.hpp>
 #endif
 
 #if !defined(_MSC_VER)
@@ -52,9 +54,8 @@ static void ossia_global_init()
     logger();
 
     // Init WinSock
-#if defined(_MSC_VER)
-    WSADATA wsa_data;
-    ::WSAStartup(MAKEWORD(2, 0), &wsa_data);
+#if defined(_WIN32) && !defined(_MSC_VER)
+    static boost::asio::detail::winsock_init<>::manual manual_winsock_init;
 #endif
 
 // Register QML types
