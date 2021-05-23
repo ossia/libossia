@@ -344,11 +344,11 @@ struct OSSIA_EXPORT domain_base<ossia::value>
     return *this;
   }
 
-  domain_base<value_type>(const value_type& v1, const value_type& v2)
+  domain_base(const value_type& v1, const value_type& v2)
       : min{v1}, max{v2}
   {
   }
-  domain_base<value_type>(value_type&& v1, value_type&& v2)
+  domain_base(value_type&& v1, value_type&& v2)
       : min{std::move(v1)}, max{std::move(v2)}
   {
   }
