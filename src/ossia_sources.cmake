@@ -692,6 +692,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_ordering.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_static.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_parallel.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_parallel_impl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_utils.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/graph_interface.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/tick_methods.hpp"
