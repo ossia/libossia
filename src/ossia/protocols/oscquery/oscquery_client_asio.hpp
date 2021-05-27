@@ -18,7 +18,7 @@ struct oscquery_client
   string_map<ossia::net::parameter_base*> listening;
 
   std::string client_ip;
-  std::unique_ptr<ossia::net::udp_socket> osc_socket;
+  std::unique_ptr<ossia::net::udp_send_socket> osc_socket;
   int remote_sender_port{};
 
 public:
@@ -70,7 +70,8 @@ public:
 
   void open_osc_sender(ossia::oscquery_asio::oscquery_server_protocol& proto, uint16_t port)
   {
-    osc_socket = std::make_unique<ossia::net::udp_socket>(ossia::net::socket_configuration{client_ip, port}, proto.m_context->context);
+    osc_socket = std::make_unique<ossia::net::udp_send_socket>(ossia::net::socket_configuration{client_ip, port}, proto.m_context->context);
+    osc_socket->connect();
   }
 
 };

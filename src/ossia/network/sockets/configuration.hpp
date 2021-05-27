@@ -5,6 +5,10 @@
 
 namespace ossia::net
 {
+enum class framing
+{
+  size_prefix, slip
+};
 
 struct fd_configuration
 {

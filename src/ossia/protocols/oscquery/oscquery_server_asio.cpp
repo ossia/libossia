@@ -34,9 +34,9 @@ namespace ossia
 namespace oscquery_asio
 {
 
-struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_socket
+struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_receive_socket
 {
-  using udp_socket::udp_socket;
+  using udp_receive_socket::udp_receive_socket;
 };
 
 static uintptr_t client_identifier(const std::vector<oscquery_client>& clts, const oscpack::IpEndpointName& ip)
@@ -278,7 +278,7 @@ bool oscquery_server_protocol::echo_incoming_message(
 {
   using namespace ossia::net;
 
-  using send_visitor = osc_value_send_visitor<net::parameter_base, osc_extended_policy, socket_writer<udp_socket>>;
+  using send_visitor = osc_value_send_visitor<net::parameter_base, osc_extended_policy, socket_writer<udp_send_socket>>;
 
   bool not_this_protocol = &id.protocol != this;
   // we know that the value is valid

@@ -27,11 +27,11 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
             -> std::unique_ptr<osc_protocol_base>
         {
           if(conf.remote && conf.local)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, udp_socket>>(std::move(ctx), *conf.remote, *conf.local);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_send_socket, udp_receive_socket>>(std::move(ctx), *conf.remote, *conf.local);
           else if(conf.remote)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, null_socket>>(std::move(ctx), *conf.remote);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_send_socket, null_socket>>(std::move(ctx), *conf.remote);
           else if(conf.local)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_socket>>(std::move(ctx), *conf.local);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_receive_socket>>(std::move(ctx), *conf.local);
           else
             return {};
         }
@@ -108,11 +108,11 @@ std::unique_ptr<osc_protocol_base> make_osc_protocol_impl(network_context_ptr&& 
             -> std::unique_ptr<osc_protocol_base>
         {
           if(conf.remote && conf.local)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, udp_socket>>(std::move(ctx), *conf.remote, *conf.local);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_send_socket, udp_receive_socket>>(std::move(ctx), *conf.remote, *conf.local);
           else if(conf.remote)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_socket, null_socket>>(std::move(ctx), *conf.remote);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, udp_send_socket, null_socket>>(std::move(ctx), *conf.remote);
           else if(conf.local)
-            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_socket>>(std::move(ctx), *conf.local);
+            return std::make_unique<osc_generic_bidir_protocol<client_type, null_socket, udp_receive_socket>>(std::move(ctx), *conf.local);
           else
             return {};
         }
