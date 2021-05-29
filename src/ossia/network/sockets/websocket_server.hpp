@@ -118,6 +118,9 @@ public:
     m_server.set_http_handler([this, h](connection_handler hdl) {
       auto con = m_server.get_con_from_hdl(hdl);
 
+      //enable cross origin requests from anywhere
+      con->append_header("Access-Control-Allow-Origin", "*");
+
       try
       {
         ossia::net::server_reply str
