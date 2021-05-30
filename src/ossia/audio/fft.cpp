@@ -99,7 +99,12 @@ fft::fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   return m_output;
 }
 
+fft::fft_complex* fft::execute() noexcept
+{
+  run_plan_r2c(m_fw, m_input, m_output);
 
+  return m_output;
+}
 
 rfft::rfft(std::size_t newSize) noexcept
 {
@@ -126,6 +131,13 @@ void rfft::reset(std::size_t newSize)
 rfft::fft_real* rfft::execute(rfft::fft_complex* input) noexcept
 {
   run_plan_c2r(m_fw, input, m_output);
+
+  return m_output;
+}
+
+rfft::fft_real* rfft::execute() noexcept
+{
+  run_plan_c2r(m_fw, m_input, m_output);
 
   return m_output;
 }
