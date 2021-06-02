@@ -8,19 +8,15 @@
 
 #include <cstdint>
 
-namespace ossia
+namespace ossia::net
 {
-namespace net
+struct dmx_buffer;
+class OSSIA_EXPORT dmx_parameter : public device_parameter
 {
-
-class OSSIA_EXPORT artnet_parameter : public device_parameter
-{
-  using dmx_buffer = artnet_protocol::dmx_buffer;
-
 public:
-  artnet_parameter(
+  dmx_parameter(
       net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min = 0, int max = 255);
-  ~artnet_parameter();
+  ~dmx_parameter();
 
 private:
   void device_update_value() override;
@@ -56,6 +52,6 @@ private:
   friend struct artnet_range_visitor;
 };
 */
-}
+
 }
 #endif

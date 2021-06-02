@@ -2,7 +2,7 @@
 #if defined(OSSIA_PROTOCOL_ARTNET)
 #include "artnet_protocol.hpp"
 
-#include "artnet_parameter.hpp"
+#include <ossia/protocols/artnet/dmx_parameter.hpp>
 
 #include <ossia/detail/fmt.hpp>
 #include <artnet/artnet.h>
@@ -15,18 +15,18 @@
 
 namespace ossia::net
 {
-artnet_protocol::dmx_buffer::dmx_buffer() : dirty(false)
+dmx_buffer::dmx_buffer() : dirty(false)
 {
   std::memset(data, 0, DMX_CHANNEL_COUNT);
 }
 
-int artnet_protocol::dmx_buffer::send(artnet_node node)
+dmx_buffer::~dmx_buffer()
 {
-  return artnet_send_dmx(node, 0, DMX_CHANNEL_COUNT, data);
+
 }
 
 ////
-artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const artnet_protocol_config& conf)
+artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const dmx_config& conf)
   : protocol_base{flags{}}
   , m_context{ctx}
   , m_timer{ctx->context}
@@ -70,7 +70,7 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
   {
     auto& root = dev.get_root_node();
     for (unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-      device_parameter::create_device_parameter<artnet_parameter>(
+      device_parameter::create_device_parameter<dmx_parameter>(
           root, fmt::format("Channel-{}", i + 1), 0, m_buffer, i);
   }
 
@@ -106,7 +106,7 @@ void artnet_protocol::update_function()
 {
   if (m_buffer.dirty)
   {
-    m_buffer.send(m_node);
+    artnet_send_dmx(m_node, 0, DMX_CHANNEL_COUNT, m_buffer.data);
     m_buffer.dirty = false;
   }
 }

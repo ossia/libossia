@@ -85,6 +85,13 @@ public:
   {
   }
 
+  udp_send_socket(const boost::asio::ip::address_v4& host, const uint16_t port, boost::asio::io_context& ctx)
+      : m_context {ctx}
+      , m_endpoint {host, port}
+      , m_socket {ctx}
+  {
+  }
+
   void connect()
   {
     m_socket.open(boost::asio::ip::udp::v4());

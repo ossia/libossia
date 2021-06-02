@@ -1,6 +1,8 @@
+
 #pragma once
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
+#include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -10,17 +12,25 @@
 #include <array>
 #include <cstdint>
 
-using artnet_node = void*;
-
 namespace ossia::net
 {
-struct dmx_config;
-class OSSIA_EXPORT artnet_protocol final
+// Implementation mostly based on https://github.com/hhromic/libe131
+
+class OSSIA_EXPORT e131_protocol final
     : public ossia::net::protocol_base
 {
 public:
-  artnet_protocol(ossia::net::network_context_ptr, const dmx_config& conf);
-  ~artnet_protocol();
+  static constexpr uint16_t default_port = 5568;
+  static constexpr uint8_t default_priority = 100;
+
+  // Unicast
+  e131_protocol(ossia::net::network_context_ptr, const dmx_config& conf,
+                const ossia::net::socket_configuration& socket
+                );
+
+  // Multicast, uses the universe mentioned in the config
+  e131_protocol(ossia::net::network_context_ptr, const dmx_config& conf, uint16_t port = default_port);
+  ~e131_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
 
@@ -41,11 +51,10 @@ private:
   dmx_buffer m_buffer;
 
   ossia::net::device_base* m_device{};
-  artnet_node m_node;
 
+  ossia::net::udp_send_socket m_socket;
+  uint16_t m_universe{};
   bool m_autocreate{};
 };
-
 }
-
 #endif

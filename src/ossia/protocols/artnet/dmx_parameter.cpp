@@ -1,6 +1,7 @@
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
-#include "artnet_parameter.hpp"
+#include "dmx_parameter.hpp"
+#include <ossia/protocols/artnet/dmx_buffer.hpp>
 
 #include <cstdio>
 
@@ -8,7 +9,7 @@ namespace ossia::net
 {
 struct artnet_visitor
 {
-  artnet_parameter::dmx_buffer& buf;
+  dmx_buffer& buf;
   const unsigned int channel;
   void operator()(int v) const noexcept
   {
@@ -32,7 +33,7 @@ struct artnet_visitor
   }
 };
 
-artnet_parameter::artnet_parameter(
+dmx_parameter::dmx_parameter(
     net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min, int max)
     : device_parameter(
           node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
@@ -42,11 +43,11 @@ artnet_parameter::artnet_parameter(
 {
 }
 
-artnet_parameter::~artnet_parameter()
+dmx_parameter::~dmx_parameter()
 {
 }
 
-void artnet_parameter::device_update_value()
+void dmx_parameter::device_update_value()
 {
   value().apply(artnet_visitor{m_buffer, m_channel});
 }
