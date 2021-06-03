@@ -75,6 +75,7 @@ e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_conf
     throw std::runtime_error(
         "DMX 512 update frequency must be in the range [1, 44] Hz");
 
+  m_socket.connect();
   m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 }
 e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_config& conf, uint16_t port)
@@ -89,6 +90,7 @@ e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_conf
     throw std::runtime_error(
         "DMX 512 update frequency must be in the range [1, 44] Hz");
 
+  m_socket.connect();
   m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 }
 
@@ -109,7 +111,9 @@ void e131_protocol::set_device(ossia::net::device_base& dev)
           root, fmt::format("{}", i + 1), 0, m_buffer, i);
   }
 
-  m_timer.start([this] { this->update_function(); });
+  m_timer.start([this] {
+    this->update_function();
+  });
 }
 
 bool e131_protocol::pull(net::parameter_base& param)
@@ -171,11 +175,14 @@ static int e131_pkt_init(e131_packet *packet, const uint16_t universe, const uin
   packet->root.flength = htons(0x7000 | root_length);
   packet->root.vector = htonl(_E131_ROOT_VECTOR);
 
+  //char uuid[17] = { "\xfb\x3c\x10\x65\xa1\x7f\x4d\xe2\x99\x19\x31\x7a\x07\xc1\x00\x52" };
+  //memcpy(packet->root.cid, uuid, 16);
+
   // set Framing Layer values
   packet->frame.flength = htons(0x7000 | frame_length);
   packet->frame.vector = htonl(_E131_FRAME_VECTOR);
   memcpy(packet->frame.source_name, "libossia", 8);
-  packet->frame.priority = e131_protocol::default_priority;
+  packet->frame.priority = 0x64;
   packet->frame.universe = htons(universe);
 
   // set Device Management Protocol (DMP) Layer values
@@ -191,15 +198,29 @@ static int e131_pkt_init(e131_packet *packet, const uint16_t universe, const uin
 
 void e131_protocol::update_function()
 {
-  if (m_buffer.dirty)
-  {
-    e131_packet pkt;
-    e131_pkt_init(&pkt, this->m_universe, 512);
-    std::copy_n(m_buffer.data, 512, pkt.dmp.prop_val);
-    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+  static std::atomic_int seq = 0;
+  try {
+    if (true || m_buffer.dirty)
+    {
+      e131_packet pkt;
+      e131_pkt_init(&pkt, this->m_universe, 512);
 
-    //e131_send_dmx(m_node, 0, DMX_CHANNEL_COUNT, m_buffer.data);
-    m_buffer.dirty = false;
+      for (size_t pos = 0; pos < 512; pos++)
+        pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
+      pkt.frame.seq_number = seq;
+
+      m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+
+      seq++;
+      m_buffer.dirty = false;
+    }
+  }  catch (std::exception& e) {
+
+    ossia::logger().error("write faileure: {}", e.what());
+
+  }  catch (...) {
+
+    ossia::logger().error("write faileure");
   }
 }
 }
