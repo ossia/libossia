@@ -12,6 +12,7 @@ struct dmx_config
   uint32_t frequency{};
   uint16_t universe{};
   bool autocreate{true};
+  bool multicast{true};
 };
 
 struct dmx_buffer

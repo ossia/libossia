@@ -14,20 +14,6 @@ namespace ossia::net
 template<typename OscVersion>
 struct osc_protocol_common
 {
-  template<typename T>
-  static void init(T& self)
-  {
-    self.from_client.open();
-    self.to_client.connect();
-
-    self.from_client.receive(
-          [&self] (const char* data, std::size_t sz) {
-        auto on_message = [&self] (auto&& msg) { self.on_received_message(msg); };
-        osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
-      }
-    );
-  }
-
   template<typename T, typename Value_T>
   static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
   {

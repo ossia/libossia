@@ -3,7 +3,8 @@
 #include "e131_protocol.hpp"
 
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
-
+#include <boost/asio/ip/multicast.hpp>
+#include <boost/asio/ip/host_name.hpp>
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/packed_struct.hpp>
 #include <artnet/artnet.h>
@@ -63,11 +64,24 @@ static_assert(sizeof(e131_packet) == 638);
 
 namespace ossia::net
 {
+static
+boost::asio::ip::address_v4 e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket)
+{
+  if(conf.multicast)
+  {
+    return boost::asio::ip::address_v4(0xefff0000 | conf.universe);
+  }
+  else
+  {
+    return boost::asio::ip::address_v4::from_string(socket.host);
+  }
+}
+
 e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_config& conf, const ossia::net::socket_configuration& socket)
     : protocol_base{flags{}}
     , m_context{ctx}
     , m_timer{ctx->context}
-    , m_socket{socket, ctx->context}
+    , m_socket{e131_host(conf, socket), socket.port, ctx->context}
     , m_universe{conf.universe}
     , m_autocreate{conf.autocreate}
 {
@@ -76,21 +90,14 @@ e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_conf
         "DMX 512 update frequency must be in the range [1, 44] Hz");
 
   m_socket.connect();
-  m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
-}
-e131_protocol::e131_protocol(ossia::net::network_context_ptr ctx, const dmx_config& conf, uint16_t port)
-    : protocol_base{flags{}}
-    , m_context{ctx}
-    , m_timer{ctx->context}
-    , m_socket{boost::asio::ip::address_v4(0xefff0000 | conf.universe), port, ctx->context}
-    , m_universe{conf.universe}
-    , m_autocreate{conf.autocreate}
-{
-  if (conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error(
-        "DMX 512 update frequency must be in the range [1, 44] Hz");
 
-  m_socket.connect();
+  if(conf.multicast && !socket.host.empty())
+  {
+    m_socket.m_socket.set_option(
+          boost::asio::ip::multicast::outbound_interface(
+                                   boost::asio::ip::address_v4::from_string(socket.host)));
+  }
+
   m_timer.set_delay(std::chrono::milliseconds{static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 }
 
@@ -158,15 +165,15 @@ static int e131_pkt_init(e131_packet *packet, const uint16_t universe, const uin
   memset(packet, 0, sizeof *packet);
 
   /* E1.31 Private Constants */
-  constexpr uint16_t _E131_PREAMBLE_SIZE = 0x0010;
-  constexpr uint16_t _E131_POSTAMBLE_SIZE = 0x0000;
-  constexpr uint8_t _E131_ACN_PID[] = {0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e, 0x31, 0x37, 0x00, 0x00, 0x00};
-  constexpr uint32_t _E131_ROOT_VECTOR = 0x00000004;
-  constexpr uint32_t _E131_FRAME_VECTOR = 0x00000002;
-  constexpr uint8_t _E131_DMP_VECTOR = 0x02;
-  constexpr uint8_t _E131_DMP_TYPE = 0xa1;
-  constexpr uint16_t _E131_DMP_FIRST_ADDR = 0x0000;
-  constexpr uint16_t _E131_DMP_ADDR_INC = 0x0001;
+  const uint16_t _E131_PREAMBLE_SIZE = 0x0010;
+  const uint16_t _E131_POSTAMBLE_SIZE = 0x0000;
+  const uint8_t _E131_ACN_PID[] = {0x41, 0x53, 0x43, 0x2d, 0x45, 0x31, 0x2e, 0x31, 0x37, 0x00, 0x00, 0x00};
+  const uint32_t _E131_ROOT_VECTOR = 0x00000004;
+  const uint32_t _E131_FRAME_VECTOR = 0x00000002;
+  const uint8_t _E131_DMP_VECTOR = 0x02;
+  const uint8_t _E131_DMP_TYPE = 0xa1;
+  const uint16_t _E131_DMP_FIRST_ADDR = 0x0000;
+  const uint16_t _E131_DMP_ADDR_INC = 0x0001;
 
   // set Root Layer values
   packet->root.preamble_size = htons(_E131_PREAMBLE_SIZE);

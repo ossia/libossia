@@ -23,13 +23,10 @@ public:
   static constexpr uint16_t default_port = 5568;
   static constexpr uint8_t default_priority = 100;
 
-  // Unicast
   e131_protocol(ossia::net::network_context_ptr, const dmx_config& conf,
                 const ossia::net::socket_configuration& socket
                 );
 
-  // Multicast, uses the universe mentioned in the config
-  e131_protocol(ossia::net::network_context_ptr, const dmx_config& conf, uint16_t port = default_port);
   ~e131_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
