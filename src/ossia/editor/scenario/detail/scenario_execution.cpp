@@ -112,7 +112,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
       }
     }
 
-    if (dispose)
+    if (dispose && !nextTimeInterval->graphal)
       make_dispose(nextTimeInterval->get_end_event(), stopped);
   }
 
