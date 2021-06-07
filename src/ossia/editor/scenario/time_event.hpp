@@ -37,11 +37,11 @@ public:
   /*! event status */
   enum class status : uint8_t
   {
-    NONE,
-    PENDING,
-    HAPPENED,
-    DISPOSED,
-    FINISHED
+    NONE     = 0b00000000,
+    PENDING  = 0b00000001,
+    HAPPENED = 0b00000010,
+    DISPOSED = 0b00000011,
+    FINISHED = 0b10000000
   };
 
   /**

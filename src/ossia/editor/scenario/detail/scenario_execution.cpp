@@ -73,7 +73,7 @@ void scenario::make_happen(
   if (event.m_callback)
     (event.m_callback)(event.m_status);
 
-  event.m_status = time_event::status::FINISHED;
+  reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
 }
 
 void scenario::make_dispose(time_event& event, interval_set& stopped)
@@ -119,7 +119,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
   if (event.m_callback)
     (event.m_callback)(event.m_status);
 
-  event.m_status = time_event::status::FINISHED;
+  reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
 }
 enum progress_mode
 {

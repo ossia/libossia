@@ -4,7 +4,7 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/quantification.hpp>
 #include <ossia/detail/algorithms.hpp>
-#include <iostream>
+#include <ossia/detail/logger.hpp>
 
 namespace ossia
 {
@@ -46,6 +46,12 @@ sync_status scenario::trigger_sync_musical(
   }
   return sync_status::NOT_READY;
 }
+static constexpr bool is_finished(ossia::time_event::status st)
+{ return uint8_t(st) & uint8_t(ossia::time_event::status::FINISHED); };
+static constexpr bool is_happened(ossia::time_event::status st)
+{ return (uint8_t(st) & uint8_t(ossia::time_event::status::HAPPENED)) == uint8_t(ossia::time_event::status::HAPPENED); };
+static constexpr bool is_disposed(ossia::time_event::status st)
+{ return (uint8_t(st) & uint8_t(ossia::time_event::status::DISPOSED)) == uint8_t(ossia::time_event::status::DISPOSED); };
 
 int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& maximalDurationReached)
 {
@@ -73,70 +79,58 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
 
   for (const std::shared_ptr<time_event>& timeEvent : sync.get_time_events())
   {
-    switch (timeEvent->get_status())
+    const auto status = timeEvent->get_status();
+    if(is_finished(status) || status == time_event::status::NONE)
     {
-      // check if NONE TimeEvent is ready to become PENDING
-      case time_event::status::FINISHED:
-      case time_event::status::NONE:
+      bool minimalDurationReached = true;
+
+      for (const std::shared_ptr<ossia::time_interval>& timeInterval :
+           timeEvent->previous_time_intervals())
       {
-        bool minimalDurationReached = true;
+        // ignore graphal intervals for the sake of allowing them to repeat
+        if(timeInterval->graphal)
+          continue;
 
-        for (const std::shared_ptr<ossia::time_interval>& timeInterval :
-             timeEvent->previous_time_intervals())
+        const auto& ev = timeInterval->get_start_event();
+        const auto start_ev_status = ev.get_status();
+
+        // previous TimeIntervals with a DISPOSED start event are ignored
+        if (is_disposed(start_ev_status))
         {
-          // ignore graphal intervals for the sake of allowing them to repeat
-          if(timeInterval->graphal)
-            continue;
-
-          const auto& ev = timeInterval->get_start_event();
-          // previous TimeIntervals with a FINISHED start event are ignored
-          // (that is used in cyclic graphs)
-
-          // previous TimeIntervals with a DISPOSED start event are ignored
-          if (ev.get_status() == time_event::status::DISPOSED)
-          {
-            continue;
-          }
-
-          // previous TimeInterval with a not yet HAPPENED start event
-          // can't have reached its minimal duration
-          if (ev.get_status() != time_event::status::HAPPENED
-           && ev.get_status() != time_event::status::FINISHED)
-          {
-            minimalDurationReached = false;
-            break;
-          }
-
-          // previous TimeInterval which doesn't reached its minimal duration
-          // force to quit
-          if (timeInterval->get_date() < timeInterval->get_min_duration())
-          {
-            minimalDurationReached = false;
-            break;
-          }
+          continue;
         }
 
-        // access to PENDING status once all previous TimeIntervals allow it
-        if (minimalDurationReached)
+        // previous TimeInterval with a not yet HAPPENED start event
+        // can't have reached its minimal duration
+        if (!is_happened(start_ev_status) && !is_finished(start_ev_status))
         {
-          timeEvent->set_status(time_event::status::PENDING);
-          on_pending(timeEvent.get());
+          minimalDurationReached = false;
+          break;
         }
-        break;
+
+        // previous TimeInterval which doesn't reach its minimal duration
+        // force to quit
+        if (timeInterval->get_date() < timeInterval->get_min_duration())
+        {
+          minimalDurationReached = false;
+          break;
+        }
       }
 
-      // PENDING TimeEvent is ready for evaluation
-      case time_event::status::PENDING:
+      // access to PENDING status once all previous TimeIntervals allow it
+      if (minimalDurationReached)
+      {
+        timeEvent->set_status(time_event::status::PENDING);
         on_pending(timeEvent.get());
-        break;
-
-      case time_event::status::HAPPENED:
-        break;
-
-      case time_event::status::DISPOSED:
-        activeCount--;
-        break;
-
+      }
+    }
+    else if(status == time_event::status::PENDING)
+    {
+      on_pending(timeEvent.get());
+    }
+    else if(is_disposed(status))
+    {
+      activeCount--;
     }
   }
 
