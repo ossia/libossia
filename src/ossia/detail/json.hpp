@@ -4,9 +4,16 @@
 #include <ossia/detail/string_view.hpp>
 #if defined(_WIN32)
 #include <windows.h>
+
 #ifdef GetObject
 #undef GetObject
 #endif
+
+// Yay for windows defining uuid_t macro
+#ifdef uuid_t
+#undef uuid_t
+#endif
+
 #endif
 #include <rapidjson/document.h>
 #include <rapidjson/writer.h>

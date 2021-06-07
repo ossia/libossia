@@ -29,13 +29,13 @@ namespace ossia
 {
 namespace oscquery_asio
 {
-struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_socket
+struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_send_socket
 {
-  using udp_socket::udp_socket;
+  using udp_send_socket::udp_send_socket;
 };
-struct oscquery_mirror_asio_protocol::osc_receiver_impl : ossia::net::udp_socket
+struct oscquery_mirror_asio_protocol::osc_receiver_impl : ossia::net::udp_receive_socket
 {
-  using udp_socket::udp_socket;
+  using udp_receive_socket::udp_receive_socket;
 };
 
 struct http_async_answer

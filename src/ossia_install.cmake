@@ -106,6 +106,9 @@ endif()
 if(OSSIA_QT)
   install_headers_rec("${OSSIA_QT_HEADERS}")
 endif()
+if(OSSIA_FFT)
+  install_headers_rec("${OSSIA_FFT_HEADERS}")
+endif()
 
 if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/oscpack/oscpack"
