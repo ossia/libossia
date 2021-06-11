@@ -21,6 +21,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flicks.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/fmt.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/for_each_in_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/hash_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/json.hpp"

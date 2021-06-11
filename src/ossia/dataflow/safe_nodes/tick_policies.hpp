@@ -1,12 +1,15 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/safe_nodes/node.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/flat_map.hpp>
 
 #include <bitset>
 
 namespace ossia::safe_nodes
 {
+
+template <typename T>
+using timed_vec = ossia::flat_map<int64_t, T>;
 
 template <typename T, typename U>
 auto timestamp(const std::pair<T, U>& p)

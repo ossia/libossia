@@ -8,43 +8,11 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply_type.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
+#include <ossia/detail/for_each_in_tuple.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <bitset>
 namespace ossia{
-
-
-template <class F,
-          template<class...> class T1, class... T1s, std::size_t... I1s,
-          template<class...> class T2, class... T2s, std::size_t... I2s>
-void for_each_in_tuples2_impl(
-    T1<T1s...>& t1,
-    T2<T2s...>& t2,
-    F&& func,
-    std::index_sequence<I1s...>,
-    std::index_sequence<I2s...>
-    )
-{
-  (std::forward<F>(func)
-     (
-        std::get<I1s>(std::forward<T1<T1s...>>(t1)),
-        std::get<I2s>(std::forward<T2<T2s...>>(t2))
-     ),
-   ...);
-}
-
-template <class F,
-          template<class...> class T1, class... T1s,
-          template<class...> class T2, class... T2s>
-void for_each_in_tuples2(T1<T1s...>& t1, T2<T2s...>& t2, F&& func)
-{
-  for_each_in_tuples2_impl(
-        t1, t2,
-        std::forward<F>(func),
-        std::make_index_sequence<sizeof...(T1s)>(),
-        std::make_index_sequence<sizeof...(T2s)>()
-        );
-}
 
 // template <template<class...> class T1, template<class...> class T2, class F>
 // void for_each_in_tuples2(T1<>&& t1, T2<>&& t2, const F& func)
@@ -380,7 +348,7 @@ public:
     {
       std::size_t i = 0;
       bool ok = false;
-      ossia::for_each_in_tuples2(this->control_outs_tuple, this->control_outs, [&] (auto&& control_in, auto&& control_out) {
+      ossia::for_each_in_tuples_ref(this->control_outs_tuple, this->control_outs, [&] (auto&& control_in, auto&& control_out) {
         if(!control_in.empty())
         {
           ok = true;
