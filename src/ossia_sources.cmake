@@ -43,6 +43,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_flat_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/span.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
