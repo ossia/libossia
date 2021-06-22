@@ -200,7 +200,7 @@ texture_outlet::~texture_outlet()
 void audio_outlet::post_process()
 {
   // TODO do that better in a sample accurate way
-  if(auto& gain_msg = gain_inlet.data.get_data(); !gain_msg.empty())
+  if(auto& gain_msg = std::as_const(gain_inlet).data.get_data(); !gain_msg.empty())
     gain = ossia::convert<float>(gain_msg.back().value);
 
   // TODO pan
