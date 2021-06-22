@@ -18,6 +18,10 @@ public:
   using fft_plan = fftw_plan;
   using fft_real = double;
   using fft_complex = double[2];
+#else
+  struct fft_plan { };
+  using fft_real = double;
+  using fft_complex = double[2];
 #endif
 
   explicit fft(std::size_t newSize) noexcept;
@@ -49,6 +53,10 @@ public:
   using fft_complex = float[2];
 #elif defined(FFTW_DOUBLE_ONLY)
   using fft_plan = fftw_plan;
+  using fft_real = double;
+  using fft_complex = double[2];
+#else
+  struct fft_plan { };
   using fft_real = double;
   using fft_complex = double[2];
 #endif
