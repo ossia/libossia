@@ -47,6 +47,9 @@ public:
         {
           switch(m_handle.bitsPerSample())
           {
+            case 8:
+              m_converter = read_u8;
+              break;
             case 16:
               m_converter = read_s16;
               break;
@@ -264,7 +267,7 @@ public:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    if(!m_handle)
+    if(!m_handle || !m_converter)
       return;
 
     // TODO do the backwards play head

@@ -21,6 +21,16 @@ template <typename SampleFormat, int N>
 constexpr audio_sample convert_sample(SampleFormat i);
 
 template <>
+constexpr audio_sample convert_sample<uint8_t, 8>(uint8_t i)
+{
+  // 0 -> 255 to -1 -> 1
+  if constexpr (std::is_same_v<ossia::audio_sample, float>)
+    return i / 127.f - 1.f;
+  else
+    return i / 127. - 1.;
+}
+
+template <>
 constexpr audio_sample convert_sample<int16_t, 16>(int16_t i)
 {
   // TODO division -> multiplication
@@ -51,6 +61,21 @@ template <>
 constexpr audio_sample convert_sample<float, 32>(float i)
 {
   return i;
+}
+
+inline void read_u8(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
+{
+  const auto channels = ap.size();
+  auto d = reinterpret_cast<int8_t*>(data);
+
+  for (int64_t j = 0; j < samples; j++)
+  {
+    for (std::size_t i = 0; i < channels; i++)
+    {
+      ap[i][j]
+          = convert_sample<uint8_t, 8>(d[j * channels + i]);
+    }
+  }
 }
 
 inline void read_s16(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
