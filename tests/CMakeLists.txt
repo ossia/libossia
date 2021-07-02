@@ -1,25 +1,13 @@
 ### Setup ###
 # Don't run tests on CI when we're building specific bindings...
 if(OSSIA_CI)
-if(OSSIA_PD_ONLY OR OSSIA_MAX_ONLY OR OSSIA_PYTHON_ONLY OR OSSIA_NODEJS OR OSSIA_JAVA_ONLY OR OSSIA_UNITY3D)
-  return()
+  if(OSSIA_PD_ONLY OR OSSIA_MAX_ONLY OR OSSIA_PYTHON_ONLY OR OSSIA_NODEJS OR OSSIA_JAVA_ONLY OR OSSIA_UNITY3D)
+    return()
+  endif()
 endif()
-endif(OSSIA_CI)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
-
-function(ossia_add_test TESTNAME TESTSRCS)
-    add_executable(ossia_${TESTNAME} ${TESTSRCS})
-    target_compile_options(ossia_${TESTNAME} PUBLIC ${OSSIA_COMPILE_OPTIONS})
-    if(APPLE)
-      target_compile_definitions(ossia_${TESTNAME} PUBLIC  CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS)
-    endif()
-    target_include_directories(ossia_${TESTNAME} PUBLIC "${CMAKE_CURRENT_LIST_DIR}/catch")
-    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia PRIVATE Catch2::Catch2WithMain)
-
-    add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
-endFunction()
 
 ### Tests ###
 ossia_add_test(PresetTest   "${CMAKE_CURRENT_SOURCE_DIR}/Preset/PresetTest.cpp")

@@ -315,3 +315,16 @@ function(ossia_set_visibility TheTarget)
     )
   endif()
 endfunction()
+
+
+function(ossia_add_test TESTNAME TESTSRCS)
+    add_executable(ossia_${TESTNAME} ${TESTSRCS})
+    target_compile_options(ossia_${TESTNAME} PUBLIC ${OSSIA_COMPILE_OPTIONS})
+    if(APPLE)
+      target_compile_definitions(ossia_${TESTNAME} PUBLIC  CATCH_CONFIG_NO_CPP17_UNCAUGHT_EXCEPTIONS)
+    endif()
+    target_include_directories(ossia_${TESTNAME} PUBLIC "${CMAKE_CURRENT_LIST_DIR}/catch")
+    target_link_libraries(ossia_${TESTNAME} PUBLIC ${OSSIA_LINK_OPTIONS} ossia PRIVATE Catch2::Catch2WithMain)
+
+    add_test(NAME ossia_target_${TESTNAME} COMMAND ossia_${TESTNAME})
+endFunction()
