@@ -25,11 +25,11 @@ serial_wrapper::~serial_wrapper()
 }
 
 serial_protocol::serial_protocol(
-    const QByteArray& code, const QSerialPortInfo& bot)
+    const QByteArray& code, const QSerialPortInfo& bot, const int32_t rate)
     : protocol_base{flags{}}
     , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
-    , m_serialPort{bot}
+    , m_serialPort{bot, rate}
     , m_code{code}
 {
   QObject::connect(
