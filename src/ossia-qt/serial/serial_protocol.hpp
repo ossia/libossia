@@ -69,9 +69,11 @@ class OSSIA_EXPORT serial_wrapper final
   QSerialPort mSerialPort;
 
 public:
-  serial_wrapper(const QSerialPortInfo& port) : mSerialPort{port}
+  serial_wrapper(const QSerialPortInfo& port, const int32_t rate = 9600) : mSerialPort{port}
   {
     mSerialPort.open(QIODevice::ReadWrite);
+    mSerialPort.setBaudRate(rate);
+
     ossia::logger().info(
         "Opened serial port: {}", mSerialPort.errorString().toStdString());
     connect(
@@ -112,7 +114,7 @@ class OSSIA_EXPORT serial_protocol final
 {
 public:
   // Param : the name of the serial port
-  serial_protocol(const QByteArray& code, const QSerialPortInfo& bot);
+  serial_protocol(const QByteArray& code, const QSerialPortInfo& bot, const int32_t rate= 9600);
   ~serial_protocol() override;
 
   bool pull(ossia::net::parameter_base&) override;
