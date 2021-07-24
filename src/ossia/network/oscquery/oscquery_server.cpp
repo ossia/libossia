@@ -714,8 +714,24 @@ catch (...)
   logger().error("oscquery_server_protocol::on_nodeRenamed: error.");
 }
 
+void oscquery_server_protocol::disable_zeroconf()
+{
+  m_disableZeroconf = true;
+  m_zeroconfServerWS = {};
+  m_zeroconfServerOSC = {};
+}
+
+void oscquery_server_protocol::set_zeroconf_servers(net::zeroconf_server oscquery_server, net::zeroconf_server osc_server)
+{
+  m_zeroconfServerWS = std::move(oscquery_server);
+  m_zeroconfServerOSC = std::move(osc_server);
+}
+
 void oscquery_server_protocol::update_zeroconf()
 {
+  if(m_disableZeroconf)
+    return;
+
   try
   {
     m_zeroconfServerWS = net::make_zeroconf_server(

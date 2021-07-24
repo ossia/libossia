@@ -78,6 +78,9 @@ public:
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 
+
+  void disable_zeroconf();
+  void set_zeroconf_servers(net::zeroconf_server oscquery_server,  net::zeroconf_server osc_server);
 private:
   // List of connected clients
   oscquery_client* find_client(const connection_handler& hdl);
@@ -139,6 +142,7 @@ private:
   uint16_t m_wsPort{};
 
   bool m_echo{};
+  bool m_disableZeroconf{};
 
   // TODO could we make an intermediate base class for oscquery_{server,mirror}
   // that hold that function queue and other shared members/methods ?
