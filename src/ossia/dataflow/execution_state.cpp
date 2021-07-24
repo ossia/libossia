@@ -192,6 +192,7 @@ struct global_pull_node_visitor
 
 execution_state::~execution_state()
 {
+  apply_device_changes();
   for(auto dev : m_devices_exec)
     dev->get_protocol().stop_execution();
 }
