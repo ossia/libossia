@@ -6,7 +6,7 @@
 namespace ossia::qt
 {
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 
 template<typename T, typename Fun>
 inline void run_async(T* self, Fun&& fun)
