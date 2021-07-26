@@ -19,7 +19,7 @@ inline void run_async(T* self, Fun&& fun)
 template<typename T, typename Fun>
 inline void run_async(T* self, Fun&& fun)
 {
-  if(std::is_copy_constructible_v<Fun>) {
+  if constexpr(std::is_copy_constructible_v<Fun>) {
     QTimer::singleShot(0, self, std::forward<Fun>(fun));
   } else {
     // Old Qt did not support move-only types such as unique_ptr,
