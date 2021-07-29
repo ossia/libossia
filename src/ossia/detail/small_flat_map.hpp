@@ -16,4 +16,12 @@ struct pod_pair {
 
 template <typename K, typename V, std::size_t N, typename Compare = std::less<void>>
 using small_flat_pod_map = fc::flat_map<ossia::small_pod_vector<pod_pair<K, V>, N>, Compare>;
+
+
+template <typename K, typename V, std::size_t N, typename Compare = std::less<void>>
+using static_flat_map = fc::flat_map<ossia::static_vector<std::pair<K, V>, N>, Compare>;
+
+template <typename K, typename V, std::size_t N, typename Compare = std::less<void>>
+using static_flat_pod_map = fc::flat_map<ossia::static_vector<pod_pair<K, V>, N>, Compare>;
+
 }
