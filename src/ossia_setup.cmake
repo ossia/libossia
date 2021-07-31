@@ -131,12 +131,13 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/frozen/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>

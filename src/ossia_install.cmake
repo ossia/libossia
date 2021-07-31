@@ -148,7 +148,14 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/flat/include/"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/flat/"
+        DESTINATION include
+        COMPONENT Devel
+        MESSAGE_NEVER
+        ${3RDPARTY_INSTALL_PATTERN}
+)
+
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/mdspan/include/"
         DESTINATION include
         COMPONENT Devel
         MESSAGE_NEVER
@@ -221,13 +228,6 @@ endif()
 install(FILES "${OSSIA_3RDPARTY_FOLDER}/flat_hash_map/flat_hash_map.hpp"
         DESTINATION include/
         COMPONENT Devel
-)
-
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/flat/include/flat"
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER
-        ${3RDPARTY_INSTALL_PATTERN}
 )
 
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include/tsl"

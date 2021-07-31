@@ -47,12 +47,12 @@ public:
         // win : https://stackoverflow.com/a/13413019/1495627
         // mac : https://stackoverflow.com/a/52905687/1495627
         // other: naive way
-        auto time_to_sleep = std::chrono::microseconds(us_per_buffer);
-        auto actual_next = start + time_to_sleep;
+        //auto time_to_sleep = std::chrono::microseconds(us_per_buffer);
+        //auto actual_next = start + time_to_sleep;
         auto now = start;
         auto elapsed = (now - orig_start);
         auto expected_next_elapsed = clk::duration(iter_total * us_per_buffer);
-        auto delta = expected_next_elapsed - elapsed;
+        //auto delta = expected_next_elapsed - elapsed;
         double delta_p = (expected_next_elapsed.count() - elapsed.count() / 1000.);
         if(delta_p > 0)
         {

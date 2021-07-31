@@ -27,18 +27,16 @@ void for_each_in_tuples(T1<T1s...>&& t1, T2<T2s...>&& t2, F&& func)
 {
   static_assert(sizeof...(T1s) == sizeof...(T2s));
 
-  using namespace std;
-  for_each_in_tuples_impl(
-      move<T1<T1s...>>(t1),
-      move<T2<T2s...>>(t2),
-      forward<F>(func),
-      make_index_sequence<sizeof...(T1s)>()
-      );
-}
-
-template <class F>
-void for_each_in_tuples(const std::tuple<>& , const std::tuple<>& , const F& )
-{
+  if constexpr(sizeof...(T1s) > 0)
+  {
+    using namespace std;
+    for_each_in_tuples_impl(
+        move<T1<T1s...>>(t1),
+        move<T2<T2s...>>(t2),
+        forward<F>(func),
+        make_index_sequence<sizeof...(T1s)>()
+        );
+  }
 }
 
 template <class F, template<class...> class T1, class... T1s, std::size_t... I1s, template<class...> class T2, class... T2s>
@@ -62,11 +60,14 @@ void for_each_in_tuples_ref(T1<T1s...>& t1, T2<T2s...>& t2, F&& func)
 {
   static_assert(sizeof...(T1s) == sizeof...(T2s));
 
-  for_each_in_tuples_ref_impl(
-      t1, t2,
-      std::forward<F>(func),
-      std::make_index_sequence<sizeof...(T1s)>()
-      );
+  if constexpr(sizeof...(T1s) > 0)
+  {
+    for_each_in_tuples_ref_impl(
+        t1, t2,
+        std::forward<F>(func),
+        std::make_index_sequence<sizeof...(T1s)>()
+        );
+  }
 }
 
 

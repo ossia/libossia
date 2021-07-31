@@ -188,8 +188,7 @@ void scenario::run_interval(
         {
           m_overticks.insert(
               node_it,
-              std::make_pair(
-                  end_node, overtick{ot, ot, tk.offset + tick_ms - ot}));
+              { end_node, overtick{ot, ot, tk.offset + tick_ms - ot} });
         }
       }
     }

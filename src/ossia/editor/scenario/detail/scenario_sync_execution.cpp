@@ -26,7 +26,7 @@ sync_status scenario::quantify_time_sync(time_sync& sync, const ossia::token_req
       for (const auto& cst : ev->previous_time_intervals())
       {
         m_itv_end_map.insert(
-            std::make_pair(cst.get(), cst->get_date() + diff_date));
+            { cst.get(), cst->get_date() + diff_date });
       }
     }
     sync.observe_expression(false);

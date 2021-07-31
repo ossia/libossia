@@ -118,3 +118,6 @@
 [submodule "3rdparty/ios-cmake"]
 	path = 3rdparty/ios-cmake
 	url = https://github.com/avilleret/ios-cmake.git
+[submodule "3rdparty/mdspan"]
+	path = 3rdparty/mdspan
+	url = https://github.com/kokkos/mdspan

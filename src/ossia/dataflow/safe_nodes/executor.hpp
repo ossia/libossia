@@ -205,7 +205,7 @@ public:
     using control_type = typename std::tuple_element<N, decltype(Node_T::Metadata::controls)>::type;
     using val_type = typename control_type::type;
 
-    ossia::safe_nodes::timed_vec<val_type>& vec
+    ossia::timed_vec<val_type>& vec
         = std::get<N>(this->control_tuple);
     vec.clear();
     const auto& vp
