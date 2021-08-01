@@ -1,9 +1,10 @@
 #pragma once
 #include <ossia/detail/fmt.hpp>
 #include <ossia/network/value/value.hpp>
+#include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/optional.hpp>
 #include <boost/algorithm/string/replace.hpp>
-#include <flat/flat_set.hpp>
+
 namespace ossia
 {
 template <typename FormatContext>
