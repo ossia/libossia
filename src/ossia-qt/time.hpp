@@ -89,6 +89,9 @@ inline QDataStream& operator>>(QDataStream& i, ossia::token_request& sel)
   ;
 }
 
+Q_DECLARE_METATYPE(ossia::musical_sync)
+W_REGISTER_ARGTYPE(ossia::musical_sync)
+
 Q_DECLARE_METATYPE(ossia::bar_time)
 W_REGISTER_ARGTYPE(ossia::bar_time)
 

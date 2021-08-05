@@ -334,6 +334,53 @@ void scenario::state_impl(const ossia::token_request& tk)
 
     m_pendingEvents.clear();
 
+    // Check intervals that have been quantized
+    for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end(); )
+    {
+      auto [itv,ratio] = *it;
+      if(auto date = tk.get_quantification_date(ratio))
+      {
+        if(itv->running())
+        {
+          mark_end_discontinuous{}(*itv);
+          itv->stop();
+        }
+        itv->start();
+        itv->tick_current(*date, tk);
+        //mark_start_discontinuous{}(*itv);
+
+        m_runningIntervals.insert(itv);
+        auto& start_ev = itv->get_start_event();
+        start_ev.set_status(ossia::time_event::status::HAPPENED);
+
+        it = m_itv_to_start.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+    for(auto it = m_itv_to_stop.begin(); it != m_itv_to_stop.end(); )
+    {
+      auto [itv,ratio] = *it;
+      if(auto date = tk.get_quantification_date(ratio))
+      {
+        if(itv->running())
+        {
+          //mark_end_discontinuous{}(*itv);
+          itv->stop();
+        }
+
+        if(auto running_it = m_runningIntervals.find(itv); running_it != m_runningIntervals.end())
+          m_runningIntervals.erase(running_it);
+
+        it = m_itv_to_stop.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
 
     // First check timesyncs already past their min
     // for any that may have a quantization setting

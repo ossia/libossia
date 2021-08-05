@@ -153,10 +153,9 @@ public:
     return m_status;
   }
 
-  void set_sync_rate(double syncRatio, double quarterDuration) noexcept
+  void set_sync_rate(double syncRatio) noexcept
   {
     m_sync_rate = syncRatio;
-    m_quarter_duration = quarterDuration;
   }
   double get_sync_rate() const noexcept
   {
@@ -194,7 +193,6 @@ private:
   std::optional<expressions::expression_callback_iterator> m_callback;
 
   double m_sync_rate = 0.;
-  double m_quarter_duration = ossia::quarter_duration<double>; // REMOVEME
 
   std::atomic_bool trigger_request{};
   time_value m_trigger_date = Infinite;
