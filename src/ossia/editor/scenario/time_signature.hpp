@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #include <string_view>
+#include <optional>
 #include <cinttypes>
 
 namespace ossia
