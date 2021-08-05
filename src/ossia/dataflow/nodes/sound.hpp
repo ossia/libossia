@@ -474,7 +474,7 @@ protected:
     return stretch_ratio;
   }
 
-  time_value m_prev_date{};
+  time_value m_prev_date{time_value::infinite_min};
 
   time_value m_loop_duration{};
   time_value m_start_offset{};
@@ -491,6 +491,14 @@ protected:
 
 class dummy_sound_node final : public sound_node
 {
+public:
+  ossia::audio_outlet audio_out;
+  dummy_sound_node()
+  {
+    // Add a dummy outlet so that interval can connect propagation to it
+    m_outlets.push_back(&audio_out);
+  }
+
   void transport(time_value date) override
   {
   }

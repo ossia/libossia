@@ -291,7 +291,19 @@ public:
     {
       if(t.prev_date < m_prev_date)
       {
-        transport(t.prev_date);
+        // Sentinel: we never played.
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min}) {
+          if(t.prev_date != 0_tv) {
+            transport(t.prev_date);
+          }
+          else {
+            // Otherwise we don't need transport, everything is alreayd at 0
+            m_prev_date = 0_tv;
+          }
+        }
+        else {
+          transport(t.prev_date);
+        }
       }
 
       for (std::size_t chan = 0; chan < channels; chan++)
