@@ -57,40 +57,98 @@ struct recabler
   ossia::inlets inls;
   ossia::outlets outls;
 
+  void clear_cables(ossia::inlet& port)
+  {
+    for(ossia::graph_edge* cable : port.cables())
+    {
+      graph->disconnect(cable);
+      cable->clear();
+    }
+    port.cables().clear();
+  }
+  void clear_cables(ossia::outlet& port)
+  {
+    for(ossia::graph_edge* cable : port.cables())
+    {
+      graph->disconnect(cable);
+      cable->clear();
+    }
+    port.cables().clear();
+  }
+
+  template<typename T>
+  void copy_child_inlets(T* old_port, T* new_port)
+  {
+    for(std::size_t child_i = 0; child_i < old_port->child_inlets.size(); child_i++)
+    {
+      auto old_cld = old_port->child_inlets[child_i];
+      if(child_i < new_port->child_inlets.size())
+      {
+        auto new_cld = new_port->child_inlets[child_i];
+
+        copy_port(old_cld, new_cld);
+      }
+      else
+      {
+        clear_cables(*old_cld);
+      }
+    }
+  }
+
+  void copy_port(ossia::inlet* old_in, ossia::inlet* new_in)
+  {
+    copy_child_inlets(old_in, new_in);
+
+    if(old_in->which() == new_in->which())
+    {
+      new_in->address = old_in->address;
+      for(auto& cable : old_in->cables())
+      {
+        cable->in = new_in;
+      }
+      new_in->cables() = std::move(old_in->cables());
+    }
+    else
+    {
+      clear_cables(*old_in);
+    }
+  }
+
+  void copy_port(ossia::outlet* old_out, ossia::outlet* new_out)
+  {
+    copy_child_inlets(old_out, new_out);
+
+    if(old_out->which() == new_out->which())
+    {
+      new_out->address = old_out->address;
+      for(auto& cable : old_out->cables())
+      {
+        cable->out = new_out;
+      }
+      new_out->cables() = std::move(old_out->cables());
+    }
+    else
+    {
+      clear_cables(*old_out);
+    }
+  }
+
   void operator()()
   {
     auto& old_inputs = node->root_inputs();
     auto& old_outputs = node->root_outputs();
     {
-      int k = 0;
+      std::size_t k = 0;
       for(auto& old_in : old_inputs)
       {
         if(k < inls.size())
         {
           auto& new_in = inls[k];
-          for(std::size_t child_i = 0; child_i < old_in->child_inlets.size(); child_i++)
-          {
-            auto cld = old_in->child_inlets[child_i];
-            for(auto& child_cable : cld->cables())
-            {
-              child_cable->in = new_in->child_inlets[child_i];
-            }
-          }
-
-          for(auto& cable : old_in->cables())
-          {
-            cable->in = new_in;
-          }
-          new_in->cables() = std::move(old_in->cables());
+          copy_port(old_in, new_in);
         }
         else
         {
-          for(ossia::graph_edge* cable : old_in->cables())
-          {
-            graph->disconnect(cable);
-            cable->clear();
-          }
-          old_in->cables().clear();
+          clear_cables(*old_in);
         }
 
         delete old_in;
@@ -100,35 +158,17 @@ struct recabler
     }
 
     {
-      int k = 0;
+      std::size_t k = 0;
       for(auto& old_out : old_outputs)
       {
         if(k < outls.size())
         {
           auto& new_out = outls[k];
-          for(std::size_t child_i = 0; child_i < old_out->child_inlets.size(); child_i++)
-          {
-            auto cld = old_out->child_inlets[child_i];
-            for(auto& child_cable : cld->cables())
-            {
-              child_cable->in = new_out->child_inlets[child_i];
-            }
-          }
-
-          for(auto& cable : old_out->cables())
-          {
-            cable->out = new_out;
-          }
-          new_out->cables() = std::move(old_out->cables());
+          copy_port(old_out, new_out);
         }
         else
         {
-          for(ossia::graph_edge* cable : old_out->cables())
-          {
-            graph->disconnect(cable);
-            cable->clear();
-          }
-          old_out->cables().clear();
+          clear_cables(*old_out);
         }
 
         delete old_out;
