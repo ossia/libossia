@@ -198,13 +198,6 @@ void graph_node::clear() noexcept
 
   for (auto outl : m_outlets)
   {
-    /*
-    // Audio outlets add two inlets at the end
-    if(outl->which() == ossia::audio_port::which)
-    {
-      m_inlets.pop_back();
-      m_inlets.pop_back();
-    }*/
     delete outl;
   }
   for (auto inl : m_inlets)
