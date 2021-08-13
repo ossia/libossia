@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <string>
 #include <string_view>
 #include <optional>
 #include <cinttypes>
