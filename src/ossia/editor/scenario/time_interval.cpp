@@ -459,7 +459,12 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
 
   // todo what if the interval started
   if (m_running)
+  {
     timeProcess->start();
+    if(m_date != 0_tv) {
+      timeProcess->transport(m_date);
+    }
+  }
 
   if(bool b = node->muted())
     timeProcess->mute(b);
