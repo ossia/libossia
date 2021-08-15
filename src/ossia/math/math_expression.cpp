@@ -1,6 +1,6 @@
 #include <ossia/math/math_expression.hpp>
 #include <ossia/detail/logger.hpp>
-#include <rnd/include/rnd/random.hpp>
+#include <rnd/random.hpp>
 #define exprtk_disable_string_capabilities 1
 #include <exprtk.hpp>
 namespace ossia
