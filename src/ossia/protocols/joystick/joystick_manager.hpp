@@ -24,8 +24,8 @@ struct sdl_joystick_context
     //  Prevent SDL from setting SIGINT handler on Posix Systems
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
-    if (SDL_Init(SDL_INIT_JOYSTICK) < 0)
-      throw std::runtime_error("SDL Init failure");
+    if (int ret = SDL_Init(SDL_INIT_JOYSTICK); ret < 0)
+      throw std::runtime_error(fmt::format("SDL Init failure: {}", SDL_GetError()));
 
     SDL_JoystickEventState(SDL_ENABLE);
   }
