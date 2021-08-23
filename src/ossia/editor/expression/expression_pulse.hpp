@@ -42,6 +42,8 @@ public:
   /*! reset the evaluation to false until the next destination update */
   void update() const;
 
+  void reset();
+
   const destination& get_destination() const;
 
 private:

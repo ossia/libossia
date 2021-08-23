@@ -31,6 +31,7 @@ public:
 
   bool evaluate() const;
   void update() const;
+  void reset();
 
   expression_base& get_expression() const;
 

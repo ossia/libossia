@@ -73,6 +73,16 @@ inline void update(const expression_ptr& e)
 }
 
 /**
+ * @brief reset
+ * @param e An expression
+ */
+OSSIA_EXPORT void reset(expression_base& e);
+inline void reset(const expression_ptr& e)
+{
+  return reset(*e);
+}
+
+/**
  * @brief operator==(const expression_base& lhs, const expression_base& rhs)
  * Compares two expressions.
  *

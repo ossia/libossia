@@ -35,6 +35,9 @@ public:
   void update() const
   {
   }
+  void reset() const
+  {
+  }
 };
 }
 }

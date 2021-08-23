@@ -42,6 +42,10 @@ void scenario::start()
     m_waitingNodes.insert(node);
   }
 
+  for (auto& node: m_nodes)
+  {
+    node->reset();
+  }
 
   // start each TimeInterval if possible
   for (const auto& timeInterval : m_intervals)

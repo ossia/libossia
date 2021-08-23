@@ -36,6 +36,7 @@ public:
   bool evaluate() const;
 
   void update() const;
+  void reset();
 
   expression_base& get_first_operand() const;
   binary_operator get_operator() const;

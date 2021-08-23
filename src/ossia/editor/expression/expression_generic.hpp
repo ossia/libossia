@@ -43,6 +43,9 @@ public:
     return expr->evaluate();
   }
 
+  void reset() const {
+
+  }
 private:
   void on_first_callback_added() override
   {

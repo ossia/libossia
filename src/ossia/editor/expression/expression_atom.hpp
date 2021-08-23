@@ -50,6 +50,7 @@ public:
 
   bool evaluate() const;
   void update() const;
+  void reset();
 
   const val_t& get_first_operand() const;
   comparator get_operator() const;

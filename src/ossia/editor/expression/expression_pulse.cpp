@@ -33,6 +33,11 @@ void expression_pulse::update() const
   m_result = false;
 }
 
+void expression_pulse::reset()
+{
+  m_result = false;
+}
+
 void expression_pulse::on_first_callback_added()
 {
 }

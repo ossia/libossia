@@ -34,6 +34,12 @@ void expression_composition::update() const
   expressions::update(*m_second);
 }
 
+void expression_composition::reset()
+{
+  expressions::reset(*m_first);
+  expressions::reset(*m_second);
+}
+
 expression_base& expression_composition::get_first_operand() const
 {
   return *m_first;

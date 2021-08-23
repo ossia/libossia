@@ -29,6 +29,11 @@ void expression_not::update() const
   expressions::update(*m_expression);
 }
 
+void expression_not::reset()
+{
+  expressions::reset(*m_expression);
+}
+
 expression_base& expression_not::get_expression() const
 {
   return *m_expression;
