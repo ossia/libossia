@@ -454,6 +454,7 @@ void oscquery_mirror_asio_protocol::start_osc()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>(ossia::net::socket_configuration{"0.0.0.0", (uint16_t)m_osc_port}, this->m_ctx->context);
   m_oscServer->open();
+  m_osc_port = m_oscServer->m_socket.local_endpoint().port();
   m_oscServer->receive([this] (const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
 }
 

@@ -50,7 +50,7 @@ class OSSIA_EXPORT oscquery_mirror_asio_protocol final
 public:
   oscquery_mirror_asio_protocol(
       ossia::net::network_context_ptr ctx,
-      std::string host, uint16_t local_osc_port = 10203);
+      std::string host, uint16_t local_osc_port = 0);
   ~oscquery_mirror_asio_protocol() override;
 
   bool pull(net::parameter_base&) override;
