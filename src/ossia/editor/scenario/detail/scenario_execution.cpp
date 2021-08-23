@@ -275,7 +275,9 @@ void scenario::state_impl(const ossia::token_request& tk)
       {
         n->observe_expression(true, [n](bool b) {
           if (b)
+          {
             n->start_trigger_request();
+          }
         });
       }
 
@@ -288,18 +290,7 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
         else
         {
-          auto& evs = n->get_time_events();
-          for (auto& e : evs)
-          {
-            const auto st = e->get_status();
-            if (st == ossia::time_event::status::HAPPENED
-                || st == ossia::time_event::status::DISPOSED)
-            {
-              m_sg.reset_component(*n);
-              break;
-            }
-          }
-
+          m_sg.reset_component(*n);
           if(n->is_autotrigger())
             n->m_evaluating = true;
 

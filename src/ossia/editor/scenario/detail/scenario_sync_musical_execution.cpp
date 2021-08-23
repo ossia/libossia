@@ -39,6 +39,11 @@ sync_status scenario::trigger_sync_musical(
 
     sync.set_is_being_triggered(true);
 
+    if(sync.m_expression)
+    {
+      expressions::reset(*sync.m_expression);
+    }
+
     if (!sync.has_trigger_date() && sync.has_sync_rate())
     {
       return quantify_time_sync(sync, tk);

@@ -131,6 +131,11 @@ sync_status scenario::trigger_sync(
   // trigger the time sync
   sync.set_is_being_triggered(false);
 
+  if(sync.m_expression)
+  {
+    expressions::reset(*sync.m_expression);
+  }
+
   // now TimeEvents will happen or be disposed.
   // the last added events are necessarily the ones of this node.
   for (time_event* ev : pending)
