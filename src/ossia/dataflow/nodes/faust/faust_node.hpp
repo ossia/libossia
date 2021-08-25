@@ -44,7 +44,7 @@ public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> displays;
 
-  std::array<int8_t, 128> in_flight;
+  std::array<int8_t, 128> in_flight{};
   faust_synth(std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> dsp)
     : m_dsp{std::move(dsp)}
   {
