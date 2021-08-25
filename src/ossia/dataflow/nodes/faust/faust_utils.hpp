@@ -267,11 +267,13 @@ struct faust_node_utils
       {
         case libremidi::message_type::NOTE_ON:
         {
+          self.in_flight[mess[1]]++;
           dsp.keyOn(mess[0], mess[1], mess[2]);
           break;
         }
         case libremidi::message_type::NOTE_OFF:
         {
+          self.in_flight[mess[1]]--;
           dsp.keyOff(mess[0], mess[1], mess[2]);
           break;
         }
@@ -290,6 +292,14 @@ struct faust_node_utils
           // TODO continue...
       }
     }
+  }
+
+  template <typename Node, typename DspPoly>
+  void all_notes_off(Node& self, DspPoly& dsp)
+  {
+    for(int k = 0; k < 128; k++)
+      while(self.in_flight[k]-- > 0)
+        dsp.keyOff(1, k, 0);
   }
 
   /// Execution ///
