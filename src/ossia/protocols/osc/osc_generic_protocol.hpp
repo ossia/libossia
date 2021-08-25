@@ -48,6 +48,8 @@ public:
 
     from_client.receive(
         [this] (const char* data, std::size_t sz) {
+          if(!m_device)
+            return;
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         }
@@ -67,6 +69,8 @@ public:
 
     from_client.receive(
         [this] (const char* data, std::size_t sz) {
+          if(!m_device)
+            return;
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         }
@@ -94,6 +98,8 @@ public:
 
     from_client.receive(
         [this] (const char* data, std::size_t sz) {
+          if(!m_device)
+            return;
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         }
@@ -121,6 +127,8 @@ public:
 
     from_client.receive(
         [this] (const char* data, std::size_t sz) {
+          if(!m_device)
+            return;
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
           osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
         }

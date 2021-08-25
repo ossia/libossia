@@ -87,17 +87,18 @@ struct osc_protocol_common
   template<typename T>
   static void on_received_message(T& self, const oscpack::ReceivedMessage& m)
   {
-    if (!self.learning())
+    [[unlikely]]
+    if(self.learning())
     {
-      ossia::net::on_input_message<false>(
-            m.AddressPattern(),
-            ossia::net::osc_message_applier{self.m_id, m},
-            self.m_listening, *self.m_device, self.m_logger);
+      auto already_learned = ossia::net::osc_learn(&self.m_device->get_root_node(), m);
+      if(!already_learned)
+        return;
     }
-    else
-    {
-      ossia::net::osc_learn(&self.m_device->get_root_node(), m);
-    }
+
+    ossia::net::on_input_message<false>(
+        m.AddressPattern(),
+        ossia::net::osc_message_applier{self.m_id, m},
+        self.m_listening, *self.m_device, self.m_logger);
   }
 };
 

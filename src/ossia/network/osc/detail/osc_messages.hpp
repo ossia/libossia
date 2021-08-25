@@ -23,7 +23,8 @@ struct buffer_packed_osc_stream
   oscpack::OutboundPacketStream stream;
 };
 
+// returns the node if it was already learned
 OSSIA_EXPORT
-void osc_learn(ossia::net::node_base* n, const oscpack::ReceivedMessage& m);
+ossia::net::node_base* osc_learn(ossia::net::node_base* n, const oscpack::ReceivedMessage& m);
 
 }

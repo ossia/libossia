@@ -231,17 +231,18 @@ bool osc_protocol::echo_incoming_message(
 void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  if (!m_learning)
+  [[unlikely]]
+  if(m_learning)
   {
-    ossia::net::on_input_message<false>(
-          m.AddressPattern(),
-          ossia::net::osc_message_applier{m_id, m},
-          m_listening, *m_device, m_logger);
+    auto already_learned = ossia::net::osc_learn(&m_device->get_root_node(), m);
+    if(!already_learned)
+      return;
   }
-  else
-  {
-    ossia::net::osc_learn(&m_device->get_root_node(), m);
-  }
+
+  ossia::net::on_input_message<false>(
+      m.AddressPattern(),
+      ossia::net::osc_message_applier{m_id, m},
+      m_listening, *m_device, m_logger);
 }
 
 
