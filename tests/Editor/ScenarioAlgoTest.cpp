@@ -1091,7 +1091,7 @@ TEST_CASE ("test_musical_bar", "test_musical_bar")
   std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   // assume sampling rate is 44100 -> a quarter note is 22050
-  e1->get_time_sync().set_sync_rate(1, 22050);
+  e1->get_time_sync().set_sync_rate(1);
 
   /*                c0                  c1
     * e0 - - - - - - - - - - e1 - - - - - - - - - - e2
@@ -1210,7 +1210,7 @@ TEST_CASE ("test_musical_bar_offset", "test_musical_bar_offset")
   std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   // assume sampling rate is 44100 -> a quarter note is 22050
-  e1->get_time_sync().set_sync_rate(1, 22050);
+  e1->get_time_sync().set_sync_rate(1);
 
   /*                      c0                  c1
     * ex -- e0 - - - - - - - - - - e1 - - - - - - - - - - e2
@@ -1321,7 +1321,7 @@ TEST_CASE ("test_musical_quarter", "test_musical_quarter")
   std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   // assume sampling rate is 44100 -> a quarter note is 22050
-  e1->get_time_sync().set_sync_rate(4, 22050);
+  e1->get_time_sync().set_sync_rate(4);
 
   /*                c0                  c1
     * e0 - - - - - - - - - - e1 - - - - - - - - - - e2
@@ -1427,7 +1427,7 @@ TEST_CASE ("test_musical_eighth", "test_musical_eighth")
   std::shared_ptr<time_event> e2 = create_event(scenario); e2->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   // assume sampling rate is 44100 -> a quarter note is 22050
-  e1->get_time_sync().set_sync_rate(8, 22050);
+  e1->get_time_sync().set_sync_rate(8);
 
   /*                c0                  c1
     * e0 - - - - - - - - - - e1 - - - - - - - - - - e2

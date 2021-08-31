@@ -19,7 +19,7 @@ static const conf client_conf = conf{{recv_sock{{"0.0.0.0", 9875}}, send_sock{{"
 TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_send_socket, udp_receive_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
 
@@ -51,7 +51,7 @@ TEST_CASE ("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 TEST_CASE ("test_comm_osc_udp_big", "test_comm_osc_udp_big")
 {
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_send_socket, udp_receive_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
 
@@ -87,7 +87,7 @@ TEST_CASE ("test_comm_osc_udp", "test_comm_osc_udp")
 {
   using namespace ossia::net;
   using namespace ossia::net;
-  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_socket, udp_socket>;
+  using proto = osc_generic_bidir_protocol<osc_protocol_client<osc_1_0_policy>, udp_send_socket, udp_receive_socket>;
 
   auto ctx = std::make_shared<ossia::net::network_context>();
 

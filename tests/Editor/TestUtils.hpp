@@ -105,6 +105,7 @@ std::ostream& operator<<(std::ostream& s, ossia::time_event::status st)
     case ossia::time_event::status::PENDING: s << "pending"; break;
     case ossia::time_event::status::HAPPENED: s << "happened"; break;
     case ossia::time_event::status::DISPOSED: s << "disposed"; break;
+    case ossia::time_event::status::FINISHED: s << "finished"; break;
   }
   return s;
 }

@@ -18,6 +18,65 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/detail/flicks.hpp>
 
+struct tick
+{
+  ossia::execution_state& st;
+  ossia::graph_interface& g;
+  ossia::time_interval& itv;
+  ossia::time_value prev_date{};
+
+  void operator()(const ossia::audio_tick_state& st)
+  {
+    (*this)(st.frames, st.seconds);
+  }
+
+  void operator()(unsigned long frameCount, double seconds)
+  {
+    using namespace ossia;
+#if defined(OSSIA_EXECUTION_LOG)
+    auto log = g_exec_log.start_tick();
+#endif
+
+    std::atomic_thread_fence(std::memory_order_seq_cst);
+    st.begin_tick();
+    st.samples_since_start += frameCount;
+    st.bufferSize = (int)frameCount;
+    // we could run a syscall and call now() but that's a bit more costly.
+    st.cur_date = seconds * 1e9;
+
+    const auto flicks = frameCount * st.samplesToModelRatio;
+    const ossia::token_request tok{};
+
+    // Temporal tick
+    {
+#if defined(OSSIA_EXECUTION_LOG)
+      auto log = g_exec_log.start_temporal();
+#endif
+      itv.tick_offset(ossia::time_value{int64_t(flicks)}, 0_tv, tok);
+    }
+
+    // Dataflow execution
+    {
+#if defined(OSSIA_EXECUTION_LOG)
+      auto log = g_exec_log.start_dataflow();
+#endif
+
+      g.state(st);
+    }
+
+    std::atomic_thread_fence(std::memory_order_seq_cst);
+
+    // Apply messages
+    {
+#if defined(OSSIA_EXECUTION_LOG)
+      auto log = g_exec_log.start_commit();
+#endif
+
+      st.commit_merged();
+    }
+  }
+};
+
 constexpr ossia::time_value seconds(double s) noexcept {
   return ossia::time_value{int64_t(s * ossia::flicks_per_second<int64_t>)};
 }
@@ -212,7 +271,7 @@ int main(int argc, char** argv)
   auto root_interval = create_score(graph, audio);
   root_interval->start();
 
-  audio.engine->set_tick(ossia::buffer_tick<&ossia::execution_state::commit>{e, graph, *root_interval});
+  audio.engine->set_tick(tick{e, graph, *root_interval});
 
   std::this_thread::sleep_for(20s);
 

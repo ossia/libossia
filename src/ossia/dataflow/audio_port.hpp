@@ -17,6 +17,16 @@ struct audio_port
   static const constexpr int which = 0;
 
   audio_vector samples;
+
+  operator ossia::mutable_audio_span<double>() noexcept
+  {
+    return {samples.begin(), samples.end()};
+  }
+
+  operator ossia::audio_span<double>() const noexcept
+  {
+    return {samples.begin(), samples.end()};
+  }
 };
 
 #if BOOST_VERSION >= 107200
