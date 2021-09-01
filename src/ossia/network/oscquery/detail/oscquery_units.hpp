@@ -271,11 +271,23 @@ struct unit_writer
   {
     write_extended(u);
   }
+  void operator()(const aed_u& u)
+  {
+    write_extended(u);
+  }
+  void operator()(const ad_u& u)
+  {
+    write_extended(u);
+  }
   void operator()(const opengl_u& u)
   {
     write_extended(u);
   }
   void operator()(const cylindrical_u& u)
+  {
+    write_extended(u);
+  }
+  void operator()(const azd_u& u)
   {
     write_extended(u);
   }
@@ -449,8 +461,11 @@ ossia::yxy_u{} }, { { "color.hunterLab.l", "color.hunterLab.a",
 
       unit_matcher(spherical_u{}),
       unit_matcher(polar_u{}),
+      unit_matcher(aed_u{}),
+      unit_matcher(ad_u{}),
       unit_matcher(opengl_u{}),
       unit_matcher(cylindrical_u{}),
+      unit_matcher(azd_u{}),
 
       {{"position.cartesian.x", "position.cartesian.y",
         "position.cartesian.z"},

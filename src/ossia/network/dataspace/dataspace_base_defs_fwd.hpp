@@ -105,15 +105,21 @@ struct cartesian_3d_u;
 struct cartesian_2d_u;
 struct spherical_u;
 struct polar_u;
+struct aed_u;
+struct ad_u;
 struct opengl_u;
 struct cylindrical_u;
+struct azd_u;
 
 using cartesian_3d = strong_value<cartesian_3d_u>;
 using cartesian_2d = strong_value<cartesian_2d_u>;
 using spherical = strong_value<spherical_u>;
 using polar = strong_value<polar_u>;
+using aed = strong_value<aed_u>;
+using ad = strong_value<ad_u>;
 using opengl = strong_value<opengl_u>;
 using cylindrical = strong_value<cylindrical_u>;
+using azd = strong_value<azd_u>;
 
 template <typename T>
 struct speed_ratio;
