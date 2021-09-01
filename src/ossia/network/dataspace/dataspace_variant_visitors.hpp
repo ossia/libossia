@@ -2083,6 +2083,18 @@ auto apply(
         {
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
         }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+        }
         default:
           throw std::runtime_error(": bad type");
       }
@@ -4330,6 +4342,18 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         {
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
         }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
+        }
         default:
           throw std::runtime_error(": bad type");
       }
@@ -4361,6 +4385,18 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         case position_u::Type::Type5:
         {
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
+        }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
           throw std::runtime_error(": bad type");
@@ -4394,6 +4430,18 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         {
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
         }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
+        }
         default:
           throw std::runtime_error(": bad type");
       }
@@ -4425,6 +4473,18 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         case position_u::Type::Type5:
         {
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
+        }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
           throw std::runtime_error(": bad type");
@@ -4458,6 +4518,18 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         {
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
         }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
+        }
         default:
           throw std::runtime_error(": bad type");
       }
@@ -4490,8 +4562,152 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
         {
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
         }
+        case position_u::Type::Type6:
+        {
+          return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value6);
+        }
+        case position_u::Type::Type7:
+        {
+          return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
+        }
+        case position_u::Type::Type8:
+        {
+          return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
+        }
         default:
           throw std::runtime_error(": bad type");
+      }
+  }
+  case position::Type::Type6:
+  {
+    switch (arg1.m_type)
+    {
+    case position_u::Type::Type0:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value0);
+    }
+    case position_u::Type::Type1:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
+    }
+    case position_u::Type::Type2:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
+    }
+    case position_u::Type::Type3:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
+    }
+    case position_u::Type::Type4:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
+    }
+    case position_u::Type::Type5:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
+    }
+    case position_u::Type::Type6:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value6);
+    }
+    case position_u::Type::Type7:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
+    }
+    case position_u::Type::Type8:
+    {
+      return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
+    }
+    default:
+      throw std::runtime_error(": bad type");
+    }
+  }
+  case position::Type::Type7:
+  {
+    switch (arg1.m_type)
+    {
+    case position_u::Type::Type0:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value0);
+    }
+    case position_u::Type::Type1:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
+    }
+    case position_u::Type::Type2:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
+    }
+    case position_u::Type::Type3:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
+    }
+    case position_u::Type::Type4:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
+    }
+    case position_u::Type::Type5:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
+    }
+    case position_u::Type::Type6:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value6);
+    }
+    case position_u::Type::Type7:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
+    }
+    case position_u::Type::Type8:
+    {
+      return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
+    }
+    default:
+      throw std::runtime_error(": bad type");
+    }
+  }
+  case position::Type::Type8:
+  {
+    switch (arg1.m_type)
+    {
+    case position_u::Type::Type0:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value0);
+    }
+    case position_u::Type::Type1:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
+    }
+    case position_u::Type::Type2:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
+    }
+    case position_u::Type::Type3:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
+    }
+    case position_u::Type::Type4:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
+    }
+    case position_u::Type::Type5:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
+    }
+    case position_u::Type::Type6:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value6);
+    }
+    case position_u::Type::Type7:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
+    }
+    case position_u::Type::Type8:
+    {
+      return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
+    }
+    default:
+      throw std::runtime_error(": bad type");
       }
     }
     default:
