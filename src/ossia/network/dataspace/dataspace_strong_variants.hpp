@@ -3227,15 +3227,9 @@ public:
 
     ossia::polar m_value3;
 
-    ossia::aed m_value4;
+    ossia::opengl m_value4;
 
-    ossia::ad m_value5;
-
-    ossia::opengl m_value6;
-
-    ossia::cylindrical m_value7;
-
-    ossia::azd m_value8;
+    ossia::cylindrical m_value5;
 
     dummy_t m_dummy;
     Impl() : m_dummy{}
@@ -3254,9 +3248,6 @@ public:
     Type3,
     Type4,
     Type5,
-    Type6,
-    Type7,
-    Type8,
     Npos = std::numeric_limits<int8_t>::max()
   };
 
@@ -3316,25 +3307,13 @@ public:
   {
     new (&m_impl.m_value3) ossia::polar{v};
   }
-  position(ossia::aed v) : m_type{Type4}
+  position(ossia::opengl v) : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::aed{v};
+    new (&m_impl.m_value4) ossia::opengl{v};
   }
-  position(ossia::ad v) : m_type{Type5}
+  position(ossia::cylindrical v) : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::ad{v};
-  }
-  position(ossia::opengl v) : m_type{Type6}
-  {
-    new (&m_impl.m_value6) ossia::opengl{v};
-  }
-  position(ossia::cylindrical v) : m_type{Type7}
-  {
-    new (&m_impl.m_value7) ossia::cylindrical{v};
-  }
-  position(ossia::azd v) : m_type{Type8}
-  {
-    new (&m_impl.m_value8) ossia::azd{v};
+    new (&m_impl.m_value5) ossia::cylindrical{v};
   }
   position(const position& other) : m_type{other.m_type}
   {
@@ -3484,38 +3463,17 @@ inline const ossia::polar* position::target() const
   return nullptr;
 }
 template <>
-inline const ossia::aed* position::target() const
+inline const ossia::opengl* position::target() const
 {
   if (m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
-inline const ossia::ad* position::target() const
+inline const ossia::cylindrical* position::target() const
 {
   if (m_type == Type5)
     return &m_impl.m_value5;
-  return nullptr;
-}
-template <>
-inline const ossia::opengl* position::target() const
-{
-  if (m_type == Type6)
-    return &m_impl.m_value6;
-  return nullptr;
-}
-template <>
-inline const ossia::cylindrical* position::target() const
-{
-  if (m_type == Type7)
-    return &m_impl.m_value7;
-  return nullptr;
-}
-template <>
-inline const ossia::azd* position::target() const
-{
-  if (m_type == Type8)
-    return &m_impl.m_value8;
   return nullptr;
 }
 template <>
@@ -3547,38 +3505,17 @@ inline ossia::polar* position::target()
   return nullptr;
 }
 template <>
-inline ossia::aed* position::target()
+inline ossia::opengl* position::target()
 {
   if (m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
-inline ossia::ad* position::target()
+inline ossia::cylindrical* position::target()
 {
   if (m_type == Type5)
     return &m_impl.m_value5;
-  return nullptr;
-}
-template <>
-inline ossia::opengl* position::target()
-{
-  if (m_type == Type6)
-    return &m_impl.m_value6;
-  return nullptr;
-}
-template <>
-inline ossia::cylindrical* position::target()
-{
-  if (m_type == Type7)
-    return &m_impl.m_value7;
-  return nullptr;
-}
-template <>
-inline ossia::azd* position::target()
-{
-  if (m_type == Type8)
-    return &m_impl.m_value8;
   return nullptr;
 }
 template <>
@@ -3610,38 +3547,17 @@ inline const ossia::polar& position::get() const
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline const ossia::aed& position::get() const
+inline const ossia::opengl& position::get() const
 {
   if (m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline const ossia::ad& position::get() const
+inline const ossia::cylindrical& position::get() const
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline const ossia::opengl& position::get() const
-{
-  if (m_type == Type6)
-    return m_impl.m_value6;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline const ossia::cylindrical& position::get() const
-{
-  if (m_type == Type7)
-    return m_impl.m_value7;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline const ossia::azd& position::get() const
-{
-  if (m_type == Type8)
-    return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <>
@@ -3673,38 +3589,17 @@ inline ossia::polar& position::get()
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline ossia::aed& position::get()
+inline ossia::opengl& position::get()
 {
   if (m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
-inline ossia::ad& position::get()
+inline ossia::cylindrical& position::get()
 {
   if (m_type == Type5)
     return m_impl.m_value5;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline ossia::opengl& position::get()
-{
-  if (m_type == Type6)
-    return m_impl.m_value6;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline ossia::cylindrical& position::get()
-{
-  if (m_type == Type7)
-    return m_impl.m_value7;
-  throw std::runtime_error("position: bad type");
-}
-template <>
-inline ossia::azd& position::get()
-{
-  if (m_type == Type8)
-    return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <typename Visitor>

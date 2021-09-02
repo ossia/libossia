@@ -26,8 +26,8 @@ using gain_u_list
 using orientation_u_list = brigand::list<quaternion_u, euler_u, axis_u>;
 
 using position_u_list = brigand::list<
-    cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, aed_u,
-    ad_u, opengl_u, cylindrical_u, azd_u>;
+    cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, opengl_u,
+    cylindrical_u>;
 
 using speed_u_list = brigand::list<
     meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u,
@@ -144,7 +144,7 @@ using gain_list = brigand::list<linear, midigain, decibel, decibel_raw>;
 using orientation_list = brigand::list<quaternion, euler, axis>;
 
 using position_list = brigand::list<
-    cartesian_3d, cartesian_2d, spherical, polar, aed, ad, opengl, cylindrical, azd>;
+    cartesian_3d, cartesian_2d, spherical, polar, opengl, cylindrical>;
 
 using speed_list = brigand::list<
     meter_per_second, miles_per_hour, kilometer_per_hour, knot,

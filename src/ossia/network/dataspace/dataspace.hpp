@@ -152,19 +152,10 @@ struct OSSIA_EXPORT unit_t final
   unit_t(polar_u t) noexcept : v{position_u{t}}
   {
   }
-  unit_t(aed_u t) noexcept : v{position_u{t}}
-  {
-  }
-  unit_t(ad_u t) noexcept : v{position_u{t}}
-  {
-  }
   unit_t(opengl_u t) noexcept : v{position_u{t}}
   {
   }
   unit_t(cylindrical_u t) noexcept : v{position_u{t}}
-  {
-  }
-  unit_t(azd_u t) noexcept : v{position_u{t}}
   {
   }
 
