@@ -180,6 +180,11 @@ struct buffer_tick
 
       (st.*Commit)();
     }
+
+    // Clear the scenario token
+    {
+      scenar.node->requested_tokens.clear();
+    }
   }
 };
 
