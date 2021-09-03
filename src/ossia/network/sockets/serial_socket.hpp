@@ -48,10 +48,13 @@ public:
 
   void close()
   {
-    m_context.post([this] {
-      m_port.close();
-      on_close();
-    });
+    if(m_port.is_open())
+    {
+      m_context.post([this] {
+        m_port.close();
+        on_close();
+      });
+    }
   }
 
   void write(const char* data, std::size_t sz)

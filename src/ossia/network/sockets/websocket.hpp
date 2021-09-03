@@ -43,13 +43,14 @@ struct websocket_simple_client : websocket_client
     send_binary_message(std::string_view{data, sz});
   }
 
-  bool connected() const noexcept { return m_connected; }
-
   void close()
   {
-    m_client.get_io_service().post([this] {
-      websocket_client::stop();
-    });
+    if(connected())
+    {
+      m_client.get_io_service().post([this] {
+        websocket_client::stop();
+      });
+    }
   }
 
   std::string m_host;

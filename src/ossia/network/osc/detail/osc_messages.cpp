@@ -1,5 +1,6 @@
 #include <ossia/network/osc/detail/osc_messages.hpp>
 #include <ossia/network/base/osc_address.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/detail/logger.hpp>
 
 namespace ossia::net

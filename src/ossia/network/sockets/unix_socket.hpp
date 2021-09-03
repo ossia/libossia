@@ -38,10 +38,13 @@ public:
 
   void close()
   {
-    m_context.post([this] {
-      m_socket.close();
-      on_close();
-    });
+    if(m_socket.is_open())
+    {
+      m_context.post([this] {
+        m_socket.close();
+        on_close();
+      });
+    }
   }
 
   template <typename F>
