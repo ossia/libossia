@@ -130,7 +130,7 @@ public:
     m_end_discontinuous = b;
   }
 
-  virtual void prepare(const execution_state& st) const noexcept;
+  virtual void prepare(const execution_state& st) noexcept;
   virtual bool consumes(const execution_state&) const noexcept;
   virtual void run(const token_request&, exec_state_facade) noexcept;
   virtual std::string label() const noexcept;
@@ -222,4 +222,11 @@ public:
 
   void clear() noexcept override;
 };
+
+template<typename T, typename... Args>
+auto make_node(const execution_state& st, Args&&... args) {
+  auto n = std::make_shared<T>(std::forward<Args>(args)...);
+  n->prepare(st);
+  return n;
+}
 }

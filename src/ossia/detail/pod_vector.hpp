@@ -12,7 +12,7 @@ template <class T>
 struct pod_allocator
 {
   using value_type = T;
-    
+
   template <typename... Args>
   explicit pod_allocator(Args&&...) noexcept
   {
@@ -43,6 +43,10 @@ struct pod_allocator
     return false;
   }
 };
+
+template <class T, std::size_t Align>
+using aligned_pod_allocator = pod_allocator<T>;
+
 #else
 template <class T>
 struct pod_allocator
@@ -79,9 +83,76 @@ struct pod_allocator
     return false;
   }
 };
+
+
+template <class T, std::size_t Align>
+struct aligned_pod_allocator
+{
+  using value_type = T;
+
+  aligned_pod_allocator() noexcept = default;
+  aligned_pod_allocator(const aligned_pod_allocator&) noexcept = default;
+  aligned_pod_allocator(aligned_pod_allocator&&) noexcept = default;
+  aligned_pod_allocator& operator=(const aligned_pod_allocator&) noexcept = default;
+  aligned_pod_allocator& operator=(aligned_pod_allocator&&) noexcept = default;
+
+  static inline T* allocate(std::size_t num) noexcept
+  {
+    static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "can only be used with POD types");
+    static_assert(
+        alignof(T) <= alignof(std::max_align_t),
+        "type must not have specific alignment requirements");
+
+    if constexpr(Align != __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+    {
+#if defined(_WIN32)
+      return ::_aligned_malloc(sizeof(T) * num);
+#else
+      void *p;
+      posix_memalign(&p, Align, sizeof(T) * num);
+      return static_cast<T*>(p);
 #endif
+    }
+    else
+    {
+      return (T*)std::malloc(sizeof(T) * num);
+    }
+  }
+
+  static inline void deallocate(T* p, std::size_t) noexcept
+  {
+#if defined(_WIN32)
+    if constexpr(Align != __STDCPP_DEFAULT_NEW_ALIGNMENT__)
+    {
+      ::_aligned_free(p);
+    }
+    else
+    {
+      std::free(p);
+    }
+#else
+    std::free(p);
+#endif
+  }
+
+  friend inline bool operator==(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
+  {
+    return true;
+  }
+  friend inline bool operator!=(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
+  {
+    return false;
+  }
+};
+#endif
+
+template<typename T>
+struct pod_allocator_avx2 : aligned_pod_allocator<T, 32> {
+  using aligned_pod_allocator<T, 32>::aligned_pod_allocator;
+};
+
 template <typename T>
-using pod_vector = std::vector<T, pod_allocator<T>>;
+using pod_vector = std::vector<T, pod_allocator_avx2<T>>;
 
 using int_vector = pod_vector<int>;
 using float_vector = pod_vector<float>;

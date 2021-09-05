@@ -57,20 +57,51 @@ struct data_size
 inline
 void mix(const audio_vector& src_vec, audio_vector& sink_vec)
 {
-  ensure_vector_sizes(src_vec, sink_vec);
-  // Just copy the channels without much thoughts
-  for (std::size_t chan = 0, src_chans = src_vec.size();
-       chan < src_chans;
-       chan++)
+  if(src_vec.size() != 0 && sink_vec.size() == 0)
   {
-    auto& src = src_vec[chan];
-    auto& sink = sink_vec[chan];
-    const std::size_t N = src.size();
-    auto src_p = src.data();
-    auto sink_p = sink.data();
+    sink_vec = src_vec;
+    return;
+  }
+  else if(src_vec.size() == sink_vec.size())
+  {
+    for (std::size_t chan = 0, src_chans = src_vec.size();
+         chan < src_chans;
+         chan++)
+    {
+      auto& src = src_vec[chan];
+      auto& sink = sink_vec[chan];
+      if(sink.empty())
+      {
+        sink = src;
+      }
+      else
+      {
+        sink.resize(src.size());
+        const std::size_t N = src.size();
+        auto src_p = src.data();
+        auto sink_p = sink.data();
+        for (std::size_t i = 0; i < N; i++)
+          sink_p[i] += src_p[i];
+      }
+    }
+  }
+  else
+  {
+    ensure_vector_sizes(src_vec, sink_vec);
+    // Just copy the channels without much thoughts
+    for (std::size_t chan = 0, src_chans = src_vec.size();
+         chan < src_chans;
+         chan++)
+    {
+      auto& src = src_vec[chan];
+      auto& sink = sink_vec[chan];
+      const std::size_t N = src.size();
+      auto src_p = src.data();
+      auto sink_p = sink.data();
 
-    for (std::size_t i = 0; i < N; i++)
-      sink_p[i] += src_p[i];
+      for (std::size_t i = 0; i < N; i++)
+        sink_p[i] += src_p[i];
+    }
   }
 }
 

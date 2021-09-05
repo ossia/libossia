@@ -129,7 +129,7 @@ public:
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(chan);
+    ap.samples.resize(std::max(this->upmix, chan));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_read == 0)

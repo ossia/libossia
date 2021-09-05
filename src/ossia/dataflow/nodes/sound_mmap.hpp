@@ -278,7 +278,7 @@ public:
     const auto len = m_handle.totalPCMFrameCount();
 
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(channels);
+    ap.samples.resize(std::max((std::size_t)upmix, (std::size_t)channels));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_write <= 0)

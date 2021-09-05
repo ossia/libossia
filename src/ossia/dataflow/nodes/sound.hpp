@@ -216,11 +216,8 @@ inline void perform_upmix(const std::size_t upmix, const std::size_t chan, ossia
       {
         case 1:
         {
-          ap.samples.resize(upmix);
-          for (std::size_t i = 1; i < upmix; i++)
-          {
-            ap.samples[i] = ap.samples[0];
-          }
+          for(std::size_t chan = 1; chan < upmix; ++chan)
+            ap.samples[chan].assign(ap.samples[0].begin(), ap.samples[0].end());
           break;
         }
         default:
