@@ -106,7 +106,7 @@ struct aligned_pod_allocator
     if constexpr(Align != __STDCPP_DEFAULT_NEW_ALIGNMENT__)
     {
 #if defined(_WIN32)
-      return ::_aligned_malloc(sizeof(T) * num);
+      return ::_aligned_malloc(sizeof(T) * num, Align);
 #else
       void *p;
       posix_memalign(&p, Align, sizeof(T) * num);
