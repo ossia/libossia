@@ -9,7 +9,7 @@ This OSC tree-based architecture (coined "device" in the OSSIA terminology) can 
 
 libossia offers bindings and implementations for several environments: PureData, Max/MSP, Python, C, C++, openframeworks, Unity3D, QML, Faust, SuperCollider.
 
-You can find some documentation for the library and its various implementations is at https://ossia.github.io
+You can find some documentation for the library and its various implementations is at https://ossia.io
 
 Please feel free to ask questions on the [forum](http://forum.ossia.io/c/libossia), or to come and chat with us ! [![Gitter](https://badges.gitter.im/ossia/libossia.svg)](https://gitter.im/ossia/libossia?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
