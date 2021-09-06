@@ -113,7 +113,7 @@ private:
       format_string += "Out: ";
       for (std::size_t i = 0; i < sizeof...(args); i++)
         format_string += "{} ";
-      m_logger.outbound_logger->info(format_string.c_str(), args...);
+      m_logger.outbound_logger->info(fmt::runtime(format_string), args...);
     }
   }
 

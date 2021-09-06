@@ -22,9 +22,11 @@ static_html_builder::~static_html_builder()
 struct static_html_builder_impl
 {
   fmt::memory_buffer& w;
+  std::back_insert_iterator<fmt::memory_buffer> out = std::back_inserter(w);
+
   void build_header(ossia::net::node_base& node)
   {
-    fmt::format_to(w, R"_(<!doctype html>
+    out = fmt::format_to(out, R"_(<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
@@ -35,28 +37,28 @@ struct static_html_builder_impl
 
   void build_footer()
   {
-    fmt::format_to(w, R"_(</body></html>)_");
+    out = fmt::format_to(out, R"_(</body></html>)_");
   }
 
   void build_node(ossia::net::node_base& node)
   {
     if (auto p = node.get_parameter())
     {
-      fmt::format_to(w, "\n<p>");
-      fmt::format_to(w, "<b>{}</b> : {}", node.osc_address(), p->value());
+      out = fmt::format_to(out, "\n<p>");
+      out = fmt::format_to(out, "<b>{}</b> : {}", node.osc_address(), p->value());
 
       auto& dom = p->get_domain();
       auto min = dom.get_min();
       if (min.valid())
-        fmt::format_to(w, " ; <b>Min</b>: {}", min);
+        out = fmt::format_to(out, " ; <b>Min</b>: {}", min);
 
       auto max = dom.get_max();
       if (max.valid())
-        fmt::format_to(w, " ; <b>Max</b>: {}", max);
+        out = fmt::format_to(out, " ; <b>Max</b>: {}", max);
 
       if (auto u = p->get_unit())
-        fmt::format_to(w, " ; <b>Unit</b>: {}",  ossia::get_pretty_unit_text(u));
-      fmt::format_to(w, "</p>");
+        out = fmt::format_to(out, " ; <b>Unit</b>: {}",  ossia::get_pretty_unit_text(u));
+      out = fmt::format_to(out, "</p>");
     }
 
     for (auto cld : node.children_copy())
