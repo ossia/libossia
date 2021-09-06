@@ -3,7 +3,6 @@
 #include "context.hpp"
 
 #include <ossia/detail/logger.hpp>
-#include <fmt/ostream.h>
 
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_sinks.h>

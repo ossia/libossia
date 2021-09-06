@@ -10,7 +10,6 @@
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
 #include <ossia/detail/fmt.hpp>
-#include <fmt/ostream.h>
 namespace ossia
 {
 namespace net
