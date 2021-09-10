@@ -274,13 +274,13 @@ strong_value<aed_u::neutral_unit>
 aed_u::to_neutral(strong_value<aed_u::concrete_type> self)
 {
   const auto a = self.dataspace_value[0] * deg_to_rad + half_pi;
-  const auto e = self.dataspace_value[1] * deg_to_rad + half_pi;
+  const auto e = self.dataspace_value[1] * deg_to_rad;
   const auto d = self.dataspace_value[2];
 
   const auto temp = std::cos(e) * d;
 
-  return strong_value<neutral_unit>{(float)(std::cos(-a) * temp),
-        (float)(std::sin(-a) * temp),
+  return strong_value<neutral_unit>{(float)(-std::cos(-a) * temp),
+        (float)(std::sin(a) * temp),
         (float)(std::sin(e) * d)};
 }
 
@@ -293,8 +293,8 @@ aed_u::from_neutral(strong_value<aed_u::neutral_unit> self)
 
   const auto temp = ipow(x, 2) + ipow(y, 2);
 
-  return {-(float)(std::atan2(y, x) - half_pi * rad_to_deg),
-        (float)(std::atan2(z, std::sqrt(temp)) - half_pi * rad_to_deg),
+  return {-(float)((std::atan2(y, x) - half_pi) * rad_to_deg),
+        (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
         (float)(std::sqrt(temp + ipow(z, 2)))};
 }
 
@@ -326,7 +326,7 @@ azd_u::to_neutral(strong_value<azd_u::concrete_type> self)
   const auto z = self.dataspace_value[1];
   const auto d = self.dataspace_value[2];
 
-  return {(float)(std::cos(-a) * d), (float)(std::sin(-a) * d), z};
+  return {(float)(std::cos(-a) * d), (float)(std::sin(a) * d), z};
 }
 
 azd_u::value_type
@@ -336,7 +336,7 @@ azd_u::from_neutral(strong_value<azd_u::neutral_unit> self)
   const auto y = self.dataspace_value[1];
   const auto z = self.dataspace_value[2];
 
-  return {(float)(std::atan2(y, x) - half_pi * rad_to_deg),
+  return {-(float)((std::atan2(y, x) - half_pi) * rad_to_deg),
         z,
         (float)(ossia::norm(x, y))};
 }
