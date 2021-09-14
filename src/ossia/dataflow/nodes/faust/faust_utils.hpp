@@ -339,8 +339,7 @@ struct faust_node_utils
   {
     if (tk.forward())
     {
-      const int64_t st = tk.physical_start(e.modelToSamples());
-      const int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const auto [st, d] = e.timings(tk);
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& midi_in = self.root_inputs()[1]->template cast<ossia::midi_port>();
