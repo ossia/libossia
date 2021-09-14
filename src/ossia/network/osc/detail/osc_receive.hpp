@@ -10,10 +10,36 @@
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
 #include <ossia/detail/fmt.hpp>
+namespace fmt
+{
+template <>
+struct formatter<oscpack::ReceivedMessage>
+{
+  template <typename ParseContext>
+  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  template <typename FormatContext>
+  auto format(const oscpack::ReceivedMessage& m, FormatContext &ctx) {
+    auto out = ctx.out();
+    out = format_to(out, "{}", m.AddressPattern());
+    if(m.ArgumentCount() > 0)
+    {
+      out = format_to(out, ": ");
+      for(auto it = m.ArgumentsBegin(); it != m.ArgumentsEnd(); ++it)
+      {
+        out = format_to(out, "{} ", *it);
+      }
+    }
+    return ctx.out();
+  }
+};
+
+}
 namespace ossia
 {
 namespace net
 {
+
 
 struct osc_message_applier
 {

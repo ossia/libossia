@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/fmt.hpp>
+#include <fmt/ranges.h>
 #include <ossia/network/value/value.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/optional.hpp>
@@ -48,109 +49,6 @@ struct formatter<std::optional<T>>
   }
 };
 
-template <typename T, std::size_t N>
-struct formatter<std::array<T, N>>
-{
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-  template <typename FormatContext>
-  auto format(const std::array<T, N>& v, FormatContext &ctx)
-  {
-    auto out = ctx.out();
-    format_to(out, "[{}", v[0]);
-    for (std::size_t i = 1; i < N; i++)
-      format_to(out, ", {}", v[i]);
-    format_to(out, "]");
-    return ctx.out();
-  }
-};
-
-template<typename T, typename F>
-auto format_vec(const T& v, F& ctx)
-{
-  auto out = ctx.out();
-  out = format_to(out, "[");
-
-  if (v.size() > 0)
-  {
-    auto it = v.begin();
-    out = format_to(out, "{}", *it);
-    ++it;
-
-    for (; it != v.end(); ++it)
-    {
-      out = format_to(out, ", {}", *it);
-    }
-  }
-  return format_to(out, "]");
-}
-
-template <>
-struct formatter<std::vector<ossia::value>>
-{
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-  template <typename FormatContext>
-  auto format(const std::vector<ossia::value>& v, FormatContext &ctx)
-  {
-    return format_vec(v, ctx);
-  }
-};
-
-template <typename T>
-struct formatter<std::vector<T>>
-{
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-  template <typename FormatContext>
-  auto format(const std::vector<T>& v, FormatContext &ctx)
-  {
-    return format_vec(v, ctx);
-  }
-};
-
-template <>
-struct formatter<std::vector<fc::flat_set<std::vector<ossia::value>>>>
-{
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-  template <typename FormatContext>
-  auto format(const std::vector<fc::flat_set<std::vector<ossia::value>>>& v, FormatContext &ctx)
-  {
-    return format_vec(v, ctx);
-  }
-};
-template <typename T, typename Compare>
-struct formatter<fc::flat_set<T, Compare>>
-{
-  template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
-
-  template <typename FormatContext>
-  auto format(const fc::flat_set<T, Compare>& v, FormatContext &ctx)
-  {
-    auto out = ctx.out();
-    out = format_to(out, "[");
-    const auto n = v.size();
-    if (n > 0)
-    {
-      auto it = v.begin();
-      out = format_to(out, "{}", *it);
-      ++it;
-
-      for (; it != v.end(); ++it)
-      {
-        out = format_to(out, ", {}", *it);
-      }
-    }
-    return format_to(out, "]");
-  }
-};
-
 template <>
 struct formatter<ossia::value>
 {
@@ -162,7 +60,6 @@ struct formatter<ossia::value>
     return v.apply(ossia::value_prettyprint_visitor{ctx});
   }
 };
-
 
 }
 
