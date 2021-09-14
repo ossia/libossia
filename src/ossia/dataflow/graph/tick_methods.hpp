@@ -158,6 +158,7 @@ struct buffer_tick
 #if defined(OSSIA_EXECUTION_LOG)
       auto log = g_exec_log.start_temporal();
 #endif
+
       scenar.state_impl(tok);
     }
 

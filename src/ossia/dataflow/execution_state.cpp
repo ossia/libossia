@@ -1028,9 +1028,23 @@ exec_state_facade::find_node(std::string_view name) const noexcept
   return impl->find_node(name);
 }
 
-int64_t exec_state_facade::physical_start(const token_request& t) const noexcept
+auto exec_state_facade::timings(const token_request& t) const noexcept -> sample_timings
 {
-  return t.physical_start(impl->modelToSamplesRatio);
+  sample_timings tm;
+  tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
+
+  const auto tick_dur = t.physical_write_duration(impl->modelToSamplesRatio);
+  auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
+  if(max_dur < 0)
+    max_dur = 0;
+
+  tm.length = std::min(tick_dur, max_dur);
+  assert(tm.start_sample >= 0);
+  assert(tm.start_sample < impl->bufferSize);
+  assert(tm.length >= 0);
+  assert(tm.start_sample + tm.length <= impl->bufferSize);
+
+  return tm;
 }
 
 void exec_state_facade::insert(net::parameter_base& dest, const typed_value& v)

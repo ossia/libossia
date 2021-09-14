@@ -63,6 +63,7 @@ void scenario::make_happen(
   for (const std::shared_ptr<ossia::time_interval>& timeInterval :
        event.next_time_intervals())
   {
+    timeInterval->set_parent_speed(tok.speed);
     timeInterval->start();
     timeInterval->tick_current(tick_offset, tok);
     mark_start_discontinuous{}(*timeInterval);

@@ -81,7 +81,7 @@ public:
   {
     auto& out = *m_outlets[0]->target<ossia::value_port>();
 
-    const auto tick_start = e.physical_start(t);
+    const auto [tick_start, d] = e.timings(t);
 
     switch (m_data.size())
     {

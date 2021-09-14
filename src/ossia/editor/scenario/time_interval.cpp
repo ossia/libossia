@@ -329,6 +329,7 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
     tok.musical_start_position = this->m_musical_start_position;
     tok.musical_end_last_bar = this->m_musical_end_last_bar;
     tok.musical_end_position = this->m_musical_end_position;
+
     node->request(tok);
     // get the state of each TimeProcess at current clock position and date
     for (const std::shared_ptr<ossia::time_process>& timeProcess : processes)

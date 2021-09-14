@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
+#include <ossia/detail/logger.hpp>
 
 #if __has_include(<faust/dsp/poly-llvm-dsp.h>)
 #include <faust/dsp/poly-llvm-dsp.h>
@@ -308,8 +309,7 @@ struct faust_node_utils
   {
     if (tk.forward())
     {
-      const int64_t st = tk.physical_start(e.modelToSamples());
-      const int64_t d = tk.physical_write_duration(e.modelToSamples());
+      const auto [st, d] = e.timings(tk);
 
       auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();

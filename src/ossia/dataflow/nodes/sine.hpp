@@ -61,8 +61,7 @@ public:
     }
 
     auto& audio = audio_out->samples;
-    auto N = t.physical_write_duration(st.modelToSamples());
-    int64_t tick_start = t.physical_start(st.modelToSamples());
+    const auto [tick_start, N] = st.timings(t);
 
     if (N > 0)
     {

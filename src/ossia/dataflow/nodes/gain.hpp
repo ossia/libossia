@@ -32,9 +32,7 @@ public:
     auto& in = audio_in->samples;
     auto& out = audio_out->samples;
 
-    const int64_t N = t.physical_write_duration(st.modelToSamples());
-
-    const int64_t first_pos = t.physical_start(st.modelToSamples());
+    const auto [first_pos, N] = st.timings(t);
     const int64_t last_pos = first_pos + N;
 
     const auto channels = in.size();

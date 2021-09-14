@@ -17,7 +17,8 @@ public:
   void
   run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
-    outlet->write_value((float)tk.position(), e.physical_start(tk));
+    const auto [tick_start, d] = e.timings(tk);
+    outlet->write_value((float)tk.position(), tick_start);
   }
 };
 }
