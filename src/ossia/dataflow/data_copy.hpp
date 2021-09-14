@@ -76,8 +76,11 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
       }
       else
       {
-        sink.resize(src.size());
         const std::size_t N = src.size();
+
+        if (sink.size() < N)
+          sink.resize(N);
+
         auto src_p = src.data();
         auto sink_p = sink.data();
         for (std::size_t i = 0; i < N; i++)
