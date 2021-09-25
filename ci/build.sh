@@ -411,6 +411,7 @@ case "$TRAVIS_OS_NAME" in
             rm -rf *
 
             echo "" > .nojekyll
+            cp ../../ci/index.html .
             mv ../html .
 
             if [ -d "html" ] && [ -f "html/index.html" ]; then
