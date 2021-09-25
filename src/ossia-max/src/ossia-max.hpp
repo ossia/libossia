@@ -170,7 +170,7 @@ public:
 
   void set_log_level(t_symbol* log_sym)
   {
-    std::vector<std::string> vec = SPDLOG_LEVEL_NAMES;
+    std::vector<spdlog::string_view_t> vec SPDLOG_LEVEL_NAMES;
     auto it = std::find(vec.begin(), vec.end(), log_sym->s_name);
     if(it != vec.end())
     {

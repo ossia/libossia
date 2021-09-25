@@ -15,7 +15,7 @@ extern "C" void ossia_ossia_setup()
         c, "log_level", 0, ossia_object, m_log_level);
   std::stringstream lvl_list;
   for(auto lvl : SPDLOG_LEVEL_NAMES)
-      lvl_list << lvl << " ";
+      lvl_list << lvl.data() << " ";
   CLASS_ATTR_ENUM(c, "log_level", 0, lvl_list.str().c_str());
   CLASS_ATTR_LABEL(c, "log_level", 0, "Log Level");
   CLASS_ATTR_DEFAULT(c, "log_level", 0, "error");
