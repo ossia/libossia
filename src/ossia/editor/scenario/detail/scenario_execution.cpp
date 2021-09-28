@@ -235,8 +235,8 @@ void scenario::state_impl(const ossia::token_request& tk)
   // ossia::logger().info("scenario::state starts");
   // if (date != m_lastDate)
   {
-    auto prev_last_date = m_lastDate;
-    m_lastDate = tk.date;
+    auto prev_last_date = m_last_date;
+    m_last_date = tk.date;
 
     // Duration of this tick.
     time_value tick_ms
