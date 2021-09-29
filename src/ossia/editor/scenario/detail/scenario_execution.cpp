@@ -65,7 +65,7 @@ void scenario::make_happen(
   {
     timeInterval->set_parent_speed(tok.speed);
     timeInterval->start();
-    timeInterval->tick_current(tick_offset, tok);
+    //timeInterval->tick_current(tick_offset, tok);
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
@@ -338,7 +338,7 @@ void scenario::state_impl(const ossia::token_request& tk)
           itv->stop();
         }
         itv->start();
-        itv->tick_current(*date, tk);
+        //itv->tick_current(*date, tk);
         //mark_start_discontinuous{}(*itv);
 
         m_runningIntervals.insert(itv);
