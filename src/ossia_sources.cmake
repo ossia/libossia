@@ -14,6 +14,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/constexpr_string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/enum_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_set.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_multimap.hpp"
@@ -690,6 +691,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_mmap.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_ref.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_impl.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_utils.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/port.hpp"
