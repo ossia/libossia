@@ -114,3 +114,18 @@ TEST_CASE ("test_loops_mid", "test_loops_mid")
 
   REQUIRE(expected == vec);
 }
+
+
+TEST_CASE ("test_musical_quantization", "test_musical_quantization")
+{
+  using namespace ossia;
+
+  token_request r;
+  r.prev_date = 0_tv;
+  r.date = 2048000_tv;
+  r.musical_end_last_bar = 0.005804985827664399;
+  r.musical_end_position = 0.005804985827664399;
+
+  auto res = r.get_quantification_date(8.0);
+  REQUIRE(res == 0_tv);
+}
