@@ -1,18 +1,23 @@
 #pragma once
 #include <cinttypes>
+#include <cassert>
 #include <utility>
 #include <type_traits>
 
 namespace ossia
 {
-
+/**
+ * @brief A most simple pair type, to reduce binary bloat
+ */
 template<typename T1, typename T2>
 struct pair {
   T1 key;
   T2 value;
 };
 
-
+/**
+ * @brief A container useful for mapping contiguous enums to strings without using too much memory
+ */
 template<typename K, typename V, std::size_t N>
 class enum_map
 {

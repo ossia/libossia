@@ -121,3 +121,6 @@
 [submodule "3rdparty/mdspan"]
 	path = 3rdparty/mdspan
 	url = https://github.com/kokkos/mdspan
+[submodule "3rdparty/tuplet"]
+	path = 3rdparty/tuplet
+	url = https://github.com/codeinred/tuplet
