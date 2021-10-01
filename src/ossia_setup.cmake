@@ -16,6 +16,16 @@ target_compile_definitions(ossia
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
 
+# Workaround for boost being broken with clang 13 (at least until 1.77)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)
+    target_compile_definitions(ossia
+      PUBLIC
+        BOOST_ASIO_HAS_STD_INVOKE_RESULT=1
+    )
+  endif()
+endif()
+
 if(WIN32)
   if(MSVC)
     target_compile_definitions(ossia PUBLIC
@@ -136,6 +146,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/frozen/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/bitset2>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
