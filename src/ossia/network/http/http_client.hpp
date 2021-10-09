@@ -32,17 +32,17 @@ public:
       , m_err{std::move(err)}
   {
     m_request.reserve(100 + server.size() + path.size());
-    fmt::format_to(m_request, "GET ");
+    fmt::format_to(fmt::appender(m_request), "GET ");
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
     for (auto c : path)
       if (c != ' ')
-        fmt::format_to(m_request, "{}", c);
+        fmt::format_to(fmt::appender(m_request), "{}", c);
       else
-        fmt::format_to(m_request, "%20");
+        fmt::format_to(fmt::appender(m_request), "%20");
 
 
-    fmt::format_to(m_request,
+    fmt::format_to(fmt::appender(m_request),
                    " HTTP/1.1\r\n"
                    "Host: {}"
                    "\r\n"

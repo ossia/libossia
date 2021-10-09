@@ -177,30 +177,30 @@ struct fmt_writer
 
   void operator()(impulse) const
   {
-    fmt::format_to(wr, "impulse");
+    fmt::format_to(fmt::appender(wr), "impulse");
   }
   void operator()(int32_t v) const
   {
-    fmt::format_to(wr, "{}", v);
+    fmt::format_to(fmt::appender(wr), "{}", v);
   }
   void operator()(float v) const
   {
-    fmt::format_to(wr, "{}", v);
+    fmt::format_to(fmt::appender(wr), "{}", v);
   }
   void operator()(bool v) const
   {
     if (v)
-      fmt::format_to(wr, "true");
+      fmt::format_to(fmt::appender(wr), "true");
     else
-      fmt::format_to(wr, "false");
+      fmt::format_to(fmt::appender(wr), "false");
   }
   void operator()(char v) const
   {
-    fmt::format_to(wr, "{}", v);
+    fmt::format_to(fmt::appender(wr), "{}", v);
   }
   void operator()(const std::string& v) const
   {
-    fmt::format_to(wr, "{}", v);
+    fmt::format_to(fmt::appender(wr), "{}", v);
   }
   void operator()() const
   {
@@ -208,15 +208,15 @@ struct fmt_writer
   template <std::size_t N>
   void operator()(std::array<float, N> v) const
   {
-    fmt::format_to(wr, "[{}", v[0]);
+    fmt::format_to(fmt::appender(wr), "[{}", v[0]);
     for (std::size_t i = 1; i < N; i++)
-      fmt::format_to(wr, ", {}", v[i]);
-    fmt::format_to(wr, "]");
+      fmt::format_to(fmt::appender(wr), ", {}", v[i]);
+    fmt::format_to(fmt::appender(wr), "]");
   }
   void operator()(const std::vector<ossia::value>& v) const
   {
     using namespace std::literals;
-    fmt::format_to(wr, "[");
+    fmt::format_to(fmt::appender(wr), "[");
     const auto n = v.size();
     if (n > 0)
     {
@@ -224,11 +224,11 @@ struct fmt_writer
 
       for (std::size_t i = 1; i < n; i++)
       {
-        fmt::format_to(wr, ", ");
+        fmt::format_to(fmt::appender(wr), ", ");
         v[i].apply(*this);
       }
     }
-    fmt::format_to(wr, "]");
+    fmt::format_to(fmt::appender(wr), "]");
   }
 };
 
@@ -271,12 +271,13 @@ struct value_converter<std::string>
   template <std::size_t N>
   T operator()(std::array<float, N> v) const
   {
-    fmt::memory_buffer wr;
-    fmt::format_to(wr, "[{}", v[0]);
+    std::string wr;
+    wr.reserve(N * 10);
+    fmt::format_to(std::back_inserter(wr), "[{}", v[0]);
     for (std::size_t i = 1; i < N; i++)
-      fmt::format_to(wr, ", {}", v[i]);
-    fmt::format_to(wr, "]");
-    return std::string(wr.data(), wr.size());
+      fmt::format_to(std::back_inserter(wr), ", {}", v[i]);
+    fmt::format_to(std::back_inserter(wr), "]");
+    return wr;
   }
 
   T operator()(const std::vector<ossia::value>& v) const

@@ -106,7 +106,8 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
   {
     if(!p->test_flag(SupportsMultiplex))
     {
-       ossia::logger().error("Cannot multiplex a protocol of type: {}", typeid(*p).name());
+       auto& proto = *p;
+       ossia::logger().error("Cannot multiplex a protocol of type: {}", typeid(proto).name());
        return;
     }
 

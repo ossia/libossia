@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/ssize.hpp>
 #include <cmath>
 #include <algorithm>
 #include <cinttypes>
@@ -83,22 +84,76 @@ inline constexpr int64_t constexpr_floor(T val) noexcept
 }
 
 /**
- * @brief clamp_min Returns the value bounded by a min
+ * @brief max function tailored for values
  */
 template <class T>
-OSSIA_INLINE constexpr T clamp_min(T d, const T min) noexcept
+OSSIA_INLINE constexpr T max(T a, const T b) noexcept
 {
-  return d < min ? min : d;
+  return a < b ? b : a;
 }
 
+static OSSIA_INLINE constexpr float max(float a, const float b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr double max(double a, const double b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr double max(float a, const double b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr double max(double a, const float b) noexcept
+{ return a < b ? b : a; }
+
+static OSSIA_INLINE constexpr int32_t max(int32_t a, const int32_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr int64_t max(int64_t a, const int64_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr int64_t max(int64_t a, const int32_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr int64_t max(int32_t a, const int64_t b) noexcept
+{ return a < b ? b : a; }
+
+static OSSIA_INLINE constexpr uint32_t max(uint32_t a, const uint32_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t max(uint64_t a, const uint64_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t max(uint64_t a, const uint32_t b) noexcept
+{ return a < b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t max(uint32_t a, const uint64_t b) noexcept
+{ return a < b ? b : a; }
+
 /**
- * @brief clamp_max Returns the value bounded by a max
+ * @brief min Returns the value bounded by a max
  */
 template <class T>
-OSSIA_INLINE constexpr T clamp_max(T d, const T max) noexcept
+OSSIA_INLINE constexpr T min(T a, const T b) noexcept
 {
-  return d > max ? max : d;
+  return a > b ? b : a;
 }
+
+static OSSIA_INLINE constexpr float min(float a, const float b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr double min(double a, const double b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr double min(float a, const double b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr double min(double a, const float b) noexcept
+{ return a > b ? b : a; }
+
+static OSSIA_INLINE constexpr int32_t min(int32_t a, const int32_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr int64_t min(int64_t a, const int64_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr int64_t min(int64_t a, const int32_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr int64_t min(int32_t a, const int64_t b) noexcept
+{ return a > b ? b : a; }
+
+static OSSIA_INLINE constexpr uint32_t min(uint32_t a, const uint32_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t min(uint64_t a, const uint64_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t min(uint64_t a, const uint32_t b) noexcept
+{ return a > b ? b : a; }
+static OSSIA_INLINE constexpr uint64_t min(uint32_t a, const uint64_t b) noexcept
+{ return a > b ? b : a; }
 
 /**
  * @brief clamp Returns the value bounded by a min and a max
@@ -106,8 +161,61 @@ OSSIA_INLINE constexpr T clamp_max(T d, const T max) noexcept
 template <class T>
 OSSIA_INLINE constexpr T clamp(T d, const T min, const T max) noexcept
 {
-  return clamp_min(clamp_max(d, max), min);
+  return ossia::max(ossia::min(d, max), min);
 }
+
+static OSSIA_INLINE constexpr int64_t clamp(int64_t d, const int64_t min, const int64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int64_t d, const int32_t min, const int64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int64_t d, const int32_t min, const int32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int64_t d, const int64_t min, const int32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int32_t clamp(int32_t d, const int32_t min, const int32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int32_t d, const int64_t min, const int64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int32_t d, const int32_t min, const int64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr int64_t clamp(int32_t d, const int64_t min, const int32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+
+
+static OSSIA_INLINE constexpr uint64_t clamp(uint64_t d, const uint64_t min, const uint64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint64_t d, const uint32_t min, const uint64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint64_t d, const uint32_t min, const uint32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint64_t d, const uint64_t min, const uint32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint32_t clamp(uint32_t d, const uint32_t min, const uint32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint32_t d, const uint64_t min, const uint64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint32_t d, const uint32_t min, const uint64_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr uint64_t clamp(uint32_t d, const uint64_t min, const uint32_t max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+
+
+static OSSIA_INLINE constexpr double clamp(double d, const double min, const double max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(double d, const float min, const double max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(double d, const float min, const float max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(double d, const double min, const float max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr float clamp(float d, const float min, const float max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(float d, const double min, const double max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(float d, const float min, const double max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
+static OSSIA_INLINE constexpr double clamp(float d, const double min, const float max) noexcept
+{ return ossia::max(ossia::min(d, max), min); }
 
 // Wrap & Fold code taken from Jamoma TTLimits.h.
 // Credits : Nils Peters, Nov. 2008
@@ -151,5 +259,25 @@ OSSIA_INLINE float normalized_to_log(float min, float range, float val) noexcept
 {
   const float res = std::expm1f(val * std::log1pf(range)) + min;
   return std::min(res, min + range);
+}
+
+template<typename T, typename R>
+constexpr OSSIA_INLINE bool valid_index(T idx, const R& range) noexcept
+{
+  using range_size_type = typename R::size_type;
+  if constexpr(std::is_signed_v<T>)
+  {
+    if constexpr(std::is_signed_v<range_size_type>)
+      return idx >= 0 && idx < range.size();
+    else
+      return idx >= 0 && idx < std::ssize(range);
+  }
+  else
+  {
+    if constexpr(std::is_signed_v<range_size_type>)
+      return idx < static_cast<std::size_t>(range.size());
+    else
+      return idx < range.size();
+  }
 }
 }

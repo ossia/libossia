@@ -41,7 +41,7 @@ struct push_data
   }
   void operator()() const noexcept { }
 };
-
+/*
 void process_port_values(
     ossia::value_port& source,
     ossia::net::parameter_base& sink)
@@ -57,7 +57,7 @@ void process_port_values(
   {
     process_control_value(value.value, source.domain, addr_dom);
   }
-}
+}*/
 }
 
 inlet::~inlet()

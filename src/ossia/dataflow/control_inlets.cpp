@@ -2,6 +2,7 @@
 
 namespace ossia
 {
+/*
 namespace
 {
 void pre_process_minmax_ports(
@@ -39,6 +40,7 @@ void pre_process_minmax_ports(
   }
 }
 }
+*/
 
 minmax_float_inlet::minmax_float_inlet()
 {

@@ -88,7 +88,7 @@ void scenario::start()
     {
       m_runningIntervals.insert(&cst);
       cst.start();
-      const auto tok = ossia::token_request{};
+      //const auto tok = ossia::token_request{};
       //cst.tick_current(0_tv, tok);
     }
     // the interval is in the future

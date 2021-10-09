@@ -28,8 +28,8 @@ namespace
   static const constexpr auto create_plan_c2r = ::fftw_plan_dft_c2r_1d;
   static const constexpr auto run_plan_c2r = ::fftw_execute_dft_c2r;
   static const constexpr auto destroy_plan = ::fftw_destroy_plan;
-  static const constexpr auto cleanup = ::fftw_cleanup;
-  static const constexpr auto alignment_of = ::fftw_alignment_of;
+  // static const constexpr auto cleanup = ::fftw_cleanup;
+  // static const constexpr auto alignment_of = ::fftw_alignment_of;
 #else
 #define FFTW_DESTROY_INPUT 0
 #define FFTW_MEASURE 0
