@@ -86,9 +86,12 @@ inline constexpr int64_t constexpr_floor(T val) noexcept
 /**
  * @brief max function tailored for values
  */
-template <class T>
-OSSIA_INLINE constexpr T max(T a, const T b) noexcept
+template <class T, class U>
+OSSIA_INLINE constexpr auto max(const T a, const U b) noexcept
+ -> typename std::conditional<(sizeof(T) > sizeof(U)), T, U>::type
 {
+  static_assert(std::is_integral_v<T> && std::is_integral_v<U>);
+  static_assert(std::is_signed_v<T> == std::is_signed_v<U>);
   return a < b ? b : a;
 }
 
@@ -101,30 +104,15 @@ static OSSIA_INLINE constexpr double max(float a, const double b) noexcept
 static OSSIA_INLINE constexpr double max(double a, const float b) noexcept
 { return a < b ? b : a; }
 
-static OSSIA_INLINE constexpr int32_t max(int32_t a, const int32_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr int64_t max(int64_t a, const int64_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr int64_t max(int64_t a, const int32_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr int64_t max(int32_t a, const int64_t b) noexcept
-{ return a < b ? b : a; }
-
-static OSSIA_INLINE constexpr uint32_t max(uint32_t a, const uint32_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t max(uint64_t a, const uint64_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t max(uint64_t a, const uint32_t b) noexcept
-{ return a < b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t max(uint32_t a, const uint64_t b) noexcept
-{ return a < b ? b : a; }
-
 /**
- * @brief min Returns the value bounded by a max
+ * @brief min function tailored for values
  */
-template <class T>
-OSSIA_INLINE constexpr T min(T a, const T b) noexcept
+template <class T, class U>
+OSSIA_INLINE constexpr auto min(const T a, const U b) noexcept
+-> typename std::conditional<(sizeof(T) > sizeof(U)), T, U>::type
 {
+  static_assert(std::is_integral_v<T> && std::is_integral_v<U>);
+  static_assert(std::is_signed_v<T> == std::is_signed_v<U>);
   return a > b ? b : a;
 }
 
@@ -135,24 +123,6 @@ static OSSIA_INLINE constexpr double min(double a, const double b) noexcept
 static OSSIA_INLINE constexpr double min(float a, const double b) noexcept
 { return a > b ? b : a; }
 static OSSIA_INLINE constexpr double min(double a, const float b) noexcept
-{ return a > b ? b : a; }
-
-static OSSIA_INLINE constexpr int32_t min(int32_t a, const int32_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr int64_t min(int64_t a, const int64_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr int64_t min(int64_t a, const int32_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr int64_t min(int32_t a, const int64_t b) noexcept
-{ return a > b ? b : a; }
-
-static OSSIA_INLINE constexpr uint32_t min(uint32_t a, const uint32_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t min(uint64_t a, const uint64_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t min(uint64_t a, const uint32_t b) noexcept
-{ return a > b ? b : a; }
-static OSSIA_INLINE constexpr uint64_t min(uint32_t a, const uint64_t b) noexcept
 { return a > b ? b : a; }
 
 /**
