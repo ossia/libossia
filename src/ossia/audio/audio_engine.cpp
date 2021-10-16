@@ -1,5 +1,6 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/audio/dummy_protocol.hpp>
+#include <ossia/audio/alsa_protocol.hpp>
 #include <ossia/audio/jack_protocol.hpp>
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/pulseaudio_protocol.hpp>
