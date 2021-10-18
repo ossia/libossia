@@ -17,7 +17,7 @@
 
 namespace ossia
 {
-#define snd_alloca(ptr, lib, type) do { *ptr = (snd_##type##_t *) alloca(snd_##type##_sizeof()); memset(*ptr, 0, lib.type##_sizeof()); } while (0)
+#define snd_alloca(ptr, lib, type) do { *ptr = (snd_##type##_t *) alloca(lib.type##_sizeof()); memset(*ptr, 0, lib.type##_sizeof()); } while (0)
 class libasound
 {
 public:
@@ -119,7 +119,7 @@ private:
         pcm_recover = library.symbol<decltype(&::snd_pcm_recover)>("snd_pcm_recover");
         pcm_drain = library.symbol<decltype(&::snd_pcm_drain)>("snd_pcm_drain");
         pcm_close = library.symbol<decltype(&::snd_pcm_close)>("snd_pcm_close");
-        strerror = library.symbol<decltype(&::snd_strerror)>("snd_strerror");        
+        strerror = library.symbol<decltype(&::snd_strerror)>("snd_strerror");
         device_name_hint = library.symbol<decltype(&::snd_device_name_hint)>("snd_device_name_hint");
         device_name_get_hint = library.symbol<decltype(&::snd_device_name_get_hint)>("snd_device_name_get_hint");
         device_name_free_hint = library.symbol<decltype(&::snd_device_name_free_hint)>("snd_device_name_free_hint");
@@ -208,11 +208,10 @@ public:
       snd_alloca(&hwparams, snd, pcm_hw_params);
       snd.pcm_hw_params_any(m_client, hwparams);
 
-      snd_pcm_sw_params_t *swparams;
-      snd_pcm_sw_params_alloca(&swparams);
+      // snd_pcm_sw_params_t *swparams;
+      // snd_pcm_sw_params_alloca(&swparams);
 
       auto access = SND_PCM_ACCESS_RW_NONINTERLEAVED;
-      constexpr auto format = SND_PCM_FORMAT_FLOAT_LE;
       if (int ret = snd.pcm_hw_params_set_access(m_client, hwparams, access);
           ret < 0)
       {
@@ -221,9 +220,23 @@ public:
         access = SND_PCM_ACCESS_RW_INTERLEAVED;
       }
 
-      if (int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format);
-          ret < 0)
-        ossia::logger().error("alsa_engine: can't set format: {}", snd.strerror(ret));
+      auto format = SND_PCM_FORMAT_FLOAT_LE;
+      if (int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format); ret < 0)
+      {
+        format = SND_PCM_FORMAT_S32_LE;
+        if (int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format); ret < 0)
+        {
+          format = SND_PCM_FORMAT_S24_LE;
+          if (int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format); ret < 0)
+          {
+            format = SND_PCM_FORMAT_S16_LE;
+            if (int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format); ret < 0)
+            {
+              ossia::logger().error("alsa_engine: can't set format: {}", snd.strerror(ret));
+            }
+          }
+        }
+      }
 
       if (int ret = snd.pcm_hw_params_set_channels(m_client, hwparams, outputs);
           ret < 0)
@@ -281,14 +294,55 @@ public:
 
       if(access == SND_PCM_ACCESS_RW_NONINTERLEAVED)
       {
-        m_thread = std::thread([=] { run_thread_deinterleaved(); });
+        switch(format)
+        {
+          case SND_PCM_FORMAT_S16_LE:
+            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_S24_LE:
+            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_S32_LE:
+            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_FLOAT_LE:
+            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_activated = true;
+            break;
+          default:
+            m_activated = false;
+            break;
+        }
       }
       else
       {
-        m_thread = std::thread([=] { run_thread_interleaved(); });
+        switch(format)
+        {
+          case SND_PCM_FORMAT_S16_LE:
+            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_S24_LE:
+            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_S32_LE:
+            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_FLOAT_LE:
+            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_activated = true;
+            break;
+          default:
+            m_activated = false;
+            break;
+        }
       }
     }
-    activated = true;
   }
 
   ~alsa_engine() override
@@ -297,7 +351,6 @@ public:
 
     if(m_client)
     {
-        const auto &snd = libasound::instance();
         m_stop_token = true;
         assert(m_thread.joinable());
         m_thread.join();
@@ -311,19 +364,151 @@ public:
   {
     if(!m_client)
       return false;
-    return activated;
+    return m_activated;
   }
 
 private:
   void clear_buffers()
   {
-    ossia::fill(this->m_buffer, 0.f);
+    ossia::fill(this->m_temp_buffer, 0.f);
+    ossia::fill(this->m_deinterleaved_buffer, 0.f);
   }
 
+  bool submit(void* data)
+  {
+    if (int ret = snd.pcm_writei(m_client, data, this->effective_buffer_size); ret == -EPIPE) {
+      ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
+      snd.pcm_prepare(m_client);
+    } else if (ret < 0) {
+      m_activated = false;
+      m_stop_token = true;
+      this->stop_processing = true;
+      return false;
+    } else {
+      snd.pcm_start(m_client);
+    }
+    return true;
+  }
+
+  // FIXME refactor with sound.hpp
+  template<auto>
+  void interleave(float** outs);
+  template<auto>
+  void convert(float** outs);
+
+  template<>
+  void interleave<SND_PCM_FORMAT_FLOAT_LE>(float** outs)
+  {
+    float* output = reinterpret_cast<float*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+      for(int k = 0; k < this->effective_buffer_size; k++)
+        output[k * this->effective_outputs + c] = outs[c][k];
+  }
+
+  template<>
+  void interleave<SND_PCM_FORMAT_S16_LE>(float** outs)
+  {
+    int16_t* output = reinterpret_cast<int16_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int16_t& out = output[k * this->effective_outputs + c];
+
+        out = sample * (0x7FFF + .5f) - 0.5f;
+      }
+    }
+  }
+
+  template<>
+  void interleave<SND_PCM_FORMAT_S24_LE>(float** outs)
+  {
+    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int32_t& out = output[k * this->effective_outputs + c];
+
+        out = int32_t(sample * (std::numeric_limits<int32_t>::max() / 256.f)) << 8;
+      }
+    }
+  }
+
+  template<>
+  void interleave<SND_PCM_FORMAT_S32_LE>(float** outs)
+  {
+    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int32_t& out = output[k * this->effective_outputs + c];
+
+        out = sample * std::numeric_limits<int32_t>::max();
+      }
+    }
+  }
+
+  template<>
+  void convert<SND_PCM_FORMAT_S16_LE>(float** outs)
+  {
+    int16_t* output = reinterpret_cast<int16_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      int16_t* out_channel = output + c * this->effective_buffer_size;
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int16_t& out = out_channel[k];
+
+        out = sample * (0x7FFF + .5f) - 0.5f;
+      }
+    }
+  }
+
+  template<>
+  void convert<SND_PCM_FORMAT_S24_LE>(float** outs)
+  {
+    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      int32_t* out_channel = output + c * this->effective_buffer_size;
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int32_t& out = out_channel[k];
+
+        out = int32_t(sample * (std::numeric_limits<int32_t>::max() / 256.f)) << 8;
+      }
+    }
+  }
+
+  template<>
+  void convert<SND_PCM_FORMAT_S32_LE>(float** outs)
+  {
+    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
+    for(int c = 0; c < this->effective_outputs; c++)
+    {
+      int32_t* out_channel = output + c * this->effective_buffer_size;
+      for(int k = 0; k < this->effective_buffer_size; k++)
+      {
+        const float sample = outs[c][k];
+        int32_t& out = out_channel[k];
+
+        out = sample * std::numeric_limits<int32_t>::max();
+      }
+    }
+  }
+
+
+  template<auto Format>
   void run_thread_interleaved()
   {
-    const auto &snd = libasound::instance();
-    m_buffer.resize(this->effective_outputs * this->effective_buffer_size * sizeof(float));
+    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample<Format>());
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
     float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
@@ -336,33 +521,29 @@ private:
     {
       process(nullptr, outs, this->effective_buffer_size);
 
-      // interleave
-      float* output = reinterpret_cast<float*>(m_buffer.data());
-      for(int c = 0; c < this->effective_outputs; c++)
-        for(int k = 0; k < this->effective_buffer_size; k++)
-          output[k * this->effective_outputs + c] = outs[c][k];
+      interleave<Format>(outs);
 
-      if (int ret = snd.pcm_writei(m_client, m_buffer.data(), this->effective_buffer_size); ret == -EPIPE) {
-        ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
-        snd.pcm_prepare(m_client);
-      } else if (ret < 0) {
-        activated = false;
-        m_stop_token = true;
-        this->stop_processing = true;
-        return;
-
-
-        //ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
-        //std::exit(1);
-      } else {
-        snd.pcm_start(m_client);
-      }
+      if(!submit(m_temp_buffer.data()))
+        break;
     }
   }
 
+  template<auto Format>
+  static constexpr int bytes_per_sample()
+  {
+    switch(Format) {
+      case SND_PCM_FORMAT_S16_LE: return 2;
+      case SND_PCM_FORMAT_S24_LE: return 4;
+      case SND_PCM_FORMAT_S32_LE: return 4;
+      case SND_PCM_FORMAT_FLOAT_LE: return 4;
+      default: return 4;
+    }
+  }
+
+  template<auto Format>
   void run_thread_deinterleaved()
   {
-    const auto &snd = libasound::instance();
+    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample<Format>());
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
     float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
@@ -375,22 +556,33 @@ private:
     {
       process(nullptr, outs, this->effective_buffer_size);
 
-      if (int ret = snd.pcm_writei(m_client, m_deinterleaved_buffer.data(), this->effective_buffer_size); ret == -EPIPE) {
-        ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
-        snd.pcm_prepare(m_client);
-      } else if (ret < 0) {
-        activated = false;
-        m_stop_token = true;
-        this->stop_processing = true;
-        return;
-        //ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
-        //std::exit(1);
-      } else {
-        snd.pcm_start(m_client);
-      }
+      convert<Format>(outs);
+
+      if(!submit(m_temp_buffer.data()))
+        break;
     }
   }
 
+  // Special case where we don't need a temp buffer
+  template<>
+  void run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>()
+  {
+    m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
+
+    float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
+    for(int c = 0; c < this->effective_outputs; c++)
+      outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
+
+    m_start_time = clk::now();
+    m_last_time = m_start_time;
+    while(!this->m_stop_token)
+    {
+      process(nullptr, outs, this->effective_buffer_size);
+
+      if(!submit(m_deinterleaved_buffer.data()))
+        break;
+    }
+  }
 
   void process(float** , float** float_output, uint64_t nframes)
   {
@@ -417,18 +609,21 @@ private:
     self.tick_end();
     m_last_time = clk::now();
   }
+
   using clk = std::chrono::steady_clock;
+
+  const libasound& snd{libasound::instance()};
 
   snd_pcm_t* m_client{};
   std::thread m_thread;
-  ossia::pod_vector<char> m_buffer;
+  ossia::pod_vector<char> m_temp_buffer;
   ossia::float_vector m_deinterleaved_buffer;
 
   clk::time_point m_start_time{};
   clk::time_point m_last_time{};
 
   std::atomic_bool m_stop_token{};
-  bool activated = false;
+  bool m_activated = false;
 };
 
 }
