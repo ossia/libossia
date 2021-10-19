@@ -411,19 +411,46 @@ private:
     ossia::fill(this->m_deinterleaved_buffer, 0.f);
   }
 
-  bool submit(void* data)
+  void abort(int ret) {
+    ossia::logger().error("alsa_engine::submit: {}", snd.strerror(ret));
+    m_activated = false;
+    m_stop_token = true;
+    this->stop_processing = true;
+  };
+
+  bool submit(char* data)
   {
-    if (int ret = snd.pcm_writei(m_client, data, this->effective_buffer_size); ret == -EPIPE) {
-      ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
-      snd.pcm_prepare(m_client);
-    } else if (ret < 0) {
-      return true;
-      m_activated = false;
-      m_stop_token = true;
-      this->stop_processing = true;
-      return false;
-    } else {
-      snd.pcm_start(m_client);
+    int samples = this->effective_buffer_size;
+    int channels = this->effective_outputs;
+    while(samples > 0)
+    {
+      int ret = snd.pcm_writei(m_client, data, samples);
+
+      if (ret == -EPIPE || ret == -ESTRPIPE)
+      {
+        ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
+        if(int ret = snd.pcm_prepare(m_client); ret < 0) {
+          abort(ret);
+          return false;
+        }
+      }
+      else if (ret == -EAGAIN)
+      {
+        continue;
+      }
+      else if (ret < 0)
+      {
+        ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
+        return true;
+        abort(ret);
+        return false;
+      }
+      else
+      {
+        data += ret * channels;
+        samples -= ret;
+        snd.pcm_start(m_client);
+      }
     }
     return true;
   }
@@ -482,7 +509,7 @@ private:
       else
       {
         // Directly submit our buffer
-        if(!submit(m_deinterleaved_buffer.data()))
+        if(!submit(reinterpret_cast<char*>(m_deinterleaved_buffer.data())))
           break;
       }
     }
