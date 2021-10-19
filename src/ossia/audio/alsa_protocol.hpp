@@ -5,6 +5,7 @@
 #include <ossia/detail/dylib_loader.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/dataflow/float_to_sample.hpp>
 
 #include <alsa/asoundlib.h>
 
@@ -192,6 +193,52 @@ struct exception : std::runtime_error {
   }
 };
 
+template<auto Format>
+static constexpr void snd_interleave(const float* const* in, char* out, int channels, int bs)
+{
+  switch(Format) {
+    case SND_PCM_FORMAT_S16_LE:
+      return ossia::interleave<int16_t, 16>(in, reinterpret_cast<int16_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S24_LE:
+      return ossia::interleave<int32_t, 24>(in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S32_LE:
+      return ossia::interleave<int32_t, 32>(in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_FLOAT_LE:
+      return ossia::interleave<float, 32>(in, reinterpret_cast<float*>(out), channels, bs);
+    default:
+      return;
+  }
+}
+
+template<auto Format>
+static constexpr void snd_convert(const float* const* in, char* out, int channels, int bs)
+{
+  switch(Format) {
+    case SND_PCM_FORMAT_S16_LE:
+      return ossia::convert<int16_t, 16>(in, reinterpret_cast<int16_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S24_LE:
+      return ossia::convert<int32_t, 24>(in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S32_LE:
+      return ossia::convert<int32_t, 32>(in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_FLOAT_LE:
+      return ossia::convert<float, 32>(in, reinterpret_cast<float*>(out), channels, bs);
+    default:
+      return;
+  }
+}
+
+template<auto Format>
+static constexpr int snd_bytes_per_sample()
+{
+  switch(Format) {
+    case SND_PCM_FORMAT_S16_LE: return 2;
+    case SND_PCM_FORMAT_S24_LE: return 4;
+    case SND_PCM_FORMAT_S32_LE: return 4;
+    case SND_PCM_FORMAT_FLOAT_LE: return 4;
+    default: return 4;
+  }
+}
+
 class alsa_engine final : public audio_engine
 {
 public:
@@ -297,19 +344,19 @@ public:
         switch(format)
         {
           case SND_PCM_FORMAT_S16_LE:
-            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_thread = std::thread([this] { run_thread_deinterleaved<SND_PCM_FORMAT_S16_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S24_LE:
-            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_thread = std::thread([this] { run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S32_LE:
-            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_thread = std::thread([this] { run_thread_deinterleaved<SND_PCM_FORMAT_S32_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_FLOAT_LE:
-            m_thread = std::thread([=] { run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_thread = std::thread([this] { run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
             m_activated = true;
             break;
           default:
@@ -322,19 +369,19 @@ public:
         switch(format)
         {
           case SND_PCM_FORMAT_S16_LE:
-            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_thread = std::thread([this] { run_thread_interleaved<SND_PCM_FORMAT_S16_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S24_LE:
-            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_thread = std::thread([this] { run_thread_interleaved<SND_PCM_FORMAT_S24_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S32_LE:
-            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_thread = std::thread([this] { run_thread_interleaved<SND_PCM_FORMAT_S32_LE>(); });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_FLOAT_LE:
-            m_thread = std::thread([=] { run_thread_interleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_thread = std::thread([this] { run_thread_interleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
             m_activated = true;
             break;
           default:
@@ -390,125 +437,10 @@ private:
     return true;
   }
 
-  // FIXME refactor with sound.hpp
-  template<auto>
-  void interleave(float** outs);
-  template<auto>
-  void convert(float** outs);
-
-  template<>
-  void interleave<SND_PCM_FORMAT_FLOAT_LE>(float** outs)
-  {
-    float* output = reinterpret_cast<float*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-      for(int k = 0; k < this->effective_buffer_size; k++)
-        output[k * this->effective_outputs + c] = outs[c][k];
-  }
-
-  template<>
-  void interleave<SND_PCM_FORMAT_S16_LE>(float** outs)
-  {
-    int16_t* output = reinterpret_cast<int16_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int16_t& out = output[k * this->effective_outputs + c];
-
-        out = sample * (0x7FFF + .5f) - 0.5f;
-      }
-    }
-  }
-
-  template<>
-  void interleave<SND_PCM_FORMAT_S24_LE>(float** outs)
-  {
-    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int32_t& out = output[k * this->effective_outputs + c];
-
-        out = int32_t(sample * (std::numeric_limits<int32_t>::max() / 256.f)) << 8;
-      }
-    }
-  }
-
-  template<>
-  void interleave<SND_PCM_FORMAT_S32_LE>(float** outs)
-  {
-    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int32_t& out = output[k * this->effective_outputs + c];
-
-        out = sample * std::numeric_limits<int32_t>::max();
-      }
-    }
-  }
-
-  template<>
-  void convert<SND_PCM_FORMAT_S16_LE>(float** outs)
-  {
-    int16_t* output = reinterpret_cast<int16_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      int16_t* out_channel = output + c * this->effective_buffer_size;
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int16_t& out = out_channel[k];
-
-        out = sample * (0x7FFF + .5f) - 0.5f;
-      }
-    }
-  }
-
-  template<>
-  void convert<SND_PCM_FORMAT_S24_LE>(float** outs)
-  {
-    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      int32_t* out_channel = output + c * this->effective_buffer_size;
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int32_t& out = out_channel[k];
-
-        out = int32_t(sample * (std::numeric_limits<int32_t>::max() / 256.f)) << 8;
-      }
-    }
-  }
-
-  template<>
-  void convert<SND_PCM_FORMAT_S32_LE>(float** outs)
-  {
-    int32_t* output = reinterpret_cast<int32_t*>(m_temp_buffer.data());
-    for(int c = 0; c < this->effective_outputs; c++)
-    {
-      int32_t* out_channel = output + c * this->effective_buffer_size;
-      for(int k = 0; k < this->effective_buffer_size; k++)
-      {
-        const float sample = outs[c][k];
-        int32_t& out = out_channel[k];
-
-        out = sample * std::numeric_limits<int32_t>::max();
-      }
-    }
-  }
-
-
   template<auto Format>
   void run_thread_interleaved()
   {
-    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample<Format>());
+    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * snd_bytes_per_sample<Format>());
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
     float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
@@ -521,52 +453,21 @@ private:
     {
       process(nullptr, outs, this->effective_buffer_size);
 
-      interleave<Format>(outs);
+      snd_interleave<Format>(outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
 
       if(!submit(m_temp_buffer.data()))
         break;
-    }
-  }
-
-  template<auto Format>
-  static constexpr int bytes_per_sample()
-  {
-    switch(Format) {
-      case SND_PCM_FORMAT_S16_LE: return 2;
-      case SND_PCM_FORMAT_S24_LE: return 4;
-      case SND_PCM_FORMAT_S32_LE: return 4;
-      case SND_PCM_FORMAT_FLOAT_LE: return 4;
-      default: return 4;
     }
   }
 
   template<auto Format>
   void run_thread_deinterleaved()
   {
-    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample<Format>());
-    m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
-
-    float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
-    for(int c = 0; c < this->effective_outputs; c++)
-      outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
-
-    m_start_time = clk::now();
-    m_last_time = m_start_time;
-    while(!this->m_stop_token)
+    // In the float case we skip the temp buffer
+    if constexpr(Format != SND_PCM_FORMAT_FLOAT_LE)
     {
-      process(nullptr, outs, this->effective_buffer_size);
-
-      convert<Format>(outs);
-
-      if(!submit(m_temp_buffer.data()))
-        break;
+      m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * snd_bytes_per_sample<Format>());
     }
-  }
-
-  // Special case where we don't need a temp buffer
-  template<>
-  void run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>()
-  {
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
     float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
@@ -579,8 +480,20 @@ private:
     {
       process(nullptr, outs, this->effective_buffer_size);
 
-      if(!submit(m_deinterleaved_buffer.data()))
-        break;
+      if constexpr(Format != SND_PCM_FORMAT_FLOAT_LE)
+      {
+        // Convert into the temp buffer
+        snd_convert<Format>(outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
+
+        if(!submit(m_temp_buffer.data()))
+          break;
+      }
+      else
+      {
+        // Directly submit our buffer
+        if(!submit(m_deinterleaved_buffer.data()))
+          break;
+      }
     }
   }
 
@@ -625,6 +538,7 @@ private:
   std::atomic_bool m_stop_token{};
   bool m_activated = false;
 };
+
 
 }
 

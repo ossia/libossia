@@ -653,6 +653,8 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/node_process.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/control_inlets.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/sample_to_float.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/float_to_sample.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/timed_value.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/transport.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/typed_value.hpp"
