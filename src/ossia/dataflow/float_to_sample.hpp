@@ -7,7 +7,23 @@
 
 namespace ossia
 {
+/** Generic versions found on KVR
+static inline
+int quantize(double x, int w)
+{
+  const double range = exp2((double) w);
 
+  return (int) clamp(floor(x * range * 0.5), - range * 0.5, range * 0.5 - 1.0);
+}
+
+static inline
+double dequantize(int n, int w)
+{
+  const double range = exp2((double) w);
+
+  return ((2.0 * (double) n + range) / (range - 1.0)) - 1.0;
+}
+*/
 template <typename SampleFormat, int N>
 constexpr SampleFormat float_to_sample(ossia::audio_sample sample) noexcept;
 
@@ -39,11 +55,12 @@ constexpr int16_t float_to_sample<int16_t, 16>(ossia::audio_sample sample) noexc
   }
 }
 
+// ALSA S24_LE: https://stackoverflow.com/a/40301874/1495627
 template <>
 constexpr int32_t float_to_sample<int32_t, 24>(ossia::audio_sample sample) noexcept
 {
   const constexpr ossia::audio_sample int24_max = std::numeric_limits<int32_t>::max() / 256.;
-  return int32_t(sample * int24_max) << 8;
+  return int32_t(sample * int24_max);
 }
 
 template <>

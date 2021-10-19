@@ -174,20 +174,10 @@ private:
     }
 };
 
-template<std::size_t N>
-struct literal {
-  constexpr literal(const char (&str)[N]) noexcept {
-    std::copy_n(str, N, this->str);
-  }
-
-  char str[N];
-};
-
-template<literal lit>
 struct exception : std::runtime_error {
   template<typename... Args>
-  exception(Args&&... args)
-    : std::runtime_error{fmt::format(lit.str, std::forward<Args>(args)...)}
+  exception(fmt::format_string<Args...> format,Args&&... args)
+    : std::runtime_error{fmt::format(format, std::forward<Args>(args)...)}
   {
 
   }
@@ -249,7 +239,7 @@ public:
     {
       if (int ret = snd.pcm_open(&m_client, card_out.c_str(), SND_PCM_STREAM_PLAYBACK, 0);
           ret < 0)
-        throw ossia::exception<"alsa_engine: error when opening device '{}': {}">(card_out, snd.strerror(ret));
+        throw ossia::exception("alsa_engine: error when opening device '{}': {}", card_out, snd.strerror(ret));
 
       snd_pcm_hw_params_t *hwparams;
       snd_alloca(&hwparams, snd, pcm_hw_params);
@@ -427,6 +417,7 @@ private:
       ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
       snd.pcm_prepare(m_client);
     } else if (ret < 0) {
+      return true;
       m_activated = false;
       m_stop_token = true;
       this->stop_processing = true;
