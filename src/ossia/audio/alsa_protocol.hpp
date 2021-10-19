@@ -56,6 +56,7 @@ public:
     decltype(&::snd_pcm_state) pcm_state{};
     decltype(&::snd_pcm_state_name) pcm_state_name{};
     decltype(&::snd_pcm_writei) pcm_writei{};
+    decltype(&::snd_pcm_writen) pcm_writen{};
     decltype(&::snd_pcm_prepare) pcm_prepare{};
     decltype(&::snd_pcm_start) pcm_start{};
     decltype(&::snd_pcm_recover) pcm_recover{};
@@ -115,6 +116,7 @@ private:
         pcm_state = library.symbol<decltype(&::snd_pcm_state)>("snd_pcm_state");
         pcm_state_name = library.symbol<decltype(&::snd_pcm_state_name)>("snd_pcm_state_name");
         pcm_writei = library.symbol<decltype(&::snd_pcm_writei)>("snd_pcm_writei");
+        pcm_writen = library.symbol<decltype(&::snd_pcm_writen)>("snd_pcm_writen");
         pcm_prepare = library.symbol<decltype(&::snd_pcm_prepare)>("snd_pcm_prepare");
         pcm_start = library.symbol<decltype(&::snd_pcm_start)>("snd_pcm_start");
         pcm_recover = library.symbol<decltype(&::snd_pcm_recover)>("snd_pcm_recover");
@@ -162,6 +164,7 @@ private:
         assert(pcm_state);
         assert(pcm_state_name);
         assert(pcm_writei);
+        assert(pcm_writen);
         assert(pcm_prepare);
         assert(pcm_start);
         assert(pcm_recover);
@@ -418,10 +421,10 @@ private:
     this->stop_processing = true;
   };
 
-  bool submit(char* data)
+  bool submit_interleaved(char* data, int sample_size_in_bytes)
   {
     int samples = this->effective_buffer_size;
-    int channels = this->effective_outputs;
+    const int channels = this->effective_outputs;
     while(samples > 0)
     {
       int ret = snd.pcm_writei(m_client, data, samples);
@@ -447,7 +450,49 @@ private:
       }
       else
       {
-        data += ret * channels;
+        data += ret * channels * sample_size_in_bytes;
+        samples -= ret;
+        snd.pcm_start(m_client);
+      }
+    }
+    return true;
+  }
+
+  bool submit_deinterleaved(void** data, int sample_size_in_bytes)
+  {
+    int samples = this->effective_buffer_size;
+    const int channels = this->effective_outputs;
+    while(samples > 0)
+    {
+      int ret = snd.pcm_writen(m_client, data, samples);
+
+      if (ret == -EPIPE || ret == -ESTRPIPE)
+      {
+        ossia::logger().error("alsa_engine: snd_pcm_writei: buffer underrun.");
+        if(int ret = snd.pcm_prepare(m_client); ret < 0) {
+          abort(ret);
+          return false;
+        }
+      }
+      else if (ret == -EAGAIN)
+      {
+        continue;
+      }
+      else if (ret < 0)
+      {
+        ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
+        return true;
+        abort(ret);
+        return false;
+      }
+      else
+      {
+        auto data_c = reinterpret_cast<char**>(data);
+        for(int c = 0; c < channels; ++c)
+        {
+          data_c[c] += ret * sample_size_in_bytes;
+        }
+
         samples -= ret;
         snd.pcm_start(m_client);
       }
@@ -458,22 +503,23 @@ private:
   template<auto Format>
   void run_thread_interleaved()
   {
-    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * snd_bytes_per_sample<Format>());
+    constexpr int bytes_per_sample = snd_bytes_per_sample<Format>();
+    m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample);
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
-    float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
+    float** score_outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
     for(int c = 0; c < this->effective_outputs; c++)
-      outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
+      score_outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
 
     m_start_time = clk::now();
     m_last_time = m_start_time;
     while(!this->m_stop_token)
     {
-      process(nullptr, outs, this->effective_buffer_size);
+      process(nullptr, score_outs, this->effective_buffer_size);
 
-      snd_interleave<Format>(outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
+      snd_interleave<Format>(score_outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
 
-      if(!submit(m_temp_buffer.data()))
+      if(!submit_interleaved(m_temp_buffer.data(), bytes_per_sample))
         break;
     }
   }
@@ -481,37 +527,45 @@ private:
   template<auto Format>
   void run_thread_deinterleaved()
   {
+    constexpr int bytes_per_sample = snd_bytes_per_sample<Format>();
     // In the float case we skip the temp buffer
     if constexpr(Format != SND_PCM_FORMAT_FLOAT_LE)
     {
-      m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * snd_bytes_per_sample<Format>());
+      m_temp_buffer.resize(this->effective_outputs * this->effective_buffer_size * bytes_per_sample);
     }
     m_deinterleaved_buffer.resize(this->effective_outputs * this->effective_buffer_size);
 
-    float** outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
+    float** score_outs = (float**)alloca(sizeof(float*) * this->effective_outputs);
+    void** deinterleaved_outs = (void**)alloca(sizeof(void*) * this->effective_outputs);
+
     for(int c = 0; c < this->effective_outputs; c++)
-      outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
+    {
+      score_outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
+    }
 
     m_start_time = clk::now();
     m_last_time = m_start_time;
     while(!this->m_stop_token)
     {
-      process(nullptr, outs, this->effective_buffer_size);
+      process(nullptr, score_outs, this->effective_buffer_size);
 
       if constexpr(Format != SND_PCM_FORMAT_FLOAT_LE)
       {
-        // Convert into the temp buffer
-        snd_convert<Format>(outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
+        // Convert into the temp buffer if necessary
+        snd_convert<Format>(score_outs, m_temp_buffer.data(), this->effective_outputs, this->effective_buffer_size);
+      }
 
-        if(!submit(m_temp_buffer.data()))
-          break;
-      }
-      else
+      for(int c = 0; c < this->effective_outputs; c++)
       {
-        // Directly submit our buffer
-        if(!submit(reinterpret_cast<char*>(m_deinterleaved_buffer.data())))
-          break;
+        if constexpr(Format != SND_PCM_FORMAT_FLOAT_LE)
+          deinterleaved_outs[c] = m_deinterleaved_buffer.data() + c * this->effective_buffer_size;
+        else
+          deinterleaved_outs[c] = score_outs[c];
       }
+
+      // Submit
+      if(!submit_deinterleaved(deinterleaved_outs, bytes_per_sample))
+        break;
     }
   }
 
