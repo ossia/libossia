@@ -155,6 +155,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rnd/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
 
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>

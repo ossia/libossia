@@ -69,6 +69,19 @@ public:
     return {};
   }
 
+  constexpr std::optional<K> find_key(const V& v) const noexcept
+  {
+    for(std::size_t i = 0; i < N; i++)
+    {
+      if(m_map[i] == v)
+      {
+        return static_cast<K>(i);
+      }
+    }
+
+    return {};
+  }
+
   pair<K, const V&> get(int64_t i) const noexcept
   {
     assert(i >= 0 && i < int64_t(N));

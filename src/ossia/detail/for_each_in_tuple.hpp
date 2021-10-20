@@ -119,3 +119,48 @@ void tuple_array_func(T1<T1s...>&& t1, std::array<U, N>& t2, F&& func)
 }
 
 }
+
+
+#include <tuplet/tuple.hpp>
+
+namespace ossia{
+
+template <class F, class... Ts, std::size_t... Is>
+void for_each_in_tuple(
+    tuplet::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
+{
+  (std::forward<F>(func)(get<Is>(tuple)), ...);
+}
+
+template <class F, class... Ts>
+void for_each_in_tuple(tuplet::tuple<Ts...>& tuple, F&& func)
+{
+  for_each_in_tuple(
+        tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <class F>
+void for_each_in_tuple(tuplet::tuple<>& tuple, const F& func)
+{
+}
+
+template <class F, class... Ts, std::size_t... Is>
+void for_each_in_tuple(
+    const tuplet::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
+{
+  (std::forward<F>(func)(get<Is>(tuple)), ...);
+}
+
+template <class F, class... Ts>
+void for_each_in_tuple(const tuplet::tuple<Ts...>& tuple, F&& func)
+{
+  for_each_in_tuple(
+      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <class F>
+void for_each_in_tuple(const tuplet::tuple<>& tuple, const F& func)
+{
+}
+
+}

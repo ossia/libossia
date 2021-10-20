@@ -169,6 +169,13 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/multi_index/include/"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/"
+        DESTINATION include
+        COMPONENT Devel
+        MESSAGE_NEVER
+        ${3RDPARTY_INSTALL_PATTERN}
+)
+
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/spdlog/include/"
         DESTINATION include
         COMPONENT Devel
