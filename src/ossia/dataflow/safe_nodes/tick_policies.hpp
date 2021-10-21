@@ -26,6 +26,7 @@ struct precise_tick
       TickFun&& f, const ossia::token_request& req,
       const ossia::timed_vec<Args>&... arg)
   {
+    using namespace tuplet;
     auto iterators = tuplet::make_tuple(arg.begin()...);
     const auto last_iterators = tuplet::make_tuple(--arg.end()...);
 
