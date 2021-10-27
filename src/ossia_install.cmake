@@ -300,7 +300,7 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/rubberband/rubberband"
 find_program(BOOST_BCP "bcp")
 if(BOOST_BCP)
    # install a subset of boost thanks to bcp
-   install(CODE "execute_process(COMMAND bcp --boost=${Boost_INCLUDE_DIR} boost/any.hpp boost/container/small_vector.hpp boost/container/static_vector.hpp boost/lexical_cast.hpp boost/algorithm/string/replace.hpp ${CMAKE_INSTALL_PREFIX}/include)")
+   install(CODE "execute_process(COMMAND bcp --boost=${Boost_INCLUDE_DIR} boost/any.hpp boost/container/small_vector.hpp boost/container/static_vector.hpp boost/lexical_cast.hpp boost/algorithm/string/replace.hpp boost/endian/conversion.hpp ${CMAKE_INSTALL_PREFIX}/include)")
 else()
   if(NOT WIN32 AND OSSIA_MUST_INSTALL_BOOST)
     install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/boost"
