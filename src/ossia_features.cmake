@@ -310,9 +310,11 @@ if(OSSIA_DATAFLOW)
 
   #SDL support
   set(SDL_BUILDING_LIBRARY TRUE)
-  ossia_find_sdl()
-  if(SDL_LIB)
-    target_link_libraries(ossia PUBLIC "${SDL_LIB}")
+  if(NOT OSSIA_DISABLE_SDL)
+    ossia_find_sdl()
+    if(SDL_LIB)
+      target_link_libraries(ossia PUBLIC "${SDL_LIB}")
+    endif()
   endif()
 
   target_link_libraries(ossia PRIVATE samplerate)
