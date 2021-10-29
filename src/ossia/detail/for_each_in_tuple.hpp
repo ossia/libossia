@@ -121,6 +121,8 @@ void tuple_array_func(T1<T1s...>&& t1, std::array<U, N>& t2, F&& func)
 }
 
 
+#include <version>
+#if __cplusplus > 201703L && __cpp_impl_three_way_comparison >= 201907L
 #include <tuplet/tuple.hpp>
 
 namespace ossia{
@@ -164,3 +166,4 @@ void for_each_in_tuple(const tuplet::tuple<>& tuple, const F& func)
 }
 
 }
+#endif
