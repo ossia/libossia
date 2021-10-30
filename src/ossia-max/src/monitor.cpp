@@ -9,7 +9,7 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_monitor class methods

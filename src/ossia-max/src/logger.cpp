@@ -6,7 +6,7 @@
 #include <ossia/detail/thread.hpp>
 #include <git_info.h>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 extern "C" void ossia_logger_setup()
 {

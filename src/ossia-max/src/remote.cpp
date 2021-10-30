@@ -8,7 +8,7 @@
 #include <ossia-max/src/utils.hpp>
 #include <ossia/network/common/path.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_remote class methods
@@ -46,7 +46,7 @@ extern "C" void ossia_remote_setup()
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void* remote::create(t_symbol* name, long argc, t_atom* argv)
@@ -347,7 +347,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
   if ( attribute == ossia::net::text_unit()) {
     // TODO review this: why taking only one parameter into account,
     // what about controlling several parameters with different units with the same ossia.remote ?
-    std::shared_ptr<ossia::max::matcher> good_one{};
+    std::shared_ptr<ossia::max_binding::matcher> good_one{};
 
     for(auto& m : x->m_matchers)
     {

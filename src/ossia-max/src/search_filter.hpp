@@ -6,7 +6,7 @@
 static const constexpr int MAX_NUM_ITEMS = 256;
 
 namespace ossia {
-namespace max {
+namespace max_binding {
 struct search_filter
 {
   t_symbol* m_filter_type[MAX_NUM_ITEMS];

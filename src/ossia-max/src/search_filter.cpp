@@ -5,7 +5,7 @@
 #include "utils.hpp"
 
 namespace ossia {
-namespace max {
+namespace max_binding {
 
 bool search_filter::filter(const ossia::net::node_base& node)
 {

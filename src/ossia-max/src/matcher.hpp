@@ -7,7 +7,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 struct object_base;

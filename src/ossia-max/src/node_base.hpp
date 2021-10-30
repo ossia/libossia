@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class node_base : public object_base

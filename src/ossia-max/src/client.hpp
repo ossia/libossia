@@ -7,7 +7,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -
@@ -69,7 +69,7 @@ public:
   static void get_mess_cb(client*, t_symbol*);
 
   static void* create(t_symbol*, long, t_atom*);
-  static void destroy(ossia::max::client*);
+  static void destroy(ossia::max_binding::client*);
 
   int m_argc{};
   t_atom* m_argv{};

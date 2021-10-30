@@ -54,7 +54,7 @@ extern "C"
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -
@@ -158,13 +158,13 @@ public:
     if(std::is_same<T, client>::value) return ossia_client_class;
     if(std::is_same<T, attribute>::value) return ossia_attribute_class;
     if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
-    if(std::is_same<T, ossia::max::logger>::value) return ossia_logger_class;
-    if(std::is_same<T, ossia::max::explorer>::value) return ossia_explorer_class;
-    if(std::is_same<T, ossia::max::monitor>::value) return ossia_monitor_class;
-    if(std::is_same<T, ossia::max::search>::value) return ossia_search_class;
-    if(std::is_same<T, ossia::max::router>::value) return ossia_router_class;
-    if(std::is_same<T, ossia::max::fuzzysearch>::value) return ossia_fuzzysearch_class;
-    if(std::is_same<T, ossia::max::oassert>::value) return ossia_assert_class;
+    if(std::is_same<T, ossia::max_binding::logger>::value) return ossia_logger_class;
+    if(std::is_same<T, ossia::max_binding::explorer>::value) return ossia_explorer_class;
+    if(std::is_same<T, ossia::max_binding::monitor>::value) return ossia_monitor_class;
+    if(std::is_same<T, ossia::max_binding::search>::value) return ossia_search_class;
+    if(std::is_same<T, ossia::max_binding::router>::value) return ossia_router_class;
+    if(std::is_same<T, ossia::max_binding::fuzzysearch>::value) return ossia_fuzzysearch_class;
+    if(std::is_same<T, ossia::max_binding::oassert>::value) return ossia_assert_class;
     return nullptr;
   }
 

@@ -10,7 +10,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 class ZeroconfMinuitListener final : servus::Listener
 {

@@ -5,7 +5,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #define MAX_NUM_ITEMS 256
@@ -45,8 +45,8 @@ struct monitor : object_base, search_filter
   void on_device_deleted(const ossia::net::node_base&);
   void handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action);
 
-  static void execute_method(ossia::max::monitor* x, t_symbol* s, long argc, t_atom* argv);
-  static void free(ossia::max::monitor* x);
+  static void execute_method(ossia::max_binding::monitor* x, t_symbol* s, long argc, t_atom* argv);
+  static void free(ossia::max_binding::monitor* x);
   static t_max_err notify(monitor *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   static void assist(monitor* x, void* b, long m, long a, char* s);
 

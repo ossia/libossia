@@ -7,7 +7,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -
@@ -28,8 +28,8 @@ struct logger
 
   void reset();
 
-  static void in_anything(ossia::max::logger* x, t_symbol* s, long argc, t_atom* argv);
-  static void free(ossia::max::logger* x);
+  static void in_anything(ossia::max_binding::logger* x, t_symbol* s, long argc, t_atom* argv);
+  static void free(ossia::max_binding::logger* x);
   static t_max_err notify(logger *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   static void check_connection_status(logger* x);
 
