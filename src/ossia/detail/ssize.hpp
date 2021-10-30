@@ -3,7 +3,7 @@
 #if __has_include(<version>)
 #include <version>
   // MacOSX11.3 SDK provides ssize but does not define it...
-  #if __cpp_lib_ssize >= 201902L || (defined(__APPLE__) && defined(__MAC_11_3)) || defined(__EMSCRIPTEN__)
+#if __cpp_lib_ssize >= 201902L || __MAC_OS_X_VERSION_MAX_ALLOWED > 1130 || defined(__EMSCRIPTEN__)
     #include <iterator>
     #define OSSIA_HAS_STD_SSIZE 1
   #endif
