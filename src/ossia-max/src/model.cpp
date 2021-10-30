@@ -9,7 +9,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node_functions.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_model class methods
@@ -20,7 +20,7 @@ extern "C" void ossia_model_setup()
 
   t_class* c = class_new(
       "ossia.model", (method)model::create, (method)model::destroy,
-      (long)sizeof(ossia::max::model), 0L, A_GIMME, 0);
+      (long)sizeof(ossia::max_binding::model), 0L, A_GIMME, 0);
 
   node_base::class_setup(c);
 
@@ -41,7 +41,7 @@ extern "C" void ossia_model_setup()
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void* model::create(t_symbol*, long argc, t_atom* argv)

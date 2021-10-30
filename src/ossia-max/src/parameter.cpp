@@ -7,7 +7,7 @@
 #include <ossia-max/src/remote.hpp>
 #include <ossia-max/src/utils.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 extern "C" void ossia_parameter_setup()
 {
@@ -15,7 +15,7 @@ extern "C" void ossia_parameter_setup()
   auto c = class_new( "ossia.parameter",
       (method)parameter::create,
       (method)parameter::destroy,
-      (long)sizeof(ossia::max::parameter), 0L,
+      (long)sizeof(ossia::max_binding::parameter), 0L,
       A_GIMME, 0);
 
   parameter_base::class_setup(c);
@@ -32,14 +32,14 @@ extern "C" void ossia_parameter_setup()
 
   class_register(CLASS_BOX, c);
 
-  auto& ossia_library = ossia::max::ossia_max::instance();
+  auto& ossia_library = ossia::max_binding::ossia_max::instance();
   ossia_library.ossia_parameter_class = c;
 
 }
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void* parameter::create(t_symbol* s, long argc, t_atom* argv)
@@ -228,7 +228,7 @@ void parameter::save_values()
   }
 }
 
-void parameter::on_device_created_callback(ossia::max::device* dev)
+void parameter::on_device_created_callback(ossia::max_binding::device* dev)
 {
   // TODO match the device name with m_name prefix
   // then create_node_from_matcher

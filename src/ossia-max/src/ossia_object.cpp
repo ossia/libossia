@@ -1,13 +1,13 @@
 #include "ossia_object.hpp"
 #include "ossia-max.hpp"
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 extern "C" void ossia_ossia_setup()
 {
   t_class* c = class_new(
       "ossia", (method)ossia_object::create, (method)ossia_object::destroy,
-      (long)sizeof(ossia::max::ossia_object), 0L, A_GIMME, 0);
+      (long)sizeof(ossia::max_binding::ossia_object), 0L, A_GIMME, 0);
 
   device::class_setup(c);
 
@@ -22,18 +22,18 @@ extern "C" void ossia_ossia_setup()
 
   class_register(CLASS_BOX, c);
 
-  auto& ossia_library = ossia::max::ossia_max::instance();
+  auto& ossia_library = ossia::max_binding::ossia_max::instance();
   ossia_library.ossia_ossia_class = c;
 }
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void* ossia_object::create(t_symbol* name, long argc, t_atom* argv)
 {
-  auto& ossia_library = ossia::max::ossia_max::instance();
+  auto& ossia_library = ossia::max_binding::ossia_max::instance();
 
   auto x = make_ossia<ossia_object>();
 

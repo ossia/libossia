@@ -12,7 +12,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 matcher::matcher(ossia::net::node_base* n, object_base* p) :

@@ -12,7 +12,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)

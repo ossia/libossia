@@ -5,7 +5,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class attribute : public parameter_base

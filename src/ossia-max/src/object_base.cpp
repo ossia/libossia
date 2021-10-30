@@ -12,7 +12,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
@@ -93,7 +93,7 @@ void object_base::get_hierarchy()
   while (patcher)
   {
     vec.push_back(patcher);
-    patcher = ossia::max::get_patcher(patcher);
+    patcher = ossia::max_binding::get_patcher(patcher);
   }
 
   // remove duplicates
@@ -870,9 +870,9 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
 
 void object_base::create_patcher_hierarchy()
 {
-  m_patcher = ossia::max::get_patcher(&m_object);
+  m_patcher = ossia::max_binding::get_patcher(&m_object);
   auto patcher = m_patcher;
-  auto parent = ossia::max::get_patcher(patcher);
+  auto parent = ossia::max_binding::get_patcher(patcher);
   ossia_max::instance().patchers[patcher].parent_patcher = parent;
   //ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
 
@@ -881,7 +881,7 @@ void object_base::create_patcher_hierarchy()
     ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
     auto patcher = parent;
 
-    parent = ossia::max::get_patcher(patcher);
+    parent = ossia::max_binding::get_patcher(patcher);
     ossia_max::instance().patchers[patcher].parent_patcher = parent;
 
     // no need to go up further if we already know patcher hierarchy from that point

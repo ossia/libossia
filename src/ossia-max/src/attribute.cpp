@@ -6,7 +6,7 @@
 
 #include <ossia/network/common/path.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 extern "C" void ossia_attribute_setup()
 {
@@ -37,7 +37,7 @@ extern "C" void ossia_attribute_setup()
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 

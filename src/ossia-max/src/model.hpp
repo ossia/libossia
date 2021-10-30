@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class model : public node_base
@@ -15,8 +15,8 @@ public:
   void do_registration();
 
   static void* create(t_symbol*, long, t_atom*);
-  static void destroy(ossia::max::model*);
-  static void assist(ossia::max::model*, void*, long, long, char*);
+  static void destroy(ossia::max_binding::model*);
+  static void assist(ossia::max_binding::model*, void*, long, long, char*);
 };
 
 } // max namespace

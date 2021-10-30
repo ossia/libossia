@@ -22,7 +22,7 @@
 #include <ossia/network/leapmotion/leapmotion_device.hpp>
 #endif
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 static void* phidgets_poll_clock = {};
@@ -65,7 +65,7 @@ extern "C" void ossia_device_setup()
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void device::class_setup(t_class *c)

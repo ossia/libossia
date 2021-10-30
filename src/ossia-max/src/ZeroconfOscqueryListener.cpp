@@ -9,7 +9,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfOscqueryListener::s_devices;
 std::vector<std::pair<ZeroconfOscqueryListener::ConnectionEvent, std::string>> ZeroconfOscqueryListener::s_connection_events;
@@ -142,7 +142,7 @@ std::mutex ZeroconfOscqueryListener::s_mutex;
     {
       if(client->is_zeroconf() && client->m_device && client->m_device->get_name() == name)
       {
-        ossia::max::client::client::disconnect(client);
+        ossia::max_binding::client::client::disconnect(client);
         clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
       }
     }

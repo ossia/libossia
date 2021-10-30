@@ -23,7 +23,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -

@@ -12,7 +12,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 std::vector<std::shared_ptr<ossia::net::generic_device>> ZeroconfMinuitListener::s_devices;
 
@@ -119,7 +119,7 @@ std::vector<std::pair<ZeroconfMinuitListener::ConnectionEvent, std::string>> Zer
       {
         if(client->is_zeroconf() && client->m_device->get_name() == it->get()->get_name())
         {
-          ossia::max::client::client::disconnect(client);
+          ossia::max_binding::client::client::disconnect(client);
           clock_delay(client->m_clock, 1000); // hardcoded reconnection delay
         }
       }
