@@ -7,7 +7,7 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <regex>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_router class methods

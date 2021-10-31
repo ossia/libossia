@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class ossia_object : public device

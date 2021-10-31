@@ -5,7 +5,7 @@
 namespace ossia
 {
 
-namespace max
+namespace max_binding
 {
 class device;
 class parameter final : public parameter_base
@@ -16,14 +16,14 @@ public:
   void do_registration();
   bool unregister();
   void save_values();
-  void on_device_created_callback(ossia::max::device* dev);
+  void on_device_created_callback(ossia::max_binding::device* dev);
 
   static void* create(t_symbol*, long, t_atom*);
-  static void destroy(ossia::max::parameter*);
+  static void destroy(ossia::max_binding::parameter*);
 
   static void assist(
-      ossia::max::parameter*, void*, long, long, char*);
-  static t_max_err notify(ossia::max::parameter *x,
+      ossia::max_binding::parameter*, void*, long, long, char*);
+  static t_max_err notify(ossia::max_binding::parameter *x,
       t_symbol *s, t_symbol *msg, void *sender, void *data);
   static void loadbang(parameter* x);
 };

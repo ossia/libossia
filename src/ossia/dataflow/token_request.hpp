@@ -231,6 +231,11 @@ struct token_request
 
         quantification_date = prev_date + quantified_duration * ratio;
       }
+      else if(start_quarter == 0. && end_quarter > 0.)
+      {
+        // Special first bar case
+        return prev_date;
+      }
     }
 
     return quantification_date;

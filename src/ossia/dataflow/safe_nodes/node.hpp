@@ -7,6 +7,7 @@
 
 #include <array>
 #include <tuple>
+#include <tuplet/tuple.hpp>
 
 namespace ossia::safe_nodes
 {
@@ -67,7 +68,13 @@ struct get_type_list {};
 template<typename ... T>
 struct get_type_list<const std::tuple<T...>>
 {
-  using type = std::tuple<typename T::type...>;
+  using type = tuplet::tuple<typename T::type...>;
+};
+
+template<typename ... T>
+struct get_type_list<const tuplet::tuple<T...>>
+{
+  using type = tuplet::tuple<typename T::type...>;
 };
 
 template <typename Node_T>
@@ -149,8 +156,8 @@ struct base_metadata
   static const constexpr dummy_container<midi_in> midi_ins{};
   static const constexpr dummy_container<midi_out> midi_outs{};
   static const constexpr dummy_container<address_in> address_ins{};
-  static const constexpr std::tuple<> controls{};
-  static const constexpr std::tuple<> control_outs{};
+  static const constexpr tuplet::tuple<> controls{};
+  static const constexpr tuplet::tuple<> control_outs{};
 
   static const constexpr double recommended_height{};
 };

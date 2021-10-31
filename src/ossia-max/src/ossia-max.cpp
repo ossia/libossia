@@ -16,7 +16,7 @@
 
 #include <git_info.h>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 void* ossia_max::s_browse_clock;
 ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
@@ -185,7 +185,7 @@ std::vector<T*> sort_by_depth(const ossia::safe_set<T*>& safe)
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -

@@ -9,7 +9,7 @@
 #include "equals.hpp"
 #include <ossia-max/src/ossia-max.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 extern "C" void ossia_equals_setup()
 {

@@ -13,7 +13,7 @@ struct clamp_min_functor
   template <typename... T>
   static OSSIA_INLINE auto compute(T&&... args)
   {
-    return ossia::clamp_min(std::forward<T>(args)...);
+    return ossia::max(std::forward<T>(args)...);
   }
 };
 

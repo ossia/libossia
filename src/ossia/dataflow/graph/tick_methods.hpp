@@ -119,7 +119,6 @@ struct buffer_tick
   ossia::graph_interface& g;
   ossia::scenario& scenar;
   ossia::transport_info_fun transport;
-  ossia::time_value prev_date{};
 
   void operator()(const ossia::audio_tick_state& st)
   {
@@ -143,9 +142,14 @@ struct buffer_tick
     const auto flicks = frameCount * st.samplesToModelRatio;
 
     ossia::token_request tok{};
-    tok.prev_date = prev_date;
-    tok.date = prev_date + flicks;
-    prev_date = tok.date;
+    tok.prev_date = scenar.last_date();
+
+    // FIXME this is a bit ugly..
+    if(tok.prev_date == ossia::Infinite)
+      tok.prev_date = 0_tv;
+
+    tok.date = tok.prev_date + flicks;
+
 
     // Notify the current transport state
     if (transport.allocated())

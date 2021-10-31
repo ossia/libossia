@@ -74,29 +74,25 @@ endif()
 
 # Download various dependencies
 set(BOOST_MINOR_MINIMAL 67)
-set(BOOST_MINOR_LATEST 76)
+set(BOOST_MINOR_LATEST 77)
+
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
+
 if (NOT Boost_FOUND)
   set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
   set(BOOST_VERSION "boost_1_${BOOST_MINOR_LATEST}_0" CACHE INTERNAL "")
-  if ( NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
 
-    if(WIN32)
-      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.zip")
-      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk17/${BOOST_VERSION}.zip)
-      set(BOOST_ARCHIVE ${BOOST_VERSION}.zip)
-    else()
-      message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-      set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk17/${BOOST_VERSION}.tar.gz)
-      set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
-    endif()
+  if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
+    message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
+    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk22/${BOOST_VERSION}.tar.gz)
+    set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
 
     file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
 
-  execute_process(
-    COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
-    WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}")
-
+    execute_process(
+      COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
+      WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}"
+    )
   endif()
   set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
   set(Boost_INCLUDE_DIR "${BOOST_ROOT}")

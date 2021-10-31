@@ -127,8 +127,9 @@ public:
       const ptr_container<time_sync>&, const ptr_container<time_interval>&,
       time_sync& root);
 
+  ossia::time_value last_date() const noexcept { return m_last_date; }
 private:
-  ossia::time_value m_lastDate{ossia::Infinite};
+  ossia::time_value m_last_date{ossia::Infinite};
 
   ptr_container<time_interval> m_intervals;
   ptr_container<time_sync> m_nodes; // list of all TimeSyncs of the scenario

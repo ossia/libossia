@@ -18,7 +18,7 @@
 #include <fmt/format.h>
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void object_namespace(object_base* x);
@@ -108,7 +108,7 @@ t_symbol* access_mode2symbol(ossia::access_mode mode);
  * @param node
  * @return
  */
-std::vector<ossia::max::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
+std::vector<ossia::max_binding::matcher*> make_matchers_vector(object_base* x, const ossia::net::node_base* node);
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);
 

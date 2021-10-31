@@ -5,7 +5,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #define MAX_NUM_ITEMS 256
@@ -29,8 +29,8 @@ struct search : object_base, search_filter
 
   bool unregister();
 
-  static void execute_method(ossia::max::search* x, t_symbol* s, long argc, t_atom* argv);
-  static void free(ossia::max::search* x);
+  static void execute_method(ossia::max_binding::search* x, t_symbol* s, long argc, t_atom* argv);
+  static void free(ossia::max_binding::search* x);
   static t_max_err notify(search *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
   static void assist(search* x, void* b, long m, long a, char* s);
 

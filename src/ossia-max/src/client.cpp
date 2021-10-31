@@ -23,7 +23,7 @@
 
 #include <boost/algorithm/string.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_client class methods
@@ -71,7 +71,7 @@ extern "C" void ossia_client_setup()
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 void* client::create(t_symbol* name, long argc, t_atom* argv)
@@ -422,12 +422,12 @@ void client::unregister_children()
   {
     if (child->m_otype == object_class::view)
     {
-      ossia::max::view* view = (ossia::max::view*)child;
+      ossia::max_binding::view* view = (ossia::max_binding::view*)child;
       view->unregister();
     }
     else if (child->m_otype == object_class::remote)
     {
-      ossia::max::remote* remote = (ossia::max::remote*)child;
+      ossia::max_binding::remote* remote = (ossia::max_binding::remote*)child;
       remote->unregister();
     }
   }

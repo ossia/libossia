@@ -17,7 +17,7 @@ struct rubberband_stretcher
       std::size_t channels,
       std::size_t sampleRate,
       int64_t pos)
-    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, RubberBand::RubberBandStretcher::OptionProcessRealTime | opt)}
+    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, (uint32_t)RubberBand::RubberBandStretcher::OptionProcessRealTime | (uint32_t)opt)}
     , next_sample_to_read{pos}
     , options{opt}
 

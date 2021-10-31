@@ -12,13 +12,6 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <bitset>
-namespace ossia{
-
-// template <template<class...> class T1, template<class...> class T2, class F>
-// void for_each_in_tuples2(T1<>&& t1, T2<>&& t2, const F& func)
-// {
-// }
-}
 namespace ossia::safe_nodes
 {
 
@@ -206,20 +199,20 @@ public:
     using val_type = typename control_type::type;
 
     ossia::timed_vec<val_type>& vec
-        = std::get<N>(this->control_tuple);
+        = get<N>(this->control_tuple);
     vec.clear();
     const auto& vp
         = static_cast<ossia::value_inlet*>(inl[idx])->data.get_data();
     vec.container.reserve(vp.size() + 1);
 
     // in all cases, set the current value at t=0
-    vec.insert(std::make_pair(int64_t{0}, std::get<N>(this->controls)));
+    vec.insert(std::make_pair(int64_t{0}, get<N>(this->controls)));
 
     // copy all the values... values arrived later replace previous ones
     apply_control<control_type::must_validate, N>(vec, vp);
 
     // the last value will be the first for the next tick
-    std::get<N>(this->controls) = vec.rbegin()->second;
+    get<N>(this->controls) = vec.rbegin()->second;
     return vec;
   }
 
@@ -229,13 +222,13 @@ public:
     static_assert(info::control_out_count > 0);
     static_assert(N < info::control_out_count);
 
-    return std::get<N>(this->control_outs_tuple);
+    return get<N>(this->control_outs_tuple);
   }
 
   template <bool Validate, std::size_t N, typename Vec, typename Vp>
   void apply_control(Vec& vec, const Vp& vp) noexcept
   {
-    constexpr const auto ctrl = std::get<N>(Node_T::Metadata::controls);
+    constexpr const auto ctrl = get<N>(Node_T::Metadata::controls);
     if constexpr(Validate)
     {
       for (auto& v : vp)

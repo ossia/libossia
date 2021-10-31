@@ -13,7 +13,7 @@
 #include <algorithm>
 
 namespace ossia {
-namespace max {
+namespace max_binding {
 
 void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
@@ -442,7 +442,7 @@ void parameter_base::set_default()
       {
         case ossia::val_type::VEC4F:
           if (m_default_size >= 4)
-            ossia::net::set_default_value(*node, max::to_vec<4>(m_default));
+            ossia::net::set_default_value(*node, max_binding::to_vec<4>(m_default));
           break;
         case ossia::val_type::VEC3F:
           if (m_default_size >= 3)

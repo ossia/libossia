@@ -2,62 +2,11 @@
 #if __has_include(<pulse/pulseaudio.h>)
 #include <ossia/audio/audio_engine.hpp>
 #include <pulse/pulseaudio.h>
-#include <sstream>
-#include <dlfcn.h>
+#include <ossia/detail/dylib_loader.hpp>
 
 #define OSSIA_AUDIO_PULSEAUDIO 1
 namespace ossia
 {
-
-class dylib_loader
-{
-public:
-  explicit dylib_loader(const char* const so)
-  {
-    impl = dlopen(so, RTLD_LAZY | RTLD_LOCAL | RTLD_NODELETE);
-    if(!impl)
-    {
-      std::stringstream err;
-      err << so << ": not found. Functionality may be reduced.";
-      throw std::runtime_error(err.str());
-    }
-  }
-
-  dylib_loader(const dylib_loader&) noexcept = delete;
-  dylib_loader& operator=(const dylib_loader&) noexcept = delete;
-  dylib_loader(dylib_loader&& other)
-  {
-    impl = other.impl;
-    other.impl = nullptr;
-  }
-
-  dylib_loader& operator=(dylib_loader&& other) noexcept
-  {
-    impl = other.impl;
-    other.impl = nullptr;
-    return *this;
-  }
-
-  ~dylib_loader()
-  {
-    if (impl)
-    {
-      dlclose(impl);
-    }
-  }
-
-  template <typename T>
-  T symbol(const char* const sym) const noexcept
-  {
-    return (T)dlsym(impl, sym);
-  }
-
-  operator bool() const { return bool(impl); }
-
-private:
-  void* impl{};
-};
-
 
 class libpulse
 {

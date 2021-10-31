@@ -5,7 +5,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 Nano::Signal<void(device_base*)> device_base::on_device_created{};
 Nano::Signal<void(device_base*)> device_base::on_device_removing{};
@@ -55,7 +55,7 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
       {
         case object_class::remote:
         {
-          auto rmt = static_cast<ossia::max::remote*>(obj);
+          auto rmt = static_cast<ossia::max_binding::remote*>(obj);
           // only break for 'unit' attribute
           if( attribute == ossia::net::text_unit()
            || attribute == ossia::net::text_extended_type()){
@@ -66,7 +66,7 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
         case object_class::attribute:
         case object_class::param:
         {
-          auto oc = static_cast<ossia::max::parameter_base*>(obj);
+          auto oc = static_cast<ossia::max_binding::parameter_base*>(obj);
           oc->update_attribute(oc, attribute, &node);
           break;
         }

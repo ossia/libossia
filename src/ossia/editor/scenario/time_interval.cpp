@@ -233,7 +233,7 @@ time_interval::~time_interval()
 void time_interval::start_and_tick()
 {
   start();
-  tick_current(0_tv, {});
+  //tick_current(0_tv, {});
 }
 
 void time_interval::start()

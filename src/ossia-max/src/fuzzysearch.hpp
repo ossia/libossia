@@ -11,7 +11,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -
@@ -26,8 +26,8 @@ struct fuzzysearch : search_filter
 
   fuzzysearch(long argc, t_atom* argv);
 
-  static void search(ossia::max::fuzzysearch* x, t_symbol* s, long argc, t_atom* argv);
-  static void free(ossia::max::fuzzysearch* x);
+  static void search(ossia::max_binding::fuzzysearch* x, t_symbol* s, long argc, t_atom* argv);
+  static void free(ossia::max_binding::fuzzysearch* x);
   static t_max_err notify(fuzzysearch *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
 
   static void assist(fuzzysearch* x, void* b, long m, long a, char* s);

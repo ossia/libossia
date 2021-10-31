@@ -124,9 +124,9 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
         case bounding_mode::FOLD:
           return T(ossia::fold(std::forward<U>(val), min, max));
         case bounding_mode::LOW:
-          return T(ossia::clamp_min(std::forward<U>(val), min));
+          return T(ossia::max(std::forward<U>(val), min));
         case bounding_mode::HIGH:
-          return T(ossia::clamp_max(std::forward<U>(val), max));
+          return T(ossia::min(std::forward<U>(val), max));
         default:
           break;
       }
@@ -138,7 +138,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
       {
         case bounding_mode::CLIP:
         case bounding_mode::LOW:
-          return T(ossia::clamp_min(std::forward<U>(val), min));
+          return T(ossia::max(std::forward<U>(val), min));
         default:
           break;
       }
@@ -150,7 +150,7 @@ ossia::value numeric_clamp<Domain>::operator()(bounding_mode b, U&& val) const
       {
         case bounding_mode::CLIP:
         case bounding_mode::HIGH:
-          return T(ossia::clamp_max(val, max));
+          return T(ossia::min(val, max));
         default:
           break;
       }
@@ -212,9 +212,9 @@ operator()(bounding_mode b, U&& val) const
     case bounding_mode::FOLD:
       return bool(ossia::fold(std::forward<U>(val), false, true));
     case bounding_mode::LOW:
-      return bool(ossia::clamp_min(std::forward<U>(val), false));
+      return bool(ossia::max(std::forward<U>(val), false));
     case bounding_mode::HIGH:
-      return bool(ossia::clamp_max(std::forward<U>(val), true));
+      return bool(ossia::min(std::forward<U>(val), true));
     default:
       return std::forward<U>(val);
   }
@@ -254,11 +254,11 @@ operator()(bounding_mode b, std::array<float, N> val) const
           break;
         case bounding_mode::LOW:
           for (std::size_t i = 0; i < N; i++)
-            val[i] = ossia::clamp_min(val[i], min);
+            val[i] = ossia::max(val[i], min);
           break;
         case bounding_mode::HIGH:
           for (std::size_t i = 0; i < N; i++)
-            val[i] = ossia::clamp_max(val[i], max);
+            val[i] = ossia::min(val[i], max);
           break;
         default:
           break;
@@ -272,7 +272,7 @@ operator()(bounding_mode b, std::array<float, N> val) const
         case bounding_mode::CLIP:
         case bounding_mode::LOW:
           for (std::size_t i = 0; i < N; i++)
-            val[i] = ossia::clamp_min(val[i], min);
+            val[i] = ossia::max(val[i], min);
         default:
           break;
       }
@@ -285,7 +285,7 @@ operator()(bounding_mode b, std::array<float, N> val) const
         case bounding_mode::CLIP:
         case bounding_mode::HIGH:
           for (std::size_t i = 0; i < N; i++)
-            val[i] = ossia::clamp_max(val[i], max);
+            val[i] = ossia::min(val[i], max);
         default:
           break;
       }
@@ -456,11 +456,11 @@ operator()(bounding_mode b, std::array<float, N> val) const
       break;
     case bounding_mode::LOW:
       for (std::size_t i = 0; i < N; i++)
-        val[i] = ossia::clamp_min(bool(val[i]), min);
+        val[i] = ossia::max(bool(val[i]), min);
       break;
     case bounding_mode::HIGH:
       for (std::size_t i = 0; i < N; i++)
-        val[i] = ossia::clamp_max(bool(val[i]), max);
+        val[i] = ossia::min(bool(val[i]), max);
       break;
     default:
       break;
@@ -632,10 +632,10 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
             res[i] = ossia::fold(val[i], *min[i], *max[i]);
             break;
           case bounding_mode::LOW:
-            res[i] = ossia::clamp_min(val[i], *min[i]);
+            res[i] = ossia::max(val[i], *min[i]);
             break;
           case bounding_mode::HIGH:
-            res[i] = ossia::clamp_max(val[i], *max[i]);
+            res[i] = ossia::min(val[i], *max[i]);
             break;
           default:
             res[i] = val[i];
@@ -648,7 +648,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
         {
           case bounding_mode::CLIP:
           case bounding_mode::LOW:
-            res[i] = ossia::clamp_min(val[i], *min[i]);
+            res[i] = ossia::max(val[i], *min[i]);
             break;
           default:
             res[i] = val[i];
@@ -661,7 +661,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
         {
           case bounding_mode::CLIP:
           case bounding_mode::HIGH:
-            res[i] = ossia::clamp_max(val[i], *max[i]);
+            res[i] = ossia::min(val[i], *max[i]);
             break;
           default:
             res[i] = val[i];

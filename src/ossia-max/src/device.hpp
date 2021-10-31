@@ -5,7 +5,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class device : public device_base
@@ -22,12 +22,12 @@ public:
   static void get_protocols(device* x);
   static void stop_expose(device*x, int index);
   static void get_mess_cb(device* x, t_symbol* s);
-  static void assist(ossia::max::device*, void*, long, long, char*);
+  static void assist(ossia::max_binding::device*, void*, long, long, char*);
   static void send_raw_osc(device* x, t_symbol* s, int argc, t_atom* argv);
   static void resend_all_values(device* x, t_symbol* s);
 
   static void* create(t_symbol*, long, t_atom*);
-  static void destroy(ossia::max::device*);
+  static void destroy(ossia::max_binding::device*);
   static void class_setup(t_class* c);
 };
 

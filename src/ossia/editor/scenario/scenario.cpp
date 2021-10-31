@@ -88,8 +88,8 @@ void scenario::start()
     {
       m_runningIntervals.insert(&cst);
       cst.start();
-      const auto tok = ossia::token_request{};
-      cst.tick_current(0_tv, tok);
+      //const auto tok = ossia::token_request{};
+      //cst.tick_current(0_tv, tok);
     }
     // the interval is in the future
     else if (
@@ -137,7 +137,7 @@ void scenario::stop()
   m_maxReachedEvents.clear();
   m_overticks.clear();
   m_itv_end_map.clear();
-  m_lastDate = ossia::Infinite;
+  m_last_date = ossia::Infinite;
 }
 
 void scenario::pause()
@@ -167,7 +167,7 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
   {
     time_sync* end_root{};
 
-    if(m_lastDate != ossia::Infinite)
+    if(m_last_date != ossia::Infinite)
     {
       auto& t = itv->get_end_event().get_time_sync();
       if (t.is_start())
@@ -192,7 +192,7 @@ void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
   {
     m_sg.remove_edge(itv.get());
 
-    if(m_lastDate != ossia::Infinite)
+    if(m_last_date != ossia::Infinite)
     {
       auto& t = itv->get_end_event().get_time_sync();
       if (t.is_start())
@@ -225,7 +225,7 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
       t.mute(true);
     m_nodes.push_back(std::move(timeSync));
 
-    if(m_lastDate != ossia::Infinite)
+    if(m_last_date != ossia::Infinite)
     {
       if (t.is_start())
       {

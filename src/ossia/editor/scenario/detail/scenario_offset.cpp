@@ -229,7 +229,7 @@ void scenario::transport_impl(ossia::time_value offset)
     }
   }
 
-  m_lastDate = offset;
+  m_last_date = offset;
 }
 
 void scenario::offset_impl(ossia::time_value offset)
@@ -321,11 +321,13 @@ void scenario::offset_impl(ossia::time_value offset)
   // offset all TimeIntervals
   for (const auto& timeInterval : m_intervals)
   {
+
     ossia::time_interval& cst = *timeInterval;
 
     auto& sev = cst.get_start_event();
     auto& stn = sev.get_time_sync();
     auto start_date = sev.get_time_sync().get_date();
+    auto end_date = start_date + cst.get_nominal_duration();
     bool all_empty = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
       return ev->previous_time_intervals().empty();
     });
@@ -334,16 +336,19 @@ void scenario::offset_impl(ossia::time_value offset)
       continue;
 
     // offset TimeInterval's Clock
-    time_value intervalOffset = offset - start_date;
-
-    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration()
-        && sev.get_status() == time_event::status::HAPPENED)
+    if(start_date <= offset && offset <= end_date)
     {
-      cst.offset(intervalOffset);
-      m_runningIntervals.insert(&cst);
+      // A currently playing interval
+      if(sev.get_status() == time_event::status::HAPPENED)
+      {
+        //cst.start();
+        cst.offset(offset - start_date);
+
+        m_runningIntervals.insert(&cst);
+      }
     }
   }
 
-  m_lastDate = offset;
+  m_last_date = offset;
 }
 }

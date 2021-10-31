@@ -9,7 +9,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 /** like == but can compare floating-point numbers while tolerating the floating-point (im)precision.
  */

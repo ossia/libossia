@@ -47,7 +47,7 @@ template <typename T>
 T LinearGainToDecibelsClipped(const T value)
 {
   return value <= T(0.) ? -DecibelHeadroom<T>
-                     : clamp_min(T(20.0) * std::log10(value), -DecibelHeadroom<T>);
+                     : ossia::max(T(20.0) * std::log10(value), -DecibelHeadroom<T>);
 }
 
 template <typename T>

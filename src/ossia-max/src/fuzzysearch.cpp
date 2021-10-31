@@ -3,7 +3,7 @@
 #include <ossia-max/src/fuzzysearch.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 
-using namespace ossia::max;
+using namespace ossia::max_binding;
 
 #pragma mark -
 #pragma mark ossia_fuzzysearch class methods

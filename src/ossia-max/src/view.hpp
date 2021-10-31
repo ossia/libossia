@@ -3,7 +3,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 class device_base;
@@ -21,11 +21,11 @@ public:
 
   void on_node_created_callback(ossia::net::node_base& node);
 
-  void on_device_created(ossia::max::device_base* device);
-  void on_device_removing(ossia::max::device_base* device);
+  void on_device_created(ossia::max_binding::device_base* device);
+  void on_device_removing(ossia::max_binding::device_base* device);
 
   static void* create(t_symbol*, long, t_atom*);
-  static void destroy(ossia::max::view*);
+  static void destroy(ossia::max_binding::view*);
 };
 
 } // max namespace

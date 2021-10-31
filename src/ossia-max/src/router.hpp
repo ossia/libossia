@@ -10,7 +10,7 @@
 
 namespace ossia
 {
-namespace max
+namespace max_binding
 {
 
 #pragma mark -
@@ -24,8 +24,8 @@ struct router
   router(long argc, t_atom* argv);
   void change_pattern(int index, std::string pattern);
 
-  static void free(ossia::max::router* x);
-  static void in_anything(ossia::max::router* x, t_symbol* s, long argc, t_atom* argv);
+  static void free(ossia::max_binding::router* x);
+  static void in_anything(ossia::max_binding::router* x, t_symbol* s, long argc, t_atom* argv);
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
