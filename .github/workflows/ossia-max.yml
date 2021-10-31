@@ -55,7 +55,7 @@ jobs:
     - name: Archive Max Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-max-macos
+        name: ossia-max
         path: artifacts/ossia
     - name: Upload logs
       if: ${{ always() }}
@@ -89,7 +89,7 @@ jobs:
     - name: Archive Max Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-max-windows
+        name: ossia-max
         path: build/install/ossia-max-package/ossia
     - name: Upload logs
       if: ${{ always() }}
