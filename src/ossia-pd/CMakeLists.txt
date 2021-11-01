@@ -150,17 +150,29 @@ set_target_properties(${PROJECT_NAME}
   PROPERTIES
     PREFIX ""
     OUTPUT_NAME "ossia")
+
 if(APPLE)
-    set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_darwin")
+  set(PLATFORM_SUFFIX "d") # d for Darwin
 elseif(UNIX)
-    if(${OSSIA_ARCHITECTURE} MATCHES "arm")
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_arm")
-    elseif(${OSSIA_ARCHITECTURE} MATCHES "x86")
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".l_i386")
-    else()
-        set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".pd_linux")
-    endif()
+  set(PLATFORM_SUFFIX "l") # l for Linux
+else()
+  set(PLATFORM_SUFFIX "m") # m for Microsoft
 endif()
+
+
+if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
+  set(ARCH_SUFFIX "arm")
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*aarch64.*")
+  set(ARCH_SUFFIX "aarch64")
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*64.*")
+  set(ARCH_SUFFIX "amd64")
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*86.*")
+  set(ARCH_SUFFIX "i386")
+else()
+  message(FATAL "Could not determine target architecture")  
+endif()
+
+set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".${PLATFORM_SUFFIX}_${ARCH_SUFFIX}")
 
 if(APPLE)
   target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
