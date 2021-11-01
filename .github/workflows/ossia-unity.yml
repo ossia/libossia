@@ -21,7 +21,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-unity-linux
+        name: ossia-unity
         path: install
 
   Unity3DMac:
@@ -79,7 +79,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-unity-macos
+        name: ossia-unity
         path: install
     environment: 'Apple Certificate'
 
@@ -177,5 +177,5 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-unity-windows
+        name: ossia-unity
         path: install

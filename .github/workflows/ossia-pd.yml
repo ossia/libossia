@@ -56,7 +56,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-macos
+        name: ossia-pd
         path: install/ossia-pd-package
 
   build-windows:
@@ -81,7 +81,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-windows
+        name: ossia-pd
         path: install/ossia-pd-package/ossia
 
   build-linux:
@@ -101,7 +101,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-linux
+        name: ossia-pd
         path: install/ossia-pd-package/ossia
 
   build-rpi:
@@ -152,5 +152,5 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
-        name: ossia-pd-rpi
+        name: ossia-pd
         path: install/ossia-pd-package/ossia
