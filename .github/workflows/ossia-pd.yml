@@ -42,9 +42,9 @@ jobs:
 
         (
           cd install/ossia-pd-package
-          codesign --force --timestamp --sign "ossia.io" ossia/ossia.pd_darwin
+          codesign --force --timestamp --sign "ossia.io" ossia/ossia.d_*
 
-          zip ossia-pd.zip ossia/ossia.pd_darwin
+          zip ossia-pd.zip ossia/ossia.d_*
           xcrun altool \
                 --notarize-app \
                 -t osx \
@@ -144,11 +144,6 @@ jobs:
 
         cmake --build build
         cmake --build build --target install
-
-        # cd install/ossia-pd-package
-        # tar -czf ${GITHUB_WORKSPACE}/ossia-pd-linux_arm.tar.gz ossia
-
-        # ${GITHUB_WORKSPACE}/ci/push_deken.sh
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
