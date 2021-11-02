@@ -105,7 +105,9 @@ jobs:
       - uses: actions/checkout@v2 # download all artifacts from build-* jobs
       - name: Rezip
         shell: bash
-        run: sudo apt-get install zip && zip -r ossia-max-${GITHUB_REF}.zip ossia-max
+        run: |
+          ls 
+          zip -r ossia-max-${GITHUB_REF}.zip ossia-max
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
