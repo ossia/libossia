@@ -258,7 +258,7 @@ case "$TRAVIS_OS_NAME" in
         $CMAKE_BIN --build . --target install
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
         fi
         cp ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       ;;
@@ -311,8 +311,8 @@ case "$TRAVIS_OS_NAME" in
         docker run --rm \
           -v `pwd`:/ \
           -e WHEEL_TAG_VERSION \
-          -e PyPiUser \
-          -e PyPiWord \
+          -e PYPIUSER \
+          -e PYPIWORD \
           $DOCKER_IMAGE \
           $PRE_CMD \
           ci/build-wheels.sh
@@ -344,7 +344,7 @@ case "$TRAVIS_OS_NAME" in
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
         if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
         fi
 
         ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
@@ -546,7 +546,7 @@ case "$TRAVIS_OS_NAME" in
       ${PYTHON_BIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
 
       if [[ "x${TRAVIS_TAG}" != "x" ]]; then
-          ${PYTHON_BIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
+          ${PYTHON_BIN} -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl || true
           mv ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/
       fi
       cp ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl ${ARTIFACTS_DIR}/

@@ -19,6 +19,6 @@ for PYBIN in /opt/python/*/bin/; do
 
 if [[ "${TRAVIS_TAG}" != "x" ]]; then
     for WHEEL in ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist; do
-        ${PYBIN} -m twine upload -u ${PyPiUser} -p ${PyPiWord} WHEEL
+        ${PYBIN} -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} WHEEL
     done
 fi
