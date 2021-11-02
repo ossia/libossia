@@ -182,9 +182,10 @@ jobs:
       - name: Install Deken
         shell: bash
         run: |
-          mkdir -p ~/bin/
-          curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ~/bin/deken
-          chmod 755 ~/bin/deken
+          mkdir -p ${HOME}/bin/
+          curl https://raw.githubusercontent.com/pure-data/deken/master/developer/deken > ${HOME}/bin/deken
+          chmod 755 ${HOME}/bin/deken
+          export PATH="$PATH:${HOME}/bin"
           deken
       - name: Create Deken Package
         shell: bash
