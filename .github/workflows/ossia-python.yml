@@ -44,7 +44,7 @@ jobs:
           echo Signing ${lib}
           codesign --force --timestamp --sign "ossia.io" ${lib}
         done
-    - name: Make Wheel
+    - name: Build Wheel
       shell: bash
       run: |
         cmake --build build --target install
@@ -53,13 +53,17 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
     - name: Install Dependencies
       run: | 
         sudo apt-get update -yqq 
         sudo apt-get upgrade -yqq
         sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
-    - name: Build
+    - name: Build ossia-python
+      run: | 
+        cmake --build build -G Ninja -DOSSIA_PYTHON_ONLY=1
+        cmake --build build
+        cmake --build build --target install
+    - name: Build Wheel
       run: | 
         - ./ci/build_wheels.sh
     - name: Archive Package
