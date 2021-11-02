@@ -1,9 +1,11 @@
 #!/bin/bash
-set -e -x
+set -ex
+
+REPO_ROOT="${0%/*}/../"
 
 # Compile wheels
 for PYBIN in /opt/python/*/bin; do
-    "${PYBIN}/pip" wheel /io/build/src/ossia-python/ -w ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist
+    "${PYBIN}/pip" wheel /io/build/src/ossia-python/ -w ${REPO_ROOT}/build/src/ossia-python/dist
 done
 
 for PYBIN in /opt/python/*/bin/; do
@@ -13,12 +15,10 @@ for PYBIN in /opt/python/*/bin/; do
 
 	$CMAKE_BIN --build . -- -j2
 	# now we just want to install the wheel and run the tests
-	${PYBIN} -m pip install --user ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist/pyossia*.whl
-	${PYBIN} ${TRAVIS_BUILD_DIR}/src/ossia-python/tests/test.py
-
-
-if [[ "${TRAVIS_TAG}" != "x" ]]; then
-    for WHEEL in ${TRAVIS_BUILD_DIR}/build/src/ossia-python/dist; do
+	${PYBIN} -m pip install --user ${REPO_ROOT}/build/src/ossia-python/dist/pyossia*.whl
+	${PYBIN} ${REPO_ROOT}/src/ossia-python/tests/test.py
+if [[ ${GITHUB_REF} == refs/tags/* ]]; then
+    for WHEEL in ${REPO_ROOT}/build/src/ossia-python/dist; do
         ${PYBIN} -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} WHEEL
     done
 fi
