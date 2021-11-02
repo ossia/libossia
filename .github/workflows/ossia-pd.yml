@@ -157,11 +157,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: ossia-pd
+          path: ossia
       - name: Rezip
         shell: bash
         run: |
           ls
-          zip -r ossia-pd-${GITHUB_REF}.zip ossia-pd
+          zip -r ossia-pd-${GITHUB_REF}.zip ossia
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
@@ -175,6 +176,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: ossia-pd
+          path: ossia
       - name: Install Deken
         shell: bash
         run: |

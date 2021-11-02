@@ -187,11 +187,12 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: ossia-unity
+          path: ossia
       - name: Rezip
         shell: bash
         run: |
           ls
-          zip -r ossia-unity-${GITHUB_REF}.zip ossia-unity
+          zip -r ossia-unity-${GITHUB_REF}.zip ossia
       - name: Release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
