@@ -39,7 +39,7 @@ jobs:
 
         security unlock-keychain -p azure build.keychain
 
-        for lib in `find build "ossia_python.cpython*.so" -print`
+        for lib in `find build -name "ossia_python.cpython*.so" -print`
         do
           echo Signing ${lib}
           codesign --force --timestamp --sign "ossia.io" ${lib}
