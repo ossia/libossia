@@ -183,4 +183,4 @@ jobs:
         run: |
           SHORT=${GITHUB_REF:11} # remove the 'refs/tags/' prefix
           SLUG=${SHORT//\//_} # replace '/' with '_'
-          docker run --rm -ti -e DEKEN_USERNAME -e DEKEN_PASSWORD --user $(id -u) --volume ossia:/ossia registry.git.iem.at/pd/deken deken upload -v "${SLUG}" ossia
+          docker run --rm -e DEKEN_USERNAME -e DEKEN_PASSWORD --user $(id -u) --volume ossia:/ossia registry.git.iem.at/pd/deken deken upload -v "${SLUG}" ossia
