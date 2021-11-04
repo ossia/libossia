@@ -1,0 +1,5 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && apt-get upgrade -yqq
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -yqq git build-essential cmake gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf ninja-build
+
