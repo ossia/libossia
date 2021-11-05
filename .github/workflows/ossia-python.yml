@@ -65,7 +65,7 @@ jobs:
         cmake --build build
         cmake --build build --target install
     - name: Build Wheel
-      run: ./ci/build_wheels.sh
+      run: ./ci/build-wheels.sh
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
