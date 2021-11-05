@@ -2,25 +2,12 @@
 set -ex
 
 REPO_ROOT="${0%/*}/../"
+PYBIN=python3
+
+echo "Building for python: $PYBIN"
 
 # Compile wheels
-for PYBIN in /opt/python/*/bin
-do
-    "${PYBIN}/pip" wheel /io/build/src/ossia-python/ -w ${REPO_ROOT}/build/src/ossia-python/dist
-done
-
-for PYBIN in /opt/python/*/bin/
-do
-    echo "Building for python: $PYBIN"
-    "${PYBIN}/python" get-pip.py
-    "${PYBIN}/pip" install setuptools
-    $CMAKE_BIN -DCMAKE_BUILD_TYPE=Release -DOSSIA_PYTHON_ONLY=1 ..
-
-    $CMAKE_BIN --build . -- -j2
-    # now we just want to install the wheel and run the tests
-    ${PYBIN} -m pip install --user ${REPO_ROOT}/build/src/ossia-python/dist/pyossia*.whl
-    ${PYBIN} ${REPO_ROOT}/src/ossia-python/tests/test.py
-done
+${PYBIN} -m pip wheel /io/build/src/ossia-python/ -w ${REPO_ROOT}/build/src/ossia-python/dist
 
 if [[ ${GITHUB_REF} == refs/tags/* ]]; then
     for WHEEL in ${REPO_ROOT}/build/src/ossia-python/dist; do
