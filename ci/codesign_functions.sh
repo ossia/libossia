@@ -46,7 +46,7 @@ release_macos_folder() {
   codesign_osx "$folder"
   (
     cd "$folder"/.. || return
-    ditto -c -k --sequesterRsrc --keepParent $(basename "$folder") "${ARTIFACTS_DIR}/$zipfile"
-    notarize_osx "${ARTIFACTS_DIR}/$zipfile" "$bundle_id"
+    ditto -c -k --sequesterRsrc --keepParent $(basename "$folder") "$zipfile"
+    notarize_osx "$zipfile" "$bundle_id"
   )
 }

@@ -51,7 +51,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ossia-cpp
-        path: install
+        path: "ossia-cpp-osx.zip"
     environment: 'Apple Certificate'
       
   cpp-windows:
