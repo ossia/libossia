@@ -44,7 +44,7 @@ jobs:
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
       run: |
-        source ${GITHUB_WORKSPACE}/codesign_functions.sh
+        source ${GITHUB_WORKSPACE}/ci/odesign_functions.sh
         release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     - name: Archive Package
