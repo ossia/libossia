@@ -42,6 +42,7 @@ private:
 
   ossia::net::device_base* m_device{};
   artnet_node m_node;
+  uint8_t m_universe{};
 
   bool m_autocreate{};
 };

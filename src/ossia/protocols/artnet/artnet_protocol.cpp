@@ -25,7 +25,7 @@ dmx_buffer::~dmx_buffer()
 
 }
 
-////
+static constexpr int artnet_port_id = 0;
 artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const dmx_config& conf)
   : protocol_base{flags{}}
   , m_context{ctx}
@@ -47,11 +47,17 @@ artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const dmx_
 
   if (m_node == NULL)
     throw std::runtime_error("Artnet new failed");
+  m_universe = conf.universe;
+
+  artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX);
+  artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, m_universe);
 
   artnet_set_short_name(m_node, ARTNET_NODE_SHORT_NAME);
   artnet_set_long_name(m_node, ARTNET_NODE_LONG_NAME);
-  artnet_set_node_type(m_node, ARTNET_RAW);
+  artnet_set_node_type(m_node, ARTNET_SRV);
 
+
+  artnet_dump_config(m_node);
   if (artnet_start(m_node) != ARTNET_EOK)
     throw std::runtime_error("Artnet Start failed");
 }
@@ -106,7 +112,7 @@ void artnet_protocol::update_function()
 {
   if (m_buffer.dirty)
   {
-    artnet_send_dmx(m_node, 0, DMX_CHANNEL_COUNT, m_buffer.data);
+    artnet_send_dmx(m_node, artnet_port_id, DMX_CHANNEL_COUNT, m_buffer.data);
     m_buffer.dirty = false;
   }
 }
