@@ -51,6 +51,8 @@ sync_status scenario::trigger_sync_musical(
   }
   return sync_status::NOT_READY;
 }
+static constexpr bool is_pending(ossia::time_event::status st)
+{ return uint8_t(st) & uint8_t(ossia::time_event::status::PENDING); };
 static constexpr bool is_finished(ossia::time_event::status st)
 { return uint8_t(st) & uint8_t(ossia::time_event::status::FINISHED); };
 static constexpr bool is_happened(ossia::time_event::status st)
@@ -107,7 +109,7 @@ int is_timesync_ready(time_sync& sync, small_event_vec& pendingEvents, bool& max
 
         // previous TimeInterval with a not yet HAPPENED start event
         // can't have reached its minimal duration
-        if (!is_happened(start_ev_status) && !is_finished(start_ev_status))
+        if (!is_happened(start_ev_status) && !is_finished(start_ev_status) && !is_pending(start_ev_status))
         {
           minimalDurationReached = false;
           break;
