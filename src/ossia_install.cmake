@@ -211,6 +211,13 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/rnd/include/rnd"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/tuplet"
+        DESTINATION include
+        COMPONENT Devel
+        MESSAGE_NEVER
+        ${3RDPARTY_INSTALL_PATTERN}
+)
+
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/fmt/include/fmt"
         DESTINATION include
         COMPONENT Devel
