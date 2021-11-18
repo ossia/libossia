@@ -1,10 +1,66 @@
 #pragma once
+#include <tuplet/tuple.hpp>
+
 #include <utility>
 #include <tuple>
 #include <array>
+#include <tuplet/tuple.hpp>
 
 namespace ossia
 {
+
+// http://stackoverflow.com/a/26902803/1495627
+#if __cplusplus < 202002L
+
+template <typename... T>
+struct dummy_get_adl;
+
+template <std::size_t N, typename... Args>
+auto get(dummy_get_adl<Args...>);
+
+#endif
+
+template <template<typename...> class Tuple, class F, class... Ts, std::size_t... Is>
+void for_each_in_tuple(
+    const Tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
+{
+  (std::forward<F>(func)(get<Is>(tuple)), ...);
+}
+template <template<typename...> class Tuple, class F, class... Ts, std::size_t... Is>
+void for_each_in_tuple(
+    Tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
+{
+  (std::forward<F>(func)(get<Is>(tuple)), ...);
+}
+
+template <template<typename...> class Tuple, class F, class... Ts>
+void for_each_in_tuple(const Tuple<Ts...>& tuple, F&& func)
+{
+  for_each_in_tuple(
+      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <template<typename...> class Tuple, class F>
+void for_each_in_tuple(const Tuple<>& tuple, const F& func)
+{
+}
+
+template <template<typename...> class Tuple, class F, class... Ts>
+void for_each_in_tuple(Tuple<Ts...>& tuple, F&& func)
+{
+  for_each_in_tuple(
+        tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
+}
+
+template <template<typename...> class Tuple, class F>
+void for_each_in_tuple(Tuple<>& tuple, const F& func)
+{
+}
+
+
+
+
+
 
 template <class F, class T1, std::size_t... I1s, class T2>
 void for_each_in_tuples_impl(
@@ -15,6 +71,7 @@ void for_each_in_tuples_impl(
     )
 {
   using namespace std;
+  using namespace tuplet;
   (forward<F>(func)(
        get<I1s>(forward<T1>(t1)),
        get<I1s>(forward<T2>(t2))
@@ -30,6 +87,7 @@ void for_each_in_tuples(T1<T1s...>&& t1, T2<T2s...>&& t2, F&& func)
   if constexpr(sizeof...(T1s) > 0)
   {
     using namespace std;
+    using namespace tuplet;
     for_each_in_tuples_impl(
         move<T1<T1s...>>(t1),
         move<T2<T2s...>>(t2),
@@ -48,6 +106,7 @@ void for_each_in_tuples_ref_impl(
     )
 {
   using namespace std;
+  using namespace tuplet;
   (forward<F>(func)(
        get<I1s>(t1),
        get<I1s>(t2)
@@ -79,7 +138,7 @@ auto concat_tuples_impl(
     )
 {
   using namespace std;
-  return make_tuple(make_pair(get<I1s>(t1), std::get<I1s>(t2)) ...);
+  return tuplet::make_tuple(make_pair(get<I1s>(t1), std::get<I1s>(t2)) ...);
 }
 
 template <template<class...> class T1, class... T1s, template<class...> class T2, class... T2s>
@@ -101,6 +160,7 @@ void tuple_array_func_impl(
     std::index_sequence<I1s...>
     )
 {
+  using namespace tuplet;
   using namespace std;
   (forward<F>(func)(
        get<I1s>(t1),
@@ -120,50 +180,3 @@ void tuple_array_func(T1<T1s...>&& t1, std::array<U, N>& t2, F&& func)
 
 }
 
-
-#include <version>
-#if __cplusplus > 201703L && __cpp_impl_three_way_comparison >= 201907L
-#include <tuplet/tuple.hpp>
-
-namespace ossia{
-
-template <class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(
-    tuplet::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(get<Is>(tuple)), ...);
-}
-
-template <class F, class... Ts>
-void for_each_in_tuple(tuplet::tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-        tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <class F>
-void for_each_in_tuple(tuplet::tuple<>& tuple, const F& func)
-{
-}
-
-template <class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(
-    const tuplet::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(get<Is>(tuple)), ...);
-}
-
-template <class F, class... Ts>
-void for_each_in_tuple(const tuplet::tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <class F>
-void for_each_in_tuple(const tuplet::tuple<>& tuple, const F& func)
-{
-}
-
-}
-#endif

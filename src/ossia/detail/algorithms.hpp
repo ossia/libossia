@@ -1,13 +1,10 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 #include <ossia/detail/string_view.hpp>
 
 #include <algorithm>
 #include <array>
-#include <iostream>
 #include <iterator>
-#include <tuple>
 #include <utility>
 
 #include <type_traits>
@@ -193,45 +190,6 @@ auto last_before(T&& container, const K& k)
     std::advance(it, -1);
   }
   return it;
-}
-
-// http://stackoverflow.com/a/26902803/1495627
-template <class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(
-    const std::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(std::get<Is>(tuple)), ...);
-}
-
-template <class F, class... Ts>
-void for_each_in_tuple(const std::tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <class F>
-void for_each_in_tuple(const std::tuple<>& tuple, const F& func)
-{
-}
-
-template <class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(
-    std::tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(std::get<Is>(tuple)), ...);
-}
-
-template <class F, class... Ts>
-void for_each_in_tuple(std::tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-        tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <class F>
-void for_each_in_tuple(std::tuple<>& tuple, const F& func)
-{
 }
 
 template <std::size_t N>

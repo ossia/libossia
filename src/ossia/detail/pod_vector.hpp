@@ -88,6 +88,11 @@ struct pod_allocator
 template <class T, std::size_t Align>
 struct aligned_pod_allocator
 {
+  template <class U>
+  struct rebind {
+    using other = aligned_pod_allocator<U, Align>;
+  };
+
   using value_type = T;
 
   aligned_pod_allocator() noexcept = default;
@@ -148,6 +153,10 @@ struct aligned_pod_allocator
 
 template<typename T>
 struct pod_allocator_avx2 : aligned_pod_allocator<T, 32> {
+  template <class U>
+  struct rebind {
+    using other = pod_allocator_avx2<U>;
+  };
   using aligned_pod_allocator<T, 32>::aligned_pod_allocator;
 };
 

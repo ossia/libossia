@@ -65,16 +65,10 @@ struct get_control_type
 template<typename>
 struct get_type_list {};
 
-template<typename ... T>
-struct get_type_list<const std::tuple<T...>>
+template<template<typename...> class Tuple, typename ... T>
+struct get_type_list<const Tuple<T...>>
 {
-  using type = tuplet::tuple<typename T::type...>;
-};
-
-template<typename ... T>
-struct get_type_list<const tuplet::tuple<T...>>
-{
-  using type = tuplet::tuple<typename T::type...>;
+  using type = Tuple<typename T::type...>;
 };
 
 template <typename Node_T>
