@@ -145,7 +145,6 @@ if(NOT MSVC)
     target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
 endif()
 
-# Win32 uses DLL as a suffix for pd externals
 set_target_properties(${PROJECT_NAME}
   PROPERTIES
     PREFIX ""
