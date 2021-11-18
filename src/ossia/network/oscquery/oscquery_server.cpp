@@ -133,7 +133,7 @@ void oscquery_server_protocol::request(net::parameter_base&)
 template <typename T>
 bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
 {
-  auto val = net::filter_value(addr, v);
+  auto val = bound_value(addr, v);
   if (val.valid())
   {
     // Push to all clients

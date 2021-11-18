@@ -2,7 +2,12 @@
 #include <ossia/dataflow/data_copy.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
+#include <ossia/network/common/value_bounding.hpp>
+#include <ossia/network/common/value_mapping.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
+#include <ossia/detail/logger.hpp>
+#include <ossia/network/value/format_value.hpp>
 
 namespace ossia
 {
@@ -265,28 +270,78 @@ void value_port::add_global_values(
 
   if (source_idx == index && source_type == type)
   {
-    for (const ossia::value& v : vec)
-      write_value(v, 0);
+    if(other.get_domain() && this->domain)
+    {
+      for (ossia::value v : vec)
+      {
+        map_value(v, other.get_domain(), this->domain);
+        write_value(std::move(v), 0); // TODO put correct timestamps here
+      }
+    }
+    else
+    {
+      for (const ossia::value& v : vec)
+      {
+        write_value(v, 0);
+      }
+    }
   }
   else
   {
-    for (const ossia::value& v : vec)
-      write_value(filter_value(v, source_idx, source_type), 0);
+    if(other.get_domain() && this->domain)
+    {
+      for (ossia::value v : vec)
+      {
+        auto val = filter_value(v, source_idx, source_type);
+        map_value(val, other.get_domain(), this->domain);
+        write_value(std::move(val), 0);
+      }
+    }
+    else
+    {
+      for (const ossia::value& v : vec)
+        write_value(filter_value(v, source_idx, source_type), 0);
+    }
   }
+}
+
+ossia::complex_type get_complex_type(const ossia::net::parameter_base& other)
+{
+  if(other.get_unit())
+    return other.get_unit();
+  return other.get_value_type();
 }
 
 void value_port::add_global_value(
     const ossia::net::parameter_base& other, const ossia::value& v)
 {
-  const ossia::complex_type source_type = other.get_unit();
+  const ossia::complex_type source_type = get_complex_type(other);
   const ossia::destination_index source_idx{}; // WTF?
   if (source_idx == index && source_type == type)
   {
-    write_value(v, 0);
+    if(other.get_domain() && this->domain)
+    {
+      auto val = v;
+      map_value(val, other.get_domain(), this->domain);
+      write_value(std::move(val), 0);
+    }
+    else
+    {
+      write_value(v, 0);
+    }
   }
   else
   {
-    write_value(filter_value(v, source_idx, source_type), 0);
+    if(other.get_domain() && this->domain)
+    {
+      auto val = filter_value(v, source_idx, source_type);
+      map_value(val, other.get_domain(), this->domain);
+      write_value(std::move(val), 0);
+    }
+    else
+    {
+      write_value(filter_value(v, source_idx, source_type), 0);
+    }
   }
 }
 

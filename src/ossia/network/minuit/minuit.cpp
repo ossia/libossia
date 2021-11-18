@@ -266,7 +266,7 @@ bool minuit_protocol::pull(ossia::net::parameter_base& address)
 
 bool minuit_protocol::push_raw(const full_parameter_data& addr)
 {
-  auto val = filter_value(addr, addr.value());
+  auto val = bound_value(addr, addr.value());
   if (val.valid())
   {
     m_sender->send(addr, val);
@@ -279,7 +279,7 @@ bool minuit_protocol::push_raw(const full_parameter_data& addr)
 
 bool minuit_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  auto val = filter_value(addr, v);
+  auto val = bound_value(addr, v);
   if (val.valid())
   {
     m_sender->send(addr, val);

@@ -19,7 +19,7 @@ struct bundle_common_policy
   template<typename Addr_T>
   void operator()(oscpack::OutboundPacketStream& str, ossia::value& val, const Addr_T& addr)
   {
-    if (val = filter_value(addr, addr.value()); val.valid())
+    if (val = bound_value(addr, addr.value()); val.valid())
     {
       str << oscpack::BeginMessageN(osc_address(addr));
       val.apply(typename OscPolicy::dynamic_policy{{str, addr.get_unit()}});

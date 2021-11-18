@@ -187,7 +187,7 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
   using proto = oscquery_protocol_common<osc_extended_policy>;
 
   // TODO if we have multiple clients, likely better to generate the message once....
-  auto val = net::filter_value(addr, v);
+  auto val = bound_value(addr, v);
   if (val.valid())
   {
     // Push to all clients

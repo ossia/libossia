@@ -64,7 +64,7 @@ struct oscquery_protocol_common
   template<typename Protocol, typename Addr>
   static bool push(Protocol& proto, const Addr& addr, const ossia::value& v)
   {
-    if (auto val = net::filter_value(addr, v); val.valid())
+    if (auto val = bound_value(addr, v); val.valid())
     {
       // Push to server
       const bool critical = addr.get_critical();
