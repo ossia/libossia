@@ -3,6 +3,7 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <pulse/pulseaudio.h>
 #include <ossia/detail/dylib_loader.hpp>
+#include <iostream>
 
 #define OSSIA_AUDIO_PULSEAUDIO 1
 namespace ossia
