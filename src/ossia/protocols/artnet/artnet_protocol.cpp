@@ -54,7 +54,7 @@ artnet_protocol::artnet_protocol(ossia::net::network_context_ptr ctx, const dmx_
 
   artnet_set_short_name(m_node, ARTNET_NODE_SHORT_NAME);
   artnet_set_long_name(m_node, ARTNET_NODE_LONG_NAME);
-  artnet_set_node_type(m_node, ARTNET_SRV);
+  artnet_set_node_type(m_node, ARTNET_RAW);
 
 
   artnet_dump_config(m_node);
@@ -112,7 +112,7 @@ void artnet_protocol::update_function()
 {
   if (m_buffer.dirty)
   {
-    artnet_send_dmx(m_node, artnet_port_id, DMX_CHANNEL_COUNT, m_buffer.data);
+    artnet_raw_send_dmx(m_node, m_universe, DMX_CHANNEL_COUNT, m_buffer.data);
     m_buffer.dirty = false;
   }
 }
