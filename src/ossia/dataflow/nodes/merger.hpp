@@ -15,7 +15,7 @@ public:
     for (int i = 0; i < count; i++)
     {
       auto inl = new ossia::audio_inlet;
-      inl->target<ossia::audio_port>()->samples.resize(2);
+      inl->target<ossia::audio_port>()->set_channels(2);
       for (auto& channel : inl->target<ossia::audio_port>()->samples)
       {
         channel.reserve(512);
@@ -24,7 +24,7 @@ public:
     }
 
     m_outlets.push_back(new ossia::audio_outlet);
-    m_outlets.back()->target<ossia::audio_port>()->samples.resize(
+    m_outlets.back()->target<ossia::audio_port>()->set_channels(
         2 * count);
     for (auto& channel :
          m_outlets.back()->target<ossia::audio_port>()->samples)

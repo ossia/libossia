@@ -239,7 +239,7 @@ struct faust_node_utils
   template <typename Node>
   static void copy_output(Node& self, int64_t d, int64_t n_out, float* outputs_, float** output_n, ossia::audio_port& audio_out)
   {
-    audio_out.samples.resize(n_out);
+    audio_out.set_channels(n_out);
     for (int64_t i = 0; i < n_out; i++)
     {
       audio_out.samples[i].resize(d);
@@ -252,7 +252,7 @@ struct faust_node_utils
     // TODO handle multichannel cleanly
     if (n_out == 1)
     {
-      audio_out.samples.resize(2);
+      audio_out.set_channels(2);
       audio_out.samples[1] = audio_out.samples[0];
     }
   }

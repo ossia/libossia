@@ -25,7 +25,12 @@ public:
       ossia::audio_port& o = *audio_out;
       if(!audio_out.has_gain)
       {
-        o.samples = i.samples;
+        const auto channels = i.samples.size();
+        audio_buffer_pool::set_channels(o.samples, channels);
+        for(std::size_t c = 0; c < channels; c++)
+        {
+          o.samples[c] = i.samples[c];
+        }
       }
       else
       {
