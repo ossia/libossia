@@ -13,6 +13,7 @@
 #include <ossia/detail/apply.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/network/common/value_mapping.hpp>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/protocols/midi/midi_device.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
@@ -591,28 +592,30 @@ void execution_state::commit_merged()
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end;
        ++it)
   {
-    switch (it->second.size())
+    auto& [param, vec] = *it;
+    switch (vec.size())
     {
       case 0:
         continue;
       case 1:
       {
-        to_state_element(*it->first, it->second[0].first).launch();
+        to_state_element(*param, vec[0].first).launch();
         break;
       }
       default:
       {
         m_monoState.e = ossia::state_element{};
         state_flatten_visitor<ossia::mono_state, false, true> vis{m_monoState};
-        // i += it->second.size();
-        for (auto& val : it->second)
+        // i += vec.size();
+        for (auto& val : vec)
         {
-          vis(to_state_element(*it->first, std::move(val.first)));
+          vis(to_state_element(*param, std::move(val.first)));
         }
         ossia::launch(m_monoState.e);
+        break;
       }
     }
-    it->second.clear();
+    vec.clear();
   }
   // std::cout << "NUM MESSAGES: " << i << std::endl;
 
@@ -626,30 +629,31 @@ void execution_state::commit()
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end;
        ++it)
   {
-    switch (it->second.size())
+    auto& [param, vec] = *it;
+    switch (vec.size())
     {
       case 0:
         continue;
       case 1:
       {
-        to_state_element(*it->first, it->second[0].first).launch();
+        to_state_element(*param, vec[0].first).launch();
         break;
       }
       default:
       {
         m_commitOrderedState.clear();
-        m_commitOrderedState.reserve(it->second.size());
-        for (auto& val : it->second)
+        m_commitOrderedState.reserve(vec.size());
+        for (auto& val : vec)
         {
           // std::cerr << "mergin : " <<  val.first.value << std::endl;
-          vis(to_state_element(*it->first, std::move(val.first)));
+          vis(to_state_element(*param, std::move(val.first)));
         }
 
         m_commitOrderedState.launch();
       }
     }
 
-    it->second.clear();
+    vec.clear();
   }
 
   commit_common();
@@ -665,22 +669,23 @@ void execution_state::commit_priorized()
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end;
        ++it)
   {
+    auto& [param, vec] = *it;
     m_commitOrderedState.clear();
-    m_commitOrderedState.reserve(it->second.size());
+    m_commitOrderedState.reserve(vec.size());
     state_flatten_visitor<ossia::flat_vec_state, false, true> vis{
         m_commitOrderedState};
 
     int64_t cur_ts = 0; // timestamp
     int cur_ms = 0;     // message stamp
     int cur_prio = 0;
-    if (const auto& p = ossia::net::get_priority(it->first->get_node()))
+    if (const auto& p = ossia::net::get_priority(param->get_node()))
       cur_prio = *p;
 
-    for (auto& val : it->second)
+    for (auto& val : vec)
     {
       cur_ms = std::max(cur_ms, val.second);
       cur_ts = std::max(cur_ts, val.first.timestamp);
-      vis(to_state_element(*it->first, std::move(val.first)));
+      vis(to_state_element(*param, std::move(val.first)));
     }
 
     auto& idx
@@ -688,7 +693,7 @@ void execution_state::commit_priorized()
     for (auto& e : m_commitOrderedState)
       idx.push_back(std::move(e));
 
-    it->second.clear();
+    vec.clear();
   }
 
   for (auto& vec : m_priorizedMessagesCache.container)
@@ -708,14 +713,15 @@ void execution_state::commit_ordered()
   for (auto it = m_valueState.begin(), end = m_valueState.end(); it != end;
        ++it)
   {
+    auto& [param, vec] = *it;
     m_commitOrderedState.clear();
-    m_commitOrderedState.reserve(it->second.size());
+    m_commitOrderedState.reserve(vec.size());
     state_flatten_visitor<ossia::flat_vec_state, false, true> vis{
         m_commitOrderedState};
 
     int64_t cur_ts = 0; // timestamp
     int cur_ms = 0;     // message stamp
-    for (auto& val : it->second)
+    for (auto& val : vec)
     {
       cur_ms = std::max(cur_ms, val.second);
       cur_ts = std::max(cur_ts, val.first.timestamp);
@@ -726,7 +732,7 @@ void execution_state::commit_ordered()
     for (auto& e : m_commitOrderedState)
       idx.push_back(std::move(e));
 
-    it->second.clear();
+    vec.clear();
   }
 
   for (auto& vec : m_flatMessagesCache.container)
@@ -785,6 +791,71 @@ void execution_state::insert(
   insert(param.address(), v);
 }
 */
+
+// Note: this should be combined with the code in the commit_ methods
+// in order to handle both domain and unit conversion in a single place...
+static ossia::typed_value
+map_value_to_param(const ossia::net::parameter_base& param, const ossia::timed_value& v, const ossia::value_port& val)
+{
+  auto& tgt_domain = param.get_domain();
+  if(!val.index.empty())
+    goto def_case;
+
+  if(!tgt_domain)
+    goto def_case;
+
+  if(!val.domain)
+    goto def_case;
+
+  if(val.type.target<ossia::unit_t>())
+    goto def_case;
+
+  {
+    auto vv = v.value;
+
+    // Map to the target domain
+    map_value(vv, val.domain, tgt_domain);
+
+    // Convert to the parameter type
+    vv = ossia::convert(vv, param.get_value_type());
+
+    return ossia::typed_value{std::move(vv), val.index, val.type};
+  }
+
+  def_case:
+    return ossia::typed_value{v, val.index, val.type};
+}
+
+static ossia::typed_value
+map_value_to_param(const ossia::net::parameter_base& param, ossia::timed_value&& v, const ossia::value_port& val)
+{
+  auto& tgt_domain = param.get_domain();
+  if(!val.index.empty())
+    goto def_case;
+
+  if(!tgt_domain)
+    goto def_case;
+
+  if(!val.domain)
+    goto def_case;
+
+  if(val.type.target<ossia::unit_t>())
+    goto def_case;
+
+  {
+    // Map to the target domain
+    map_value(v.value, val.domain, tgt_domain);
+
+    // Convert to the parameter type
+    auto vv = ossia::convert(std::move(v.value), param.get_value_type());
+
+    return ossia::typed_value{std::move(vv), val.index, val.type};
+  }
+
+def_case:
+  return ossia::typed_value{std::move(v), val.index, val.type};
+}
+
 void execution_state::insert(
     ossia::net::parameter_base& param, const value_port& val)
 {
@@ -805,18 +876,22 @@ void execution_state::insert(
               return val.first.timestamp == v.timestamp;
             });
         if (it != st.end())
-          it->first = ossia::typed_value{v, val.index, val.type};
+        {
+          it->first = map_value_to_param(param, v, val);
+        }
         else
-          st.emplace_back(
-              ossia::typed_value{v, val.index, val.type}, idx++);
+        {
+          st.emplace_back(map_value_to_param(param, v, val), idx++);
+        }
       }
       break;
     }
     case ossia::data_mix_method::mix_append:
     {
       for (const auto& v : val.get_data())
-        st.emplace_back(
-            ossia::typed_value{v, val.index, val.type}, idx++);
+      {
+        st.emplace_back(map_value_to_param(param, v, val), idx++);
+      }
       break;
     }
     case ossia::data_mix_method::mix_merge:
@@ -850,10 +925,10 @@ void execution_state::insert(ossia::net::parameter_base& param, value_port&& val
         });
         if (it != st.end())
           it->first
-              = ossia::typed_value{std::move(v), val.index, val.type};
+              = map_value_to_param(param, std::move(v), val);
         else
           st.emplace_back(
-                ossia::typed_value{std::move(v), val.index, val.type},
+                map_value_to_param(param, std::move(v), val),
                 idx++);
       }
       break;
@@ -862,7 +937,7 @@ void execution_state::insert(ossia::net::parameter_base& param, value_port&& val
     {
       for (auto& v : val.get_data())
         st.emplace_back(
-              ossia::typed_value{std::move(v), val.index, val.type},
+              map_value_to_param(param, std::move(v), val),
               idx++);
       break;
     }

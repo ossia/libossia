@@ -290,7 +290,7 @@ void value_port::add_global_values(
   {
     if(other.get_domain() && this->domain)
     {
-      for (ossia::value v : vec)
+      for (const ossia::value& v : vec)
       {
         auto val = filter_value(v, source_idx, source_type);
         map_value(val, other.get_domain(), this->domain);
