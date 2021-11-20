@@ -39,8 +39,8 @@ struct precise_tick
       ossia::for_each_in_range<sizeof...(arg)>(
           [&b, &iterators, &last_iterators](auto i) {
             b
-                &= (get<i.value>(iterators)
-                    == get<i.value>(last_iterators));
+                &= (tuplet::get<i.value>(iterators)
+                    == tuplet::get<i.value>(last_iterators));
           });
       return b;
     };
@@ -68,8 +68,8 @@ struct precise_tick
 
       ossia::for_each_in_range<sizeof...(arg)>([&](auto idx_t) {
         constexpr auto idx = idx_t.value;
-        auto& it = get<idx>(iterators);
-        if (it != get<idx>(last_iterators))
+        auto& it = tuplet::get<idx>(iterators);
+        if (it != tuplet::get<idx>(last_iterators))
         {
           auto next = it;
           ++next;
@@ -100,7 +100,7 @@ struct precise_tick
         constexpr auto idx = idx_t.value;
         if (to_increment.test(idx))
         {
-          ++get<idx>(iterators);
+          ++tuplet::get<idx>(iterators);
         }
       });
     }

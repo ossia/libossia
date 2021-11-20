@@ -22,12 +22,6 @@ struct object_pool
   {
     buffers.enqueue(std::move(b));
   }
-
-  static object_pool& instance()
-  {
-    static object_pool p;
-    return p;
-  }
 };
 
 // TODO categorized_object_pool with more generic user-defined categorization ?

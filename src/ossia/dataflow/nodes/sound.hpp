@@ -52,11 +52,11 @@ inline void perform_upmix(const std::size_t upmix, const std::size_t chan, ossia
     {
       for(std::size_t i = 1; i < chan; i++)
       {
-        if(ap.samples[0].size() < ap.samples[i].size())
-          ap.samples[0].resize(ap.samples[i].size());
+        if(ap.channel(0).size() < ap.channel(i).size())
+          ap.channel(0).resize(ap.channel(i).size());
 
-        for(std::size_t j = 0; j < ap.samples[i].size(); j++)
-          ap.samples[0][j] += ap.samples[i][j];
+        for(std::size_t j = 0; j < ap.channel(i).size(); j++)
+          ap.channel(0)[j] += ap.channel(i)[j];
       }
     }
     default:
@@ -72,7 +72,7 @@ inline void perform_upmix(const std::size_t upmix, const std::size_t chan, ossia
         case 1:
         {
           for(std::size_t chan = 1; chan < upmix; ++chan)
-            ap.samples[chan].assign(ap.samples[0].begin(), ap.samples[0].end());
+            ap.channel(chan).assign(ap.channel(0).begin(), ap.channel(0).end());
           break;
         }
         default:
@@ -87,7 +87,7 @@ inline void perform_start_offset(const std::size_t start, ossia::audio_port& ap)
 {
   if (start != 0)
   {
-    ap.samples.insert(ap.samples.begin(), start, ossia::audio_channel{});
+    ap.get().insert(ap.get().begin(), start, ossia::audio_channel{});
   }
 }
 

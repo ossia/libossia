@@ -498,20 +498,23 @@ void qml_device::recreate(QObject* root)
       else
         this->remove(obj.first);
     }
-    for_each_in_tuple(
-        std::make_tuple(m_properties, m_parameters, m_signals),
-        [this](auto& props) {
-          for (const auto& obj : props)
-          {
-            if (obj.second)
-            {
-              obj.first->resetNode();
-              qApp->processEvents();
-            }
-            else
-              this->remove(obj.first);
-          }
-        });
+
+    auto on_prop = [this](auto& props) {
+      for (const auto& obj : props)
+      {
+        if (obj.second)
+        {
+          obj.first->resetNode();
+          qApp->processEvents();
+        }
+        else
+          this->remove(obj.first);
+      }
+    };
+
+    on_prop(m_properties);
+    on_prop(m_parameters);
+    on_prop(m_signals);
 
     setup_models(m_models.size(), m_models.size(), *this);
     while(processing_models)
@@ -549,20 +552,23 @@ void qml_device::recreate_preset(QObject* root)
       else
         this->remove(obj.first);
     }
-    for_each_in_tuple(
-        std::make_tuple(m_properties, m_parameters, m_signals),
-        [this](auto& props) {
-          for (const auto& obj : props)
-          {
-            if (obj.second)
-            {
-              obj.first->resetNode();
-              qApp->processEvents();
-            }
-            else
-              this->remove(obj.first);
-          }
-        });
+
+    auto on_prop = [this](auto& props) {
+      for (const auto& obj : props)
+      {
+        if (obj.second)
+        {
+          obj.first->resetNode();
+          qApp->processEvents();
+        }
+        else
+          this->remove(obj.first);
+      }
+    };
+
+    on_prop(m_properties);
+    on_prop(m_parameters);
+    on_prop(m_signals);
 
     clear_models_preset(m_models.size(), m_models.size(), *this);
     while(processing_models)
@@ -586,20 +592,21 @@ void qml_device::recreate_preset(QObject* root)
 
 void qml_device::remap(QObject* )
 {
-  for_each_in_tuple(
-      std::make_tuple(
-          m_reader_properties, m_writer_properties, m_bindings, m_callbacks),
-      [=](auto props) // Note: we voluntarily make a copy, due to erasing
-                      // elements
-      {
-        for (auto obj : props)
-        {
-          if (obj.second)
-            obj.first->resetNode();
-          else
-            this->remove(obj.first);
-        }
-      });
+  auto do_remap = [=](auto props) // Note: we voluntarily make a copy, due to erasing
+                  // elements
+  {
+    for (auto obj : props)
+    {
+      if (obj.second)
+        obj.first->resetNode();
+      else
+        this->remove(obj.first);
+    }
+  };
+  do_remap(m_reader_properties);
+  do_remap(m_writer_properties);
+  do_remap(m_bindings);
+  do_remap(m_callbacks);
 }
 
 void qml_device::setReadPreset(bool readPreset)

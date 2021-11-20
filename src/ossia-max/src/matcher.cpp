@@ -4,6 +4,7 @@
 #include <ossia-max/src/utils.hpp>
 
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/common/value_bounding.hpp>
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
@@ -202,7 +203,7 @@ void matcher::output_value(ossia::value v)
   }
 
   auto param = node->get_parameter();
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       param->get_domain(),
       std::move(v),
       param->get_bounding());

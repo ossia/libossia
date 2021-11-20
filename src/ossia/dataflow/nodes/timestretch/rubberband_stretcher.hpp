@@ -79,7 +79,7 @@ struct rubberband_stretcher
       {
         for (int64_t j = 0; j < samples_to_write; j++)
         {
-          ap.samples[i][j + samples_offset] = double(output[i][j]);
+          ap.channel(i)[j + samples_offset] = double(output[i][j]);
         }
       }
     }

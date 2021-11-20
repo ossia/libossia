@@ -5,6 +5,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
+#include <iostream>
 #define OSSIA_AUDIO_SDL 1
 
 namespace ossia

@@ -278,7 +278,7 @@ public:
     const auto len = m_handle.totalPCMFrameCount();
 
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(std::max((std::size_t)upmix, (std::size_t)channels));
+    ap.set_channels(std::max((std::size_t)upmix, (std::size_t)channels));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_write <= 0)
@@ -308,7 +308,7 @@ public:
 
       for (std::size_t chan = 0; chan < channels; chan++)
       {
-        ap.samples[chan].resize(e.bufferSize());
+        ap.channel(chan).resize(e.bufferSize());
       }
 
       double stretch_ratio = update_stretch(t, e);
@@ -323,7 +323,7 @@ public:
       for (std::size_t chan = 0; chan < channels; chan++)
       {
         // fade
-        snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.samples[chan],
+        snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.channel(chan),
                      samples_offset, samples_to_write);
       }
 

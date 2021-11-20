@@ -344,6 +344,8 @@ void scenario::state_impl(const ossia::token_request& tk)
         m_runningIntervals.insert(itv);
         auto& start_ev = itv->get_start_event();
         start_ev.set_status(ossia::time_event::status::HAPPENED);
+        auto& end_ev = itv->get_end_event();
+        end_ev.set_status(ossia::time_event::status::NONE);
 
         it = m_itv_to_start.erase(it);
       }

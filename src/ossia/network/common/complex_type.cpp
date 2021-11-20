@@ -315,7 +315,20 @@ ossia::value convert(
   auto src_u = source_t.target<ossia::unit_t>();
   auto tgt_u = dest_t.target<ossia::unit_t>();
   if (src_u && tgt_u)
+  {
     return ossia::convert(v, *src_u, *tgt_u);
+  }
+  else
+  {
+    // auto src_t = source_t.target<ossia::val_type>();
+    auto tgt_t = dest_t.target<ossia::val_type>();
+
+    if(tgt_t)
+    {
+      return ossia::convert(v, *tgt_t);
+    }
+  }
+
   // TODO else
   return v;
 }

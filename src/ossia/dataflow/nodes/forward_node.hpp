@@ -25,11 +25,11 @@ public:
       ossia::audio_port& o = *audio_out;
       if(!audio_out.has_gain)
       {
-        o.samples = i.samples;
+        o = i;
       }
       else
       {
-        switch(i.samples.size())
+        switch(i.channels())
         {
           case 0:
             return;

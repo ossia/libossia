@@ -11,6 +11,14 @@
 
 namespace ossia
 {
+audio_buffer_pool::audio_buffer_pool() = default;
+audio_buffer_pool::~audio_buffer_pool() = default;
+
+audio_buffer_pool& audio_buffer_pool::instance() noexcept
+{
+  static audio_buffer_pool p;
+  return p;
+}
 
 node_process::node_process(node_ptr n)
 {
@@ -127,9 +135,10 @@ void graph_node::prepare(const execution_state& st) noexcept
     std::size_t buffer_size{};
     void operator()(ossia::audio_port& p) const noexcept
     {
-      if(p.samples.empty())
-        p.samples.resize(2);
-      for(auto& c : p.samples)
+      if(p.empty())
+        p.set_channels(2);
+
+      for(auto& c : p.get())
       {
         c.shrink_to_fit();
         c.reserve(buffer_size);

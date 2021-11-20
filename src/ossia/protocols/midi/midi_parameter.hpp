@@ -106,7 +106,7 @@ struct address_info
   {
     if (type != Type::PB && type != Type::Any)
       return ossia::make_domain(defaultValue(0), defaultValue(127));
-    return ossia::make_domain(-8192, 8191);
+    return ossia::make_domain(0, 16384);
   }
 
   address_info(Type t) : type{t}

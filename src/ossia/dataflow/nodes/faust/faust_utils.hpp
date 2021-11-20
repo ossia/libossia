@@ -196,18 +196,18 @@ struct faust_node_utils
     for (int64_t i = 0; i < n_in; i++)
     {
       input_n[i] = inputs_ + i * d;
-      if (int64_t(audio_in.samples.size()) > i)
+      if (int64_t(audio_in.channels()) > i)
       {
         auto num_samples = std::min(
-              (int64_t)d, (int64_t)audio_in.samples[i].size());
+              (int64_t)d, (int64_t)audio_in.channel(i).size());
         for (int64_t j = 0; j < num_samples; j++)
         {
-          input_n[i][j] = (float)audio_in.samples[i][j];
+          input_n[i][j] = (float)audio_in.channel(i)[j];
         }
 
-        if (d > int64_t(audio_in.samples[i].size()))
+        if (d > int64_t(audio_in.channel(i).size()))
         {
-          for (int64_t j = audio_in.samples[i].size(); j < d; j++)
+          for (int64_t j = audio_in.channel(i).size(); j < d; j++)
           {
             input_n[i][j] = 0.f;
           }
@@ -239,21 +239,21 @@ struct faust_node_utils
   template <typename Node>
   static void copy_output(Node& self, int64_t d, int64_t n_out, float* outputs_, float** output_n, ossia::audio_port& audio_out)
   {
-    audio_out.samples.resize(n_out);
+    audio_out.set_channels(n_out);
     for (int64_t i = 0; i < n_out; i++)
     {
-      audio_out.samples[i].resize(d);
+      audio_out.channel(i).resize(d);
       for (int64_t j = 0; j < d; j++)
       {
-        audio_out.samples[i][j] = (double)output_n[i][j];
+        audio_out.channel(i)[j] = (double)output_n[i][j];
       }
     }
 
     // TODO handle multichannel cleanly
     if (n_out == 1)
     {
-      audio_out.samples.resize(2);
-      audio_out.samples[1] = audio_out.samples[0];
+      audio_out.set_channels(2);
+      audio_out.channel(1) = audio_out.channel(0);
     }
   }
 

@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia-pd/src/object_base.hpp>
 #include <ossia/network/base/osc_address.hpp>
+#include <ossia/network/common/value_bounding.hpp>
 #include <ossia-pd/src/utils.hpp>
 
 #include <ossia/network/osc/detail/osc.hpp>
@@ -213,7 +214,7 @@ t_matcher::~t_matcher()
 void t_matcher::enqueue_value(ossia::value v)
 {
   auto param = node->get_parameter();
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
         param->get_domain(),
         std::move(v),
         param->get_bounding());

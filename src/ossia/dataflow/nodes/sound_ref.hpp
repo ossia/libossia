@@ -129,7 +129,7 @@ public:
     const std::size_t chan = m_data.size();
     const std::size_t len = m_data[0].size();
     ossia::audio_port& ap = *audio_out;
-    ap.samples.resize(std::max(this->upmix, chan));
+    ap.set_channels(std::max(this->upmix, chan));
 
     const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_read == 0)
@@ -161,7 +161,7 @@ public:
 
       for (std::size_t i = 0; i < chan; ++i)
       {
-        ap.samples[i].resize(e.bufferSize());
+        ap.channel(i).resize(e.bufferSize());
       }
 
       double stretch_ratio = update_stretch(t, e);
@@ -176,7 +176,7 @@ public:
       for(std::size_t i = 0; i < chan; i++)
       {
           ossia::snd::do_fade(
-              t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+              t.start_discontinuous, t.end_discontinuous, ap.channel(i),
               samples_offset, samples_to_write);
       }
 

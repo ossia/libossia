@@ -17,7 +17,7 @@ struct osc_protocol_common
   template<typename T, typename Value_T>
   static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
   {
-    auto val = filter_value(addr, std::forward<Value_T>(v));
+    auto val = bound_value(addr, std::forward<Value_T>(v));
     if (val.valid())
     {
       using send_visitor = osc_value_send_visitor<ossia::net::parameter_base, OscVersion, typename T::writer_type>;
@@ -37,7 +37,7 @@ struct osc_protocol_common
   template<typename T>
   static bool push_raw(T& self, const ossia::net::full_parameter_data& addr)
   {
-    auto val = filter_value(addr, addr.value());
+    auto val = bound_value(addr, addr.value());
     if (val.valid())
     {
       using send_visitor = osc_value_send_visitor<ossia::net::full_parameter_data, OscVersion, typename T::writer_type>;
