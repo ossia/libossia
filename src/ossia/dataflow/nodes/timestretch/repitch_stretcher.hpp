@@ -132,7 +132,7 @@ struct repitch_stretcher
       auto it = repitchers[i].data.begin();
       for(int j = 0; j < samples_to_write; j++)
       {
-        ap.samples[i][j + samples_offset] = double(*it);
+        ap.channel(i)[j + samples_offset] = double(*it);
         ++it;
       }
 

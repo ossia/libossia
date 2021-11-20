@@ -39,7 +39,7 @@ struct raw_stretcher
     {
       double** output = (double**)alloca(sizeof(double*) * chan);
       for (std::size_t i = 0; i < chan; i++)
-        output[i] = ap[i].data() + samples_offset;
+        output[i] = ap.channel(i).data() + samples_offset;
 
       audio_fetcher.fetch_audio(next_sample_to_read, samples_to_write, output);
       next_sample_to_read += samples_to_write;
