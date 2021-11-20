@@ -107,13 +107,13 @@ struct copy_data
   void operator()(const audio_port& out, audio_delay_line& in)
   {
     // Called in env_writer, when copying from a node to a delay line
-    in.samples.push_back(out.samples);
+    in.samples.push_back(out.get());
   }
 
   void operator()(const audio_port& out, audio_port& in)
   {
     // Called in init_node_visitor::copy, when copying from a node to another
-    mix(out.samples, in.samples);
+    mix(out.get(), in.get());
   }
 
   /// MIDI ///
@@ -158,7 +158,7 @@ struct copy_data_pos
   {
     if (pos < out.samples.size())
     {
-      mix(out.samples[pos], in.samples);
+      mix(out.samples[pos], in.get());
     }
   }
 

@@ -42,7 +42,7 @@ struct local_pull_visitor
   {
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_audioState.find(static_cast<ossia::audio_parameter*>(addr));
-    if (it != st.m_audioState.end() && !it->second.samples.empty())
+    if (it != st.m_audioState.end() && !it->second.empty())
     {
       copy_data{}(it->second, val);
       return true;
@@ -97,7 +97,7 @@ struct global_pull_visitor
 #else
     auto aa = static_cast<const audio_parameter*>(&out);
 #endif
-    aa->clone_value(val.samples);
+    aa->clone_value(val.get());
   }
 
   void operator()(midi_port& val) const
@@ -534,7 +534,7 @@ void execution_state::commit_common()
     assert(elt.first);
     elt.first->push_value(elt.second);
 
-    for (auto& vec : elt.second.samples)
+    for (auto& vec : elt.second.get())
     {
       vec.clear();
     }
@@ -968,7 +968,7 @@ void execution_state::insert(
     ossia::audio_parameter& param, const audio_port& v)
 {
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
-  mix(v.samples, m_audioState[&param].samples);
+  mix(v.get(), m_audioState[&param].get());
 }
 
 void execution_state::insert(
@@ -1052,7 +1052,7 @@ static bool is_in(
   auto it = container.find(static_cast<ossia::audio_parameter*>(&other));
   if (it == container.end())
     return false;
-  return !it->second.samples.empty();
+  return !it->second.empty();
 }
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {

@@ -27,9 +27,9 @@ public:
 
   void run(const token_request& t, exec_state_facade) noexcept override
   {
-    auto i = m_inlets[0]->target<ossia::audio_port>();
-    auto o = m_outlets[0]->target<ossia::audio_port>();
-    o->samples = i->samples;
+    auto& i = *m_inlets[0]->target<ossia::audio_port>();
+    auto& o = *m_outlets[0]->target<ossia::audio_port>();
+    o = i;
   }
 };
 

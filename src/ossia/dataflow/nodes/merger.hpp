@@ -16,7 +16,7 @@ public:
     {
       auto inl = new ossia::audio_inlet;
       inl->target<ossia::audio_port>()->set_channels(2);
-      for (auto& channel : inl->target<ossia::audio_port>()->samples)
+      for (auto& channel : *inl->target<ossia::audio_port>())
       {
         channel.reserve(512);
       }
@@ -27,7 +27,7 @@ public:
     m_outlets.back()->target<ossia::audio_port>()->set_channels(
         2 * count);
     for (auto& channel :
-         m_outlets.back()->target<ossia::audio_port>()->samples)
+         *m_outlets.back()->target<ossia::audio_port>())
     {
       channel.reserve(512);
     }
@@ -40,11 +40,11 @@ public:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    auto& out = m_outlets.back()->target<ossia::audio_port>()->samples;
+    auto& out = m_outlets.back()->target<ossia::audio_port>()->get();
     std::size_t cur = 0;
     for (int i = 0; i < m_count; i++)
     {
-      auto& in = m_inlets[i]->target<ossia::audio_port>()->samples;
+      auto& in = m_inlets[i]->target<ossia::audio_port>()->get();
 
       switch(in.size())
       {

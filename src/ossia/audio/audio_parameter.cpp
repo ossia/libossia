@@ -36,10 +36,10 @@ void audio_parameter::clone_value(audio_vector& res_vec) const
 
 void audio_parameter::push_value(const audio_port& port)
 {
-  auto min_chan = std::min(port.samples.size(), (std::size_t)audio.size());
+  auto min_chan = std::min(port.channels(), (std::size_t)audio.size());
   for (std::size_t chan = 0; chan < min_chan; chan++)
   {
-    auto& src = port.samples[chan];
+    auto& src = port.channel(chan);
     auto& dst = audio[chan];
     const auto N = std::min(src.size(), (std::size_t)dst.size());
     for (std::size_t i = 0; i < N; i++)

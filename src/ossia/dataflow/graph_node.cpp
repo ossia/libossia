@@ -135,10 +135,10 @@ void graph_node::prepare(const execution_state& st) noexcept
     std::size_t buffer_size{};
     void operator()(ossia::audio_port& p) const noexcept
     {
-      if(p.samples.empty())
+      if(p.empty())
         p.set_channels(2);
 
-      for(auto& c : p.samples)
+      for(auto& c : p.get())
       {
         c.shrink_to_fit();
         c.reserve(buffer_size);

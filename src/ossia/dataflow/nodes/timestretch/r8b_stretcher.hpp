@@ -32,7 +32,7 @@ struct r8b_stretcher
 //    for (std::size_t i = 0; i < channels(); ++i)
 //    {
 //      /* Create the resampler objects. */
-//      ap.samples[i].resize(t.offset.impl + samples_to_write);
+//      ap.channel(i).resize(t.offset.impl + samples_to_write);
 //
 //      if(resamplers.size() < channels())
 //      {
@@ -51,10 +51,10 @@ struct r8b_stretcher
 //                << std::endl;
 //      for(int j = 0; j < samples_to_write; j++)
 //      {
-//        ap.samples[i][j + t.offset] = output[j];
+//        ap.channel(i)[j + t.offset] = output[j];
 //      }
 //      do_fade(
-//          t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+//          t.start_discontinuous, t.end_discontinuous, ap.channel(i),
 //          t.offset.impl, samples_to_write);
 //    }
 //  }
