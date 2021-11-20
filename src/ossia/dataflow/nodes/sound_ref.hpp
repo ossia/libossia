@@ -161,7 +161,7 @@ public:
 
       for (std::size_t i = 0; i < chan; ++i)
       {
-        ap.samples[i].resize(e.bufferSize());
+        ap.channel(i).resize(e.bufferSize());
       }
 
       double stretch_ratio = update_stretch(t, e);
@@ -176,7 +176,7 @@ public:
       for(std::size_t i = 0; i < chan; i++)
       {
           ossia::snd::do_fade(
-              t.start_discontinuous, t.end_discontinuous, ap.samples[i],
+              t.start_discontinuous, t.end_discontinuous, ap.channel(i),
               samples_offset, samples_to_write);
       }
 
