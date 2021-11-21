@@ -48,7 +48,9 @@ jobs:
       shell: bash
       run: |
         cmake --build build --target install
-        python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl || true
+        echo "List files in 'build/src/ossia-python/dist': "
+        ls build/src/ossia-python/dist
+        python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl
 
   build-linux:
     runs-on: ubuntu-latest
@@ -65,7 +67,8 @@ jobs:
         cmake --build build
         cmake --build build --target install
     - name: Build Wheel
-      run: ./ci/build-wheels.sh
+      run: |
+        python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
