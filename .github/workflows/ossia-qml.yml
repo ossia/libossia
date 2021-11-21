@@ -36,7 +36,11 @@ jobs:
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_QML_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
-        cmake --build build --target install 
+        cmake --build build --target install
+        echo "Install ends with $?, list local files: "
+        ls
+        echo "I am here: ${PWD}, list install folder content: "
+        ls install
     - name: Code Signing
       shell: bash
       env:
@@ -44,6 +48,8 @@ jobs:
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
       run: |
+        ls 
+        ls install
         source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
         release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
