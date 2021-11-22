@@ -25,7 +25,7 @@ static void observe_rec(protocol_base& proto, ossia::net::node_base& n)
 
 
 multiplex_protocol::multiplex_protocol()
-  : protocol_base{flags{}}
+  : protocol_base{}
 {
 }
 
