@@ -297,7 +297,9 @@ if(OSSIA_DATAFLOW)
   ossia_link_jack()
 
   # PortAudio support
-  if(TARGET portaudio)
+  if(TARGET PortAudio::PortAudio)
+    target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
+  elseif(TARGET portaudio)
     target_link_libraries(ossia PUBLIC portaudio)
   elseif(TARGET portaudio_static)
     target_link_libraries(ossia PUBLIC portaudio_static)
