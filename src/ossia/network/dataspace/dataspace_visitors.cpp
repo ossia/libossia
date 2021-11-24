@@ -194,10 +194,10 @@ value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
       u.v);
 }
 
+static const ossia::make_unit_helper make_unit_helper_impl;
 unit_t make_unit(uint64_t dataspace, uint64_t unit)
 {
-  static const ossia::make_unit_helper f;
-  return f.get_unit(dataspace, unit);
+  return make_unit_helper_impl.get_unit(dataspace, unit);
 }
 
 val_type matching_type(const unit_t& u)
