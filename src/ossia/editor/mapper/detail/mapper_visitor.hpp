@@ -51,17 +51,17 @@ struct mapper_compute_visitor
     {
       case ossia::curve_segment_type::FLOAT:
       {
-        auto c = static_cast<curve<int, float>*>(base_curve);
+        auto c = static_cast<curve<float, float>*>(base_curve);
         return float{c->value_at(driver)};
       }
       case ossia::curve_segment_type::INT:
       {
-        auto c = static_cast<curve<int, int>*>(base_curve);
+        auto c = static_cast<curve<float, int>*>(base_curve);
         return int32_t{c->value_at(driver)};
       }
       case ossia::curve_segment_type::BOOL:
       {
-        auto c = static_cast<curve<int, bool>*>(base_curve);
+        auto c = static_cast<curve<float, bool>*>(base_curve);
         return bool{c->value_at(driver)};
       }
       case ossia::curve_segment_type::DOUBLE:
