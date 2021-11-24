@@ -102,6 +102,7 @@ public:
 
     scoped_lock guard(m_lock);
     m_client.close(m_hdl, websocketpp::close::status::normal, "");
+    m_client.stop();
     m_open = false;
   }
 
