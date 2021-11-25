@@ -286,7 +286,7 @@ public:
             ret < 0)
           ossia::logger().error("alsa_engine: can't set period size. {}", snd.strerror(ret));
 
-      unsigned int pnear = 1;
+      unsigned int pnear = 2;
       if (int ret = snd.pcm_hw_params_set_periods_near(m_client, hwparams, &pnear, 0);
           ret < 0)
         ossia::logger().error("alsa_engine: can't set periods. {}", snd.strerror(ret));
@@ -443,7 +443,7 @@ private:
       }
       else if (ret < 0)
       {
-        ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
+        //ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
         return true;
         abort(ret);
         return false;
@@ -480,7 +480,7 @@ private:
       }
       else if (ret < 0)
       {
-        ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
+        //ossia::logger().error("alsa_engine: snd_pcm_writei: {}", snd.strerror(ret));
         return true;
         abort(ret);
         return false;
