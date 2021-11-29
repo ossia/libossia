@@ -297,6 +297,7 @@ if(OSSIA_DATAFLOW)
   ossia_link_jack()
 
   # PortAudio support
+  if(NOT OSSIA_DISABLE_PORTAUDIO)
   if(TARGET PortAudio::PortAudio)
     target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
   elseif(TARGET portaudio)
@@ -310,6 +311,7 @@ if(OSSIA_DATAFLOW)
     endif()
   endif()
 
+  endif()
   #SDL support
   set(SDL_BUILDING_LIBRARY TRUE)
   if(NOT OSSIA_DISABLE_SDL)

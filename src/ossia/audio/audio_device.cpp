@@ -17,7 +17,7 @@ audio_device::audio_device(
   std::string default_protocol, default_in, default_out;
 #if defined(__EMSCRIPTEN__)
   default_protocol = "SDL";
-#elif __has_include(<portaudio.h>)
+#elif OSSIA_AUDIO_PORTAUDIO
   default_protocol = "PortAudio";
   Pa_Initialize();
   {
