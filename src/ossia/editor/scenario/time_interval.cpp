@@ -94,7 +94,7 @@ void time_interval::tick_impl(
 
     if(new_date.impl > old_date.impl)
     {
-      auto d = new_date - 1_tv;
+      auto d = new_date;
       const double num_quarters = d.impl / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, d);
