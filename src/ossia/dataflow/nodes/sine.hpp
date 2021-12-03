@@ -60,13 +60,14 @@ public:
           ossia::convert<float>(vals.back().value), 0.f, 20000.f);
     }
 
-    auto& audio = audio_out->samples;
+    ossia::audio_port& audio = *audio_out;
     const auto [tick_start, N] = st.timings(t);
 
     if (N > 0)
     {
-      audio.resize(1);
-      audio[0].resize(tick_start + N);
+      audio.set_channels(1);
+      auto& c = audio.channel(0);
+      c.resize(tick_start + N);
 
 #if BOOST_COMP_GNUC
       int64_t k = t.start_date_to_physical(st.modelToSamples());
@@ -89,7 +90,7 @@ public:
         m_cos = new_cos / norm;
         m_sin = new_sin / norm;
 
-        audio[0][i] = amplitude * m_sin;
+        c[i] = amplitude * m_sin;
       }
 #endif
     }

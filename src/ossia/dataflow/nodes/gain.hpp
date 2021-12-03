@@ -29,23 +29,26 @@ public:
               .dataspace_value,
           0.f, 1.f);
 
-    auto& in = audio_in->samples;
-    auto& out = audio_out->samples;
+    auto& in = *audio_in;
+    auto& out = *audio_out;
 
     const auto [first_pos, N] = st.timings(t);
     const int64_t last_pos = first_pos + N;
 
-    const auto channels = in.size();
-    out.resize(channels);
+    const auto channels = in.channels();
+    out.set_channels(channels);
 
     for (std::size_t i = 0; i < channels; i++)
     {
-      const int64_t cur_chan_size = in[i].size();
+      auto& in_c = in.channel(i);
+      auto& out_c = out.channel(i);
 
-      out[i].resize(st.bufferSize());
+      const int64_t cur_chan_size = in_c.size();
 
-      const auto* input = in[i].data();
-      auto* output = out[i].data();
+      out_c.resize(st.bufferSize());
+
+      const auto* input = in_c.data();
+      auto* output = out_c.data();
       if (cur_chan_size < last_pos)
       {
         for (int64_t j = first_pos; j < cur_chan_size; j++)
@@ -57,7 +60,7 @@ public:
       else
       {
         for (int64_t j = first_pos; j < last_pos; j++)
-          out[i][j] = gain * input[j];
+          output[j] = gain * input[j];
       }
     }
   }

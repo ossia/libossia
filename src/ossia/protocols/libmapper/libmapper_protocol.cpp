@@ -4,6 +4,7 @@
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <thread>
+#include <iostream>
 #include <mapper/mapper_cpp.h>
 namespace ossia::net
 {

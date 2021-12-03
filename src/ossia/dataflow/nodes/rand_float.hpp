@@ -21,7 +21,8 @@ public:
   {
     thread_local std::mt19937 gen;
     auto& out = *value_out.target<ossia::value_port>();
-    out.write_value(dist(gen), e.physical_start(t));
+    auto tm = e.timings(t);
+    out.write_value(dist(gen), tm.start_sample);
   }
 };
 }
