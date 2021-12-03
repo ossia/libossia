@@ -16,6 +16,7 @@
 #cmakedefine OSSIA_PROTOCOL_JOYSTICK
 #cmakedefine OSSIA_PROTOCOL_WIIMOTE
 #cmakedefine OSSIA_PROTOCOL_ARTNET
+#cmakedefine OSSIA_PROTOCOL_LIBMAPPER
 
 // Additional features
 #cmakedefine OSSIA_DNSSD
