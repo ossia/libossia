@@ -19,23 +19,23 @@ constexpr char libmapper_type<float> = 'f';
 
 struct libmapper_send
 {
-  mapper_signal signal{};
-  mapper_timetag_t timetag{};
+  mpr_signal signal{};
+  mpr_time timetag{};
 
   void operator()(impulse v) const noexcept { }
-  void operator()(int v) const noexcept { mapper_signal_update_int(signal, v); }
-  void operator()(float v) const noexcept { mapper_signal_update_float(signal, v); }
-  void operator()(bool v) const noexcept { mapper_signal_update_int(signal, v); }
-  void operator()(char v) const noexcept { mapper_signal_update_int(signal, v); }
-  void operator()(vec2f v) const noexcept { mapper_signal_update(signal, v.data(), 2, timetag); }
-  void operator()(vec3f v) const noexcept { mapper_signal_update(signal, v.data(), 3, timetag); }
-  void operator()(vec4f v) const noexcept { mapper_signal_update(signal, v.data(), 4, timetag); }
+  void operator()(int v) const noexcept { mpr_sig_set_value(signal, 0, 1, MPR_INT32, &v); }
+  void operator()(float v) const noexcept { mpr_sig_set_value(signal, 0, 1, MPR_FLT, &v); }
+  void operator()(bool v) const noexcept { mpr_sig_set_value(signal, 0, 1, MPR_BOOL, &v); }
+  void operator()(char v) const noexcept { (*this)(int(v)); }
+  void operator()(vec2f v) const noexcept { mpr_sig_set_value(signal, 0, 2, MPR_FLT, v.data()); }
+  void operator()(vec3f v) const noexcept { mpr_sig_set_value(signal, 0, 3, MPR_FLT, v.data()); }
+  void operator()(vec4f v) const noexcept { mpr_sig_set_value(signal, 0, 4, MPR_FLT, v.data()); }
   void operator()(const std::string& v) const noexcept { (*this)(std::stof(v)); }
   void operator()(const std::vector<ossia::value>& v) const noexcept {
-    float* sub = (float*)alloca(sizeof(float) * v.size());
-    for(auto i = 0u; i < v.size(); i++)
-      sub[i] = ossia::convert<float>(v[i]);
-    mapper_signal_update(signal, sub, v.size(), timetag);
+    //float* sub = (float*)alloca(sizeof(float) * v.size());
+    //for(auto i = 0u; i < v.size(); i++)
+    //  sub[i] = ossia::convert<float>(v[i]);
+    //mapper_signal_update(signal, sub, v.size(), timetag);
   }
   void operator()() const noexcept { }
 };
@@ -82,7 +82,7 @@ struct libmapper_create_param
 struct libmapper_apply_control
 {
   libmapper_server_protocol& protocol;
-  mapper::Device& dev;
+  mpr_device dev;
   void operator()(libmapper_server_protocol::CreateSignal cmd) const noexcept
   {
     cmd.param->value().apply(libmapper_create_param{protocol, *cmd.param});
@@ -90,11 +90,12 @@ struct libmapper_apply_control
 
   void operator()(libmapper_server_protocol::RemoveSignal cmd) const noexcept
   {
-    mapper_device_remove_signal(dev, cmd.sig);
+    //mapper_device_remove_signal(dev, cmd.sig);
   }
 
 };
 
+/*
 template<typename Type>
 static void on_libmapper_input(mapper_signal sig, mapper_id instance, const void* value, int count, mapper_timetag_t* tt)
 {
@@ -105,6 +106,7 @@ static void on_libmapper_input(mapper_signal sig, mapper_id instance, const void
     ossia::apply(libmapper_receive<Type>{*param, (Type*) arr, count}, param->value());
   }
 }
+*/
 
 
 libmapper_server_protocol::libmapper_server_protocol()
@@ -144,7 +146,8 @@ void libmapper_server_protocol::set_device(ossia::net::device_base& dev)
 
     m_running = false;
     m_thread.join();
-    m_mapper_dev.reset();
+    mpr_dev_free(m_mapper_dev);
+    m_mapper_dev = nullptr;
   }
 
   m_device = &dev;
@@ -227,27 +230,34 @@ void libmapper_server_protocol::create_1d_parameter(const parameter_base& p)
     {
       std::string addr = n.osc_address();
 
-      auto i = m_inputMap[&p] = m_mapper_dev->add_input_signal(addr + ".in", 1, t, unit_text.data(), &min, &max, on_libmapper_input<LibmapperType>, (void*) &p);
-      auto o = m_outputMap[&p] = m_mapper_dev->add_output_signal(addr + ".out", 1, t, unit_text.data(), &min, &max);
-      p.value().apply(libmapper_send{o});
+      std::string in_name = addr + ".in";
+      std::string out_name = addr + ".out";
+      mpr_sig_handler* in_hdl{};
+      mpr_sig_handler* out_hdl{};
+      auto in_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_IN, in_name.c_str(), 1, MPR_FLT, "", nullptr, nullptr, nullptr, in_hdl, 0);
+      auto out_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_OUT, out_name.c_str(), 1, MPR_FLT, "", nullptr, nullptr, nullptr, out_hdl, 0);
+      ///*auto i = */m_inputMap[&p] = m_mapper_dev->add_input_signal(addr + ".in", 1, t, unit_text.data(), &min, &max, on_libmapper_input<LibmapperType>, (void*) &p);
+      //auto o = m_outputMap[&p] = m_mapper_dev->add_output_signal(addr + ".out", 1, t, unit_text.data(), &min, &max);
+
+      p.value().apply(libmapper_send{out_sig});
 
       break;
     }
 
     case ossia::access_mode::GET:
     {
-      const auto& addr = n.osc_address();
-
-      auto i = m_inputMap[&p] = m_mapper_dev->add_input_signal(addr, 1, t, unit_text.data(), &min, &max, on_libmapper_input<LibmapperType>, (void*) &p);
+      // const auto& addr = n.osc_address();
+      //
+      // /* auto i = */m_inputMap[&p] = m_mapper_dev->add_signal(mapper::Direction::INCOMING, addr, 1, t, unit_text.data(), &min, &max, on_libmapper_input<LibmapperType>, (void*) &p);
       break;
     }
 
     case ossia::access_mode::SET:
     {
-      const auto& addr = n.osc_address();
-
-      auto o = m_outputMap[&p] = m_mapper_dev->add_output_signal(addr, 1, t, unit_text.data(), &min, &max);
-      p.value().apply(libmapper_send{o});
+      // const auto& addr = n.osc_address();
+      //
+      // auto o = m_outputMap[&p] = m_mapper_dev->add_output_signal(addr, 1, t, unit_text.data(), &min, &max);
+      // p.value().apply(libmapper_send{o});
       break;
     }
   }
@@ -256,6 +266,7 @@ void libmapper_server_protocol::create_1d_parameter(const parameter_base& p)
 template<std::size_t N>
 void libmapper_server_protocol::create_array_parameter(const parameter_base& p)
 {
+  /*
   auto& n = p.get_node();
   auto min = p.get_domain().convert_min<std::array<float, N>>();
   auto max = p.get_domain().convert_max<std::array<float, N>>();
@@ -294,10 +305,12 @@ void libmapper_server_protocol::create_array_parameter(const parameter_base& p)
       break;
     }
   }
+  */
 }
 
 void libmapper_server_protocol::create_vector_parameter(const parameter_base& p)
 {
+  /*
   // TODO handle various domain cases... ints, floats...
   auto& n = p.get_node();
   auto min = p.get_domain().convert_min<float>();
@@ -337,6 +350,7 @@ void libmapper_server_protocol::create_vector_parameter(const parameter_base& p)
       break;
     }
   }
+  */
 }
 
 
@@ -382,7 +396,7 @@ void libmapper_server_protocol::on_nodeRenamed(const node_base& n, std::string o
 
 void libmapper_server_protocol::execThread()
 {
-  m_mapper_dev = std::make_unique<mapper::Device>(m_device->get_name());
+  m_mapper_dev = mpr_dev_new(m_device->get_name().c_str(), nullptr);
 
   ossia::net::visit_parameters(
         m_device->get_root_node(),
@@ -401,16 +415,16 @@ void libmapper_server_protocol::execThread()
     while(m_sendQueue.try_dequeue(m))
       m.value.apply(libmapper_send{m.sig});
 
-    m_mapper_dev->poll(10);
+    mpr_dev_poll(m_mapper_dev, 10);
 
     ControlMessage ctl;
     while(m_ctlQueue.try_dequeue(ctl))
     {
-      std::visit(libmapper_apply_control{*this, *m_mapper_dev}, ctl);
+      std::visit(libmapper_apply_control{*this, m_mapper_dev}, ctl);
       m_editSemaphore--;
     }
 
-    m_mapper_dev->poll(10);
+    mpr_dev_poll(m_mapper_dev, 10);
   }
 
 }
@@ -418,17 +432,49 @@ void libmapper_server_protocol::execThread()
 
 libmapper_client_protocol::libmapper_client_protocol()
 {
-  m_db = std::make_unique<mapper::Database>();
-  m_db->add_device_callback([] (mapper_database db,
-                                 mapper_device dev,
-                                 mapper_record_event event,
-                                 const void *user){
+  const auto MPR_OBJ_ALL = MPR_OBJ_NEW | MPR_OBJ_MOD | MPR_OBJ_REM | MPR_OBJ_EXP;
+  m_db = mpr_graph_new(MPR_OBJ_ALL);
+  // void mpr_graph_handler(mpr_graph graph, mpr_obj object, const mpr_graph_evt event, const void *data)
+  mpr_graph_add_cb(
+        m_db,
+        [] (mpr_graph db,
+        mpr_obj dev,
+        const mpr_graph_evt event,
+        const void *user){
     std::cerr << "device callback!\n";
+    switch(event)
+    {
+      case MPR_OBJ_NEW: std::cerr << "New \n"; break;
+      case MPR_OBJ_MOD: std::cerr << "Mod \n"; break;
+      case MPR_OBJ_REM: std::cerr << "Rem \n"; break;
+      case MPR_OBJ_EXP: std::cerr << "Exp \n"; break;
+    }
+
     auto self = (libmapper_client_protocol*) user;
-    self->update(*(ossia::net::node_base*)0x0);
-  }, this);
-  m_db->subscribe(MAPPER_OBJ_ALL);
-  m_db->request_devices();
+
+    int N = mpr_obj_get_num_props(dev, 0);
+    for (int i = 0; i < N; i++)
+    {
+      const char* key;
+      int len;
+      mpr_type type;
+      const void* value;
+      int publish{};
+      mpr_obj_get_prop_by_idx(dev , i, &key, &len, &type, &value, &publish);
+
+      std::cerr<< " Prop: " << key << " => " << int(type) << std::endl;
+      switch(type)
+      {
+        case MPR_STR:
+
+          std::cerr<< "  ==> " << (const char*)(value) << std::endl;
+          break;
+      }
+    }
+    self->update();
+  }, MPR_OBJ_ALL, this);
+  // m_db->subscribe(MAPPER_OBJ_ALL);
+  // m_db->request_devices();
 }
 
 libmapper_client_protocol::~libmapper_client_protocol()
@@ -437,14 +483,14 @@ libmapper_client_protocol::~libmapper_client_protocol()
 }
 void libmapper_client_protocol::poll(int v)
 {
-  m_db->poll(v);
+  mpr_graph_poll(m_db, v);
 }
 
 void libmapper_client_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  m_mapper_dev = std::make_unique<mapper::Device>(m_device->get_name());
+  m_mapper_dev = mpr_dev_new(m_device->get_name().c_str(), 0);
 }
 
 bool libmapper_client_protocol::pull(net::parameter_base& param)
@@ -457,8 +503,9 @@ bool libmapper_client_protocol::push(const net::parameter_base& param, const oss
   auto it = m_outputMap.find(&param);
   if(it != m_outputMap.end())
   {
-    mapper_signal sig = it->second;
-    mapper_signal_update_float(sig, ossia::convert<float>(v));
+    auto sig = it->second;
+    float va = ossia::convert<float>(v);
+    mpr_sig_set_value(sig, 0, 1, MPR_FLT, &va);
   }
   return true;
 }
@@ -475,14 +522,31 @@ bool libmapper_client_protocol::push_raw(const ossia::net::full_parameter_data& 
 
 bool libmapper_client_protocol::update(ossia::net::node_base&)
 {
-  for(mapper::Device dev : m_db->devices("*"))
+  return update();
+}
+bool libmapper_client_protocol::update()
+{
+  std::cerr << "ok\n";
+  mpr_graph_poll(m_db, 100);
+  auto list = mpr_graph_get_list(m_db, MPR_DEV);
+  mpr_graph_poll(m_db, 100);
+  int n = mpr_list_get_size(list);
+  for(int i = 0; i < n; i++)
   {
-    auto prop = dev.property("name");
-    std::cerr << mapper_device_host(dev) << ":" << dev.port() << std::endl;
-    switch(prop.type)
-    {
-      case 's': std::cerr << (const char*)prop.value  << std::endl;
-    }
+    mpr_dev device = mpr_list_get_idx(list, i);
+
+    int len{};
+    mpr_type type{};
+    const void* value{};
+    int publish{};
+    mpr_obj_get_prop_by_key(device, "name", &len, &type, &value, &publish);
+
+    //std::cerr << mapper_device_host(dev) << ":" << dev.port() << std::endl;
+    // switch(prop.type)
+    // {
+    //   case 's': std::cerr << (const char*)prop.value  << std::endl;
+    // }
+    //
 
     // What we could do is,
     // create a hidden mirror of each remote signal
@@ -490,13 +554,13 @@ bool libmapper_client_protocol::update(ossia::net::node_base&)
     // will handle
     // Another option is to create an osc device but that will only work
     // for sending, not receiving
-    for(const mapper::Signal& node : dev.signals())
-    {
-      std::cerr << " --> " << node.name() << std::endl;
-
-      mapper_signal_update_float(node, (float)rand() / 1000.);
-      mapper_signal_push(node);
-    }
+    // for(const mapper::Signal& node : dev.signals())
+    // {
+    //   std::cerr << " --> " << node.name() << std::endl;
+    //
+    //   mapper_signal_update_float(node, (float)rand() / 1000.);
+    //   mapper_signal_push(node);
+    // }
    }
   return true;
 }

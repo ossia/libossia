@@ -9,21 +9,17 @@
 #include <concurrentqueue.h>
 #include <vector>
 #include <variant>
-namespace mapper
-{
-class Device;
-class Database;
-}
 
-typedef void *mapper_device;
-typedef void *mapper_signal;
-typedef void *mapper_link;
-typedef void *mapper_map;
-typedef void *mapper_slot;
-typedef void *mapper_network;
-typedef void *mapper_database;
-typedef void *mapper_queue;
-typedef int mapper_signal_group;
+typedef void *mpr_graph;
+typedef void *mpr_device;
+typedef void *mpr_signal;
+typedef void *mpr_link;
+typedef void *mpr_map;
+typedef void *mpr_slot;
+typedef void *mpr_network;
+typedef void *mpr_database;
+typedef void *mpr_queue;
+typedef int mpr_signal_group;
 
 
 namespace ossia::net
@@ -72,17 +68,17 @@ private:
 
   ossia::net::device_base* m_device{};
 
-  std::unique_ptr<mapper::Device> m_mapper_dev;
+  mpr_device m_mapper_dev{};
 
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mapper_signal> m_inputMap;
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mapper_signal> m_outputMap;
+  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
+  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
 
   std::thread m_thread;
   std::atomic_bool m_running{};
 
   struct Message
   {
-    mapper_signal sig;
+    mpr_signal sig;
     ossia::value value;
   };
 
@@ -94,7 +90,7 @@ private:
   };
   struct RemoveSignal
   {
-    mapper_signal sig;
+    mpr_signal sig;
   };
   using ControlMessage = std::variant<CreateSignal, RemoveSignal>;
   moodycamel::ConcurrentQueue<ControlMessage> m_ctlQueue;
@@ -120,6 +116,7 @@ public:
   bool push_raw(const ossia::net::full_parameter_data&) override;
   bool observe(ossia::net::parameter_base& param, bool enable) override;
 
+  bool update();
   bool update(ossia::net::node_base&) override;
   void stop() override;
 
@@ -128,11 +125,11 @@ private:
 
   ossia::net::device_base* m_device{};
 
-  std::unique_ptr<mapper::Database> m_db;
-  std::unique_ptr<mapper::Device> m_mapper_dev;
+  mpr_graph m_db{};
+  mpr_device m_mapper_dev{};
 
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mapper_signal> m_inputMap;
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mapper_signal> m_outputMap;
+  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
+  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
 
 };
 }
