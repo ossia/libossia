@@ -35,13 +35,13 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   {
     audio_ins.push_back(
         ossia::net::find_or_create_parameter<ossia::audio_parameter>(
-            root, "/in/" + std::to_string(i)));
+            root, "/in/" + std::to_string(i + 1)));
   }
   for (int i = 0; i < outputs; i++)
   {
     audio_outs.push_back(
         ossia::net::find_or_create_parameter<ossia::audio_parameter>(
-            root, "/out/" + std::to_string(i)));
+            root, "/out/" + std::to_string(i + 1)));
   }
 
   main_audio_in->audio.resize(inputs);
