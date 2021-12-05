@@ -7,8 +7,14 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
+#include <fmt/format.h>
+#include <fmt/printf.h>
 
 #include <algorithm>
+#if __has_include(<charconv>)
+#include <charconv>
+#endif
+
 namespace ossia
 {
 namespace net
@@ -140,27 +146,47 @@ sanitize_name(std::string name, const std::vector<std::string>& brethren)
   }
 }
 
+static
+std::optional<int> parse_instance(std::string_view instance)
+{
+  int n{};
+#if defined(__cpp_lib_to_chars)
+  const auto res = std::from_chars(instance.data(), instance.data() + instance.size(), n);
+  return (res.ec == std::errc{}) ? std::optional<int>{n} : std::nullopt;
+#else
+  if(boost::conversion::detail::try_lexical_convert(instance, n))
+    return n;
+  return std::nullopt;
+#endif
+}
+
+static thread_local ossia::small_vector<int, 16> instance_num;
 void sanitize_name(
     std::string& name, const ossia::net::node_base::children_t& brethren)
 {
   sanitize_name(name);
   bool is_here = false;
   std::optional<int> name_instance;
-  ossia::small_vector<int, 16> instance_num;
+  instance_num.clear();
   instance_num.reserve(brethren.size());
 
   // First get the root name : the first part of the "a.b"
-  std::string root_name = name;
+  std::string_view root_name = name;
+  fmt::print(stderr, "std::string: {}\n", name);
+
+  bool name_is_root = true;
   {
     auto pos = name.find_last_of('.');
     if (pos != std::string::npos)
     {
-      int n{};
-      if(boost::conversion::detail::try_lexical_convert(name.substr(pos + 1), n))
+      name_instance = parse_instance(root_name.substr(pos + 1));
+      if(name_instance)
       {
-        // OPTIMIZEME
-        name_instance = n;
-        root_name = name.substr(0, pos);
+        // !!! horror storry that happened here:
+        // root_name = name.substr(...)
+        // but name.substr() is a temporary std::string...
+        root_name = root_name.substr(0, pos);
+        name_is_root = false;
       }
     }
   }
@@ -180,12 +206,9 @@ void sanitize_name(
     bool same_root = (n_name.compare(0, root_len, root_name) == 0);
     if (same_root && (n_name[root_len] == '.'))
     {
-      // Instance
-      int n{};
-      // OPTIMIZEME
-      if(boost::conversion::detail::try_lexical_convert(n_name.substr(root_len + 1), n))
+      if(std::optional<int> n = parse_instance(n_name.substr(root_len + 1)))
       {
-        instance_num.push_back(n);
+        instance_num.push_back(*n);
       }
     }
     // case where we have the "default" instance without .0
@@ -204,15 +227,21 @@ void sanitize_name(
     auto n = instance_num.size();
     if ((n == 0) || ((n == 1) && (instance_num[0] == 0)))
     {
-      name = root_name;
+      if(!name_is_root)
+      {
+        name = root_name;
+      }
+
       name += ".1";
     }
     else
     {
       std::sort(instance_num.begin(), instance_num.end());
-      name = root_name;
-      name += '.';
-      name += boost::lexical_cast<std::string>(instance_num.back() + 1);
+      if(!name_is_root)
+      {
+        name = root_name;
+      }
+      fmt::format_to(std::back_inserter(name), ".{}", instance_num.back() + 1);
     }
   }
 }
