@@ -14,6 +14,15 @@ namespace ossia
 {
 namespace net
 {
+struct dummy_lock {
+  template<typename T>
+  explicit dummy_lock(T&&) { }
+};
+#if defined(OSSIA_PARAMETER_VALUE_SINGLETHREAD)
+using value_lock_t = dummy_lock;
+#else
+using value_lock_t = std::lock_guard<std::mutex>;
+#endif
 
 generic_parameter::generic_parameter(ossia::net::node_base& node)
     : ossia::net::parameter_base{node}
@@ -91,7 +100,7 @@ const ossia::value& generic_parameter::getValue() const
 
 ossia::value generic_parameter::value() const
 {
-  lock_t lock(m_valueMutex);
+  value_lock_t lock(m_valueMutex);
 
   return m_value;
 }
@@ -103,7 +112,7 @@ generic_parameter::set_value(const ossia::value& val)
 
   if (val.valid())
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
       // TODO assess whether we would avoid an allocation on the return
@@ -130,7 +139,7 @@ ossia::value generic_parameter::set_value(ossia::value&& val)
   ossia::value copy;
   if (val.valid())
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
@@ -155,7 +164,7 @@ ossia::value generic_parameter::set_value_quiet(const ossia::value& val)
 
   if (val.valid())
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
       // TODO assess whether we would avoid an allocation on the return
@@ -181,7 +190,7 @@ ossia::value generic_parameter::set_value_quiet(ossia::value&& val)
   ossia::value copy;
   if (val.valid())
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     if (m_value.v.which() == val.v.which())
     {
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
@@ -201,7 +210,7 @@ ossia::value generic_parameter::set_value_quiet(ossia::value&& val)
 
 void generic_parameter::set_value_quiet(const destination& destination)
 {
-  lock_t lock(m_valueMutex);
+  value_lock_t lock(m_valueMutex);
   if (destination.address().get_value_type() == m_valueType)
   {
     m_previousValue = std::move(m_value); // TODO also implement me for MIDI
@@ -226,7 +235,7 @@ ossia::net::generic_parameter&
 generic_parameter::set_value_type(ossia::val_type type)
 {
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " <<
     // (int) mValueType << " <=== " << (int) type << std::endl;
     m_valueType = type;
@@ -311,7 +320,7 @@ void generic_parameter::on_removing_last_callback()
 generic_parameter& generic_parameter::set_unit(const unit_t& v)
 {
   {
-    lock_t lock(m_valueMutex);
+    value_lock_t lock(m_valueMutex);
     m_unit = v;
 
     // update the type to match the unit.
