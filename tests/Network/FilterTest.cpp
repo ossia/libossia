@@ -5,6 +5,7 @@
 #include <catch.hpp>
 
 #include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 
 using namespace ossia;
@@ -18,7 +19,7 @@ TEST_CASE( "Float domain, float value" )
   auto domain = make_domain_from_minmax(
       {-100.0f}, {0.0f}, ossia::val_type::FLOAT);
   ossia::value v = -12.0f;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -35,7 +36,7 @@ TEST_CASE( "int domain, int value" )
   auto domain = make_domain_from_minmax(
       {-100}, {0}, ossia::val_type::INT);
   ossia::value v = -12;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -52,7 +53,7 @@ TEST_CASE( "Float domain, int value" )
   auto domain = make_domain_from_minmax(
       {-100.0f}, {0.0f}, ossia::val_type::FLOAT);
   ossia::value v = -12;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -65,7 +66,7 @@ TEST_CASE( "Float domain with int, int value" )
   auto domain = make_domain_from_minmax(
       {-100}, {0}, ossia::val_type::FLOAT);
   ossia::value v = -12;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -78,7 +79,7 @@ TEST_CASE( "Float domain with int&float, int value" )
   auto domain = make_domain_from_minmax(
       {-100}, {0.0f}, ossia::val_type::FLOAT);
   ossia::value v = -12;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -91,7 +92,7 @@ TEST_CASE( "Float domain with float&int, int value" )
   auto domain = make_domain_from_minmax(
       {-100.0}, {0}, ossia::val_type::FLOAT);
   ossia::value v = -12;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -108,7 +109,7 @@ TEST_CASE( "int domain, float value" )
   auto domain = make_domain_from_minmax(
       {-100}, {0}, ossia::val_type::INT);
   ossia::value v = -12.0f;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -121,7 +122,7 @@ TEST_CASE( "int domain with float, float value" )
   auto domain = make_domain_from_minmax(
       {-100.0f}, {0.0f}, ossia::val_type::INT);
   ossia::value v = -12.0f;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -134,7 +135,7 @@ TEST_CASE( "int domain with int&float, Float value" )
   auto domain = make_domain_from_minmax(
       {-100}, {0.0f}, ossia::val_type::INT);
   ossia::value v = -12.0f;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
@@ -147,7 +148,7 @@ TEST_CASE( "Int domain with float&int, Float value" )
   auto domain = make_domain_from_minmax(
       {-100.0}, {0}, ossia::val_type::INT);
   ossia::value v = -12.0f;
-  auto filtered = ossia::net::filter_value(
+  auto filtered = ossia::bound_value(
       domain, v, ossia::bounding_mode::CLIP);
 
   REQUIRE(filtered.valid());
