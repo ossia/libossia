@@ -172,7 +172,6 @@ void sanitize_name(
 
   // First get the root name : the first part of the "a.b"
   std::string_view root_name = name;
-  fmt::print(stderr, "std::string: {}\n", name);
 
   bool name_is_root = true;
   {
