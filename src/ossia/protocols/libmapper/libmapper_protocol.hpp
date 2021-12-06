@@ -102,7 +102,7 @@ private:
 class OSSIA_EXPORT libmapper_client_protocol final : public ossia::net::protocol_base
 {
 public:
-  libmapper_client_protocol();
+  explicit libmapper_client_protocol(std::string device);
   libmapper_client_protocol(const libmapper_client_protocol&) = delete;
   libmapper_client_protocol(libmapper_client_protocol&&) = delete;
   libmapper_client_protocol& operator=(const libmapper_client_protocol&) = delete;
@@ -124,6 +124,8 @@ public:
 private:
 
   ossia::net::device_base* m_device{};
+
+  std::string m_mapper_dev_name;
 
   mpr_graph m_db{};
   mpr_device m_mapper_dev{};

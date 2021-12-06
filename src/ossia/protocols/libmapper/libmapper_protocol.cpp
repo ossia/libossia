@@ -430,51 +430,104 @@ void libmapper_server_protocol::execThread()
 }
 
 
-libmapper_client_protocol::libmapper_client_protocol()
+void on_libmapper_client_message(mpr_graph db,
+                                 mpr_obj obj,
+                                 const mpr_graph_evt event,
+                                 const void *user)
+{
+  switch(event)
+  {
+    case MPR_OBJ_NEW: std::cerr << "New \n"; break;
+    case MPR_OBJ_MOD: std::cerr << "Mod \n"; break;
+    case MPR_OBJ_REM: std::cerr << "Rem \n"; break;
+    case MPR_OBJ_EXP: std::cerr << "Exp \n"; break;
+  }
+
+  auto self = (libmapper_client_protocol*) user;
+
+  int N = mpr_obj_get_num_props(obj, 0);
+  for (int i = 0; i < N; i++)
+  {
+    const char* key;
+    int len;
+    mpr_type type;
+    const void* value;
+    int publish{};
+    mpr_obj_get_prop_by_idx(obj , i, &key, &len, &type, &value, &publish);
+
+    std::cerr<< " Prop: " << key  << std::dec;
+    switch(type)
+    {
+      default:
+        std::cerr << " ?? " << std::hex << int(type);
+        break;
+      case MPR_DEV:
+        std::cerr<< "  ==> dev " << value;
+        break;
+      case MPR_BOOL:
+        std::cerr<< "  ==> bol " << *(int*)(value);
+        break;
+      case MPR_INT32:
+        std::cerr<< "  ==> i32 " << *(int32_t*)(value);
+        break;
+      case MPR_INT64:
+        std::cerr<< "  ==> i64 " << *(int64_t*)(value);
+        break;
+      case MPR_FLT:
+        std::cerr<< "  ==> f32 " << *(float*)(value);
+        break;
+      case MPR_DBL:
+        std::cerr<< "  ==> f64 " << *(double*)(value);
+        break;
+      case MPR_STR:
+        std::cerr<< "  ==> str " << (const char*)(value);
+        break;
+      case MPR_TYPE:
+      {
+        std::cerr<< "  ==> type ";
+        switch(*(mpr_type*)value)
+        {
+          default:
+            std::cerr << " ?? " << std::hex << int(*(mpr_type*)value);
+            break;
+          case MPR_DEV:
+            std::cerr<< " dev ";
+            break;
+          case MPR_BOOL:
+            std::cerr<< " bol ";
+            break;
+          case MPR_INT32:
+            std::cerr<< " i32 ";
+            break;
+          case MPR_INT64:
+            std::cerr<< " i64 ";
+            break;
+          case MPR_FLT:
+            std::cerr<< " f32 ";
+            break;
+          case MPR_DBL:
+            std::cerr<< " f64 ";
+            break;
+          case MPR_STR:
+            std::cerr<< " str ";
+            break;
+        }
+
+        break;
+      }
+    }
+    std::cerr << std::endl;
+  }
+}
+
+libmapper_client_protocol::libmapper_client_protocol(std::string device)
 {
   const auto MPR_OBJ_ALL = MPR_OBJ_NEW | MPR_OBJ_MOD | MPR_OBJ_REM | MPR_OBJ_EXP;
   m_db = mpr_graph_new(MPR_OBJ_ALL);
-  // void mpr_graph_handler(mpr_graph graph, mpr_obj object, const mpr_graph_evt event, const void *data)
-  mpr_graph_add_cb(
-        m_db,
-        [] (mpr_graph db,
-        mpr_obj dev,
-        const mpr_graph_evt event,
-        const void *user){
-    std::cerr << "device callback!\n";
-    switch(event)
-    {
-      case MPR_OBJ_NEW: std::cerr << "New \n"; break;
-      case MPR_OBJ_MOD: std::cerr << "Mod \n"; break;
-      case MPR_OBJ_REM: std::cerr << "Rem \n"; break;
-      case MPR_OBJ_EXP: std::cerr << "Exp \n"; break;
-    }
 
-    auto self = (libmapper_client_protocol*) user;
-
-    int N = mpr_obj_get_num_props(dev, 0);
-    for (int i = 0; i < N; i++)
-    {
-      const char* key;
-      int len;
-      mpr_type type;
-      const void* value;
-      int publish{};
-      mpr_obj_get_prop_by_idx(dev , i, &key, &len, &type, &value, &publish);
-
-      std::cerr<< " Prop: " << key << " => " << int(type) << std::endl;
-      switch(type)
-      {
-        case MPR_STR:
-
-          std::cerr<< "  ==> " << (const char*)(value) << std::endl;
-          break;
-      }
-    }
-    self->update();
-  }, MPR_OBJ_ALL, this);
-  // m_db->subscribe(MAPPER_OBJ_ALL);
-  // m_db->request_devices();
+  std::string name = "ossia_mirror_" + device;
+  m_mapper_dev = mpr_dev_new(name.c_str(), m_db);
+  mpr_obj_set_prop(m_mapper_dev, MPR_PROP_NAME, nullptr, 1, MPR_STR, name.c_str(), false);
 }
 
 libmapper_client_protocol::~libmapper_client_protocol()
@@ -489,8 +542,6 @@ void libmapper_client_protocol::poll(int v)
 void libmapper_client_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
-
-  m_mapper_dev = mpr_dev_new(m_device->get_name().c_str(), 0);
 }
 
 bool libmapper_client_protocol::pull(net::parameter_base& param)
@@ -504,8 +555,33 @@ bool libmapper_client_protocol::push(const net::parameter_base& param, const oss
   if(it != m_outputMap.end())
   {
     auto sig = it->second;
-    float va = ossia::convert<float>(v);
-    mpr_sig_set_value(sig, 0, 1, MPR_FLT, &va);
+    switch(param.get_value_type())
+    {
+      case ossia::val_type::FLOAT:
+      {
+        mpr_sig_set_value(sig, 0, 1, MPR_FLT, v.target<float>());
+        break;
+      }
+      case ossia::val_type::INT:
+      {
+        mpr_sig_set_value(sig, 0, 1, MPR_INT32, v.target<int>());
+        break;
+      }
+      case ossia::val_type::BOOL:
+      {
+        int b = *v.target<bool>();
+        mpr_sig_set_value(sig, 0, 1, MPR_INT32, &b);
+        break;
+      }
+      case ossia::val_type::STRING:
+      {
+        auto& s = *v.target<std::string>();
+        mpr_sig_set_value(sig, 0, 1, MPR_STR, s.c_str());
+        break;
+      }
+      default:
+        break;
+    }
   }
   return true;
 }
@@ -526,27 +602,81 @@ bool libmapper_client_protocol::update(ossia::net::node_base&)
 }
 bool libmapper_client_protocol::update()
 {
-  std::cerr << "ok\n";
+  assert(this->m_device);
+  auto& root = this->m_device->get_root_node();
   mpr_graph_poll(m_db, 100);
+  mpr_dev_poll(m_mapper_dev, 100);
   auto list = mpr_graph_get_list(m_db, MPR_DEV);
   mpr_graph_poll(m_db, 100);
+  mpr_dev_poll(m_mapper_dev, 100);
   int n = mpr_list_get_size(list);
   for(int i = 0; i < n; i++)
   {
     mpr_dev device = mpr_list_get_idx(list, i);
 
-    int len{};
-    mpr_type type{};
-    const void* value{};
-    int publish{};
-    mpr_obj_get_prop_by_key(device, "name", &len, &type, &value, &publish);
+    auto name = mpr_obj_get_prop_as_str(device, MPR_PROP_NAME, nullptr);
+    std::cerr << "Found device: " << name << std::endl;
 
-    //std::cerr << mapper_device_host(dev) << ":" << dev.port() << std::endl;
-    // switch(prop.type)
-    // {
-    //   case 's': std::cerr << (const char*)prop.value  << std::endl;
-    // }
-    //
+    auto ins = mpr_dev_get_sigs(device, mpr_dir::MPR_DIR_IN);
+    const int32_t num_in = mpr_list_get_size(ins);
+
+    auto outs = mpr_dev_get_sigs(device, mpr_dir::MPR_DIR_OUT);
+    const int32_t num_out = mpr_list_get_size(outs);
+
+    for(int sig_i = 0; sig_i < num_in; sig_i++)
+    {
+      mpr_sig sig = mpr_list_get_idx(ins, sig_i);
+
+      std::string name = mpr_obj_get_prop_as_str(sig, MPR_PROP_NAME, nullptr);
+      mpr_type type = mpr_obj_get_prop_as_int32(sig, MPR_PROP_TYPE, nullptr);
+      mpr_sig local_out_sig{};
+      mpr_map local_out_map{};
+      ossia::net::parameter_base* param{};
+      switch(type)
+      {
+        case 'f':
+        case 'd':
+        {
+          float min = mpr_obj_get_prop_as_flt(sig, MPR_PROP_MIN, nullptr);
+          float max = mpr_obj_get_prop_as_flt(sig, MPR_PROP_MAX, nullptr);
+          param = ossia::create_parameter(root, name, "float");
+          local_out_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_OUT, name.c_str(), 1, type, nullptr, &min, &max, nullptr, nullptr, 0);
+          break;
+        }
+        case 'i':
+        case 'h':
+        {
+          int32_t min = mpr_obj_get_prop_as_int32(sig, MPR_PROP_MIN, nullptr);
+          int32_t max = mpr_obj_get_prop_as_int32(sig, MPR_PROP_MAX, nullptr);
+          param = ossia::create_parameter(root, name, "int");
+          local_out_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_OUT, name.c_str(), 1, type, nullptr, &min, &max, nullptr, nullptr, 0);
+          break;
+        }
+        case 'b':
+          param = ossia::create_parameter(root, name, "bool");
+          local_out_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_OUT, name.c_str(), 1, type, nullptr, nullptr, nullptr, nullptr, nullptr, 0);
+          break;
+        case 's':
+          param = ossia::create_parameter(root, name, "string");
+          local_out_sig = mpr_sig_new(m_mapper_dev, mpr_dir::MPR_DIR_OUT, name.c_str(), 1, type, nullptr, nullptr, nullptr, nullptr, nullptr, 0);
+          break;
+        default:
+          break;
+      }
+
+      if(sig && local_out_sig)
+      {
+        mpr_obj_push(local_out_sig);
+        local_out_map = mpr_map_new(1, &sig, 1, &local_out_map);
+        m_outputMap[param] = local_out_sig;
+      }
+    }
+
+
+    // For inputs:
+    // We create local hidden outputs
+    // We create a map for each output to input
+
 
     // What we could do is,
     // create a hidden mirror of each remote signal
