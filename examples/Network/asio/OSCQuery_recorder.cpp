@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/timer.hpp>
 #include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
 #include <ossia/network/context.hpp>
@@ -23,60 +24,85 @@ struct recorder {
   FILE* file{};
   int64_t pos{};
 
-  std::unordered_map<ossia::net::node_base*, int32_t> indices;
+  std::unordered_map<ossia::net::node_base*, int64_t> indices;
+
+  void pad4()
+  {
+    switch(pos % 4)
+    {
+      case 0:
+        break;
+      case 1:
+        pos += fwrite("\0\0\0\0", 1, 3, file);
+        break;
+      case 2:
+        pos += fwrite("\0\0\0\0", 1, 2, file);
+        break;
+      case 3:
+        pos += fwrite("\0\0\0\0", 1, 1, file);
+        break;
+    }
+  }
 };
 
 namespace
 {
+
+static uint32_t message_data_size(ossia::net::parameter_base& b)
+{
+  switch(b.get_value_type())
+  {
+    case ossia::val_type::BOOL:
+    case ossia::val_type::INT:
+    case ossia::val_type::FLOAT:
+      return sizeof(int32_t);
+    case ossia::val_type::VEC2F:
+      return sizeof(ossia::vec2f);
+    case ossia::val_type::VEC3F:
+      return sizeof(ossia::vec3f);
+    case ossia::val_type::VEC4F:
+      return sizeof(ossia::vec4f);
+    case ossia::val_type::IMPULSE:
+    default:
+      return 0;
+  }
+}
 static
 void write_header(recorder& ctx, const std::vector<ossia::net::node_base*>& nodes)
 {
   auto file = ctx.file;
 
   fwrite("OSCR", 1, 4, file);
-
   ctx.pos += 4;
+
+  int32_t count = nodes.size();
+  fwrite(&count, 4, 1, file);
+  ctx.pos += 4;
+
   for(auto* node : nodes)
   {
-    auto p = node->get_parameter();
-    if(!p)
-      continue;
-
     // Write the address
     auto& addr = node->osc_address();
+
     ctx.pos += fwrite(addr.c_str(), 1, addr.length() + 1, file);
-    while(ctx.pos % 4 != 0)
-    {
-      ctx.pos += fwrite("", 1, 1, file);
-    }
+    ctx.pad4();
 
     // Write the typetag
     const auto tt = ossia::oscquery::get_osc_typetag(*node);
     {
       const std::string& tag = *tt;
-      // We only handle this for now
-      if(tag != "f")
-        continue;
 
       ctx.pos += fwrite(tag.c_str(), 1, tag.length() + 1, file);
-      while(ctx.pos % 4 != 0)
-      {
-        ctx.pos += fwrite("", 1, 1, file);
-      }
+      ctx.pad4();
     }
 
     // Write the size of messages with that index for easy lookup
-    static constexpr int index_size = sizeof(int32_t);
+    static constexpr int index_size = sizeof(int64_t);
     static constexpr int timestamp_size = sizeof(int64_t);
-    uint32_t osc_message_sz = index_size + timestamp_size;
-    osc_message_sz += sizeof(float);
-    ctx.pos += fwrite(&osc_message_sz, sizeof(osc_message_sz), 1, file);
 
-    ctx.pos += fwrite("", 1, 1, file);
-    while(ctx.pos % 4 != 0)
-    {
-      ctx.pos += fwrite("", 1, 1, file);
-    }
+    uint32_t osc_message_sz = index_size + timestamp_size + message_data_size(*node->get_parameter());
+    fwrite(&osc_message_sz, sizeof(osc_message_sz), 1, file);
+    ctx.pos += 4;
   }
 }
 
@@ -124,7 +150,9 @@ int main(int argc, char** argv)
   device.get_protocol().update(device);
 
   auto nodes = ossia::net::find_nodes(device.get_root_node(), pattern);
-
+  ossia::remove_erase_if(nodes, [] (auto n) {
+    return !n->get_parameter();
+  });
 
   auto f = fopen(file.c_str(), "w");
   recorder rec{.file = f};
