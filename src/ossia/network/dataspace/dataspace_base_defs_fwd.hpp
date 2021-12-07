@@ -100,7 +100,7 @@ using quaternion = strong_value<quaternion_u>;
 using euler = strong_value<euler_u>;
 using axis = strong_value<axis_u>;
 
-// 6
+// 9
 struct cartesian_3d_u;
 struct cartesian_2d_u;
 struct spherical_u;

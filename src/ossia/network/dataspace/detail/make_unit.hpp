@@ -7,40 +7,6 @@
 
 namespace ossia
 {
-#if OSSIA_ASAN
-class make_unit_helper
-{
-public:
-  make_unit_helper()
-  {
-  }
-
-  ossia::unit_t get_unit(uint64_t dataspace, uint64_t unit) const
-  {
-    ossia::unit_t ret{};
-
-    uint64_t d = 0;
-    ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
-      using dataspace_type = typename decltype(t)::type;
-      if(d == dataspace)
-      {
-        uint64_t i = 0;
-        ossia::for_each_tagged(dataspace_type{}, [&] (auto u) {
-          if(i == unit)
-          {
-            using unit_type = typename decltype(u)::type;
-            ret = unit_type{};
-          }
-          i++;
-        });
-      }
-      d++;
-    });
-
-    return ret;
-  }
-};
-#else
 class make_unit_helper
 {
 public:
@@ -113,6 +79,5 @@ private:
     return arr;
   }
 };
-#endif
 }
 

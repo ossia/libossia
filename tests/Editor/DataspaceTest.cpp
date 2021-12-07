@@ -13,6 +13,19 @@
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/logger.hpp>
 
+
+constexpr int computed_unit_count()
+{
+  int k = 0;
+  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
+    using dataspace_type = typename decltype(t)::type;
+    ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
+      k++;
+    });
+  });
+  return k;
+}
+static_assert(computed_unit_count() == ossia::unit_count);
 static constexpr auto constexpr_abs(float f)
 {
   return f > 0 ? f : -f;

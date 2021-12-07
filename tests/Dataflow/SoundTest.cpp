@@ -26,7 +26,7 @@ TEST_CASE ("test_sound_ref", "test_sound_ref")
     snd.run(tk, {&e});
   }
 
-  auto op = snd.root_outputs()[0]->target<audio_port>()->samples;
+  auto op = snd.root_outputs()[0]->target<audio_port>()->get();
   audio_vector expected{audio_channel{0.1f, 0.2f, 0.3f, 0.4f, 0.1f, 0.2f, 0.3f, 0.4f, 0.1f}};
   for(int i = 0; i < 9; i++)
   {
@@ -101,10 +101,10 @@ TEST_CASE ("test_sound_mmap", "test_sound_mmap")
   for(auto tk : snd.requested_tokens)
   {
     snd.run(tk, {&e});
-    auto op = snd.root_outputs()[0]->target<audio_port>()->samples;
+    auto op = snd.root_outputs()[0]->target<audio_port>()->get();
   }
 
-  auto op = snd.root_outputs()[0]->target<audio_port>()->samples;
+  auto op = snd.root_outputs()[0]->target<audio_port>()->get();
   audio_vector expected{audio_channel{0.1f, 0.2f, 0.3f, 0.4f, 0.1f, 0.2f, 0.3f, 0.4f, 0.1f}};
   for(int i = 0; i < 9; i++)
   {

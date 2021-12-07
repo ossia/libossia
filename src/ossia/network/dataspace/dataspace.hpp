@@ -295,7 +295,7 @@ struct is_array_unit<T, decltype(T{}.array_parameters())>
 };
 
 static const constexpr int dataspace_count = 8;
-static const constexpr int unit_count = 2 + 9 + 11 + 4 + 3 + 6 + 6 + 9;
+static const constexpr int unit_count = 2 + 9 + 11 + 4 + 3 + 9 + 6 + 9;
 }
 namespace std
 {
