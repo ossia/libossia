@@ -1,14 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/editor/curve/curve_segment/power.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <catch2/catch_approx.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 
@@ -66,7 +65,7 @@ TEST_CASE ("test_double_float", "test_double_float")
 
 TEST_CASE ("test_float_float", "test_float_float")
 {
-  using Approx = Catch::Approx;
+  using Approx = Catch::Detail::Approx;
   auto c = std::make_shared<curve<float, float>>();
   REQUIRE(c != nullptr);
 

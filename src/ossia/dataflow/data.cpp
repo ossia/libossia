@@ -287,22 +287,19 @@ void value_port::write_value(value&& v, int64_t timestamp)
   }
 }
 
-value value_port::filter_value(const value& source, const destination_index& source_idx, const ossia::complex_type& source_type) const
+static void filter_value(
+    value& source,
+    const ossia::destination_index& /* source_index */,
+    const ossia::destination_index& res_index,
+    const ossia::complex_type& source_type,
+    const ossia::complex_type& res_type
+    )
 {
-  if (source_type == type || !source_type)
-  {
-    // We can just take the value at the index
-    return get_value_at_index(source, this->index);
-  }
-  else
-  {
-    auto res = ossia::convert(source, source_type, type);
-    if (res.valid())
-    {
-      return get_value_at_index(res, this->index);
-    }
-  }
-  return source;
+  if (source_type && res_type && source_type != res_type)
+    source = ossia::convert(source, source_type, res_type);
+
+  if (source.valid() && !res_index.empty())
+    source = get_value_at_index(source, res_index);
 }
 
 void value_port::add_local_value(const ossia::typed_value& other)
@@ -315,8 +312,9 @@ void value_port::add_local_value(const ossia::typed_value& other)
   }
   else
   {
-    write_value(
-          filter_value(other.value, other.index, other.type), other.timestamp);
+    auto v = other.value;
+    filter_value(v, other.index, index, other.type, type);
+    write_value(v, other.timestamp);
   }
 }
 
@@ -324,15 +322,14 @@ void value_port::add_global_values(
     const net::parameter_base& other, const value_vector<ossia::value>& vec)
 {
   const ossia::complex_type source_type = other.get_unit();
-  const ossia::destination_index source_idx{}; // WTF?
 
-  if (source_idx == index && source_type == type)
+  if (index.empty() && (source_type == type || !source_type))
   {
     if(other.get_domain() && this->domain)
     {
       for (ossia::value v : vec)
       {
-        map_value(v, other.get_domain(), this->domain);
+        map_value(v, index, other.get_domain(), this->domain);
         write_value(std::move(v), 0); // TODO put correct timestamps here
       }
     }
@@ -348,17 +345,20 @@ void value_port::add_global_values(
   {
     if(other.get_domain() && this->domain)
     {
-      for (const ossia::value& v : vec)
+      for (ossia::value v : vec)
       {
-        auto val = filter_value(v, source_idx, source_type);
-        map_value(val, other.get_domain(), this->domain);
-        write_value(std::move(val), 0);
+        filter_value(v, {}, index, source_type, type);
+        map_value(v, index, other.get_domain(), this->domain);
+        write_value(std::move(v), 0);
       }
     }
     else
     {
-      for (const ossia::value& v : vec)
-        write_value(filter_value(v, source_idx, source_type), 0);
+      for (ossia::value v : vec)
+      {
+        filter_value(v, {}, index, source_type, type);
+        write_value(v, 0);
+      }
     }
   }
 }
@@ -371,36 +371,21 @@ ossia::complex_type get_complex_type(const ossia::net::parameter_base& other)
 }
 
 void value_port::add_global_value(
-    const ossia::net::parameter_base& other, const ossia::value& v)
+    const ossia::net::parameter_base& other, ossia::value val)
 {
   const ossia::complex_type source_type = get_complex_type(other);
-  const ossia::destination_index source_idx{}; // WTF?
-  if (source_idx == index && source_type == type)
+
+  // Convert to the correct unit
+  filter_value(val, {}, index, source_type, type);
+
+  // Map the value
+  if(other.get_domain() && this->domain)
   {
-    if(other.get_domain() && this->domain)
-    {
-      auto val = v;
-      map_value(val, other.get_domain(), this->domain);
-      write_value(std::move(val), 0);
-    }
-    else
-    {
-      write_value(v, 0);
-    }
+    map_value(val, index, other.get_domain(), this->domain);
   }
-  else
-  {
-    if(other.get_domain() && this->domain)
-    {
-      auto val = filter_value(v, source_idx, source_type);
-      map_value(val, other.get_domain(), this->domain);
-      write_value(std::move(val), 0);
-    }
-    else
-    {
-      write_value(filter_value(v, source_idx, source_type), 0);
-    }
-  }
+
+  // Write the value
+  write_value(std::move(val), 0);
 }
 
 

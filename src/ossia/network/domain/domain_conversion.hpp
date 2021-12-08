@@ -134,6 +134,43 @@ struct domain_conversion<vecf_domain<N>>
     return list_func(t);
   }
 
+  OSSIA_INLINE domain operator()(const domain_base<int>& d)
+  {
+    domain_base<float> res;
+    if(d.min)
+      res.min = *d.min;
+    if(d.max)
+      res.max = *d.max;
+    for(auto& val : d.values)
+      res.values.push_back(val);
+    return res;
+  }
+
+  OSSIA_INLINE domain operator()(const domain_base<char>& d)
+  {
+    domain_base<float> res;
+    if(d.min)
+      res.min = *d.min;
+    if(d.max)
+      res.max = *d.max;
+    for(auto& val : d.values)
+      res.values.push_back(val);
+    return res;
+  }
+
+  OSSIA_INLINE domain operator()(const domain_base<bool>& d)
+  {
+    domain_base<float> res;
+    res.min = 0.f;
+    res.max = 1.f;
+    return res;
+  }
+
+  OSSIA_INLINE domain operator()(const domain_base<float>& d)
+  {
+    return d;
+  }
+
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {

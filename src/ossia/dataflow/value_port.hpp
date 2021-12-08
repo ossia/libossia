@@ -24,11 +24,6 @@ struct OSSIA_EXPORT value_port
 
   void write_value(ossia::value&& v, int64_t timestamp);
 
-  ossia::value filter_value(
-      const ossia::value& source,
-      const ossia::destination_index& source_idx, // TODO handle me
-      const ossia::complex_type& source_type) const;
-
   void add_local_value(const ossia::typed_value& other);
 
   void add_port_values(const ossia::value_port& other);
@@ -38,7 +33,7 @@ struct OSSIA_EXPORT value_port
       const value_vector<ossia::value>& vec);
 
   void add_global_value(
-      const ossia::net::parameter_base& other, const ossia::value& v);
+      const ossia::net::parameter_base& other, ossia::value v);
 
   void set_data(const value_vector<ossia::timed_value>& vec);
 

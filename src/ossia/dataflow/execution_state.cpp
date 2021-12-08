@@ -814,7 +814,7 @@ map_value_to_param(const ossia::net::parameter_base& param, const ossia::timed_v
     auto vv = v.value;
 
     // Map to the target domain
-    map_value(vv, val.domain, tgt_domain);
+    map_value(vv, ossia::destination_index{}, val.domain, tgt_domain);
 
     // Convert to the parameter type
     vv = ossia::convert(vv, param.get_value_type());
@@ -844,7 +844,7 @@ map_value_to_param(const ossia::net::parameter_base& param, ossia::timed_value&&
 
   {
     // Map to the target domain
-    map_value(v.value, val.domain, tgt_domain);
+    map_value(v.value, ossia::destination_index{}, val.domain, tgt_domain);
 
     // Convert to the parameter type
     auto vv = ossia::convert(std::move(v.value), param.get_value_type());

@@ -56,6 +56,7 @@ endif()
 
 if(OSSIA_TESTING)
   include(CTest)
+  set(CATCH_BUILD_STATIC_LIBRARY 1)
   add_subdirectory(3rdparty/Catch2)
   add_subdirectory(tests)
 endif()

@@ -14,46 +14,25 @@ struct scale_visitor
 
   }
 
-  void operator()(int& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
-  void operator()(float& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
-  void operator()(bool& v) const noexcept
+  template<typename Val>
+  void operator()(Val& v) const noexcept
   {
     v = dst_min + ratio * (v - src_min);
   }
 
-  void operator()(char& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
   void operator()(std::string& str) const noexcept
   {
     for(char& v : str)
       v = dst_min + ratio * (v - src_min);
   }
 
-  void operator()(ossia::vec2f& v) const noexcept
+  template<std::size_t N>
+  void operator()(std::array<float, N>& v) const noexcept
   {
-    v[0] = dst_min + ratio * (v[0] - src_min);
-    v[1] = dst_min + ratio * (v[1] - src_min);
-  }
-  void operator()(ossia::vec3f& v) const noexcept
-  {
-    v[0] = dst_min + ratio * (v[0] - src_min);
-    v[1] = dst_min + ratio * (v[1] - src_min);
-    v[2] = dst_min + ratio * (v[2] - src_min);
-  }
-  void operator()(ossia::vec4f& v) const noexcept
-  {
-    v[0] = dst_min + ratio * (v[0] - src_min);
-    v[1] = dst_min + ratio * (v[1] - src_min);
-    v[2] = dst_min + ratio * (v[2] - src_min);
-    v[3] = dst_min + ratio * (v[3] - src_min);
+    for(std::size_t i = 0; i < N; i++)
+    {
+      v[i] = dst_min + ratio * (v[i] - src_min);
+    }
   }
 
   void operator()(std::vector<ossia::value>& v) const noexcept
@@ -67,16 +46,16 @@ struct scale_visitor
   }
 };
 
-template<typename T, typename U, typename V>
-void scale(T& value, U src_min, U src_max, V dst_min, V dst_max)
+template<typename T>
+void scale(T& value, double src_min, double src_max, double dst_min, double dst_max)
 {
-  const U sub = src_max - src_min;
+  const double sub = src_max - src_min;
   if(sub == 0)
     return;
 
   auto ratio = (dst_max - dst_min) / sub;
 
-  scale_visitor<U, V, decltype(ratio)>{src_min, dst_min, ratio}(value);
+  scale_visitor<double, double, double>{src_min, dst_min, ratio}(value);
 }
 
 template<typename T, typename U>
@@ -87,9 +66,34 @@ auto constrain(T& value, const std::vector<U>& acceptable)
 
 struct domain_map
 {
+  const ossia::destination_index& index;
+
   template<typename Value_T, typename Domain_T1, typename Domain_T2>
   void operator()(Value_T& v, Domain_T1& source_domain, Domain_T2& tgt_domain) const noexcept
   {
+  }
+
+  // float value, vec3 domain, an index corresponding to the domain "index"
+  template<std::size_t N, typename T>
+  void operator()(T& v, ossia::vecf_domain<N>& source_domain, ossia::domain_base<T>& tgt_domain) const noexcept
+  {
+    if constexpr(std::is_same_v<int, T> || std::is_same_v<float, T>)
+    {
+      if(index.size() == 1 && index[0] < int(N))
+      {
+        const auto& smin = source_domain.min[index[0]];
+        const auto& smax = source_domain.max[index[0]];
+        if (smin && smax && tgt_domain.min && tgt_domain.max)
+        {
+          scale(v, *smin, *smax, *tgt_domain.min, *tgt_domain.max);
+        }
+      }
+
+      if (!tgt_domain.values.empty())
+      {
+        constrain(v, tgt_domain.values);
+      }
+    }
   }
 
   template<typename Value_T>
@@ -195,12 +199,16 @@ struct domain_map
   }
 };
 
-void map_value(value& source, const domain& source_domain, const domain& target_domain)
+void map_value(
+    value& source,
+    const ossia::destination_index& idx,
+    const domain& source_domain,
+    const domain& target_domain)
 {
   ossia::apply([&] (auto& source_domain, auto& v) {
     using val_t = std::remove_const_t<std::remove_reference_t<decltype(v)>>;
     ossia::apply_nonnull([&] (auto& tgt_domain) {
-      domain_map{}(const_cast<val_t&>(v), source_domain, tgt_domain);
+      domain_map{idx}(const_cast<val_t&>(v), source_domain, tgt_domain);
     }, const_cast<domain&>(target_domain).v);
   }, const_cast<domain&>(source_domain).v, source.v);
 }
