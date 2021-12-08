@@ -127,6 +127,9 @@ operator<<(std::ostream&, const ossia::net::parameter_base&);
 OSSIA_EXPORT
 void expand_ranges(std::string& str);
 
+OSSIA_EXPORT
+std::pair<std::vector<std::string>, bool> expand_address(const std::string& address);
+
 /**
  * @brief list_all_children : list all child nodes recursively
  * @param node : starting point

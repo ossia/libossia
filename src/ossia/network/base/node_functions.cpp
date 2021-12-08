@@ -627,7 +627,7 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
-  std::regex pattern("\\.[0-9]+");
+  static const std::regex pattern("\\.[0-9]+");
 
   // first sort by name taking care of instance number; i.e. foo.3 before foo.11
   ossia::sort(children, [&](auto n1, auto n2) {
@@ -713,13 +713,8 @@ void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
   }
 }
 
-std::vector<parameter_base*> find_or_create_parameter(
-    node_base& node, const std::string& address, const std::string& type)
+std::pair<std::vector<std::string>, bool> expand_address(const std::string& address)
 {
-  // search for child that matches name but without parameter
-  // and create parameter on that node if it exists
-  // or create a new node with that name and a parameter
-
   std::vector<std::string> names;
   bool pattern_matching = is_brace_expansion(address);
 
@@ -735,6 +730,18 @@ std::vector<parameter_base*> find_or_create_parameter(
   {
     names.push_back(address);
   }
+
+  return {names, pattern_matching};
+}
+
+std::vector<parameter_base*> find_or_create_parameter(
+    node_base& node, const std::string& address, const std::string& type)
+{
+  // search for child that matches name but without parameter
+  // and create parameter on that node if it exists
+  // or create a new node with that name and a parameter
+
+  auto [names, pattern_matching] = expand_address(address);
 
   std::vector<node_base*> nodes{};
   nodes.reserve(names.size());
