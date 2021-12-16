@@ -20,9 +20,13 @@ public:
   void register_symbol_table();
 
   bool set_expression(const std::string& expr);
+  bool recompile();
+
   std::string error() const;
 
   double value();
+
+  ossia::value result();
 
 private:
   math_expression(const math_expression&) = delete;

@@ -3,6 +3,8 @@
 #include <rnd/random.hpp>
 #define exprtk_disable_string_capabilities 1
 #include <exprtk.hpp>
+#include <fmt/ranges.h>
+#include <ossia/detail/math.hpp>
 namespace ossia
 {
 
@@ -77,13 +79,19 @@ bool math_expression::set_expression(const std::string& expr)
   if (expr != impl->cur_expr_txt)
   {
     impl->cur_expr_txt = expr;
-    impl->valid = impl->parser.compile(impl->cur_expr_txt, impl->expr);
-    if (!impl->valid)
-    {
-      ossia::logger().error("Error while parsing: {}", impl->parser.error());
-    }
+    recompile();
   }
 
+  return impl->valid;
+}
+
+bool math_expression::recompile()
+{
+  impl->valid = impl->parser.compile(impl->cur_expr_txt, impl->expr);
+  if (!impl->valid)
+  {
+    ossia::logger().error("Error while parsing: {}", impl->parser.error());
+  }
   return impl->valid;
 }
 
@@ -95,6 +103,45 @@ std::string math_expression::error() const
 double math_expression::value()
 {
   return impl->expr.value();
+}
+
+ossia::value math_expression::result()
+{
+  double v = impl->expr.value();
+  if(!ossia::safe_isnan(v))
+    return v;
+
+  std::vector<ossia::value> ret;
+  const auto& r = impl->expr.results();
+
+  for (std::size_t i = 0; i < r.count(); ++i)
+  {
+    using type_t = typename exprtk::results_context<double>::type_store_t;
+    const type_t& t = r[i];
+
+    switch (t.type)
+    {
+      case type_t::e_scalar:
+      {
+        ret.push_back(*(double*)t.data);
+        break;
+      }
+
+      case type_t::e_vector:
+      {
+        std::vector<ossia::value> vec;
+        vec.reserve(t.size);
+        for(std::size_t i = 0; i < t.size; i++)
+          vec.emplace_back(t.vec_data[t.size]);
+        ret.push_back(std::move(vec));
+        break;
+      }
+
+      default:
+        continue;
+    }
+  }
+  return ret;
 }
 
 }
