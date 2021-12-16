@@ -253,11 +253,17 @@ constexpr OSSIA_INLINE bool valid_index(T idx, const R& range) noexcept
 
 OSSIA_INLINE bool safe_isnan(double val) noexcept
 {
+#if __FINITE_MATH_ONLY__
 #if defined(_MSC_VER)
   return std::isnan(val);
+#elif defined(__APPLE__)
+  return __isnand(val);
 #else
   // On gcc / clang, with -ffast-math, std::isnan always returns 0
   return __isnan(val);
+#endif
+#else
+  return std::isnan(val);
 #endif
 }
 }
