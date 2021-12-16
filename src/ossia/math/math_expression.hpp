@@ -1,8 +1,9 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <string>
 #include <vector>
-
-#include <ossia/detail/config.hpp>
+#include <ossia/network/value/value.hpp>
 
 namespace ossia
 {
