@@ -23,6 +23,8 @@ public:
     : ctx{ctx}
     , dev{device}
   {
+    left.init();
+    right.init();
   }
 
   ossia::vec3f to_value(Vector v)
@@ -32,15 +34,19 @@ public:
 
   void onInit(const Controller&) override
   {
+    ossia::logger().error("OnInit");
   }
   void onConnect(const Controller&) override
   {
+    ossia::logger().error("OnConnect");
   }
   void onDisconnect(const Controller&) override
   {
+    ossia::logger().error("onDisconnect");
   }
   void onExit(const Controller&) override
   {
+    ossia::logger().error("onExit");
   }
 
   void processFrame(const Leap::Frame& frame)
@@ -63,9 +69,16 @@ public:
 
       handType.grab_strength.push_value(hand.grabStrength());
 
-      handType.pitch.push_value(hand.direction().pitch() * RAD_TO_DEG);
-      handType.roll.push_value(hand.palmNormal().roll() * RAD_TO_DEG);
-      handType.yaw.push_value(hand.direction().yaw() * RAD_TO_DEG);
+      {
+        float p = ossia::wrap(hand.direction().pitch() * RAD_TO_DEG, 0.f, 360.f);
+        float r = ossia::wrap(hand.palmNormal().roll() * RAD_TO_DEG, 0.f, 360.f);
+        float y = ossia::wrap(hand.direction().yaw() * RAD_TO_DEG, 0.f, 360.f);
+        handType.pitch.push_value(p);
+        handType.roll.push_value(r);
+        handType.yaw.push_value(y);
+
+        handType.orientation.push_value(ossia::vec3f{y,p,r});
+      }
 
       auto arm = hand.arm();
       handType.arm_direction.push_value(to_value(arm.direction()));
@@ -125,18 +138,23 @@ public:
 
   void onFocusGained(const Controller&) override
   {
+    ossia::logger().error("onFocusGained");
   }
   void onFocusLost(const Controller&) override
   {
+    ossia::logger().error("onFocusLost");
   }
   void onDeviceChange(const Controller&) override
   {
+    ossia::logger().error("onDeviceChange");
   }
   void onServiceConnect(const Controller&) override
   {
+    ossia::logger().error("onServiceConnect");
   }
   void onServiceDisconnect(const Controller&) override
   {
+    ossia::logger().error("onServiceDisconnect");
   }
 
 #if defined(_WIN32)
@@ -222,6 +240,56 @@ public:
         *ossia::create_parameter(root, "/" + kind + "/pitch", "float")};
     ossia::net::parameter_base& yaw{
         *ossia::create_parameter(root, "/" + kind + "/yaw", "float")};
+
+    ossia::net::parameter_base& orientation{
+      *ossia::create_parameter(root, "/" + kind + "/orientation", "euler")};
+
+    void init()
+    {
+      ossia::vecf_domain<3> box_domain;
+      box_domain.min[0] = -200;
+      box_domain.min[1] = 0;
+      box_domain.min[2] = -200;
+      box_domain.max[0] = 200;
+      box_domain.max[1] = 500;
+      box_domain.max[2] = 200;
+
+      thumb_distal_begin.set_domain(box_domain);
+      thumb_distal_end.set_domain(box_domain);
+      index_distal_begin.set_domain(box_domain);
+      index_distal_end.set_domain(box_domain);
+      middle_distal_begin.set_domain(box_domain);
+      middle_distal_end.set_domain(box_domain);
+      ring_distal_begin.set_domain(box_domain);
+      ring_distal_end.set_domain(box_domain);
+      pinky_distal_begin.set_domain(box_domain);
+      pinky_distal_end.set_domain(box_domain);
+      pinky_distal_end.set_domain(box_domain);
+
+      ossia::domain domain_speed = ossia::make_domain(-1000., 1000.f);
+      ossia::domain domain_01 = ossia::make_domain(0.f, 1.f);
+      ossia::domain domain_minus1_1 = ossia::make_domain(-1.f, 1.f);
+      palm_velocity.set_domain(domain_speed);
+      palm_position.set_domain(box_domain);
+      palm_normal.set_domain(domain_minus1_1);
+      palm_direction.set_domain(domain_minus1_1);
+
+      grab_strength.set_domain(domain_01);
+
+      wrist_position.set_domain(box_domain);
+      elbow_position.set_domain(box_domain);
+      arm_direction.set_domain(domain_minus1_1);
+
+
+      ossia::domain_base<float> angle_domain;
+      angle_domain.min = 0;
+      angle_domain.max = 360;
+
+      roll.set_domain(angle_domain);
+      yaw.set_domain(angle_domain);
+      pitch.set_domain(angle_domain);
+      orientation.set_domain(angle_domain);
+    }
   };
 
   hand left{dev.get_root_node(), "left"};
