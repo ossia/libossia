@@ -22,3 +22,9 @@ namespace ossia {
   using spsc_queue = moodycamel::ReaderWriterQueue<T, MAX_BLOCK_SIZE>;
 }
 #endif
+
+#include <concurrentqueue.h>
+namespace ossia {
+  template<typename T>
+  using mpmc_queue = moodycamel::ConcurrentQueue<T>;
+}
