@@ -441,6 +441,57 @@ struct OSSIA_EXPORT texture_outlet : public ossia::outlet
   std::size_t which() const noexcept final override { return texture_port::which; }
 };
 
+struct geometry_port {
+  static const constexpr int which = 4;
+};
+
+struct OSSIA_EXPORT geometry_inlet : public ossia::inlet
+{
+  geometry_inlet() noexcept = default;
+
+  geometry_inlet(destination_t dest) noexcept
+    : inlet{std::move(dest)}
+  {
+  }
+
+  geometry_inlet(ossia::net::parameter_base& addr) noexcept
+    : inlet{&addr}
+  {
+  }
+
+  geometry_inlet(graph_edge& edge) noexcept
+  {
+    sources.push_back(&edge);
+  }
+
+  ~geometry_inlet();
+
+  std::size_t which() const noexcept final override { return geometry_port::which; }
+};
+
+struct OSSIA_EXPORT geometry_outlet : public ossia::outlet
+{
+  geometry_outlet() noexcept = default;
+
+  geometry_outlet(destination_t dest) noexcept
+    : outlet{std::move(dest)}
+  {
+  }
+
+  geometry_outlet(ossia::net::parameter_base& addr) noexcept
+    : outlet{&addr}
+  {
+  }
+
+  geometry_outlet(graph_edge& edge) noexcept
+  {
+    targets.push_back(&edge);
+  }
+  ~geometry_outlet();
+
+  std::size_t which() const noexcept final override { return geometry_port::which; }
+};
+
 template<typename T>
 inline T* inlet::target() noexcept
 {
@@ -486,6 +537,17 @@ inline T* inlet::target() noexcept
     else
     {
       return (texture_inlet*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, geometry_inlet>)
+  {
+    if(which() == 4)
+    {
+      return static_cast<geometry_inlet*>(this);
+    }
+    else
+    {
+      return (geometry_inlet*)nullptr;
     }
   }
   else
@@ -541,6 +603,17 @@ inline T* outlet::target() noexcept
       return (texture_outlet*)nullptr;
     }
   }
+  else if constexpr(std::is_same_v<T, geometry_outlet>)
+  {
+    if(which() == 4)
+    {
+      return static_cast<geometry_outlet*>(this);
+    }
+    else
+    {
+      return (geometry_outlet*)nullptr;
+    }
+  }
   else
   {
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
@@ -591,6 +664,17 @@ inline const T* inlet::target() const noexcept
     else
     {
       return (const texture_inlet*)nullptr;
+    }
+  }
+  else if constexpr(std::is_same_v<T, geometry_inlet>)
+  {
+    if(which() == 4)
+    {
+      return static_cast<const geometry_inlet*>(this);
+    }
+    else
+    {
+      return (const geometry_inlet*)nullptr;
     }
   }
   else
@@ -646,6 +730,17 @@ inline const T* outlet::target() const noexcept
       return (const texture_outlet*)nullptr;
     }
   }
+  else if constexpr(std::is_same_v<T, geometry_outlet>)
+  {
+    if(which() == 4)
+    {
+      return static_cast<const geometry_outlet*>(this);
+    }
+    else
+    {
+      return (const geometry_outlet*)nullptr;
+    }
+  }
   else
   {
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
@@ -673,6 +768,10 @@ inline T& inlet::cast() noexcept
   {
     return static_cast<texture_inlet&>(*this);
   }
+  else if constexpr(std::is_same_v<T, geometry_inlet>)
+  {
+    return static_cast<geometry_inlet&>(*this);
+  }
   else
   {
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
@@ -698,6 +797,10 @@ inline T& outlet::cast() noexcept
   {
     return static_cast<texture_outlet&>(*this);
   }
+  else if constexpr(std::is_same_v<T, geometry_outlet>)
+  {
+    return static_cast<geometry_outlet&>(*this);
+  }
   else
   {
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
@@ -721,6 +824,10 @@ inline const T& inlet::cast() const noexcept
   else if constexpr(std::is_same_v<T, texture_inlet>)
   {
     return static_cast<const texture_inlet&>(*this);
+  }
+  else if constexpr(std::is_same_v<T, geometry_inlet>)
+  {
+    return static_cast<const geometry_inlet&>(*this);
   }
   else
   {
@@ -747,6 +854,10 @@ inline const T& outlet::cast() const noexcept
   {
     return static_cast<const texture_outlet&>(*this);
   }
+  else if constexpr(std::is_same_v<T, geometry_outlet>)
+  {
+    return static_cast<const geometry_outlet&>(*this);
+  }
   else
   {
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
@@ -764,6 +875,7 @@ inline auto inlet::visit(const T& t)
     case 1: return t(static_cast<midi_inlet*>(this)->data);
     case 2: return t(static_cast<value_inlet*>(this)->data);
     //case 3: return t(static_cast<texture_inlet&>(*this));
+    //case 4: return t(static_cast<geometry_inlet&>(*this));
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -779,6 +891,7 @@ inline auto outlet::visit(const T& t)
     case 1: return t(static_cast<midi_outlet*>(this)->data);
     case 2: return t(static_cast<value_outlet*>(this)->data);
     //case 3: return t(static_cast<texture_outlet&>(*this));
+    //case 4: return t(static_cast<geometry_outlet&>(*this));
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -793,6 +906,7 @@ inline auto inlet::visit(const T& t) const
     case 1: return t(static_cast<const midi_inlet*>(this)->data);
     case 2: return t(static_cast<const value_inlet*>(this)->data);
     //case 3: return t(static_cast<const texture_inlet&>(*this));
+    //case 4: return t(static_cast<const geometry_inlet&>(*this));
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -807,6 +921,7 @@ inline auto outlet::visit(const T& t) const
     case 1: return t(static_cast<const midi_outlet*>(this)->data);
     case 2: return t(static_cast<const value_outlet*>(this)->data);
     //case 3: return t(static_cast<const texture_outlet&>(*this));
+    //case 4: return t(static_cast<const geometry_outlet&>(*this));
   }
 
   if constexpr(std::is_invocable_v<T>)

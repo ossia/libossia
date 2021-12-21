@@ -196,6 +196,15 @@ texture_outlet::~texture_outlet()
 
 }
 
+geometry_inlet::~geometry_inlet()
+{
+
+}
+geometry_outlet::~geometry_outlet()
+{
+
+}
+
 
 void audio_outlet::post_process()
 {
