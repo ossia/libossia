@@ -129,4 +129,4 @@
 	url = https://github.com/thibaudk/dno
 [submodule "3rdparty/kfr"]
 	path = 3rdparty/kfr
-	url = https://github.com/kfrlib/kfr
+	url = https://github.com/jcelerier/kfr
