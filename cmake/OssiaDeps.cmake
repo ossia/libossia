@@ -32,7 +32,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   )
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate cpp-taskflow)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate cpp-taskflow kfr)
   endif()
 
   if(OSSIA_DNSSD)

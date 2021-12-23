@@ -1,29 +1,47 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <cinttypes>
 #include <cstddef>
 #include <ossia/detail/config.hpp>
 
-using fftw_plan = struct fftw_plan_s*;
-using fftwf_plan = struct fftwf_plan_s*;
+#if OSSIA_FFT_FFTW
+  #if defined(FFTW_SINGLE_ONLY)
+  using fftw_plan = struct fftw_plan_s*;
+  using fftwf_plan = struct fftwf_plan_s*;
+  namespace ossia
+  {
+    using fft_plan = fftwf_plan;
+    using fft_real = float;
+    using fft_complex = float[2];
+    struct fft_temp_storage { };
+  }
+  #elif defined(FFTW_DOUBLE_ONLY)
+  using fftw_plan = struct fftw_plan_s*;
+  using fftwf_plan = struct fftwf_plan_s*;
+  namespace ossia
+  {
+    using fft_plan = fftw_plan;
+    using fft_real = double;
+    using fft_complex = double[2];
+    struct fft_temp_storage { };
+  }
+  #endif
+#else
+namespace ossia
+{
+  using fft_plan = void*;
+  using fft_real = double;
+  using fft_complex = double[2];
+  using fft_temp_storage = ossia::pod_vector<uint8_t>;
+}
+#endif
+
 namespace ossia
 {
 class OSSIA_EXPORT fft
 {
 public:
-#if defined(FFTW_SINGLE_ONLY)
-  using fft_plan = fftwf_plan;
-  using fft_real = float;
-  using fft_complex = float[2];
-#elif defined(FFTW_DOUBLE_ONLY)
-  using fft_plan = fftw_plan;
-  using fft_real = double;
-  using fft_complex = double[2];
-#else
-  struct fft_plan { };
-  using fft_real = double;
-  using fft_complex = double[2];
-#endif
-
   explicit fft(std::size_t newSize) noexcept;
   ~fft();
 
@@ -42,24 +60,12 @@ private:
   std::size_t m_size = 0;
   fft_real* m_input{};
   fft_complex* m_output{};
+  fft_temp_storage m_storage;
 };
 
 class OSSIA_EXPORT rfft
 {
 public:
-#if defined(FFTW_SINGLE_ONLY)
-  using fft_plan = fftwf_plan;
-  using fft_real = float;
-  using fft_complex = float[2];
-#elif defined(FFTW_DOUBLE_ONLY)
-  using fft_plan = fftw_plan;
-  using fft_real = double;
-  using fft_complex = double[2];
-#else
-  struct fft_plan { };
-  using fft_real = double;
-  using fft_complex = double[2];
-#endif
 
   explicit rfft(std::size_t newSize) noexcept;
   ~rfft();
@@ -80,5 +86,6 @@ private:
   std::size_t m_size = 0;
   fft_complex* m_input{};
   fft_real* m_output{};
+  fft_temp_storage m_storage;
 };
 }
