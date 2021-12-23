@@ -23,6 +23,7 @@ public:
   bool set_expression(const std::string& expr);
   bool recompile();
 
+  bool has_variable(std::string_view var) const noexcept;
   std::string error() const;
 
   double value();
