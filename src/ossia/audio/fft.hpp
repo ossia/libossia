@@ -5,8 +5,8 @@
 #include <cstddef>
 #include <ossia/detail/config.hpp>
 
-#if OSSIA_FFT_FFTW
-  #if defined(FFTW_SINGLE_ONLY)
+#if defined(OSSIA_FFT_FFTW)
+  #if defined(OSSIA_FFTW_SINGLE_ONLY)
   using fftw_plan = struct fftw_plan_s*;
   using fftwf_plan = struct fftwf_plan_s*;
   namespace ossia
@@ -16,7 +16,7 @@
     using fft_complex = float[2];
     struct fft_temp_storage { };
   }
-  #elif defined(FFTW_DOUBLE_ONLY)
+  #elif defined(OSSIA_FFTW_DOUBLE_ONLY)
   using fftw_plan = struct fftw_plan_s*;
   using fftwf_plan = struct fftwf_plan_s*;
   namespace ossia

@@ -51,6 +51,18 @@ option(OSSIA_PROTOCOL_WIIMOTE "Enable Wiimote Protocol" ON) #use wiiuse
 option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON) #use libartnet
 option(OSSIA_PROTOCOL_LIBMAPPER "Enable libmapper protocol" OFF) #use external libmapper
 
+option(OSSIA_DISABLE_FFT "Disable FFT building" OFF)
+
+if("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
+  set(OSSIA_COMPILER_IS_CLANG 1)
+  set(OSSIA_COMPILER_IS_NOT_CLANG 1)
+else()
+  set(OSSIA_COMPILER_IS_CLANG 0)
+  set(OSSIA_COMPILER_IS_NOT_CLANG 1)
+endif()
+
+option(OSSIA_FFT_FFTW "Enable FFT through FFTW" "${OSSIA_COMPILER_IS_NOT_CLANG}")
+
 # List of all the available protocols
 set(OSSIA_AVAILABLE_PROTOCOLS
   AUDIO MIDI

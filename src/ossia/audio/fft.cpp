@@ -8,7 +8,7 @@ namespace ossia
 {
 namespace
 {
-#if defined(FFTW_SINGLE_ONLY)
+#if defined(OSSIA_FFTW_SINGLE_ONLY)
   static const constexpr auto alloc_real = ::fftwf_alloc_real;
   static const constexpr auto alloc_complex = ::fftwf_alloc_complex;
   static const constexpr auto fft_free = ::fftwf_free;
@@ -20,7 +20,7 @@ namespace
   static const constexpr auto cleanup = ::fftwf_cleanup;
   static const constexpr auto alignment_of = ::fftwf_alignment_of;
 
-#elif defined(FFTW_DOUBLE_ONLY)
+#elif defined(OSSIA_FFTW_DOUBLE_ONLY)
   static const constexpr auto alloc_real = ::fftw_alloc_real;
   static const constexpr auto alloc_complex = ::fftw_alloc_complex;
   static const constexpr auto fft_free = ::fftw_free;
@@ -162,14 +162,14 @@ void rfft::reset(std::size_t newSize)
   new(this) rfft(newSize);
 }
 
-rfft_real* rfft::execute(rfft_complex* input) noexcept
+fft_real* rfft::execute(fft_complex* input) noexcept
 {
   run_plan_c2r(m_fw, input, m_output);
 
   return m_output;
 }
 
-rfft_real* rfft::execute() noexcept
+fft_real* rfft::execute() noexcept
 {
   run_plan_c2r(m_fw, m_input, m_output);
 
