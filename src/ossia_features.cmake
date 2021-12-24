@@ -352,7 +352,10 @@ if(OSSIA_DATAFLOW)
       add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
-      target_link_libraries(ossia PRIVATE "$<BUILD_INTERFACE:kfr_dft>")
+      target_link_libraries(ossia PRIVATE
+        "$<BUILD_INTERFACE:kfr>"
+        "$<BUILD_INTERFACE:kfr_dft>"
+        )
     endif()
 
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
