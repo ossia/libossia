@@ -231,7 +231,7 @@ struct token_request
 
         quantification_date = prev_date + quantified_duration * ratio;
       }
-      else if(start_quarter == 0. && end_quarter > 0.)
+      else if(musical_start_position == 0. && musical_end_position > 0.)
       {
         // Special first bar case
         return prev_date;
