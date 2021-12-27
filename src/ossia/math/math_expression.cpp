@@ -115,18 +115,14 @@ double math_expression::value()
   return impl->expr.value();
 }
 
-ossia::value math_expression::result()
+static std::vector<ossia::value> result_to_vec(auto& r)
 {
-  double v = impl->expr.value();
-  if(!ossia::safe_isnan(v))
-    return v;
+  using type_t = typename exprtk::results_context<double>::type_store_t;
+  const auto N = r.count();
 
   std::vector<ossia::value> ret;
-  const auto& r = impl->expr.results();
-
-  for (std::size_t i = 0; i < r.count(); ++i)
+  for (std::size_t i = 0; i < N; ++i)
   {
-    using type_t = typename exprtk::results_context<double>::type_store_t;
     const type_t& t = r[i];
 
     switch (t.type)
@@ -152,6 +148,39 @@ ossia::value math_expression::result()
     }
   }
   return ret;
+}
+static ossia::value result_to_value(auto& r)
+{
+  using type_t = typename exprtk::results_context<double>::type_store_t;
+  const auto N = r.count();
+  switch(N)
+  {
+    case 2:
+      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar)
+        return ossia::vec2f{(float)*(double*)r[0].data, (float)*(double*)r[1].data};
+      break;
+    case 3:
+      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar && r[2].type == type_t::e_scalar)
+        return ossia::vec3f{(float)*(double*)r[0].data, (float)*(double*)r[1].data, (float)*(double*)r[2].data};
+      break;
+    case 4:
+      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar && r[2].type == type_t::e_scalar && r[3].type == type_t::e_scalar)
+        return ossia::vec4f{(float)*(double*)r[0].data, (float)*(double*)r[1].data, (float)*(double*)r[2].data, (float)*(double*)r[3].data};
+      break;
+    default:
+      break;
+  }
+
+  return result_to_vec(r);
+}
+
+ossia::value math_expression::result()
+{
+  double v = impl->expr.value();
+  if(!ossia::safe_isnan(v))
+    return v;
+  else
+    return result_to_value(impl->expr.results());
 }
 
 }
