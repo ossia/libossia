@@ -16,7 +16,7 @@ audio_parameter::audio_parameter(net::node_base& n)
 void audio_parameter::clone_value(audio_vector& res_vec) const
 {
   if (res_vec.size() < audio.size())
-    res_vec.resize(audio.size());
+    ossia::audio_buffer_pool::set_channels(res_vec, audio.size());
 
   auto min_chan = std::min(res_vec.size(), audio.size());
   for (std::size_t chan = 0; chan < min_chan; chan++)
