@@ -325,6 +325,9 @@ if(OSSIA_DATAFLOW)
   target_link_libraries(ossia PRIVATE rubberband)
 
   # FFT support
+  if(NOT OSSIA_DISABLE_KFR)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
+  endif()
   if(NOT OSSIA_DISABLE_FFT)
     # Either use fftw if requested
     if(OSSIA_FFT_FFTW)
@@ -348,8 +351,7 @@ if(OSSIA_DATAFLOW)
           target_link_libraries(ossia PRIVATE ${FFTW3F_LIBRARY})
         endif()
       endif()
-    else() # Or default to KFR
-      add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
+    elseif(NOT OSSIA_DISABLE_KFR) # Or default to KFR
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
       target_link_libraries(ossia PRIVATE
