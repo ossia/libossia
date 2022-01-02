@@ -1,8 +1,14 @@
 #include <ossia/math/math_expression.hpp>
 #include <ossia/detail/logger.hpp>
 #include <rnd/random.hpp>
+
 #define exprtk_disable_string_capabilities 1
+#pragma GCC visibility push(internal)
+#pragma clang visibility push(internal)
 #include <exprtk.hpp>
+#pragma GCC visibility pop
+#pragma clang visibility pop
+
 #include <fmt/ranges.h>
 #include <ossia/detail/math.hpp>
 namespace ossia
