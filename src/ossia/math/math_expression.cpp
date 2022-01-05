@@ -2,6 +2,32 @@
 #include <ossia/detail/logger.hpp>
 #include <rnd/random.hpp>
 
+#pragma GCC visibility push(default)
+#pragma clang visibility push(default)
+#include <algorithm>
+#include <cassert>
+#include <cctype>
+#include <cmath>
+#include <complex>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <deque>
+#include <exception>
+#include <functional>
+#include <iterator>
+#include <limits>
+#include <list>
+#include <map>
+#include <set>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <utility>
+#include <vector>
+#pragma GCC visibility pop
+#pragma clang visibility pop
+
 #define exprtk_disable_string_capabilities 1
 #pragma GCC visibility push(internal)
 #pragma clang visibility push(internal)
