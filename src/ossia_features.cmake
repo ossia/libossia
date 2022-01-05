@@ -327,6 +327,7 @@ if(OSSIA_DATAFLOW)
   # FFT support
   if(NOT OSSIA_DISABLE_KFR)
     set(ENABLE_DFT_MULTIARCH 1)
+    set(ENABLE_DFT_MULTIARCH 1 CACHE "" INTERNAL)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
   endif()
   if(NOT OSSIA_DISABLE_FFT)
@@ -355,10 +356,19 @@ if(OSSIA_DATAFLOW)
     elseif(NOT OSSIA_DISABLE_KFR) # Or default to KFR
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
-      target_link_libraries(ossia PRIVATE
-        "$<BUILD_INTERFACE:kfr>"
-        "$<BUILD_INTERFACE:kfr_dft_all>"
-        )
+      if(TARGET kfr_dft_all)
+        message(STATUS "KFR: kfr_dft_all used")
+        target_link_libraries(ossia PRIVATE
+          "$<BUILD_INTERFACE:kfr>"
+          "$<BUILD_INTERFACE:kfr_dft_all>"
+          )
+      elseif(TARGET kfr_dft)
+        message(STATUS "KFR: kfr_dft used")
+        target_link_libraries(ossia PRIVATE
+          "$<BUILD_INTERFACE:kfr>"
+          "$<BUILD_INTERFACE:kfr_dft>"
+          )
+      endif()
     endif()
 
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
