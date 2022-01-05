@@ -356,19 +356,10 @@ if(OSSIA_DATAFLOW)
     elseif(NOT OSSIA_DISABLE_KFR) # Or default to KFR
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
-      if(TARGET kfr_dft_all)
-        message(STATUS "KFR: kfr_dft_all used")
-        target_link_libraries(ossia PRIVATE
-          "$<BUILD_INTERFACE:kfr>"
-          "$<BUILD_INTERFACE:kfr_dft_all>"
-          )
-      elseif(TARGET kfr_dft)
-        message(STATUS "KFR: kfr_dft used")
-        target_link_libraries(ossia PRIVATE
-          "$<BUILD_INTERFACE:kfr>"
-          "$<BUILD_INTERFACE:kfr_dft>"
-          )
-      endif()
+      target_link_libraries(ossia PRIVATE
+        "$<BUILD_INTERFACE:kfr>"
+        "$<BUILD_INTERFACE:kfr_dft>"
+        )
     endif()
 
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
