@@ -7,7 +7,7 @@
 #include <cstdio>
 #include <cstring>
 #include <mutex>
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia-c/log/ossia_log.h>
 #include <ossia/network/base/node.hpp>

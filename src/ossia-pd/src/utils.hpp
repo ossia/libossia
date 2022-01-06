@@ -10,7 +10,7 @@
 #include <ossia/network/domain/domain.hpp>
 
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <fmt/format.h>
+#include <ossia/detail/fmt.hpp>
 
 #include <iostream>
 #include <chrono>

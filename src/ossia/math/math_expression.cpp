@@ -35,6 +35,7 @@
 #pragma GCC visibility pop
 #pragma clang visibility pop
 
+#include <ossia/detail/fmt.hpp>
 #include <fmt/ranges.h>
 #include <ossia/detail/math.hpp>
 namespace ossia

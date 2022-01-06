@@ -7,7 +7,8 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
-#include <fmt/format.h>
+
+#include <ossia/detail/fmt.hpp>
 #include <fmt/printf.h>
 
 #include <algorithm>

@@ -60,6 +60,9 @@
 #define SPDLOG_DEBUG_ON
 #define SPDLOG_TRACE_ON
 
+#define FMT_USE_LONG_DOUBLE 0
+#define FMT_USE_INT128 0
+
 #if !defined(SPDLOG_FMT_EXTERNAL)
 #define SPDLOG_FMT_EXTERNAL 1
 #endif
