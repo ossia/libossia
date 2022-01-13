@@ -185,6 +185,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
     const midi_parameter& adrs = dynamic_cast<const midi_parameter&>(address);
     if (m_info.type != midi_info::Type::Output)
       return false;
+    static constexpr auto to_int = [] (auto& v) { return ossia::convert<int32_t>(v); };
 
     auto& adrinfo = adrs.info();
     switch (adrinfo.type)
@@ -192,7 +193,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::NoteOn_N:
       {
         m_output->send_message(libremidi::message::note_on(
-            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
+            adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
@@ -200,14 +201,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       {
         auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(libremidi::message::note_on(
-            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+            adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::NoteOff_N:
       {
         m_output->send_message(libremidi::message::note_off(
-            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
+            adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
@@ -215,14 +216,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       {
         auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(libremidi::message::note_off(
-            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+            adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::CC_N:
       {
         m_output->send_message(libremidi::message::control_change(
-            adrinfo.channel, adrinfo.note, v.get<int32_t>()));
+            adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
@@ -230,14 +231,14 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       {
         auto& val = v.get<std::vector<ossia::value>>();
         m_output->send_message(libremidi::message::control_change(
-            adrinfo.channel, val[0].get<int32_t>(), val[1].get<int32_t>()));
+            adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::PC:
       {
         m_output->send_message(libremidi::message::program_change(
-            adrinfo.channel, v.get<int32_t>()));
+            adrinfo.channel, to_int(v)));
         return true;
       }
 
@@ -251,7 +252,7 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       case address_info::Type::PB:
       {
         m_output->send_message(libremidi::message::pitch_bend(
-            adrinfo.channel, v.get<int32_t>()));
+            adrinfo.channel, to_int(v)));
         return true;
       }
 
