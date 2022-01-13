@@ -11,7 +11,8 @@ joystick_protocol::joystick_protocol(
     const int joystick_index)
   : protocol_base{flags{SupportsMultiplex}}
   , m_manager{joystick_protocol_manager::instance()}
-  , m_processor{joystick_event_processor::instance(m_manager, ptr->context)}
+  , m_processor{joystick_event_processor::instance(m_manager)}
+  , m_ctx{ptr}
   , m_joystick_id{joystick_id}
 {
   //  Check That (ID, Index) is a valid combinaison
@@ -29,12 +30,14 @@ joystick_protocol::joystick_protocol(
   if (m_joystick == nullptr)
     throw std::runtime_error("Failed to open Joystick");
 
+  m_processor.register_context(ptr->context);
   m_processor.start_event_loop();
 }
 
 joystick_protocol::~joystick_protocol()
 {
   stop();
+  m_processor.unregister_context(m_ctx->context);
   m_processor.stop_event_loop();
 }
 

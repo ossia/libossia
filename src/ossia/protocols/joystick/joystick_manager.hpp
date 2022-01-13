@@ -121,10 +121,25 @@ public:
 // TODO refactor this so that each protocol gets callback only related to its own joystick instead
 struct joystick_event_processor
 {
+  struct timer_context {
+    explicit timer_context(boost::asio::io_context& ctx)
+      : context{&ctx}
+      , timer{ctx}
+      , count{1}
+    {
+
+    }
+    timer_context(timer_context&&) = default;
+    timer_context& operator=(timer_context&&) = default;
+
+    boost::asio::io_context* context{};
+    ossia::timer timer;
+    int count = 0;
+  };
+
   static inline std::atomic_int instance_count = 0;
-  joystick_event_processor(joystick_protocol_manager& manager, boost::asio::io_context& ctx)
+  joystick_event_processor(joystick_protocol_manager& manager)
     : m_manager{manager}
-    , m_timer{ctx}
   {
   }
 
@@ -132,10 +147,56 @@ struct joystick_event_processor
   {
   }
 
-  static joystick_event_processor& instance(joystick_protocol_manager& manager, boost::asio::io_context& ctx)
+  static joystick_event_processor& instance(joystick_protocol_manager& manager)
   {
-    static joystick_event_processor instance{manager, ctx};
+    static joystick_event_processor instance{manager};
     return instance;
+  }
+
+  void register_context(boost::asio::io_context& ctx)
+  {
+    for(auto& tm : this->m_timers)
+    {
+      if(tm.context == &ctx)
+      {
+        tm.count++;
+        return;
+      }
+    }
+
+    m_timers.emplace_back(ctx);
+
+    if(instance_count > 0)
+    {
+      auto& tm = m_timers.back();
+      start(tm.timer);
+    }
+  }
+
+  void start(ossia::timer& timer)
+  {
+    using namespace std::literals;
+    timer.set_delay(4ms);
+    timer.start([this] { this->process_events(); });
+  }
+
+  void unregister_context(boost::asio::io_context& ctx)
+  {
+    for(auto it = m_timers.begin(); it != m_timers.end();)
+    {
+      auto& tm = *it;
+      if(tm.context == &ctx)
+      {
+        tm.count--;
+        if(tm.count == 0)
+        {
+          it = m_timers.erase(it);
+          continue;
+        }
+      }
+
+      ++it;
+    }
   }
 
   void start_event_loop()
@@ -143,9 +204,8 @@ struct joystick_event_processor
     if (instance_count++ > 0)
       return;
 
-    using namespace std::literals;
-    m_timer.set_delay(4ms);
-    m_timer.start([this] { this->process_events(); });
+    for(auto& tm : m_timers)
+      start(tm.timer);
   }
 
   void stop_event_loop()
@@ -159,7 +219,8 @@ struct joystick_event_processor
     ev.type = SDL_FIRSTEVENT;
     SDL_PushEvent(&ev);
 
-    m_timer.stop();
+    for(auto& tm : m_timers)
+      tm.timer.stop();
   }
 
   void push(joystick_protocol* proto, ossia::net::parameter_base* param, ossia::value val)
@@ -238,7 +299,7 @@ struct joystick_event_processor
   }
 
   joystick_protocol_manager& m_manager;
-  ossia::timer m_timer;
+  std::vector<timer_context> m_timers;
 };
 
 }

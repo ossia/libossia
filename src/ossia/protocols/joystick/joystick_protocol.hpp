@@ -51,6 +51,7 @@ public:
 private:
   joystick_protocol_manager& m_manager;
   joystick_event_processor& m_processor;
+  ossia::net::network_context_ptr m_ctx{};
 
   ossia::net::device_base* m_device{};
 

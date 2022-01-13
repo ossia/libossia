@@ -9,10 +9,16 @@ class timer
 {
 public:
   explicit timer(boost::asio::io_context& ctx)
-    : m_timer{ctx}
+    : m_ctx{&ctx}
+    , m_timer{ctx}
   {
 
   }
+
+  timer(const timer&) = delete;
+  timer(timer&&) = default;
+  timer& operator=(const timer&) = delete;
+  timer& operator=(timer&&) = default;
 
   ~timer()
   {
@@ -42,10 +48,13 @@ public:
 
   void stop()
   {
-    m_timer.cancel();
+    m_ctx->post([tm = std::make_shared<boost::asio::high_resolution_timer>(std::move(m_timer))] () mutable {
+      tm->cancel();
+    });
   }
 
 private:
+  boost::asio::io_context* m_ctx{};
   boost::asio::high_resolution_timer m_timer;
   std::chrono::milliseconds m_delay{};
 };
