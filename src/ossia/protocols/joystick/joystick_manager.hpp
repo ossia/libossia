@@ -232,7 +232,8 @@ struct joystick_event_processor
   {
     if (auto p = m_manager.get_protocol_by_id(ev.which))
     {
-      push(p, p->m_axis_parameters[ev.axis], float(ev.value / 32767.0f));
+      const float res = (ev.value + .5f) / (0x7FFF + .5f);
+      push(p, p->m_axis_parameters[ev.axis], res);
     }
   }
 
