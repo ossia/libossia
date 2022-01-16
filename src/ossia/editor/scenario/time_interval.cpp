@@ -140,6 +140,13 @@ void time_interval::tick(time_value date, const ossia::token_request& parent_req
 
 void time_interval::tick_offset(time_value date, ossia::time_value offset, const ossia::token_request& parent_request)
 {
+  auto itv_node = static_cast<ossia::nodes::interval*>(node.get());
+  int64_t seek_request = itv_node->seek;
+  if (BOOST_UNLIKELY(seek_request >= 0)) {
+    itv_node->seek = std::numeric_limits<int64_t>::min();
+    transport(time_value{seek_request});
+  }
+
   if(BOOST_UNLIKELY(m_hasTempo && parent_request.speed != 0))
   {
     // TODO : use this formula to compute the exact date at which we must end for this tick
@@ -518,6 +525,8 @@ void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
     auto n = static_cast<ossia::nodes::interval*>(node.get());
     if(n->root_inputs().size() == 1)
     {
+      n->root_inputs().push_back(new ossia::value_inlet{});
+      n->root_inputs().push_back(new ossia::value_inlet{});
       n->root_inputs().push_back(new ossia::value_inlet{});
     }
   }
