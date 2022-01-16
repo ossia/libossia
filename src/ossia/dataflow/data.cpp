@@ -223,6 +223,26 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
   }
 }
 
+void audio_buffer_pool::set_channels(audio_vector& samples, std::size_t channels)
+{
+  if(samples.size() == channels)
+    return;
+
+  auto& pool = audio_buffer_pool::instance();
+  while(samples.size() > channels)
+  {
+    auto chan = std::move(samples.back());
+    chan.clear();
+    pool.release(std::move(chan));
+    samples.pop_back();
+  }
+
+  while(samples.size() < channels)
+  {
+    samples.push_back(pool.acquire());
+  }
+}
+
 void value_port::write_value(const value& v, int64_t timestamp)
 {
   switch (mix_method)
