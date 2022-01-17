@@ -64,9 +64,11 @@ public:
 
   ~interval()
   {
-    if(m_inlets.size() == 2)
+    if(m_inlets.size() == 4)
     {
-      delete m_inlets.back();
+      delete m_inlets[1];
+      delete m_inlets[2];
+      delete m_inlets[3];
       m_inlets.resize(1);
     }
   }
@@ -78,18 +80,29 @@ public:
   void run(const token_request& t, exec_state_facade f) noexcept override
   {
     forward_node::run(t, f);
-    if(m_inlets.size() == 2)
+    if(m_inlets.size() >= 4)
     {
-      ossia::value_port& vp = *m_inlets[1]->target<ossia::value_port>();
-      if(auto& data = vp.get_data(); !data.empty())
       {
-        tempo = ossia::convert<float>(data.back().value);
+        ossia::value_port& vp = *m_inlets[1]->target<ossia::value_port>();
+        if(auto& data = vp.get_data(); !data.empty())
+        {
+          tempo = ossia::convert<float>(data.back().value);
+        }
+      }
+      {
+        ossia::value_port& vp = *m_inlets[3]->target<ossia::value_port>();
+        if(auto& data = vp.get_data(); !data.empty())
+        {
+          float seek_ms = ossia::convert<float>(data.back().value);
+          seek = ossia::flicks_per_millisecond<double> * seek_ms;
+        }
       }
     }
   }
 
   static const constexpr float no_tempo = -1000.f;
   float tempo{no_tempo};
+  int64_t seek{std::numeric_limits<int64_t>::min()};
 };
 class loop final : public forward_node
 {
