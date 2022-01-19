@@ -44,6 +44,7 @@ jobs:
         sudo cp ./gcov /usr/bin/gcov-9
 
         gcov-9 --version
+
     - name: Build
       run: |
         QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
