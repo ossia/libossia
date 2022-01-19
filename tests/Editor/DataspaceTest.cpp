@@ -12,7 +12,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/logger.hpp>
-
+#include <iostream>
 
 constexpr int computed_unit_count()
 {
@@ -220,7 +220,7 @@ struct unit_test_visitor
         }
         REQUIRE(parsed_unit == unit_type {});
       }
-  
+
   }
 };
 

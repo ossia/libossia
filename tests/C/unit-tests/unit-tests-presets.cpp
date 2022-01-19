@@ -5,14 +5,14 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include "catch.hpp"
-#include <catch2/catch_approx.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <string>
 #include <rapidjson/document.h>
 #include <ossia-c/preset/preset.h>
 #include <ossia/preset/preset.hpp>
+
 namespace Catch
 {
 std::string toString(ossia::value const& value) {
@@ -471,7 +471,7 @@ TEST_CASE ("Types conversion") {
   SECTION ("Float") {
     REQUIRE(d.HasMember("float"));
     REQUIRE(d["float"].IsDouble());
-    REQUIRE(d["float"].GetDouble() == Catch::Approx(3.566f).epsilon(0.001));
+    REQUIRE(d["float"].GetDouble() == Catch::Detail::Approx(3.566f).epsilon(0.001));
   }
 }
 
