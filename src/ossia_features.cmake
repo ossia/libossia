@@ -364,7 +364,11 @@ if(OSSIA_DATAFLOW)
         )
     endif()
 
-    target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
+    if(OSSIA_FFT)
+      target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
+    else()
+      unset(OSSIA_FFT_FFTW)
+    endif()
   endif()
 
   if(APPLE)

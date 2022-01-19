@@ -15,6 +15,7 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia-cpp/ossia-cpp98.hpp>
 #include <array>
+#include <iostream>
 
 namespace opp
 {
@@ -1528,8 +1529,8 @@ node& node::set_accepted_values(std::vector<value> v)
     {
       ossia::set_values(dom, std::move(vals));
       m_param->set_domain(std::move(dom));
-    } 
-    else 
+    }
+    else
     {
       m_param->set_domain(ossia::make_domain(vals));
     }
