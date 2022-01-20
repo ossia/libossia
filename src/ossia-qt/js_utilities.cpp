@@ -456,6 +456,16 @@ QString js_string_outbound_visitor::operator()() const
   return (*this)(impulse{});
 }
 
+QString js_string_unquoted_outbound_visitor::operator()(char val) const
+{
+  return QString{val};
+}
+
+QString js_string_unquoted_outbound_visitor::operator()(const std::string& val) const
+{
+  return QString::fromStdString(val);
+}
+
 value value_from_js(const QJSValue& v)
 {
   if (v.isNumber())

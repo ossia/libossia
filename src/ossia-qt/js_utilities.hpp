@@ -429,6 +429,13 @@ struct OSSIA_EXPORT js_string_outbound_visitor
 
   QString operator()() const;
 };
+struct OSSIA_EXPORT js_string_unquoted_outbound_visitor
+    : js_string_outbound_visitor
+{
+  using js_string_outbound_visitor::operator();
+  QString operator()(char val) const;
+  QString operator()(const std::string& val) const;
+};
 
 OSSIA_EXPORT ossia::value value_from_js(const QJSValue& v);
 
@@ -445,6 +452,11 @@ inline QJSValue value_to_js_value(const ossia::value& cur, QJSEngine& engine)
 inline QString value_to_js_string(const ossia::value& cur)
 {
   return cur.apply(js_string_outbound_visitor{});
+}
+
+inline QString value_to_js_string_unquoted(const ossia::value& cur)
+{
+  return cur.apply(js_string_unquoted_outbound_visitor{});
 }
 
 /**

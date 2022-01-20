@@ -124,7 +124,7 @@ void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& 
   auto& addr = *addr_p;
   auto dat = addr.data().request;
   auto rep = m_access->get(QNetworkRequest(
-      dat.replace("$val", qt::value_to_js_string(v))));
+      dat.replace("$val", qt::value_to_js_string_unquoted(v))));
 
   m_replies[rep] = &addr;
 }
