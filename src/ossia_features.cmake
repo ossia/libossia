@@ -351,7 +351,7 @@ if(OSSIA_DATAFLOW)
           target_link_libraries(ossia PRIVATE ${FFTW3F_LIBRARY})
         endif()
       endif()
-    elseif(OSSIA_ENABLE_KFR)
+    elseif(OSSIA_ENABLE_KFR AND ENABLE_DFT) # defined in kfr/CMakeLists.txt
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
       target_link_libraries(ossia PRIVATE
