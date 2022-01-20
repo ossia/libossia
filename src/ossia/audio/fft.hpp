@@ -27,13 +27,21 @@
     struct fft_temp_storage { };
   }
   #endif
-#else
+#elif defined(OSSIA_FFT_KFR)
 namespace ossia
 {
   using fft_plan = void*;
   using fft_real = double;
   using fft_complex = double[2];
   using fft_temp_storage = ossia::pod_vector<uint8_t>;
+}
+#else
+namespace ossia
+{
+  using fft_plan = void*;
+  using fft_real = double;
+  using fft_complex = double[2];
+  struct fft_temp_storage { };
 }
 #endif
 

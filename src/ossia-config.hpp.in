@@ -30,7 +30,12 @@
 #cmakedefine OSSIA_PARALLEL
 
 // FFT support
+#cmakedefine OSSIA_ENABLE_FFT
+#cmakedefine OSSIA_ENABLE_FFTW
+#cmakedefine OSSIA_ENABLE_KFR
+
 #cmakedefine OSSIA_FFT_FFTW
-#cmakedefine OSSIA_FFT_KFR
 #cmakedefine OSSIA_FFTW_SINGLE_ONLY
 #cmakedefine OSSIA_FFTW_DOUBLE_ONLY
+
+#cmakedefine OSSIA_FFT_KFR

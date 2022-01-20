@@ -325,12 +325,12 @@ if(OSSIA_DATAFLOW)
   target_link_libraries(ossia PRIVATE rubberband)
 
   # FFT support
-  if(NOT OSSIA_DISABLE_KFR)
+  if(OSSIA_ENABLE_KFR)
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
   endif()
-  if(NOT OSSIA_DISABLE_FFT)
-    # Either use fftw if requested
-    if(OSSIA_FFT_FFTW)
+
+  if(OSSIA_ENABLE_FFT)
+    if(OSSIA_ENABLE_FFTW)
       find_path(FFTW3_INCLUDEDIR fftw3.h)
       if(FFTW3_INCLUDEDIR)
         find_library(FFTW3_LIBRARY fftw3)
@@ -351,7 +351,7 @@ if(OSSIA_DATAFLOW)
           target_link_libraries(ossia PRIVATE ${FFTW3F_LIBRARY})
         endif()
       endif()
-    elseif(NOT OSSIA_DISABLE_KFR) # Or default to KFR
+    elseif(OSSIA_ENABLE_KFR)
       set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
       set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
       target_link_libraries(ossia PRIVATE
@@ -360,11 +360,12 @@ if(OSSIA_DATAFLOW)
         )
     endif()
 
-    if(OSSIA_FFT)
-      target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
-    else()
-      unset(OSSIA_FFT_FFTW)
+    if(NOT OSSIA_FFT_FFTW AND NOT OSSIA_FFT_KFR)
+      set(OSSIA_FFT NAIVE CACHE INTERNAL "")
+      set(OSSIA_FFT_NAIVE 1 CACHE INTERNAL "")
     endif()
+
+    target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
   endif()
 
   if(APPLE)

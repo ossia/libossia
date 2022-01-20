@@ -107,7 +107,7 @@ endif()
 if(OSSIA_QT)
   install_headers_rec("${OSSIA_QT_HEADERS}")
 endif()
-if(OSSIA_FFT)
+if(OSSIA_ENABLE_FFT)
   install_headers_rec("${OSSIA_FFT_HEADERS}")
 endif()
 

@@ -305,21 +305,24 @@ fft_real* rfft::execute() noexcept
 #include <complex>
 #include <ossia/detail/math.hpp>
 
-// Minimal implementation taken from https://gist.github.com/lukicdarkoo/3f0d056e9244784f8b4a
 namespace ossia
 {
-
 namespace {
-static void fft_rec(std::complex<double> *x, int N)
+// Minimal implementation taken from https://gist.github.com/lukicdarkoo/3f0d056e9244784f8b4a
+template<typename FP>
+static void fft_rec(std::complex<FP> *x, int N)
 {
+  using namespace std;
+  using cplx = std::complex<FP>;
+
   // Check if it is splitted enough
   if (N <= 1) {
     return;
   }
 
   // Split even and odd
-  std::complex<double>* odd = (std::complex<double>*)alloca(sizeof(std::complex<double>) * N/2);
-  std::complex<double>* even = (std::complex<double>*)alloca(sizeof(std::complex<double>) * N/2);
+  auto* odd = (cplx*)alloca(sizeof(cplx) * N/2);
+  auto* even = (cplx*)alloca(sizeof(cplx) * N/2);
   for (int i = 0; i < N / 2; i++) {
     even[i] = x[i*2];
     odd[i] = x[i*2+1];
@@ -331,31 +334,27 @@ static void fft_rec(std::complex<double> *x, int N)
 
   // Calculate DFT
   for (int k = 0; k < N / 2; k++) {
-    std::complex<double> t = exp(std::complex<double>(0, -2 * ossia::pi * k / N)) * odd[k];
+    cplx t = exp(cplx(0, -2 * ossia::pi * k / N)) * odd[k];
     x[k] = even[k] + t;
     x[N / 2 + k] = even[k] - t;
   }
 }
 
-static void do_fft(double *x_in, std::complex<double>*x_out, int N)
+template<typename FP>
+static void do_fft(FP* x_in, std::complex<FP>* x_out, int N)
 {
-  // Make copy of array and apply window
   for (int i = 0; i < N; i++) {
-    x_out[i] = std::complex<double>(x_in[i], 0);
-    x_out[i] *= 1; // Window
+    x_out[i] = {x_in[i], 0};
   }
-
-  // Start recursion
   fft_rec(x_out, N);
 }
 }
 
-
 fft::fft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = (ossia::fft_real*)malloc(sizeof(ossia::fft_real) * newSize);
-  m_output = (ossia::fft_complex*)malloc(sizeof(ossia::fft_complex) * newSize);
+  m_input = (ossia::fft_real*)calloc(newSize + 1, sizeof(ossia::fft_real));
+  m_output = (ossia::fft_complex*)calloc(newSize + 1, sizeof(ossia::fft_complex));
 }
 
 fft::~fft()
@@ -386,8 +385,8 @@ fft_complex* fft::execute() noexcept
 rfft::rfft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = (ossia::fft_complex*)calloc(newSize, sizeof(ossia::fft_complex));
-  m_output = (ossia::fft_real*)calloc(newSize, sizeof(ossia::fft_real));
+  m_input = (ossia::fft_complex*)calloc(newSize + 1, sizeof(ossia::fft_complex));
+  m_output = (ossia::fft_real*)calloc(newSize + 1, sizeof(ossia::fft_real));
 }
 
 rfft::~rfft()

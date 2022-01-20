@@ -63,9 +63,9 @@ else()
   set(OSSIA_COMPILER_IS_NOT_CLANG 1)
 endif()
 
-option(OSSIA_DISABLE_FFT "Disable FFT building" ON)
-option(OSSIA_DISABLE_KFR "Disable KFR building" ON)
-option(OSSIA_FFT_FFTW "Enable FFT through FFTW" "${OSSIA_COMPILER_IS_NOT_CLANG}")
+option(OSSIA_ENABLE_FFT "Enable FFT support" OFF)
+option(OSSIA_ENABLE_FFTW "Enable FFT through FFTW" OFF)
+option(OSSIA_ENABLE_KFR "Enable KFR library" OFF)
 
 # List of all the available protocols
 set(OSSIA_AVAILABLE_PROTOCOLS
