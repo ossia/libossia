@@ -884,9 +884,12 @@ void object_base::create_patcher_hierarchy()
     parent = ossia::max_binding::get_patcher(patcher);
     ossia_max::instance().patchers[patcher].parent_patcher = parent;
 
+    /*
+    // FIXME this breaks some nested parameter registration, see https://github.com/ossia/libossia/issues/742#issuecomment-1016792975
     // no need to go up further if we already know patcher hierarchy from that point
     if(ossia_max::instance().patchers.find(patcher) != ossia_max::instance().patchers.end())
       break;
+    */
   }
 }
 
