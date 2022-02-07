@@ -26,17 +26,23 @@ public:
   websocket_client()
     : m_open{false}
   {
-    m_client.clear_access_channels(websocketpp::log::alevel::all);
-    m_client.clear_error_channels(websocketpp::log::elevel::all);
+    m_client = std::make_shared<client_t>();
+    std::weak_ptr<client_t> weak_client = m_client;
+    m_client->clear_access_channels(websocketpp::log::alevel::all);
+    m_client->clear_error_channels(websocketpp::log::elevel::all);
 
-    m_client.set_open_handler([this](connection_handler hdl) {
+    m_client->set_open_handler([this, weak_client](connection_handler hdl) {
+      if(!weak_client.lock())
+        return;
       scoped_lock guard(m_lock);
       m_open = true;
 
       on_open();
     });
 
-    m_client.set_close_handler([this](connection_handler hdl) {
+    m_client->set_close_handler([this, weak_client](connection_handler hdl) {
+      if(!weak_client.lock())
+        return;
       {
         scoped_lock guard(m_lock);
         m_open = false;
@@ -44,7 +50,9 @@ public:
       on_close();
     });
 
-    m_client.set_fail_handler([this](connection_handler hdl) {
+    m_client->set_fail_handler([this, weak_client](connection_handler hdl) {
+      if(!weak_client.lock())
+        return;
       {
         scoped_lock guard(m_lock);
         m_open = false;
@@ -58,11 +66,14 @@ public:
   websocket_client(MessageHandler&& onMessage)
     : websocket_client{}
   {
-    m_client.init_asio();
+    m_client->init_asio();
 
-    m_client.set_message_handler(
-        [handler = std::move(onMessage)](
+    std::weak_ptr<client_t> weak_client = m_client;
+    m_client->set_message_handler(
+        [handler = std::move(onMessage), weak_client](
             connection_handler hdl, client_t::message_ptr msg) {
+          if(!weak_client.lock())
+            return;
           handler(hdl, msg->get_opcode(), msg->get_raw_payload());
         });
   }
@@ -71,11 +82,14 @@ public:
   websocket_client(boost::asio::io_context& ctx, MessageHandler&& onMessage)
     : websocket_client{}
   {
-    m_client.init_asio(&ctx);
+    m_client->init_asio(&ctx);
 
-    m_client.set_message_handler(
-        [handler = std::move(onMessage)](
+    std::weak_ptr<client_t> weak_client = m_client;
+    m_client->set_message_handler(
+        [handler = std::move(onMessage), weak_client](
             connection_handler hdl, client_t::message_ptr msg) {
+          if(!weak_client.lock())
+            return;
           handler(hdl, msg->get_opcode(), msg->get_raw_payload());
         });
   }
@@ -95,14 +109,14 @@ public:
   {
     if (!m_open)
     {
-      m_client.stop();
+      m_client->stop();
       m_connected = false;
       return;
     }
 
     scoped_lock guard(m_lock);
-    m_client.close(m_hdl, websocketpp::close::status::normal, "");
-    m_client.stop();
+    m_client->close(m_hdl, websocketpp::close::status::normal, "");
+    m_client->stop();
     m_open = false;
   }
 
@@ -123,17 +137,17 @@ public:
   {
     websocketpp::lib::error_code ec;
 
-    auto con = m_client.get_connection(uri, ec);
+    auto con = m_client->get_connection(uri, ec);
     if (ec)
     {
-      m_client.get_alog().write(
+      m_client->get_alog().write(
           websocketpp::log::alevel::app,
           "Get Connection Error: " + ec.message());
       return;
     }
 
     m_hdl = con->get_handle();
-    m_client.connect(con);
+    m_client->connect(con);
     m_connected = true;
   }
 
@@ -148,7 +162,7 @@ public:
   {
     connect(uri);
 
-    m_client.run();
+    m_client->run();
 
     finish_connection();
   }
@@ -160,11 +174,11 @@ public:
 
     websocketpp::lib::error_code ec;
 
-    m_client.send(m_hdl, request, websocketpp::frame::opcode::text, ec);
+    m_client->send(m_hdl, request, websocketpp::frame::opcode::text, ec);
 
     if (ec)
     {
-      m_client.get_alog().write(
+      m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());
     }
   }
@@ -176,13 +190,13 @@ public:
 
     websocketpp::lib::error_code ec;
 
-    m_client.send(
+    m_client->send(
         m_hdl, request.GetString(), request.GetSize(),
         websocketpp::frame::opcode::text, ec);
 
     if (ec)
     {
-      m_client.get_alog().write(
+      m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());
     }
   }
@@ -194,13 +208,13 @@ public:
 
     websocketpp::lib::error_code ec;
 
-    m_client.send(
+    m_client->send(
         m_hdl, request.data(), request.size(),
         websocketpp::frame::opcode::binary, ec);
 
     if (ec)
     {
-      m_client.get_alog().write(
+      m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());
     }
   }
@@ -209,7 +223,7 @@ protected:
   using client_t = websocketpp::client<websocketpp::config::asio_client>;
   using scoped_lock = websocketpp::lib::lock_guard<websocketpp::lib::mutex>;
 
-  client_t m_client;
+  std::shared_ptr<client_t> m_client;
   connection_handler m_hdl;
   websocketpp::lib::mutex m_lock;
   std::atomic_bool m_open{false};

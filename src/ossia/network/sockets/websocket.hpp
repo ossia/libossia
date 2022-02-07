@@ -19,7 +19,7 @@ struct websocket_simple_client : websocket_client
       : ossia::net::websocket_client{}
       , m_host{conf.url}
   {
-    m_client.init_asio(&ctx);
+    m_client->init_asio(&ctx);
   }
 
   void connect()
@@ -28,9 +28,13 @@ struct websocket_simple_client : websocket_client
 
   template <typename F>
   void receive(F onMessage) {
-    m_client.set_message_handler(
-        [handler = std::move(onMessage)](
+
+    std::weak_ptr<client_t> weak_client = m_client;
+    m_client->set_message_handler(
+        [handler = std::move(onMessage), weak_client](
             connection_handler hdl, client_t::message_ptr msg) {
+          if(!weak_client.lock())
+            return;
           const auto& data = msg->get_raw_payload();
           handler(data.data(), data.size());
         });
@@ -47,7 +51,7 @@ struct websocket_simple_client : websocket_client
   {
     if(connected())
     {
-      m_client.get_io_service().post([this] {
+      m_client->get_io_service().post([this] {
         websocket_client::stop();
       });
     }
