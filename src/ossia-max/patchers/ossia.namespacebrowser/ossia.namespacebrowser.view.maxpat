@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 11,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 273.0, 147.0, 608.0, 416.0 ],
+		"rect" : [ 286.0, 156.0, 608.0, 416.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
@@ -48,7 +48,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 450.0, 135.0, 153.0, 93.0 ],
+					"patching_rect" : [ 450.0, 135.0, 153.0, 94.0 ],
 					"text" : "send a bang that requests the unique address of receive objects in the model, which is returned via local_receive."
 				}
 
@@ -120,7 +120,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 840.0, 165.0, 150.0, 33.0 ],
+					"patching_rect" : [ 840.0, 165.0, 150.0, 34.0 ],
 					"text" : "fires on tab for... some reason?"
 				}
 
@@ -134,7 +134,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 90.0, 180.0, 150.0, 66.0 ],
+					"patching_rect" : [ 90.0, 180.0, 150.0, 67.0 ],
 					"text" : "set the coordinates of the floating patcher so it lines up with the menu button"
 				}
 
@@ -149,7 +149,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 255.0, 210.0, 150.0, 79.0 ],
+					"patching_rect" : [ 255.0, 210.0, 150.0, 81.0 ],
 					"text" : "send a bang to open the model as a floating patcher that contains the address search UI"
 				}
 
@@ -238,7 +238,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 675.0, 195.0, 70.0, 35.0 ],
+					"patching_rect" : [ 675.0, 195.0, 70.0, 36.0 ],
 					"text" : "substitute bang none",
 					"textcolor" : [ 0.968627450980392, 0.968627450980392, 0.968627450980392, 1.0 ]
 				}
@@ -248,7 +248,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-25",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
@@ -320,7 +320,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-10",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "inlet",
 					"numinlets" : 0,
 					"numoutlets" : 1,
@@ -390,13 +390,13 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 30.0, 270.0, 163.0, 22.0 ],
+					"patching_rect" : [ 30.0, 270.0, 185.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"filename" : "o.get_onscreen_position.js",
+						"filename" : "ossia.get_onscreen_position.js",
 						"parameter_enable" : 0
 					}
 ,
-					"text" : "js o.get_onscreen_position.js"
+					"text" : "js ossia.get_onscreen_position.js"
 				}
 
 			}
@@ -616,6 +616,23 @@
 
 			}
  ],
+		"dependency_cache" : [ 			{
+				"name" : "ossia.get_onscreen_position.js",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/javascript",
+				"patcherrelativepath" : "../../../../../../Max 8/Packages/ossia/javascript",
+				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "ossia.remote.mxe64",
+				"type" : "mx64"
+			}
+, 			{
+				"name" : "ossia.view.mxe64",
+				"type" : "mx64"
+			}
+ ],
+		"autosave" : 0,
 		"styles" : [ 			{
 				"name" : "Jamoma_highlighted_orange",
 				"default" : 				{
@@ -633,7 +650,8 @@
 , 			{
 				"name" : "jpink",
 				"default" : 				{
-					"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
+					"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+					"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 					"bgfillcolor" : 					{
 						"type" : "color",
 						"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
@@ -644,13 +662,12 @@
 						"autogradient" : 0
 					}
 ,
-					"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+					"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
 					"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-					"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-					"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
 					"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-					"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-					"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ]
+					"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
+					"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+					"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
 				}
 ,
 				"parentstyle" : "",
