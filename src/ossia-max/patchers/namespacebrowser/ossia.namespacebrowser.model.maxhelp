@@ -4,13 +4,13 @@
 		"appversion" : 		{
 			"major" : 8,
 			"minor" : 1,
-			"revision" : 7,
+			"revision" : 8,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 573.0, 79.0, 604.0, 597.0 ],
+		"rect" : [ 596.0, 79.0, 810.0, 762.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -39,6 +39,34 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"floatoutput" : 1,
+					"id" : "obj-7",
+					"maxclass" : "slider",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 525.0, 510.0, 15.0, 60.0 ],
+					"size" : 1.0
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"floatoutput" : 1,
+					"id" : "obj-2",
+					"maxclass" : "slider",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 450.0, 510.0, 15.0, 60.0 ],
+					"size" : 1.0
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"bubble" : 1,
 					"bubblepoint" : 0.42,
@@ -162,7 +190,7 @@
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 7,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -373,13 +401,12 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-9",
-					"linecount" : 2,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 105.0, 330.0, 135.0, 35.0 ],
-					"text" : "address /model2/slider2"
+					"patching_rect" : [ 105.0, 330.0, 135.0, 22.0 ],
+					"text" : "address none"
 				}
 
 			}
@@ -404,7 +431,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 525.0, 405.0, 20.0, 140.0 ],
+					"patching_rect" : [ 525.0, 405.0, 15.0, 60.0 ],
 					"size" : 1.0
 				}
 
@@ -418,7 +445,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 450.0, 405.0, 20.0, 140.0 ],
+					"patching_rect" : [ 450.0, 405.0, 15.0, 60.0 ],
 					"size" : 1.0
 				}
 
@@ -428,19 +455,20 @@
 					"id" : "obj-15",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 7,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 218.0, 299.0, 176.0, 167.0 ],
+						"rect" : [ 651.0, 98.0, 410.0, 329.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -470,26 +498,39 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"id" : "obj-3",
+									"comment" : "",
+									"id" : "obj-5",
+									"index" : 1,
+									"maxclass" : "outlet",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 15.0, 150.0, 30.0, 30.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-4",
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
-									"numoutlets" : 1,
-									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 120.0, 115.0, 22.0 ],
-									"text" : "ossia.model model2"
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 15.0, 105.0, 272.0, 35.0 ],
+									"text" : "ossia.parameter output @range 0. 1. @type float @clip both @mode SET"
 								}
 
 							}
 , 							{
 								"box" : 								{
 									"id" : "obj-2",
-									"linecount" : 3,
+									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 15.0, 60.0, 142.0, 49.0 ],
-									"text" : "ossia.parameter slider2 @range 0 1. @type float @clip high"
+									"patching_rect" : [ 15.0, 60.0, 267.0, 35.0 ],
+									"text" : "ossia.parameter slider @range 0. 1. @type float @clip both @mode GET"
 								}
 
 							}
@@ -506,6 +547,18 @@
 								}
 
 							}
+, 							{
+								"box" : 								{
+									"id" : "obj-3",
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "" ],
+									"patching_rect" : [ 210.0, 195.0, 115.0, 22.0 ],
+									"text" : "ossia.model model2"
+								}
+
+							}
  ],
 						"lines" : [ 							{
 								"patchline" : 								{
@@ -514,10 +567,24 @@
 								}
 
 							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"source" : [ "obj-2", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
  ]
 					}
 ,
-					"patching_rect" : [ 525.0, 555.0, 58.0, 22.0 ],
+					"patching_rect" : [ 525.0, 480.0, 58.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -534,19 +601,20 @@
 					"id" : "obj-6",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
-					"numoutlets" : 0,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
 							"minor" : 1,
-							"revision" : 7,
+							"revision" : 8,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 179.0, 330.0, 242.0, 147.0 ],
+						"rect" : [ 179.0, 330.0, 312.0, 309.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -576,12 +644,63 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-7",
+									"linecount" : 2,
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 15.0, 255.0, 282.0, 35.0 ],
+									"text" : "ossia.parameter slider/notes/numpad @range 0. 1. @type float @clip both @mode GET"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-6",
+									"linecount" : 2,
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 15.0, 210.0, 274.0, 35.0 ],
+									"text" : "ossia.parameter slider/notes @range 0. 1. @type float @clip both @mode GET"
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"comment" : "",
+									"id" : "obj-5",
+									"index" : 1,
+									"maxclass" : "outlet",
+									"numinlets" : 1,
+									"numoutlets" : 0,
+									"patching_rect" : [ 15.0, 150.0, 30.0, 30.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
+									"id" : "obj-4",
+									"linecount" : 2,
+									"maxclass" : "newobj",
+									"numinlets" : 1,
+									"numoutlets" : 2,
+									"outlettype" : [ "", "" ],
+									"patching_rect" : [ 15.0, 105.0, 272.0, 35.0 ],
+									"text" : "ossia.parameter output @range 0. 1. @type float @clip both @mode SET"
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-3",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 15.0, 105.0, 115.0, 22.0 ],
+									"patching_rect" : [ 90.0, 180.0, 115.0, 22.0 ],
 									"text" : "ossia.model model1"
 								}
 
@@ -594,8 +713,8 @@
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
-									"patching_rect" : [ 15.0, 60.0, 209.0, 35.0 ],
-									"text" : "ossia.parameter slider1 @range 0. 1. @type float @clip both"
+									"patching_rect" : [ 15.0, 60.0, 267.0, 35.0 ],
+									"text" : "ossia.parameter slider @range 0. 1. @type float @clip both @mode GET"
 								}
 
 							}
@@ -620,10 +739,24 @@
 								}
 
 							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-4", 0 ],
+									"source" : [ "obj-2", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-5", 0 ],
+									"source" : [ "obj-4", 0 ]
+								}
+
+							}
  ]
 					}
 ,
-					"patching_rect" : [ 450.0, 555.0, 58.0, 22.0 ],
+					"patching_rect" : [ 450.0, 480.0, 58.0, 22.0 ],
 					"saved_object_attributes" : 					{
 						"description" : "",
 						"digest" : "",
@@ -673,6 +806,7 @@
 					"offset" : [ 0.0, 0.0 ],
 					"outlettype" : [ "bang" ],
 					"patching_rect" : [ 15.0, 210.0, 222.0, 21.0 ],
+					"varname" : "ossia.namespacebrowser.view",
 					"viewvisibility" : 1
 				}
 
@@ -765,6 +899,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-7", 0 ],
+					"source" : [ "obj-15", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-22", 0 ],
 					"source" : [ "obj-21", 0 ]
 				}
@@ -773,7 +914,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-12", 0 ],
-					"midpoints" : [ 459.5, 393.0, 534.5, 393.0 ],
+					"midpoints" : [ 459.5, 393.0, 534.0, 393.0 ],
 					"order" : 0,
 					"source" : [ "obj-22", 0 ]
 				}
@@ -820,10 +961,34 @@
 				}
 
 			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-2", 0 ],
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
  ],
 		"parameters" : 		{
+			"obj-13::obj-123::obj-14" : [ "live.text", "live.text", 0 ],
+			"obj-13::obj-123::obj-15" : [ "live.text[1]", "live.text", 0 ],
 			"obj-25" : [ "toggle", "toggle", 0 ],
 			"parameterbanks" : 			{
+
+			}
+,
+			"parameter_overrides" : 			{
+				"obj-13::obj-123::obj-14" : 				{
+					"parameter_invisible" : 0,
+					"parameter_longname" : "live.text",
+					"parameter_modmode" : 0,
+					"parameter_type" : 2,
+					"parameter_unitstyle" : 10
+				}
+,
+				"obj-13::obj-123::obj-15" : 				{
+					"parameter_longname" : "live.text[1]"
+				}
 
 			}
 ,
@@ -832,31 +997,39 @@
 ,
 		"dependency_cache" : [ 			{
 				"name" : "ossia.namespacebrowser.model.maxpat",
-				"bootpath" : "~/Documents/GitHub/cirk2_2/ossia.namespacebrowser",
+				"bootpath" : "~/Github/tml-ossia/utilities/namespacebrowser",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "ossia.namespacebrowser.view.maxpat",
-				"bootpath" : "~/Documents/GitHub/cirk2_2/ossia.namespacebrowser",
+				"bootpath" : "~/Github/tml-ossia/utilities/namespacebrowser",
 				"patcherrelativepath" : ".",
 				"type" : "JSON",
 				"implicit" : 1
 			}
 , 			{
 				"name" : "o.get_onscreen_position.js",
-				"bootpath" : "~/Documents/GitHub/cirk2_2/ossia.namespacebrowser",
+				"bootpath" : "~/Github/tml-ossia/utilities/namespacebrowser",
 				"patcherrelativepath" : ".",
 				"type" : "TEXT",
 				"implicit" : 1
+			}
+, 			{
+				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.model.mxo",
+				"name" : "ossia.view.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -865,14 +1038,6 @@
 			}
 , 			{
 				"name" : "ossia.explorer.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.remote.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.view.mxo",
 				"type" : "iLaX"
 			}
  ],
@@ -894,9 +1059,9 @@
 , 			{
 				"name" : "jpink",
 				"default" : 				{
-					"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-					"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 					"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+					"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+					"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
 					"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
 					"bgfillcolor" : 					{
 						"type" : "color",
@@ -908,9 +1073,9 @@
 						"autogradient" : 0
 					}
 ,
-					"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
+					"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
+					"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
 					"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-					"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
 					"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
 				}
 ,
