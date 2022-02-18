@@ -406,7 +406,6 @@ private:
         if (res != 0) {
           // we're in huge trouble
           std::cerr << "no pa_stream_begin_write\n";
-          self.processing = false;
           return;
         }
 
@@ -444,7 +443,6 @@ private:
                                           0LL, PA_SEEK_RELATIVE);
             res != 0) {
           // we're in huge trouble
-          self.processing = false;
           return;
         }
 

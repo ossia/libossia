@@ -12,14 +12,15 @@ namespace ossia
 class OSSIA_EXPORT audio_engine
 {
 public:
-  audio_engine();
+  explicit audio_engine();
   virtual ~audio_engine();
 
   virtual bool running() const = 0;
+  virtual void wait(int milliseconds);
   void stop();
-  void start();
 
   void gc();
+  void sync();
 
   using fun_type = smallfun::function<void(const ossia::audio_tick_state&), 256>;
   void set_tick(fun_type&& t);
@@ -33,12 +34,8 @@ public:
 
   fun_type audio_tick;
 
-  std::atomic_int req_stop{};
-  std::atomic_int ack_stop{};
-  std::atomic_int req_tick{};
-  std::atomic_int ack_tick{};
   std::atomic_bool stop_processing{};
-  std::atomic_bool processing{};
+  std::atomic_bool stop_received{};
 
   int effective_sample_rate{};
   int effective_buffer_size{};
@@ -47,18 +44,20 @@ public:
 
   void tick_start()
   {
-    processing = true;
     load_audio_tick();
   }
   void tick_clear()
   {
-    processing = false;
-    ack_stop = req_stop.load();
+    stop_received = true;
   }
   void tick_end()
   {
-    processing = false;
   }
+
+private:
+  std::shared_ptr<audio_engine> self;
+  std::atomic_int64_t request{-1};
+  std::atomic_int64_t reply{-1};
 };
 
 

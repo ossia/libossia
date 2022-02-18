@@ -151,8 +151,13 @@ public:
             JackPortIsPhysical | JackPortIsOutput);
         if (ports)
         {
-          for (std::size_t i = 0; i < input_ports.size() && ports[i]; i++)
+          for (std::size_t i = 0; i < input_ports.size(); i++)
+          {
+            if(!ports[i])
+              break;
+
             jack_connect(client, ports[i], jack_port_name(input_ports[i]));
+          }
 
           jack_free(ports);
         }
@@ -163,8 +168,13 @@ public:
             JackPortIsPhysical | JackPortIsInput);
         if (ports)
         {
-          for (std::size_t i = 0; i < output_ports.size() && ports[i]; i++)
+          for (std::size_t i = 0; i < output_ports.size(); i++)
+          {
+            if(!ports[i])
+              break;
+
             jack_connect(client, jack_port_name(output_ports[i]), ports[i]);
+          }
 
           jack_free(ports);
         }
@@ -268,11 +278,11 @@ private:
                           self.output_ports[i], nframes);
     }
 
-
+    // Transport
     jack_position_t pos{};
-    auto transport_state = jack_transport_query(self.m_client->client, &pos);
     std::optional<transport_status> st;
     std::optional<uint64_t> transport_frames;
+    auto transport_state = jack_transport_query(self.m_client->client, &pos);
     if(self.transport != transport_mode::none)
     {
       switch(transport_state)
@@ -292,6 +302,9 @@ private:
       transport_frames = jack_nframes_t(pos.frame);
     }
 
+    //std::cerr << pos.beats_per_minute << std::endl;
+
+    // Actual execution
     ossia::audio_tick_state ts{
       float_input, float_output,
       (int)inputs, (int)outputs,
