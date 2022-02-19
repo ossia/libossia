@@ -320,11 +320,11 @@ if(OSSIA_DATAFLOW)
     if(PIPEWIRE_INCLUDEDIR AND SPA_INCLUDEDIR)
       set(PIPEWIRE_INCLUDEDIR "${PIPEWIRE_INCLUDEDIR}/pipewire-0.3")
       set(SPA_INCLUDEDIR "${SPA_INCLUDEDIR}/spa-0.2")
+      target_include_directories(ossia SYSTEM PUBLIC
+        "$<BUILD_INTERFACE:${PIPEWIRE_INCLUDEDIR}>"
+        "$<BUILD_INTERFACE:${SPA_INCLUDEDIR}>"
+      )
     endif()
-    target_include_directories(ossia SYSTEM PUBLIC
-      "$<BUILD_INTERFACE:${PIPEWIRE_INCLUDEDIR}>"
-      "$<BUILD_INTERFACE:${SPA_INCLUDEDIR}>"
-    )
   endif()
 
   #SDL support
