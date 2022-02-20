@@ -5,6 +5,7 @@
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/pulseaudio_protocol.hpp>
 #include <ossia/audio/sdl_protocol.hpp>
+#include <ossia/detail/logger.hpp>
 #include <thread>
 
 namespace ossia
