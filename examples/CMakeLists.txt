@@ -7,13 +7,14 @@ endFunction()
 
 
 if(OSSIA_DATAFLOW)
-    ossia_add_example(mixsines "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSines.cpp")
-    ossia_add_example(mixsinesaddr "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSinesAddress.cpp")
     ossia_add_example(minidaw "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MiniDAW.cpp")
 
     if(OSSIA_PROTOCOL_OSCQUERY)
       ossia_add_example(editor_graph "${CMAKE_CURRENT_SOURCE_DIR}/Editor/example_graph.cpp")
+      ossia_add_example(mixsines "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSines.cpp")
+      ossia_add_example(mixsinesaddr "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSinesAddress.cpp")
     endif()
+
     if(OSSIA_PROTOCOL_OSC)
       ossia_add_example(synthosc "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SynthOSC.cpp")
     endif()
