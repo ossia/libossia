@@ -7,18 +7,26 @@ endFunction()
 
 
 if(OSSIA_DATAFLOW)
-    ossia_add_example(editor_graph "${CMAKE_CURRENT_SOURCE_DIR}/Editor/example_graph.cpp")
     ossia_add_example(mixsines "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSines.cpp")
-    ossia_add_example(minidaw "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MiniDAW.cpp")
-    ossia_add_example(synthosc "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SynthOSC.cpp")
     ossia_add_example(mixsinesaddr "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MixSinesAddress.cpp")
+    ossia_add_example(minidaw "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/MiniDAW.cpp")
+
+    if(OSSIA_PROTOCOL_OSCQUERY)
+      ossia_add_example(editor_graph "${CMAKE_CURRENT_SOURCE_DIR}/Editor/example_graph.cpp")
+    endif()
+    if(OSSIA_PROTOCOL_OSC)
+      ossia_add_example(synthosc "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SynthOSC.cpp")
+    endif()
 
     if(OSSIA_EDITOR)
       ossia_add_example(editor_curve "${CMAKE_CURRENT_SOURCE_DIR}/Editor/curve.cpp")
       ossia_add_example(editor_expression "${CMAKE_CURRENT_SOURCE_DIR}/Editor/expression.cpp")
       ossia_add_example(editor_scenario "${CMAKE_CURRENT_SOURCE_DIR}/Editor/scenario.cpp")
-      ossia_add_example(editor_state "${CMAKE_CURRENT_SOURCE_DIR}/Editor/state.cpp")
       ossia_add_example(editor_automation "${CMAKE_CURRENT_SOURCE_DIR}/Editor/automation.cpp")
+
+      if(OSSIA_PROTOCOL_OSCQUERY)
+        ossia_add_example(editor_state "${CMAKE_CURRENT_SOURCE_DIR}/Editor/state.cpp")
+      endif()
     endif()
 endif()
 
