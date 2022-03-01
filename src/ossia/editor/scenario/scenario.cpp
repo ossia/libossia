@@ -6,6 +6,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+#include <iostream>
 
 namespace ossia
 {

@@ -25,8 +25,7 @@ struct parameter_data;
  *
  * TODO maybe replace val_type by small_vector<val_type> ?
  */
-using complex_type
-    = eggs::variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
+using complex_type = eggs::variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
 
 //! Get the implementation type of a high level type. If unknown will be
 //! ossia::impulse.

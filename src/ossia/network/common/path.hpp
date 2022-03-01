@@ -6,7 +6,6 @@
 
 #include <smallfun.hpp>
 
-#include <iostream>
 #include <string>
 
 namespace ossia

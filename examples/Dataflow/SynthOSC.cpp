@@ -8,6 +8,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <boost/lexical_cast.hpp>
 #include <ossia/network/value/format_value.hpp>
+#include <iostream>
 
 std::string osc_address;
 uint16_t listen_port{};
