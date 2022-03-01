@@ -73,18 +73,6 @@ TEST_CASE( "Matching" )
                 REQUIRE((matches_Q.front().oscname.find('Q') != std::string::npos || matches_Q.front().oscname.find('q') != std::string::npos));
             }
         }
-        /*
-        WHEN("Searching for q case-insensitively") {
-            opt.case_sensitive = false;
-            std::vector<ossia::net::fuzzysearch_result> matches;
-            ossia::net::fuzzysearch({&device.get_root_node()}, {"q"}, matches, opt);
-            INFO(matches.front().oscname);
-            THEN("We find them through Q") {
-                REQUIRE(!matches.empty());
-                REQUIRE((matches.front().oscname.find('Q') != std::string::npos ||matches.front().oscname.find('q') != std::string::npos));
-            }
-        }
-        */
     }
 
 }
