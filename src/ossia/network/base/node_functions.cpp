@@ -682,9 +682,10 @@ std::vector<ossia::net::node_base*> list_all_children(ossia::net::node_base* nod
  * @param pattern: strings to search
  * @return a vector of fuzzysearch_result sorted in descending score order
  */
-void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
+void fuzzysearch(const std::vector<ossia::net::node_base*>& nodes,
                  const std::vector<std::string>& patterns,
-                 std::vector<fuzzysearch_result>& results)
+                 std::vector<fuzzysearch_result>& results,
+                 fuzzysearch_options opt)
 {
   results.clear();
 
@@ -697,12 +698,33 @@ void fuzzysearch(std::vector<ossia::net::node_base*> nodes,
     for(const auto& n : children)
     {
       std::string oscaddress = ossia::net::osc_parameter_string_with_device(*n);
-      double percent = 1.0;
-      for(const auto& pattern : patterns)
+      if(!opt.case_sensitive)
       {
-        percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
+        // Make everything lowercase, address and patterns
+        for(char& c : oscaddress)
+          c = std::tolower(c);
+        double percent = 1.0;
+
+        auto res = patterns;
+        for(std::string& s: res)
+            for(char& c: s)
+                c = std::tolower(c);
+
+        for(const auto& pattern : res)
+        {
+          percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
+        }
+        results.push_back({percent * 100., oscaddress, n});
       }
-      results.push_back({percent * 100., oscaddress, n});
+      else
+      {
+        double percent = 1.0;
+        for(const auto& pattern : patterns)
+        {
+          percent *= rapidfuzz::fuzz::partial_ratio(oscaddress, pattern) / 100.;
+        }
+        results.push_back({percent * 100., oscaddress, n});
+      }
     }
 
     // TODO in the future, when we'll use C++20
