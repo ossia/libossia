@@ -38,6 +38,9 @@ extern "C" void ossia_fuzzysearch_setup()
   CLASS_ATTR_LABEL(c, "scope", 0, "Search scope");
   CLASS_ATTR_ENUMINDEX3(c, "scope", 0, "Global", "Absolute", "Relative");
 
+  CLASS_ATTR_LONG(c, "insensitive", 0, fuzzysearch, m_case_sensitive);
+  CLASS_ATTR_STYLE_LABEL(c, "insensitive", 0, "onoff", "Make fuzzy-search case-sensitive");
+
   class_register(CLASS_BOX, ossia_library.ossia_fuzzysearch_class);
 }
 
@@ -54,13 +57,16 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
   if(argc == 0)
     return;
 
-  std::vector<std::string> patterns;
+  auto& patterns = x->patterns;
+  auto& matches = x->matches;
+
+  patterns.clear();
   patterns.reserve(argc);
-  for(int i = 0; i<argc; i++)
+  for(int i = 0; i < argc; i++)
   {
     if(argv[i].a_type == A_SYM)
     {
-      patterns.push_back(std::string(argv[i].a_w.w_sym->s_name));
+      patterns.emplace_back(argv[i].a_w.w_sym->s_name);
     }
   }
   if(patterns.empty())
@@ -106,9 +112,11 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
 
   }
 
-  std::vector<ossia::net::fuzzysearch_result> matches{};
+  matches.clear();
 
-  ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, matches);
+  ossia::net::fuzzysearch_options opt{};
+  opt.case_sensitive = x->m_case_sensitive != 0;
+  ossia::net::fuzzysearch({x->m_roots.begin(), x->m_roots.end()}, patterns, matches, opt);
 
   ossia::remove_erase_if(matches, [&](const ossia::net::fuzzysearch_result& m){
     return x->filter(*m.node);
@@ -125,6 +133,9 @@ void fuzzysearch::search(fuzzysearch* x, t_symbol* s, long argc, t_atom* argv)
     A_SETSYM(a+1, gensym(m.oscname.c_str()));
     outlet_anything(x->m_outlet, gensym("match"), 2, a);
   }
+
+  patterns.clear();
+  matches.clear();
 }
 
 void fuzzysearch::free(fuzzysearch* x)
