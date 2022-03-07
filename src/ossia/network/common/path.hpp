@@ -47,6 +47,7 @@ struct OSSIA_EXPORT path_element
   {
   }
 
+  OSSIA_EXPORT
   friend std::ostream& operator<<(std::ostream& s, const path_element& p);
 
   operator std::string() const

@@ -372,7 +372,7 @@ bool match(
 
 }
 
-std::ostream& operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
+std::ostream& regex_path::operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
 {
   return s << p.address;
 }
