@@ -6,6 +6,7 @@
 
 #include <smallfun.hpp>
 
+#include <iosfwd>
 #include <string>
 
 namespace ossia
@@ -46,10 +47,7 @@ struct OSSIA_EXPORT path_element
   {
   }
 
-  friend std::ostream& operator<<(std::ostream& s, const path_element& p)
-  {
-    return s << p.address;
-  }
+  friend std::ostream& operator<<(std::ostream& s, const path_element& p);
 
   operator std::string() const
   {
