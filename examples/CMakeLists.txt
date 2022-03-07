@@ -107,6 +107,10 @@ if(OSSIA_PROTOCOL_JOYSTICK)
   ossia_add_example(joystick "${CMAKE_CURRENT_SOURCE_DIR}/Network/joystick/joystick.cpp")
 endif()
 
+if(OSSIA_PROTOCOL_SERIAL)
+  ossia_add_example(network_arduino "${CMAKE_CURRENT_SOURCE_DIR}/Network/Arduino.cpp")
+endif()
+
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
 ossia_add_example(fuzzysearch "${CMAKE_CURRENT_SOURCE_DIR}/Common/FuzzySearch.cpp")
