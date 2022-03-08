@@ -170,17 +170,17 @@ jobs:
         with:
           files: ossia-pd*.zip
 
-  upload_to_deken:
-    runs-on: ubuntu-latest
-    needs: [ build-macos, build-windows, build-rpi, build-linux ]
-    steps:
-      - uses: actions/download-artifact@v2
-        with:
-          name: ossia-pd
-          path: ossia
-      - name: Create Deken Package
-        shell: bash
-        run: |
-          SHORT=${GITHUB_REF:11} # remove the 'refs/tags/' prefix
-          SLUG=${SHORT//\//_} # replace '/' with '_'
-          docker run --rm -e DEKEN_USERNAME -e DEKEN_PASSWORD --user $(id -u) --volume ossia:/ossia registry.git.iem.at/pd/deken deken upload -v "${SLUG}" /ossia
+  # upload_to_deken:
+  #   runs-on: ubuntu-latest
+  #   needs: [ build-macos, build-windows, build-rpi, build-linux ]
+  #   steps:
+  #     - uses: actions/download-artifact@v2
+  #       with:
+  #         name: ossia-pd
+  #         path: ossia
+  #     - name: Create Deken Package
+  #       shell: bash
+  #       run: |
+  #         SHORT=${GITHUB_REF:11} # remove the 'refs/tags/' prefix
+  #         SLUG=${SHORT//\//_} # replace '/' with '_'
+  #         docker run --rm -e DEKEN_USERNAME -e DEKEN_PASSWORD --user $(id -u) --volume ossia:/ossia registry.git.iem.at/pd/deken deken upload -v "${SLUG}" /ossia

@@ -13,8 +13,9 @@ jobs:
       run: |
         sudo apt update -qq
         sudo apt install -qq -y build-essential g++ ninja-build wget
-        wget https://github.com/jcelerier/cninja/releases/download/v3.7.2/cninja-v3.7.2-Linux.tar.gz
+        wget https://github.com/jcelerier/cninja/releases/download/v3.7.6/cninja-v3.7.6-Linux.tar.gz
         tar xaf cninja-*-Linux.tar.gz
+        mv cninja "$(System.DefaultWorkingDirectory)/"
         rm *.tar.gz
     - name: Build
       run: |
