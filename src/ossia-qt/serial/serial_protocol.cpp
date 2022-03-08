@@ -91,6 +91,7 @@ framed_serial_socket serial_wrapper::make_socket(const network_context_ptr& ctx,
       return framed_serial_socket{std::in_place_index<1>, port.transport, ctx->context};
     case ossia::net::framing::slip:
       return framed_serial_socket{std::in_place_index<2>, port.transport, ctx->context};
+    default:
     case ossia::net::framing::line_delimiter:
       return framed_serial_socket{std::in_place_index<3>, port.transport, ctx->context};
   }
