@@ -15,6 +15,7 @@
 #include <QObject>
 #include <QSerialPort>
 
+#include <variant>
 #include <verdigris>
 
 #include <ossia-qt/js_utilities.hpp>
