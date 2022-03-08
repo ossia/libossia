@@ -47,13 +47,15 @@ public:
   template <typename F>
   void receive(F f)
   {
-    m_decoder.receive(stream_processor<serial_socket, F>{*this, std::move(f)});
+    struct proc : stream_processor<serial_socket, F> { };
+    m_decoder.receive(proc{*this, std::move(f)});
   }
 
   void close()
   {
     if(m_port.is_open())
     {
+      m_port.cancel();
       m_context.post([this] {
         m_port.close();
         on_close();

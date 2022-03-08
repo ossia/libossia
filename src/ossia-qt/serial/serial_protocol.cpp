@@ -19,9 +19,94 @@ namespace ossia
 namespace net
 {
 
+static auto on_open = [] { fprintf(stderr, "connection open! \n"); };
+static auto on_close = [] { fprintf(stderr, "connection on_close! \n"); };
+static auto on_fail = [] { fprintf(stderr, "connection on_fail! \n"); };
+
+struct serial_wrapper_read
+{
+  serial_wrapper& self;
+  void operator()(const unsigned char* data, std::size_t sz) const noexcept {
+    QByteArray arr{reinterpret_cast<const char*>(data), (int)sz};
+    self.on_read(arr);
+  };
+};
+
+struct serial_wrapper_init
+{
+  serial_wrapper& self;
+  const serial_protocol_configuration& port;
+
+  template<typename T>
+  void common_init(T& m_socket)
+  {
+    m_socket.on_open.connect(on_open);
+    m_socket.on_close.connect(on_close);
+    m_socket.on_fail.connect(on_fail);
+
+    m_socket.connect();
+    m_socket.receive(serial_wrapper_read{self});
+  }
+
+  void operator()(auto& sock)
+  {
+    common_init(sock);
+  }
+
+  void operator()(line_framing_socket& sock)
+  {
+    int sz = std::max((int) 7, (int) port.line_framing_delimiter.size());
+    std::copy_n(port.line_framing_delimiter.begin(), sz, sock.m_encoder.delimiter);
+    std::copy_n(port.line_framing_delimiter.begin(), sz, sock.m_decoder.delimiter);
+    common_init(sock);
+  }
+};
+
+serial_wrapper::serial_wrapper(const network_context_ptr& ctx, const serial_protocol_configuration& port)
+  : m_socket{make_socket(ctx, port)}
+{
+  std::visit(serial_wrapper_init{*this, port}, m_socket);
+  m_open = true;
+}
+
+void serial_wrapper::on_write(const QByteArray& b) noexcept
+{
+  std::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
+}
+
+void serial_wrapper::on_read(const QByteArray& arr)
+{
+  QString str = QString::fromLatin1(arr);
+  read(str, arr);
+}
+
+
+framed_serial_socket serial_wrapper::make_socket(const network_context_ptr& ctx, const serial_protocol_configuration& port)
+{
+  switch(port.framing)
+  {
+    case ossia::net::framing::none:
+      return framed_serial_socket{std::in_place_index<0>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix:
+      return framed_serial_socket{std::in_place_index<1>, port.transport, ctx->context};
+    case ossia::net::framing::slip:
+      return framed_serial_socket{std::in_place_index<2>, port.transport, ctx->context};
+    case ossia::net::framing::line_delimiter:
+      return framed_serial_socket{std::in_place_index<3>, port.transport, ctx->context};
+  }
+}
+
+void serial_wrapper::close()
+{
+  if(m_open)
+  {
+    m_open = false;
+    std::visit([] (auto& sock) { sock.close(); }, m_socket);
+  }
+}
+
 serial_wrapper::~serial_wrapper() noexcept
 {
-
 }
 
 serial_protocol::serial_protocol(
@@ -261,66 +346,15 @@ void serial_protocol::set_device(device_base& dev)
   m_component->setData(m_code, QUrl{});
 }
 
+void serial_protocol::stop()
+{
+  this->m_port->close();
+}
+
 serial_protocol::~serial_protocol()
 {
-}
-
-
-framed_serial_socket serial_wrapper::make_socket(const network_context_ptr& ctx, const serial_protocol_configuration& port)
-{
-  switch(port.framing)
-  {
-    case ossia::net::framing::none:
-      return framed_serial_socket{std::in_place_index<0>, port.transport, ctx->context};
-    case ossia::net::framing::size_prefix:
-      return framed_serial_socket{std::in_place_index<1>, port.transport, ctx->context};
-    case ossia::net::framing::slip:
-      return framed_serial_socket{std::in_place_index<2>, port.transport, ctx->context};
-    case ossia::net::framing::line_delimiter:
-      return framed_serial_socket{std::in_place_index<3>, port.transport, ctx->context};
-  }
-}
-serial_wrapper::serial_wrapper(const network_context_ptr& ctx, const serial_protocol_configuration& port)
-  : m_socket{make_socket(ctx, port)}
-{
-  if(port.framing == ossia::net::framing::line_delimiter)
-  {
-    line_framing_socket* ptr = std::get_if<line_framing_socket>(&m_socket);
-    assert(ptr);
-    int sz = std::max((int) 7, (int) port.line_framing_delimiter.size());
-    std::copy_n(port.line_framing_delimiter.begin(), sz, ptr->m_encoder.delimiter);
-    std::copy_n(port.line_framing_delimiter.begin(), sz, ptr->m_decoder.delimiter);
-  }
-  static auto on_open = [] { fprintf(stderr, "connection open! \n"); };
-  static auto on_close = [] { fprintf(stderr, "connection on_close! \n"); };
-  static auto on_fail = [] { fprintf(stderr, "connection on_fail! \n"); };
-
-  std::visit([this] (auto& m_socket) {
-    m_socket.on_open.connect(on_open);
-    m_socket.on_close.connect(on_close);
-    m_socket.on_fail.connect(on_fail);
-
-    m_socket.connect();
-    m_socket.receive(
-        [this] (const unsigned char* data, std::size_t sz) {
-           QByteArray arr{reinterpret_cast<const char*>(data), (int)sz};
-           on_read(arr);
-        });
-  }, m_socket);
-}
-
-void serial_wrapper::on_write(const QByteArray& b) noexcept
-{
-  std::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
-}
-
-void serial_wrapper::on_read(const QByteArray& arr)
-{
-  QString str = QString::fromLatin1(arr);
-  read(str, arr);
 }
 
 }
 }
 #endif
-

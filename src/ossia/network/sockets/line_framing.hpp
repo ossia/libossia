@@ -38,6 +38,9 @@ struct line_framing_decoder
           boost::asio::dynamic_buffer(m_data),
           (const char*) delimiter,
           [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
+            if(ec.failed())
+              return;
+
             int new_sz = sz;
             new_sz -= strlen(delimiter);
             if(new_sz > 0)

@@ -77,10 +77,14 @@ struct serial_parameter_data final : public parameter_data,
 };
 
 
-using no_framing_socket = ossia::net::serial_socket<no_framing>;
-using size_framing_socket = ossia::net::serial_socket<size_prefix_framing>;
-using slip_framing_socket = ossia::net::serial_socket<slip_framing>;
-using line_framing_socket = ossia::net::serial_socket<line_framing>;
+struct no_framing_socket : ossia::net::serial_socket<no_framing>
+{ using serial_socket::serial_socket; };
+struct size_framing_socket : ossia::net::serial_socket<size_prefix_framing>
+{ using serial_socket::serial_socket; };
+struct slip_framing_socket : ossia::net::serial_socket<slip_framing>
+{ using serial_socket::serial_socket; };
+struct line_framing_socket : ossia::net::serial_socket<line_framing>
+{ using serial_socket::serial_socket; };
 
 using framed_serial_socket = std::variant<
   no_framing_socket,
@@ -115,9 +119,12 @@ public:
   void on_read(const QByteArray& arr);
   W_SLOT(on_read)
 
+  void close();
+
 private:
   framed_serial_socket make_socket(const network_context_ptr& ctx, const ossia::net::serial_protocol_configuration& port);
   framed_serial_socket m_socket;
+  bool m_open{};
 };
 
 using serial_parameter = wrapped_parameter<serial_parameter_data>;
@@ -140,6 +147,7 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   void set_device(ossia::net::device_base& dev) override;
+  void stop() override;
 
   static serial_parameter_data read_data(const QJSValue& js)
   {
