@@ -45,7 +45,7 @@ jobs:
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
       run: |
         source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
-        release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "ossia-qml-osx.zip" "io.ossia.ossia-qml"
+        release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     - name: Archive Package
       uses: actions/upload-artifact@v2
