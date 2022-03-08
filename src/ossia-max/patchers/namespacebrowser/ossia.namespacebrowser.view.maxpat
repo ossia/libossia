@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 245.0, 603.0, 863.0, 458.0 ],
+		"rect" : [ 199.0, 400.0, 863.0, 458.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 1,
 		"default_fontsize" : 12.0,
@@ -55,7 +55,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 718.0, 349.0, 378.0, 760.0 ],
+						"rect" : [ 463.0, 147.0, 1051.0, 1048.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 1,
 						"default_fontsize" : 12.0,
@@ -83,6 +83,7 @@
 						"style" : "",
 						"subpatcher_template" : "evan_template",
 						"assistshowspatchername" : 0,
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-54",
@@ -123,17 +124,6 @@
 									"text" : "(Browse or type to search manually)",
 									"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"varname" : "comment"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-23",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 975.0, 1170.0, 32.0, 22.0 ],
-									"text" : "print"
 								}
 
 							}
@@ -1989,7 +1979,7 @@
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_enum" : [ "all", "get", "set", "bi" ],
-											"parameter_longname" : "live.text[166]",
+											"parameter_longname" : "live.text[26]",
 											"parameter_mmax" : 3,
 											"parameter_shortname" : "live.text",
 											"parameter_type" : 2,
@@ -2017,7 +2007,7 @@
 									"saved_attribute_attributes" : 									{
 										"valueof" : 										{
 											"parameter_enum" : [ "val1", "val2" ],
-											"parameter_longname" : "live.text[167]",
+											"parameter_longname" : "live.text[25]",
 											"parameter_mmax" : 1,
 											"parameter_shortname" : "live.text",
 											"parameter_type" : 2
@@ -3825,7 +3815,7 @@
 									"presentation" : 1,
 									"presentation_rect" : [ 0.0, 35.0, 375.0, 730.0 ],
 									"rowheight" : 20,
-									"rows" : 138,
+									"rows" : 137,
 									"sccolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"selmode" : 3,
 									"sgcolor" : [ 0.7, 0.7, 0.7, 0.701961 ],
@@ -4352,17 +4342,8 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-23", 0 ],
-									"order" : 1,
-									"source" : [ "obj-2", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-50", 0 ],
 									"midpoints" : [ 984.5, 1152.0, 1277.5, 1152.0, 1277.5, 268.0, 1014.5, 268.0 ],
-									"order" : 0,
 									"source" : [ "obj-2", 0 ]
 								}
 
@@ -5162,6 +5143,7 @@
 					"rounded" : 0.0,
 					"style" : "default",
 					"tabmode" : 0,
+					"text" : "none",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ],
 					"varname" : "textEdit"
 				}
