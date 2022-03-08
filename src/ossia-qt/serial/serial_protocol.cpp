@@ -57,8 +57,6 @@ serial_protocol::serial_protocol(
       });
 }
 
-static int k = 0;
-static std::chrono::high_resolution_clock::time_point t0;
 void serial_protocol::create(const ossia::net::network_context_ptr& ctx, const ossia::net::serial_configuration& cfg)
 {
   m_object = m_component->create();
@@ -124,8 +122,6 @@ void serial_protocol::create(const ossia::net::network_context_ptr& ctx, const o
   m_port = std::make_shared<serial_wrapper>(ctx, conf);
   QObject::connect(m_port.get(), &serial_wrapper::read,
                    this, &serial_protocol::on_read, Qt::QueuedConnection);
-
-  t0 = std::chrono::high_resolution_clock::now();
   return;
 }
 
@@ -315,14 +311,11 @@ serial_wrapper::serial_wrapper(const network_context_ptr& ctx, const serial_prot
 
 void serial_wrapper::on_write(const QByteArray& b) noexcept
 {
-  qDebug() << "Writing : " << b;
   std::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
 }
 
 void serial_wrapper::on_read(const QByteArray& arr)
 {
-  qDebug() << "Received: " << arr;
-
   QString str = QString::fromLatin1(arr);
   read(str, arr);
 }
