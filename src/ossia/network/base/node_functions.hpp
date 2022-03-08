@@ -142,15 +142,25 @@ list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
 
 struct OSSIA_EXPORT fuzzysearch_result
 {
-  double score;
+  double score{};
   std::string oscname;
-  ossia::net::node_base* node;
+  ossia::net::node_base* node{};
+
+  friend bool operator==(const fuzzysearch_result& lhs, const fuzzysearch_result& rhs) noexcept {
+    return lhs.score == rhs.score && lhs.oscname == rhs.oscname && lhs.node == rhs.node;
+  }
+};
+
+struct fuzzysearch_options
+{
+  bool case_sensitive{true};
 };
 
 OSSIA_EXPORT
-void fuzzysearch(std::vector<ossia::net::node_base*> node,
+void fuzzysearch(const std::vector<ossia::net::node_base*>& node,
                  const std::vector<std::string>& patterns,
-                 std::vector<fuzzysearch_result>& results);
+                 std::vector<fuzzysearch_result>& results,
+                 fuzzysearch_options = {});
 
 }
 }

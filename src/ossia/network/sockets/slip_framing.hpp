@@ -93,7 +93,7 @@ struct slip_decoder
             m_status = waiting;
             if(m_decoded.size() > 0)
             {
-              f(m_decoded.data(), m_decoded.size());
+              f((const unsigned char*)m_decoded.data(), m_decoded.size());
             }
             m_decoded.clear();
             break;

@@ -5,6 +5,7 @@
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/pulseaudio_protocol.hpp>
 #include <ossia/audio/sdl_protocol.hpp>
+#include <ossia/detail/logger.hpp>
 #include <thread>
 
 namespace ossia
@@ -37,30 +38,40 @@ audio_engine::~audio_engine()
 {
 }
 
-void audio_engine::stop()
+void audio_engine::wait(int milliseconds)
 {
-  int timeout = 5000;
-  req_stop++;
-  stop_processing = true;
-
-#if !defined(__EMSCRIPTEN__)
-  while (ack_stop != req_stop && running() && timeout > 0)
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    timeout -= 100;
-  }
-
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-
-  if(timeout <= 0)
-    throw std::runtime_error("Audio thread not responding");
-#endif
+  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-void audio_engine::start()
+void audio_engine::stop()
 {
-  stop_processing = false;
-  std::atomic_thread_fence(std::memory_order_seq_cst);
+  stop_processing = true;
+  sync();
+  gc();
+}
+
+void audio_engine::sync()
+{
+  int64_t req = request.load();
+  req++;
+  request.store(req);
+
+  // The engine has started running, we wait for a couple iterations
+  // to leave some time for the ticks to be updated
+  int k = 0;
+  int buffer_length_in_ms = 8;
+  if(this->effective_sample_rate > 0)
+    buffer_length_in_ms = std::ceil(this->effective_buffer_size * 1000. / this->effective_sample_rate);
+
+  while(this->reply.load() < req)
+  {
+    if(k++ > 20)
+    {
+      ossia::logger().error("Audio engine seems stuck?");
+      break;
+    }
+    this->wait(2 * buffer_length_in_ms);
+  }
 }
 
 void audio_engine::gc()
@@ -72,24 +83,13 @@ void audio_engine::gc()
 
 void audio_engine::set_tick(audio_engine::fun_type&& t)
 {
-  int timeout = 5000;
   if(t.allocated())
     tick_funlist.enqueue(std::move(t));
   else
     tick_funlist.enqueue(default_audio_tick{});
 
-  req_tick++;
-#if !defined(__EMSCRIPTEN__)
-  while (ack_tick != req_tick && running() && timeout > 0)
-  {
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    timeout -= 100;
-  }
-
-  std::atomic_thread_fence(std::memory_order_seq_cst);
-  if(timeout <= 0)
-    throw std::runtime_error("Audio thread not responding");
-#endif
+  sync();
+  gc();
 }
 
 void audio_engine::load_audio_tick()
@@ -99,8 +99,8 @@ void audio_engine::load_audio_tick()
   {
     tick_gc.enqueue(std::move(audio_tick));
     audio_tick = std::move(tick);
-    ack_tick++;
   }
+  reply.store(request.load());
 }
 
 

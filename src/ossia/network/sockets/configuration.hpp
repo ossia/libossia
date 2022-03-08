@@ -7,7 +7,7 @@ namespace ossia::net
 {
 enum class framing
 {
-  size_prefix, slip
+  none, size_prefix, slip, line_delimiter
 };
 
 struct fd_configuration

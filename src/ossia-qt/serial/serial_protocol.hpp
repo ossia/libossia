@@ -1,11 +1,23 @@
 #pragma once
-#include <ossia-qt/js_utilities.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
-#include <verdigris>
+#include <ossia/network/sockets/serial_socket.hpp>
+#include <ossia/network/sockets/no_framing.hpp>
+#include <ossia/network/sockets/size_prefix_framing.hpp>
+#include <ossia/network/sockets/line_framing.hpp>
+#include <ossia/network/sockets/slip_framing.hpp>
+#include <ossia/network/context.hpp>
+
+#include <boost/asio/error.hpp>
+#include <boost/asio/streambuf.hpp>
+
 #include <QObject>
 #include <QSerialPort>
+
+#include <verdigris>
+
+#include <ossia-qt/js_utilities.hpp>
 
 class QQmlEngine;
 class QQmlComponent;
@@ -21,7 +33,8 @@ struct serial_parameter_data_base
   serial_parameter_data_base(serial_parameter_data_base&&) = default;
   serial_parameter_data_base& operator=(const serial_parameter_data_base&)
       = default;
-  serial_parameter_data_base& operator=(serial_parameter_data_base&&) = default;
+  serial_parameter_data_base& operator=(serial_parameter_data_base&&)
+      = default;
   serial_parameter_data_base(const QJSValue& val)
   {
     auto r = val.property("request");
@@ -37,10 +50,8 @@ struct serial_parameter_data_base
 
   QString request;
 };
-
-struct serial_parameter_data final
-    : public parameter_data
-    , public serial_parameter_data_base
+struct serial_parameter_data final : public parameter_data,
+                                     public serial_parameter_data_base
 {
   using base_data_type = serial_parameter_data_base;
   serial_parameter_data() = default;
@@ -49,72 +60,77 @@ struct serial_parameter_data final
   serial_parameter_data& operator=(const serial_parameter_data&) = default;
   serial_parameter_data& operator=(serial_parameter_data&&) = default;
 
-  serial_parameter_data(const std::string& name) : parameter_data{name}
+  serial_parameter_data(const std::string& name) : parameter_data {name}
   {
   }
 
   serial_parameter_data(const QJSValue& val)
-      : parameter_data{ossia::qt::make_parameter_data(val)}
-      , serial_parameter_data_base{val}
+      : parameter_data {ossia::qt::make_parameter_data(val)}
+      , serial_parameter_data_base {val}
   {
   }
 
-  bool valid() const noexcept { return !request.isEmpty() || type; }
+  bool valid() const noexcept
+  {
+    return !request.isEmpty() || type;
+  }
 };
-class OSSIA_EXPORT serial_wrapper final
-    : public QObject
+
+
+using no_framing_socket = ossia::net::serial_socket<no_framing>;
+using size_framing_socket = ossia::net::serial_socket<size_prefix_framing>;
+using slip_framing_socket = ossia::net::serial_socket<slip_framing>;
+using line_framing_socket = ossia::net::serial_socket<line_framing>;
+
+using framed_serial_socket = std::variant<
+  no_framing_socket,
+  size_framing_socket,
+  slip_framing_socket,
+  line_framing_socket
+>;
+
+struct serial_protocol_configuration
+{
+  ossia::net::framing framing;
+  std::string line_framing_delimiter;
+
+  serial_configuration transport;
+};
+
+class OSSIA_EXPORT serial_wrapper final : public QObject
 {
   W_OBJECT(serial_wrapper)
 
-  QSerialPort mSerialPort;
-
 public:
-  serial_wrapper(const QSerialPortInfo& port, const int32_t rate = 9600) : mSerialPort{port}
-  {
-    mSerialPort.open(QIODevice::ReadWrite);
-    mSerialPort.setBaudRate(rate);
+  serial_wrapper(const network_context_ptr& ctx, const ossia::net::serial_protocol_configuration& port);
+  ~serial_wrapper() noexcept;
 
-    ossia::logger().info(
-        "Opened serial port: {}", mSerialPort.errorString().toStdString());
-    connect(
-        this, &serial_wrapper::write, this, &serial_wrapper::on_write,
-        Qt::QueuedConnection);
+  void write(QByteArray arg_1) E_SIGNAL(OSSIA_EXPORT, write, arg_1);
+  void read(QString txt, QByteArray raw)
+  E_SIGNAL(OSSIA_EXPORT, read, txt, raw);
 
-    connect(
-        &mSerialPort, &QSerialPort::readyRead, this, &serial_wrapper::on_read,
-        Qt::QueuedConnection);
-  }
-  ~serial_wrapper();
+  void on_write(const QByteArray& b) noexcept;
+  W_SLOT(on_write)
 
-public:
-  void write(QByteArray arg_1) E_SIGNAL(OSSIA_EXPORT, write, arg_1)
-  void read(QByteArray arg_1) E_SIGNAL(OSSIA_EXPORT, read, arg_1)
+  void on_read(const QByteArray& arr);
+  W_SLOT(on_read)
 
-public:
-  void on_write(QByteArray b)
-  {
-    mSerialPort.write(b);
-  }; W_SLOT(on_write)
-
-  void on_read()
-  {
-    while(mSerialPort.canReadLine())
-    {
-      read(mSerialPort.readLine());
-    }
-  }; W_SLOT(on_read)
+private:
+  framed_serial_socket make_socket(const network_context_ptr& ctx, const ossia::net::serial_protocol_configuration& port);
+  framed_serial_socket m_socket;
 };
 
-
 using serial_parameter = wrapped_parameter<serial_parameter_data>;
-using serial_node = ossia::net::wrapped_node<serial_parameter_data, serial_parameter>;
-class OSSIA_EXPORT serial_protocol final
-    : public QObject
-    , public ossia::net::protocol_base
+using serial_node
+    = ossia::net::wrapped_node<serial_parameter_data, serial_parameter>;
+class OSSIA_EXPORT serial_protocol final : public QObject,
+                                           public ossia::net::protocol_base
 {
 public:
   // Param : the name of the serial port
-  serial_protocol(const QByteArray& code, const QSerialPortInfo& bot, const int32_t rate= 9600);
+  serial_protocol(
+      const ossia::net::network_context_ptr&,
+      const QByteArray& code, const ossia::net::serial_configuration& bot);
   ~serial_protocol() override;
 
   bool pull(ossia::net::parameter_base&) override;
@@ -131,18 +147,24 @@ public:
   }
 
 private:
-  void on_read(const QByteArray&);
-  QQmlEngine* m_engine{};
-  QQmlComponent* m_component{};
+  void create(const ossia::net::network_context_ptr&, const ossia::net::serial_configuration& cfg);
+  void on_read(const QString& txt, const QByteArray&);
+  QQmlEngine* m_engine {};
+  QQmlComponent* m_component {};
 
-  ossia::net::device_base* m_device{};
-  QObject* m_object{};
-  mutable serial_wrapper m_serialPort;
+  ossia::net::device_base* m_device {};
+  QObject* m_object {};
+  QJSValue m_jsObj{};
+  QJSValue m_onTextMessage{};
+  QJSValue m_onBinaryMessage{};
+  QJSValue m_onRead{};
+  std::shared_ptr<serial_wrapper> m_port;
   QByteArray m_code;
 };
 using serial_device = ossia::net::wrapped_device<serial_node, serial_protocol>;
 
-class OSSIA_EXPORT Serial : public QObject {
+class OSSIA_EXPORT Serial : public QObject
+{
 };
 
 }

@@ -21,7 +21,11 @@ public:
   using decoder = typename Framing::template decoder<boost::asio::serial_port>;
 
   serial_socket(const serial_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}, m_conf{std::move(conf)}, m_port{ctx}, m_decoder{this->m_port}
+      : m_context {ctx}
+      , m_conf{std::move(conf)}
+      , m_port{ctx}
+      , m_encoder{this->m_port}
+      , m_decoder{this->m_port}
   {
   }
 
@@ -59,7 +63,7 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    encoder{this->m_port}.write(data, sz);
+    m_encoder.write(data, sz);
   }
 
   bool connected() const noexcept
@@ -74,6 +78,7 @@ public:
   boost::asio::io_context& m_context;
   serial_configuration m_conf;
   boost::asio::serial_port m_port;
+  encoder m_encoder;
   decoder m_decoder;
 };
 }

@@ -11,9 +11,9 @@
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/algorithm/string/replace.hpp>
 #include <ossia/detail/algorithms.hpp>
-
 #include <tsl/hopscotch_set.h>
 
+#include <iostream>
 #include <regex>
 
 namespace ossia
@@ -369,5 +369,12 @@ bool match(
   apply(p, vec);
   return ossia::find(vec, &node) != std::end(vec);
 }
+
 }
+
+std::ostream& regex_path::operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
+{
+  return s << p.address;
+}
+
 }

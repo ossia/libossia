@@ -21,8 +21,13 @@ struct fuzzysearch : search_filter
 {
   t_object m_object;
   t_symbol* m_scope{};
-  std::set<ossia::net::node_base*> m_roots{};
+
   void* m_outlet{};
+  long m_case_sensitive{};
+
+  std::set<ossia::net::node_base*> m_roots;
+  std::vector<std::string> patterns;
+  std::vector<ossia::net::fuzzysearch_result> matches;
 
   fuzzysearch(long argc, t_atom* argv);
 

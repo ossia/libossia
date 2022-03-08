@@ -292,9 +292,9 @@ public:
   void init()
   {
     m_server.listen(
-        [this] (const char* data, std::size_t sz) {
+        [this] (const unsigned char* data, std::size_t sz) {
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+          osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
         });
   }
 
@@ -408,9 +408,9 @@ public:
 
     m_client.connect();
     m_client.receive(
-        [this] (const char* data, std::size_t sz) {
+        [this] (const unsigned char* data, std::size_t sz) {
           auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+          osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
         });
   }
 

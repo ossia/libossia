@@ -16,6 +16,7 @@ struct search_filter
   t_symbol* m_filter_modes[3];
   long m_filter_modes_size{};
   long m_filter_visible{0};
+  long m_filter_terminal{0};
 
   bool filter(const ossia::net::node_base& node);
 
@@ -34,6 +35,9 @@ struct search_filter
     CLASS_ATTR_LONG(c, "visible", 0, T, m_filter_visible);
     CLASS_ATTR_LABEL(c, "visible", 0, "Filter by visibility (0 means no filtering, 1 only visible, 2 only hidden");
     CLASS_ATTR_FILTER_CLIP(c, "visible", 0, 2);
+
+    CLASS_ATTR_LONG(c, "terminal", 0, T, m_filter_terminal);
+    CLASS_ATTR_STYLE_LABEL(c, "terminal", 0, "onoff", "Only show terminal nodes");
   }
 };
 } // namespace max
