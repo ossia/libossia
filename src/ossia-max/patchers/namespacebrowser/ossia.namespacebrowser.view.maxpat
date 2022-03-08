@@ -55,7 +55,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 718.0, 349.0, 378.0, 760.0 ],
+						"rect" : [ 352.0, 50.0, 1785.0, 1350.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 1,
 						"default_fontsize" : 12.0,
@@ -83,6 +83,7 @@
 						"style" : "",
 						"subpatcher_template" : "evan_template",
 						"assistshowspatchername" : 0,
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-54",
@@ -123,17 +124,6 @@
 									"text" : "(Browse or type to search manually)",
 									"textcolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"varname" : "comment"
-								}
-
-							}
-, 							{
-								"box" : 								{
-									"id" : "obj-23",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 975.0, 1170.0, 32.0, 22.0 ],
-									"text" : "print"
 								}
 
 							}
@@ -3825,7 +3815,7 @@
 									"presentation" : 1,
 									"presentation_rect" : [ 0.0, 35.0, 375.0, 730.0 ],
 									"rowheight" : 20,
-									"rows" : 138,
+									"rows" : 137,
 									"sccolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"selmode" : 3,
 									"sgcolor" : [ 0.7, 0.7, 0.7, 0.701961 ],
@@ -4164,7 +4154,7 @@
 									"presentation" : 1,
 									"presentation_rect" : [ 180.0, 35.0, 195.0, 730.0 ],
 									"rowheight" : 20,
-									"rows" : 2,
+									"rows" : 1,
 									"sccolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"selmode" : 3,
 									"sgcolor" : [ 0.7, 0.7, 0.7, 0.701961 ],
@@ -4352,17 +4342,8 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-23", 0 ],
-									"order" : 1,
-									"source" : [ "obj-2", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-50", 0 ],
 									"midpoints" : [ 984.5, 1152.0, 1277.5, 1152.0, 1277.5, 268.0, 1014.5, 268.0 ],
-									"order" : 0,
 									"source" : [ "obj-2", 0 ]
 								}
 
@@ -5162,6 +5143,7 @@
 					"rounded" : 0.0,
 					"style" : "default",
 					"tabmode" : 0,
+					"text" : "none",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ],
 					"varname" : "textEdit"
 				}
