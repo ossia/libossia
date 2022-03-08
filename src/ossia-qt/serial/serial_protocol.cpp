@@ -19,22 +19,24 @@ namespace ossia
 namespace net
 {
 
-serial_wrapper::~serial_wrapper()
+serial_wrapper::~serial_wrapper() noexcept
 {
 
 }
 
 serial_protocol::serial_protocol(
-    const QByteArray& code, const QSerialPortInfo& bot, const int32_t rate)
+    const ossia::net::network_context_ptr& ctx
+      , const QByteArray& code
+      , const ossia::net::serial_configuration& cfg
+      )
     : protocol_base{flags{}}
     , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
-    , m_serialPort{bot, rate}
     , m_code{code}
 {
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
-      [=](QQmlComponent::Status status) {
+      [this, ctx, cfg](QQmlComponent::Status status) {
         qDebug() << status;
         qDebug() << m_component->errorString();
         if (!m_device)
@@ -43,20 +45,8 @@ serial_protocol::serial_protocol(
         switch (status)
         {
           case QQmlComponent::Status::Ready:
-          {
-            m_object = m_component->create();
-            m_object->setParent(m_engine->rootContext());
-
-            QVariant ret;
-            QMetaObject::invokeMethod(
-                m_object, "createTree", Q_RETURN_ARG(QVariant, ret));
-            qt::create_device<ossia::net::device_base, serial_node, serial_protocol>(
-                *m_device, ret.value<QJSValue>());
-
-            QObject::connect(&m_serialPort, &serial_wrapper::read,
-                             this, &serial_protocol::on_read);
+            this->create(ctx, cfg);
             return;
-          }
           case QQmlComponent::Status::Loading:
             return;
           case QQmlComponent::Status::Null:
@@ -65,7 +55,74 @@ serial_protocol::serial_protocol(
             return;
         }
       });
+}
 
+void serial_protocol::create(const ossia::net::network_context_ptr& ctx, const ossia::net::serial_configuration& cfg)
+{
+  m_object = m_component->create();
+  m_object->setParent(m_engine->rootContext());
+
+  QVariant ret;
+  QMetaObject::invokeMethod(
+      m_object, "createTree", Q_RETURN_ARG(QVariant, ret));
+
+  qt::create_device<ossia::net::device_base, serial_node, serial_protocol>(
+      *m_device, ret.value<QJSValue>());
+
+  m_jsObj = m_engine->newQObject(m_object);
+
+  ossia::net::serial_protocol_configuration conf;
+  conf.transport = cfg;
+
+  auto delim = m_jsObj.property("delimiter").toString();
+  auto frm = m_jsObj.property("framing").toString().toLower();
+
+  conf.framing = ossia::net::framing::none;
+  if(frm == "slip")
+  {
+    conf.framing = ossia::net::framing::slip;
+  }
+  else if(frm == "size")
+  {
+    conf.framing = ossia::net::framing::size_prefix;
+  }
+  else if(frm == "delimiter")
+  {
+    conf.framing = ossia::net::framing::line_delimiter;
+    conf.line_framing_delimiter = delim.toStdString();
+  }
+  else
+  {
+    // Keep the same behaviour than before: split on \r\n
+    conf.framing = ossia::net::framing::line_delimiter;
+    if(!delim.isEmpty())
+      conf.line_framing_delimiter = "\r\n";
+    else
+      conf.line_framing_delimiter = delim.toStdString();
+  }
+
+  m_onTextMessage = m_jsObj.property("onMessage");
+  m_onBinaryMessage = m_jsObj.property("onBinary");
+  m_onRead = m_jsObj.property("onRead");
+
+  if(m_onTextMessage.isCallable())
+  {
+    // Argument: parsed as message, passed to JS as QString
+  }
+  else if(m_onBinaryMessage.isCallable())
+  {
+    // Argument: parsed as message, passed to JS as QByteArray
+  }
+  else if(m_onRead.isCallable())
+  {
+    // Argument: raw un-processed data, passed to JS as QByteArray
+    conf.framing = ossia::net::framing::none;
+  }
+
+  m_port = std::make_shared<serial_wrapper>(ctx, conf);
+  QObject::connect(m_port.get(), &serial_wrapper::read,
+                   this, &serial_protocol::on_read, Qt::QueuedConnection);
+  return;
 }
 
 bool serial_protocol::pull(parameter_base&)
@@ -73,15 +130,29 @@ bool serial_protocol::pull(parameter_base&)
   return false;
 }
 
-void serial_protocol::on_read(const QByteArray& a)
+void serial_protocol::on_read(const QString& txt, const QByteArray& a)
 {
-  QVariant ret;
-  QMetaObject::invokeMethod(
-        m_object, "onMessage",
-        Q_RETURN_ARG(QVariant, ret),
-        Q_ARG(QVariant, a));
+  QJSValueList lst;
+  QJSValue arr;
+  if(m_onTextMessage.isCallable())
+  {
+    // Argument: parsed as message, passed to JS as QString
+    lst.append(m_engine->toScriptValue(txt));
+    arr = m_onTextMessage.callWithInstance(m_jsObj, lst);
+  }
+  else if(m_onBinaryMessage.isCallable())
+  {
+    // Argument: parsed as message, passed to JS as QByteArray
+    lst.append(m_engine->toScriptValue(a));
+    arr = m_onBinaryMessage.callWithInstance(m_jsObj, lst);
+  }
+  else if(m_onRead.isCallable())
+  {
+    // Argument: raw un-processed data, passed to JS as QByteArray
+    lst.append(m_engine->toScriptValue(a));
+    arr = m_onBinaryMessage.callWithInstance(m_jsObj, lst);
+  }
 
-  auto arr = ret.value<QJSValue>();
   // should be an array of { address, value } objects
   if (!arr.isArray())
     return;
@@ -106,15 +177,19 @@ void serial_protocol::on_read(const QByteArray& a)
 
     if (auto addr = n->get_parameter())
     {
-      qDebug() << "Applied value"
-               << QString::fromStdString(value_to_pretty_string(
-                                           qt::value_from_js(addr->value(), v)));
+      // qDebug() << "Applied value"
+      //          << QString::fromStdString(value_to_pretty_string(
+      //                                      qt::value_from_js(addr->value(), v)));
       addr->set_value(qt::value_from_js(addr->value(), v));
     }
   }
 }
 bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
+  // Prevent pushes when the device has not been set yet
+  if(!m_port)
+    return false;
+
   auto& ad = dynamic_cast<const serial_parameter&>(addr);
   auto str = ad.data().request;
   switch (addr.get_value_type())
@@ -162,9 +237,8 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
       throw std::runtime_error("serial_protocol::push: bad type");
   }
 
-  str += '\n';
-  qDebug() << str;
-  m_serialPort.write(str.toUtf8());
+  //qDebug() << str;
+  m_port->on_write(str.toUtf8());
   return false;
 }
 
@@ -190,6 +264,63 @@ void serial_protocol::set_device(device_base& dev)
 serial_protocol::~serial_protocol()
 {
 }
+
+
+framed_serial_socket serial_wrapper::make_socket(const network_context_ptr& ctx, const serial_protocol_configuration& port)
+{
+  switch(port.framing)
+  {
+    case ossia::net::framing::none:
+      return framed_serial_socket{std::in_place_index<0>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix:
+      return framed_serial_socket{std::in_place_index<1>, port.transport, ctx->context};
+    case ossia::net::framing::slip:
+      return framed_serial_socket{std::in_place_index<2>, port.transport, ctx->context};
+    case ossia::net::framing::line_delimiter:
+      return framed_serial_socket{std::in_place_index<3>, port.transport, ctx->context};
+  }
+}
+serial_wrapper::serial_wrapper(const network_context_ptr& ctx, const serial_protocol_configuration& port)
+  : m_socket{make_socket(ctx, port)}
+{
+  if(port.framing == ossia::net::framing::line_delimiter)
+  {
+    line_framing_socket* ptr = std::get_if<line_framing_socket>(&m_socket);
+    assert(ptr);
+    int sz = std::max((int) 7, (int) port.line_framing_delimiter.size());
+    std::copy_n(port.line_framing_delimiter.begin(), sz, ptr->m_encoder.delimiter);
+    std::copy_n(port.line_framing_delimiter.begin(), sz, ptr->m_decoder.delimiter);
+  }
+  static auto on_open = [] { fprintf(stderr, "connection open! \n"); };
+  static auto on_close = [] { fprintf(stderr, "connection on_close! \n"); };
+  static auto on_fail = [] { fprintf(stderr, "connection on_fail! \n"); };
+
+  std::visit([this] (auto& m_socket) {
+    m_socket.on_open.connect(on_open);
+    m_socket.on_close.connect(on_close);
+    m_socket.on_fail.connect(on_fail);
+
+    m_socket.connect();
+    m_socket.receive(
+        [this] (const unsigned char* data, std::size_t sz) {
+           QByteArray arr{reinterpret_cast<const char*>(data), (int)sz};
+           on_read(arr);
+        });
+  }, m_socket);
+}
+
+void serial_wrapper::on_write(const QByteArray& b) noexcept
+{
+  std::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
+}
+
+void serial_wrapper::on_read(const QByteArray& arr)
+{
+  QString str = QString::fromLatin1(arr);
+  read(str, arr);
+}
+
 }
 }
 #endif
+

@@ -9,6 +9,12 @@ namespace max_binding {
 
 bool search_filter::filter(const ossia::net::node_base& node)
 {
+  if(m_filter_terminal > 0)
+  {
+    if(!node.children().empty())
+      return true;
+  }
+
   if(m_filter_tags_size > 0)
   {
     bool match = true;

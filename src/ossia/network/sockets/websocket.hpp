@@ -36,7 +36,7 @@ struct websocket_simple_client : websocket_client
           if(!weak_client.lock())
             return;
           const auto& data = msg->get_raw_payload();
-          handler(data.data(), data.size());
+          handler((const unsigned char*)data.data(), data.size());
         });
 
     websocket_client::connect(m_host);
@@ -83,7 +83,7 @@ struct websocket_simple_server: ossia::net::websocket_server
         [handler = std::move(onMessage)](
             connection_handler hdl, server_t::message_ptr msg) {
           const auto& data = msg->get_raw_payload();
-          handler(data.data(), data.size());
+          handler((const unsigned char*)data.data(), data.size());
         });
 
     websocket_server::listen(m_port);

@@ -31,7 +31,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: |
-        brew install ninja
+        brew install ninja qt5
     - name: Build
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_QML_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
@@ -45,7 +45,7 @@ jobs:
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
       run: |
         source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
-        release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "ossia-qml-osx.zip" "io.ossia.ossia-qml"
+        release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     - name: Archive Package
       uses: actions/upload-artifact@v2

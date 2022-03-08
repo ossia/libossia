@@ -190,6 +190,7 @@ install(
         "${CMAKE_CURRENT_SOURCE_DIR}/examples"
         "${CMAKE_CURRENT_SOURCE_DIR}/init"
         "${CMAKE_CURRENT_SOURCE_DIR}/interfaces"
+        "${CMAKE_CURRENT_SOURCE_DIR}/javascript"
         "${CMAKE_CURRENT_SOURCE_DIR}/docs"
         "${CMAKE_CURRENT_SOURCE_DIR}/patchers"
         "${CMAKE_CURRENT_SOURCE_DIR}/extras"

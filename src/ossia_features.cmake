@@ -56,9 +56,9 @@ function(ossia_link_jack)
       "${OSSIA_SDK}/jack/include"
       )
   if(Jack_INCLUDE_DIR)
-    target_include_directories(ossia PUBLIC
+    target_include_directories(ossia SYSTEM PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/weakjack>)
-    target_include_directories(ossia PUBLIC $<BUILD_INTERFACE:${Jack_INCLUDE_DIR}>)
+    target_include_directories(ossia SYSTEM PUBLIC $<BUILD_INTERFACE:${Jack_INCLUDE_DIR}>)
     target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
   endif()
 endfunction()
@@ -298,20 +298,35 @@ if(OSSIA_DATAFLOW)
 
   # PortAudio support
   if(NOT OSSIA_DISABLE_PORTAUDIO)
-  if(TARGET PortAudio::PortAudio)
-    target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
-  elseif(TARGET portaudio)
-    target_link_libraries(ossia PUBLIC portaudio)
-  elseif(TARGET portaudio_static)
-    target_link_libraries(ossia PUBLIC portaudio_static)
-  else()
-    find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
-    if(PORTAUDIO_LIBRARY)
-      target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
+    if(TARGET PortAudio::PortAudio)
+      target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
+    elseif(TARGET portaudio)
+      target_link_libraries(ossia PUBLIC portaudio)
+    elseif(TARGET portaudio_static)
+      target_link_libraries(ossia PUBLIC portaudio_static)
+    else()
+      find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
+      if(PORTAUDIO_LIBRARY)
+        target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
+      endif()
     endif()
   endif()
 
+  # PipeWire
+  if(NOT OSSIA_DISABLE_PIPEWIRE)
+    find_path(PIPEWIRE_INCLUDEDIR pipewire-0.3/pipewire/filter.h)
+    find_path(SPA_INCLUDEDIR spa-0.2/spa/param/latency-utils.h)
+
+    if(PIPEWIRE_INCLUDEDIR AND SPA_INCLUDEDIR)
+      set(PIPEWIRE_INCLUDEDIR "${PIPEWIRE_INCLUDEDIR}/pipewire-0.3")
+      set(SPA_INCLUDEDIR "${SPA_INCLUDEDIR}/spa-0.2")
+      target_include_directories(ossia SYSTEM PUBLIC
+        "$<BUILD_INTERFACE:${PIPEWIRE_INCLUDEDIR}>"
+        "$<BUILD_INTERFACE:${SPA_INCLUDEDIR}>"
+      )
+    endif()
   endif()
+
   #SDL support
   set(SDL_BUILDING_LIBRARY TRUE)
   if(NOT OSSIA_DISABLE_SDL)

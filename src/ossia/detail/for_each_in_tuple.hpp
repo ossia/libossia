@@ -72,9 +72,9 @@ void for_each_in_tuples_impl(
 {
   using namespace std;
   using namespace tuplet;
-  (forward<F>(func)(
-       get<I1s>(forward<T1>(t1)),
-       get<I1s>(forward<T2>(t2))
+  (std::forward<F>(func)(
+       get<I1s>(std::forward<T1>(t1)),
+       get<I1s>(std::forward<T2>(t2))
        ),
    ...);
 }
@@ -91,7 +91,7 @@ void for_each_in_tuples(T1<T1s...>&& t1, T2<T2s...>&& t2, F&& func)
     for_each_in_tuples_impl(
         move<T1<T1s...>>(t1),
         move<T2<T2s...>>(t2),
-        forward<F>(func),
+        std::forward<F>(func),
         make_index_sequence<sizeof...(T1s)>()
         );
   }
@@ -107,7 +107,7 @@ void for_each_in_tuples_ref_impl(
 {
   using namespace std;
   using namespace tuplet;
-  (forward<F>(func)(
+  (std::forward<F>(func)(
        get<I1s>(t1),
        get<I1s>(t2)
        ),

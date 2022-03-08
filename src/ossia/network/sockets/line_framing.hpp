@@ -3,6 +3,7 @@
 #include <ossia/detail/pod_vector.hpp>
 
 #include <boost/asio/read.hpp>
+#include <boost/asio/read_until.hpp>
 #include <boost/asio/write.hpp>
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
@@ -13,13 +14,14 @@ namespace ossia::net
 {
 
 template<typename Socket>
-struct size_prefix_decoder
+struct line_framing_decoder
 {
   Socket& socket;
+  char delimiter[8] = {0};
   int32_t m_next_packet_size {};
   ossia::pod_vector<char> m_data;
 
-  explicit size_prefix_decoder(Socket& socket)
+  explicit line_framing_decoder(Socket& socket)
       : socket{socket}
   {
     m_data.reserve(65535);
@@ -28,31 +30,22 @@ struct size_prefix_decoder
   template <typename F>
   void receive(F f)
   {
+    m_data.clear();
+
     // Receive the size prefix
-    socket.async_read_some(
-        boost::asio::buffer(&m_next_packet_size, sizeof(int32_t)),
-        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
-          read_size(std::move(f), ec, sz);
-        });
-  }
-
-  template <typename F>
-  void read_size(F&& f, boost::system::error_code ec, std::size_t sz)
-  {
-    if(!f.validate_stream(ec))
-      return;
-
-    boost::endian::big_to_native_inplace(m_next_packet_size);
-    if (m_next_packet_size <= 0)
-      return;
-
-    m_data.resize(m_next_packet_size);
-    boost::asio::async_read(socket,
-        boost::asio::buffer(m_data.data(), m_next_packet_size),
-        boost::asio::transfer_exactly(m_next_packet_size),
-        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
-          read_data(std::move(f), ec, sz);
-        });
+    boost::asio::async_read_until(
+          socket,
+          boost::asio::dynamic_buffer(m_data),
+          (const char*) delimiter,
+          [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
+            int new_sz = sz;
+            new_sz -= strlen(delimiter);
+            if(new_sz > 0)
+              read_data(std::move(f), ec, new_sz);
+            else
+              this->receive(std::move(f));
+          }
+    );
   }
 
   template <typename F>
@@ -77,16 +70,15 @@ struct size_prefix_decoder
 };
 
 template<typename Socket>
-struct size_prefix_encoder
+struct line_framing_encoder
 {
   Socket& socket;
+  char delimiter[8] = {0};
 
   void write(const char* data, std::size_t sz)
   {
-    int32_t packet_size = sz;
-    boost::endian::native_to_big_inplace(packet_size);
-    this->write(socket, boost::asio::buffer(reinterpret_cast<const char*>(&packet_size), sizeof(int32_t)));
     this->write(socket, boost::asio::buffer(data, sz));
+    this->write(socket, boost::asio::buffer(delimiter, strlen(delimiter)));
   }
 
   template<typename T>
@@ -102,12 +94,12 @@ struct size_prefix_encoder
   }
 };
 
-struct size_prefix_framing
+struct line_framing
 {
   template<typename Socket>
-  using encoder = size_prefix_encoder<Socket>;
+  using encoder = line_framing_encoder<Socket>;
   template<typename Socket>
-  using decoder = size_prefix_decoder<Socket>;
+  using decoder = line_framing_decoder<Socket>;
 };
 
 }

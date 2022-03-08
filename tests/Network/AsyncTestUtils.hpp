@@ -2,6 +2,9 @@
 #include "ProtocolTestUtils.hpp"
 
 #include <ossia/network/context.hpp>
+#include <ossia/network/value/format_value.hpp>
+#include <ossia/detail/fmt.hpp>
+
 
 using namespace ossia;
 
