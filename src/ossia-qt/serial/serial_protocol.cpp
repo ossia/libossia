@@ -277,8 +277,26 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
   if(!m_port)
     return false;
 
-  auto& ad = dynamic_cast<const serial_parameter&>(addr);
-  auto str = ad.data().request;
+  auto& ad = const_cast<serial_parameter&>(dynamic_cast<const serial_parameter&>(addr));
+  QJSValue& req = ad.data().request;
+  QString str;
+  if(req.isString())
+  {
+    str = req.toString();
+  }
+  else if(req.isCallable())
+  {
+    auto res = req.call();
+    if(res.isError())
+      return false;
+
+    str = res.toString();
+  }
+  else
+  {
+    return false;
+  }
+
   switch (addr.get_value_type())
   {
     case ossia::val_type::FLOAT:

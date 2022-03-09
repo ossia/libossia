@@ -38,18 +38,14 @@ struct serial_parameter_data_base
       = default;
   serial_parameter_data_base(const QJSValue& val)
   {
-    auto r = val.property("request");
-    if (r.isString())
+    request = val.property("request");
+    if (!request.isString() && !request.isCallable())
     {
-      request = r.toString();
-    }
-    else
-    {
-      request = val.property("name").toString();
+      request = val.property("name");
     }
   }
 
-  QString request;
+  QJSValue request;
 };
 struct serial_parameter_data final : public parameter_data,
                                      public serial_parameter_data_base
@@ -73,7 +69,7 @@ struct serial_parameter_data final : public parameter_data,
 
   bool valid() const noexcept
   {
-    return !request.isEmpty() || type;
+    return request.isString() || request.isCallable() || type;
   }
 };
 
