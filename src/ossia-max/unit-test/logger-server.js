@@ -89,6 +89,7 @@ async function main()
 
     for(overdrive = 0; overdrive<2; overdrive++)
     {
+        tweak_max_prefs();
         for(let index = 0; index < files.length; index++)
         {
             file = files[index];
@@ -108,12 +109,11 @@ async function main()
                 console.log("");
             }
         }
-        report_and_exit();
+        write_report();
     }
    
     restore_max_prefs();
     process.exit(failed_tests.size);
-
 }
 
 function launch_max(patcher_path)
@@ -131,7 +131,7 @@ function launch_max(patcher_path)
     });
 }
 
-function report_and_exit()
+function write_report()
 {
     console.log("\n\n");
     console.log('======');
@@ -160,9 +160,13 @@ function read_max_prefs()
 {
     prefs_rawdata = fs.readFileSync(max_prefs_file);
     prefs = JSON.parse(prefs_rawdata);
+}
 
+function tweak_max_prefs()
+{
     // disable window restoratin on load
     prefs["preferences"]["restorewindows"] = 0;
+    prefs["preferences"]["overdrive"] = overdrive;
     write_max_prefs();
 }
 
