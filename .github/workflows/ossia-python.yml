@@ -64,10 +64,10 @@ jobs:
         cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1
         cmake --build build
         cmake --build build --target install
-    - name: Build Wheel
-      run: ./ci/build-wheels.sh
-    - name: Archive Package
-      uses: actions/upload-artifact@v2
-      with:
-        name: ossia-pd
-        path: install/ossia-pd-package/ossia
+#    - name: Build Wheel
+#      run: ./ci/build-wheels.sh
+#    - name: Archive Package
+#      uses: actions/upload-artifact@v2
+#      with:
+#        name: ossia-pd
+#        path: install/ossia-pd-package/ossia

@@ -34,7 +34,7 @@ jobs:
         )
 
         (
-          ./cninja ${GITHUB_WORKSPACE} static minimal benchmarks -- -DCMAKE_PREFIX_PATH=$PWD/benchmark/build/inst
+          cninja ${GITHUB_WORKSPACE} static minimal benchmarks -- -DCMAKE_PREFIX_PATH=$PWD/benchmark/build/inst
           mv build-* build
         )
 
