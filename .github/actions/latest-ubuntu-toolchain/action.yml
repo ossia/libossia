@@ -1,0 +1,29 @@
+name: 'Install latest toolchains'
+description: 'Install latest toolchains on Ubuntu'
+runs:
+  using: "composite"
+  steps:
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
+        sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
+
+        sudo apt-get update -yqq
+        sudo apt-get install -yqq kitware-archive-keyring
+        sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+
+        echo 'deb http://apt.llvm.org/focal/ llvm-toolchain-focal-14 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+        sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421
+        sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+        sudo add-apt-repository --yes ppa:beineri/opt-qt-5.15.2-focal
+        sudo apt-get update -qq
+        sudo apt purge --auto-remove cmake
+        sudo apt-get install -yqq \
+            g++-11 binutils ninja-build cmake \
+            clang-14 lld-14 \
+            qt515base qt515declarative qt515svg qt515quickcontrols2 qt515websockets qt515serialport \
+            libasound2-dev portaudio19-dev \
+            mesa-common-dev libgl1-mesa-dev \
+            libbluetooth-dev \
+            libavahi-client-dev

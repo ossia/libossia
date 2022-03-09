@@ -1,0 +1,25 @@
+name: 'Install RPi toolchain'
+description: 'Install RPi toolchain'
+runs:
+  using: "composite"
+  steps:
+    - name: Install Dependencies
+      shell: bash
+      run: |
+        sudo apt-get update -yqq 
+        sudo apt-get upgrade -yqq
+        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev wget
+
+        wget -nv https://github.com/ossia/sdk/releases/download/sdk24/cross-gcc-10.3.0-pi.tar.gz
+        tar xf cross-gcc-10.3.0-pi.tar.gz
+        sudo mv cross-pi-gcc-10.3.0-2 /opt/
+        sudo ln -s /opt/cross-pi-gcc-10.3.0-2 /opt/cross-pi-gcc
+
+        sudo ln -s /usr/include/arm-linux-gnueabihf/sys /usr/include/sys
+        sudo ln -s /usr/include/arm-linux-gnueabihf/bits /usr/include/bits
+        sudo ln -s /usr/include/arm-linux-gnueabihf/gnu /usr/include/gnu
+        sudo ln -s /usr/include/arm-linux-gnueabihf/asm /usr/include/asm
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crti.o /usr/lib/crti.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
+        sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
+        

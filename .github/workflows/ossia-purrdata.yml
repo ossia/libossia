@@ -120,28 +120,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update -yqq 
-        sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev wget
-
-        wget -nv https://www.dropbox.com/s/lwchd3va49sd43p/gcc-8.2.0-rpi.tar.bz2
-        tar xf gcc-8.2.0-rpi.tar.bz2
-        sudo mv cross-pi-gcc-8.2.0/ /opt/
-        sudo ln -s /opt/cross-pi-gcc-8.2.0 /opt/cross-pi-gcc
-
-        sudo ln -s /usr/include/arm-linux-gnueabihf/sys /usr/include/sys
-        sudo ln -s /usr/include/arm-linux-gnueabihf/bits /usr/include/bits
-        sudo ln -s /usr/include/arm-linux-gnueabihf/gnu /usr/include/gnu
-        sudo ln -s /usr/include/arm-linux-gnueabihf/asm /usr/include/asm
-        sudo ln -s /usr/lib/arm-linux-gnueabihf/crti.o /usr/lib/crti.o
-        sudo ln -s /usr/lib/arm-linux-gnueabihf/crt1.o /usr/lib/crt1.o
-        sudo ln -s /usr/lib/arm-linux-gnueabihf/crtn.o /usr/lib/crtn.o
+    - uses: ./.github/actions/latest-rpi-toolchain
     - name: Build
       run: |
         export CTEST_OUTPUT_ON_FAILURE=1
-        export RPI_ROOT_PATH=/opt/cross-pi-gcc-8.2.0
+        export RPI_ROOT_PATH=/opt/cross-pi-gcc
         export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
         export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
         export PATH=/opt/cross-pi-gcc/bin:${PATH}
