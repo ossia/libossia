@@ -15,12 +15,12 @@ jobs:
         sudo apt install -qq -y build-essential g++ ninja-build wget
         wget https://github.com/jcelerier/cninja/releases/download/v3.7.6/cninja-v3.7.6-Linux.tar.gz
         tar xaf cninja-*-Linux.tar.gz
-        mv cninja "$(System.DefaultWorkingDirectory)/"
+        sudo mv cninja "/usr/bin/"
         rm *.tar.gz
+
     - name: Build
       run: |
         echo $(variables.gitTag)
-        cd $(System.DefaultWorkingDirectory)
 
         git clone https://github.com/google/benchmark
         git clone https://github.com/google/googletest.git benchmark/googletest
