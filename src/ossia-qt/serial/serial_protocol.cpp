@@ -236,8 +236,9 @@ void serial_protocol::on_read(const QString& txt, const QByteArray& a)
   {
     // Argument: raw un-processed data, passed to JS as QByteArray
     lst.append(m_engine->toScriptValue(a));
-    arr = m_onBinaryMessage.callWithInstance(m_jsObj, lst);
+    arr = m_onRead.callWithInstance(m_jsObj, lst);
   }
+
 
   // should be an array of { address, value } objects
   if (!arr.isArray())
