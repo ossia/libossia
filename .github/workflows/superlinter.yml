@@ -19,7 +19,7 @@ jobs:
 
       # Runs the Super-Linter action
       - name: Prepare Build Environment
-        uses: github/super-linter@v3
+        uses: github/super-linter@v4
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
