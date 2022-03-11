@@ -280,44 +280,94 @@ TEST_CASE ("test_bool", "test_bool")
 }
 
 
-TEST_CASE ("test_impulse", "test_impulse")
+TEST_CASE ("test_impulse_json", "test_impulse")
 {
-  ossia::net::generic_device dev{"mydevice"};
+  GIVEN("A device with impulse members")
+  {
+    ossia::net::generic_device dev{"mydevice"};
 
-  auto& root = dev.get_root_node();
+    auto& root = dev.get_root_node();
 
-  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/foo"));
-  ossia::try_setup_parameter("impulse", ossia::net::create_node(root, "/bar"));
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/foo"));
+    ossia::try_setup_parameter("impulse", ossia::net::create_node(root, "/bar"));
 
-  auto preset = ossia::presets::make_preset(dev);
-  auto presetJSON = ossia::presets::write_json("mydevice", preset);
+    auto preset = ossia::presets::make_preset(dev);
 
-  rapidjson::Document doc;
-  doc.Parse(presetJSON);
-  REQUIRE(doc.IsObject());
-  REQUIRE(doc["mydevice"].IsObject());
-  REQUIRE(doc["mydevice"]["foo"].IsNumber());
-  REQUIRE(doc["mydevice"].FindMember("bar") == doc["mydevice"].MemberEnd());
+    THEN("The base preset does not have them")
+    {
+      REQUIRE(preset.size() == 1);
+      REQUIRE(preset[0].first == "/foo");
+      REQUIRE(preset[0].second == ossia::value(0.f));
+    }
+
+    THEN("The preset -> json preset does not have them")
+    {
+      auto presetJSON = ossia::presets::write_json("mydevice", preset);
+      rapidjson::Document doc;
+      doc.Parse(presetJSON);
+      REQUIRE(doc.IsObject());
+      REQUIRE(doc["mydevice"].IsObject());
+      REQUIRE(doc["mydevice"]["foo"].IsNumber());
+      REQUIRE(doc["mydevice"].FindMember("bar") == doc["mydevice"].MemberEnd());
+    }
+
+    THEN("The json preset does not have them")
+    {
+       auto presetJSON = ossia::presets::make_json_preset(root);
+       INFO(presetJSON);
+       rapidjson::Document doc;
+       doc.Parse(presetJSON);
+       REQUIRE(doc.IsObject());
+       REQUIRE(doc["foo"].IsNumber());
+       REQUIRE(doc.FindMember("bar") == doc.MemberEnd());
+    }
+  }
 }
 
-TEST_CASE ("test_get_set_bi", "test_get_set_bi")
+TEST_CASE ("test_get_set_bi_json", "test_get_set_bi")
 {
-  ossia::net::generic_device dev{"mydevice"};
+  GIVEN("A device with bi/get/set members")
+  {
+    ossia::net::generic_device dev{"mydevice"};
 
-  auto& root = dev.get_root_node();
+    auto& root = dev.get_root_node();
 
-  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/get"))->set_access(ossia::access_mode::GET);
-  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/set"))->set_access(ossia::access_mode::SET);
-  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/bi"))->set_access(ossia::access_mode::BI);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/get"))->set_access(ossia::access_mode::GET);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/set"))->set_access(ossia::access_mode::SET);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/bi"))->set_access(ossia::access_mode::BI);
 
-  auto preset = ossia::presets::make_preset(dev);
-  auto presetJSON = ossia::presets::write_json("mydevice", preset);
+    auto preset = ossia::presets::make_preset(dev);
 
-  rapidjson::Document doc;
-  doc.Parse(presetJSON);
-  REQUIRE(doc.IsObject());
-  REQUIRE(doc["mydevice"].IsObject());
-  REQUIRE(doc["mydevice"].FindMember("get") == doc["mydevice"].MemberEnd());
-  REQUIRE(doc["mydevice"].FindMember("set") == doc["mydevice"].MemberEnd());
-  REQUIRE(doc["mydevice"]["bi"].IsNumber());
+    THEN("The base preset does not have them")
+    {
+      REQUIRE(preset.size() == 1);
+      REQUIRE(preset[0].first == "/bi");
+      REQUIRE(preset[0].second == ossia::value(0.f));
+    }
+
+    THEN("The preset -> json preset does not have them")
+    {
+      auto presetJSON = ossia::presets::write_json("mydevice", preset);
+
+      rapidjson::Document doc;
+      doc.Parse(presetJSON);
+      REQUIRE(doc.IsObject());
+      REQUIRE(doc["mydevice"].IsObject());
+      REQUIRE(doc["mydevice"].FindMember("get") == doc["mydevice"].MemberEnd());
+      REQUIRE(doc["mydevice"].FindMember("set") == doc["mydevice"].MemberEnd());
+      REQUIRE(doc["mydevice"]["bi"].IsNumber());
+    }
+
+    THEN("The json preset does not have them")
+    {
+       auto presetJSON = ossia::presets::make_json_preset(root);
+       INFO(presetJSON);
+       rapidjson::Document doc;
+       doc.Parse(presetJSON);
+       REQUIRE(doc.IsObject());
+       REQUIRE(doc["bi"].IsNumber());
+       REQUIRE(doc.FindMember("get") == doc.MemberEnd());
+       REQUIRE(doc.FindMember("set") == doc.MemberEnd());
+    }
+  }
 }
