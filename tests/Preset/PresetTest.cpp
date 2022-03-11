@@ -13,6 +13,7 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 
+#include <ossia/detail/json.hpp>
 #include <iostream>
 
 TEST_CASE ("test_device", "test_device")
@@ -46,16 +47,12 @@ TEST_CASE ("test_device", "test_device")
   a4->push_value("bar"s);
 
   auto preset = ossia::presets::make_preset(dev);
-  std::cerr << preset.begin()->first;
   auto presetJSON = ossia::presets::write_json("mydevice", preset);
-  std::cerr << presetJSON.c_str();
-
-  std::cerr << ossia::presets::write_json(dev);
+  ossia::presets::write_json(dev);
 }
 
 TEST_CASE ("test_nodes", "test_nodes")
 {
-
   ossia::net::generic_device dev{"mydevice"};
 
   auto& root = dev.get_root_node();
@@ -69,8 +66,6 @@ TEST_CASE ("test_nodes", "test_nodes")
 
   auto preset = ossia::presets::make_preset(dev);
   auto presetJSON = ossia::presets::write_json("mydevice", preset);
-  std::cerr << presetJSON.c_str();
-
 }
 
 TEST_CASE ("test_parse", "test_parse")
@@ -125,7 +120,6 @@ TEST_CASE ("test_parse", "test_parse")
                                               ossia::detail::parse::value_,
                                               boost::spirit::x3::ascii::space,
                                               v);
-    std::cerr << str.c_str();
     REQUIRE(ok);
   }
 
@@ -141,7 +135,6 @@ TEST_CASE ("test_parse", "test_parse")
           x3::lexeme [ address_ >> x3::lit("\t") ],
         boost::spirit::x3::ascii::space,
         v);
-    std::cerr << str.c_str();
     REQUIRE(ok);
   }
 
@@ -159,7 +152,6 @@ TEST_CASE ("test_parse", "test_parse")
                                               ossia::detail::parse::preset_pair_,
                                               boost::spirit::x3::ascii::space,
                                               v);
-    std::cerr << str.c_str();
     REQUIRE(ok);
   }
 }
@@ -178,12 +170,9 @@ TEST_CASE ("test_nodes_txt", "test_nodes_txt")
 
   auto preset = ossia::presets::make_preset(dev);
   auto presetStr = ossia::presets::to_string(preset);
-  std::cerr << presetStr.c_str();
 
   auto loadPreset = ossia::presets::from_string(presetStr);
-  for(auto s : loadPreset) std::cerr << s.first.c_str();
   auto presetStr2 = ossia::presets::to_string(loadPreset);
-  std::cerr << presetStr2.c_str();
   REQUIRE(loadPreset == preset);
 
 }
@@ -211,12 +200,9 @@ TEST_CASE ("test_vecnf", "test_vecnf")
   auto presetStr2 = ossia::presets::to_string(loadPreset);
   REQUIRE(loadPreset == preset);
 
-  std::cerr << "Write json";
   const auto json = ossia::presets::write_json("whatever", loadPreset);
-  std::cerr << json.c_str();
-  std::cerr << "Read json";
   const auto read_json = ossia::presets::read_json(json, false);
-  std::cerr << ossia::presets::to_string(read_json).c_str();
+  ossia::presets::to_string(read_json);
 
 }
 
@@ -243,18 +229,14 @@ TEST_CASE ("test_values", "test_values")
   auto presetStr2 = ossia::presets::to_string(loadPreset);
   REQUIRE(loadPreset == preset);
 
-  std::cerr << "Write json";
   const auto json = ossia::presets::write_json("whatever", loadPreset);
-  std::cerr << json.c_str();
-  std::cerr << "Read json";
   const auto read_json = ossia::presets::read_json(json, false);
-  std::cerr << ossia::presets::to_string(read_json).c_str();
+  ossia::presets::to_string(read_json);
 
 }
 
 TEST_CASE ("test_bool", "test_bool")
 {
-  std::cerr << "\n\n\ntest_bool\n\n\n";
   using namespace std::literals;
   ossia::net::generic_device dev{"mydevice"};
   auto& root = dev.get_root_node();
@@ -275,7 +257,6 @@ TEST_CASE ("test_bool", "test_bool")
     a1->push_value(false);
     a2->push_value(true);
     auto np = ossia::presets::read_json(presetJSON);
-    std::cerr << ossia::presets::to_string(np) << std::endl;
 
     REQUIRE(preset == np);
     REQUIRE_NOTHROW([&] {
@@ -296,4 +277,47 @@ TEST_CASE ("test_bool", "test_bool")
       REQUIRE(a1->value() == ossia::value{true});
       REQUIRE(a2->value() == ossia::value{false});
   }
+}
+
+
+TEST_CASE ("test_impulse", "test_impulse")
+{
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/foo"));
+  ossia::try_setup_parameter("impulse", ossia::net::create_node(root, "/bar"));
+
+  auto preset = ossia::presets::make_preset(dev);
+  auto presetJSON = ossia::presets::write_json("mydevice", preset);
+
+  rapidjson::Document doc;
+  doc.Parse(presetJSON);
+  REQUIRE(doc.IsObject());
+  REQUIRE(doc["mydevice"].IsObject());
+  REQUIRE(doc["mydevice"]["foo"].IsNumber());
+  REQUIRE(doc["mydevice"].FindMember("bar") == doc["mydevice"].MemberEnd());
+}
+
+TEST_CASE ("test_get_set_bi", "test_get_set_bi")
+{
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/get"))->set_access(ossia::access_mode::GET);
+  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/set"))->set_access(ossia::access_mode::SET);
+  ossia::try_setup_parameter("float", ossia::net::create_node(root, "/bi"))->set_access(ossia::access_mode::BI);
+
+  auto preset = ossia::presets::make_preset(dev);
+  auto presetJSON = ossia::presets::write_json("mydevice", preset);
+
+  rapidjson::Document doc;
+  doc.Parse(presetJSON);
+  REQUIRE(doc.IsObject());
+  REQUIRE(doc["mydevice"].IsObject());
+  REQUIRE(doc["mydevice"].FindMember("get") == doc["mydevice"].MemberEnd());
+  REQUIRE(doc["mydevice"].FindMember("set") == doc["mydevice"].MemberEnd());
+  REQUIRE(doc["mydevice"]["bi"].IsNumber());
 }
