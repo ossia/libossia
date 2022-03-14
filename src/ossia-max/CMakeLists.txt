@@ -91,6 +91,7 @@ set(PROJECT_SRCS
 
 add_library(${PROJECT_NAME} SHARED ${PROJECT_SRCS})
 target_compile_options(${PROJECT_NAME} PRIVATE ${OSSIA_COMPILE_OPTIONS})
+target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})

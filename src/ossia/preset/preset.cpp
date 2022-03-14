@@ -1291,7 +1291,7 @@ void ossia::presets::apply_preset(
   }
 }
 
-ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
+ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node, preset_save_options opt)
 {
   ossia::presets::preset cue;
   auto nodes = ossia::net::list_all_children(&node);
@@ -1299,8 +1299,7 @@ ossia::presets::preset ossia::presets::make_preset(ossia::net::node_base& node)
   {
     if (auto param = n->get_parameter())
     {
-      if (param->get_value_type() != ossia::val_type::IMPULSE
-          && param->get_access() == ossia::access_mode::BI )
+      if (must_save_parameter(*param, opt))
       {
         std::string key = "/" + n->get_name();
         key.reserve(100);

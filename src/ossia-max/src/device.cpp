@@ -98,6 +98,13 @@ void device::class_setup(t_class *c)
   class_addmethod(
       c, (method) device::resend_all_values,
       "send_all_values", A_GIMME, 0);
+
+  CLASS_ATTR_LONG(c, "saveget", 0, device, m_saveget);
+  CLASS_ATTR_STYLE_LABEL(c, "saveget", 0, "onoff", "Save get parameters when snapshotting presets");
+  CLASS_ATTR_LONG(c, "saveset", 0, device, m_saveset);
+  CLASS_ATTR_STYLE_LABEL(c, "saveset", 0, "onoff", "Save set parameters when snapshotting presets");
+  CLASS_ATTR_LONG(c, "savebi", 0, device,  m_savebi);
+  CLASS_ATTR_STYLE_LABEL(c, "savebi", 0,  "onoff", "Save bi parameters when snapshotting presets");
 }
 
 void* device::create(t_symbol*, long argc, t_atom* argv)

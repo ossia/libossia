@@ -53,7 +53,7 @@ struct search_result
   t_object* patcher{};
   t_object* parent{};
   t_symbol* classname{};
-  int level; // relative hierarchy level
+  int level{}; // relative hierarchy level
 
   friend bool operator<(search_result a, search_result b)
   {
@@ -85,7 +85,7 @@ public:
   void* m_highlight_clock{}; // clock to reset color after some amount of time
                              // to highlight the object in the patcher
 
-  float m_rate{10};
+  float m_rate{10.f};
 
   std::shared_ptr<ossia::net::generic_device> m_device{};
   std::vector<std::shared_ptr<matcher>> m_matchers{};
@@ -127,6 +127,10 @@ public:
   long m_defer_set{1};
   long m_recall_safe{};
   long m_trim_addr{1};
+  long m_saveget{};
+  long m_saveset{};
+  long m_savebi{1};
+
   t_object* m_patcher{};
 
   long m_tags_size{};

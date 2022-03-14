@@ -110,7 +110,7 @@ OSSIA_EXPORT void apply_preset(
     keep_arch_type t = keep_arch_on, presets::instance_functions = {},
     bool allow_nonterminal = false, bool remove_first = true);
 
-OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&);
+OSSIA_EXPORT presets::preset make_preset(ossia::net::node_base&, preset_save_options = {});
 
 OSSIA_EXPORT ossia::net::node_base*
 get_node(ossia::net::node_base&, const std::string&);

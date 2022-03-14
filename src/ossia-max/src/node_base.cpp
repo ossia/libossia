@@ -62,6 +62,10 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
       bool make_kiss = filename.size() >= 4 &&
                  filename.compare(filename.size() - 4, 4, ".txt") == 0;
 
+      ossia::presets::preset_save_options opt{};
+      opt.save_bi  = x->m_savebi  > 0;
+      opt.save_get = x->m_saveget > 0;
+      opt.save_set = x->m_saveset > 0;
       try
       {
         if (make_kiss)
@@ -71,7 +75,7 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
           ossia::presets::write_file(kiss, filename);
         } else {
 
-          auto json = ossia::presets::make_json_preset(*node);
+          auto json = ossia::presets::make_json_preset(*node, opt);
           ossia::presets::write_file(json, filename);
         }
         A_SETLONG(status+1, 1);
