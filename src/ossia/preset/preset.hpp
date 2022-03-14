@@ -48,6 +48,12 @@ enum keep_arch_type
   keep_arch_off
 };
 
+struct preset_save_options {
+  bool save_get{false};
+  bool save_set{false};
+  bool save_bi{true};
+};
+
 /*!
  * \brief export device tree to a json tree
  * \param device device to export to json
@@ -73,7 +79,7 @@ OSSIA_EXPORT const std::string read_file(const std::string& filename);
  * @return JSON string
  */
 OSSIA_EXPORT const std::string
-make_json_preset(const ossia::net::node_base& node);
+make_json_preset(const ossia::net::node_base& node, preset_save_options = {});
 
 typedef void (*func_t)(ossia::net::node_base* n);
 
