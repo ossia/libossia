@@ -70,7 +70,7 @@ void node_base::preset(node_base *x, t_symbol*, long argc, t_atom* argv)
       {
         if (make_kiss)
         {
-          auto preset = ossia::presets::make_preset(*node);
+          auto preset = ossia::presets::make_preset(*node, opt);
           auto kiss = ossia::presets::to_string(preset);
           ossia::presets::write_file(kiss, filename);
         } else {
