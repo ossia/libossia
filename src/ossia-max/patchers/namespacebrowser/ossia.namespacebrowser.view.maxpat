@@ -128,17 +128,6 @@
 							}
 , 							{
 								"box" : 								{
-									"id" : "obj-23",
-									"maxclass" : "newobj",
-									"numinlets" : 1,
-									"numoutlets" : 0,
-									"patching_rect" : [ 975.0, 1170.0, 32.0, 22.0 ],
-									"text" : "print"
-								}
-
-							}
-, 							{
-								"box" : 								{
 									"id" : "obj-190",
 									"linecount" : 4,
 									"maxclass" : "comment",
@@ -3825,7 +3814,7 @@
 									"presentation" : 1,
 									"presentation_rect" : [ 0.0, 35.0, 375.0, 730.0 ],
 									"rowheight" : 20,
-									"rows" : 138,
+									"rows" : 1,
 									"sccolor" : [ 0.8, 0.8, 0.8, 1.0 ],
 									"selmode" : 3,
 									"sgcolor" : [ 0.7, 0.7, 0.7, 0.701961 ],
@@ -4352,17 +4341,8 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-23", 0 ],
-									"order" : 1,
-									"source" : [ "obj-2", 0 ]
-								}
-
-							}
-, 							{
-								"patchline" : 								{
 									"destination" : [ "obj-50", 0 ],
 									"midpoints" : [ 984.5, 1152.0, 1277.5, 1152.0, 1277.5, 268.0, 1014.5, 268.0 ],
-									"order" : 0,
 									"source" : [ "obj-2", 0 ]
 								}
 
@@ -5062,7 +5042,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-25",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "outlet",
 					"numinlets" : 1,
 					"numoutlets" : 0,
@@ -5134,7 +5114,7 @@
 				"box" : 				{
 					"comment" : "",
 					"id" : "obj-10",
-					"index" : 1,
+					"index" : 0,
 					"maxclass" : "inlet",
 					"numinlets" : 0,
 					"numoutlets" : 1,
@@ -5389,6 +5369,41 @@
 
 			}
  ],
+		"parameters" : 		{
+			"obj-123::obj-14" : [ "live.text[167]", "live.text", 0 ],
+			"obj-123::obj-15" : [ "live.text[166]", "live.text", 0 ],
+			"parameterbanks" : 			{
+
+			}
+,
+			"inherited_shortname" : 1
+		}
+,
+		"dependency_cache" : [ 			{
+				"name" : "ossia.explorer.mxe64",
+				"type" : "mx64"
+			}
+, 			{
+				"name" : "ossia.fuzzysearch.mxe64",
+				"type" : "mx64"
+			}
+, 			{
+				"name" : "ossia.get_onscreen_position.js",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/javascript",
+				"patcherrelativepath" : "../../../../../../Max 8/Packages/ossia/javascript",
+				"type" : "TEXT",
+				"implicit" : 1
+			}
+, 			{
+				"name" : "ossia.remote.mxe64",
+				"type" : "mx64"
+			}
+, 			{
+				"name" : "ossia.view.mxe64",
+				"type" : "mx64"
+			}
+ ],
+		"autosave" : 0,
 		"styles" : [ 			{
 				"name" : "Jamoma_highlighted_orange",
 				"default" : 				{
