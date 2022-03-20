@@ -4,7 +4,10 @@ get_filename_component(OSSIA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 list(APPEND CMAKE_MODULE_PATH ${OSSIA_CMAKE_DIR})
 find_dependency(Boost 1.67 REQUIRED)
+find_dependency(SDL2)
+
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
+
 
 if(NOT TARGET ossia::ossia)
   include("${OSSIA_CMAKE_DIR}/ossia-targets.cmake")

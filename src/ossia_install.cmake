@@ -6,9 +6,13 @@ set(3RDPARTY_INSTALL_PATTERN
   PATTERN "*.hpp"
   PATTERN "*.tpp"
   PATTERN "*.ipp"
+  PATTERN "*.def"
   PATTERN "license*"
   PATTERN "License*"
   PATTERN "LICENSE*"
+  PATTERN "authors*"
+  PATTERN "Authors*"
+  PATTERN "AUTHORS*"
 )
 
 if(OSSIA_QML)
@@ -128,6 +132,7 @@ install(FILES
 
 # Install used libraries headers
 if(NOT OSSIA_CPP_ONLY AND NOT OSSIA_C_ONLY)
+
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/libremidi"
         DESTINATION include
         COMPONENT Devel
@@ -304,6 +309,12 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/rubberband/rubberband"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/weakjack"
+        DESTINATION include
+        COMPONENT Devel
+        MESSAGE_NEVER
+        ${3RDPARTY_INSTALL_PATTERN}
+)
 find_program(BOOST_BCP "bcp")
 if(BOOST_BCP)
    # install a subset of boost thanks to bcp
