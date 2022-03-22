@@ -15,8 +15,6 @@ namespace ossia
 namespace max_binding
 {
 
-ossia::safe_set<ossia::net::parameter_base*> object_base::param_locks;
-
 object_base::object_base()
 {
   create_patcher_hierarchy();
@@ -742,13 +740,24 @@ void object_base::lock_and_touch(object_base* x, t_symbol* s)
   x->m_lock = false;
 }
 
+static std::mutex param_locks_mutex;
+static std::atomic_int64_t param_locks_counter{};
+static ossia::small_vector<std::pair<int64_t, ossia::net::parameter_base*>, 64> param_locks;
 void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val)
 {
-  if(!param_locks.contains(param))
+  std::unique_lock<std::mutex> param_locks_mutex;
+  auto it = ossia::find_if(param_locks, [param] (auto& p) { return p.second == param; });
+  if(it == param_locks.end())
   {
-    param_locks.push_back(param);
+    int64_t r = param_locks_counter++;
+    param_locks.emplace_back(r, param);
+    param_locks_mutex.unlock();
+
     param->push_value(val);
-    param_locks.remove_all(param);
+
+    param_locks_mutex.lock();
+    auto rm_it = ossia::find_if(param_locks, [r] (auto& p) { return p.first == r; });
+    param_locks.erase(rm_it);
   }
 }
 

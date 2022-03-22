@@ -176,8 +176,6 @@ protected:
 
   std::map<std::string, ossia::value> m_value_map{};
 
-  static ossia::safe_set<ossia::net::parameter_base*> param_locks;
-
 private:
   std::vector<std::shared_ptr<matcher>> find_parent_nodes();
   void create_patcher_hierarchy();
