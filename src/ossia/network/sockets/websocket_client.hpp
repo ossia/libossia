@@ -109,7 +109,8 @@ public:
   {
     if (!m_open)
     {
-      m_client->stop();
+      if(m_client)
+        m_client->stop();
       m_connected = false;
       return;
     }

@@ -535,6 +535,7 @@ set(OSSIA_QT_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/metatypes.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/matching_type.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/token_request.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/time_value.hpp"
   )
 
