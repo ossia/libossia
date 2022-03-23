@@ -26,7 +26,13 @@ public:
   websocket_client()
     : m_open{false}
   {
+    init_client();
+  }
+
+  void init_client()
+  {
     m_client = std::make_shared<client_t>();
+    assert(m_client);
     std::weak_ptr<client_t> weak_client = m_client;
     m_client->clear_access_channels(websocketpp::log::alevel::all);
     m_client->clear_error_channels(websocketpp::log::elevel::all);
@@ -59,13 +65,16 @@ public:
       }
       on_fail();
     });
+    assert(m_client);
   }
+
   //! \tparam Function that will be called when the client receives a server
   //! message.
   template <typename MessageHandler>
   websocket_client(MessageHandler&& onMessage)
     : websocket_client{}
   {
+    assert(m_client);
     m_client->init_asio();
 
     std::weak_ptr<client_t> weak_client = m_client;
@@ -76,13 +85,16 @@ public:
             return;
           handler(hdl, msg->get_opcode(), msg->get_raw_payload());
         });
+    assert(m_client);
   }
 
   template <typename MessageHandler>
   websocket_client(boost::asio::io_context& ctx, MessageHandler&& onMessage)
     : websocket_client{}
   {
+    assert(m_client);
     m_client->init_asio(&ctx);
+    m_ctx = &ctx;
 
     std::weak_ptr<client_t> weak_client = m_client;
     m_client->set_message_handler(
@@ -92,6 +104,7 @@ public:
             return;
           handler(hdl, msg->get_opcode(), msg->get_raw_payload());
         });
+    assert(m_client);
   }
 
   ~websocket_client()
@@ -137,6 +150,15 @@ public:
   void connect(const std::string& uri)
   {
     websocketpp::lib::error_code ec;
+    if(!m_client)
+    {
+      init_client();
+      assert(m_client);
+      if(m_ctx)
+        m_client->init_asio(m_ctx);
+      else
+        m_client->init_asio();
+    }
 
     auto con = m_client->get_connection(uri, ec);
     if (ec)
@@ -170,7 +192,7 @@ public:
 
   void send_message(const std::string& request)
   {
-    if (!m_open)
+    if (!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
@@ -186,7 +208,7 @@ public:
 
   void send_message(const rapidjson::StringBuffer& request)
   {
-    if (!m_open)
+    if (!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
@@ -204,7 +226,7 @@ public:
 
   void send_binary_message(std::string_view request)
   {
-    if (!m_open)
+    if (!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
@@ -224,6 +246,7 @@ protected:
   using client_t = websocketpp::client<websocketpp::config::asio_client>;
   using scoped_lock = websocketpp::lib::lock_guard<websocketpp::lib::mutex>;
 
+  boost::asio::io_context* m_ctx{};
   std::shared_ptr<client_t> m_client;
   connection_handler m_hdl;
   websocketpp::lib::mutex m_lock;
