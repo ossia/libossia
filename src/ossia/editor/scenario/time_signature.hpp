@@ -5,8 +5,6 @@
 #include <optional>
 #include <cinttypes>
 
-#include <ossia_export.h>
-
 namespace ossia
 {
 struct time_signature {
