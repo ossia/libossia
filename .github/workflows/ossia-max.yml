@@ -35,15 +35,24 @@ jobs:
 
         security unlock-keychain -p azure build.keychain
 
+        echo "Checking codesigning"
+        find . -name libossia-max.dylib
         (
           cd artifacts
+          echo "===== Content of artifacts"
+          ls
+          echo "===== Content of artifacts/ossia/support"
+          ls ossia/support
+          echo "===== Content of artifacts/ossia/externals"
+          ls ossia/externals
+
           codesign --force --timestamp --sign "ossia.io" ossia/support/libossia-max.dylib
           for mxo in ossia/externals/*.mxo;
           do 
             codesign --force --timestamp --sign "ossia.io" $mxo
           done
           
-          zip ossia-max.zip ossia
+          ditto -c -k --sequesterRsrc --keepParent ossia ossia-max.zip
           xcrun altool \
                 --notarize-app \
                 -t osx \
