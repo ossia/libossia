@@ -745,7 +745,7 @@ static std::atomic_int64_t param_locks_counter{};
 static ossia::small_vector<std::pair<int64_t, ossia::net::parameter_base*>, 64> param_locks;
 void object_base::push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val)
 {
-  std::unique_lock<std::mutex> param_locks_mutex;
+  std::unique_lock<std::mutex> param_locks{param_locks_mutex};
   auto it = ossia::find_if(param_locks, [param] (auto& p) { return p.second == param; });
   if(it == param_locks.end())
   {
