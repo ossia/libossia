@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/timed_value.hpp>
 #include <ossia/dataflow/typed_value.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/dataflow/value_vector.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/editor/scenario/time_value.hpp>

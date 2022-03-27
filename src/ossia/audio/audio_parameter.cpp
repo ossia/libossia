@@ -2,6 +2,7 @@
 
 #include "audio_protocol.hpp"
 
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 

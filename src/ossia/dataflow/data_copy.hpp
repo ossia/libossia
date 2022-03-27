@@ -5,6 +5,7 @@
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/typed_value.hpp>
 namespace ossia
 {
 

@@ -189,6 +189,7 @@ set(SRCS
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.cpp"

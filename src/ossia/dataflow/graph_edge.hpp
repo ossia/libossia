@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/connection.hpp>
+#include <ossia/dataflow/typed_value.hpp>
 
 namespace ossia
 {

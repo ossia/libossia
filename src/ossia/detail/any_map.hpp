@@ -93,10 +93,8 @@ struct is_empty_value
 };
 
 //! Remove an attribute
-inline void unset_attribute(any_map& e, ossia::string_view str)
-{
-  e.erase(str);
-}
+OSSIA_EXPORT
+void unset_attribute(any_map& e, ossia::string_view str);
 
 //! Sets an attribute in an any_map
 template <typename T>
@@ -118,18 +116,12 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
 }
 
 //! Checks if an attribute is present.
-inline bool has_attribute(const any_map& e, ossia::string_view str) noexcept
-{
-  return e.find(str) != e.end();
-}
+OSSIA_EXPORT
+bool has_attribute(const any_map& e, ossia::string_view str) noexcept;
 
 //! Sets a bool-like attribute. It should be checked for with has_attribute.
-inline void set_attribute(any_map& e, ossia::string_view str)
-{
-  auto it = e.find(str);
-  if (it == e.end())
-    e.insert(std::make_pair(std::string(str), ossia::any{}));
-}
+OSSIA_EXPORT
+void set_attribute(any_map& e, ossia::string_view str);
 
 //! Sets an attribute in an any_map
 template <typename T>
@@ -151,11 +143,8 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
 }
 
 //! Removes an attribute in an any_map
-inline void
-set_attribute(any_map& e, ossia::string_view str, std::nullopt_t)
-{
-  unset_attribute(e, str);
-}
+OSSIA_EXPORT
+void set_attribute(any_map& e, ossia::string_view str, std::nullopt_t);
 
 //! Sets an attribute if opt has a value, else remove the attribute
 template <typename T>

@@ -51,7 +51,7 @@ struct rand_gen
   {
   }
 
-  T operator()(const T& min, const T& max) noexcept
+  T operator()(const T& min, const T& max) noexcept override
   {
     return std::uniform_real_distribution<>{min, max}(engine);
   }
