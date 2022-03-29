@@ -19,6 +19,7 @@ TEST_CASE ("test_websockets_log_no_connection", "test_websockets_log_no_connecti
     auto sink = std::make_shared<websocket_log_sink>(con, appname);
     auto log = std::make_shared<spdlog::logger>("max_logger", sink);
     
+    boost::asio::io_context ctx;
     ctx.run_for(std::chrono::milliseconds(100));
 }
 

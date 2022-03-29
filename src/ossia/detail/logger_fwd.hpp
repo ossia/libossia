@@ -2,6 +2,7 @@
 // Important defines :
 #include <ossia/detail/config.hpp>
 
+#include <memory>
 #if !defined(OSSIA_BRUH_LOGGER)
 namespace spdlog
 {
