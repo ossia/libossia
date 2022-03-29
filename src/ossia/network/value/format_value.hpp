@@ -36,7 +36,7 @@ struct formatter<std::optional<T>>
   constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
   template <typename FormatContext>
-  auto format(const std::optional<T>& n, FormatContext &ctx)
+  auto format(const std::optional<T>& n, FormatContext &ctx) const
   {
     if(n)
     {
@@ -56,7 +56,7 @@ struct formatter<ossia::value>
   constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
 
   template <typename FormatContext>
-  auto format(const ossia::value& v, FormatContext &ctx) {
+  auto format(const ossia::value& v, FormatContext &ctx) const {
     return v.apply(ossia::value_prettyprint_visitor{ctx});
   }
 };

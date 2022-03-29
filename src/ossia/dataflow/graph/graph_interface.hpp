@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/transport.hpp>
+#include <ossia/detail/logger_fwd.hpp>
 
 #include <smallfun.hpp>
 
@@ -59,7 +60,7 @@ struct graph_setup_options
   } merge{};
 
   bool parallel{};
-  std::shared_ptr<spdlog::logger> log{};
+  std::shared_ptr<ossia::logger_type> log{};
   std::shared_ptr<bench_map> bench{};
 };
 

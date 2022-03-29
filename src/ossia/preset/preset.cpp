@@ -1205,9 +1205,7 @@ void apply_preset_node(
     {
       if (keeparch == ossia::presets::keep_arch_on)
       {
-        ossia::logger().warn(
-            "{}:{}  {}", __LINE__, __FILE__,
-            "Can't change device architecture");
+        ossia::logger().warn("Can't change device architecture");
         throw std::runtime_error(
             "preset loading: can't change device architecture");
       }

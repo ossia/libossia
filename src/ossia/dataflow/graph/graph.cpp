@@ -211,12 +211,12 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
   return ossia::buffer_tick<&ossia::execution_state::commit>{st, g, root, transport};
 }
 
-void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
+void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
 {
   int i = 0;
   struct
   {
-    spdlog::logger& logger;
+    ossia::logger_type& logger;
     int& i;
     void operator()(const ossia::value_port& p) const noexcept
     {
@@ -264,12 +264,12 @@ void graph_util::log_inputs(const graph_node& n, spdlog::logger& logger)
   for_each_inlet(n, [&] (auto& in) { in.visit(vis); });
 }
 
-void graph_util::log_outputs(const graph_node& n, spdlog::logger& logger)
+void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
 {
   int i = 0;
   struct
   {
-    spdlog::logger& logger;
+    ossia::logger_type& logger;
     int& i;
     void operator()(const ossia::value_port& p) const noexcept
     {

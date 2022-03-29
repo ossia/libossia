@@ -268,11 +268,12 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
   {
     // Push to server
     auto critical = addr.get_critical();
+    const auto& osc_addr = addr.get_node().osc_address();
     if ((!critical || !m_hasWS) && m_oscSender)
     {
       if (m_logger.outbound_logger)
       {
-        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+        m_logger.outbound_logger->info("Out: {} {}", osc_addr, val);
       }
       ossia::oscquery::osc_writer::send_message(
           addr, val, m_oscSender->socket());
@@ -281,13 +282,13 @@ bool oscquery_mirror_protocol::push(const net::parameter_base& addr, const ossia
     {
       if (m_logger.outbound_logger)
       {
-        m_logger.outbound_logger->info("Out: {} {}", addr.get_node().osc_address(), val);
+        m_logger.outbound_logger->info("Out: {} {}", osc_addr, val);
       }
       ws_send_binary_message(osc_writer::to_message(addr, val));
     }
 
     if (m_logger.outbound_listened_logger)
-      m_logger.outbound_listened_logger->info("Out: {0}", addr, val);
+      m_logger.outbound_listened_logger->info("Out: {0}", osc_addr, val);
     return true;
   }
   return false;

@@ -55,7 +55,7 @@ public:
   template <typename Comp_T>
   static void tick(
       graph& g, execution_state& e, std::vector<graph_node*>& active_nodes,
-      Comp_T&& comp, spdlog::logger& log)
+      Comp_T&& comp, ossia::logger_type& log)
   {
     std::size_t executed = 0;
     while (executed != active_nodes.size())
@@ -315,7 +315,7 @@ public:
   std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)>
       sort_fun{simple_topo_sort{m_graph}};
 
-  std::shared_ptr<spdlog::logger> logger;
+  std::shared_ptr<ossia::logger_type> logger;
 
 private:
   void print(std::ostream& stream) override

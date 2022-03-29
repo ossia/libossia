@@ -78,6 +78,24 @@ context::context(const std::vector<spdlog::sink_ptr>& sinks)
 
 context::~context() = default;
 
+#if defined(OSSIA_BRUH_LOGGER)
+
+bruh_logger& logger() noexcept
+{
+  static bruh_logger b;
+  return b;
+}
+
+std::shared_ptr<bruh_logger> logger_ptr() noexcept
+{
+  return std::make_shared<bruh_logger>();
+}
+std::vector<std::shared_ptr<spdlog::sinks::sink>>& bruh_logger::sinks()
+{
+  static thread_local std::vector<std::shared_ptr<spdlog::sinks::sink>> s;
+  return s;
+}
+#else
 spdlog::logger& logger() noexcept
 {
   static spdlog::logger& init
@@ -98,4 +116,5 @@ catch(...)
 {
   return spdlog::null_logger_mt("ossia");
 }
+#endif
 }

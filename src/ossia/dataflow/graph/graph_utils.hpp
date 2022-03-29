@@ -316,8 +316,8 @@ struct OSSIA_EXPORT graph_util
     } while (!disabled_cache.empty());
   }
 
-  static void log_inputs(const graph_node&, spdlog::logger& logger);
-  static void log_outputs(const graph_node&, spdlog::logger& logger);
+  static void log_inputs(const graph_node&, ossia::logger_type& logger);
+  static void log_outputs(const graph_node&, ossia::logger_type& logger);
 
   static void run_scaled(graph_node& first_node, execution_state& e);
 
@@ -348,7 +348,7 @@ struct OSSIA_EXPORT graph_util
   }
 
   static void
-  exec_node(graph_node& first_node, execution_state& e, spdlog::logger& logger)
+  exec_node(graph_node& first_node, execution_state& e, ossia::logger_type& logger)
   {
     init_node(first_node, e);
     if (first_node.start_discontinuous())

@@ -25,9 +25,17 @@ struct formatter<oscpack::ReceivedMessage>
     if(m.ArgumentCount() > 0)
     {
       out = format_to(out, ": ");
+      auto buf = fmt::basic_memory_buffer<char>();
       for(auto it = m.ArgumentsBegin(); it != m.ArgumentsEnd(); ++it)
       {
-        out = format_to(out, "{} ", *it);
+        using namespace detail;
+        buf.clear();
+
+        formatbuf<std::basic_streambuf<char>> format_buf{buf};
+        std::basic_ostream<char> output{&format_buf};
+        output << *it;
+
+        out = format_to(out, "{} ", std::string_view{buf.data(), buf.size()});
       }
     }
     return ctx.out();

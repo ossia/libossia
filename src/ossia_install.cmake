@@ -167,13 +167,6 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/mdspan/include/"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/multi_index/include/"
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER
-        ${3RDPARTY_INSTALL_PATTERN}
-)
-
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/"
         DESTINATION include
         COMPONENT Devel
@@ -189,13 +182,6 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/spdlog/include/"
 )
 
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/"
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER
-        ${3RDPARTY_INSTALL_PATTERN}
-)
-
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/chobo-shl/include/"
         DESTINATION include
         COMPONENT Devel
         MESSAGE_NEVER

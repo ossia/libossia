@@ -296,16 +296,16 @@ bool minuit_protocol::observe(ossia::net::parameter_base& address, bool enable)
   auto act
       = name_table.get_action(ossia::minuit::minuit_action::ListenRequest);
 
+  const auto& osc_addr = address.get_node().osc_address();
   if (enable)
   {
-    this->m_sender->send(act, address, "enable"sv);
-    m_listening.insert(
-        std::make_pair(address.get_node().osc_address(), &address));
+    this->m_sender->send(act, osc_addr, "enable"sv);
+    m_listening.insert(std::make_pair(osc_addr, &address));
   }
   else
   {
-    this->m_sender->send(act, address, "disable"sv);
-    m_listening.erase(address.get_node().osc_address());
+    this->m_sender->send(act, osc_addr, "disable"sv);
+    m_listening.erase(osc_addr);
   }
 
   m_lastSentMessage = get_time();

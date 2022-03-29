@@ -1,19 +1,15 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general libossia dependencies :")
   set(OSSIA_SUBMODULES
-      bitset2
       brigand
-      chobo-shl
       concurrentqueue
       flat
       flat_hash_map
       Flicks
       fmt
-      frozen
       GSL
       hopscotch-map
       mdspan
-      multi_index
       nano-signal-slot
       rapidfuzz-cpp
       rapidjson

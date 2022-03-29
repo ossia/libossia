@@ -12,6 +12,7 @@
 #endif
 
 #include <thread>
+#include <ossia/detail/fmt.hpp>
 
 namespace ossia::net
 {

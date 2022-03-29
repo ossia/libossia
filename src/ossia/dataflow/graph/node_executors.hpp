@@ -57,7 +57,7 @@ struct node_exec_bench
 struct node_exec_logger
 {
   execution_state*& g;
-  spdlog::logger& logger;
+  ossia::logger_type& logger;
 
   void operator()(graph_node& node)
   try
@@ -81,7 +81,7 @@ struct node_exec_logger_bench
 {
   execution_state*& g;
   bench_map& perf;
-  spdlog::logger& logger;
+  ossia::logger_type& logger;
 
   void operator()(graph_node& node)
   try
@@ -238,7 +238,7 @@ struct static_exec_logger
   }
 
   std::shared_ptr<bench_map> perf;
-  std::shared_ptr<spdlog::logger> logger;
+  std::shared_ptr<ossia::logger_type> logger;
   template <typename Graph_T, typename Impl_T>
   void operator()(
       Graph_T& g, Impl_T& impl, execution_state& e,
@@ -277,7 +277,7 @@ struct static_exec_logger_bench
   }
 
   std::shared_ptr<bench_map> perf;
-  std::shared_ptr<spdlog::logger> logger;
+  std::shared_ptr<ossia::logger_type> logger;
 
   template <typename Graph_T>
   static_exec_logger_bench(Graph_T&)

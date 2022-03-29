@@ -342,7 +342,7 @@ template <typename Impl>
 struct custom_parallel_update
 {
 public:
-  std::shared_ptr<spdlog::logger> logger;
+  std::shared_ptr<ossia::logger_type> logger;
   std::shared_ptr<bench_map> perf_map;
 
   template <typename Graph_T>
