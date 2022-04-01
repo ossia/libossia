@@ -974,7 +974,6 @@ void object_base::make_global_paths(const std::string& name)
       for(auto& m : parent->m_matchers)
       {
         auto p = ossia::net::address_string_from_node(*m->get_node());
-        std::cout << p << std::endl;
         m_paths.push_back(p + "/" + name);
       }
     }
