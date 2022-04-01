@@ -160,7 +160,6 @@ public:
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void get_address(object_base *x,  std::vector<matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
-  static void closebang(object_base* x);
   static void loadbang(object_base* x);
   void save_children_state();
   void highlight();

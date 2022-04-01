@@ -145,7 +145,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 {
   std::vector<std::shared_ptr<matcher>> matchers;
 
-  update_path();
+  update_path(); // TODO this might not always be necessary here
   for(auto& addr : m_paths)
   {
     size_t pos = addr.find(":/");
@@ -301,11 +301,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
   }
 
   return matchers;
-}
-
-void object_base::closebang(object_base* x)
-{
-  x->m_dead = true;
 }
 
 void object_base::loadbang(object_base* x)
@@ -660,7 +655,6 @@ void object_base::class_setup(t_class*c)
   class_addmethod(c, (method) object_base::select_mess_cb,  "select",    A_GIMME, 0);
   class_addmethod(c, (method) object_base::select_mess_cb,  "unselect",  A_GIMME, 0);
   class_addmethod(c, (method) object_base::loadbang,        "loadbang",  A_CANT,  0);
-  class_addmethod(c, (method) object_base::closebang,       "closebang", A_CANT,  0);
 }
 
 void object_base::fill_selection()
@@ -796,7 +790,7 @@ object_base* object_base::find_parent_object_recursively(
   while(patcher)
   {
     auto& pat_desc = ossia_max::instance().patchers[patcher];
-    auto vec = std::vector<object_base*>{};
+    std::vector<object_base*> vec {};
     if(m_addr_scope == ossia::net::address_scope::relative
         && look_for_model_view)
     {
