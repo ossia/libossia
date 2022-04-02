@@ -1020,12 +1020,14 @@ void object_base::update_path()
   {
     case ossia::net::address_scope::absolute:
     {
-      std::string base_name = "*:";
+      std::string base_name {};
       auto parent = static_cast<device_base*>(find_parent_object());
       if(parent)
       {
         if(parent->m_device)
           base_name = parent->m_device->get_name();
+        else
+          return;
       }
       else
       {
