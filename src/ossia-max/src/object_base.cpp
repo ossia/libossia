@@ -157,7 +157,15 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
     bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
     bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-    std::regex pattern(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
+    std::regex pattern;
+    try
+    {
+      pattern = std::regex(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
+    } catch (std::exception& e) {
+      error("'%s' bad regex: %s", prefix.data(), e.what());
+      return {};
+    }
+
 
     std::vector<ossia::net::generic_device*> devs = get_all_devices();
 

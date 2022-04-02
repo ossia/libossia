@@ -3,7 +3,6 @@
 #include <ossia/network/common/path.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 #include "ossia-max.hpp"
-#include <regex>
 #include <algorithm> // std::lexicographical_compare
 
 namespace ossia
