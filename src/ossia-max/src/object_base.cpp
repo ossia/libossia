@@ -17,7 +17,9 @@ namespace max_binding
 
 object_base::object_base()
 {
-  create_patcher_hierarchy();
+  auto& omax = ossia_max::instance();
+  load_configuration(omax);
+  create_patcher_hierarchy(omax);
 }
 
 object_base::~object_base()
@@ -28,8 +30,10 @@ object_base::~object_base()
     object_free(m_highlight_clock);
   }
 
-  auto pat_it = ossia_max::instance().patchers.find(m_patcher);
-  if(pat_it != ossia_max::instance().patchers.end())
+  auto& omax = ossia_max::instance();
+
+  auto pat_it = omax.patchers.find(m_patcher);
+  if(pat_it != omax.patchers.end())
   {
     auto& pat_desc = pat_it->second;
     switch(m_otype)
@@ -52,7 +56,7 @@ object_base::~object_base()
           if(parent_object)
             matchers = parent_object->m_matchers;
           else
-            matchers.push_back(std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr));
+            matchers.push_back(std::make_shared<matcher>(&omax.get_default_device()->get_root_node(), nullptr));
           register_children_in_patcher_recursively(m_patcher, nullptr);
           output_all_values(m_patcher, true);
         }
@@ -795,9 +799,10 @@ object_base* object_base::find_parent_object_recursively(
     t_object* patcher, bool look_for_model_view)
 {
   assert(m_addr_scope != ossia::net::address_scope::global);
+  auto& omax = ossia_max::instance();
   while(patcher)
   {
-    auto& pat_desc = ossia_max::instance().patchers[patcher];
+    auto& pat_desc = omax.patchers[patcher];
     std::vector<object_base*> vec {};
     if(m_addr_scope == ossia::net::address_scope::relative
         && look_for_model_view)
@@ -879,26 +884,31 @@ std::vector<std::shared_ptr<matcher>> object_base::find_parent_nodes()
   return {};
 }
 
-void object_base::create_patcher_hierarchy()
+void object_base::load_configuration(ossia_max& omax)
+{
+  this->m_defer_set = omax.config.defer_by_default;
+}
+
+void object_base::create_patcher_hierarchy(ossia_max& omax)
 {
   m_patcher = ossia::max_binding::get_patcher(&m_object);
   auto patcher = m_patcher;
   auto parent = ossia::max_binding::get_patcher(patcher);
-  ossia_max::instance().patchers[patcher].parent_patcher = parent;
-  //ossia_max::instance().patchers[patcher].poly_index = get_poly_index(patcher);
+  omax.patchers[patcher].parent_patcher = parent;
+  //omax.patchers[patcher].poly_index = get_poly_index(patcher);
 
   while(parent)
   {
-    ossia_max::instance().patchers[parent].subpatchers.push_back(patcher);
+    omax.patchers[parent].subpatchers.push_back(patcher);
     auto patcher = parent;
 
     parent = ossia::max_binding::get_patcher(patcher);
-    ossia_max::instance().patchers[patcher].parent_patcher = parent;
+    omax.patchers[patcher].parent_patcher = parent;
 
     /*
     // FIXME this breaks some nested parameter registration, see https://github.com/ossia/libossia/issues/742#issuecomment-1016792975
     // no need to go up further if we already know patcher hierarchy from that point
-    if(ossia_max::instance().patchers.find(patcher) != ossia_max::instance().patchers.end())
+    if(omax.patchers.find(patcher) != omax.patchers.end())
       break;
     */
   }
