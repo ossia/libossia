@@ -197,29 +197,30 @@ TEST_CASE ("test_multiplex_remove", "test_multiplex_remove")
 
   for (int i = 0; i < 10; i++) {
     ctx->context.run_for(std::chrono::milliseconds(1));
-		for (auto& p: proto->get_protocols()) {
+    for (auto& p: proto->get_protocols()) {
       //i just want to remove the OSC protocol, but it is easier to match on not oscquery
-			auto o = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(p.get());
-			if (!o) {
-				proto->stop_expose_to(*p);
-			}
-		}
+      auto o = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(p.get());
+      if (!o) {
+        proto->stop_expose_to(*p);
+        break;
+      }
+    }
 
     //create a new OSC connection
-		using conf = ossia::net::osc_protocol_configuration;
-		auto o = ossia::net::make_osc_protocol(
-				ctx,
-				{
-					.mode = conf::HOST,
-					.version = conf::OSC1_1,
-					.framing = conf::SLIP,
-					.transport = ossia::net::udp_configuration {{
+    using conf = ossia::net::osc_protocol_configuration;
+    auto o = ossia::net::make_osc_protocol(
+        ctx,
+        {
+          .mode = conf::HOST,
+          .version = conf::OSC1_1,
+          .framing = conf::SLIP,
+          .transport = ossia::net::udp_configuration {{
             .local = std::nullopt,
             .remote = ossia::net::send_socket_configuration {{"127.0.0.1", shared}}
-					}}
-				}
-			);
-		proto->expose_to(std::move(o));
+          }}
+        }
+      );
+    proto->expose_to(std::move(o));
   }
 
   run = false;
