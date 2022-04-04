@@ -136,6 +136,11 @@ struct patcher_descriptor{
   }
 };
 
+struct configuration
+{
+  bool defer_by_default = true;
+};
+
 class ossia_max
 {
 public:
@@ -244,6 +249,7 @@ public:
   static ZeroconfOscqueryListener s_zeroconf_oscq_listener;
   static ZeroconfMinuitListener   s_zeroconf_minuit_listener;
 
+  configuration config;
 private:
   ossia_max();
   ~ossia_max();

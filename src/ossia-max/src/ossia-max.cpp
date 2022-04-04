@@ -16,6 +16,17 @@
 
 #include <git_info.h>
 
+#if defined(_WIN32)
+#include <shlwapi.h>
+#include <shlobj.h>
+#endif
+#include <rapidjson/istreamwrapper.h>
+#include <istream>
+#include <fstream>
+#include <locale>
+#include <codecvt>
+#include <string>
+
 using namespace ossia::max_binding;
 
 void* ossia_max::s_browse_clock;
@@ -41,6 +52,49 @@ void patcher_listener_free(t_object *x)
 void *patcher_listener_new()
 {
   return (t_object *)object_alloc(ossia_max::ossia_patcher_listener_class);
+}
+
+static configuration read_configuration_file()
+{
+  using namespace std;
+  using namespace std::literals;
+  using namespace rapidjson;
+
+  // Open the config file
+  #if defined(__APPLE__)
+    std::string path = getenv("HOME") + "/Library/Application Support/ossia-max/ossia-max.conf"s;
+  #elif defined(_WIN32)
+    wchar_t szPath[MAX_PATH] = {0};
+    if (!SUCCEEDED(SHGetFolderPathW(nullptr, CSIDL_APPDATA, nullptr, 0, szPath))) {
+      return {};
+    }
+    std::wstring_convert<std::codecvt_utf8< wchar_t >> converter;
+    std::string path = converter.to_bytes(szPath) + "\\ossia-max\\ossia-max.conf";
+  #endif
+
+  std::fstream fs;
+  fs.open(path, std::ios_base::in);
+
+  if(!fs.is_open())
+    return {};
+
+  // Parse it with rapidjson
+  IStreamWrapper isw {fs};
+  Document doc;
+  doc.ParseStream(isw);
+
+  if(!doc.IsObject())
+   return {};
+
+  configuration conf;
+
+  if(auto it = doc.FindMember("default_deferlow"); it != doc.MemberEnd()) {
+    if(it->value.IsBool()) {
+      conf.defer_by_default = it->value.GetBool();
+    }
+  }
+
+  return conf;
 }
 
 // ossia-max library constructor
@@ -70,10 +124,13 @@ ossia_max::ossia_max():
   clock_delay(ossia_max::s_browse_clock, 100.);
 
   ossia_patcher_listener_class = class_new("ossia.patcher_listener", (method)patcher_listener_new, (method)patcher_listener_free, sizeof(t_object), 0L, A_CANT, 0);
-  class_addmethod(ossia_patcher_listener_class, (method)patcher_listener_notify,			"notify", 0);
+  class_addmethod(ossia_patcher_listener_class, (method)patcher_listener_notify, "notify", 0);
   class_register(CLASS_NOBOX, ossia_patcher_listener_class);
 
   m_patcher_listener = (t_object*) object_new(CLASS_NOBOX, gensym("ossia.patcher_listener"), nullptr);
+
+  // Load the configuration file if any
+  this->config = read_configuration_file();
 
   post("OSSIA library for Max is loaded");
   post("build SHA : %s", ossia::get_commit_sha().c_str());
