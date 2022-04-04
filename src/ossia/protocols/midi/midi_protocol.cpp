@@ -15,18 +15,25 @@ namespace midi
 {
 static constexpr auto midi_api(libremidi::API api)
 {
-  return (api == libremidi::API::UNSPECIFIED) ? libremidi::default_platform_api() : api;
+  return (api == libremidi::API::UNSPECIFIED)
+             ? libremidi::default_platform_api()
+             : api;
 }
-midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, libremidi::API api)
-  : protocol_base{flags{}}
-  , m_context{ctx}
-  , m_input{std::make_unique<libremidi::midi_in>(midi_api(api), "ossia-in")}
-  , m_output{std::make_unique<libremidi::midi_out>(midi_api(api), "ossia-out")}
+midi_protocol::midi_protocol(
+    ossia::net::network_context_ptr ctx, std::string device_name,
+    libremidi::API api)
+    : protocol_base {flags {}}
+    , m_context {ctx}
+    , m_input {std::make_unique<libremidi::midi_in>(
+          midi_api(api), device_name)}
+    , m_output {
+          std::make_unique<libremidi::midi_out>(midi_api(api), device_name)}
 {
 }
 
-midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
-  : midi_protocol{std::move(ctx), api}
+midi_protocol::midi_protocol(
+    ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
+    : midi_protocol {std::move(ctx), m.name, api}
 {
   set_info(m);
 }
@@ -50,7 +57,24 @@ midi_protocol::~midi_protocol()
     logger().error("midi_protocol::~midi_protocol() error");
   }
 }
-
+std::string midi_protocol::get_midi_port_name(
+    ossia::net::device_base* dev, const midi_info& info)
+{
+  std::string name {};
+  if (dev)
+    name = dev->get_name();
+  else
+  {
+    if (info.is_virtual)
+      name = info.type == midi_info::Type::Input
+                 ? "libossia MIDI virtual input"
+                 : "libossia MIDI virtual output";
+    else
+      name = info.type == midi_info::Type::Input ? "libossia MIDI input"
+                                                 : "libossia MIDI output";
+  }
+  return name;
+}
 bool midi_protocol::set_info(midi_info m)
 {
   try
@@ -66,22 +90,21 @@ bool midi_protocol::set_info(midi_info m)
     }
 
     m_info = m;
-
     if (m_info.type == midi_info::Type::Input)
     {
-      if (m_dev)
-        m_input->open_port(m_info.port, m_dev->get_name());
+      if (m_info.is_virtual)
+        m_input->open_virtual_port(get_midi_port_name(m_dev, m_info));
       else
-        m_input->open_port(m_info.port, "libossia MIDI input");
+        m_input->open_port(m_info.port, get_midi_port_name(m_dev, m_info));
 
-      m_input->set_callback([&] (const auto& m) { midi_callback(m); });
+      m_input->set_callback([&](const auto& m) { midi_callback(m); });
     }
     else if (m_info.type == midi_info::Type::Output)
     {
-      if (m_dev)
-        m_output->open_port(m_info.port, m_dev->get_name());
+      if (m_info.is_virtual)
+        m_output->open_virtual_port(get_midi_port_name(m_dev, m_info));
       else
-        m_output->open_port(m_info.port, "libossia MIDI out");
+        m_output->open_port(m_info.port, get_midi_port_name(m_dev, m_info));
     }
 
     return true;
@@ -531,20 +554,22 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
   std::vector<midi_info> vec;
 
   {
-    libremidi::midi_in in{api, ""};
+    libremidi::midi_in in {api, ""};
     auto portcount = in.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::Input, in.get_port_name(i), i);
+      const std::string& name = in.get_port_name(i);
+      vec.emplace_back(midi_info::Type::Input, name, name, i, false);
     }
   }
 
   {
-    libremidi::midi_out out{api, ""};
+    libremidi::midi_out out {api, ""};
     auto portcount = out.get_port_count();
     for (auto i = 0u; i < portcount; i++)
     {
-      vec.emplace_back(midi_info::Type::Output, out.get_port_name(i), i);
+      const std::string& name = out.get_port_name(i);
+      vec.emplace_back(midi_info::Type::Output, name, name, i, false);
     }
   }
   return vec;
