@@ -33,27 +33,41 @@ struct OSSIA_EXPORT midi_info
   };
 
   midi_info() = default;
-  midi_info(Type t, std::string d, int p)
-      : type{t}, device{std::move(d)}, port{p}
+  midi_info(Type t, std::string d, std::string n, int p, bool v)
+      : type {t}
+      , device {std::move(d)}
+      , name {std::move(n)}
+      , port {p}
+      , is_virtual {v}
   {
   }
 
-  Type type{};
-  std::string device{};
-  int port{};
+  Type type {};
+  std::string device {};
+  std::string name {};
+  int port {};
+  bool is_virtual {};
 };
 
 class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
 {
 public:
-  explicit midi_protocol(ossia::net::network_context_ptr, libremidi::API api = libremidi::API::UNSPECIFIED);
-  explicit midi_protocol(ossia::net::network_context_ptr, midi_info, libremidi::API api = libremidi::API::UNSPECIFIED);
+  explicit midi_protocol(
+      ossia::net::network_context_ptr, std::string device_name,
+      libremidi::API api = libremidi::API::UNSPECIFIED);
+  explicit midi_protocol(
+      ossia::net::network_context_ptr, midi_info,
+      libremidi::API api = libremidi::API::UNSPECIFIED);
   ~midi_protocol();
 
   bool set_info(midi_info);
   midi_info get_info() const;
 
-  static std::vector<midi_info> scan(libremidi::API = libremidi::API::UNSPECIFIED);
+  static std::string
+  get_midi_port_name(ossia::net::device_base* dev, const midi_info& info);
+
+  static std::vector<midi_info>
+      scan(libremidi::API = libremidi::API::UNSPECIFIED);
 
   void push_value(const libremidi::message&);
 
@@ -80,10 +94,10 @@ private:
 
   std::array<midi_channel, 16> m_channels;
 
-  midi_info m_info{};
-  midi_device* m_dev{};
-  bool m_registers{};
-  std::atomic_bool m_learning{};
+  midi_info m_info {};
+  midi_device* m_dev {};
+  bool m_registers {};
+  std::atomic_bool m_learning {};
 
   friend class midi_device;
   friend class midi_parameter;
