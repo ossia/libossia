@@ -1,7 +1,7 @@
-#N canvas 630 22 810 466 10;
+#N canvas 2795 489 810 466 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
-#X obj 74 291 print device_dump;
+#X obj 74 341 print device_dump;
 #X text 157 72 get namespace;
 #X msg 95 98 expose;
 #X text 234 123 expose with oscquery and default ports (osc: 9999 \,
@@ -10,31 +10,31 @@ ws: 5678);
 #X text 316 151 expose with oscquery and specific ports (resp. osc
 & ws);
 #X msg 122 151 expose oscquery 1234 9876;
-#X floatatom 472 298 5 0 0 0 - - -, f 5;
-#X floatatom 472 342 5 0 0 0 - - -, f 5;
-#X obj 291 298 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X floatatom 472 338 5 0 0 0 - - -;
+#X floatatom 472 382 5 0 0 0 - - -;
+#X obj 291 338 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X obj 291 342 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
+#X obj 291 382 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
 #X msg 74 73 namespace;
-#X obj 74 269 ø.device pd-device-help;
-#X obj 291 319 ø.param bar @type bool;
-#X text 286 270 here are some parameters to expose in the device:;
+#X obj 74 319 ø.device pd-device-help;
+#X obj 291 359 ø.param bar @type bool;
+#X text 286 310 here are some parameters to expose in the device:;
 #N canvas 986 403 215 139 model 0;
-#X floatatom 26 65 5 0 0 0 - - -, f 5;
-#X floatatom 26 109 5 0 0 0 - - -, f 5;
+#X floatatom 26 65 5 0 0 0 - - -;
+#X floatatom 26 109 5 0 0 0 - - -;
 #X obj 25 28 ø.model sub;
 #X obj 26 85 ø.param aParam @type float;
 #X connect 0 0 3 0;
 #X connect 3 0 1 0;
-#X restore 595 381 pd model;
-#X text 204 383 more can be exposed in subpatchers \, e.g. using models:
+#X restore 595 421 pd model;
+#X text 204 423 more can be exposed in subpatchers \, e.g. using models:
 ;
 #N canvas 307 374 473 124 ossia/ø 0;
 #X text 62 56 ossia.theNameOftheObject;
 #X text 47 28 all ossia-pd objects can indifferently be named:;
 #X text 63 76 ø.theNameOftheObject;
-#X restore 42 387 pd ossia/ø;
+#X restore 42 427 pd ossia/ø;
 #X text 158 96 get supported protocols and syntax;
 #X text 434 49 (open ossia-device-help.pd if you want to remote-control
 this patcher), f 36;
@@ -55,16 +55,20 @@ this patcher), f 36;
 #X connect 4 0 5 0;
 #X connect 5 0 6 0;
 #X connect 6 0 0 0;
-#X restore 141 235 pd presets;
-#X text 227 235 preset management in here;
-#X obj 630 345 print;
-#X obj 472 319 ø.param foo @type float;
+#X restore 161 275 pd presets;
+#X text 226 275 preset management in here;
+#X obj 607 381 print;
+#X obj 472 359 ø.param foo @type float;
 #X msg 128 182 get protocols;
-#X msg 134 209 stop 0;
+#X msg 154 249 stop 0;
 #X text 242 182 get a list of all protocols this device is exposed
 through;
-#X text 226 209 stop exposing this device (if it's only exposed once)
+#X text 199 251 stop exposing this device (if it's only exposed once)
 ;
+#X msg 138 218 get oscquery_clients;
+#X text 271 204 get a list of all oscquery clients connected to this
+device \, it returns client's ip and listening OSC port (useful to
+send direct message);
 #X connect 3 0 13 0;
 #X connect 5 0 13 0;
 #X connect 7 0 13 0;
@@ -78,3 +82,4 @@ through;
 #X connect 24 1 23 0;
 #X connect 25 0 13 0;
 #X connect 26 0 13 0;
+#X connect 29 0 13 0;
