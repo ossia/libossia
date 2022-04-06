@@ -38,6 +38,7 @@ osc_protocol::osc_protocol(
   update_sender();
   update_receiver();
   update_zeroconf();
+  m_buffer.reserve(128);
 }
 
 osc_protocol::~osc_protocol()
@@ -165,7 +166,16 @@ bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::val
   auto val = bound_value(addr, v);
   if (val.valid())
   {
-    m_sender->send(addr, val);
+    if(m_buffering)
+    {
+      std::string address = ossia::net::osc_address(addr);
+      std::lock_guard lock(m_buffer_mutex);
+      m_buffer.push_back(ossia::net::full_parameter_data{address,val});
+    }
+    else
+    {
+      m_sender->send(addr, val);
+    }
     return true;
   }
   return false;
@@ -179,7 +189,15 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
   auto val = bound_value(addr, addr.value());
   if (val.valid())
   {
-    m_sender->send(addr, val);
+    if(m_buffering)
+    {
+      std::lock_guard lock(m_buffer_mutex);
+      m_buffer.push_back(ossia::net::full_parameter_data{addr.address,val});
+    }
+    else
+    {
+      m_sender->send(addr, val);
+    }
     return true;
   }
   return false;
@@ -194,6 +212,13 @@ bool osc_protocol::push_bundle(
     return true;
   }
   return false;
+}
+
+void osc_protocol::send_buffer()
+{
+  std::lock_guard lock(m_buffer_mutex);
+  push_raw_bundle(m_buffer);
+  m_buffer.clear();
 }
 
 bool osc_protocol::push_raw_bundle(

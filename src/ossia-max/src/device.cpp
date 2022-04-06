@@ -90,6 +90,12 @@ void device::class_setup(t_class *c)
       c, (method) device::stop_expose,
       "stop", A_LONG, 0);
   class_addmethod(
+      c, (method) device::enable_buffering,
+      "enable_buffering", A_LONG, A_LONG, 0);
+  class_addmethod(
+      c, (method) device::send_buffer,
+      "send_buffer", A_LONG, 0);
+  class_addmethod(
       c, (method) device::get_mess_cb,
       "get", A_SYM, 0);
   class_addmethod(
@@ -416,6 +422,49 @@ void device::name(device *x, t_symbol* s, long argc, t_atom* argv){
     x->m_device->set_name(x->m_name->s_name);
   } else {
     object_error(&x->m_object,"bad argument to message 'name'");
+  }
+}
+
+void device::enable_buffering(device* x, int index, int enable)
+{
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                        x->m_device->get_protocol()).get_protocols();
+  if(index >= 0 && index < protocols.size())
+  {
+    if(auto osc = dynamic_cast<ossia::net::osc_protocol*>(protocols[0].get()))
+    {
+      osc->enable_buffering(enable > 0);
+    }
+    else
+    {
+      std::cerr << "protocol at index " << index << " is not OSC. Only OSC Protocol support buffering." << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "index out of protocols range" << std::endl;
+  }
+}
+
+
+void device::send_buffer(device* x, int index)
+{
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                        x->m_device->get_protocol()).get_protocols();
+  if(index >= 0 && index < protocols.size())
+  {
+    if(auto osc = dynamic_cast<ossia::net::osc_protocol*>(protocols[0].get()))
+    {
+      osc->send_buffer();
+    }
+    else
+    {
+      std::cerr << "protocol at index " << index << " is not OSC. Only OSC Protocol support buffering." << std::endl;
+    }
+  }
+  else
+  {
+    std::cerr << "index out of protocols range" << std::endl;
   }
 }
 

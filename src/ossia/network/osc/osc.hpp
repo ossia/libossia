@@ -66,6 +66,8 @@ public:
   observe(ossia::net::parameter_base& parameter_base, bool enable) override;
   bool echo_incoming_message(const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&, const ossia::value& v) override;
 
+  void enable_buffering(bool b) { m_buffering = b; }
+  void send_buffer();
 private:
   void on_received_message(
       const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip);
@@ -94,6 +96,10 @@ private:
   std::optional<std::string> m_expose{};
 
   message_origin_identifier m_id;
+
+  bool m_buffering {};
+  std::vector<ossia::net::full_parameter_data> m_buffer;
+  std::mutex m_buffer_mutex;
 };
 }
 }
