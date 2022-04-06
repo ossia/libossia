@@ -21,8 +21,9 @@ public:
    * @brief obj_namespace send the namespace through dump outlet
    * @note only relevant for client, device, model and view objects.
    * @param x
+   * @details with argc = 0, it will return only parameter (no node without parameter)
    */
-  static void get_namespace(object_base* x);
+  static void get_namespace(object_base* x, t_symbol* s, long argc, t_atom* argv);
 
 };
 
