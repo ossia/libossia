@@ -6,6 +6,7 @@
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
 
 #include <boost/algorithm/string.hpp>
 
@@ -351,12 +352,52 @@ void device::get_protocols(device* x)
   }
 }
 
+void device::get_oscq_clients(device* x)
+{
+  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
+                          x->m_device->get_protocol()).get_protocols();
+
+  std::vector<std::array<t_atom,2>> res;
+
+  for(auto& p : protocols)
+  {
+    if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
+    {
+      for(const ossia::oscquery::oscquery_client& c : oscq->get_clients())
+      {
+        std::array<t_atom, 2> atoms;
+        SETSYMBOL(&atoms[0], gensym(c.client_ip.c_str()));
+        SETFLOAT(&atoms[1], c.sender->port());
+
+        res.push_back(atoms);
+      }
+    }
+  }
+
+  t_atom a;
+  SETFLOAT(&a,res.size());
+  outlet_anything(x->m_dumpout, gensym("oscquery_clients_size"), 1, &a);
+
+  for(auto& r : res)
+  {
+    outlet_anything(x->m_dumpout, gensym("oscquery_clients"), r.size(), r.data());
+  }
+}
+
 void device::get_mess_cb(device* x, t_symbol* s)
 {
   if ( s == gensym("protocols") )
+  {
     device::get_protocols(x);
+  }
+  else if ( s == gensym("oscquery_clients") )
+  {
+    device::get_oscq_clients(x);
+  }
   else
+  {
     device_base::get_mess_cb(x,s);
+  }
 }
 
 void device::stop_expose(device*x, float f)

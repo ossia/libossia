@@ -75,6 +75,8 @@ public:
     return m_wsPort;
   }
 
+  const std::vector<oscquery_client>& get_clients() const noexcept { return m_clients; }
+
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
 
