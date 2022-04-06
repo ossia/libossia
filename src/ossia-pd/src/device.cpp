@@ -367,7 +367,13 @@ void device::get_oscq_clients(device* x)
       {
         std::array<t_atom, 2> atoms;
         SETSYMBOL(&atoms[0], gensym(c.client_ip.c_str()));
-        SETFLOAT(&atoms[1], c.sender->port());
+        if(c.sender)
+        {
+          SETFLOAT(&atoms[1], c.sender->port());
+        } else {
+          SETFLOAT(&atoms[1], -1);
+        }
+
 
         res.push_back(atoms);
       }
