@@ -16,10 +16,6 @@
 
 #include <git_info.h>
 
-#if defined(_WIN32)
-#include <shlwapi.h>
-#include <shlobj.h>
-#endif
 #include <rapidjson/istreamwrapper.h>
 #include <istream>
 #include <fstream>
@@ -27,6 +23,15 @@
 #include <codecvt>
 #include <string>
 
+#if defined(_WIN32)
+#if defined(LF_FACESIZE)
+#undef NOGDI
+#undef LF_FACESIZE
+#endif
+#include <Shtypes.h>
+#include <shlobj.h>
+#include <shlwapi.h>
+#endif
 using namespace ossia::max_binding;
 
 void* ossia_max::s_browse_clock;
