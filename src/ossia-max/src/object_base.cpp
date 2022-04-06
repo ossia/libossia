@@ -759,7 +759,12 @@ void object_base::push_parameter_value(ossia::net::parameter_base* param, const 
     param_locks.emplace_back(r, param);
     param_locks_mutex.unlock();
 
-    param->push_value(val);
+    if(!m_net_lock)
+    {
+      m_net_lock = true;
+      param->push_value(val);
+      m_net_lock = false;
+    }
 
     param_locks_mutex.lock();
     auto rm_it = ossia::find_if(param_locks, [r] (auto& p) { return p.first == r; });

@@ -231,9 +231,14 @@ void matcher::output_value(ossia::value v)
       outlet_anything(owner->m_dumpout,gensym("address"),2,a);
     }
 
-    value_visitor<object_base> vm;
-    vm.x = (object_base*)owner;
-    val.apply(vm);
+    if(!x->m_net_lock)
+    {
+      x->m_net_lock = true;
+      value_visitor<object_base> vm;
+      vm.x = (object_base*)owner;
+      val.apply(vm);
+      x->m_net_lock = false;
+    }
   }
 }
 

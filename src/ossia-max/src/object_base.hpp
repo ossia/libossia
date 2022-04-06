@@ -78,6 +78,7 @@ public:
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
+  bool m_net_lock{false};
   bool m_registered{}; // true if register_node() have been called at least once
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
@@ -328,8 +329,9 @@ struct value_visitor
 
     atom_setfloat(&a, f);
     if(x && x->m_data_out)
+    {
       outlet_float(x->m_data_out, f);
-
+    }
     set_out(a);
   }
 
