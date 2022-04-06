@@ -145,6 +145,16 @@
 			</description>
 		</attribute>
 		
+		<attribute name="recall_safe" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Enable or disable value update when recalling preset
+			</digest>
+			<description>
+				The <a>recall_safe</a> attribute (default: off) allows to prevent value update when recalling a preset. This can be handy for example in live situation to prevent a model or parameter state to be recalled while being controlled by some processes (manual control, mapping, etc.)
+			</description>
+		</attribute>
+		
+
 		<attribute name="tags" get="1" set="1" type="atom" size="1">
 			<digest>
 				Tags associated with this node

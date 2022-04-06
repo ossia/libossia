@@ -64,6 +64,64 @@
 		</method>
 	</methodlist>
 
+	<!--ATTRIBUTES-->
+	<attributelist>
+		<attribute name="description" get="1" set="1" type="atom" size="1">
+			<digest>
+				Set description to node
+			</digest>
+			<description>
+				The <at>description</at> attribute allows to set a description to a node
+			</description>
+		</attribute>
+		
+		<attribute name="invisible" get="1" set="1" type="int" size="1">
+			<digest>
+				Hide node from remote client
+			</digest>
+			<description>
+				The <at>invisible</at> attribute allows to hide a model from remote clients - this can be useful e.g. for "internal" that we don't want to give access to.
+			</description>
+		</attribute>
+		
+		<attribute name="priority" get="1" set="1" type="int" size="1">
+			<digest>
+				Set priority
+			</digest>
+			<description>
+				The <at>priority</at> attribute allows to order how several values of a same hierarchical level can be recalled 
+			</description>
+		</attribute>
+
+		<attribute name="recall_safe" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Enable or disable value update when recalling preset
+			</digest>
+			<description>
+				The <a>recall_safe</a> attribute (default: off) allows to prevent value update when recalling a preset. This can be handy for example in live situation to prevent a model or parameter state to be recalled while being controlled by some processes (manual control, mapping, etc.)
+			</description>
+		</attribute>
+		
+		<attribute name="tags" get="1" set="1" type="atom" size="1">
+			<digest>
+				Tags associated with this node
+			</digest>
+			<description>
+				The <at>tags</at> attribute allows to associate a variable number of tags for this node. This helps documenting the parameter.
+			</description>
+		</attribute>
+
+		<attribute name="trim_address" get="1" set="1" type="boolean" size="1">
+			<digest>
+				Output absolute or relative address path
+			</digest>
+			<description>
+				The <a>trim_address</a> attribute sets whether the address is output as a relative or absolute path
+			</description>
+		</attribute>
+		
+	</attributelist>		
+
 	<!--SEEALSO-->
 	<seealsolist>
 		<seealso name="ossia.model"/>
