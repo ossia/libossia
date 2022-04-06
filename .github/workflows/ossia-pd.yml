@@ -57,7 +57,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ossia-pd
-        path: install/ossia-pd-package
+        path: install/ossia-pd-package/ossia
 
   build-windows:
     runs-on: windows-latest
@@ -82,7 +82,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: ossia-pd
-        path: install/ossia-pd-package/ossia
+        path: build/install/ossia-pd-package/ossia
 
   build-linux:
     runs-on: ubuntu-latest
