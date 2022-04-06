@@ -1,8 +1,7 @@
-#N canvas 2795 489 810 466 10;
+#N canvas 2930 536 810 466 10;
 #X text 44 20 Create a local device to register all object in the same
 patcher and subpatcher recursively.;
 #X obj 74 341 print device_dump;
-#X text 157 72 get namespace;
 #X msg 95 98 expose;
 #X text 234 123 expose with oscquery and default ports (osc: 9999 \,
 ws: 5678);
@@ -16,18 +15,17 @@ ws: 5678);
 1;
 #X obj 291 382 tgl 15 0 empty empty empty 17 7 0 10 -262144 -1 -1 0
 1;
-#X msg 74 73 namespace;
 #X obj 74 319 ø.device pd-device-help;
 #X obj 291 359 ø.param bar @type bool;
 #X text 286 310 here are some parameters to expose in the device:;
-#N canvas 986 403 215 139 model 0;
+#N canvas 3093 685 215 139 model 0;
 #X floatatom 26 65 5 0 0 0 - - -;
 #X floatatom 26 109 5 0 0 0 - - -;
 #X obj 25 28 ø.model sub;
 #X obj 26 85 ø.param aParam @type float;
 #X connect 0 0 3 0;
 #X connect 3 0 1 0;
-#X restore 595 421 pd model;
+#X restore 535 421 pd model;
 #X text 204 423 more can be exposed in subpatchers \, e.g. using models:
 ;
 #N canvas 307 374 473 124 ossia/ø 0;
@@ -36,7 +34,7 @@ ws: 5678);
 #X text 63 76 ø.theNameOftheObject;
 #X restore 42 427 pd ossia/ø;
 #X text 158 96 get supported protocols and syntax;
-#X text 434 49 (open ossia-device-help.pd if you want to remote-control
+#X text 433 21 (open ossia-device-help.pd if you want to remote-control
 this patcher), f 36;
 #N canvas 0 22 361 184 presets 0;
 #X obj 196 126 outlet;
@@ -69,17 +67,20 @@ through;
 #X text 271 204 get a list of all oscquery clients connected to this
 device \, it returns client's ip and listening OSC port (useful to
 send direct message);
-#X connect 3 0 13 0;
-#X connect 5 0 13 0;
-#X connect 7 0 13 0;
-#X connect 8 0 24 0;
-#X connect 10 0 14 0;
-#X connect 12 0 13 0;
-#X connect 13 0 1 0;
-#X connect 14 0 11 0;
-#X connect 21 0 13 0;
-#X connect 24 0 9 0;
-#X connect 24 1 23 0;
-#X connect 25 0 13 0;
-#X connect 26 0 13 0;
-#X connect 29 0 13 0;
+#X msg 74 73 namespace 1;
+#X text 157 64 get namespace (with an argument \, it returns all nodes
+\, even if the ones without parameters);
+#X connect 2 0 11 0;
+#X connect 4 0 11 0;
+#X connect 6 0 11 0;
+#X connect 7 0 22 0;
+#X connect 9 0 12 0;
+#X connect 11 0 1 0;
+#X connect 12 0 10 0;
+#X connect 19 0 11 0;
+#X connect 22 0 8 0;
+#X connect 22 1 21 0;
+#X connect 23 0 11 0;
+#X connect 24 0 11 0;
+#X connect 27 0 11 0;
+#X connect 29 0 11 0;
