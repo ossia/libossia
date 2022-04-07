@@ -5,7 +5,6 @@
 #include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <ossia/ossia.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 #include <iostream>
 #include <thread>

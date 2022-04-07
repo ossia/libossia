@@ -13,7 +13,6 @@
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <ossia/ossia.hpp>
 
 TEST_CASE ("Device exceptions") {
   ossia::net::generic_device localDevice{"test"};

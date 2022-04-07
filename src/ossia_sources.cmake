@@ -86,7 +86,6 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/network.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/misc_visitors.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/ossia.hpp"
 
     ## Network ##
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/domain/domain.hpp"

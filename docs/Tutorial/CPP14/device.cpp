@@ -1,4 +1,3 @@
-#include <ossia/ossia.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 
