@@ -16,8 +16,6 @@ using namespace ossia::max_binding;
 
 extern "C" void ossia_model_setup()
 {
-  auto& ossia_library = ossia_max::instance();
-
   t_class* c = class_new(
       "ossia.model", (method)model::create, (method)model::destroy,
       (long)sizeof(ossia::max_binding::model), 0L, A_GIMME, 0);
@@ -36,6 +34,8 @@ extern "C" void ossia_model_setup()
         "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
+
+  auto& ossia_library = ossia_max::instance();
   ossia_library.ossia_model_class = c;
 }
 
