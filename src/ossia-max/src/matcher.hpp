@@ -37,6 +37,8 @@ public:
   bool is_locked() const { return m_lock; }
   bool is_dead() const { return m_dead; }
 
+  // holds the position of the matcher in the max object internal list
+  // this is used to output the 'instance' number of a ossia.remote with pattern matching
   int m_index{0};
 
 private:

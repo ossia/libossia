@@ -20,7 +20,7 @@ public:
   ossia::safe_set<ossia::net::device_base*> m_devices{};
 
   void on_node_created_callback(ossia::net::node_base& node);
-
+  void on_node_renamed_callback(ossia::net::node_base& node, const std::string&);
   void on_device_created(ossia::max_binding::device_base* device);
   void on_device_removing(ossia::max_binding::device_base* device);
 

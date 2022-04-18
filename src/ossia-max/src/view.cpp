@@ -67,6 +67,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
       if(!x->m_devices.contains(dev))
       {
         dev->on_node_created.connect<&view::on_node_created_callback>(x);
+        dev->on_node_renamed.connect<&view::on_node_renamed_callback>(x);
         x->m_devices.push_back(dev);
       }
     }
@@ -109,6 +110,7 @@ void view::destroy(view* x)
   for(auto dev : x->m_devices)
   {
     dev->on_node_created.disconnect<&view::on_node_created_callback>(x);
+    dev->on_node_renamed.disconnect<&view::on_node_renamed_callback>(x);
   }
   x->m_devices.clear();
 
@@ -190,6 +192,8 @@ void view::on_device_removing(device_base* obj)
   if(m_devices.contains(dev))
   {
     dev->on_node_created.disconnect<&view::on_node_created_callback>(this);
+    dev->on_node_renamed.disconnect<&view::on_node_renamed_callback>(this);
+
     m_devices.remove_all(dev);
   }
 }
@@ -202,8 +206,26 @@ void view::on_device_created(device_base* obj)
     // no need to connect to on_node_removing because ossia::max::matcher
     // already connect to it
     dev->on_node_created.connect<&view::on_node_created_callback>(this);
+    dev->on_node_renamed.connect<&view::on_node_renamed_callback>(this);
+
     m_devices.push_back(dev);
   }
+}
+
+void view::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
+{
+  // first remove the matcher with old name
+  for(auto& m : m_matchers)
+  {
+    if(m->get_node() == &node)
+    {
+      m_matchers.erase(std::remove(std::begin(m_matchers),
+                                   std::end(m_matchers), m), m_matchers.end());
+    }
+  }
+
+  // try to find a new match for the new name
+  on_node_created_callback(node);
 }
 
 } // max namespace
