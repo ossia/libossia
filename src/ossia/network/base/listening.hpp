@@ -2,9 +2,19 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/detail/small_vector.hpp>
 
 namespace ossia
 {
+static inline bool string_starts_with(const std::string& src, const std::string& prefix)
+{
+#if defined(__cpp_lib_starts_ends_with)
+  return src.starts_with(prefix);
+#else
+  return s.rfind(prefix, 0) == 0;
+#endif
+}
+
 // MOVEME
 template <typename T>
 struct locked_map
@@ -50,12 +60,23 @@ public:
   void rename(const key_type& oldk, const key_type& newk)
   {
     lock_t lock(m_mutex);
-    auto it = m_map.find(oldk);
-    if (it != m_map.end())
+
+    ossia::small_vector<std::pair<key_type, mapped_type>, 8> cache;
+
+    for(auto& [k, v] : m_map)
     {
-      auto v = it->second;
-      m_map.erase(it);
-      m_map.insert({newk, v});
+      if(string_starts_with(k, oldk))
+        cache.emplace_back(k, std::move(v));
+    }
+
+    if(!cache.empty())
+    {
+      for(auto&& e : std::move(cache))
+      {
+        m_map.erase(e.first);
+        e.first.replace(0, oldk.length(), newk);
+        m_map.insert({std::move(e.first), std::move(e.second)});
+      }
     }
   }
 
