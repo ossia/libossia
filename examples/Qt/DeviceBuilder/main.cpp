@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QPushButton>
 #include <QLabel>
-#include <QTableWidget>
+#include <QTreeWidget>
 #include <QDoubleSpinBox>
 #include <QLabel>
 
@@ -32,57 +32,87 @@ int main(int argc, char** argv)
     "my_device"};
 
   auto add_btn = new QPushButton("Add Parameter");
-  auto rem_btn = new QPushButton("Remove Parameter");
-  auto table = new QTableWidget(0,2);
-  table->setSelectionBehavior(QAbstractItemView::SelectRows);
+  auto add_node_btn = new QPushButton("Add Node (without parameter)");
+  auto rem_btn = new QPushButton("Remove Node");
+  auto tree = new QTreeWidget;
+  tree->setColumnCount(2);
+  tree->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-  QObject::connect(add_btn, &QPushButton::clicked, [&](){
-    auto& node = create_node(device, "parameter");
-    auto param = node.create_parameter(val_type::FLOAT);
-    table->insertRow(table->rowCount());
-    int row = table->rowCount() - 1;
+  auto add_node = [&](bool with_param = false){
+    std::string name("node");
+    if(with_param)
+      name = "parameter";
+
+    auto& node = create_node(device, name);
+    ossia::net::parameter_base* param{};
+
+    if(with_param)
+      param = node.create_parameter(val_type::FLOAT);
+
     auto label = QString::fromStdString(node.get_name());
-    auto spin = new QDoubleSpinBox;
-    auto mdl = table->model();
-    mdl->setData(mdl->index(row,0), QVariant::fromValue<node_base*>(&node), Qt::UserRole);
-    table->item(row,0)->setText(label);
-    table->setCellWidget(row, 1, spin);
 
-    QObject::connect(spin, qOverload<double>(&QDoubleSpinBox::valueChanged),
-      [param](double v){
-        param->push_value(static_cast<float>(v));
+    QTreeWidgetItem* item{};
+    auto selection = tree->selectedItems();
+    if(selection.empty())
+      item = new QTreeWidgetItem(tree);
+    else
+    {
+      auto parent = selection.first();
+      item = new QTreeWidgetItem(parent);
+      parent->setExpanded(true);
+    }
+
+    item->setFlags(item->flags() | Qt::ItemIsEditable);
+    item->setText(0, label);
+    item->setData(0, Qt::UserRole, QVariant::fromValue<node_base*>(&node));
+    tree->addTopLevelItem(item);
+
+    if(with_param)
+    {
+      auto spin = new QDoubleSpinBox;
+      tree->setItemWidget(item, 1, spin);
+
+      QObject::connect(spin, qOverload<double>(&QDoubleSpinBox::valueChanged),
+                       [param](double v){
+                         param->push_value(static_cast<float>(v));
+                       });
+
+      param->add_callback([spin](const ossia::value& v){
+        spin->blockSignals(true);
+        spin->setValue(v.get<float>());
+        spin->blockSignals(false);
       });
+    }
+  };
 
-    param->add_callback([spin](const ossia::value& v){
-      spin->blockSignals(true);
-      spin->setValue(v.get<float>());
-      spin->blockSignals(false);
-    });
-  });
+  QObject::connect(add_node_btn, &QPushButton::clicked, add_node);
+  QObject::connect(add_btn, &QPushButton::clicked, [&](){ add_node(true); });
 
   QObject::connect(rem_btn, &QPushButton::clicked, [&](){
-    auto items = table->selectedItems();
+    auto items = tree->selectedItems();
     for(auto i : items)
     {
-      auto name = i->text().toStdString();
+      auto name = i->text(0).toStdString();
       device.remove_child(name);
-      table->removeRow(i->row());
+      auto parent = i->parent();
+      if(parent)
+        parent->removeChild(i);
+      delete i;
     }
   });
 
-  QObject::connect(table, &QTableWidget::itemChanged,
-    [&](QTableWidgetItem *item){
-    if(item->column() == 0)
-    {
-      auto name = item->text().toStdString();
-      auto node = item->data(Qt::UserRole).value<node_base*>();
-      node->set_name(name);
-    }
+  QObject::connect(tree, &QTreeWidget::itemChanged,
+    [&](QTreeWidgetItem *item){
+      auto name = item->text(0).toStdString();
+      auto node = item->data(0,Qt::UserRole).value<node_base*>();
+      if(node)
+        node->set_name(name);
   });
 
-  lay.addWidget(add_btn, 0, 0);
-  lay.addWidget(rem_btn, 0, 1);
-  lay.addWidget(table, 1, 0, 2, 10);
+  lay.addWidget(add_node_btn, 0, 0);
+  lay.addWidget(add_btn, 0, 1);
+  lay.addWidget(rem_btn, 0, 2);
+  lay.addWidget(tree, 1, 0, 2, 10);
 
   w.show();
   return app.exec();
