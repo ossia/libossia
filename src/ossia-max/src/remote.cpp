@@ -66,6 +66,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
       if(!x->m_devices.contains(dev))
       {
         dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(x);
+        dev->on_node_renamed.connect<&remote::on_node_renamed_callback>(x);
         x->m_devices.push_back(dev);
       }
     }
@@ -125,6 +126,7 @@ void remote::destroy(remote* x)
   for(auto dev : x->m_devices)
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(x);
+    dev->on_node_renamed.disconnect<&remote::on_node_renamed_callback>(x);
   }
   x->m_devices.clear();
 
@@ -267,6 +269,7 @@ void remote::on_device_removing(device_base* obj)
   if(m_devices.contains(dev))
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+    dev->on_node_renamed.disconnect<&remote::on_node_renamed_callback>(this);
     m_devices.remove_all(dev);
   }
 }
@@ -279,7 +282,28 @@ void remote::on_device_created(device_base* obj)
     // no need to connect to on_node_removing because ossia::max::matcher
     // already connect to it
     dev->on_parameter_created.connect<&remote::on_parameter_created_callback>(this);
+    dev->on_node_renamed.connect<&remote::on_node_renamed_callback>(this);
     m_devices.push_back(dev);
+  }
+}
+
+void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
+{
+  // first remove the matcher with old name
+  for(auto& m : m_matchers)
+  {
+    if(m->get_node() == &node)
+    {
+      m_matchers.erase(std::remove(std::begin(m_matchers),
+                  std::end(m_matchers), m), m_matchers.end());
+    }
+  }
+
+  // try to find a new match for the new name
+  auto param = node.get_parameter();
+  if(param)
+  {
+    on_parameter_created_callback(*param);
   }
 }
 
@@ -315,9 +339,11 @@ void remote::unregister()
 
   ossia_max::instance().nr_remotes.push_back(this);
 
+  // FIXME : why disconnecting here ? we should not disconnect here but only in destructor
   for(auto dev : m_devices.reference())
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
+    dev->on_node_renamed.disconnect<&remote::on_node_renamed_callback>(this);
   }
   m_devices.clear();
 

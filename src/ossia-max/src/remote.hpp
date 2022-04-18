@@ -25,6 +25,7 @@ public:
 
   void on_device_created(ossia::max_binding::device_base* device);
   void on_device_removing(ossia::max_binding::device_base* device);
+  void on_node_renamed_callback(ossia::net::node_base& node, const std::string& old_name);
   void update_unit();
 
   static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
