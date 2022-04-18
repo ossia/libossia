@@ -81,6 +81,8 @@ int main(int argc, char** argv)
     if(with_param)
     {
       auto spin = new QDoubleSpinBox;
+      spin->setMinimum(std::numeric_limits<double>::lowest());
+      spin->setMaximum(std::numeric_limits<double>::max());
       tree->setItemWidget(item, 1, spin);
 
       QObject::connect(spin, qOverload<double>(&QDoubleSpinBox::valueChanged),
@@ -116,7 +118,7 @@ int main(int argc, char** argv)
     [&](QTreeWidgetItem *item){
       auto name = item->text(0).toStdString();
       auto node = item->data(0,Qt::UserRole).value<node_base*>();
-      if(node)
+      if(node && node->get_name() != name)
         node->set_name(name);
   });
 
