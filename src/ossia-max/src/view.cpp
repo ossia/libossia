@@ -223,6 +223,8 @@ void view::on_node_renamed_callback(ossia::net::node_base& node, const std::stri
                                    std::end(m_matchers), m), m_matchers.end());
     }
   }
+  // update all children objects
+  register_children_in_patcher_recursively(m_patcher, this);
 
   // try to find a new match for the new name
   on_node_created_callback(node);
