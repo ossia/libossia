@@ -17,7 +17,8 @@ jobs:
           -DCMAKE_BUILD_TYPE=Release \
           -DOSSIA_PD_ONLY=1 \
           -DOSSIA_PURR_DATA=1 \
-          -DCMAKE_INSTALL_PREFIX=install
+          -DCMAKE_INSTALL_PREFIX=install \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
 
         cmake --build build
         cmake --build build --target install

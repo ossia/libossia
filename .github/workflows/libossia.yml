@@ -24,7 +24,8 @@ jobs:
           -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
           -DOSSIA_STATIC=$STATIC \
           -DCMAKE_INSTALL_PREFIX=install \
-          -DOSSIA_TESTING=1
+          -DOSSIA_TESTING=1 \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
         cmake --build build --target test
         cmake --build build --target install

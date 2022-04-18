@@ -15,7 +15,10 @@ jobs:
         sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
     - name: Build
       run: |
-        cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_QML_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
+          -DOSSIA_QML_ONLY=1 \
+          -DCMAKE_INSTALL_PREFIX=install \
+          -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install 
     - name: Archive Package
@@ -34,7 +37,11 @@ jobs:
         brew install ninja qt5
     - name: Build
       run: |
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_QML_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
+          -DOSSIA_QML_ONLY=1 \
+          -DCMAKE_INSTALL_PREFIX=install \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
         cmake --build build --target install 
     - name: Code Signing
