@@ -58,6 +58,8 @@ if(OSSIA_PROTOCOL_OSC)
   ossia_add_example(network_osc_playback "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSC_playback.cpp")
 endif()
 
+add_subdirectory("Qt/DeviceBuilder")
+
 if(OSSIA_PROTOCOL_OSCQUERY)
   ossia_add_example(network_oscquery_publication "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication.cpp")
   ossia_add_example(network_oscquery_publication_simple "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQuery_publication_simple.cpp")
