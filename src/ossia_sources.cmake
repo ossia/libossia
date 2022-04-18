@@ -31,6 +31,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/locked_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/lockfree_queue.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/logger.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/logger_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/math.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mpl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
