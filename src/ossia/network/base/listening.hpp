@@ -11,7 +11,7 @@ static inline bool string_starts_with(const std::string& src, const std::string&
 #if defined(__cpp_lib_starts_ends_with)
   return src.starts_with(prefix);
 #else
-  return s.rfind(prefix, 0) == 0;
+  return src.rfind(prefix, 0) == 0;
 #endif
 }
 
