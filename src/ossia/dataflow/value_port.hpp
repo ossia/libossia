@@ -9,7 +9,6 @@
 
 namespace ossia
 {
-
 enum data_mix_method : int8_t
 {
   mix_append,

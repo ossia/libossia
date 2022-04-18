@@ -243,7 +243,7 @@ struct resampler
       int64_t samples_to_read,
       int64_t samples_to_write,
       int64_t samples_offset,
-      ossia::audio_port& ap)
+      const ossia::mutable_audio_span<double>& ap)
   {
     switch(m_stretch.index())
     {
@@ -278,10 +278,22 @@ struct resampler
 };
 
 
-
-class sound_node : public ossia::nonowning_graph_node
+struct sound_processing_info
 {
-public:
+  time_value m_prev_date{time_value::infinite_min};
+
+  time_value m_loop_duration{};
+  time_value m_start_offset{};
+
+  double tempo{};
+
+  int64_t m_loop_duration_samples{};
+  int64_t m_start_offset_samples{};
+
+  ossia::resampler m_resampler{};
+
+  bool m_loops{};
+
   void set_loop_info(ossia::time_value loop_duration, ossia::time_value start_offset, bool loops)
   {
     m_loop_duration = loop_duration;
@@ -301,9 +313,6 @@ public:
     tempo = v;
   }
 
-  virtual void transport(time_value date) = 0;
-
-protected:
   double update_stretch(const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
   {
     double stretch_ratio = 1.;
@@ -313,7 +322,7 @@ protected:
       {
         case 0:
           model_ratio = ossia::root_tempo / t.tempo;
-        break;
+          break;
         default:
           model_ratio = ossia::root_tempo / this->tempo;
           stretch_ratio = this->tempo / t.tempo;
@@ -325,20 +334,14 @@ protected:
     m_start_offset_samples = m_start_offset.impl * e.modelToSamples() * model_ratio;
     return stretch_ratio;
   }
+};
 
-  time_value m_prev_date{time_value::infinite_min};
-
-  time_value m_loop_duration{};
-  time_value m_start_offset{};
-
-  double tempo{};
-
-  int64_t m_loop_duration_samples{};
-  int64_t m_start_offset_samples{};
-
-  ossia::resampler m_resampler{};
-
-  bool m_loops{};
+class sound_node
+    : public ossia::nonowning_graph_node
+    , public sound_processing_info
+{
+public:
+  virtual void transport(time_value date) = 0;
 };
 
 class dummy_sound_node final : public sound_node

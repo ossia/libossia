@@ -45,7 +45,7 @@ struct rubberband_stretcher
       int64_t samples_to_read,
       const int64_t samples_to_write,
       const int64_t samples_offset,
-      ossia::audio_port& ap) noexcept
+      const ossia::mutable_audio_span<double>& ap) noexcept
   {
     if(tempo_ratio != m_rubberBand->getTimeRatio())
     {
@@ -79,7 +79,7 @@ struct rubberband_stretcher
       {
         for (int64_t j = 0; j < samples_to_write; j++)
         {
-          ap.channel(i)[j + samples_offset] = double(output[i][j]);
+          ap[i][j + samples_offset] = double(output[i][j]);
         }
       }
     }

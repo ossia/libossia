@@ -87,4 +87,5 @@ struct resampler
 
   std::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
 };
+
 }

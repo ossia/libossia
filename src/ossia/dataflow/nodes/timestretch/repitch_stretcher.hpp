@@ -43,7 +43,7 @@ struct repitch_stretcher
     }
 
     std::vector<float> input_buffer;
-    SRC_STATE* resampler;
+    SRC_STATE* resampler{};
     boost::circular_buffer<float> data;
   };
 
@@ -73,7 +73,7 @@ struct repitch_stretcher
       int64_t samples_to_read,
       const int64_t samples_to_write,
       const int64_t samples_offset,
-      ossia::audio_port& ap) noexcept
+      const ossia::mutable_audio_span<double>& ap) noexcept
   {
     assert(chan > 0);
 
@@ -132,7 +132,7 @@ struct repitch_stretcher
       auto it = repitchers[i].data.begin();
       for(int j = 0; j < samples_to_write; j++)
       {
-        ap.channel(i)[j + samples_offset] = double(*it);
+        ap[i][j + samples_offset] = double(*it);
         ++it;
       }
 
