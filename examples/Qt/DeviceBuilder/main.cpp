@@ -10,6 +10,7 @@
 #include <QTreeWidget>
 #include <QDoubleSpinBox>
 #include <QLabel>
+#include <QDebug>
 
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
@@ -39,32 +40,42 @@ int main(int argc, char** argv)
   tree->setSelectionBehavior(QAbstractItemView::SelectRows);
 
   auto add_node = [&](bool with_param = false){
+    QTreeWidgetItem* item{};
+    node_base* node{};
+
     std::string name("node");
     if(with_param)
       name = "parameter";
 
-    auto& node = create_node(device, name);
-    ossia::net::parameter_base* param{};
-
-    if(with_param)
-      param = node.create_parameter(val_type::FLOAT);
-
-    auto label = QString::fromStdString(node.get_name());
-
-    QTreeWidgetItem* item{};
     auto selection = tree->selectedItems();
     if(selection.empty())
+    {
       item = new QTreeWidgetItem(tree);
+      node = &create_node(device, name);
+    }
     else
     {
       auto parent = selection.first();
       item = new QTreeWidgetItem(parent);
       parent->setExpanded(true);
+
+      auto parent_node = parent->data(0,Qt::UserRole).value<node_base*>();
+      if(parent_node)
+        node = &create_node(*parent_node, name);
+      else
+        qDebug() << "Selected item has no node_base* attached.";
     }
+
+    ossia::net::parameter_base* param{};
+
+    if(with_param)
+      param = node->create_parameter(val_type::FLOAT);
+
+    auto label = QString::fromStdString(node->get_name());
 
     item->setFlags(item->flags() | Qt::ItemIsEditable);
     item->setText(0, label);
-    item->setData(0, Qt::UserRole, QVariant::fromValue<node_base*>(&node));
+    item->setData(0, Qt::UserRole, QVariant::fromValue<node_base*>(node));
     tree->addTopLevelItem(item);
 
     if(with_param)
