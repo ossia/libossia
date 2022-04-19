@@ -170,20 +170,42 @@ void view::unregister()
   m_registered = false;
 }
 
-void view::on_node_created_callback(ossia::net::node_base& node)
+void view::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
-  for(auto p : m_paths)
+  // first remove the matcher with old name
+  for(auto& m : m_matchers)
   {
-    auto path = ossia::traversal::make_path(p);
-    if ( path && ossia::traversal::match(*path, node) )
+    if(m->get_node() == &node)
     {
-      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-      int size = m_matchers.size();
-      m_matchers[size-1]->m_index = size;
-      fill_selection();
-      register_children_in_patcher_recursively(m_patcher, this);
+      m_matchers.erase(std::remove(std::begin(m_matchers),
+                                   std::end(m_matchers), m), m_matchers.end());
+    }
+    else
+    {
+      auto parent = m->get_node()->get_parent();
+      while(parent)
+      {
+        if(parent == &node)
+        {
+          m_matchers.erase(std::remove(std::begin(m_matchers),
+                                       std::end(m_matchers), m), m_matchers.end());
+          break;
+        }
+        parent = parent->get_parent();
+      }
     }
   }
+
+  // try to find a new match for the new name
+  on_node_created_callback(node);
+}
+
+void view::on_node_created_callback(ossia::net::node_base& node)
+{
+  do_registration();
+
+  // update all children objects
+  register_children_in_patcher_recursively(m_patcher, this);
 }
 
 void view::on_device_removing(device_base* obj)
@@ -210,38 +232,6 @@ void view::on_device_created(device_base* obj)
 
     m_devices.push_back(dev);
   }
-}
-
-void view::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
-{
-  // first remove the matcher with old name
-  for(auto& m : m_matchers)
-  {
-    if(m->get_node() == &node)
-    {
-      m_matchers.erase(std::remove(std::begin(m_matchers),
-                                   std::end(m_matchers), m), m_matchers.end());
-    }
-    else
-    {
-      auto parent = m->get_node()->get_parent();
-      while(parent)
-      {
-        if(parent == &node)
-        {
-          m_matchers.erase(std::remove(std::begin(m_matchers),
-                                       std::end(m_matchers), m), m_matchers.end());
-          break;
-        }
-        parent = parent->get_parent();
-      }
-    }
-  }
-  // update all children objects
-  register_children_in_patcher_recursively(m_patcher, this);
-
-  // try to find a new match for the new name
-  on_node_created_callback(node);
 }
 
 } // max namespace

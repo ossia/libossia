@@ -313,12 +313,12 @@ void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::st
     }
   }
 
-  // try to find a new match for the new name
-  auto param = node.get_parameter();
-  if(param)
-  {
-    on_parameter_created_callback(*param);
-  }
+  do_registration();
+}
+
+void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
+{
+  do_registration();
 }
 
 void remote::do_registration()
@@ -353,33 +353,7 @@ void remote::unregister()
 
   ossia_max::instance().nr_remotes.push_back(this);
 
-  // FIXME : why disconnecting here ? we should not disconnect here but only in destructor
-  for(auto dev : m_devices.reference())
-  {
-    dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(this);
-    dev->on_node_renamed.disconnect<&remote::on_node_renamed_callback>(this);
-  }
-  m_devices.clear();
-
   m_registered = false;
-}
-
-void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
-{
-  auto& node = addr.get_node();
-
-  for(auto& p : m_paths)
-  {
-    auto path = ossia::traversal::make_path(p);
-    if ( path && ossia::traversal::match(*path, node) )
-    {
-      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-      int size = m_matchers.size();
-      m_matchers[size-1]->m_index = size;
-      fill_selection();
-      set_unit();
-    }
-  }
 }
 
 void remote::update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node)

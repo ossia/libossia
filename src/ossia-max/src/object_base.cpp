@@ -170,10 +170,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
       return {};
     }
 
-
-    std::vector<ossia::net::generic_device*> devs = get_all_devices();
-
-    for(auto dev : devs)
+    for(auto dev : get_all_devices())
     {
       std::string name = dev->get_name();
 
