@@ -297,6 +297,20 @@ void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::st
       m_matchers.erase(std::remove(std::begin(m_matchers),
                   std::end(m_matchers), m), m_matchers.end());
     }
+    else
+    {
+      auto parent = m->get_node()->get_parent();
+      while(parent)
+      {
+        if(parent == &node)
+        {
+          m_matchers.erase(std::remove(std::begin(m_matchers),
+                                       std::end(m_matchers), m), m_matchers.end());
+          break;
+        }
+        parent = parent->get_parent();
+      }
+    }
   }
 
   // try to find a new match for the new name
