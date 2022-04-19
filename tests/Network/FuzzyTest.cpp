@@ -15,6 +15,15 @@ using namespace ossia;
 // float domain, float value //
 ///////////////////////////////
 
+static inline bool string_ends_with(const std::string& src, const std::string& suffix)
+{
+#if defined(__cpp_lib_starts_ends_with)
+  return src.ends_with(suffix);
+#else
+  return src.size() >= suffix.size() && 0 == src.compare(src.size()-suffix.size(), suffix.size(), suffix);
+#endif
+}
+
 TEST_CASE( "Matching" )
 {
     GIVEN("A device") {
@@ -58,7 +67,7 @@ TEST_CASE( "Matching" )
             INFO(matches.front().oscname);
             THEN("We find them through Q") {
                 REQUIRE(!matches.empty());
-                REQUIRE(matches.front().oscname.ends_with("frequency"));
+                REQUIRE(string_ends_with(matches.front().oscname, "frequency"));
             }
         }
         WHEN("Searching for Q case-insensitively") {
