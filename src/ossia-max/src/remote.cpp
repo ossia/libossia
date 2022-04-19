@@ -123,7 +123,7 @@ void remote::destroy(remote* x)
   outlet_delete(x->m_set_out);
   outlet_delete(x->m_data_out);
 
-  for(auto dev : x->m_devices)
+  for(auto dev : get_all_devices())
   {
     dev->on_parameter_created.disconnect<&remote::on_parameter_created_callback>(x);
     dev->on_node_renamed.disconnect<&remote::on_node_renamed_callback>(x);

@@ -107,7 +107,7 @@ void view::destroy(view* x)
 {
   critical_enter(0);
 
-  for(auto dev : x->m_devices)
+  for(auto dev : get_all_devices())
   {
     dev->on_node_created.disconnect<&view::on_node_created_callback>(x);
     dev->on_node_renamed.disconnect<&view::on_node_renamed_callback>(x);
