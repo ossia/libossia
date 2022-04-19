@@ -140,7 +140,6 @@ void client::register_children(client* x)
     else if (v->m_otype == object_class::remote)
     {
       ossia::pd::remote* remote = (ossia::pd::remote*)v;
-      std::string name(remote->m_name->s_name);
       if(remote->m_addr_scope == ossia::net::address_scope::global)
         remote->register_node(x->m_matchers);
     }
