@@ -130,13 +130,16 @@ void view::destroy(view* x)
 
 void view::do_registration()
 {
-  m_registered = true;
+  if(m_name && std::string(m_name->s_name) != "")
+  {
+    m_registered = true;
 
-  m_matchers = find_or_create_matchers();
-  set_matchers_index();
+    m_matchers = find_or_create_matchers();
+    set_matchers_index();
 
-  m_selection_path.reset();
-  fill_selection();
+    m_selection_path.reset();
+    fill_selection();
+  }
 }
 
 void view::unregister()

@@ -323,17 +323,18 @@ void remote::on_parameter_created_callback(const ossia::net::parameter_base& add
 
 void remote::do_registration()
 {
-  std::string name = m_name->s_name;
+  if(m_name && std::string(m_name->s_name) != "")
+  {
+    m_registered = true;
 
-  m_registered = true;
+    m_matchers=find_or_create_matchers();
+    set_matchers_index();
 
-  m_matchers=find_or_create_matchers();
-  set_matchers_index();
+    m_selection_path.reset();
+    fill_selection();
 
-  m_selection_path.reset();
-  fill_selection();
-
-  set_unit();
+    set_unit();
+  }
 }
 
 void remote::unregister()
