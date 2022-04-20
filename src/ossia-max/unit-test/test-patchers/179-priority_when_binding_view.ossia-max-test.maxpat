@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -40,12 +40,24 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-10",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 648.0, 598.0, 55.0, 22.0 ],
+					"text" : "zl.slice 1"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-15",
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 348.0, 721.0, 187.0, 22.0 ],
+					"patching_rect" : [ 348.0, 751.0, 187.0, 22.0 ],
 					"text" : "/foo a_param yap another_param"
 				}
 
@@ -93,7 +105,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 679.0, 686.0, 42.0, 22.0 ],
+					"patching_rect" : [ 679.0, 716.0, 42.0, 22.0 ],
 					"text" : "gate 2"
 				}
 
@@ -106,7 +118,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 876.0, 791.0, 196.0, 22.0 ],
+					"patching_rect" : [ 876.0, 821.0, 196.0, 22.0 ],
 					"text" : "ossia.assert prority_another_model"
 				}
 
@@ -118,7 +130,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 876.0, 721.0, 249.0, 22.0 ],
+					"patching_rect" : [ 876.0, 751.0, 249.0, 22.0 ],
 					"text" : "zl.compare another_param yap a_param /foo"
 				}
 
@@ -132,7 +144,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 876.0, 755.0, 24.0, 24.0 ],
+					"patching_rect" : [ 876.0, 785.0, 24.0, 24.0 ],
 					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
 				}
 
@@ -231,7 +243,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 619.0, 791.0, 168.0, 22.0 ],
+					"patching_rect" : [ 619.0, 821.0, 168.0, 22.0 ],
 					"text" : "ossia.assert prority_submodel"
 				}
 
@@ -243,7 +255,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 619.0, 721.0, 249.0, 22.0 ],
+					"patching_rect" : [ 619.0, 751.0, 249.0, 22.0 ],
 					"text" : "zl.compare /foo a_param yap another_param"
 				}
 
@@ -267,7 +279,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 616.0, 635.0, 51.0, 22.0 ],
+					"patching_rect" : [ 616.0, 665.0, 51.0, 22.0 ],
 					"text" : "zl group"
 				}
 
@@ -293,7 +305,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 619.0, 755.0, 24.0, 24.0 ],
+					"patching_rect" : [ 619.0, 785.0, 24.0, 24.0 ],
 					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
 				}
 
@@ -317,7 +329,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 647.0, 582.0, 82.0, 22.0 ],
+					"patching_rect" : [ 647.0, 567.0, 82.0, 22.0 ],
 					"text" : "route address"
 				}
 
@@ -356,6 +368,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-2",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"numinlets" : 0,
 					"numoutlets" : 0,
@@ -364,8 +377,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -610,6 +623,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-8",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"numinlets" : 1,
 					"numoutlets" : 1,
@@ -619,8 +633,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -932,6 +946,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-1",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"numinlets" : 0,
 					"numoutlets" : 0,
@@ -940,8 +955,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1179,6 +1194,13 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
+					"destination" : [ "obj-11", 0 ],
+					"source" : [ "obj-10", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-15", 1 ],
 					"order" : 1,
 					"source" : [ "obj-11", 0 ]
@@ -1253,7 +1275,7 @@
 , 			{
 				"patchline" : 				{
 					"destination" : [ "obj-11", 0 ],
-					"midpoints" : [ 1169.0, 622.5, 625.5, 622.5 ],
+					"midpoints" : [ 1169.0, 641.5, 625.5, 641.5 ],
 					"source" : [ "obj-22", 0 ]
 				}
 
@@ -1322,7 +1344,7 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-11", 0 ],
+					"destination" : [ "obj-10", 0 ],
 					"source" : [ "obj-3", 0 ]
 				}
 
@@ -1411,11 +1433,12 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.assert.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.model.mxo",
@@ -1426,19 +1449,18 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.view.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.assert.mxo",
-				"type" : "iLaX"
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
 , 			{
-				"name" : "ossia.logger.mxo",
+				"name" : "ossia.view.mxo",
 				"type" : "iLaX"
 			}
  ],
