@@ -756,11 +756,9 @@ void object_base::push_parameter_value(ossia::net::parameter_base* param, const 
     param_locks.emplace_back(r, param);
     param_locks_mutex.unlock();
 
-    if(!m_net_lock)
+    if(!m_local_mute)
     {
-      m_net_lock = true;
       param->push_value(val);
-      m_net_lock = false;
     }
 
     param_locks_mutex.lock();

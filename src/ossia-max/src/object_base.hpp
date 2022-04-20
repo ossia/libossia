@@ -78,7 +78,7 @@ public:
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
-  bool m_net_lock{false};
+  bool m_local_mute{false};
   bool m_registered{}; // true if register_node() have been called at least once
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};

@@ -197,47 +197,43 @@ void matcher::output_value(ossia::value v)
       return;
   }
 
-  if(owner->m_otype == object_class::remote && static_cast<parameter_base*>(owner)->m_inlet_locked)
+  if(!owner->m_local_mute)
   {
-    return;
-  }
+    owner->m_local_mute = true;
 
-  auto param = node->get_parameter();
-  auto filtered = ossia::bound_value(
-      param->get_domain(),
-      std::move(v),
-      param->get_bounding());
+    auto param = node->get_parameter();
+    auto filtered = ossia::bound_value(
+        param->get_domain(),
+        std::move(v),
+        param->get_bounding());
 
-  // FIXME filter_value return false but an invalid filtered value
-  if(!param->filter_value(filtered) && filtered.valid())
-  {
-    auto x = (parameter_base*) owner;
-
-    ossia::value val;
-    if ( x->m_local_unit == std::nullopt )
+    // FIXME filter_value return false but an invalid filtered value
+    if(!param->filter_value(filtered) && filtered.valid())
     {
-      val = std::move(filtered);
-    }
-    else
-    {
-      val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_local_unit);
-    }
+      auto x = (parameter_base*) owner;
 
-    if(owner->m_dumpout)
-    {
-      t_atom a[2];
-      a[0] = m_addr;
-      A_SETLONG(a+1, m_index);
-      outlet_anything(owner->m_dumpout,gensym("address"),2,a);
-    }
+      ossia::value val;
+      if ( x->m_local_unit == std::nullopt )
+      {
+        val = std::move(filtered);
+      }
+      else
+      {
+        val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_local_unit);
+      }
 
-    if(!x->m_net_lock)
-    {
-      x->m_net_lock = true;
+      if(owner->m_dumpout)
+      {
+        t_atom a[2];
+        a[0] = m_addr;
+        A_SETLONG(a+1, m_index);
+        outlet_anything(owner->m_dumpout,gensym("address"),2,a);
+      }
+
       value_visitor<object_base> vm;
       vm.x = (object_base*)owner;
       val.apply(vm);
-      x->m_net_lock = false;
+      owner->m_local_mute = false;
     }
   }
 }
