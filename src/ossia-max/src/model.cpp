@@ -129,8 +129,6 @@ void model::assist(model*, void*, long m, long, char* s)
 
 void model::do_registration()
 {
-  ossia::string_view name(m_name->s_name);
-
   m_registered = true;
 
   m_matchers = find_or_create_matchers();

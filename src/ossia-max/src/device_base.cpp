@@ -74,6 +74,11 @@ void device_base::on_attribute_modified_callback(ossia::net::node_base& node, co
         case object_class::view:
         case object_class::device:
         case object_class::client:
+        {
+          auto oc = static_cast<ossia::max_binding::node_base*>(obj);
+          oc->update_attribute(oc, attribute, &node);
+          break;
+        }
           break;
         default:
             ;
