@@ -22,6 +22,7 @@ using mutable_audio_span = ossia::small_vector<gsl::span<T>, 8>;
 struct audio_data
 {
   audio_array data;
+  std::string path;
 };
 
 #if BOOST_VERSION >= 107200
