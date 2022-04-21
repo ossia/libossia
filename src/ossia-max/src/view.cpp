@@ -176,7 +176,7 @@ void view::unregister()
 void view::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  for(auto& m : m_matchers)
+  for(const auto& m : m_matchers)
   {
     if(m->get_node() == &node)
     {

@@ -1176,7 +1176,7 @@ void parameter_base::output_values(bool only_default)
   std::vector<node_priority> priority_graph;
   priority_graph.reserve(m_matchers.size());
 
-  for(auto& m : m_matchers)
+  for(const auto& m : m_matchers)
   {
     auto node = m->get_node();
     if(node)

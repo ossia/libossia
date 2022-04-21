@@ -329,7 +329,7 @@ std::vector<ossia::max_binding::matcher*> make_matchers_vector(object_base* x, c
   std::vector<ossia::max_binding::matcher*> matchers;
   if (node)
   {
-    for (auto& m : x->m_matchers)
+    for (const auto& m : x->m_matchers)
     {
       if (node == m->get_node() && !m->is_zombie())
       {

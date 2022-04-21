@@ -139,7 +139,7 @@ void node_base::get_namespace(node_base* x, t_symbol* s, long argc, t_atom* argv
     outlet_anything(x->m_dumpout, gensym("namespace_size"), 1, &a);
   }
 
-  for (auto& m : x->m_matchers)
+  for (const auto& m : x->m_matchers)
   {
     auto n = m->get_node();
     std::vector<ossia::net::node_base*> children = ossia::net::list_all_children(n);
@@ -180,7 +180,7 @@ void node_base::get_namespace(node_base* x, t_symbol* s, long argc, t_atom* argv
 void node_base::push_default_value(node_base* x)
 {
   std::vector<ossia::net::node_base*> list;
-  for (auto& m : x->m_matchers)
+  for (const auto& m : x->m_matchers)
   {
     auto n = m->get_node();
     list = ossia::net::list_all_children(n);
@@ -216,7 +216,7 @@ void node_base::set(node_base* x, t_symbol*, int argc, t_atom* argv)
     argv++;
     argc--;
     auto v = atom2value(nullptr,argc,argv);
-    for (auto& m : x->m_matchers)
+    for (const auto& m : x->m_matchers)
     {
       auto nodes = ossia::net::find_nodes(*m->get_node(), addr);
       for (auto& node : nodes)

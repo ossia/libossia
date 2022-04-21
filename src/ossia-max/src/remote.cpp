@@ -290,8 +290,11 @@ void remote::on_device_created(device_base* obj)
 void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  for(auto& m : m_matchers)
+  for(const auto& m : m_matchers)
   {
+    if(!m)
+      continue;
+
     if(m->get_node() == &node)
     {
       m_matchers.erase(std::remove(std::begin(m_matchers),
@@ -364,7 +367,7 @@ void remote::update_attribute(remote* x, ossia::string_view attribute, const oss
     // what about controlling several parameters with different units with the same ossia.remote ?
     std::shared_ptr<ossia::max_binding::matcher> good_one{};
 
-    for(auto& m : x->m_matchers)
+    for(const auto& m : x->m_matchers)
     {
       if(!m->is_zombie())
       {

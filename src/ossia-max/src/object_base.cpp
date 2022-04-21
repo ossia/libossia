@@ -671,13 +671,13 @@ void object_base::fill_selection()
   m_node_selection.clear();
   if ( m_selection_path )
   {
-    for (auto& m : m_matchers)
+    for (const auto& m : m_matchers)
     {
       if ( ossia::traversal::match(*m_selection_path, *m->get_node()) )
         m_node_selection.push_back(m.get());
     }
   } else {
-    for (auto& m : m_matchers)
+    for (const auto& m : m_matchers)
     {
       m_node_selection.push_back(m.get());
     }
@@ -989,7 +989,7 @@ void object_base::make_global_paths(const std::string& name)
     }
     else
     {
-      for(auto& m : parent->m_matchers)
+      for(const auto& m : parent->m_matchers)
       {
         auto p = ossia::net::address_string_from_node(*m->get_node());
         m_paths.push_back(p + "/" + name);
