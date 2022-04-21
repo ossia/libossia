@@ -102,7 +102,7 @@ struct init_node_visitor
     }
   }
 
-  static void copy(const outlet& out, inlet& in)
+  static void move(outlet& out, inlet& in)
   {
     const auto w = out.which();
     if (w == in.which() && w != data_type::npos)
@@ -110,20 +110,52 @@ struct init_node_visitor
       switch (w)
       {
         case 0:
-          copy_data{}(
+          move_data{}(
               out.cast<ossia::audio_port>(),
               in.cast<ossia::audio_port>());
           break;
         case 1:
-          copy_data{}(
+          move_data{}(
               out.cast<ossia::midi_port>(),
               in.cast<ossia::midi_port>());
           break;
         case 2:
-          copy_data{}(
+          move_data{}(
               out.cast<ossia::value_port>(),
               in.cast<ossia::value_port>());
           break;
+      }
+    }
+  }
+  static void copy(outlet& out, inlet& in)
+  {
+    if(out.cables().size() == 1 && in.cables().size() == 1)
+    {
+      move(out, in);
+    }
+    else
+    {
+      const auto w = out.which();
+      if (w == in.which() && w != data_type::npos)
+      {
+        switch (w)
+        {
+          case 0:
+            copy_data{}(
+                out.cast<ossia::audio_port>(),
+                in.cast<ossia::audio_port>());
+            break;
+          case 1:
+            copy_data{}(
+                out.cast<ossia::midi_port>(),
+                in.cast<ossia::midi_port>());
+            break;
+          case 2:
+            copy_data{}(
+                out.cast<ossia::value_port>(),
+                in.cast<ossia::value_port>());
+            break;
+        }
       }
     }
   }

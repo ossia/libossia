@@ -54,6 +54,33 @@ struct data_size
   }
 };
 
+struct move_data
+{
+  /// Value ///
+  void operator()(value_port& out, value_port& in)
+  {
+    auto tmp = std::move(in.get_data());
+    in.get_data() = std::move(out.get_data());
+    out.get_data() = std::move(tmp);
+  }
+
+  /// Audio ///
+  void operator()(audio_port& out, audio_port& in)
+  {
+    auto tmp = std::move(in.get());
+    in.get() = std::move(out.get());
+    out.get() = std::move(tmp);
+  }
+
+  /// MIDI ///
+  void operator()(midi_port& out, midi_port& in)
+  {
+    auto tmp = std::move(in.messages);
+    in.messages = std::move(out.messages);
+    out.messages = std::move(tmp);
+  }
+};
+
 struct copy_data
 {
   /// Value ///
