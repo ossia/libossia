@@ -46,6 +46,7 @@ class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 public:
   explicit parameter_base(ossia::net::node_base& n) : m_node{n}
   {
+    set_critical(true);
   }
   explicit parameter_base(const parameter_base&) = delete;
   explicit parameter_base(parameter_base&&) = delete;
