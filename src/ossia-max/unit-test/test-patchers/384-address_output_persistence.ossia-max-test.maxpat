@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -39,6 +39,18 @@
 		"subpatcher_template" : "",
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 623.0, 150.0, 55.0, 22.0 ],
+					"text" : "zl.slice 1"
+				}
+
+			}
+, 			{
 				"box" : 				{
 					"id" : "obj-19",
 					"maxclass" : "newobj",
@@ -83,13 +95,13 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 706.0, 207.0, 180.0, 22.0 ],
-					"text" : "/spat/source.1/position"
+					"text" : "/spat/source.1/position 1"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
+					"color" : [ 1.0, 0.0, 0.0, 1.0 ],
 					"id" : "obj-8",
 					"linecount" : 2,
 					"maxclass" : "newobj",
@@ -175,7 +187,7 @@
 					"numoutlets" : 2,
 					"outlettype" : [ "", "bang" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 441.0, 29.0, 50.0, 22.0 ]
+					"patching_rect" : [ 441.0, 14.0, 50.0, 22.0 ]
 				}
 
 			}
@@ -186,7 +198,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 441.0, 65.0, 42.0, 22.0 ],
+					"patching_rect" : [ 441.0, 50.0, 42.0, 22.0 ],
 					"text" : "$1 0 1"
 				}
 
@@ -211,7 +223,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 623.0, 153.0, 82.0, 22.0 ],
+					"patching_rect" : [ 623.0, 121.0, 82.0, 22.0 ],
 					"text" : "route address"
 				}
 
@@ -223,7 +235,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 3,
 					"outlettype" : [ "", "", "" ],
-					"patching_rect" : [ 441.0, 101.0, 201.0, 22.0 ],
+					"patching_rect" : [ 441.0, 86.0, 201.0, 22.0 ],
 					"text" : "ossia.remote /spat/source.1/position"
 				}
 
@@ -264,6 +276,7 @@
 					"enablevscroll" : 0,
 					"id" : "obj-1",
 					"lockeddragscroll" : 0,
+					"lockedsize" : 0,
 					"maxclass" : "bpatcher",
 					"numinlets" : 1,
 					"numoutlets" : 0,
@@ -272,8 +285,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 2,
+							"revision" : 2,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -340,20 +353,19 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 149.0, 173.0, 129.0, 22.0 ],
-									"text" : "source.4/position"
+									"text" : "source.1/position 1"
 								}
 
 							}
 , 							{
 								"box" : 								{
 									"id" : "obj-6",
-									"linecount" : 2,
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 33.0, 173.0, 50.0, 35.0 ],
-									"text" : "0.38 0 1"
+									"patching_rect" : [ 33.0, 173.0, 50.0, 22.0 ],
+									"text" : "0.1 0 1"
 								}
 
 							}
@@ -541,7 +553,7 @@
 				"patchline" : 				{
 					"destination" : [ "obj-11", 1 ],
 					"order" : 0,
-					"source" : [ "obj-7", 0 ]
+					"source" : [ "obj-6", 0 ]
 				}
 
 			}
@@ -549,6 +561,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-3", 1 ],
 					"order" : 1,
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-6", 0 ],
 					"source" : [ "obj-7", 0 ]
 				}
 
@@ -563,11 +582,12 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.assert.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.model.mxo",
@@ -578,16 +598,15 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.assert.mxo",
-				"type" : "iLaX"
-			}
-, 			{
 				"name" : "ossia.remote.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.logger.mxo",
-				"type" : "iLaX"
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0
