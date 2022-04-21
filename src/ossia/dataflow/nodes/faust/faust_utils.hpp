@@ -2,6 +2,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/logger.hpp>
+#include <iostream>
 
 #if __has_include(<faust/dsp/poly-llvm-dsp.h>)
 #include <faust/dsp/poly-llvm-dsp.h>
@@ -304,31 +305,61 @@ struct faust_node_utils
   }
 
   /// Execution ///
+
   template <typename Node, typename Dsp>
-  static void exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
+  static void do_exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
   {
-    if (tk.forward())
+    const auto [st, d] = e.timings(tk);
+    ossia::audio_port& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
+    ossia::audio_port& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
+    const int64_t n_in = dsp.getNumInputs();
+    const int64_t n_out = dsp.getNumOutputs();
+    audio_in.set_channels(n_in);
+    audio_out.set_channels(n_out);
+
+    if constexpr(std::is_same_v<FAUSTFLOAT, float>)
     {
-      const auto [st, d] = e.timings(tk);
-
-      auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
-      auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
-      const int64_t n_in = dsp.getNumInputs();
-      const int64_t n_out = dsp.getNumOutputs();
-
       float* inputs_ = (float*)alloca(n_in * d * sizeof(float));
       float* outputs_ = (float*)alloca(n_out * d * sizeof(float));
 
       float** input_n = (float**)alloca(sizeof(float*) * n_in);
       float** output_n = (float**)alloca(sizeof(float*) * n_out);
 
-      copy_controls(self);
-
       copy_input(self, d, n_in, inputs_, input_n, audio_in);
       init_output(self, d, n_out, outputs_, output_n);
       dsp.compute(d, input_n, output_n);
       copy_output(self, d, n_out, outputs_, output_n, audio_out);
+    }
+    else
+    {
+      double** input_n = (double**)alloca(sizeof(double*) * n_in);
+      double** output_n = (double**)alloca(sizeof(double*) * n_out);
+      for(int i = 0; i < n_in; i++)
+      {
+        audio_in.channel(i).resize(e.bufferSize());
+        input_n[i] = audio_in.channel(i).data();
+      }
+      for(int i = 0; i < n_out; i++)
+      {
+        audio_out.channel(i).resize(e.bufferSize());
+        output_n[i] = audio_out.channel(i).data();
+      }
 
+      dsp.compute(d, input_n, output_n);
+    }
+  }
+
+  template <typename Node, typename Dsp>
+  static void exec(Node& self, Dsp& dsp, const ossia::token_request& tk, const ossia::exec_state_facade& e)
+  {
+    if (tk.forward())
+    {
+      const auto [st, d] = e.timings(tk);
+      copy_controls(self);
+
+      if(d == 0)
+        return;
+      do_exec(self, dsp, tk, e);
       copy_displays(self, st);
     }
   }
@@ -341,29 +372,15 @@ struct faust_node_utils
     {
       const auto [st, d] = e.timings(tk);
 
-      auto& audio_in = self.root_inputs()[0]->template cast<ossia::audio_port>();
       auto& midi_in = self.root_inputs()[1]->template cast<ossia::midi_port>();
-      auto& audio_out = self.root_outputs()[0]->template cast<ossia::audio_port>();
-
-      const int64_t n_in = dsp.getNumInputs();
-      const int64_t n_out = dsp.getNumOutputs();
-
-      float* inputs_ = (float*)alloca(n_in * d * sizeof(float));
-      float* outputs_ = (float*)alloca(n_out * d * sizeof(float));
-
-      float** input_n = (float**)alloca(sizeof(float*) * n_in);
-      float** output_n = (float**)alloca(sizeof(float*) * n_out);
 
       copy_controls(self);
       dsp.updateAllZones();
-
       copy_midi(self, dsp, midi_in);
 
-      copy_input(self, d, n_in, inputs_, input_n, audio_in);
-      init_output(self, d, n_out, outputs_, output_n);
-      dsp.compute(d, input_n, output_n);
-      copy_output(self, d, n_out, outputs_, output_n, audio_out);
-
+      if(d == 0)
+        return;
+      do_exec(self, dsp, tk, e);
       copy_displays(self, st);
     }
   }
