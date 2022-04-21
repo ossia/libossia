@@ -341,7 +341,7 @@ struct faust_node_utils
       }
       for(int i = 0; i < n_out; i++)
       {
-        audio_out.channel(i).resize(e.bufferSize());
+        audio_out.channel(i).resize(e.bufferSize(), boost::container::default_init);
         output_n[i] = audio_out.channel(i).data();
       }
 

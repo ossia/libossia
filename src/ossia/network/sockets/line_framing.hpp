@@ -19,7 +19,7 @@ struct line_framing_decoder
   Socket& socket;
   char delimiter[8] = {0};
   int32_t m_next_packet_size {};
-  ossia::pod_vector<char> m_data;
+  std::vector<char, ossia::pod_allocator_avx2<char>> m_data;
 
   explicit line_framing_decoder(Socket& socket)
       : socket{socket}

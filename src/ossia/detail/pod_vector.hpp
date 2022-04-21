@@ -5,6 +5,8 @@
 #include <vector>
 
 #include <type_traits>
+#include <boost/container/vector.hpp>
+
 namespace ossia
 {
 #if defined(_MSC_VER) && defined(_DEBUG)
@@ -161,7 +163,7 @@ struct pod_allocator_avx2 : aligned_pod_allocator<T, 32> {
 };
 
 template <typename T>
-using pod_vector = std::vector<T, pod_allocator_avx2<T>>;
+using pod_vector = boost::container::vector<T, pod_allocator_avx2<T>>;
 
 using int_vector = pod_vector<int>;
 using float_vector = pod_vector<float>;
