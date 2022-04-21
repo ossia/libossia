@@ -9,7 +9,7 @@ var wss = new WebSocketServer({port: 1337});
 var norun = 0;
 var success = 0;
 var fail = 0;
-var failed_tests = [];
+var failed_tests = new Set([]);
 var total_tests_count = 0;
 
 var assert_failed = 0;
@@ -35,7 +35,7 @@ wss.on('connection', function(ws) {
                     case 'fail':
                         fail++;
                         assert_failed++;
-                        failed_tests.push(current_patcher);
+                        failed_tests.add(current_patcher);
                         break;
                     case 'success':
                         assert_success++;
@@ -104,7 +104,7 @@ async function main()
                 await exec('open -W -n ' + patcher_path);
                 if(assert_failed + assert_success == 0)
                 {
-                    failed_tests.push(current_patcher);
+                    failed_tests.add(current_patcher);
                 }
                 console.log("");
             }
