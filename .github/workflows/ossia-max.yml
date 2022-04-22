@@ -127,3 +127,54 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ossia-max*.zip
+
+  unit-tests-macos:
+    runs-on: macos-latest
+    needs: [ build-macos ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: ossia-max
+          path: "~/Documents/Max 8/Packages/ossia"
+      - name: Install Max
+        shell: bash
+        run: |
+          wget https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.dmg
+          hdiutil mount Max822_220208.dmg
+          cp -R /Volumes/Max822/Max.app /Applications
+          # disable first time dialog
+          xattr -d com.apple.quarantine /Applications/Max.app 
+
+      - name: Install node-js
+        run: |
+          brew install node
+          npm install appdata-path
+
+      - name: Run Tests
+        run: |
+          cd src/ossia-max/unit-test
+          node logger-server.js
+
+  unit-tests-windows:
+    runs-on: windows-latest
+    needs: [ build-windows ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: ossia-max
+          path: ossia
+      - name: Install Max
+        run: |
+          Invoke-WebRequest -Uri https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.zip -OutFile Max822_220208.zip
+          Expand-Archive -F -LiteralPath Max822_220208.zip -DestinationPath .
+          ls
+      - name: Install node-js
+        run: choco install nodejs.install
+
+      - name: Run Tests
+        shell: pwsh
+        run: |
+          cd src/ossia-max/unit-test
+          node logger-server.js 

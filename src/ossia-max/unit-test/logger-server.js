@@ -19,6 +19,13 @@ var prefs_rawdata;
 var overdrive = 0;
 
 var max_prefs_file = "";
+prefs = { preferences : 
+    {
+        restorewindows : 0,
+        overdrive : 0,
+        startuptour : 0
+    }
+}
 
 wss.on('connection', function(ws) {
     ws.on('message', function(message) {
@@ -101,7 +108,7 @@ async function main()
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
-                await exec('open -W -n ' + patcher_path);
+                await exec('open -F -W -n ' + patcher_path);
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
@@ -112,7 +119,7 @@ async function main()
         write_report();
     }
    
-    restore_max_prefs();
+    write_max_prefs(prefs_rawdata);
     process.exit(failed_tests.size);
 }
 
@@ -158,8 +165,14 @@ function write_report()
 
 function read_max_prefs()
 {
-    prefs_rawdata = fs.readFileSync(max_prefs_file);
-    prefs = JSON.parse(prefs_rawdata);
+    try {
+        if (fs.existsSync(max_prefs_file)) {
+            prefs_rawdata = fs.readFileSync(max_prefs_file);
+            prefs = JSON.parse(prefs_rawdata);
+        }
+      } catch(err) {
+        console.error(err)
+      }
 }
 
 function tweak_max_prefs()
@@ -167,18 +180,25 @@ function tweak_max_prefs()
     // disable window restoratin on load
     prefs["preferences"]["restorewindows"] = 0;
     prefs["preferences"]["overdrive"] = overdrive;
-    write_max_prefs();
+    write_max_prefs(JSON.stringify(prefs));
 }
 
-function write_max_prefs()
+function write_max_prefs(data)
 {
-    var data = JSON.stringify(prefs);
-    fs.writeFileSync(max_prefs_file, data);
-}
-
-function restore_max_prefs()
-{
-    fs.writeFileSync(max_prefs_file, prefs_rawdata);
+    parent_folder = path.dirname(max_prefs_file)
+    fs.mkdir(parent_folder, { recursive: true }, (err) => {
+        if (err) {
+            Console.Log("Can't create folder: " + parent_folder)
+            throw err;
+        }
+        fs.writeFile(max_prefs_file, data, { floag: 'w' }, function (err) {
+            if(err) {
+                console.log("Can't write settings")
+                throw err;
+            }
+            console.log("Settings written");
+        });
+      });
 }
 
 main();
