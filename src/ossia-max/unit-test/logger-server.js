@@ -81,6 +81,8 @@ async function main()
     console.log('Directory path: ' + directory_path);
     max_prefs_file = path.join(getAppDataPath(), "Cycling '74/Max 8/Settings/maxpreferences.maxpref");
 
+    var isWin = process.platform === "win32";
+
     read_max_prefs();
 
     args = process.argv.slice(2);
@@ -104,11 +106,19 @@ async function main()
             {
                 console.log("Open " + file);
                 total_tests_count++;
-                patcher_path = path.join(directory_path, file);
+                patcher_path = path.normalize(path.join(directory_path, file));
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
-                await exec('open -F -W -n ' + patcher_path);
+                if( isWin )
+                {
+                    await exec("Start-Process \"C:/Program Files/Cycling '74/Max 8/Max.exe\" -Wait -NoNewWindow " + patcher_path ,
+                                {'shell':'powershell.exe'});
+                }
+                else
+                {
+                    await exec('open -F -W -n ' + patcher_path);
+                }
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
