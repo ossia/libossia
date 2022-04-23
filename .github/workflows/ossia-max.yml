@@ -171,12 +171,17 @@ jobs:
         run: |
           Invoke-WebRequest -Uri https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.zip -OutFile Max822_220208.zip
           Expand-Archive -F -LiteralPath Max822_220208.zip -DestinationPath .
-          ls
+          msiexec /passive /i Max822_220209_85d93eb.msi
+
       - name: Install node-js
-        run: choco install nodejs.install
+        run:  |
+          choco install -y nodejs.install
+          npm install appdata-path
 
       - name: Run Tests
         shell: pwsh
         run: |
           cd src/ossia-max/unit-test
+          # Turn off firewall
+          Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
           node logger-server.js 
