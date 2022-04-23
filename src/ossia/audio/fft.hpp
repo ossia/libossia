@@ -51,6 +51,12 @@ class OSSIA_EXPORT fft
 {
 public:
   explicit fft(std::size_t newSize) noexcept;
+  fft() noexcept
+    : fft{16}
+  {
+
+  }
+
   ~fft();
 
   static constexpr double norm(std::size_t sz) noexcept {
