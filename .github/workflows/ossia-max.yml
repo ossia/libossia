@@ -140,11 +140,13 @@ jobs:
       - name: Install Max
         shell: bash
         run: |
-          wget https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.dmg
+          wget -q https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.dmg
           hdiutil mount Max822_220208.dmg
-          cp -R /Volumes/Max822/Max.app /Applications
+          mkdir -p /Applications
+          cp -R /Volumes/Max822/Max.app /Applications/Max.app
+          ls /Applications
           # disable first time dialog
-          xattr -d com.apple.quarantine /Applications/Max.app 
+          xattr -d com.apple.quarantine /Applications/Max.app | true
 
       - name: Install node-js
         run: |
