@@ -113,11 +113,11 @@ async function main()
                 if( isWin )
                 {
                     await exec("Start-Process \"C:/Program Files/Cycling '74/Max 8/Max.exe\" -Wait -NoNewWindow " + patcher_path ,
-                                {'shell':'powershell.exe'});
+                                {shell:'powershell.exe', timeout : 180000});
                 }
                 else
                 {
-                    await exec('open -F -W -n ' + patcher_path);
+                    await exec('open -F -W -n ' + patcher_path, { timeout : 180000 });
                 }
                 if(assert_failed + assert_success == 0)
                 {
