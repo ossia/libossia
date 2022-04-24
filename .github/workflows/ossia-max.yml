@@ -146,16 +146,16 @@ jobs:
           cp -R /Volumes/Max822/Max.app /Applications/Max.app
           ls /Applications
           # disable first time dialog
-          xattr -d com.apple.quarantine /Applications/Max.app | true
+          # xattr -d com.apple.quarantine /Applications/Max.app | true
 
       - name: Install node-js
         run: |
           brew install node
-          npm install appdata-path
 
       - name: Run Tests
         run: |
           cd src/ossia-max/unit-test
+          npm install appdata-path ws
           node logger-server.js
 
   unit-tests-windows:
@@ -176,12 +176,12 @@ jobs:
       - name: Install node-js
         run:  |
           choco install -y nodejs.install
-          npm install appdata-path
 
       - name: Run Tests
         shell: pwsh
         run: |
           cd src/ossia-max/unit-test
+          npm install appdata-path ws
           # Turn off firewall
           Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
           node logger-server.js 
