@@ -145,6 +145,7 @@ jobs:
           mkdir -p /Applications
           cp -R /Volumes/Max822/Max.app /Applications/Max.app
           ls /Applications
+          ls "~/Documents/Max 8/Packages/ossia"
           # disable first time dialog
           # xattr -d com.apple.quarantine /Applications/Max.app | true
 
@@ -166,12 +167,13 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: ossia-max
-          path: ossia
+          path: "~/Documents/Max 8/Packages/ossia"
       - name: Install Max
         run: |
           Invoke-WebRequest -Uri https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.zip -OutFile Max822_220208.zip
           Expand-Archive -F -LiteralPath Max822_220208.zip -DestinationPath .
           msiexec /passive /i Max822_220209_85d93eb.msi
+          ls "~/Documents/Max 8/Packages/ossia"
 
       - name: Install node-js
         run:  |
