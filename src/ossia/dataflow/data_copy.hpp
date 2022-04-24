@@ -59,9 +59,7 @@ struct move_data
   /// Value ///
   void operator()(value_port& out, value_port& in)
   {
-    auto tmp = std::move(in.get_data());
-    in.get_data() = std::move(out.get_data());
-    out.get_data() = std::move(tmp);
+    in.add_port_values(std::move(out));
   }
 
   /// Audio ///
