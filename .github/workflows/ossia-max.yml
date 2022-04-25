@@ -165,15 +165,17 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: test=result
-          path: "*.csv"
+          name: test-result
+          path: "src/ossia-max/unit-test/*.csv"
 
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: logs
-          path: "*.log"
+          path: |
+            "*.log"
+            "src/ossia-max/unit-test/*.log"
 
   unit-tests-windows:
     runs-on: windows-latest
@@ -221,12 +223,14 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
-          name: test=result
-          path: "*.csv"
+          name: test-result
+          path: "src/ossia-max/unit-test/*.csv"
 
       - name: Upload logs
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
           name: logs
-          path: "*.log"
+          path: |
+            "*.log"
+            "src/ossia-max/unit-test/*.log"
