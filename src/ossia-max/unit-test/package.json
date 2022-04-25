@@ -1,6 +1,7 @@
 {
     "dependencies": {
         "appdata-path": "^1.0.0",
+        "csv-writer": "^1.6.0",
         "ws": "^7.4.3"
     }
 }

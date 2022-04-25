@@ -6,6 +6,23 @@ const getAppDataPath = require("appdata-path");
 var WebSocketServer = require('ws').Server
 var wss = new WebSocketServer({port: 1337});
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: 'out.csv',
+  header: [
+    {id: 'commit', title: 'Commit'},
+    {id: 'filename', title: 'Filname'},
+    {id: 'test', title: 'Test Name'},
+    {id: 'result', title: 'Result'},
+  ]
+});
+
+var test_result = { commit: process.env.GITHUB_SHA,
+            filename: '',
+            test: '',
+            result: ''};
+var results_array = []
+
 var norun = 0;
 var success = 0;
 var fail = 0;
@@ -34,22 +51,28 @@ wss.on('connection', function(ws) {
         {
             case 'assert':
             {
+                test_result.filename = current_patcher;
+                test_result.test = json.name;
                 switch(json.status)
                 {
                     case 'norun':
                         norun++;
+                        test_result.result = -1;
                         break;
                     case 'fail':
                         fail++;
                         assert_failed++;
                         failed_tests.add(current_patcher);
+                        test_result.result = 0;
                         break;
                     case 'success':
                         assert_success++;
                         success++;
+                        test_result.result = 1;
                         break;
 
                 }
+                results_array.push(test_result);
                 console.log("\t> Assert: " + json.status + " - " + json.name);
                 break;
             }
@@ -110,6 +133,8 @@ async function main()
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
+                test_result.filename = current_patcher;
+                test_result.name = '*';
                 if( isWin )
                 {
                     await exec("Start-Process \"C:/Program Files/Cycling '74/Max 8/Max.exe\" -Wait -NoNewWindow " + patcher_path ,
@@ -122,6 +147,11 @@ async function main()
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
+                    await csvWriter.writeRecords(test_result)
+                }
+                else
+                {
+                    await csvWriter.writeRecords(results_array)
                 }
                 console.log("");
             }
