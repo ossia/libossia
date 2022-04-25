@@ -158,6 +158,20 @@ jobs:
           cd src/ossia-max/unit-test
           npm install appdata-path ws
           node logger-server.js
+      
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: test=result
+          path: "*.csv"
+
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: "*.log"
 
   unit-tests-windows:
     runs-on: windows-latest
@@ -199,3 +213,17 @@ jobs:
           # Turn off firewall
           Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
           node logger-server.js 
+      
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: test=result
+          path: "*.csv"
+
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: "*.log"
