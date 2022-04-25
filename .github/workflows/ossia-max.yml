@@ -147,7 +147,8 @@ jobs:
           ls /Applications
           ls "${HOME}/Documents/Max 8/Packages/ossia"
           # disable first time dialog
-          # xattr -d com.apple.quarantine /Applications/Max.app | true
+          xattr -r -d com.apple.quarantine /Applications/Max.app
+          xattr -r -d com.apple.quarantine '${HOME}/Documents/Max 8/Packages/ossia/'
 
       - name: Install node-js
         run: |
