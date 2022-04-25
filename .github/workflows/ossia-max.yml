@@ -172,9 +172,12 @@ jobs:
         run: |
           Invoke-WebRequest -Uri https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.zip -OutFile Max822_220208.zip
           Expand-Archive -F -LiteralPath Max822_220208.zip -DestinationPath .
-          msiexec /passive /i Max822_220209_85d93eb.msi
+          msiexec /passive /i Max822_220209_85d93eb.msi /log c:\max-install.log
+          cat c:\max-install.log
           ls "~/Documents/Max 8/Packages/ossia"
-          ls "C:/Program Files/Cycling '74/Max 8/"
+          cd c:/
+          Get-ChildItem -Recurse -Filter 'Max 8'
+        
 
       - name: Install node-js
         run:  |
