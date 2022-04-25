@@ -157,7 +157,7 @@ jobs:
       - name: Run Tests
         run: |
           cd src/ossia-max/unit-test
-          npm install appdata-path ws csv-writer
+          npm install appdata-path ws csv-writer util
           node logger-server.js
       
       - name: Upload Test Results
@@ -210,7 +210,7 @@ jobs:
         shell: pwsh
         run: |
           cd src/ossia-max/unit-test
-          npm install appdata-path ws csv-writer
+          npm install appdata-path ws csv-writer util
           # Turn off firewall
           Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
           node logger-server.js 

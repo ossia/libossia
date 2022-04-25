@@ -23,6 +23,15 @@ var test_result = { commit: process.env.GITHUB_SHA,
             result: ''};
 var results_array = []
 
+var fs = require('fs');
+var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
+var log_stdout = process.stdout;
+
+console.log = function(d) { //
+    log_file.write(util.format(d) + '\n');
+    log_stdout.write(util.format(d) + '\n');
+  };
+
 var norun = 0;
 var success = 0;
 var fail = 0;
@@ -95,7 +104,6 @@ wss.on('close', function close() {
 
 //requiring path and fs modules
 const path = require('path');
-const fs = require('fs');
 const { report, exit } = require('process');
 
 async function main()
