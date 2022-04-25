@@ -129,7 +129,7 @@ jobs:
           files: ossia-max*.zip
 
   unit-tests-macos:
-    runs-on: macos-latest
+    runs-on: [ self-hosted, macOS ]
     needs: [ build-macos ]
     steps:
       - uses: actions/checkout@v2
