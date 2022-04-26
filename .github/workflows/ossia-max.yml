@@ -211,7 +211,6 @@ jobs:
           choco install -y nodejs.install
 
       - name: Run Tests
-        shell: pwsh
         run: |
           cd src/ossia-max/unit-test
           npm install
