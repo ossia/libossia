@@ -158,7 +158,7 @@ jobs:
       - name: Run Tests
         run: |
           cd src/ossia-max/unit-test
-          npm install appdata-path ws csv-writer util
+          npm install
           node logger-server.js
       
       - name: Upload Test Results
@@ -178,7 +178,7 @@ jobs:
             "src/ossia-max/unit-test/*.log"
 
   unit-tests-windows:
-    runs-on: windows-latest
+    runs-on: [ self-hosted, Windows ]
     needs: [ build-windows ]
     steps:
       - uses: actions/checkout@v2
@@ -214,7 +214,7 @@ jobs:
         shell: pwsh
         run: |
           cd src/ossia-max/unit-test
-          npm install appdata-path ws csv-writer util
+          npm install
           # Turn off firewall
           Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
           node logger-server.js 
