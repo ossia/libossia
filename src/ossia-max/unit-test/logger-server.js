@@ -8,7 +8,7 @@ var wss = new WebSocketServer({port: 1337});
 
 const createCsvWriter = require('csv-writer').createObjectCsvWriter;
 const csvWriter = createCsvWriter({
-  path: 'out.csv',
+  path: 'out-' + process.platform + '.csv',
   header: [
     {id: 'commit', title: 'Commit'},
     {id: 'filename', title: 'Filname'},
@@ -24,7 +24,7 @@ var test_result = { commit: process.env.GITHUB_SHA,
 var results_array = []
 
 var fs = require('fs');
-var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
+var log_file = fs.createWriteStream(__dirname + '/debug-' + process.platform + '.log', {flags : 'w'});
 var log_stdout = process.stdout;
 
 console.log = function(d) { //
