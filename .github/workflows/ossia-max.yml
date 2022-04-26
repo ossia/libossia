@@ -131,6 +131,7 @@ jobs:
   unit-tests-macos:
     runs-on: [ self-hosted, macOS ]
     needs: [ build-macos ]
+    if: github.repository == 'ossia/libossia'
     steps:
       - uses: actions/checkout@v2
       - uses: actions/download-artifact@v2
@@ -179,6 +180,7 @@ jobs:
 
   unit-tests-windows:
     runs-on: [ self-hosted, Windows ]
+    if: github.repository == 'ossia/libossia'
     needs: [ build-windows ]
     steps:
       - uses: actions/checkout@v2
