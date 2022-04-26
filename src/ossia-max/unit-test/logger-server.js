@@ -17,10 +17,6 @@ const csvWriter = createCsvWriter({
   ]
 });
 
-var test_result = { commit: process.env.GITHUB_SHA,
-            filename: '',
-            test: '',
-            result: ''};
 var results_array = []
 
 var fs = require('fs');
@@ -60,8 +56,10 @@ wss.on('connection', function(ws) {
         {
             case 'assert':
             {
-                test_result.filename = current_patcher;
-                test_result.test = json.name;
+                var test_result = { commit: process.env.GITHUB_SHA,
+                    filename: current_patcher,
+                    test: json.name,
+                    result: -1};
                 switch(json.status)
                 {
                     case 'norun':
@@ -141,8 +139,6 @@ async function main()
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
-                test_result.filename = current_patcher;
-                test_result.name = '*';
                 if( isWin )
                 {
                     await exec("Start-Process \"C:/Program Files/Cycling '74/Max 8/Max.exe\" -Wait -NoNewWindow " + patcher_path ,
@@ -155,6 +151,10 @@ async function main()
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
+                    var test_result = { commit: process.env.GITHUB_SHA,
+                        filename: current_patcher,
+                        test: '*',
+                        result: -1};
                     await csvWriter.writeRecords(test_result)
                 }
                 else
