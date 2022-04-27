@@ -33,6 +33,7 @@ var success = 0;
 var fail = 0;
 var failed_tests = new Set([]);
 var total_tests_count = 0;
+var _timeout = 180000;
 
 var assert_failed = 0;
 var assert_success = 0;
@@ -139,15 +140,35 @@ async function main()
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
+                
                 if( isWin )
                 {
-                    await exec("Start-Process \"C:/Program Files/Cycling '74/Max 8/Max.exe\" -Wait -NoNewWindow " + patcher_path ,
-                                {shell:'powershell.exe', timeout : 600000});
+                    try 
+                    {
+                        await exec("start ./test-patchers/" + file + " ; sleep 10",
+                                    {shell:'powershell.exe'});
+                        await exec("$nid = (Get-Process Max).id ; Wait-Process -Id $nid",
+                                    {shell:'powershell.exe', timeout : _timeout});
+                    }
+                    catch (err)
+                    {
+                        console.log("Error while waiting for test to finish: " + err)
+                        
+                        try
+                        {
+                            await exec("$nid = (Get-Process Max).id; Stop-Process -Force -Id $nid; Wait-Process -Id $nid",
+                            {shell:'powershell.exe', timeout : _timeout});
+                        } catch (err)
+                        {
+                            console.log("Error while waiting for Max to quit: " + err);
+                        }
+                    }
                 }
                 else
                 {
-                    await exec('open -F -W -n ' + patcher_path, { timeout : 600000 });
+                    await exec('open -F -W -n ' + patcher_path, { timeout : _timeout });
                 }
+
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
