@@ -127,3 +127,111 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ossia-max*.zip
+
+  unit-tests-macos:
+    runs-on: [ self-hosted, macOS ]
+    needs: [ build-macos ]
+    if: github.repository == 'ossia/libossia'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: ossia-max
+          path: "~/Documents/Max 8/Packages/ossia"
+      - name: Install Max
+        shell: bash
+        run: |
+          if [ ! -d "/Applications/Max.app" ]; then
+            wget -q https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.dmg
+            hdiutil mount Max822_220208.dmg
+            mkdir -p /Applications
+            cp -R /Volumes/Max822/Max.app /Applications/Max.app
+            # disable first time dialog
+            xattr -r -d com.apple.quarantine /Applications/Max.app
+          fi
+          find "${HOME}/Documents/Max 8/Packages/ossia/" -name "*.mxo"   -exec  xattr -r -d com.apple.quarantine {} +
+          find "${HOME}/Documents/Max 8/Packages/ossia/" -name "*.dylib" -exec  xattr -r -d com.apple.quarantine {} +
+
+      - name: Install node-js
+        run: |
+          brew install node
+
+      - name: Run Tests
+        run: |
+          cd src/ossia-max/unit-test
+          npm install
+          node logger-server.js
+      
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-result
+          path: "src/ossia-max/unit-test/*.csv"
+
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: |
+            "*.log"
+            "src/ossia-max/unit-test/*.log"
+
+  unit-tests-windows:
+    runs-on: [ self-hosted, Windows ]
+    if: github.repository == 'ossia/libossia'
+    needs: [ build-windows ]
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          name: ossia-max
+          path: "~/Documents/Max 8/Packages/ossia"
+      - name: Install Max
+        run: |
+          if(-not(Test-path "C:/Program Files/Cycling '74/Max 8/Max.exe" -PathType leaf))
+          {
+            Invoke-WebRequest -Uri https://akiaj5esl75o5wbdcv2a-maxmspjitter.s3.amazonaws.com/Max822_220208.zip -OutFile Max822_220208.zip
+            Expand-Archive -F -LiteralPath Max822_220208.zip -DestinationPath .
+            $file = Get-Childitem . | where {$_.extension -eq ".msi"}
+            $DataStamp = get-date -Format yyyyMMddTHHmmss
+            $logFile = '{0}-{1}.log' -f $file.fullname,$DataStamp
+            $MSIArguments = @(
+                "/i"
+                ('"{0}"' -f $file.fullname)
+                "/qn"
+                "/norestart"
+                "/L*v"
+                $logFile
+            )
+            Start-Process "msiexec.exe" -ArgumentList $MSIArguments -Wait -NoNewWindow
+          }
+          
+      - name: Install node-js
+        run:  |
+          choco install -y nodejs.install
+
+      - name: Run Tests
+        run: |
+          cd src/ossia-max/unit-test
+          npm install
+          # Turn off firewall
+          Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+          node logger-server.js 
+      
+      - name: Upload Test Results
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: test-result
+          path: "src/ossia-max/unit-test/*.csv"
+
+      - name: Upload logs
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with:
+          name: logs
+          path: |
+            "*.log"
+            "src/ossia-max/unit-test/*.log"

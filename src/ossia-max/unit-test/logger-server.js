@@ -6,11 +6,34 @@ const getAppDataPath = require("appdata-path");
 var WebSocketServer = require('ws').Server
 var wss = new WebSocketServer({port: 1337});
 
+const createCsvWriter = require('csv-writer').createObjectCsvWriter;
+const csvWriter = createCsvWriter({
+  path: 'out-' + process.platform + '.csv',
+  header: [
+    {id: 'commit', title: 'Commit'},
+    {id: 'filename', title: 'Filname'},
+    {id: 'test', title: 'Test Name'},
+    {id: 'result', title: 'Result'},
+  ]
+});
+
+var results_array = []
+
+var fs = require('fs');
+var log_file = fs.createWriteStream(__dirname + '/debug-' + process.platform + '.log', {flags : 'w'});
+var log_stdout = process.stdout;
+
+console.log = function(d) { //
+    log_file.write(util.format(d) + '\n');
+    log_stdout.write(util.format(d) + '\n');
+  };
+
 var norun = 0;
 var success = 0;
 var fail = 0;
 var failed_tests = new Set([]);
 var total_tests_count = 0;
+var _timeout = 180000;
 
 var assert_failed = 0;
 var assert_success = 0;
@@ -19,6 +42,13 @@ var prefs_rawdata;
 var overdrive = 0;
 
 var max_prefs_file = "";
+prefs = { preferences : 
+    {
+        restorewindows : 0,
+        overdrive : 0,
+        startuptour : 0
+    }
+}
 
 wss.on('connection', function(ws) {
     ws.on('message', function(message) {
@@ -27,22 +57,30 @@ wss.on('connection', function(ws) {
         {
             case 'assert':
             {
+                var test_result = { commit: process.env.GITHUB_SHA,
+                    filename: current_patcher,
+                    test: json.name,
+                    result: -1};
                 switch(json.status)
                 {
                     case 'norun':
                         norun++;
+                        test_result.result = -1;
                         break;
                     case 'fail':
                         fail++;
                         assert_failed++;
                         failed_tests.add(current_patcher);
+                        test_result.result = 0;
                         break;
                     case 'success':
                         assert_success++;
                         success++;
+                        test_result.result = 1;
                         break;
 
                 }
+                results_array.push(test_result);
                 console.log("\t> Assert: " + json.status + " - " + json.name);
                 break;
             }
@@ -65,7 +103,6 @@ wss.on('close', function close() {
 
 //requiring path and fs modules
 const path = require('path');
-const fs = require('fs');
 const { report, exit } = require('process');
 
 async function main()
@@ -73,6 +110,8 @@ async function main()
     directory_path = __dirname;
     console.log('Directory path: ' + directory_path);
     max_prefs_file = path.join(getAppDataPath(), "Cycling '74/Max 8/Settings/maxpreferences.maxpref");
+
+    var isWin = process.platform === "win32";
 
     read_max_prefs();
 
@@ -97,14 +136,51 @@ async function main()
             {
                 console.log("Open " + file);
                 total_tests_count++;
-                patcher_path = path.join(directory_path, file);
+                patcher_path = path.normalize(path.join(directory_path, file));
                 current_patcher = file;
                 assert_failed = 0;
                 assert_success = 0;
-                await exec('open -W -n ' + patcher_path);
+                
+                if( isWin )
+                {
+                    try 
+                    {
+                        await exec("start ./test-patchers/" + file + " ; sleep 10",
+                                    {shell:'powershell.exe'});
+                        await exec("$nid = (Get-Process Max).id ; Wait-Process -Id $nid",
+                                    {shell:'powershell.exe', timeout : _timeout});
+                    }
+                    catch (err)
+                    {
+                        console.log("Error while waiting for test to finish: " + err)
+                        
+                        try
+                        {
+                            await exec("$nid = (Get-Process Max).id; Stop-Process -Force -Id $nid; Wait-Process -Id $nid",
+                            {shell:'powershell.exe', timeout : _timeout});
+                        } catch (err)
+                        {
+                            console.log("Error while waiting for Max to quit: " + err);
+                        }
+                    }
+                }
+                else
+                {
+                    await exec('open -F -W -n ' + patcher_path, { timeout : _timeout });
+                }
+
                 if(assert_failed + assert_success == 0)
                 {
                     failed_tests.add(current_patcher);
+                    var test_result = { commit: process.env.GITHUB_SHA,
+                        filename: current_patcher,
+                        test: '*',
+                        result: -1};
+                    await csvWriter.writeRecords(test_result)
+                }
+                else
+                {
+                    await csvWriter.writeRecords(results_array)
                 }
                 console.log("");
             }
@@ -112,7 +188,7 @@ async function main()
         write_report();
     }
    
-    restore_max_prefs();
+    write_max_prefs(prefs_rawdata);
     process.exit(failed_tests.size);
 }
 
@@ -158,8 +234,14 @@ function write_report()
 
 function read_max_prefs()
 {
-    prefs_rawdata = fs.readFileSync(max_prefs_file);
-    prefs = JSON.parse(prefs_rawdata);
+    try {
+        if (fs.existsSync(max_prefs_file)) {
+            prefs_rawdata = fs.readFileSync(max_prefs_file);
+            prefs = JSON.parse(prefs_rawdata);
+        }
+      } catch(err) {
+        console.error(err)
+      }
 }
 
 function tweak_max_prefs()
@@ -167,18 +249,25 @@ function tweak_max_prefs()
     // disable window restoratin on load
     prefs["preferences"]["restorewindows"] = 0;
     prefs["preferences"]["overdrive"] = overdrive;
-    write_max_prefs();
+    write_max_prefs(JSON.stringify(prefs));
 }
 
-function write_max_prefs()
+function write_max_prefs(data)
 {
-    var data = JSON.stringify(prefs);
-    fs.writeFileSync(max_prefs_file, data);
-}
-
-function restore_max_prefs()
-{
-    fs.writeFileSync(max_prefs_file, prefs_rawdata);
+    parent_folder = path.dirname(max_prefs_file)
+    fs.mkdir(parent_folder, { recursive: true }, (err) => {
+        if (err) {
+            Console.Log("Can't create folder: " + parent_folder)
+            throw err;
+        }
+        fs.writeFile(max_prefs_file, data, { floag: 'w' }, function (err) {
+            if(err) {
+                console.log("Can't write settings")
+                throw err;
+            }
+            console.log("Settings written");
+        });
+      });
 }
 
 main();
