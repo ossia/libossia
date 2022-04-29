@@ -3,8 +3,8 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"minor" : 2,
+			"revision" : 2,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
@@ -40,6 +40,81 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
+					"id" : "obj-11",
+					"maxclass" : "newobj",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "" ],
+					"patching_rect" : [ 156.5, 405.0, 154.0, 22.0 ],
+					"text" : "ossia.assert \"Default value\""
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"checkedcolor" : [ 0.0, 1.0, 0.0, 1.0 ],
+					"id" : "obj-13",
+					"maxclass" : "toggle",
+					"numinlets" : 1,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"parameter_enable" : 0,
+					"patching_rect" : [ 156.5, 371.200003802776337, 24.0, 24.0 ],
+					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-15",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 156.5, 340.399999999999977, 107.0, 22.0 ],
+					"text" : "zl.compare default"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-10",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 2,
+					"outlettype" : [ "", "" ],
+					"patching_rect" : [ 329.0, 310.0, 42.0, 22.0 ],
+					"text" : "gate 2"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-9",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "int" ],
+					"patching_rect" : [ 329.0, 270.0, 29.5, 22.0 ],
+					"text" : "+ 1"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-4",
+					"maxclass" : "newobj",
+					"numinlets" : 5,
+					"numoutlets" : 4,
+					"outlettype" : [ "int", "", "", "int" ],
+					"patching_rect" : [ 329.0, 220.400000000000006, 61.0, 22.0 ],
+					"text" : "counter"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-1",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -67,21 +142,21 @@
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 2,
-					"outlettype" : [ "bang", "" ],
+					"outlettype" : [ "", "bang" ],
 					"patching_rect" : [ 317.5, 154.0, 29.5, 22.0 ],
-					"text" : "t b l"
+					"text" : "t l b"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.0, 1.0, 0.0, 1.0 ],
+					"color" : [ 0.0, 0.0, 0.0, 0.0 ],
 					"id" : "obj-2",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 328.0, 358.0, 183.0, 22.0 ],
+					"patching_rect" : [ 351.5, 405.0, 183.0, 22.0 ],
 					"text" : "ossia.assert \"Loadbanged value\""
 				}
 
@@ -95,7 +170,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 328.0, 324.200003802776337, 24.0, 24.0 ],
+					"patching_rect" : [ 351.5, 371.200003802776337, 24.0, 24.0 ],
 					"uncheckedcolor" : [ 0.996078431372549, 0.0, 0.0, 1.0 ]
 				}
 
@@ -107,7 +182,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 2,
 					"outlettype" : [ "", "" ],
-					"patching_rect" : [ 328.0, 218.400000000000006, 168.0, 22.0 ],
+					"patching_rect" : [ 351.5, 340.399999999999977, 168.0, 22.0 ],
 					"text" : "zl.compare \"loadbang default\""
 				}
 
@@ -131,7 +206,7 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 44.0, 176.0, 243.0, 22.0 ],
+					"patching_rect" : [ 66.5, 220.400000000000006, 243.0, 22.0 ],
 					"text" : "\"loadbang default\""
 				}
 
@@ -177,6 +252,20 @@
  ],
 		"lines" : [ 			{
 				"patchline" : 				{
+					"destination" : [ "obj-12", 0 ],
+					"source" : [ "obj-10", 1 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-15", 0 ],
+					"source" : [ "obj-10", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-12", 0 ]
 				}
@@ -184,8 +273,22 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-11", 0 ],
+					"source" : [ "obj-13", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-2", 0 ],
 					"source" : [ "obj-14", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-13", 0 ],
+					"source" : [ "obj-15", 0 ]
 				}
 
 			}
@@ -200,6 +303,13 @@
 				"patchline" : 				{
 					"destination" : [ "obj-43", 0 ],
 					"source" : [ "obj-3", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-9", 0 ],
+					"source" : [ "obj-4", 0 ]
 				}
 
 			}
@@ -221,8 +331,15 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-12", 0 ],
+					"destination" : [ "obj-10", 1 ],
 					"order" : 0,
+					"source" : [ "obj-8", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-4", 0 ],
 					"source" : [ "obj-8", 1 ]
 				}
 
@@ -231,20 +348,28 @@
 				"patchline" : 				{
 					"destination" : [ "obj-5", 1 ],
 					"order" : 1,
-					"source" : [ "obj-8", 1 ]
+					"source" : [ "obj-8", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-10", 0 ],
+					"source" : [ "obj-9", 0 ]
 				}
 
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.assert.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.device.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
 				"type" : "iLaX"
 			}
 , 			{
@@ -252,12 +377,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.assert.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.logger.mxo",
-				"type" : "iLaX"
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0,
