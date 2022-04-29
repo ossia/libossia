@@ -159,8 +159,6 @@ t_max_err parameter::notify(parameter *x, t_symbol *s,
 
 void parameter::do_registration()
 {
-  m_registered = true;
-
   m_matchers = find_or_create_matchers();
   set_matchers_index();
 
@@ -181,6 +179,8 @@ void parameter::do_registration()
   set_rate();
   set_repetition_filter();
   set_recall_safe();
+
+  m_registered = true;
 
   for(const auto& m : m_matchers)
   {

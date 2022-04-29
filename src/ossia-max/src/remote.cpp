@@ -221,7 +221,7 @@ void remote::set_unit()
             t_atom a;
             A_SETSYM(&a, m_unit);
             outlet_anything(m->get_owner()->m_dumpout,gensym("unit"),   1, &a);
-            m->output_value(m->get_node()->get_parameter()->value());
+            if(m_registered) m->output_value(m->get_node()->get_parameter()->value());
           }
           else
           {
@@ -328,8 +328,6 @@ void remote::do_registration()
 {
   if(m_name && std::string(m_name->s_name) != "")
   {
-    m_registered = true;
-
     m_matchers=find_or_create_matchers();
     set_matchers_index();
 
@@ -337,6 +335,7 @@ void remote::do_registration()
     fill_selection();
 
     set_unit();
+    m_registered = true;
   }
 }
 
