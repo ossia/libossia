@@ -224,12 +224,12 @@ function write_report()
     
     console.log("Tests:");
     console.log("Total\tFailed");
-    console.log(total_tests_count + "\t" + failed_tests.length + " (" + 100 * failed_tests.length / total_tests_count + "%)");
+    var fail_size = Array.from(failed_tests).length;
+    console.log(total_tests_count + "\t" + fail_size + " (" + 100 * fail_size / total_tests_count + "%)");
     console.log("\nList of failed tests:");
     failed_tests.forEach(function(file) {
         console.log(file);
     });
-    console.log();
 }
 
 function read_max_prefs()
