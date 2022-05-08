@@ -82,11 +82,15 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
 
 void router::change_pattern(int index, std::string pattern)
 {
+  if(!pattern.empty() && pattern[0]=='/')
+  {
+    pattern = pattern.substr(1);
+  }
   ossia::net::expand_ranges(pattern);
   pattern = ossia::traversal::substitute_characters(pattern);
 
   try {
-    m_patterns[index] = std::regex("^" + pattern);
+    m_patterns[index] = std::regex("^/?" + pattern + "($|/)");
   } catch (std::exception& e) {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
