@@ -33,7 +33,7 @@ var success = 0;
 var fail = 0;
 var failed_tests = new Set([]);
 var total_tests_count = 0;
-var _timeout = 180000;
+var _timeout = 180000; // in ms
 
 var assert_failed = 0;
 var assert_success = 0;
@@ -166,7 +166,14 @@ async function main()
                 }
                 else
                 {
-                    await exec('open -F -W -n ' + patcher_path, { timeout : _timeout });
+                    try
+                    {
+                        await exec('open -F -W -n ' + patcher_path, { timeout : _timeout });
+                    }
+                    catch (err)
+                    {
+                        console.log("Error while waiting for test to finish: " + err);
+                    }
                 }
 
                 if(assert_failed + assert_success == 0)
