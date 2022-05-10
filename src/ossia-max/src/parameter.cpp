@@ -24,7 +24,7 @@ extern "C" void ossia_parameter_setup()
       c, (method)parameter::assist,
       "assist", A_CANT, 0);
   class_addmethod(
-      c, (method)parameter::notify,
+      c, (method)parameter_base::notify,
       "notify", A_CANT, 0);
 
   class_addmethod(c, (method) address_mess_cb<parameter>, "address",   A_SYM, 0);
@@ -137,24 +137,6 @@ void parameter::assist(parameter* x, void* b, long m, long a, char* s)
         ;
     }
   }
-}
-
-t_max_err parameter::notify(parameter *x, t_symbol *s,
-                       t_symbol *msg, void *sender, void *data)
-{
-  t_symbol *attrname;
-
-  if (!x->m_lock && msg == gensym("attr_modified")) {
-    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
-
-    if ( attrname == gensym("unit") )
-      x->set_unit();
-    else if ( attrname == gensym("type") )
-      x->set_type();
-    else
-      parameter_base::notify(x, s, msg, sender, data);
-  }
-  return 0;
 }
 
 void parameter::do_registration()

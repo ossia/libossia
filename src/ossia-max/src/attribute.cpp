@@ -28,7 +28,6 @@ extern "C" void ossia_attribute_setup()
   class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
   class_addmethod(c, (method) address_mess_cb<attribute>, "address",   A_SYM, 0);
 
-
   class_register(CLASS_BOX, c);
 
   auto& ossia_library = ossia_max::instance();

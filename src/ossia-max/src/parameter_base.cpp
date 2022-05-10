@@ -59,7 +59,9 @@ t_max_err parameter_base::notify(parameter_base *x, t_symbol *s, t_symbol *msg, 
   if (!x->m_lock && msg == gensym("attr_modified")) {
     attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
 
-    if ( attrname == gensym("mode") )
+    if ( attrname == gensym("unit") )
+      x->set_unit();
+    else if ( attrname == gensym("mode") )
       x->set_access_mode();
     else if ( attrname == gensym("repetitions") )
       x->set_repetition_filter();
