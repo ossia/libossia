@@ -3,14 +3,14 @@
 		"fileversion" : 1,
 		"appversion" : 		{
 			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"minor" : 3,
+			"revision" : 0,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 749.0, 87.0, 865.0, 957.0 ],
+		"rect" : [ 1779.0, 87.0, 865.0, 957.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -125,8 +125,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -162,13 +162,25 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-7",
+									"maxclass" : "button",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 20.0, 164.0, 24.0, 24.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-5",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 189.0, 248.0, 115.0, 22.0 ],
-									"text" : "0"
+									"text" : "time.second"
 								}
 
 							}
@@ -258,14 +270,14 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 134.5, 324.0, 136.0, 22.0 ],
+									"patching_rect" : [ 134.5, 324.0, 136.0, 35.0 ],
 									"text" : "ossia.assert attribute-unit"
 								}
 
@@ -363,7 +375,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-21", 0 ],
+									"destination" : [ "obj-7", 0 ],
 									"source" : [ "obj-26", 0 ]
 								}
 
@@ -395,6 +407,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-21", 1 ],
 									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-21", 0 ],
+									"source" : [ "obj-7", 0 ]
 								}
 
 							}
@@ -438,8 +457,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -475,13 +494,25 @@
 						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
+									"id" : "obj-8",
+									"maxclass" : "button",
+									"numinlets" : 1,
+									"numoutlets" : 1,
+									"outlettype" : [ "bang" ],
+									"parameter_enable" : 0,
+									"patching_rect" : [ 20.0, 170.0, 24.0, 24.0 ]
+								}
+
+							}
+, 							{
+								"box" : 								{
 									"id" : "obj-5",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 210.0, 245.0, 89.0, 22.0 ],
-									"text" : "0"
+									"text" : "time.second"
 								}
 
 							}
@@ -578,7 +609,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
-									"patching_rect" : [ 134.5, 320.0, 127.0, 22.0 ],
+									"patching_rect" : [ 134.5, 320.0, 127.0, 35.0 ],
 									"text" : "ossia.assert param-unit"
 								}
 
@@ -676,7 +707,7 @@
 							}
 , 							{
 								"patchline" : 								{
-									"destination" : [ "obj-21", 0 ],
+									"destination" : [ "obj-8", 0 ],
 									"source" : [ "obj-26", 0 ]
 								}
 
@@ -708,6 +739,13 @@
 								"patchline" : 								{
 									"destination" : [ "obj-21", 1 ],
 									"source" : [ "obj-4", 0 ]
+								}
+
+							}
+, 							{
+								"patchline" : 								{
+									"destination" : [ "obj-21", 0 ],
+									"source" : [ "obj-8", 0 ]
 								}
 
 							}
@@ -749,8 +787,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -953,8 +991,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1086,7 +1124,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -1257,8 +1295,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1390,7 +1428,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -1559,8 +1597,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1763,8 +1801,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -1872,7 +1910,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -2027,8 +2065,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2136,7 +2174,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -2289,8 +2327,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2493,8 +2531,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2614,7 +2652,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -2776,8 +2814,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -2897,7 +2935,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -3057,8 +3095,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3261,8 +3299,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3394,7 +3432,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -3565,8 +3603,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3674,7 +3712,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -3829,8 +3867,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -3950,7 +3988,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -4112,8 +4150,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4221,7 +4259,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -4376,8 +4414,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4485,7 +4523,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -4640,8 +4678,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -4749,7 +4787,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -4902,8 +4940,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5104,8 +5142,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5308,8 +5346,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5429,7 +5467,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -5591,8 +5629,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -5712,7 +5750,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -5872,8 +5910,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -6076,8 +6114,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -6197,7 +6235,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -6359,8 +6397,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -6480,7 +6518,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -6640,8 +6678,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -6844,8 +6882,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -6953,7 +6991,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -7108,8 +7146,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7230,7 +7268,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -7390,8 +7428,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7594,8 +7632,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7715,7 +7753,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -7877,8 +7915,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -7998,7 +8036,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -8160,8 +8198,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -8269,7 +8307,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -8424,8 +8462,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -8545,7 +8583,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -8707,8 +8745,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -8828,7 +8866,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -8990,8 +9028,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9111,7 +9149,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -9271,8 +9309,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9475,8 +9513,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9633,7 +9671,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -9758,8 +9796,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -9916,7 +9954,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -10041,8 +10079,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -10162,7 +10200,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -10302,13 +10340,13 @@
 , 			{
 				"box" : 				{
 					"id" : "obj-24",
-					"linecount" : 2,
+					"linecount" : 3,
 					"maxclass" : "message",
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 207.0, 485.5, 50.0, 35.0 ],
-					"text" : "mode get"
+					"patching_rect" : [ 207.0, 485.5, 50.0, 49.0 ],
+					"text" : "unit time.second"
 				}
 
 			}
@@ -10335,8 +10373,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -10539,8 +10577,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -10697,7 +10735,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -10822,8 +10860,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -10980,7 +11018,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -11105,8 +11143,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -11226,7 +11264,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -11401,8 +11439,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -11522,7 +11560,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -11684,8 +11722,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -11805,7 +11843,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -11965,8 +12003,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -12169,8 +12207,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -12290,7 +12328,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -12452,8 +12490,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -12561,7 +12599,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -12716,8 +12754,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -12825,7 +12863,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -12980,8 +13018,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -13089,7 +13127,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -13242,8 +13280,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -13446,8 +13484,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -13543,7 +13581,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -13691,8 +13729,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -13788,7 +13826,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -13936,8 +13974,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -14033,7 +14071,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -14179,8 +14217,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -14383,8 +14421,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -14492,7 +14530,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -14666,8 +14704,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -14775,7 +14813,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -15080,8 +15118,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -15189,7 +15227,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -15361,8 +15399,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -15551,8 +15589,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -15648,7 +15686,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -15801,8 +15839,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -15898,7 +15936,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -16051,8 +16089,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -16148,7 +16186,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -16313,8 +16351,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -16503,8 +16541,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -16693,8 +16731,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -16790,7 +16828,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -16962,8 +17000,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -17059,7 +17097,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -17231,8 +17269,8 @@
 						"fileversion" : 1,
 						"appversion" : 						{
 							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"minor" : 3,
+							"revision" : 0,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
@@ -17328,7 +17366,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 1.0, 0.0, 0.0, 1.0 ],
+									"color" : [ 0.0, 1.0, 0.0, 1.0 ],
 									"id" : "obj-22",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -18894,11 +18932,16 @@
 			}
  ],
 		"dependency_cache" : [ 			{
-				"name" : "ossia.test-logger.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.assert.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.attribute.mxo",
+				"type" : "iLaX"
+			}
+, 			{
+				"name" : "ossia.logger.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
@@ -18909,16 +18952,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.attribute.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.assert.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.logger.mxo",
-				"type" : "iLaX"
+				"name" : "ossia.test-logger.maxpat",
+				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
+				"patcherrelativepath" : "../../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0
