@@ -76,14 +76,17 @@ void attribute::on_device_created(device_base* obj)
   dev->on_node_renamed.connect<&attribute::on_node_renamed_callback>(this);
 }
 
+void wrapper(void* x)
+{
+  static_cast<attribute*>(x)->do_registration();
+}
+
 void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  for(const auto& m : m_matchers)
+  auto cpy = m_matchers;
+  for(const auto& m : cpy)
   {
-    if(!m)
-      continue;
-
     if(m->get_node() == &node)
     {
       m_matchers.erase(std::remove(std::begin(m_matchers),
@@ -105,12 +108,12 @@ void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std:
     }
   }
 
-  do_registration();
+  schedule(this, (method)wrapper, 0, nullptr, 0, nullptr);
 }
 
 void attribute::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
-  do_registration();
+  schedule(this, (method)wrapper, 0, nullptr, 0, nullptr);
 }
 
 void attribute::do_registration()
@@ -129,8 +132,18 @@ void attribute::do_registration()
 
 void attribute::unregister()
 {
-  m_node_selection.clear();
-  m_matchers.clear();
+  auto copy = m_matchers;
+  for (auto& m : copy)
+  {
+    if(m->is_locked())
+    {
+      m->set_zombie();
+    }
+    else
+    {
+      ossia::remove_erase(m_matchers, m);
+    }
+  }
 
   ossia_max::instance().nr_attributes.push_back(this);
   m_registered = false;
