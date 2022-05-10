@@ -19,7 +19,9 @@ extern "C" void ossia_remote_setup()
 
   // instantiate the ossia.remote class
   t_class* c = class_new(
-      "ossia.remote", (method)remote::create, (method)remote::destroy,
+      "ossia.remote",
+      (method)remote::create,
+      (method)remote::destroy,
       (short)sizeof(remote), 0L, A_GIMME, 0);
 
   if (c)
@@ -291,7 +293,8 @@ void remote::on_device_created(device_base* obj)
 void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  for(const auto& m : m_matchers)
+  auto cpy = m_matchers;
+  for(const auto& m : cpy)
   {
     if(!m)
       continue;
