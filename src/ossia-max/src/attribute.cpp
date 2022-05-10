@@ -22,7 +22,7 @@ extern "C" void ossia_attribute_setup()
         c, (method)attribute::assist,
         "assist", A_CANT, 0);
   class_addmethod(
-        c, (method)attribute::notify,
+        c, (method)parameter_base::notify,
         "notify", A_CANT, 0);
 
   class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
@@ -60,33 +60,71 @@ void attribute::assist(attribute* x, void* b, long m, long a, char* s)
   }
 }
 
-t_max_err attribute::notify(attribute *x, t_symbol *s,
-                            t_symbol *msg, void *sender, void *data)
+void attribute::on_device_removing(device_base* obj)
 {
-  t_symbol *attrname;
+  auto dev = obj->m_device.get();
+  dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
+  dev->on_node_renamed.disconnect<&attribute::on_node_renamed_callback>(this);
+}
 
-  if (!x->m_lock && msg == gensym("attr_modified")) {
-    attrname = (t_symbol *)object_method((t_object *)data, gensym("getname"));
+void attribute::on_device_created(device_base* obj)
+{
+  auto dev = obj->m_device.get();
+  // no need to connect to on_node_removing because ossia::max::matcher
+  // already connect to it
+  dev->on_parameter_created.connect<&attribute::on_parameter_created_callback>(this);
+  dev->on_node_renamed.connect<&attribute::on_node_renamed_callback>(this);
+}
 
-    if ( attrname == gensym("unit") )
-      x->set_unit();
-    else if ( attrname == gensym("type") )
-      x->set_type();
+void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
+{
+  // first remove the matcher with old name
+  for(const auto& m : m_matchers)
+  {
+    if(!m)
+      continue;
+
+    if(m->get_node() == &node)
+    {
+      m_matchers.erase(std::remove(std::begin(m_matchers),
+                                   std::end(m_matchers), m), m_matchers.end());
+    }
     else
-      parameter_base::notify(x, s, msg, sender, data);
+    {
+      auto parent = m->get_node()->get_parent();
+      while(parent)
+      {
+        if(parent == &node)
+        {
+          m_matchers.erase(std::remove(std::begin(m_matchers),
+                                       std::end(m_matchers), m), m_matchers.end());
+          break;
+        }
+        parent = parent->get_parent();
+      }
+    }
   }
-  return 0;
+
+  do_registration();
+}
+
+void attribute::on_parameter_created_callback(const ossia::net::parameter_base& addr)
+{
+  do_registration();
 }
 
 void attribute::do_registration()
 {
-  m_registered = true;
+  if(m_name && std::string(m_name->s_name) != "")
+  {
+    m_matchers = find_or_create_matchers();
+    set_matchers_index();
 
-  m_matchers = find_or_create_matchers();
-  set_matchers_index();
+    m_selection_path.reset();
+    fill_selection();
 
-  m_selection_path.reset();
-  fill_selection();
+    m_registered = true;
+  }
 }
 
 void attribute::unregister()
@@ -95,35 +133,7 @@ void attribute::unregister()
   m_matchers.clear();
 
   ossia_max::instance().nr_attributes.push_back(this);
-
-  if(m_dev)
-  {
-    m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(this);
-    m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(this);
-  }
-  m_dev = nullptr;
-}
-
-void attribute::on_parameter_created_callback(const ossia::net::parameter_base& param)
-{
-  auto& node = param.get_node();
-
-  for(auto p : m_paths)
-  {
-    auto path = ossia::traversal::make_path(p);
-    if( path && ossia::traversal::match(*path, node) )
-    {
-      m_matchers.emplace_back(std::make_shared<matcher>(&node,this));
-      int size = m_matchers.size();
-      m_matchers[size-1]->m_index = size;
-      fill_selection();
-    }
-  }
-}
-
-void attribute::on_device_deleted(const net::node_base &)
-{
-  m_dev = nullptr;
+  m_registered = false;
 }
 
 void* attribute::create(t_symbol* name, int argc, t_atom* argv)
@@ -134,6 +144,16 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
   {
     critical_enter(0);
     ossia_max::get_patcher_descriptor(x->m_patcher).attributes.push_back(x);
+
+    device_base::on_device_created.connect<&attribute::on_device_created>(x);
+    device_base::on_device_removing.connect<&attribute::on_device_removing>(x);
+
+    std::vector<ossia::net::generic_device*> devs = get_all_devices();
+    for(auto dev : devs)
+    {
+      dev->on_parameter_created.connect<&attribute::on_parameter_created_callback>(x);
+      dev->on_node_renamed.connect<&attribute::on_node_renamed_callback>(x);
+    }
 
     x->m_otype = object_class::attribute;
     x->m_dumpout = outlet_new(x, NULL);
@@ -174,20 +194,14 @@ void attribute::destroy(attribute* x)
   x->m_dead = true;
   x->unregister();
 
-  bool is_pattern;
-
-  for(auto& p : x->m_paths)
+  for(auto dev : get_all_devices())
   {
-    is_pattern = ossia::traversal::is_pattern(p);
-    if(is_pattern)
-      break;
+    dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(x);
+    dev->on_node_renamed.disconnect<&attribute::on_node_renamed_callback>(x);
   }
 
-  if(is_pattern && x->m_dev)
-  {
-    x->m_dev->on_parameter_created.disconnect<&attribute::on_parameter_created_callback>(x);
-    x->m_dev->get_root_node().about_to_be_deleted.disconnect<&attribute::on_device_deleted>(x);
-  }
+  device_base::on_device_created.disconnect<&attribute::on_device_created>(x);
+  device_base::on_device_removing.disconnect<&attribute::on_device_removing>(x);
 
   outlet_delete(x->m_dumpout);
   x->~attribute();

@@ -57,6 +57,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
   {
     critical_enter(0);
     ossia_max::get_patcher_descriptor(x->m_patcher).remotes.push_back(x);
+
     device_base::on_device_created.connect<&remote::on_device_created>(x);
     device_base::on_device_removing.connect<&remote::on_device_removing>(x);
 

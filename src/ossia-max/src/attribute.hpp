@@ -8,6 +8,7 @@ namespace ossia
 namespace max_binding
 {
 
+class device_base;
 class attribute : public parameter_base
 {
 public:
@@ -16,16 +17,18 @@ public:
   void do_registration();
   void unregister();
 
-  ossia::net::device_base* m_dev{};
-
   static void assist(attribute*, void*, long, long, char*);
-  static t_max_err notify(attribute *x, t_symbol *s,
-                          t_symbol *msg, void *sender, void *data);
   static void destroy(attribute* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
   void on_device_deleted(const ossia::net::node_base&);
+
+  void on_device_removing(device_base* obj);
+  void on_device_created(device_base* obj);
+  void on_node_renamed_callback(ossia::net::node_base& node, const std::string&);
+
 };
 } // namespace pd
 } // namespace ossia
+

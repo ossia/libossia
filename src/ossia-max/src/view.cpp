@@ -152,20 +152,34 @@ void view::unregister()
 
   for (auto child : children_view)
   {
-    if (child->m_otype == object_class::view)
+    switch(child->m_otype)
     {
-      ossia::max_binding::view* view = (ossia::max_binding::view*)child;
+      case object_class::view:
+      {
+        ossia::max_binding::view* view = (ossia::max_binding::view*)child;
 
-      if (view == this)
-        continue;
+        if (view == this)
+          continue;
 
-      view->unregister();
+        view->unregister();
+        break;
+      }
+      case object_class::remote:
+      {
+        ossia::max_binding::remote* remote = (ossia::max_binding::remote*)child;
+        remote->unregister();
+        break;
+      }
+      case object_class::attribute:
+      {
+        ossia::max_binding::attribute* attr = (ossia::max_binding::attribute*)child;
+        attr->unregister();
+        break;
+      }
+      default:
+        break;
     }
-    else if (child->m_otype == object_class::remote)
-    {
-      ossia::max_binding::remote* remote = (ossia::max_binding::remote*)child;
-      remote->unregister();
-    }
+
   }
 
   ossia_max::instance().nr_views.push_back(this);

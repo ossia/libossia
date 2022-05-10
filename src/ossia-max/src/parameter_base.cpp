@@ -721,7 +721,10 @@ void parameter_base::get_unit(parameter_base*x, std::vector<matcher*> nodes)
     if(m->is_zombie() || m->is_dead())
       continue;
 
-    ossia::net::parameter_base* param = m->get_node()->get_parameter();
+    auto node = m->get_node();
+    if(!node) continue;
+
+    ossia::net::parameter_base* param = node->get_parameter();
     if(param)
     {
       std::string_view unit = ossia::get_pretty_unit_text(param->get_unit());
