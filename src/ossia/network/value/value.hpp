@@ -39,8 +39,96 @@ class value;
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 OSSIA_EXPORT ossia::value parse_pretty_value(ossia::string_view str);
 
-#include <ossia/network/value/value_variant_impl.hpp>
+struct value_variant_type
+{
+public:
+  struct dummy_t
+  {
+  };
+  union Impl {
+    float m_value0;
 
+    int m_value1;
+
+    ossia::vec2f m_value2;
+
+    ossia::vec3f m_value3;
+
+    ossia::vec4f m_value4;
+
+    ossia::impulse m_value5;
+
+    bool m_value6;
+
+    std::string m_value7;
+
+    std::vector<ossia::value> m_value8;
+
+    char m_value9;
+
+    dummy_t m_dummy;
+    Impl() : m_dummy{}
+    {
+    }
+    ~Impl()
+    {
+    }
+  };
+
+  enum Type : int8_t
+  {
+    Type0,
+    Type1,
+    Type2,
+    Type3,
+    Type4,
+    Type5,
+    Type6,
+    Type7,
+    Type8,
+    Type9,
+    Npos = std::numeric_limits<int8_t>::max()
+  };
+
+  void destruct_impl();
+  Impl m_impl;
+  Type m_type;
+
+public:
+  static const constexpr auto npos = Npos;
+  int which() const;
+
+  operator bool() const;
+  template <typename T>
+  const T* target() const;
+  template <typename T>
+  T* target();
+  template <typename T>
+  const T& get() const;
+  template <typename T>
+  T& get();
+
+  template <typename T>
+  static Type matching_type();
+  value_variant_type();
+  ~value_variant_type();
+  value_variant_type(float v);
+  value_variant_type(int v);
+  value_variant_type(ossia::vec2f v);
+  value_variant_type(ossia::vec3f v);
+  value_variant_type(ossia::vec4f v);
+  value_variant_type(ossia::impulse v);
+  value_variant_type(bool v);
+  value_variant_type(const std::string& v);
+  value_variant_type(std::string&& v);
+  value_variant_type(const std::vector<ossia::value>& v);
+  value_variant_type(std::vector<ossia::value>&& v);
+  value_variant_type(char v);
+  value_variant_type(const value_variant_type& other);
+  value_variant_type(value_variant_type&& other);
+  value_variant_type& operator=(const value_variant_type& other);
+  value_variant_type& operator=(value_variant_type&& other);
+};
 using value_variant = value_variant_type;
 
 /**
@@ -288,16 +376,10 @@ public:
   }
 
   template <typename Visitor>
-  auto apply(Visitor&& vis) -> decltype(auto)
-  {
-    return ossia::apply(std::forward<Visitor>(vis), this->v);
-  }
+  auto apply(Visitor&& vis) -> decltype(auto);
 
   template <typename Visitor>
-  auto apply(Visitor&& vis) const -> decltype(auto)
-  {
-    return ossia::apply(std::forward<Visitor>(vis), this->v);
-  }
+  auto apply(Visitor&& vis) const -> decltype(auto);
 
   friend OSSIA_EXPORT bool operator==(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator!=(const value& lhs, const value& rhs);
@@ -371,6 +453,21 @@ inline ossia::value init_value(ossia::val_type type)
 OSSIA_EXPORT
 ossia::value get_value_at_index(
     const ossia::value& val, const ossia::destination_index& idx);
+
+#include <ossia/network/value/value_variant_impl.hpp>
+
+
+template <typename Visitor>
+inline auto value::apply(Visitor&& vis) -> decltype(auto)
+{
+  return ossia::apply(std::forward<Visitor>(vis), this->v);
+}
+
+template <typename Visitor>
+inline auto value::apply(Visitor&& vis) const -> decltype(auto)
+{
+  return ossia::apply(std::forward<Visitor>(vis), this->v);
+}
 }
 
 namespace std

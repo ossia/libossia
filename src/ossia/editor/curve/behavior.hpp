@@ -19,8 +19,64 @@ template <typename X, typename Y>
 class curve;
 
 struct behavior;
-#include <ossia/editor/curve/behavior_variant_impl.hpp>
+struct behavior_variant_type
+{
+public:
+  struct dummy_t
+  {
+  };
+  union Impl {
+    std::shared_ptr<ossia::curve_abstract> m_value0;
 
+    std::vector<ossia::behavior> m_value1;
+
+    dummy_t m_dummy;
+    Impl() : m_dummy{}
+    {
+    }
+    ~Impl()
+    {
+    }
+  };
+
+  enum Type : int8_t
+  {
+    Type0,
+    Type1,
+    Npos
+  };
+
+  void destruct_impl();
+  Impl m_impl;
+  Type m_type;
+
+public:
+  static const constexpr auto npos = Npos;
+  int which() const;
+
+  operator bool() const;
+  template <typename T>
+  const T* target() const;
+  template <typename T>
+  T* target();
+  template <typename T>
+  const T& get() const;
+  template <typename T>
+  T& get();
+
+  template <typename T>
+  static Type matching_type();
+  behavior_variant_type();
+  ~behavior_variant_type();
+  behavior_variant_type(const std::shared_ptr<ossia::curve_abstract>& v);
+  behavior_variant_type(std::shared_ptr<ossia::curve_abstract>&& v);
+  behavior_variant_type(const std::vector<ossia::behavior>& v);
+  behavior_variant_type(std::vector<ossia::behavior>&& v);
+  behavior_variant_type(const behavior_variant_type& other);
+  behavior_variant_type(behavior_variant_type&& other);
+  behavior_variant_type& operator=(const behavior_variant_type& other);
+  behavior_variant_type& operator=(behavior_variant_type&& other);
+};
 /**
  * @class Contains either no curve, a single curve, or multiple curves
  *
@@ -94,6 +150,7 @@ struct OSSIA_EXPORT behavior final
     return ossia::apply(std::forward<Visitor>(vis), this->v);
   }
 };
+#include <ossia/editor/curve/behavior_variant_impl.hpp>
 template <typename Functor>
 auto apply(Functor&& functor, const behavior& var) -> decltype(auto)
 {
@@ -125,4 +182,6 @@ auto apply_nonnull(Functor&& functor, behavior&& var) -> decltype(auto)
   return ossia::apply_nonnull(
       std::forward<Functor>(functor), std::move(var.v));
 }
+
+
 }

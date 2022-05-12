@@ -1,167 +1,4 @@
-struct behavior_variant_type
-{
-public:
-  struct dummy_t
-  {
-  };
-  union Impl {
-    std::shared_ptr<ossia::curve_abstract> m_value0;
 
-    std::vector<ossia::behavior> m_value1;
-
-    dummy_t m_dummy;
-    Impl() : m_dummy{}
-    {
-    }
-    ~Impl()
-    {
-    }
-  };
-
-  enum Type : int8_t
-  {
-    Type0,
-    Type1,
-    Npos
-  };
-
-  void destruct_impl()
-  {
-    switch (m_type)
-    {
-      case Type::Type0:
-        m_impl.m_value0.~shared_ptr();
-        break;
-      case Type::Type1:
-        m_impl.m_value1.~vector();
-        break;
-      default:
-        break;
-    }
-  }
-  Impl m_impl;
-  Type m_type;
-
-public:
-  static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
-
-  operator bool() const
-  {
-    return m_type != npos;
-  }
-  template <typename T>
-  const T* target() const;
-  template <typename T>
-  T* target();
-  template <typename T>
-  const T& get() const;
-  template <typename T>
-  T& get();
-
-  template <typename T>
-  static Type matching_type();
-  behavior_variant_type() : m_type{Npos}
-  {
-  }
-  ~behavior_variant_type()
-  {
-    destruct_impl();
-  }
-  behavior_variant_type(const std::shared_ptr<ossia::curve_abstract>& v)
-      : m_type{Type0}
-  {
-    new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{v};
-  }
-  behavior_variant_type(std::shared_ptr<ossia::curve_abstract>&& v)
-      : m_type{Type0}
-  {
-    new (&m_impl.m_value0)
-        std::shared_ptr<ossia::curve_abstract>{std::move(v)};
-  }
-  behavior_variant_type(const std::vector<ossia::behavior>& v) : m_type{Type1}
-  {
-    new (&m_impl.m_value1) std::vector<ossia::behavior>{v};
-  }
-  behavior_variant_type(std::vector<ossia::behavior>&& v) : m_type{Type1}
-  {
-    new (&m_impl.m_value1) std::vector<ossia::behavior>{std::move(v)};
-  }
-  behavior_variant_type(const behavior_variant_type& other)
-      : m_type{other.m_type}
-  {
-    switch (m_type)
-    {
-      case Type::Type0:
-        new (&m_impl.m_value0)
-            std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
-        break;
-      case Type::Type1:
-        new (&m_impl.m_value1)
-            std::vector<ossia::behavior>{other.m_impl.m_value1};
-        break;
-      default:
-        break;
-    }
-  }
-  behavior_variant_type(behavior_variant_type&& other) : m_type{other.m_type}
-  {
-    switch (m_type)
-    {
-      case Type::Type0:
-        new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{
-            std::move(other.m_impl.m_value0)};
-        break;
-      case Type::Type1:
-        new (&m_impl.m_value1)
-            std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
-        break;
-      default:
-        break;
-    }
-  }
-  behavior_variant_type& operator=(const behavior_variant_type& other)
-  {
-    destruct_impl();
-    m_type = other.m_type;
-    switch (m_type)
-    {
-      case Type::Type0:
-        new (&m_impl.m_value0)
-            std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
-        break;
-      case Type::Type1:
-        new (&m_impl.m_value1)
-            std::vector<ossia::behavior>{other.m_impl.m_value1};
-        break;
-      default:
-        break;
-    }
-    return *this;
-  }
-  behavior_variant_type& operator=(behavior_variant_type&& other)
-  {
-    destruct_impl();
-    m_type = other.m_type;
-    switch (m_type)
-    {
-      case Type::Type0:
-        new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{
-            std::move(other.m_impl.m_value0)};
-        break;
-      case Type::Type1:
-        new (&m_impl.m_value1)
-            std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
-        break;
-      default:
-        break;
-    }
-    return *this;
-  }
-};
 template <>
 inline const std::shared_ptr<ossia::curve_abstract>*
 behavior_variant_type::target() const
@@ -298,4 +135,136 @@ auto apply(Visitor&& functor, behavior_variant_type&& var)
     default:
       return functor();
   }
+}
+
+inline void behavior_variant_type::destruct_impl()
+{
+  switch (m_type)
+  {
+    case Type::Type0:
+      m_impl.m_value0.~shared_ptr();
+      break;
+    case Type::Type1:
+      m_impl.m_value1.~vector();
+      break;
+    default:
+      break;
+  }
+}
+
+inline int behavior_variant_type::which() const
+{
+  return m_type;
+}
+
+inline behavior_variant_type::operator bool() const
+{
+  return m_type != npos;
+}
+
+inline behavior_variant_type::behavior_variant_type() : m_type{Npos}
+{
+}
+
+inline behavior_variant_type::~behavior_variant_type()
+{
+  destruct_impl();
+}
+
+inline behavior_variant_type::behavior_variant_type(const std::shared_ptr<ossia::curve_abstract>& v)
+  : m_type{Type0}
+{
+  new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{v};
+}
+
+inline behavior_variant_type::behavior_variant_type(std::shared_ptr<ossia::curve_abstract>&& v)
+  : m_type{Type0}
+{
+  new (&m_impl.m_value0)
+      std::shared_ptr<ossia::curve_abstract>{std::move(v)};
+}
+
+inline behavior_variant_type::behavior_variant_type(const std::vector<ossia::behavior>& v) : m_type{Type1}
+{
+  new (&m_impl.m_value1) std::vector<ossia::behavior>{v};
+}
+
+inline behavior_variant_type::behavior_variant_type(std::vector<ossia::behavior>&& v) : m_type{Type1}
+{
+  new (&m_impl.m_value1) std::vector<ossia::behavior>{std::move(v)};
+}
+
+inline behavior_variant_type::behavior_variant_type(const behavior_variant_type& other)
+  : m_type{other.m_type}
+{
+  switch (m_type)
+  {
+    case Type::Type0:
+      new (&m_impl.m_value0)
+          std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
+      break;
+    case Type::Type1:
+      new (&m_impl.m_value1)
+          std::vector<ossia::behavior>{other.m_impl.m_value1};
+      break;
+    default:
+      break;
+  }
+}
+
+inline behavior_variant_type::behavior_variant_type(behavior_variant_type&& other) : m_type{other.m_type}
+{
+  switch (m_type)
+  {
+    case Type::Type0:
+      new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{
+        std::move(other.m_impl.m_value0)};
+      break;
+    case Type::Type1:
+      new (&m_impl.m_value1)
+          std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
+      break;
+    default:
+      break;
+  }
+}
+
+inline behavior_variant_type& behavior_variant_type::operator=(const behavior_variant_type& other)
+{
+  destruct_impl();
+  m_type = other.m_type;
+  switch (m_type)
+  {
+    case Type::Type0:
+      new (&m_impl.m_value0)
+          std::shared_ptr<ossia::curve_abstract>{other.m_impl.m_value0};
+      break;
+    case Type::Type1:
+      new (&m_impl.m_value1)
+          std::vector<ossia::behavior>{other.m_impl.m_value1};
+      break;
+    default:
+      break;
+  }
+  return *this;
+}
+
+inline behavior_variant_type& behavior_variant_type::operator=(behavior_variant_type&& other)
+{
+  destruct_impl();
+  m_type = other.m_type;
+  switch (m_type)
+  {
+    case Type::Type0:
+      new (&m_impl.m_value0) std::shared_ptr<ossia::curve_abstract>{
+        std::move(other.m_impl.m_value0)};
+      break;
+    case Type::Type1:
+      new (&m_impl.m_value1)
+          std::vector<ossia::behavior>{std::move(other.m_impl.m_value1)};
+      break;
+    default:
+      break;
+  }
+  return *this;
 }
