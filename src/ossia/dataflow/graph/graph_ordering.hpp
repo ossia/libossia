@@ -129,7 +129,7 @@ struct init_node_visitor
   }
   static void copy(outlet& out, inlet& in)
   {
-    if(out.cables().size() == 1 && in.cables().size() == 1)
+    if(out.cables().size() == 1 && in.cables().size() == 1 && !out.address && !in.address)
     {
       move(out, in);
     }
