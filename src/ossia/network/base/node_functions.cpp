@@ -497,6 +497,59 @@ void expand_ranges(std::string& str)
       }
     }
   }
+
+  {
+    static const std::regex reg_alpha_low{R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"};
+    static const std::regex reg_alpha_up{R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"};
+
+    for(const auto& reg : {reg_alpha_low, reg_alpha_up})
+    {
+      struct rx_double
+      {
+        std::size_t start{}, length{};
+        char first{}, last{};
+      };
+      ossia::small_vector<rx_double, 4> positions;
+
+      std::regex_iterator<std::string::iterator> rit(
+          str.begin(), str.end(), reg);
+      std::regex_iterator<std::string::iterator> rend;
+
+      for (auto it = rit; it != rend; ++it)
+      {
+        char fst = it->str(1)[0];
+        char lst = it->str(2)[0];
+        positions.push_back(rx_double{(std::size_t)it->position(),
+                                       (std::size_t)it->length(),
+                                       std::min(fst, lst), std::max(fst, lst)});
+      }
+
+      for (auto it = positions.rbegin(); it != positions.rend(); ++it)
+      {
+        if(it->last == it->first)
+        {
+          str.replace(it->start, it->length, std::to_string(it->first));
+        }
+        else
+        {
+          std::string rep;
+          rep.reserve(3 * std::abs((it->last - it->first)) + 2);
+          rep.push_back('{');
+          for (char v = it->first; v <= it->last; v++)
+          {
+            rep += v;
+            rep += ',';
+          }
+
+          if (rep.back() == ',')
+          {
+            rep.back() = '}';
+            str.replace(it->start, it->length, rep);
+          }
+        }
+      }
+    }
+  }
 }
 
 std::string canonicalize_str(std::string str)

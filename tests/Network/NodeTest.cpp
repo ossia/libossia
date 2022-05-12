@@ -458,3 +458,38 @@ TEST_CASE ("test_attributes_2", "test_attributes_2")
   REQUIRE((bool)get_app_creator(n));
   REQUIRE(*get_app_creator(n) == std::string("Lelouch vi Brittania"));
 }
+
+TEST_CASE ("test_pattern_matching", "test_pattern_matching")
+{
+  generic_device dev{"A"};
+  {
+    auto nodes = ossia::net::create_nodes(dev, "test.{1..4}");
+    REQUIRE(nodes.size() == 4);
+    for(size_t i = 0; i < nodes.size(); i++)
+    {
+      REQUIRE(nodes[i]->get_name() == "test." + std::to_string(i + 1));
+    }
+  }
+
+  {
+    auto nodes = ossia::net::create_nodes(dev, "test.{a..e}");
+    REQUIRE(nodes.size() == 5);
+    for(size_t i = 0; i < nodes.size(); i++)
+    {
+      std::string name{"test."};
+      name += 'a' + i;
+      REQUIRE(nodes[i]->get_name() == name);
+    }
+  }
+
+  {
+    auto nodes = ossia::net::create_nodes(dev, "test.{B..F}");
+    REQUIRE(nodes.size() == 5);
+    for(size_t i = 0; i < nodes.size(); i++)
+    {
+      std::string name{"test."};
+      name += 'B' + i;
+      REQUIRE(nodes[i]->get_name() == name);
+    }
+  }
+}
