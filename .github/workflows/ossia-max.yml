@@ -134,6 +134,14 @@ jobs:
     if: github.repository == 'ossia/libossia'
     steps:
       - uses: actions/checkout@v2
+
+      - name: Remove Downloaded Package
+        run:  |
+          $package = "~/Documents/Max 8/Packages/ossia"
+          if( Test-Path $package ) {
+            Remove-Item -Recurse $package
+          }
+          
       - uses: actions/download-artifact@v2
         with:
           name: ossia-max
@@ -184,6 +192,14 @@ jobs:
     needs: [ build-windows ]
     steps:
       - uses: actions/checkout@v2
+      
+      - name: Remove Downloaded Package
+        run:  |
+          $package = "~/Documents/Max 8/Packages/ossia"
+          if( Test-Path $package ) {
+            Remove-Item -Recurse $package
+          }
+
       - uses: actions/download-artifact@v2
         with:
           name: ossia-max
