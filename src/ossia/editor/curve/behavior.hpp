@@ -139,18 +139,25 @@ struct OSSIA_EXPORT behavior final
   }
 
   template <typename Visitor>
-  auto apply(Visitor&& vis) -> decltype(auto)
-  {
-    return ossia::apply(std::forward<Visitor>(vis), this->v);
-  }
+  auto apply(Visitor&& vis) -> decltype(auto);
 
   template <typename Visitor>
-  auto apply(Visitor&& vis) const -> decltype(auto)
-  {
-    return ossia::apply(std::forward<Visitor>(vis), this->v);
-  }
+  auto apply(Visitor&& vis) const -> decltype(auto);
 };
 #include <ossia/editor/curve/behavior_variant_impl.hpp>
+
+template <typename Visitor>
+inline auto behavior::apply(Visitor&& vis) -> decltype(auto)
+{
+  return ossia::apply(std::forward<Visitor>(vis), this->v);
+}
+
+template <typename Visitor>
+inline auto behavior::apply(Visitor&& vis) const -> decltype(auto)
+{
+  return ossia::apply(std::forward<Visitor>(vis), this->v);
+}
+
 template <typename Functor>
 auto apply(Functor&& functor, const behavior& var) -> decltype(auto)
 {
