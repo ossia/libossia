@@ -18,18 +18,17 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       Servus
       SmallFunction
       spdlog
-      variant
+      mparkvariant
       verdigris
       weakjack
       websocketpp
       whereami
       ../cmake/cmake-modules
       ios-cmake
-      mparkvariant
   )
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate cpp-taskflow kfr)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate kfr)
   endif()
 
   if(OSSIA_DNSSD)
@@ -71,7 +70,7 @@ endif()
 
 # Download various dependencies
 set(BOOST_MINOR_MINIMAL 67)
-set(BOOST_MINOR_LATEST 78)
+set(BOOST_MINOR_LATEST 79)
 
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
 
@@ -81,7 +80,7 @@ if (NOT Boost_FOUND)
 
   if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
     message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk23/${BOOST_VERSION}.tar.gz)
+    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk25/${BOOST_VERSION}.tar.gz)
     set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
 
     file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")

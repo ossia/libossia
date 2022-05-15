@@ -1,9 +1,6 @@
 [submodule "CMake/cmake-modules"]
 	path = cmake/cmake-modules
     url = https://github.com/OSSIA/cmake-modules
-[submodule "3rdparty/variant"]
-    path = 3rdparty/variant
-    url = https://github.com/eggs-cpp/variant
 [submodule "3rdparty/mparkvariant"]
 	path = 3rdparty/mparkvariant
 	url = https://github.com/mpark/variant
@@ -97,9 +94,6 @@
 [submodule "3rdparty/rnd"]
 	path = 3rdparty/rnd
 	url = https://github.com/jcelerier/rnd
-[submodule "3rdparty/cpp-taskflow"]
-	path = 3rdparty/cpp-taskflow
-	url = https://github.com/cpp-taskflow/cpp-taskflow
 [submodule "3rdparty/rapidfuzz-cpp"]
 	path = 3rdparty/rapidfuzz-cpp
 	url = https://github.com/maxbachmann/rapidfuzz-cpp.git 
