@@ -282,9 +282,6 @@ endif()
 if(OSSIA_DATAFLOW)
   if(NOT CMAKE_SYSTEM_NAME MATCHES Emscripten)
     set(OSSIA_PARALLEL 1)
-    target_include_directories(ossia PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/cpp-taskflow>
-    )
   endif()
 
   target_include_directories(ossia PUBLIC

@@ -139,7 +139,7 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/libremidi"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/variant/include/"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/mparkvariant/include/"
         DESTINATION include
         COMPONENT Devel
         MESSAGE_NEVER
