@@ -83,17 +83,17 @@ struct init_node_visitor
     {
       switch (w)
       {
-        case 0:
+        case delay_line_type::index_of<ossia::audio_delay_line>():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::audio_delay_line*>(out.target()),
               in.cast<ossia::audio_port>());
           break;
-        case 1:
+        case delay_line_type::index_of<ossia::midi_delay_line>():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::midi_delay_line*>(out.target()),
               in.cast<ossia::midi_port>());
           break;
-        case 2:
+        case delay_line_type::index_of<ossia::value_delay_line>():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::value_delay_line*>(out.target()),
               in.cast<ossia::value_port>());

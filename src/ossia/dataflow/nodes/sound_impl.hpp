@@ -3,7 +3,7 @@
 #include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
 #include <ossia/dataflow/nodes/timestretch/rubberband_stretcher.hpp>
 #include <ossia/dataflow/nodes/timestretch/repitch_stretcher.hpp>
-#include <variant>
+#include <ossia/detail/variant.hpp>
 
 namespace ossia
 {
@@ -16,7 +16,7 @@ struct resampler
     {
       case audio_stretch_mode::None:
       {
-        if(auto s = std::get_if<ossia::raw_stretcher>(&m_stretch))
+        if(auto s = ossia::get_if<ossia::raw_stretcher>(&m_stretch))
         {
           s->next_sample_to_read = date.impl;
         }
@@ -28,7 +28,7 @@ struct resampler
       }
       case audio_stretch_mode::Repitch:
       {
-        if(auto s = std::get_if<ossia::repitch_stretcher>(&m_stretch);
+        if(auto s = ossia::get_if<ossia::repitch_stretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
         {
           s->next_sample_to_read = date.impl;
@@ -65,27 +65,12 @@ struct resampler
       int64_t samples_offset,
       ossia::audio_port& ap)
   {
-    switch(m_stretch.index())
-    {
-      case 0:
-      {
-        std::get_if<ossia::raw_stretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
-        return;
-      }
-      case 1:
-      {
-        std::get_if<ossia::rubberband_stretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
-        break;
-      }
-      case 2:
-      {
-        std::get_if<ossia::repitch_stretcher>(&m_stretch)->run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
-        break;
-      }
-    }
+    ossia::visit([&] (auto& stretcher) {
+      stretcher.run(audio_fetcher, t, e, tempo_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
+    });
   }
 
-  std::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
+  ossia::variant<raw_stretcher, rubberband_stretcher, repitch_stretcher> m_stretch;
 };
 
 }

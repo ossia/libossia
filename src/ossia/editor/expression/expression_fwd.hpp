@@ -1,11 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 #include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 
-#include <eggs/variant.hpp>
-#include <ossia/detail/config.hpp>
-
+#include <memory>
 #include <functional>
 
 /**
@@ -30,7 +28,7 @@ class expression_composition;
 class expression_not;
 class expression_pulse;
 class expression_generic;
-using expression_base = eggs::variant<
+using expression_base = ossia::nullable_variant<
     expression_atom, expression_bool, expression_composition, expression_not,
     expression_pulse, expression_generic>;
 

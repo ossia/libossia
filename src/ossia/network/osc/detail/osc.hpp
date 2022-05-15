@@ -396,7 +396,7 @@ struct osc_inbound_visitor
   {
     for (int i = 0; i < n; i++)
     {
-      auto res = eggs::variants::apply(*this, t[i].v);
+      auto res = ossia::apply_nonnull(*this, t[i].v);
       t[i] = std::move(res);
       ++cur_it;
     }

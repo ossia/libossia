@@ -590,6 +590,49 @@ struct state_flatten_visitor_merger
   }
 };
 
+template<typename T>
+struct state_flatten_impl_same_address {
+  const T& incoming;
+
+  template<typename U>
+  bool operator()(const U& m) {
+    return incoming.get_unit() == m.get_unit();
+  }
+  bool operator()(const ossia::state& t) {
+    return false;
+  }
+  bool operator()(const ossia::monostate& t) {
+    return false;
+  }
+};
+
+template<typename T>
+struct state_flatten_impl_different_address {
+  const T& incoming;
+  ossia::net::parameter_base* address{};
+
+  bool operator()(const ossia::message& m) {
+    return &m.dest.value.get() == address
+           && incoming.get_unit() == m.get_unit();
+  }
+
+  bool operator()(const ossia::piecewise_message& m) {
+    return &m.address.get() == address
+        && incoming.get_unit() == m.get_unit();
+  }
+  template<std::size_t N>
+  bool operator()(const ossia::piecewise_vec_message<N>& m) {
+    return &m.address.get() == address
+        && incoming.get_unit() == m.get_unit();
+  }
+  bool operator()(const ossia::state& t) {
+    return false;
+  }
+  bool operator()(const ossia::monostate& t) {
+    return false;
+  }
+};
+
 template <
     typename State_T, bool MergeSingleValues, bool AssumeSameAddresses = false>
 struct state_flatten_visitor
@@ -619,82 +662,16 @@ private:
   {
     if constexpr (AssumeSameAddresses)
     {
+      state_flatten_impl_same_address<T> vis{incoming};
       return find_if(st, [&](const state_element& e) {
-        const auto tgt = e.target();
-        switch (e.which())
-        {
-          case 0:
-          {
-            const auto m = static_cast<const message*>(tgt);
-            return incoming.get_unit() == m->get_unit();
-          }
-            // 1 is state
-          case 2:
-          {
-            const auto p = static_cast<const piecewise_message*>(tgt);
-            return incoming.get_unit() == p->get_unit();
-          }
-          case 3:
-          {
-            const auto p = static_cast<const piecewise_vec_message<2>*>(tgt);
-            return incoming.get_unit() == p->get_unit();
-          }
-          case 4:
-          {
-            const auto p = static_cast<const piecewise_vec_message<3>*>(tgt);
-            return incoming.get_unit() == p->get_unit();
-          }
-          case 5:
-          {
-            const auto p = static_cast<const piecewise_vec_message<4>*>(tgt);
-            return incoming.get_unit() == p->get_unit();
-          }
-          default:
-            return false;
-        }
+        return ossia::visit(vis, e);
       });
     }
     else
     {
+      state_flatten_impl_different_address<T> vis{incoming, param_ptr(incoming)};
       return find_if(st, [&](const state_element& e) {
-        const auto address = param_ptr(incoming);
-        const auto tgt = e.target();
-        switch (e.which())
-        {
-          case 0:
-          {
-            const auto m = static_cast<const message*>(tgt);
-            return &m->dest.value.get() == address
-                   && incoming.get_unit() == m->get_unit();
-          }
-            // 1 is state
-          case 2:
-          {
-            const auto p = static_cast<const piecewise_message*>(tgt);
-            return &p->address.get() == address
-                   && incoming.get_unit() == p->get_unit();
-          }
-          case 3:
-          {
-            const auto p = static_cast<const piecewise_vec_message<2>*>(tgt);
-            return &p->address.get() == address
-                   && incoming.get_unit() == p->get_unit();
-          }
-          case 4:
-          {
-            const auto p = static_cast<const piecewise_vec_message<3>*>(tgt);
-            return &p->address.get() == address
-                   && incoming.get_unit() == p->get_unit();
-          }
-          case 5:
-          {
-            const auto p = static_cast<const piecewise_vec_message<4>*>(tgt);
-            return &p->address.get() == address
-                   && incoming.get_unit() == p->get_unit();
-          }
-          default:
-            return false;
-        }
+        return ossia::visit(vis, e);
       });
     }
   }
@@ -717,54 +694,16 @@ public:
     }
     else
     {
-      using namespace eggs::variants;
       // Merge messages
       state_flatten_visitor_merger<
           State_T, std::remove_reference_t<decltype(it)>, MergeSingleValues>
           merger{state, it};
-      // Workaround for a GDB bug if we use a generic lambda
-      // in a template function (operator() here)
-      switch (get_state_element(it).which())
-      {
-        case 0:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<0>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 1:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<1>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 2:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<2>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 3:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<3>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 4:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<4>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        case 5:
-          merger(
-              *get_state_element(it)
-                   .template target<state_element_by_index<5>>(),
-              std::forward<Message_T>(incoming));
-          break;
-        default:
-          break;
-      }
+
+      ossia::visit([&] (auto& u) {
+        using type = std::decay_t<decltype(u)>;
+        if constexpr(!std::is_same_v<ossia::monostate, type>)
+          merger(u, std::forward<Message_T>(incoming));
+      }, get_state_element(it));
     }
   }
 
@@ -784,6 +723,13 @@ public:
     {
       ossia::apply(*this, std::move(e));
     }
+  }
+
+  void operator()(const ossia::monostate&)
+  {
+  }
+  void operator()(ossia::monostate&&)
+  {
   }
 
   void operator()()

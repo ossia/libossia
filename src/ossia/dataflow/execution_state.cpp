@@ -1008,7 +1008,7 @@ struct state_exec_visitor
   {
   }
 
-  void operator()()
+  void operator()(const ossia::monostate&)
   {
   }
 };

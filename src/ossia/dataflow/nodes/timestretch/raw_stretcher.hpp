@@ -21,6 +21,11 @@ struct raw_stretcher
 
   }
 
+  void transport(int64_t date)
+  {
+    next_sample_to_read = date;
+  }
+
   template<typename T>
   void run(
       T& audio_fetcher,

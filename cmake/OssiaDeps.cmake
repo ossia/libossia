@@ -25,6 +25,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       whereami
       ../cmake/cmake-modules
       ios-cmake
+      mparkvariant
   )
 
   if(OSSIA_DATAFLOW)

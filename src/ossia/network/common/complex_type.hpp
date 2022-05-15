@@ -2,7 +2,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 
-#include <eggs/variant.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 namespace ossia
 {
 struct unit_t;
@@ -25,7 +25,7 @@ struct parameter_data;
  *
  * TODO maybe replace val_type by small_vector<val_type> ?
  */
-using complex_type = eggs::variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
+using complex_type = ossia::nullable_variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
 
 //! Get the implementation type of a high level type. If unknown will be
 //! ossia::impulse.

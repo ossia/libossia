@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 #include <ossia/detail/hash.hpp>
-
-#include <eggs/variant.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 
 #include <memory>
 #include <utility>
@@ -34,7 +32,7 @@ namespace traversal
 {
 struct path;
 }
-using destination_t = eggs::variant<
+using destination_t = ossia::nullable_variant<
     ossia::net::parameter_base*, ossia::traversal::path,
     ossia::net::node_base*>;
 struct execution_state;
@@ -57,7 +55,7 @@ struct audio_delay_line;
 struct midi_delay_line;
 struct value_delay_line;
 
-using data_type = eggs::variant<audio_port, midi_port, value_port>;
+using data_type = ossia::nullable_variant<audio_port, midi_port, value_port>;
 using delay_line_type
-    = eggs::variant<audio_delay_line, midi_delay_line, value_delay_line>;
+    = ossia::nullable_variant<audio_delay_line, midi_delay_line, value_delay_line>;
 }

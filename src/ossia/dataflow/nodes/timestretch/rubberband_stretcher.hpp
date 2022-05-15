@@ -34,6 +34,12 @@ struct rubberband_stretcher
   int64_t next_sample_to_read = 0;
   RubberBand::RubberBandStretcher::PresetOption options{};
 
+  void transport(int64_t date)
+  {
+    m_rubberBand->reset();
+    next_sample_to_read = date;
+  }
+
   template<typename T>
   void run(
       T& audio_fetcher,

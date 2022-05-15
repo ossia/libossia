@@ -415,7 +415,6 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 
   m_oscServer->open();
   m_oscServer->receive([this] (const char* data, std::size_t sz) {
-    std::cerr << m_oscServer->m_endpoint.address() << " : " << m_oscServer->m_endpoint.port() << std::endl;
     process_raw_osc_data(data, sz);
   });
 }

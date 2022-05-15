@@ -37,6 +37,11 @@ struct val_type_visitor
     return ossia::val_type::IMPULSE;
   }
 
+  ret operator()(ossia::monostate)
+  {
+    return ossia::val_type::IMPULSE;
+  }
+
   ret operator()()
   {
     return ossia::val_type::IMPULSE;
@@ -96,6 +101,11 @@ struct setup_parameter_visitor
       ossia::net::set_extended_type(n, v);
       return p;
     }
+    return nullptr;
+  }
+
+  ret operator()(ossia::monostate)
+  {
     return nullptr;
   }
 
@@ -298,6 +308,7 @@ struct update_parameter_visitor
     ossia::net::set_extended_type(addr.get_node(), v);
   }
 
+  ret operator()(ossia::monostate) { }
   ret operator()()
   {
   }

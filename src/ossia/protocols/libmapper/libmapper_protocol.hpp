@@ -6,9 +6,9 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/variant.hpp>
 #include <concurrentqueue.h>
 #include <vector>
-#include <variant>
 
 typedef void *mpr_graph;
 typedef void *mpr_device;
@@ -92,7 +92,7 @@ private:
   {
     mpr_signal sig;
   };
-  using ControlMessage = std::variant<CreateSignal, RemoveSignal>;
+  using ControlMessage = ossia::variant<CreateSignal, RemoveSignal>;
   moodycamel::ConcurrentQueue<ControlMessage> m_ctlQueue;
 
   std::atomic_int m_editSemaphore{};
