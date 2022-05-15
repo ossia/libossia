@@ -47,19 +47,19 @@ auto apply_con(const T& visitor, ossia::connection& con)
   auto tgt = con.target();
   switch (con.which().index())
   {
-    case ossia::connection::index_of<immediate_glutton_connection>():
+    case ossia::connection::index_of<immediate_glutton_connection>().index():
       return visitor(*reinterpret_cast<immediate_glutton_connection*>(tgt));
       break;
-    case ossia::connection::index_of<immediate_strict_connection>():
+    case ossia::connection::index_of<immediate_strict_connection>().index():
       return visitor(*reinterpret_cast<immediate_strict_connection*>(tgt));
       break;
-    case ossia::connection::index_of<delayed_glutton_connection>():
+    case ossia::connection::index_of<delayed_glutton_connection>().index():
       return visitor(*reinterpret_cast<delayed_glutton_connection*>(tgt));
       break;
-    case ossia::connection::index_of<delayed_strict_connection>():
+    case ossia::connection::index_of<delayed_strict_connection>().index():
       return visitor(*reinterpret_cast<delayed_strict_connection*>(tgt));
       break;
-    case ossia::connection::index_of<dependency_connection>():
+    case ossia::connection::index_of<dependency_connection>().index():
       return visitor(*reinterpret_cast<dependency_connection*>(tgt));
       break;
     default:
@@ -73,22 +73,22 @@ auto apply_con(const T& visitor, const ossia::connection& con)
   auto tgt = con.target();
   switch (con.which().index())
   {
-    case ossia::connection::index_of<immediate_glutton_connection>():
+    case ossia::connection::index_of<immediate_glutton_connection>().index():
       return visitor(
           *reinterpret_cast<const immediate_glutton_connection*>(tgt));
       break;
-    case ossia::connection::index_of<immediate_strict_connection>():
+    case ossia::connection::index_of<immediate_strict_connection>().index():
       return visitor(
           *reinterpret_cast<const immediate_strict_connection*>(tgt));
       break;
-    case ossia::connection::index_of<delayed_glutton_connection>():
+    case ossia::connection::index_of<delayed_glutton_connection>().index():
       return visitor(
           *reinterpret_cast<const delayed_glutton_connection*>(tgt));
       break;
-    case ossia::connection::index_of<delayed_strict_connection>():
+    case ossia::connection::index_of<delayed_strict_connection>().index():
       return visitor(*reinterpret_cast<const delayed_strict_connection*>(tgt));
       break;
-    case ossia::connection::index_of<dependency_connection>():
+    case ossia::connection::index_of<dependency_connection>().index():
       return visitor(*reinterpret_cast<const dependency_connection*>(tgt));
       break;
     default:

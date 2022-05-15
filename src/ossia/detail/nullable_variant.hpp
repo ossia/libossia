@@ -14,6 +14,12 @@ struct nullable_variant_index {
   OSSIA_MAXIMUM_INLINE constexpr std::size_t to_std_index() const noexcept
   { return value - 1; }
 };
+OSSIA_MAXIMUM_INLINE constexpr bool operator==(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
+{ return lhs.value == rhs.value; }
+OSSIA_MAXIMUM_INLINE constexpr bool operator!=(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
+{ return lhs.value != rhs.value; }
+OSSIA_MAXIMUM_INLINE constexpr bool operator<(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
+{ return lhs.value < rhs.value; }
 
 template<typename... Args>
 struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
@@ -21,14 +27,14 @@ struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
   using base = typename mpark::variant<mpark::monostate, Args...>;
   using base::base;
 
-  static constexpr std::size_t npos = 0;
+  static constexpr nullable_variant_index npos{0};
 
   template<typename T>
-  static constexpr std::size_t index_of() noexcept {
+  static constexpr nullable_variant_index index_of() noexcept {
     if constexpr(!boost::mp11::mp_contains<base, T>::value)
-      return 0;
+      return npos;
     else
-      return boost::mp11::mp_find<base, T>::value;
+      return {boost::mp11::mp_find<base, T>::value};
   }
 
   OSSIA_MAXIMUM_INLINE constexpr operator bool() const noexcept {
@@ -196,7 +202,7 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator==(const L& lhs, const nullable_vari
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx != rhs.index())
+    if(lhs_idx != rhs.which())
       return false;
     else
       return lhs == *rhs.template target<L>();
@@ -207,7 +213,7 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const L& lhs, const nullable_vari
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx != rhs.index())
+    if(lhs_idx != rhs.which())
       return true;
     else
       return lhs != *rhs.template target<L>();
@@ -219,9 +225,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<(const L& lhs, const nullable_varia
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx < rhs.index())
+    if(lhs_idx < rhs.which())
       return true;
-    else if(lhs_idx > rhs.index())
+    else if(lhs_idx > rhs.which())
       return false;
     else
       return lhs < *rhs.template target<L>();
@@ -233,9 +239,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>(const L& lhs, const nullable_varia
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx > rhs.index())
+    if(lhs_idx > rhs.which())
       return true;
-    else if(lhs_idx < rhs.index())
+    else if(lhs_idx < rhs.which())
       return false;
     else
       return lhs > *rhs.template target<L>();
@@ -246,9 +252,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const L& lhs, const nullable_vari
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx < rhs.index())
+    if(lhs_idx < rhs.which())
       return true;
-    else if(lhs_idx > rhs.index())
+    else if(lhs_idx > rhs.which())
       return false;
     else
       return lhs <= *rhs.template target<L>();
@@ -259,9 +265,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const L& lhs, const nullable_vari
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs_idx > rhs.index())
+    if(lhs_idx > rhs.which())
       return true;
-    else if(lhs_idx < rhs.index())
+    else if(lhs_idx < rhs.which())
       return false;
     else
       return lhs >= *rhs.template target<L>();
@@ -272,7 +278,7 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator==(const nullable_variant<Ts...>& lh
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() != rhs_idx)
+    if(lhs.which() != rhs_idx)
       return false;
     else
       return *lhs.template target<R>() == rhs;
@@ -284,7 +290,7 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const nullable_variant<Ts...>& lh
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() != rhs_idx)
+    if(lhs.which() != rhs_idx)
       return true;
     else
       return *lhs.template target<R>() != rhs;
@@ -296,9 +302,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<(const nullable_variant<Ts...>& lhs
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() < rhs_idx)
+    if(lhs.which() < rhs_idx)
       return true;
-    else if(lhs.index() > rhs_idx)
+    else if(lhs.which() > rhs_idx)
       return false;
     else
       return *lhs.template target<R>() < rhs;
@@ -309,9 +315,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>(const nullable_variant<Ts...>& lhs
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() > rhs_idx)
+    if(lhs.which() > rhs_idx)
       return true;
-    else if(lhs.index() < rhs_idx)
+    else if(lhs.which() < rhs_idx)
       return false;
     else
       return *lhs.template target<R>() > rhs;
@@ -322,9 +328,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const nullable_variant<Ts...>& lh
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() < rhs_idx)
+    if(lhs.which() < rhs_idx)
       return true;
-    else if(lhs.index() > rhs_idx)
+    else if(lhs.which() > rhs_idx)
       return false;
     else
       return *lhs.template target<R>() <= rhs;
@@ -335,9 +341,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const nullable_variant<Ts...>& lh
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
-    if(lhs.index() > rhs_idx)
+    if(lhs.which() > rhs_idx)
       return true;
-    else if(lhs.index() < rhs_idx)
+    else if(lhs.which() < rhs_idx)
       return false;
     else
       return *lhs.template target<R>() >= rhs;
