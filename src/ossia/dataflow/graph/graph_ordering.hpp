@@ -79,9 +79,9 @@ struct init_node_visitor
   static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
   {
     const auto w = out.which();
-    if (w == in.which() && w != data_type::npos)
+    if (w.to_std_index() == in.which() && w.valid())
     {
-      switch (w)
+      switch (w.index())
       {
         case delay_line_type::index_of<ossia::audio_delay_line>():
           copy_data_pos{pos}(
@@ -273,21 +273,21 @@ struct env_writer
     // Copy to the buffer
     const auto con_w = con.buffer.which();
     const auto out_w = out.which();
-    if (con_w == out_w)
+    if (con_w.to_std_index() == out_w)
     {
-      switch (con_w)
+      switch (con_w.index())
       {
-        case 0:
+        case delay_line_type::index_of<ossia::audio_delay_line>():
           copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
-        case 1:
+        case delay_line_type::index_of<ossia::midi_delay_line>():
           copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
-        case 2:
+        case delay_line_type::index_of<ossia::value_delay_line>():
           copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));
@@ -301,21 +301,21 @@ struct env_writer
     // Copy to the buffer
     const auto con_w = con.buffer.which();
     const auto out_w = out.which();
-    if (con_w == out_w)
+    if (con_w.to_std_index() == out_w)
     {
-      switch (con_w)
+      switch (con_w.index())
       {
-        case 0:
+        case delay_line_type::index_of<ossia::audio_delay_line>():
           copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
-        case 1:
+        case delay_line_type::index_of<ossia::midi_delay_line>():
           copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
-        case 2:
+        case delay_line_type::index_of<ossia::value_delay_line>():
           copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));

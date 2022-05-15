@@ -45,21 +45,21 @@ template <typename T>
 auto apply_con(const T& visitor, ossia::connection& con)
 {
   auto tgt = con.target();
-  switch (con.which())
+  switch (con.which().index())
   {
-    case 0:
+    case ossia::connection::index_of<immediate_glutton_connection>():
       return visitor(*reinterpret_cast<immediate_glutton_connection*>(tgt));
       break;
-    case 1:
+    case ossia::connection::index_of<immediate_strict_connection>():
       return visitor(*reinterpret_cast<immediate_strict_connection*>(tgt));
       break;
-    case 2:
+    case ossia::connection::index_of<delayed_glutton_connection>():
       return visitor(*reinterpret_cast<delayed_glutton_connection*>(tgt));
       break;
-    case 3:
+    case ossia::connection::index_of<delayed_strict_connection>():
       return visitor(*reinterpret_cast<delayed_strict_connection*>(tgt));
       break;
-    case 4:
+    case ossia::connection::index_of<dependency_connection>():
       return visitor(*reinterpret_cast<dependency_connection*>(tgt));
       break;
     default:
@@ -71,24 +71,24 @@ template <typename T>
 auto apply_con(const T& visitor, const ossia::connection& con)
 {
   auto tgt = con.target();
-  switch (con.which())
+  switch (con.which().index())
   {
-    case 0:
+    case ossia::connection::index_of<immediate_glutton_connection>():
       return visitor(
           *reinterpret_cast<const immediate_glutton_connection*>(tgt));
       break;
-    case 1:
+    case ossia::connection::index_of<immediate_strict_connection>():
       return visitor(
           *reinterpret_cast<const immediate_strict_connection*>(tgt));
       break;
-    case 2:
+    case ossia::connection::index_of<delayed_glutton_connection>():
       return visitor(
           *reinterpret_cast<const delayed_glutton_connection*>(tgt));
       break;
-    case 3:
+    case ossia::connection::index_of<delayed_strict_connection>():
       return visitor(*reinterpret_cast<const delayed_strict_connection*>(tgt));
       break;
-    case 4:
+    case ossia::connection::index_of<dependency_connection>():
       return visitor(*reinterpret_cast<const dependency_connection*>(tgt));
       break;
     default:

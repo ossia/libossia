@@ -15,7 +15,7 @@ template <typename Fun, typename NodeFun, typename DeviceList_T>
 bool apply_to_destination(
     const destination_t& address, const DeviceList_T& devices, Fun f, NodeFun nf)
 {
-  switch (address.which())
+  switch (address.which().index())
   {
     // ossia::net::parameter_base*
     case destination_t::index_of<ossia::net::parameter_base*>():

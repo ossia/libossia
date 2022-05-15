@@ -273,7 +273,7 @@ void qml_logger::startHeartbeat(QVariantMap data)
   std::map<std::string, ossia::variant<std::string, int>> m;
   if (data.find("pid") == data.end())
   {
-    m.insert({"pid", QCoreApplication::applicationPid()});
+    m.insert({"pid", (int)QCoreApplication::applicationPid()});
   }
 
   if (data.find("cmd") == data.end())

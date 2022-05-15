@@ -5,6 +5,15 @@
 #include <boost/mp11.hpp>
 namespace ossia
 {
+struct nullable_variant_index {
+  std::size_t value;
+  OSSIA_MAXIMUM_INLINE constexpr bool valid() const noexcept
+  { return value != 0; }
+  OSSIA_MAXIMUM_INLINE constexpr std::size_t index() const noexcept
+  { return value; }
+  OSSIA_MAXIMUM_INLINE constexpr std::size_t to_std_index() const noexcept
+  { return value - 1; }
+};
 
 template<typename... Args>
 struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
@@ -26,8 +35,8 @@ struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
     return this->index() != 0;
   }
 
-  OSSIA_MAXIMUM_INLINE constexpr std::size_t which() const noexcept {
-    return this->index();
+  OSSIA_MAXIMUM_INLINE constexpr nullable_variant_index which() const noexcept {
+    return nullable_variant_index{this->index()};
   }
 
   template<typename T>
