@@ -136,6 +136,7 @@ target_include_directories(ossia
 target_include_directories(ossia SYSTEM
   PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/variant/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mparkvariant/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>

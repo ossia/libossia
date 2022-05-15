@@ -2,6 +2,7 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "qml_logger.hpp"
 #include <ossia/network/common/websocket_log_sink.hpp>
+#include <ossia/detail/variant.hpp>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QFile>
@@ -269,7 +270,7 @@ void qml_logger::setLogLevel(qml_logger::log_level l)
 
 void qml_logger::startHeartbeat(QVariantMap data)
 {
-  std::map<std::string, eggs::variant<std::string, int>> m;
+  std::map<std::string, ossia::variant<std::string, int>> m;
   if (data.find("pid") == data.end())
   {
     m.insert({"pid", QCoreApplication::applicationPid()});

@@ -18,14 +18,14 @@ bool apply_to_destination(
   switch (address.which())
   {
     // ossia::net::parameter_base*
-    case 0:
+    case destination_t::index_of<ossia::net::parameter_base*>():
     {
       f(*address.target<ossia::net::parameter_base*>(), true);
       return true;
     }
 
     // ossia::traversal::path
-    case 1:
+    case destination_t::index_of<ossia::traversal::path>():
     {
       std::vector<ossia::net::node_base*> roots{};
 
@@ -45,7 +45,7 @@ bool apply_to_destination(
     }
 
     // ossia::net::node_base*
-    case 2:
+    case destination_t::index_of<ossia::net::node_base*>():
     {
       nf(*address.target<ossia::net::node_base*>(), true);
       return true;

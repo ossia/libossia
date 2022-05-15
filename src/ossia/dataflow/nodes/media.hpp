@@ -44,6 +44,6 @@ struct mmap_audio_handle
 struct media_data
 {
   std::string file_path;
-  std::variant<audio_handle, mmap_audio_handle> media;
+  ossia::variant<audio_handle, mmap_audio_handle> media;
 };*/
 }

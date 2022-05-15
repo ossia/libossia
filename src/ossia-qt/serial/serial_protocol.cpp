@@ -65,13 +65,13 @@ struct serial_wrapper_init
 serial_wrapper::serial_wrapper(const network_context_ptr& ctx, const serial_protocol_configuration& port)
   : m_socket{make_socket(ctx, port)}
 {
-  std::visit(serial_wrapper_init{*this, port}, m_socket);
+  ossia::visit(serial_wrapper_init{*this, port}, m_socket);
   m_open = true;
 }
 
 void serial_wrapper::on_write(const QByteArray& b) noexcept
 {
-  std::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
+  ossia::visit([&b] (auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
 }
 
 void serial_wrapper::on_read(const QByteArray& arr)
@@ -86,14 +86,14 @@ framed_serial_socket serial_wrapper::make_socket(const network_context_ptr& ctx,
   switch(port.framing)
   {
     case ossia::net::framing::none:
-      return framed_serial_socket{std::in_place_index<0>, port.transport, ctx->context};
+      return framed_serial_socket{ossia::in_place_index<0>, port.transport, ctx->context};
     case ossia::net::framing::size_prefix:
-      return framed_serial_socket{std::in_place_index<1>, port.transport, ctx->context};
+      return framed_serial_socket{ossia::in_place_index<1>, port.transport, ctx->context};
     case ossia::net::framing::slip:
-      return framed_serial_socket{std::in_place_index<2>, port.transport, ctx->context};
+      return framed_serial_socket{ossia::in_place_index<2>, port.transport, ctx->context};
     default:
     case ossia::net::framing::line_delimiter:
-      return framed_serial_socket{std::in_place_index<3>, port.transport, ctx->context};
+      return framed_serial_socket{ossia::in_place_index<3>, port.transport, ctx->context};
   }
 }
 
@@ -102,7 +102,7 @@ void serial_wrapper::close()
   if(m_open)
   {
     m_open = false;
-    std::visit([] (auto& sock) { sock.close(); }, m_socket);
+    ossia::visit([] (auto& sock) { sock.close(); }, m_socket);
   }
 }
 

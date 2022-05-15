@@ -2,7 +2,7 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
 
-#include <eggs/variant.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 #include <readerwriterqueue.h>
 #include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_sinks.h>
@@ -228,7 +228,7 @@ public:
   }
 
   void
-  send_init(const std::map<std::string, eggs::variant<std::string, int>>& map)
+  send_init(const std::map<std::string, ossia::variant<std::string, int>>& map)
   {
     rapidjson::StringBuffer buffer;
     ossia::json_writer writer{buffer};
@@ -260,8 +260,7 @@ public:
     for (const auto& pair : map)
     {
       writer.Key(pair.first);
-      if (pair.second)
-        eggs::variants::apply(sw, pair.second);
+      ossia::visit(sw, pair.second);
     }
 
     writer.EndObject();

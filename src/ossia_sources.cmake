@@ -36,6 +36,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mpl.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/murmur3.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/nullable_variant.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/optional.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/packed_struct.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/ptr_set.hpp"

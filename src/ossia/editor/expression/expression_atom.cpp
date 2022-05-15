@@ -52,7 +52,7 @@ expression_atom::~expression_atom()
 
 bool expression_atom::evaluate() const
 {
-  return eggs::variants::apply(*this, m_first, m_second);
+  return ossia::apply_nonnull(*this, m_first, m_second);
 }
 
 void expression_atom::update() const
@@ -174,13 +174,13 @@ bool expression_atom::operator()(
 bool expression_atom::
 operator()(const ossia::value& first, const val_t& second) const
 {
-  return eggs::variants::apply(
+  return ossia::apply_nonnull(
       [&](const auto& t) { return this->operator()(first, t); }, second);
 }
 bool expression_atom::
 operator()(const val_t& first, const ossia::value& second) const
 {
-  return eggs::variants::apply(
+  return ossia::apply_nonnull(
       [&](const auto& t) { return this->operator()(t, second); }, first);
 }
 

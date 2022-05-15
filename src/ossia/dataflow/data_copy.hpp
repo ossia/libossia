@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/nullable_variant.hpp>
 #include <ossia/dataflow/data.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/parameter.hpp>
@@ -48,10 +49,10 @@ struct data_size
     return p.samples.size();
   }
 
+  std::size_t operator()(const ossia::monostate&) const
+  { return 0; }
   std::size_t operator()() const
-  {
-    return 0;
-  }
+  { return 0; }
 };
 
 struct move_data

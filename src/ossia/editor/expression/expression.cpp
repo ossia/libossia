@@ -15,6 +15,8 @@ struct evaluate_visitor
   {
     return e.evaluate();
   }
+  bool operator()(const ossia::monostate& e)
+  { return false; }
 };
 
 struct update_visitor
@@ -24,6 +26,8 @@ struct update_visitor
   {
     e.update();
   }
+  void operator()(const ossia::monostate& e)
+  { return; }
 };
 
 struct reset_visitor
@@ -33,6 +37,8 @@ struct reset_visitor
   {
     e.reset();
   }
+  void operator()(ossia::monostate& e)
+  { return; }
 };
 
 struct add_callback_visitor
@@ -44,6 +50,9 @@ struct add_callback_visitor
   {
     return e.add_callback(std::move(cb));
   }
+
+  expression_callback_iterator operator()(ossia::monostate& e)
+  { return {}; }
 };
 
 struct remove_callback_visitor
@@ -54,6 +63,8 @@ struct remove_callback_visitor
   {
     e.remove_callback(it);
   }
+  void operator()(ossia::monostate& e)
+  { }
 };
 
 struct get_callback_count_visitor
@@ -63,6 +74,8 @@ struct get_callback_count_visitor
   {
     return e.callback_count();
   }
+  std::size_t operator()(const ossia::monostate& e)
+  { return 0; }
 };
 
 struct different_visitor
@@ -89,15 +102,15 @@ struct different_visitor
       const expression_composition& lhs, const expression_composition& rhs)
   {
     return lhs.get_operator() != rhs.get_operator()
-           || eggs::variants::apply(
+           || ossia::apply_nonnull(
                   *this, lhs.get_first_operand(), rhs.get_first_operand())
-           || eggs::variants::apply(
+           || ossia::apply_nonnull(
                   *this, lhs.get_second_operand(), rhs.get_second_operand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
-    return eggs::variants::apply(
+    return ossia::apply_nonnull(
         *this, lhs.get_expression(), rhs.get_expression());
   }
 
@@ -131,15 +144,15 @@ struct equal_visitor
       const expression_composition& lhs, const expression_composition& rhs)
   {
     return lhs.get_operator() == rhs.get_operator()
-           && eggs::variants::apply(
+           && ossia::apply_nonnull(
                   *this, lhs.get_first_operand(), rhs.get_first_operand())
-           && eggs::variants::apply(
+           && ossia::apply_nonnull(
                   *this, lhs.get_second_operand(), rhs.get_second_operand());
   }
 
   bool operator()(const expression_not& lhs, const expression_not& rhs)
   {
-    return eggs::variants::apply(
+    return ossia::apply_nonnull(
         *this, lhs.get_expression(), rhs.get_expression());
   }
 
@@ -152,55 +165,55 @@ struct equal_visitor
 
 bool evaluate(const ossia::expressions::expression_base& e)
 {
-  return eggs::variants::apply(evaluate_visitor{}, e);
+  return ossia::apply_nonnull(evaluate_visitor{}, e);
 }
 
 void update(const ossia::expressions::expression_base& e)
 {
-  return eggs::variants::apply(update_visitor{}, e);
+  return ossia::apply_nonnull(update_visitor{}, e);
 }
 
 void reset(ossia::expressions::expression_base& e)
 {
-  return eggs::variants::apply(reset_visitor{}, e);
+  return ossia::apply_nonnull(reset_visitor{}, e);
 }
 
 bool operator!=(const expression_base& lhs, const expression_base& rhs)
 {
-  return eggs::variants::apply(different_visitor{}, lhs, rhs);
+  return ossia::apply_nonnull(different_visitor{}, lhs, rhs);
 }
 
 bool operator==(const expression_base& lhs, const expression_base& rhs)
 {
-  return eggs::variants::apply(equal_visitor{}, lhs, rhs);
+  return ossia::apply_nonnull(equal_visitor{}, lhs, rhs);
 }
 
 expression_callback_iterator
 add_callback(expression_base& e, expression_result_callback cb)
 {
-  return eggs::variants::apply(add_callback_visitor{std::move(cb)}, e);
+  return ossia::apply_nonnull(add_callback_visitor{std::move(cb)}, e);
 }
 
 void remove_callback(expression_base& e, expression_callback_iterator it)
 {
-  return eggs::variants::apply(remove_callback_visitor{it}, e);
+  return ossia::apply_nonnull(remove_callback_visitor{it}, e);
 }
 
 std::size_t callback_count(expression_base& e)
 {
-  return eggs::variants::apply(get_callback_count_visitor{}, e);
+  return ossia::apply_nonnull(get_callback_count_visitor{}, e);
 }
 
 const expression_base& expression_true()
 {
-  static const expression_base e{eggs::variants::in_place<expression_bool>,
+  static const expression_base e{ossia::in_place_type<expression_bool>,
                                  true};
   return e;
 }
 
 const expression_base& expression_false()
 {
-  static const expression_base e{eggs::variants::in_place<expression_bool>,
+  static const expression_base e{ossia::in_place_type<expression_bool>,
                                  false};
   return e;
 }
@@ -210,7 +223,7 @@ expression_ptr make_expression_atom(
     const expression_atom::val_t& rhs)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_atom>, lhs, c, rhs,
+      ossia::in_place_type<expression_atom>, lhs, c, rhs,
       expression_atom::dummy_t{});
 }
 
@@ -218,7 +231,7 @@ expression_ptr make_expression_atom(
     expression_atom::val_t&& lhs, comparator c, expression_atom::val_t&& rhs)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_atom>, std::move(lhs), c,
+      ossia::in_place_type<expression_atom>, std::move(lhs), c,
       std::move(rhs), expression_atom::dummy_t{});
 }
 }

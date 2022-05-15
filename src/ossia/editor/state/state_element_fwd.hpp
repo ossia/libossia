@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <eggs/variant.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 /**
  * \file state_element_fwd.hpp
  */
@@ -23,11 +23,11 @@ class state;
  * \see \ref state
  * \see state_element.hpp
  */
-using state_element = eggs::variant<
+using state_element = ossia::nullable_variant<
     message, state, piecewise_message, piecewise_vec_message<2>,
     piecewise_vec_message<3>, piecewise_vec_message<4>>;
 
 template <std::size_t N>
 using state_element_by_index =
-    typename eggs::variants::variant_element<N, ossia::state_element>::type;
+    typename ossia::variant_element_t<N, ossia::state_element>;
 }

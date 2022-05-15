@@ -8,6 +8,7 @@
 #include <ossia/network/sockets/line_framing.hpp>
 #include <ossia/network/sockets/slip_framing.hpp>
 #include <ossia/network/context.hpp>
+#include <ossia/detail/variant.hpp>
 
 #include <boost/asio/error.hpp>
 #include <boost/asio/streambuf.hpp>
@@ -15,7 +16,6 @@
 #include <QObject>
 #include <QSerialPort>
 
-#include <variant>
 #include <verdigris>
 
 #include <ossia-qt/js_utilities.hpp>
@@ -83,7 +83,7 @@ struct slip_framing_socket : ossia::net::serial_socket<slip_framing>
 struct line_framing_socket : ossia::net::serial_socket<line_framing>
 { using serial_socket::serial_socket; };
 
-using framed_serial_socket = std::variant<
+using framed_serial_socket = ossia::variant<
   no_framing_socket,
   size_framing_socket,
   slip_framing_socket,

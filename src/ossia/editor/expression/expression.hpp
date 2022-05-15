@@ -135,7 +135,7 @@ OSSIA_EXPORT const expression_base& expression_false();
 inline expression_ptr make_expression_true()
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_bool>, true);
+      ossia::in_place_type<expression_bool>, true);
 }
 
 /**
@@ -146,7 +146,7 @@ inline expression_ptr make_expression_true()
 inline expression_ptr make_expression_false()
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_bool>, false);
+      ossia::in_place_type<expression_bool>, false);
 }
 
 /**
@@ -158,7 +158,7 @@ template <typename... Args>
 expression_ptr make_expression_atom(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_atom>, std::forward<Args>(args)...);
+      ossia::in_place_type<expression_atom>, std::forward<Args>(args)...);
 }
 OSSIA_EXPORT
 expression_ptr make_expression_atom(
@@ -180,7 +180,7 @@ template <typename... Args>
 expression_ptr make_expression_bool(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_bool>, std::forward<Args>(args)...);
+      ossia::in_place_type<expression_bool>, std::forward<Args>(args)...);
 }
 
 /**
@@ -192,7 +192,7 @@ template <typename... Args>
 expression_ptr make_expression_composition(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_composition>,
+      ossia::in_place_type<expression_composition>,
       std::forward<Args>(args)...);
 }
 
@@ -205,7 +205,7 @@ template <typename... Args>
 expression_ptr make_expression_not(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_not>, std::forward<Args>(args)...);
+      ossia::in_place_type<expression_not>, std::forward<Args>(args)...);
 }
 
 /**
@@ -217,7 +217,7 @@ template <typename... Args>
 expression_ptr make_expression_pulse(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_pulse>, std::forward<Args>(args)...);
+      ossia::in_place_type<expression_pulse>, std::forward<Args>(args)...);
 }
 
 template <typename T, typename... Args>
@@ -228,7 +228,7 @@ expression_ptr make_expression_generic(Args&&... args)
       "Must inherit from expression_generic_base");
 
   return std::make_unique<expression_base>(
-      eggs::variants::in_place<expression_generic>,
+      ossia::in_place_type<expression_generic>,
       std::make_unique<T>(std::forward<Args>(args)...));
 }
 }
