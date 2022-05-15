@@ -83,17 +83,17 @@ struct init_node_visitor
     {
       switch (w.index())
       {
-        case delay_line_type::index_of<ossia::audio_delay_line>():
+        case delay_line_type::index_of<ossia::audio_delay_line>().index():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::audio_delay_line*>(out.target()),
               in.cast<ossia::audio_port>());
           break;
-        case delay_line_type::index_of<ossia::midi_delay_line>():
+        case delay_line_type::index_of<ossia::midi_delay_line>().index():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::midi_delay_line*>(out.target()),
               in.cast<ossia::midi_port>());
           break;
-        case delay_line_type::index_of<ossia::value_delay_line>():
+        case delay_line_type::index_of<ossia::value_delay_line>().index():
           copy_data_pos{pos}(
               *reinterpret_cast<const ossia::value_delay_line*>(out.target()),
               in.cast<ossia::value_port>());
@@ -105,7 +105,7 @@ struct init_node_visitor
   static void move(outlet& out, inlet& in)
   {
     const auto w = out.which();
-    if (w == in.which() && w != data_type::npos)
+    if (w == in.which())
     {
       switch (w)
       {
@@ -136,7 +136,7 @@ struct init_node_visitor
     else
     {
       const auto w = out.which();
-      if (w == in.which() && w != data_type::npos)
+      if (w == in.which())
       {
         switch (w)
         {
@@ -277,17 +277,17 @@ struct env_writer
     {
       switch (con_w.index())
       {
-        case delay_line_type::index_of<ossia::audio_delay_line>():
+        case delay_line_type::index_of<ossia::audio_delay_line>().index():
           copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
-        case delay_line_type::index_of<ossia::midi_delay_line>():
+        case delay_line_type::index_of<ossia::midi_delay_line>().index():
           copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
-        case delay_line_type::index_of<ossia::value_delay_line>():
+        case delay_line_type::index_of<ossia::value_delay_line>().index():
           copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));
@@ -305,17 +305,17 @@ struct env_writer
     {
       switch (con_w.index())
       {
-        case delay_line_type::index_of<ossia::audio_delay_line>():
+        case delay_line_type::index_of<ossia::audio_delay_line>().index():
           copy_data{}(out.cast<ossia::audio_port>(),
               *reinterpret_cast<ossia::audio_delay_line*>(
                 con.buffer.target()));
           break;
-        case delay_line_type::index_of<ossia::midi_delay_line>():
+        case delay_line_type::index_of<ossia::midi_delay_line>().index():
           copy_data{}(out.cast<ossia::midi_port>(),
               *reinterpret_cast<ossia::midi_delay_line*>(
                 con.buffer.target()));
           break;
-        case delay_line_type::index_of<ossia::value_delay_line>():
+        case delay_line_type::index_of<ossia::value_delay_line>().index():
           copy_data{}(out.cast<ossia::value_port>(),
               *reinterpret_cast<ossia::value_delay_line*>(
                 con.buffer.target()));
