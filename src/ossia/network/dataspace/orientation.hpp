@@ -6,7 +6,6 @@ namespace ossia
 {
 
 struct quaternion_u;
-struct orientation_u;
 template <typename Impl>
 struct orientation_unit
 {
@@ -54,6 +53,8 @@ struct OSSIA_EXPORT quaternion_u : public orientation_unit<quaternion_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const quaternion_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const quaternion_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
@@ -87,6 +88,8 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
   {
     return ossia::bounding_mode::WRAP;
   }
+  constexpr bool operator==(const euler_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const euler_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
@@ -121,5 +124,7 @@ struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const axis_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const axis_u& other) const noexcept { return false; }
 };
 }

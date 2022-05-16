@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/dataspace/dataspace_base_defs_fwd.hpp>
 #include <ossia/detail/math.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/value/vec.hpp>

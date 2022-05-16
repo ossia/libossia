@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/destination_index.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/exceptions.hpp>
@@ -38,8 +39,8 @@ class value;
  */
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 OSSIA_EXPORT ossia::value parse_pretty_value(ossia::string_view str);
-
-struct value_variant_type
+/*
+struct value_/variant_type
 {
 public:
   struct dummy_t
@@ -129,7 +130,8 @@ public:
   value_variant_type& operator=(const value_variant_type& other);
   value_variant_type& operator=(value_variant_type&& other);
 };
-using value_variant = value_variant_type;
+*/
+using value_variant = ossia::nullable_variant<float, int, ossia::vec2f, ossia::vec3f, ossia::vec4f, ossia::impulse, bool, std::string, std::vector<ossia::value>, char>;
 
 /**
  * @brief The value class
@@ -165,6 +167,7 @@ public:
   // Construction
   template <typename T>
   value(T*) = delete;
+  value(const ossia::monostate&) = delete;
   value(const char* txt) : v{std::string(txt)}
   {
   }
@@ -362,7 +365,7 @@ public:
       return ossia::val_type::NONE;
     }
 
-    return static_cast<ossia::val_type>(t);
+    return static_cast<ossia::val_type>(t.to_std_index());
   }
 
   bool valid() const noexcept
@@ -453,9 +456,9 @@ inline ossia::value init_value(ossia::val_type type)
 OSSIA_EXPORT
 ossia::value get_value_at_index(
     const ossia::value& val, const ossia::destination_index& idx);
-
+/*
 #include <ossia/network/value/value_variant_impl.hpp>
-
+*/
 
 template <typename Visitor>
 inline auto value::apply(Visitor&& vis) -> decltype(auto)

@@ -7,7 +7,7 @@
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
-#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+// #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>

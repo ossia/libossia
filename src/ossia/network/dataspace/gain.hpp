@@ -5,7 +5,6 @@
 namespace ossia
 {
 struct linear_u;
-struct gain_u;
 template <typename Impl>
 struct gain_unit
 {
@@ -118,6 +117,9 @@ struct OSSIA_EXPORT linear_u : public gain_unit<linear_u>
   {
     return ossia::bounding_mode::LOW;
   }
+
+  constexpr bool operator==(const linear_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const linear_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
@@ -147,6 +149,9 @@ struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
   {
     return ossia::bounding_mode::LOW;
   }
+
+  constexpr bool operator==(const midigain_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const midigain_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
@@ -176,6 +181,9 @@ struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
   {
     return ossia::bounding_mode::LOW;
   }
+
+  constexpr bool operator==(const decibel_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const decibel_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
@@ -205,5 +213,8 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
   {
     return ossia::bounding_mode::FREE;
   }
+
+  constexpr bool operator==(const decibel_raw_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const decibel_raw_u& other) const noexcept { return false; }
 };
 }

@@ -1,6 +1,6 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 
-#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+// #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <ossia/network/oscquery/detail/attributes.hpp>

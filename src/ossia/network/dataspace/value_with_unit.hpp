@@ -5,8 +5,10 @@
 
 namespace ossia
 {
+using strong_value_variant = ossia::nullable_variant<
+  ossia::value, distance, position, speed, orientation, angle, color, gain, timing>;
 
-#include <ossia/network/dataspace/dataspace_strong_variants.hpp>
+//#include <ossia/network/dataspace/dataspace_strong_variants.hpp>
 //! Unit attached with a corresponding value. e.g. a specific color, or
 //! position.
 struct OSSIA_EXPORT value_with_unit final

@@ -21,7 +21,7 @@ ossia::value
 wrap(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
   if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_ternary_fun_visitor<wrap_functor>{}, val.v, min.v, max.v);
   return val;
 }
@@ -37,7 +37,7 @@ ossia::value
 wrap(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_ternary_fun_visitor<wrap_functor>{}, ossia::move(val).v, min.v,
         max.v);
   return val;

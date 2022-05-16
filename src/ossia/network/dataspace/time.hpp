@@ -4,7 +4,6 @@
 
 namespace ossia
 {
-struct timing_u;
 struct second_u;
 template <typename Impl>
 struct timing_unit
@@ -43,6 +42,8 @@ struct second_u : public timing_unit<second_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const second_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const second_u& other) const noexcept { return false; }
 };
 
 struct bark_u : public timing_unit<bark_u>
@@ -71,6 +72,8 @@ struct bark_u : public timing_unit<bark_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const bark_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const bark_u& other) const noexcept { return false; }
 };
 
 struct bpm_u : public timing_unit<bpm_u>
@@ -99,6 +102,8 @@ struct bpm_u : public timing_unit<bpm_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const bpm_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const bpm_u& other) const noexcept { return false; }
 };
 
 struct cent_u : public timing_unit<cent_u>
@@ -131,6 +136,8 @@ struct cent_u : public timing_unit<cent_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const cent_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cent_u& other) const noexcept { return false; }
 };
 
 struct frequency_u : public timing_unit<frequency_u>
@@ -160,6 +167,8 @@ struct frequency_u : public timing_unit<frequency_u>
   {
     return ossia::bounding_mode::LOW;
   }
+  constexpr bool operator==(const frequency_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const frequency_u& other) const noexcept { return false; }
 };
 
 struct mel_u : public timing_unit<mel_u>
@@ -189,6 +198,8 @@ struct mel_u : public timing_unit<mel_u>
   {
     return ossia::bounding_mode::LOW;
   }
+  constexpr bool operator==(const mel_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const mel_u& other) const noexcept { return false; }
 };
 
 struct midi_pitch_u : public timing_unit<midi_pitch_u>
@@ -218,6 +229,8 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
   {
     return ossia::bounding_mode::LOW;
   }
+  constexpr bool operator==(const midi_pitch_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const midi_pitch_u& other) const noexcept { return false; }
 };
 
 struct millisecond_u : public timing_unit<millisecond_u>
@@ -247,6 +260,8 @@ struct millisecond_u : public timing_unit<millisecond_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const millisecond_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const millisecond_u& other) const noexcept { return false; }
 };
 
 struct sample_u : public timing_unit<sample_u>
@@ -282,6 +297,8 @@ struct sample_u : public timing_unit<sample_u>
   {
     return ossia::bounding_mode::LOW;
   }
+  constexpr bool operator==(const sample_u& other) const noexcept { return rate == other.rate; }
+  constexpr bool operator!=(const sample_u& other) const noexcept { return rate != other.rate; }
 };
 
 template<typename T>
@@ -313,6 +330,8 @@ struct playback_speed_u : public timing_unit<playback_speed_u>
   {
     return ossia::bounding_mode::LOW;
   }
+  constexpr bool operator==(const playback_speed_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const playback_speed_u& other) const noexcept { return false; }
 };
 
 // template<int N>

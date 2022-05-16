@@ -6,7 +6,6 @@ namespace ossia
 {
 
 struct argb_u;
-struct color_u;
 template <typename Impl>
 struct color_unit
 {
@@ -53,6 +52,9 @@ struct OSSIA_EXPORT argb_u : public color_unit<argb_u>
   {
     return self.dataspace_value;
   }
+
+  constexpr bool operator==(const argb_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const argb_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT rgba8_u : public color_unit<rgba8_u>
@@ -94,6 +96,9 @@ struct OSSIA_EXPORT rgba8_u : public color_unit<rgba8_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const rgba8_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const rgba8_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
@@ -132,6 +137,9 @@ struct OSSIA_EXPORT rgba_u : public color_unit<rgba_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const rgba_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const rgba_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
@@ -170,6 +178,9 @@ struct OSSIA_EXPORT rgb_u : public color_unit<rgb_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const rgb_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const rgb_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
@@ -208,6 +219,9 @@ struct OSSIA_EXPORT bgr_u : public color_unit<bgr_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const bgr_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const bgr_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
@@ -248,6 +262,9 @@ struct OSSIA_EXPORT argb8_u : public color_unit<argb8_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const argb8_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const argb8_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
@@ -277,6 +294,9 @@ struct OSSIA_EXPORT hsv_u : public color_unit<hsv_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const hsv_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const hsv_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
@@ -302,6 +322,9 @@ struct OSSIA_EXPORT hsl_u : public color_unit<hsl_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const hsl_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const hsl_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
@@ -344,6 +367,9 @@ struct OSSIA_EXPORT cmy8_u : public color_unit<cmy8_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+
+  constexpr bool operator==(const cmy8_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cmy8_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cmyk8_u : public color_unit<cmyk8_u>
@@ -359,6 +385,8 @@ struct OSSIA_EXPORT cmyk8_u : public color_unit<cmyk8_u>
   }
 
   using value_type = vec4f;
+  constexpr bool operator==(const cmyk8_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cmyk8_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
@@ -389,6 +417,8 @@ struct OSSIA_EXPORT xyz_u : public color_unit<xyz_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+  constexpr bool operator==(const xyz_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const xyz_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
@@ -414,6 +444,8 @@ struct OSSIA_EXPORT yxy_u : public color_unit<yxy_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+  constexpr bool operator==(const yxy_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const yxy_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
@@ -441,6 +473,8 @@ struct OSSIA_EXPORT hunter_lab_u : public color_unit<hunter_lab_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+  constexpr bool operator==(const hunter_lab_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const hunter_lab_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
@@ -464,6 +498,8 @@ struct OSSIA_EXPORT cie_lab_u : public color_unit<cie_lab_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+  constexpr bool operator==(const cie_lab_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cie_lab_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
@@ -487,5 +523,7 @@ struct OSSIA_EXPORT cie_luv_u : public color_unit<cie_luv_u>
   {
     return ossia::bounding_mode::CLIP;
   }
+  constexpr bool operator==(const cie_luv_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cie_luv_u& other) const noexcept { return false; }
 };
 }

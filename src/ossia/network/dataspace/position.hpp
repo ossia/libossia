@@ -4,7 +4,6 @@
 namespace ossia
 {
 struct cartesian_3d_u;
-struct position_u;
 template <typename Impl>
 struct position_unit
 {
@@ -52,6 +51,8 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const cartesian_3d_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cartesian_3d_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
@@ -90,6 +91,8 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const cartesian_2d_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cartesian_2d_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
@@ -123,6 +126,8 @@ struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const spherical_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const spherical_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
@@ -168,6 +173,8 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const polar_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const polar_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT aed_u : public position_unit<aed_u>
@@ -201,6 +208,8 @@ struct OSSIA_EXPORT aed_u : public position_unit<aed_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const aed_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const aed_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT ad_u : public position_unit<ad_u>
@@ -246,6 +255,8 @@ struct OSSIA_EXPORT ad_u : public position_unit<ad_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const ad_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const ad_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
@@ -287,6 +298,8 @@ struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const opengl_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const opengl_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
@@ -319,6 +332,8 @@ struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const cylindrical_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const cylindrical_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT azd_u : public position_unit<azd_u>
@@ -351,5 +366,7 @@ struct OSSIA_EXPORT azd_u : public position_unit<azd_u>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const azd_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const azd_u& other) const noexcept { return false; }
 };
 }

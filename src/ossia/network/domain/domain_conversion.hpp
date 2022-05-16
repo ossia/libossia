@@ -7,6 +7,7 @@ namespace ossia
 template <typename U>
 struct domain_conversion
 {
+  using return_type = domain;
 
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
@@ -65,6 +66,7 @@ struct domain_conversion
 template <>
 struct domain_conversion<domain_base<impulse>>
 {
+  using return_type = domain;
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
@@ -75,6 +77,7 @@ struct domain_conversion<domain_base<impulse>>
 template <>
 struct domain_conversion<domain_base<bool>>
 {
+  using return_type = domain;
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
   {
@@ -99,6 +102,7 @@ struct domain_conversion<vector_domain>
 template <std::size_t N>
 struct domain_conversion<vecf_domain<N>>
 {
+  using return_type = domain;
   OSSIA_INLINE domain operator()(const vecf_domain<N>& src)
   {
     return src;
@@ -181,6 +185,8 @@ struct domain_conversion<vecf_domain<N>>
 template <>
 struct domain_conversion<domain_base<std::string>>
 {
+  using return_type = domain;
+
   OSSIA_INLINE domain operator()(const domain_base<std::string>& src)
   {
     return src;
@@ -237,11 +243,11 @@ inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
   // Converts domains but keeps compatible different domains.
   // e.g. a float domain works for vec4f or list.
   //! \note check this if the order in domain_base_variant changes.
-  if (dom.which() < list_index)
+  if (dom.which().to_std_index() < list_index)
   {
     dom = convert_domain(dom, newtype);
   }
-  else if (dom.which() == list_index)
+  else if (dom.which().to_std_index() == list_index)
   {
     switch (newtype)
     {

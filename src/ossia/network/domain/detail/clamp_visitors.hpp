@@ -8,6 +8,7 @@ namespace ossia
 template <typename TernaryFun>
 struct apply_ternary_fun_visitor
 {
+  using return_type = ossia::value;
   template <typename T, typename U, typename V>
   OSSIA_INLINE ossia::value
   operator()(const T& val, const U& min, const V& max)
@@ -162,6 +163,7 @@ struct apply_ternary_fun_visitor
 template <typename BinaryFun>
 struct apply_binary_fun_visitor
 {
+  using return_type = ossia::value;
   template <typename T, typename U>
   OSSIA_INLINE ossia::value operator()(const T& val, const U& min)
   {

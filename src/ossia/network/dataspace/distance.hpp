@@ -7,7 +7,6 @@ namespace ossia
 
 template <typename T>
 struct distance_ratio;
-struct distance_u;
 
 using meter_u = distance_ratio<std::ratio<1>>;
 using kilometer_u = distance_ratio<std::kilo>;
@@ -41,6 +40,9 @@ struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
   {
     return {};
   }
+
+  constexpr bool operator==(const distance_ratio& other) const noexcept { return true; }
+  constexpr bool operator!=(const distance_ratio& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
@@ -79,6 +81,9 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
   {
     return ossia::bounding_mode::FREE;
   }
+
+  constexpr bool operator==(const pixel_u& other) const noexcept { return ppm == other.ppm; }
+  constexpr bool operator!=(const pixel_u& other) const noexcept { return ppm != other.ppm; }
 };
 
 template <>

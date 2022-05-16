@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/small_vector.hpp>
-#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+// #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
 

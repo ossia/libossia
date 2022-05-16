@@ -4,7 +4,6 @@
 #include <ossia/network/domain/domain_base_impl.hpp>
 namespace ossia
 {
-struct angle_u;
 struct radian_u;
 template <typename Impl>
 struct angle_unit
@@ -44,6 +43,9 @@ struct OSSIA_EXPORT radian_u : public angle_unit<radian_u>
   {
     return ossia::bounding_mode::WRAP;
   }
+
+  constexpr bool operator==(const radian_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const radian_u& other) const noexcept { return false; }
 };
 
 struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
@@ -73,5 +75,8 @@ struct OSSIA_EXPORT degree_u : public angle_unit<degree_u>
   {
     return ossia::bounding_mode::WRAP;
   }
+
+  constexpr bool operator==(const degree_u& other) const noexcept { return true; }
+  constexpr bool operator!=(const degree_u& other) const noexcept { return false; }
 };
 }

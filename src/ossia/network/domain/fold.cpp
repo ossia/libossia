@@ -21,7 +21,7 @@ ossia::value
 fold(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
   if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_ternary_fun_visitor<fold_functor>{}, val.v, min.v, max.v);
   return val;
 }
@@ -37,7 +37,7 @@ ossia::value
 fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v,
         max.v);
   return val;

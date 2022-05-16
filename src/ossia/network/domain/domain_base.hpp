@@ -1,11 +1,27 @@
 #pragma once
 #include <ossia/network/domain/domain_base_impl.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 /**
  * \file domain_base.hpp
  */
 namespace ossia
 {
+using domain_base_variant = ossia::nullable_variant<
+  ossia::domain_base<ossia::impulse>,
+  ossia::domain_base<bool>,
+  ossia::domain_base<int>,
+  ossia::domain_base<float>,
+  ossia::domain_base<char>,
+  ossia::domain_base<std::string>,
+  ossia::vector_domain,
+  ossia::vecf_domain<2>,
+  ossia::vecf_domain<3>,
+  ossia::vecf_domain<4>,
+  ossia::domain_base<ossia::value>
+>;
+/*
 #include <ossia/network/domain/domain_variant_impl.hpp>
+*/
 /**
  * \brief domain A domain of values
  *

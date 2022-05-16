@@ -10,6 +10,7 @@ namespace
 {
 struct evaluate_visitor
 {
+  using return_type = bool;
   template <typename T>
   bool operator()(const T& e)
   {
@@ -21,6 +22,7 @@ struct evaluate_visitor
 
 struct update_visitor
 {
+  using return_type = void;
   template <typename T>
   void operator()(const T& e)
   {
@@ -32,6 +34,7 @@ struct update_visitor
 
 struct reset_visitor
 {
+  using return_type = void;
   template <typename T>
   void operator()(T& e)
   {
@@ -43,6 +46,7 @@ struct reset_visitor
 
 struct add_callback_visitor
 {
+  using return_type = expression_callback_iterator;
   expression_result_callback cb;
 
   template <typename T>
@@ -57,6 +61,7 @@ struct add_callback_visitor
 
 struct remove_callback_visitor
 {
+  using return_type = void;
   expression_callback_iterator it;
   template <typename T>
   void operator()(T& e)
@@ -69,6 +74,7 @@ struct remove_callback_visitor
 
 struct get_callback_count_visitor
 {
+  using return_type = std::size_t;
   template <typename T>
   std::size_t operator()(const T& e)
   {
@@ -80,6 +86,7 @@ struct get_callback_count_visitor
 
 struct different_visitor
 {
+  using return_type = bool;
   template <typename T, typename U>
   bool operator()(const T& lhs, const U& rhs)
   {
@@ -122,6 +129,7 @@ struct different_visitor
 
 struct equal_visitor
 {
+  using return_type = bool;
   template <typename T, typename U>
   bool operator()(const T& lhs, const U& rhs)
   {

@@ -54,6 +54,15 @@ struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
     return mpark::get_if<T>(this);
   }
 
+  template<typename T>
+  OSSIA_MAXIMUM_INLINE constexpr T& get() noexcept {
+    return mpark::get<T>(*this);
+  }
+  template<typename T>
+  OSSIA_MAXIMUM_INLINE constexpr const T& get() const noexcept {
+    return mpark::get<T>(*this);
+  }
+
   // FIXME is this safe
   [[deprecated]]
   OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept {
@@ -74,102 +83,177 @@ OSSIA_MAXIMUM_INLINE auto visit(F&& visitor, Args&&... variants)
   return mpark::visit(visitor, static_cast<Args&&>(variants)...);
 }
 */
+
 template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>& variant)
+struct get_variant_visitation_return_type;
+template<typename F, typename A1, typename... A1s>
+struct get_variant_visitation_return_type<F, ossia::nullable_variant<A1, A1s...>> {
+  using type = std::invoke_result_t<F, A1&>;
+};
+template<typename F, typename A1, typename... A1s, typename A2, typename... A2s>
+struct get_variant_visitation_return_type<F, ossia::nullable_variant<A1, A1s...>, ossia::nullable_variant<A2, A2s...>> {
+    using type = std::invoke_result_t<F, A1&, A2&>;
+};
+template<typename F, typename A1, typename... A1s, typename A2, typename... A2s, typename A3, typename... A3s>
+struct get_variant_visitation_return_type<F, ossia::nullable_variant<A1, A1s...>, ossia::nullable_variant<A2, A2s...>, ossia::nullable_variant<A3, A3s...>> {
+    using type = std::invoke_result_t<F, A1&, A2&, A3&>;
+};
+
+template<typename F, typename ret>
+struct apply_call_empty_wrapper {
+  F&& visitor;
+  ret bad() const {
+    if constexpr(requires { visitor(); }) {
+      return visitor();
+    }
+    else if constexpr(requires (ossia::monostate m) { visitor(m); }) {
+      ossia::monostate m;
+      return visitor(m);
+    }
+    else {
+      static_assert(F::this_should_not_happen);
+    }
+  }
+  template<typename T>
+  ret operator()(T&& t) const { return visitor(std::forward<T>(t)); }
+  ret operator()(const ossia::monostate&) const { return bad(); }
+  ret operator()(ossia::monostate&) const { return bad(); }
+  ret operator()(ossia::monostate&&) const { return bad(); }
+};
+
+
+template<typename F, typename Arg>
+OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, Arg&& variant)
   -> decltype(auto)
 {
-  return mpark::visit(visitor, variant);
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, std::decay_t<Arg>>::type;
+  return mpark::visit(
+        apply_call_empty_wrapper<F, ret>{std::forward<F>(visitor)},
+        variant);
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, const ossia::nullable_variant<Args...>& variant)
-  -> decltype(auto)
-{
-  return mpark::visit(visitor, variant);
-}
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>&& variant)
-  -> decltype(auto)
-{
-  return mpark::visit(visitor, std::move(variant));
-}
+
+
+template<typename F, typename ret>
+struct apply_nonnull_wrapper {
+  F&& visitor;
+  template<typename T>
+  ret operator()(T&& t) const { return visitor(std::forward<T>(t)); }
+  ret operator()(const ossia::monostate&) const { throw std::runtime_error("apply_nonnull called on invalid variant"); }
+  ret operator()(ossia::monostate&) const { throw std::runtime_error("apply_nonnull called on invalid variant"); }
+  ret operator()(ossia::monostate&&) const { throw std::runtime_error("apply_nonnull called on invalid variant"); }
+};
+
+template<typename F, typename ret>
+struct apply_nonnull_wrapper_2 {
+    F&& visitor;
+
+    template<typename U>
+    ret operator()(const ossia::monostate& t, U&& u) const {
+      throw std::runtime_error("apply_nonnull called on invalid variant");
+    }
+    template<typename T>
+    ret operator()(T&& t, const ossia::monostate& u) const {
+      throw std::runtime_error("apply_nonnull called on invalid variant");
+    }
+
+    ret operator()(const ossia::monostate& t, const ossia::monostate& u) const {
+      throw std::runtime_error("apply_nonnull called on invalid variant");
+    }
+    template<typename T, typename U>
+    ret operator()(T&& t, U&& u) const
+    {
+      using type1 = std::remove_const_t<std::decay_t<T>>;
+      using type2 = std::remove_const_t<std::decay_t<U>>;
+      if constexpr(!std::is_same_v<type1, ossia::monostate> && !std::is_same_v<type2, ossia::monostate>
+                   && !std::is_same_v<type1, const ossia::monostate> && !std::is_same_v<type2, const ossia::monostate>)
+      {
+        return visitor(std::forward<T>(t), std::forward<U>(u));
+      }
+      else
+      {
+        throw std::runtime_error("apply_nonnull called on invalid variant");
+        if constexpr(std::is_same_v<ret, void>)
+          return;
+        else
+          return ret{};
+      }
+    }
+};
+template<typename F, typename ret>
+struct apply_nonnull_wrapper_3 {
+    F&& visitor;
+    template<typename T, typename U, typename V>
+    ret operator()(T&& t, U&& u, V&& v) const
+    {
+      using type1 = std::remove_const_t<std::decay_t<T>>;
+      using type2 = std::remove_const_t<std::decay_t<U>>;
+      using type3 = std::remove_const_t<std::decay_t<V>>;
+      if constexpr(!std::is_same_v<type1, ossia::monostate> && !std::is_same_v<type2, ossia::monostate> && !std::is_same_v<type3, ossia::monostate>)
+      {
+        return visitor(std::forward<T>(t), std::forward<U>(u), std::forward<V>(v));
+      }
+      else
+      {
+        throw std::runtime_error("apply_nonnull called on invalid variant");
+        if constexpr(std::is_same_v<ret, void>)
+          return;
+        else
+          return ret{};
+      }
+    }
+};
 
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& variant)
 -> decltype(auto)
 {
-  if(variant)
-  {
-    return mpark::visit(visitor, variant);
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, ossia::nullable_variant<Args...>>::type;
+  return mpark::visit(
+        apply_nonnull_wrapper<F, ret>{std::forward<F>(visitor)},
+        variant);
 }
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& variant)
 -> decltype(auto)
 {
-  if(variant)
-  {
-    return mpark::visit(visitor, variant);
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, ossia::nullable_variant<Args...>>::type;
+  return mpark::visit(
+        apply_nonnull_wrapper<F, ret>{std::forward<F>(visitor)},
+        variant);
 }
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& variant)
 -> decltype(auto)
 {
-  if(variant)
-  {
-    return mpark::visit(visitor, std::move(variant));
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, ossia::nullable_variant<Args...>>::type;
+  return mpark::visit(
+        apply_nonnull_wrapper<F, ret>{std::forward<F>(visitor)},
+        std::move(variant));
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& v1, ossia::nullable_variant<Args...>& v2)
+template<typename F, typename T, typename U>
+OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, T&& v1, U&& v2)
 -> decltype(auto)
 {
-  if(v1 && v2)
-  {
-    return mpark::visit(visitor, v1, v2);
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, std::decay_t<T>, std::decay_t<U>>::type;
+  return mpark::visit(
+        apply_nonnull_wrapper_2<F, ret>{std::forward<F>(visitor)},
+        std::forward<T>(v1), std::forward<U>(v2));
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& v1, const ossia::nullable_variant<Args...>& v2)
+template<typename F, typename T, typename U, typename V>
+OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, T&& v1, U&& v2, V&& v3)
 -> decltype(auto)
 {
-  if(v1 && v2)
-  {
-    return mpark::visit(visitor, v1, v2);
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  using ret = typename get_variant_visitation_return_type<std::decay_t<F>, std::decay_t<T>, std::decay_t<U>, std::decay_t<V>>::type;
+  return mpark::visit(
+        apply_nonnull_wrapper_3<F, ret>{std::forward<F>(visitor)},
+        std::forward<T>(v1), std::forward<U>(v2), std::forward<V>(v3));
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& v1, const ossia::nullable_variant<Args...>&& v2)
--> decltype(auto)
+
+template<typename F, typename Arg, typename... Args>
+OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, Arg&& arg, Args&&... rem)
+  -> decltype(auto)
 {
-  if(v1 && v2)
-  {
-    return mpark::visit(visitor, std::move(v1), std::move(v2));
-  }
-  else
-  {
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-  }
+  return apply_nonnull(std::forward<F>(visitor), std::forward<Arg>(arg), std::forward<Args>(rem)...);
 }
 
 template <typename... Ts>

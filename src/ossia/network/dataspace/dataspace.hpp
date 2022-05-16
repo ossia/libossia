@@ -13,7 +13,11 @@
 #include <functional>
 namespace ossia
 {
-#include <ossia/network/dataspace/dataspace_base_variants.hpp>
+using unit_variant = ossia::nullable_variant<
+distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, timing_u
+>;
+
+//#include <ossia/network/dataspace/dataspace_base_variants.hpp>
 //!  Units give a semantic meaning to the value of a parameter.<br>
 //! They are sorted by categories: every unit in a category is convertible to
 //! the other units in the same category.<br> Every category (coined
@@ -304,7 +308,7 @@ struct hash<ossia::distance_u>
 {
   std::size_t operator()(const ossia::distance_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -312,7 +316,7 @@ struct hash<ossia::position_u>
 {
   std::size_t operator()(const ossia::position_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -320,7 +324,7 @@ struct hash<ossia::speed_u>
 {
   std::size_t operator()(const ossia::speed_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -328,7 +332,7 @@ struct hash<ossia::orientation_u>
 {
   std::size_t operator()(const ossia::orientation_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -336,7 +340,7 @@ struct hash<ossia::angle_u>
 {
   std::size_t operator()(const ossia::angle_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -344,7 +348,7 @@ struct hash<ossia::color_u>
 {
   std::size_t operator()(const ossia::color_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -352,7 +356,7 @@ struct hash<ossia::gain_u>
 {
   std::size_t operator()(const ossia::gain_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
   }
 };
 template <>
@@ -360,7 +364,17 @@ struct hash<ossia::timing_u>
 {
   std::size_t operator()(const ossia::timing_u& k) const
   {
-    return k.which();
+    return k.which().to_std_index();
+  }
+};
+
+struct unit_hash_impl
+{
+  using return_type = void;
+  std::size_t& seed;
+  template<typename T>
+  void operator()(const T& d) const noexcept {
+    ossia::hash_combine(seed, d.which().to_std_index());
   }
 };
 
@@ -372,10 +386,8 @@ struct hash<ossia::unit_t>
     std::size_t seed = 0;
     if(v.v.which() != v.v.npos)
     {
-      ossia::hash_combine(seed, v.v.which());
-      ossia::apply_nonnull([&] (auto& d) {
-        ossia::hash_combine(seed, d.which());
-      }, v.v);
+      ossia::hash_combine(seed, v.v.which().to_std_index());
+      ossia::apply_nonnull(unit_hash_impl{seed}, v.v);
     }
     return seed;
   }

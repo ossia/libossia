@@ -20,7 +20,7 @@ struct clamp_max_functor
 ossia::value clamp_max(const ossia::value& val, const ossia::value& max)
 {
   if (val.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_binary_fun_visitor<clamp_max_functor>{}, val.v, max.v);
   return val;
 }
@@ -34,7 +34,7 @@ ossia::value clamp_max(ossia::value&& val, const ossia::value& max)
 ossia::value clamp_max(ossia::value&& val, const ossia::value& max)
 {
   if (val.valid() && max.valid())
-    return ossia::apply(
+    return ossia::apply_nonnull(
         apply_binary_fun_visitor<clamp_max_functor>{}, ossia::move(val).v,
         max.v);
   return val;

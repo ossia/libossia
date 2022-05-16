@@ -6,7 +6,7 @@
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
+// #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>

@@ -16,7 +16,6 @@ using kilometer_per_hour_u = speed_ratio<std::ratio<1000, 3600>>;
 using knot_u = speed_ratio<std::ratio<1852, 3600>>;
 using foot_per_hour_u = speed_ratio<std::ratio<254 * 12, 3600 * 10000>>;
 using foot_per_second_u = speed_ratio<std::ratio<254 * 12, 10000>>;
-struct speed_u;
 template <typename Impl>
 struct speed_unit
 {
@@ -42,6 +41,8 @@ struct speed_ratio : public linear_unit<speed_unit<speed_ratio<T>>, T>
   {
     return ossia::bounding_mode::FREE;
   }
+  constexpr bool operator==(const speed_ratio& other) const noexcept { return true; }
+  constexpr bool operator!=(const speed_ratio& other) const noexcept { return false; }
 };
 
 template <>
