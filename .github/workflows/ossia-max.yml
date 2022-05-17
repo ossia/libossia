@@ -144,8 +144,8 @@ jobs:
           path: "~/Documents/Max 8/Packages/ossia-new"
 
       - name: Fix Signature
-        run: ditto "~/Documents/Max 8/Packages/ossia-new" "~/Documents/Max 8/Packages/ossia"
-        
+        run: ditto "${HOME}/Documents/Max 8/Packages/ossia-new" "${HOME}/Documents/Max 8/Packages/ossia"
+
       - name: Install Max
         shell: bash
         run: |
