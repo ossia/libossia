@@ -15,6 +15,8 @@ namespace ossia
 namespace max_binding
 {
 
+t_symbol* value_visitor::address_sym = gensym("address");
+
 object_base::object_base()
 {
   auto& omax = ossia_max::instance();

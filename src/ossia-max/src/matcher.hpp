@@ -53,6 +53,8 @@ private:
   bool m_zombie{}; // true if node is deleted, t_matcher should be deleted asap
   bool m_lock{};
   t_atom m_addr{};
+
+  friend class value_visitor;
 };
 
 } // namespace max

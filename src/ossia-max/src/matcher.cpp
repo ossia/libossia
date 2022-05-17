@@ -222,16 +222,7 @@ void matcher::output_value(ossia::value v)
         val = ossia::convert(std::move(filtered), param->get_unit(), *x->m_local_unit);
       }
 
-      if(owner->m_dumpout)
-      {
-        t_atom a[2];
-        a[0] = m_addr;
-        A_SETLONG(a+1, m_index);
-        outlet_anything(owner->m_dumpout,gensym("address"),2,a);
-      }
-
-      value_visitor<object_base> vm;
-      vm.x = (object_base*)owner;
+      value_visitor vm(*this);
       val.apply(vm);
       owner->m_local_mute = false;
     }

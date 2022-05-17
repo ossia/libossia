@@ -269,10 +269,27 @@ struct value2atom
 
 // Template typed function switcher to convert t_atom or standard type into
 // ossia::value
-template <typename T>
 struct value_visitor
 {
-  T* x;
+  matcher& m;
+  object_base* x;
+  static t_symbol* address_sym;
+
+  value_visitor(matcher& _m) : m{_m}, x{m.owner}
+  {
+
+  }
+
+  void output_address() const
+  {
+    if(x->m_dumpout)
+    {
+      t_atom a[2];
+      a[0] = m.m_addr;
+      A_SETLONG(a+1, m.m_index);
+      schedule(x->m_dumpout, (method)outlet_anything, 0, gensym("address"),2,a);
+    }
+  }
 
   void set_out(t_atom& a) const
   {
@@ -285,7 +302,7 @@ struct value_visitor
       }
       else
       {
-        outlet_anything(x->m_set_out, gensym("set"), 1, &a);
+        schedule(x->m_set_out, (method)outlet_anything, 0, gensym("set"),1,&a);
       }
     }
   }
@@ -301,36 +318,43 @@ struct value_visitor
       }
       else
       {
-        outlet_anything(x->m_set_out, gensym("set"), N, a);
+        schedule(x->m_set_out, (method)outlet_anything, 0, gensym("set"), N, a);
       }
     }
   }
 
   void operator()(impulse) const
   {
-    outlet_bang(x->m_data_out);
+    static t_symbol* bang_sym = gensym("bang");
+    output_address();
+    schedule(x->m_data_out, (method)outlet_anything, 0, bang_sym, 0, nullptr);
 
     if (x->m_set_out)
-      outlet_bang(x->m_set_out);
+      schedule(x->m_set_out, (method)outlet_anything, 0, bang_sym, 0, nullptr);
   }
 
   void operator()(int32_t i) const
   {
+    static t_symbol* int_sym = gensym("int");
+
+    output_address();
     t_atom a;
     atom_setlong(&a, i);
-    outlet_int(x->m_data_out, i);
+    schedule(x->m_data_out, (method)outlet_anything, 0, int_sym, 1, &a);
 
     set_out(a);
   }
 
   void operator()(float f) const
   {
-    t_atom a;
+    static t_symbol* float_sym = gensym("float");
 
+    output_address();
+    t_atom a;
     atom_setfloat(&a, f);
     if(x && x->m_data_out)
     {
-      outlet_float(x->m_data_out, f);
+      schedule(x->m_data_out, (method)outlet_anything, 0, float_sym, 1, &a);
     }
     set_out(a);
   }
@@ -342,21 +366,23 @@ struct value_visitor
 
   void operator()(const std::string& str) const
   {
+    output_address();
     t_symbol* s = gensym(str.c_str());
     t_atom a;
 
     atom_setsym(&a, s);
-    outlet_anything(x->m_data_out, s, 0, nullptr);
+    schedule(x->m_data_out, (method)outlet_anything, 0, s, 0, nullptr);
 
     set_out(a);
   }
 
   void operator()(char c) const
   {
+    output_address();
     t_atom a;
 
     atom_setlong(&a, (long)c);
-    outlet_int(x->m_data_out, (long)c);
+    schedule(x->m_data_out, (method)outlet_int, 0, nullptr, 1, &a);
 
     set_out(a);
   }
@@ -364,17 +390,19 @@ struct value_visitor
   template<std::size_t N>
   void operator()(std::array<float, N> vec) const
   {
+    output_address();
     t_atom a[N];
 
     for(int i = 0; i < N; i++)
       atom_setfloat(a + i, vec[i]);
-    outlet_list(x->m_data_out, gensym("list"), N, a);
+    schedule(x->m_data_out, (method)outlet_list, 0, gensym("list"), N, a);
 
     set_out(N, a);
   }
 
   void operator()(const std::vector<ossia::value>& t) const
   {
+    output_address();
     std::vector<t_atom> va;
     value2atom vm{va};
 
@@ -386,7 +414,7 @@ struct value_visitor
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
     if (x->m_data_out)
-      outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
+      schedule(x->m_data_out, (method)outlet_list, 0, gensym("list"), va.size(), list_ptr);
 
     set_out(va.size(), list_ptr);
   }
