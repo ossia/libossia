@@ -115,3 +115,6 @@
 [submodule "3rdparty/kfr"]
 	path = 3rdparty/kfr
 	url = https://github.com/jcelerier/kfr
+[submodule "3rdparty/PerlinNoise"]
+	path = 3rdparty/PerlinNoise
+	url = https://github.com/Reputeless/PerlinNoise

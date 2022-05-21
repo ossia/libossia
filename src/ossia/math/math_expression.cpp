@@ -1,6 +1,7 @@
 #include <ossia/math/math_expression.hpp>
 #include <ossia/detail/logger.hpp>
 #include <rnd/random.hpp>
+#include <PerlinNoise/PerlinNoise.hpp>
 
 #pragma GCC visibility push(default)
 #pragma clang visibility push(default)
@@ -57,8 +58,28 @@ struct rand_gen
   }
 };
 
+template <typename T, std::size_t N>
+struct perlin;
+
+template <typename T>
+struct perlin<T, 1>
+    : public exprtk::ifunction<T>
+{
+  const siv::PerlinNoise engine{ 4u }; // choosen by fair dice roll
+
+  perlin(): exprtk::ifunction<T>{3}
+  {
+  }
+
+  T operator()(const T& x, const T& octaves, const T& persistence) noexcept override
+  {
+    return engine.normalizedOctave1D_01(x, std::max(1., octaves), std::clamp(persistence, 0., 1.));
+  }
+};
+
 struct math_expression::impl {
   rand_gen<double> random;
+  perlin<double, 1> noise1d;
   exprtk::symbol_table<double> syms;
   exprtk::expression<double> expr;
   exprtk::parser<double> parser;
@@ -71,6 +92,7 @@ math_expression::math_expression()
   : impl{new struct impl}
 {
   impl->syms.add_function("random", impl->random);
+  impl->syms.add_function("noise", impl->noise1d);
 }
 
 math_expression::~math_expression()
