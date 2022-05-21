@@ -1,7 +1,7 @@
 #include <ossia/math/math_expression.hpp>
 #include <ossia/detail/logger.hpp>
 #include <rnd/random.hpp>
-#include <PerlinNoise/PerlinNoise.hpp>
+#include <PerlinNoise.hpp>
 
 #pragma GCC visibility push(default)
 #pragma clang visibility push(default)
