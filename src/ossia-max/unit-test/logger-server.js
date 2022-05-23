@@ -11,7 +11,7 @@ const csvWriter = createCsvWriter({
   path: 'out-' + process.platform + '.csv',
   header: [
     {id: 'commit', title: 'Commit'},
-    {id: 'filename', title: 'Filname'},
+    {id: 'filename', title: 'Filename'},
     {id: 'test', title: 'Test Name'},
     {id: 'result', title: 'Result'},
   ]
