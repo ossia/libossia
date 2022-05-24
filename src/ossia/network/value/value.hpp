@@ -194,29 +194,29 @@ public:
   value(const std::string& val) noexcept : v{val}
   {
   }
-  value(const std::vector<ossia::value>& val) noexcept : v{val}
+  value(const std::vector<ossia::value>& val) noexcept : v(val)
   {
   }
-  value(std::array<float, 2> val) noexcept : v{val}
+  value(std::array<float, 2> val) noexcept : v(val)
   {
   }
-  value(std::array<float, 3> val) noexcept : v{val}
+  value(std::array<float, 3> val) noexcept : v(val)
   {
   }
-  value(std::array<float, 4> val) noexcept : v{val}
+  value(std::array<float, 4> val) noexcept : v(val)
   {
   }
 
-  explicit value(std::string&& val) noexcept : v{std::move(val)}
+  explicit value(std::string&& val) noexcept : v(std::move(val))
   {
   }
-  explicit value(std::vector<ossia::value>&& val) noexcept : v{std::move(val)}
+  explicit value(std::vector<ossia::value>&& val) noexcept : v(std::move(val))
   {
   }
 
   template <typename T, typename... Args>
   value(detail::dummy<T> t, Args&&... args) noexcept
-      : v{T{std::forward<Args>(args)...}}
+      : v(T(std::forward<Args>(args)...))
   {
   }
 
@@ -299,10 +299,10 @@ public:
   {
   }
   ~value() noexcept;
-  value(const value& other) noexcept : v{other.v}
+  value(const value& other) noexcept : v(other.v)
   {
   }
-  value(value&& other) noexcept : v{std::move(other.v)}
+  value(value&& other) noexcept : v(std::move(other.v))
   {
   }
   value& operator=(const value& other) noexcept

@@ -16971,12 +16971,12 @@ inline value_variant_type::value_variant_type(std::string&& v) : m_type{Type7}
 
 inline value_variant_type::value_variant_type(const std::vector<ossia::value>& v) : m_type{Type8}
 {
-  new (&m_impl.m_value8) std::vector<ossia::value>{v};
+  new (&m_impl.m_value8) std::vector<ossia::value>(v);
 }
 
 inline value_variant_type::value_variant_type(std::vector<ossia::value>&& v) : m_type{Type8}
 {
-  new (&m_impl.m_value8) std::vector<ossia::value>{std::move(v)};
+  new (&m_impl.m_value8) std::vector<ossia::value>(std::move(v));
 }
 
 inline value_variant_type::value_variant_type(char v) : m_type{Type9}
@@ -17014,7 +17014,7 @@ inline value_variant_type::value_variant_type(const value_variant_type& other) :
       break;
     case Type::Type8:
       new (&m_impl.m_value8)
-          std::vector<ossia::value>{other.m_impl.m_value8};
+          std::vector<ossia::value>(other.m_impl.m_value8);
       break;
     case Type::Type9:
       new (&m_impl.m_value9) char{other.m_impl.m_value9};
@@ -17055,7 +17055,7 @@ inline value_variant_type::value_variant_type(value_variant_type&& other) : m_ty
       break;
     case Type::Type8:
       new (&m_impl.m_value8)
-          std::vector<ossia::value>{std::move(other.m_impl.m_value8)};
+          std::vector<ossia::value>(std::move(other.m_impl.m_value8));
       break;
     case Type::Type9:
       new (&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
@@ -17099,7 +17099,7 @@ inline value_variant_type& value_variant_type::operator=(const value_variant_typ
         break;
       case Type::Type8:
         new (&m_impl.m_value8)
-            std::vector<ossia::value>{other.m_impl.m_value8};
+            std::vector<ossia::value>(other.m_impl.m_value8);
         break;
       case Type::Type9:
         new (&m_impl.m_value9) char{other.m_impl.m_value9};
@@ -17184,7 +17184,7 @@ inline value_variant_type& value_variant_type::operator=(value_variant_type&& ot
         break;
       case Type::Type8:
         new (&m_impl.m_value8)
-            std::vector<ossia::value>{std::move(other.m_impl.m_value8)};
+            std::vector<ossia::value>(std::move(other.m_impl.m_value8));
         break;
       case Type::Type9:
         new (&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
