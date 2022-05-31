@@ -1,4 +1,5 @@
 #pragma once
+#include <stdexcept>
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/variant.hpp>
 #include <mpark/variant.hpp>
