@@ -337,12 +337,23 @@ struct faust_node_utils
       for(int i = 0; i < n_in; i++)
       {
         audio_in.channel(i).resize(e.bufferSize());
-        input_n[i] = audio_in.channel(i).data();
+        input_n[i] = audio_in.channel(i).data() + st;
       }
-      for(int i = 0; i < n_out; i++)
+      if(BOOST_LIKELY(st == 0 && d == e.bufferSize()))
       {
-        audio_out.channel(i).resize(e.bufferSize(), boost::container::default_init);
-        output_n[i] = audio_out.channel(i).data();
+        for(int i = 0; i < n_out; i++)
+        {
+          audio_out.channel(i).resize(e.bufferSize(), boost::container::default_init);
+          output_n[i] = audio_out.channel(i).data() + st;
+        }
+      }
+      else
+      {
+        for(int i = 0; i < n_out; i++)
+        {
+          audio_out.channel(i).resize(e.bufferSize());
+          output_n[i] = audio_out.channel(i).data() + st;
+        }
       }
 
       dsp.compute(d, input_n, output_n);
