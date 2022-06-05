@@ -4,6 +4,7 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/detail/algorithms.hpp>
 
+#include <iostream>
 namespace ossia
 {
 
