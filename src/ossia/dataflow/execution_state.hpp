@@ -4,6 +4,7 @@
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/mutex.hpp>
+#include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/network/base/device.hpp>
@@ -34,13 +35,14 @@ struct local_pull_visitor;
 struct global_pull_visitor;
 struct state_exec_visitor;
 #if defined(OSSIA_PARALLEL)
+using ossia_audio_lock_t = std::lock_guard<ossia::audio_spin_mutex>;
 #define OSSIA_EXEC_STATE_LOCK_READ(state) \
-  ossia::read_lock_t ossia_read_lock      \
+  ossia_audio_lock_t ossia_read_lock      \
   {                                       \
     (state).mutex                         \
   }
 #define OSSIA_EXEC_STATE_LOCK_WRITE(state) \
-  ossia::write_lock_t ossia_write_lock     \
+  ossia_audio_lock_t ossia_write_lock      \
   {                                        \
     (state).mutex                          \
   }
@@ -152,7 +154,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
       ossia::net::parameter_base*, value_vector<libremidi::message>>
       m_midiState;
 
-  mutable shared_mutex_t mutex;
+  mutable ossia::audio_spin_mutex mutex;
 
 private:
   void get_new_values();
