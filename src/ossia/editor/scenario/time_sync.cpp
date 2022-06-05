@@ -153,6 +153,11 @@ void time_sync::observe_expression(
 
     if (m_observe)
     {
+      if(m_callback)
+      {
+        std::cerr << "Warning: time_sync can only have one callback\n";
+        expressions::remove_callback(*m_expression, *m_callback);
+      }
       m_callback = expressions::add_callback(*m_expression, cb);
     }
     else
