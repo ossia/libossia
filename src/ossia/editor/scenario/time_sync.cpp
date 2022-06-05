@@ -7,6 +7,14 @@
 namespace ossia
 {
 
+time_sync_callback::~time_sync_callback() { }
+void time_sync_callback::triggered() { }
+void time_sync_callback::entered_evaluation() { }
+void time_sync_callback::entered_triggering() { }
+void time_sync_callback::trigger_date_fixed(ossia::time_value) { }
+void time_sync_callback::left_evaluation() { }
+void time_sync_callback::finished_evaluation(bool) { }
+
 time_sync::time_sync()
   : m_expression(expressions::make_expression_true())
   , m_status{status::NOT_DONE}
@@ -19,7 +27,10 @@ time_sync::time_sync()
 {
 }
 
-time_sync::~time_sync() = default;
+time_sync::~time_sync()
+{
+  callbacks.clear();
+}
 
 time_value time_sync::get_date() const noexcept
 {
@@ -179,10 +190,7 @@ void time_sync::cleanup()
     timeevent->cleanup();
 
   m_timeEvents.clear();
-  triggered.callbacks_clear();
-  entered_evaluation.callbacks_clear();
-  left_evaluation.callbacks_clear();
-  finished_evaluation.callbacks_clear();
+  callbacks.clear();
 }
 
 void time_sync::mute(bool m)
@@ -202,7 +210,7 @@ void time_sync::set_is_being_triggered(bool v) noexcept
     m_is_being_triggered = v;
     if (v)
     {
-      entered_triggering.send();
+      callbacks.entered_triggering();
     }
   }
   if(!v)

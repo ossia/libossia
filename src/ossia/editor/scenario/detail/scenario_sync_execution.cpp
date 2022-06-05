@@ -90,7 +90,7 @@ sync_status scenario::trigger_sync(
   {
     sync.m_evaluating = true;
     sync.end_trigger_request();
-    sync.entered_evaluation.send();
+    sync.callbacks.entered_evaluation();
   }
 
   // update the expression one time
@@ -160,10 +160,10 @@ sync_status scenario::trigger_sync(
   sync.observe_expression(false);
 
   // notify observers
-  sync.triggered.send();
+  sync.callbacks.triggered();
 
   sync.m_evaluating = false;
-  sync.finished_evaluation.send(maximalDurationReached);
+  sync.callbacks.finished_evaluation(maximalDurationReached);
   if (maximalDurationReached)
     sync.m_status = time_sync::status::DONE_MAX_REACHED;
   else
@@ -190,7 +190,7 @@ sync_status scenario::process_this(
     {
       sync.m_evaluating = false;
       sync.end_trigger_request();
-      sync.left_evaluation.send();
+      sync.callbacks.left_evaluation();
     }
 
     return sync_status::NOT_READY;

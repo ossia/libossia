@@ -18,6 +18,59 @@ class expression_base;
 class state;
 class time_event;
 class scenario;
+struct OSSIA_EXPORT time_sync_callback
+{
+  virtual ~time_sync_callback();
+
+  virtual void triggered();
+
+  //! Called when the time_sync starts evaluating
+  virtual void entered_evaluation();
+
+  //! Called when the time_sync has started triggering (e.g. was clicked)
+  virtual void entered_triggering();
+
+  //! Called when we know at which date a trigger must execute due to quantification
+  virtual void trigger_date_fixed(ossia::time_value);
+
+  //! Called if the time_sync stops evaluating due to a changing duration
+  virtual void left_evaluation();
+
+  //! Boolean : true if the evaluation was finished due to the max bound
+  virtual void finished_evaluation(bool);
+};
+
+
+struct OSSIA_EXPORT time_sync_callbacks
+{
+  boost::container::small_vector<time_sync_callback*, 2> callbacks;
+
+  void clear()
+  {
+    for(auto cb : callbacks)
+      delete cb;
+    callbacks.clear();
+  }
+
+  void triggered()
+  { for(auto v : callbacks) v->triggered(); }
+
+  void entered_evaluation()
+  { for(auto v : callbacks) v->entered_evaluation(); }
+
+  void entered_triggering()
+  { for(auto v : callbacks) v->entered_triggering(); }
+
+  void trigger_date_fixed(ossia::time_value t)
+  { for(auto v : callbacks) v->trigger_date_fixed(t); }
+
+  void left_evaluation()
+  { for(auto v : callbacks) v->left_evaluation(); }
+
+  void finished_evaluation(bool b)
+  { for(auto v : callbacks) v->finished_evaluation(b); }
+};
+
 /**
  * \brief #time_sync is use to describe temporal structure to synchronize each
  * attached #time_event evaluation.
@@ -119,28 +172,12 @@ public:
 
   void mute(bool b);
   bool muted() const noexcept { return m_muted; }
+
   /*! Execution callbacks
    *
    * Used to be notified when the #time_sync is triggered.
-   * \todo why no nano-signal-slot ?
-   * \details This is not thread-safe
    */
-  callback_container<std::function<void()>> triggered;
-
-  //! Called when the time_sync starts evaluating
-  callback_container<std::function<void()>> entered_evaluation;
-
-  //! Called when the time_sync has started triggering (e.g. was clicked)
-  callback_container<std::function<void()>> entered_triggering;
-
-  //! Called when we know at which date a trigger must execute due to quantification
-  callback_container<std::function<void(ossia::time_value)>> trigger_date_fixed;
-
-  //! Called if the time_sync stops evaluating due to a changing duration
-  callback_container<std::function<void()>> left_evaluation;
-
-  //! Boolean : true if the evaluation was finished due to the max bound
-  callback_container<std::function<void(bool)>> finished_evaluation;
+  time_sync_callbacks callbacks;
 
   enum class status : uint8_t
   {
@@ -169,7 +206,7 @@ public:
   void set_trigger_date(time_value v) noexcept
   {
     m_trigger_date = v;
-    trigger_date_fixed.send(v);
+    callbacks.trigger_date_fixed(v);
   }
   time_value get_trigger_date() const noexcept
   {

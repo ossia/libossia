@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <ossia/detail/audio_spin_mutex.hpp>
 
 #include <list>
 #include <mutex>
@@ -42,27 +43,29 @@ template <typename T>
  */
 class callback_container
 {
+  using mutex = ossia::audio_spin_mutex;
+  using lock_guard = std::lock_guard<ossia::audio_spin_mutex>;
 public:
   callback_container() = default;
   callback_container(const callback_container& other)
   {
-    std::lock_guard<std::mutex> lck{other.m_mutx};
+    lock_guard lck{other.m_mutx};
     m_callbacks = other.m_callbacks;
   }
   callback_container(callback_container&& other) noexcept
   {
-    std::lock_guard<std::mutex> lck{other.m_mutx};
+    lock_guard lck{other.m_mutx};
     m_callbacks = std::move(other.m_callbacks);
   }
   callback_container& operator=(const callback_container& other)
   {
-    std::lock_guard<std::mutex> lck{other.m_mutx};
+    lock_guard lck{other.m_mutx};
     m_callbacks = other.m_callbacks;
     return *this;
   }
   callback_container& operator=(callback_container&& other) noexcept
   {
-    std::lock_guard<std::mutex> lck{other.m_mutx};
+    lock_guard lck{other.m_mutx};
     m_callbacks = std::move(other.m_callbacks);
     return *this;
   }
@@ -87,7 +90,7 @@ public:
     T cb = callback;
     if (cb)
     {
-      std::lock_guard<std::mutex> lck{m_mutx};
+      lock_guard lck{m_mutx};
       auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
       if (m_callbacks.size() == 1)
         on_first_callback_added();
@@ -105,7 +108,7 @@ public:
    */
   void remove_callback(iterator it)
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     if (m_callbacks.size() == 1)
       on_removing_last_callback();
     m_callbacks.erase(it);
@@ -117,12 +120,12 @@ public:
    */
   void replace_callback(iterator it, T&& cb)
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     *m_callbacks.erase(it, it) = std::move(cb);
   }
   void replace_callbacks(impl&& cbs)
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     m_callbacks = std::move(cbs);
   }
 
@@ -147,7 +150,7 @@ public:
 
   disabled_callback disable_callback(iterator it)
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     disabled_callback dis{*this};
 
     // TODO should we also call on_removing_last_blah ?
@@ -162,7 +165,7 @@ public:
    */
   std::size_t callback_count() const
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     return m_callbacks.size();
   }
 
@@ -172,7 +175,7 @@ public:
    */
   bool callbacks_empty() const
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     return m_callbacks.empty();
   }
 
@@ -183,7 +186,7 @@ public:
   template <typename... Args>
   void send(Args&&... args)
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     for (auto& callback : m_callbacks)
     {
       if (callback)
@@ -196,7 +199,7 @@ public:
    */
   void callbacks_clear()
   {
-    std::lock_guard<std::mutex> lck{m_mutx};
+    lock_guard lck{m_mutx};
     if (!m_callbacks.empty())
       on_removing_last_callback();
     m_callbacks.clear();
@@ -228,6 +231,6 @@ protected:
 
 private:
   impl m_callbacks;
-  mutable std::mutex m_mutx;
+  mutable ossia::audio_spin_mutex m_mutx;
 };
 }

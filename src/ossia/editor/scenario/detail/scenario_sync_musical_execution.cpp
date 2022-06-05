@@ -17,7 +17,7 @@ sync_status scenario::trigger_sync_musical(
   {
     sync.m_evaluating = true;
     sync.end_trigger_request();
-    sync.entered_evaluation.send();
+    sync.callbacks.entered_evaluation();
   }
 
   if (sync.m_expression
@@ -160,7 +160,7 @@ sync_status scenario::process_this_musical(
     {
       sync.m_evaluating = false;
       sync.end_trigger_request();
-      sync.left_evaluation.send();
+      sync.callbacks.left_evaluation();
     }
 
     return sync_status::NOT_READY;
