@@ -102,7 +102,7 @@ struct token_request
   //! this is the amount of samples that we must process from the sound file during this tick
   constexpr physical_time physical_read_duration(double ratio) const noexcept
   {
-    return constexpr_floor(abs(date - prev_date).impl * ratio);
+    return constexpr_ceil(abs(date - prev_date).impl * ratio);
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
@@ -111,7 +111,7 @@ struct token_request
     //C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
-    return constexpr_floor(abs(date - prev_date).impl * ratio / speed);
+    return constexpr_ceil(abs(date - prev_date).impl * ratio / speed);
   }
 
   //! This is an upper bound on what we can write to a buffer.

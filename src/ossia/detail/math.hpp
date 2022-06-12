@@ -83,6 +83,13 @@ inline constexpr int64_t constexpr_floor(T val) noexcept
              : fval_int - 1));
 }
 
+template<typename T>
+inline constexpr int64_t constexpr_ceil(T f)
+{
+  const int64_t i = f;
+  return f > i ? i + 1 : i;
+}
+
 /**
  * @brief max function tailored for values
  */

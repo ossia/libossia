@@ -167,7 +167,7 @@ void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)
 
 void mix(const audio_vector& src_vec, audio_vector& sink_vec)
 {
-  if(src_vec.size() != 0 && sink_vec.size() == 0)
+  if(BOOST_UNLIKELY(src_vec.size() != 0 && sink_vec.size() == 0))
   {
     const auto channels = src_vec.size();
     audio_buffer_pool::set_channels(sink_vec, channels);
@@ -177,7 +177,7 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
     }
     return;
   }
-  else if(src_vec.size() == sink_vec.size())
+  else if(BOOST_LIKELY(src_vec.size() == sink_vec.size()))
   {
     for (std::size_t chan = 0, src_chans = src_vec.size();
          chan < src_chans;
@@ -193,8 +193,10 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
       {
         const std::size_t N = src.size();
 
-        if (sink.size() < N)
+        if (BOOST_UNLIKELY(sink.size() < N))
+        {
           sink.resize(N);
+        }
 
         auto src_p = src.data();
         auto sink_p = sink.data();
