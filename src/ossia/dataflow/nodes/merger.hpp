@@ -40,7 +40,9 @@ public:
   void
   run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    auto& out = m_outlets.back()->target<ossia::audio_port>()->get();
+    auto& op = *m_outlets.back()->target<ossia::audio_port>();
+    op.set_channels(2 * this->m_count);
+    auto& out = op.get();
     std::size_t cur = 0;
     for (int i = 0; i < m_count; i++)
     {
@@ -57,8 +59,17 @@ public:
           out[cur++] = in[1];
           break;
         default:
-          cur += 2;
+          out[cur++].resize(e.bufferSize());
+          out[cur++].resize(e.bufferSize());
           break;
+      }
+    }
+
+    for(auto& c : out)
+    {
+      if(c.size() < e.bufferSize())
+      {
+        c.resize(e.bufferSize());
       }
     }
   }
