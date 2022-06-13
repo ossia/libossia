@@ -130,6 +130,12 @@ void math_expression::register_symbol_table()
   impl->expr.register_symbol_table(impl->syms);
 }
 
+void math_expression::update_symbol_table()
+{
+  impl->expr.get_symbol_table(0) = impl->syms;
+  recompile();
+}
+
 bool math_expression::set_expression(const std::string& expr)
 {
   if (expr != impl->cur_expr_txt)
