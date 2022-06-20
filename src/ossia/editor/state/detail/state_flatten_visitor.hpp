@@ -111,6 +111,13 @@ struct vec_merger
 
   template <std::size_t N>
   ossia::state_element
+  operator()(float orig, std::array<float, N> incoming) const
+  {
+    return vec_merger{incoming_dest, existing_dest}(incoming, orig);
+  }
+
+  template <std::size_t N>
+  ossia::state_element
   operator()(std::array<float, N>& orig, float incoming) const
   {
     auto& existing_index = existing_dest.index;
@@ -138,7 +145,7 @@ struct vec_merger
       }
       else
       {
-        return {};
+        return ossia::message{existing_dest, orig};
       }
     }
   }
