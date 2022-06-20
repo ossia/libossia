@@ -1,4 +1,5 @@
 #include <ossia/math/math_expression.hpp>
+#include <ossia/math/safe_math.hpp>
 #include <ossia/detail/logger.hpp>
 #include <rnd/random.hpp>
 #include <PerlinNoise.hpp>

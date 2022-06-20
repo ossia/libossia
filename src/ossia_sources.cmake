@@ -58,6 +58,8 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_tuple.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/variant.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/safe_math.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/destination_qualifiers.hpp"
