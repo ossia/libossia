@@ -155,14 +155,17 @@ bool math_expression::has_variable(std::string_view var) const noexcept
 
 bool math_expression::recompile()
 {
+  impl->variables.clear();
+
   impl->valid = impl->parser.compile(impl->cur_expr_txt, impl->expr);
-  if (!impl->valid)
+  if (impl->valid)
+  {
+    exprtk::collect_variables(impl->cur_expr_txt, impl->variables);
+  }
+  else
   {
     ossia::logger().error("Error while parsing: {}", impl->parser.error());
   }
-
-  impl->variables.clear();
-  exprtk::collect_variables(impl->cur_expr_txt, impl->variables);
 
   return impl->valid;
 }

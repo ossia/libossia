@@ -7,6 +7,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/apply_type.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/audio_spin_mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/buffer_pool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
