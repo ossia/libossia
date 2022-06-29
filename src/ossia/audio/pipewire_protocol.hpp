@@ -302,6 +302,10 @@ struct pipewire_context
   {
     pending = 0;
     done = 0;
+
+    if(!core)
+      return;
+
     spa_hook core_listener;
 
     static constexpr struct pw_core_events core_events = {
