@@ -1,8 +1,10 @@
 #pragma once
 
-#include <memory>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/span.hpp>
+
+#include <memory>
+#include <string>
 
 namespace ossia
 {
