@@ -40,13 +40,11 @@ struct resampler
         break;
       }
       case audio_stretch_mode::RubberBandStandard:
-      {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::DefaultOptions, channels, fileSampleRate, date.impl);
-        break;
-      }
       case audio_stretch_mode::RubberBandPercussive:
+      case ossia::audio_stretch_mode::RubberBandStandardHQ:
+      case ossia::audio_stretch_mode::RubberBandPercussiveHQ:
       {
-        m_stretch.emplace<rubberband_stretcher>(RubberBand::RubberBandStretcher::PresetOption::PercussiveOptions, channels, fileSampleRate, date.impl);
+        m_stretch.emplace<rubberband_stretcher>(get_rubberband_preset(mode), channels, fileSampleRate, date.impl);
         break;
       }
     }

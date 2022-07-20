@@ -1,5 +1,6 @@
 #pragma once
 #if __has_include(<RubberBandStretcher.h>)
+#include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/audio_port.hpp>
@@ -9,15 +10,48 @@
 #include <iostream>
 namespace ossia
 {
+#if __has_include(<RubberBandStretcher.h>)
+static constexpr auto get_rubberband_preset(ossia::audio_stretch_mode mode)
+{
+  using opt_t = RubberBand::RubberBandStretcher::Option;
+  using preset_t = RubberBand::RubberBandStretcher::PresetOption;
+  uint32_t preset = opt_t::OptionProcessRealTime | opt_t::OptionThreadingNever;
+  switch(mode)
+  {
+    case ossia::audio_stretch_mode::RubberBandStandard:
+      break;
+
+    case ossia::audio_stretch_mode::RubberBandPercussive:
+      preset |= preset_t::PercussiveOptions;
+      break;
+
+    case ossia::audio_stretch_mode::RubberBandStandardHQ:
+      preset |= RubberBand::RubberBandStretcher::OptionEngineFiner;
+      preset |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+      break;
+
+    case ossia::audio_stretch_mode::RubberBandPercussiveHQ:
+      preset |= preset_t::PercussiveOptions;
+      preset |= RubberBand::RubberBandStretcher::OptionEngineFiner;
+      preset |= RubberBand::RubberBandStretcher::OptionPitchHighConsistency;
+      break;
+
+    default:
+      break;
+  }
+
+  return preset;
+}
+#endif
 
 struct rubberband_stretcher
 {
   rubberband_stretcher(
-      RubberBand::RubberBandStretcher::PresetOption opt,
+      uint32_t opt,
       std::size_t channels,
       std::size_t sampleRate,
       int64_t pos)
-    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, (uint32_t)RubberBand::RubberBandStretcher::OptionProcessRealTime | (uint32_t)opt)}
+    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, opt)}
     , next_sample_to_read{pos}
     , options{opt}
 
@@ -32,7 +66,7 @@ struct rubberband_stretcher
 
   std::unique_ptr<RubberBand::RubberBandStretcher> m_rubberBand;
   int64_t next_sample_to_read = 0;
-  RubberBand::RubberBandStretcher::PresetOption options{};
+  uint32_t options{};
 
   void transport(int64_t date)
   {

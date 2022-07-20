@@ -148,12 +148,10 @@ struct resampler
 #if __has_include(<RubberBandStretcher.h>)
       case ossia::audio_stretch_mode::RubberBandStandard:
       case ossia::audio_stretch_mode::RubberBandPercussive:
+      case ossia::audio_stretch_mode::RubberBandStandardHQ:
+      case ossia::audio_stretch_mode::RubberBandPercussiveHQ:
       {
-        using preset_t = RubberBand::RubberBandStretcher::PresetOption;
-        const auto preset = mode == audio_stretch_mode::RubberBandStandard
-            ? preset_t::DefaultOptions
-            : preset_t::PercussiveOptions;
-
+        const auto preset = get_rubberband_preset(mode);
         if(auto s = ossia::get_if<RubberbandStretcher>(&m_stretch); s && s->options == preset)
         {
           s->transport(date);
