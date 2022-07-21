@@ -8,12 +8,12 @@
 #if defined(__EMSCRIPTEN__)
 // TODO once we support asyncify
 #define ossia_rwlock_pause()
-#elif defined(_MSC_VER)
-#include <intrin.h>
-#define ossia_rwlock_pause() YieldProcessor()
-#elif defined(__x86_64__)
+#elif defined(__x86_64__) || defined(_M_X64)
 #include <immintrin.h>
 #define ossia_rwlock_pause() _mm_pause()
+#elif defined(_M_ARM64)
+#include <intrin.h>
+#define ossia_rwlock_pause() __yield()
 #elif defined(__i386__)
 #define ossia_rwlock_pause() __asm__ __volatile__("rep; nop")
 #elif defined(__ia64__)
@@ -23,8 +23,11 @@
 #elif defined(__sparc) || defined(__sparc__)
 #define ossia_rwlock_pause() __asm__ __volatile__("pause")
 #elif defined(__ppc__) || defined(_ARCH_PPC) || defined(_ARCH_PWR) \
-    || defined(_ARCH_PWR2) || defined(_POWER)
+|| defined(_ARCH_PWR2) || defined(_POWER)
 #define ossia_rwlock_pause() __asm__ volatile("or 27,27,27")
+#elif defined(_MSC_VER)
+#include <windows.h>
+#define ossia_rwlock_pause() YieldProcessor()
 #else
 #define ossia_rwlock_pause()
 #endif
