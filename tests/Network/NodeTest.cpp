@@ -130,51 +130,50 @@ TEST_CASE ("test_path", "test_path")
 #if !defined(__APPLE__)
   {
     auto path = device("foo") / "bar" / any_instance("baz");
-    REQUIRE(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bar/baz", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/", path));
+    REQUIRE(!ossia::traversal::match("foo:/bob/baz.2", path));
+    REQUIRE(!ossia::traversal::match("foo:/bob/bim/blurg/baz.2", path));
   }
 
   {
     auto path = device("foo") / any_node() / any_instance("baz");
-    REQUIRE(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bar/baz", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bob/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/", path));
+    REQUIRE(!ossia::traversal::match("foo:/bob/bim/blurg/baz.2", path));
   }
 
   {
     auto path = device("foo") / any_path() / any_instance("baz");
-    REQUIRE(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bar/baz", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bob/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bob/bim/blurg/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/", path));
   }
 
   {
     auto path = device("foo") / any_between{"bob", "bar"} / any_instance("baz");
-    REQUIRE(std::regex_match("foo:/bar/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bob/baz.2", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bin/baz.2", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bob/bim/blurg/baz.2", std::regex(path.address)));
-    REQUIRE(std::regex_match("foo:/bar/baz", std::regex(path.address)));
-    REQUIRE(!std::regex_match("foo:/bar/baz/", std::regex(path.address)));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bob/baz.2", path));
+    REQUIRE(!ossia::traversal::match("foo:/bin/baz.2", path));
+    REQUIRE(!ossia::traversal::match("foo:/bob/bim/blurg/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/", path));
   }
 
   {
     auto path = any_path() / any_instance("baz");
     std::cerr << "regex: " << path;
-    auto regex = std::regex(path.address);
-    REQUIRE(std::regex_match("foo:/bar/baz.2", regex));
-    REQUIRE(std::regex_match("blob:/baz.2", regex));
-    REQUIRE(!std::regex_match("bin/baz.2", regex));
-    REQUIRE(std::regex_match("foo:/bob/bim/blurg/baz.2", regex));
-    REQUIRE(!std::regex_match("foo:/bar/baz/azeaze", regex));
-    REQUIRE(!std::regex_match("foo:/bar/baz/", regex));
+    REQUIRE(ossia::traversal::match("foo:/bar/baz.2", path));
+    REQUIRE(ossia::traversal::match("blob:/baz.2", path));
+    REQUIRE(!ossia::traversal::match("bin/baz.2", path));
+    REQUIRE(ossia::traversal::match("foo:/bob/bim/blurg/baz.2", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/azeaze", path));
+    REQUIRE(!ossia::traversal::match("foo:/bar/baz/", path));
   }
 #endif
 }

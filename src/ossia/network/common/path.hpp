@@ -258,6 +258,9 @@ OSSIA_EXPORT bool match(
 //! Convert ossia regex syntax to std::regex
 OSSIA_EXPORT std::string substitute_characters(const std::string& path);
 
+//! Only useful for tests
+OSSIA_EXPORT bool match(std::string_view address, const regex_path::path_element& e);
+
 }
 }
 

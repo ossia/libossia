@@ -13,6 +13,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       rapidfuzz-cpp
       rapidjson
       readerwriterqueue
+      re2
       rnd
       Servus
       SmallFunction
@@ -98,6 +99,9 @@ endif()
 add_library(boost INTERFACE IMPORTED)
 set_property(TARGET boost PROPERTY
              INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
+
+set(RE2_BUILD_TESTING 0)
+add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/re2" EXCLUDE_FROM_ALL)
 
 if(OSSIA_PROTOCOL_MIDI)
   set(LIBREMIDI_EXAMPLES OFF CACHE "" INTERNAL)

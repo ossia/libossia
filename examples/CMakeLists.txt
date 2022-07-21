@@ -106,7 +106,6 @@ if(OSSIA_PROTOCOL_OSCQUERY)
 endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
-
   ossia_add_example(joystick "${CMAKE_CURRENT_SOURCE_DIR}/Network/joystick/joystick.cpp")
 endif()
 

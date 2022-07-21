@@ -473,7 +473,6 @@ TEST_CASE ("test_match_range", "test_match_range")
       auto addresses = to_string(match);
       debug(match);
       for(int i = start; i <= 25; i++) {
-        std::cerr << "start " << start << " ; i" << i;
         REQUIRE(ossia::contains(addresses, "/foo." + std::to_string(i)));
       }
       REQUIRE((int)match_set.size() == (25 - start + 1));
