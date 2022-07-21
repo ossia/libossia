@@ -13,14 +13,18 @@
 #include <ossia/detail/algorithms.hpp>
 #include <tsl/hopscotch_set.h>
 
-#include <iostream>
+#include <re2/re2.h>
 #include <regex>
 
-namespace ossia
-{
+#include <iostream>
 
-namespace traversal
+namespace ossia::traversal
 {
+using rexp = std::shared_ptr<re2::RE2>;
+static inline bool rexp_match(std::string_view m, const rexp& r)
+{
+  return re2::RE2::FullMatch(m, *r);
+}
 
 void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
 {
@@ -86,12 +90,12 @@ void get_all_children(std::vector<ossia::net::node_base*>& vec)
 }
 
 void match_device_with_regex(
-    std::vector<ossia::net::node_base*>& vec, const std::regex& r)
+    std::vector<ossia::net::node_base*>& vec, const rexp& r)
 {
   for (auto it = vec.cbegin(); it != vec.cend();)
   {
     const auto& name = (*it)->get_device().get_name();
-    if (!std::regex_match(name, r))
+    if (!rexp_match(name, r))
       it = vec.erase(it);
     else
       ++it;
@@ -111,7 +115,7 @@ void match_device_simple(
 }
 
 void match_with_regex(
-    std::vector<ossia::net::node_base*>& vec, const std::regex& r)
+    std::vector<ossia::net::node_base*>& vec, const rexp& r)
 {
   ossia::small_vector<ossia::net::node_base*, 16> old(vec.begin(), vec.end());
   vec.clear();
@@ -120,7 +124,7 @@ void match_with_regex(
   {
     for (auto& cld : node->children())
     {
-      if (std::regex_match(cld->get_name(), r))
+      if (rexp_match(cld->get_name(), r))
       {
         vec.push_back(cld.get());
       }
@@ -154,7 +158,7 @@ struct regex_cache
     return c;
   }
 
-  ossia::string_map<std::regex> map;
+  ossia::string_map<rexp> map;
   std::mutex mutex;
 };
 
@@ -191,7 +195,7 @@ std::string substitute_characters(const std::string& part)
   return res;
 }
 
-std::regex make_regex(std::string& part)
+rexp make_regex(std::string& part)
 {
   // Perform the various regex-like replacements
   // note: seriously, don't do this with regex if possible
@@ -200,7 +204,7 @@ std::regex make_regex(std::string& part)
   res += substitute_characters(part);
   res += "$";
 
-  return std::regex{res};
+  return std::make_shared<re2::RE2>(res);
 }
 
 constexpr bool is_regex(std::string_view v)
@@ -237,9 +241,8 @@ void add_device_part(std::string part, path& p)
     {
       std::string orig = part;
 
-      std::regex r = make_regex(part);
-      p.child_functions.push_back([=](auto& v) { match_device_with_regex(v, r); });
-      map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+      auto it = map.map.emplace(std::move(orig), make_regex(part));
+      p.child_functions.push_back([r = it.first->second] (auto& v) { match_device_with_regex(v, r); });
     }
   }
 }
@@ -268,11 +271,9 @@ void add_relative_path(std::string& part, path& p)
       else
       {
         std::string orig = part;
+        auto it = map.map.emplace(std::move(orig), make_regex(part));
 
-        std::regex r = make_regex(part);
-
-        p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
-        map.map.insert(std::make_pair(std::move(orig), std::move(r)));
+        p.child_functions.push_back([r = it.first->second](auto& v) { match_with_regex(v, r); });
       }
     }
   }
@@ -371,6 +372,9 @@ bool match(
 }
 
 }
+
+namespace ossia
+{
 
 std::ostream& regex_path::operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
 {

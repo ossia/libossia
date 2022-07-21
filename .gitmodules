@@ -118,3 +118,6 @@
 [submodule "3rdparty/span"]
 	path = 3rdparty/span
 	url = https://github.com/tcbrindle/span
+[submodule "3rdparty/re2"]
+	path = 3rdparty/re2
+	url = https://github.com/google/re2
