@@ -282,7 +282,7 @@ install(
       COMPONENT Devel
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/GSL/include/gsl"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/span/include/tcb"
         DESTINATION include
         COMPONENT Devel
         MESSAGE_NEVER

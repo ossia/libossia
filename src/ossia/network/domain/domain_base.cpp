@@ -86,7 +86,7 @@ domain make_domain(std::vector<std::string> s)
   return domain{std::move(v)};
 }
 
-domain make_domain(gsl::span<const char*> span)
+domain make_domain(tcb::span<const char*> span)
 {
   domain_base<std::string> v;
   for(std::size_t i = 0, N = span.size(); i < N; i++)

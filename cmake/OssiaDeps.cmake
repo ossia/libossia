@@ -7,7 +7,6 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       flat_hash_map
       Flicks
       fmt
-      GSL
       hopscotch-map
       mdspan
       nano-signal-slot
@@ -17,6 +16,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       rnd
       Servus
       SmallFunction
+      span
       spdlog
       mparkvariant
       verdigris

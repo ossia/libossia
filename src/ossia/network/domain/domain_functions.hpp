@@ -40,7 +40,7 @@ OSSIA_EXPORT
 domain make_domain(const ossia::value& lhs, const ossia::value& rhs);
 
 OSSIA_EXPORT domain make_domain(std::vector<std::string> s);
-OSSIA_EXPORT domain make_domain(gsl::span<const char*>);
+OSSIA_EXPORT domain make_domain(tcb::span<const char*>);
 
 OSSIA_EXPORT domain make_domain_from_osc(
     const ossia::small_vector<ossia::value, 2>& val, const ossia::value& cur);

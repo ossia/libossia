@@ -142,7 +142,6 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/GSL/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat>
@@ -152,6 +151,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rnd/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/PerlinNoise>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>

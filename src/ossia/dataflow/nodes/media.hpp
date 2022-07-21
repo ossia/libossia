@@ -17,9 +17,9 @@ using audio_vector = std::vector<audio_channel>;
 using audio_sample = float;
 using audio_array = ossia::small_vector<ossia::pod_vector<audio_sample>, 2>;
 template<typename T>
-using audio_span = ossia::small_vector<gsl::span<const T>, 8>;
+using audio_span = ossia::small_vector<tcb::span<const T>, 8>;
 template<typename T>
-using mutable_audio_span = ossia::small_vector<gsl::span<T>, 8>;
+using mutable_audio_span = ossia::small_vector<tcb::span<T>, 8>;
 
 struct audio_data
 {
