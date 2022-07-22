@@ -42,6 +42,24 @@ ws_generic_client_protocol::ws_generic_client_protocol(
                 *m_device, ret.value<QJSValue>());
 
             m_websocket->open(addr);
+
+            QObject::connect(
+                m_websocket, &QWebSocket::connected, this,
+                [=] {
+                  QVariant ret;
+                  QMetaObject::invokeMethod(
+                      m_object, "onConnected", Q_RETURN_ARG(QVariant, ret));
+                  apply_reply(ret.value<QJSValue>());
+            });
+            QObject::connect(
+                m_websocket, &QWebSocket::disconnected, this,
+                [=] {
+                  QVariant ret;
+                  QMetaObject::invokeMethod(
+                      m_object, "onDisonnected", Q_RETURN_ARG(QVariant, ret));
+                  apply_reply(ret.value<QJSValue>());
+            });
+
             QObject::connect(
                 m_websocket, &QWebSocket::binaryMessageReceived, this,
                 [=](const QByteArray& arr) {
