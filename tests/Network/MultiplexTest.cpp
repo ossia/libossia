@@ -4,6 +4,7 @@
 #include <catch.hpp>
 
 #include <iostream>
+#include <thread>
 
 #include <ossia/context.hpp>
 #include <ossia/detail/config.hpp>
@@ -106,7 +107,7 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
 
 TEST_CASE ("test_oscquery_osc_large", "test_oscquery_osc_large")
 {
-  uint16_t shared = 9996;
+  uint16_t shared = 9997;
   auto ctx = std::make_shared<ossia::net::network_context>();
   using conf = ossia::net::osc_protocol_configuration;
 
@@ -137,6 +138,93 @@ TEST_CASE ("test_oscquery_osc_large", "test_oscquery_osc_large")
   std::string s(1048576, '*');
   bip->push_value(s);
   ctx->context.run_for(std::chrono::milliseconds(100));
+}
+
+TEST_CASE ("test_multiplex_remove", "test_multiplex_remove")
+{
+  uint16_t shared = 9998;
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  using conf = ossia::net::osc_protocol_configuration;
+
+  auto osc = ossia::net::make_osc_protocol(
+      ctx,
+      {
+        .mode = conf::HOST,
+        .version = conf::OSC1_1,
+        .transport = ossia::net::udp_configuration {{
+          .local = std::nullopt,
+          .remote = ossia::net::send_socket_configuration {{"127.0.0.1", shared}}
+        }}
+      }
+      );
+  auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
+
+  auto protou = std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery);
+  //get the pointer so we can use the protocol after using it with the device
+  //is there a better way??
+  auto proto = protou.get();
+  generic_device device { std::move(protou), "my_device" };
+
+  device.set_echo(true);
+
+  ossia::net::generic_device remote{
+    ossia::net::make_osc_protocol(
+        ctx,
+        {
+          .mode = conf::MIRROR,
+          .version = conf::OSC1_1,
+          .transport = ossia::net::udp_configuration {{
+            .local = ossia::net::receive_socket_configuration {{"0.0.0.0", shared}},
+            .remote = std::nullopt
+          }}
+        }
+        ),
+      "test_osc"};
+
+
+  auto& bi = find_or_create_node(device, "/foo/bi");
+  auto bip = bi.create_parameter(ossia::val_type::INT);
+  bi.set(access_mode_attribute{}, access_mode::BI);
+  bool run = true;
+
+  //updating from another thread should  not crash
+  auto handle = std::thread([&run, bip]() mutable {
+      int v = 0;
+      while (run) {
+        bip->push_value(v++);
+      }
+  });
+
+  for (int i = 0; i < 10; i++) {
+    ctx->context.run_for(std::chrono::milliseconds(1));
+    for (auto& p: proto->get_protocols()) {
+      //i just want to remove the OSC protocol, but it is easier to match on not oscquery
+      auto o = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(p.get());
+      if (!o) {
+        proto->stop_expose_to(*p);
+        break;
+      }
+    }
+
+    //create a new OSC connection
+    using conf = ossia::net::osc_protocol_configuration;
+    auto o = ossia::net::make_osc_protocol(
+        ctx,
+        {
+          .mode = conf::HOST,
+          .version = conf::OSC1_1,
+          .framing = conf::SLIP,
+          .transport = ossia::net::udp_configuration {{
+            .local = std::nullopt,
+            .remote = ossia::net::send_socket_configuration {{"127.0.0.1", shared}}
+          }}
+        }
+      );
+    proto->expose_to(std::move(o));
+  }
+
+  run = false;
+  handle.join();
 }
 
 #endif
