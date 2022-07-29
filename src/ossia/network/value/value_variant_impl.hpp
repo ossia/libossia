@@ -16974,7 +16974,7 @@ inline value_variant_type::value_variant_type(const std::vector<ossia::value>& v
   new (&m_impl.m_value8) std::vector<ossia::value>(v);
 }
 
-inline value_variant_type::value_variant_type(std::vector<ossia::value>&& v) : m_type{Type8}
+inline value_variant_type::value_variant_type(std::vector<ossia::value>&& v) noexcept : m_type{Type8}
 {
   new (&m_impl.m_value8) std::vector<ossia::value>(std::move(v));
 }
@@ -17024,7 +17024,7 @@ inline value_variant_type::value_variant_type(const value_variant_type& other) :
   }
 }
 
-inline value_variant_type::value_variant_type(value_variant_type&& other) : m_type{other.m_type}
+inline value_variant_type::value_variant_type(value_variant_type&& other) noexcept : m_type{other.m_type}
 {
   switch (m_type)
   {
@@ -17149,7 +17149,7 @@ inline value_variant_type& value_variant_type::operator=(const value_variant_typ
   return *this;
 }
 
-inline value_variant_type& value_variant_type::operator=(value_variant_type&& other)
+inline value_variant_type& value_variant_type::operator=(value_variant_type&& other) noexcept
 {
   if(m_type != other.m_type)
   {

@@ -162,7 +162,7 @@ public:
 
       bool ok = start + m_start_offset_samples < file_duration;
       if(ok)
-        ok &= this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
+        ok = ok && this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);
 
       if(ok)
       {

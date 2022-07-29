@@ -21,10 +21,10 @@ struct formatter<oscpack::ReceivedMessage>
   template <typename FormatContext>
   auto format(const oscpack::ReceivedMessage& m, FormatContext &ctx) {
     auto out = ctx.out();
-    out = format_to(out, "{}", m.AddressPattern());
+    out = fmt::format_to(out, "{}", m.AddressPattern());
     if(m.ArgumentCount() > 0)
     {
-      out = format_to(out, ": ");
+      out = fmt::format_to(out, ": ");
       auto buf = fmt::basic_memory_buffer<char>();
       for(auto it = m.ArgumentsBegin(); it != m.ArgumentsEnd(); ++it)
       {
@@ -35,7 +35,8 @@ struct formatter<oscpack::ReceivedMessage>
         std::basic_ostream<char> output{&format_buf};
         output << *it;
 
-        out = format_to(out, "{} ", std::string_view{buf.data(), buf.size()});
+        out = fmt::format_to(
+            out, "{} ", std::string_view {buf.data(), buf.size()});
       }
     }
     return ctx.out();

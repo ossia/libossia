@@ -180,10 +180,8 @@ void transitive_closure(
           adj.push_back(t);
       }
     }
-    std::sort(adj.begin(), adj.end());
-    auto di = std::unique(adj.begin(), adj.end());
-    if (di != adj.end())
-      adj.erase(di, adj.end());
+
+    ossia::remove_duplicates(adj);
     for (auto i = adj.begin(); i != adj.end(); ++i)
     {
       add_edge(s, *i, CG);

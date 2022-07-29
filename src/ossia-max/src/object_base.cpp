@@ -5,6 +5,7 @@
 #include <ossia/preset/preset.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -99,7 +100,7 @@ void object_base::get_hierarchy()
   }
 
   // remove duplicates
-  vec.erase( std::unique( vec.begin(), vec.end() ), vec.end() );
+  ossia::remove_duplicates(vec);
 }
 
 void object_base::highlight()

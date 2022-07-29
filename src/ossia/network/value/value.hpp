@@ -122,12 +122,12 @@ public:
   value_variant_type(const std::string& v);
   value_variant_type(std::string&& v);
   value_variant_type(const std::vector<ossia::value>& v);
-  value_variant_type(std::vector<ossia::value>&& v);
+  value_variant_type(std::vector<ossia::value>&& v) noexcept;
   value_variant_type(char v);
   value_variant_type(const value_variant_type& other);
-  value_variant_type(value_variant_type&& other);
+  value_variant_type(value_variant_type&& other) noexcept;
   value_variant_type& operator=(const value_variant_type& other);
-  value_variant_type& operator=(value_variant_type&& other);
+  value_variant_type& operator=(value_variant_type&& other) noexcept;
 };
 using value_variant = value_variant_type;
 

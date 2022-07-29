@@ -242,6 +242,15 @@ void remove_duplicates(T& vec) {
   vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
 
+template<typename T, typename Comp>
+void remove_duplicates(T& vec, Comp comparator) {
+  if(vec.size() <= 1)
+    return;
+
+  std::sort(vec.begin(), vec.end(), comparator);
+  vec.erase(std::unique(vec.begin(), vec.end(), comparator), vec.end());
+}
+
 template<typename Container, typename K, typename Comp, typename... Args>
 auto emplace_sorted(Container& vec, const K& k, Comp&& comp, Args&&... args)
   -> decltype(auto)

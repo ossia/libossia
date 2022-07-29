@@ -51,7 +51,7 @@ struct spline
 
   std::array<tsReal, N> evaluate(double pos) const noexcept
   {
-    std::array<tsReal, N> res;
+    std::array<tsReal, N> res = {};
 
     tsStatus status;
     if (ts_int_bspline_eval_woa(&m_spline, pos, &m_net, &status) != 0)

@@ -40,11 +40,11 @@ struct formatter<std::optional<T>>
   {
     if(n)
     {
-      return format_to(ctx.out(), "{}", *n);
+      return fmt::format_to(ctx.out(), "{}", *n);
     }
     else
     {
-      return format_to(ctx.out(), "none");
+      return fmt::format_to(ctx.out(), "none");
     }
   }
 };
