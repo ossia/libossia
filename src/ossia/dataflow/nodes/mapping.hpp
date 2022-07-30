@@ -57,11 +57,15 @@ private:
     for (auto& tv : ip.get_data())
     {
       if (tv.value.valid())
+      try
       {
         auto v = ossia::apply(
             ossia::detail::mapper_compute_visitor{}, tv.value, m_drive.v);
 
         op.write_value(std::move(v), tv.timestamp);
+      }
+      catch (...)
+      {
       }
     }
   }
