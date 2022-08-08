@@ -363,8 +363,7 @@ void device::get_oscq_clients(device* x)
   {
     if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
     {
-      for(const ossia::oscquery::oscquery_client& c : oscq->get_clients())
-      {
+      oscq->for_each_client([&] (auto& c) {
         std::array<t_atom, 2> atoms;
         SETSYMBOL(&atoms[0], gensym(c.client_ip.c_str()));
         if(c.sender)
@@ -374,9 +373,8 @@ void device::get_oscq_clients(device* x)
           SETFLOAT(&atoms[1], -1);
         }
 
-
         res.push_back(atoms);
-      }
+      });
     }
   }
 

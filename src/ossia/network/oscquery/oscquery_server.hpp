@@ -76,7 +76,14 @@ public:
     return m_wsPort;
   }
 
-  const clients& get_clients() const noexcept { return m_clients; }
+  template<typename F>
+  void for_each_client(F&& f) const noexcept(noexcept(f(std::declval<const oscquery_client&>())))
+  {
+    std::lock_guard<std::mutex> lck{m_clientsMutex};
+    for(auto& clt : m_clients) {
+      f(*clt);
+    }
+  }
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
@@ -138,7 +145,7 @@ private:
   std::thread m_serverThread;
 
   // To lock m_clients
-  mutex_t m_clientsMutex;
+  mutable mutex_t m_clientsMutex;
 
   // The local ports
   uint16_t m_oscPort{};
