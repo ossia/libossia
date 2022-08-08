@@ -7,6 +7,6 @@ if(OSSIA_COVERAGE)
       "${CMAKE_COMMAND}"
       "/usr;/opt;libossia/3rdparty;moc_;ui_;.moc;qrc_"
       coverage
-      "--build;.;--target;ExperimentalTest"
+      "--build;.;--target;test"
   )
 endif()
