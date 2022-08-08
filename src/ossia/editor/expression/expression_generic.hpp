@@ -15,7 +15,7 @@ struct OSSIA_EXPORT expression_generic_base
 {
   virtual ~expression_generic_base();
   virtual void update() = 0;
-  virtual bool evaluate() const = 0;
+  [[nodiscard]] virtual bool evaluate() const = 0;
   virtual void on_first_callback_added(expression_generic&) = 0;
   virtual void on_removing_last_callback(expression_generic&) = 0;
 };

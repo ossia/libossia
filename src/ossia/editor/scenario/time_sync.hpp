@@ -97,10 +97,10 @@ public:
  \details a #time_sync with na previous #time_intervals have a date equals to
  0.
  \return #TimeValue the date */
-  time_value get_date() const noexcept;
+  [[nodiscard]] time_value get_date() const noexcept;
 
   /*! get the expression of the #time_sync */
-  const expression& get_expression() const noexcept;
+  [[nodiscard]] const expression& get_expression() const noexcept;
 
   /*! set the expression of the #time_sync
  \details setting the expression to ExpressionTrue will defer the evaluation
@@ -132,14 +132,15 @@ public:
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  const ptr_container<time_event>& get_time_events() const noexcept
+  [[nodiscard]] const ptr_container<time_event>&
+  get_time_events() const noexcept
   {
     return m_timeEvents;
   }
 
   // Interface to be used for set-up by other time processes
-  bool is_observing_expression() const noexcept;
-  bool is_evaluating() const noexcept;
+  [[nodiscard]] bool is_observing_expression() const noexcept;
+  [[nodiscard]] bool is_evaluating() const noexcept;
 
   /*! evaluate all #time_event's to make them to happen or to dispose them
  \return boolean true if the operation succeeded */
@@ -153,10 +154,10 @@ public:
    * This is only relevant for subgraphs not connected
    * to the root of a ossia::scenario
    */
-  bool is_autotrigger() const noexcept;
+  [[nodiscard]] bool is_autotrigger() const noexcept;
   void set_autotrigger(bool) noexcept;
 
-  bool is_start() const noexcept;
+  [[nodiscard]] bool is_start() const noexcept;
   void set_start(bool) noexcept;
 
 
@@ -171,7 +172,10 @@ public:
   void cleanup();
 
   void mute(bool b);
-  bool muted() const noexcept { return m_muted; }
+  [[nodiscard]] bool muted() const noexcept
+  {
+    return m_muted;
+  }
 
   /*! Execution callbacks
    *
@@ -185,7 +189,7 @@ public:
     DONE_TRIGGERED,
     DONE_MAX_REACHED
   };
-  status get_status() const noexcept
+  [[nodiscard]] status get_status() const noexcept
   {
     return m_status;
   }
@@ -194,11 +198,11 @@ public:
   {
     m_sync_rate = syncRatio;
   }
-  double get_sync_rate() const noexcept
+  [[nodiscard]] double get_sync_rate() const noexcept
   {
     return m_sync_rate;
   }
-  bool has_sync_rate() const noexcept
+  [[nodiscard]] bool has_sync_rate() const noexcept
   {
     return m_sync_rate > 0;
   }
@@ -208,17 +212,17 @@ public:
     m_trigger_date = v;
     callbacks.trigger_date_fixed(v);
   }
-  time_value get_trigger_date() const noexcept
+  [[nodiscard]] time_value get_trigger_date() const noexcept
   {
     return m_trigger_date;
   }
-  bool has_trigger_date() const noexcept
+  [[nodiscard]] bool has_trigger_date() const noexcept
   {
     return !m_trigger_date.infinite();
   }
 
   void set_is_being_triggered(bool v) noexcept;
-  bool is_being_triggered() const noexcept
+  [[nodiscard]] bool is_being_triggered() const noexcept
   {
     return m_is_being_triggered;
   }

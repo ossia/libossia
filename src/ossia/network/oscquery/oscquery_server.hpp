@@ -31,6 +31,7 @@ class websocket_server;
 namespace oscquery
 {
 struct oscquery_client;
+using clients = std::vector<std::unique_ptr<oscquery_client>>;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base
@@ -75,7 +76,7 @@ public:
     return m_wsPort;
   }
 
-  const std::vector<oscquery_client>& get_clients() const noexcept { return m_clients; }
+  const clients& get_clients() const noexcept { return m_clients; }
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
@@ -129,7 +130,7 @@ private:
   net::listened_parameters m_listening;
 
   // The clients connected to this server
-  std::vector<oscquery_client> m_clients;
+  clients m_clients TS_GUARDED_BY(m_clientsMutex);
 
   ossia::net::device_base* m_device{};
 

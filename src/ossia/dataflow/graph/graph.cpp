@@ -255,6 +255,11 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
       }
       i++;
     }
+    void operator()(const ossia::geometry_port& p) const noexcept
+    {
+      // logger.log(spdlog::level::debug, "input {} (geometry)");
+      i++;
+    }
 
     void operator()() const noexcept
     {
@@ -307,6 +312,11 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
             break;
         }
       }
+      i++;
+    }
+    void operator()(const ossia::geometry_port& p) const noexcept
+    {
+      // logger.log(spdlog::level::debug, "output {} (geometry)");
       i++;
     }
     void operator()() const noexcept

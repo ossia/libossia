@@ -434,8 +434,8 @@ struct OSSIA_EXPORT graph_util
 
 struct OSSIA_EXPORT graph_base : graph_interface
 {
-  const std::vector<ossia::graph_node*>& get_nodes() const
-      noexcept final override
+  [[nodiscard]] const std::vector<ossia::graph_node*>&
+  get_nodes() const noexcept final override
   {
     return m_node_list;
   }

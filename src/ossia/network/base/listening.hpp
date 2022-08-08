@@ -100,7 +100,7 @@ public:
 
 private:
   mutable mutex_t m_mutex;
-  map_type m_map;
+  map_type m_map TS_GUARDED_BY(m_mutex);
 };
 
 namespace net

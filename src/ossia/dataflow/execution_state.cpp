@@ -62,6 +62,13 @@ struct local_pull_visitor
     return false;
   }
 
+  [[noreturn]]
+  bool operator()(geometry_port& val) const
+  {
+    assert(false);
+    return false;
+  }
+
   bool operator()() const
   {
     return false;
@@ -125,6 +132,12 @@ struct global_pull_visitor
     }
   }
 
+  [[noreturn]]
+  void operator()(geometry_port& val) const
+  {
+    assert(false);
+  }
+
   void operator()() const
   {
   }
@@ -185,6 +198,12 @@ struct global_pull_node_visitor
         }
       }
     }
+  }
+
+  [[noreturn]]
+  void operator()(geometry_port& val) const
+  {
+    assert(false);
   }
 
   void operator()() const

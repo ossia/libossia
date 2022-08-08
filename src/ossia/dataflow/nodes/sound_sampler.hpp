@@ -18,12 +18,12 @@ struct sound_sampler
     upmix = v;
   }
 
-  std::size_t channels() const
+  [[nodiscard]] std::size_t channels() const
   {
     return m_data.size();
   }
 
-  std::size_t duration() const
+  [[nodiscard]] std::size_t duration() const
   {
     return m_data.empty() ? 0 : m_data[0].size();
   }

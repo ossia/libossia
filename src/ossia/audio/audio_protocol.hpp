@@ -34,7 +34,7 @@ public:
   void register_parameter(virtual_audio_parameter& p);
   void unregister_parameter(virtual_audio_parameter& p);
 
-  ossia::net::device_base& get_device() const
+  [[nodiscard]] ossia::net::device_base& get_device() const
   {
     return *m_dev;
   }

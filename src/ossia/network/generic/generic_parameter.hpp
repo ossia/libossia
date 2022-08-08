@@ -32,7 +32,7 @@ protected:
   ossia::bounding_mode m_boundingMode{};
 
   mutable mutex_t m_valueMutex;
-  ossia::value m_value;
+  ossia::value m_value TS_GUARDED_BY(m_valueMutex);
 
   ossia::domain m_domain;
 

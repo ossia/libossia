@@ -22,21 +22,22 @@ class state;
 struct OSSIA_EXPORT exec_state_facade
 {
   ossia::execution_state* impl{};
-  int sampleRate() const noexcept;
-  int bufferSize() const noexcept;
-  double modelToSamples() const noexcept;
-  double samplesToModel() const noexcept;
-  int64_t samplesSinceStart() const noexcept;
-  double startDate() const noexcept;
-  double currentDate() const noexcept;
-  ossia::net::node_base* find_node(std::string_view name) const noexcept;
+  [[nodiscard]] int sampleRate() const noexcept;
+  [[nodiscard]] int bufferSize() const noexcept;
+  [[nodiscard]] double modelToSamples() const noexcept;
+  [[nodiscard]] double samplesToModel() const noexcept;
+  [[nodiscard]] int64_t samplesSinceStart() const noexcept;
+  [[nodiscard]] double startDate() const noexcept;
+  [[nodiscard]] double currentDate() const noexcept;
+  [[nodiscard]] ossia::net::node_base*
+  find_node(std::string_view name) const noexcept;
 
   struct sample_timings {
     int64_t start_sample;
     int64_t length;
   };
 
-  sample_timings timings(const token_request& t) const noexcept;
+  [[nodiscard]] sample_timings timings(const token_request& t) const noexcept;
 
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
   void insert(ossia::net::parameter_base& dest, typed_value&& v);

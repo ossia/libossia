@@ -83,7 +83,7 @@ struct slip_framing_socket : ossia::net::serial_socket<slip_framing>
 struct line_framing_socket : ossia::net::serial_socket<line_framing>
 { using serial_socket::serial_socket; };
 
-using framed_serial_socket = ossia::variant<
+using framed_serial_socket = ossia::slow_variant<
   no_framing_socket,
   size_framing_socket,
   slip_framing_socket,

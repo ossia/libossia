@@ -509,4 +509,14 @@ value_vector<ossia::timed_value>& value_port::get_data()
   return data;
 }
 
+
+
+
+void geometry_port::clear()
+{
+
+}
+
+
+
 }

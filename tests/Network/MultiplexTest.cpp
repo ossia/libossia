@@ -63,8 +63,8 @@ TEST_CASE ("test_oscquery_osc_out", "test_oscquery_osc_out")
       "test_osc"};
 
 
-  std::string address; 
-  ossia::value recv; 
+  std::string address;
+  ossia::value recv;
   auto on_server_message = [&] (const std::string& s, const ossia::value& v) {
     address = s;
     recv = v;
@@ -131,7 +131,8 @@ TEST_CASE ("test_oscquery_osc_large", "test_oscquery_osc_large")
 
   device.set_echo(true);
 
-  //very large should not crash
+  // very large should not crash. It will error, though, since
+  // we likely hit UDP buffer limits
   auto& bi = find_or_create_node(device, "/foo/bi");
   auto bip = bi.create_parameter(ossia::val_type::STRING);
   bi.set(access_mode_attribute{}, access_mode::BI);

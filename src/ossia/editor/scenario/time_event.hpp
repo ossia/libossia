@@ -76,7 +76,8 @@ public:
 
   void add_time_process(std::shared_ptr<time_process>);
   void remove_time_process(time_process*);
-  const std::vector<std::shared_ptr<time_process>>& get_time_processes() const
+  [[nodiscard]] const std::vector<std::shared_ptr<time_process>>&
+  get_time_processes() const
   {
     return m_processes;
   }
@@ -85,13 +86,13 @@ public:
 
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
-  time_sync& get_time_sync() const;
+  [[nodiscard]] time_sync& get_time_sync() const;
 
   void set_time_sync(time_sync&);
 
   /*! get the expression of the event
   \return std::shared_ptr<expression> */
-  const expression& get_expression() const;
+  [[nodiscard]] const expression& get_expression() const;
 
   /*! set the expression of the event
    \param std::shared_ptr<expression>
@@ -100,13 +101,13 @@ public:
 
   /*! get the status of the event
    \return #Status */
-  status get_status() const;
+  [[nodiscard]] status get_status() const;
 
   /**
    * @brief getOffsetValue Returns the value of the condition if
    * we are offseting past this time event.
    */
-  offset_behavior get_offset_behavior() const;
+  [[nodiscard]] offset_behavior get_offset_behavior() const;
 
   /**
    * @brief setOffsetValue Sets the value of the condition if we are offseting
@@ -123,7 +124,8 @@ public:
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_interval>& previous_time_intervals() const
+  [[nodiscard]] const ptr_container<time_interval>&
+  previous_time_intervals() const
   {
     return m_previous_time_intervals;
   }
@@ -137,7 +139,7 @@ public:
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */
-  const ptr_container<time_interval>& next_time_intervals() const
+  [[nodiscard]] const ptr_container<time_interval>& next_time_intervals() const
   {
     return m_next_time_intervals;
   }

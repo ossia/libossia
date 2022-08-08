@@ -41,7 +41,7 @@ public:
   ossia::float_vector values;
   ossia::time_value dur{};
 
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Step";
   }

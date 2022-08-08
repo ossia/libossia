@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/geometry_port.hpp>
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/detail/nullable_variant.hpp>

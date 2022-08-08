@@ -13,14 +13,14 @@ enum class inlet_kind
   midi_in,
   value_in,
   address_in,
-  control_in
+  control_in,
 };
 enum class outlet_kind
 {
   audio_out,
   midi_out,
   value_out,
-  control_out
+  control_out,
 };
 struct address_in
 {

@@ -338,11 +338,11 @@ public:
     }
   }
 
-  std::size_t channels() const
+  [[nodiscard]] std::size_t channels() const
   {
     return m_handle ? m_handle.channels() : 0;
   }
-  std::size_t duration() const
+  [[nodiscard]] std::size_t duration() const
   {
     return m_handle ? m_handle.totalPCMFrameCount(): 0;
   }

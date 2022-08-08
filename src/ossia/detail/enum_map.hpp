@@ -88,7 +88,7 @@ public:
     return {static_cast<K>(i), m_map[i]};
   }
 
-  constexpr std::size_t size() const noexcept
+  [[nodiscard]] constexpr std::size_t size() const noexcept
   {
     return N;
   }

@@ -66,13 +66,13 @@ struct audio_port
   audio_channel& channel(std::size_t i) noexcept
   { return m_samples[i]; }
 
-  const audio_channel& channel(std::size_t i) const noexcept
+  [[nodiscard]] const audio_channel& channel(std::size_t i) const noexcept
   { return m_samples[i]; }
 
-  std::size_t channels() const noexcept
+  [[nodiscard]] std::size_t channels() const noexcept
   { return m_samples.size(); }
 
-  bool empty() const noexcept
+  [[nodiscard]] bool empty() const noexcept
   { return m_samples.empty(); }
 
   void set_channels(std::size_t channels)
@@ -91,16 +91,43 @@ struct audio_port
   }
 
   audio_vector& get() noexcept { return m_samples; }
-  const audio_vector& get() const noexcept { return m_samples; }
+  [[nodiscard]] const audio_vector& get() const noexcept
+  {
+    return m_samples;
+  }
 
-  auto begin() const noexcept { return m_samples.begin(); }
-  auto end() const noexcept { return m_samples.end(); }
-  auto cbegin() const noexcept { return m_samples.cbegin(); }
-  auto cend() const noexcept { return m_samples.cend(); }
-  auto rbegin() const noexcept { return m_samples.rbegin(); }
-  auto rend() const noexcept { return m_samples.rend(); }
-  auto crbegin() const noexcept { return m_samples.crbegin(); }
-  auto crend() const noexcept { return m_samples.crend(); }
+  [[nodiscard]] auto begin() const noexcept
+  {
+    return m_samples.begin();
+  }
+  [[nodiscard]] auto end() const noexcept
+  {
+    return m_samples.end();
+  }
+  [[nodiscard]] auto cbegin() const noexcept
+  {
+    return m_samples.cbegin();
+  }
+  [[nodiscard]] auto cend() const noexcept
+  {
+    return m_samples.cend();
+  }
+  [[nodiscard]] auto rbegin() const noexcept
+  {
+    return m_samples.rbegin();
+  }
+  [[nodiscard]] auto rend() const noexcept
+  {
+    return m_samples.rend();
+  }
+  [[nodiscard]] auto crbegin() const noexcept
+  {
+    return m_samples.crbegin();
+  }
+  [[nodiscard]] auto crend() const noexcept
+  {
+    return m_samples.crend();
+  }
   auto begin() noexcept { return m_samples.begin(); }
   auto end() noexcept { return m_samples.end(); }
   auto cbegin() noexcept { return m_samples.cbegin(); }

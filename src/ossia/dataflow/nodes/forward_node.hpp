@@ -72,7 +72,7 @@ public:
       m_inlets.resize(1);
     }
   }
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Interval";
   }
@@ -108,7 +108,7 @@ class loop final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Loop";
   }
@@ -117,7 +117,7 @@ class scenario final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Scenario";
   }

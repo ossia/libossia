@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/variant.hpp>
-#include <mpark/variant.hpp>
 #include <boost/mp11.hpp>
 namespace ossia
 {
@@ -23,9 +22,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<(nullable_variant_index lhs, nullab
 { return lhs.value < rhs.value; }
 
 template<typename... Args>
-struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
+struct nullable_variant : public ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>
 {
-  using base = typename mpark::variant<mpark::monostate, Args...>;
+  using base = typename ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>;
   using base::base;
 
   static constexpr nullable_variant_index npos{0};
@@ -48,11 +47,11 @@ struct nullable_variant : public mpark::variant<mpark::monostate, Args...>
 
   template<typename T>
   OSSIA_MAXIMUM_INLINE constexpr T* target() noexcept {
-    return mpark::get_if<T>(this);
+    return ossia_variant_alias::get_if<T>(this);
   }
   template<typename T>
   OSSIA_MAXIMUM_INLINE constexpr const T* target() const noexcept {
-    return mpark::get_if<T>(this);
+    return ossia_variant_alias::get_if<T>(this);
   }
 
   // FIXME is this safe
@@ -72,26 +71,26 @@ template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto visit(F&& visitor, Args&&... variants)
   -> decltype(auto)
 {
-  return mpark::visit(visitor, static_cast<Args&&>(variants)...);
+  return ossia_variant_alias::visit(visitor, static_cast<Args&&>(variants)...);
 }
 */
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>& variant)
   -> decltype(auto)
 {
-  return mpark::visit(visitor, variant);
+  return ossia_variant_alias::visit(visitor, variant);
 }
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, const ossia::nullable_variant<Args...>& variant)
   -> decltype(auto)
 {
-  return mpark::visit(visitor, variant);
+  return ossia_variant_alias::visit(visitor, variant);
 }
 template<typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>&& variant)
   -> decltype(auto)
 {
-  return mpark::visit(visitor, std::move(variant));
+  return ossia_variant_alias::visit(visitor, std::move(variant));
 }
 
 template<typename F, typename... Args>
@@ -100,7 +99,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
 {
   if(variant)
   {
-    return mpark::visit(visitor, variant);
+    return ossia_variant_alias::visit(visitor, variant);
   }
   else
   {
@@ -113,7 +112,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_varia
 {
   if(variant)
   {
-    return mpark::visit(visitor, variant);
+    return ossia_variant_alias::visit(visitor, variant);
   }
   else
   {
@@ -126,7 +125,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
 {
   if(variant)
   {
-    return mpark::visit(visitor, std::move(variant));
+    return ossia_variant_alias::visit(visitor, std::move(variant));
   }
   else
   {
@@ -139,7 +138,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
 {
   if(v1 && v2)
   {
-    return mpark::visit(visitor, v1, v2);
+    return ossia_variant_alias::visit(visitor, v1, v2);
   }
   else
   {
@@ -152,7 +151,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_varia
 {
   if(v1 && v2)
   {
-    return mpark::visit(visitor, v1, v2);
+    return ossia_variant_alias::visit(visitor, v1, v2);
   }
   else
   {
@@ -165,7 +164,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
 {
   if(v1 && v2)
   {
-    return mpark::visit(visitor, std::move(v1), std::move(v2));
+    return ossia_variant_alias::visit(visitor, std::move(v1), std::move(v2));
   }
   else
   {

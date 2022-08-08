@@ -112,7 +112,7 @@ struct resampler
   enum {
     RawStretcher = 0, RubberbandStretcher = 1, RepitchStretcher = 2
   };
-  int64_t next_sample_to_read() const noexcept
+  [[nodiscard]] int64_t next_sample_to_read() const noexcept
   {
     return ossia::visit(
           [] (auto& stretcher) noexcept { return stretcher.next_sample_to_read; },
@@ -201,7 +201,10 @@ struct resampler
     }, m_stretch);
   }
 
-  bool stretch() const noexcept { return m_stretch.index() != 0; }
+  [[nodiscard]] bool stretch() const noexcept
+  {
+    return m_stretch.index() != 0;
+  }
 
 private:
   ossia::variant<raw_stretcher

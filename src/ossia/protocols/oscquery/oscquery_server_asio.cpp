@@ -39,13 +39,14 @@ struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_receive_soc
   using udp_receive_socket::udp_receive_socket;
 };
 
-static uintptr_t client_identifier(const std::vector<oscquery_client>& clts, const oscpack::IpEndpointName& ip)
+static uintptr_t client_identifier(const clients& clts, const oscpack::IpEndpointName& ip)
 {
   if(clts.size() == 1)
-    return (uintptr_t) clts[0].connection.lock().get();
+    return (uintptr_t) clts[0]->connection.lock().get();
 
-  for (const oscquery_client& c : clts)
+  for (const auto& client_p : clts)
   {
+    auto& c = *client_p;
     if(c.remote_sender_port == ip.port)
     {
       return (uintptr_t) c.connection.lock().get();
@@ -155,8 +156,9 @@ bool oscquery_server_protocol::write_impl(std::string_view data, bool critical)
   if (!critical)
   {
     lock_t lock(m_clientsMutex);
-    for (auto& client : m_clients)
+    for (auto& client_p : m_clients)
     {
+      auto& client = *client_p;
       if (client.osc_socket)
       {
         client.osc_socket->write(data.data(), data.size());
@@ -170,8 +172,9 @@ bool oscquery_server_protocol::write_impl(std::string_view data, bool critical)
   else
   {
     lock_t lock(m_clientsMutex);
-    for (auto& client : m_clients)
+    for (auto& client_p : m_clients)
     {
+      auto& client = *client_p;
       m_websocketServer->send_binary_message(client.connection, data);
     }
   }
@@ -195,8 +198,9 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
     if (!critical)
     {
       lock_t lock(m_clientsMutex);
-      for (auto& client : m_clients)
+      for (auto& client_p : m_clients)
       {
+        auto& client = *client_p;
         if (client.osc_socket)
         {
           if (m_logger.outbound_logger)
@@ -220,8 +224,9 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
     else
     {
       lock_t lock(m_clientsMutex);
-      for (auto& client : m_clients)
+      for (auto& client_p : m_clients)
       {
+        auto& client = *client_p;
         if (m_logger.outbound_logger)
         {
           m_logger.outbound_logger->info("Out: {} {}", ossia::net::osc_address(addr), val);
@@ -288,8 +293,9 @@ bool oscquery_server_protocol::echo_incoming_message(
   {
     lock_t lock(m_clientsMutex);
     // No need to echo if we just have one client, the most common case
-    for (auto& client : m_clients)
+    for (auto& client_p : m_clients)
     {
+      auto& client = *client_p;
       if (not_this_protocol || !is_same(client, id)) {
         if (client.osc_socket)
         {
@@ -317,8 +323,9 @@ bool oscquery_server_protocol::echo_incoming_message(
   {
     lock_t lock(m_clientsMutex);
 
-    for (auto& client : m_clients)
+    for (auto& client_p : m_clients)
     {
+      auto& client = *client_p;
       if (not_this_protocol || !is_same(client, id)) {
 
         if (m_logger.outbound_logger)
@@ -437,7 +444,7 @@ void oscquery_server_protocol::stop()
     auto it = m_clients.begin();
     while (it != m_clients.end())
     {
-      auto con = m_websocketServer->impl().get_con_from_hdl(it->connection);
+      auto con = m_websocketServer->impl().get_con_from_hdl((*it)->connection);
       con->close(websocketpp::close::status::going_away, "Server shutdown");
       it = m_clients.erase(it);
     }
@@ -464,9 +471,9 @@ oscquery_server_protocol::find_client(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
 
-  auto it = ossia::find(m_clients, hdl);
+  auto it = ossia::find_if(m_clients, [&] (auto& clt) { return *clt == hdl; });
   if (it != m_clients.end())
-    return &*it;
+    return it->get();
   return nullptr;
 }
 
@@ -582,8 +589,9 @@ void oscquery_server_protocol::on_connectionOpen(
 
   {
     lock_t lock(m_clientsMutex);
-    m_clients.emplace_back(hdl);
-    m_clients.back().client_ip = std::move(ip);
+
+    m_clients.emplace_back(std::make_unique<oscquery_client>(hdl));
+    m_clients.back()->client_ip = std::move(ip);
     m_clientCount++;
   }
 
@@ -601,12 +609,14 @@ catch (...)
 void oscquery_server_protocol::on_connectionClosed(
     const connection_handler& hdl)
 {
-  lock_t lock(m_clientsMutex);
-  auto it = ossia::find(m_clients, hdl);
-  if (it != m_clients.end())
   {
-    --m_clientCount;
-    m_clients.erase(it);
+    lock_t lock(m_clientsMutex);
+    auto it = ossia::find_if(m_clients, [&] (auto& clt) { return *clt == hdl; });
+    if (it != m_clients.end())
+    {
+      --m_clientCount;
+      m_clients.erase(it);
+    }
   }
 
   auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
@@ -620,7 +630,7 @@ void oscquery_server_protocol::on_nodeCreated(const net::node_base& n) try
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer->send_message(client.connection, mess);
+    m_websocketServer->send_message(client->connection, mess);
   }
 }
 catch (const std::exception& e)
@@ -639,7 +649,7 @@ void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n) try
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer->send_message(client.connection, mess);
+    m_websocketServer->send_message(client->connection, mess);
   }
 }
 catch (const std::exception& e)
@@ -663,7 +673,7 @@ void oscquery_server_protocol::on_attributeChanged(
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer->send_message(client.connection, mess);
+    m_websocketServer->send_message(client->connection, mess);
   }
 }
 catch (const std::exception& e)
@@ -691,8 +701,10 @@ void oscquery_server_protocol::on_nodeRenamed(
   {
     // Remote listening
     lock_t lock(m_clientsMutex);
-    for (auto& client : m_clients)
+    for (auto& client_p : m_clients)
     {
+      auto& client = *client_p;
+      std::lock_guard lck{client.listeningMutex};
       auto it = client.listening.find(old_addr);
       if (it != client.listening.end())
       {
@@ -706,7 +718,7 @@ void oscquery_server_protocol::on_nodeRenamed(
   lock_t lock(m_clientsMutex);
   for (auto& client : m_clients)
   {
-    m_websocketServer->send_message(client.connection, mess);
+    m_websocketServer->send_message(client->connection, mess);
   }
 }
 catch (const std::exception& e)

@@ -220,7 +220,7 @@ void add_device_part(std::string part, path& p)
   // TODO LRU cache
   if(!is_regex(part))
   {
-    p.child_functions.push_back([=, p = std::move(part)](auto& v) { match_device_simple(v, p); });
+    p.child_functions.emplace_back([=, p = std::move(part)](auto& v) { match_device_simple(v, p); });
   }
   else
   {
@@ -230,7 +230,7 @@ void add_device_part(std::string part, path& p)
     auto it = map.map.find(part);
     if (it != map.map.end())
     {
-      p.child_functions.push_back(
+      p.child_functions.emplace_back(
           [r = it->second](auto& v) { match_device_with_regex(v, r); });
     }
     else
@@ -238,7 +238,7 @@ void add_device_part(std::string part, path& p)
       std::string orig = part;
 
       std::regex r = make_regex(part);
-      p.child_functions.push_back([=](auto& v) { match_device_with_regex(v, r); });
+      p.child_functions.emplace_back([=](auto& v) { match_device_with_regex(v, r); });
       map.map.insert(std::make_pair(std::move(orig), std::move(r)));
     }
   }
@@ -251,7 +251,7 @@ void add_relative_path(std::string& part, path& p)
   {
     if(!is_regex(part))
     {
-      p.child_functions.push_back([p = std::move(part)](auto& v) { match_simple(v, p); });
+      p.child_functions.emplace_back([p = std::move(part)](auto& v) { match_simple(v, p); });
     }
     else
     {
@@ -262,7 +262,7 @@ void add_relative_path(std::string& part, path& p)
       auto it = map.map.find(part);
       if (it != map.map.end())
       {
-        p.child_functions.push_back(
+        p.child_functions.emplace_back(
             [r = it->second](auto& v) { match_with_regex(v, r); });
       }
       else
@@ -271,14 +271,14 @@ void add_relative_path(std::string& part, path& p)
 
         std::regex r = make_regex(part);
 
-        p.child_functions.push_back([=](auto& v) { match_with_regex(v, r); });
+        p.child_functions.emplace_back([=](auto& v) { match_with_regex(v, r); });
         map.map.insert(std::make_pair(std::move(orig), std::move(r)));
       }
     }
   }
   else
   {
-    p.child_functions.push_back([](auto& x) { return get_parent(x); });
+    p.child_functions.emplace_back([](auto& x) { return get_parent(x); });
   }
 }
 
@@ -320,7 +320,7 @@ std::optional<path> make_path(std::string_view address) try
       //* means all the nodes.
       // We have to pass an array with all the devices ?
       // We can't just make a big regex because of '..'
-      p.child_functions.push_back([](auto& x) { return get_all_children(x); });
+      p.child_functions.emplace_back([](auto& x) { return get_all_children(x); });
 
       add_simple_address(address.substr(2));
     }

@@ -396,12 +396,12 @@ public:
   constant_curve& operator=(const constant_curve&) = delete;
   constant_curve& operator=(constant_curve&&) = delete;
 
-  ossia::value value() const
+  [[nodiscard]] ossia::value value() const
   {
     return mValue;
   }
 
-  curve_type get_type() const override
+  [[nodiscard]] curve_type get_type() const override
   {
     return std::make_pair(
         ossia::curve_segment_type::DOUBLE, ossia::curve_segment_type::ANY);

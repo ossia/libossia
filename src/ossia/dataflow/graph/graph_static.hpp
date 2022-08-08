@@ -120,7 +120,7 @@ public:
     }
   }
 
-  const graph_t& impl() const
+  [[nodiscard]] const graph_t& impl() const
   {
     return m_graph;
   }
@@ -244,7 +244,8 @@ public:
     {
       graph_vertex_t node_to_find{};
       bool& ok;
-      bool discover_vertex(graph_vertex_t u, const graph_t&) const
+      bool
+      discover_vertex(graph_vertex_t u, const graph_t&) const noexcept
       {
         if (u == node_to_find)
           ok = true;
@@ -392,7 +393,7 @@ public:
   using transitive_closure_t = boost::adjacency_list<
       boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
 
-  bool has_edge(int source_vtx, int sink_vtx) const
+  [[nodiscard]] bool has_edge(int source_vtx, int sink_vtx) const
   {
     return boost::edge(source_vtx, sink_vtx, m_transitive_closure).second;
   }
@@ -421,7 +422,7 @@ public:
   using transitive_closure_t = boost::adjacency_list<
       boost::vecS, boost::vecS, boost::directedS, ossia::graph_node*, int64_t>;
 
-  bool has_edge(int source_vtx, int sink_vtx) const
+  [[nodiscard]] bool has_edge(int source_vtx, int sink_vtx) const
   {
     return boost::edge(source_vtx, sink_vtx, m_transitive_closure).second;
   }

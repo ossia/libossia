@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#include <ossia/detail/mutex.hpp>
+
 #include <array>
 #include <atomic>
 #include <thread>
@@ -37,9 +40,9 @@ namespace ossia
 
 // Code adapted from Timur Doumler's great article:
 // https://timur.audio/using-locks-in-real-time-audio-processing-safely
-struct audio_spin_mutex
+struct TS_CAPABILITY("mutex") audio_spin_mutex
 {
-  void lock() noexcept
+  void lock() noexcept TS_ACQUIRE()
   {
     // approx. 5x5 ns (= 25 ns), 10x40 ns (= 400 ns), and 3000x350 ns
     // (~ 1 ms), respectively, when measured on a 2.9 GHz Intel i9
@@ -84,15 +87,17 @@ struct audio_spin_mutex
     }
   }
 
-  bool try_lock()
+  bool try_lock() TS_TRY_ACQUIRE(true)
   {
     return !locked.load(std::memory_order_relaxed) && !locked.exchange(true, std::memory_order_acquire);
   }
 
-  void unlock()
+  void unlock() TS_RELEASE()
   {
     locked.store(false, std::memory_order_release);
   }
+
+  const auto& operator!() const { return *this; }
 
 private:
   std::atomic<bool> locked{false};

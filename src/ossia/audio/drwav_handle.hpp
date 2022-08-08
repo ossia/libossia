@@ -142,15 +142,37 @@ public:
     return drwav_read_pcm_frames_f32(impl, framesToRead, buffer);
   }
 
-  auto channels() const noexcept { return impl->channels; }
-  auto translatedFormatTag() const noexcept { return impl->translatedFormatTag; }
-  auto bitsPerSample() const noexcept { return impl->bitsPerSample; }
-  auto sampleRate() const noexcept { return impl->sampleRate; }
-  auto totalPCMFrameCount() const noexcept { return impl->totalPCMFrameCount; }
+  [[nodiscard]] auto channels() const noexcept
+  {
+    return impl->channels;
+  }
+  [[nodiscard]] auto translatedFormatTag() const noexcept
+  {
+    return impl->translatedFormatTag;
+  }
+  [[nodiscard]] auto bitsPerSample() const noexcept
+  {
+    return impl->bitsPerSample;
+  }
+  [[nodiscard]] auto sampleRate() const noexcept
+  {
+    return impl->sampleRate;
+  }
+  [[nodiscard]] auto totalPCMFrameCount() const noexcept
+  {
+    return impl->totalPCMFrameCount;
+  }
 
-  ::drwav* wav() const noexcept { return impl; }
+  [[nodiscard]] ::drwav* wav() const noexcept
+  {
+    return impl;
+  }
 
-  acid_chunk acid() const noexcept { return m_acid; }
+  [[nodiscard]] acid_chunk acid() const noexcept
+  {
+    return m_acid;
+  }
+
 private:
   ::drwav* impl{};
   acid_chunk m_acid{};

@@ -29,7 +29,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "mapping";
   }

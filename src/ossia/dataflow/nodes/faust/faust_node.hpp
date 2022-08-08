@@ -25,7 +25,7 @@ public:
     faust_node_utils{}.exec(*this, *m_dsp, tk, e);
   }
 
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Faust";
   }
@@ -60,7 +60,7 @@ public:
     faust_node_utils{}.exec_synth(*this, *m_dsp, tk, e);
   }
 
-  std::string label() const noexcept override
+  [[nodiscard]] std::string label() const noexcept override
   {
     return "Faust Synth";
   }

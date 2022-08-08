@@ -68,7 +68,11 @@ public:
   fft_complex* execute(float* input, std::size_t sz) noexcept;
   fft_complex* execute() noexcept;
 
-  fft_real* input() const noexcept { return m_input; }
+  [[nodiscard]] fft_real* input() const noexcept
+  {
+    return m_input;
+  }
+
 private:
   fft_plan m_fw = {};
   std::size_t m_size = 0;
@@ -93,7 +97,10 @@ public:
   fft_real* execute(fft_complex* input) noexcept;
   fft_real* execute() noexcept;
 
-  fft_complex* input() const noexcept { return m_input; }
+  [[nodiscard]] fft_complex* input() const noexcept
+  {
+    return m_input;
+  }
 
 private:
   fft_plan m_fw = {};

@@ -86,7 +86,7 @@ struct compute_value_uninformed_visitor
 {
   double position;
 
-  ossia::value error() const
+  [[nodiscard]] ossia::value error() const
   {
     throw invalid_value_type_error(
         "computeValue_visitor: "
@@ -186,7 +186,7 @@ struct compute_value_visitor
   double position;
   ossia::val_type driven_type;
 
-  ossia::value error() const
+  [[nodiscard]] ossia::value error() const
   {
     throw invalid_value_type_error(
         "computeValue_visitor: "

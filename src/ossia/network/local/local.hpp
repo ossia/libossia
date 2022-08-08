@@ -3,6 +3,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/detail/audio_spin_mutex.hpp>
+#include <ossia/detail/mutex.hpp>
 
 #include <vector>
 
@@ -64,9 +65,9 @@ public:
   }
 
 private:
-  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols;
+  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols TS_GUARDED_BY(m_protocols_mutex);
+  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols_to_register TS_GUARDED_BY(m_protocols_mutex);
   ossia::audio_spin_mutex m_protocols_mutex;
-  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols_to_register;
   ossia::net::device_base* m_device{};
 };
 

@@ -19,6 +19,10 @@ struct init_delay_line
   {
     delay_line = midi_delay_line{};
   }
+  void operator()(const geometry_port&) const noexcept
+  {
+    delay_line = geometry_delay_line{};
+  }
   void operator()() const noexcept
   {
   }

@@ -35,7 +35,7 @@ public:
     impl.push_back(t);
   }
 
-  bool empty() const noexcept
+  [[nodiscard]] bool empty() const noexcept
   {
     return impl.empty();
   }

@@ -4,6 +4,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/geometry_port.hpp>
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/dataflow/typed_value.hpp>
@@ -25,6 +26,11 @@ struct clear_data
   void operator()(audio_port& p) const
   {
     p.set_channels(0);
+  }
+
+  void operator()(geometry_port& p) const
+  {
+    p.clear();
   }
 
   void operator()() const
@@ -49,6 +55,11 @@ struct data_size
     return p.samples.size();
   }
 
+  std::size_t operator()(const geometry_delay_line& p) const
+  {
+    return p.geometries.size();
+  }
+
   std::size_t operator()(const ossia::monostate&) const
   { return 0; }
   std::size_t operator()() const
@@ -57,13 +68,11 @@ struct data_size
 
 struct move_data
 {
-  /// Value ///
   void operator()(value_port& out, value_port& in)
   {
     in.add_port_values(std::move(out));
   }
 
-  /// Audio ///
   void operator()(audio_port& out, audio_port& in)
   {
     auto tmp = std::move(in.get());
@@ -71,12 +80,17 @@ struct move_data
     out.get() = std::move(tmp);
   }
 
-  /// MIDI ///
   void operator()(midi_port& out, midi_port& in)
   {
     auto tmp = std::move(in.messages);
     in.messages = std::move(out.messages);
     out.messages = std::move(tmp);
+  }
+
+  void operator()(geometry_port& out, geometry_port& in)
+  {
+    if(out.geometry.dirty)
+      in.geometry = std::move(out.geometry);
   }
 };
 
@@ -162,6 +176,28 @@ struct copy_data
     // Called in env_writer, when copying from a node to a delay line
     in.messages.push_back(out.messages);
   }
+
+  /// Geometry ///
+  void operator()(const geometry_port& out, geometry_port& in)
+  {
+    // Called in init_node_visitor::copy, when copying from a node to another
+    if(out.geometry.dirty)
+      in.geometry = out.geometry;
+  }
+
+  void operator()(const geometry& out, geometry_port& in)
+  {
+    // Called in copy_data_pos below    
+    if(out.dirty)
+      in.geometry = out;
+  }
+
+  void operator()(const geometry_port& out, geometry_delay_line& in)
+  {
+    // Called in env_writer, when copying from a node to a delay line
+    if(out.geometry.dirty)
+      in.geometries.push_back(out.geometry);
+  }
 };
 
 struct copy_data_pos
@@ -194,6 +230,13 @@ struct copy_data_pos
     if (pos < out.messages.size())
     {
       copy_data{}(out.messages[pos], in);
+    }
+  }
+  void operator()(const geometry_delay_line& out, geometry_port& in)
+  {
+    if (pos < out.geometries.size())
+    {
+      copy_data{}(out.geometries[pos], in);
     }
   }
 };

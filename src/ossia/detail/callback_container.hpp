@@ -230,7 +230,7 @@ protected:
   }
 
 private:
-  impl m_callbacks;
+  impl m_callbacks TS_GUARDED_BY(m_mutx);
   mutable ossia::audio_spin_mutex m_mutx;
 };
 }

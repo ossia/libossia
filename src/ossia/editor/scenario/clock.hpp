@@ -43,7 +43,7 @@ public:
   void pause();
 
   /*! true if the interval is running and paused, else false */
-  bool paused() const;
+  [[nodiscard]] bool paused() const;
 
   /*! resume the clock progression */
   void resume();
@@ -56,7 +56,7 @@ public:
 
   /*! get the duration of the clock
    \return const #TimeValue duration */
-  time_value get_duration() const;
+  [[nodiscard]] time_value get_duration() const;
 
   /*! set the duration of the clock execution
    \param const #TimeValue duration
@@ -65,7 +65,7 @@ public:
 
   /*! get the granularity of the clock
    \return const #TimeValue granularity */
-  time_value get_granularity() const;
+  [[nodiscard]] time_value get_granularity() const;
 
   /*! set the granularity of the clock execution
    \param const #TimeValue granularity
@@ -75,19 +75,19 @@ public:
 
   /*! get the running status of the clock
    \return bool true if is running */
-  bool running() const;
+  [[nodiscard]] bool running() const;
 
   /*! get the position of the clock
    \return const #TimeValue position */
-  time_value get_position() const;
+  [[nodiscard]] time_value get_position() const;
 
   /*! get the date of the clock
    \return const #TimeValue date */
-  time_value get_date() const;
+  [[nodiscard]] time_value get_date() const;
 
   // Execution status will be called when the clock starts and stops.
   void set_exec_status_callback(exec_status_callback);
-  exec_status_callback get_exec_status_callback() const;
+  [[nodiscard]] exec_status_callback get_exec_status_callback() const;
 
 private:
   /*! to allow TimeInterval to override setDuration accessor */

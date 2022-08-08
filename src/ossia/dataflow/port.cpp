@@ -39,6 +39,12 @@ struct push_data
       audio->push_value(p);
     }
   }
+
+  [[noreturn]]
+  void operator()(const geometry_port& p) const
+  {
+    assert(false);
+  }
   void operator()() const noexcept { }
 };
 /*
@@ -126,6 +132,13 @@ struct outlet_inserter
 
     e.insert(*addr, data);
   }
+
+  [[noreturn]]
+  void operator()(const ossia::geometry_port& data) const noexcept
+  {
+    assert(false);
+  }
+
 
   void operator()(ossia::value_port&& data) const noexcept
   {

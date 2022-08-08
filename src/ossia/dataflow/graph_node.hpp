@@ -111,12 +111,12 @@ public:
   graph_node() noexcept;
   virtual ~graph_node();
 
-  bool enabled() const noexcept
+  [[nodiscard]] bool enabled() const noexcept
   {
     return !requested_tokens.empty();
   }
 
-  bool executed() const noexcept
+  [[nodiscard]] bool executed() const noexcept
   {
     return m_executed;
   }
@@ -131,19 +131,20 @@ public:
   }
 
   virtual void prepare(const execution_state& st) noexcept;
-  virtual bool consumes(const execution_state&) const noexcept;
+  [[nodiscard]] virtual bool consumes(const execution_state&) const noexcept;
   virtual void run(const token_request&, exec_state_facade) noexcept;
-  virtual std::string label() const noexcept;
+  [[nodiscard]] virtual std::string label() const noexcept;
 
-  bool has_port_inputs() const noexcept;
-  bool has_global_inputs() const noexcept;
-  bool has_local_inputs(const execution_state& st) const noexcept;
+  [[nodiscard]] bool has_port_inputs() const noexcept;
+  [[nodiscard]] bool has_global_inputs() const noexcept;
+  [[nodiscard]] bool
+  has_local_inputs(const execution_state& st) const noexcept;
 
-  const inlets& root_inputs() const noexcept
+  [[nodiscard]] const inlets& root_inputs() const noexcept
   {
     return m_inlets;
   }
-  const outlets& root_outputs() const noexcept
+  [[nodiscard]] const outlets& root_outputs() const noexcept
   {
     return m_outlets;
   }
@@ -159,11 +160,11 @@ public:
 
   virtual void clear() noexcept;
 
-  bool start_discontinuous() const noexcept
+  [[nodiscard]] bool start_discontinuous() const noexcept
   {
     return m_start_discontinuous;
   }
-  bool end_discontinuous() const noexcept
+  [[nodiscard]] bool end_discontinuous() const noexcept
   {
     return m_end_discontinuous;
   }
@@ -184,7 +185,7 @@ public:
   {
     m_logging = b;
   }
-  bool logged() const noexcept
+  [[nodiscard]] bool logged() const noexcept
   {
     return m_logging;
   }
@@ -193,7 +194,7 @@ public:
   {
     m_muted = b;
   }
-  bool muted() const noexcept
+  [[nodiscard]] bool muted() const noexcept
   {
     return m_muted;
   }

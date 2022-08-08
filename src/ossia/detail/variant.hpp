@@ -8,33 +8,48 @@
 #define OSSIA_MAXIMUM_INLINE OSSIA_INLINE
 #endif
 
+#if __has_include(<boost/variant2.hpp>)
+#include <boost/variant2.hpp>
+namespace ossia_variant_alias = boost::variant2;
+#else
 #include <mpark/variant.hpp>
+namespace ossia_variant_alias = mpark;
+#endif
 
-//#include <boost/variant2.hpp>
-//namespace mpark = boost::variant2;
 namespace ossia
 {
-using monostate = mpark::monostate;
+using monostate = ossia_variant_alias::monostate;
+#if __cpp_concepts >= 201907L
+template<typename T>
+concept nothrow_move_constructible = std::is_nothrow_move_constructible_v<T>;
+
+template<nothrow_move_constructible... Args>
+#else
 template<typename... Args>
-using variant = mpark::variant<Args...>;
+#endif
+using variant = ossia_variant_alias::variant<Args...>;
+
+template<typename... Args>
+using slow_variant = ossia_variant_alias::variant<Args...>;
 
 
 template<std::size_t N, typename T>
-using variant_element = mpark::variant_alternative<N, T>;
+using variant_element = ossia_variant_alias::variant_alternative<N, T>;
 template<std::size_t N, typename T>
-using variant_element_t = mpark::variant_alternative_t<N, T>;
+using variant_element_t = ossia_variant_alias::variant_alternative_t<N, T>;
 
-using mpark::operator==;
-using mpark::operator!=;
-using mpark::operator<;
-using mpark::operator>;
-using mpark::operator<=;
-using mpark::operator>=;
+using ossia_variant_alias::operator==;
+using ossia_variant_alias::operator!=;
+using ossia_variant_alias::operator<;
+using ossia_variant_alias::operator>;
+using ossia_variant_alias::operator<=;
+using ossia_variant_alias::operator>=;
 
-using mpark::in_place;
-using mpark::in_place_type;
-using mpark::in_place_index;
-using mpark::visit;
-using mpark::get;
-using mpark::get_if;
+//using boost::variant2::in_place;
+//using ossia_variant_alias::in_place;
+using ossia_variant_alias::in_place_type;
+using ossia_variant_alias::in_place_index;
+using ossia_variant_alias::visit;
+using ossia_variant_alias::get;
+using ossia_variant_alias::get_if;
 }

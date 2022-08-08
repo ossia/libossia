@@ -303,7 +303,8 @@ struct ossia_to_qvariant
   }
 
   template <std::size_t N>
-  typename QArray<N>::type make_array(const std::array<float, N>& arr) const
+  [[nodiscard]] typename QArray<N>::type
+  make_array(const std::array<float, N>& arr) const
   {
     typename QArray<N>::type vec;
 
@@ -352,7 +353,7 @@ struct OSSIA_EXPORT js_value_outbound_visitor
 {
   QJSEngine& engine;
 
-  QJSValue to_enum(qml_val_type::val_type t) const;
+  [[nodiscard]] QJSValue to_enum(qml_val_type::val_type t) const;
 
   QJSValue operator()(impulse) const;
 
@@ -363,7 +364,7 @@ struct OSSIA_EXPORT js_value_outbound_visitor
 
   QJSValue operator()(const std::string& val) const;
 
-  QJSValue make_list(const std::vector<ossia::value>& arr) const;
+  [[nodiscard]] QJSValue make_list(const std::vector<ossia::value>& arr) const;
 
   QJSValue operator()(const std::vector<ossia::value>& val) const;
 

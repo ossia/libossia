@@ -85,7 +85,7 @@ public:
   /**
    * @brief True if the process is not currently muted.
    */
-  bool unmuted() const;
+  [[nodiscard]] bool unmuted() const;
 
   /**
    * @brief Enables or disable the process.
@@ -97,7 +97,7 @@ public:
   /**
    * @brief True if the process is enabled.
    */
-  bool enabled() const;
+  [[nodiscard]] bool enabled() const;
 
   /**
    * @brief Enables looping of the process after every loop_duration

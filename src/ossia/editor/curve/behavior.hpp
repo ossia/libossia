@@ -52,7 +52,7 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const;
+  [[nodiscard]] int which() const;
 
   operator bool() const;
   template <typename T>

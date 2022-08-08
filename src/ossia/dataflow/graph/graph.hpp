@@ -308,7 +308,7 @@ public:
     }
   }
 
-  const graph_t& impl() const
+  [[nodiscard]] const graph_t& impl() const
   {
     return m_graph;
   }

@@ -38,6 +38,7 @@ struct json_query_answerer;
 namespace oscquery_asio
 {
 struct oscquery_client;
+using clients = std::vector<std::unique_ptr<oscquery_client>>;
 //! Implementation of an oscquery server.
 class OSSIA_EXPORT oscquery_server_protocol final
     : public ossia::net::protocol_base
@@ -136,7 +137,7 @@ private:
   net::listened_parameters m_listening;
 
   // The clients connected to this server
-  std::vector<oscquery_client> m_clients;
+  clients m_clients;
   std::atomic_int m_clientCount{};
 
   ossia::net::device_base* m_device{};

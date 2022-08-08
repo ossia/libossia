@@ -150,6 +150,9 @@ void graph_node::prepare(const execution_state& st) noexcept
     void operator()(ossia::value_port& p) const noexcept
     {
     }
+    void operator()(ossia::geometry_port& p) const noexcept
+    {
+    }
   } vis;
   for(auto& in : this->m_inlets)
   {

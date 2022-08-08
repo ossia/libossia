@@ -39,7 +39,7 @@ struct OSSIA_EXPORT value_port
 
   void clear();
 
-  const value_vector<ossia::timed_value>& get_data() const;
+  [[nodiscard]] const value_vector<ossia::timed_value>& get_data() const;
   value_vector<ossia::timed_value>& get_data();
 
   ossia::domain domain;
