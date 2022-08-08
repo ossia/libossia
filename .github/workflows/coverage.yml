@@ -31,7 +31,7 @@ jobs:
         set +e
         source $QT_ENV_SCRIPT
         set -e
-        
+
         cmake -B build -S ${GITHUB_WORKSPACE} \
           -DCMAKE_BUILD_TYPE=Debug \
           -DOSSIA_TESTING=1 \
@@ -39,11 +39,15 @@ jobs:
           -DPORTAUDIO_ONLY_DYNAMIC=1 \
           -DOSSIA_PD=0 \
           -DOSSIA_QT=1 \
-          -DOSSIA_C=1 
+          -DOSSIA_C=1
         cmake --build build -- -j2
         cmake --build build --target ossia_coverage || true
         rm -rf **/*.o
 
         find . -name '*.info'
 
-        coveralls-lcov $(find . -name '*.info')
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: ${{ github.workspace }}/build/coverage.info
