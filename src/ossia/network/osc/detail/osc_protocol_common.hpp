@@ -143,12 +143,18 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
   template<typename T, typename Val_T>
   static bool push(T& self, const ossia::net::parameter_base& addr, Val_T&& v)
   {
+    if (addr.get_access() == ossia::access_mode::SET)
+      return false;
+
     return osc_protocol_common<OscVersion>::push(self, addr, std::forward<Val_T>(v));
   }
 
   template<typename T>
   static bool push_raw(T& self, const ossia::net::full_parameter_data& addr)
   {
+    if (addr.get_access() == ossia::access_mode::SET)
+      return false;
+
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
