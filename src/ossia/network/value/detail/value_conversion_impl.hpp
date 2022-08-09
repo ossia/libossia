@@ -283,7 +283,7 @@ struct value_converter<std::string>
     using namespace std::literals;
     fmt::memory_buffer wr;
     fmt_writer{wr}(v);
-    return std::string(wr.data(), wr.size());
+    return {wr.data(), wr.size()};
   }
 };
 
@@ -303,7 +303,7 @@ struct value_converter<std::vector<ossia::value>>
     std::vector<ossia::value> v;
     for(std::size_t i = 0; i < N; i++)
     {
-      v.push_back(float{u[i]});
+      v.emplace_back(float{u[i]});
     }
     return v;
   }

@@ -90,7 +90,7 @@ domain make_domain(tcb::span<const char*> span)
 {
   domain_base<std::string> v;
   for(std::size_t i = 0, N = span.size(); i < N; i++)
-    v.values.push_back(span[i]);
+    v.values.emplace_back(span[i]);
   return domain{std::move(v)};
 }
 

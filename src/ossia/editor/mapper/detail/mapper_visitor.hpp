@@ -173,7 +173,7 @@ struct mapper_compute_visitor
       }
       else
       {
-        t_value.push_back({});
+        t_value.emplace_back();
       }
       it_driver++;
     }

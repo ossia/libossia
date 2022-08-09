@@ -240,8 +240,8 @@ OSSIA_EXPORT void set_value_type(ossia::net::node_base& n, val_type v);
 
 OSSIA_EXPORT ossia::string_view text_domain();
 OSSIA_EXPORT domain get_domain(const ossia::net::node_base& n);
-OSSIA_EXPORT void set_domain(ossia::net::node_base& n, domain v);
-OSSIA_EXPORT void set_domain(ossia::net::parameter_data& n, domain v);
+OSSIA_EXPORT void set_domain(ossia::net::node_base& n, const domain& v);
+OSSIA_EXPORT void set_domain(ossia::net::parameter_data& n, const domain& v);
 
 OSSIA_EXPORT ossia::string_view text_access_mode();
 OSSIA_EXPORT std::optional<access_mode> get_access_mode(const ossia::net::node_base& n);

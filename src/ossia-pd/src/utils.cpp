@@ -35,23 +35,23 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
     std::vector<ossia::value> list;
     list.reserve(argc + 1);
     if(s && s != gensym("list"))
-      list.push_back(std::string(s->s_name));
+      list.emplace_back(std::string(s->s_name));
 
     for(; argc > 0; argc--, argv++)
     {
       switch(argv->a_type)
       {
         case A_SYMBOL:
-          list.push_back(std::string(atom_getsymbol(argv)->s_name));
+          list.emplace_back(std::string(atom_getsymbol(argv)->s_name));
           break;
         case A_FLOAT:
-          list.push_back(atom_getfloat(argv));
+          list.emplace_back(atom_getfloat(argv));
           break;
         default:;
       }
     }
 
-    return ossia::value(list);
+    return std::move(list);
   }
 }
 
@@ -91,7 +91,7 @@ std::string string_from_path(const std::vector<std::string>& vs)
   if(vs.empty())
     fmt::format_to(b, "/");
 
-  return std::string(b.data(), b.size());
+  return {b.data(), b.size()};
 }
 
 void register_quarantinized()
@@ -119,7 +119,7 @@ std::string get_absolute_path(object_base* x)
   std::vector<std::string> vs;
   vs.reserve(8);
 
-  vs.push_back(x->m_name->s_name);
+  vs.emplace_back(x->m_name->s_name);
 
   ossia::pd::view* view = nullptr;
   ossia::pd::model* model = nullptr;
@@ -146,7 +146,7 @@ std::string get_absolute_path(object_base* x)
   while(view)
   {
     if(view->m_name)
-      vs.push_back(view->m_name->s_name);
+      vs.emplace_back(view->m_name->s_name);
     tmp_view = view;
     view = find_parent_alive<ossia::pd::view>(tmp_view, 1, &view_level);
   }
@@ -155,7 +155,7 @@ std::string get_absolute_path(object_base* x)
   while(model)
   {
     if(model->m_name)
-      vs.push_back(model->m_name->s_name);
+      vs.emplace_back(model->m_name->s_name);
     tmp_model = model;
     model = find_parent_alive<ossia::pd::model>(tmp_model, 1, &view_level);
   }
@@ -421,9 +421,9 @@ std::vector<ossia::value> attribute2value(t_atom* atom, long size)
   for(int i = 0; i < size; i++)
   {
     if(atom[i].a_type == A_FLOAT)
-      list.push_back(atom_getfloat(&atom[i]));
+      list.emplace_back(atom_getfloat(&atom[i]));
     else if(atom[i].a_type == A_SYMBOL)
-      list.push_back(std::string(atom_getsymbol(&atom[i])->s_name));
+      list.emplace_back(std::string(atom_getsymbol(&atom[i])->s_name));
   }
   return list;
 }

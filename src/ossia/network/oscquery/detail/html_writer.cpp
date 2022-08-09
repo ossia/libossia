@@ -73,6 +73,6 @@ std::string static_html_builder::build_tree(ossia::net::node_base& node)
   bld.build_node(node);
   bld.build_footer();
 
-  return std::string(w.data(), w.size());
+  return {w.data(), w.size()};
 }
 }

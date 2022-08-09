@@ -214,7 +214,7 @@ inline behavior_variant_type::behavior_variant_type(const behavior_variant_type&
   }
 }
 
-inline behavior_variant_type::behavior_variant_type(behavior_variant_type&& other)
+inline behavior_variant_type::behavior_variant_type(behavior_variant_type&& other) noexcept
     : m_type{other.m_type}
 {
   switch(m_type)
@@ -253,7 +253,7 @@ behavior_variant_type::operator=(const behavior_variant_type& other)
 }
 
 inline behavior_variant_type&
-behavior_variant_type::operator=(behavior_variant_type&& other)
+behavior_variant_type::operator=(behavior_variant_type&& other) noexcept
 {
   destruct_impl();
   m_type = other.m_type;

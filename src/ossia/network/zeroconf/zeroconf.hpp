@@ -36,9 +36,9 @@ struct OSSIA_EXPORT zeroconf_server
 {
   zeroconf_server();
   zeroconf_server(const zeroconf_server&) = delete;
-  zeroconf_server(zeroconf_server&&);
+  zeroconf_server(zeroconf_server&&) noexcept;
   zeroconf_server& operator=(const zeroconf_server&) = delete;
-  zeroconf_server& operator=(zeroconf_server&&);
+  zeroconf_server& operator=(zeroconf_server&&) noexcept;
   ~zeroconf_server();
 
   zeroconf_server(std::unique_ptr<servus::Servus> s);

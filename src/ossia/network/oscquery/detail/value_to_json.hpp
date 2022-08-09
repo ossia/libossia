@@ -268,7 +268,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(i);
+          res.emplace_back(i);
           return true;
         }
         case oscpack::TypeTagValues::INT32_TYPE_TAG: {
@@ -276,7 +276,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(i);
+          res.emplace_back(i);
           return true;
         }
         case oscpack::TypeTagValues::FLOAT_TYPE_TAG: {
@@ -284,7 +284,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(i);
+          res.emplace_back(i);
           return true;
         }
         case oscpack::TypeTagValues::CHAR_TYPE_TAG: {
@@ -292,7 +292,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(i);
+          res.emplace_back(i);
           return true;
         }
 
@@ -302,7 +302,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(i);
+          res.emplace_back(i);
           return true;
         }
 
@@ -312,7 +312,7 @@ struct json_to_value
           if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
-          res.push_back(std::move(i));
+          res.emplace_back(std::move(i));
           return true;
         }
 
@@ -324,7 +324,7 @@ struct json_to_value
             if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
-            res.push_back(i);
+            res.emplace_back(i);
             ++typetag_cursor; // We skip the ']'
           }
           else if(can_read("[fff]"))
@@ -334,7 +334,7 @@ struct json_to_value
             if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
-            res.push_back(i);
+            res.emplace_back(i);
             ++typetag_cursor; // We skip the ']'
           }
           else if(can_read("[ffff]"))
@@ -344,7 +344,7 @@ struct json_to_value
             if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
-            res.push_back(i);
+            res.emplace_back(i);
             ++typetag_cursor; // We skip the ']'
           }
           else
@@ -355,7 +355,7 @@ struct json_to_value
               return false;
 
             ++typetag_cursor; // We skip the ']'
-            res.push_back(std::move(i));
+            res.emplace_back(std::move(i));
           }
           return true;
         }

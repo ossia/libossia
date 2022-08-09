@@ -305,12 +305,12 @@ domain get_domain(const ossia::net::node_base& n)
     return addr->get_domain();
   return {};
 }
-void set_domain(ossia::net::node_base& n, domain v)
+void set_domain(ossia::net::node_base& n, const domain& v)
 {
   if(auto addr = n.get_parameter())
     addr->set_domain(std::move(v));
 }
-void set_domain(ossia::net::parameter_data& n, domain v)
+void set_domain(ossia::net::parameter_data& n, const domain& v)
 {
   n.domain = std::move(v);
 }
@@ -328,7 +328,7 @@ std::optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 void set_access_mode(ossia::net::node_base& n, access_mode v)
 {
   if(auto addr = n.get_parameter())
-    addr->set_access(std::move(v));
+    addr->set_access(v);
 }
 void set_access_mode(ossia::net::parameter_data& n, access_mode v)
 {
@@ -348,7 +348,7 @@ std::optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
   if(auto addr = n.get_parameter())
-    addr->set_bounding(std::move(v));
+    addr->set_bounding(v);
 }
 void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v)
 {
@@ -428,7 +428,7 @@ repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 {
   if(auto addr = n.get_parameter())
-    addr->set_repetition_filter(std::move(v));
+    addr->set_repetition_filter(v);
 }
 
 ossia::string_view text_unit()

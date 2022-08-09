@@ -195,7 +195,7 @@ void parameter_base::set_range()
       for(int i = 0; i < m_range_size; i++)
       {
         if(m_range[i].a_type == A_SYMBOL)
-          senum.push_back(m_range[i].a_w.w_symbol->s_name);
+          senum.emplace_back(m_range[i].a_w.w_symbol->s_name);
         else if(m_range[i].a_type == A_FLOAT)
         {
           std::stringstream ss;
@@ -691,7 +691,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
     if(s && s != gensym("list") && s != gensym("set"))
     {
-      list.push_back(std::string(s->s_name));
+      list.emplace_back(std::string(s->s_name));
       start_with_symbol = true;
     }
 
@@ -732,10 +732,10 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
         switch(argv->a_type)
         {
           case A_SYMBOL:
-            list.push_back(std::string(atom_getsymbol(argv)->s_name));
+            list.emplace_back(std::string(atom_getsymbol(argv)->s_name));
             break;
           case A_FLOAT:
-            list.push_back(atom_getfloat(argv));
+            list.emplace_back(atom_getfloat(argv));
             break;
           default:
             pd_error(x, "value type not handled");

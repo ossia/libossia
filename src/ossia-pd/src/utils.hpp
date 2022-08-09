@@ -660,8 +660,8 @@ bool ossia_register(T* x)
 
     if(matchers == &tmp && x->m_addr_scope != ossia::net::address_scope::global)
     {
-      tmp.push_back(
-          {&ossia_pd::get_default_device()->get_root_node(), (object_base*)nullptr});
+      tmp.emplace_back(
+          &ossia_pd::get_default_device()->get_root_node(), (object_base*)nullptr);
     }
   }
 

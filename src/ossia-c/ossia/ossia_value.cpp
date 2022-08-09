@@ -98,7 +98,7 @@ ossia_value_t ossia_value_create_fn(const float* values, size_t size)
   t.reserve(size);
   for(std::size_t i = 0; i < size; i++)
   {
-    t.push_back(values[i]);
+    t.emplace_back(values[i]);
   }
   return convert(std::move(t));
 }
@@ -109,7 +109,7 @@ ossia_value_t ossia_value_create_in(const int* values, size_t size)
   t.reserve(size);
   for(size_t i = 0; i < size; i++)
   {
-    t.push_back(values[i]);
+    t.emplace_back(values[i]);
   }
   return convert(std::move(t));
 }

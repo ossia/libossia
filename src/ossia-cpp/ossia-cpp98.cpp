@@ -388,7 +388,7 @@ node::node(const node& other)
 {
 }
 
-node::node(node&& other)
+node::node(node&& other) noexcept
     : node{other.m_node, other.m_param}
 {
 }
@@ -418,7 +418,7 @@ node& node::operator=(const node& other)
   return *this;
 }
 
-node& node::operator=(node&& other)
+node& node::operator=(node&& other) noexcept
 {
   if(m_node)
     cleanup(*m_node);
@@ -1539,7 +1539,7 @@ std::vector<value> node::get_accepted_values() const
     auto v = ossia::get_values(dom);
     for(const auto& val : v)
     {
-      out.push_back(opp::value(v));
+      out.emplace_back(opp::value(val));
     }
   }
   return out;

@@ -71,9 +71,9 @@ public:
   behavior_variant_type(const std::vector<ossia::behavior>& v);
   behavior_variant_type(std::vector<ossia::behavior>&& v);
   behavior_variant_type(const behavior_variant_type& other);
-  behavior_variant_type(behavior_variant_type&& other);
+  behavior_variant_type(behavior_variant_type&& other) noexcept;
   behavior_variant_type& operator=(const behavior_variant_type& other);
-  behavior_variant_type& operator=(behavior_variant_type&& other);
+  behavior_variant_type& operator=(behavior_variant_type&& other) noexcept;
 };
 /**
  * @class Contains either no curve, a single curve, or multiple curves

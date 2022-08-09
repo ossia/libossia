@@ -84,7 +84,7 @@ public:
     m_y0_cacheUsed = false;
   }
 
-  curve(curve&& other)
+  curve(curve&& other) noexcept
   {
     m_x0 = other.m_x0;
     m_y0 = other.m_y0;
@@ -106,7 +106,7 @@ public:
     m_y0_cacheUsed = false;
     return *this;
   }
-  curve& operator=(curve&& other)
+  curve& operator=(curve&& other) noexcept
   {
     m_x0 = other.m_x0;
     m_y0 = other.m_y0;

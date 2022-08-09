@@ -23,7 +23,7 @@ public:
 
   dylib_loader(const dylib_loader&) noexcept = delete;
   dylib_loader& operator=(const dylib_loader&) noexcept = delete;
-  dylib_loader(dylib_loader&& other)
+  dylib_loader(dylib_loader&& other) noexcept
   {
     impl = other.impl;
     other.impl = nullptr;

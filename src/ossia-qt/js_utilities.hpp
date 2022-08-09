@@ -259,7 +259,7 @@ struct OSSIA_EXPORT qt_to_ossia
     tpl.reserve(v.size());
     for(auto& val : v)
     {
-      tpl.push_back(val.toStdString());
+      tpl.emplace_back(val.toStdString());
     }
     return tpl;
   }

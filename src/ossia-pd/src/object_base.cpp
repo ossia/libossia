@@ -43,7 +43,7 @@ void t_select_clock::deselect(t_select_clock* x)
 
 #pragma mark t_matcher
 
-t_matcher::t_matcher(t_matcher&& other)
+t_matcher::t_matcher(t_matcher&& other) noexcept
 {
   node = other.node;
   other.node = nullptr;
@@ -74,7 +74,7 @@ t_matcher::t_matcher(t_matcher&& other)
   }
 }
 
-t_matcher& t_matcher::operator=(t_matcher&& other)
+t_matcher& t_matcher::operator=(t_matcher&& other) noexcept
 {
   node = other.node;
   other.node = nullptr;
@@ -383,7 +383,7 @@ void object_base::set_tags()
     switch(m_tags[i].a_type)
     {
       case A_SYMBOL:
-        tags.push_back(m_tags[i].a_w.w_symbol->s_name);
+        tags.emplace_back(m_tags[i].a_w.w_symbol->s_name);
         break;
       case A_FLOAT: {
         std::stringstream ss;

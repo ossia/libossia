@@ -213,28 +213,28 @@ struct osc_utilities
       switch(it->TypeTag())
       {
         case oscpack::INT32_TYPE_TAG:
-          t.push_back(int32_t{it->AsInt32Unchecked()});
+          t.emplace_back(int32_t{it->AsInt32Unchecked()});
           break;
         case oscpack::INT64_TYPE_TAG:
-          t.push_back(int32_t{(int)it->AsInt64Unchecked()});
+          t.emplace_back(int32_t{(int)it->AsInt64Unchecked()});
           break;
         case oscpack::FLOAT_TYPE_TAG:
-          t.push_back(float{it->AsFloatUnchecked()});
+          t.emplace_back(float{it->AsFloatUnchecked()});
           break;
         case oscpack::DOUBLE_TYPE_TAG:
-          t.push_back(float{(float)it->AsDoubleUnchecked()});
+          t.emplace_back(float{(float)it->AsDoubleUnchecked()});
           break;
         case oscpack::TIME_TAG_TYPE_TAG:
-          t.push_back(int32_t(it->AsTimeTagUnchecked()));
+          t.emplace_back(int32_t(it->AsTimeTagUnchecked()));
           break;
         case oscpack::CHAR_TYPE_TAG:
-          t.push_back(char{it->AsCharUnchecked()});
+          t.emplace_back(char{it->AsCharUnchecked()});
           break;
         case oscpack::TRUE_TYPE_TAG:
-          t.push_back(bool{true});
+          t.emplace_back(bool{true});
           break;
         case oscpack::FALSE_TYPE_TAG:
-          t.push_back(bool{false});
+          t.emplace_back(bool{false});
           break;
         case oscpack::STRING_TYPE_TAG:
           t.push_back(std::string{it->AsStringUnchecked()});
@@ -243,18 +243,18 @@ struct osc_utilities
           t.push_back(std::string{it->AsSymbolUnchecked()});
           break;
         case oscpack::BLOB_TYPE_TAG:
-          t.push_back(get_blob(it));
+          t.emplace_back(get_blob(it));
           break;
         case oscpack::RGBA_COLOR_TYPE_TAG: {
           auto c = it->AsRgbaColorUnchecked();
-          t.push_back(make_vec(
+          t.emplace_back(make_vec(
               uint8_t(c >> 24 & 0xFF), uint8_t(c >> 16 & 0xFF), uint8_t(c >> 8 & 0xFF),
               uint8_t(c & 0xFF)));
           break;
         }
         case oscpack::ARRAY_BEGIN_TYPE_TAG: {
           ++it;
-          t.push_back(create_list_(it, end));
+          t.emplace_back(create_list_(it, end));
           break;
         }
         case oscpack::ARRAY_END_TYPE_TAG: {

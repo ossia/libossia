@@ -154,7 +154,7 @@ public:
   }
 
   receiver() = default;
-  receiver(receiver&& other)
+  receiver(receiver&& other) noexcept
   {
     other.stop();
     m_impl = std::move(other.m_impl);
@@ -162,7 +162,7 @@ public:
     setPort(other.m_port);
   }
 
-  receiver& operator=(receiver&& other)
+  receiver& operator=(receiver&& other) noexcept
   {
     stop();
 

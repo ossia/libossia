@@ -52,5 +52,5 @@ inline void write_json(ossia::json_writer& writer, char c)
 
 inline std::string json_to_str(const rapidjson::StringBuffer& other)
 {
-  return std::string(other.GetString(), other.GetSize());
+  return {other.GetString(), other.GetSize()};
 }

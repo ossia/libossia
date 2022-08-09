@@ -62,9 +62,9 @@ public:
   t_matcher(ossia::net::node_base* n, object_base* p); // constructor
   ~t_matcher();
   t_matcher(const t_matcher&) = delete;
-  t_matcher(t_matcher&& other);
+  t_matcher(t_matcher&& other) noexcept;
   t_matcher& operator=(const t_matcher&) = delete;
-  t_matcher& operator=(t_matcher&& other);
+  t_matcher& operator=(t_matcher&& other) noexcept;
 
   void enqueue_value(ossia::value v);
   void output_value();

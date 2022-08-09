@@ -168,7 +168,7 @@ bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::val
     {
       std::string address = ossia::net::osc_address(addr);
       std::lock_guard lock(m_buffer_mutex);
-      m_buffer.push_back(ossia::net::full_parameter_data{address, val});
+      m_buffer.emplace_back(address, val);
     }
     else
     {
@@ -190,7 +190,7 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
     if(m_buffering)
     {
       std::lock_guard lock(m_buffer_mutex);
-      m_buffer.push_back(ossia::net::full_parameter_data{addr.address, val});
+      m_buffer.emplace_back(addr.address, val);
     }
     else
     {

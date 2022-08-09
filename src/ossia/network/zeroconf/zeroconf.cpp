@@ -97,8 +97,8 @@ zeroconf_server make_zeroconf_server(
 }
 
 zeroconf_server::zeroconf_server() = default;
-zeroconf_server::zeroconf_server(zeroconf_server&&) = default;
-zeroconf_server& zeroconf_server::operator=(zeroconf_server&&) = default;
+zeroconf_server::zeroconf_server(zeroconf_server&&) noexcept = default;
+zeroconf_server& zeroconf_server::operator=(zeroconf_server&&) noexcept = default;
 zeroconf_server::~zeroconf_server() = default;
 
 zeroconf_server::zeroconf_server(std::unique_ptr<servus::Servus> s)

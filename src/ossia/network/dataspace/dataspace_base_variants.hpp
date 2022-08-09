@@ -80,7 +80,7 @@ public:
         break;
     }
   }
-  angle_u(angle_u&& other)
+  angle_u(angle_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -111,7 +111,7 @@ public:
     }
     return *this;
   }
-  angle_u& operator=(angle_u&& other)
+  angle_u& operator=(angle_u&& other) noexcept
   {
     m_type = other.m_type;
     switch(m_type)
@@ -461,7 +461,7 @@ public:
         break;
     }
   }
-  color_u(color_u&& other)
+  color_u(color_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -535,7 +535,7 @@ public:
     }
     return *this;
   }
-  color_u& operator=(color_u&& other)
+  color_u& operator=(color_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -1321,7 +1321,7 @@ public:
         break;
     }
   }
-  distance_u(distance_u&& other)
+  distance_u(distance_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -1407,7 +1407,7 @@ public:
     }
     return *this;
   }
-  distance_u& operator=(distance_u&& other)
+  distance_u& operator=(distance_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -2234,7 +2234,7 @@ public:
         break;
     }
   }
-  gain_u(gain_u&& other)
+  gain_u(gain_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -2278,7 +2278,7 @@ public:
     }
     return *this;
   }
-  gain_u& operator=(gain_u&& other)
+  gain_u& operator=(gain_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -2682,7 +2682,7 @@ public:
         break;
     }
   }
-  orientation_u(orientation_u&& other)
+  orientation_u(orientation_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -2720,7 +2720,7 @@ public:
     }
     return *this;
   }
-  orientation_u& operator=(orientation_u&& other)
+  orientation_u& operator=(orientation_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -3131,7 +3131,7 @@ public:
         break;
     }
   }
-  position_u(position_u&& other)
+  position_u(position_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -3205,7 +3205,7 @@ public:
     }
     return *this;
   }
-  position_u& operator=(position_u&& other)
+  position_u& operator=(position_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -3936,7 +3936,7 @@ public:
         break;
     }
   }
-  speed_u(speed_u&& other)
+  speed_u(speed_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -3994,7 +3994,7 @@ public:
     }
     return *this;
   }
-  speed_u& operator=(speed_u&& other)
+  speed_u& operator=(speed_u&& other) noexcept
   {
 
     m_type = other.m_type;
@@ -4583,7 +4583,7 @@ public:
         break;
     }
   }
-  timing_u(timing_u&& other)
+  timing_u(timing_u&& other) noexcept
       : m_type{other.m_type}
   {
     switch(m_type)
@@ -4657,7 +4657,7 @@ public:
     }
     return *this;
   }
-  timing_u& operator=(timing_u&& other)
+  timing_u& operator=(timing_u&& other) noexcept
   {
 
     m_type = other.m_type;

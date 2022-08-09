@@ -1717,8 +1717,8 @@ public:
   void save_preset(const std::string& filename);
 
 #if defined(OSSIA_CPP_CXX11)
-  node(node&&);
-  node& operator=(node&&);
+  node(node&&) noexcept;
+  node& operator=(node&&) noexcept;
 #endif
 
   /**
