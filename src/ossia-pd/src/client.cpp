@@ -17,9 +17,7 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 client::client()
@@ -482,5 +480,4 @@ extern "C" void setup_ossia0x2eclient(void)
 
   ossia_pd::client_class = c;
 }
-} // pd namespace
 } // ossia namespace

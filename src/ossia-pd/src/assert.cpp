@@ -7,9 +7,7 @@
 
 #include <ossia-pd/src/assert.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 static t_eclass* assert_class;
@@ -97,5 +95,4 @@ extern "C" void setup_ossia0x2eassert(void)
   assert_class = c;
 }
 
-} // pd namespace
 } // ossia namespace

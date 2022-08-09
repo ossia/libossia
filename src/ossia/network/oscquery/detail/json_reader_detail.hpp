@@ -3,9 +3,7 @@
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/exceptions.hpp>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 inline void json_assert(bool val)
 {
@@ -43,5 +41,4 @@ struct json_parser_impl
 }
 
 using val_t = rapidjson::Value;
-}
 }

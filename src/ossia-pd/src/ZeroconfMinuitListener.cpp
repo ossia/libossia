@@ -9,9 +9,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 std::vector<ossia::net::minuit_connection_data> ZeroconfMinuitListener::m_devices;
 std::vector<std::vector<ossia::net::minuit_connection_data>::iterator>
@@ -157,5 +155,4 @@ void ZeroconfMinuitListener::browse()
   service.browse(0);
 }
 
-}
 } // namespace ossia

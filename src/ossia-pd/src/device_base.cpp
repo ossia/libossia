@@ -7,9 +7,7 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 device_base::device_base(t_eclass* c)
@@ -184,5 +182,4 @@ void device_base::disconnect_slots()
   }
 }
 
-} // namespace pd
 } // namespace ossia

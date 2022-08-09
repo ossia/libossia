@@ -2,9 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 
 //! Puts the OSC typetag of a value in a std::string
@@ -202,6 +200,5 @@ net::parameter_base* setup_parameter(ossia::string_view t, net::node_base& node)
 void set_osc_typetag(net::node_base& n, ossia::string_view tag)
 {
   setup_parameter(get_type_from_osc_typetag(tag), n);
-}
 }
 }

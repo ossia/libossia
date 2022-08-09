@@ -6,9 +6,7 @@
 
 #include <exception>
 
-namespace ossia
-{
-namespace minuit
+namespace ossia::minuit
 {
 enum class minuit_command : char
 {
@@ -280,6 +278,5 @@ inline minuit_operation get_operation(char str)
 inline minuit_operation get_operation(ossia::string_view str)
 {
   return get_operation(str[0]);
-}
 }
 }

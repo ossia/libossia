@@ -2,9 +2,7 @@
 #include "device_base.hpp"
 #include "m_pd.h" // for post()
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 namespace Protocol_Settings
@@ -78,5 +76,4 @@ public:
   static void stop_expose(device* x, float index);
 };
 
-}
 } // namespace

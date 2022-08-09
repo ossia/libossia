@@ -4,9 +4,7 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 attribute::attribute()
@@ -306,5 +304,4 @@ ossia::safe_set<attribute*>& attribute::quarantine()
   return ossia_pd::instance().attribute_quarantine;
 }
 
-} // pd namespace
 } // ossia namespace

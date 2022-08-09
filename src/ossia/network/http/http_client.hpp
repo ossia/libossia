@@ -8,9 +8,7 @@
 
 #include <utility>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 using tcp = boost::asio::ip::tcp;
 
@@ -221,5 +219,4 @@ private:
   Fun m_fun;
   Err m_err;
 };
-}
 }

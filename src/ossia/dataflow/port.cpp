@@ -67,13 +67,9 @@ void process_port_values(
 }*/
 }
 
-inlet::~inlet()
-{
-}
+inlet::~inlet() = default;
 
-outlet::~outlet()
-{
-}
+outlet::~outlet() = default;
 
 void inlet::pre_process()
 {
@@ -176,34 +172,18 @@ void outlet::write(execution_state& e)
       do_nothing_for_nodes{});
 }
 
-value_inlet::~value_inlet()
-{
-}
+value_inlet::~value_inlet() = default;
 
-value_outlet::~value_outlet()
-{
-}
-audio_inlet::~audio_inlet()
-{
-}
+value_outlet::~value_outlet() = default;
+audio_inlet::~audio_inlet() = default;
 
-audio_outlet::~audio_outlet()
-{
-}
+audio_outlet::~audio_outlet() = default;
 
-texture_inlet::~texture_inlet()
-{
-}
-texture_outlet::~texture_outlet()
-{
-}
+texture_inlet::~texture_inlet() = default;
+texture_outlet::~texture_outlet() = default;
 
-geometry_inlet::~geometry_inlet()
-{
-}
-geometry_outlet::~geometry_outlet()
-{
-}
+geometry_inlet::~geometry_inlet() = default;
+geometry_outlet::~geometry_outlet() = default;
 
 void audio_outlet::post_process()
 {
@@ -227,13 +207,9 @@ void audio_outlet::post_process()
   }
 }
 
-midi_inlet::~midi_inlet()
-{
-}
+midi_inlet::~midi_inlet() = default;
 
-midi_outlet::~midi_outlet()
-{
-}
+midi_outlet::~midi_outlet() = default;
 
 void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out)
 {

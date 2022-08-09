@@ -18,9 +18,7 @@ class Servus
 };
 }
 #endif
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 bool zeroconf_supported()
 {
@@ -106,6 +104,5 @@ zeroconf_server::~zeroconf_server() = default;
 zeroconf_server::zeroconf_server(std::unique_ptr<servus::Servus> s)
     : server{std::move(s)}
 {
-}
 }
 }

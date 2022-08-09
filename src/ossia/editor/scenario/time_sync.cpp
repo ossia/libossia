@@ -8,9 +8,7 @@
 namespace ossia
 {
 
-time_sync_callback::~time_sync_callback()
-{
-}
+time_sync_callback::~time_sync_callback() = default;
 void time_sync_callback::triggered()
 {
 }

@@ -132,9 +132,7 @@ public:
   osc_generic_bidir_protocol& operator=(const osc_generic_bidir_protocol&) = delete;
   osc_generic_bidir_protocol& operator=(osc_generic_bidir_protocol&&) = delete;
 
-  ~osc_generic_bidir_protocol() override
-  {
-  }
+  ~osc_generic_bidir_protocol() override = default;
 
   bool update(ossia::net::node_base& node_base) override
   {
@@ -292,9 +290,7 @@ public:
   osc_generic_server_protocol& operator=(const osc_generic_server_protocol&) = delete;
   osc_generic_server_protocol& operator=(osc_generic_server_protocol&&) = delete;
 
-  ~osc_generic_server_protocol() override
-  {
-  }
+  ~osc_generic_server_protocol() override = default;
 
   bool update(ossia::net::node_base& node_base) override
   {
@@ -404,9 +400,7 @@ public:
   osc_generic_client_protocol& operator=(const osc_generic_client_protocol&) = delete;
   osc_generic_client_protocol& operator=(osc_generic_client_protocol&&) = delete;
 
-  ~osc_generic_client_protocol() override
-  {
-  }
+  ~osc_generic_client_protocol() override = default;
 
   bool update(ossia::net::node_base& node_base) override
   {

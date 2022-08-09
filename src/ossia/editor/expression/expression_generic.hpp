@@ -5,9 +5,7 @@
 
 #include <memory>
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 //! This expression allows the users of the library to implement their own
 //! behaviour.
@@ -57,5 +55,4 @@ private:
     expr->on_removing_last_callback(*this);
   }
 };
-}
 }

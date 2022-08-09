@@ -3,9 +3,7 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/value/value_traits.hpp>
-namespace ossia
-{
-namespace detail
+namespace ossia::detail
 {
 
 template <typename T, typename U>
@@ -173,5 +171,4 @@ struct convert_to_unit_visitor
     return {};
   }
 };
-}
 }

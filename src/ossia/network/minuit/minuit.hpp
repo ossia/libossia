@@ -24,9 +24,7 @@ class sender;
 class receiver;
 }
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 struct osc_1_0_outbound_stream_visitor;
 class generic_device;
@@ -114,5 +112,4 @@ private:
   std::atomic<long long> m_lastSentMessage;
   std::atomic<long long> m_lastRecvMessage;
 };
-}
 }

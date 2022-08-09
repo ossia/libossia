@@ -13,9 +13,7 @@ public:
     m_outlets.push_back(new ossia::value_outlet);
   }
 
-  ~step() override
-  {
-  }
+  ~step() override = default;
 
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {

@@ -115,26 +115,33 @@ ossia_domain_t ossia_domain_make_value_set(const ossia_value_t* v, size_t n)
 }
 void ossia_domain_get_values(ossia_domain_t domain, ossia_value_t** values, size_t* size)
 {
-  if(!domain || !values || !size)
-  {
-    ossia_log_error("ossia_domain_get_values: a parameter is null");
-  }
-  else
-  {
-    auto vals = ossia::get_values(domain->domain);
-    size_t N = vals.size();
-    auto ptr = new ossia_value_t[N];
-    *size = N;
-    for(size_t i = 0; i < N; i++)
+  return safe_function(__func__, [=] {
+    if(!domain || !values || !size)
     {
-      ptr[i] = convert(vals[i]);
+      ossia_log_error("ossia_domain_get_values: a parameter is null");
+      if(values)
+        *values = nullptr;
+      if(size)
+        *size = 0;
+      return;
     }
-    *values = ptr;
-    return;
-  }
+    else
+    {
+      auto vals = ossia::get_values(domain->domain);
+      size_t N = vals.size();
+      auto ptr = new ossia_value_t[N];
+      *size = N;
+      for(size_t i = 0; i < N; i++)
+      {
+        ptr[i] = convert(vals[i]);
+      }
+      *values = ptr;
+      return;
+    }
 
-  *values = nullptr;
-  *size = 0;
+    *values = nullptr;
+    *size = 0;
+  });
 }
 
 void ossia_domain_set_values(ossia_domain_t domain, const ossia_value_t* in, size_t size)

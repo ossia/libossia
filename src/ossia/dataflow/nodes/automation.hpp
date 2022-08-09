@@ -44,9 +44,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  ~automation() override
-  {
-  }
+  ~automation() override = default;
 
   [[nodiscard]] std::string label() const noexcept override
   {
@@ -90,9 +88,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  ~float_automation() override
-  {
-  }
+  ~float_automation() override = default;
 
   std::string label() const noexcept override
   {

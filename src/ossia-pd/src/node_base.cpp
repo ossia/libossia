@@ -12,9 +12,7 @@
 #include <ossia-pd/src/node_base.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 node_base::node_base(t_eclass* x)
@@ -240,5 +238,4 @@ void node_base::set(node_base* x, t_symbol* s, int argc, t_atom* argv)
   }
 }
 
-} // namespace pd
 } // namespace ossia

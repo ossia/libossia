@@ -32,7 +32,7 @@ void ossia_log_error(const char* error)
 struct ossia_logger
 {
   ossia_logger(std::string host, std::string name)
-      : connection{std::make_shared<ossia::websocket_threaded_connection>(host)}
+      : connection{std::make_shared<ossia::websocket_threaded_connection>(std::move(host))}
       , logger{"", std::make_shared<ossia::websocket_log_sink>(connection, name)}
       , heartbeat{connection, "name", std::chrono::seconds(5)}
   {

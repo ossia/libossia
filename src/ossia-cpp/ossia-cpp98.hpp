@@ -1,7 +1,7 @@
 #ifndef OSSIA_CPP98_HPP_2017_07_07
 #define OSSIA_CPP98_HPP_2017_07_07
 #include <ossia_export.h>
-#include <stddef.h>
+#include <cstddef>
 
 #include <string>
 #include <vector>
@@ -460,8 +460,8 @@ public:
   void set_string(std::string v);
 
 #if defined(OSSIA_CPP_CXX11)
-  value(value&& v);
-  value& operator=(value&& v);
+  value(value&& v) noexcept;
+  value& operator=(value&& v) noexcept;
 #endif
 
   /**

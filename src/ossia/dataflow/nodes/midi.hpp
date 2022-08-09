@@ -45,9 +45,7 @@ public:
     m_toStop.container.reserve(64);
   }
 
-  ~midi() override
-  {
-  }
+  ~midi() override = default;
 
   void set_channel(int c)
   {

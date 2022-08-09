@@ -25,9 +25,7 @@ public:
   {
   }
 
-  ~udp_receive_socket()
-  {
-  }
+  ~udp_receive_socket() = default;
 
   void open()
   {

@@ -6,11 +6,7 @@
 #include <ossia/network/value/value.hpp>
 
 #include <oscpack/osc/OscTypes.h>
-namespace ossia
-{
-namespace oscquery
-{
-namespace detail
+namespace ossia::oscquery::detail
 {
 
 // TODO base64 encode
@@ -633,6 +629,4 @@ struct json_to_value_unchecked
     throw std::runtime_error("json_to_value_unchecked: no type");
   }
 };
-}
-}
 }

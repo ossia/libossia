@@ -239,6 +239,11 @@ void ossia_parameter_to_byte_array(ossia_parameter_t address, char** out, size_t
     if(!address || !out || !size)
     {
       ossia_log_error("ossia_parameter_to_byte_array: a parameter is null");
+      if(out)
+        *out = nullptr;
+      if(size)
+        *size = 0;
+      return;
     }
     else
     {
@@ -247,8 +252,6 @@ void ossia_parameter_to_byte_array(ossia_parameter_t address, char** out, size_t
         copy_bytes(*casted_val, out, size);
       return;
     }
-    *out = nullptr;
-    *size = 0;
   });
 }
 
@@ -276,6 +279,11 @@ void ossia_parameter_to_list(
     if(!parameter || !out || !size)
     {
       ossia_log_error("ossia_parameter_to_list: a parameter is null");
+      if(out)
+        *out = nullptr;
+      if(size)
+        *size = 0;
+      return;
     }
     else
     {
@@ -293,9 +301,6 @@ void ossia_parameter_to_list(
       }
       return;
     }
-
-    *out = nullptr;
-    *size = 0;
   });
 }
 
@@ -305,6 +310,11 @@ void ossia_parameter_to_fn(ossia_parameter_t parameter, float** out, size_t* siz
     if(!parameter || !out || !size)
     {
       ossia_log_error("ossia_parameter_to_fn: a parameter is null");
+      if(out)
+        *out = nullptr;
+      if(size)
+        *size = 0;
+      return;
     }
     else
     {
@@ -322,9 +332,6 @@ void ossia_parameter_to_fn(ossia_parameter_t parameter, float** out, size_t* siz
       }
       return;
     }
-
-    *out = nullptr;
-    *size = 0;
   });
 }
 
@@ -334,6 +341,11 @@ void ossia_parameter_to_in(ossia_parameter_t parameter, int** out, size_t* size)
     if(!parameter || !out || !size)
     {
       ossia_log_error("ossia_parameter_to_fn: a parameter is null");
+      if(out)
+        *out = nullptr;
+      if(size)
+        *size = 0;
+      return;
     }
     else
     {
@@ -351,9 +363,6 @@ void ossia_parameter_to_in(ossia_parameter_t parameter, int** out, size_t* size)
       }
       return;
     }
-
-    *out = nullptr;
-    *size = 0;
   });
 }
 void ossia_parameter_push_value(ossia_parameter_t address, ossia_value_t value)

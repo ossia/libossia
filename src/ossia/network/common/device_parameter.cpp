@@ -17,9 +17,7 @@ device_parameter::device_parameter(
   set_repetition_filter(repetition_filter::ON);
 }
 
-device_parameter::~device_parameter()
-{
-}
+device_parameter::~device_parameter() = default;
 
 void device_parameter::device_value_change_event(const ossia::value& val)
 {

@@ -6,9 +6,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/value/value.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 /**
  * @brief The data that can be found inside a parameter
@@ -171,5 +169,4 @@ public:
     return critical;
   }
 };
-}
 }

@@ -10,9 +10,7 @@
 #include <QJSValue>
 #endif
 
-namespace ossia
-{
-namespace qt
+namespace ossia::qt
 {
 
 #if defined(QT_QML_LIB)
@@ -723,7 +721,6 @@ value qt_to_ossia::operator()(const QVariant& v)
     default:
       return operator()();
   }
-}
 }
 }
 #endif

@@ -36,9 +36,7 @@
 
 #include <ossia-qt/qml_context.hpp>
 #endif
-namespace ossia
-{
-namespace qt
+namespace ossia::qt
 {
 
 template <std::size_t N>
@@ -597,7 +595,6 @@ QMetaObject::Connection connectSignalToMatchingMethod(
   return {};
 }
 #endif
-}
 }
 
 OSSIA_EXPORT QDebug operator<<(QDebug s, const ossia::value& v);

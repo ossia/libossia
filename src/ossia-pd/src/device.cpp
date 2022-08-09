@@ -10,9 +10,7 @@
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 device::device()
@@ -460,5 +458,4 @@ extern "C" void setup_ossia0x2edevice(void)
 
   ossia_pd::device_class = c;
 }
-} // pd namespace
 } // ossia namespace

@@ -6,9 +6,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 #pragma mark t_remote
@@ -488,5 +486,4 @@ ossia::safe_set<remote*>& remote::quarantine()
   return ossia_pd::instance().remote_quarantine;
 }
 
-} // pd namespace
 } // ossia namespace

@@ -36,9 +36,7 @@ audio_engine::audio_engine()
   audio_tick = default_audio_tick{};
 }
 
-audio_engine::~audio_engine()
-{
-}
+audio_engine::~audio_engine() = default;
 
 void audio_engine::wait(int milliseconds)
 {

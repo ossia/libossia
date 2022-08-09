@@ -34,9 +34,7 @@ public:
     return "mapping";
   }
 
-  ~mapping() override
-  {
-  }
+  ~mapping() override = default;
 
   void set_behavior(const ossia::behavior& b)
   {

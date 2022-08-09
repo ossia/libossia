@@ -3,9 +3,7 @@
 #include <ossia/detail/for_each.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 
 const key_map_type& ossia_to_oscquery_key()
@@ -64,6 +62,5 @@ oscquery_to_ossia_key(ossia::string_view s)
   if(it != m.end())
     return it.value();
   return std::nullopt;
-}
 }
 }

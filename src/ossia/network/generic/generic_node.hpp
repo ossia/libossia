@@ -5,9 +5,7 @@
 
 #include <functional>
 #include <map>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 class protocol_base;
 
@@ -61,5 +59,4 @@ private:
   {
   }
 };
-}
 }

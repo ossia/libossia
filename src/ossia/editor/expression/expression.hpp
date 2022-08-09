@@ -44,9 +44,7 @@
  * \ref expression_generic
  */
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 /**
  * @brief evaluate
@@ -223,6 +221,5 @@ expression_ptr make_expression_generic(Args&&... args)
   return std::make_unique<expression_base>(
       ossia::in_place_type<expression_generic>,
       std::make_unique<T>(std::forward<Args>(args)...));
-}
 }
 }

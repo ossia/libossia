@@ -6,9 +6,7 @@
 /**
  * \file expression_bool.hpp
  */
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 /**
  * @brief expression_bool : a constant boolean value.
@@ -39,5 +37,4 @@ public:
   {
   }
 };
-}
 }

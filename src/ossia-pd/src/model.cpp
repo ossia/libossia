@@ -8,9 +8,7 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 model::model()
@@ -296,5 +294,4 @@ ossia::safe_set<model*>& model::quarantine()
 {
   return ossia_pd::instance().model_quarantine;
 }
-} // pd namespace
 } // ossia namespace

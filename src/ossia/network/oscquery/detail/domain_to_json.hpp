@@ -2,11 +2,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 
-namespace ossia
-{
-namespace oscquery
-{
-namespace detail
+namespace ossia::oscquery::detail
 {
 inline void write_json(ossia::json_writer& writer, int v)
 {
@@ -253,6 +249,4 @@ struct domain_to_json
     */
   }
 };
-}
-}
 }

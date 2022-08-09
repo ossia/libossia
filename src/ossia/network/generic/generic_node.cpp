@@ -11,9 +11,7 @@
 
 #include <cassert>
 #include <iostream>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 generic_node_base::generic_node_base(
     std::string name, ossia::net::device_base& aDevice, node_base& aParent)
@@ -146,6 +144,5 @@ std::unique_ptr<ossia::net::node_base>
 generic_node::make_child(const std::string& name_base)
 {
   return std::make_unique<generic_node>(name_base, m_device, *this);
-}
 }
 }

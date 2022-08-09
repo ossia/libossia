@@ -17,9 +17,7 @@
 
 struct wiimote_t;
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
 {
@@ -72,5 +70,4 @@ private:
   unsigned int m_wiimote_count{};
   ossia::net::device_base* m_device{};
 };
-}
 }

@@ -4,9 +4,7 @@
 
 #include <ossia-pd/src/parameter_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class attribute : public parameter_base
@@ -36,5 +34,4 @@ public:
 
   void on_device_deleted(const ossia::net::node_base&);
 };
-} // namespace pd
 } // namespace ossia

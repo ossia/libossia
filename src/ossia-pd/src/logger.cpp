@@ -7,9 +7,7 @@
 
 #include <ossia-pd/src/logger.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 logger::logger(int argc, t_atom* argv)
@@ -149,5 +147,4 @@ extern "C" void setup_ossia0x2elogger(void)
   ossia_pd::logger_class = c;
 }
 
-} // pd namespace
 } // ossia namespace

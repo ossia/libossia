@@ -10,9 +10,7 @@ audio_protocol::audio_protocol()
 {
 }
 
-audio_protocol::~audio_protocol()
-{
-}
+audio_protocol::~audio_protocol() = default;
 
 void audio_protocol::setup_tree(int inputs, int outputs)
 {

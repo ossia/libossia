@@ -43,9 +43,7 @@
 #include <qqml.h>
 
 #include <ossia-qt/js_utilities.hpp>
-namespace ossia
-{
-namespace qt
+namespace ossia::qt
 {
 
 void qml_plugin::reg(const char* uri)
@@ -124,5 +122,4 @@ void qml_plugin::registerTypes(const char* uri)
   static ossia::context c;
 }
 #endif
-}
 }

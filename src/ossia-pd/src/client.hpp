@@ -5,9 +5,7 @@
 
 #include <ossia-pd/src/device_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class client : public device_base
@@ -72,5 +70,4 @@ public:
   int m_argc{};
   t_atom* m_argv{};
 };
-}
 } // namespace

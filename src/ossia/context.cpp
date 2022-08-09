@@ -41,9 +41,7 @@ template class OSSIA_EXTERN_EXPORT_CPP(OSSIA_EXPORT) tsl::hopscotch_map<
 #endif
 namespace ossia
 {
-invalid_callback_error::~invalid_callback_error()
-{
-}
+invalid_callback_error::~invalid_callback_error() = default;
 
 static void ossia_global_init()
 {

@@ -3,9 +3,7 @@
 #include <ossia/editor/curve/behavior.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/network/value/value.hpp>
-namespace ossia
-{
-namespace detail
+namespace ossia::detail
 {
 
 using vec_behavior = ossia::static_vector<curve<double, float>*, 4>;
@@ -293,5 +291,4 @@ struct compute_value_visitor
     return t;
   }
 };
-}
 }

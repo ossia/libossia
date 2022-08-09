@@ -19,9 +19,7 @@
 #include <boost/algorithm/string.hpp>
 
 #include <oscpack/osc/OscPrintReceivedElements.h>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 using sender_t = osc::sender<osc_1_0_outbound_stream_visitor>;
 
@@ -41,9 +39,7 @@ osc_protocol::osc_protocol(
   m_buffer.reserve(128);
 }
 
-osc_protocol::~osc_protocol()
-{
-}
+osc_protocol::~osc_protocol() = default;
 
 const std::string& osc_protocol::get_ip() const
 {
@@ -273,6 +269,5 @@ void osc_protocol::on_received_message(
 void osc_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-}
 }
 }

@@ -14,9 +14,7 @@
 // see
 // http://stackoverflow.com/questions/23437778/comparing-3-modern-c-ways-to-convert-integral-values-to-strings
 #include <boost/lexical_cast.hpp>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 struct osc_utilities
@@ -520,7 +518,6 @@ struct osc_write_domain_visitor
   {
   }
 };
-}
 }
 
 namespace oscpack

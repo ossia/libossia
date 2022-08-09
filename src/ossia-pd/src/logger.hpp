@@ -3,9 +3,7 @@
 
 #include <ossia-pd/src/object_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class logger : public object_base
@@ -31,5 +29,4 @@ public:
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<ossia::websocket_heartbeat> m_beat;
 };
-} // pd namespace
 } // ossia namespace

@@ -9,9 +9,7 @@
 #include <websocketpp/common/thread.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 //! Low-level Websocket client
@@ -251,5 +249,4 @@ protected:
   std::atomic_bool m_open{false};
   std::atomic_bool m_connected{false};
 };
-}
 }

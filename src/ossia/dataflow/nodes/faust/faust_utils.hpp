@@ -490,9 +490,7 @@ struct custom_dsp_poly_factory : public dsp_factory
   {
   }
 
-  virtual ~custom_dsp_poly_factory()
-  {
-  }
+  virtual ~custom_dsp_poly_factory() = default;
 
   virtual std::string getName()
   {

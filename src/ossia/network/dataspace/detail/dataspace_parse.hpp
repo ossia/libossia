@@ -9,10 +9,7 @@
 
 #include <brigand/algorithms/wrap.hpp>
 #include <brigand/sequences/list.hpp>
-namespace ossia
-{
-
-namespace detail
+namespace ossia::detail
 {
 using unit_map = string_view_map<ossia::unit_t>;
 
@@ -155,5 +152,4 @@ struct make_unit_symbols_helper
     });
   }
 };
-}
 }

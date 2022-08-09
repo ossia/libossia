@@ -4,9 +4,7 @@
 
 #include <array>
 #include <string>
-namespace ossia
-{
-namespace minuit
+namespace ossia::minuit
 {
 class name_table
 {
@@ -34,5 +32,4 @@ public:
 private:
   std::array<std::string, 9> m_actions;
 };
-}
 }

@@ -7,9 +7,7 @@ namespace oscpack
 {
 class OutboundPacketStream;
 }
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 struct osc_outbound_visitor
 {
@@ -138,5 +136,4 @@ public:
 private:
   mutable int m_depth = 0;
 };
-}
 }

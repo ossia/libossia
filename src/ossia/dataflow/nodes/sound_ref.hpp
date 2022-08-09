@@ -14,9 +14,7 @@ public:
     m_outlets.push_back(&audio_out);
   }
 
-  ~sound_ref()
-  {
-  }
+  ~sound_ref() = default;
 
   [[nodiscard]] std::string label() const noexcept override
   {

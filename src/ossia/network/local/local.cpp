@@ -29,9 +29,7 @@ multiplex_protocol::multiplex_protocol()
 {
 }
 
-multiplex_protocol::~multiplex_protocol()
-{
-}
+multiplex_protocol::~multiplex_protocol() = default;
 
 bool multiplex_protocol::pull(ossia::net::parameter_base& address)
 {

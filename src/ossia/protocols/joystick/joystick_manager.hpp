@@ -141,9 +141,7 @@ struct joystick_event_processor
   {
   }
 
-  ~joystick_event_processor()
-  {
-  }
+  ~joystick_event_processor() = default;
 
   static joystick_event_processor& instance(joystick_protocol_manager& manager)
   {

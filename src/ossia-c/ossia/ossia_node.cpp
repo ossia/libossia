@@ -419,28 +419,35 @@ void ossia_node_set_tags(ossia_node_t node, const char** tags, size_t sz)
 OSSIA_EXPORT
 void ossia_node_get_tags(ossia_node_t node, char*** tags, size_t* size)
 {
-  if(!node || !tags || !size)
-  {
-    ossia_log_error("ossia_node_get_tags: a parameter is null");
-  }
-  else
-  {
-    auto t = ossia::net::get_tags(*convert_node(node));
-    if(t && !t->empty())
+  return safe_function(__func__, [=] {
+    if(!node || !tags || !size)
     {
-      auto& vtags = *t;
-      auto ptr = new char*[vtags.size()];
-      for(size_t i = 0; i < vtags.size(); ++i)
-      {
-        ptr[i] = copy_string(vtags[i]);
-      }
-      *tags = ptr;
+      ossia_log_error("ossia_node_get_tags: a parameter is null");
+      if(tags)
+        *tags = nullptr;
+      if(size)
+        *size = 0;
       return;
     }
-  }
+    else
+    {
+      auto t = ossia::net::get_tags(*convert_node(node));
+      if(t && !t->empty())
+      {
+        auto& vtags = *t;
+        auto ptr = new char*[vtags.size()];
+        for(size_t i = 0; i < vtags.size(); ++i)
+        {
+          ptr[i] = copy_string(vtags[i]);
+        }
+        *tags = ptr;
+        return;
+      }
+    }
 
-  *tags = nullptr;
-  *size = 0;
+    *tags = nullptr;
+    *size = 0;
+  });
 }
 
 void ossia_tags_free(char** tags, size_t size)
@@ -696,7 +703,7 @@ void ossia_node_set_default_value(ossia_node_t node, ossia_value_t default_value
     if(!default_value)
       ossia::net::set_default_value(n, std::nullopt);
     else
-      ossia::net::set_default_value(n, convert(default_value->value));
+      ossia::net::set_default_value(n, default_value->value);
   });
 }
 ossia_value_t ossia_node_get_default_value(ossia_node_t node)
@@ -705,7 +712,7 @@ ossia_value_t ossia_node_get_default_value(ossia_node_t node)
     if(!node)
     {
       ossia_log_error("ossia_node_get_default_value: node is null");
-      return 0;
+      return nullptr;
     }
 
     auto val = ossia::net::get_default_value(*convert_node(node));

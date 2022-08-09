@@ -6,9 +6,7 @@
 
 namespace ossia
 {
-time_process::~time_process()
-{
-}
+time_process::~time_process() = default;
 
 void time_process::offset(time_value date)
 {

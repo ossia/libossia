@@ -1,4 +1,4 @@
-﻿// This is an open source non-commercial project. Dear PVS-Studio, please check
+// This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_mirror.hpp"
 
@@ -19,9 +19,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 struct http_answer
 {
@@ -911,6 +909,5 @@ void load_oscquery_device(net::device_base& dev, std::string json)
   doc.Parse(json.c_str());
   if(!doc.HasParseError())
     json_parser::parse_namespace(dev.get_root_node(), doc);
-}
 }
 }

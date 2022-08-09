@@ -8,9 +8,7 @@
 #include <boost/asio/ip/basic_resolver.hpp>
 #include <boost/asio/ip/tcp.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 std::vector<std::shared_ptr<ossia::net::generic_device>>
     ZeroconfOscqueryListener::m_devices;
@@ -132,5 +130,4 @@ void ZeroconfOscqueryListener::browse()
   service.browse(0);
 }
 
-}
 } // namespace ossia

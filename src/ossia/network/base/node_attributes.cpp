@@ -4,9 +4,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String)     \
   std::optional<Type> get_##Name(const extended_attributes& n)     \
@@ -447,6 +445,5 @@ void set_unit(ossia::net::node_base& n, unit_t v)
 {
   if(auto addr = n.get_parameter())
     addr->set_unit(std::move(v));
-}
 }
 }

@@ -11,9 +11,7 @@
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
 
-namespace ossia
-{
-namespace minuit
+namespace ossia::minuit
 {
 template <minuit_command Req, minuit_operation Op>
 struct minuit_behavior
@@ -779,5 +777,4 @@ public:
     }
   }
 };
-}
 }

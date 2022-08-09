@@ -44,9 +44,7 @@ dmx_parameter::dmx_parameter(
 {
 }
 
-dmx_parameter::~dmx_parameter()
-{
-}
+dmx_parameter::~dmx_parameter() = default;
 
 void dmx_parameter::device_update_value()
 {

@@ -4,9 +4,7 @@
 
 #include "ossia-pd.hpp"
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 explorer::explorer(int argc, t_atom* argv)
     : object_base{ossia_pd::explorer_class}
@@ -77,5 +75,4 @@ extern "C" void setup_ossia0x2eexplorer(void)
   ossia_pd::explorer_class = c;
 }
 
-}
 }

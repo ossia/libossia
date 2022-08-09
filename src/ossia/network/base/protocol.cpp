@@ -4,9 +4,7 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/network_logger.hpp>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 protocol_base::~protocol_base() = default;
 
@@ -79,6 +77,5 @@ void protocol_base::connect()
 std::future<void> protocol_base::pull_async(parameter_base&)
 {
   return {};
-}
 }
 }

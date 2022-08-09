@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia-pd/src/object_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 class explorer
     : public object_base // inherite from object_base just to use default constructor
@@ -22,5 +20,4 @@ public:
 
   void stop_monitoring();
 };
-} // pd namespace
 } // ossia namespace

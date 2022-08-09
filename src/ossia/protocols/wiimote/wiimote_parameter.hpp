@@ -5,9 +5,7 @@
 
 struct wiimote_t;
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 class rumble_parameter : public device_parameter
@@ -40,5 +38,4 @@ private:
   const uint8_t m_led;
   static std::map<wiimote_t*, uint8_t> m_led_mask;
 };
-}
 }

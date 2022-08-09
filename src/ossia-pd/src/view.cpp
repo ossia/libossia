@@ -4,9 +4,7 @@
 #include <ossia-pd/src/utils.hpp>
 #include <ossia-pd/src/view.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 view::view()
@@ -265,5 +263,4 @@ ossia::safe_set<view*>& view::quarantine()
   return ossia_pd::instance().view_quarantine;
 }
 
-} // pd namespace
 } // ossia namespace

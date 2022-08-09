@@ -21,9 +21,7 @@ public:
     m_outlets.push_back(&audio_out);
   }
 
-  ~sound_mmap()
-  {
-  }
+  ~sound_mmap() = default;
 
   void set_start(std::size_t v)
   {

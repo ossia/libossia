@@ -16,9 +16,7 @@ class QQmlComponent;
 class QNetworkAccessManager;
 class QNetworkReply;
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 struct http_parameter_data_base
@@ -133,7 +131,6 @@ using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
 class OSSIA_EXPORT HTTP : public QObject
 {
 };
-}
 }
 
 Q_DECLARE_METATYPE(ossia::net::http_parameter*)

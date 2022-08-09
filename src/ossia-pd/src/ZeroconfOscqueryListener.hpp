@@ -7,9 +7,7 @@
 
 #include <memory>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 class ZeroconfOscqueryListener final : servus::Listener
 {
@@ -32,5 +30,4 @@ private:
   static std::mutex m_mutex;
 };
 
-} // namespace pd
 } // namespace ossia

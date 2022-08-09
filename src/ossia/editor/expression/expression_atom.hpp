@@ -13,9 +13,7 @@
 /**
  * \file expression_atom.hpp
  */
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 /**
  * @brief expression_atom : numeric operators in expressions.
@@ -102,5 +100,4 @@ private:
 
   comparator m_operator{};
 };
-}
 }

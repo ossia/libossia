@@ -3,9 +3,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 class OSSIA_EXPORT generic_device
     : public ossia::net::device_base
@@ -35,5 +33,4 @@ public:
 
   ~generic_device();
 };
-}
 }

@@ -12,9 +12,7 @@
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 using t_ossia = device;
@@ -273,5 +271,4 @@ void ossia_pd::discover_network_devices(ossia_pd* x)
   clock_delay(ossia_pd::browse_clock, 100.);
 }
 
-}
 } // namespace

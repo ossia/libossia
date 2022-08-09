@@ -10,13 +10,9 @@
 namespace ossia::oscquery
 {
 
-html_builder::~html_builder()
-{
-}
+html_builder::~html_builder() = default;
 
-static_html_builder::~static_html_builder()
-{
-}
+static_html_builder::~static_html_builder() = default;
 
 struct static_html_builder_impl
 {

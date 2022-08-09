@@ -10,9 +10,7 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 struct dummy_lock
 {
@@ -337,6 +335,5 @@ generic_parameter& generic_parameter::set_unit(const unit_t& v)
   }
   m_node.get_device().on_attribute_modified(m_node, std::string(text_unit()));
   return *this;
-}
 }
 }

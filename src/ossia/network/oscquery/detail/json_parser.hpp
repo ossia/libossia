@@ -5,9 +5,7 @@
 
 #include <memory>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 //! Functions to parse replies to OSCQuery json requests
 struct OSSIA_EXPORT json_parser
@@ -39,5 +37,4 @@ struct OSSIA_EXPORT json_parser
       ossia::net::node_base& map, const rapidjson::Value& obj,
       ossia::net::parameter_base*& request_value);
 };
-}
 }

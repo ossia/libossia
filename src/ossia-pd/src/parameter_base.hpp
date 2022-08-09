@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia-pd/src/object_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class parameter_base : public object_base
@@ -89,5 +87,4 @@ public:
   static void output_value(parameter_base* x);
 };
 
-} // namespace pd
 } // namespace ossia

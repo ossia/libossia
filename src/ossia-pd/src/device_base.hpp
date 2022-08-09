@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia-pd/src/node_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class device_base : public node_base
@@ -27,5 +25,4 @@ public:
   void disconnect_slots();
 };
 
-} // namespace pd
 } // namespace ossia

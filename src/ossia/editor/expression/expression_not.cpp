@@ -3,9 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/expression/expression_not.hpp>
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 expression_not::expression_not(expression_ptr p)
     : m_expression{std::move(p)}
@@ -54,6 +52,5 @@ void expression_not::on_removing_last_callback()
 void expression_not::result_callback(bool result)
 {
   send(!result);
-}
 }
 }

@@ -11,9 +11,7 @@
 #include <ossia-pd/src/parameter_base.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 parameter_base::parameter_base(t_eclass* x)
@@ -948,5 +946,4 @@ void parameter_base::class_setup(t_eclass* c)
   // modify eclass.c to trig a callback when sending [getATTRNAME( from patcher
 }
 
-} // namespace pd
 } // namespace ossia

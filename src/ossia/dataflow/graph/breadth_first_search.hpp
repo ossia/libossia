@@ -78,11 +78,7 @@ make_two_bit_color_map_fast(std::size_t n, const IndexMap& index_map)
 
 } // end namespace boost
 
-namespace ossia
-{
-// Based on the boost BFS code, but allows to early abort and does not call
-// twenty different functions
-namespace bfs
+namespace ossia::bfs
 {
 template <
     class IncidenceGraph, class Vertex, class Buffer, class BFSVisitor, class ColorMap>
@@ -134,6 +130,5 @@ void breadth_first_search_simple(
     put(color, *i, two_bit_white);
 
   breadth_first_visit_simple(g, s, Q, vis, color);
-}
 }
 }

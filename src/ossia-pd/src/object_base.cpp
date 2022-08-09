@@ -15,9 +15,7 @@ extern void canvas_vis(t_canvas* x, t_floatarg f);
 extern void canvas_editmode(t_canvas* x, t_floatarg state);
 extern void glist_select(t_glist* x, t_gobj* y);
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 #pragma mark t_select_clock
@@ -793,5 +791,4 @@ object_base::notify(object_base* x, t_symbol* s, t_symbol* msg, void* sender, vo
   return {};
 }
 
-}
 } // namespace

@@ -19,9 +19,7 @@
 #include <string>
 #include <vector>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 
 string_map<std::string> query_parser::parse_http_methods(ossia::string_view str)
@@ -289,6 +287,5 @@ void query_parser::parse(
     detail::typetag_attribute attr, const std::string& data, net::parameter_data& res)
 {
   res.type = get_type_from_osc_typetag(data);
-}
 }
 }

@@ -14,9 +14,7 @@
  * `/foo/bar?mrskeltal=dootdoot&hint=1234`
  *
  */
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 // See
@@ -85,6 +83,5 @@ inline bool url_decode(std::string_view in, std::string& out)
     }
   }
   return true;
-}
 }
 }

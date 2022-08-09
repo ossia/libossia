@@ -7,11 +7,7 @@
 
 #include <libremidi/libremidi.hpp>
 #include <libremidi/message.hpp>
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 static constexpr auto midi_api(libremidi::API api)
 {
@@ -576,7 +572,5 @@ bool midi_protocol::learning() const
 void midi_protocol::set_learning(bool newLearn)
 {
   m_learning = newLearn;
-}
-}
 }
 }

@@ -2,9 +2,7 @@
 
 #include <ossia-pd/src/parameter_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class parameter : public parameter_base
@@ -29,5 +27,4 @@ public:
 
   static ossia::safe_set<parameter*>& quarantine();
 };
-} // namespace pd
 } // namespace ossia

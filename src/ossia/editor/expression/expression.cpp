@@ -2,9 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/expression/expression.hpp>
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 namespace
 {
@@ -236,6 +234,5 @@ expression_ptr make_expression_atom(
   return std::make_unique<expression_base>(
       ossia::in_place_type<expression_atom>, std::move(lhs), c, std::move(rhs),
       expression_atom::dummy_t{});
-}
 }
 }

@@ -5,9 +5,7 @@
 #include <ossia/detail/string_map.hpp>
 #include <ossia/network/value/value.hpp>
 
-namespace ossia
-{
-namespace minuit
+namespace ossia::minuit
 {
 
 ossia::string_view to_minuit_type_text(const ossia::value& val)
@@ -145,6 +143,5 @@ ossia::string_view to_minuit_attribute_text(minuit_attribute str)
       throw parse_error("to_minuit_attribute_text: unhandled attribute");
   }
   return {};
-}
 }
 }

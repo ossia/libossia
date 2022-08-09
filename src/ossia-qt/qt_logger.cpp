@@ -30,9 +30,7 @@ OSSIA_EXPORT bool latin_compare(const QString& qstr, const std::string& str)
   return true;
 }
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 OSSIA_EXPORT void sanitize_device_name(QString& ret)
 {
@@ -140,7 +138,6 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
       return root_name % "." % QString::number(instance_num.back() + 1);
     }
   }
-}
 }
 }
 

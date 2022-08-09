@@ -10,9 +10,7 @@
 /**
  * \file expression_composition.hpp
  */
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 /**
  * @brief expression_composition : logical composition (and, or, xor)
@@ -56,5 +54,4 @@ private:
 
   binary_operator m_operator{};
 };
-}
 }

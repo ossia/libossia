@@ -16,9 +16,7 @@ namespace spdlog
 {
 class logger;
 }
-namespace ossia
-{
-namespace qt
+namespace ossia::qt
 {
 class qml_device;
 class OSSIA_EXPORT qml_val_type
@@ -94,7 +92,6 @@ public:
 
   W_ENUM(duration, Infinite)
 };
-}
 }
 
 Q_DECLARE_METATYPE(ossia::qt::qml_val_type::val_type)

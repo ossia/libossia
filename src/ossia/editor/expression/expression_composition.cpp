@@ -3,9 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/expression/expression_composition.hpp>
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 
 expression_composition::expression_composition(
@@ -105,6 +103,5 @@ void expression_composition::second_callback(bool second_result)
 {
   bool result = do_evaluation(expressions::evaluate(*m_first), second_result);
   send(result);
-}
 }
 }

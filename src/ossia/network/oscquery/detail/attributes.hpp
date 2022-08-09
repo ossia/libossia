@@ -14,9 +14,7 @@
  * This file contains mapping from the ossia attributes to the OSCQuery
  * attributes.
  */
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 namespace detail
 {
@@ -503,5 +501,4 @@ OSSIA_EXPORT std::optional<ossia::string_view> ossia_to_oscquery_key(ossia::stri
 
 //! Convert the text of an oscquery attribute to the key of an ossia attribute.
 OSSIA_EXPORT std::optional<ossia::string_view> oscquery_to_ossia_key(ossia::string_view);
-}
 }

@@ -13,9 +13,7 @@
 
 #include <oscpack/osc/OscPrintReceivedElements.h>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 static auto get_time()
@@ -406,6 +404,5 @@ try
 }
 catch(...)
 {
-}
 }
 }

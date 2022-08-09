@@ -319,12 +319,8 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
 
   for_each_outlet(n, [&](auto& out) { out.visit(vis); });
 }
-graph_interface::~graph_interface()
-{
-}
-audio_parameter::~audio_parameter()
-{
-}
+graph_interface::~graph_interface() = default;
+audio_parameter::~audio_parameter() = default;
 
 graph::~graph()
 {

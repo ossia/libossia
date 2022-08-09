@@ -12,9 +12,7 @@
 #include <thread>
 #include <vector>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 struct parameter_data;
@@ -83,5 +81,4 @@ public:
 private:
   friend struct update_parameter_visitor;
 };
-}
 }

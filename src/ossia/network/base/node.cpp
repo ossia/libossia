@@ -21,9 +21,7 @@
 #include <ossia-qt/name_utils.hpp>
 #endif
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 node_base::~node_base() = default;
 
@@ -315,6 +313,5 @@ std::vector<node_base*> node_base::children_copy() const
 
   SPDLOG_TRACE((&ossia::logger()), "unlocking(children_copy)");
   return copy;
-}
 }
 }

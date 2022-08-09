@@ -19,9 +19,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  ~spline() override
-  {
-  }
+  ~spline() override = default;
 
   std::string label() const noexcept override
   {
@@ -65,9 +63,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  ~spline3d() override
-  {
-  }
+  ~spline3d() override = default;
 
   std::string label() const noexcept override
   {

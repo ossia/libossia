@@ -820,7 +820,5 @@ oscquery_device::oscquery_device(uint16_t osc_port, uint16_t ws_port, std::strin
 {
 }
 
-oscquery_device::~oscquery_device()
-{
-}
+oscquery_device::~oscquery_device() = default;
 }

@@ -23,9 +23,7 @@ class parameter_base;
 class value;
 }
 
-namespace ossia
-{
-namespace presets
+namespace ossia::presets
 {
 using preset = std::vector<std::pair<std::string, ossia::value>>;
 
@@ -115,5 +113,4 @@ OSSIA_EXPORT ossia::net::node_base* get_node(ossia::net::node_base&, const std::
 
 OSSIA_EXPORT std::string to_string(const ossia::net::device_base& ossiadev);
 
-} // namespace presets
 } // namespace ossia

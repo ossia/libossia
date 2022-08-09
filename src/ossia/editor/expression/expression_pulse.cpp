@@ -2,9 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/editor/expression/expression_pulse.hpp>
 #include <ossia/network/value/destination.hpp>
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 
 expression_pulse::expression_pulse(const ossia::destination& destination)
@@ -56,6 +54,5 @@ void expression_pulse::destination_callback(const ossia::value& value)
 {
   m_result = true;
   send(true);
-}
 }
 }

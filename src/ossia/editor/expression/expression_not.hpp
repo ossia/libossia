@@ -9,9 +9,7 @@
 /**
  * \file expression_not.hpp
  */
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 /**
  * @brief expression_not : negation of an expression
@@ -44,5 +42,4 @@ private:
   expression_ptr m_expression;
   expression_callback_iterator m_callback;
 };
-}
 }

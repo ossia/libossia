@@ -15,9 +15,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -27,14 +25,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -64,10 +54,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~angle_u()
-  {
-    destruct_impl();
-  }
+  ~angle_u() = default;
   angle_u(ossia::degree_u v)
       : m_type{Type0}
   {
@@ -110,7 +97,6 @@ public:
   }
   angle_u& operator=(const angle_u& other)
   {
-    destruct_impl();
     m_type = other.m_type;
     switch(m_type)
     {
@@ -127,7 +113,6 @@ public:
   }
   angle_u& operator=(angle_u&& other)
   {
-    destruct_impl();
     m_type = other.m_type;
     switch(m_type)
     {
@@ -348,9 +333,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -367,14 +350,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -404,10 +379,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~color_u()
-  {
-    destruct_impl();
-  }
+  ~color_u() = default;
   color_u(ossia::argb_u v)
       : m_type{Type0}
   {
@@ -527,7 +499,7 @@ public:
   }
   color_u& operator=(const color_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -565,7 +537,7 @@ public:
   }
   color_u& operator=(color_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -1203,9 +1175,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -1224,14 +1194,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -1261,10 +1223,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~distance_u()
-  {
-    destruct_impl();
-  }
+  ~distance_u() = default;
   distance_u(ossia::meter_u v)
       : m_type{Type0}
   {
@@ -1406,7 +1365,7 @@ public:
   }
   distance_u& operator=(const distance_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -1450,7 +1409,7 @@ public:
   }
   distance_u& operator=(distance_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -2192,9 +2151,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -2206,14 +2163,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -2243,10 +2192,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~gain_u()
-  {
-    destruct_impl();
-  }
+  ~gain_u() = default;
   gain_u(ossia::linear_u v)
       : m_type{Type0}
   {
@@ -2311,7 +2257,7 @@ public:
   }
   gain_u& operator=(const gain_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -2334,7 +2280,7 @@ public:
   }
   gain_u& operator=(gain_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -2661,9 +2607,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -2674,14 +2618,7 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
+
   Impl m_impl;
   Type m_type;
 
@@ -2711,10 +2648,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~orientation_u()
-  {
-    destruct_impl();
-  }
+  ~orientation_u() = default;
   orientation_u(ossia::quaternion_u v)
       : m_type{Type0}
   {
@@ -2768,7 +2702,7 @@ public:
   }
   orientation_u& operator=(const orientation_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -2788,7 +2722,7 @@ public:
   }
   orientation_u& operator=(orientation_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -3068,9 +3002,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -3087,14 +3019,7 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
+
   Impl m_impl;
   Type m_type;
 
@@ -3124,10 +3049,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~position_u()
-  {
-    destruct_impl();
-  }
+  ~position_u() = default;
   position_u(ossia::cartesian_3d_u v)
       : m_type{Type0}
   {
@@ -3247,7 +3169,7 @@ public:
   }
   position_u& operator=(const position_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -3285,7 +3207,7 @@ public:
   }
   position_u& operator=(position_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -3913,9 +3835,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -3929,14 +3849,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -3966,10 +3878,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~speed_u()
-  {
-    destruct_impl();
-  }
+  ~speed_u() = default;
   speed_u(ossia::meter_per_second_u v)
       : m_type{Type0}
   {
@@ -4058,7 +3967,7 @@ public:
   }
   speed_u& operator=(const speed_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -4087,7 +3996,7 @@ public:
   }
   speed_u& operator=(speed_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -4546,9 +4455,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -4565,14 +4472,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl()
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -4602,10 +4501,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~timing_u()
-  {
-    destruct_impl();
-  }
+  ~timing_u() = default;
   timing_u(ossia::second_u v)
       : m_type{Type0}
   {
@@ -4725,7 +4621,7 @@ public:
   }
   timing_u& operator=(const timing_u& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -4763,7 +4659,7 @@ public:
   }
   timing_u& operator=(timing_u&& other)
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -5395,9 +5291,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() = default;
   };
 
   enum Type : int8_t
@@ -5413,14 +5307,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-  void destruct_impl() noexcept
-  {
-    switch(m_type)
-    {
-      default:
-        break;
-    }
-  }
   Impl m_impl;
   Type m_type;
 
@@ -5452,7 +5338,7 @@ public:
   }
   ~unit_variant() noexcept
   {
-    destruct_impl();
+
   }
   unit_variant(ossia::distance_u v) noexcept
       : m_type{Type0}
@@ -5562,7 +5448,7 @@ public:
   }
   unit_variant& operator=(const unit_variant& other) noexcept
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {
@@ -5597,7 +5483,7 @@ public:
   }
   unit_variant& operator=(unit_variant&& other) noexcept
   {
-    destruct_impl();
+
     m_type = other.m_type;
     switch(m_type)
     {

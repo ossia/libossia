@@ -8,9 +8,7 @@
 
 #include <regex>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
@@ -641,5 +639,4 @@ void trig_output_value(net::node_base* node)
   }
 }
 
-}
 }

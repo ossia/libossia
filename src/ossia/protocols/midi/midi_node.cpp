@@ -24,9 +24,7 @@ const std::string& midi_node_name(midi_size_t i)
   return tbl.names[i];
 }
 
-midi_node::~midi_node()
-{
-}
+midi_node::~midi_node() = default;
 
 midi_node::midi_node(midi_device& aDevice, node_base& aParent)
     : m_device{aDevice}

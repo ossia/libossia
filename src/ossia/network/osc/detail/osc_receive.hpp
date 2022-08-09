@@ -47,9 +47,7 @@ struct formatter<oscpack::ReceivedMessage>
 };
 
 }
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 struct osc_message_applier
@@ -147,5 +145,4 @@ void on_input_message(
   f.log(logger);
 }
 
-}
 }

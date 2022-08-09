@@ -12,9 +12,7 @@
 template class ossia::callback_container<ossia::value_callback>;
 */
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 parameter_base::~parameter_base() = default;
 
@@ -151,6 +149,5 @@ void push_value(const destination& d, const value_with_unit& v)
 std::ostream& operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
 {
   return s << ossia::net::address_string_from_node(addr);
-}
 }
 }

@@ -4,9 +4,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 
 /**
@@ -163,5 +161,4 @@ struct json_query_answerer
     return {};
   }
 };
-}
 }

@@ -20,9 +20,7 @@ template <typename T>
 class sender;
 class receiver;
 }
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 struct osc_1_0_outbound_stream_visitor;
 class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
@@ -105,5 +103,4 @@ private:
   std::vector<ossia::net::full_parameter_data> m_buffer;
   std::mutex m_buffer_mutex;
 };
-}
 }

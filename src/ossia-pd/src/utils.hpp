@@ -15,9 +15,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 template <typename TimeT = std::chrono::microseconds>
@@ -712,5 +710,4 @@ void obj_dequarantining(T* x)
   x->quarantine().remove_all(x);
 }
 
-} // namespace pd
 } // namespace ossia

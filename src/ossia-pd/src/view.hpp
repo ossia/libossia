@@ -3,9 +3,7 @@
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/parameter_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 struct view : public node_base
@@ -27,5 +25,4 @@ public:
       view* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl,
       t_floatarg alt);
 };
-}
 } // namespace

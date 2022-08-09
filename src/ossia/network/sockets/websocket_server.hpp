@@ -12,9 +12,7 @@
 #if defined(OSSIA_BENCHMARK)
 #include <chrono>
 #endif
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 //! Low-level websocket & http server for oscquery
@@ -239,5 +237,4 @@ public:
 protected:
   server_t m_server;
 };
-}
 }

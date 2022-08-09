@@ -7,9 +7,7 @@
 #include <ossia_export.h>
 
 #include <verdigris>
-namespace ossia
-{
-namespace qt
+namespace ossia::qt
 {
 #if defined(OSSIA_DISABLE_QT_PLUGIN)
 class OSSIA_EXPORT qml_plugin
@@ -29,5 +27,4 @@ public:
   void registerTypes(const char* uri) override;
 };
 #endif
-}
 }

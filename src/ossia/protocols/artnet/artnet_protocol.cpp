@@ -20,9 +20,7 @@ dmx_buffer::dmx_buffer()
   std::memset(data, 0, DMX_CHANNEL_COUNT);
 }
 
-dmx_buffer::~dmx_buffer()
-{
-}
+dmx_buffer::~dmx_buffer() = default;
 
 static constexpr int artnet_port_id = 0;
 artnet_protocol::artnet_protocol(

@@ -7,9 +7,7 @@
 
 #include <vector>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 class generic_device;
 /**
@@ -76,5 +74,4 @@ private:
 };
 
 using local_protocol = multiplex_protocol;
-}
 }

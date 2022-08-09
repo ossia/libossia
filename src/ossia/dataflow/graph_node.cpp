@@ -57,9 +57,7 @@ void node_process::mute_impl(bool)
 {
 }
 
-node_process::~node_process()
-{
-}
+node_process::~node_process() = default;
 /*
 graph_edge::graph_edge(
     connection c, std::size_t pout, std::size_t pin, node_ptr pout_node,
@@ -164,9 +162,7 @@ void graph_node::prepare(const execution_state& st) noexcept
   }
 }
 
-graph_node::graph_node() noexcept
-{
-}
+graph_node::graph_node() noexcept = default;
 
 bool graph_node::consumes(const execution_state&) const noexcept
 {

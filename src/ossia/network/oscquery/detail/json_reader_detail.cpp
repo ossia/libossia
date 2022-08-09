@@ -18,9 +18,7 @@
 
 #include <oscpack/osc/OscTypes.h>
 
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 namespace detail
 {
@@ -1212,6 +1210,5 @@ void json_parser::parse_attributes_changed(
       }
     }
   }
-}
 }
 }

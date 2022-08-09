@@ -207,9 +207,7 @@ struct global_pull_node_visitor
   }
 };
 
-execution_state::~execution_state()
-{
-}
+execution_state::~execution_state() = default;
 
 void execution_state::clear_devices()
 {

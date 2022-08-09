@@ -3,9 +3,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/expression/expression_atom.hpp>
 
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 expression_atom::expression_atom(const value& lhs, comparator op, const value& rhs)
     : m_first(lhs)
@@ -193,6 +191,5 @@ void expression_atom::second_value_callback(const ossia::value& value)
 {
   if(value.valid())
     send((*this)(m_first, value));
-}
 }
 }

@@ -50,9 +50,7 @@ minmax_float_inlet::minmax_float_inlet()
   (*this)->domain = ossia::domain_base<float>(0.f, 1.f);
 }
 
-minmax_float_inlet::~minmax_float_inlet()
-{
-}
+minmax_float_inlet::~minmax_float_inlet() = default;
 
 void minmax_float_inlet::pre_process()
 {
@@ -67,9 +65,7 @@ minmax_float_outlet::minmax_float_outlet()
   (*this)->domain = ossia::domain_base<float>(0.f, 1.f);
 }
 
-minmax_float_outlet::~minmax_float_outlet()
-{
-}
+minmax_float_outlet::~minmax_float_outlet() = default;
 
 void minmax_float_outlet::pre_process()
 {

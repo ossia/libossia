@@ -7,9 +7,7 @@ namespace ossia::nodes
 class dummy_node : public ossia::graph_node
 {
 public:
-  dummy_node()
-  {
-  }
+  dummy_node() = default;
 
   void run(const token_request& t, exec_state_facade) noexcept override
   {

@@ -16,9 +16,7 @@
 #include <charconv>
 #endif
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 std::string& sanitize_device_name(std::string& ret)
 {
@@ -296,6 +294,5 @@ bool is_brace_expansion(string_view s)
   }
 
   return b && brace_count == 0 && arr_count == 0;
-}
 }
 }

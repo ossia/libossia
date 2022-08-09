@@ -4,9 +4,7 @@
 
 #include <future>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 alias_node::~alias_node()
@@ -73,9 +71,7 @@ alias_path::alias_path(std::string name, device_base& aDevice, node_base& parent
 {
 }
 
-alias_path::~alias_path()
-{
-}
+alias_path::~alias_path() = default;
 
 const std::vector<node_base*>& alias_path::get_roots()
 {
@@ -236,9 +232,7 @@ bounding_mode alias_path::get_bounding() const
   return {};
 }
 
-parameter_base& alias_path::set_bounding(bounding_mode)
-{
+parameter_base& alias_path::set_bounding(bounding_mode){
   return *this;
-}
 }
 }

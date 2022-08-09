@@ -2,9 +2,7 @@
 
 #include <ossia-pd/src/object_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class node_base : public object_base
@@ -26,5 +24,4 @@ public:
   static void get_namespace(object_base* x, t_symbol* s, long argc, t_atom* argv);
 };
 
-} // namespace pd
 } // namespace ossia

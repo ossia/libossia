@@ -3,9 +3,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/protocol.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 device_base::~device_base() = default;
 
@@ -35,6 +33,5 @@ void device_base::apply_incoming_message_quiet(
   on_message(param);
   if(m_echo)
     m_protocol->echo_incoming_message(id, param, v);
-}
 }
 }

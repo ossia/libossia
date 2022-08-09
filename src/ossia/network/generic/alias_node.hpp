@@ -4,9 +4,7 @@
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 
 /**
@@ -89,5 +87,4 @@ private:
   std::vector<ossia::net::node_base*> m_roots;
   traversal::path m_path;
 };
-}
 }

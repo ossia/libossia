@@ -48,9 +48,7 @@ audio_device::audio_device(
   m_sr = rate;
 }
 
-audio_device::~audio_device()
-{
-}
+audio_device::~audio_device() = default;
 
 int audio_device::get_buffer_size() const
 {

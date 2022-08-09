@@ -6,16 +6,12 @@
 
 namespace ossia
 {
-constant_curve::~constant_curve()
-{
-}
+constant_curve::~constant_curve() = default;
 }
 
 namespace ossia
 {
-curve_abstract::~curve_abstract()
-{
-}
+curve_abstract::~curve_abstract() = default;
 
 void behavior::reset()
 {

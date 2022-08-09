@@ -3,11 +3,7 @@
 #include <ossia/protocols/midi/midi.hpp>
 #include <ossia/protocols/midi/midi_parameter.hpp>
 
-namespace ossia
-{
-namespace net
-{
-namespace midi
+namespace ossia::net::midi
 {
 midi_parameter::midi_parameter(address_info info, node_base& parent)
     : ossia::net::parameter_base{parent}
@@ -134,7 +130,5 @@ void midi_parameter::on_removing_last_callback()
 void midi_parameter::value_callback(const ossia::value& val)
 {
   this->set_value(val);
-}
-}
 }
 }

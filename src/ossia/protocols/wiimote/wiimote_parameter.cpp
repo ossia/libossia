@@ -3,9 +3,7 @@
 
 #include <wiiuse.h>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 //-------
 
@@ -57,6 +55,5 @@ void led_parameter::device_update_value()
     led_mask &= (~mask);
 
   wiiuse_set_leds(m_wiimote, led_mask);
-}
 }
 }

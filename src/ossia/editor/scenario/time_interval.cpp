@@ -279,9 +279,7 @@ time_interval::time_interval(
 {
 }
 
-time_interval::~time_interval()
-{
-}
+time_interval::~time_interval() = default;
 
 void time_interval::start_and_tick()
 {

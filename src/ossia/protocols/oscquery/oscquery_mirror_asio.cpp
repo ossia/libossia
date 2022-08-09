@@ -1,4 +1,4 @@
-﻿// This is an open source non-commercial project. Dear PVS-Studio, please check
+// This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "oscquery_mirror_asio.hpp"
@@ -25,9 +25,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
-namespace ossia
-{
-namespace oscquery_asio
+namespace ossia::oscquery_asio
 {
 struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_send_socket
 {
@@ -655,5 +653,4 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
   return true;
 }
 
-}
 }

@@ -3,10 +3,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
-namespace ossia
-{
-
-namespace comparisons
+namespace ossia::comparisons
 {
 struct Impulse_T
 {
@@ -347,39 +344,4 @@ struct VecValue
     return val.apply(make_vec_visitor(lhs, fun));
   }
 };
-}
-/*
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator==(const ossia::value& v) const
-{
-  return comparisons::VecValue::apply(*this, v, std::equal_to<>{});
-}
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator!=(const ossia::value& v) const
-{
-  return !comparisons::VecValue::apply(*this, v, std::equal_to<>{});
-}
-
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator>(const ossia::value& v) const
-{
-  return comparisons::VecValue::apply(*this, v, std::greater<>{});
-}
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator>=(const ossia::value& v) const
-{
-  return comparisons::VecValue::apply(*this, v, std::greater_equal<>{});
-}
-
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator<(const ossia::value& v) const
-{
-  return comparisons::VecValue::apply(*this, v, std::less<>{});
-}
-template <typename T, std::size_t N>
-OSSIA_EXPORT bool Vec<T, N>::operator<=(const ossia::value& v) const
-{
-  return comparisons::VecValue::apply(*this, v, std::less_equal<>{});
-}
-*/
 }

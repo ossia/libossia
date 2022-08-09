@@ -1,11 +1,7 @@
 #pragma once
 #include <ossia/detail/json.hpp>
 #include <ossia/network/base/node_attributes.hpp>
-namespace ossia
-{
-namespace oscquery
-{
-namespace detail
+namespace ossia::oscquery::detail
 {
 //! Implementation of the JSON serialisation mechanism for oscquery
 struct json_writer_impl
@@ -51,6 +47,4 @@ struct json_writer_impl
   //! Writes a node recursively. Creates a new object.
   void writeNode(const ossia::net::node_base& n);
 };
-}
-}
 }

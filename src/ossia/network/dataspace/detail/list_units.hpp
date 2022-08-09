@@ -6,9 +6,7 @@
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
 
 #include <boost/algorithm/string/case_conv.hpp>
-namespace ossia
-{
-namespace detail
+namespace ossia::detail
 {
 
 template <typename InsertFun>
@@ -80,6 +78,5 @@ void list_units(InsertFun fun)
   fun("micrometer", ossia::micrometer_u{});
   fun("nanometer", ossia::nanometer_u{});
   fun("picometer", ossia::picometer_u{});
-}
 }
 }

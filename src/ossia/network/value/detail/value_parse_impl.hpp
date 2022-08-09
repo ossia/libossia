@@ -14,12 +14,7 @@
 #include <boost/spirit/home/x3.hpp>
 #endif
 BOOST_FUSION_ADAPT_STRUCT(ossia::impulse)
-namespace ossia
-{
-namespace detail
-{
-
-namespace parse
+namespace ossia::detail::parse
 {
 using namespace boost::fusion;
 namespace x3 = boost::spirit::x3;
@@ -93,6 +88,4 @@ const x3::rule<class preset_, std::vector<std::pair<std::string, ossia::value>>>
     = "preset";
 const auto preset__def = *(preset_pair_ % x3::lexeme[x3::eol]);
 BOOST_SPIRIT_DEFINE(preset_)
-}
-}
 }

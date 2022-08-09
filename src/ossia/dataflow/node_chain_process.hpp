@@ -7,9 +7,7 @@ namespace ossia
 
 struct node_chain_process final : public looping_process<node_chain_process>
 {
-  node_chain_process()
-  {
-  }
+  node_chain_process() = default;
 
   void state_impl(const ossia::token_request& req)
   {

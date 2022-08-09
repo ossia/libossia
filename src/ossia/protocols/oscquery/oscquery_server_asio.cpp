@@ -29,9 +29,7 @@
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
 #include <ossia/protocols/oscquery/oscquery_client_asio.hpp>
-namespace ossia
-{
-namespace oscquery_asio
+namespace ossia::oscquery_asio
 {
 
 struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_receive_socket
@@ -799,6 +797,5 @@ ossia::net::server_reply oscquery_server_protocol::on_binary_ws_message(
   // TODO here we know where the message comes from, can be used for id
   process_raw_osc_data(message.data(), message.size());
   return {};
-}
 }
 }

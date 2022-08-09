@@ -14,9 +14,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  ~metronome() override
-  {
-  }
+  ~metronome() override = default;
 
   [[nodiscard]] std::string label() const noexcept override
   {

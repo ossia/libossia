@@ -20,9 +20,7 @@
 #include <utility>
 #include <vector>
 
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 namespace
 {
@@ -846,6 +844,5 @@ std::vector<parameter_base*> find_or_create_parameter(
   }
 
   return parameters;
-}
 }
 }

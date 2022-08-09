@@ -16,9 +16,7 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/value/format_value.hpp>
 #include <ossia/network/value/value.hpp>
-namespace ossia
-{
-namespace oscquery
+namespace ossia::oscquery
 {
 namespace detail
 {
@@ -764,5 +762,4 @@ json_writer::string_t json_writer::attributes_changed_array(
   return buf;
 }
 
-}
 }

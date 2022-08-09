@@ -1,7 +1,5 @@
 #pragma once
-namespace ossia
-{
-namespace expressions
+namespace ossia::expressions
 {
 
 //! Represents a comparison between expressions
@@ -22,5 +20,4 @@ enum class binary_operator
   OR,  //! ||
   XOR  //! ^
 };
-}
 }

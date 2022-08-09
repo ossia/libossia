@@ -14,9 +14,7 @@
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 parameter::parameter()
@@ -333,5 +331,4 @@ ossia::safe_set<parameter*>& parameter::quarantine()
   return ossia_pd::instance().parameter_quarantine;
 }
 
-} // pd namespace
 } // ossia namespace

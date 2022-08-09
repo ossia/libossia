@@ -1,9 +1,7 @@
 #pragma once
 #include <ossia-pd/src/node_base.hpp>
 
-namespace ossia
-{
-namespace pd
+namespace ossia::pd
 {
 
 class model : public node_base
@@ -24,5 +22,4 @@ public:
 
   static ossia::safe_set<model*>& quarantine();
 };
-}
 } // namespace

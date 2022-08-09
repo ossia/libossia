@@ -13,9 +13,7 @@
 
 #include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::net::http_protocol)
-namespace ossia
-{
-namespace net
+namespace ossia::net
 {
 http_protocol::http_protocol(QByteArray code)
     : protocol_base{flags{}}
@@ -162,6 +160,5 @@ void http_protocol::apply_reply(QJSValue arr)
       addr->push_value(qt::value_from_js(addr->value(), v));
     }
   }
-}
 }
 }

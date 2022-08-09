@@ -5,9 +5,7 @@
 #include <ossia/editor/curve/curve_abstract.hpp>
 #include <ossia/misc_visitors.hpp>
 
-namespace ossia
-{
-namespace detail
+namespace ossia::detail
 {
 struct mapper_compute_visitor
 {
@@ -192,5 +190,4 @@ struct mapper_compute_visitor
     return {};
   }
 };
-}
 }
