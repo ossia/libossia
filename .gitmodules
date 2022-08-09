@@ -121,3 +121,6 @@
 [submodule "3rdparty/re2"]
 	path = 3rdparty/re2
 	url = https://github.com/google/re2
+[submodule "3rdparty/compile-time-regular-expressions"]
+	path = 3rdparty/compile-time-regular-expressions
+	url = https://github.com/hanickadot/compile-time-regular-expressions

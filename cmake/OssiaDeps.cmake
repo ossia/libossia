@@ -3,6 +3,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   set(OSSIA_SUBMODULES
       brigand
       concurrentqueue
+      compile-time-regular-expressions
       flat
       flat_hash_map
       Flicks

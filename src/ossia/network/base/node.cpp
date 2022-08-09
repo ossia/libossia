@@ -129,6 +129,7 @@ bool node_base::is_root_instance(const node_base& child) const
 
 void node_base::on_address_change()
 {
+  read_lock_t lock{m_mutex};
   for(auto& cld : m_children)
   {
     cld->on_address_change();

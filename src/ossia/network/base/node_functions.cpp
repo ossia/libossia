@@ -11,8 +11,11 @@
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <rapidfuzz/fuzz.hpp>
+#include <re2/re2.h>
+#include <ctre.hpp>
 
 #include <bitset>
+#include <charconv>
 #include <iostream>
 #include <iterator>
 #include <regex>
@@ -388,29 +391,30 @@ List expand(const Range& range)
 
 void expand_ranges(std::string& str)
 {
+  using namespace ctre::literals;
+  if(str.find('{') != std::string::npos)
   {
-    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
-
+  {
     struct rx_triple
     {
       std::size_t start{}, length{};
       int64_t first{}, last{}, increment{};
+      bool operator==(const rx_triple&) const noexcept = default;
     };
     ossia::small_vector<rx_triple, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit(str.begin(), str.end(), reg);
-    std::regex_iterator<std::string::iterator> rend;
-
-    for(auto it = rit; it != rend; ++it)
     {
-      int fst = std::stoi(it->str(1));
-      int lst = std::stoi(it->str(2));
-      int inc = std::stoi(it->str(3));
-      if(inc != 0)
+      constexpr auto rex = R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"_ctre;
+      const auto s = rex.range(str);
+      for(auto& it : s)
       {
-        positions.push_back(rx_triple{
-            (std::size_t)it->position(), (std::size_t)it->length(), std::min(fst, lst),
-            std::max(fst, lst), inc});
+        int fst = it.get<1>().to_number();
+        int lst = it.get<2>().to_number();
+        int inc = it.get<3>().to_number();
+        if(inc != 0)
+        {
+          positions.push_back(rx_triple{(std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst), inc});
+        }
       }
     }
 
@@ -444,8 +448,6 @@ void expand_ranges(std::string& str)
   }
 
   {
-    static const std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
-
     struct rx_double
     {
       std::size_t start{}, length{};
@@ -453,16 +455,15 @@ void expand_ranges(std::string& str)
     };
     ossia::small_vector<rx_double, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit(str.begin(), str.end(), reg);
-    std::regex_iterator<std::string::iterator> rend;
-
-    for(auto it = rit; it != rend; ++it)
     {
-      int fst = std::stoi(it->str(1));
-      int lst = std::stoi(it->str(2));
-      positions.push_back(rx_double{
-          (std::size_t)it->position(), (std::size_t)it->length(), std::min(fst, lst),
-          std::max(fst, lst)});
+      constexpr auto rex = R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"_ctre;
+      const auto s = rex.range(str);
+      for(auto& it : s)
+      {
+        int fst = it.get<1>().to_number();
+        int lst = it.get<2>().to_number();
+        positions.push_back(rx_double{(std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst)});
+      }
     }
 
     for(auto it = positions.rbegin(); it != positions.rend(); ++it)
@@ -492,28 +493,23 @@ void expand_ranges(std::string& str)
   }
 
   {
-    static const std::regex reg_alpha_low{R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"};
-    static const std::regex reg_alpha_up{R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"};
+    constexpr auto reg_alpha_low = R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"_ctre;
+    constexpr auto reg_alpha_up = R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"_ctre;
 
-    for(const auto& reg : {reg_alpha_low, reg_alpha_up})
+    struct rx_char
     {
-      struct rx_double
-      {
-        std::size_t start{}, length{};
-        char first{}, last{};
-      };
-      ossia::small_vector<rx_double, 4> positions;
+      std::size_t start{}, length{};
+      char first{}, last{};
+    };
+    auto apply = [&] (auto& reg) {
+      ossia::small_vector<rx_char, 4> positions;
 
-      std::regex_iterator<std::string::iterator> rit(str.begin(), str.end(), reg);
-      std::regex_iterator<std::string::iterator> rend;
-
-      for(auto it = rit; it != rend; ++it)
+      const auto s = reg.range(str);
+      for(auto& it : s)
       {
-        char fst = it->str(1)[0];
-        char lst = it->str(2)[0];
-        positions.push_back(rx_double{
-            (std::size_t)it->position(), (std::size_t)it->length(), std::min(fst, lst),
-            std::max(fst, lst)});
+        char fst = it.template get<1>().data()[0];
+        char lst = it.template get<2>().data()[0];
+        positions.push_back(rx_char{(std::size_t)(it.template get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst)});
       }
 
       for(auto it = positions.rbegin(); it != positions.rend(); ++it)
@@ -540,7 +536,10 @@ void expand_ranges(std::string& str)
           }
         }
       }
-    }
+    };
+    apply(reg_alpha_low);
+    apply(reg_alpha_up);
+  }
   }
 }
 
@@ -548,9 +547,9 @@ std::string canonicalize_str(std::string str)
 {
   {
     // 1. find all [a-z0-9XYZ]
-    static const std::regex rx_class{"\\[[a-zA-Z0-9-]+\\]"};
-
+    using namespace ctre::literals;
     std::replace(str.begin(), str.end(), '|', ',');
+
     struct rx_pos
     {
       std::size_t start{}, length{};
@@ -558,13 +557,10 @@ std::string canonicalize_str(std::string str)
     };
     ossia::small_vector<rx_pos, 4> positions;
 
-    std::regex_iterator<std::string::iterator> rit(str.begin(), str.end(), rx_class);
-    std::regex_iterator<std::string::iterator> rend;
-
-    for(auto it = rit; it != rend; ++it)
+    constexpr auto rx_class  = R"(\[[a-zA-Z0-9\-]+\])"_ctre;
+    for(auto& it : rx_class.range(str))
     {
-      auto theStr = it->str();
-      theStr = theStr.substr(1, theStr.size() - 2);
+      const auto theStr = it.view().substr(1, it.size() - 2);
       std::bitset<128> bits;
 
       for(int i = 0, N = theStr.size(); i < N;)
@@ -590,7 +586,7 @@ std::string canonicalize_str(std::string str)
         }
       }
       positions.push_back(
-          rx_pos{(std::size_t)it->position(), (std::size_t)it->length(), bits});
+          rx_pos{(std::size_t)(it.data() - str.data()), (std::size_t)it.size(), bits});
     }
 
     for(auto it = positions.rbegin(); it != positions.rend(); ++it)
@@ -671,33 +667,35 @@ list_all_children(ossia::net::node_base* node, unsigned int depth)
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
-  static const std::regex pattern("\\.[0-9]+");
-
-  // first sort by name taking care of instance number; i.e. foo.3 before
-  // foo.11
+  using namespace ctre::literals;
+  constexpr auto pattern = "\\.([0-9]+)"_ctre;
   ossia::sort(children, [&](auto n1, auto n2) {
-    std::string s1 = n1->get_name();
-    std::string s2 = n2->get_name();
+    const auto& s1 = n1->get_name();
+    const auto& s2 = n2->get_name();
 
-    boost::algorithm::to_lower(s1);
-    boost::algorithm::to_lower(s2);
-
-    std::smatch asmatch, bsmatch;
-    if(std::regex_search(s1, asmatch, pattern)
-       && std::regex_search(s2, bsmatch, pattern))
+    auto r1 = pattern.search(s1);
+    auto r2 = pattern.search(s2);
+    if(r1.matched() && r2.matched())
     {
-      if(asmatch.prefix() == bsmatch.prefix())
+      auto p1 = std::string_view(s1.data(), r1.data() - s1.data());
+      auto p2 = std::string_view(s2.data(), r2.data() - s2.data());
+      if(p1 == p2)
       {
-        int aidx = std::stoi(asmatch.str(0).substr(1));
-        int bidx = std::stoi(bsmatch.str(0).substr(1));
+        int aidx = r1.template get<1>().to_number();
+        int bidx = r2.template get<1>().to_number();
         return aidx < bidx;
       }
       else
       {
-        return asmatch.prefix() < bsmatch.prefix();
+        return p1 < p2;
       }
     }
-    return s1 < s2;
+
+#if defined(_MSC_VER)
+    return stricmp(s1.c_str(), s2.c_str()) < 0;
+#else
+    return strcasecmp(s1.c_str(), s2.c_str()) < 0;
+#endif
   });
 
   // then sort by priority

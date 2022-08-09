@@ -42,6 +42,7 @@ node_base* generic_node_base::get_parent() const
 void generic_node_base::on_address_change()
 {
   m_oscAddressCache = ossia::net::osc_parameter_string(*this);
+  read_lock_t lock{m_mutex};
   for(auto& cld : m_children)
   {
     cld->on_address_change();
@@ -53,7 +54,7 @@ node_base& generic_node_base::set_name(std::string name)
   auto old_name = std::move(m_name);
   if(m_parent)
   {
-    read_lock_t lock{m_mutex};
+    read_lock_t lock{m_parent->m_mutex};
     sanitize_name(name, m_parent->unsafe_children());
     m_name = name;
   }

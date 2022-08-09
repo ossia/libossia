@@ -179,10 +179,11 @@ public:
   }
 
   //! Non mutex-protected version. With great powers, yada yada etc etc
-  const auto& unsafe_children() const
+  const auto& unsafe_children() const TS_REQUIRES(m_mutex)
   {
     return m_children;
   }
+  mutable shared_mutex_t m_mutex;
 
   //! Return a copy of the children vector to iterate without deadlocking.
   std::vector<node_base*> children_copy() const;
@@ -210,8 +211,7 @@ protected:
   virtual void removing_child(node_base& node_base) = 0;
 
   std::string m_name;
-  children_t m_children;
-  mutable shared_mutex_t m_mutex;
+  children_t m_children TS_GUARDED_BY(m_mutex);
   extended_attributes m_extended{0};
   std::string m_oscAddressCache;
 };

@@ -317,12 +317,14 @@ if(NOT OSSIA_DATAFLOW)
 endif()
 
 # Static linking configuration
-if(OSSIA_STATIC)
-  # Are we building libossia directly?
-  if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    # If so, if it's a static build of libossia, we need to ship
-    # the libartnet, wiiuse, etc... .a's
-    set(OSSIA_INSTALL_STATIC_DEPENDENCIES ON)
+if(NOT (OSSIA_MAX OR OSSIA_PD OR OSSIA_JAVA OR OSSIA_UNITY3D OR OSSIA_PYTHON))
+  if(OSSIA_STATIC)
+    # Are we building libossia directly?
+    if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+      # If so, if it's a static build of libossia, we need to ship
+      # the libartnet, wiiuse, etc... .a's
+      set(OSSIA_INSTALL_STATIC_DEPENDENCIES ON)
+    endif()
   endif()
 endif()
 
