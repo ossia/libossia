@@ -73,7 +73,7 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG)
 find_package(Threads REQUIRED)
 target_link_libraries(ossia PUBLIC Threads::Threads)
-target_link_libraries(ossia PRIVATE re2)
+target_link_libraries(ossia PRIVATE $<LINK_ONLY:re2>)
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})

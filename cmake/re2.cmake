@@ -38,12 +38,14 @@ if(UNIX)
   target_link_libraries(re2 PUBLIC Threads::Threads)
 endif()
 
-install(
-  TARGETS re2
-  EXPORT re2-exports
-  RUNTIME DESTINATION lib
-  ARCHIVE DESTINATION lib)
+if(OSSIA_INSTALL_STATIC_DEPENDENCIES)
+  install(
+    TARGETS re2
+    EXPORT re2-exports
+    RUNTIME DESTINATION lib
+    ARCHIVE DESTINATION lib)
 
-install(EXPORT re2-exports
-        DESTINATION lib/cmake/re2)
-export(EXPORT re2-exports)
+  install(EXPORT re2-exports
+          DESTINATION lib/cmake/re2)
+  export(EXPORT re2-exports)
+endif()

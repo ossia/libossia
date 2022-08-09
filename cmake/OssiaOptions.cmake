@@ -1,5 +1,6 @@
 # Build settings :
 option(OSSIA_STATIC "Make a static build" OFF)
+option(OSSIA_INSTALL_STATIC_DEPENDENCIES "Generate install rules for libartnet, wiiuse, etc" OFF)
 option(OSSIA_COVERAGE "Run code coverage" OFF)
 option(OSSIA_EXAMPLES "Build examples" OFF)
 option(OSSIA_TESTING "Build tests" OFF)
@@ -315,6 +316,15 @@ if(NOT OSSIA_DATAFLOW)
   set(OSSIA_EDITOR 0)
 endif()
 
+# Static linking configuration
+if(OSSIA_STATIC)
+  # Are we building libossia directly?
+  if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    # If so, if it's a static build of libossia, we need to ship
+    # the libartnet, wiiuse, etc... .a's
+    set(OSSIA_INSTALL_STATIC_DEPENDENCIES ON)
+  endif()
+endif()
 
 function(ossia_set_visibility TheTarget)
   if(OSSIA_STATIC_EXPORT)
@@ -331,7 +341,6 @@ function(ossia_set_visibility TheTarget)
     )
   endif()
 endfunction()
-
 
 function(ossia_add_test TESTNAME TESTSRCS)
     add_executable(ossia_${TESTNAME} ${TESTSRCS})
