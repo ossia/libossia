@@ -18,7 +18,8 @@ struct OSSIA_EXPORT value_with_unit final
   value_with_unit& operator=(const value_with_unit& other) = default;
   value_with_unit& operator=(value_with_unit&& other) = default;
   template <typename T>
-  value_with_unit(const T& arg) noexcept : v(arg)
+  value_with_unit(const T& arg) noexcept
+      : v(arg)
   {
   }
 
@@ -39,15 +40,17 @@ struct OSSIA_EXPORT value_with_unit final
 
   template <typename T>
   T* target() noexcept
-  { 
+  {
     return v.target<T>();
   }
 
-  friend inline bool operator==(const value_with_unit& lhs, const value_with_unit& rhs) noexcept
+  friend inline bool
+  operator==(const value_with_unit& lhs, const value_with_unit& rhs) noexcept
   {
     return lhs.v == rhs.v;
   }
-  friend inline bool operator!=(const value_with_unit& lhs, const value_with_unit& rhs) noexcept
+  friend inline bool
+  operator!=(const value_with_unit& lhs, const value_with_unit& rhs) noexcept
   {
     return lhs.v != rhs.v;
   }

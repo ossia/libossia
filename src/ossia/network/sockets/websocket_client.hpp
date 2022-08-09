@@ -24,7 +24,7 @@ public:
   Nano::Signal<void()> on_fail;
 
   websocket_client()
-    : m_open{false}
+      : m_open{false}
   {
     init_client();
   }
@@ -72,25 +72,25 @@ public:
   //! message.
   template <typename MessageHandler>
   websocket_client(MessageHandler&& onMessage)
-    : websocket_client{}
+      : websocket_client{}
   {
     assert(m_client);
     m_client->init_asio();
 
     std::weak_ptr<client_t> weak_client = m_client;
     m_client->set_message_handler(
-        [handler = std::move(onMessage), weak_client](
-            connection_handler hdl, client_t::message_ptr msg) {
-          if(!weak_client.lock())
-            return;
-          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
-        });
+        [handler = std::move(onMessage),
+         weak_client](connection_handler hdl, client_t::message_ptr msg) {
+      if(!weak_client.lock())
+        return;
+      handler(hdl, msg->get_opcode(), msg->get_raw_payload());
+    });
     assert(m_client);
   }
 
   template <typename MessageHandler>
   websocket_client(boost::asio::io_context& ctx, MessageHandler&& onMessage)
-    : websocket_client{}
+      : websocket_client{}
   {
     assert(m_client);
     m_client->init_asio(&ctx);
@@ -98,18 +98,18 @@ public:
 
     std::weak_ptr<client_t> weak_client = m_client;
     m_client->set_message_handler(
-        [handler = std::move(onMessage), weak_client](
-            connection_handler hdl, client_t::message_ptr msg) {
-          if(!weak_client.lock())
-            return;
-          handler(hdl, msg->get_opcode(), msg->get_raw_payload());
-        });
+        [handler = std::move(onMessage),
+         weak_client](connection_handler hdl, client_t::message_ptr msg) {
+      if(!weak_client.lock())
+        return;
+      handler(hdl, msg->get_opcode(), msg->get_raw_payload());
+    });
     assert(m_client);
   }
 
   ~websocket_client()
   {
-    if (m_open)
+    if(m_open)
       stop();
   }
 
@@ -120,7 +120,7 @@ public:
 
   void stop()
   {
-    if (!m_open)
+    if(!m_open)
     {
       if(m_client)
         m_client->stop();
@@ -161,11 +161,10 @@ public:
     }
 
     auto con = m_client->get_connection(uri, ec);
-    if (ec)
+    if(ec)
     {
       m_client->get_alog().write(
-          websocketpp::log::alevel::app,
-          "Get Connection Error: " + ec.message());
+          websocketpp::log::alevel::app, "Get Connection Error: " + ec.message());
       return;
     }
 
@@ -192,14 +191,14 @@ public:
 
   void send_message(const std::string& request)
   {
-    if (!m_open || !m_client)
+    if(!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
 
     m_client->send(m_hdl, request, websocketpp::frame::opcode::text, ec);
 
-    if (ec)
+    if(ec)
     {
       m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());
@@ -208,16 +207,16 @@ public:
 
   void send_message(const rapidjson::StringBuffer& request)
   {
-    if (!m_open || !m_client)
+    if(!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
 
     m_client->send(
-        m_hdl, request.GetString(), request.GetSize(),
-        websocketpp::frame::opcode::text, ec);
+        m_hdl, request.GetString(), request.GetSize(), websocketpp::frame::opcode::text,
+        ec);
 
-    if (ec)
+    if(ec)
     {
       m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());
@@ -226,16 +225,15 @@ public:
 
   void send_binary_message(std::string_view request)
   {
-    if (!m_open || !m_client)
+    if(!m_open || !m_client)
       return;
 
     websocketpp::lib::error_code ec;
 
     m_client->send(
-        m_hdl, request.data(), request.size(),
-        websocketpp::frame::opcode::binary, ec);
+        m_hdl, request.data(), request.size(), websocketpp::frame::opcode::binary, ec);
 
-    if (ec)
+    if(ec)
     {
       m_client->get_alog().write(
           websocketpp::log::alevel::app, "Send Error: " + ec.message());

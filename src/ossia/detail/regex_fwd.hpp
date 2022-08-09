@@ -3,11 +3,11 @@
 
 OSSIA_STD_BEGIN_NAMESPACE_CXX11
 #if defined(_MSC_VER)
-  template <typename T>
-  class regex_traits;
+template <typename T>
+class regex_traits;
 #else
-  template <typename T>
-  struct regex_traits;
+template <typename T>
+struct regex_traits;
 #endif
 
 template <typename T, typename Traits>

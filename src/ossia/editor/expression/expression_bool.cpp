@@ -9,7 +9,8 @@ namespace expressions
 
 expression_bool::~expression_bool() = default;
 
-expression_bool::expression_bool(bool result) : m_result{result}
+expression_bool::expression_bool(bool result)
+    : m_result{result}
 {
 }
 }

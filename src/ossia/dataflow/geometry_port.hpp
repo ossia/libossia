@@ -1,29 +1,39 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/small_vector.hpp>
+
 #include <boost/container/static_vector.hpp>
 
 namespace ossia
 {
 struct geometry
 {
-  struct buffer {
+  struct buffer
+  {
     std::shared_ptr<void> data{};
     int size{};
     bool dirty{};
   };
 
-  struct binding {
+  struct binding
+  {
     uint32_t stride{};
-    enum { per_vertex, per_instance } classification{};
+    enum
+    {
+      per_vertex,
+      per_instance
+    } classification{};
     int step_rate{};
   };
 
-  struct attribute {
+  struct attribute
+  {
     int binding = 0;
     int location = 0;
 
-    enum {
+    enum
+    {
       fp4,
       fp3,
       fp2,
@@ -31,12 +41,14 @@ struct geometry
       unsigned4,
       unsigned2,
       unsigned1
-    } format = fp4;
+    } format
+        = fp4;
 
     uint32_t offset = 0;
   };
 
-  struct input {
+  struct input
+  {
     int buffer{};
     int offset{};
   };
@@ -47,20 +59,43 @@ struct geometry
   ossia::small_vector<input, 2> input;
 
   int vertices{}, indices{};
-  enum { triangles, triangle_strip, triangle_fan, lines, line_strip, points } topology;
-  enum { none, front, back } cull_mode;
-  enum { counter_clockwise, clockwise } front_face;
+  enum
+  {
+    triangles,
+    triangle_strip,
+    triangle_fan,
+    lines,
+    line_strip,
+    points
+  } topology;
+  enum
+  {
+    none,
+    front,
+    back
+  } cull_mode;
+  enum
+  {
+    counter_clockwise,
+    clockwise
+  } front_face;
 
-  struct {
+  struct
+  {
     int buffer{-1};
     int offset{};
-    enum { uint16, uint32 } format{};
+    enum
+    {
+      uint16,
+      uint32
+    } format{};
   } index;
 
   bool dirty{};
 };
 
-struct OSSIA_EXPORT geometry_port {
+struct OSSIA_EXPORT geometry_port
+{
   static const constexpr int which = 4;
 
   void clear();

@@ -11,21 +11,21 @@ hsv_u::to_neutral(strong_value<hsv_u::concrete_type> self)
   const double H = self.dataspace_value[0];
   const double S = self.dataspace_value[1];
   const double V = self.dataspace_value[2];
-  if (S == 0.)
+  if(S == 0.)
   {
     return {1., (float)V, (float)V, (float)V};
   }
   else
   {
     double var_h = H * 6.;
-    if (var_h == 6.)
+    if(var_h == 6.)
       var_h = 0.;      // H must be < 1
     int var_i = var_h; // Or ... var_i = floor( var_h )
     auto var_1 = V * (1. - S);
     auto var_2 = V * (1. - S * (var_h - var_i));
     auto var_3 = V * (1. - S * (1. - (var_h - var_i)));
 
-    switch (var_i)
+    switch(var_i)
     {
       case 0:
         return make_vec(1., V, var_3, var_1);
@@ -49,13 +49,11 @@ hsv_u::value_type hsv_u::from_neutral(strong_value<hsv_u::neutral_unit> self)
   const double var_G = self.dataspace_value[2];
   const double var_B = self.dataspace_value[3];
 
-  const auto var_Min
-      = std::min(std::min(var_R, var_G), var_B); // Min. value of RGB
-  const auto var_Max
-      = std::max(std::max(var_R, var_G), var_B); // Max. value of RGB
-  const auto del_Max = var_Max - var_Min;        // Delta RGB value
+  const auto var_Min = std::min(std::min(var_R, var_G), var_B); // Min. value of RGB
+  const auto var_Max = std::max(std::max(var_R, var_G), var_B); // Max. value of RGB
+  const auto del_Max = var_Max - var_Min;                       // Delta RGB value
 
-  if (del_Max == 0.) // This is a gray, no chroma...
+  if(del_Max == 0.) // This is a gray, no chroma...
   {
     return {0., 0., (float)var_Max};
   }
@@ -69,16 +67,16 @@ hsv_u::value_type hsv_u::from_neutral(strong_value<hsv_u::neutral_unit> self)
     auto del_G = (((var_Max - var_G) / 6.) + (del_Max / 2.)) / del_Max;
     auto del_B = (((var_Max - var_B) / 6.) + (del_Max / 2.)) / del_Max;
 
-    if (var_R == var_Max)
+    if(var_R == var_Max)
       H = del_B - del_G;
-    else if (var_G == var_Max)
+    else if(var_G == var_Max)
       H = (1. / 3.) + del_R - del_B;
-    else if (var_B == var_Max)
+    else if(var_B == var_Max)
       H = (2. / 3.) + del_G - del_R;
 
-    if (H < 0.)
+    if(H < 0.)
       H += 1.;
-    if (H > 1.)
+    if(H > 1.)
       H -= 1.;
     return make_vec(H, S, V);
   }
@@ -87,9 +85,8 @@ hsv_u::value_type hsv_u::from_neutral(strong_value<hsv_u::neutral_unit> self)
 strong_value<xyz_u::neutral_unit>
 xyz_u::to_neutral(strong_value<xyz_u::concrete_type> self)
 {
-  auto var_X
-      = self.dataspace_value[0]
-        / 100.; // X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
+  auto var_X = self.dataspace_value[0]
+               / 100.; // X from 0 to  95.047      (Observer = 2°, Illuminant = D65)
   auto var_Y = self.dataspace_value[1] / 100.; // Y from 0 to 100.000
   auto var_Z = self.dataspace_value[2] / 100.; // Z from 0 to 108.883
 
@@ -98,8 +95,7 @@ xyz_u::to_neutral(strong_value<xyz_u::concrete_type> self)
   auto var_B = var_X * 0.0557 + var_Y * -0.2040 + var_Z * 1.0570;
 
   auto translate = [](auto var) {
-    return var > 0.0031308 ? 1.055 * (std::pow(var, (1 / 2.4))) - 0.055
-                           : var * 12.92;
+    return var > 0.0031308 ? 1.055 * (std::pow(var, (1 / 2.4))) - 0.055 : var * 12.92;
   };
 
   return make_vec(1., translate(var_R), translate(var_G), translate(var_B));
@@ -108,9 +104,7 @@ xyz_u::to_neutral(strong_value<xyz_u::concrete_type> self)
 xyz_u::value_type xyz_u::from_neutral(strong_value<xyz_u::neutral_unit> self)
 {
   auto translate = [](auto var) {
-    return 100.
-           * ((var > 0.04045) ? std::pow((var + 0.055) / 1.055, 2.4)
-                              : var / 12.92);
+    return 100. * ((var > 0.04045) ? std::pow((var + 0.055) / 1.055, 2.4) : var / 12.92);
   };
   auto var_R = translate(self.dataspace_value[1]);
   auto var_G = translate(self.dataspace_value[2]);
@@ -184,8 +178,7 @@ euler_u::to_neutral(strong_value<euler_u::concrete_type> self)
   };
 }
 
-euler_u::value_type
-euler_u::from_neutral(strong_value<euler_u::neutral_unit> self)
+euler_u::value_type euler_u::from_neutral(strong_value<euler_u::neutral_unit> self)
 {
   const auto x = self.dataspace_value[0];
   const auto y = self.dataspace_value[1];
@@ -224,8 +217,7 @@ axis_u::to_neutral(strong_value<axis_u::concrete_type> self)
   };
 }
 
-axis_u::value_type
-axis_u::from_neutral(strong_value<axis_u::neutral_unit> self)
+axis_u::value_type axis_u::from_neutral(strong_value<axis_u::neutral_unit> self)
 {
   const auto x = self.dataspace_value[0];
   const auto y = self.dataspace_value[1];
@@ -236,8 +228,9 @@ axis_u::from_neutral(strong_value<axis_u::neutral_unit> self)
 
   const auto sin_a2 = std::fabs(sin_a) < 0.0005 ? 1.0 : 1.0 / sin_a;
 
-  return {(float)(x * sin_a2), (float)(y * sin_a2), (float)(z * sin_a2),
-          (float)(rad_to_deg * 2.0 * std::atan2(sin_a, w))};
+  return {
+      (float)(x * sin_a2), (float)(y * sin_a2), (float)(z * sin_a2),
+      (float)(rad_to_deg * 2.0 * std::atan2(sin_a, w))};
 }
 
 // POSITION //
@@ -251,9 +244,9 @@ spherical_u::to_neutral(strong_value<spherical_u::concrete_type> self)
 
   const auto temp = std::cos(p) * r;
 
-  return strong_value<neutral_unit>{(float)(std::cos(t) * temp),
-                                    (float)(std::sin(t) * temp),
-                                    (float)(std::sin(p) * r)};
+  return strong_value<neutral_unit>{
+      (float)(std::cos(t) * temp), (float)(std::sin(t) * temp),
+      (float)(std::sin(p) * r)};
 }
 
 spherical_u::value_type
@@ -265,9 +258,9 @@ spherical_u::from_neutral(strong_value<spherical_u::neutral_unit> self)
 
   const auto temp = ipow(x, 2) + ipow(y, 2);
 
-  return {(float)(std::sqrt(temp + ipow(z, 2))),
-        (float)(std::atan2(y, x)),
-        (float)(std::atan2(z, std::sqrt(temp)))};
+  return {
+      (float)(std::sqrt(temp + ipow(z, 2))), (float)(std::atan2(y, x)),
+      (float)(std::atan2(z, std::sqrt(temp)))};
 }
 
 strong_value<aed_u::neutral_unit>
@@ -279,13 +272,12 @@ aed_u::to_neutral(strong_value<aed_u::concrete_type> self)
 
   const auto temp = std::cos(e) * d;
 
-  return strong_value<neutral_unit>{(float)(-std::cos(-a) * temp),
-        (float)(std::sin(a) * temp),
-        (float)(std::sin(e) * d)};
+  return strong_value<neutral_unit>{
+      (float)(-std::cos(-a) * temp), (float)(std::sin(a) * temp),
+      (float)(std::sin(e) * d)};
 }
 
-aed_u::value_type
-aed_u::from_neutral(strong_value<aed_u::neutral_unit> self)
+aed_u::value_type aed_u::from_neutral(strong_value<aed_u::neutral_unit> self)
 {
   const auto x = self.dataspace_value[0];
   const auto y = self.dataspace_value[1];
@@ -293,9 +285,10 @@ aed_u::from_neutral(strong_value<aed_u::neutral_unit> self)
 
   const auto temp = ipow(x, 2) + ipow(y, 2);
 
-  return {-(float)((std::atan2(y, x) - half_pi) * rad_to_deg),
-        (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
-        (float)(std::sqrt(temp + ipow(z, 2)))};
+  return {
+      -(float)((std::atan2(y, x) - half_pi) * rad_to_deg),
+      (float)(std::atan2(z, std::sqrt(temp)) * rad_to_deg),
+      (float)(std::sqrt(temp + ipow(z, 2)))};
 }
 
 strong_value<cylindrical_u::neutral_unit>
@@ -315,8 +308,7 @@ cylindrical_u::from_neutral(strong_value<cylindrical_u::neutral_unit> self)
   const auto y = self.dataspace_value[1];
   const auto z = self.dataspace_value[2];
 
-  return {(float)(ossia::norm(x, y)), (float)(std::atan2(y, x)),
-          z};
+  return {(float)(ossia::norm(x, y)), (float)(std::atan2(y, x)), z};
 }
 
 strong_value<azd_u::neutral_unit>
@@ -329,15 +321,14 @@ azd_u::to_neutral(strong_value<azd_u::concrete_type> self)
   return {(float)(std::cos(-a) * d), (float)(std::sin(a) * d), z};
 }
 
-azd_u::value_type
-azd_u::from_neutral(strong_value<azd_u::neutral_unit> self)
+azd_u::value_type azd_u::from_neutral(strong_value<azd_u::neutral_unit> self)
 {
   const auto x = self.dataspace_value[0];
   const auto y = self.dataspace_value[1];
   const auto z = self.dataspace_value[2];
 
-  return {-(float)((std::atan2(y, x) - half_pi) * rad_to_deg),
-        z,
-        (float)(ossia::norm(x, y))};
+  return {
+      -(float)((std::atan2(y, x) - half_pi) * rad_to_deg), z,
+      (float)(ossia::norm(x, y))};
 }
 }

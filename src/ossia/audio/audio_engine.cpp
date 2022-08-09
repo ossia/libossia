@@ -1,12 +1,13 @@
+#include <ossia/audio/alsa_protocol.hpp>
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/audio/dummy_protocol.hpp>
-#include <ossia/audio/alsa_protocol.hpp>
 #include <ossia/audio/jack_protocol.hpp>
+#include <ossia/audio/pipewire_protocol.hpp>
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/pulseaudio_protocol.hpp>
-#include <ossia/audio/pipewire_protocol.hpp>
 #include <ossia/audio/sdl_protocol.hpp>
 #include <ossia/detail/logger.hpp>
+
 #include <thread>
 
 namespace ossia
@@ -62,7 +63,8 @@ void audio_engine::sync()
   int k = 0;
   int buffer_length_in_ms = 8;
   if(this->effective_sample_rate > 0)
-    buffer_length_in_ms = std::ceil(this->effective_buffer_size * 1000. / this->effective_sample_rate);
+    buffer_length_in_ms
+        = std::ceil(this->effective_buffer_size * 1000. / this->effective_sample_rate);
 
   while(this->reply.load() < req)
   {
@@ -79,7 +81,8 @@ void audio_engine::gc()
 {
   // try to make deallocations happen in the main thread as far as possible
   fun_type t;
-  while(tick_gc.try_dequeue(t));
+  while(tick_gc.try_dequeue(t))
+    ;
 }
 
 void audio_engine::set_tick(audio_engine::fun_type&& t)
@@ -104,10 +107,9 @@ void audio_engine::load_audio_tick()
   reply.store(request.load());
 }
 
-
 ossia::audio_engine* make_audio_engine(
-    std::string proto, std::string name, std::string req_in,
-    std::string req_out, int& inputs, int& outputs, int& rate, int& bs)
+    std::string proto, std::string name, std::string req_in, std::string req_out,
+    int& inputs, int& outputs, int& rate, int& bs)
 {
   ossia::audio_engine* p{};
 
@@ -119,32 +121,32 @@ ossia::audio_engine* make_audio_engine(
   return new ossia::sdl_protocol{rate, bs};
 #endif
 
-  if (0)
+  if(0)
   {
   }
 #if __has_include(<pulse/pulseaudio.h>)
-  else if (proto == "PulseAudio")
+  else if(proto == "PulseAudio")
   {
-    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate,   bs};
+    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
   }
 #endif
 #if OSSIA_AUDIO_PORTAUDIO
-  else if (proto == "PortAudio")
+  else if(proto == "PortAudio")
   {
     p = new ossia::portaudio_engine{name,    req_in, req_out, inputs,
-                                    outputs, rate,   bs, paInDevelopment};
+                                    outputs, rate,   bs,      paInDevelopment};
   }
 #endif
 
 #if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
-  else if (proto == "JACK")
+  else if(proto == "JACK")
   {
     p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
   }
 #endif
 
 #if defined(OSSIA_AUDIO_SDL)
-  else if (proto == "SDL")
+  else if(proto == "SDL")
   {
     inputs = 0;
     outputs = 2;
@@ -152,34 +154,34 @@ ossia::audio_engine* make_audio_engine(
   }
 #endif
 
-  else if (proto == "Dummy")
+  else if(proto == "Dummy")
   {
     p = new ossia::dummy_engine{rate, bs};
   }
 
-  if (!p)
+  if(!p)
   {
 #if __has_include(<pulse/pulseaudio.h>)
-    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate,   bs};
+    p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
 #endif
   }
 
-  if (!p)
+  if(!p)
   {
 #if OSSIA_AUDIO_PORTAUDIO
     p = new ossia::portaudio_engine{name,    req_in, req_out, inputs,
-                                    outputs, rate,   bs, paInDevelopment};
+                                    outputs, rate,   bs,      paInDevelopment};
 #endif
   }
 
-  if (!p)
+  if(!p)
   {
 #if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
     p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
 #endif
   }
 
-  if (!p)
+  if(!p)
   {
 #if defined(OSSIA_AUDIO_SDL)
     inputs = 0;
@@ -188,7 +190,7 @@ ossia::audio_engine* make_audio_engine(
 #endif
   }
 
-  if (!p)
+  if(!p)
   {
     p = new ossia::dummy_engine{rate, bs};
   }

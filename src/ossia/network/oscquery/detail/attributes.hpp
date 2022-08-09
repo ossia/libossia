@@ -440,29 +440,26 @@ struct metadata<net::app_name_attribute>
 using base_attributes = brigand::list<
     typetag_attribute, net::value_attribute, net::domain_attribute,
     net::access_mode_attribute, net::bounding_mode_attribute,
-    net::repetition_filter_attribute, net::unit_attribute,
-    net::default_value_attribute>;
+    net::repetition_filter_attribute, net::unit_attribute, net::default_value_attribute>;
 
 using base_attributes_without_type = brigand::list<
     net::value_attribute, net::domain_attribute, net::access_mode_attribute,
-    net::bounding_mode_attribute, net::repetition_filter_attribute,
-    net::unit_attribute, net::default_value_attribute>;
+    net::bounding_mode_attribute, net::repetition_filter_attribute, net::unit_attribute,
+    net::default_value_attribute>;
 
 using extended_attributes = brigand::list<
     net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
     net::value_step_size_attribute, net::instance_bounds_attribute,
     net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
-    net::extended_type_attribute, net::description_attribute,
-    net::app_name_attribute, net::app_creator_attribute,
-    net::app_version_attribute>;
+    net::extended_type_attribute, net::description_attribute, net::app_name_attribute,
+    net::app_creator_attribute, net::app_version_attribute>;
 
 using attributes_when_reading = brigand::list<
-    net::domain_attribute, net::access_mode_attribute,
-    net::bounding_mode_attribute, net::repetition_filter_attribute,
-    net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
-    net::value_step_size_attribute, net::instance_bounds_attribute,
-    net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
-    net::description_attribute, net::app_name_attribute,
+    net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute,
+    net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute,
+    net::priority_attribute, net::value_step_size_attribute,
+    net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute,
+    net::disabled_attribute, net::description_attribute, net::app_name_attribute,
     net::app_creator_attribute, net::app_version_attribute>;
 
 using all_attributes = brigand::list<
@@ -470,12 +467,11 @@ using all_attributes = brigand::list<
 
     net::value_attribute, net::default_value_attribute,
 
-    net::domain_attribute, net::access_mode_attribute,
-    net::bounding_mode_attribute, net::repetition_filter_attribute,
-    net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
-    net::value_step_size_attribute, net::instance_bounds_attribute,
-    net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
-    net::description_attribute, net::app_name_attribute,
+    net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute,
+    net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute,
+    net::priority_attribute, net::value_step_size_attribute,
+    net::instance_bounds_attribute, net::critical_attribute, net::hidden_attribute,
+    net::disabled_attribute, net::description_attribute, net::app_name_attribute,
     net::app_creator_attribute, net::app_version_attribute>;
 }
 enum class message_type
@@ -503,11 +499,9 @@ OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
 OSSIA_EXPORT const key_map_type& oscquery_to_ossia_key();
 
 //! Convert the text of an ossia attribute to the key of an oscquery attribute
-OSSIA_EXPORT std::optional<ossia::string_view>
-    ossia_to_oscquery_key(ossia::string_view);
+OSSIA_EXPORT std::optional<ossia::string_view> ossia_to_oscquery_key(ossia::string_view);
 
 //! Convert the text of an oscquery attribute to the key of an ossia attribute.
-OSSIA_EXPORT std::optional<ossia::string_view>
-    oscquery_to_ossia_key(ossia::string_view);
+OSSIA_EXPORT std::optional<ossia::string_view> oscquery_to_ossia_key(ossia::string_view);
 }
 }

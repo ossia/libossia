@@ -47,8 +47,7 @@ public:
   std::future<void> pull_value_async() final override;
   void request_value() final override;
 
-  ossia::net::generic_parameter&
-  push_value(const ossia::value&) final override;
+  ossia::net::generic_parameter& push_value(const ossia::value&) final override;
   ossia::net::generic_parameter& push_value(ossia::value&&) final override;
   ossia::net::generic_parameter& push_value() final override;
 
@@ -63,19 +62,16 @@ public:
   void set_value_quiet(const ossia::destination&);
 
   ossia::val_type get_value_type() const final override;
-  ossia::net::generic_parameter&
-      set_value_type(ossia::val_type) final override;
+  ossia::net::generic_parameter& set_value_type(ossia::val_type) final override;
 
   ossia::access_mode get_access() const final override;
   ossia::net::generic_parameter& set_access(ossia::access_mode) final override;
 
   const ossia::domain& get_domain() const final override;
-  ossia::net::generic_parameter&
-  set_domain(const ossia::domain&) final override;
+  ossia::net::generic_parameter& set_domain(const ossia::domain&) final override;
 
   ossia::bounding_mode get_bounding() const final override;
-  ossia::net::generic_parameter&
-      set_bounding(ossia::bounding_mode) final override;
+  ossia::net::generic_parameter& set_bounding(ossia::bounding_mode) final override;
 
   bool filter_value(const ossia::value& val) const final override;
 

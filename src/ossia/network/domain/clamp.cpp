@@ -18,29 +18,25 @@ struct clamp_functor
   }
 };
 
-ossia::value clamp(
-    const ossia::value& val, const ossia::value& min, const ossia::value& max)
+ossia::value
+clamp(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
-  if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
-        apply_ternary_fun_visitor<clamp_functor>{}, val.v, min.v, max.v);
+  if(val.valid() && min.valid() && max.valid())
+    return ossia::apply(apply_ternary_fun_visitor<clamp_functor>{}, val.v, min.v, max.v);
   return val;
 }
 
 #if defined(FAST_COMPILES)
-ossia::value
-clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   return clamp(val, min, max);
 }
 #else
-ossia::value
-clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+ossia::value clamp(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
-  if (val.valid() && min.valid() && max.valid())
+  if(val.valid() && min.valid() && max.valid())
     return ossia::apply(
-        apply_ternary_fun_visitor<clamp_functor>{}, ossia::move(val).v, min.v,
-        max.v);
+        apply_ternary_fun_visitor<clamp_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 #endif

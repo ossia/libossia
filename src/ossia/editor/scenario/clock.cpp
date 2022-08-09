@@ -17,9 +17,7 @@ namespace ossia
 clock::clock(ossia::time_interval& cst, double ratio)
     : m_interval{cst}
     , m_ratio(ratio)
-    , m_duration{cst.get_max_duration().infinite()
-                     ? ossia::Infinite
-                     : time_value{cst.get_max_duration() * ratio}}
+    , m_duration{cst.get_max_duration().infinite() ? ossia::Infinite : time_value{cst.get_max_duration() * ratio}}
     , m_granularity{1}
     , m_running{false}
     , m_paused{false}
@@ -33,7 +31,7 @@ clock::~clock()
 
 void clock::start_and_tick()
 {
-  if (m_running)
+  if(m_running)
     return;
 
   // reset timing informations
@@ -50,7 +48,7 @@ void clock::start_and_tick()
   m_interval.start();
   m_interval.tick_current(0_tv, ossia::token_request{});
 
-  if (m_thread.joinable())
+  if(m_thread.joinable())
     m_thread.join();
 
   // launch a new thread to run the clock execution
@@ -62,7 +60,7 @@ void clock::stop()
 {
   request_stop();
 
-  if (m_thread.joinable())
+  if(m_thread.joinable())
     m_thread.join();
 
   m_interval.stop();
@@ -95,7 +93,7 @@ bool clock::tick()
   using namespace std::chrono;
   bool paused = m_paused;
   bool running = m_running;
-  if (paused || !running)
+  if(paused || !running)
     return false;
 
   int64_t droppedTicks = 0;
@@ -110,13 +108,13 @@ bool clock::tick()
 
   const auto tok = ossia::token_request{};
   // adjust date and elapsed time considering the dropped ticks
-  if (droppedTicks)
+  if(droppedTicks)
   {
     m_date += droppedTicks * m_granularity.impl;
     m_elapsedTime += droppedTicks * m_granularity.impl;
 
     // maybe the clock reaches the end ?
-    if (m_duration - m_date < Zero && !m_duration.infinite())
+    if(m_duration - m_date < Zero && !m_duration.infinite())
     {
       // notify the owner
       m_interval.tick_offset(time_value{deltaInUs}, 0_tv, tok);
@@ -132,9 +130,9 @@ bool clock::tick()
   // std::cerr << m_granularity << " " << m_ratio << " " << deltaInUs << " "<<
   // droppedTicks << " "  << granularityInUs << " " << pauseInUs << std::endl;
   // if too early: wait
-  if (pauseInUs > 0)
+  if(pauseInUs > 0)
   {
-    while (pauseInUs > 5000)
+    while(pauseInUs > 5000)
     {
       // pause the thread logarithmically
       auto t1 = clock_type::now();
@@ -146,14 +144,13 @@ bool clock::tick()
     {
       // busy loop
       auto t1 = clock_type::now();
-      while (duration_cast<microseconds>(clock_type::now() - t1).count()
-             < (pauseInUs + 10))
+      while(duration_cast<microseconds>(clock_type::now() - t1).count()
+            < (pauseInUs + 10))
         ;
     }
 
-    deltaInUs
-        = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
-          - droppedTicks * m_granularity.impl;
+    deltaInUs = duration_cast<microseconds>(clock_type::now() - m_lastTime).count()
+                - droppedTicks * m_granularity.impl;
   }
 
   // std::cerr << deltaInUs << std::endl;
@@ -167,13 +164,13 @@ bool clock::tick()
 
   // test paused and running status after computing the date because there is a
   // sleep before
-  if (!paused && running)
+  if(!paused && running)
   {
     // notify the owner
     m_interval.tick(time_value{deltaInUs}, tok, m_ratio);
 
     // is this the end
-    if (m_duration - m_date < Zero && !m_duration.infinite())
+    if(m_duration - m_date < Zero && !m_duration.infinite())
     {
       request_stop();
     }
@@ -222,11 +219,11 @@ time_value clock::get_date() const
 
 void clock::request_stop()
 {
-  if (m_running)
+  if(m_running)
   {
     m_shouldStop = true;
     m_paused = false;
-    if (m_statusCallback)
+    if(m_statusCallback)
       m_statusCallback(exec_status::STOPPED);
   }
 }
@@ -251,26 +248,26 @@ void clock::thread_callback()
   try
   {
     // launch the tick if the duration is valid and while it have to run
-    if (m_duration > Zero)
+    if(m_duration > Zero)
     {
 
-      while (m_running && !m_shouldStop)
+      while(m_running && !m_shouldStop)
       {
-        if (!m_paused)
+        if(!m_paused)
           tick();
         else
           std::this_thread::sleep_for(std::chrono::milliseconds(30));
       }
     }
 
-    if (m_shouldStop)
+    if(m_shouldStop)
       m_running = false;
   }
-  catch (std::exception& e)
+  catch(std::exception& e)
   {
     logger().error("clock::threadCallback() catched: {}", e.what());
   }
-  catch (...)
+  catch(...)
   {
     logger().error("An error occured in clock::threadCallback()");
   }

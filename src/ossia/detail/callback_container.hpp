@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/audio_spin_mutex.hpp>
 
 #include <list>
@@ -19,12 +20,14 @@ namespace ossia
  */
 struct OSSIA_EXPORT invalid_callback_error final : public std::logic_error
 {
-  invalid_callback_error(const char* e) : std::logic_error(e)
+  invalid_callback_error(const char* e)
+      : std::logic_error(e)
   {
   }
 
   ~invalid_callback_error() override;
-  invalid_callback_error() : std::logic_error("Bad callback")
+  invalid_callback_error()
+      : std::logic_error("Bad callback")
   {
   }
 };
@@ -45,6 +48,7 @@ class callback_container
 {
   using mutex = ossia::audio_spin_mutex;
   using lock_guard = std::lock_guard<ossia::audio_spin_mutex>;
+
 public:
   callback_container() = default;
   callback_container(const callback_container& other)
@@ -88,11 +92,11 @@ public:
   iterator add_callback(T callback)
   {
     T cb = callback;
-    if (cb)
+    if(cb)
     {
       lock_guard lck{m_mutx};
       auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
-      if (m_callbacks.size() == 1)
+      if(m_callbacks.size() == 1)
         on_first_callback_added();
       return it;
     }
@@ -109,11 +113,10 @@ public:
   void remove_callback(iterator it)
   {
     lock_guard lck{m_mutx};
-    if (m_callbacks.size() == 1)
+    if(m_callbacks.size() == 1)
       on_removing_last_callback();
     m_callbacks.erase(it);
   }
-
 
   /**
    * @brief Replaces an existing callback with another function.
@@ -133,9 +136,9 @@ public:
   {
   public:
     explicit disabled_callback(callback_container& self)
-      : self{self}, old_callbacks{self.m_callbacks}
+        : self{self}
+        , old_callbacks{self.m_callbacks}
     {
-
     }
 
     ~disabled_callback()
@@ -187,9 +190,9 @@ public:
   void send(Args&&... args)
   {
     lock_guard lck{m_mutx};
-    for (auto& callback : m_callbacks)
+    for(auto& callback : m_callbacks)
     {
-      if (callback)
+      if(callback)
         callback(std::forward<Args>(args)...);
     }
   }
@@ -200,7 +203,7 @@ public:
   void callbacks_clear()
   {
     lock_guard lck{m_mutx};
-    if (!m_callbacks.empty())
+    if(!m_callbacks.empty())
       on_removing_last_callback();
     m_callbacks.clear();
   }

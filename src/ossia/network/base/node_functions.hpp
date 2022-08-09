@@ -41,8 +41,7 @@ find_nodes(node_base& dev, ossia::string_view pattern);
  * Hence there is no guarantee that the created node name is the same
  * than the one requested; the output should be checked.
  */
-OSSIA_EXPORT node_base&
-create_node(node_base& dev, ossia::string_view parameter_base);
+OSSIA_EXPORT node_base& create_node(node_base& dev, ossia::string_view parameter_base);
 
 /**
  * @brief Create nodes according to a brace-expansion-like mechanism
@@ -79,8 +78,8 @@ OSSIA_EXPORT std::vector<parameter_base*> find_or_create_parameter(
 /**
  * @brief Calls find_node or create_node according to the value `create`
  */
-OSSIA_EXPORT node_base* find_or_create_node(
-    node_base& dev, ossia::string_view parameter_base, bool create);
+OSSIA_EXPORT node_base*
+find_or_create_node(node_base& dev, ossia::string_view parameter_base, bool create);
 
 //! Get a valid name for a given node
 void sanitize_name(std::string& name, const node_base::children_t& brethren);
@@ -106,11 +105,10 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
 }
 
 template <typename Address>
-auto find_or_create_parameter(
-    ossia::net::node_base& root, ossia::string_view name)
+auto find_or_create_parameter(ossia::net::node_base& root, ossia::string_view name)
 {
   auto& node = ossia::net::find_or_create_node(root, std::move(name));
-  if (auto p = dynamic_cast<Address*>(node.get_parameter()))
+  if(auto p = dynamic_cast<Address*>(node.get_parameter()))
   {
     return p;
   }
@@ -121,8 +119,7 @@ auto find_or_create_parameter(
     return addr;
   }
 }
-OSSIA_EXPORT std::ostream&
-operator<<(std::ostream&, const ossia::net::parameter_base&);
+OSSIA_EXPORT std::ostream& operator<<(std::ostream&, const ossia::net::parameter_base&);
 
 OSSIA_EXPORT
 void expand_ranges(std::string& str);
@@ -139,14 +136,15 @@ OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
 
-
 struct OSSIA_EXPORT fuzzysearch_result
 {
   double score{};
   std::string oscname;
   ossia::net::node_base* node{};
 
-  friend bool operator==(const fuzzysearch_result& lhs, const fuzzysearch_result& rhs) noexcept {
+  friend bool
+  operator==(const fuzzysearch_result& lhs, const fuzzysearch_result& rhs) noexcept
+  {
     return lhs.score == rhs.score && lhs.oscname == rhs.oscname && lhs.node == rhs.node;
   }
 };
@@ -157,10 +155,10 @@ struct fuzzysearch_options
 };
 
 OSSIA_EXPORT
-void fuzzysearch(const std::vector<ossia::net::node_base*>& node,
-                 const std::vector<std::string>& patterns,
-                 std::vector<fuzzysearch_result>& results,
-                 fuzzysearch_options = {});
+void fuzzysearch(
+    const std::vector<ossia::net::node_base*>& node,
+    const std::vector<std::string>& patterns, std::vector<fuzzysearch_result>& results,
+    fuzzysearch_options = {});
 
 }
 }

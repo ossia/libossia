@@ -1,16 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/context.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/osc/osc.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <git_info.h>
 #include <ossia_pd_export.h>
 
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
-#include <ossia/context.hpp>
-
-#include <git_info.h>
 
 namespace ossia
 {
@@ -23,11 +23,10 @@ t_clock* ossia_pd::browse_clock;
 ZeroconfOscqueryListener ossia_pd::zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_pd::zeroconf_minuit_listener;
 
-
 static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
 {
   auto& opd = ossia_pd::instance();
-  t_ossia* x = (t_ossia*) eobj_new(opd.ossia_class);
+  t_ossia* x = (t_ossia*)eobj_new(opd.ossia_class);
 
   x->m_dumpout = outlet_new((t_object*)x, gensym("dumpout"));
   x->m_device = opd.get_default_device();
@@ -35,12 +34,15 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   x->m_name = gensym(x->m_device->get_name().c_str());
   x->m_matchers.push_back({&x->m_device->get_root_node(), (object_base*)nullptr});
 
-  x->m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.connect<&device_base::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created.connect<&device_base::on_parameter_created_callback>(
+      x);
+  x->m_device->on_parameter_removing
+      .connect<&device_base::on_parameter_deleted_callback>(x);
 
   x->m_patcher_hierarchy.push_back(x->m_obj.o_canvas);
 
-  if (argc > 0 && argv[0].a_type == A_SYMBOL){
+  if(argc > 0 && argv[0].a_type == A_SYMBOL)
+  {
     x->m_name = argv[0].a_w.w_symbol;
     x->m_device->set_name(x->m_name->s_name);
   }
@@ -48,17 +50,19 @@ static void* ossia_new(t_symbol* name, int argc, t_atom* argv)
   return (x);
 }
 
-static void ossia_free(t_ossia *x)
+static void ossia_free(t_ossia* x)
 {
   outlet_free(x->m_dumpout);
 
-  x->m_device->on_parameter_created.disconnect<&device_base::on_parameter_created_callback>(x);
-  x->m_device->on_parameter_removing.disconnect<&device_base::on_parameter_deleted_callback>(x);
+  x->m_device->on_parameter_created
+      .disconnect<&device_base::on_parameter_created_callback>(x);
+  x->m_device->on_parameter_removing
+      .disconnect<&device_base::on_parameter_deleted_callback>(x);
 
   ossia_pd::instance().devices.remove_all(x);
 }
 
-static void enable_testing(t_ossia *x, float f)
+static void enable_testing(t_ossia* x, float f)
 {
   ossia_pd::instance().m_testing = f > 0.;
 }
@@ -66,8 +70,8 @@ static void enable_testing(t_ossia *x, float f)
 extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
 {
   t_eclass* c = eclass_new(
-      "ossia", (method)ossia_new, (method)ossia_free, sizeof(t_ossia),
-      CLASS_DEFAULT, A_GIMME, 0);
+      "ossia", (method)ossia_new, (method)ossia_free, sizeof(t_ossia), CLASS_DEFAULT,
+      A_GIMME, 0);
 
   setup_ossia0x2eassert();
   setup_ossia0x2eattribute();
@@ -80,15 +84,15 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   setup_ossia0x2eremote();
   setup_ossia0x2eview();
 
-  class_addcreator((t_newmethod)ossia_new,gensym("ø"), A_GIMME, 0);
+  class_addcreator((t_newmethod)ossia_new, gensym("ø"), A_GIMME, 0);
 
   node_base::class_setup(c);
 
-  eclass_addmethod(c, (method) device::expose, "expose",    A_GIMME, 0);
-  eclass_addmethod(c, (method) device::name,   "name",      A_GIMME, 0);
-  eclass_addmethod(c, (method) device::stop_expose, "stop", A_FLOAT, 0);
-  eclass_addmethod(c, (method) device::get_mess_cb, "get", A_SYMBOL, 0);
-  eclass_addmethod(c, (method) enable_testing, "testing", A_FLOAT, 0);
+  eclass_addmethod(c, (method)device::expose, "expose", A_GIMME, 0);
+  eclass_addmethod(c, (method)device::name, "name", A_GIMME, 0);
+  eclass_addmethod(c, (method)device::stop_expose, "stop", A_FLOAT, 0);
+  eclass_addmethod(c, (method)device::get_mess_cb, "get", A_SYMBOL, 0);
+  eclass_addmethod(c, (method)enable_testing, "testing", A_FLOAT, 0);
 
   ossia_pd::ossia_class = c;
 
@@ -101,7 +105,8 @@ extern "C" OSSIA_PD_EXPORT void ossia_setup(void)
   inst.devices.reserve(4);
   inst.clients.reserve(4);
 
-  ossia_pd::browse_clock = clock_new(nullptr, (t_method) ossia_pd::discover_network_devices);
+  ossia_pd::browse_clock
+      = clock_new(nullptr, (t_method)ossia_pd::discover_network_devices);
   clock_delay(ossia_pd::browse_clock, 100.);
 
   post("Welcome to ossia library");
@@ -143,33 +148,39 @@ ossia_pd::ossia_pd():
 
   m_device.on_attribute_modified.connect<&device_base::on_attribute_modified_callback>();
 
-  m_reg_clock = clock_new(this, (t_method) ossia_pd::register_nodes);
+  m_reg_clock = clock_new(this, (t_method)ossia_pd::register_nodes);
 }
 
 ossia_pd::~ossia_pd()
 {
-  m_device.on_attribute_modified.disconnect<&device_base::on_attribute_modified_callback>();
-  for (auto x : devices.copy()){
-    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-        x->m_device->get_protocol());
+  m_device.on_attribute_modified
+      .disconnect<&device_base::on_attribute_modified_callback>();
+  for(auto x : devices.copy())
+  {
+    auto& multiplex
+        = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol());
     auto& protos = multiplex.get_protocols();
-    for (auto& proto : protos)
+    for(auto& proto : protos)
     {
       multiplex.stop_expose_to(*proto);
     }
     x->m_protocols.clear();
     x->disconnect_slots();
   }
-  for (auto x : views.copy()){
+  for(auto x : views.copy())
+  {
     x->m_matchers.clear();
   }
-  for (auto x : remotes.copy()){
+  for(auto x : remotes.copy())
+  {
     x->m_matchers.clear();
   }
-  for (auto x : models.copy()){
+  for(auto x : models.copy())
+  {
     x->m_matchers.clear();
   }
-  for (auto x : parameters.copy()){
+  for(auto x : parameters.copy())
+  {
     x->m_matchers.clear();
   }
 }
@@ -185,53 +196,48 @@ void ossia_pd::register_nodes(void* x)
 {
   auto& inst = ossia_pd::instance();
   auto& map = inst.m_root_patcher;
-  for (auto it = map.begin(); it != map.end(); it++)
+  for(auto it = map.begin(); it != map.end(); it++)
   {
     t_canvas* patcher = it->first;
-    for (auto dev : inst.devices.reference())
+    for(auto dev : inst.devices.reference())
     {
       if(dev->m_patcher_hierarchy.back() == patcher)
         ossia::pd::device::register_children(dev);
     }
-    for (auto client : inst.clients.reference())
+    for(auto client : inst.clients.reference())
     {
       if(client->m_patcher_hierarchy.back() == patcher)
         ossia::pd::client::register_children(client);
     }
 
-    for (auto model : inst.models.reference())
+    for(auto model : inst.models.reference())
     {
-      if ( model->m_patcher_hierarchy.back() == patcher
-            && model->m_matchers.empty())
+      if(model->m_patcher_hierarchy.back() == patcher && model->m_matchers.empty())
         ossia_register(model);
     }
-    for (auto param : inst.parameters.reference())
+    for(auto param : inst.parameters.reference())
     {
-      if ( param->m_patcher_hierarchy.back() == patcher
-            && param->m_matchers.empty())
+      if(param->m_patcher_hierarchy.back() == patcher && param->m_matchers.empty())
         ossia_register(param);
     }
 
-    for (auto view : inst.views.reference())
+    for(auto view : inst.views.reference())
     {
-      if ( view->m_patcher_hierarchy.back() == patcher
-            && view->m_matchers.empty())
+      if(view->m_patcher_hierarchy.back() == patcher && view->m_matchers.empty())
         ossia_register(view);
     }
-    for (auto remote : inst.remotes.reference())
+    for(auto remote : inst.remotes.reference())
     {
-      if ( remote->m_patcher_hierarchy.back() == patcher
-            && remote->m_matchers.empty())
+      if(remote->m_patcher_hierarchy.back() == patcher && remote->m_matchers.empty())
         ossia_register(remote);
     }
-    for (auto attr : inst.attributes.reference())
+    for(auto attr : inst.attributes.reference())
     {
-      if ( attr->m_patcher_hierarchy.back() == patcher
-            && attr->m_matchers.empty())
+      if(attr->m_patcher_hierarchy.back() == patcher && attr->m_matchers.empty())
         ossia_register(attr);
     }
 
-    for (auto dev : inst.devices.reference())
+    for(auto dev : inst.devices.reference())
     {
       if(dev->m_patcher_hierarchy.back() == patcher)
         node_base::push_default_value(dev);
@@ -244,9 +250,9 @@ void ossia_pd::register_nodes(void* x)
     auto n = &inst.get_default_device()->get_root_node();
     list = ossia::net::list_all_children(n);
 
-    for (ossia::net::node_base* child : list)
+    for(ossia::net::node_base* child : list)
     {
-      if (auto param = child->get_parameter())
+      if(auto param = child->get_parameter())
       {
         auto val = ossia::net::get_default_value(*child);
         if(val)

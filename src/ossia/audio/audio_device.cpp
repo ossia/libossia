@@ -4,13 +4,20 @@
 namespace ossia
 {
 
-audio_device::audio_device(std::string name, int bufferSize, int sampleRate, int inputs, int outputs)
-    : audio_device{std::make_unique<audio_protocol>(), name, bufferSize, sampleRate, inputs, outputs}
+audio_device::audio_device(
+    std::string name, int bufferSize, int sampleRate, int inputs, int outputs)
+    : audio_device{std::make_unique<audio_protocol>(),
+                   name,
+                   bufferSize,
+                   sampleRate,
+                   inputs,
+                   outputs}
 {
 }
 
 audio_device::audio_device(
-    std::unique_ptr<audio_protocol> proto, std::string name, int bs, int rate, int ins, int outs)
+    std::unique_ptr<audio_protocol> proto, std::string name, int bs, int rate, int ins,
+    int outs)
     : device{std::move(proto), name}
     , protocol{static_cast<audio_protocol&>(device.get_protocol())}
 {
@@ -58,15 +65,13 @@ int audio_device::get_sample_rate() const
 ossia::audio_parameter& audio_device::get_main_in()
 {
   return static_cast<ossia::audio_parameter&>(
-      *ossia::net::find_node(device.get_root_node(), "/in/main")
-           ->get_parameter());
+      *ossia::net::find_node(device.get_root_node(), "/in/main")->get_parameter());
 }
 
 ossia::audio_parameter& audio_device::get_main_out()
 {
   return static_cast<ossia::audio_parameter&>(
-      *ossia::net::find_node(device.get_root_node(), "/out/main")
-           ->get_parameter());
+      *ossia::net::find_node(device.get_root_node(), "/out/main")->get_parameter());
 }
 
 }

@@ -37,8 +37,8 @@ private:
 
 public:
   minuit_protocol(
-      const std::string& local_name, const std::string& remote_ip,
-      uint16_t remote_port, uint16_t local_port);
+      const std::string& local_name, const std::string& remote_ip, uint16_t remote_port,
+      uint16_t local_port);
 
   minuit_protocol(const minuit_protocol&) = delete;
   minuit_protocol(minuit_protocol&&) = delete;
@@ -61,22 +61,21 @@ public:
   bool update(ossia::net::node_base& node_base) override;
 
   bool pull(ossia::net::parameter_base& parameter_base) override;
-  bool
-  push_raw(const ossia::net::full_parameter_data& parameter_base) override;
+  bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
   std::future<void> pull_async(parameter_base&) override;
   void request(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
-
   bool
-  observe(ossia::net::parameter_base& parameter_base, bool enable) override;
-  bool observe_quietly(
-      ossia::net::parameter_base& parameter_base, bool enable) override;
+  push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+
+  bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
+  bool observe_quietly(ossia::net::parameter_base& parameter_base, bool enable) override;
 
   void namespace_refresh(ossia::string_view req, const std::string& addr);
   void namespace_refreshed(ossia::string_view addr);
 
-  void get_refresh(ossia::string_view req, const std::string& addr, std::promise<void>&& p);
+  void
+  get_refresh(ossia::string_view req, const std::string& addr, std::promise<void>&& p);
   void get_refreshed(ossia::string_view req);
 
   osc::sender<osc_1_0_outbound_stream_visitor>& sender() const;
@@ -91,8 +90,8 @@ private:
   std::string m_localName;
   std::string m_ip;
   uint16_t m_remotePort{}; /// the port that a remote device opens
-  uint16_t m_localPort{}; /// the port where a remote device sends OSC messages
-                          /// to (opened in this library)
+  uint16_t m_localPort{};  /// the port where a remote device sends OSC
+                           /// messages to (opened in this library)
 
   listened_parameters m_listening;
 

@@ -23,7 +23,7 @@ device_parameter::~device_parameter()
 
 void device_parameter::device_value_change_event(const ossia::value& val)
 {
-  if (val.valid())
+  if(val.valid())
   {
     m_current_value = val;
     get_protocol().push(*this);
@@ -60,7 +60,7 @@ net::parameter_base& device_parameter::push_value()
 
 ossia::value device_parameter::set_value(const ossia::value& val)
 {
-  if (val.valid())
+  if(val.valid())
   {
     m_current_value = val;
     send(val);

@@ -13,20 +13,11 @@ extern "C" void ossia_assert_setup()
       (long)sizeof(oassert), 0L, A_GIMME, 0);
 
   auto& c = ossia_library.ossia_assert_class;
-  class_addmethod(
-      c, (method)oassert::in_long,
-      "int", A_LONG, 0);
-  class_addmethod(c, (method)oassert::reset,
-      "reset", A_NOTHING, 0);
-  class_addmethod(
-      c, (method)oassert::assist,
-      "assist", A_CANT, 0);
-  class_addmethod(
-      c, (method)oassert::notify,
-      "notify", A_CANT, 0);
-  class_addmethod(
-      c, (method)oassert::closebang,
-      "closebang", A_CANT, 0);
+  class_addmethod(c, (method)oassert::in_long, "int", A_LONG, 0);
+  class_addmethod(c, (method)oassert::reset, "reset", A_NOTHING, 0);
+  class_addmethod(c, (method)oassert::assist, "assist", A_CANT, 0);
+  class_addmethod(c, (method)oassert::notify, "notify", A_CANT, 0);
+  class_addmethod(c, (method)oassert::closebang, "closebang", A_CANT, 0);
 
   CLASS_ATTR_SYM(c, "name", 0, oassert, m_name);
   CLASS_ATTR_LABEL(c, "name", 0, "Test name");
@@ -50,9 +41,9 @@ extern "C" void* ossia_assert_create(t_symbol* s, long argc, t_atom* argv)
 
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    if (attrstart > 0 && argv)
+    if(attrstart > 0 && argv)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
       }
@@ -74,11 +65,11 @@ void oassert::reset(oassert* x)
 }
 void oassert::save_color()
 {
-  t_object *box{};
+  t_object* box{};
 
   // get the object's wrapping box
-  t_max_err err = object_obex_lookup(this, gensym("#B"), (t_object **)&box);
-  if (err != MAX_ERR_NONE)
+  t_max_err err = object_obex_lookup(this, gensym("#B"), (t_object**)&box);
+  if(err != MAX_ERR_NONE)
     return;
 
   err = jbox_get_color(box, &m_color);
@@ -88,11 +79,11 @@ void oassert::save_color()
 
 void oassert::update_color()
 {
-  t_object *box{};
+  t_object* box{};
 
   // get the object's wrapping box
-  t_max_err err = object_obex_lookup(this, gensym("#B"), (t_object **)&box);
-  if (err != MAX_ERR_NONE)
+  t_max_err err = object_obex_lookup(this, gensym("#B"), (t_object**)&box);
+  if(err != MAX_ERR_NONE)
     return;
 
   // invert the color
@@ -139,7 +130,7 @@ void oassert::in_long(oassert* x, long v)
   critical_exit(0);
 }
 
-void oassert::closebang(oassert *x)
+void oassert::closebang(oassert* x)
 {
   if(x->m_status == NORUN)
   {
@@ -190,7 +181,7 @@ rapidjson::StringBuffer oassert::create_report()
 
 void oassert::free(oassert* x)
 {
-  if (x)
+  if(x)
   {
     ossia_max::instance().oasserts.remove_all(x);
     outlet_delete(x->m_dumpout);
@@ -198,15 +189,15 @@ void oassert::free(oassert* x)
   }
 }
 
-t_max_err oassert::notify(
-    oassert* x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+t_max_err
+oassert::notify(oassert* x, t_symbol* s, t_symbol* msg, void* sender, void* data)
 {
   return 0;
 }
 
-void oassert::assist(oassert *x, void *b, long m, long a, char *s)
+void oassert::assist(oassert* x, void* b, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Log messages inlet");
   }

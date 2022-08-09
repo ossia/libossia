@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/optional.hpp>
-#include <ossia/detail/string_map.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/string_map.hpp>
 
 namespace ossia
 {
@@ -25,12 +25,12 @@ public:
   using mapped_type = typename map_type::mapped_type;
   using value_type = typename map_type::value_type;
 
-  template<typename Key>
+  template <typename Key>
   std::optional<mapped_type> find(const Key& path) const
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(path);
-    if (it != m_map.end())
+    if(it != m_map.end())
     {
       return it.value();
     }
@@ -40,12 +40,12 @@ public:
     }
   }
 
-  template<typename Key>
+  template <typename Key>
   std::optional<mapped_type> find_and_take(const Key& path)
   {
     lock_t lock(m_mutex);
     auto it = m_map.find(path);
-    if (it != m_map.end())
+    if(it != m_map.end())
     {
       auto val = std::move(it.value());
       m_map.erase(it);
@@ -106,7 +106,6 @@ private:
 namespace net
 {
 class parameter_base;
-using listened_parameters
-    = locked_map<string_map<ossia::net::parameter_base*>>;
+using listened_parameters = locked_map<string_map<ossia::net::parameter_base*>>;
 }
 }

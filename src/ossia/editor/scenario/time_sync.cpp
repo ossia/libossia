@@ -1,30 +1,44 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/detail/algorithms.hpp>
 
 #include <iostream>
 namespace ossia
 {
 
-time_sync_callback::~time_sync_callback() { }
-void time_sync_callback::triggered() { }
-void time_sync_callback::entered_evaluation() { }
-void time_sync_callback::entered_triggering() { }
-void time_sync_callback::trigger_date_fixed(ossia::time_value) { }
-void time_sync_callback::left_evaluation() { }
-void time_sync_callback::finished_evaluation(bool) { }
+time_sync_callback::~time_sync_callback()
+{
+}
+void time_sync_callback::triggered()
+{
+}
+void time_sync_callback::entered_evaluation()
+{
+}
+void time_sync_callback::entered_triggering()
+{
+}
+void time_sync_callback::trigger_date_fixed(ossia::time_value)
+{
+}
+void time_sync_callback::left_evaluation()
+{
+}
+void time_sync_callback::finished_evaluation(bool)
+{
+}
 
 time_sync::time_sync()
-  : m_expression(expressions::make_expression_true())
-  , m_status{status::NOT_DONE}
-  , m_start{}
-  , m_observe{}
-  , m_evaluating{}
-  , m_muted{}
-  , m_autotrigger{}
-  , m_is_being_triggered{}
+    : m_expression(expressions::make_expression_true())
+    , m_status{status::NOT_DONE}
+    , m_start{}
+    , m_observe{}
+    , m_evaluating{}
+    , m_muted{}
+    , m_autotrigger{}
+    , m_is_being_triggered{}
 {
 }
 
@@ -37,16 +51,14 @@ time_value time_sync::get_date() const noexcept
 {
   // compute the date from each first previous time interval
   // ignoring zero duration time interval
-  if (!get_time_events().empty())
+  if(!get_time_events().empty())
   {
-    for (auto& timeEvent : get_time_events())
+    for(auto& timeEvent : get_time_events())
     {
-      if (!timeEvent->previous_time_intervals().empty())
+      if(!timeEvent->previous_time_intervals().empty())
       {
-        if (timeEvent->previous_time_intervals()[0]->get_nominal_duration()
-            > Zero)
-          return timeEvent->previous_time_intervals()[0]
-                     ->get_nominal_duration()
+        if(timeEvent->previous_time_intervals()[0]->get_nominal_duration() > Zero)
+          return timeEvent->previous_time_intervals()[0]->get_nominal_duration()
                  + timeEvent->previous_time_intervals()[0]
                        ->get_start_event()
                        .get_time_sync()
@@ -70,10 +82,11 @@ time_sync& time_sync::set_expression(expression_ptr exp) noexcept
   return *this;
 }
 
-time_sync::iterator time_sync::insert(
-    time_sync::const_iterator pos, std::shared_ptr<time_event> ev)
+time_sync::iterator
+time_sync::insert(time_sync::const_iterator pos, std::shared_ptr<time_event> ev)
 {
-  if(m_muted) ev->mute(true);
+  if(m_muted)
+    ev->mute(true);
   return m_timeEvents.insert(pos, std::move(ev));
 }
 
@@ -83,11 +96,9 @@ void time_sync::remove(const std::shared_ptr<time_event>& e)
 }
 
 time_sync::iterator time_sync::emplace(
-    const_iterator pos, time_event::exec_callback callback,
-    ossia::expression_ptr exp)
+    const_iterator pos, time_event::exec_callback callback, ossia::expression_ptr exp)
 {
-  return insert(
-      pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
+  return insert(pos, std::make_shared<time_event>(callback, *this, std::move(exp)));
 }
 
 bool time_sync::is_evaluating() const noexcept
@@ -143,16 +154,16 @@ void time_sync::observe_expression(bool observe)
 void time_sync::observe_expression(
     bool observe, ossia::expressions::expression_result_callback cb)
 {
-  if (!m_expression || *m_expression == expressions::expression_true()
-      || *m_expression == expressions::expression_false())
+  if(!m_expression || *m_expression == expressions::expression_true()
+     || *m_expression == expressions::expression_false())
     return;
 
-  if (observe != m_observe)
+  if(observe != m_observe)
   {
     bool wasObserving = m_observe;
     m_observe = observe;
 
-    if (m_observe)
+    if(m_observe)
     {
       if(m_callback)
       {
@@ -164,7 +175,7 @@ void time_sync::observe_expression(
     else
     {
       // stop expression observation
-      if (wasObserving && m_callback)
+      if(wasObserving && m_callback)
       {
         expressions::remove_callback(*m_expression, *m_callback);
         m_callback = std::nullopt;
@@ -178,7 +189,7 @@ void time_sync::reset()
   if(m_expression)
     expressions::reset(*m_expression);
 
-  for (auto& timeEvent : m_timeEvents)
+  for(auto& timeEvent : m_timeEvents)
   {
     timeEvent->reset();
   }
@@ -192,7 +203,7 @@ void time_sync::reset()
 
 void time_sync::cleanup()
 {
-  for (auto& timeevent : m_timeEvents)
+  for(auto& timeevent : m_timeEvents)
     timeevent->cleanup();
 
   m_timeEvents.clear();
@@ -214,7 +225,7 @@ void time_sync::set_is_being_triggered(bool v) noexcept
   if(m_is_being_triggered != v)
   {
     m_is_being_triggered = v;
-    if (v)
+    if(v)
     {
       callbacks.entered_triggering();
     }

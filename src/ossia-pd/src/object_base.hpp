@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia/detail/safe_vec.hpp>
-#include <ossia/detail/optional.hpp>
-#include <ossia/network/base/value_callback.hpp>
-#include <ossia/network/base/node_functions.hpp>
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/detail/safe_vec.hpp>
+#include <ossia/network/base/node_functions.hpp>
+#include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
 
 #include <map>
 
@@ -18,7 +18,8 @@ extern "C" {
 
 namespace ossia
 {
-namespace net {
+namespace net
+{
 class node_base;
 class parameter_base;
 class device_base;
@@ -27,7 +28,8 @@ class generic_device;
 namespace pd
 {
 
-enum class object_class {
+enum class object_class
+{
   root = 0,
   attribute,
   param,
@@ -47,11 +49,11 @@ public:
   ~t_select_clock();
 
   static void deselect(t_select_clock* x);
+
 private:
   t_clock* m_clock{};
   object_base* m_obj{};
   t_canvas* m_canvas{};
-
 };
 
 class t_matcher
@@ -66,15 +68,28 @@ public:
 
   void enqueue_value(ossia::value v);
   void output_value();
-  auto get_node() const { return node; }
-  auto get_owner() const { return owner; }
-  t_atom* get_atom_addr_ptr() { return &m_addr; }
+  auto get_node() const
+  {
+    return node;
+  }
+  auto get_owner() const
+  {
+    return owner;
+  }
+  t_atom* get_atom_addr_ptr()
+  {
+    return &m_addr;
+  }
   void set_owner_addr();
 
   inline bool operator==(const t_matcher& rhs) const noexcept
-  { return (this->node == rhs.node); }
+  {
+    return (this->node == rhs.node);
+  }
   inline bool operator!=(const t_matcher& rhs) const noexcept
-  { return (this->node != rhs.node); }
+  {
+    return (this->node != rhs.node);
+  }
 
   std::vector<ossia::value> m_set_pool;
 
@@ -82,8 +97,8 @@ private:
   ossia::net::node_base* node{};
   object_base* owner{};
 
-  std::optional<ossia::callback_container<ossia::value_callback>::iterator>
-    callbackit = std::nullopt;
+  std::optional<ossia::callback_container<ossia::value_callback>::iterator> callbackit
+      = std::nullopt;
 
   moodycamel::ReaderWriterQueue<ossia::value, 64> m_queue_list;
 
@@ -103,13 +118,13 @@ public:
   object_class m_otype{};
   t_symbol* m_name{};
   ossia::net::address_scope m_addr_scope{};
-  bool m_is_pattern{}; // whether the address is a pattern or not
-  bool m_dead{false}; // whether this object is being deleted or not
+  bool m_is_pattern{};      // whether the address is a pattern or not
+  bool m_dead{false};       // whether this object is being deleted or not
   bool m_is_deleted{false}; // true during the is_deleted callback method
   unsigned int m_queue_length{64};
   int m_recall_safe{0};
 
-  t_clock* m_clock{};   // multi-purpose clock
+  t_clock* m_clock{}; // multi-purpose clock
   std::chrono::milliseconds m_last_click{};
 
   t_clock* m_poll_clock{}; // value or message polling clock
@@ -126,7 +141,7 @@ public:
   std::vector<t_canvas*> m_patcher_hierarchy; // canvas hierarchy in ascending order
                                               // starting at current canvas
 
-  static void class_setup(t_eclass*c);
+  static void class_setup(t_eclass* c);
 
   void fill_selection();
   void update_path();
@@ -138,7 +153,8 @@ public:
   void set_recall_safe();
 
   static void get_mess_cb(object_base* x, t_symbol* s);
-  static t_pd_err notify(object_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+  static t_pd_err
+  notify(object_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
   static void print_hierarchy(object_base* x);
 
   static void get_description(object_base* x, std::vector<t_matcher*> nodes);
@@ -146,7 +162,7 @@ public:
   static void get_priority(object_base* x, std::vector<t_matcher*> nodes);
   static void get_hidden(object_base* x, std::vector<t_matcher*> nodes);
   static void get_recall_safe(object_base* x, std::vector<t_matcher*> nodes);
-  static void get_zombie(object_base*x, std::vector<t_matcher*> nodes);
+  static void get_zombie(object_base* x, std::vector<t_matcher*> nodes);
   static void loadbang(object_base* x, t_float flag);
 
   t_atom m_tags[OSSIA_PD_MAX_ATTR_SIZE] = {{}};
@@ -161,12 +177,14 @@ public:
   object_base(t_eclass* c);
   ~object_base();
 
-
-  static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
+  static void update_attribute(
+      object_base* x, ossia::string_view attribute,
+      const ossia::net::node_base* node = nullptr);
   void is_deleted(const ossia::net::node_base& n);
 
   /**
-   * @brief find_and_display_friend go through all registered parameters to find the ones that matches current remote
+   * @brief find_and_display_friend go through all registered parameters to find the ones
+   * that matches current remote
    * @param x the remote
    * @return false if nothing have been found
    */
@@ -176,9 +194,10 @@ public:
    * @brief obj_get_address return global address through dump outlet
    * @param x
    */
-  static void get_address(object_base *x, std::vector<t_matcher*> nodes);
+  static void get_address(object_base* x, std::vector<t_matcher*> nodes);
 
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
+
 protected:
   std::optional<ossia::traversal::path> m_path;
   std::map<std::string_view, ossia::value> m_value_map;

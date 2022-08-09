@@ -1,10 +1,11 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#include <ossia/detail/flicks.hpp>
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/detail/flicks.hpp>
-#include <ossia/detail/config.hpp>
 
 #include <atomic>
 #include <memory>
@@ -30,7 +31,8 @@ struct OSSIA_EXPORT time_sync_callback
   //! Called when the time_sync has started triggering (e.g. was clicked)
   virtual void entered_triggering();
 
-  //! Called when we know at which date a trigger must execute due to quantification
+  //! Called when we know at which date a trigger must execute due to
+  //! quantification
   virtual void trigger_date_fixed(ossia::time_value);
 
   //! Called if the time_sync stops evaluating due to a changing duration
@@ -39,7 +41,6 @@ struct OSSIA_EXPORT time_sync_callback
   //! Boolean : true if the evaluation was finished due to the max bound
   virtual void finished_evaluation(bool);
 };
-
 
 struct OSSIA_EXPORT time_sync_callbacks
 {
@@ -53,22 +54,40 @@ struct OSSIA_EXPORT time_sync_callbacks
   }
 
   void triggered()
-  { for(auto v : callbacks) v->triggered(); }
+  {
+    for(auto v : callbacks)
+      v->triggered();
+  }
 
   void entered_evaluation()
-  { for(auto v : callbacks) v->entered_evaluation(); }
+  {
+    for(auto v : callbacks)
+      v->entered_evaluation();
+  }
 
   void entered_triggering()
-  { for(auto v : callbacks) v->entered_triggering(); }
+  {
+    for(auto v : callbacks)
+      v->entered_triggering();
+  }
 
   void trigger_date_fixed(ossia::time_value t)
-  { for(auto v : callbacks) v->trigger_date_fixed(t); }
+  {
+    for(auto v : callbacks)
+      v->trigger_date_fixed(t);
+  }
 
   void left_evaluation()
-  { for(auto v : callbacks) v->left_evaluation(); }
+  {
+    for(auto v : callbacks)
+      v->left_evaluation();
+  }
 
   void finished_evaluation(bool b)
-  { for(auto v : callbacks) v->finished_evaluation(b); }
+  {
+    for(auto v : callbacks)
+      v->finished_evaluation(b);
+  }
 };
 
 /**
@@ -90,7 +109,6 @@ public:
 
   time_sync();
   ~time_sync();
-
 
   /*! get the date
  \details the date is the sum of its previous #time_interval durations
@@ -132,8 +150,7 @@ public:
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  [[nodiscard]] const ptr_container<time_event>&
-  get_time_events() const noexcept
+  [[nodiscard]] const ptr_container<time_event>& get_time_events() const noexcept
   {
     return m_timeEvents;
   }
@@ -159,7 +176,6 @@ public:
 
   [[nodiscard]] bool is_start() const noexcept;
   void set_start(bool) noexcept;
-
 
   //! enable observation of the ossia::expression
   void observe_expression(bool);

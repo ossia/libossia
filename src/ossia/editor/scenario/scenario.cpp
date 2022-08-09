@@ -6,12 +6,14 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+
 #include <iostream>
 
 namespace ossia
 {
 
-scenario::scenario() : m_sg{*this}
+scenario::scenario()
+    : m_sg{*this}
 {
   // create the start TimeSync
   node = std::make_shared<ossia::nodes::scenario>();
@@ -21,7 +23,7 @@ scenario::scenario() : m_sg{*this}
 
 scenario::~scenario()
 {
-  for (auto& timesync : m_nodes)
+  for(auto& timesync : m_nodes)
   {
     timesync->cleanup();
   }
@@ -38,36 +40,36 @@ void scenario::start()
   m_retry_syncs.container.reserve(8);
   m_rootNodes = get_roots();
 
-  for (auto node : m_rootNodes)
+  for(auto node : m_rootNodes)
   {
     m_waitingNodes.insert(node);
   }
 
-  for (auto& node: m_nodes)
+  for(auto& node : m_nodes)
   {
     node->reset();
   }
 
   // start each TimeInterval if possible
-  for (const auto& timeInterval : m_intervals)
+  for(const auto& timeInterval : m_intervals)
   {
     time_interval& cst = *timeInterval;
     time_event::status startStatus = cst.get_start_event().get_status();
     time_event::status endStatus = cst.get_end_event().get_status();
 
     // the interval is in the past
-    if (startStatus == time_event::status::HAPPENED
-        && endStatus == time_event::status::HAPPENED)
+    if(startStatus == time_event::status::HAPPENED
+       && endStatus == time_event::status::HAPPENED)
     {
     }
     // the start of the interval is pending
-    else if (
+    else if(
         startStatus == time_event::status::PENDING
         && endStatus == time_event::status::NONE)
     {
     }
     // the interval is supposed to be running
-    else if (
+    else if(
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::NONE)
     {
@@ -77,37 +79,37 @@ void scenario::start()
     }
     // the interval starts in the void and ends on a timesync that did
     // execute
-    else if (
+    else if(
         startStatus == time_event::status::NONE
         && endStatus == time_event::status::HAPPENED)
     {
     }
     // the end of the interval is pending
-    else if (
+    else if(
         startStatus == time_event::status::HAPPENED
         && endStatus == time_event::status::PENDING)
     {
       m_runningIntervals.insert(&cst);
       cst.start();
-      //const auto tok = ossia::token_request{};
-      //cst.tick_current(0_tv, tok);
+      // const auto tok = ossia::token_request{};
+      // cst.tick_current(0_tv, tok);
     }
     // the interval is in the future
-    else if (
-        startStatus == time_event::status::NONE
-        && endStatus == time_event::status::NONE)
+    else if(
+        startStatus == time_event::status::NONE && endStatus == time_event::status::NONE)
     {
     }
-    else if (
+    else if(
         startStatus == time_event::status::DISPOSED
         && endStatus == time_event::status::DISPOSED)
     {
-        // the interval is started by a false condition
+      // the interval is started by a false condition
     }
     // error
     else
     {
-      std::cerr << "scenario_impl::start:  start: " << (int)startStatus << " ; end: " << (int)endStatus << std::endl;
+      std::cerr << "scenario_impl::start:  start: " << (int)startStatus
+                << " ; end: " << (int)endStatus << std::endl;
       throw execution_error(
           "scenario_impl::start: "
           "TimeEvent's status configuration of the "
@@ -119,13 +121,13 @@ void scenario::start()
 void scenario::stop()
 {
   // stop each running TimeIntervals
-  for (const std::shared_ptr<ossia::time_interval>& timeInterval : m_intervals)
+  for(const std::shared_ptr<ossia::time_interval>& timeInterval : m_intervals)
   {
     time_interval& cst = *timeInterval;
     cst.stop();
   }
 
-  for (const std::shared_ptr<ossia::time_sync>& node : m_nodes)
+  for(const std::shared_ptr<ossia::time_sync>& node : m_nodes)
   {
     node->reset();
   }
@@ -144,7 +146,7 @@ void scenario::stop()
 void scenario::pause()
 {
   // pause all running TimeIntervals
-  for (const auto& timeInterval : m_intervals)
+  for(const auto& timeInterval : m_intervals)
   {
     auto& cst = *timeInterval;
     cst.pause();
@@ -154,7 +156,7 @@ void scenario::pause()
 void scenario::resume()
 {
   // resume all running TimeIntervals
-  for (const auto& timeInterval : m_intervals)
+  for(const auto& timeInterval : m_intervals)
   {
     auto& cst = *timeInterval;
     cst.resume();
@@ -164,14 +166,14 @@ void scenario::resume()
 void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
 {
   // store the TimeInterval if it is not already stored
-  if (!contains(m_intervals, itv))
+  if(!contains(m_intervals, itv))
   {
     time_sync* end_root{};
 
     if(m_last_date != ossia::Infinite)
     {
       auto& t = itv->get_end_event().get_time_sync();
-      if (t.is_start())
+      if(t.is_start())
         end_root = &t;
     }
     m_sg.add_edge(itv.get());
@@ -189,24 +191,25 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
 
 void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
 {
-  if (itv)
+  if(itv)
   {
     m_sg.remove_edge(itv.get());
 
     if(m_last_date != ossia::Infinite)
     {
       auto& t = itv->get_end_event().get_time_sync();
-      if (t.is_start())
+      if(t.is_start())
       {
         m_waitingNodes.insert(&t);
       }
       m_rootNodes = get_roots();
     }
-    if (auto it = ossia::find(m_runningIntervals, itv.get()); it != m_runningIntervals.end())
+    if(auto it = ossia::find(m_runningIntervals, itv.get());
+       it != m_runningIntervals.end())
       m_runningIntervals.erase(it);
-    if (auto it = ossia::find(m_itv_to_start, itv.get()); it != m_itv_to_start.end())
+    if(auto it = ossia::find(m_itv_to_start, itv.get()); it != m_itv_to_start.end())
       m_itv_to_start.erase(it);
-    if (auto it = ossia::find(m_itv_to_stop, itv.get()); it != m_itv_to_stop.end())
+    if(auto it = ossia::find(m_itv_to_stop, itv.get()); it != m_itv_to_stop.end())
       m_itv_to_stop.erase(it);
 
     m_itv_end_map.erase(itv.get());
@@ -218,7 +221,7 @@ void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
 void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
 {
   // store a TimeSync if it is not already stored
-  if (!contains(m_nodes, timeSync))
+  if(!contains(m_nodes, timeSync))
   {
     auto& t = *timeSync;
     m_sg.add_vertice(&t);
@@ -228,7 +231,7 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
 
     if(m_last_date != ossia::Infinite)
     {
-      if (t.is_start())
+      if(t.is_start())
       {
         m_waitingNodes.insert(&t);
         m_rootNodes = get_roots();
@@ -239,12 +242,12 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
 
 void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
-  if (timeSync)
+  if(timeSync)
   {
     m_sg.remove_vertice(timeSync.get());
     m_waitingNodes.erase(timeSync.get());
     auto it = ossia::find(m_rootNodes, timeSync.get());
-    if (it != m_rootNodes.end())
+    if(it != m_rootNodes.end())
       m_rootNodes.erase(it);
     m_overticks.erase(timeSync.get());
     m_endNodes.erase(timeSync.get());
@@ -269,15 +272,15 @@ const ptr_container<time_interval>& scenario::get_time_intervals() const
   return m_intervals;
 }
 void scenario::reset_subgraph(
-    const ptr_container<time_sync>& syncs,
-    const ptr_container<time_interval>& itvs, time_sync& root)
+    const ptr_container<time_sync>& syncs, const ptr_container<time_interval>& itvs,
+    time_sync& root)
 {
-  for (const std::shared_ptr<ossia::time_sync>& sync : syncs)
+  for(const std::shared_ptr<ossia::time_sync>& sync : syncs)
   {
     sync->reset();
   }
 
-  for (const std::shared_ptr<ossia::time_interval>& itv : itvs)
+  for(const std::shared_ptr<ossia::time_interval>& itv : itvs)
   {
     itv->stop();
     m_runningIntervals.erase(itv.get());
@@ -287,11 +290,11 @@ void scenario::reset_subgraph(
 
 void scenario::mute_impl(bool m)
 {
-  for (auto& itv : get_time_intervals())
+  for(auto& itv : get_time_intervals())
   {
     itv->mute(m);
   }
-  for (auto& s : get_time_syncs())
+  for(auto& s : get_time_syncs())
   {
     s->mute(m);
   }
@@ -326,7 +329,7 @@ void scenario_graph::add_edge(scenario_graph_edge itv)
 void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
 {
   auto it = vertices.find(timeSync);
-  if (it != vertices.end())
+  if(it != vertices.end())
   {
     boost::clear_vertex(it->second, graph);
     boost::remove_vertex(it->second, graph);
@@ -338,7 +341,7 @@ void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
 void scenario_graph::remove_edge(scenario_graph_edge itv)
 {
   auto it = edges.find(itv);
-  if (it != edges.end())
+  if(it != edges.end())
   {
     boost::remove_edge(it->second, graph);
     recompute_maps();
@@ -346,13 +349,12 @@ void scenario_graph::remove_edge(scenario_graph_edge itv)
   }
 }
 
-
 void scenario_graph::recompute_maps()
 {
   vertices.clear();
   edges.clear();
   {
-    auto [vbegin,vend] = boost::vertices(graph);
+    auto [vbegin, vend] = boost::vertices(graph);
     for(auto it = vbegin; it != vend; ++it)
     {
       auto k = *it;
@@ -363,7 +365,7 @@ void scenario_graph::recompute_maps()
     }
   }
   {
-    auto [ebegin,eend] = boost::edges(graph);
+    auto [ebegin, eend] = boost::edges(graph);
     for(auto it = ebegin; it != eend; ++it)
     {
       auto k = *it;
@@ -373,6 +375,5 @@ void scenario_graph::recompute_maps()
       edges.insert({n, k});
     }
   }
-
 }
 }

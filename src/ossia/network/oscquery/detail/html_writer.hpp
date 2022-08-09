@@ -1,8 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <ossia/detail/config.hpp>
-
 #include <string>
 
 namespace ossia::net

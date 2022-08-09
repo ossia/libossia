@@ -88,10 +88,8 @@ inline void reset(const expression_ptr& e)
  *
  * Two expressions are comparable if they have all the same terms.
  */
-OSSIA_EXPORT bool
-operator==(const expression_base& lhs, const expression_base& rhs);
-OSSIA_EXPORT bool
-operator!=(const expression_base& lhs, const expression_base& rhs);
+OSSIA_EXPORT bool operator==(const expression_base& lhs, const expression_base& rhs);
+OSSIA_EXPORT bool operator!=(const expression_base& lhs, const expression_base& rhs);
 
 /**
  * @brief add_callback Add a callback to an expression.
@@ -102,8 +100,7 @@ add_callback(expression_base&, expression_result_callback);
 /**
  * @brief remove_callback Remove a callback to an expression.
  */
-OSSIA_EXPORT void
-remove_callback(expression_base&, expression_callback_iterator);
+OSSIA_EXPORT void remove_callback(expression_base&, expression_callback_iterator);
 
 /**
  * @brief callback_count
@@ -134,8 +131,7 @@ OSSIA_EXPORT const expression_base& expression_false();
  */
 inline expression_ptr make_expression_true()
 {
-  return std::make_unique<expression_base>(
-      ossia::in_place_type<expression_bool>, true);
+  return std::make_unique<expression_base>(ossia::in_place_type<expression_bool>, true);
 }
 
 /**
@@ -145,8 +141,7 @@ inline expression_ptr make_expression_true()
  */
 inline expression_ptr make_expression_false()
 {
-  return std::make_unique<expression_base>(
-      ossia::in_place_type<expression_bool>, false);
+  return std::make_unique<expression_base>(ossia::in_place_type<expression_bool>, false);
 }
 
 /**
@@ -167,8 +162,7 @@ expression_ptr make_expression_atom(
     const ossia::expressions::expression_atom::val_t& rhs);
 OSSIA_EXPORT
 expression_ptr make_expression_atom(
-    ossia::expressions::expression_atom::val_t&& lhs,
-    ossia::expressions::comparator c,
+    ossia::expressions::expression_atom::val_t&& lhs, ossia::expressions::comparator c,
     ossia::expressions::expression_atom::val_t&& rhs);
 
 /**
@@ -192,8 +186,7 @@ template <typename... Args>
 expression_ptr make_expression_composition(Args&&... args)
 {
   return std::make_unique<expression_base>(
-      ossia::in_place_type<expression_composition>,
-      std::forward<Args>(args)...);
+      ossia::in_place_type<expression_composition>, std::forward<Args>(args)...);
 }
 
 /**

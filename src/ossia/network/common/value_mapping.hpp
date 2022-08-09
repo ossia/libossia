@@ -7,9 +7,7 @@ namespace ossia
 
 OSSIA_EXPORT
 void map_value(
-    ossia::value& source,
-    const ossia::destination_index& idx,
-    const ossia::domain& source_domain,
-    const ossia::domain& target_domain);
+    ossia::value& source, const ossia::destination_index& idx,
+    const ossia::domain& source_domain, const ossia::domain& target_domain);
 
 }

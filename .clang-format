@@ -5,6 +5,7 @@ AlignEscapedNewlinesLeft: true
 AlignOperands: true
 AlignTrailingComments: true
 AlignConsecutiveDeclarations: false
+AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: false
 AllowShortCaseLabelsOnASingleLine: false
@@ -19,6 +20,7 @@ BraceWrapping:
   AfterClass:      true
   AfterControlStatement: true
   AfterEnum:       true
+  AfterExternBlock: false
   AfterFunction:   true
   AfterNamespace:  true
   AfterStruct:     true
@@ -27,26 +29,30 @@ BraceWrapping:
   BeforeElse:      true
   IndentBraces:    false
   
+BreakBeforeConceptDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: All
-BreakBeforeBraces: Allman
+BreakBeforeBraces: Custom
 BreakBeforeTernaryOperators: true
-BreakConstructorInitializersBeforeComma: true
-ColumnLimit: 79
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+ColumnLimit: 89
 CommentPragmas: '^ IWYU pragma:'
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 IndentCaseLabels: true
+IndentExternBlock: NoIndent
 IndentWidth: 2
 IndentWrappedFunctionNames: false
 KeepEmptyLinesAtTheStartOfBlocks: true
+LambdaBodyIndentation: OuterScope
 Language: Cpp
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: None
+PackConstructorInitializers: Never
 PenaltyBreakBeforeFirstCallParameter: 19
 PenaltyBreakComment: 300
 PenaltyBreakFirstLessLess: 120
@@ -54,9 +60,12 @@ PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
+ReferenceAlignment: Left
 SpaceAfterCStyleCast: false
+SpaceAroundPointerQualifiers: Default
 SpaceBeforeAssignmentOperators: true
-SpaceBeforeParens: ControlStatements
+SpaceBeforeCpp11BracedList: false
+SpaceBeforeParens: Never
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
@@ -64,7 +73,7 @@ SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: Cpp11
+Standard: Latest
 TabWidth: 2
 UseTab: Never
 

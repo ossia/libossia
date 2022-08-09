@@ -1,47 +1,54 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/pod_vector.hpp>
+
 #include <cinttypes>
 #include <cstddef>
-#include <ossia/detail/config.hpp>
 
 #if defined(OSSIA_FFT_FFTW)
-  #if defined(OSSIA_FFTW_SINGLE_ONLY)
-  using fftw_plan = struct fftw_plan_s*;
-  using fftwf_plan = struct fftwf_plan_s*;
-  namespace ossia
-  {
-    using fft_plan = fftwf_plan;
-    using fft_real = float;
-    using fft_complex = float[2];
-    struct fft_temp_storage { };
-  }
-  #elif defined(OSSIA_FFTW_DOUBLE_ONLY)
-  using fftw_plan = struct fftw_plan_s*;
-  using fftwf_plan = struct fftwf_plan_s*;
-  namespace ossia
-  {
-    using fft_plan = fftw_plan;
-    using fft_real = double;
-    using fft_complex = double[2];
-    struct fft_temp_storage { };
-  }
-  #endif
+#if defined(OSSIA_FFTW_SINGLE_ONLY)
+using fftw_plan = struct fftw_plan_s*;
+using fftwf_plan = struct fftwf_plan_s*;
+namespace ossia
+{
+using fft_plan = fftwf_plan;
+using fft_real = float;
+using fft_complex = float[2];
+struct fft_temp_storage
+{
+};
+}
+#elif defined(OSSIA_FFTW_DOUBLE_ONLY)
+using fftw_plan = struct fftw_plan_s*;
+using fftwf_plan = struct fftwf_plan_s*;
+namespace ossia
+{
+using fft_plan = fftw_plan;
+using fft_real = double;
+using fft_complex = double[2];
+struct fft_temp_storage
+{
+};
+}
+#endif
 #elif defined(OSSIA_FFT_KFR)
 namespace ossia
 {
-  using fft_plan = void*;
-  using fft_real = double;
-  using fft_complex = double[2];
-  using fft_temp_storage = ossia::pod_vector<uint8_t>;
+using fft_plan = void*;
+using fft_real = double;
+using fft_complex = double[2];
+using fft_temp_storage = ossia::pod_vector<uint8_t>;
 }
 #else
 namespace ossia
 {
-  using fft_plan = void*;
-  using fft_real = double;
-  using fft_complex = double[2];
-  struct fft_temp_storage { };
+using fft_plan = void*;
+using fft_real = double;
+using fft_complex = double[2];
+struct fft_temp_storage
+{
+};
 }
 #endif
 
@@ -52,14 +59,14 @@ class OSSIA_EXPORT fft
 public:
   explicit fft(std::size_t newSize) noexcept;
   fft() noexcept
-    : fft{16}
+      : fft{16}
   {
-
   }
 
   ~fft();
 
-  static constexpr double norm(std::size_t sz) noexcept {
+  static constexpr double norm(std::size_t sz) noexcept
+  {
     return 1. / sz;
   }
 
@@ -84,11 +91,11 @@ private:
 class OSSIA_EXPORT rfft
 {
 public:
-
   explicit rfft(std::size_t newSize) noexcept;
   ~rfft();
 
-  static constexpr double norm(std::size_t sz) noexcept {
+  static constexpr double norm(std::size_t sz) noexcept
+  {
     return 1. / sz;
   }
 

@@ -1,20 +1,20 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
+#include <ossia/detail/buffer_pool.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/osc/detail/message_generator.hpp>
-#include <ossia/network/osc/detail/osc_utils.hpp>
-#include <ossia/network/osc/detail/osc_packet_processor.hpp>
 #include <ossia/network/osc/detail/osc_messages.hpp>
+#include <ossia/network/osc/detail/osc_packet_processor.hpp>
+#include <ossia/network/osc/detail/osc_utils.hpp>
+#include <ossia/network/value/value.hpp>
 
 #include <boost/endian/conversion.hpp>
-#include <ossia/detail/buffer_pool.hpp>
 
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
 
 namespace ossia::net
 {
-template<typename Parameter, typename OscPolicy, typename Writer>
+template <typename Parameter, typename OscPolicy, typename Writer>
 #if __cpp_lib_concepts >= 201907L
 requires std::is_invocable_v<Writer, const char*, std::size_t>
 #endif
@@ -27,12 +27,13 @@ struct osc_value_send_visitor
   using static_policy = typename OscPolicy::static_policy;
   using dynamic_policy = typename OscPolicy::dynamic_policy;
 
-  template<typename T>
+  template <typename T>
   void operator()(T v) const noexcept
   try
   {
-    const std::size_t sz = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
-    char* buffer = (char*) alloca(sz);
+    const std::size_t sz
+        = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
+    char* buffer = (char*)alloca(sz);
     std::size_t i = write_string(address_pattern, buffer);
 
     i += static_policy{parameter.get_unit()}(buffer + i, v);
@@ -48,15 +49,19 @@ struct osc_value_send_visitor
     ossia::logger().error("osc_value_send_visitor: unknown error");
   }
 
-  void operator()(const std::string& v) const noexcept try
+  void operator()(const std::string& v) const noexcept
+  try
   {
-    const std::size_t sz = pattern_size(address_pattern.size()) + 4 + pattern_size(v.size());
-    if(sz < 16384) {
-      char* buffer = (char*) alloca(sz);
+    const std::size_t sz
+        = pattern_size(address_pattern.size()) + 4 + pattern_size(v.size());
+    if(sz < 16384)
+    {
+      char* buffer = (char*)alloca(sz);
       std::size_t i = write_string(address_pattern, buffer);
 
       if(is_blob(parameter))
-        i += static_policy{parameter.get_unit()}(buffer + i, oscpack::Blob(v.data(), v.size()));
+        i += static_policy{parameter.get_unit()}(
+            buffer + i, oscpack::Blob(v.data(), v.size()));
       else
         i += static_policy{parameter.get_unit()}(buffer + i, v);
 
@@ -70,7 +75,8 @@ struct osc_value_send_visitor
       std::size_t i = write_string(address_pattern, buffer.data());
 
       if(is_blob(parameter))
-        i += static_policy{parameter.get_unit()}(buffer.data() + i, oscpack::Blob(v.data(), v.size()));
+        i += static_policy{parameter.get_unit()}(
+            buffer.data() + i, oscpack::Blob(v.data(), v.size()));
       else
         i += static_policy{parameter.get_unit()}(buffer.data() + i, v);
 
@@ -86,11 +92,12 @@ struct osc_value_send_visitor
     ossia::logger().error("osc_value_send_visitor: unknown error");
   }
 
-  void operator()(const std::vector<ossia::value>& v) const noexcept try
+  void operator()(const std::vector<ossia::value>& v) const noexcept
+  try
   {
     auto& pool = buffer_pool::instance();
     auto buf = pool.acquire();
-    while (buf.size() < max_osc_message_size)
+    while(buf.size() < max_osc_message_size)
     {
       try
       {
@@ -124,11 +131,10 @@ struct osc_value_send_visitor
 
   void operator()()
   {
-
   }
 };
 
-template<typename Parameter, typename OscPolicy>
+template <typename Parameter, typename OscPolicy>
 struct osc_value_write_visitor
 {
   const Parameter& parameter;
@@ -138,10 +144,11 @@ struct osc_value_write_visitor
   using static_policy = typename OscPolicy::static_policy;
   using dynamic_policy = typename OscPolicy::dynamic_policy;
 
-  template<typename T>
+  template <typename T>
   void operator()(T v) const noexcept
   {
-    const std::size_t sz = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
+    const std::size_t sz
+        = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
     result.resize(sz);
     std::size_t i = write_string(address_pattern, result.data());
 
@@ -152,12 +159,14 @@ struct osc_value_write_visitor
 
   void operator()(const std::string& v) const noexcept
   {
-    const std::size_t sz = pattern_size(address_pattern.size()) + 4 + pattern_size(v.size());
+    const std::size_t sz
+        = pattern_size(address_pattern.size()) + 4 + pattern_size(v.size());
     result.resize(sz);
     std::size_t i = write_string(address_pattern, result.data());
 
     if(is_blob(parameter))
-      i += static_policy{parameter.get_unit()}(result.data() + i, oscpack::Blob(v.data(), v.size()));
+      i += static_policy{parameter.get_unit()}(
+          result.data() + i, oscpack::Blob(v.data(), v.size()));
     else
       i += static_policy{parameter.get_unit()}(result.data() + i, v);
 
@@ -167,7 +176,7 @@ struct osc_value_write_visitor
   void operator()(const std::vector<ossia::value>& v) const noexcept
   {
     // OPTIMIZEME
-    while (result.size() < max_osc_message_size)
+    while(result.size() < max_osc_message_size)
     {
       try
       {
@@ -190,7 +199,6 @@ struct osc_value_write_visitor
   }
   void operator()()
   {
-
   }
 };
 }

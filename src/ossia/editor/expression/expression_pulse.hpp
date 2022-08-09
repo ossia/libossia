@@ -1,10 +1,10 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
-
-#include <ossia/detail/config.hpp>
 
 #include <memory>
 
@@ -21,8 +21,7 @@ namespace expressions
  * @brief expression_pulse : becomes true when a message happens
  * @see expression.hpp
  */
-class OSSIA_EXPORT expression_pulse final
-    : public expression_callback_container
+class OSSIA_EXPORT expression_pulse final : public expression_callback_container
 {
 public:
   expression_pulse(const destination& destination);

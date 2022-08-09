@@ -7,15 +7,16 @@ namespace ossia
 {
 namespace expressions
 {
-expression_not::expression_not(expression_ptr p) : m_expression{std::move(p)}
+expression_not::expression_not(expression_ptr p)
+    : m_expression{std::move(p)}
 {
-  if (!m_expression)
+  if(!m_expression)
     throw std::runtime_error("An argument to expression_not is null");
 }
 
 expression_not::~expression_not()
 {
-  if (!expression_callback_container::callbacks_empty())
+  if(!expression_callback_container::callbacks_empty())
     expression_callback_container::callbacks_clear();
 }
 

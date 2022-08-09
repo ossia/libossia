@@ -20,9 +20,7 @@ protocol_base& device_base::get_protocol() const
 }
 
 void device_base::apply_incoming_message(
-    const message_origin_identifier& id,
-    parameter_base& param,
-    value&& value)
+    const message_origin_identifier& id, parameter_base& param, value&& value)
 {
   auto v = param.set_value(std::move(value));
   on_message(param);
@@ -31,9 +29,7 @@ void device_base::apply_incoming_message(
 }
 
 void device_base::apply_incoming_message_quiet(
-    const message_origin_identifier& id,
-    parameter_base& param,
-    value&& value)
+    const message_origin_identifier& id, parameter_base& param, value&& value)
 {
   auto v = param.set_value_quiet(std::move(value));
   on_message(param);

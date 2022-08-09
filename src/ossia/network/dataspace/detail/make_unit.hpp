@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/for_each.hpp>
 #include <ossia/detail/size.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
@@ -11,7 +12,8 @@ class make_unit_helper
 {
 public:
   make_unit_helper()
-      : indices(make_dataspace_index_array()), units(make_unit_array())
+      : indices(make_dataspace_index_array())
+      , units(make_unit_array())
   {
   }
 
@@ -20,11 +22,11 @@ public:
     // Position of the dataspace + position of the unit
     // position of the dataspace is the sum of the n first in unit_sizes
 
-    if (dataspace < indices.size())
+    if(dataspace < indices.size())
     {
       auto idx = indices[dataspace];
 
-      if (idx + unit < units.size())
+      if(idx + unit < units.size())
         return units[idx + unit];
     }
 
@@ -80,4 +82,3 @@ private:
   }
 };
 }
-

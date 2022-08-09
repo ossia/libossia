@@ -20,11 +20,7 @@ void run_network_context(ossia::net::network_context& ctx)
 
 std::thread run_threaded_network_context(ossia::net::network_context& ctx)
 {
-  return std::thread{
-    [&ctx] {
-      ctx.run();
-    }
-  };
+  return std::thread{[&ctx] { ctx.run(); }};
 }
 
 void stop_network_context(ossia::net::network_context& ctx)

@@ -1,11 +1,11 @@
 #pragma once
-#include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/geometry_port.hpp>
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
-#include <ossia/network/common/path.hpp>
+#include <ossia/dataflow/value_port.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/network/common/path.hpp>
 
 namespace ossia
 {
@@ -56,7 +56,7 @@ public:
   void connect(graph_edge* e) noexcept
   {
     auto it = ossia::find(sources, e);
-    if (it == sources.end())
+    if(it == sources.end())
       sources.push_back(e);
   }
 
@@ -67,20 +67,23 @@ public:
 
   [[nodiscard]] virtual std::size_t which() const noexcept = 0;
 
-  template<typename T>
+  template <typename T>
   T* target() noexcept;
-  template<typename T>
+  template <typename T>
   const T* target() const noexcept;
-  template<typename T>
+  template <typename T>
   T& cast() noexcept;
-  template<typename T>
+  template <typename T>
   const T& cast() const noexcept;
-  template<typename T>
+  template <typename T>
   auto visit(const T& t);
-  template<typename T>
+  template <typename T>
   auto visit(const T& t) const;
 
-  auto& cables() noexcept { return sources; }
+  auto& cables() noexcept
+  {
+    return sources;
+  }
   [[nodiscard]] auto& cables() const noexcept
   {
     return sources;
@@ -123,7 +126,7 @@ public:
   void connect(graph_edge* e) noexcept
   {
     auto it = ossia::find(targets, e);
-    if (it == targets.end())
+    if(it == targets.end())
       targets.push_back(e);
   }
 
@@ -136,23 +139,26 @@ public:
 
   [[nodiscard]] virtual std::size_t which() const noexcept = 0;
 
-  template<typename T>
+  template <typename T>
   T* target() noexcept;
-  template<typename T>
+  template <typename T>
   const T* target() const noexcept;
-  template<typename T>
+  template <typename T>
   T& cast() noexcept;
-  template<typename T>
+  template <typename T>
   const T& cast() const noexcept;
-  template<typename T>
+  template <typename T>
   auto visit(const T& t);
-  template<typename T>
+  template <typename T>
   auto visit(const T& t) const;
 
   virtual void pre_process();
   virtual void post_process();
 
-  auto& cables() noexcept { return targets; }
+  auto& cables() noexcept
+  {
+    return targets;
+  }
   [[nodiscard]] auto& cables() const noexcept
   {
     return targets;
@@ -188,10 +194,22 @@ struct OSSIA_EXPORT audio_inlet : public ossia::inlet
 
   ~audio_inlet();
 
-  const ossia::audio_port& operator*() const noexcept { return data; }
-  const ossia::audio_port* operator->() const noexcept { return &data; }
-  ossia::audio_port& operator*() noexcept { return data; }
-  ossia::audio_port* operator->() noexcept { return &data; }
+  const ossia::audio_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::audio_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::audio_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::audio_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -222,10 +240,22 @@ struct OSSIA_EXPORT midi_inlet : public ossia::inlet
 
   ~midi_inlet();
 
-  const ossia::midi_port& operator*() const noexcept { return data; }
-  const ossia::midi_port* operator->() const noexcept { return &data; }
-  ossia::midi_port& operator*() noexcept { return data; }
-  ossia::midi_port* operator->() noexcept { return &data; }
+  const ossia::midi_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::midi_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::midi_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::midi_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -254,13 +284,24 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
     sources.push_back(&edge);
   }
 
-
   ~value_inlet();
 
-  const ossia::value_port& operator*() const noexcept { return data; }
-  const ossia::value_port* operator->() const noexcept { return &data; }
-  ossia::value_port& operator*() noexcept { return data; }
-  ossia::value_port* operator->() noexcept { return &data; }
+  const ossia::value_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::value_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::value_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::value_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -311,10 +352,22 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   ~audio_outlet();
 
-  const ossia::audio_port& operator*() const noexcept { return data; }
-  const ossia::audio_port* operator->() const noexcept { return &data; }
-  ossia::audio_port& operator*() noexcept { return data; }
-  ossia::audio_port* operator->() noexcept { return &data; }
+  const ossia::audio_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::audio_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::audio_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::audio_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -368,10 +421,22 @@ struct OSSIA_EXPORT midi_outlet : public ossia::outlet
   }
   ~midi_outlet();
 
-  const ossia::midi_port& operator*() const noexcept { return data; }
-  const ossia::midi_port* operator->() const noexcept { return &data; }
-  ossia::midi_port& operator*() noexcept { return data; }
-  ossia::midi_port* operator->() noexcept { return &data; }
+  const ossia::midi_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::midi_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::midi_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::midi_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -401,10 +466,22 @@ struct OSSIA_EXPORT value_outlet : public ossia::outlet
   }
   ~value_outlet();
 
-  const ossia::value_port& operator*() const noexcept { return data; }
-  const ossia::value_port* operator->() const noexcept { return &data; }
-  ossia::value_port& operator*() noexcept { return data; }
-  ossia::value_port* operator->() noexcept { return &data; }
+  const ossia::value_port& operator*() const noexcept
+  {
+    return data;
+  }
+  const ossia::value_port* operator->() const noexcept
+  {
+    return &data;
+  }
+  ossia::value_port& operator*() noexcept
+  {
+    return data;
+  }
+  ossia::value_port* operator->() noexcept
+  {
+    return &data;
+  }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -414,8 +491,8 @@ struct OSSIA_EXPORT value_outlet : public ossia::outlet
   ossia::value_port data;
 };
 
-
-struct texture_port {
+struct texture_port
+{
   static const constexpr int which = 3;
 };
 
@@ -477,12 +554,12 @@ struct OSSIA_EXPORT geometry_inlet : public ossia::inlet
   geometry_inlet() noexcept = default;
 
   geometry_inlet(destination_t dest) noexcept
-    : inlet{std::move(dest)}
+      : inlet{std::move(dest)}
   {
   }
 
   geometry_inlet(ossia::net::parameter_base& addr) noexcept
-    : inlet{&addr}
+      : inlet{&addr}
   {
   }
 
@@ -506,12 +583,12 @@ struct OSSIA_EXPORT geometry_outlet : public ossia::outlet
   geometry_outlet() noexcept = default;
 
   geometry_outlet(destination_t dest) noexcept
-    : outlet{std::move(dest)}
+      : outlet{std::move(dest)}
   {
   }
 
   geometry_outlet(ossia::net::parameter_base& addr) noexcept
-    : outlet{&addr}
+      : outlet{&addr}
   {
   }
 
@@ -529,7 +606,7 @@ struct OSSIA_EXPORT geometry_outlet : public ossia::outlet
   geometry_port data;
 };
 
-template<typename T>
+template <typename T>
 inline T* inlet::target() noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -593,7 +670,7 @@ inline T* inlet::target() noexcept
   }
 }
 
-template<typename T>
+template <typename T>
 inline T* outlet::target() noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -656,7 +733,7 @@ inline T* outlet::target() noexcept
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
   }
 }
-template<typename T>
+template <typename T>
 inline const T* inlet::target() const noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -720,7 +797,7 @@ inline const T* inlet::target() const noexcept
   }
 }
 
-template<typename T>
+template <typename T>
 inline const T* outlet::target() const noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -784,9 +861,7 @@ inline const T* outlet::target() const noexcept
   }
 }
 
-
-
-template<typename T>
+template <typename T>
 inline T& inlet::cast() noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -815,7 +890,7 @@ inline T& inlet::cast() noexcept
   }
 }
 
-template<typename T>
+template <typename T>
 inline T& outlet::cast() noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -843,7 +918,7 @@ inline T& outlet::cast() noexcept
     static_assert(std::is_same_v<T, struct _>, "Invalid type requested");
   }
 }
-template<typename T>
+template <typename T>
 inline const T& inlet::cast() const noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -872,7 +947,7 @@ inline const T& inlet::cast() const noexcept
   }
 }
 
-template<typename T>
+template <typename T>
 inline const T& outlet::cast() const noexcept
 {
   if constexpr(std::is_same_v<T, audio_port>)
@@ -901,69 +976,82 @@ inline const T& outlet::cast() const noexcept
   }
 }
 
-
-
-template<typename T>
+template <typename T>
 inline auto inlet::visit(const T& t)
 {
   switch(which())
   {
-    case 0: return t(static_cast<audio_inlet*>(this)->data);
-    case 1: return t(static_cast<midi_inlet*>(this)->data);
-    case 2: return t(static_cast<value_inlet*>(this)->data);
-    //case 3: return t(static_cast<texture_inlet&>(*this));
-    case 4: return t(static_cast<geometry_inlet*>(this)->data);
+    case 0:
+      return t(static_cast<audio_inlet*>(this)->data);
+    case 1:
+      return t(static_cast<midi_inlet*>(this)->data);
+    case 2:
+      return t(static_cast<value_inlet*>(this)->data);
+    // case 3: return t(static_cast<texture_inlet&>(*this));
+    case 4:
+      return t(static_cast<geometry_inlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
     return t();
 }
 
-template<typename T>
+template <typename T>
 inline auto outlet::visit(const T& t)
 {
   switch(which())
   {
-    case 0: return t(static_cast<audio_outlet*>(this)->data);
-    case 1: return t(static_cast<midi_outlet*>(this)->data);
-    case 2: return t(static_cast<value_outlet*>(this)->data);
-    //case 3: return t(static_cast<texture_outlet&>(*this));
-    case 4: return t(static_cast<geometry_outlet*>(this)->data);
+    case 0:
+      return t(static_cast<audio_outlet*>(this)->data);
+    case 1:
+      return t(static_cast<midi_outlet*>(this)->data);
+    case 2:
+      return t(static_cast<value_outlet*>(this)->data);
+    // case 3: return t(static_cast<texture_outlet&>(*this));
+    case 4:
+      return t(static_cast<geometry_outlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
     return t();
 }
-template<typename T>
+template <typename T>
 inline auto inlet::visit(const T& t) const
 {
   switch(which())
   {
-    case 0: return t(static_cast<const audio_inlet*>(this)->data);
-    case 1: return t(static_cast<const midi_inlet*>(this)->data);
-    case 2: return t(static_cast<const value_inlet*>(this)->data);
-    //case 3: return t(static_cast<const texture_inlet&>(*this));
-    case 4: return t(static_cast<const geometry_inlet*>(this)->data);
+    case 0:
+      return t(static_cast<const audio_inlet*>(this)->data);
+    case 1:
+      return t(static_cast<const midi_inlet*>(this)->data);
+    case 2:
+      return t(static_cast<const value_inlet*>(this)->data);
+    // case 3: return t(static_cast<const texture_inlet&>(*this));
+    case 4:
+      return t(static_cast<const geometry_inlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
     return t();
 }
-template<typename T>
+template <typename T>
 inline auto outlet::visit(const T& t) const
 {
   switch(which())
   {
-    case 0: return t(static_cast<const audio_outlet*>(this)->data);
-    case 1: return t(static_cast<const midi_outlet*>(this)->data);
-    case 2: return t(static_cast<const value_outlet*>(this)->data);
-    //case 3: return t(static_cast<const texture_outlet&>(*this));
-    case 4: return t(static_cast<const geometry_outlet*>(this)->data);
+    case 0:
+      return t(static_cast<const audio_outlet*>(this)->data);
+    case 1:
+      return t(static_cast<const midi_outlet*>(this)->data);
+    case 2:
+      return t(static_cast<const value_outlet*>(this)->data);
+    // case 3: return t(static_cast<const texture_outlet&>(*this));
+    case 4:
+      return t(static_cast<const geometry_outlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
     return t();
 }
-
 
 }

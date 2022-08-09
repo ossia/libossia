@@ -5,7 +5,7 @@ namespace ossia::net
 
 static void getAddressFromNode_rec(const node_base& n, std::string& str)
 {
-  if (auto p = n.get_parent())
+  if(auto p = n.get_parent())
   {
     getAddressFromNode_rec(*p, str);
   }
@@ -23,7 +23,7 @@ static void getAddressFromNode_rec(const node_base& n, std::string& str)
 
 static void getOSCAddressFromNode_rec(const node_base& n, std::string& str)
 {
-  if (auto p = n.get_parent())
+  if(auto p = n.get_parent())
   {
     getOSCAddressFromNode_rec(*p, str);
   }
@@ -37,10 +37,9 @@ static void getOSCAddressFromNode_rec(const node_base& n, std::string& str)
   str += n.get_name();
 }
 
-static void
-getOSCAddressFromNodeWithDevice_rec(const node_base& n, std::string& str)
+static void getOSCAddressFromNodeWithDevice_rec(const node_base& n, std::string& str)
 {
-  if (auto p = n.get_parent())
+  if(auto p = n.get_parent())
   {
     getOSCAddressFromNode_rec(*p, str);
   }
@@ -54,7 +53,7 @@ std::string address_string_from_node(const ossia::net::node_base& node)
   std::string s;
   s.reserve(80);
   getAddressFromNode_rec(node, s);
-  if (s.back() == ':') // case of only device.
+  if(s.back() == ':') // case of only device.
     s += '/';
   return s;
 }
@@ -70,10 +69,10 @@ std::string relative_address_string_from_nodes(
   std::string addr = ossia::net::address_string_from_node(node);
   // TODO how to deal with multiple parents ?
   std::string parent_addr = ossia::net::address_string_from_node(parent);
-  if (parent_addr.back() != '/')
+  if(parent_addr.back() != '/')
     parent_addr += "/";
 
-  if (addr.find(parent_addr) != std::string::npos)
+  if(addr.find(parent_addr) != std::string::npos)
   {
     return addr.substr(parent_addr.size());
   }
@@ -85,7 +84,7 @@ std::string relative_address_string_from_nodes(
 
 std::string osc_parameter_string(const node_base& n)
 {
-  if (n.get_parent())
+  if(n.get_parent())
   {
     std::string s;
     s.reserve(80);
@@ -101,7 +100,7 @@ std::string osc_parameter_string(const node_base& n)
 
 std::string osc_parameter_string_with_device(const node_base& n)
 {
-  if (n.get_parent())
+  if(n.get_parent())
   {
     std::string s;
     s.reserve(80);

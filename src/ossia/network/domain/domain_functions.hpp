@@ -1,13 +1,13 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/span.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value_base.hpp>
 
-#include <ossia/detail/span.hpp>
-
-#include <utility>
 #include <optional>
+#include <utility>
 #include <vector>
 namespace ossia
 {
@@ -21,21 +21,21 @@ struct vecf_domain;
 
 OSSIA_EXPORT value
 apply_domain(const domain& dom, bounding_mode b, const ossia::value& val);
-OSSIA_EXPORT value
-apply_domain(const domain& dom, bounding_mode b, ossia::value&& val);
+OSSIA_EXPORT value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val);
 
 OSSIA_EXPORT value get_min(const domain& dom);
 OSSIA_EXPORT value get_max(const domain& dom);
-OSSIA_EXPORT std::pair<std::optional<float>, std::optional<float>> get_float_minmax(const domain& dom);
+OSSIA_EXPORT std::pair<std::optional<float>, std::optional<float>>
+get_float_minmax(const domain& dom);
 
 OSSIA_EXPORT void set_min(domain& dom, const ossia::value& val);
 OSSIA_EXPORT void set_max(domain& dom, const ossia::value& val);
 
-OSSIA_EXPORT void
-set_values(domain& dom, const std::vector<ossia::value>& val);
+OSSIA_EXPORT void set_values(domain& dom, const std::vector<ossia::value>& val);
 OSSIA_EXPORT std::vector<ossia::value> get_values(const ossia::domain& dom);
 
-// TODO we should find a way to prevent invalid domains here, e.g. min=int, max=float
+// TODO we should find a way to prevent invalid domains here, e.g. min=int,
+// max=float
 OSSIA_EXPORT
 domain make_domain(const ossia::value& lhs, const ossia::value& rhs);
 

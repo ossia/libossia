@@ -12,7 +12,8 @@ struct rand_float final : public ossia::nonowning_graph_node
 
 public:
   std::uniform_real_distribution<float> dist;
-  rand_float(float min, float max) : dist{min, max}
+  rand_float(float min, float max)
+      : dist{min, max}
   {
     m_outlets.push_back(&value_out);
   }

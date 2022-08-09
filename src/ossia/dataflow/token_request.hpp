@@ -1,8 +1,9 @@
 #pragma once
-#include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/editor/scenario/time_signature.hpp>
-#include <ossia/detail/math.hpp>
 #include <ossia/detail/flicks.hpp>
+#include <ossia/detail/math.hpp>
+#include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+
 #include <cassert>
 #include <optional>
 
@@ -21,18 +22,21 @@ struct token_request
   constexpr token_request(
       ossia::time_value prev_d, ossia::time_value d, ossia::time_value parent_duration,
       ossia::time_value off, double s, time_signature sig, double tempo) noexcept
-    : prev_date{prev_d}, date{d}, parent_duration{parent_duration},
-      offset{off}, speed{s}
-      , tempo{tempo}, signature{sig}
+      : prev_date{prev_d}
+      , date{d}
+      , parent_duration{parent_duration}
+      , offset{off}
+      , speed{s}
+      , tempo{tempo}
+      , signature{sig}
   {
-    if (offset.impl < 0)
+    if(offset.impl < 0)
     {
       offset.impl = 0;
     }
   }
 
-  [[nodiscard]] constexpr token_request
-  add_offset(ossia::time_value t) const noexcept
+  [[nodiscard]] constexpr token_request add_offset(ossia::time_value t) const noexcept
   {
     token_request other = *this;
     other.prev_date += t;
@@ -40,17 +44,19 @@ struct token_request
     return other;
   }
 
-  template<typename Exec, typename Transport>
-  constexpr void loop(ossia::time_value start_offset, ossia::time_value loop_duration, Exec f, Transport transport) const noexcept
+  template <typename Exec, typename Transport>
+  constexpr void loop(
+      ossia::time_value start_offset, ossia::time_value loop_duration, Exec f,
+      Transport transport) const noexcept
   {
     ossia::token_request other = *this;
     ossia::time_value orig_from = other.prev_date;
     ossia::time_value tick_amount = other.date - other.prev_date;
 
-    while (tick_amount > 0_tv)
+    while(tick_amount > 0_tv)
     {
       const time_value cur_from{orig_from % loop_duration};
-      if (cur_from + tick_amount < loop_duration)
+      if(cur_from + tick_amount < loop_duration)
       {
         other.prev_date = cur_from + start_offset;
         other.date = other.prev_date + tick_amount;
@@ -80,21 +86,19 @@ struct token_request
     return date - prev_date;
   }
 
-
   //! The date of the first sample in the context of the parent.
   //! e.g. if we're at the start of our third buffer of 256 samples for
   //! a given time_interval, this will give 768.
   [[nodiscard]] constexpr physical_time
   start_date_to_physical(double ratio) const noexcept
-  //C++23: [[ expects: speed != 0. ]]
+  // C++23: [[ expects: speed != 0. ]]
   {
-      assert(speed != 0.);
-      return this->prev_date.impl * ratio / speed;
+    assert(speed != 0.);
+    return this->prev_date.impl * ratio / speed;
   }
 
   //! Where we must start to read / write in our physical buffers
-  [[nodiscard]] constexpr physical_time
-  physical_start(double ratio) const noexcept
+  [[nodiscard]] constexpr physical_time physical_start(double ratio) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
@@ -102,7 +106,8 @@ struct token_request
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
-  //! this is the amount of samples that we must process from the sound file during this tick
+  //! this is the amount of samples that we must process from the sound file
+  //! during this tick
   [[nodiscard]] constexpr physical_time
   physical_read_duration(double ratio) const noexcept
   {
@@ -129,34 +134,38 @@ struct token_request
   }
 
   //! Is the given value in the tick defined by this token_request
-  [[nodiscard]] constexpr bool
-  in_range(ossia::time_value global_time) const noexcept
+  [[nodiscard]] constexpr bool in_range(ossia::time_value global_time) const noexcept
   {
     return global_time.impl >= prev_date.impl && global_time.impl < date.impl;
   }
 
-  //! Maps a time value in the frame of reference of this tick's node to a time value inside its physical buffers
-  [[nodiscard]] constexpr physical_time to_physical_time_in_tick(
-      ossia::time_value global_time, double ratio) const noexcept
+  //! Maps a time value in the frame of reference of this tick's node to a time
+  //! value inside its physical buffers
+  [[nodiscard]] constexpr physical_time
+  to_physical_time_in_tick(ossia::time_value global_time, double ratio) const noexcept
   {
     return (global_time - prev_date + offset).impl * ratio / speed;
   }
 
-  //! Maps a time value in the frame of reference of this tick's node to a time value inside its physical buffers
+  //! Maps a time value in the frame of reference of this tick's node to a time
+  //! value inside its physical buffers
   [[nodiscard]] constexpr physical_time
   to_physical_time_in_tick(int64_t global_time, double ratio) const noexcept
   {
     return to_physical_time_in_tick(ossia::time_value{global_time}, ratio);
   }
 
-  //! Maps a time value in the frame of reference of the physical buffers, to a model time
-  [[nodiscard]] constexpr time_value from_physical_time_in_tick(
-      ossia::physical_time phys_time, double ratio) const noexcept
+  //! Maps a time value in the frame of reference of the physical buffers, to a
+  //! model time
+  [[nodiscard]] constexpr time_value
+  from_physical_time_in_tick(ossia::physical_time phys_time, double ratio) const noexcept
   {
-    return time_value{constexpr_floor(phys_time * (speed / ratio) + prev_date.impl - offset.impl)};
+    return time_value{
+        constexpr_floor(phys_time * (speed / ratio) + prev_date.impl - offset.impl)};
   }
 
-  //! If we are in a kind of hierarchical object, return where we are at the end of this tick.
+  //! If we are in a kind of hierarchical object, return where we are at the
+  //! end of this tick.
   [[nodiscard]] constexpr double position() const noexcept
   {
     return parent_duration.impl > 0 ? date.impl / double(parent_duration.impl) : 0.;
@@ -201,16 +210,20 @@ struct token_request
       if(musical_end_last_bar != musical_start_last_bar)
       {
         // 4 if we're in 4/4 for instance
-        const double musical_bar_duration = musical_end_last_bar - musical_start_last_bar;
+        const double musical_bar_duration
+            = musical_end_last_bar - musical_start_last_bar;
 
         // rate = 0.5 -> 2 bars at 3/4 -> 6 quarter notes
         const double quantif_duration = musical_bar_duration / rate;
 
-        // we must be on quarter note 6, 12, 18, ... from the previous signature
-        const double rem = std::fmod(musical_end_last_bar - musical_start_last_signature, quantif_duration);
+        // we must be on quarter note 6, 12, 18, ... from the previous
+        // signature
+        const double rem = std::fmod(
+            musical_end_last_bar - musical_start_last_signature, quantif_duration);
         if(rem < 0.0001)
         {
-          // There is a bar change in this tick and it is when we are going to trigger
+          // There is a bar change in this tick and it is when we are going to
+          // trigger
           const double musical_bar_start = musical_end_last_bar - musical_start_position;
 
           const double ratio = musical_bar_start / musical_tick_duration;
@@ -224,7 +237,8 @@ struct token_request
     {
       // Quantize relative to quarter divisions
       // TODO ! if there is a bar change,
-      // and no prior quantization date before that, we have to quantize to the bar change
+      // and no prior quantization date before that, we have to quantize to the
+      // bar change
       const double start_quarter = (musical_start_position - musical_start_last_bar);
       const double end_quarter = (musical_end_position - musical_start_last_bar);
 
@@ -236,8 +250,11 @@ struct token_request
       if(start_quant != end_quant)
       {
         // Date to quantify is the next one :
-        const double musical_tick_duration = musical_end_position - musical_start_position;
-        const double quantified_duration = (musical_start_last_bar + (start_quant + 1) * 4. / rate) - musical_start_position;
+        const double musical_tick_duration
+            = musical_end_position - musical_start_position;
+        const double quantified_duration
+            = (musical_start_last_bar + (start_quant + 1) * 4. / rate)
+              - musical_start_position;
         const double ratio = (date - prev_date).impl / musical_tick_duration;
 
         quantification_date = prev_date + quantified_duration * ratio;
@@ -254,16 +271,16 @@ struct token_request
 
   //! Like physical_quantification_date, but returns a date mapped to this tick
   [[nodiscard]] constexpr std::optional<physical_time>
-  get_physical_quantification_date(
-      double rate, double modelToSamples) const noexcept
+  get_physical_quantification_date(double rate, double modelToSamples) const noexcept
   {
     if(auto d = get_quantification_date(rate))
       return to_physical_time_in_tick(*d, modelToSamples);
     return {};
   }
 
-  template<typename Tick, typename Tock>
-  constexpr void metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
+  template <typename Tick, typename Tock>
+  constexpr void
+  metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
   {
     if((musical_end_last_bar != musical_start_last_bar) || musical_start_position == 0.)
     {
@@ -272,7 +289,8 @@ struct token_request
       if(musical_tick_duration != 0)
       {
         const double musical_bar_start = musical_end_last_bar - musical_start_position;
-        const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+        const int64_t samples_tick_duration
+            = physical_write_duration(modelToSamplesRatio);
         if(samples_tick_duration > 0)
         {
           const double ratio = musical_bar_start / musical_tick_duration;
@@ -283,18 +301,23 @@ struct token_request
     }
     else
     {
-      const int64_t start_quarter = std::floor(musical_start_position - musical_start_last_bar);
-      const int64_t end_quarter = std::floor(musical_end_position - musical_start_last_bar);
+      const int64_t start_quarter
+          = std::floor(musical_start_position - musical_start_last_bar);
+      const int64_t end_quarter
+          = std::floor(musical_end_position - musical_start_last_bar);
       if(start_quarter != end_quarter)
       {
         // There is a quarter change in this tick, start the down tick
         // start_position is prev_date
         // end_position is date
-        const double musical_tick_duration = musical_end_position - musical_start_position;
+        const double musical_tick_duration
+            = musical_end_position - musical_start_position;
         if(musical_tick_duration != 0)
         {
-          const double musical_bar_start = (end_quarter + musical_start_last_bar) - musical_start_position;
-          const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+          const double musical_bar_start
+              = (end_quarter + musical_start_last_bar) - musical_start_position;
+          const int64_t samples_tick_duration
+              = physical_write_duration(modelToSamplesRatio);
           if(samples_tick_duration > 0)
           {
             const double ratio = musical_bar_start / musical_tick_duration;
@@ -326,7 +349,7 @@ struct token_request
   }
 
   constexpr void set_end_time(time_value t) noexcept
-    //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  // C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
     const auto old_date = date;
     date = t;
@@ -341,7 +364,7 @@ struct token_request
   }
 
   constexpr void set_start_time(time_value t) noexcept
-  //C++23: [[ expects: t <= this->date && t > this->prev_date ]]
+  // C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
     const auto old_date = prev_date;
     prev_date = t;
@@ -352,13 +375,14 @@ struct token_request
       musical_start_position *= ratio;
     }
 
-    // TODO what if musical_start_position is now after end_position / end_last_bar ?
+    // TODO what if musical_start_position is now after end_position /
+    // end_last_bar ?
   }
 
-  ossia::time_value prev_date{}; // Sample we are at
-  ossia::time_value date{}; // Sample we are finishing at
-  ossia::time_value parent_duration{}; // Duration of the parent item of the one being ticked
-
+  ossia::time_value prev_date{};       // Sample we are at
+  ossia::time_value date{};            // Sample we are finishing at
+  ossia::time_value parent_duration{}; // Duration of the parent item of the
+                                       // one being ticked
 
   //! Where in the tick we are located.
   //! e.g. if we read 9 time_value across two intervals,
@@ -378,23 +402,24 @@ struct token_request
   double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
 
-  ossia::quarter_note musical_start_last_signature{}; // Position of the last bar signature change in quarter notes (at prev_date)
-  ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in quarter notes (at prev_date)
+  ossia::quarter_note musical_start_last_signature{}; // Position of the last bar
+                                                      // signature change in quarter
+                                                      // notes (at prev_date)
+  ossia::quarter_note musical_start_last_bar{}; // Position of the last bar start in
+                                                // quarter notes (at prev_date)
   ossia::quarter_note musical_start_position{}; // Current position in quarter notes
-  ossia::quarter_note musical_end_last_bar{}; // Position of the last bar start in quarter notes (at date)
-  ossia::quarter_note musical_end_position{}; // Current position in quarter notes
+  ossia::quarter_note musical_end_last_bar{};   // Position of the last bar start in
+                                                // quarter notes (at date)
+  ossia::quarter_note musical_end_position{};   // Current position in quarter notes
   bool start_discontinuous{};
   bool end_discontinuous{};
 };
 
 inline bool operator==(const token_request& lhs, const token_request& rhs)
 {
-  return    lhs.prev_date == rhs.prev_date
-         && lhs.date == rhs.date
-         && lhs.parent_duration == rhs.parent_duration
-         && lhs.offset == rhs.offset
-         && lhs.speed == rhs.speed
-         && lhs.tempo == rhs.tempo
+  return lhs.prev_date == rhs.prev_date && lhs.date == rhs.date
+         && lhs.parent_duration == rhs.parent_duration && lhs.offset == rhs.offset
+         && lhs.speed == rhs.speed && lhs.tempo == rhs.tempo
          && lhs.signature == rhs.signature
          && lhs.musical_start_last_bar == rhs.musical_start_last_bar
          && lhs.musical_start_position == rhs.musical_start_position
@@ -419,15 +444,14 @@ struct simple_token_request
 
   operator token_request() const noexcept
   {
-    return ossia::token_request{prev_date, date, parent_duration, offset, 1.0, {4,4}, 120.};
+    return ossia::token_request{prev_date, date, parent_duration, offset, 1.0,
+                                {4, 4},    120.};
   }
 
   friend bool operator==(const token_request& lhs, const simple_token_request& self)
   {
-    return
-        lhs.prev_date == self.prev_date &&
-        lhs.date == self.date &&
-        lhs.offset == self.offset;
+    return lhs.prev_date == self.prev_date && lhs.date == self.date
+           && lhs.offset == self.offset;
   }
   friend bool operator==(const simple_token_request& self, const token_request& rhs)
   {

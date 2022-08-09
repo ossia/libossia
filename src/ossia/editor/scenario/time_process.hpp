@@ -1,9 +1,9 @@
 #pragma once
 
-#include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/dataflow/token_request.hpp>
-
 #include <ossia/detail/config.hpp>
+
+#include <ossia/dataflow/token_request.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
 
 #include <memory>
 #include <string>
@@ -130,8 +130,7 @@ protected:
   bool m_enabled = true;
 };
 
-
-template<typename T>
+template <typename T>
 class looping_process : public time_process
 {
 public:
@@ -147,11 +146,10 @@ public:
     }
     else
     {
-      tok.loop(this->m_start_offset,
-               this->m_loop_duration,
-               [this] (const token_request& tr) { static_cast<T*>(this)->state_impl(tr); },
-               [this] (const time_value& t) { static_cast<T*>(this)->transport_impl(t); }
-      );
+      tok.loop(
+          this->m_start_offset, this->m_loop_duration,
+          [this](const token_request& tr) { static_cast<T*>(this)->state_impl(tr); },
+          [this](const time_value& t) { static_cast<T*>(this)->transport_impl(t); });
     }
   }
 };

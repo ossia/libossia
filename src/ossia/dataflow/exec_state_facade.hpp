@@ -1,7 +1,9 @@
 #pragma once
-#include <cinttypes>
-#include <string_view>
 #include <ossia/detail/config.hpp>
+
+#include <cinttypes>
+
+#include <string_view>
 
 namespace ossia
 {
@@ -29,10 +31,10 @@ struct OSSIA_EXPORT exec_state_facade
   [[nodiscard]] int64_t samplesSinceStart() const noexcept;
   [[nodiscard]] double startDate() const noexcept;
   [[nodiscard]] double currentDate() const noexcept;
-  [[nodiscard]] ossia::net::node_base*
-  find_node(std::string_view name) const noexcept;
+  [[nodiscard]] ossia::net::node_base* find_node(std::string_view name) const noexcept;
 
-  struct sample_timings {
+  struct sample_timings
+  {
     int64_t start_sample;
     int64_t length;
   };

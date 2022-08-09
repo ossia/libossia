@@ -1,17 +1,16 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#include <ossia/dataflow/control_inlets.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/port.hpp>
-#include <ossia/dataflow/control_inlets.hpp>
 #include <ossia/editor/automation/curve_value_visitor.hpp>
 #include <ossia/editor/curve/behavior.hpp>
-
-#include <ossia/detail/config.hpp>
 
 /**
  * \file automation.hpp
  */
-
 
 namespace ossia::nodes
 {
@@ -65,18 +64,16 @@ public:
   }
 
 private:
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    if (!m_drive)
+    if(!m_drive)
       return;
     const auto [tick_start, d] = e.timings(t);
 
     ossia::value_port& vp = *value_out;
     vp.write_value(
         ossia::apply(
-            ossia::detail::compute_value_visitor{t.position(),
-                                                 ossia::val_type::FLOAT},
+            ossia::detail::compute_value_visitor{t.position(), ossia::val_type::FLOAT},
             m_drive),
         tick_start);
   }
@@ -113,8 +110,7 @@ public:
   }
 
 private:
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     const auto [tick_start, d] = e.timings(t);
 

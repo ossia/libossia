@@ -1,12 +1,13 @@
 #pragma once
-#include <concurrentqueue.h>
 #include <ossia/detail/pod_vector.hpp>
+
+#include <concurrentqueue.h>
 namespace ossia
 {
 template <typename Obj_T>
 struct object_pool
 {
-  template<typename T, size_t MAX_BLOCK_SIZE = 64>
+  template <typename T, size_t MAX_BLOCK_SIZE = 64>
   using mpmc_queue = moodycamel::ConcurrentQueue<T>;
 
   mpmc_queue<Obj_T> buffers;
@@ -37,21 +38,21 @@ template <typename Obj_T, typename Alloc, std::size_t... sz>
 struct sized_object_pool
 {
   using SizeSpec = std::integer_sequence<std::size_t, sz...>;
-  template<typename T, size_t MAX_BLOCK_SIZE = 64>
+  template <typename T, size_t MAX_BLOCK_SIZE = 64>
   using mpmc_queue = moodycamel::ConcurrentQueue<T>;
 
   static const constexpr auto buckets = SizeSpec::size() + 1;
   std::array<mpmc_queue<Obj_T>, buckets> queues;
 
-  template<std::size_t Sz, std::size_t... Szs>
+  template <std::size_t Sz, std::size_t... Szs>
   static constexpr int find_bucket_impl(std::size_t size, std::size_t k) noexcept
   {
     if(size < Sz)
       return k;
     else if constexpr(sizeof...(Szs) > 0)
-      return find_bucket_impl<Szs...>(size, k+1);
+      return find_bucket_impl<Szs...>(size, k + 1);
     else
-      return k+1;
+      return k + 1;
   }
 
   static constexpr int find_bucket(std::size_t size) noexcept
@@ -91,8 +92,9 @@ struct sized_object_pool
   }
 };
 
-template<typename T>
-struct container_memory_manager {
+template <typename T>
+struct container_memory_manager
+{
   static constexpr void resize(T& t, std::size_t sz) noexcept
   {
     t.resize(sz);
@@ -109,7 +111,7 @@ struct container_memory_manager {
 
 struct buffer_pool
 {
-  template<typename T, size_t MAX_BLOCK_SIZE = 64>
+  template <typename T, size_t MAX_BLOCK_SIZE = 64>
   using mpmc_queue = moodycamel::ConcurrentQueue<T>;
   using buffer = ossia::pod_vector<char>;
 

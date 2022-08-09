@@ -38,7 +38,7 @@
   {                                         \
     constexpr auto constexpr_return_x_ = X; \
     return constexpr_return_x_;             \
-  } while (0)
+  } while(0)
 
 /// Inline support ///
 #if defined(__GNUC__)

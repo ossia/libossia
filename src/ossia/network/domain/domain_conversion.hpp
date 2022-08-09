@@ -17,12 +17,12 @@ struct domain_conversion
   domain operator()(const domain_base<int32_t>& t)
   {
     U f;
-    if (t.min)
+    if(t.min)
       f.min = *t.min;
-    if (t.max)
+    if(t.max)
       f.max = *t.max;
-    if (!t.values.empty())
-      for (auto val : t.values)
+    if(!t.values.empty())
+      for(auto val : t.values)
         f.values.push_back(val);
     return f;
   }
@@ -30,12 +30,12 @@ struct domain_conversion
   domain operator()(const domain_base<float>& t)
   {
     U f;
-    if (t.min)
+    if(t.min)
       f.min = *t.min;
-    if (t.max)
+    if(t.max)
       f.max = *t.max;
-    if (!t.values.empty())
-      for (auto val : t.values)
+    if(!t.values.empty())
+      for(auto val : t.values)
         f.values.push_back(val);
     return f;
   }
@@ -51,12 +51,12 @@ struct domain_conversion
   domain operator()(const domain_base<char>& t)
   {
     U f;
-    if (t.min)
+    if(t.min)
       f.min = *t.min;
-    if (t.max)
+    if(t.max)
       f.max = *t.max;
-    if (!t.values.empty())
-      for (auto val : t.values)
+    if(!t.values.empty())
+      for(auto val : t.values)
         f.values.push_back(val);
     return f;
   }
@@ -107,22 +107,22 @@ struct domain_conversion<vecf_domain<N>>
   {
     vecf_domain<N> dom;
     const std::size_t min_size = std::min(N, t.min.size());
-    for (std::size_t i = 0; i < min_size; i++)
+    for(std::size_t i = 0; i < min_size; i++)
     {
       dom.min[i] = ossia::convert<float>(t.min[i]);
     }
 
     const std::size_t max_size = std::min(N, t.max.size());
-    for (std::size_t i = 0; i < max_size; i++)
+    for(std::size_t i = 0; i < max_size; i++)
     {
       dom.max[i] = ossia::convert<float>(t.max[i]);
     }
 
     const std::size_t vals_size = std::min(N, t.values.size());
-    for (std::size_t i = 0; i < vals_size; i++)
+    for(std::size_t i = 0; i < vals_size; i++)
     {
       dom.values[i].clear();
-      for (auto& val : t.values[i])
+      for(auto& val : t.values[i])
         dom.values[i].insert(ossia::convert<float>(val));
     }
 
@@ -197,24 +197,20 @@ struct domain_conversion<domain_base<std::string>>
 
 inline domain convert_domain(const domain& dom, ossia::val_type newtype)
 {
-  switch (newtype)
+  switch(newtype)
   {
     case val_type::IMPULSE:
-      return ossia::apply_nonnull(
-          domain_conversion<domain_base<impulse>>{}, dom);
+      return ossia::apply_nonnull(domain_conversion<domain_base<impulse>>{}, dom);
     case val_type::INT:
-      return ossia::apply_nonnull(
-          domain_conversion<domain_base<int32_t>>{}, dom);
+      return ossia::apply_nonnull(domain_conversion<domain_base<int32_t>>{}, dom);
     case val_type::FLOAT:
-      return ossia::apply_nonnull(
-          domain_conversion<domain_base<float>>{}, dom);
+      return ossia::apply_nonnull(domain_conversion<domain_base<float>>{}, dom);
     case val_type::BOOL:
       return ossia::apply_nonnull(domain_conversion<domain_base<bool>>{}, dom);
     case val_type::CHAR:
       return ossia::apply_nonnull(domain_conversion<domain_base<char>>{}, dom);
     case val_type::STRING:
-      return ossia::apply_nonnull(
-          domain_conversion<domain_base<std::string>>{}, dom);
+      return ossia::apply_nonnull(domain_conversion<domain_base<std::string>>{}, dom);
     case val_type::LIST:
       return ossia::apply_nonnull(domain_conversion<vector_domain>{}, dom);
     case val_type::VEC2F:
@@ -237,18 +233,17 @@ inline void convert_compatible_domain(domain& dom, ossia::val_type newtype)
   // Converts domains but keeps compatible different domains.
   // e.g. a float domain works for vec4f or list.
   //! \note check this if the order in domain_base_variant changes.
-  if (dom.which() < list_index)
+  if(dom.which() < list_index)
   {
     dom = convert_domain(dom, newtype);
   }
-  else if (dom.which() == list_index)
+  else if(dom.which() == list_index)
   {
-    switch (newtype)
+    switch(newtype)
     {
       case ossia::val_type::VEC2F:
       case ossia::val_type::VEC3F:
-      case ossia::val_type::VEC4F:
-      {
+      case ossia::val_type::VEC4F: {
         dom = convert_domain(dom, newtype);
         break;
       }

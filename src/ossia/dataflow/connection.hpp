@@ -1,9 +1,9 @@
 #pragma once
-#include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/geometry_port.hpp>
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
 #include <ossia/detail/nullable_variant.hpp>
 
 namespace ossia
@@ -44,6 +44,5 @@ struct dependency_connection
 
 using connection = ossia::nullable_variant<
     immediate_glutton_connection, immediate_strict_connection,
-    delayed_glutton_connection, delayed_strict_connection,
-    dependency_connection>;
+    delayed_glutton_connection, delayed_strict_connection, dependency_connection>;
 }

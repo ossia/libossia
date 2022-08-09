@@ -9,13 +9,13 @@ class percentage final : public ossia::nonowning_graph_node
 {
 public:
   ossia::value_outlet outlet;
-  percentage(ossia::destination d): outlet{&d.address()}
+  percentage(ossia::destination d)
+      : outlet{&d.address()}
   {
     m_outlets.push_back(&outlet);
   }
 
-  void
-  run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     const auto [tick_start, d] = e.timings(tk);
     outlet->write_value((float)tk.position(), tick_start);

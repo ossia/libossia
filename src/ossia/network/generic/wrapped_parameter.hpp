@@ -15,12 +15,12 @@ class wrapped_node : public ossia::net::node_base
 public:
   using data_type = T;
   wrapped_node(
-      T&& data, ossia::net::device_base& aDevice,
-      ossia::net::node_base& aParent)
-      : m_device{aDevice}, m_parent{&aParent}
+      T&& data, ossia::net::device_base& aDevice, ossia::net::node_base& aParent)
+      : m_device{aDevice}
+      , m_parent{&aParent}
   {
     m_name = data.name;
-    if (data.valid())
+    if(data.valid())
       m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
 
@@ -28,7 +28,7 @@ public:
       : m_device{aDevice}
   {
     m_name = data.name;
-    if (data.valid())
+    if(data.valid())
       m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
 
@@ -78,7 +78,7 @@ public:
 
   void add_child(std::unique_ptr<ossia::net::node_base> p)
   {
-    if (p)
+    if(p)
     {
       write_lock_t lock{m_mutex};
       m_children.push_back(std::move(p));
@@ -133,7 +133,9 @@ private:
 };
 
 template <typename Node_T, typename Protocol_T>
-class wrapped_device final : public ossia::net::device_base, public Node_T
+class wrapped_device final
+    : public ossia::net::device_base
+    , public Node_T
 {
 public:
   wrapped_device() = delete;

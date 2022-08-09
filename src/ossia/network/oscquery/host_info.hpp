@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/string_map.hpp>
+
 #include <string>
 
 namespace ossia::oscquery

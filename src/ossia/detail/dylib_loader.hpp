@@ -1,8 +1,9 @@
 #pragma once
 
 #if __has_include(<dlfcn.h>)
-#include <dlfcn.h>
 #include <ossia/detail/fmt.hpp>
+
+#include <dlfcn.h>
 
 #include <stdexcept>
 
@@ -37,7 +38,7 @@ public:
 
   ~dylib_loader()
   {
-    if (impl)
+    if(impl)
     {
       dlclose(impl);
     }
@@ -49,7 +50,10 @@ public:
     return (T)dlsym(impl, sym);
   }
 
-  operator bool() const { return bool(impl); }
+  operator bool() const
+  {
+    return bool(impl);
+  }
 
 private:
   void* impl{};

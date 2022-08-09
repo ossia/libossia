@@ -13,7 +13,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
 
   void state_impl(const ossia::token_request& req)
   {
-    for (auto& node : nodes)
+    for(auto& node : nodes)
     {
       node->request(req);
     }
@@ -27,7 +27,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
 
   void stop() override
   {
-    for (auto& node : nodes)
+    for(auto& node : nodes)
     {
       node->all_notes_off();
     }
@@ -35,7 +35,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
 
   void offset_impl(time_value date) override
   {
-    for (auto& node : nodes)
+    for(auto& node : nodes)
     {
       node->all_notes_off();
     }
@@ -43,7 +43,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
 
   void transport_impl(ossia::time_value date) override
   {
-    for (auto& node : nodes)
+    for(auto& node : nodes)
     {
       node->all_notes_off();
     }
@@ -51,7 +51,7 @@ struct node_chain_process final : public looping_process<node_chain_process>
 
   void mute_impl(bool b) override
   {
-    for (auto& node : nodes)
+    for(auto& node : nodes)
       node->set_mute(b);
   }
   std::vector<std::shared_ptr<ossia::graph_node>> nodes;

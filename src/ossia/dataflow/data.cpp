@@ -1,12 +1,11 @@
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/data_copy.hpp>
+#include <ossia/dataflow/value_port.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
+#include <ossia/detail/logger.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/common/value_mapping.hpp>
-#include <ossia/network/common/complex_type.hpp>
-
-#include <ossia/detail/logger.hpp>
 #include <ossia/network/value/format_value.hpp>
 
 namespace ossia
@@ -23,7 +22,6 @@ struct process_float_control_visitor
 
   void operator()(ossia::impulse) const noexcept
   {
-
   }
 
   void operator()(int& v) const noexcept
@@ -80,16 +78,16 @@ struct process_float_control_visitor
 };
 
 bool should_process_control(
-    const value_port& source_port,
-    const value_port& sink_port) noexcept
+    const value_port& source_port, const value_port& sink_port) noexcept
 {
-  return (source_port.domain && sink_port.domain) || (source_port.type && sink_port.type) || source_port.tween_date;
+  return (source_port.domain && sink_port.domain) || (source_port.type && sink_port.type)
+         || source_port.tween_date;
 }
 
 void process_float_control(
     ossia::value& v, float src_min, float src_max, float dst_min, float dst_max)
 {
-  const float sub = src_max - src_min ;
+  const float sub = src_max - src_min;
   if(sub == 0.f)
     return;
 
@@ -98,17 +96,16 @@ void process_float_control(
 }
 
 void process_control_value(
-    ossia::value& v,
-    const value_port& source_port,
-    const value_port& sink_port) noexcept
+    ossia::value& v, const value_port& source_port, const value_port& sink_port) noexcept
 {
   if(source_port.domain && sink_port.domain && source_port.type && sink_port.type)
-    process_control_value(v, source_port.domain, sink_port.domain, source_port.type, sink_port.type);
+    process_control_value(
+        v, source_port.domain, sink_port.domain, source_port.type, sink_port.type);
   else if(source_port.type && sink_port.type)
     process_control_value(v, source_port.type, sink_port.type);
-  else if(source_port.domain && sink_port.domain )
+  else if(source_port.domain && sink_port.domain)
     process_control_value(v, source_port.domain, sink_port.domain);
-  if (source_port.tween_date)
+  if(source_port.tween_date)
   {
     // TODO
   }
@@ -116,8 +113,7 @@ void process_control_value(
 }
 
 void process_control_value(
-    ossia::value& v,
-    const ossia::domain& source_domain,
+    ossia::value& v, const ossia::domain& source_domain,
     const ossia::domain& sink_domain) noexcept
 {
   auto [src_min, src_max] = ossia::get_float_minmax(source_domain);
@@ -129,22 +125,17 @@ void process_control_value(
   }
 }
 
-
 void process_control_value(
-    ossia::value& v,
-    const ossia::complex_type& source_type,
+    ossia::value& v, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept
 {
   v = convert(v, source_type, sink_type);
 }
 
 void process_control_value(
-    ossia::value& v,
-    const ossia::domain& source_domain,
-    const ossia::domain& sink_domain,
-    const ossia::complex_type& source_type,
-    const ossia::complex_type& sink_type
-    ) noexcept
+    ossia::value& v, const ossia::domain& source_domain,
+    const ossia::domain& sink_domain, const ossia::complex_type& source_type,
+    const ossia::complex_type& sink_type) noexcept
 {
   process_control_value(v, source_type, sink_type);
   process_control_value(v, source_domain, sink_domain); // TODO does that make sense
@@ -154,13 +145,13 @@ void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)
 {
   const auto src_chans = src_vec.size();
   const auto sink_chans = sink_vec.size();
-  if (sink_chans < src_chans)
+  if(sink_chans < src_chans)
     audio_buffer_pool::set_channels(sink_vec, src_chans);
 
-  for (std::size_t chan = 0; chan < src_chans; chan++)
+  for(std::size_t chan = 0; chan < src_chans; chan++)
   {
     const std::size_t N = src_vec[chan].size();
-    if (sink_vec[chan].size() < N)
+    if(sink_vec[chan].size() < N)
       sink_vec[chan].resize(N);
   }
 }
@@ -179,9 +170,7 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
   }
   else if(BOOST_LIKELY(src_vec.size() == sink_vec.size()))
   {
-    for (std::size_t chan = 0, src_chans = src_vec.size();
-         chan < src_chans;
-         chan++)
+    for(std::size_t chan = 0, src_chans = src_vec.size(); chan < src_chans; chan++)
     {
       auto& src = src_vec[chan];
       auto& sink = sink_vec[chan];
@@ -193,14 +182,14 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
       {
         const std::size_t N = src.size();
 
-        if (BOOST_UNLIKELY(sink.size() < N))
+        if(BOOST_UNLIKELY(sink.size() < N))
         {
           sink.resize(N);
         }
 
         auto src_p = src.data();
         auto sink_p = sink.data();
-        for (std::size_t i = 0; i < N; i++)
+        for(std::size_t i = 0; i < N; i++)
           sink_p[i] += src_p[i];
       }
     }
@@ -209,9 +198,7 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
   {
     ensure_vector_sizes(src_vec, sink_vec);
     // Just copy the channels without much thoughts
-    for (std::size_t chan = 0, src_chans = src_vec.size();
-         chan < src_chans;
-         chan++)
+    for(std::size_t chan = 0, src_chans = src_vec.size(); chan < src_chans; chan++)
     {
       auto& src = src_vec[chan];
       auto& sink = sink_vec[chan];
@@ -219,7 +206,7 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
       auto src_p = src.data();
       auto sink_p = sink.data();
 
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
         sink_p[i] += src_p[i];
     }
   }
@@ -247,80 +234,71 @@ void audio_buffer_pool::set_channels(audio_vector& samples, std::size_t channels
 
 void value_port::write_value(const value& v, int64_t timestamp)
 {
-  switch (mix_method)
+  switch(mix_method)
   {
-  case data_mix_method::mix_replace:
-  {
-    auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
-      return val.timestamp == timestamp;
-    });
-    if (it != data.end())
-    {
-      it->value = v;
+    case data_mix_method::mix_replace: {
+      auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+        return val.timestamp == timestamp;
+      });
+      if(it != data.end())
+      {
+        it->value = v;
+      }
+      else
+      {
+        data.emplace_back(v);
+      }
+      break;
     }
-    else
-    {
-      data.emplace_back(v);
+    case data_mix_method::mix_append: {
+      this->data.emplace_back(v);
+      break;
     }
-    break;
-  }
-  case data_mix_method::mix_append:
-  {
-    this->data.emplace_back(v);
-    break;
-  }
-  case data_mix_method::mix_merge:
-  {
-    // TODO;
-    break;
-  }
+    case data_mix_method::mix_merge: {
+      // TODO;
+      break;
+    }
   }
 }
 
 void value_port::write_value(value&& v, int64_t timestamp)
 {
-  switch (mix_method)
+  switch(mix_method)
   {
-  case data_mix_method::mix_replace:
-  {
-    auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
-      return val.timestamp == timestamp;
-    });
-    if (it != data.end())
-    {
-      it->value = std::move(v);
+    case data_mix_method::mix_replace: {
+      auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+        return val.timestamp == timestamp;
+      });
+      if(it != data.end())
+      {
+        it->value = std::move(v);
+      }
+      else
+      {
+        data.emplace_back(std::move(v));
+      }
+      break;
     }
-    else
-    {
-      data.emplace_back(std::move(v));
+    case data_mix_method::mix_append: {
+      this->data.emplace_back(std::move(v));
+      break;
     }
-    break;
-  }
-  case data_mix_method::mix_append:
-  {
-    this->data.emplace_back(std::move(v));
-    break;
-  }
-  case data_mix_method::mix_merge:
-  {
-    // TODO;
-    break;
-  }
+    case data_mix_method::mix_merge: {
+      // TODO;
+      break;
+    }
   }
 }
 
 static void filter_value(
-    value& source,
-    const ossia::destination_index& /* source_index */,
-    const ossia::destination_index& res_index,
-    const ossia::complex_type& source_type,
-    const ossia::complex_type& res_type
-    )
+    value& source, const ossia::destination_index& /* source_index */,
+    const ossia::destination_index& res_index, const ossia::complex_type& source_type,
+    const ossia::complex_type& res_type)
 {
-  if (source_type && res_type && source_type != res_type)
+  if(source_type && res_type && source_type != res_type)
     source = ossia::convert(source, source_type, res_type);
 
-  if (source.valid() && !res_index.empty())
+  if(source.valid() && !res_index.empty())
     source = get_value_at_index(source, res_index);
 }
 
@@ -328,7 +306,7 @@ void value_port::add_local_value(const ossia::typed_value& other)
 {
   // These values come from the local environemnt
   // Convert to the correct type / index
-  if (other.index == index && other.type == type)
+  if(other.index == index && other.type == type)
   {
     write_value(other.value, other.timestamp);
   }
@@ -345,11 +323,11 @@ void value_port::add_global_values(
 {
   const ossia::complex_type source_type = other.get_unit();
 
-  if (index.empty() && (source_type == type || !source_type))
+  if(index.empty() && (source_type == type || !source_type))
   {
     if(other.get_domain() && this->domain)
     {
-      for (ossia::value v : vec)
+      for(ossia::value v : vec)
       {
         map_value(v, index, other.get_domain(), this->domain);
         write_value(std::move(v), 0); // TODO put correct timestamps here
@@ -357,7 +335,7 @@ void value_port::add_global_values(
     }
     else
     {
-      for (const ossia::value& v : vec)
+      for(const ossia::value& v : vec)
       {
         write_value(v, 0);
       }
@@ -367,7 +345,7 @@ void value_port::add_global_values(
   {
     if(other.get_domain() && this->domain)
     {
-      for (ossia::value v : vec)
+      for(ossia::value v : vec)
       {
         filter_value(v, {}, index, source_type, type);
         map_value(v, index, other.get_domain(), this->domain);
@@ -376,7 +354,7 @@ void value_port::add_global_values(
     }
     else
     {
-      for (ossia::value v : vec)
+      for(ossia::value v : vec)
       {
         filter_value(v, {}, index, source_type, type);
         write_value(v, 0);
@@ -410,81 +388,75 @@ void value_port::add_global_value(
   write_value(std::move(val), 0);
 }
 
-
 void value_port::add_port_values(const value_port& other)
 {
   // These values come from another node: we just copy them blindly
-  if (should_process_control(other, *this))
+  if(should_process_control(other, *this))
   {
-    switch (mix_method)
+    switch(mix_method)
     {
-    case data_mix_method::mix_replace:
-    {
-      for (const auto& v : other.get_data())
-      {
-        auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
-          return val.timestamp == v.timestamp;
-        });
-        if (it != data.end())
+      case data_mix_method::mix_replace: {
+        for(const auto& v : other.get_data())
         {
-          it->value = v.value;
+          auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+            return val.timestamp == v.timestamp;
+          });
+          if(it != data.end())
+          {
+            it->value = v.value;
+            process_control_value(it->value, other, *this);
+          }
+          else
+          {
+            data.emplace_back(v);
+            process_control_value(data.back().value, other, *this);
+          }
+        }
+        break;
+      }
+      case data_mix_method::mix_append: {
+        auto it = data.insert(data.end(), other.data.begin(), other.data.end());
+        for(const auto end = data.end(); it != end; ++it)
+        {
           process_control_value(it->value, other, *this);
         }
-        else
-        {
-          data.emplace_back(v);
-          process_control_value(data.back().value, other, *this);
-        }
+        break;
       }
-      break;
-    }
-    case data_mix_method::mix_append:
-    {
-      auto it = data.insert(data.end(), other.data.begin(), other.data.end());
-      for(const auto end = data.end(); it != end; ++it) {
-        process_control_value(it->value, other, *this);
+      case data_mix_method::mix_merge: {
+        // TODO;
+        break;
       }
-      break;
-    }
-    case data_mix_method::mix_merge:
-    {
-      // TODO;
-      break;
-    }
     }
   }
   else
   {
-    switch (mix_method)
+    switch(mix_method)
     {
-    case data_mix_method::mix_replace:
-    {
-      for (const auto& v : other.get_data())
-      {
-        auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
-          return val.timestamp == v.timestamp;
-        });
-        if (it != data.end())
+      case data_mix_method::mix_replace: {
+        for(const auto& v : other.get_data())
         {
-          it->value = v.value;
+          auto it = ossia::find_if(data, [&](const ossia::timed_value& val) {
+            return val.timestamp == v.timestamp;
+          });
+          if(it != data.end())
+          {
+            it->value = v.value;
+          }
+          else
+          {
+            data.emplace_back(v);
+          }
         }
-        else
-        {
-          data.emplace_back(v);
-        }
+        break;
       }
-      break;
-    }
-    case data_mix_method::mix_append:
-    {
-      data.insert(data.end(), other.data.begin(), other.data.end());
-      break;
-    }
-    case data_mix_method::mix_merge:
-    {
-      // TODO;
-      break;
-    }
+      case data_mix_method::mix_append: {
+        data.insert(data.end(), other.data.begin(), other.data.end());
+        break;
+      }
+      case data_mix_method::mix_merge: {
+        // TODO;
+        break;
+      }
     }
   }
 }
@@ -509,14 +481,8 @@ value_vector<ossia::timed_value>& value_port::get_data()
   return data;
 }
 
-
-
-
 void geometry_port::clear()
 {
-
 }
-
-
 
 }

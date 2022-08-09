@@ -1,6 +1,7 @@
 #pragma once
-#include <libremidi/message.hpp>
 #include <ossia/dataflow/value_vector.hpp>
+
+#include <libremidi/message.hpp>
 
 namespace ossia
 {
@@ -14,7 +15,6 @@ struct midi_port
   using message = libremidi::message;
   using message_type = libremidi::message_type;
   using midi_bytes = libremidi::midi_bytes;
-
 
   message& note_on(uint8_t channel, uint8_t note, uint8_t velocity) noexcept
   {
@@ -38,8 +38,9 @@ struct midi_port
 
   message& pitch_bend(uint8_t channel, int value) noexcept
   {
-    return create(make_command(message_type::PITCH_BEND, channel),
-                       (unsigned char)(value & 0x7F), (uint8_t)((value >> 7) & 0x7F));
+    return create(
+        make_command(message_type::PITCH_BEND, channel), (unsigned char)(value & 0x7F),
+        (uint8_t)((value >> 7) & 0x7F));
   }
 
   message& pitch_bend(uint8_t channel, uint8_t lsb, uint8_t msb) noexcept
@@ -56,6 +57,7 @@ struct midi_port
   {
     return create(make_command(message_type::AFTERTOUCH, channel), value);
   }
+
 private:
   static uint8_t make_command(const message_type type, const int channel) noexcept
   {

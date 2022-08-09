@@ -1,6 +1,7 @@
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
 #include "dmx_parameter.hpp"
+
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
 
 #include <cstdio>
@@ -26,18 +27,18 @@ struct artnet_visitor
     buf.data[channel] = v;
     buf.dirty = true;
   }
-  template<typename... Args>
+  template <typename... Args>
   void operator()(Args&&...) const noexcept
   {
-
   }
 };
 
 dmx_parameter::dmx_parameter(
-    net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min, int max)
+    net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min,
+    int max)
     : device_parameter(
-          node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
-          make_domain(min, max))
+        node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
+        make_domain(min, max))
     , m_buffer{buffer}
     , m_channel{channel}
 {
@@ -62,13 +63,10 @@ ossia::domain make_domain_from_range(const artnet_range& r)
 }
 
 artnet_range_parameter::artnet_range_parameter(
-    net::node_base& node, dmx_buffer& buffer, unsigned int channel, artnet_range r)
-    : device_parameter(
-          node, val_type::STRING, bounding_mode::CLIP, access_mode::SET,
-          make_domain_from_range(r))
-    , m_buffer{buffer}
-    , m_channel{channel}
-    , m_range{std::move(r)}
+    net::node_base& node, dmx_buffer& buffer, unsigned int channel,
+artnet_range r) : device_parameter( node, val_type::STRING,
+bounding_mode::CLIP, access_mode::SET, make_domain_from_range(r)) ,
+m_buffer{buffer} , m_channel{channel} , m_range{std::move(r)}
 {
 }
 
@@ -92,8 +90,8 @@ struct artnet_range_visitor
 
   void operator()(const std::string& v) const noexcept
   {
-    auto it = ossia::find_if(range, [&] (const auto& r) { return r.name == v; });
-    if(it != range.end())
+    auto it = ossia::find_if(range, [&] (const auto& r) { return r.name == v;
+}); if(it != range.end())
     {
       buf.data[channel] = it->min;
       buf.dirty = true;

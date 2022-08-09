@@ -1,15 +1,15 @@
 #pragma once
+#include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/detail/mutex.hpp>
-#include <ossia/network/context_functions.hpp>
 #include <ossia/network/base/listening.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/context_functions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
-#include <ossia/detail/lockfree_queue.hpp>
 
-#include <tsl/hopscotch_map.h>
 #include <nano_signal_slot.hpp>
+#include <tsl/hopscotch_map.h>
 
 #include <atomic>
 namespace osc
@@ -40,8 +40,7 @@ namespace oscquery_asio
 struct oscquery_client;
 using clients = std::vector<std::unique_ptr<oscquery_client>>;
 //! Implementation of an oscquery server.
-class OSSIA_EXPORT oscquery_server_protocol final
-    : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_server_protocol final : public ossia::net::protocol_base
 {
   friend struct oscquery_client;
   friend class ossia::oscquery::query_answerer;
@@ -50,7 +49,9 @@ class OSSIA_EXPORT oscquery_server_protocol final
 
 public:
   using connection_handler = std::weak_ptr<void>;
-  oscquery_server_protocol(ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234, uint16_t ws_port = 5678);
+  oscquery_server_protocol(
+      ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234,
+      uint16_t ws_port = 5678);
   ~oscquery_server_protocol() override;
 
   bool pull(net::parameter_base&) override;
@@ -58,11 +59,11 @@ public:
   void request(net::parameter_base&) override;
   bool push(const net::parameter_base&, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
-  bool
-  push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>&) override;
-  bool echo_incoming_message(const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&, const ossia::value& v) override;
+  bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
+  bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
+  bool echo_incoming_message(
+      const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&,
+      const ossia::value& v) override;
   bool observe(net::parameter_base&, bool) override;
   bool observe_quietly(net::parameter_base&, bool) override;
   bool update(net::node_base& b) override;
@@ -91,8 +92,7 @@ private:
   // List of connected clients
   oscquery_client* find_client(const connection_handler& hdl);
 
-  void
-  add_node(ossia::string_view path, const string_map<std::string>& parameters);
+  void add_node(ossia::string_view path, const string_map<std::string>& parameters);
   void remove_node(ossia::string_view path, const std::string& node);
   void rename_node(ossia::string_view node, const std::string& new_name);
 
@@ -121,8 +121,8 @@ private:
   // which will set appropriate error codes.
   ossia::net::server_reply
   on_text_ws_message(const connection_handler& hdl, const std::string& message);
-  ossia::net::server_reply on_binary_ws_message(
-      const connection_handler& hdl, const std::string& message);
+  ossia::net::server_reply
+  on_binary_ws_message(const connection_handler& hdl, const std::string& message);
 
   ossia::net::network_context_ptr m_context;
 
@@ -148,7 +148,6 @@ private:
   // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
-
 };
 }
 }

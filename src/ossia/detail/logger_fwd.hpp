@@ -18,7 +18,8 @@ using logger_type = spdlog::logger;
 #include <vector>
 namespace spdlog
 {
-namespace sinks {
+namespace sinks
+{
 class sink;
 }
 }

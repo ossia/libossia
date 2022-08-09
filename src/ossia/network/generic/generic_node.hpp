@@ -41,25 +41,21 @@ private:
 class OSSIA_EXPORT generic_node : public generic_node_base
 {
 public:
-  generic_node(
-      std::string name, ossia::net::device_base& aDevice, node_base& aParent);
+  generic_node(std::string name, ossia::net::device_base& aDevice, node_base& aParent);
   generic_node(std::string name, ossia::net::device_base& aDevice);
 
   ~generic_node() override;
 
   ossia::net::parameter_base* get_parameter() const final override;
-  ossia::net::parameter_base*
-  create_parameter(ossia::val_type type) final override;
-  void set_parameter(
-      std::unique_ptr<ossia::net::parameter_base> addr) final override;
+  ossia::net::parameter_base* create_parameter(ossia::val_type type) final override;
+  void set_parameter(std::unique_ptr<ossia::net::parameter_base> addr) final override;
   bool remove_parameter() final override;
 
 protected:
   std::unique_ptr<ossia::net::parameter_base> m_parameter;
 
 private:
-  std::unique_ptr<node_base>
-  make_child(const std::string& name) final override;
+  std::unique_ptr<node_base> make_child(const std::string& name) final override;
 
   void removing_child(node_base&) final override
   {

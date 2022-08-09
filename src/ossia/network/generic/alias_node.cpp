@@ -11,7 +11,7 @@ namespace net
 
 alias_node::~alias_node()
 {
-  if (m_origin)
+  if(m_origin)
   {
     m_origin->about_to_be_deleted.disconnect<&alias_node::on_deletion>(this);
   }
@@ -40,14 +40,14 @@ node_base* alias_node::get_origin() const
 
 void alias_node::set_origin(node_base* o)
 {
-  if (m_origin)
+  if(m_origin)
   {
     m_origin->about_to_be_deleted.disconnect<&alias_node::on_deletion>(this);
   }
 
   m_origin = o;
 
-  if (m_origin)
+  if(m_origin)
   {
     m_origin->about_to_be_deleted.connect<&alias_node::on_deletion>(this);
   }
@@ -67,8 +67,7 @@ void alias_node::on_deletion(const node_base& orig)
   m_origin = nullptr;
 }
 
-alias_path::alias_path(
-    std::string name, device_base& aDevice, node_base& parent)
+alias_path::alias_path(std::string name, device_base& aDevice, node_base& parent)
     : ossia::net::generic_node_base{name, aDevice, parent}
     , ossia::net::parameter_base{(ossia::net::node_base&)*this}
 {
@@ -146,14 +145,14 @@ void alias_path::do_for_nodes(Fun f)
 {
   auto nodes = m_roots;
   ossia::traversal::apply(m_path, nodes);
-  for (ossia::net::node_base* n : nodes)
+  for(ossia::net::node_base* n : nodes)
     f(*n);
 }
 
 parameter_base& alias_path::push_value(const ossia::value& v)
 {
   do_for_nodes([&](ossia::net::node_base& n) {
-    if (auto p = n.get_parameter())
+    if(auto p = n.get_parameter())
       p->push_value(v);
   });
   return *this;
@@ -167,7 +166,7 @@ parameter_base& alias_path::push_value(ossia::value&& v)
 parameter_base& alias_path::push_value()
 {
   do_for_nodes([](ossia::net::node_base& n) {
-    if (auto p = n.get_parameter())
+    if(auto p = n.get_parameter())
       p->push_value();
   });
   return *this;
@@ -176,7 +175,7 @@ parameter_base& alias_path::push_value()
 ossia::value alias_path::set_value(const ossia::value& v)
 {
   do_for_nodes([&](ossia::net::node_base& n) {
-    if (auto p = n.get_parameter())
+    if(auto p = n.get_parameter())
       p->set_value(v);
   });
   return v;
@@ -190,7 +189,7 @@ ossia::value alias_path::set_value(ossia::value&& v)
 ossia::value alias_path::set_value_quiet(const ossia::value& v)
 {
   do_for_nodes([&](ossia::net::node_base& n) {
-    if (auto p = n.get_parameter())
+    if(auto p = n.get_parameter())
       p->set_value_quiet(v);
   });
   return v;

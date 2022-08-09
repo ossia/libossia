@@ -4,9 +4,11 @@
 #undef error
 #undef post
 
+#include "search_filter.hpp"
+
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
-#include "search_filter.hpp"
+
 #include <set>
 
 namespace ossia
@@ -31,9 +33,11 @@ struct fuzzysearch : search_filter
 
   fuzzysearch(long argc, t_atom* argv);
 
-  static void search(ossia::max_binding::fuzzysearch* x, t_symbol* s, long argc, t_atom* argv);
+  static void
+  search(ossia::max_binding::fuzzysearch* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max_binding::fuzzysearch* x);
-  static t_max_err notify(fuzzysearch *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static t_max_err
+  notify(fuzzysearch* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
 
   static void assist(fuzzysearch* x, void* b, long m, long a, char* s);
 };

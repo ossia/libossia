@@ -15,8 +15,7 @@ protected:
 
 public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
-  using const_iterator
-      = ossia::ptr_container<ossia::net::node_base>::const_iterator;
+  using const_iterator = ossia::ptr_container<ossia::net::node_base>::const_iterator;
   ~midi_node() override;
   midi_node(midi_device& aDevice, ossia::net::node_base& aParent);
   midi_node(midi_device& aDevice);
@@ -30,8 +29,7 @@ public:
   parameter_base* create_parameter(val_type) final override;
   bool remove_parameter() final override;
 
-  std::unique_ptr<node_base>
-  make_child(const std::string& name) override;
+  std::unique_ptr<node_base> make_child(const std::string& name) override;
   void removing_child(node_base& node_base) final override;
 
   //! Explicitely add a child node (which has to be valid)

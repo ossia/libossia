@@ -1,8 +1,9 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/math.hpp>
 
 #include <cmath>
-#include <ossia/detail/config.hpp>
 
 /**
   \file easing.hpp
@@ -211,9 +212,8 @@ struct circularInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5)
-               ? 0.5 * (1 - std::sqrt(1 - 4. * (t * t)))
-               : 0.5 * (std::sqrt(-((2. * t) - 3.) * ((2. * t) - 1.)) + 1.);
+    return (t < 0.5) ? 0.5 * (1 - std::sqrt(1 - 4. * (t * t)))
+                     : 0.5 * (std::sqrt(-((2. * t) - 3.) * ((2. * t) - 1.)) + 1.);
   }
 };
 
@@ -240,10 +240,9 @@ struct exponentialInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t <= 0. || t >= 1.)
-               ? t
-               : (t < 0.5) ? 0.5 * ossia::exp2((20. * t) - 10.)
-                           : -0.5 * ossia::exp2((-20. * t) + 10.) + 1.;
+    return (t <= 0. || t >= 1.) ? t
+           : (t < 0.5)          ? 0.5 * ossia::exp2((20. * t) - 10.)
+                                : -0.5 * ossia::exp2((-20. * t) + 10.) + 1.;
   }
 };
 
@@ -302,14 +301,13 @@ struct backInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return (t < 0.5)
-               ? 0.5 * (ipow(2. * t, 3) - (2. * t) * std::sin((2. * t) * pi))
-               : 0.5
-                         * (1.
-                            - (ipow(1. - (2. * t - 1.), 3)
-                               - (1. - (2. * t - 1.))
-                                     * std::sin((1. - (2. * t - 1.)) * pi)))
-                     + 0.5;
+    return (t < 0.5) ? 0.5 * (ipow(2. * t, 3) - (2. * t) * std::sin((2. * t) * pi))
+                     : 0.5
+                               * (1.
+                                  - (ipow(1. - (2. * t - 1.), 3)
+                                     - (1. - (2. * t - 1.))
+                                           * std::sin((1. - (2. * t - 1.)) * pi)))
+                           + 0.5;
   }
 };
 
@@ -318,15 +316,11 @@ struct bounceOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return t < 4. / 11.
-               ? (121. * t * t) / 16.
-               : (t < 8. / 11.)
-                     ? (363. / 40. * t * t) - (99 / 10. * t) + 17 / 5.
-                     : (t < 9. / 10.)
-                           ? (4356. / 361. * t * t) - (35442. / 1805. * t)
-                                 + 16061. / 1805.
-                           : (54. / 5. * t * t) - (513. / 25. * t)
-                                 + 268. / 25.;
+    return t < 4. / 11.     ? (121. * t * t) / 16.
+           : (t < 8. / 11.) ? (363. / 40. * t * t) - (99 / 10. * t) + 17 / 5.
+           : (t < 9. / 10.)
+               ? (4356. / 361. * t * t) - (35442. / 1805. * t) + 16061. / 1805.
+               : (54. / 5. * t * t) - (513. / 25. * t) + 268. / 25.;
   }
 };
 
@@ -344,8 +338,7 @@ struct bounceInOut
   template <typename T>
   constexpr T operator()(T t) const
   {
-    return t < 0.5 ? 0.5 * bounceIn{}(t * 2.)
-                   : 0.5 * bounceOut{}(t * 2. - 1.) + 0.5;
+    return t < 0.5 ? 0.5 * bounceIn{}(t * 2.) : 0.5 * bounceOut{}(t * 2. - 1.) + 0.5;
   }
 };
 

@@ -33,13 +33,11 @@ struct convert_unit_visitor
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const angle& d1, const angle_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const angle& d1, const angle_u& d2)
   {
     return ossia::apply(*this, d1, d2);
   }
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const color& d1, const color_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const color& d1, const color_u& d2)
   {
     return ossia::apply(*this, d1, d2);
   }
@@ -53,8 +51,7 @@ struct convert_unit_visitor
   {
     return ossia::apply(*this, d1, d2);
   }
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const gain& d1, const gain_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const gain& d1, const gain_u& d2)
   {
     return ossia::apply(*this, d1, d2);
   }
@@ -63,13 +60,11 @@ struct convert_unit_visitor
   {
     return ossia::apply(*this, d1, d2);
   }
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const speed& d1, const speed_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const speed& d1, const speed_u& d2)
   {
     return ossia::apply(*this, d1, d2);
   }
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const timing& d1, const timing_u& d2)
+  OSSIA_INLINE ossia::value_with_unit operator()(const timing& d1, const timing_u& d2)
   {
     return ossia::apply(*this, d1, d2);
   }

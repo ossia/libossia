@@ -23,7 +23,8 @@ public:
 
   network_logger(
       std::shared_ptr<ossia::logger_type> i, std::shared_ptr<ossia::logger_type> o)
-      : inbound_logger{std::move(i)}, outbound_logger{std::move(o)}
+      : inbound_logger{std::move(i)}
+      , outbound_logger{std::move(o)}
   {
   }
 

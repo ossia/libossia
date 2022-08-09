@@ -19,8 +19,7 @@ public:
   generic_device& operator=(generic_device&&) = delete;
 
   generic_device(
-      std::unique_ptr<ossia::net::protocol_base> protocol_base,
-      std::string name);
+      std::unique_ptr<ossia::net::protocol_base> protocol_base, std::string name);
 
   const ossia::net::node_base& get_root_node() const override
   {

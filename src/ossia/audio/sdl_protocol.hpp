@@ -5,6 +5,7 @@
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
+
 #include <iostream>
 #define OSSIA_AUDIO_SDL 1
 
@@ -28,7 +29,7 @@ public:
 
     m_deviceId = SDL_OpenAudioDevice(nullptr, 0, &m_desired, &m_obtained, 0);
     std::cerr << "SDL: " << m_deviceId << " :" << SDL_GetError() << std::endl;
-    if (m_deviceId < 2)
+    if(m_deviceId < 2)
     {
       using namespace std::literals;
       throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
@@ -39,14 +40,10 @@ public:
     this->effective_inputs = 0;
     this->effective_outputs = m_obtained.channels;
 
-    std::cerr
-        << "SDL: " << m_obtained.freq << " ; "
-        << m_obtained.samples << " ; "
-        << m_obtained.size << " ; "
-        << SDL_AUDIO_ISFLOAT(m_obtained.format) << " ; "
-        << SDL_AUDIO_BITSIZE(m_obtained.format) << " ; "
-        << (int)m_obtained.channels << std::endl
-           ;
+    std::cerr << "SDL: " << m_obtained.freq << " ; " << m_obtained.samples << " ; "
+              << m_obtained.size << " ; " << SDL_AUDIO_ISFLOAT(m_obtained.format)
+              << " ; " << SDL_AUDIO_BITSIZE(m_obtained.format) << " ; "
+              << (int)m_obtained.channels << std::endl;
     SDL_PauseAudioDevice(m_deviceId, 0);
   }
 
@@ -75,7 +72,7 @@ private:
     assert(frames > 0);
     assert(frames * out_chan * sizeof(float) == bytes);
 
-    if (self.stop_processing)
+    if(self.stop_processing)
     {
       self.tick_clear();
       memset(data, 0, bytes);
@@ -88,7 +85,7 @@ private:
 
       auto float_output = (float**)alloca(sizeof(float*) * out_chan);
 
-      for (int c = 0; c < out_chan; c++)
+      for(int c = 0; c < out_chan; c++)
       {
         float_output[c] = float_data + c * frames;
       }
@@ -96,11 +93,12 @@ private:
       // if one day there's input... samples[j++] / 32768.;
 
       // TODO time in seconds !
-      ossia::audio_tick_state ts{nullptr, float_output, 0, out_chan, (uint64_t)frames, 0};
+      ossia::audio_tick_state ts{nullptr,  float_output,     0,
+                                 out_chan, (uint64_t)frames, 0};
       self.audio_tick(ts);
 
-      for (int j = 0; j < frames; j++)
-        for (int c = 0; c < out_chan; c++)
+      for(int j = 0; j < frames; j++)
+        for(int c = 0; c < out_chan; c++)
           *audio_out++ = float_output[c][j];
 
       self.tick_end();

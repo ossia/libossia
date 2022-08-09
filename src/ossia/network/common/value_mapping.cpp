@@ -2,7 +2,7 @@
 
 namespace ossia
 {
-template<typename T, typename U, typename V>
+template <typename T, typename U, typename V>
 struct scale_visitor
 {
   T src_min{};
@@ -11,10 +11,9 @@ struct scale_visitor
 
   void operator()(ossia::impulse) const noexcept
   {
-
   }
 
-  template<typename Val>
+  template <typename Val>
   void operator()(Val& v) const noexcept
   {
     v = dst_min + ratio * (v - src_min);
@@ -26,7 +25,7 @@ struct scale_visitor
       v = dst_min + ratio * (v - src_min);
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   void operator()(std::array<float, N>& v) const noexcept
   {
     for(std::size_t i = 0; i < N; i++)
@@ -46,7 +45,7 @@ struct scale_visitor
   }
 };
 
-template<typename T>
+template <typename T>
 void scale(T& value, double src_min, double src_max, double dst_min, double dst_max)
 {
   const double sub = src_max - src_min;
@@ -58,24 +57,26 @@ void scale(T& value, double src_min, double src_max, double dst_min, double dst_
   scale_visitor<double, double, double>{src_min, dst_min, ratio}(value);
 }
 
-template<typename T, typename U>
+template <typename T, typename U>
 auto constrain(T& value, const std::vector<U>& acceptable)
 {
-
 }
 
 struct domain_map
 {
   const ossia::destination_index& index;
 
-  template<typename Value_T, typename Domain_T1, typename Domain_T2>
-  void operator()(Value_T& v, Domain_T1& source_domain, Domain_T2& tgt_domain) const noexcept
+  template <typename Value_T, typename Domain_T1, typename Domain_T2>
+  void
+  operator()(Value_T& v, Domain_T1& source_domain, Domain_T2& tgt_domain) const noexcept
   {
   }
 
   // float value, vec3 domain, an index corresponding to the domain "index"
-  template<std::size_t N, typename T>
-  void operator()(T& v, ossia::vecf_domain<N>& source_domain, ossia::domain_base<T>& tgt_domain) const noexcept
+  template <std::size_t N, typename T>
+  void operator()(
+      T& v, ossia::vecf_domain<N>& source_domain,
+      ossia::domain_base<T>& tgt_domain) const noexcept
   {
     if constexpr(std::is_same_v<int, T> || std::is_same_v<float, T>)
     {
@@ -83,116 +84,132 @@ struct domain_map
       {
         const auto& smin = source_domain.min[index[0]];
         const auto& smax = source_domain.max[index[0]];
-        if (smin && smax && tgt_domain.min && tgt_domain.max)
+        if(smin && smax && tgt_domain.min && tgt_domain.max)
         {
           scale(v, *smin, *smax, *tgt_domain.min, *tgt_domain.max);
         }
       }
 
-      if (!tgt_domain.values.empty())
+      if(!tgt_domain.values.empty())
       {
         constrain(v, tgt_domain.values);
       }
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<int>& source_domain, ossia::domain_base<int>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<int>& source_domain,
+      ossia::domain_base<int>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
+    if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<float>& source_domain, ossia::domain_base<float>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<float>& source_domain,
+      ossia::domain_base<float>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
+    if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<int>& source_domain, ossia::domain_base<float>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<int>& source_domain,
+      ossia::domain_base<float>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
+    if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<float>& source_domain, ossia::domain_base<int>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<float>& source_domain,
+      ossia::domain_base<int>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
+    if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<int>& source_domain, ossia::domain_base<bool>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<int>& source_domain,
+      ossia::domain_base<bool>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max)
+    if(source_domain.min && source_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, 0, 1);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<float>& source_domain, ossia::domain_base<bool>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<float>& source_domain,
+      ossia::domain_base<bool>& tgt_domain) const noexcept
   {
-    if (source_domain.min && source_domain.max)
+    if(source_domain.min && source_domain.max)
     {
       scale(v, *source_domain.min, *source_domain.max, 0, 1);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<bool>& source_domain, ossia::domain_base<int>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<bool>& source_domain,
+      ossia::domain_base<int>& tgt_domain) const noexcept
   {
-    if (tgt_domain.min && tgt_domain.max)
+    if(tgt_domain.min && tgt_domain.max)
     {
       scale(v, 0, 1, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
   }
 
-  template<typename Value_T>
-  void operator()(Value_T& v, ossia::domain_base<bool>& source_domain, ossia::domain_base<float>& tgt_domain) const noexcept
+  template <typename Value_T>
+  void operator()(
+      Value_T& v, ossia::domain_base<bool>& source_domain,
+      ossia::domain_base<float>& tgt_domain) const noexcept
   {
-    if (tgt_domain.min && tgt_domain.max)
+    if(tgt_domain.min && tgt_domain.max)
     {
       scale(v, 0, 1, *tgt_domain.min, *tgt_domain.max);
     }
 
-    if (!tgt_domain.values.empty())
+    if(!tgt_domain.values.empty())
     {
       constrain(v, tgt_domain.values);
     }
@@ -200,17 +217,19 @@ struct domain_map
 };
 
 void map_value(
-    value& source,
-    const ossia::destination_index& idx,
-    const domain& source_domain,
+    value& source, const ossia::destination_index& idx, const domain& source_domain,
     const domain& target_domain)
 {
-  ossia::apply([&] (auto& source_domain, auto& v) {
+  ossia::apply(
+      [&](auto& source_domain, auto& v) {
     using val_t = std::remove_const_t<std::remove_reference_t<decltype(v)>>;
-    ossia::apply_nonnull([&] (auto& tgt_domain) {
+    ossia::apply_nonnull(
+        [&](auto& tgt_domain) {
       domain_map{idx}(const_cast<val_t&>(v), source_domain, tgt_domain);
-    }, const_cast<domain&>(target_domain).v);
-  }, const_cast<domain&>(source_domain).v, source.v);
+        },
+        const_cast<domain&>(target_domain).v);
+      },
+      const_cast<domain&>(source_domain).v, source.v);
 }
 
 }

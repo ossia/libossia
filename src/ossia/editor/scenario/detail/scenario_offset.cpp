@@ -29,9 +29,9 @@ static void process_timesync_dates(time_sync& t, DateMap& map)
 {
   map.insert(std::make_pair(&t, t.get_date()));
 
-  for (EventPtr& ev : t.get_time_events())
+  for(EventPtr& ev : t.get_time_events())
   {
-    for (IntervalPtr& cst : ev->next_time_intervals())
+    for(IntervalPtr& cst : ev->next_time_intervals())
     {
       if(!cst->graphal)
         process_timesync_dates(cst->get_end_event().get_time_sync(), map);
@@ -40,11 +40,12 @@ static void process_timesync_dates(time_sync& t, DateMap& map)
 }
 
 void process_offset(
-    time_sync& timesync, ossia::time_value offset, past_events_map& pastEvents, ossia::flat_set<ossia::time_event*>& seen_events)
+    time_sync& timesync, ossia::time_value offset, past_events_map& pastEvents,
+    ossia::flat_set<ossia::time_event*>& seen_events)
 {
   time_value date = timesync.get_date();
   auto get_event_status = [](const time_event& event) {
-    switch (event.get_offset_behavior())
+    switch(event.get_offset_behavior())
     {
       case time_event::offset_behavior::EXPRESSION_TRUE:
         return time_event::status::HAPPENED;
@@ -59,7 +60,7 @@ void process_offset(
     }
   };
 
-  for (const std::shared_ptr<ossia::time_event>& ev_ptr : timesync.get_time_events())
+  for(const std::shared_ptr<ossia::time_event>& ev_ptr : timesync.get_time_events())
   {
     if(seen_events.insert(ev_ptr.get()).second == false)
       continue;
@@ -68,11 +69,11 @@ void process_offset(
     time_event::status eventStatus;
 
     // evaluate event status considering its time sync date
-    if (date < offset)
+    if(date < offset)
     {
       eventStatus = get_event_status(event);
     }
-    else if (date == offset)
+    else if(date == offset)
     {
       eventStatus = time_event::status::PENDING;
     }
@@ -82,25 +83,23 @@ void process_offset(
     }
 
     // evaluate event status considering previous time intervals
-    for (const auto& timeInterval : event.previous_time_intervals())
+    for(const auto& timeInterval : event.previous_time_intervals())
     {
       time_value intervalOffset
-          = offset
-            - timeInterval->get_start_event().get_time_sync().get_date();
+          = offset - timeInterval->get_start_event().get_time_sync().get_date();
 
-      if (intervalOffset < Zero)
+      if(intervalOffset < Zero)
       {
         eventStatus = time_event::status::NONE;
       }
-      else if (
-          intervalOffset >= Zero
-          && intervalOffset <= timeInterval->get_max_duration())
+      else if(
+          intervalOffset >= Zero && intervalOffset <= timeInterval->get_max_duration())
       {
         eventStatus = intervalOffset > timeInterval->get_min_duration()
                           ? time_event::status::PENDING
                           : time_event::status::NONE;
       }
-      else if (intervalOffset > timeInterval->get_max_duration())
+      else if(intervalOffset > timeInterval->get_max_duration())
       {
         eventStatus = get_event_status(event);
       }
@@ -110,18 +109,19 @@ void process_offset(
     event.set_status(eventStatus);
 
     // add HAPPENED event to offset event list
-    if (eventStatus == time_event::status::HAPPENED)
+    if(eventStatus == time_event::status::HAPPENED)
     {
-      if (!ev_ptr->get_time_processes().empty())
+      if(!ev_ptr->get_time_processes().empty())
       {
         pastEvents.insert(std::make_pair(date, ev_ptr.get()));
       }
 
       // propagate offset processing to setup all TimeEvents
-      for (const auto& timeInterval : event.next_time_intervals())
+      for(const auto& timeInterval : event.next_time_intervals())
       {
         process_offset(
-            timeInterval->get_end_event().get_time_sync(), offset, pastEvents, seen_events);
+            timeInterval->get_end_event().get_time_sync(), offset, pastEvents,
+            seen_events);
       }
     }
   }
@@ -155,13 +155,13 @@ void scenario::transport_impl(ossia::time_value offset)
   // this;
   // it's only a temporary (1 year later: haha) bugfix for
   // https://github.com/ossia/score/issues/253 .
-  for (auto& elt : time_map)
+  for(auto& elt : time_map)
   {
-    if (elt.second < offset)
+    if(elt.second < offset)
     {
-      for (const EventPtr& ev : elt.first->get_time_events())
+      for(const EventPtr& ev : elt.first->get_time_events())
       {
-        for (const IntervalPtr& cst_ptr : ev->previous_time_intervals())
+        for(const IntervalPtr& cst_ptr : ev->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
@@ -172,21 +172,21 @@ void scenario::transport_impl(ossia::time_value offset)
     }
     else
     {
-      for (const EventPtr& ev_ptr : elt.first->get_time_events())
+      for(const EventPtr& ev_ptr : elt.first->get_time_events())
       {
-        for (const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
+        for(const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto& start_tn = cst.get_start_event().get_time_sync();
           auto start_date_it = time_map.find(&start_tn);
-          if (start_date_it != time_map.end())
+          if(start_date_it != time_map.end())
           {
             auto start_date = start_date_it->second;
-            if (start_date < offset)
+            if(start_date < offset)
             {
               auto dur = cst.get_nominal_duration();
               auto dur_min = cst.get_min_duration();
-              if (dur_min < dur)
+              if(dur_min < dur)
                 cst.set_min_duration(offset - start_date);
             }
           }
@@ -199,26 +199,25 @@ void scenario::transport_impl(ossia::time_value offset)
   process_offset(*m_nodes[0], offset, pastEvents, seen_events);
 
   // offset all TimeIntervals
-  for (const auto& timeInterval : m_intervals)
+  for(const auto& timeInterval : m_intervals)
   {
     ossia::time_interval& cst = *timeInterval;
 
     const auto& sev = cst.get_start_event();
     const auto& stn = sev.get_time_sync();
     const auto start_date = sev.get_time_sync().get_date();
-    const bool all_empty
-        = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
-            return ev->previous_time_intervals().empty();
-          });
+    const bool all_empty = ossia::all_of(stn.get_time_events(), [](const auto& ev) {
+      return ev->previous_time_intervals().empty();
+    });
 
-    if (all_empty && &stn != m_nodes[0].get())
+    if(all_empty && &stn != m_nodes[0].get())
       continue;
 
     // offset TimeInterval's Clock
     const time_value intervalOffset = offset - start_date;
 
-    if (intervalOffset >= Zero && intervalOffset <= cst.get_max_duration()
-        && sev.get_status() == time_event::status::HAPPENED)
+    if(intervalOffset >= Zero && intervalOffset <= cst.get_max_duration()
+       && sev.get_status() == time_event::status::HAPPENED)
     {
       cst.transport(intervalOffset);
       m_runningIntervals.insert(&cst);
@@ -254,13 +253,13 @@ void scenario::offset_impl(ossia::time_value offset)
   // this;
   // it's only a temporary (1 year later: haha) bugfix for
   // https://github.com/ossia/score/issues/253 .
-  for (auto& elt : time_map)
+  for(auto& elt : time_map)
   {
-    if (elt.second < offset)
+    if(elt.second < offset)
     {
-      for (const EventPtr& ev : elt.first->get_time_events())
+      for(const EventPtr& ev : elt.first->get_time_events())
       {
-        for (const IntervalPtr& cst_ptr : ev->previous_time_intervals())
+        for(const IntervalPtr& cst_ptr : ev->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto dur = cst.get_nominal_duration();
@@ -271,21 +270,21 @@ void scenario::offset_impl(ossia::time_value offset)
     }
     else
     {
-      for (const EventPtr& ev_ptr : elt.first->get_time_events())
+      for(const EventPtr& ev_ptr : elt.first->get_time_events())
       {
-        for (const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
+        for(const IntervalPtr& cst_ptr : ev_ptr->previous_time_intervals())
         {
           time_interval& cst = *cst_ptr;
           auto& start_tn = cst.get_start_event().get_time_sync();
           auto start_date_it = time_map.find(&start_tn);
-          if (start_date_it != time_map.end())
+          if(start_date_it != time_map.end())
           {
             auto start_date = start_date_it->second;
-            if (start_date < offset)
+            if(start_date < offset)
             {
               auto dur = cst.get_nominal_duration();
               auto dur_min = cst.get_min_duration();
-              if (dur_min < dur)
+              if(dur_min < dur)
                 cst.set_min_duration(offset - start_date);
             }
           }
@@ -298,11 +297,11 @@ void scenario::offset_impl(ossia::time_value offset)
   process_offset(*m_nodes[0], offset, pastEvents, seen_events);
 
   // build offset state from all ordered past events
-  if (unmuted())
+  if(unmuted())
   {
     ossia::state state;
 
-    for (const auto& e : pastEvents)
+    for(const auto& e : pastEvents)
     {
       for(const auto& proc : e.second->get_time_processes())
       {
@@ -319,7 +318,7 @@ void scenario::offset_impl(ossia::time_value offset)
   }
 
   // offset all TimeIntervals
-  for (const auto& timeInterval : m_intervals)
+  for(const auto& timeInterval : m_intervals)
   {
 
     ossia::time_interval& cst = *timeInterval;
@@ -332,7 +331,7 @@ void scenario::offset_impl(ossia::time_value offset)
       return ev->previous_time_intervals().empty();
     });
 
-    if (all_empty && &stn != m_nodes[0].get())
+    if(all_empty && &stn != m_nodes[0].get())
       continue;
 
     // offset TimeInterval's Clock
@@ -341,7 +340,7 @@ void scenario::offset_impl(ossia::time_value offset)
       // A currently playing interval
       if(sev.get_status() == time_event::status::HAPPENED)
       {
-        //cst.start();
+        // cst.start();
         cst.offset(offset - start_date);
 
         m_runningIntervals.insert(&cst);

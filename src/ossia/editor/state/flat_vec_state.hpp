@@ -1,9 +1,9 @@
 #pragma once
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/editor/state/detail/state_execution_visitor.hpp>
 #include <ossia/editor/state/state_element.hpp>
-#include <ossia/detail/algorithms.hpp>
 
 namespace ossia
 {
@@ -40,7 +40,7 @@ struct flat_vec_state
 
   void launch() noexcept
   {
-    for (auto& state : m_children)
+    for(auto& state : m_children)
     {
       ossia::apply(state_execution_visitor{}, std::move(state));
     }
@@ -106,8 +106,7 @@ struct mono_state
 };
 
 #if defined(OSSIA_SMALL_VECTOR)
-inline ossia::state_element&
-get_state_element(ossia::flat_vec_state::iterator iterator)
+inline ossia::state_element& get_state_element(ossia::flat_vec_state::iterator iterator)
 {
   return *iterator;
 }

@@ -4,9 +4,9 @@
 #undef error
 #undef post
 
-#include <vector>
-#include <string>
 #include <regex>
+#include <string>
+#include <vector>
 
 namespace ossia
 {
@@ -25,14 +25,14 @@ struct router
   void change_pattern(int index, std::string pattern);
 
   static void free(ossia::max_binding::router* x);
-  static void in_anything(ossia::max_binding::router* x, t_symbol* s, long argc, t_atom* argv);
+  static void
+  in_anything(ossia::max_binding::router* x, t_symbol* s, long argc, t_atom* argv);
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
   std::vector<std::regex> m_patterns{};
   std::vector<void*> m_outlets{};
   std::vector<void*> m_inlets{};
-
 };
 } // max namespace
 } // ossia namespace
@@ -41,5 +41,5 @@ struct router
 #pragma mark ossia_router class declaration
 
 extern "C" {
-  void* ossia_router_new(t_symbol* s, long argc, t_atom* argv);
+void* ossia_router_new(t_symbol* s, long argc, t_atom* argv);
 }

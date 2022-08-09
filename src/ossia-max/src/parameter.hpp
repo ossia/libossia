@@ -21,10 +21,10 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max_binding::parameter*);
 
-  static void assist(
-      ossia::max_binding::parameter*, void*, long, long, char*);
-  static t_max_err notify(ossia::max_binding::parameter *x,
-      t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static void assist(ossia::max_binding::parameter*, void*, long, long, char*);
+  static t_max_err notify(
+      ossia::max_binding::parameter* x, t_symbol* s, t_symbol* msg, void* sender,
+      void* data);
   static void loadbang(parameter* x);
 };
 

@@ -6,10 +6,10 @@
 #include <ossia/network/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
+#include <ossia/network/dataspace/detail/dataspace_text.hpp>
 #include <ossia/network/dataspace/detail/list_units.hpp>
 #include <ossia/network/dataspace/detail/make_unit.hpp>
 #include <ossia/network/dataspace/detail/make_value.hpp>
-#include <ossia/network/dataspace/detail/dataspace_text.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
@@ -20,8 +20,7 @@ namespace ossia
 {
 /// Checks ///
 
-bool check_units_convertible(
-    const ossia::unit_t& lhs, const ossia::unit_t& rhs)
+bool check_units_convertible(const ossia::unit_t& lhs, const ossia::unit_t& rhs)
 {
   return lhs.which() == rhs.which();
 }
@@ -45,7 +44,7 @@ ossia::string_view get_unit_accessors(const unit_t& u)
 ossia::string_view get_pretty_unit_text(const unit_t& u)
 {
   using namespace std::literals;
-  if (u)
+  if(u)
   {
     static const detail::unit_pretty_texts map;
     return map.map.at(u);
@@ -58,7 +57,7 @@ ossia::string_view get_pretty_unit_text(const unit_t& u)
 
 unit_t parse_unit(ossia::string_view text, const unit_t& dataspace)
 {
-  if (!text.empty())
+  if(!text.empty())
     return ossia::apply(detail::unit_factory_visitor{text}, dataspace.v);
   return {};
 }
@@ -82,7 +81,7 @@ unit_t parse_pretty_unit(ossia::string_view text)
 
   // TODO find case insensitive
   auto it = map.find(boost::to_lower_copy(std::string(text)));
-  if (it != map.end())
+  if(it != map.end())
     return it->second;
   else
     return {};
@@ -128,7 +127,7 @@ struct unit_accessor_helper<Unit, detail::enable_if_multidimensional<Unit>>
   char operator()(uint8_t n)
   {
     const auto& a = Unit::array_parameters();
-    if (n < a.size())
+    if(n < a.size())
       return a[n];
     return 0;
   }
@@ -137,17 +136,17 @@ struct unit_accessor_helper<Unit, detail::enable_if_multidimensional<Unit>>
 
 ossia::domain get_unit_default_domain(const ossia::unit_t& unit)
 {
-  if (unit)
+  if(unit)
   {
     return ossia::apply_nonnull(
         [=](const auto& d) {
-          if (d)
-          {
-            return ossia::apply_nonnull(
-                [=](const auto& u) -> ossia::domain { return u.domain(); }, d);
-          }
+      if(d)
+      {
+        return ossia::apply_nonnull(
+            [=](const auto& u) -> ossia::domain { return u.domain(); }, d);
+      }
 
-          return ossia::domain{};
+      return ossia::domain{};
         },
         unit.v);
   }
@@ -157,21 +156,21 @@ ossia::domain get_unit_default_domain(const ossia::unit_t& unit)
 
 char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
 {
-  if (unit)
+  if(unit)
   {
     return ossia::apply_nonnull(
         [=](const auto& d) {
-          if (d)
-          {
-            return ossia::apply_nonnull(
-                [=](const auto& u) {
-                  return detail::unit_accessor_helper<std::remove_const_t<
-                      std::remove_reference_t<decltype(u)>>>{}(n);
-                },
-                d);
-          }
+      if(d)
+      {
+        return ossia::apply_nonnull(
+            [=](const auto& u) {
+          return detail::unit_accessor_helper<
+              std::remove_const_t<std::remove_reference_t<decltype(u)>>>{}(n);
+            },
+            d);
+      }
 
-          return '\0';
+      return '\0';
         },
         unit.v);
   }
@@ -182,12 +181,12 @@ char get_unit_accessor(const ossia::unit_t& unit, uint8_t n)
 /// Convert ///
 value_with_unit make_value(const ossia::value& v, const ossia::unit_t& u)
 {
-  if (!u || !v.valid())
+  if(!u || !v.valid())
     return v;
 
   return ossia::apply_nonnull(
       [&](const auto& dataspace) -> ossia::value_with_unit {
-        if (!dataspace)
+        if(!dataspace)
           return v;
         return ossia::apply(make_value_with_unit_visitor{}, v.v, dataspace);
       },
@@ -202,19 +201,18 @@ unit_t make_unit(uint64_t dataspace, uint64_t unit)
 
 val_type matching_type(const unit_t& u)
 {
-  if (!u)
+  if(!u)
     return ossia::val_type::IMPULSE;
 
   return ossia::apply_nonnull(
       [&](const auto& dataspace) -> ossia::val_type {
-        if (!dataspace)
+        if(!dataspace)
           return ossia::val_type::IMPULSE;
 
         return ossia::apply_nonnull(
             [](auto unit) -> ossia::val_type {
               using unit_t = decltype(unit);
-              return ossia::value_trait<
-                  typename unit_t::value_type>::ossia_enum;
+              return ossia::value_trait<typename unit_t::value_type>::ossia_enum;
             },
             dataspace);
       },
@@ -222,9 +220,9 @@ val_type matching_type(const unit_t& u)
 }
 value_with_unit convert(const value_with_unit& v, const unit_t& t)
 {
-  if (v && t)
+  if(v && t)
   {
-    if (auto value = v.target<ossia::value>())
+    if(auto value = v.target<ossia::value>())
       return make_value(*value, t);
     else
       return ossia::apply(detail::convert_unit_visitor{}, v.v, t.v);
@@ -247,7 +245,8 @@ unit_t to_unit(const value_with_unit& v)
 
 std::string to_pretty_string(const value_with_unit& v)
 {
-  return fmt::format("{} {}", value_to_pretty_string(to_value(v)), get_pretty_unit_text(to_unit(v)));
+  return fmt::format(
+      "{} {}", value_to_pretty_string(to_value(v)), get_pretty_unit_text(to_unit(v)));
 }
 
 /// Merge ///
@@ -266,7 +265,7 @@ struct merger_impl
   template <typename Dataspace_T>
   OSSIA_INLINE ossia::value_with_unit operator()(const Dataspace_T& ds)
   {
-    if (ds && val.v)
+    if(ds && val.v)
       return ossia::apply(detail::value_merger{idx}, ds, val.v);
     return {};
   }
@@ -301,18 +300,17 @@ struct vec_merger_impl
   template <typename Dataspace_T>
   OSSIA_INLINE ossia::value_with_unit operator()(const Dataspace_T& ds)
   {
-    if (ds)
+    if(ds)
     {
       return ossia::apply_nonnull(vec_merger_impl_helper<N>{val, idx}, ds);
     }
     return {};
   }
 };
-ossia::value_with_unit merge(
-    const value_with_unit& vu, const ossia::value& val,
-    ossia::destination_index idx)
+ossia::value_with_unit
+merge(const value_with_unit& vu, const ossia::value& val, ossia::destination_index idx)
 {
-  if (vu && val.valid())
+  if(vu && val.valid())
   {
     return ossia::apply_nonnull(merger_impl{val, idx}, vu.v);
   }
@@ -323,7 +321,7 @@ ossia::value_with_unit merge(
 ossia::value_with_unit
 merge(const value_with_unit& vu, const ossia::vec2f& val, std::bitset<2> idx)
 {
-  if (vu)
+  if(vu)
   {
     return ossia::apply_nonnull(vec_merger_impl<2>{val, idx}, vu.v);
   }
@@ -334,7 +332,7 @@ merge(const value_with_unit& vu, const ossia::vec2f& val, std::bitset<2> idx)
 ossia::value_with_unit
 merge(const value_with_unit& vu, const ossia::vec3f& val, std::bitset<3> idx)
 {
-  if (vu)
+  if(vu)
   {
     return ossia::apply_nonnull(vec_merger_impl<3>{val, idx}, vu.v);
   }
@@ -345,7 +343,7 @@ merge(const value_with_unit& vu, const ossia::vec3f& val, std::bitset<3> idx)
 ossia::value_with_unit
 merge(const value_with_unit& vu, const ossia::vec4f& val, std::bitset<4> idx)
 {
-  if (vu)
+  if(vu)
   {
     return ossia::apply_nonnull(vec_merger_impl<4>{val, idx}, vu.v);
   }
@@ -361,20 +359,12 @@ ossia::value convert(
       ossia::convert(ossia::make_value(value, source_unit), destination_unit));
 }
 
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::color_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::distance_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::position_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::speed_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::orientation_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::angle_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::gain_u);
-template OSSIA_EXPORT ossia::unit_t
-    parse_unit(ossia::string_view, ossia::timing_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::color_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::distance_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::position_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::speed_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::orientation_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::angle_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::gain_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::timing_u);
 }

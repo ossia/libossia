@@ -20,8 +20,7 @@ struct dummy
 };
 }
 
-OSSIA_EXPORT std::string
-to_pretty_string(const ossia::destination_index& index);
+OSSIA_EXPORT std::string to_pretty_string(const ossia::destination_index& index);
 
 class value;
 
@@ -45,7 +44,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     float m_value0;
 
     int m_value1;
@@ -67,7 +67,8 @@ public:
     char m_value9;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -165,52 +166,67 @@ public:
   // Construction
   template <typename T>
   value(T*) = delete;
-  value(const char* txt) : v{std::string(txt)}
+  value(const char* txt)
+      : v{std::string(txt)}
   {
   }
 
-  value(impulse val) noexcept : v{val}
+  value(impulse val) noexcept
+      : v{val}
   {
   }
 
-  value(bool val) noexcept : v{val}
+  value(bool val) noexcept
+      : v{val}
   {
   }
-  value(int val) noexcept : v{val}
+  value(int val) noexcept
+      : v{val}
   {
   }
-  value(long val) noexcept : v{(int)val}
+  value(long val) noexcept
+      : v{(int)val}
   {
   }
-  value(char val) noexcept : v{val}
+  value(char val) noexcept
+      : v{val}
   {
   }
-  value(float val) noexcept : v{val}
+  value(float val) noexcept
+      : v{val}
   {
   }
-  value(double val) noexcept : v{(float)val}
+  value(double val) noexcept
+      : v{(float)val}
   {
   }
-  value(const std::string& val) noexcept : v{val}
+  value(const std::string& val) noexcept
+      : v{val}
   {
   }
-  value(const std::vector<ossia::value>& val) noexcept : v(val)
+  value(const std::vector<ossia::value>& val) noexcept
+      : v(val)
   {
   }
-  value(std::array<float, 2> val) noexcept : v(val)
+  value(std::array<float, 2> val) noexcept
+      : v(val)
   {
   }
-  value(std::array<float, 3> val) noexcept : v(val)
+  value(std::array<float, 3> val) noexcept
+      : v(val)
   {
   }
-  value(std::array<float, 4> val) noexcept : v(val)
+  value(std::array<float, 4> val) noexcept
+      : v(val)
   {
   }
 
-  explicit value(std::string&& val) noexcept : v(std::move(val))
+  explicit value(std::string&& val) noexcept
+      : v(std::move(val))
   {
   }
-  explicit value(std::vector<ossia::value>&& val) noexcept : v(std::move(val))
+  explicit value(std::vector<ossia::value>&& val) noexcept
+      : v(std::move(val))
   {
   }
 
@@ -299,10 +315,12 @@ public:
   {
   }
   ~value() noexcept;
-  value(const value& other) noexcept : v(other.v)
+  value(const value& other) noexcept
+      : v(other.v)
   {
   }
-  value(value&& other) noexcept : v(std::move(other.v))
+  value(value&& other) noexcept
+      : v(std::move(other.v))
   {
   }
   value& operator=(const value& other) noexcept
@@ -357,7 +375,7 @@ public:
   ossia::val_type get_type() const
   {
     auto t = v.which();
-    if (t == v.npos)
+    if(t == v.npos)
     {
       return ossia::val_type::NONE;
     }
@@ -387,24 +405,24 @@ public:
   friend OSSIA_EXPORT bool operator>=(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<(const value& lhs, const value& rhs);
   friend OSSIA_EXPORT bool operator<=(const value& lhs, const value& rhs);
-/*
-  friend std::ostream& operator<<(std::ostream& os, const ossia::value& c)
-  {
-    // TODO OPTIMIZEME
-    return os << value_to_pretty_string(c);
-  }
+  /*
+    friend std::ostream& operator<<(std::ostream& os, const ossia::value& c)
+    {
+      // TODO OPTIMIZEME
+      return os << value_to_pretty_string(c);
+    }
 
-  friend std::istream& operator>>(std::istream& is, const ossia::value& c)
-  {
-    // TODO
-    return is;
-  }
-  */
+    friend std::istream& operator>>(std::istream& is, const ossia::value& c)
+    {
+      // TODO
+      return is;
+    }
+    */
 };
 
 inline ossia::value init_value(ossia::val_type type)
 {
-  switch (type)
+  switch(type)
   {
     case val_type::IMPULSE:
       return ossia::impulse{};
@@ -451,11 +469,10 @@ inline ossia::value init_value(ossia::val_type type)
  * @return The value if it is found, else nothing.
  */
 OSSIA_EXPORT
-ossia::value get_value_at_index(
-    const ossia::value& val, const ossia::destination_index& idx);
+ossia::value
+get_value_at_index(const ossia::value& val, const ossia::destination_index& idx);
 
 #include <ossia/network/value/value_variant_impl.hpp>
-
 
 template <typename Visitor>
 inline auto value::apply(Visitor&& vis) -> decltype(auto)
@@ -474,8 +491,7 @@ namespace std
 {
 OSSIA_EXPORT std::ostream&
 operator<<(std::ostream&, const std::vector<std::string>& list);
-OSSIA_EXPORT std::istream&
-operator>>(std::istream&, std::vector<std::string>& list);
+OSSIA_EXPORT std::istream& operator>>(std::istream&, std::vector<std::string>& list);
 }
 /*
 extern template class std::vector<ossia::value>;

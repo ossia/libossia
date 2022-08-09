@@ -1,26 +1,27 @@
 #pragma once
 
+#include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/variant.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/device_parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/detail/hash_map.hpp>
-#include <ossia/detail/variant.hpp>
+
 #include <concurrentqueue.h>
+
 #include <vector>
 
-typedef void *mpr_graph;
-typedef void *mpr_device;
-typedef void *mpr_signal;
-typedef void *mpr_link;
-typedef void *mpr_map;
-typedef void *mpr_slot;
-typedef void *mpr_network;
-typedef void *mpr_database;
-typedef void *mpr_queue;
+typedef void* mpr_graph;
+typedef void* mpr_device;
+typedef void* mpr_signal;
+typedef void* mpr_link;
+typedef void* mpr_map;
+typedef void* mpr_slot;
+typedef void* mpr_network;
+typedef void* mpr_database;
+typedef void* mpr_queue;
 typedef int mpr_signal_group;
-
 
 namespace ossia::net
 {
@@ -45,11 +46,10 @@ public:
   bool update(ossia::net::node_base&) override;
   void stop() override;
 
-
 private:
-  template<typename OssiaType, typename LibmapperType>
+  template <typename OssiaType, typename LibmapperType>
   void create_1d_parameter(const parameter_base& p);
-  template<std::size_t N>
+  template <std::size_t N>
   void create_array_parameter(const parameter_base& p);
   void create_vector_parameter(const parameter_base& p);
   friend struct libmapper_create_param;
@@ -60,8 +60,7 @@ private:
   void on_parameterCreated(const ossia::net::parameter_base&);
   void on_parameterRemoved(const ossia::net::parameter_base&);
   void on_parameterChanged(const ossia::net::parameter_base&);
-  void
-  on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   void execThread();
@@ -98,7 +97,6 @@ private:
   std::atomic_int m_editSemaphore{};
 };
 
-
 class OSSIA_EXPORT libmapper_client_protocol final : public ossia::net::protocol_base
 {
 public:
@@ -121,8 +119,8 @@ public:
   void stop() override;
 
   void poll(int);
-private:
 
+private:
   ossia::net::device_base* m_device{};
 
   std::string m_mapper_dev_name;
@@ -132,6 +130,5 @@ private:
 
   ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
   ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
-
 };
 }

@@ -1,9 +1,11 @@
 #include "qml_scenario.hpp"
-#include <ossia-qt/score/qml_interval.hpp>
-#include <ossia-qt/score/qml_cond.hpp>
-#include <ossia-qt/score/qml_sync.hpp>
-#include <ossia-qt/score/qml_exec.hpp>
+
 #include <ossia/editor/scenario/time_event.hpp>
+
+#include <ossia-qt/score/qml_cond.hpp>
+#include <ossia-qt/score/qml_exec.hpp>
+#include <ossia-qt/score/qml_interval.hpp>
+#include <ossia-qt/score/qml_sync.hpp>
 
 namespace ossia
 {
@@ -11,7 +13,7 @@ namespace qt
 {
 
 qml_scenario::qml_scenario(QQuickItem* parent)
-  : qml_process{parent}
+    : qml_process{parent}
 {
   m_impl = std::make_shared<ossia::scenario>();
   reset();
@@ -19,7 +21,6 @@ qml_scenario::qml_scenario(QQuickItem* parent)
 
 qml_scenario::~qml_scenario()
 {
-
 }
 
 void qml_scenario::registerInterval(qml_interval* itv)
@@ -39,7 +40,7 @@ void qml_scenario::registerInterval(qml_interval* itv)
 
     if(auto iv = itv->interval())
     {
-      qml_exec::get(this)->submitCommand([mpl=m_impl,iv] {
+      qml_exec::get(this)->submitCommand([mpl = m_impl, iv] {
 
       });
     }
@@ -54,7 +55,7 @@ void qml_scenario::unregisterInterval(qml_interval* itv)
   {
     if(auto iv = itv->interval())
     {
-      qml_exec::get(this)->submitCommand([impl=m_impl,iv] {
+      qml_exec::get(this)->submitCommand([impl = m_impl, iv] {
         ossia::remove_erase(iv->get_start_event().next_time_intervals(), iv);
         ossia::remove_erase(iv->get_end_event().previous_time_intervals(), iv);
         impl->remove_time_interval(iv);
@@ -89,7 +90,8 @@ void qml_scenario::setup()
   m_impl = std::make_shared<ossia::scenario>();
   if(!m_startSync)
     return;
-  for(qml_sync* sync : this->findChildren<qml_sync*>(QString{}, Qt::FindDirectChildrenOnly))
+  for(qml_sync* sync :
+      this->findChildren<qml_sync*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     if(sync != m_startSync)
     {
@@ -104,7 +106,8 @@ void qml_scenario::setup()
     }
   }
 
-  for(qml_interval* ival: this->findChildren<qml_interval*>(QString{}, Qt::FindDirectChildrenOnly))
+  for(qml_interval* ival :
+      this->findChildren<qml_interval*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     ival->setup();
     if(auto iv = ival->interval())

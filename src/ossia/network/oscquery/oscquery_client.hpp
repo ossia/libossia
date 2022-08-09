@@ -1,10 +1,10 @@
 #pragma once
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
 
 namespace osc
@@ -44,7 +44,7 @@ public:
 
   void start_listen(std::string path, ossia::net::parameter_base* addr)
   {
-    if (addr)
+    if(addr)
     {
       std::lock_guard lck{listeningMutex};
       listening.insert(std::make_pair(std::move(path), addr));
@@ -62,7 +62,8 @@ public:
     return !connection.expired() && connection.lock() == h.lock();
   }
 
-  void open_osc_sender(const ossia::oscquery::oscquery_server_protocol& proto, uint16_t port)
+  void
+  open_osc_sender(const ossia::oscquery::oscquery_server_protocol& proto, uint16_t port)
   {
     sender = std::make_unique<osc::sender<oscquery::osc_outbound_visitor>>(
         proto.get_logger(), client_ip, port);

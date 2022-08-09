@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/common/device_parameter.hpp>
+
 #include <cstdint>
 
 struct wiimote_t;
@@ -27,8 +28,7 @@ class led_parameter : public device_parameter
 
 public:
   led_parameter(
-      ossia::net::node_base& node, struct wiimote_t* wiimote,
-      const uint8_t led);
+      ossia::net::node_base& node, struct wiimote_t* wiimote, const uint8_t led);
 
   ~led_parameter();
 

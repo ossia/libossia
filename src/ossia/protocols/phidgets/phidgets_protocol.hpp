@@ -1,11 +1,12 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/phidgets/phidgets_parameter_data.hpp>
 
 #include <readerwriterqueue.h>
-#include <ossia/detail/config.hpp>
 
 namespace ossia
 {

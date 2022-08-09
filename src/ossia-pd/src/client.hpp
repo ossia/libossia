@@ -1,8 +1,9 @@
 #pragma once
-#include <ossia-pd/src/device_base.hpp>
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
+
+#include <ossia-pd/src/device_base.hpp>
 
 namespace ossia
 {
@@ -49,8 +50,14 @@ public:
 
   bool m_zeroconf{true}; // true if we should lookup for device name with zeroconf
 
-  bool is_zeroconf() const { return m_zeroconf; }
-  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
+  bool is_zeroconf() const
+  {
+    return m_zeroconf;
+  }
+  std::string get_name() const
+  {
+    return m_name ? std::string(m_name->s_name) : "";
+  }
 
   static void get_mess_cb(client* x, t_symbol* s);
 
@@ -64,7 +71,6 @@ public:
 
   int m_argc{};
   t_atom* m_argv{};
-
 };
 }
 } // namespace

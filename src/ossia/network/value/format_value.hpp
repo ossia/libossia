@@ -1,10 +1,12 @@
 #pragma once
-#include <ossia/detail/fmt.hpp>
-#include <fmt/ranges.h>
-#include <ossia/network/value/value.hpp>
 #include <ossia/detail/flat_set.hpp>
+#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/optional.hpp>
+#include <ossia/network/value/value.hpp>
+
 #include <boost/algorithm/string/replace.hpp>
+
+#include <fmt/ranges.h>
 
 namespace ossia
 {
@@ -33,10 +35,13 @@ template <typename T>
 struct formatter<std::optional<T>>
 {
   template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
 
   template <typename FormatContext>
-  auto format(const std::optional<T>& n, FormatContext &ctx) const
+  auto format(const std::optional<T>& n, FormatContext& ctx) const
   {
     if(n)
     {
@@ -53,10 +58,14 @@ template <>
 struct formatter<ossia::value>
 {
   template <typename ParseContext>
-  constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+  constexpr auto parse(ParseContext& ctx)
+  {
+    return ctx.begin();
+  }
 
   template <typename FormatContext>
-  auto format(const ossia::value& v, FormatContext &ctx) const {
+  auto format(const ossia::value& v, FormatContext& ctx) const
+  {
     return v.apply(ossia::value_prettyprint_visitor{ctx});
   }
 };
@@ -112,7 +121,8 @@ inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec4f vec) const
   return fmt::format_to(ctx.out(), "vec4f: {}", vec);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(const std::vector<value>& t) const
+inline fmt_ctx::iterator
+value_prettyprint_visitor::operator()(const std::vector<value>& t) const
 {
   return fmt::format_to(ctx.out(), "list: {}", t);
 }

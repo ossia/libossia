@@ -1,13 +1,13 @@
 #pragma once
-#include <ossia/detail/nullable_variant.hpp>
-#include <ossia/dataflow/data.hpp>
-#include <ossia/detail/algorithms.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/data.hpp>
 #include <ossia/dataflow/geometry_port.hpp>
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/dataflow/typed_value.hpp>
+#include <ossia/dataflow/value_port.hpp>
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/nullable_variant.hpp>
+#include <ossia/network/base/parameter.hpp>
 namespace ossia
 {
 
@@ -61,9 +61,13 @@ struct data_size
   }
 
   std::size_t operator()(const ossia::monostate&) const
-  { return 0; }
+  {
+    return 0;
+  }
   std::size_t operator()() const
-  { return 0; }
+  {
+    return 0;
+  }
 };
 
 struct move_data
@@ -97,18 +101,17 @@ struct move_data
 struct copy_data
 {
   /// Value ///
-  void operator()(
-      const value_vector<std::pair<ossia::typed_value, int>>& out,
-      value_port& in)
+  void
+  operator()(const value_vector<std::pair<ossia::typed_value, int>>& out, value_port& in)
   {
     // Called in local_pull_visitor
-    for (auto& val : out)
+    for(auto& val : out)
       in.add_local_value(val.first);
   }
   void operator()(const value_vector<ossia::typed_value>& out, value_port& in)
   {
     // Called in copy_data_pos, when copying from a delay line to a port
-    for (auto& val : out)
+    for(auto& val : out)
       in.add_local_value(val);
   }
 
@@ -137,7 +140,7 @@ struct copy_data
     // Called in env_writer, when copying from a node to a delay line
     value_vector<ossia::typed_value> vec;
     vec.reserve(out.get_data().size());
-    for (const ossia::timed_value& val : out.get_data())
+    for(const ossia::timed_value& val : out.get_data())
     {
       vec.emplace_back(val, out.index, out.type);
     }
@@ -167,7 +170,7 @@ struct copy_data
   void operator()(const value_vector<libremidi::message>& out, midi_port& in)
   {
     // Called in copy_data_pos, when copying from a delay line to a port
-    for (const auto& data : out)
+    for(const auto& data : out)
       in.messages.push_back(data);
   }
 
@@ -187,7 +190,7 @@ struct copy_data
 
   void operator()(const geometry& out, geometry_port& in)
   {
-    // Called in copy_data_pos below    
+    // Called in copy_data_pos below
     if(out.dirty)
       in.geometry = out;
   }
@@ -211,7 +214,7 @@ struct copy_data_pos
 
   void operator()(const value_delay_line& out, value_port& in)
   {
-    if (pos < out.data.size())
+    if(pos < out.data.size())
     {
       copy_data{}(out.data[pos], in);
     }
@@ -219,7 +222,7 @@ struct copy_data_pos
 
   void operator()(const audio_delay_line& out, audio_port& in)
   {
-    if (pos < out.samples.size())
+    if(pos < out.samples.size())
     {
       mix(out.samples[pos], in.get());
     }
@@ -227,14 +230,14 @@ struct copy_data_pos
 
   void operator()(const midi_delay_line& out, midi_port& in)
   {
-    if (pos < out.messages.size())
+    if(pos < out.messages.size())
     {
       copy_data{}(out.messages[pos], in);
     }
   }
   void operator()(const geometry_delay_line& out, geometry_port& in)
   {
-    if (pos < out.geometries.size())
+    if(pos < out.geometries.size())
     {
       copy_data{}(out.geometries[pos], in);
     }

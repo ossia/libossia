@@ -23,7 +23,7 @@ bool state::empty() const
 
 void state::launch()
 {
-  for (auto& state : m_children)
+  for(auto& state : m_children)
   {
     ossia::apply(state_execution_visitor{}, state);
   }
@@ -31,13 +31,13 @@ void state::launch()
 
 void state::add(const state_element& e)
 {
-  if (e)
+  if(e)
     m_children.push_back(e);
 }
 
 void state::add(state_element&& e)
 {
-  if (e)
+  if(e)
     m_children.push_back(std::move(e));
 }
 
@@ -83,19 +83,16 @@ void flatten_and_filter(ossia::state& state, const state_element& element)
 
 void flatten_and_filter(ossia::state& state, state_element&& element)
 {
-  ossia::apply(
-      state_flatten_visitor<ossia::state, false>{state}, std::move(element));
+  ossia::apply(state_flatten_visitor<ossia::state, false>{state}, std::move(element));
 }
 
-void merge_flatten_and_filter(
-    ossia::state& state, const state_element& element)
+void merge_flatten_and_filter(ossia::state& state, const state_element& element)
 {
   ossia::apply(state_flatten_visitor<ossia::state, true>{state}, element);
 }
 
 void merge_flatten_and_filter(ossia::state& state, state_element&& element)
 {
-  ossia::apply(
-      state_flatten_visitor<ossia::state, true>{state}, std::move(element));
+  ossia::apply(state_flatten_visitor<ossia::state, true>{state}, std::move(element));
 }
 }

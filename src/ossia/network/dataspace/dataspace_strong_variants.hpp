@@ -4,13 +4,15 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::degree m_value0;
 
     ossia::radian m_value1;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -27,7 +29,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -58,44 +60,49 @@ public:
 
   template <typename T>
   static Type matching_type();
-  angle() : m_type{Npos}
+  angle()
+      : m_type{Npos}
   {
   }
   ~angle()
   {
     destruct_impl();
   }
-  angle(ossia::degree v) : m_type{Type0}
+  angle(ossia::degree v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::degree{v};
+    new(&m_impl.m_value0) ossia::degree{v};
   }
-  angle(ossia::radian v) : m_type{Type1}
+  angle(ossia::radian v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::radian{v};
+    new(&m_impl.m_value1) ossia::radian{v};
   }
-  angle(const angle& other) : m_type{other.m_type}
+  angle(const angle& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::degree{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::degree{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::radian{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::radian{other.m_impl.m_value1};
         break;
       default:
         break;
     }
   }
-  angle(angle&& other) : m_type{other.m_type}
+  angle(angle&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::degree{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::degree{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::radian{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::radian{std::move(other.m_impl.m_value1)};
         break;
       default:
         break;
@@ -105,13 +112,13 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::degree{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::degree{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::radian{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::radian{other.m_impl.m_value1};
         break;
       default:
         break;
@@ -122,13 +129,13 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::degree{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::degree{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::radian{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::radian{std::move(other.m_impl.m_value1)};
         break;
       default:
         break;
@@ -139,63 +146,63 @@ public:
 template <>
 inline const ossia::degree* angle::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::radian* angle::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::degree* angle::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::radian* angle::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::degree& angle::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("angle: bad type");
 }
 template <>
 inline const ossia::radian& angle::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("angle: bad type");
 }
 template <>
 inline ossia::degree& angle::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("angle: bad type");
 }
 template <>
 inline ossia::radian& angle::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("angle: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const angle& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -208,7 +215,7 @@ auto apply_nonnull(Visitor&& functor, const angle& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, angle& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -221,7 +228,7 @@ auto apply_nonnull(Visitor&& functor, angle& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, angle&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -234,7 +241,7 @@ auto apply_nonnull(Visitor&& functor, angle&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const angle& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -247,7 +254,7 @@ auto apply(Visitor&& functor, const angle& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, angle& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -260,7 +267,7 @@ auto apply(Visitor&& functor, angle& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, angle&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case angle::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -272,9 +279,9 @@ auto apply(Visitor&& functor, angle&& var)
 }
 inline bool operator==(const angle& lhs, const angle& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case angle::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -288,9 +295,9 @@ inline bool operator==(const angle& lhs, const angle& rhs)
 }
 inline bool operator!=(const angle& lhs, const angle& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case angle::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -339,7 +346,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::argb m_value0;
 
     ossia::rgba m_value1;
@@ -359,7 +367,8 @@ public:
     ossia::xyz m_value8;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -383,7 +392,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -414,114 +423,126 @@ public:
 
   template <typename T>
   static Type matching_type();
-  color() : m_type{Npos}
+  color()
+      : m_type{Npos}
   {
   }
   ~color()
   {
     destruct_impl();
   }
-  color(ossia::argb v) : m_type{Type0}
+  color(ossia::argb v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::argb{v};
+    new(&m_impl.m_value0) ossia::argb{v};
   }
-  color(ossia::rgba v) : m_type{Type1}
+  color(ossia::rgba v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::rgba{v};
+    new(&m_impl.m_value1) ossia::rgba{v};
   }
-  color(ossia::rgb v) : m_type{Type2}
+  color(ossia::rgb v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::rgb{v};
+    new(&m_impl.m_value2) ossia::rgb{v};
   }
-  color(ossia::bgr v) : m_type{Type3}
+  color(ossia::bgr v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::bgr{v};
+    new(&m_impl.m_value3) ossia::bgr{v};
   }
-  color(ossia::argb8 v) : m_type{Type4}
+  color(ossia::argb8 v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::argb8{v};
+    new(&m_impl.m_value4) ossia::argb8{v};
   }
-  color(ossia::rgba8 v) : m_type{Type5}
+  color(ossia::rgba8 v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::rgba8{v};
+    new(&m_impl.m_value5) ossia::rgba8{v};
   }
-  color(ossia::hsv v) : m_type{Type6}
+  color(ossia::hsv v)
+      : m_type{Type6}
   {
-    new (&m_impl.m_value6) ossia::hsv{v};
+    new(&m_impl.m_value6) ossia::hsv{v};
   }
-  color(ossia::cmy8 v) : m_type{Type7}
+  color(ossia::cmy8 v)
+      : m_type{Type7}
   {
-    new (&m_impl.m_value7) ossia::cmy8{v};
+    new(&m_impl.m_value7) ossia::cmy8{v};
   }
-  color(ossia::xyz v) : m_type{Type8}
+  color(ossia::xyz v)
+      : m_type{Type8}
   {
-    new (&m_impl.m_value8) ossia::xyz{v};
+    new(&m_impl.m_value8) ossia::xyz{v};
   }
-  color(const color& other) : m_type{other.m_type}
+  color(const color& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::argb{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::argb{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::rgba{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::rgba{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::rgb{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::rgb{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::bgr{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::bgr{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::argb8{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::argb8{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::rgba8{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::rgba8{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::hsv{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::hsv{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cmy8{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::cmy8{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::xyz{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::xyz{other.m_impl.m_value8};
         break;
       default:
         break;
     }
   }
-  color(color&& other) : m_type{other.m_type}
+  color(color&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::argb{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::argb{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::rgba{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::rgba{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::rgb{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::rgb{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::bgr{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::bgr{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::argb8{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::argb8{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::rgba8{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::rgba8{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::hsv{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::hsv{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cmy8{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::cmy8{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::xyz{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::xyz{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -531,34 +552,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::argb{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::argb{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::rgba{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::rgba{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::rgb{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::rgb{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::bgr{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::bgr{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::argb8{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::argb8{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::rgba8{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::rgba8{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::hsv{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::hsv{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cmy8{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::cmy8{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::xyz{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::xyz{other.m_impl.m_value8};
         break;
       default:
         break;
@@ -569,34 +590,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::argb{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::argb{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::rgba{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::rgba{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::rgb{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::rgb{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::bgr{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::bgr{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::argb8{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::argb8{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::rgba8{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::rgba8{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::hsv{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::hsv{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cmy8{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::cmy8{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::xyz{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::xyz{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -607,259 +628,259 @@ public:
 template <>
 inline const ossia::argb* color::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::rgba* color::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::rgb* color::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::bgr* color::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::argb8* color::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::rgba8* color::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::hsv* color::target() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline const ossia::cmy8* color::target() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline const ossia::xyz* color::target() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline ossia::argb* color::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::rgba* color::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::rgb* color::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::bgr* color::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::argb8* color::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::rgba8* color::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::hsv* color::target()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline ossia::cmy8* color::target()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline ossia::xyz* color::target()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline const ossia::argb& color::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::rgba& color::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::rgb& color::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::bgr& color::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::argb8& color::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::rgba8& color::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::hsv& color::get() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::cmy8& color::get() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline const ossia::xyz& color::get() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::argb& color::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::rgba& color::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::rgb& color::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::bgr& color::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::argb8& color::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::rgba8& color::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::hsv& color::get()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::cmy8& color::get()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("color: bad type");
 }
 template <>
 inline ossia::xyz& color::get()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("color: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const color& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -886,7 +907,7 @@ auto apply_nonnull(Visitor&& functor, const color& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, color& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -913,7 +934,7 @@ auto apply_nonnull(Visitor&& functor, color& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, color&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -940,7 +961,7 @@ auto apply_nonnull(Visitor&& functor, color&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const color& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -967,7 +988,7 @@ auto apply(Visitor&& functor, const color& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, color& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -994,7 +1015,7 @@ auto apply(Visitor&& functor, color& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, color&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case color::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -1020,9 +1041,9 @@ auto apply(Visitor&& functor, color&& var)
 }
 inline bool operator==(const color& lhs, const color& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case color::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -1050,9 +1071,9 @@ inline bool operator==(const color& lhs, const color& rhs)
 }
 inline bool operator!=(const color& lhs, const color& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case color::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -1227,7 +1248,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::meter m_value0;
 
     ossia::kilometer m_value1;
@@ -1251,7 +1273,8 @@ public:
     ossia::mile m_value10;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -1277,7 +1300,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -1308,141 +1331,148 @@ public:
 
   template <typename T>
   static Type matching_type();
-  distance() : m_type{Npos}
+  distance()
+      : m_type{Npos}
   {
   }
   ~distance()
   {
     destruct_impl();
   }
-  distance(ossia::meter v) : m_type{Type0}
+  distance(ossia::meter v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::meter{v};
+    new(&m_impl.m_value0) ossia::meter{v};
   }
-  distance(ossia::kilometer v) : m_type{Type1}
+  distance(ossia::kilometer v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::kilometer{v};
+    new(&m_impl.m_value1) ossia::kilometer{v};
   }
-  distance(ossia::decimeter v) : m_type{Type2}
+  distance(ossia::decimeter v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::decimeter{v};
+    new(&m_impl.m_value2) ossia::decimeter{v};
   }
-  distance(ossia::centimeter v) : m_type{Type3}
+  distance(ossia::centimeter v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::centimeter{v};
+    new(&m_impl.m_value3) ossia::centimeter{v};
   }
-  distance(ossia::millimeter v) : m_type{Type4}
+  distance(ossia::millimeter v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::millimeter{v};
+    new(&m_impl.m_value4) ossia::millimeter{v};
   }
-  distance(ossia::micrometer v) : m_type{Type5}
+  distance(ossia::micrometer v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::micrometer{v};
+    new(&m_impl.m_value5) ossia::micrometer{v};
   }
-  distance(ossia::nanometer v) : m_type{Type6}
+  distance(ossia::nanometer v)
+      : m_type{Type6}
   {
-    new (&m_impl.m_value6) ossia::nanometer{v};
+    new(&m_impl.m_value6) ossia::nanometer{v};
   }
-  distance(ossia::picometer v) : m_type{Type7}
+  distance(ossia::picometer v)
+      : m_type{Type7}
   {
-    new (&m_impl.m_value7) ossia::picometer{v};
+    new(&m_impl.m_value7) ossia::picometer{v};
   }
-  distance(ossia::inch v) : m_type{Type8}
+  distance(ossia::inch v)
+      : m_type{Type8}
   {
-    new (&m_impl.m_value8) ossia::inch{v};
+    new(&m_impl.m_value8) ossia::inch{v};
   }
-  distance(ossia::foot v) : m_type{Type9}
+  distance(ossia::foot v)
+      : m_type{Type9}
   {
-    new (&m_impl.m_value9) ossia::foot{v};
+    new(&m_impl.m_value9) ossia::foot{v};
   }
-  distance(ossia::mile v) : m_type{Type10}
+  distance(ossia::mile v)
+      : m_type{Type10}
   {
-    new (&m_impl.m_value10) ossia::mile{v};
+    new(&m_impl.m_value10) ossia::mile{v};
   }
-  distance(const distance& other) : m_type{other.m_type}
+  distance(const distance& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::meter{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::kilometer{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::kilometer{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::decimeter{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::decimeter{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::centimeter{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::centimeter{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::millimeter{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::millimeter{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::micrometer{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::micrometer{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::nanometer{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::nanometer{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::picometer{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::picometer{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::inch{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::inch{other.m_impl.m_value8};
         break;
       case Type::Type9:
-        new (&m_impl.m_value9) ossia::foot{other.m_impl.m_value9};
+        new(&m_impl.m_value9) ossia::foot{other.m_impl.m_value9};
         break;
       case Type::Type10:
-        new (&m_impl.m_value10) ossia::mile{other.m_impl.m_value10};
+        new(&m_impl.m_value10) ossia::mile{other.m_impl.m_value10};
         break;
       default:
         break;
     }
   }
-  distance(distance&& other) : m_type{other.m_type}
+  distance(distance&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::meter{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::kilometer{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::kilometer{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::decimeter{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::decimeter{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3)
-            ossia::centimeter{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::centimeter{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::millimeter{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::millimeter{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::micrometer{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::micrometer{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6)
-            ossia::nanometer{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::nanometer{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::picometer{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::picometer{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::inch{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::inch{std::move(other.m_impl.m_value8)};
         break;
       case Type::Type9:
-        new (&m_impl.m_value9) ossia::foot{std::move(other.m_impl.m_value9)};
+        new(&m_impl.m_value9) ossia::foot{std::move(other.m_impl.m_value9)};
         break;
       case Type::Type10:
-        new (&m_impl.m_value10) ossia::mile{std::move(other.m_impl.m_value10)};
+        new(&m_impl.m_value10) ossia::mile{std::move(other.m_impl.m_value10)};
         break;
       default:
         break;
@@ -1452,40 +1482,40 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::meter{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::kilometer{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::kilometer{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::decimeter{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::decimeter{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::centimeter{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::centimeter{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::millimeter{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::millimeter{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::micrometer{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::micrometer{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::nanometer{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::nanometer{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::picometer{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::picometer{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::inch{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::inch{other.m_impl.m_value8};
         break;
       case Type::Type9:
-        new (&m_impl.m_value9) ossia::foot{other.m_impl.m_value9};
+        new(&m_impl.m_value9) ossia::foot{other.m_impl.m_value9};
         break;
       case Type::Type10:
-        new (&m_impl.m_value10) ossia::mile{other.m_impl.m_value10};
+        new(&m_impl.m_value10) ossia::mile{other.m_impl.m_value10};
         break;
       default:
         break;
@@ -1496,47 +1526,40 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::meter{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::kilometer{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::kilometer{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::decimeter{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::decimeter{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3)
-            ossia::centimeter{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::centimeter{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::millimeter{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::millimeter{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::micrometer{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::micrometer{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6)
-            ossia::nanometer{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::nanometer{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::picometer{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::picometer{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::inch{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::inch{std::move(other.m_impl.m_value8)};
         break;
       case Type::Type9:
-        new (&m_impl.m_value9) ossia::foot{std::move(other.m_impl.m_value9)};
+        new(&m_impl.m_value9) ossia::foot{std::move(other.m_impl.m_value9)};
         break;
       case Type::Type10:
-        new (&m_impl.m_value10) ossia::mile{std::move(other.m_impl.m_value10)};
+        new(&m_impl.m_value10) ossia::mile{std::move(other.m_impl.m_value10)};
         break;
       default:
         break;
@@ -1547,315 +1570,315 @@ public:
 template <>
 inline const ossia::meter* distance::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::kilometer* distance::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::decimeter* distance::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::centimeter* distance::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::millimeter* distance::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::micrometer* distance::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::nanometer* distance::target() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline const ossia::picometer* distance::target() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline const ossia::inch* distance::target() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline const ossia::foot* distance::target() const
 {
-  if (m_type == Type9)
+  if(m_type == Type9)
     return &m_impl.m_value9;
   return nullptr;
 }
 template <>
 inline const ossia::mile* distance::target() const
 {
-  if (m_type == Type10)
+  if(m_type == Type10)
     return &m_impl.m_value10;
   return nullptr;
 }
 template <>
 inline ossia::meter* distance::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::kilometer* distance::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::decimeter* distance::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::centimeter* distance::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::millimeter* distance::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::micrometer* distance::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::nanometer* distance::target()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline ossia::picometer* distance::target()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline ossia::inch* distance::target()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline ossia::foot* distance::target()
 {
-  if (m_type == Type9)
+  if(m_type == Type9)
     return &m_impl.m_value9;
   return nullptr;
 }
 template <>
 inline ossia::mile* distance::target()
 {
-  if (m_type == Type10)
+  if(m_type == Type10)
     return &m_impl.m_value10;
   return nullptr;
 }
 template <>
 inline const ossia::meter& distance::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::kilometer& distance::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::decimeter& distance::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::centimeter& distance::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::millimeter& distance::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::micrometer& distance::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::nanometer& distance::get() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::picometer& distance::get() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::inch& distance::get() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::foot& distance::get() const
 {
-  if (m_type == Type9)
+  if(m_type == Type9)
     return m_impl.m_value9;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline const ossia::mile& distance::get() const
 {
-  if (m_type == Type10)
+  if(m_type == Type10)
     return m_impl.m_value10;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::meter& distance::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::kilometer& distance::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::decimeter& distance::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::centimeter& distance::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::millimeter& distance::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::micrometer& distance::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::nanometer& distance::get()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::picometer& distance::get()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::inch& distance::get()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::foot& distance::get()
 {
-  if (m_type == Type9)
+  if(m_type == Type9)
     return m_impl.m_value9;
   throw std::runtime_error("distance: bad type");
 }
 template <>
 inline ossia::mile& distance::get()
 {
-  if (m_type == Type10)
+  if(m_type == Type10)
     return m_impl.m_value10;
   throw std::runtime_error("distance: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const distance& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -1886,7 +1909,7 @@ auto apply_nonnull(Visitor&& functor, const distance& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, distance& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -1917,7 +1940,7 @@ auto apply_nonnull(Visitor&& functor, distance& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, distance&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -1948,7 +1971,7 @@ auto apply_nonnull(Visitor&& functor, distance&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const distance& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -1979,7 +2002,7 @@ auto apply(Visitor&& functor, const distance& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, distance& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -2010,7 +2033,7 @@ auto apply(Visitor&& functor, distance& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, distance&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case distance::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -2040,9 +2063,9 @@ auto apply(Visitor&& functor, distance&& var)
 }
 inline bool operator==(const distance& lhs, const distance& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case distance::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -2074,9 +2097,9 @@ inline bool operator==(const distance& lhs, const distance& rhs)
 }
 inline bool operator!=(const distance& lhs, const distance& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case distance::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -2267,23 +2290,19 @@ inline bool operator!=(const ossia::foot& lhs, const distance& rhs)
 }
 inline bool operator==(const distance& lhs, const ossia::mile& rhs)
 {
-  return (lhs.m_type == distance::Type::Type10)
-         && (lhs.m_impl.m_value10 == rhs);
+  return (lhs.m_type == distance::Type::Type10) && (lhs.m_impl.m_value10 == rhs);
 }
 inline bool operator==(const ossia::mile& lhs, const distance& rhs)
 {
-  return (rhs.m_type == distance::Type::Type10)
-         && (rhs.m_impl.m_value10 == lhs);
+  return (rhs.m_type == distance::Type::Type10) && (rhs.m_impl.m_value10 == lhs);
 }
 inline bool operator!=(const distance& lhs, const ossia::mile& rhs)
 {
-  return (lhs.m_type != distance::Type::Type10)
-         || (lhs.m_impl.m_value10 != rhs);
+  return (lhs.m_type != distance::Type::Type10) || (lhs.m_impl.m_value10 != rhs);
 }
 inline bool operator!=(const ossia::mile& lhs, const distance& rhs)
 {
-  return (rhs.m_type != distance::Type::Type10)
-         || (rhs.m_impl.m_value10 != lhs);
+  return (rhs.m_type != distance::Type::Type10) || (rhs.m_impl.m_value10 != lhs);
 }
 struct gain
 {
@@ -2291,7 +2310,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::linear m_value0;
 
     ossia::midigain m_value1;
@@ -2301,7 +2321,8 @@ public:
     ossia::decibel_raw m_value3;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -2320,7 +2341,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -2351,67 +2372,71 @@ public:
 
   template <typename T>
   static Type matching_type();
-  gain() : m_type{Npos}
+  gain()
+      : m_type{Npos}
   {
   }
   ~gain()
   {
     destruct_impl();
   }
-  gain(ossia::linear v) : m_type{Type0}
+  gain(ossia::linear v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::linear{v};
+    new(&m_impl.m_value0) ossia::linear{v};
   }
-  gain(ossia::midigain v) : m_type{Type1}
+  gain(ossia::midigain v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::midigain{v};
+    new(&m_impl.m_value1) ossia::midigain{v};
   }
-  gain(ossia::decibel v) : m_type{Type2}
+  gain(ossia::decibel v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::decibel{v};
+    new(&m_impl.m_value2) ossia::decibel{v};
   }
-  gain(ossia::decibel_raw v) : m_type{Type3}
+  gain(ossia::decibel_raw v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::decibel_raw{v};
+    new(&m_impl.m_value3) ossia::decibel_raw{v};
   }
-  gain(const gain& other) : m_type{other.m_type}
+  gain(const gain& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::linear{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::linear{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::midigain{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::midigain{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::decibel{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::decibel{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::decibel_raw{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::decibel_raw{other.m_impl.m_value3};
         break;
       default:
         break;
     }
   }
-  gain(gain&& other) : m_type{other.m_type}
+  gain(gain&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::linear{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::linear{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::midigain{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::midigain{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::decibel{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::decibel{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3)
-            ossia::decibel_raw{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::decibel_raw{std::move(other.m_impl.m_value3)};
         break;
       default:
         break;
@@ -2421,19 +2446,19 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::linear{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::linear{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::midigain{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::midigain{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::decibel{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::decibel{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::decibel_raw{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::decibel_raw{other.m_impl.m_value3};
         break;
       default:
         break;
@@ -2444,22 +2469,19 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::linear{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::linear{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::midigain{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::midigain{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::decibel{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::decibel{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3)
-            ossia::decibel_raw{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::decibel_raw{std::move(other.m_impl.m_value3)};
         break;
       default:
         break;
@@ -2470,119 +2492,119 @@ public:
 template <>
 inline const ossia::linear* gain::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::midigain* gain::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::decibel* gain::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::decibel_raw* gain::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::linear* gain::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::midigain* gain::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::decibel* gain::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::decibel_raw* gain::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::linear& gain::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline const ossia::midigain& gain::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline const ossia::decibel& gain::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline const ossia::decibel_raw& gain::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline ossia::linear& gain::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline ossia::midigain& gain::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline ossia::decibel& gain::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("gain: bad type");
 }
 template <>
 inline ossia::decibel_raw& gain::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("gain: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const gain& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -2599,7 +2621,7 @@ auto apply_nonnull(Visitor&& functor, const gain& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, gain& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -2616,7 +2638,7 @@ auto apply_nonnull(Visitor&& functor, gain& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, gain&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -2633,7 +2655,7 @@ auto apply_nonnull(Visitor&& functor, gain&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const gain& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -2650,7 +2672,7 @@ auto apply(Visitor&& functor, const gain& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, gain& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -2667,7 +2689,7 @@ auto apply(Visitor&& functor, gain& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, gain&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case gain::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -2683,9 +2705,9 @@ auto apply(Visitor&& functor, gain&& var)
 }
 inline bool operator==(const gain& lhs, const gain& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case gain::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -2703,9 +2725,9 @@ inline bool operator==(const gain& lhs, const gain& rhs)
 }
 inline bool operator!=(const gain& lhs, const gain& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case gain::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -2790,7 +2812,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::quaternion m_value0;
 
     ossia::euler m_value1;
@@ -2798,7 +2821,8 @@ public:
     ossia::axis m_value2;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -2816,7 +2840,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -2847,55 +2871,60 @@ public:
 
   template <typename T>
   static Type matching_type();
-  orientation() : m_type{Npos}
+  orientation()
+      : m_type{Npos}
   {
   }
   ~orientation()
   {
     destruct_impl();
   }
-  orientation(ossia::quaternion v) : m_type{Type0}
+  orientation(ossia::quaternion v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::quaternion{v};
+    new(&m_impl.m_value0) ossia::quaternion{v};
   }
-  orientation(ossia::euler v) : m_type{Type1}
+  orientation(ossia::euler v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::euler{v};
+    new(&m_impl.m_value1) ossia::euler{v};
   }
-  orientation(ossia::axis v) : m_type{Type2}
+  orientation(ossia::axis v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::axis{v};
+    new(&m_impl.m_value2) ossia::axis{v};
   }
-  orientation(const orientation& other) : m_type{other.m_type}
+  orientation(const orientation& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::quaternion{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::quaternion{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::euler{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::euler{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::axis{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::axis{other.m_impl.m_value2};
         break;
       default:
         break;
     }
   }
-  orientation(orientation&& other) : m_type{other.m_type}
+  orientation(orientation&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::quaternion{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::quaternion{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::euler{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::euler{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::axis{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::axis{std::move(other.m_impl.m_value2)};
         break;
       default:
         break;
@@ -2905,16 +2934,16 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::quaternion{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::quaternion{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::euler{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::euler{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::axis{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::axis{other.m_impl.m_value2};
         break;
       default:
         break;
@@ -2925,17 +2954,16 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::quaternion{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::quaternion{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::euler{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::euler{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::axis{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::axis{std::move(other.m_impl.m_value2)};
         break;
       default:
         break;
@@ -2946,91 +2974,91 @@ public:
 template <>
 inline const ossia::quaternion* orientation::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::euler* orientation::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::axis* orientation::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::quaternion* orientation::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::euler* orientation::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::axis* orientation::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::quaternion& orientation::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("orientation: bad type");
 }
 template <>
 inline const ossia::euler& orientation::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("orientation: bad type");
 }
 template <>
 inline const ossia::axis& orientation::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("orientation: bad type");
 }
 template <>
 inline ossia::quaternion& orientation::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("orientation: bad type");
 }
 template <>
 inline ossia::euler& orientation::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("orientation: bad type");
 }
 template <>
 inline ossia::axis& orientation::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("orientation: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const orientation& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3045,7 +3073,7 @@ auto apply_nonnull(Visitor&& functor, const orientation& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, orientation& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3060,7 +3088,7 @@ auto apply_nonnull(Visitor&& functor, orientation& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, orientation&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -3075,7 +3103,7 @@ auto apply_nonnull(Visitor&& functor, orientation&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const orientation& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3090,7 +3118,7 @@ auto apply(Visitor&& functor, const orientation& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, orientation& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3105,7 +3133,7 @@ auto apply(Visitor&& functor, orientation& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, orientation&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case orientation::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -3119,9 +3147,9 @@ auto apply(Visitor&& functor, orientation&& var)
 }
 inline bool operator==(const orientation& lhs, const orientation& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case orientation::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -3137,9 +3165,9 @@ inline bool operator==(const orientation& lhs, const orientation& rhs)
 }
 inline bool operator!=(const orientation& lhs, const orientation& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case orientation::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -3154,63 +3182,51 @@ inline bool operator!=(const orientation& lhs, const orientation& rhs)
 }
 inline bool operator==(const orientation& lhs, const ossia::quaternion& rhs)
 {
-  return (lhs.m_type == orientation::Type::Type0)
-         && (lhs.m_impl.m_value0 == rhs);
+  return (lhs.m_type == orientation::Type::Type0) && (lhs.m_impl.m_value0 == rhs);
 }
 inline bool operator==(const ossia::quaternion& lhs, const orientation& rhs)
 {
-  return (rhs.m_type == orientation::Type::Type0)
-         && (rhs.m_impl.m_value0 == lhs);
+  return (rhs.m_type == orientation::Type::Type0) && (rhs.m_impl.m_value0 == lhs);
 }
 inline bool operator!=(const orientation& lhs, const ossia::quaternion& rhs)
 {
-  return (lhs.m_type != orientation::Type::Type0)
-         || (lhs.m_impl.m_value0 != rhs);
+  return (lhs.m_type != orientation::Type::Type0) || (lhs.m_impl.m_value0 != rhs);
 }
 inline bool operator!=(const ossia::quaternion& lhs, const orientation& rhs)
 {
-  return (rhs.m_type != orientation::Type::Type0)
-         || (rhs.m_impl.m_value0 != lhs);
+  return (rhs.m_type != orientation::Type::Type0) || (rhs.m_impl.m_value0 != lhs);
 }
 inline bool operator==(const orientation& lhs, const ossia::euler& rhs)
 {
-  return (lhs.m_type == orientation::Type::Type1)
-         && (lhs.m_impl.m_value1 == rhs);
+  return (lhs.m_type == orientation::Type::Type1) && (lhs.m_impl.m_value1 == rhs);
 }
 inline bool operator==(const ossia::euler& lhs, const orientation& rhs)
 {
-  return (rhs.m_type == orientation::Type::Type1)
-         && (rhs.m_impl.m_value1 == lhs);
+  return (rhs.m_type == orientation::Type::Type1) && (rhs.m_impl.m_value1 == lhs);
 }
 inline bool operator!=(const orientation& lhs, const ossia::euler& rhs)
 {
-  return (lhs.m_type != orientation::Type::Type1)
-         || (lhs.m_impl.m_value1 != rhs);
+  return (lhs.m_type != orientation::Type::Type1) || (lhs.m_impl.m_value1 != rhs);
 }
 inline bool operator!=(const ossia::euler& lhs, const orientation& rhs)
 {
-  return (rhs.m_type != orientation::Type::Type1)
-         || (rhs.m_impl.m_value1 != lhs);
+  return (rhs.m_type != orientation::Type::Type1) || (rhs.m_impl.m_value1 != lhs);
 }
 inline bool operator==(const orientation& lhs, const ossia::axis& rhs)
 {
-  return (lhs.m_type == orientation::Type::Type2)
-         && (lhs.m_impl.m_value2 == rhs);
+  return (lhs.m_type == orientation::Type::Type2) && (lhs.m_impl.m_value2 == rhs);
 }
 inline bool operator==(const ossia::axis& lhs, const orientation& rhs)
 {
-  return (rhs.m_type == orientation::Type::Type2)
-         && (rhs.m_impl.m_value2 == lhs);
+  return (rhs.m_type == orientation::Type::Type2) && (rhs.m_impl.m_value2 == lhs);
 }
 inline bool operator!=(const orientation& lhs, const ossia::axis& rhs)
 {
-  return (lhs.m_type != orientation::Type::Type2)
-         || (lhs.m_impl.m_value2 != rhs);
+  return (lhs.m_type != orientation::Type::Type2) || (lhs.m_impl.m_value2 != rhs);
 }
 inline bool operator!=(const ossia::axis& lhs, const orientation& rhs)
 {
-  return (rhs.m_type != orientation::Type::Type2)
-         || (rhs.m_impl.m_value2 != lhs);
+  return (rhs.m_type != orientation::Type::Type2) || (rhs.m_impl.m_value2 != lhs);
 }
 struct position
 {
@@ -3218,7 +3234,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::cartesian_3d m_value0;
 
     ossia::cartesian_2d m_value1;
@@ -3238,7 +3255,8 @@ public:
     ossia::azd m_value8;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -3262,7 +3280,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -3293,121 +3311,127 @@ public:
 
   template <typename T>
   static Type matching_type();
-  position() : m_type{Npos}
+  position()
+      : m_type{Npos}
   {
   }
   ~position()
   {
     destruct_impl();
   }
-  position(ossia::cartesian_3d v) : m_type{Type0}
+  position(ossia::cartesian_3d v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::cartesian_3d{v};
+    new(&m_impl.m_value0) ossia::cartesian_3d{v};
   }
-  position(ossia::cartesian_2d v) : m_type{Type1}
+  position(ossia::cartesian_2d v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::cartesian_2d{v};
+    new(&m_impl.m_value1) ossia::cartesian_2d{v};
   }
-  position(ossia::spherical v) : m_type{Type2}
+  position(ossia::spherical v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::spherical{v};
+    new(&m_impl.m_value2) ossia::spherical{v};
   }
-  position(ossia::polar v) : m_type{Type3}
+  position(ossia::polar v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::polar{v};
+    new(&m_impl.m_value3) ossia::polar{v};
   }
-  position(ossia::aed v) : m_type{Type4}
+  position(ossia::aed v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::aed{v};
+    new(&m_impl.m_value4) ossia::aed{v};
   }
-  position(ossia::ad v) : m_type{Type5}
+  position(ossia::ad v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::ad{v};
+    new(&m_impl.m_value5) ossia::ad{v};
   }
-  position(ossia::opengl v) : m_type{Type6}
+  position(ossia::opengl v)
+      : m_type{Type6}
   {
-    new (&m_impl.m_value6) ossia::opengl{v};
+    new(&m_impl.m_value6) ossia::opengl{v};
   }
-  position(ossia::cylindrical v) : m_type{Type7}
+  position(ossia::cylindrical v)
+      : m_type{Type7}
   {
-    new (&m_impl.m_value7) ossia::cylindrical{v};
+    new(&m_impl.m_value7) ossia::cylindrical{v};
   }
-  position(ossia::azd v) : m_type{Type8}
+  position(ossia::azd v)
+      : m_type{Type8}
   {
-    new (&m_impl.m_value8) ossia::azd{v};
+    new(&m_impl.m_value8) ossia::azd{v};
   }
-  position(const position& other) : m_type{other.m_type}
+  position(const position& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::cartesian_3d{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::cartesian_3d{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::cartesian_2d{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::cartesian_2d{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::spherical{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::spherical{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
         break;
-    case Type::Type8:
-      new (&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
-      break;
+      case Type::Type8:
+        new(&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
+        break;
       default:
         break;
     }
   }
-  position(position&& other) : m_type{other.m_type}
+  position(position&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::cartesian_3d{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::cartesian_3d{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::cartesian_2d{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::cartesian_2d{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::spherical{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::spherical{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::aed{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::aed{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::cylindrical{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::cylindrical{std::move(other.m_impl.m_value7)};
         break;
-    case Type::Type8:
-      new (&m_impl.m_value8)
-          ossia::azd{std::move(other.m_impl.m_value8)};
-      break;
+      case Type::Type8:
+        new(&m_impl.m_value8) ossia::azd{std::move(other.m_impl.m_value8)};
+        break;
       default:
         break;
     }
@@ -3416,34 +3440,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::cartesian_3d{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::cartesian_3d{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::cartesian_2d{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::cartesian_2d{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::spherical{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::spherical{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::polar{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::aed{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::ad{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::opengl{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::cylindrical{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::azd{other.m_impl.m_value8};
         break;
       default:
         break;
@@ -3454,40 +3478,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::cartesian_3d{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::cartesian_3d{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::cartesian_2d{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::cartesian_2d{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::spherical{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::spherical{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::polar{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::aed{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::aed{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::ad{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::opengl{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::cylindrical{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::cylindrical{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8)
-            ossia::azd{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::azd{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -3498,259 +3516,259 @@ public:
 template <>
 inline const ossia::cartesian_3d* position::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::cartesian_2d* position::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::spherical* position::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::polar* position::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::aed* position::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::ad* position::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::opengl* position::target() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline const ossia::cylindrical* position::target() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline const ossia::azd* position::target() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline ossia::cartesian_3d* position::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::cartesian_2d* position::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::spherical* position::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::polar* position::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::aed* position::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::ad* position::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::opengl* position::target()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline ossia::cylindrical* position::target()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline ossia::azd* position::target()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline const ossia::cartesian_3d& position::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::cartesian_2d& position::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::spherical& position::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::polar& position::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::aed& position::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::ad& position::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::opengl& position::get() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::cylindrical& position::get() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline const ossia::azd& position::get() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::cartesian_3d& position::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::cartesian_2d& position::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::spherical& position::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::polar& position::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::aed& position::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::ad& position::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::opengl& position::get()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::cylindrical& position::get()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("position: bad type");
 }
 template <>
 inline ossia::azd& position::get()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("position: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const position& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3777,7 +3795,7 @@ auto apply_nonnull(Visitor&& functor, const position& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, position& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3804,7 +3822,7 @@ auto apply_nonnull(Visitor&& functor, position& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, position&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -3831,7 +3849,7 @@ auto apply_nonnull(Visitor&& functor, position&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const position& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3858,7 +3876,7 @@ auto apply(Visitor&& functor, const position& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, position& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -3885,7 +3903,7 @@ auto apply(Visitor&& functor, position& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, position&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case position::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -3911,9 +3929,9 @@ auto apply(Visitor&& functor, position&& var)
 }
 inline bool operator==(const position& lhs, const position& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case position::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -3941,9 +3959,9 @@ inline bool operator==(const position& lhs, const position& rhs)
 }
 inline bool operator!=(const position& lhs, const position& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case position::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -4118,7 +4136,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::meter_per_second m_value0;
 
     ossia::miles_per_hour m_value1;
@@ -4132,7 +4151,8 @@ public:
     ossia::foot_per_hour m_value5;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -4153,7 +4173,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -4184,90 +4204,94 @@ public:
 
   template <typename T>
   static Type matching_type();
-  speed() : m_type{Npos}
+  speed()
+      : m_type{Npos}
   {
   }
   ~speed()
   {
     destruct_impl();
   }
-  speed(ossia::meter_per_second v) : m_type{Type0}
+  speed(ossia::meter_per_second v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::meter_per_second{v};
+    new(&m_impl.m_value0) ossia::meter_per_second{v};
   }
-  speed(ossia::miles_per_hour v) : m_type{Type1}
+  speed(ossia::miles_per_hour v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::miles_per_hour{v};
+    new(&m_impl.m_value1) ossia::miles_per_hour{v};
   }
-  speed(ossia::kilometer_per_hour v) : m_type{Type2}
+  speed(ossia::kilometer_per_hour v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::kilometer_per_hour{v};
+    new(&m_impl.m_value2) ossia::kilometer_per_hour{v};
   }
-  speed(ossia::knot v) : m_type{Type3}
+  speed(ossia::knot v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::knot{v};
+    new(&m_impl.m_value3) ossia::knot{v};
   }
-  speed(ossia::foot_per_second v) : m_type{Type4}
+  speed(ossia::foot_per_second v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::foot_per_second{v};
+    new(&m_impl.m_value4) ossia::foot_per_second{v};
   }
-  speed(ossia::foot_per_hour v) : m_type{Type5}
+  speed(ossia::foot_per_hour v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::foot_per_hour{v};
+    new(&m_impl.m_value5) ossia::foot_per_hour{v};
   }
-  speed(const speed& other) : m_type{other.m_type}
+  speed(const speed& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter_per_second{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::meter_per_second{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::miles_per_hour{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::miles_per_hour{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::kilometer_per_hour{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::kilometer_per_hour{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::knot{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::knot{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::foot_per_second{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::foot_per_second{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::foot_per_hour{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::foot_per_hour{other.m_impl.m_value5};
         break;
       default:
         break;
     }
   }
-  speed(speed&& other) : m_type{other.m_type}
+  speed(speed&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::meter_per_second{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::meter_per_second{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::miles_per_hour{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::miles_per_hour{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
+        new(&m_impl.m_value2)
             ossia::kilometer_per_hour{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::knot{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::knot{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::foot_per_second{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::foot_per_second{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::foot_per_hour{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::foot_per_hour{std::move(other.m_impl.m_value5)};
         break;
       default:
         break;
@@ -4277,26 +4301,25 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::meter_per_second{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::meter_per_second{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::miles_per_hour{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::miles_per_hour{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::kilometer_per_hour{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::kilometer_per_hour{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::knot{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::knot{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::foot_per_second{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::foot_per_second{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::foot_per_hour{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::foot_per_hour{other.m_impl.m_value5};
         break;
       default:
         break;
@@ -4307,30 +4330,26 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0)
-            ossia::meter_per_second{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::meter_per_second{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::miles_per_hour{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::miles_per_hour{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
+        new(&m_impl.m_value2)
             ossia::kilometer_per_hour{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::knot{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::knot{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::foot_per_second{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::foot_per_second{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5)
-            ossia::foot_per_hour{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::foot_per_hour{std::move(other.m_impl.m_value5)};
         break;
       default:
         break;
@@ -4341,175 +4360,175 @@ public:
 template <>
 inline const ossia::meter_per_second* speed::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::miles_per_hour* speed::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::kilometer_per_hour* speed::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::knot* speed::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::foot_per_second* speed::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::foot_per_hour* speed::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::meter_per_second* speed::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::miles_per_hour* speed::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::kilometer_per_hour* speed::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::knot* speed::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::foot_per_second* speed::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::foot_per_hour* speed::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::meter_per_second& speed::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline const ossia::miles_per_hour& speed::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline const ossia::kilometer_per_hour& speed::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline const ossia::knot& speed::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline const ossia::foot_per_second& speed::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline const ossia::foot_per_hour& speed::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::meter_per_second& speed::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::miles_per_hour& speed::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::kilometer_per_hour& speed::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::knot& speed::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::foot_per_second& speed::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("speed: bad type");
 }
 template <>
 inline ossia::foot_per_hour& speed::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("speed: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const speed& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -4530,7 +4549,7 @@ auto apply_nonnull(Visitor&& functor, const speed& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, speed& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -4551,7 +4570,7 @@ auto apply_nonnull(Visitor&& functor, speed& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, speed&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -4572,7 +4591,7 @@ auto apply_nonnull(Visitor&& functor, speed&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const speed& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -4593,7 +4612,7 @@ auto apply(Visitor&& functor, const speed& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, speed& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -4614,7 +4633,7 @@ auto apply(Visitor&& functor, speed& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, speed&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case speed::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -4634,9 +4653,9 @@ auto apply(Visitor&& functor, speed&& var)
 }
 inline bool operator==(const speed& lhs, const speed& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case speed::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -4658,9 +4677,9 @@ inline bool operator==(const speed& lhs, const speed& rhs)
 }
 inline bool operator!=(const speed& lhs, const speed& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case speed::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -4781,7 +4800,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::second m_value0;
 
     ossia::bark m_value1;
@@ -4801,7 +4821,8 @@ public:
     ossia::playback_speed m_value8;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -4825,7 +4846,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       default:
         break;
@@ -4856,118 +4877,126 @@ public:
 
   template <typename T>
   static Type matching_type();
-  timing() : m_type{Npos}
+  timing()
+      : m_type{Npos}
   {
   }
   ~timing()
   {
     destruct_impl();
   }
-  timing(ossia::second v) : m_type{Type0}
+  timing(ossia::second v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::second{v};
+    new(&m_impl.m_value0) ossia::second{v};
   }
-  timing(ossia::bark v) : m_type{Type1}
+  timing(ossia::bark v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::bark{v};
+    new(&m_impl.m_value1) ossia::bark{v};
   }
-  timing(ossia::bpm v) : m_type{Type2}
+  timing(ossia::bpm v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::bpm{v};
+    new(&m_impl.m_value2) ossia::bpm{v};
   }
-  timing(ossia::cent v) : m_type{Type3}
+  timing(ossia::cent v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::cent{v};
+    new(&m_impl.m_value3) ossia::cent{v};
   }
-  timing(ossia::frequency v) : m_type{Type4}
+  timing(ossia::frequency v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::frequency{v};
+    new(&m_impl.m_value4) ossia::frequency{v};
   }
-  timing(ossia::mel v) : m_type{Type5}
+  timing(ossia::mel v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::mel{v};
+    new(&m_impl.m_value5) ossia::mel{v};
   }
-  timing(ossia::midi_pitch v) : m_type{Type6}
+  timing(ossia::midi_pitch v)
+      : m_type{Type6}
   {
-    new (&m_impl.m_value6) ossia::midi_pitch{v};
+    new(&m_impl.m_value6) ossia::midi_pitch{v};
   }
-  timing(ossia::millisecond v) : m_type{Type7}
+  timing(ossia::millisecond v)
+      : m_type{Type7}
   {
-    new (&m_impl.m_value7) ossia::millisecond{v};
+    new(&m_impl.m_value7) ossia::millisecond{v};
   }
-  timing(ossia::playback_speed v) : m_type{Type8}
+  timing(ossia::playback_speed v)
+      : m_type{Type8}
   {
-    new (&m_impl.m_value8) ossia::playback_speed{v};
+    new(&m_impl.m_value8) ossia::playback_speed{v};
   }
-  timing(const timing& other) : m_type{other.m_type}
+  timing(const timing& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::second{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::second{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::bark{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::bark{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::bpm{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::bpm{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::cent{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::cent{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::frequency{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::frequency{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::mel{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::mel{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::midi_pitch{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::midi_pitch{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::millisecond{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::millisecond{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::playback_speed{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::playback_speed{other.m_impl.m_value8};
         break;
       default:
         break;
     }
   }
-  timing(timing&& other) : m_type{other.m_type}
+  timing(timing&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::second{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::second{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::bark{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::bark{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::bpm{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::bpm{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::cent{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::cent{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::frequency{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::frequency{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::mel{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::mel{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6)
-            ossia::midi_pitch{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::midi_pitch{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::millisecond{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::millisecond{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8)
-            ossia::playback_speed{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::playback_speed{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -4977,34 +5006,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::second{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::second{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::bark{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::bark{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::bpm{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::bpm{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::cent{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::cent{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::frequency{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::frequency{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::mel{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::mel{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::midi_pitch{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::midi_pitch{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::millisecond{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::millisecond{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::playback_speed{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::playback_speed{other.m_impl.m_value8};
         break;
       default:
         break;
@@ -5015,38 +5044,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::second{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::second{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::bark{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::bark{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::bpm{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::bpm{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::cent{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::cent{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::frequency{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::frequency{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::mel{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::mel{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6)
-            ossia::midi_pitch{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::midi_pitch{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7)
-            ossia::millisecond{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::millisecond{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8)
-            ossia::playback_speed{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::playback_speed{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -5057,259 +5082,259 @@ public:
 template <>
 inline const ossia::second* timing::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::bark* timing::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::bpm* timing::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::cent* timing::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::frequency* timing::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::mel* timing::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::midi_pitch* timing::target() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline const ossia::millisecond* timing::target() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline const ossia::playback_speed* timing::target() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline ossia::second* timing::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::bark* timing::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::bpm* timing::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::cent* timing::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::frequency* timing::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::mel* timing::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::midi_pitch* timing::target()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline ossia::millisecond* timing::target()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline ossia::playback_speed* timing::target()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline const ossia::second& timing::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::bark& timing::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::bpm& timing::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::cent& timing::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::frequency& timing::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::mel& timing::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::midi_pitch& timing::get() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::millisecond& timing::get() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline const ossia::playback_speed& timing::get() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::second& timing::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::bark& timing::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::bpm& timing::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::cent& timing::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::frequency& timing::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::mel& timing::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::midi_pitch& timing::get()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::millisecond& timing::get()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("timing: bad type");
 }
 template <>
 inline ossia::playback_speed& timing::get()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("timing: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const timing& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -5336,7 +5361,7 @@ auto apply_nonnull(Visitor&& functor, const timing& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, timing& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -5363,7 +5388,7 @@ auto apply_nonnull(Visitor&& functor, timing& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, timing&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -5390,7 +5415,7 @@ auto apply_nonnull(Visitor&& functor, timing&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const timing& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -5417,7 +5442,7 @@ auto apply(Visitor&& functor, const timing& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, timing& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -5444,7 +5469,7 @@ auto apply(Visitor&& functor, timing& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, timing&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case timing::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -5470,9 +5495,9 @@ auto apply(Visitor&& functor, timing&& var)
 }
 inline bool operator==(const timing& lhs, const timing& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case timing::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -5500,9 +5525,9 @@ inline bool operator==(const timing& lhs, const timing& rhs)
 }
 inline bool operator!=(const timing& lhs, const timing& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case timing::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -5677,7 +5702,8 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     ossia::value m_value0;
 
     ossia::distance m_value1;
@@ -5697,7 +5723,8 @@ public:
     ossia::timing m_value8;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -5721,7 +5748,7 @@ public:
 
   void destruct_impl()
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
         m_impl.m_value0.~value();
@@ -5755,122 +5782,131 @@ public:
 
   template <typename T>
   static Type matching_type();
-  strong_value_variant() : m_type{Npos}
+  strong_value_variant()
+      : m_type{Npos}
   {
   }
   ~strong_value_variant()
   {
     destruct_impl();
   }
-  strong_value_variant(const ossia::value& v) : m_type{Type0}
+  strong_value_variant(const ossia::value& v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::value{v};
+    new(&m_impl.m_value0) ossia::value{v};
   }
-  strong_value_variant(ossia::value&& v) : m_type{Type0}
+  strong_value_variant(ossia::value&& v)
+      : m_type{Type0}
   {
-    new (&m_impl.m_value0) ossia::value{std::move(v)};
+    new(&m_impl.m_value0) ossia::value{std::move(v)};
   }
-  strong_value_variant(ossia::distance v) : m_type{Type1}
+  strong_value_variant(ossia::distance v)
+      : m_type{Type1}
   {
-    new (&m_impl.m_value1) ossia::distance{v};
+    new(&m_impl.m_value1) ossia::distance{v};
   }
-  strong_value_variant(ossia::position v) : m_type{Type2}
+  strong_value_variant(ossia::position v)
+      : m_type{Type2}
   {
-    new (&m_impl.m_value2) ossia::position{v};
+    new(&m_impl.m_value2) ossia::position{v};
   }
-  strong_value_variant(ossia::speed v) : m_type{Type3}
+  strong_value_variant(ossia::speed v)
+      : m_type{Type3}
   {
-    new (&m_impl.m_value3) ossia::speed{v};
+    new(&m_impl.m_value3) ossia::speed{v};
   }
-  strong_value_variant(ossia::orientation v) : m_type{Type4}
+  strong_value_variant(ossia::orientation v)
+      : m_type{Type4}
   {
-    new (&m_impl.m_value4) ossia::orientation{v};
+    new(&m_impl.m_value4) ossia::orientation{v};
   }
-  strong_value_variant(ossia::angle v) : m_type{Type5}
+  strong_value_variant(ossia::angle v)
+      : m_type{Type5}
   {
-    new (&m_impl.m_value5) ossia::angle{v};
+    new(&m_impl.m_value5) ossia::angle{v};
   }
-  strong_value_variant(ossia::color v) : m_type{Type6}
+  strong_value_variant(ossia::color v)
+      : m_type{Type6}
   {
-    new (&m_impl.m_value6) ossia::color{v};
+    new(&m_impl.m_value6) ossia::color{v};
   }
-  strong_value_variant(ossia::gain v) : m_type{Type7}
+  strong_value_variant(ossia::gain v)
+      : m_type{Type7}
   {
-    new (&m_impl.m_value7) ossia::gain{v};
+    new(&m_impl.m_value7) ossia::gain{v};
   }
-  strong_value_variant(ossia::timing v) : m_type{Type8}
+  strong_value_variant(ossia::timing v)
+      : m_type{Type8}
   {
-    new (&m_impl.m_value8) ossia::timing{v};
+    new(&m_impl.m_value8) ossia::timing{v};
   }
   strong_value_variant(const strong_value_variant& other)
       : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::value{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::value{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::distance{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::distance{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::position{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::position{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::speed{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::speed{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::orientation{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::orientation{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::angle{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::angle{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::color{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::color{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
         break;
       default:
         break;
     }
   }
-  strong_value_variant(strong_value_variant&& other) : m_type{other.m_type}
+  strong_value_variant(strong_value_variant&& other)
+      : m_type{other.m_type}
   {
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::value{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::value{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::distance{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::distance{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::position{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::position{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::speed{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::speed{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::orientation{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::orientation{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::angle{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::angle{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::color{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::color{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -5880,34 +5916,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::value{other.m_impl.m_value0};
+        new(&m_impl.m_value0) ossia::value{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1) ossia::distance{other.m_impl.m_value1};
+        new(&m_impl.m_value1) ossia::distance{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2) ossia::position{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::position{other.m_impl.m_value2};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::speed{other.m_impl.m_value3};
+        new(&m_impl.m_value3) ossia::speed{other.m_impl.m_value3};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4) ossia::orientation{other.m_impl.m_value4};
+        new(&m_impl.m_value4) ossia::orientation{other.m_impl.m_value4};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::angle{other.m_impl.m_value5};
+        new(&m_impl.m_value5) ossia::angle{other.m_impl.m_value5};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::color{other.m_impl.m_value6};
+        new(&m_impl.m_value6) ossia::color{other.m_impl.m_value6};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
+        new(&m_impl.m_value7) ossia::gain{other.m_impl.m_value7};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
+        new(&m_impl.m_value8) ossia::timing{other.m_impl.m_value8};
         break;
       default:
         break;
@@ -5918,37 +5954,34 @@ public:
   {
     destruct_impl();
     m_type = other.m_type;
-    switch (m_type)
+    switch(m_type)
     {
       case Type::Type0:
-        new (&m_impl.m_value0) ossia::value{std::move(other.m_impl.m_value0)};
+        new(&m_impl.m_value0) ossia::value{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new (&m_impl.m_value1)
-            ossia::distance{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) ossia::distance{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new (&m_impl.m_value2)
-            ossia::position{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::position{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
-        new (&m_impl.m_value3) ossia::speed{std::move(other.m_impl.m_value3)};
+        new(&m_impl.m_value3) ossia::speed{std::move(other.m_impl.m_value3)};
         break;
       case Type::Type4:
-        new (&m_impl.m_value4)
-            ossia::orientation{std::move(other.m_impl.m_value4)};
+        new(&m_impl.m_value4) ossia::orientation{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
-        new (&m_impl.m_value5) ossia::angle{std::move(other.m_impl.m_value5)};
+        new(&m_impl.m_value5) ossia::angle{std::move(other.m_impl.m_value5)};
         break;
       case Type::Type6:
-        new (&m_impl.m_value6) ossia::color{std::move(other.m_impl.m_value6)};
+        new(&m_impl.m_value6) ossia::color{std::move(other.m_impl.m_value6)};
         break;
       case Type::Type7:
-        new (&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
+        new(&m_impl.m_value7) ossia::gain{std::move(other.m_impl.m_value7)};
         break;
       case Type::Type8:
-        new (&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
+        new(&m_impl.m_value8) ossia::timing{std::move(other.m_impl.m_value8)};
         break;
       default:
         break;
@@ -5959,259 +5992,259 @@ public:
 template <>
 inline const ossia::value* strong_value_variant::target() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline const ossia::distance* strong_value_variant::target() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline const ossia::position* strong_value_variant::target() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline const ossia::speed* strong_value_variant::target() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline const ossia::orientation* strong_value_variant::target() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline const ossia::angle* strong_value_variant::target() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline const ossia::color* strong_value_variant::target() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline const ossia::gain* strong_value_variant::target() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline const ossia::timing* strong_value_variant::target() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline ossia::value* strong_value_variant::target()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return &m_impl.m_value0;
   return nullptr;
 }
 template <>
 inline ossia::distance* strong_value_variant::target()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return &m_impl.m_value1;
   return nullptr;
 }
 template <>
 inline ossia::position* strong_value_variant::target()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return &m_impl.m_value2;
   return nullptr;
 }
 template <>
 inline ossia::speed* strong_value_variant::target()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return &m_impl.m_value3;
   return nullptr;
 }
 template <>
 inline ossia::orientation* strong_value_variant::target()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return &m_impl.m_value4;
   return nullptr;
 }
 template <>
 inline ossia::angle* strong_value_variant::target()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return &m_impl.m_value5;
   return nullptr;
 }
 template <>
 inline ossia::color* strong_value_variant::target()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return &m_impl.m_value6;
   return nullptr;
 }
 template <>
 inline ossia::gain* strong_value_variant::target()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return &m_impl.m_value7;
   return nullptr;
 }
 template <>
 inline ossia::timing* strong_value_variant::target()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return &m_impl.m_value8;
   return nullptr;
 }
 template <>
 inline const ossia::value& strong_value_variant::get() const
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::distance& strong_value_variant::get() const
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::position& strong_value_variant::get() const
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::speed& strong_value_variant::get() const
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::orientation& strong_value_variant::get() const
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::angle& strong_value_variant::get() const
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::color& strong_value_variant::get() const
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::gain& strong_value_variant::get() const
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline const ossia::timing& strong_value_variant::get() const
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::value& strong_value_variant::get()
 {
-  if (m_type == Type0)
+  if(m_type == Type0)
     return m_impl.m_value0;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::distance& strong_value_variant::get()
 {
-  if (m_type == Type1)
+  if(m_type == Type1)
     return m_impl.m_value1;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::position& strong_value_variant::get()
 {
-  if (m_type == Type2)
+  if(m_type == Type2)
     return m_impl.m_value2;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::speed& strong_value_variant::get()
 {
-  if (m_type == Type3)
+  if(m_type == Type3)
     return m_impl.m_value3;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::orientation& strong_value_variant::get()
 {
-  if (m_type == Type4)
+  if(m_type == Type4)
     return m_impl.m_value4;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::angle& strong_value_variant::get()
 {
-  if (m_type == Type5)
+  if(m_type == Type5)
     return m_impl.m_value5;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::color& strong_value_variant::get()
 {
-  if (m_type == Type6)
+  if(m_type == Type6)
     return m_impl.m_value6;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::gain& strong_value_variant::get()
 {
-  if (m_type == Type7)
+  if(m_type == Type7)
     return m_impl.m_value7;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <>
 inline ossia::timing& strong_value_variant::get()
 {
-  if (m_type == Type8)
+  if(m_type == Type8)
     return m_impl.m_value8;
   throw std::runtime_error("strong_value_variant: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const strong_value_variant& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -6238,7 +6271,7 @@ auto apply_nonnull(Visitor&& functor, const strong_value_variant& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, strong_value_variant& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -6265,7 +6298,7 @@ auto apply_nonnull(Visitor&& functor, strong_value_variant& var)
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, strong_value_variant&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -6292,7 +6325,7 @@ auto apply_nonnull(Visitor&& functor, strong_value_variant&& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, const strong_value_variant& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -6319,7 +6352,7 @@ auto apply(Visitor&& functor, const strong_value_variant& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, strong_value_variant& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(var.m_impl.m_value0);
@@ -6346,7 +6379,7 @@ auto apply(Visitor&& functor, strong_value_variant& var)
 template <typename Visitor>
 auto apply(Visitor&& functor, strong_value_variant&& var)
 {
-  switch (var.m_type)
+  switch(var.m_type)
   {
     case strong_value_variant::Type::Type0:
       return functor(std::move(var.m_impl.m_value0));
@@ -6370,12 +6403,11 @@ auto apply(Visitor&& functor, strong_value_variant&& var)
       return functor();
   }
 }
-inline bool
-operator==(const strong_value_variant& lhs, const strong_value_variant& rhs)
+inline bool operator==(const strong_value_variant& lhs, const strong_value_variant& rhs)
 {
-  if (lhs.m_type == rhs.m_type)
+  if(lhs.m_type == rhs.m_type)
   {
-    switch (lhs.m_type)
+    switch(lhs.m_type)
     {
       case strong_value_variant::Type::Type0:
         return lhs.m_impl.m_value0 == rhs.m_impl.m_value0;
@@ -6401,12 +6433,11 @@ operator==(const strong_value_variant& lhs, const strong_value_variant& rhs)
   }
   return false;
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const strong_value_variant& rhs)
 {
-  if (lhs.m_type != rhs.m_type)
+  if(lhs.m_type != rhs.m_type)
     return true;
-  switch (lhs.m_type)
+  switch(lhs.m_type)
   {
     case strong_value_variant::Type::Type0:
       return lhs.m_impl.m_value0 != rhs.m_impl.m_value0;
@@ -6431,170 +6462,142 @@ operator!=(const strong_value_variant& lhs, const strong_value_variant& rhs)
   }
   return true;
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::value& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::value& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type0)
          && (lhs.m_impl.m_value0 == rhs);
 }
-inline bool
-operator==(const ossia::value& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::value& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type0)
          && (rhs.m_impl.m_value0 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::value& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::value& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type0)
          || (lhs.m_impl.m_value0 != rhs);
 }
-inline bool
-operator!=(const ossia::value& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::value& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type0)
          || (rhs.m_impl.m_value0 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::distance& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::distance& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type1)
          && (lhs.m_impl.m_value1 == rhs);
 }
-inline bool
-operator==(const ossia::distance& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::distance& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type1)
          && (rhs.m_impl.m_value1 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::distance& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::distance& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type1)
          || (lhs.m_impl.m_value1 != rhs);
 }
-inline bool
-operator!=(const ossia::distance& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::distance& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type1)
          || (rhs.m_impl.m_value1 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::position& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::position& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type2)
          && (lhs.m_impl.m_value2 == rhs);
 }
-inline bool
-operator==(const ossia::position& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::position& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type2)
          && (rhs.m_impl.m_value2 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::position& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::position& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type2)
          || (lhs.m_impl.m_value2 != rhs);
 }
-inline bool
-operator!=(const ossia::position& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::position& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type2)
          || (rhs.m_impl.m_value2 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::speed& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::speed& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type3)
          && (lhs.m_impl.m_value3 == rhs);
 }
-inline bool
-operator==(const ossia::speed& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::speed& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type3)
          && (rhs.m_impl.m_value3 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::speed& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::speed& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type3)
          || (lhs.m_impl.m_value3 != rhs);
 }
-inline bool
-operator!=(const ossia::speed& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::speed& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type3)
          || (rhs.m_impl.m_value3 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::orientation& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::orientation& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type4)
          && (lhs.m_impl.m_value4 == rhs);
 }
-inline bool
-operator==(const ossia::orientation& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::orientation& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type4)
          && (rhs.m_impl.m_value4 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::orientation& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::orientation& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type4)
          || (lhs.m_impl.m_value4 != rhs);
 }
-inline bool
-operator!=(const ossia::orientation& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::orientation& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type4)
          || (rhs.m_impl.m_value4 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::angle& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::angle& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type5)
          && (lhs.m_impl.m_value5 == rhs);
 }
-inline bool
-operator==(const ossia::angle& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::angle& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type5)
          && (rhs.m_impl.m_value5 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::angle& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::angle& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type5)
          || (lhs.m_impl.m_value5 != rhs);
 }
-inline bool
-operator!=(const ossia::angle& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::angle& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type5)
          || (rhs.m_impl.m_value5 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::color& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::color& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type6)
          && (lhs.m_impl.m_value6 == rhs);
 }
-inline bool
-operator==(const ossia::color& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::color& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type6)
          && (rhs.m_impl.m_value6 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::color& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::color& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type6)
          || (lhs.m_impl.m_value6 != rhs);
 }
-inline bool
-operator!=(const ossia::color& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::color& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type6)
          || (rhs.m_impl.m_value6 != lhs);
@@ -6619,26 +6622,22 @@ inline bool operator!=(const ossia::gain& lhs, const strong_value_variant& rhs)
   return (rhs.m_type != strong_value_variant::Type::Type7)
          || (rhs.m_impl.m_value7 != lhs);
 }
-inline bool
-operator==(const strong_value_variant& lhs, const ossia::timing& rhs)
+inline bool operator==(const strong_value_variant& lhs, const ossia::timing& rhs)
 {
   return (lhs.m_type == strong_value_variant::Type::Type8)
          && (lhs.m_impl.m_value8 == rhs);
 }
-inline bool
-operator==(const ossia::timing& lhs, const strong_value_variant& rhs)
+inline bool operator==(const ossia::timing& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type == strong_value_variant::Type::Type8)
          && (rhs.m_impl.m_value8 == lhs);
 }
-inline bool
-operator!=(const strong_value_variant& lhs, const ossia::timing& rhs)
+inline bool operator!=(const strong_value_variant& lhs, const ossia::timing& rhs)
 {
   return (lhs.m_type != strong_value_variant::Type::Type8)
          || (lhs.m_impl.m_value8 != rhs);
 }
-inline bool
-operator!=(const ossia::timing& lhs, const strong_value_variant& rhs)
+inline bool operator!=(const ossia::timing& lhs, const strong_value_variant& rhs)
 {
   return (rhs.m_type != strong_value_variant::Type::Type8)
          || (rhs.m_impl.m_value8 != lhs);

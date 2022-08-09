@@ -38,13 +38,13 @@ private:
   ossia::net::node_base* m_origin{};
 };
 
-class OSSIA_EXPORT alias_path final : public generic_node_base,
-                                      public ossia::net::parameter_base
+class OSSIA_EXPORT alias_path final
+    : public generic_node_base
+    , public ossia::net::parameter_base
 {
 public:
   alias_path(
-      std::string name, ossia::net::device_base& aDevice,
-      ossia::net::node_base& parent);
+      std::string name, ossia::net::device_base& aDevice, ossia::net::node_base& parent);
 
   ~alias_path();
 

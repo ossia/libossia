@@ -126,8 +126,7 @@ struct speed_ratio;
 
 // 6
 using meter_per_second_u = speed_ratio<std::ratio<1>>;
-using miles_per_hour_u
-    = speed_ratio<std::ratio<254 * 12 * 5280, 3600 * 10000>>;
+using miles_per_hour_u = speed_ratio<std::ratio<254 * 12 * 5280, 3600 * 10000>>;
 using kilometer_per_hour_u = speed_ratio<std::ratio<1000, 3600>>;
 using knot_u = speed_ratio<std::ratio<1852, 3600>>;
 using foot_per_hour_u = speed_ratio<std::ratio<254 * 12, 3600 * 10000>>;

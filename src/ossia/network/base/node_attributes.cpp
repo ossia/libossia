@@ -8,27 +8,27 @@ namespace ossia
 {
 namespace net
 {
-#define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String) \
-  std::optional<Type> get_##Name(const extended_attributes& n)      \
-  {                                                            \
-    return get_optional_attribute<Type>(n, text_##Name());     \
-  }                                                            \
-                                                               \
-  void set_##Name(extended_attributes& n, std::optional<Type> i)    \
-  {                                                            \
-    set_optional_attribute(n, String, std::move(i));           \
-  }                                                            \
-  void set_##Name(ossia::net::node_base& n, std::optional<Type> i)  \
-  {                                                            \
-    n.set(ossia::string_view(String), std::move(i));           \
-  }                                                            \
-  ossia::string_view text_##Name()                             \
-  {                                                            \
-    constexpr_return(ossia::make_string_view(String));         \
+#define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(Type, Name, String)     \
+  std::optional<Type> get_##Name(const extended_attributes& n)     \
+  {                                                                \
+    return get_optional_attribute<Type>(n, text_##Name());         \
+  }                                                                \
+                                                                   \
+  void set_##Name(extended_attributes& n, std::optional<Type> i)   \
+  {                                                                \
+    set_optional_attribute(n, String, std::move(i));               \
+  }                                                                \
+  void set_##Name(ossia::net::node_base& n, std::optional<Type> i) \
+  {                                                                \
+    n.set(ossia::string_view(String), std::move(i));               \
+  }                                                                \
+  ossia::string_view text_##Name()                                 \
+  {                                                                \
+    constexpr_return(ossia::make_string_view(String));             \
   }
 
 #define OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(Type, Name, String) \
-  std::optional<Type> get_##Name(const extended_attributes& n)        \
+  std::optional<Type> get_##Name(const extended_attributes& n)   \
   {                                                              \
     return get_optional_attribute<Type>(n, text_##Name());       \
   }                                                              \
@@ -40,7 +40,7 @@ namespace net
   {                                                              \
     set_attribute(n, String, i);                                 \
   }                                                              \
-  void set_##Name(extended_attributes& n, std::nullopt_t i)       \
+  void set_##Name(extended_attributes& n, std::nullopt_t i)      \
   {                                                              \
     set_attribute(n, String, std::move(i));                      \
   }                                                              \
@@ -52,9 +52,9 @@ namespace net
   {                                                              \
     n.set(ossia::string_view(String), i);                        \
   }                                                              \
-  void set_##Name(ossia::net::node_base& n, std::nullopt_t i)     \
+  void set_##Name(ossia::net::node_base& n, std::nullopt_t i)    \
   {                                                              \
-    n.set(ossia::string_view(String), std::optional<Type>{});         \
+    n.set(ossia::string_view(String), std::optional<Type>{});    \
   }                                                              \
   ossia::string_view text_##Name()                               \
   {                                                              \
@@ -69,10 +69,10 @@ namespace net
                                                                     \
   void set_##Name(extended_attributes& n, Type i)                   \
   {                                                                 \
-    if (i)                                                          \
+    if(i)                                                           \
       set_attribute(n, String);                                     \
     else                                                            \
-      set_attribute(n, String, std::nullopt);                        \
+      set_attribute(n, String, std::nullopt);                       \
   }                                                                 \
   void set_##Name(ossia::net::node_base& n, Type i)                 \
   {                                                                 \
@@ -83,22 +83,19 @@ namespace net
     constexpr_return(ossia::make_string_view(String));              \
   }
 
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
-    instance_bounds, instance_bounds, "instanceBounds")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(instance_bounds, instance_bounds, "instanceBounds")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(tags, tags, "tags")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(description, description, "description")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(priority, priority, "priority")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(refresh_rate, refresh_rate, "refreshRate")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(recall_safe, recall_safe, "recallSafe")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(
-    value_step_size, value_step_size, "valueStepsize")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(value_step_size, value_step_size, "valueStepsize")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(zombie, zombie, "zombie")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_BOOL(hidden, hidden, "hidden")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_name, app_name, "appName")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_version, app_version, "appVersion")
 OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL(app_creator, app_creator, "appCreator")
-OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(
-    default_value, default_value, "valueDefault")
+OSSIA_ATTRIBUTE_GETTER_SETTER_IMPL_2(default_value, default_value, "valueDefault")
 
 ossia::string_view text_extended_type()
 {
@@ -108,11 +105,11 @@ ossia::string_view text_extended_type()
 std::optional<extended_type> get_extended_type(const ossia::net::node_base& n)
 {
   auto opt = get_optional_attribute<extended_type>(n, text_extended_type());
-  if (!opt)
+  if(!opt)
   {
-    if (parameter_base* addr = n.get_parameter())
+    if(parameter_base* addr = n.get_parameter())
     {
-      switch (addr->get_value_type())
+      switch(addr->get_value_type())
       {
         case ossia::val_type::VEC2F:
         case ossia::val_type::VEC3F:
@@ -141,7 +138,7 @@ void set_extended_type(ossia::net::node_base& n, std::optional<extended_type> i)
 
 void set_description(extended_attributes& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_description(n, std::string{arg});
   else
     set_description(n, std::nullopt);
@@ -149,7 +146,7 @@ void set_description(extended_attributes& n, const char* arg)
 
 void set_description(ossia::net::node_base& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_description(n, std::string{arg});
   else
     set_description(n, std::nullopt);
@@ -157,7 +154,7 @@ void set_description(ossia::net::node_base& n, const char* arg)
 
 void set_app_name(extended_attributes& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_name(n, std::string{arg});
   else
     set_app_name(n, std::nullopt);
@@ -165,7 +162,7 @@ void set_app_name(extended_attributes& n, const char* arg)
 
 void set_app_name(ossia::net::node_base& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_name(n, std::string{arg});
   else
     set_app_name(n, std::nullopt);
@@ -173,7 +170,7 @@ void set_app_name(ossia::net::node_base& n, const char* arg)
 
 void set_app_creator(extended_attributes& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_creator(n, std::string{arg});
   else
     set_app_creator(n, std::nullopt);
@@ -181,7 +178,7 @@ void set_app_creator(extended_attributes& n, const char* arg)
 
 void set_app_creator(ossia::net::node_base& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_creator(n, std::string{arg});
   else
     set_app_creator(n, std::nullopt);
@@ -189,7 +186,7 @@ void set_app_creator(ossia::net::node_base& n, const char* arg)
 
 void set_app_version(extended_attributes& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_version(n, std::string{arg});
   else
     set_app_version(n, std::nullopt);
@@ -197,7 +194,7 @@ void set_app_version(extended_attributes& n, const char* arg)
 
 void set_app_version(ossia::net::node_base& n, const char* arg)
 {
-  if (arg)
+  if(arg)
     set_app_version(n, std::string{arg});
   else
     set_app_version(n, std::nullopt);
@@ -268,13 +265,13 @@ ossia::string_view text_value()
 }
 value clone_value(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->value();
   return {};
 }
 void set_value(ossia::net::node_base& n, value v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_value(std::move(v));
 }
 void set_value(ossia::net::parameter_data& n, value v)
@@ -288,13 +285,13 @@ ossia::string_view text_value_type()
 }
 std::optional<val_type> get_value_type(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_value_type();
   return std::nullopt;
 }
 void set_value_type(ossia::net::node_base& n, val_type v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_value_type(std::move(v));
   else
     n.create_parameter(std::move(v));
@@ -306,13 +303,13 @@ ossia::string_view text_domain()
 }
 domain get_domain(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_domain();
   return {};
 }
 void set_domain(ossia::net::node_base& n, domain v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_domain(std::move(v));
 }
 void set_domain(ossia::net::parameter_data& n, domain v)
@@ -326,13 +323,13 @@ ossia::string_view text_access_mode()
 }
 std::optional<access_mode> get_access_mode(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_access();
   return std::nullopt;
 }
 void set_access_mode(ossia::net::node_base& n, access_mode v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_access(std::move(v));
 }
 void set_access_mode(ossia::net::parameter_data& n, access_mode v)
@@ -346,13 +343,13 @@ ossia::string_view text_bounding_mode()
 }
 std::optional<bounding_mode> get_bounding_mode(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_bounding();
   return std::nullopt;
 }
 void set_bounding_mode(ossia::net::node_base& n, bounding_mode v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_bounding(std::move(v));
 }
 void set_bounding_mode(ossia::net::parameter_data& n, bounding_mode v)
@@ -366,13 +363,13 @@ ossia::string_view text_muted()
 }
 muted get_muted(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_muted();
   return false;
 }
 void set_muted(ossia::net::node_base& n, muted v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_muted(v);
 }
 void set_muted(ossia::net::parameter_data& n, muted v)
@@ -386,13 +383,13 @@ ossia::string_view text_disabled()
 }
 disabled get_disabled(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_disabled();
   return false;
 }
 void set_disabled(ossia::net::node_base& n, disabled v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_disabled(v);
 }
 void set_disabled(ossia::net::parameter_data& n, disabled v)
@@ -406,13 +403,13 @@ ossia::string_view text_critical()
 }
 critical get_critical(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_critical();
   return false;
 }
 void set_critical(ossia::net::node_base& n, critical v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_critical(v);
 }
 void set_critical(ossia::net::parameter_data& n, critical v)
@@ -426,13 +423,13 @@ ossia::string_view text_repetition_filter()
 }
 repetition_filter get_repetition_filter(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_repetition_filter();
   return repetition_filter::OFF;
 }
 void set_repetition_filter(ossia::net::node_base& n, repetition_filter v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_repetition_filter(std::move(v));
 }
 
@@ -442,13 +439,13 @@ ossia::string_view text_unit()
 }
 unit_t get_unit(const ossia::net::node_base& n)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     return addr->get_unit();
   return {};
 }
 void set_unit(ossia::net::node_base& n, unit_t v)
 {
-  if (auto addr = n.get_parameter())
+  if(auto addr = n.get_parameter())
     addr->set_unit(std::move(v));
 }
 }

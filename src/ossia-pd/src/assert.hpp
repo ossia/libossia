@@ -1,6 +1,7 @@
 #pragma once
-#include <ossia-pd/src/object_base.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
+
+#include <ossia-pd/src/object_base.hpp>
 
 namespace ossia
 {
@@ -23,4 +24,3 @@ public:
 };
 } // pd namespace
 } // ossia namespace
-

@@ -1,33 +1,31 @@
 #include "qml_autom.hpp"
-#include <ossia/network/base/node.hpp>
+
+#include <ossia/editor/curve/curve.hpp>
+#include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
-#include <ossia/editor/curve/curve_segment/linear.hpp>
-#include <ossia/editor/curve/curve.hpp>
-#include <ossia-qt/device/qml_device.hpp>
 
+#include <ossia-qt/device/qml_device.hpp>
 
 namespace ossia
 {
 namespace qt
 {
 
-qml_process::qml_process(QQuickItem* parent):
-  QQuickItem{parent}
+qml_process::qml_process(QQuickItem* parent)
+    : QQuickItem{parent}
 {
-  connect(this, &QQuickItem::parentChanged,
-          this, &qml_process::reset);
+  connect(this, &QQuickItem::parentChanged, this, &qml_process::reset);
 }
 
 qml_process::~qml_process()
 {
-
 }
 
 void qml_process::setup()
 {
-
 }
 
 std::shared_ptr<time_process> qml_process::process() const
@@ -50,12 +48,10 @@ void qml_process::reset()
 
 void qml_process::reset_impl()
 {
-
 }
 
-
 qml_autom::qml_autom(QQuickItem* parent)
-  : qml_process{parent}
+    : qml_process{parent}
 {
   /* TODO
   m_impl = std::make_shared<ossia::automation>();
@@ -65,7 +61,6 @@ qml_autom::qml_autom(QQuickItem* parent)
 
 qml_autom::~qml_autom()
 {
-
 }
 
 void qml_autom::setup()
@@ -181,7 +176,7 @@ void qml_autom::setTarget(QVariant var)
 
 void qml_autom::setXMin(double xMin)
 {
-  if (qFuzzyCompare(m_xMin, xMin))
+  if(qFuzzyCompare(m_xMin, xMin))
     return;
 
   m_xMin = xMin;
@@ -190,7 +185,7 @@ void qml_autom::setXMin(double xMin)
 
 void qml_autom::setXMax(double xMax)
 {
-  if (qFuzzyCompare(m_xMax, xMax))
+  if(qFuzzyCompare(m_xMax, xMax))
     return;
 
   m_xMax = xMax;
@@ -199,7 +194,7 @@ void qml_autom::setXMax(double xMax)
 
 void qml_autom::setYMin(double yMin)
 {
-  if (qFuzzyCompare(m_yMin, yMin))
+  if(qFuzzyCompare(m_yMin, yMin))
     return;
 
   m_yMin = yMin;
@@ -208,7 +203,7 @@ void qml_autom::setYMin(double yMin)
 
 void qml_autom::setYMax(double yMax)
 {
-  if (qFuzzyCompare(m_yMax, yMax))
+  if(qFuzzyCompare(m_yMax, yMax))
     return;
 
   m_yMax = yMax;
@@ -217,10 +212,9 @@ void qml_autom::setYMax(double yMax)
 
 void qml_autom::reset_impl()
 {
-
 }
 
-std::function<float (double, float, float)> qml_breakpoint::segment()
+std::function<float(double, float, float)> qml_breakpoint::segment()
 {
   switch(m_type)
   {
@@ -235,7 +229,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutQuad:
       return ossia::curve_segment_ease<float, easing::quadraticInOut>{};
     case QEasingCurve::OutInQuad:
-      //TODO return ossia::curve_segment_ease<float, easing::quadraticOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::quadraticOutIn>{};
       break;
 
     case QEasingCurve::InCubic:
@@ -245,7 +239,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutCubic:
       return ossia::curve_segment_ease<float, easing::cubicInOut>{};
     case QEasingCurve::OutInCubic:
-      //TODO return ossia::curve_segment_ease<float, easing::cubicOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::cubicOutIn>{};
       break;
 
     case QEasingCurve::InQuart:
@@ -255,7 +249,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutQuart:
       return ossia::curve_segment_ease<float, easing::quarticInOut>{};
     case QEasingCurve::OutInQuart:
-      //TODO return ossia::curve_segment_ease<float, easing::quarticOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::quarticOutIn>{};
       break;
 
     case QEasingCurve::InQuint:
@@ -265,7 +259,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutQuint:
       return ossia::curve_segment_ease<float, easing::quinticInOut>{};
     case QEasingCurve::OutInQuint:
-      //TODO return ossia::curve_segment_ease<float, easing::quinticOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::quinticOutIn>{};
       break;
 
     case QEasingCurve::InSine:
@@ -275,7 +269,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutSine:
       return ossia::curve_segment_ease<float, easing::sineInOut>{};
     case QEasingCurve::OutInSine:
-      //TODO return ossia::curve_segment_ease<float, easing::sineOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::sineOutIn>{};
       break;
 
     case QEasingCurve::InExpo:
@@ -285,7 +279,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutExpo:
       return ossia::curve_segment_ease<float, easing::exponentialInOut>{};
     case QEasingCurve::OutInExpo:
-      //TODO return ossia::curve_segment_ease<float, easing::exponentialOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::exponentialOutIn>{};
       break;
 
     case QEasingCurve::InCirc:
@@ -295,7 +289,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutCirc:
       return ossia::curve_segment_ease<float, easing::circularInOut>{};
     case QEasingCurve::OutInCirc:
-      //TODO return ossia::curve_segment_ease<float, easing::circularOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::circularOutIn>{};
       break;
 
     case QEasingCurve::InElastic:
@@ -305,7 +299,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutElastic:
       return ossia::curve_segment_ease<float, easing::elasticInOut>{};
     case QEasingCurve::OutInElastic:
-      //TODO return ossia::curve_segment_ease<float, easing::elasticOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::elasticOutIn>{};
       break;
 
     case QEasingCurve::InBack:
@@ -315,7 +309,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutBack:
       return ossia::curve_segment_ease<float, easing::backInOut>{};
     case QEasingCurve::OutInBack:
-      //TODO return ossia::curve_segment_ease<float, easing::backOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::backOutIn>{};
       break;
 
     case QEasingCurve::InBounce:
@@ -325,7 +319,7 @@ std::function<float (double, float, float)> qml_breakpoint::segment()
     case QEasingCurve::InOutBounce:
       return ossia::curve_segment_ease<float, easing::bounceInOut>{};
     case QEasingCurve::OutInBounce:
-      //TODO return ossia::curve_segment_ease<float, easing::bounceOutIn>{};
+      // TODO return ossia::curve_segment_ease<float, easing::bounceOutIn>{};
       break;
 
     case QEasingCurve::InCurve:

@@ -49,8 +49,7 @@ struct make_value_helper<U, ossia::vec2f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 2>>(t)};
   }
@@ -80,8 +79,7 @@ struct make_value_helper<U, ossia::vec3f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 3>>(t)};
   }
@@ -111,8 +109,7 @@ struct make_value_helper<U, ossia::vec4f>
     return {};
   }
 
-  OSSIA_INLINE ossia::value_with_unit
-  operator()(const std::vector<ossia::value>& t)
+  OSSIA_INLINE ossia::value_with_unit operator()(const std::vector<ossia::value>& t)
   {
     return strong_value<U>{ossia::convert<std::array<float, 4>>(t)};
   }

@@ -1,10 +1,10 @@
 #pragma once
-#include <ossia/editor/state/message.hpp>
+#include <ossia/detail/config.hpp>
+
 #include <ossia/editor/state/control_message.hpp>
+#include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
-
-#include <ossia/detail/config.hpp>
 
 /**
  * \file state_element.hpp

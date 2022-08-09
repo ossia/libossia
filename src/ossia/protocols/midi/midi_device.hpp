@@ -6,8 +6,8 @@
 namespace ossia::net::midi
 {
 class OSSIA_EXPORT midi_device final
-    : public ossia::net::device_base,
-    public midi_node
+    : public ossia::net::device_base
+    , public midi_node
 {
 public:
   midi_device(std::unique_ptr<ossia::net::protocol_base> prot);

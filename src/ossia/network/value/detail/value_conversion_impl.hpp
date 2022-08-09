@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/fmt.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/network/value/value_traits.hpp>
@@ -8,8 +9,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/spirit/home/x3.hpp>
 #include <boost/type_traits/function_traits.hpp>
-
-#include <ossia/detail/fmt.hpp>
 namespace ossia
 {
 
@@ -18,8 +17,7 @@ namespace detail
 template <typename T>
 struct array_size;
 template <typename T, std::size_t N>
-struct array_size<std::array<T, N>>
-    : public std::integral_constant<std::size_t, N>
+struct array_size<std::array<T, N>> : public std::integral_constant<std::size_t, N>
 {
 };
 
@@ -80,7 +78,7 @@ struct numeric_value_converter
     {
       return boost::lexical_cast<T>(v);
     }
-    catch (...)
+    catch(...)
     {
       return T{};
     }
@@ -118,7 +116,7 @@ struct value_converter<int> : public numeric_value_converter<int>
       boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
       return x;
     }
-    catch (...)
+    catch(...)
     {
       return int{};
     }
@@ -137,7 +135,7 @@ struct value_converter<float> : public numeric_value_converter<float>
       boost::spirit::x3::parse(v.begin(), v.end(), float_, x);
       return x;
     }
-    catch (...)
+    catch(...)
     {
       return int{};
     }
@@ -156,7 +154,7 @@ struct value_converter<double> : public numeric_value_converter<double>
       boost::spirit::x3::parse(v.begin(), v.end(), double_, x);
       return x;
     }
-    catch (...)
+    catch(...)
     {
       return int{};
     }
@@ -189,7 +187,7 @@ struct fmt_writer
   }
   void operator()(bool v) const
   {
-    if (v)
+    if(v)
       fmt::format_to(fmt::appender(wr), "true");
     else
       fmt::format_to(fmt::appender(wr), "false");
@@ -209,7 +207,7 @@ struct fmt_writer
   void operator()(std::array<float, N> v) const
   {
     fmt::format_to(fmt::appender(wr), "[{}", v[0]);
-    for (std::size_t i = 1; i < N; i++)
+    for(std::size_t i = 1; i < N; i++)
       fmt::format_to(fmt::appender(wr), ", {}", v[i]);
     fmt::format_to(fmt::appender(wr), "]");
   }
@@ -218,11 +216,11 @@ struct fmt_writer
     using namespace std::literals;
     fmt::format_to(fmt::appender(wr), "[");
     const auto n = v.size();
-    if (n > 0)
+    if(n > 0)
     {
       v[0].apply(*this);
 
-      for (std::size_t i = 1; i < n; i++)
+      for(std::size_t i = 1; i < n; i++)
       {
         fmt::format_to(fmt::appender(wr), ", ");
         v[i].apply(*this);
@@ -274,7 +272,7 @@ struct value_converter<std::string>
     std::string wr;
     wr.reserve(N * 10);
     fmt::format_to(std::back_inserter(wr), "[{}", v[0]);
-    for (std::size_t i = 1; i < N; i++)
+    for(std::size_t i = 1; i < N; i++)
       fmt::format_to(std::back_inserter(wr), ", {}", v[i]);
     fmt::format_to(std::back_inserter(wr), "]");
     return wr;
@@ -303,7 +301,7 @@ struct value_converter<std::vector<ossia::value>>
   std::vector<ossia::value> operator()(const std::array<float, N>& u)
   {
     std::vector<ossia::value> v;
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       v.push_back(float{u[i]});
     }
@@ -344,7 +342,7 @@ struct value_converter<std::array<float, N>>
   std::array<float, N> operator()(std::array<float, M> v)
   {
     std::array<float, N> a = cur;
-    for (std::size_t i = 0; i < std::min(N, M); i++)
+    for(std::size_t i = 0; i < std::min(N, M); i++)
     {
       a[i] = v[i];
     }
@@ -413,7 +411,7 @@ T convert(const std::vector<ossia::value>& val)
 
   T res{};
   const auto N = std::min(val.size(), detail::array_size<T>::value);
-  for (std::size_t i = 0; i < N; i++)
+  for(std::size_t i = 0; i < N; i++)
   {
     res[i] = val[i].apply(detail::value_converter<typename T::value_type>{});
   }
@@ -424,7 +422,7 @@ T convert(const std::vector<ossia::value>& val)
 template <typename Fun, typename... Args>
 auto lift(ossia::val_type type, Fun f, Args&&... args)
 {
-  switch (type)
+  switch(type)
   {
     case val_type::IMPULSE:
       return f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...);
@@ -440,8 +438,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       return f(ossia::value_trait<std::string>{}, std::forward<Args>(args)...);
     case val_type::LIST:
       return f(
-          ossia::value_trait<std::vector<ossia::value>>{},
-          std::forward<Args>(args)...);
+          ossia::value_trait<std::vector<ossia::value>>{}, std::forward<Args>(args)...);
     case val_type::VEC2F:
       return f(ossia::value_trait<vec2f>{}, std::forward<Args>(args)...);
     case val_type::VEC3F:
@@ -453,8 +450,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
   }
 
   throw invalid_value_type_error("lift: Invalid type");
-  return decltype(
-      f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
+  return decltype(f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
 }
 }
 

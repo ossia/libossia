@@ -1,22 +1,20 @@
 #pragma once
+#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
 
-#include <ossia/detail/fmt.hpp>
-
 namespace std
 {
 template <>
 struct hash<ossia::small_vector<std::string, 4>>
 {
-  std::size_t operator()(const ossia::small_vector<std::string, 4>& v) const
-      noexcept
+  std::size_t operator()(const ossia::small_vector<std::string, 4>& v) const noexcept
   {
     std::size_t seed{};
-    for (auto& str : v)
+    for(auto& str : v)
       ossia::hash_combine(seed, std::hash<std::string>{}(str));
     return seed;
   }
@@ -390,13 +388,12 @@ struct unit_writer
     writer.writeKey("EXTENDED_TYPE");
 
     writer.writer.StartArray();
-    if constexpr (is_array_unit<T>::value)
+    if constexpr(is_array_unit<T>::value)
     {
-      for (char val : T::array_parameters())
+      for(char val : T::array_parameters())
       {
         writer.writer.String(fmt::format(
-            "{}.{}.{}",
-            dataspace_traits<typename T::dataspace_type>::text()[0],
+            "{}.{}.{}", dataspace_traits<typename T::dataspace_type>::text()[0],
             unit_traits<T>::text()[0], val));
       }
     }
@@ -416,11 +413,10 @@ struct unit_parser
       unit_matcher(degree_u{}),
       unit_matcher(radian_u{}),
 
-      {{"color.rgb.a", "color.rgb.r", "color.rgb.g", "color.rgb.b"},
-       ossia::argb_u{}},
-      {{"color.rgb.r", "color.rgb.g", "color.rgb.b", "color.rgb.a"},
-       ossia::rgba_u{}},
-      // { { "color.rgb.r", "color.rgb.g", "color.rgb.b" }, ossia::rgba8_u{} },
+      {{"color.rgb.a", "color.rgb.r", "color.rgb.g", "color.rgb.b"}, ossia::argb_u{}},
+      {{"color.rgb.r", "color.rgb.g", "color.rgb.b", "color.rgb.a"}, ossia::rgba_u{}},
+      // { { "color.rgb.r", "color.rgb.g", "color.rgb.b" },
+      // ossia::rgba8_u{} },
       // // not needed
       {{"color.rgb.r", "color.rgb.g", "color.rgb.b"}, ossia::rgb_u{}},
       {{"color.rgb.b", "color.rgb.g", "color.rgb.r"}, ossia::bgr_u{}},
@@ -432,11 +428,12 @@ struct unit_parser
        ossia::xyz_u{}}, /*
 { { "color.hsl.h", "color.hsl.s", "color.hsl.l" }, ossia::hsl_u{} },
 { { "color.cmyk8.c", "color.cmyk8.m", "color.cmyk8.y", "color.cmyk8.k" },
-ossia::cmyk8_u{} }, { { "color.cieYxy.y", "color.cieYxy.x", "color.cieYxy.y" },
-ossia::yxy_u{} }, { { "color.hunterLab.l", "color.hunterLab.a",
-"color.hunterLab.b" }, ossia::hunter_lab_u{} }, { { "color.cieLab.l",
-"color.cieLab.a", "color.cieLab.b" }, ossia::cie_lab_u{} }, { {
-"color.cieLuv.l", "color.cieLuv.a", "color.cieLuv.b" }, ossia::cie_luv_u{} },*/
+ossia::cmyk8_u{} }, { { "color.cieYxy.y", "color.cieYxy.x",
+"color.cieYxy.y" }, ossia::yxy_u{} }, { { "color.hunterLab.l",
+"color.hunterLab.a", "color.hunterLab.b" }, ossia::hunter_lab_u{} }, { {
+"color.cieLab.l", "color.cieLab.a", "color.cieLab.b" }, ossia::cie_lab_u{}
+}, { { "color.cieLuv.l", "color.cieLuv.a", "color.cieLuv.b" },
+ossia::cie_luv_u{} },*/
 
       unit_matcher(meter_u{}),
       unit_matcher(kilometer_u{}),
@@ -467,11 +464,9 @@ ossia::yxy_u{} }, { { "color.hunterLab.l", "color.hunterLab.a",
       unit_matcher(cylindrical_u{}),
       unit_matcher(azd_u{}),
 
-      {{"position.cartesian.x", "position.cartesian.y",
-        "position.cartesian.z"},
+      {{"position.cartesian.x", "position.cartesian.y", "position.cartesian.z"},
        ossia::cartesian_3d_u{}},
-      {{"position.cartesian.x", "position.cartesian.y"},
-       ossia::cartesian_2d_u{}},
+      {{"position.cartesian.x", "position.cartesian.y"}, ossia::cartesian_2d_u{}},
 
       unit_matcher(meter_per_second_u{}),
       unit_matcher(miles_per_hour_u{}),
@@ -495,13 +490,12 @@ ossia::yxy_u{} }, { { "color.hunterLab.l", "color.hunterLab.a",
   unit_matcher(const T&)
   {
     ossia::small_vector<std::string, 4> vec;
-    if constexpr (is_array_unit<T>::value)
+    if constexpr(is_array_unit<T>::value)
     {
-      for (char val : T::array_parameters())
+      for(char val : T::array_parameters())
       {
         vec.push_back(fmt::format(
-            "{}.{}.{}",
-            dataspace_traits<typename T::dataspace_type>::text()[0],
+            "{}.{}.{}", dataspace_traits<typename T::dataspace_type>::text()[0],
             unit_traits<T>::text()[0], val));
       }
     }

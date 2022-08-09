@@ -1,6 +1,7 @@
 #pragma once
-#include <utility>
 #include <ossia/detail/nullable_variant.hpp>
+
+#include <utility>
 
 namespace ossia
 {

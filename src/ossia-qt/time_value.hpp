@@ -1,8 +1,9 @@
 #pragma once
 #include <ossia/editor/scenario/time_value.hpp>
-#include <verdigris>
 
 #include <QDataStream>
+
+#include <verdigris>
 
 inline QDataStream& operator<<(QDataStream& i, const ossia::time_value& sel)
 {

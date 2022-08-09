@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/string_view.hpp>
 
 #include <algorithm>
@@ -58,7 +59,7 @@ template <typename Vector, typename Value>
 void remove_one(Vector&& v, const Value& val)
 {
   auto it = find(v, val);
-  if (it != v.end())
+  if(it != v.end())
   {
     v.erase(it);
   }
@@ -68,7 +69,7 @@ template <typename Vector, typename Function>
 void remove_one_if(Vector& v, const Function& val)
 {
   auto it = find_if(v, val);
-  if (it != v.end())
+  if(it != v.end())
   {
     v.erase(it);
   }
@@ -89,7 +90,7 @@ void remove_erase_if(Vector& v, const Function& val)
 template <typename Vector, typename Fun>
 void erase_if(Vector& r, Fun f)
 {
-  for (auto it = std::begin(r); it != std::end(r);)
+  for(auto it = std::begin(r); it != std::end(r);)
   {
     it = f(*it) ? r.erase(it) : ++it;
   }
@@ -177,16 +178,15 @@ void copy(const Vector1& source, Vector2& destination)
 template <typename Vector1, typename Vector2, typename Pred>
 void copy_if(const Vector1& source, Vector2& destination, Pred predicate)
 {
-  std::copy_if(
-      source.begin(), source.end(), std::back_inserter(destination),
-      predicate);
+  std::copy_if(source.begin(), source.end(), std::back_inserter(destination), predicate);
 }
 
 template <typename T, typename K>
 auto last_before(T&& container, const K& k)
 {
   auto it = container.upper_bound(k);
-  if (it != container.begin()) {
+  if(it != container.begin())
+  {
     std::advance(it, -1);
   }
   return it;
@@ -227,14 +227,14 @@ constexpr std::array<std::remove_cv_t<T>, N> to_array(T (&a)[N]) noexcept
 }
 
 template <typename... Args>
-constexpr std::array<const char*, sizeof...(Args)>
-make_array(Args&&... args) noexcept
+constexpr std::array<const char*, sizeof...(Args)> make_array(Args&&... args) noexcept
 {
   return {args...};
 }
 
-template<typename T>
-void remove_duplicates(T& vec) {
+template <typename T>
+void remove_duplicates(T& vec)
+{
   if(vec.size() <= 1)
     return;
 
@@ -242,8 +242,9 @@ void remove_duplicates(T& vec) {
   vec.erase(std::unique(vec.begin(), vec.end()), vec.end());
 }
 
-template<typename T, typename Comp>
-void remove_duplicates(T& vec, Comp comparator) {
+template <typename T, typename Comp>
+void remove_duplicates(T& vec, Comp comparator)
+{
   if(vec.size() <= 1)
     return;
 
@@ -251,18 +252,21 @@ void remove_duplicates(T& vec, Comp comparator) {
   vec.erase(std::unique(vec.begin(), vec.end(), comparator), vec.end());
 }
 
-template<typename Container, typename K, typename Comp, typename... Args>
+template <typename Container, typename K, typename Comp, typename... Args>
 auto emplace_sorted(Container& vec, const K& k, Comp&& comp, Args&&... args)
-  -> decltype(auto)
+    -> decltype(auto)
 {
   auto it = std::lower_bound(vec.begin(), vec.end(), k, std::forward<Comp>(comp));
   return vec.emplace(it, std::forward<Args>(args)...);
 }
 
-template<typename D, template<typename, typename> typename S, typename T, typename Alloc>
+template <
+    typename D, template <typename, typename> typename S, typename T, typename Alloc>
 auto insert_at_end(D& dest, S<T, Alloc>&& src)
 {
-  dest.insert(dest.end(), std::make_move_iterator(src.begin()), std::make_move_iterator(src.end()));
+  dest.insert(
+      dest.end(), std::make_move_iterator(src.begin()),
+      std::make_move_iterator(src.end()));
 }
 
 }

@@ -22,7 +22,7 @@ public:
   dummy_audio_node()
   {
     m_inlets.push_back(new ossia::audio_inlet);
-    m_outlets.push_back(new ossia::audio_outlet );
+    m_outlets.push_back(new ossia::audio_outlet);
   }
 
   void run(const token_request& t, exec_state_facade) noexcept override

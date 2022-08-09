@@ -19,7 +19,7 @@ void list_units(InsertFun fun)
     ossia::net::parameter_data p;
     using dataspace_type = typename decltype(t)::type;
     using d_traits = dataspace_traits<dataspace_type>;
-    for (auto dn : d_traits::text())
+    for(auto dn : d_traits::text())
     {
       std::string dataspace_name(dn);
       boost::algorithm::to_lower(dataspace_name);
@@ -30,7 +30,7 @@ void list_units(InsertFun fun)
       ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
         using unit_type = typename decltype(u)::type;
 
-        for (auto un : unit_traits<unit_type>::text())
+        for(auto un : unit_traits<unit_type>::text())
         {
           // Add the unit in short form and long
           std::string s = boost::algorithm::to_lower_copy(std::string(un));

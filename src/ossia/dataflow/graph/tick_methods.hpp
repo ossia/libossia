@@ -1,13 +1,12 @@
 #pragma once
+#include <ossia/audio/audio_tick.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/detail/pod_vector.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/audio/audio_tick.hpp>
-
 #include <ossia/editor/scenario/execution_log.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
 
 #include <map>
 
@@ -37,7 +36,9 @@ struct cycle_count_bench
 
   uint64_t t0;
 
-  cycle_count_bench(ossia::double_vector& v) : m_tickDurations{v}, t0{rdtsc()}
+  cycle_count_bench(ossia::double_vector& v)
+      : m_tickDurations{v}
+      , t0{rdtsc()}
   {
   }
 
@@ -54,7 +55,8 @@ struct clock_count_bench
   std::chrono::time_point<std::chrono::steady_clock> t0;
 
   clock_count_bench(ossia::double_vector& v)
-      : m_tickDurations{v}, t0{std::chrono::steady_clock::now()}
+      : m_tickDurations{v}
+      , t0{std::chrono::steady_clock::now()}
   {
   }
 
@@ -102,8 +104,9 @@ struct tick_all_nodes
     const time_value new_date{e.samples_since_start};
 
     // TODO tempo / sig ?
-    for (auto& node : g.get_nodes())
-      node->request(token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, ossia::root_tempo});
+    for(auto& node : g.get_nodes())
+      node->request(
+          token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, ossia::root_tempo});
 
     g.state(e);
     std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -150,9 +153,8 @@ struct buffer_tick
 
     tok.date = tok.prev_date + flicks;
 
-
     // Notify the current transport state
-    if (transport.allocated())
+    if(transport.allocated())
     {
       transport(itv.current_transport_info());
     }
@@ -212,7 +214,7 @@ struct precise_score_tick
     std::atomic_thread_fence(std::memory_order_seq_cst);
     st.bufferSize = 1;
     st.cur_date = seconds * 1e9;
-    for (std::size_t i = 0; i < frameCount; i++)
+    for(std::size_t i = 0; i < frameCount; i++)
     {
       st.begin_tick();
       st.samples_since_start++;
@@ -374,7 +376,7 @@ struct benchmark_score_tick
     QFile f("/tmp/out.data");
     QTextStream s(&f);
     f.open(QIODevice::WriteOnly);
-    for (auto t : m_tickDurations)
+    for(auto t : m_tickDurations)
       s << t << "\n";
   }
 };

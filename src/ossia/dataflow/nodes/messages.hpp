@@ -14,12 +14,11 @@ public:
 
   void run(const ossia::token_request&, ossia::exec_state_facade e) noexcept override
   {
-    for (auto& msg : data)
+    for(auto& msg : data)
     {
       e.insert(
           msg.dest.address(),
-          ossia::typed_value{msg.message_value, msg.dest.index,
-                             msg.dest.unit});
+          ossia::typed_value{msg.message_value, msg.dest.index, msg.dest.unit});
     }
   }
 

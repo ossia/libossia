@@ -1,7 +1,7 @@
 #pragma once
-#include <ossia/editor/expression/expression_fwd.hpp>
-
 #include <ossia/detail/config.hpp>
+
+#include <ossia/editor/expression/expression_fwd.hpp>
 
 #include <memory>
 
@@ -20,15 +20,15 @@ struct OSSIA_EXPORT expression_generic_base
   virtual void on_removing_last_callback(expression_generic&) = 0;
 };
 
-class OSSIA_EXPORT expression_generic final
-    : public expression_callback_container
+class OSSIA_EXPORT expression_generic final : public expression_callback_container
 {
 public:
   expression_generic(std::unique_ptr<expression_generic_base> ptr)
       : expr{std::move(ptr)}
   {
   }
-  expression_generic(expression_generic_base* ptr) : expr{ptr}
+  expression_generic(expression_generic_base* ptr)
+      : expr{ptr}
   {
   }
   ~expression_generic() override;
@@ -43,9 +43,10 @@ public:
     return expr->evaluate();
   }
 
-  void reset() const {
-
+  void reset() const
+  {
   }
+
 private:
   void on_first_callback_added() override
   {

@@ -1,15 +1,17 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/optional.hpp>
+#include <ossia/detail/std_fwd.hpp>
 #include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/dataspace/dataspace_fwd.hpp>
 #include <ossia/network/domain/domain_fwd.hpp>
 #include <ossia/network/value/destination.hpp>
-#include <ossia/detail/std_fwd.hpp>
+
 #include <nano_signal_slot.hpp>
-#include <ossia/detail/config.hpp>
 
 #include <ciso646>
 #include <functional>
@@ -44,7 +46,8 @@ struct full_parameter_data;
 class OSSIA_EXPORT parameter_base : public callback_container<value_callback>
 {
 public:
-  explicit parameter_base(ossia::net::node_base& n) : m_node{n}
+  explicit parameter_base(ossia::net::node_base& n)
+      : m_node{n}
   {
   }
   explicit parameter_base(const parameter_base&) = delete;
@@ -123,8 +126,7 @@ public:
   ossia::value value(ossia::destination_index) const;
 
   //! Returns a list of sub-values matching the indexes
-  std::vector<ossia::value>
-  value(const std::vector<ossia::destination_index>&) const;
+  std::vector<ossia::value> value(const std::vector<ossia::destination_index>&) const;
 
   virtual ossia::value set_value(const ossia::value&) = 0;
   virtual ossia::value set_value(ossia::value&&) = 0;
@@ -155,8 +157,7 @@ public:
   virtual parameter_base& set_bounding(bounding_mode) = 0;
 
   repetition_filter get_repetition_filter() const;
-  parameter_base&
-      set_repetition_filter(repetition_filter = repetition_filter::ON);
+  parameter_base& set_repetition_filter(repetition_filter = repetition_filter::ON);
   virtual bool filter_value(const ossia::value& val) const
   {
     return m_disabled || m_muted;

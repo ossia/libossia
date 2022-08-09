@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/audio/audio_tick.hpp>
-
 #include <ossia/detail/lockfree_queue.hpp>
+
 #include <smallfun.hpp>
 
 #include <ossia-config.hpp>
@@ -60,10 +60,8 @@ private:
   std::atomic_int64_t reply{-1};
 };
 
-
-
 OSSIA_EXPORT
 ossia::audio_engine* make_audio_engine(
-    std::string proto, std::string name, std::string req_in,
-    std::string req_out, int& inputs, int& outputs, int& rate, int& bs);
+    std::string proto, std::string name, std::string req_in, std::string req_out,
+    int& inputs, int& outputs, int& rate, int& bs);
 }

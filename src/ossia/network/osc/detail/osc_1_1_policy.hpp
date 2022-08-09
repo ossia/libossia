@@ -1,11 +1,12 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/osc/detail/osc_utils.hpp>
 #include <ossia/network/osc/detail/osc_common_policy.hpp>
-#include <oscpack/osc/OscTypes.h>
-#include <oscpack/osc/OscOutboundPacketStream.h>
+#include <ossia/network/osc/detail/osc_utils.hpp>
+#include <ossia/network/value/value.hpp>
 
 #include <boost/endian/conversion.hpp>
+
+#include <oscpack/osc/OscOutboundPacketStream.h>
+#include <oscpack/osc/OscTypes.h>
 
 // OSC 1.1 adds T, F, I, N
 namespace ossia::net
@@ -32,7 +33,7 @@ struct osc_1_1_outbound_array_policy : osc_common_outbound_dynamic_policy
   // Arrays are flattened
   void operator()(const std::vector<value>& t) const
   {
-    for (const auto& val : t)
+    for(const auto& val : t)
     {
       val.apply(*this);
     }

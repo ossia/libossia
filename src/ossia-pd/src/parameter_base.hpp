@@ -9,10 +9,11 @@ namespace pd
 class parameter_base : public object_base
 {
 public:
+  parameter_base(t_eclass* x);
 
-  parameter_base(t_eclass*x);
-
-  static void update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node = nullptr);
+  static void update_attribute(
+      parameter_base* x, ossia::string_view attribute,
+      const ossia::net::node_base* node = nullptr);
 
   // attribute setting method
   void set_access_mode();
@@ -28,13 +29,14 @@ public:
   void set_rate();
   void set_unit();
 
-  static void class_setup(t_eclass*c);
-  static t_pd_err notify(parameter_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+  static void class_setup(t_eclass* c);
+  static t_pd_err
+  notify(parameter_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
 
   static void get_mess_cb(parameter_base* x, t_symbol* s);
-  static void get_unit(parameter_base*x, std::vector<t_matcher*> nodes);
-  static void get_rate(parameter_base*x, std::vector<t_matcher*> nodes);
-  static void get_mute(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_unit(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_rate(parameter_base* x, std::vector<t_matcher*> nodes);
+  static void get_mute(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_domain(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_min(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_max(parameter_base* x, std::vector<t_matcher*> nodes);
@@ -46,7 +48,7 @@ public:
   static void get_repetition_filter(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_critical(parameter_base* x, std::vector<t_matcher*> nodes);
   static void get_enable(parameter_base* x, std::vector<t_matcher*> nodes);
-  static void get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes);
+  static void get_queue_length(parameter_base* x, std::vector<t_matcher*> nodes);
 
   // attributes
   t_symbol* m_type{};
@@ -86,7 +88,6 @@ public:
   static void bang(parameter_base* x);
   static void output_value(parameter_base* x);
 };
-
 
 } // namespace pd
 } // namespace ossia

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -10,8 +12,6 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/destination.hpp>
 #include <ossia/network/value/value.hpp>
-
-#include <ossia/detail/config.hpp>
 
 #include <functional>
 #include <map>
@@ -220,9 +220,9 @@ inline Y curve<X, Y>::value_at(X abscissa) const
   Y lastValue = get_y0();
 
   auto end = m_points.end();
-  for (auto it = m_points.begin(); it != end; ++it)
+  for(auto it = m_points.begin(); it != end; ++it)
   {
-    if (abscissa > lastAbscissa && abscissa <= it->first)
+    if(abscissa > lastAbscissa && abscissa <= it->first)
     {
       lastValue = it->second.second(
           ((double)abscissa - (double)lastAbscissa)
@@ -230,7 +230,7 @@ inline Y curve<X, Y>::value_at(X abscissa) const
           lastValue, it->second.first);
       break;
     }
-    else if (abscissa > it->first)
+    else if(abscissa > it->first)
     {
       lastAbscissa = it->first;
       lastValue = it->second.first;
@@ -257,11 +257,11 @@ inline X curve<X, Y>::get_x0() const
 template <typename X, typename Y>
 inline Y curve<X, Y>::get_y0() const
 {
-  if (!m_y0_destination)
+  if(!m_y0_destination)
     return m_y0;
   else
   {
-    if (m_y0_cacheUsed)
+    if(m_y0_cacheUsed)
       return m_y0_cache;
 
     const destination& dest = *m_y0_destination;
@@ -386,7 +386,8 @@ inline Y curve<X, Y>::convert_to_template_type_value(
 class OSSIA_EXPORT constant_curve final : public curve_abstract
 {
 public:
-  constant_curve(ossia::value v) : mValue{std::move(v)}
+  constant_curve(ossia::value v)
+      : mValue{std::move(v)}
   {
   }
   ~constant_curve() override;

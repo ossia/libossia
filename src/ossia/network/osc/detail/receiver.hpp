@@ -20,7 +20,8 @@ namespace detail
 template <typename Impl_T>
 struct ClearListener : public oscpack::TimerListener
 {
-  ClearListener(UdpSocket<Impl_T>& s) : socket{s}
+  ClearListener(UdpSocket<Impl_T>& s)
+      : socket{s}
   {
   }
   UdpSocket<Impl_T>& socket;
@@ -69,8 +70,7 @@ public:
   }
 };
 }
-using ReceiveSocket
-    = detail::UdpListeningReceiveSocket<detail::Implementation>;
+using ReceiveSocket = detail::UdpListeningReceiveSocket<detail::Implementation>;
 }
 namespace osc
 {
@@ -84,19 +84,19 @@ template <typename MessageHandler>
 class listener final : public oscpack::OscPacketListener
 {
 public:
-  listener(MessageHandler msg) : m_messageHandler{msg}
+  listener(MessageHandler msg)
+      : m_messageHandler{msg}
   {
   }
 
   void ProcessMessage(
-      const oscpack::ReceivedMessage& m,
-      const oscpack::IpEndpointName& ip) override
+      const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) override
   {
     try
     {
       m_messageHandler(m, ip);
     }
-    catch (std::exception& e)
+    catch(std::exception& e)
     {
       std::stringstream s;
       oscpack::debug(s, m);
@@ -104,33 +104,30 @@ public:
       ossia::logger().error(
           "osc::listener::ProcessMessage error: '{}': {}", s.str(), e.what());
     }
-    catch (...)
+    catch(...)
     {
       std::stringstream s;
       oscpack::debug(s, m);
-      ossia::logger().error(
-          "osc::listener::ProcessMessage error: '{}'", s.str());
+      ossia::logger().error("osc::listener::ProcessMessage error: '{}'", s.str());
     }
   }
 
   void ProcessPacket(
-      const char* data, int size,
-      const oscpack::IpEndpointName& remoteEndpoint) override
+      const char* data, int size, const oscpack::IpEndpointName& remoteEndpoint) override
   {
     try
     {
       oscpack::ReceivedPacket p(data, size);
-      if (p.IsBundle())
+      if(p.IsBundle())
         this->ProcessBundle(oscpack::ReceivedBundle(p), remoteEndpoint);
       else
         this->ProcessMessage(oscpack::ReceivedMessage(p), remoteEndpoint);
     }
-    catch (std::exception& e)
+    catch(std::exception& e)
     {
-      ossia::logger().error(
-          "osc::listener::ProcessPacket error: {}", e.what());
+      ossia::logger().error("osc::listener::ProcessPacket error: {}", e.what());
     }
-    catch (...)
+    catch(...)
     {
       ossia::logger().error("osc::listener::ProcessPacket error");
     }
@@ -184,7 +181,7 @@ public:
 
   void run()
   {
-    if (m_runThread.joinable())
+    if(m_runThread.joinable())
       stop();
 
     m_runThread = std::thread([this] { run_impl(); });
@@ -195,10 +192,13 @@ public:
   void run_impl()
   {
     m_running = true;
-osc_thread_run:
-    try {
+  osc_thread_run:
+    try
+    {
       m_socket->Run();
-    } catch(...) {
+    }
+    catch(...)
+    {
       goto osc_thread_run;
     }
   }
@@ -206,9 +206,9 @@ osc_thread_run:
   void stop()
   {
     m_running = false;
-    if (m_socket)
+    if(m_socket)
     {
-      if (m_runThread.joinable())
+      if(m_runThread.joinable())
       {
         try
         {
@@ -222,7 +222,7 @@ osc_thread_run:
         }
         catch(std::exception& e)
         {
-          if (m_runThread.joinable())
+          if(m_runThread.joinable())
             m_runThread.detach();
         }
       }
@@ -249,17 +249,16 @@ osc_thread_run:
     m_port = port;
 
     bool ok = false;
-    while (!ok)
+    while(!ok)
     {
       try
       {
         m_socket = std::make_unique<oscpack::ReceiveSocket>(
-            oscpack::IpEndpointName(
-                oscpack::IpEndpointName::ANY_ADDRESS, m_port),
+            oscpack::IpEndpointName(oscpack::IpEndpointName::ANY_ADDRESS, m_port),
             m_impl.get());
         ok = true;
       }
-      catch (std::runtime_error&)
+      catch(std::runtime_error&)
       {
         m_port++;
       }

@@ -12,12 +12,10 @@ namespace midi
 midi_parameter::midi_parameter(address_info info, node_base& parent)
     : ossia::net::parameter_base{parent}
     , m_info{info}
-    , m_protocol{dynamic_cast<midi_protocol&>(
-          parent.get_device().get_protocol())}
+    , m_protocol{dynamic_cast<midi_protocol&>(parent.get_device().get_protocol())}
     , m_domain{m_info.defaultDomain()}
     , m_type{m_info.matchingType()}
-    , m_value{
-          m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
+    , m_value{m_info.defaultValue(m_info.type == address_info::Type::PB ? 0 : 64)}
 {
 }
 
@@ -63,7 +61,7 @@ ossia::value midi_parameter::value() const
 
 ossia::value midi_parameter::set_value(const ossia::value& v)
 {
-  if (m_type == v.get_type())
+  if(m_type == v.get_type())
     m_value = v;
   else
     m_value = ossia::convert(v, m_type);
@@ -74,7 +72,7 @@ ossia::value midi_parameter::set_value(const ossia::value& v)
 
 ossia::value midi_parameter::set_value(ossia::value&& v)
 {
-  if (m_type == v.get_type())
+  if(m_type == v.get_type())
     m_value = std::move(v);
   else
     m_value = ossia::convert(std::move(v), m_type);

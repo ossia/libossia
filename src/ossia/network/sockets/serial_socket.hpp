@@ -1,9 +1,10 @@
 #pragma once
 #include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/sockets/writers.hpp>
+
 #include <boost/asio/io_context.hpp>
-#include <boost/asio/serial_port.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/serial_port.hpp>
 #include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
@@ -11,7 +12,7 @@
 namespace ossia::net
 {
 
-template<typename Framing>
+template <typename Framing>
 class serial_socket
 {
 public:
@@ -21,7 +22,7 @@ public:
   using decoder = typename Framing::template decoder<boost::asio::serial_port>;
 
   serial_socket(const serial_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}
+      : m_context{ctx}
       , m_conf{std::move(conf)}
       , m_port{ctx}
       , m_encoder{this->m_port}
@@ -35,19 +36,21 @@ public:
 
     m_port.set_option(proto::baud_rate(m_conf.baud_rate));
     m_port.set_option(proto::character_size(m_conf.character_size));
-    m_port.set_option(proto::flow_control(static_cast<proto::flow_control::type>(m_conf.flow_control)));
+    m_port.set_option(proto::flow_control(
+        static_cast<proto::flow_control::type>(m_conf.flow_control)));
     m_port.set_option(proto::parity(static_cast<proto::parity::type>(m_conf.parity)));
-    m_port.set_option(proto::stop_bits(static_cast<proto::stop_bits::type>(m_conf.stop_bits)));
+    m_port.set_option(
+        proto::stop_bits(static_cast<proto::stop_bits::type>(m_conf.stop_bits)));
 
-    m_context.post([this] {
-      on_open();
-    });
+    m_context.post([this] { on_open(); });
   }
 
   template <typename F>
   void receive(F f)
   {
-    struct proc : stream_processor<serial_socket, F> { };
+    struct proc : stream_processor<serial_socket, F>
+    {
+    };
     m_decoder.receive(proc{*this, std::move(f)});
   }
 

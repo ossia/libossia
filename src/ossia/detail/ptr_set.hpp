@@ -27,8 +27,8 @@ struct PointerPredicate
   {
     return lhs == rhs.get();
   }
-  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs)
-      const noexcept
+  bool
+  operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const noexcept
   {
     return lhs == rhs;
   }
@@ -41,6 +41,6 @@ template <typename T>
 using shared_ptr_set
     = tsl::hopscotch_set<std::shared_ptr<T>, EgurHash<T>, PointerPredicate<T>>;
 template <typename T, typename V>
-using shared_ptr_map = tsl::hopscotch_map<
-    std::shared_ptr<T>, V, EgurHash<T>, PointerPredicate<T>>;
+using shared_ptr_map
+    = tsl::hopscotch_map<std::shared_ptr<T>, V, EgurHash<T>, PointerPredicate<T>>;
 }

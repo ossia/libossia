@@ -1,54 +1,76 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-pd/src/parameter_base.hpp>
-
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
+#include <algorithm>
+#include <sstream>
+
+#include <ossia-pd/src/parameter_base.hpp>
 #include <ossia-pd/src/utils.hpp>
 
-#include <sstream>
-#include <algorithm>
-
-namespace ossia {
-namespace pd {
+namespace ossia
+{
+namespace pd
+{
 
 parameter_base::parameter_base(t_eclass* x)
-  : object_base{x}
+    : object_base{x}
 {
 }
 
-void parameter_base::update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
+void parameter_base::update_attribute(
+    parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node)
 {
-  auto matchers = make_matchers_vector(x,node);
+  auto matchers = make_matchers_vector(x, node);
 
-  if ( attribute == ossia::net::text_refresh_rate() ){
+  if(attribute == ossia::net::text_refresh_rate())
+  {
     get_rate(x, matchers);
-  } else if ( attribute == ossia::net::text_value_type() ){
+  }
+  else if(attribute == ossia::net::text_value_type())
+  {
     get_type(x, matchers);
-  } else if ( attribute == ossia::net::text_domain() ){
+  }
+  else if(attribute == ossia::net::text_domain())
+  {
     get_domain(x, matchers);
-  } else if ( attribute == ossia::net::text_access_mode() ){
+  }
+  else if(attribute == ossia::net::text_access_mode())
+  {
     get_access_mode(x, matchers);
-  } else if ( attribute == ossia::net::text_bounding_mode() ){
+  }
+  else if(attribute == ossia::net::text_bounding_mode())
+  {
     get_bounding_mode(x, matchers);
-  } else if ( attribute == ossia::net::text_disabled() ){
+  }
+  else if(attribute == ossia::net::text_disabled())
+  {
     get_enable(x, matchers);
-  } else if ( attribute == ossia::net::text_repetition_filter() ){
+  }
+  else if(attribute == ossia::net::text_repetition_filter())
+  {
     get_repetition_filter(x, matchers);
-  } else if ( attribute == ossia::net::text_critical() ){
+  }
+  else if(attribute == ossia::net::text_critical())
+  {
     get_critical(x, matchers);
-  } else if ( attribute == ossia::net::text_default_value() ) {
+  }
+  else if(attribute == ossia::net::text_default_value())
+  {
     get_default(x, matchers);
-  } else {
+  }
+  else
+  {
     object_base::update_attribute((node_base*)x, attribute, node);
   }
 }
 
 void parameter_base::set_access_mode()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     auto param = node->get_parameter();
@@ -63,19 +85,18 @@ void parameter_base::set_access_mode()
 
 void parameter_base::set_repetition_filter()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     auto param = node->get_parameter();
     param->set_repetition_filter(
-          m_repetitions ? ossia::repetition_filter::OFF
-                              : ossia::repetition_filter::ON);
+        m_repetitions ? ossia::repetition_filter::OFF : ossia::repetition_filter::ON);
   }
 }
 
 void parameter_base::set_critical()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     auto param = node->get_parameter();
@@ -85,7 +106,7 @@ void parameter_base::set_critical()
 
 void parameter_base::set_enable()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::set_disabled(*node, !m_enable);
@@ -94,7 +115,7 @@ void parameter_base::set_enable()
 
 void parameter_base::set_type()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::try_setup_parameter(m_type->s_name, *node);
@@ -103,10 +124,10 @@ void parameter_base::set_type()
 
 void parameter_base::set_rate()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::net::set_refresh_rate(*node,m_rate);
+    ossia::net::set_refresh_rate(*node, m_rate);
   }
 }
 
@@ -120,7 +141,7 @@ void parameter_base::set_minmax()
     return;
   }
 
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -165,19 +186,19 @@ void parameter_base::set_range()
 {
   if(m_range_size == 0)
     return;
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    if ( param->get_value_type() == ossia::val_type::STRING )
+    if(param->get_value_type() == ossia::val_type::STRING)
     {
       std::vector<std::string> senum;
-      for ( int i = 0; i < m_range_size; i++)
+      for(int i = 0; i < m_range_size; i++)
       {
-        if (m_range[i].a_type == A_SYMBOL)
+        if(m_range[i].a_type == A_SYMBOL)
           senum.push_back(m_range[i].a_w.w_symbol->s_name);
-        else if (m_range[i].a_type == A_FLOAT)
+        else if(m_range[i].a_type == A_FLOAT)
         {
           std::stringstream ss;
           ss << m_range[i].a_w.w_float;
@@ -189,7 +210,7 @@ void parameter_base::set_range()
       param->set_domain(make_domain(senum));
     }
 
-    else if (m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
+    else if(m_range[0].a_type == A_FLOAT && m_range[1].a_type == A_FLOAT)
     {
       ossia::value fmin{m_range[0].a_w.w_float};
       ossia::value fmax{m_range[1].a_w.w_float};
@@ -201,29 +222,28 @@ void parameter_base::set_range()
         case ossia::val_type::FLOAT:
         case ossia::val_type::INT:
         case ossia::val_type::CHAR:
-          min={fmin};
-          max={fmax};
+          min = {fmin};
+          max = {fmax};
           break;
         case ossia::val_type::VEC2F:
-          min={fmin,fmin};
-          max={fmax,fmax};
+          min = {fmin, fmin};
+          max = {fmax, fmax};
           break;
         case ossia::val_type::VEC3F:
-          min={fmin,fmin,fmin};
-          max={fmax,fmax,fmax};
+          min = {fmin, fmin, fmin};
+          max = {fmax, fmax, fmax};
           break;
         case ossia::val_type::VEC4F:
-          min={fmin,fmin,fmin,fmin};
-          max={fmax,fmax,fmax,fmax};
+          min = {fmin, fmin, fmin, fmin};
+          max = {fmax, fmax, fmax, fmax};
           break;
         case ossia::val_type::LIST:
           min.resize(OSSIA_PD_MAX_ATTR_SIZE);
           max.resize(OSSIA_PD_MAX_ATTR_SIZE);
-          ossia::fill(min,fmin);
-          ossia::fill(max,fmax);
+          ossia::fill(min, fmin);
+          ossia::fill(max, fmax);
           break;
-        default:
-          ;
+        default:;
       }
       auto domain = make_domain_from_minmax(min, max, param->get_value_type());
       param->set_domain(domain);
@@ -243,7 +263,7 @@ void parameter_base::set_bounding_mode()
 
   auto mode = symbol2bounding_mode(m_bounding_mode);
 
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -254,7 +274,7 @@ void parameter_base::set_bounding_mode()
 
 void parameter_base::set_default()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
@@ -262,86 +282,78 @@ void parameter_base::set_default()
     switch(param->get_value_type())
     {
 
-      case ossia::val_type::VEC4F:
+      case ossia::val_type::VEC4F: {
+        if(m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
+           && m_default[2].a_type == A_FLOAT && m_default[3].a_type == A_FLOAT)
         {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
-              && m_default[2].a_type == A_FLOAT && m_default[3].a_type == A_FLOAT)
-          {
-            vec4f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float,
-                m_default[2].a_w.w_float, m_default[3].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
+          vec4f vec = make_vec(
+              m_default[0].a_w.w_float, m_default[1].a_w.w_float,
+              m_default[2].a_w.w_float, m_default[3].a_w.w_float);
+          ossia::net::set_default_value(*node, vec);
         }
-      case ossia::val_type::VEC3F:
+        break;
+      }
+      case ossia::val_type::VEC3F: {
+        if(m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
+           && m_default[2].a_type == A_FLOAT)
         {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT
-              && m_default[2].a_type == A_FLOAT )
-          {
-            vec3f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float,
-                m_default[2].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
+          vec3f vec = make_vec(
+              m_default[0].a_w.w_float, m_default[1].a_w.w_float,
+              m_default[2].a_w.w_float);
+          ossia::net::set_default_value(*node, vec);
         }
-      case ossia::val_type::VEC2F:
+        break;
+      }
+      case ossia::val_type::VEC2F: {
+        if(m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT)
         {
-          if (m_default[0].a_type == A_FLOAT && m_default[1].a_type == A_FLOAT )
-          {
-            vec2f vec = make_vec(
-                  m_default[0].a_w.w_float, m_default[1].a_w.w_float);
-            ossia::net::set_default_value(*node, vec);
-          }
-          break;
+          vec2f vec = make_vec(m_default[0].a_w.w_float, m_default[1].a_w.w_float);
+          ossia::net::set_default_value(*node, vec);
         }
+        break;
+      }
       case ossia::val_type::FLOAT:
       case ossia::val_type::CHAR:
       case ossia::val_type::INT:
-      case ossia::val_type::BOOL:
+      case ossia::val_type::BOOL: {
+        if(m_default[0].a_type == A_FLOAT)
         {
-          if (m_default[0].a_type == A_FLOAT )
-          {
-            ossia::net::set_default_value(*node, m_default[0].a_w.w_float);
-          }
-          break;
+          ossia::net::set_default_value(*node, m_default[0].a_w.w_float);
         }
-      case ossia::val_type::STRING:
+        break;
+      }
+      case ossia::val_type::STRING: {
+        if(m_default[0].a_type == A_SYMBOL)
         {
-          if (m_default[0].a_type == A_SYMBOL )
-          {
-            ossia::net::set_default_value(*node, m_default[0].a_w.w_symbol->s_name);
-          }
-          break;
+          ossia::net::set_default_value(*node, m_default[0].a_w.w_symbol->s_name);
         }
-      case ossia::val_type::LIST:
+        break;
+      }
+      case ossia::val_type::LIST: {
+        if(m_default_size > 0)
         {
-          if(m_default_size > 0)
-          {
-            auto def = attribute2value(m_default, m_default_size);
+          auto def = attribute2value(m_default, m_default_size);
 
-            ossia::net::set_default_value(*node, def);
-          }
-          break;
+          ossia::net::set_default_value(*node, def);
         }
-      default:
-        ;
+        break;
+      }
+      default:;
     }
   }
 }
 
 void parameter_base::set_unit()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
     ossia::net::parameter_base* param = node->get_parameter();
 
-    if ( m_unit !=  gensym("") )
+    if(m_unit != gensym(""))
     {
       ossia::unit_t unit = ossia::parse_pretty_unit(m_unit->s_name);
-      if (unit)
+      if(unit)
       {
         param->set_unit(unit);
         // update m_type since set_unit() may have changed it
@@ -356,26 +368,28 @@ void parameter_base::set_unit()
 
 void parameter_base::set_mute()
 {
-  for (t_matcher* m : m_node_selection)
+  for(t_matcher* m : m_node_selection)
   {
     ossia::net::node_base* node = m->get_node();
-    ossia::net::set_muted(*node,m_mute);
+    ossia::net::set_muted(*node, m_mute);
   }
 }
 
-void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_domain(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
     auto domain = ossia::net::get_domain(*m->get_node());
-    if (domain)
+    if(domain)
     {
       domain_visitor dv;
       dv.x = x;
       ossia::apply(dv, domain.v);
-    } else {
+    }
+    else
+    {
       x->m_range_size = 0;
       x->m_min_size = 0;
       x->m_max_size = 0;
@@ -386,9 +400,9 @@ void parameter_base::get_domain(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
-void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_bounding_mode(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -396,41 +410,44 @@ void parameter_base::get_bounding_mode(parameter_base*x, std::vector<t_matcher*>
 
     x->m_bounding_mode = bounding_mode2symbol(param->get_bounding());
     t_atom a;
-    SETSYMBOL(&a,x->m_bounding_mode);
+    SETSYMBOL(&a, x->m_bounding_mode);
     outlet_anything(x->m_dumpout, gensym("clip"), 1, &a);
   }
 }
 
-void parameter_base::get_default(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_default(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
     auto def_val = ossia::net::get_default_value(*m->get_node());
 
-    if ( def_val ){
+    if(def_val)
+    {
       std::vector<t_atom> va;
       value2atom vm{va};
       ossia::value v = *def_val;
       v.apply(vm);
 
-      x->m_default_size = va.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : va.size();
+      x->m_default_size
+          = va.size() > OSSIA_PD_MAX_ATTR_SIZE ? OSSIA_PD_MAX_ATTR_SIZE : va.size();
 
-      for (int i=0; i < x->m_default_size; i++ )
+      for(int i = 0; i < x->m_default_size; i++)
         x->m_default[i] = va[i];
-    } else {
+    }
+    else
+    {
       x->m_default_size = 0;
     }
 
-    outlet_anything(x->m_dumpout, gensym("default"),
-                    x->m_default_size, x->m_default);
+    outlet_anything(x->m_dumpout, gensym("default"), x->m_default_size, x->m_default);
   }
 }
 
-void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_type(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -439,14 +456,14 @@ void parameter_base::get_type(parameter_base*x, std::vector<t_matcher*> nodes)
     x->m_type = val_type2symbol(param->get_value_type());
 
     t_atom a;
-    SETSYMBOL(&a,x->m_type);
+    SETSYMBOL(&a, x->m_type);
     outlet_anything(x->m_dumpout, gensym("type"), 1, &a);
   }
 }
 
-void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_access_mode(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -460,9 +477,10 @@ void parameter_base::get_access_mode(parameter_base*x, std::vector<t_matcher*> n
   }
 }
 
-void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_repetition_filter(
+    parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -476,9 +494,9 @@ void parameter_base::get_repetition_filter(parameter_base*x, std::vector<t_match
   }
 }
 
-void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_critical(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -492,9 +510,9 @@ void parameter_base::get_critical(parameter_base*x, std::vector<t_matcher*> node
   }
 }
 
-void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_enable(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -502,14 +520,14 @@ void parameter_base::get_enable(parameter_base*x, std::vector<t_matcher*> nodes)
     x->m_enable = !param->get_disabled();
 
     t_atom a;
-    SETFLOAT(&a,x->m_enable);
+    SETFLOAT(&a, x->m_enable);
     outlet_anything(x->m_dumpout, gensym("enable"), 1, &a);
   }
 }
 
-void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_unit(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -524,9 +542,9 @@ void parameter_base::get_unit(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
-void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_mute(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -540,10 +558,9 @@ void parameter_base::get_mute(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
-
-void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_queue_length(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
@@ -553,15 +570,15 @@ void parameter_base::get_queue_length(parameter_base*x, std::vector<t_matcher*> 
   }
 }
 
-void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
+void parameter_base::get_rate(parameter_base* x, std::vector<t_matcher*> nodes)
 {
-  for (auto m : nodes)
+  for(auto m : nodes)
   {
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
 
     auto rate = ossia::net::get_refresh_rate(*m->get_node());
 
-    if (rate)
+    if(rate)
     {
       x->m_rate = *rate;
 
@@ -572,7 +589,7 @@ void parameter_base::get_rate(parameter_base*x, std::vector<t_matcher*> nodes)
   }
 }
 
-template<std::size_t N>
+template <std::size_t N>
 std::optional<std::array<float, N>> to_array(t_atom* argv)
 {
   std::array<float, N> arr;
@@ -592,25 +609,26 @@ std::optional<std::array<float, N>> to_array(t_atom* argv)
 
 void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto m : x->m_node_selection)
+  for(auto m : x->m_node_selection)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
     auto xparam = (parameter_base*)m->get_owner();
 
-    if ( xparam->m_ounit != std::nullopt )
+    if(xparam->m_ounit != std::nullopt)
     {
       const auto& src_unit = *xparam->m_ounit;
       const auto& dst_unit = param->get_unit();
 
       auto converted = ossia::convert(v, src_unit, dst_unit);
-      if (set_flag) m->m_set_pool.push_back(converted);
+      if(set_flag)
+        m->m_set_pool.push_back(converted);
       param->push_value(converted);
     }
     else
     {
       param->push_value(v);
-      if (set_flag)
+      if(set_flag)
         m->m_set_pool.push_back(param->value());
     }
   }
@@ -618,18 +636,19 @@ void convert_or_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 
 void just_push(parameter_base* x, ossia::value&& v, bool set_flag = false)
 {
-  for (auto m : x->m_node_selection)
+  for(auto m : x->m_node_selection)
   {
     auto node = m->get_node();
     auto param = node->get_parameter();
-    if(set_flag) m->m_set_pool.push_back(v);
+    if(set_flag)
+      m->m_set_pool.push_back(v);
     param->push_value(v);
   }
 }
 
 void parameter_base::push_symbol(parameter_base* x, t_symbol* s)
 {
-  if( s )
+  if(s)
   {
     just_push(x, std::string(s->s_name), false);
   }
@@ -637,7 +656,7 @@ void parameter_base::push_symbol(parameter_base* x, t_symbol* s)
 
 void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv)
 {
-  if (x->m_mute)
+  if(x->m_mute)
     return;
 
   // TODO : simplify if statements
@@ -646,11 +665,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if(s && s == gensym("set"))
     set_flag = true;
 
-  if (argc == 0 && s)
+  if(argc == 0 && s)
   {
     just_push(x, std::string(s->s_name), set_flag);
   }
-  else if (argc == 1 && s && ( s == gensym("float") || s == gensym("list")))
+  else if(argc == 1 && s && (s == gensym("float") || s == gensym("list")))
   {
     ossia::value v;
     // convert one element array to single element
@@ -662,18 +681,17 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       case A_FLOAT:
         convert_or_push(x, atom_getfloat(argv), set_flag);
         break;
-      default:
-        ;
+      default:;
     }
   }
   else
   {
     std::vector<ossia::value> list;
-    list.reserve(argc+1);
+    list.reserve(argc + 1);
 
     bool start_with_symbol = false;
 
-    if ( s && s != gensym("list") && s != gensym("set"))
+    if(s && s != gensym("list") && s != gensym("set"))
     {
       list.push_back(std::string(s->s_name));
       start_with_symbol = true;
@@ -686,19 +704,22 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       switch(argc)
       {
         case 2:
-          if(auto arr = to_array<2>(argv)) {
+          if(auto arr = to_array<2>(argv))
+          {
             is_array = true;
             convert_or_push(x, *arr, set_flag);
           }
           break;
         case 3:
-          if(auto arr = to_array<3>(argv)) {
+          if(auto arr = to_array<3>(argv))
+          {
             is_array = true;
             convert_or_push(x, *arr, set_flag);
           }
           break;
         case 4:
-          if(auto arr = to_array<4>(argv)) {
+          if(auto arr = to_array<4>(argv))
+          {
             is_array = true;
             convert_or_push(x, *arr, set_flag);
           }
@@ -706,11 +727,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       }
     }
 
-    if (!is_array)
+    if(!is_array)
     {
-      for (; argc > 0; argc--, argv++)
+      for(; argc > 0; argc--, argv++)
       {
-        switch (argv->a_type)
+        switch(argv->a_type)
         {
           case A_SYMBOL:
             list.push_back(std::string(atom_getsymbol(argv)->s_name));
@@ -730,11 +751,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   }
 
   // go through all matchers to fire the new value
-  for (auto node : x->m_node_selection)
+  for(auto node : x->m_node_selection)
   {
     // there should be only one param with that node
     // so break asap
-    if (x->m_otype == object_class::param )
+    if(x->m_otype == object_class::param)
     {
       node->output_value();
     }
@@ -744,15 +765,15 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
       {
         bool break_flag = false;
 
-        for (auto& m : param->m_matchers)
+        for(auto& m : param->m_matchers)
         {
-          if ( m == *node )
+          if(m == *node)
           {
             m.output_value();
             break_flag = true;
             break;
           }
-          if (break_flag)
+          if(break_flag)
             break;
         }
       }
@@ -760,9 +781,9 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
     for(auto remote : ossia_pd::instance().remotes.reference())
     {
-      for (auto& m : remote->m_matchers)
+      for(auto& m : remote->m_matchers)
       {
-        if ( m == *node )
+        if(m == *node)
           m.output_value();
       }
     }
@@ -771,11 +792,11 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
 
 void parameter_base::bang(parameter_base* x)
 {
-  for (auto m : x->m_node_selection)
+  for(auto m : x->m_node_selection)
   {
     auto param = m->get_node()->get_parameter();
 
-    if (param->get_value_type() == ossia::val_type::IMPULSE)
+    if(param->get_value_type() == ossia::val_type::IMPULSE)
       param->push_value(ossia::impulse{});
     else
     {
@@ -787,7 +808,7 @@ void parameter_base::bang(parameter_base* x)
 
 void parameter_base::output_value(parameter_base* x)
 {
-  for (auto& m : x->m_matchers)
+  for(auto& m : x->m_matchers)
   {
     m.output_value();
   }
@@ -798,9 +819,9 @@ void parameter_base::push_default_value(parameter_base* x)
 {
   ossia::net::node_base* node;
 
-  if (!x->m_mute)
+  if(!x->m_mute)
   {
-    for (auto m : x->m_node_selection)
+    for(auto m : x->m_node_selection)
     {
       node = m->get_node();
       auto param = node->get_parameter();
@@ -814,7 +835,7 @@ void parameter_base::push_default_value(parameter_base* x)
       else
       {
         auto def_val = ossia::net::get_default_value(*node);
-        if (def_val)
+        if(def_val)
         {
           param->push_value(*def_val);
           trig_output_value(node);
@@ -826,57 +847,58 @@ void parameter_base::push_default_value(parameter_base* x)
 
 void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
 {
-  if ( s == gensym("enable") )
-    parameter_base::get_enable(x,x->m_node_selection);
-  else if ( s == gensym("default") )
-    parameter_base::get_default(x,x->m_node_selection);
-  else if ( s == gensym("range") || s == gensym("min") || s == gensym("max") )
-    parameter_base::get_domain(x,x->m_node_selection);
-  else if ( s == gensym("clip") )
-    parameter_base::get_bounding_mode(x,x->m_node_selection);
-  else if ( s == gensym("type") )
-    parameter_base::get_type(x,x->m_node_selection);
-  else if ( s == gensym("mode") )
-    parameter_base::get_access_mode(x,x->m_node_selection);
-  else if ( s == gensym("repetitions") )
-    parameter_base::get_repetition_filter(x,x->m_node_selection);
-  else if ( s == gensym("critical") )
-    parameter_base::get_critical(x,x->m_node_selection);
-  else if ( s == gensym("mute") )
-    parameter_base::get_mute(x,x->m_node_selection);
-  else if ( s == gensym("unit") )
-    parameter_base::get_unit(x,x->m_node_selection);
-  else if ( s == gensym("rate") )
-    parameter_base::get_rate(x,x->m_node_selection);
-  else if ( s == gensym("queue_length") )
-    parameter_base::get_queue_length(x,x->m_node_selection);
+  if(s == gensym("enable"))
+    parameter_base::get_enable(x, x->m_node_selection);
+  else if(s == gensym("default"))
+    parameter_base::get_default(x, x->m_node_selection);
+  else if(s == gensym("range") || s == gensym("min") || s == gensym("max"))
+    parameter_base::get_domain(x, x->m_node_selection);
+  else if(s == gensym("clip"))
+    parameter_base::get_bounding_mode(x, x->m_node_selection);
+  else if(s == gensym("type"))
+    parameter_base::get_type(x, x->m_node_selection);
+  else if(s == gensym("mode"))
+    parameter_base::get_access_mode(x, x->m_node_selection);
+  else if(s == gensym("repetitions"))
+    parameter_base::get_repetition_filter(x, x->m_node_selection);
+  else if(s == gensym("critical"))
+    parameter_base::get_critical(x, x->m_node_selection);
+  else if(s == gensym("mute"))
+    parameter_base::get_mute(x, x->m_node_selection);
+  else if(s == gensym("unit"))
+    parameter_base::get_unit(x, x->m_node_selection);
+  else if(s == gensym("rate"))
+    parameter_base::get_rate(x, x->m_node_selection);
+  else if(s == gensym("queue_length"))
+    parameter_base::get_queue_length(x, x->m_node_selection);
   else
-    object_base::get_mess_cb(x,s);
+    object_base::get_mess_cb(x, s);
 }
 
-t_pd_err parameter_base::notify(parameter_base*x, t_symbol*s, t_symbol* msg, void* sender, void* data)
+t_pd_err parameter_base::notify(
+    parameter_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data)
 {
-  if (msg == gensym("attr_modified"))
+  if(msg == gensym("attr_modified"))
   {
-    if ( s == gensym("mode") )
+    if(s == gensym("mode"))
       x->set_access_mode();
-    else if ( s == gensym("repetitions") )
+    else if(s == gensym("repetitions"))
       x->set_repetition_filter();
-    else if ( s == gensym("critical") )
+    else if(s == gensym("critical"))
       x->set_critical();
-    else if ( s == gensym("enable") )
+    else if(s == gensym("enable"))
       x->set_enable();
-    else if ( s == gensym("type") )
+    else if(s == gensym("type"))
       x->set_type();
-    else if ( s == gensym("rate") )
+    else if(s == gensym("rate"))
       x->set_rate();
-    else if( s == gensym("range") )
+    else if(s == gensym("range"))
       x->set_range();
-    else if ( s == gensym("clip") )
+    else if(s == gensym("clip"))
       x->set_bounding_mode();
-    else if ( s == gensym("min") || s == gensym("max") )
+    else if(s == gensym("min") || s == gensym("max"))
       x->set_minmax();
-    else if ( s == gensym("default") )
+    else if(s == gensym("default"))
       x->set_default();
     else
       object_base::notify((object_base*)x, s, msg, sender, data);
@@ -886,31 +908,36 @@ t_pd_err parameter_base::notify(parameter_base*x, t_symbol*s, t_symbol* msg, voi
 
 void parameter_base::class_setup(t_eclass* c)
 {
-  object_base :: class_setup(c);
+  object_base ::class_setup(c);
 
-  if (c != ossia_pd::attribute_class)
+  if(c != ossia_pd::attribute_class)
   {
-    eclass_addmethod(c, (method) push,               "anything", A_GIMME, 0);
-    eclass_addmethod(c, (method) push,               "set",      A_GIMME, 0);
-    eclass_addmethod(c, (method) push_symbol,        "symbol",   A_SYMBOL, 0);
-    eclass_addmethod(c, (method) bang,               "bang",     A_NULL,  0);
-    eclass_addmethod(c, (method) push_default_value, "reset",    A_NULL,  0);
+    eclass_addmethod(c, (method)push, "anything", A_GIMME, 0);
+    eclass_addmethod(c, (method)push, "set", A_GIMME, 0);
+    eclass_addmethod(c, (method)push_symbol, "symbol", A_SYMBOL, 0);
+    eclass_addmethod(c, (method)bang, "bang", A_NULL, 0);
+    eclass_addmethod(c, (method)push_default_value, "reset", A_NULL, 0);
   }
 
-  CLASS_ATTR_INT(         c, "enable",      0, parameter_base, m_enable);
-  CLASS_ATTR_ATOM_VARSIZE(c, "default",     0, parameter_base, m_default, m_default_size, OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_ATOM_VARSIZE(c, "range",       0, parameter_base, m_range,   m_range_size,   OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_ATOM_VARSIZE(c, "min",         0, parameter_base, m_min,     m_min_size,     OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_ATOM_VARSIZE(c, "max",         0, parameter_base, m_max,     m_max_size,     OSSIA_PD_MAX_ATTR_SIZE);
-  CLASS_ATTR_SYMBOL      (c, "clip",        0, parameter_base, m_bounding_mode);
-  CLASS_ATTR_SYMBOL      (c, "type",        0, parameter_base, m_type);
-  CLASS_ATTR_SYMBOL      (c, "mode",        0, parameter_base, m_access_mode);
-  CLASS_ATTR_FLOAT       (c, "repetitions", 0, parameter_base, m_repetitions);
-  CLASS_ATTR_FLOAT       (c, "critical",    0, parameter_base, m_critical);
-  CLASS_ATTR_INT         (c, "mute",        0, parameter_base, m_mute);
-  CLASS_ATTR_SYMBOL      (c, "unit",        0, parameter_base, m_unit);
-  CLASS_ATTR_FLOAT       (c, "rate",        0, parameter_base, m_rate);
-  CLASS_ATTR_INT         (c, "queue_length",0, parameter_base, m_queue_length);
+  CLASS_ATTR_INT(c, "enable", 0, parameter_base, m_enable);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "default", 0, parameter_base, m_default, m_default_size,
+      OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "range", 0, parameter_base, m_range, m_range_size, OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "min", 0, parameter_base, m_min, m_min_size, OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_ATOM_VARSIZE(
+      c, "max", 0, parameter_base, m_max, m_max_size, OSSIA_PD_MAX_ATTR_SIZE);
+  CLASS_ATTR_SYMBOL(c, "clip", 0, parameter_base, m_bounding_mode);
+  CLASS_ATTR_SYMBOL(c, "type", 0, parameter_base, m_type);
+  CLASS_ATTR_SYMBOL(c, "mode", 0, parameter_base, m_access_mode);
+  CLASS_ATTR_FLOAT(c, "repetitions", 0, parameter_base, m_repetitions);
+  CLASS_ATTR_FLOAT(c, "critical", 0, parameter_base, m_critical);
+  CLASS_ATTR_INT(c, "mute", 0, parameter_base, m_mute);
+  CLASS_ATTR_SYMBOL(c, "unit", 0, parameter_base, m_unit);
+  CLASS_ATTR_FLOAT(c, "rate", 0, parameter_base, m_rate);
+  CLASS_ATTR_INT(c, "queue_length", 0, parameter_base, m_queue_length);
 
   // TODO use those to tweak attributes
   // CLASS_ATTR_FILTER_CLIP

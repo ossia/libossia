@@ -1,27 +1,28 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "client.hpp"
-#include "device.hpp"
-#include "model.hpp"
-#include "parameter.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "utils.hpp"
+
 #include "ZeroconfMinuitListener.hpp"
 #include "ZeroconfOscqueryListener.hpp"
+#include "device.hpp"
+#include "model.hpp"
+#include "ossia-max.hpp"
+#include "parameter.hpp"
+#include "remote.hpp"
+#include "utils.hpp"
+#include "view.hpp"
 
+#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
-#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
+
+#include <boost/algorithm/string.hpp>
 
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <sstream>
-#include "ossia-max.hpp"
-
-#include <boost/algorithm/string.hpp>
 
 using namespace ossia::max_binding;
 
@@ -39,35 +40,21 @@ extern "C" void ossia_client_setup()
 
   device_base::class_setup(c);
 
-  class_addmethod(
-      c, (method)client::update,
-      "update", A_NOTHING, 0);
+  class_addmethod(c, (method)client::update, "update", A_NOTHING, 0);
 
-  class_addmethod(
-      c, (method)client::connect_mess_cb,
-      "connect", A_GIMME, 0);
+  class_addmethod(c, (method)client::connect_mess_cb, "connect", A_GIMME, 0);
 
-  class_addmethod(
-      c, (method)client::disconnect,
-      "disconnect", A_GIMME, 0);
+  class_addmethod(c, (method)client::disconnect, "disconnect", A_GIMME, 0);
 
-  class_addmethod(
-      c, (method)client::get_mess_cb,
-      "get", A_SYM, 0);
+  class_addmethod(c, (method)client::get_mess_cb, "get", A_SYM, 0);
 
-  class_addmethod(
-      c, (method)client::assist,
-      "assist", A_NOTHING, 0);
+  class_addmethod(c, (method)client::assist, "assist", A_NOTHING, 0);
 
-  class_addmethod(
-      c, (method) client::notify,
-      "notify", A_CANT, 0);
+  class_addmethod(c, (method)client::notify, "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
   ossia_library.ossia_client_class = c;
-
 }
-
 
 namespace ossia
 {
@@ -79,7 +66,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
   auto& ossia_library = ossia_max::instance();
   auto x = make_ossia<client>();
 
-  if (x)
+  if(x)
   {
     critical_enter(0);
     auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
@@ -101,35 +88,35 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     x->m_otype = object_class::client;
 
     x->m_poll_clock = clock_new(x, (method)client::poll_message);
-    x->m_clock = clock_new(x, (method) client::connect);
+    x->m_clock = clock_new(x, (method)client::connect);
 
     // parse arguments
     long attrstart = attr_args_offset(argc, argv);
 
     // check name argument
     x->m_name = gensym("Max");
-    if (attrstart && argv)
+    if(attrstart && argv)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
-        x->m_name = atom_getsym(argv);       
+        x->m_name = atom_getsym(argv);
         bool autoconnect = true;
-        if(argc == 2 && atom_gettype(argv+1) == A_FLOAT)
+        if(argc == 2 && atom_gettype(argv + 1) == A_FLOAT)
         {
-          float f = atom_getfloat(argv+1);
+          float f = atom_getfloat(argv + 1);
           autoconnect = f > 0.;
-          if( autoconnect )
-            connect_mess_cb(x,nullptr,1,argv);
+          if(autoconnect)
+            connect_mess_cb(x, nullptr, 1, argv);
         }
         else
-          connect_mess_cb(x,nullptr,attrstart-1,argv);
+          connect_mess_cb(x, nullptr, attrstart - 1, argv);
       }
     }
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_library.clients.push_back(x);
     critical_exit(0);
@@ -163,7 +150,7 @@ void client::destroy(client* x)
 
 void client::assist(client*, void*, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Client messages input");
   }
@@ -174,18 +161,17 @@ void client::assist(client*, void*, long m, long a, char* s)
       case 0:
         sprintf(s, "Dumpout");
         break;
-      default:
-        ;
+      default:;
     }
   }
 }
 
 void client::get_mess_cb(client* x, t_symbol* s)
 {
-  if ( s == gensym("devices") )
+  if(s == gensym("devices"))
     client::get_devices(x);
   else
-    device_base::get_mess_cb(x,s);
+    device_base::get_mess_cb(x, s);
 }
 
 void client::connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv)
@@ -226,9 +212,9 @@ void client::connect(client* x)
   osc_settings.local_port = 9999;
 
   t_atom connection_status[6];
-  int count=0;
+  int count = 0;
 
-  if (argc && argv->a_type == A_SYM)
+  if(argc && argv->a_type == A_SYM)
   {
     std::string protocol_name = argv->a_w.w_sym->s_name;
     std::string name = protocol_name;
@@ -236,15 +222,12 @@ void client::connect(client* x)
 
     x->m_zeroconf = false;
 
-    if (protocol_name == "minuit")
+    if(protocol_name == "minuit")
     {
       argc--;
       argv++;
-      if (argc == 4
-          && argv[0].a_type == A_SYM
-          && argv[1].a_type == A_SYM
-          && ( argv[2].a_type == A_LONG )
-          && ( argv[3].a_type == A_LONG ))
+      if(argc == 4 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM
+         && (argv[2].a_type == A_LONG) && (argv[3].a_type == A_LONG))
       {
         minuit_settings.name = atom_getsym(argv++)->s_name;
         minuit_settings.host = atom_getsym(argv++)->s_name;
@@ -252,68 +235,66 @@ void client::connect(client* x)
         minuit_settings.local_port = atom_getlong(argv++);
       }
 
-      A_SETSYM(connection_status+1, gensym("minuit"));
-      A_SETSYM(connection_status+2, gensym(minuit_settings.name.c_str()));
-      A_SETSYM(connection_status+3, gensym(minuit_settings.host.c_str()));
-      A_SETFLOAT(connection_status+4, minuit_settings.remote_port);
-      A_SETFLOAT(connection_status+5, minuit_settings.local_port);
+      A_SETSYM(connection_status + 1, gensym("minuit"));
+      A_SETSYM(connection_status + 2, gensym(minuit_settings.name.c_str()));
+      A_SETSYM(connection_status + 3, gensym(minuit_settings.host.c_str()));
+      A_SETFLOAT(connection_status + 4, minuit_settings.remote_port);
+      A_SETFLOAT(connection_status + 5, minuit_settings.local_port);
 
       try
       {
         x->m_device = std::make_shared<ossia::net::generic_device>(
             std::make_unique<ossia::net::minuit_protocol>(
-              minuit_settings.name, minuit_settings.host,
-              minuit_settings.remote_port, minuit_settings.local_port),
+                minuit_settings.name, minuit_settings.host, minuit_settings.remote_port,
+                minuit_settings.local_port),
             x->m_name->s_name);
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         object_error((t_object*)x, "%s", e.what());
       }
 
       count = 6;
     }
-    else if (protocol_name == "oscquery")
+    else if(protocol_name == "oscquery")
     {
       argc--;
       argv++;
-      std::string wsurl = "ws://" + oscq_settings.host + ":"
-                          + std::to_string(oscq_settings.port);
-      if (argc == 1
-          && argv[0].a_type == A_SYM)
+      std::string wsurl
+          = "ws://" + oscq_settings.host + ":" + std::to_string(oscq_settings.port);
+      if(argc == 1 && argv[0].a_type == A_SYM)
       {
         wsurl = atom_getsym(argv)->s_name;
       }
 
-      A_SETSYM(connection_status+1, gensym("oscquery"));
-      A_SETSYM(connection_status+2, gensym(oscq_settings.name.c_str()));
-      A_SETSYM(connection_status+3, gensym(wsurl.c_str()));
+      A_SETSYM(connection_status + 1, gensym("oscquery"));
+      A_SETSYM(connection_status + 2, gensym(oscq_settings.name.c_str()));
+      A_SETSYM(connection_status + 3, gensym(wsurl.c_str()));
 
       try
       {
         x->m_oscq_protocol = new ossia::oscquery::oscquery_mirror_protocol{wsurl};
         x->m_oscq_protocol->set_zombie_on_remove(false);
         x->m_device = std::make_shared<ossia::net::generic_device>(
-            std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol), oscq_settings.name);
+            std::unique_ptr<ossia::net::protocol_base>(x->m_oscq_protocol),
+            oscq_settings.name);
 
         clock_set(x->m_poll_clock, 1);
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         object_error((t_object*)x, "%s", e.what());
       }
 
       count = 4;
     }
-    else if (protocol_name == "osc")
+    else if(protocol_name == "osc")
     {
       argc--;
       argv++;
-      if (argc == 4
-          && argv[0].a_type == A_SYM
-          && argv[1].a_type == A_SYM
-          && ( argv[2].a_type == A_FLOAT || argv[2].a_type == A_LONG )
-          && ( argv[3].a_type == A_FLOAT || argv[3].a_type == A_LONG ))
+      if(argc == 4 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM
+         && (argv[2].a_type == A_FLOAT || argv[2].a_type == A_LONG)
+         && (argv[3].a_type == A_FLOAT || argv[3].a_type == A_LONG))
       {
         osc_settings.name = atom_getsym(argv++)->s_name;
         osc_settings.host = atom_getsym(argv++)->s_name;
@@ -321,26 +302,25 @@ void client::connect(client* x)
         osc_settings.local_port = atom_getfloat(argv++);
       }
 
-      A_SETSYM(connection_status+1, gensym("osc"));
-      A_SETSYM(connection_status+2, gensym(osc_settings.name.c_str()));
-      A_SETSYM(connection_status+3, gensym(osc_settings.host.c_str()));
-      A_SETFLOAT(connection_status+4, osc_settings.remote_port);
-      A_SETFLOAT(connection_status+5, osc_settings.local_port);
+      A_SETSYM(connection_status + 1, gensym("osc"));
+      A_SETSYM(connection_status + 2, gensym(osc_settings.name.c_str()));
+      A_SETSYM(connection_status + 3, gensym(osc_settings.host.c_str()));
+      A_SETFLOAT(connection_status + 4, osc_settings.remote_port);
+      A_SETFLOAT(connection_status + 5, osc_settings.local_port);
 
       try
       {
         x->m_device = std::make_shared<ossia::net::generic_device>(
             std::make_unique<ossia::net::osc_protocol>(
-              osc_settings.host, osc_settings.remote_port,
-              osc_settings.local_port, osc_settings.name),
+                osc_settings.host, osc_settings.remote_port, osc_settings.local_port,
+                osc_settings.name),
             x->m_name->s_name);
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         object_error((t_object*)x, "%s", e.what());
       }
       count = 6;
-
     }
     else
     {
@@ -355,7 +335,7 @@ void client::connect(client* x)
         x->m_zeroconf = true;
       }
 
-      A_SETSYM(connection_status+1, gensym(name.c_str()));
+      A_SETSYM(connection_status + 1, gensym(name.c_str()));
       count = 2;
     }
   }
@@ -366,7 +346,7 @@ void client::connect(client* x)
 
   if(x->m_device)
   {
-    A_SETFLOAT(connection_status,1);
+    A_SETFLOAT(connection_status, 1);
 
     outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
 
@@ -380,7 +360,7 @@ void client::connect(client* x)
   }
   else
   {
-    A_SETFLOAT(connection_status,0);
+    A_SETFLOAT(connection_status, 0);
 
     outlet_anything(x->m_dumpout, gensym("connect"), count, connection_status);
 
@@ -401,31 +381,31 @@ void client::get_devices(client* x)
   for(const auto& dev : minuit_devices)
   {
     A_SETSYM(av.data(), gensym("minuit"));
-    A_SETSYM(av.data()+1, gensym(dev->get_name().c_str()));
+    A_SETSYM(av.data() + 1, gensym(dev->get_name().c_str()));
     outlet_anything(x->m_dumpout, gensym("device"), 2, av.data());
   }
 
   for(const auto& dev : oscq_devices)
   {
     A_SETSYM(av.data(), gensym("oscquery"));
-    A_SETSYM(av.data()+1, gensym(dev->get_name().c_str()));
+    A_SETSYM(av.data() + 1, gensym(dev->get_name().c_str()));
     outlet_anything(x->m_dumpout, gensym("device"), 2, av.data());
   }
 }
 
 void client::unregister_children()
 {
-  std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, m_patcher, gensym("ossia.view"));
+  std::vector<object_base*> children_view
+      = find_children_to_register(&m_object, m_patcher, gensym("ossia.view"));
 
-  for (auto child : children_view)
+  for(auto child : children_view)
   {
-    if (child->m_otype == object_class::view)
+    if(child->m_otype == object_class::view)
     {
       ossia::max_binding::view* view = (ossia::max_binding::view*)child;
       view->unregister();
     }
-    else if (child->m_otype == object_class::remote)
+    else if(child->m_otype == object_class::remote)
     {
       ossia::max_binding::remote* remote = (ossia::max_binding::remote*)child;
       remote->unregister();
@@ -435,7 +415,7 @@ void client::unregister_children()
 
 void client::update(client* x)
 {
-  if (x->m_device)
+  if(x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
   }
@@ -443,12 +423,13 @@ void client::update(client* x)
 
 void client::disconnect(client* x)
 {
-  if (x->m_device)
+  if(x->m_device)
   {
     x->m_node_selection.clear();
     x->m_matchers.clear();
     x->disconnect_slots();
-    // FIXME it should not be necessary to unregister_children because they should listen to on_node_removing signal
+    // FIXME it should not be necessary to unregister_children because they should listen
+    // to on_node_removing signal
     x->unregister_children();
     x->m_device = nullptr;
     x->m_oscq_protocol = nullptr;
@@ -462,7 +443,7 @@ void client::disconnect(client* x)
 
 void client::poll_message(client* x)
 {
-  if (x->m_oscq_protocol)
+  if(x->m_oscq_protocol)
   {
     x->m_oscq_protocol->run_commands();
     clock_delay(x->m_poll_clock, x->m_rate);

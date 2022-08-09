@@ -1,9 +1,9 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/expression/expression_fwd.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
-
-#include <ossia/detail/config.hpp>
 
 #include <cstdint>
 #include <memory>
@@ -37,8 +37,8 @@ public:
   /*! event status */
   enum class status : uint8_t
   {
-    NONE     = 0b00000000,
-    PENDING  = 0b00000001,
+    NONE = 0b00000000,
+    PENDING = 0b00000001,
     HAPPENED = 0b00000010,
     DISPOSED = 0b00000011,
     FINISHED = 0b10000000
@@ -63,8 +63,7 @@ public:
 
 public:
   time_event(
-      time_event::exec_callback, time_sync& aTimeSync,
-      expression_ptr anExpression);
+      time_event::exec_callback, time_sync& aTimeSync, expression_ptr anExpression);
 
   /*! destructor */
   ~time_event();
@@ -124,8 +123,7 @@ public:
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  [[nodiscard]] const ptr_container<time_interval>&
-  previous_time_intervals() const
+  [[nodiscard]] const ptr_container<time_interval>& previous_time_intervals() const
   {
     return m_previous_time_intervals;
   }
@@ -152,6 +150,7 @@ public:
   void cleanup();
 
   void mute(bool m);
+
 private:
   time_event::exec_callback m_callback;
 

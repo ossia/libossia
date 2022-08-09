@@ -1,15 +1,17 @@
+#include <ossia/detail/logger.hpp>
 #include <ossia/math/math_expression.hpp>
 #include <ossia/math/safe_math.hpp>
-#include <ossia/detail/logger.hpp>
-#include <rnd/random.hpp>
+
 #include <PerlinNoise.hpp>
+#include <rnd/random.hpp>
 
 #pragma GCC visibility push(default)
 #pragma clang visibility push(default)
+#include <cmath>
+
 #include <algorithm>
 #include <cassert>
 #include <cctype>
-#include <cmath>
 #include <complex>
 #include <cstdio>
 #include <cstdlib>
@@ -38,18 +40,19 @@
 #pragma clang visibility pop
 
 #include <ossia/detail/fmt.hpp>
-#include <fmt/ranges.h>
 #include <ossia/detail/math.hpp>
+
+#include <fmt/ranges.h>
 namespace ossia
 {
 
 template <typename T>
-struct rand_gen
-    : public exprtk::ifunction<T>
+struct rand_gen : public exprtk::ifunction<T>
 {
   rnd::pcg engine;
 
-  rand_gen() : exprtk::ifunction<T>{2}
+  rand_gen()
+      : exprtk::ifunction<T>{2}
   {
   }
 
@@ -63,22 +66,24 @@ template <typename T, std::size_t N>
 struct perlin;
 
 template <typename T>
-struct perlin<T, 1>
-    : public exprtk::ifunction<T>
+struct perlin<T, 1> : public exprtk::ifunction<T>
 {
-  const siv::PerlinNoise engine{ 4u }; // choosen by fair dice roll
+  const siv::PerlinNoise engine{4u}; // choosen by fair dice roll
 
-  perlin(): exprtk::ifunction<T>{3}
+  perlin()
+      : exprtk::ifunction<T>{3}
   {
   }
 
   T operator()(const T& x, const T& octaves, const T& persistence) noexcept override
   {
-    return engine.normalizedOctave1D_01(x, std::max(1., octaves), std::clamp(persistence, 0., 1.));
+    return engine.normalizedOctave1D_01(
+        x, std::max(1., octaves), std::clamp(persistence, 0., 1.));
   }
 };
 
-struct math_expression::impl {
+struct math_expression::impl
+{
   rand_gen<double> random;
   perlin<double, 1> noise1d;
   exprtk::symbol_table<double> syms;
@@ -90,7 +95,7 @@ struct math_expression::impl {
 };
 
 math_expression::math_expression()
-  : impl{new struct impl}
+    : impl{new struct impl}
 {
   impl->syms.add_function("random", impl->random);
   impl->syms.add_function("noise", impl->noise1d);
@@ -139,7 +144,7 @@ void math_expression::update_symbol_table()
 
 bool math_expression::set_expression(const std::string& expr)
 {
-  if (expr != impl->cur_expr_txt)
+  if(expr != impl->cur_expr_txt)
   {
     impl->cur_expr_txt = expr;
     recompile();
@@ -158,7 +163,7 @@ bool math_expression::recompile()
   impl->variables.clear();
 
   impl->valid = impl->parser.compile(impl->cur_expr_txt, impl->expr);
-  if (impl->valid)
+  if(impl->valid)
   {
     exprtk::collect_variables(impl->cur_expr_txt, impl->variables);
   }
@@ -186,20 +191,18 @@ static std::vector<ossia::value> result_to_vec(auto& r)
   const auto N = r.count();
 
   std::vector<ossia::value> ret;
-  for (std::size_t i = 0; i < N; ++i)
+  for(std::size_t i = 0; i < N; ++i)
   {
     const type_t& t = r[i];
 
-    switch (t.type)
+    switch(t.type)
     {
-      case type_t::e_scalar:
-      {
+      case type_t::e_scalar: {
         ret.push_back(*(double*)t.data);
         break;
       }
 
-      case type_t::e_vector:
-      {
+      case type_t::e_vector: {
         std::vector<ossia::value> vec;
         vec.reserve(t.size);
         for(std::size_t i = 0; i < t.size; i++)
@@ -225,12 +228,18 @@ static ossia::value result_to_value(auto& r)
         return ossia::vec2f{(float)*(double*)r[0].data, (float)*(double*)r[1].data};
       break;
     case 3:
-      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar && r[2].type == type_t::e_scalar)
-        return ossia::vec3f{(float)*(double*)r[0].data, (float)*(double*)r[1].data, (float)*(double*)r[2].data};
+      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar
+         && r[2].type == type_t::e_scalar)
+        return ossia::vec3f{
+            (float)*(double*)r[0].data, (float)*(double*)r[1].data,
+            (float)*(double*)r[2].data};
       break;
     case 4:
-      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar && r[2].type == type_t::e_scalar && r[3].type == type_t::e_scalar)
-        return ossia::vec4f{(float)*(double*)r[0].data, (float)*(double*)r[1].data, (float)*(double*)r[2].data, (float)*(double*)r[3].data};
+      if(r[0].type == type_t::e_scalar && r[1].type == type_t::e_scalar
+         && r[2].type == type_t::e_scalar && r[3].type == type_t::e_scalar)
+        return ossia::vec4f{
+            (float)*(double*)r[0].data, (float)*(double*)r[1].data,
+            (float)*(double*)r[2].data, (float)*(double*)r[3].data};
       break;
     default:
       break;

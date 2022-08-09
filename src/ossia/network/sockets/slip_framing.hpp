@@ -1,11 +1,11 @@
 #pragma once
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/network/sockets/writers.hpp>
-#include <boost/asio/read.hpp>
-#include <boost/asio/write.hpp>
 
 #include <boost/asio/error.hpp>
+#include <boost/asio/read.hpp>
 #include <boost/asio/streambuf.hpp>
+#include <boost/asio/write.hpp>
 
 namespace ossia::net
 {
@@ -17,18 +17,22 @@ struct slip
   static const constexpr uint8_t esc_esc = 221;
 };
 
-template<typename Socket>
+template <typename Socket>
 struct slip_decoder
 {
   Socket& socket;
   boost::asio::streambuf m_data;
   ossia::pod_vector<char> m_decoded;
-  enum { waiting, reading_char, reading_esc } m_status{waiting};
+  enum
+  {
+    waiting,
+    reading_char,
+    reading_esc
+  } m_status{waiting};
 
   explicit slip_decoder(Socket& socket)
       : socket{socket}
   {
-
   }
 
   template <typename F>
@@ -36,16 +40,16 @@ struct slip_decoder
   {
     socket.async_read_some(
         boost::asio::buffer(m_data.prepare(1024)),
-        [this, f = std::move(f)] (boost::system::error_code ec, std::size_t sz) mutable {
-          if(!f.validate_stream(ec))
-            return;
+        [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+      if(!f.validate_stream(ec))
+        return;
 
-          if (sz > 0)
-          {
-            process_bytes(f, sz);
-          }
+      if(sz > 0)
+      {
+        process_bytes(f, sz);
+      }
 
-          receive(std::move(f));
+      receive(std::move(f));
         });
   }
 
@@ -67,8 +71,7 @@ struct slip_decoder
   {
     switch(m_status)
     {
-      case waiting:
-      {
+      case waiting: {
         switch(next_char)
         {
           // Start of a message
@@ -84,8 +87,7 @@ struct slip_decoder
         break;
       }
 
-      case reading_char:
-      {
+      case reading_char: {
         switch(next_char)
         {
           // End of a message, we can process it
@@ -111,8 +113,7 @@ struct slip_decoder
         break;
       }
 
-      case reading_esc:
-      {
+      case reading_esc: {
         switch(next_char)
         {
           case slip::esc_end:
@@ -136,10 +137,9 @@ struct slip_decoder
       }
     }
   }
-
 };
 
-template<typename Socket>
+template <typename Socket>
 struct slip_encoder
 {
   Socket& socket;
@@ -159,24 +159,22 @@ struct slip_encoder
     this->write(socket, boost::asio::buffer(&slip::eot, 1));
   }
 
-  std::size_t write(const uint8_t* begin, const uint8_t* end) {
+  std::size_t write(const uint8_t* begin, const uint8_t* end)
+  {
     const uint8_t byte = *begin;
     switch(byte)
     {
-      case slip::eot:
-      {
+      case slip::eot: {
         const uint8_t data[2] = {slip::esc, slip::esc_end};
         this->write(socket, boost::asio::buffer(data, 2));
         return 1;
       }
-      case slip::esc:
-      {
+      case slip::esc: {
         const uint8_t data[2] = {slip::esc, slip::esc_esc};
         this->write(socket, boost::asio::buffer(data, 2));
         return 1;
       }
-      default:
-      {
+      default: {
         auto sub_end = begin + 1;
         while(sub_end != end && *sub_end != slip::eot && *sub_end != slip::esc)
           ++sub_end;
@@ -187,25 +185,24 @@ struct slip_encoder
     }
   }
 
-  template<typename T>
+  template <typename T>
   void write(T& sock, const boost::asio::const_buffer& buf)
   {
     boost::asio::write(sock, buf);
   }
 
-  template<typename T>
+  template <typename T>
   void write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
   {
     sock.write(buf);
   }
 };
 
-
 struct slip_framing
 {
-  template<typename Socket>
+  template <typename Socket>
   using encoder = slip_encoder<Socket>;
-  template<typename Socket>
+  template <typename Socket>
   using decoder = slip_decoder<Socket>;
 };
 }

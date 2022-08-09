@@ -1,9 +1,10 @@
 #pragma once
 
-#include <ossia-max/src/device_base.hpp>
 #include <ossia/network/local/local.hpp>
-#include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/zeroconf/zeroconf.hpp>
+
+#include <ossia-max/src/device_base.hpp>
 
 namespace ossia
 {
@@ -16,7 +17,6 @@ namespace max_binding
 class client : public device_base
 {
 public:
-
   using is_client = std::true_type;
 
   static void register_children(client*);
@@ -52,13 +52,19 @@ public:
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
   bool m_zeroconf{true};
-  bool is_zeroconf() const { return m_zeroconf; }
-  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
+  bool is_zeroconf() const
+  {
+    return m_zeroconf;
+  }
+  std::string get_name() const
+  {
+    return m_name ? std::string(m_name->s_name) : "";
+  }
 
   static void connect(client*);
   static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);
   static void disconnect(client*);
-  static void get_devices(client*x);
+  static void get_devices(client* x);
   static void check_thread_status(client* x);
   static void update(client* x);
   static void poll_message(client* x);
@@ -73,10 +79,7 @@ public:
 
   int m_argc{};
   t_atom* m_argv{};
-
-
 };
 
 } // max namespace
 } // ossia namespace
-

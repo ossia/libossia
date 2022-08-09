@@ -1,11 +1,12 @@
 #pragma once
+#include <boost/container/vector.hpp>
+
 #include <cinttypes>
 #include <cstddef>
 #include <cstdlib>
 #include <vector>
 
 #include <type_traits>
-#include <boost/container/vector.hpp>
 
 namespace ossia
 {
@@ -36,11 +37,13 @@ struct pod_allocator
     delete[] p;
   }
 
-  friend inline bool operator==(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
+  friend inline bool
+  operator==(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
   {
     return true;
   }
-  friend inline bool operator!=(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
+  friend inline bool
+  operator!=(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
   {
     return false;
   }
@@ -63,7 +66,9 @@ struct pod_allocator
 
   static inline T* allocate(std::size_t num) noexcept
   {
-    static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "can only be used with POD types");
+    static_assert(
+        std::is_standard_layout_v<T> && std::is_trivial_v<T>,
+        "can only be used with POD types");
     static_assert(
         alignof(T) <= alignof(std::max_align_t),
         "type must not have specific alignment requirements");
@@ -86,12 +91,12 @@ struct pod_allocator
   }
 };
 
-
 template <class T, std::size_t Align>
 struct aligned_pod_allocator
 {
   template <class U>
-  struct rebind {
+  struct rebind
+  {
     using other = aligned_pod_allocator<U, Align>;
   };
 
@@ -105,7 +110,9 @@ struct aligned_pod_allocator
 
   static inline T* allocate(std::size_t num) noexcept
   {
-    static_assert(std::is_standard_layout_v<T> && std::is_trivial_v<T>, "can only be used with POD types");
+    static_assert(
+        std::is_standard_layout_v<T> && std::is_trivial_v<T>,
+        "can only be used with POD types");
     static_assert(
         alignof(T) <= alignof(std::max_align_t),
         "type must not have specific alignment requirements");
@@ -115,7 +122,7 @@ struct aligned_pod_allocator
 #if defined(_WIN32)
       return static_cast<T*>(::_aligned_malloc(sizeof(T) * num, Align));
 #else
-      void *p;
+      void* p;
       posix_memalign(&p, Align, sizeof(T) * num);
       return static_cast<T*>(p);
 #endif
@@ -142,21 +149,25 @@ struct aligned_pod_allocator
 #endif
   }
 
-  friend inline bool operator==(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
+  friend inline bool
+  operator==(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
   {
     return true;
   }
-  friend inline bool operator!=(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
+  friend inline bool
+  operator!=(aligned_pod_allocator lhs, aligned_pod_allocator rhs) noexcept
   {
     return false;
   }
 };
 #endif
 
-template<typename T>
-struct pod_allocator_avx2 : aligned_pod_allocator<T, 32> {
+template <typename T>
+struct pod_allocator_avx2 : aligned_pod_allocator<T, 32>
+{
   template <class U>
-  struct rebind {
+  struct rebind
+  {
     using other = pod_allocator_avx2<U>;
   };
   using aligned_pod_allocator<T, 32>::aligned_pod_allocator;

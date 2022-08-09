@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/apply.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -15,8 +17,6 @@
 #include <ossia/network/dataspace/detail/make_unit.hpp>
 #include <ossia/network/dataspace/detail/make_value.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
-
-#include <ossia/detail/config.hpp>
 
 #include <memory>
 //#include <ossia/network/value/detail/value_conversion_impl.hpp>
@@ -41,8 +41,8 @@ struct hash<std::pair<ossia::net::parameter_base*, ossia::unit_t>>
       return ossia::unit_variant::npos;
     }
   };
-  std::size_t operator()(
-      const std::pair<ossia::net::parameter_base*, ossia::unit_t>& k) const
+  std::size_t
+  operator()(const std::pair<ossia::net::parameter_base*, ossia::unit_t>& k) const
   {
     std::size_t seed = 0;
     ossia::hash_combine(seed, k.first);
@@ -117,7 +117,7 @@ public:
 
   void launch()
   {
-    for (auto& state : m_children)
+    for(auto& state : m_children)
     {
       ossia::apply(state_execution_visitor{}, std::move(state.second));
     }
@@ -134,8 +134,7 @@ public:
   void add(ossia::message&& e)
   {
     // TODO push in vector instead... or flat_multimap
-    m_children[std::make_pair(&e.dest.value.get(), e.get_unit())]
-        = std::move(e);
+    m_children[std::make_pair(&e.dest.value.get(), e.get_unit())] = std::move(e);
   }
   void add(const ossia::piecewise_message& e)
   {
@@ -157,21 +156,18 @@ public:
 
   void add(const ossia::state_element& e)
   {
-    switch (e.which())
+    switch(e.which())
     {
       case 0:
         return add(*static_cast<const ossia::message*>(e.target()));
       case 2:
         return add(*static_cast<const ossia::piecewise_message*>(e.target()));
       case 3:
-        return add(
-            *static_cast<const ossia::piecewise_vec_message<2>*>(e.target()));
+        return add(*static_cast<const ossia::piecewise_vec_message<2>*>(e.target()));
       case 4:
-        return add(
-            *static_cast<const ossia::piecewise_vec_message<3>*>(e.target()));
+        return add(*static_cast<const ossia::piecewise_vec_message<3>*>(e.target()));
       case 5:
-        return add(
-            *static_cast<const ossia::piecewise_vec_message<4>*>(e.target()));
+        return add(*static_cast<const ossia::piecewise_vec_message<4>*>(e.target()));
       case 1:
       default:
         throw std::runtime_error("there shouldn't be a state here");
@@ -180,22 +176,21 @@ public:
   }
   void add(ossia::state_element&& e)
   {
-    switch (e.which())
+    switch(e.which())
     {
       case 0:
         return add(std::move(*static_cast<ossia::message*>(e.target())));
       case 2:
-        return add(
-            std::move(*static_cast<ossia::piecewise_message*>(e.target())));
+        return add(std::move(*static_cast<ossia::piecewise_message*>(e.target())));
       case 3:
-        return add(std::move(
-            *static_cast<ossia::piecewise_vec_message<2>*>(e.target())));
+        return add(
+            std::move(*static_cast<ossia::piecewise_vec_message<2>*>(e.target())));
       case 4:
-        return add(std::move(
-            *static_cast<ossia::piecewise_vec_message<3>*>(e.target())));
+        return add(
+            std::move(*static_cast<ossia::piecewise_vec_message<3>*>(e.target())));
       case 5:
-        return add(std::move(
-            *static_cast<ossia::piecewise_vec_message<4>*>(e.target())));
+        return add(
+            std::move(*static_cast<ossia::piecewise_vec_message<4>*>(e.target())));
       case 1:
       default:
         throw std::runtime_error("there shouldn't be a state here");
@@ -259,8 +254,7 @@ private:
   map_t m_children;
 };
 
-inline ossia::state_element&
-get_state_element(ossia::flat_set_state::iterator iterator)
+inline ossia::state_element& get_state_element(ossia::flat_set_state::iterator iterator)
 {
   return iterator->second;
 }

@@ -1,10 +1,12 @@
 #pragma once
-#include <ossia/network/base/protocol.hpp>
-#include <ossia/network/base/parameter_data.hpp>
-#include <ossia/network/base/message_queue.hpp>
-#include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/flat_map.hpp>
+#include <ossia/network/base/message_queue.hpp>
+#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/base/protocol.hpp>
+
 #include <readerwriterqueue.h>
+
 #include <chrono>
 #include <thread>
 #include <vector>
@@ -12,8 +14,7 @@
 namespace ossia::net
 {
 struct rate_limiter;
-class OSSIA_EXPORT rate_limiting_protocol final
-    : public ossia::net::protocol_base
+class OSSIA_EXPORT rate_limiting_protocol final : public ossia::net::protocol_base
 {
 public:
   using clock = std::chrono::high_resolution_clock;
@@ -54,20 +55,19 @@ private:
   std::thread m_thread;
 
   clock::time_point m_lastTime;
-  using map_t = ossia::flat_map<const ossia::net::parameter_base*, std::pair<ossia::value, clock::time_point>>;
+  using map_t = ossia::flat_map<
+      const ossia::net::parameter_base*, std::pair<ossia::value, clock::time_point>>;
   map_t m_userMessages;
   map_t m_buffer;
   map_t m_threadMessages;
   std::mutex m_msgMutex;
 };
 
-template<typename Protocol, typename... Args>
+template <typename Protocol, typename... Args>
 auto limit_output_rate(std::chrono::milliseconds ms, Args&&... args)
 {
   return std::make_unique<rate_limiting_protocol>(
-        ms,
-        std::make_unique<Protocol>(std::forward<Args>(args)...)
-        );
+      ms, std::make_unique<Protocol>(std::forward<Args>(args)...));
 }
 
 }

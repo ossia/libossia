@@ -1,7 +1,8 @@
 #pragma once
 
-#include <ossia-max/src/device_base.hpp>
 #include <ossia/network/base/protocol.hpp>
+
+#include <ossia-max/src/device_base.hpp>
 
 namespace ossia
 {
@@ -11,7 +12,6 @@ namespace max_binding
 class device : public device_base
 {
 public:
-
   using is_device = std::true_type;
 
   static void register_children(device*);
@@ -21,8 +21,8 @@ public:
   static void name(device* x, t_symbol*, long argc, t_atom* argv);
   static void get_protocols(device* x);
   static void get_oscq_clients(device* x);
-  static void stop_expose(device*x, int index);
-  static void enable_buffering(device*x, int index, int enable);
+  static void stop_expose(device* x, int index);
+  static void enable_buffering(device* x, int index, int enable);
   static void send_buffer(device* x, int index);
   static void get_mess_cb(device* x, t_symbol* s);
   static void assist(ossia::max_binding::device*, void*, long, long, char*);
@@ -86,4 +86,3 @@ static void print_protocol_help()
 } // protocol_setting namespace
 } // max namespace
 } // ossia namespace
-

@@ -1,17 +1,16 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/value_vector.hpp>
+#include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/detail/mutex.hpp>
-#include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/protocols/midi/midi_device.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
-
-#include <ossia/detail/lockfree_queue.hpp>
 
 #if defined(OSSIA_SMALL_VECTOR)
 #include <libremidi/message.hpp>
@@ -20,8 +19,8 @@
 #include <cstdint>
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit
 #include <ossia/dataflow/audio_port.hpp>
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
 #endif
 
 #include <smallfun.hpp>
@@ -63,8 +62,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   void register_device(ossia::net::device_base* d);
   void unregister_device(net::device_base* d);
 
-  const ossia::small_vector<ossia::net::device_base*, 4>& edit_devices() const
-      noexcept
+  const ossia::small_vector<ossia::net::device_base*, 4>& edit_devices() const noexcept
   {
     return m_devices_edit;
   }
@@ -75,16 +73,15 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   void unregister_port(const ossia::inlet& port);
   void unregister_port(const ossia::outlet& port);
 
-  const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const
-      noexcept
+  const ossia::small_vector<ossia::net::device_base*, 4>& exec_devices() const noexcept
   {
     return m_devices_exec;
   }
   ossia::net::node_base* find_node(std::string_view name) const noexcept
   {
-    for (auto dev : m_devices_exec)
+    for(auto dev : m_devices_exec)
     {
-      if (auto res = ossia::net::find_node(dev->get_root_node(), name))
+      if(auto res = ossia::net::find_node(dev->get_root_node(), name))
         return res;
     }
     return nullptr;
@@ -93,7 +90,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   template <typename T>
   auto get_value_or(std::string_view v, const T& val) noexcept
   {
-    if (auto node = find_node(v))
+    if(auto node = find_node(v))
       return ossia::convert<T>(node->get_parameter()->value());
     return val;
   }
@@ -118,12 +115,12 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   // void insert(const ossia::destination& dest, const data_type& v);
   // void insert(const ossia::destination& dest, data_type&& v);
 
-  //void insert(const ossia::destination& dest, const ossia::audio_port& v);
-  //void insert(const ossia::destination& dest, ossia::audio_port&& v);
-  //void insert(const ossia::destination& dest, const ossia::midi_port& v);
-  //void insert(const ossia::destination& dest, ossia::midi_port&& v);
-  //void insert(const ossia::destination& dest, const ossia::value_port& v);
-  //void insert(const ossia::destination& dest, ossia::value_port&& v);
+  // void insert(const ossia::destination& dest, const ossia::audio_port& v);
+  // void insert(const ossia::destination& dest, ossia::audio_port&& v);
+  // void insert(const ossia::destination& dest, const ossia::midi_port& v);
+  // void insert(const ossia::destination& dest, ossia::midi_port&& v);
+  // void insert(const ossia::destination& dest, const ossia::value_port& v);
+  // void insert(const ossia::destination& dest, ossia::value_port&& v);
   void insert(ossia::net::parameter_base& dest, const ossia::value_port& v);
   void insert(ossia::net::parameter_base& dest, ossia::value_port&& v);
   void insert(ossia::net::parameter_base& dest, const typed_value& v);
@@ -150,8 +147,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
       ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>>
       m_valueState;
   ossia::fast_hash_map<ossia::audio_parameter*, audio_port> m_audioState;
-  ossia::fast_hash_map<
-      ossia::net::parameter_base*, value_vector<libremidi::message>>
+  ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>
       m_midiState;
 
   mutable ossia::audio_spin_mutex mutex;

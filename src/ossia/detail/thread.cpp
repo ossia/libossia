@@ -59,8 +59,8 @@ std::string get_module_path()
 }
 }
 #elif __has_include(<ossia/../../3rdparty/whereami/src/whereami.c>)
-#include <ossia/../../3rdparty/whereami/src/whereami.h>
 #include <ossia/../../3rdparty/whereami/src/whereami.c>
+#include <ossia/../../3rdparty/whereami/src/whereami.h>
 namespace ossia
 {
 std::string get_exe_path()
@@ -70,7 +70,7 @@ std::string get_exe_path()
   int dirname_length{};
 
   length = wai_getExecutablePath(NULL, 0, &dirname_length);
-  if (length > 0)
+  if(length > 0)
   {
     path.resize(length);
     wai_getExecutablePath(&path[0], length, &dirname_length);
@@ -86,7 +86,7 @@ std::string get_module_path()
   int dirname_length{};
 
   length = wai_getModulePath(NULL, 0, &dirname_length);
-  if (length > 0)
+  if(length > 0)
   {
     path.resize(length);
     wai_getModulePath(&path[0], length, &dirname_length);

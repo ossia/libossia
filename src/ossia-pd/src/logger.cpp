@@ -1,17 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-pd/src/logger.hpp>
-#include <ossia/network/common/websocket_log_sink.hpp>
 #include "ossia-pd.hpp"
+
 #include <ossia/detail/thread.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
+
+#include <ossia-pd/src/logger.hpp>
 
 namespace ossia
 {
 namespace pd
 {
 
-logger::logger(int argc, t_atom* argv) :
-  object_base{ossia_pd::logger_class}
+logger::logger(int argc, t_atom* argv)
+    : object_base{ossia_pd::logger_class}
 {
   m_host = gensym("ws://127.0.0.1:1337");
   m_appname = gensym("pd");
@@ -27,20 +29,21 @@ void* logger::create(t_symbol* s, int argc, t_atom* argv)
 
 void logger::in_anything(logger* x, t_symbol* s, int argc, t_atom* argv)
 {
-  if (x && x->m_log && s && s->s_name && argc > 0)
+  if(x && x->m_log && s && s->s_name && argc > 0)
   {
     ossia::string_view type = s->s_name;
 
     std::string txt;
     for(int i = 0; i < argc; i++)
     {
-      switch(argv[i].a_type) {
-      case A_FLOAT:
-        txt += std::to_string(atom_getfloat(&argv[i]));
-        break;
-      case A_SYMBOL:
-        txt += std::string(atom_getsym(&argv[i])->s_name);
-        break;
+      switch(argv[i].a_type)
+      {
+        case A_FLOAT:
+          txt += std::to_string(atom_getfloat(&argv[i]));
+          break;
+        case A_SYMBOL:
+          txt += std::string(atom_getsym(&argv[i])->s_name);
+          break;
       }
       txt += " ";
     }
@@ -74,14 +77,13 @@ void logger::in_anything(logger* x, t_symbol* s, int argc, t_atom* argv)
 
 void logger::destroy(logger* x)
 {
-  if (x)
+  if(x)
   {
     x->~logger();
   }
 }
 
-t_max_err logger::notify(
-    logger* x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+t_max_err logger::notify(logger* x, t_symbol* s, t_symbol* msg, void* sender, void* data)
 {
   x->reset();
   return 0;
@@ -105,23 +107,18 @@ void logger::reset()
 
   logpost(&m_obj, 4, "logger connected");
   m_log = std::make_shared<spdlog::logger>(
-       "pd_logger", std::make_shared<websocket_log_sink>(m_con, appname));
+      "pd_logger", std::make_shared<websocket_log_sink>(m_con, appname));
 
   logpost(&m_obj, 4, "logger created");
   m_beat = std::make_shared<websocket_heartbeat>(
-        m_con,
-        appname,
-        std::chrono::seconds(ossia::clamp((int)m_ival, (int)0, (int)1000)));
+      m_con, appname,
+      std::chrono::seconds(ossia::clamp((int)m_ival, (int)0, (int)1000)));
 
   logpost(&m_obj, 4, "heartbeat connected");
-  m_beat->send_init({
-                        {"pid", ossia::get_pid()}
-                      , {"cmd", ossia::get_exe_path()}
-                    });
+  m_beat->send_init({{"pid", ossia::get_pid()}, {"cmd", ossia::get_exe_path()}});
 
   logpost(&m_obj, 4, "heartbeat init");
 }
-
 
 extern "C" void setup_ossia0x2elogger(void)
 {
@@ -131,15 +128,10 @@ extern "C" void setup_ossia0x2elogger(void)
       "ossia.logger", (method)logger::create, (method)logger::destroy,
       (short)sizeof(logger), CLASS_DEFAULT, A_GIMME, 0);
 
+  class_addcreator((t_newmethod)logger::create, gensym("ø.logger"), A_GIMME, 0);
 
-  class_addcreator((t_newmethod)logger::create,gensym("ø.logger"), A_GIMME, 0);
-
-  eclass_addmethod(
-      c, (method)logger::in_anything,
-      "anything", A_GIMME, 0);
-  eclass_addmethod(
-      c, (method)logger::notify,
-      "notify", A_NULL, 0);
+  eclass_addmethod(c, (method)logger::in_anything, "anything", A_GIMME, 0);
+  eclass_addmethod(c, (method)logger::notify, "notify", A_NULL, 0);
 
   CLASS_ATTR_SYMBOL(c, "host", 0, logger, m_host);
   CLASS_ATTR_LABEL(c, "host", 0, "Logger host (eg ws://127.0.0.1:1337)");

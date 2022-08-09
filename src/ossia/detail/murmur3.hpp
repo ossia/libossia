@@ -49,10 +49,10 @@ static constexpr inline uint64_t fmix64(uint64_t k) noexcept
 
 inline
 #if defined(__clang__)
-__attribute__((no_sanitize("undefined")))
+    __attribute__((no_sanitize("undefined")))
 #endif
-void
-murmur3_x86_32(const void* key, int len, uint32_t seed, uint32_t& out) noexcept
+    void
+    murmur3_x86_32(const void* key, int len, uint32_t seed, uint32_t& out) noexcept
 {
   const uint8_t* data = (const uint8_t*)key;
   const int nblocks = len / 4;
@@ -67,7 +67,7 @@ murmur3_x86_32(const void* key, int len, uint32_t seed, uint32_t& out) noexcept
 
   const uint32_t* blocks = (const uint32_t*)(data + nblocks * 4);
 
-  for (int i = -nblocks; i; i++)
+  for(int i = -nblocks; i; i++)
   {
     uint32_t k1 = blocks[i];
 
@@ -87,7 +87,7 @@ murmur3_x86_32(const void* key, int len, uint32_t seed, uint32_t& out) noexcept
 
   uint32_t k1 = 0;
 
-  switch (len & 3)
+  switch(len & 3)
   {
     case 3:
       k1 ^= tail[2] << 16;
@@ -136,7 +136,7 @@ constexpr void murmur3_x86_128(
 
   const uint32_t* blocks = (const uint32_t*)(data + nblocks * 16);
 
-  for (int i = -nblocks; i; i++)
+  for(int i = -nblocks; i; i++)
   {
     uint32_t k1 = blocks[i * 4 + 0];
     uint32_t k2 = blocks[i * 4 + 1];
@@ -190,7 +190,7 @@ constexpr void murmur3_x86_128(
   uint32_t k3 = 0;
   uint32_t k4 = 0;
 
-  switch (len & 15)
+  switch(len & 15)
   {
     case 15:
       k4 ^= tail[14] << 16;
@@ -279,8 +279,7 @@ constexpr void murmur3_x86_128(
 //-----------------------------------------------------------------------------
 
 constexpr void murmur3_x64_128(
-    const void* key, const int len, const uint32_t seed,
-    uint64_t (&out)[2]) noexcept
+    const void* key, const int len, const uint32_t seed, uint64_t (&out)[2]) noexcept
 {
   const uint8_t* data = (const uint8_t*)key;
   const int nblocks = len / 16;
@@ -296,7 +295,7 @@ constexpr void murmur3_x64_128(
 
   const uint64_t* blocks = (const uint64_t*)(data);
 
-  for (int i = 0; i < nblocks; i++)
+  for(int i = 0; i < nblocks; i++)
   {
     uint64_t k1 = blocks[i * 2 + 0];
     uint64_t k2 = blocks[i * 2 + 1];
@@ -328,7 +327,7 @@ constexpr void murmur3_x64_128(
   uint64_t k1 = 0;
   uint64_t k2 = 0;
 
-  switch (len & 15)
+  switch(len & 15)
   {
     case 15:
       k2 ^= (uint64_t)(tail[14]) << 48;

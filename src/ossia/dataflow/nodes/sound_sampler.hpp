@@ -1,7 +1,7 @@
 #pragma once
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/nodes/sound_utils.hpp>
-#include <ossia/dataflow/graph_node.hpp>
 
 namespace ossia::nodes
 {
@@ -42,7 +42,8 @@ struct sound_sampler
     {
       m_dataSampleRate = 44100;
       m_data.assign(m_handle->data.begin(), m_handle->data.end());
-      info->m_resampler.reset(0, audio_stretch_mode::None, m_handle->data.size(), m_dataSampleRate);
+      info->m_resampler.reset(
+          0, audio_stretch_mode::None, m_handle->data.size(), m_dataSampleRate);
     }
   }
 
@@ -50,26 +51,26 @@ struct sound_sampler
   {
     m_handle = hdl;
     m_data.clear();
-    if (hdl)
+    if(hdl)
     {
       m_dataSampleRate = sampleRate;
       m_data.assign(m_handle->data.begin(), m_handle->data.end());
     }
   }
 
-  template<typename T>
+  template <typename T>
   void fetch_audio(
-      const int64_t start,
-      const int64_t samples_to_write,
+      const int64_t start, const int64_t samples_to_write,
       T** const audio_array) const noexcept
   {
-    read_audio_from_buffer(m_data, start, samples_to_write, info->m_start_offset_samples, info->m_loop_duration_samples, info->m_loops, audio_array);
+    read_audio_from_buffer(
+        m_data, start, samples_to_write, info->m_start_offset_samples,
+        info->m_loop_duration_samples, info->m_loops, audio_array);
   }
 
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept
   {
-    if (m_data.empty())
+    if(m_data.empty())
       return;
 
     // TODO do the backwards play head
@@ -81,7 +82,8 @@ struct sound_sampler
     ossia::audio_port& ap = *audio_out;
     ap.set_channels(std::max(this->upmix, chan));
 
-    const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
+    const auto [samples_to_read, samples_to_write]
+        = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_read == 0)
       return;
     if(samples_to_write <= 0)
@@ -90,26 +92,30 @@ struct sound_sampler
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if (t.tempo > 0)
+    if(t.tempo > 0)
     {
       if(t.prev_date < info->m_prev_date)
       {
         // Sentinel: we never played.
-        if(info->m_prev_date == ossia::time_value{ossia::time_value::infinite_min}) {
-          if(t.prev_date != 0_tv) {
+        if(info->m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
+        {
+          if(t.prev_date != 0_tv)
+          {
             transport(t.prev_date);
           }
-          else {
+          else
+          {
             // Otherwise we don't need transport, everything is alreayd at 0
             info->m_prev_date = 0_tv;
           }
         }
-        else {
+        else
+        {
           transport(t.prev_date);
         }
       }
 
-      for (std::size_t i = 0; i < chan; ++i)
+      for(std::size_t i = 0; i < chan; ++i)
       {
         ap.channel(i).resize(e.bufferSize());
       }
@@ -117,13 +123,15 @@ struct sound_sampler
       double stretch_ratio = info->update_stretch(t, e);
 
       // Resample
-      info->m_resampler.run(*this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write, samples_offset, ap);
+      info->m_resampler.run(
+          *this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write,
+          samples_offset, ap);
 
       for(std::size_t i = 0; i < chan; i++)
       {
         ossia::snd::do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.channel(i),
-            samples_offset, samples_to_write);
+            t.start_discontinuous, t.end_discontinuous, ap.channel(i), samples_offset,
+            samples_to_write);
       }
 
       ossia::snd::perform_upmix(this->upmix, chan, ap);

@@ -1,11 +1,11 @@
 #pragma once
 #include <ossia/detail/json.hpp>
+#include <ossia/detail/nullable_variant.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
 
-#include <ossia/detail/nullable_variant.hpp>
 #include <readerwriterqueue.h>
-#include <spdlog/spdlog.h>
 #include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/spdlog.h>
 
 #include <atomic>
 
@@ -19,14 +19,14 @@ struct websocket_threaded_connection
     running = true;
     thread = std::thread([this, ip] {
       auto log = spdlog::get("websocket");
-      if (!log)
+      if(!log)
         log = spdlog::stderr_logger_mt("websocket");
       try
       {
-        while (running)
+        while(running)
         {
           socket.connect_and_run(ip);
-          if (running)
+          if(running)
           {
             // Try to reconnect
             log->critical("Logger could not connect to {}.", ip);
@@ -35,15 +35,15 @@ struct websocket_threaded_connection
         }
         log->critical("Logger stopping.");
       }
-      catch (const websocketpp::exception& e)
+      catch(const websocketpp::exception& e)
       {
         log->critical("Logger error: ", e.what());
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         log->critical("Logger error: ", e.what());
       }
-      catch (...)
+      catch(...)
       {
         log->critical("Logger error");
       }
@@ -53,10 +53,10 @@ struct websocket_threaded_connection
   ~websocket_threaded_connection()
   {
     running = false;
-    if (!socket.after_connect())
+    if(!socket.after_connect())
       std::this_thread::sleep_for(std::chrono::milliseconds(500));
     socket.stop();
-    if (thread.joinable())
+    if(thread.joinable())
       thread.join();
   }
 
@@ -66,12 +66,13 @@ struct websocket_threaded_connection
 };
 
 //! A sink to use with spdlog, that will send its log messages over websockets.
-struct websocket_log_sink final : public spdlog::sinks::sink,
-                                  public Nano::Observer
+struct websocket_log_sink final
+    : public spdlog::sinks::sink
+    , public Nano::Observer
 {
-  websocket_log_sink(
-      std::shared_ptr<websocket_threaded_connection> s, std::string send)
-      : socket{std::move(s)}, sender{std::move(send)}
+  websocket_log_sink(std::shared_ptr<websocket_threaded_connection> s, std::string send)
+      : socket{std::move(s)}
+      , sender{std::move(send)}
   {
     socket->socket.on_open.connect<&websocket_log_sink::open_fun>(this);
   }
@@ -79,7 +80,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
   void open_fun()
   {
     std::string m;
-    while (logs.try_dequeue(m))
+    while(logs.try_dequeue(m))
     {
       socket->socket.send_message(m);
     }
@@ -102,7 +103,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
     writer.String("log");
 
     writer.Key("level");
-    switch (msg.level)
+    switch(msg.level)
     {
       case spdlog::level::trace:
         writer.String("trace");
@@ -144,7 +145,7 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
 
   void log(const spdlog::details::log_msg& msg) override
   {
-    if (!socket->socket.connected())
+    if(!socket->socket.connected())
     {
       make_message(msg);
       logs.enqueue(std::string{buffer.GetString(), buffer.GetSize()});
@@ -160,8 +161,13 @@ struct websocket_log_sink final : public spdlog::sinks::sink,
   {
   }
 
-  void set_pattern(const std::string &pattern) override { }
-  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
+  void set_pattern(const std::string& pattern) override
+  {
+  }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override
+  {
+  }
+
 private:
   rapidjson::StringBuffer buffer;
   std::shared_ptr<websocket_threaded_connection> socket;
@@ -177,12 +183,14 @@ public:
   websocket_heartbeat(
       std::shared_ptr<websocket_threaded_connection> t, std::string s,
       std::chrono::seconds dur)
-      : interval{dur}, sender{s}, conn{t}
+      : interval{dur}
+      , sender{s}
+      , conn{t}
   {
     thread = std::thread([this] {
-      while (running)
+      while(running)
       {
-        if (init && conn->socket.connected())
+        if(init && conn->socket.connected())
         {
           buffer.Clear();
           ossia::json_writer writer{buffer};
@@ -199,12 +207,11 @@ public:
           conn->socket.send_message(buffer);
         }
 
-        for (int i = 0; i < 100; i++)
+        for(int i = 0; i < 100; i++)
         {
           std::this_thread::sleep_for(
-              std::chrono::duration_cast<std::chrono::milliseconds>(interval)
-              / 100.0);
-          if (!running)
+              std::chrono::duration_cast<std::chrono::milliseconds>(interval) / 100.0);
+          if(!running)
             return;
         }
       }
@@ -223,12 +230,11 @@ public:
   {
     conn->socket.on_open.disconnect<&websocket_heartbeat::open_fun>(*this);
     running = false;
-    if (thread.joinable())
+    if(thread.joinable())
       thread.join();
   }
 
-  void
-  send_init(const std::map<std::string, ossia::variant<std::string, int>>& map)
+  void send_init(const std::map<std::string, ossia::variant<std::string, int>>& map)
   {
     rapidjson::StringBuffer buffer;
     ossia::json_writer writer{buffer};
@@ -257,7 +263,7 @@ public:
       }
     } sw{writer};
 
-    for (const auto& pair : map)
+    for(const auto& pair : map)
     {
       writer.Key(pair.first);
       ossia::visit(sw, pair.second);
@@ -265,7 +271,7 @@ public:
 
     writer.EndObject();
 
-    if (conn->socket.connected())
+    if(conn->socket.connected())
     {
       conn->socket.send_message(buffer);
       init = true;

@@ -1,32 +1,26 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/network/common/path.hpp>
+
 #include <ossia-max/src/attribute.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
-
-#include <ossia/network/common/path.hpp>
 
 using namespace ossia::max_binding;
 
 extern "C" void ossia_attribute_setup()
 {
-  auto c = class_new( "ossia.attribute",
-      (method)attribute::create,
-      (method)attribute::destroy,
-      (long)sizeof(attribute), 0L,
-      A_GIMME, 0);
+  auto c = class_new(
+      "ossia.attribute", (method)attribute::create, (method)attribute::destroy,
+      (long)sizeof(attribute), 0L, A_GIMME, 0);
 
   parameter_base::class_setup(c);
 
-  class_addmethod(
-        c, (method)attribute::assist,
-        "assist", A_CANT, 0);
-  class_addmethod(
-        c, (method)parameter_base::notify,
-        "notify", A_CANT, 0);
+  class_addmethod(c, (method)attribute::assist, "assist", A_CANT, 0);
+  class_addmethod(c, (method)parameter_base::notify, "notify", A_CANT, 0);
 
-  class_addmethod(c, (method) parameter_base::get_mess_cb, "get",  A_SYM, 0);
-  class_addmethod(c, (method) address_mess_cb<attribute>, "address",   A_SYM, 0);
+  class_addmethod(c, (method)parameter_base::get_mess_cb, "get", A_SYM, 0);
+  class_addmethod(c, (method)address_mess_cb<attribute>, "address", A_SYM, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -39,10 +33,9 @@ namespace ossia
 namespace max_binding
 {
 
-
 void attribute::assist(attribute* x, void* b, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Remote parameter attribute messages");
   }
@@ -53,8 +46,7 @@ void attribute::assist(attribute* x, void* b, long m, long a, char* s)
       case 0:
         sprintf(s, "Remote parameter attribute value");
         break;
-      default:
-        ;
+      default:;
     }
   }
 }
@@ -88,8 +80,9 @@ void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std:
   {
     if(m->get_node() == &node)
     {
-      m_matchers.erase(std::remove(std::begin(m_matchers),
-                                   std::end(m_matchers), m), m_matchers.end());
+      m_matchers.erase(
+          std::remove(std::begin(m_matchers), std::end(m_matchers), m),
+          m_matchers.end());
     }
     else
     {
@@ -98,8 +91,9 @@ void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std:
       {
         if(parent == &node)
         {
-          m_matchers.erase(std::remove(std::begin(m_matchers),
-                                       std::end(m_matchers), m), m_matchers.end());
+          m_matchers.erase(
+              std::remove(std::begin(m_matchers), std::end(m_matchers), m),
+              m_matchers.end());
           break;
         }
         parent = parent->get_parent();
@@ -132,7 +126,7 @@ void attribute::do_registration()
 void attribute::unregister()
 {
   auto copy = m_matchers;
-  for (auto& m : copy)
+  for(auto& m : copy)
   {
     if(m->is_locked())
     {
@@ -152,7 +146,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 {
   auto x = make_ossia<attribute>();
 
-  if (x)
+  if(x)
   {
     critical_enter(0);
     ossia_max::get_patcher_descriptor(x->m_patcher).attributes.push_back(x);
@@ -175,9 +169,9 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (attrstart && argv)
+    if(attrstart && argv)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
@@ -192,7 +186,7 @@ void* attribute::create(t_symbol* name, int argc, t_atom* argv)
     // https://cycling74.com/forums/notify-when-attribute-changes
     object_attach_byptr_register(x, x, CLASS_BOX);
 
-    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
     critical_exit(0);
   }

@@ -1,14 +1,15 @@
 #include "qml_exec.hpp"
-#include <ossia/editor/state/state_element.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
+
 #include <ossia/editor/expression/expression.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
+#include <ossia/editor/state/state_element.hpp>
 namespace ossia
 {
 namespace qt
 {
 
-qml_exec&qml_exec::instance()
+qml_exec& qml_exec::instance()
 {
   static qml_exec e;
   return e;
@@ -19,7 +20,7 @@ qml_exec* qml_exec::get(QObject* obj)
   return &instance();
 }
 
-void qml_exec::submitCommand(std::function<void ()> v)
+void qml_exec::submitCommand(std::function<void()> v)
 {
   if(m_timer)
   {
@@ -52,14 +53,12 @@ void qml_exec::play(qml_interval* itvl)
   m_cur = itvl;
   auto sn = std::make_shared<ossia::time_sync>();
   auto en = std::make_shared<ossia::time_sync>();
-  auto se = std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {}, *sn, ossia::expressions::make_expression_true());
-  auto ee = std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {}, *en, ossia::expressions::make_expression_true());
-  auto itv = std::make_shared<ossia::time_interval>(
-               [this](
-               double position,
-               ossia::time_value date,
-               const ossia::state_element& state) {
-    ossia::launch(state);
+  auto se = std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {},
+  *sn, ossia::expressions::make_expression_true()); auto ee =
+  std::make_shared<ossia::time_event>([] (const ossia::time_event::status) {}, *en,
+  ossia::expressions::make_expression_true()); auto itv =
+  std::make_shared<ossia::time_interval>( [this]( double position, ossia::time_value
+  date, const ossia::state_element& state) { ossia::launch(state);
     m_cur->setPlayDuration(reverseTime(date));
 
     std::function<void()> c;
@@ -102,12 +101,10 @@ void qml_exec::stop(qml_interval* itvl)
 
 qml_exec::qml_exec()
 {
-
 }
 
 qml_exec::~qml_exec()
 {
-
 }
 
 void qml_exec::timerEvent(QTimerEvent* event)
@@ -116,7 +113,8 @@ void qml_exec::timerEvent(QTimerEvent* event)
   auto last = m_cur_t;
   m_cur_t = new_t;
 
-  auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(m_cur_t - last).count();
+  auto elapsed
+      = std::chrono::duration_cast<std::chrono::microseconds>(m_cur_t - last).count();
 
   m_cur->m_interval->tick(time_value{elapsed});
 }

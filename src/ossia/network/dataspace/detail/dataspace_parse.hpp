@@ -21,7 +21,7 @@ struct unit_map_factory
 {
   void operator()(unit_map& m)
   {
-    for (ossia::string_view v : ossia::unit_traits<Arg>::text())
+    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v, ossia::unit_t{Arg{}});
     unit_map_factory<Args...>{}(m);
   }
@@ -32,7 +32,7 @@ struct unit_map_factory<Arg>
 {
   void operator()(unit_map& m)
   {
-    for (ossia::string_view v : ossia::unit_traits<Arg>::text())
+    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v, ossia::unit_t{Arg{}});
   }
 };
@@ -68,8 +68,7 @@ struct unit_factory_visitor
 };
 
 template <typename Unit>
-using enable_if_multidimensional
-    = std::enable_if_t<Unit::is_multidimensional::value>;
+using enable_if_multidimensional = std::enable_if_t<Unit::is_multidimensional::value>;
 
 template <typename Dataspace, typename Unit, typename = void>
 struct make_unit_symbols_sub_helper
@@ -81,10 +80,10 @@ struct make_unit_symbols_sub_helper
     std::string res;
     res.reserve(20);
 
-    for (auto ds : dataspace_traits<Dataspace>::text())
+    for(auto ds : dataspace_traits<Dataspace>::text())
     {
       // For each unit :
-      for (auto un : unit_traits<unit_type>::text())
+      for(auto un : unit_traits<unit_type>::text())
       {
         res.clear();
 
@@ -101,8 +100,7 @@ struct make_unit_symbols_sub_helper
 };
 
 template <typename Dataspace, typename Unit>
-struct make_unit_symbols_sub_helper<
-    Dataspace, Unit, enable_if_multidimensional<Unit>>
+struct make_unit_symbols_sub_helper<Dataspace, Unit, enable_if_multidimensional<Unit>>
 {
   void operator()(unit_parse_symbols_t& map)
   {
@@ -111,10 +109,10 @@ struct make_unit_symbols_sub_helper<
     std::string res;
     res.reserve(20);
 
-    for (auto ds : dataspace_traits<Dataspace>::text())
+    for(auto ds : dataspace_traits<Dataspace>::text())
     {
       // For each unit :
-      for (auto un : unit_traits<unit_type>::text())
+      for(auto un : unit_traits<unit_type>::text())
       {
         res.clear();
 
@@ -131,7 +129,7 @@ struct make_unit_symbols_sub_helper<
 
         const auto& params = unit_type::array_parameters();
         const auto n = params.size();
-        for (std::size_t i = 0; i < n; i++)
+        for(std::size_t i = 0; i < n; i++)
         {
           // replace the last char with the one in the array parameter
           res[res.size() - 1] = params[i]; // color.rgb.r

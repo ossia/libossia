@@ -35,8 +35,7 @@ struct apply_domain_visitor
 
   // General case with incompatible values
   template <typename T, typename U>
-  OSSIA_INLINE ossia::value
-  operator()(const T& value, const U& bad_domain) const
+  OSSIA_INLINE ossia::value operator()(const T& value, const U& bad_domain) const
   {
     return {};
   }
@@ -63,30 +62,23 @@ struct apply_domain_visitor
     return value;
   }
   // Numeric values
-  ossia::value operator()
-      (int32_t value, const domain_base<int32_t>& domain) const;
-  ossia::value operator()
-      (int32_t value, const domain_base<float>& domain) const;
-  ossia::value operator()
-      (float value, const domain_base<int32_t>& domain) const;
-  ossia::value operator()
-      (float value, const domain_base<float>& domain) const;
-  ossia::value operator()
-      (char value, const domain_base<char>& domain) const;
-  ossia::value operator()
-      (bool value, const domain_base<bool>& domain) const;
+  ossia::value operator()(int32_t value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(int32_t value, const domain_base<float>& domain) const;
+  ossia::value operator()(float value, const domain_base<int32_t>& domain) const;
+  ossia::value operator()(float value, const domain_base<float>& domain) const;
+  ossia::value operator()(char value, const domain_base<char>& domain) const;
+  ossia::value operator()(bool value, const domain_base<bool>& domain) const;
 
   // Strings
-  OSSIA_INLINE ossia::value operator()(
-      const std::string& value, const domain_base<std::string>& domain) const
+  OSSIA_INLINE ossia::value
+  operator()(const std::string& value, const domain_base<std::string>& domain) const
   {
     return value_set_clamp<domain_base<std::string>>{domain}(b, value);
   }
   OSSIA_INLINE ossia::value
   operator()(std::string&& value, const domain_base<std::string>& domain) const
   {
-    return value_set_clamp<domain_base<std::string>>{domain}(
-        b, std::move(value));
+    return value_set_clamp<domain_base<std::string>>{domain}(b, std::move(value));
   }
 
   // Lists
@@ -94,78 +86,63 @@ struct apply_domain_visitor
   // of the list that are filterable by this domain.
   // They are defined outside the class to handle a GCC bug...
   template <typename T>
-  ossia::value operator()(
-      const std::vector<ossia::value>& value,
-      const domain_base<T>& domain) const;
+  ossia::value
+  operator()(const std::vector<ossia::value>& value, const domain_base<T>& domain) const;
   template <typename T>
-  ossia::value operator()(
-      std::vector<ossia::value>&& value, const domain_base<T>& domain) const;
+  ossia::value
+  operator()(std::vector<ossia::value>&& value, const domain_base<T>& domain) const;
 
   ossia::value operator()(
       const std::vector<ossia::value>& value,
       const domain_base<ossia::value>& domain) const;
   ossia::value operator()(
-      std::vector<ossia::value>&& value,
-      const domain_base<ossia::value>& domain) const;
+      std::vector<ossia::value>&& value, const domain_base<ossia::value>& domain) const;
 
   // Second case : we filter a whole list.
-  ossia::value operator()(
-      const std::vector<ossia::value>& value,
-      const vector_domain& domain) const;
-  ossia::value operator()(
-      std::vector<ossia::value>&& value, const vector_domain& domain) const;
+  ossia::value
+  operator()(const std::vector<ossia::value>& value, const vector_domain& domain) const;
+  ossia::value
+  operator()(std::vector<ossia::value>&& value, const vector_domain& domain) const;
 
   // Vec : we can either filter each value, or filter the whole shebang
+  ossia::value
+  operator()(const std::array<float, 2>& value, const domain_base<float>& domain) const;
   ossia::value operator()(
-      const std::array<float, 2>& value,
-      const domain_base<float>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 2>& value,
-      const domain_base<int32_t>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 2>& value,
-      const domain_base<bool>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 2>& value,
-      const domain_base<char>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 2>& value, const vecf_domain<2>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 2>& value, const vector_domain& domain) const;
+      const std::array<float, 2>& value, const domain_base<int32_t>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 2>& value, const domain_base<bool>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 2>& value, const domain_base<char>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 2>& value, const vecf_domain<2>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 2>& value, const vector_domain& domain) const;
 
+  ossia::value
+  operator()(const std::array<float, 3>& value, const domain_base<float>& domain) const;
   ossia::value operator()(
-      const std::array<float, 3>& value,
-      const domain_base<float>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 3>& value,
-      const domain_base<int32_t>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 3>& value,
-      const domain_base<bool>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 3>& value,
-      const domain_base<char>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 3>& value, const vecf_domain<3>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 3>& value, const vector_domain& domain) const;
+      const std::array<float, 3>& value, const domain_base<int32_t>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 3>& value, const domain_base<bool>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 3>& value, const domain_base<char>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 3>& value, const vecf_domain<3>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 3>& value, const vector_domain& domain) const;
 
+  ossia::value
+  operator()(const std::array<float, 4>& value, const domain_base<float>& domain) const;
   ossia::value operator()(
-      const std::array<float, 4>& value,
-      const domain_base<float>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 4>& value,
-      const domain_base<int32_t>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 4>& value,
-      const domain_base<bool>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 4>& value,
-      const domain_base<char>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 4>& value, const vecf_domain<4>& domain) const;
-  ossia::value operator()(
-      const std::array<float, 4>& value, const vector_domain& domain) const;
+      const std::array<float, 4>& value, const domain_base<int32_t>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 4>& value, const domain_base<bool>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 4>& value, const domain_base<char>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 4>& value, const vecf_domain<4>& domain) const;
+  ossia::value
+  operator()(const std::array<float, 4>& value, const vector_domain& domain) const;
 };
 
 template <typename Domain_T>
@@ -186,9 +163,9 @@ ossia::value apply_domain_visitor::operator()(
     const std::vector<ossia::value>& value, const domain_base<T>& domain) const
 {
   std::vector<ossia::value> res = value;
-  for (auto& val : res)
+  for(auto& val : res)
   {
-    if (val.get_type() == ossia::value_trait<T>::ossia_enum)
+    if(val.get_type() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
           list_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
   }
@@ -199,12 +176,11 @@ template <typename T>
 ossia::value apply_domain_visitor::operator()(
     std::vector<ossia::value>&& value, const domain_base<T>& domain) const
 {
-  for (auto& val : value)
+  for(auto& val : value)
   {
-    if (val.get_type() == ossia::value_trait<T>::ossia_enum)
+    if(val.get_type() == ossia::value_trait<T>::ossia_enum)
       val = ossia::apply_nonnull(
-          list_apply_domain_helper<domain_base<T>>{*this, domain},
-          std::move(val.v));
+          list_apply_domain_helper<domain_base<T>>{*this, domain}, std::move(val.v));
   }
   // TODO currently other values (strings, etc...) are ignored; what should we
   // do here ?

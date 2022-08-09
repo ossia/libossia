@@ -1,9 +1,9 @@
 #pragma once
 
 #include <ossia/detail/algorithms.hpp>
-#include <ossia/network/base/protocol.hpp>
 #include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/mutex.hpp>
+#include <ossia/network/base/protocol.hpp>
 
 #include <vector>
 
@@ -44,7 +44,9 @@ public:
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
 
-  bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v) override;
+  bool echo_incoming_message(
+      const message_origin_identifier&, const parameter_base&,
+      const ossia::value& v) override;
 
   void stop() override;
   void set_device(ossia::net::device_base& dev) override;
@@ -65,8 +67,10 @@ public:
   }
 
 private:
-  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols TS_GUARDED_BY(m_protocols_mutex);
-  std::vector<std::unique_ptr<ossia::net::protocol_base>> m_protocols_to_register TS_GUARDED_BY(m_protocols_mutex);
+  std::vector<std::unique_ptr<ossia::net::protocol_base>>
+      m_protocols TS_GUARDED_BY(m_protocols_mutex);
+  std::vector<std::unique_ptr<ossia::net::protocol_base>>
+      m_protocols_to_register TS_GUARDED_BY(m_protocols_mutex);
   ossia::audio_spin_mutex m_protocols_mutex;
   ossia::net::device_base* m_device{};
 };

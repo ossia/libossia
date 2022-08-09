@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <thread>
 #include <string>
+#include <thread>
 
 namespace ossia
 {

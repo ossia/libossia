@@ -1,33 +1,35 @@
+#include <ossia/network/common/value_bounding.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/osc/detail/osc.hpp>
+#include <ossia/network/value/value_conversion.hpp>
+#include <ossia/preset/preset.hpp>
+
+#include <regex>
+
 #include <ossia-max/src/matcher.hpp>
 #include <ossia-max/src/object_base.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
-
-#include <ossia/network/osc/detail/osc.hpp>
-#include <ossia/network/common/value_bounding.hpp>
-#include <ossia/preset/preset.hpp>
-#include <ossia/network/value/value_conversion.hpp>
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-
-#include <regex>
 
 namespace ossia
 {
 namespace max_binding
 {
 
-matcher::matcher(ossia::net::node_base* n, object_base* p) :
-    node{n}, owner{p}, callbackit{std::nullopt}
+matcher::matcher(ossia::net::node_base* n, object_base* p)
+    : node{n}
+    , owner{p}
+    , callbackit{std::nullopt}
 {
-  if (owner)
+  if(owner)
   {
     switch(owner->m_otype)
     {
       case object_class::remote:
       case object_class::param:
-        if (auto param = node->get_parameter())
-          callbackit = param->add_callback(
-              [=](const ossia::value& v) { output_value(v); });
+        if(auto param = node->get_parameter())
+          callbackit
+              = param->add_callback([=](const ossia::value& v) { output_value(v); });
         break;
       default:
         break;
@@ -59,17 +61,17 @@ matcher::matcher(matcher&& other)
   {
     if(auto param = node->get_parameter())
     {
-      if (callbackit)
+      if(callbackit)
         param->remove_callback(*callbackit);
 
-      if (owner)
+      if(owner)
       {
         switch(owner->m_otype)
         {
           case object_class::remote:
           case object_class::param:
-            callbackit = param->add_callback(
-                [=] (const ossia::value& v) { output_value(v); });
+            callbackit
+                = param->add_callback([=](const ossia::value& v) { output_value(v); });
             break;
           default:
             break;
@@ -102,17 +104,17 @@ matcher& matcher::operator=(matcher&& other)
   {
     if(auto param = node->get_parameter())
     {
-      if (callbackit)
+      if(callbackit)
         param->remove_callback(*callbackit);
 
-      if (owner && !owner->m_is_deleted)
+      if(owner && !owner->m_is_deleted)
       {
         switch(owner->m_otype)
         {
           case object_class::remote:
           case object_class::param:
-            callbackit = param->add_callback(
-                [=] (const ossia::value& v) { output_value(v); });
+            callbackit
+                = param->add_callback([=](const ossia::value& v) { output_value(v); });
             break;
           default:
             break;
@@ -136,15 +138,15 @@ matcher::~matcher()
   if(owner)
   {
     // purge selection
-    ossia::remove_one(owner->m_node_selection,this);
+    ossia::remove_one(owner->m_node_selection, this);
 
-    if (   owner->m_otype == object_class::param
-        || owner->m_otype == object_class::model )
+    if(owner->m_otype == object_class::param || owner->m_otype == object_class::model)
     {
-      if (!owner->m_is_deleted)
+      if(!owner->m_is_deleted)
       {
         auto param = node->get_parameter();
-        if (param && callbackit) param->remove_callback(*callbackit);
+        if(param && callbackit)
+          param->remove_callback(*callbackit);
         node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
 
         if(owner->m_otype == object_class::param)
@@ -178,9 +180,12 @@ matcher::~matcher()
           }
         }
       }
-    } else {
+    }
+    else
+    {
       auto param = node->get_parameter();
-      if (param && callbackit) param->remove_callback(*callbackit);
+      if(param && callbackit)
+        param->remove_callback(*callbackit);
       node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
     }
     owner = nullptr;
@@ -202,18 +207,16 @@ void matcher::output_value(ossia::value v)
     owner->m_local_mute = true;
 
     auto param = node->get_parameter();
-    auto filtered = ossia::bound_value(
-        param->get_domain(),
-        std::move(v),
-        param->get_bounding());
+    auto filtered
+        = ossia::bound_value(param->get_domain(), std::move(v), param->get_bounding());
 
     // FIXME filter_value return false but an invalid filtered value
     if(!param->filter_value(filtered) && filtered.valid())
     {
-      auto x = (parameter_base*) owner;
+      auto x = (parameter_base*)owner;
 
       ossia::value val;
-      if ( x->m_local_unit == std::nullopt )
+      if(x->m_local_unit == std::nullopt)
       {
         val = std::move(filtered);
       }
@@ -226,8 +229,8 @@ void matcher::output_value(ossia::value v)
       {
         t_atom a[2];
         a[0] = m_addr;
-        A_SETLONG(a+1, m_index);
-        outlet_anything(owner->m_dumpout,gensym("address"),2,a);
+        A_SETLONG(a + 1, m_index);
+        outlet_anything(owner->m_dumpout, gensym("address"), 2, a);
       }
 
       value_visitor<object_base> vm;
@@ -240,27 +243,28 @@ void matcher::output_value(ossia::value v)
 
 void matcher::set_addr_symbol()
 {
-  if (!m_dead && node && owner){
+  if(!m_dead && node && owner)
+  {
     std::string addr = ossia::net::address_string_from_node(*node);
 
     if(owner->m_trim_addr > 0)
     {
       switch(owner->m_addr_scope)
       {
-        case ossia::net::address_scope::relative:
-        {
+        case ossia::net::address_scope::relative: {
           auto parent = owner->find_parent_object();
           if(parent)
           {
             for(const auto& m : parent->m_matchers)
             {
-              std::string node_addr = ossia::net::address_string_from_node(*m->get_node());
+              std::string node_addr
+                  = ossia::net::address_string_from_node(*m->get_node());
 
               size_t offset = node_addr.back() == '/' ? 0 : 1;
 
-              if(addr.rfind(node_addr,0) == 0)
+              if(addr.rfind(node_addr, 0) == 0)
               {
-                addr = addr.substr(node_addr.size()+offset);
+                addr = addr.substr(node_addr.size() + offset);
                 break;
               }
             }
@@ -268,18 +272,16 @@ void matcher::set_addr_symbol()
           else
           {
             auto pos = addr.find(":");
-            addr = addr.substr(pos+2);
+            addr = addr.substr(pos + 2);
           }
           break;
         }
-        case ossia::net::address_scope::absolute:
-        {
+        case ossia::net::address_scope::absolute: {
           auto pos = addr.find(":");
-          addr = addr.substr(pos+1);
+          addr = addr.substr(pos + 1);
           break;
         }
-        default:
-            ;
+        default:;
       }
     }
 

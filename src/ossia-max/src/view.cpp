@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "view.hpp"
+
 #include "remote.hpp"
 #include "utils.hpp"
 
@@ -13,19 +14,17 @@ extern "C" void ossia_view_setup()
 {
   // instantiate the ossia.view class
   t_class* c = class_new(
-      "ossia.view", (method)view::create, (method)view::destroy,
-      (short)sizeof(view), 0L, A_GIMME, 0);
+      "ossia.view", (method)view::create, (method)view::destroy, (short)sizeof(view), 0L,
+      A_GIMME, 0);
 
-  if (c)
+  if(c)
   {
     node_base::class_setup(c);
 
-    class_addmethod(c, (method) address_mess_cb<view>, "address",   A_SYM, 0);
-    class_addmethod(c, (method) view::get_mess_cb, "get",   A_SYM, 0);
+    class_addmethod(c, (method)address_mess_cb<view>, "address", A_SYM, 0);
+    class_addmethod(c, (method)view::get_mess_cb, "get", A_SYM, 0);
 
-    class_addmethod(
-          c, (method)view::notify,
-          "notify", A_CANT, 0);
+    class_addmethod(c, (method)view::notify, "notify", A_CANT, 0);
   }
 
   class_register(CLASS_BOX, c);
@@ -43,11 +42,11 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 {
   auto x = make_ossia<view>();
 
-  if (x)
+  if(x)
   {
     critical_enter(0);
     auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
-    if( !pat_desc.model && !pat_desc.view)
+    if(!pat_desc.model && !pat_desc.view)
     {
       pat_desc.view = x;
     }
@@ -82,9 +81,9 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (attrstart && argv)
+    if(attrstart && argv)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
@@ -94,7 +93,7 @@ void* view::create(t_symbol* name, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_max::instance().views.push_back(x);
     critical_exit(0);
@@ -147,31 +146,28 @@ void view::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
-  std::vector<object_base*> children_view = find_children_to_register(
-      &m_object, m_patcher, gensym("ossia.view"));
+  std::vector<object_base*> children_view
+      = find_children_to_register(&m_object, m_patcher, gensym("ossia.view"));
 
-  for (auto child : children_view)
+  for(auto child : children_view)
   {
     switch(child->m_otype)
     {
-      case object_class::view:
-      {
+      case object_class::view: {
         ossia::max_binding::view* view = (ossia::max_binding::view*)child;
 
-        if (view == this)
+        if(view == this)
           continue;
 
         view->unregister();
         break;
       }
-      case object_class::remote:
-      {
+      case object_class::remote: {
         ossia::max_binding::remote* remote = (ossia::max_binding::remote*)child;
         remote->unregister();
         break;
       }
-      case object_class::attribute:
-      {
+      case object_class::attribute: {
         ossia::max_binding::attribute* attr = (ossia::max_binding::attribute*)child;
         attr->unregister();
         break;
@@ -179,7 +175,6 @@ void view::unregister()
       default:
         break;
     }
-
   }
 
   ossia_max::instance().nr_views.push_back(this);
@@ -194,8 +189,9 @@ void view::on_node_renamed_callback(ossia::net::node_base& node, const std::stri
   {
     if(m->get_node() == &node)
     {
-      m_matchers.erase(std::remove(std::begin(m_matchers),
-                                   std::end(m_matchers), m), m_matchers.end());
+      m_matchers.erase(
+          std::remove(std::begin(m_matchers), std::end(m_matchers), m),
+          m_matchers.end());
     }
     else
     {
@@ -204,8 +200,9 @@ void view::on_node_renamed_callback(ossia::net::node_base& node, const std::stri
       {
         if(parent == &node)
         {
-          m_matchers.erase(std::remove(std::begin(m_matchers),
-                                       std::end(m_matchers), m), m_matchers.end());
+          m_matchers.erase(
+              std::remove(std::begin(m_matchers), std::end(m_matchers), m),
+              m_matchers.end());
           break;
         }
         parent = parent->get_parent();

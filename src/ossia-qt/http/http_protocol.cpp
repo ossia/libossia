@@ -1,7 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "http_protocol.hpp"
-#include <ossia-qt/js_utilities.hpp>
 
 #include <QJSValueIterator>
 #include <QNetworkAccessManager>
@@ -9,7 +8,10 @@
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QQmlEngine>
+
 #include <wobjectimpl.h>
+
+#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::net::http_protocol)
 namespace ossia
 {
@@ -22,50 +24,49 @@ http_protocol::http_protocol(QByteArray code)
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
-  QObject::connect(m_access, &QNetworkAccessManager::finished,
-          this, [this] (auto reply) {
-        QNetworkReply& rep = *reply;
-        auto it = m_replies.find(&rep);
-        const http_parameter& addr = *it.value();
+  QObject::connect(
+      m_access, &QNetworkAccessManager::finished, this,
+      [this](auto reply) {
+    QNetworkReply& rep = *reply;
+    auto it = m_replies.find(&rep);
+    const http_parameter& addr = *it.value();
 
-        auto ans = addr.data().answer;
-        if (ans.isCallable())
-        {
-          apply_reply(ans.call({QString(rep.readAll())}));
-        }
+    auto ans = addr.data().answer;
+    if(ans.isCallable())
+    {
+      apply_reply(ans.call({QString(rep.readAll())}));
+    }
 
-        m_replies.erase(it);
+    m_replies.erase(it);
       },
       Qt::QueuedConnection);
 
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [=](QQmlComponent::Status status) {
-        if (!m_device)
-          return;
+    if(!m_device)
+      return;
 
-        switch (status)
-        {
-          case QQmlComponent::Status::Ready:
-          {
-            auto item = m_component->create();
-            item->setParent(m_engine->rootContext());
+    switch(status)
+    {
+      case QQmlComponent::Status::Ready: {
+        auto item = m_component->create();
+        item->setParent(m_engine->rootContext());
 
-            QVariant ret;
-            QMetaObject::invokeMethod(
-                item, "createTree", Q_RETURN_ARG(QVariant, ret));
-            qt::create_device<ossia::net::device_base, http_node, http_protocol>(
-                *m_device, ret.value<QJSValue>());
+        QVariant ret;
+        QMetaObject::invokeMethod(item, "createTree", Q_RETURN_ARG(QVariant, ret));
+        qt::create_device<ossia::net::device_base, http_node, http_protocol>(
+            *m_device, ret.value<QJSValue>());
 
-            return;
-          }
-          case QQmlComponent::Status::Loading:
-            return;
-          case QQmlComponent::Status::Null:
-          case QQmlComponent::Status::Error:
-            qDebug() << m_component->errorString();
-            return;
-        }
+        return;
+      }
+      case QQmlComponent::Status::Loading:
+        return;
+      case QQmlComponent::Status::Null:
+      case QQmlComponent::Status::Error:
+        qDebug() << m_component->errorString();
+        return;
+    }
       });
 
   QObject::connect(
@@ -90,13 +91,14 @@ bool http_protocol::pull(ossia::net::parameter_base& parameter_base)
   return true;
 }
 
-bool http_protocol::push(const ossia::net::parameter_base& parameter_base, const ossia::value& v)
+bool http_protocol::push(
+    const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
   // TODO dynamic_cast or whatever
   assert(dynamic_cast<const http_parameter*>(&parameter_base));
   auto& addr = static_cast<const http_parameter&>(parameter_base);
 
-  if (!addr.data().request.isEmpty())
+  if(!addr.data().request.isEmpty())
   {
     sig_push(&addr, v);
     return true;
@@ -106,7 +108,9 @@ bool http_protocol::push(const ossia::net::parameter_base& parameter_base, const
 }
 
 bool http_protocol::push_raw(const full_parameter_data& parameter_base)
-{ return false; }
+{
+  return false;
+}
 
 bool http_protocol::observe(parameter_base&, bool enable)
 {
@@ -123,8 +127,8 @@ void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& 
 {
   auto& addr = *addr_p;
   auto dat = addr.data().request;
-  auto rep = m_access->get(QNetworkRequest(
-      dat.replace("$val", qt::value_to_js_string_unquoted(v))));
+  auto rep = m_access->get(
+      QNetworkRequest(dat.replace("$val", qt::value_to_js_string_unquoted(v))));
 
   m_replies[rep] = &addr;
 }
@@ -132,28 +136,28 @@ void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& 
 void http_protocol::apply_reply(QJSValue arr)
 {
   // should be an array of { address, value } objects
-  if (!arr.isArray())
+  if(!arr.isArray())
     return;
 
   QJSValueIterator it(arr);
-  while (it.hasNext())
+  while(it.hasNext())
   {
     it.next();
     auto val = it.value();
     auto addr = val.property("address");
-    if (!addr.isString())
+    if(!addr.isString())
       continue;
 
     auto addr_txt = addr.toString().toStdString();
     auto n = ossia::net::find_node(m_device->get_root_node(), addr_txt);
-    if (!n)
+    if(!n)
       continue;
 
     auto v = val.property("value");
-    if (v.isNull())
+    if(v.isNull())
       continue;
 
-    if (auto addr = n->get_parameter())
+    if(auto addr = n->get_parameter())
     {
       addr->push_value(qt::value_from_js(addr->value(), v));
     }

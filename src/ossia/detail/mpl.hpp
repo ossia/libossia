@@ -16,8 +16,8 @@
 namespace ossia
 {
 template <
-    template <typename...> typename Sequence,
-    template <typename...> typename Tuple, typename... Args>
+    template <typename...> typename Sequence, template <typename...> typename Tuple,
+    typename... Args>
 auto list_of_tuple_to_tuple_of_list(const Sequence<Tuple<Args...>>& lst)
 {
   namespace bg = brigand;
@@ -32,7 +32,7 @@ auto list_of_tuple_to_tuple_of_list(const Sequence<Tuple<Args...>>& lst)
   // TODO reserve sizeof...(Args)
 
   // copy our data
-  for (const auto& tuple : lst)
+  for(const auto& tuple : lst)
   {
     bg::for_each<index_list>([&](auto t) {
       constexpr auto N = decltype(t)::type::value;

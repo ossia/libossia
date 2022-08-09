@@ -18,34 +18,35 @@ struct push_data
   void operator()(const value_port& p) const
   {
     // TODO do the unit conversion
-    for (auto& val : p.get_data())
+    for(auto& val : p.get_data())
       dest.push_value(val.value);
   }
 
   void operator()(const midi_port& p) const
   {
     auto& proto = dest.get_node().get_device().get_protocol();
-    if (auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
+    if(auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
     {
-      for (auto& val : p.messages)
+      for(auto& val : p.messages)
         midi->push_value(val);
     }
   }
 
   void operator()(const audio_port& p) const
   {
-    if (auto audio = dynamic_cast<ossia::audio_parameter*>(&dest))
+    if(auto audio = dynamic_cast<ossia::audio_parameter*>(&dest))
     {
       audio->push_value(p);
     }
   }
 
-  [[noreturn]]
-  void operator()(const geometry_port& p) const
+  [[noreturn]] void operator()(const geometry_port& p) const
   {
     assert(false);
   }
-  void operator()() const noexcept { }
+  void operator()() const noexcept
+  {
+  }
 };
 /*
 void process_port_values(
@@ -68,32 +69,26 @@ void process_port_values(
 
 inlet::~inlet()
 {
-
 }
 
 outlet::~outlet()
 {
-
 }
 
 void inlet::pre_process()
 {
-
 }
 
 void inlet::post_process()
 {
-
 }
 
 void outlet::pre_process()
 {
-
 }
 
 void outlet::post_process()
 {
-
 }
 
 struct outlet_inserter
@@ -133,12 +128,10 @@ struct outlet_inserter
     e.insert(*addr, data);
   }
 
-  [[noreturn]]
-  void operator()(const ossia::geometry_port& data) const noexcept
+  [[noreturn]] void operator()(const ossia::geometry_port& data) const noexcept
   {
     assert(false);
   }
-
 
   void operator()(ossia::value_port&& data) const noexcept
   {
@@ -154,70 +147,63 @@ void outlet::write(execution_state& e)
   apply_to_destination(
       address, e.exec_devices(),
       [&](ossia::net::parameter_base* addr, bool unique) {
-        if (unique)
-        {
-          // TODO right now with visit this branch is useless - there is never any move
-          // TODO we don't really care about moves anyways
-          if (scope & port::scope_t::local)
-          {
-            visit(outlet_inserter{e, addr});
-          }
-          else if (scope & port::scope_t::global)
-          {
-            visit(push_data{*addr});
-          }
-        }
-        else
-        {
-          if (scope & port::scope_t::local)
-          {
-            visit(outlet_inserter{e, addr});
-          }
-          else if (scope & port::scope_t::global)
-          {
-            ((const outlet&)(*this)).visit(push_data{*addr});
-          }
-        }
-  }, do_nothing_for_nodes{});
+    if(unique)
+    {
+      // TODO right now with visit this branch is useless - there is never
+      // any move
+      // TODO we don't really care about moves anyways
+      if(scope & port::scope_t::local)
+      {
+        visit(outlet_inserter{e, addr});
+      }
+      else if(scope & port::scope_t::global)
+      {
+        visit(push_data{*addr});
+      }
+    }
+    else
+    {
+      if(scope & port::scope_t::local)
+      {
+        visit(outlet_inserter{e, addr});
+      }
+      else if(scope & port::scope_t::global)
+      {
+        ((const outlet&)(*this)).visit(push_data{*addr});
+      }
+    }
+      },
+      do_nothing_for_nodes{});
 }
 
 value_inlet::~value_inlet()
 {
-
 }
 
 value_outlet::~value_outlet()
 {
-
 }
 audio_inlet::~audio_inlet()
 {
-
 }
 
 audio_outlet::~audio_outlet()
 {
-
 }
 
 texture_inlet::~texture_inlet()
 {
-
 }
 texture_outlet::~texture_outlet()
 {
-
 }
 
 geometry_inlet::~geometry_inlet()
 {
-
 }
 geometry_outlet::~geometry_outlet()
 {
-
 }
-
 
 void audio_outlet::post_process()
 {
@@ -228,27 +214,25 @@ void audio_outlet::post_process()
   // TODO pan
   switch(data.channels())
   {
-  case 0:
-    return;
+    case 0:
+      return;
 
-  case 1:
-    process_audio_out_mono(*this);
-    break;
+    case 1:
+      process_audio_out_mono(*this);
+      break;
 
-  default:
-    process_audio_out_general(*this);
-    break;
+    default:
+      process_audio_out_general(*this);
+      break;
   }
 }
 
 midi_inlet::~midi_inlet()
 {
-
 }
 
 midi_outlet::~midi_outlet()
 {
-
 }
 
 void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out)
@@ -260,7 +244,7 @@ void process_audio_out_mono(ossia::audio_port& i, ossia::audio_outlet& audio_out
 
   const auto N = i.channel(0).size();
   const auto i_ptr = i.channel(0).data();
-  const auto o_ptr  = o.channel(0).data();
+  const auto o_ptr = o.channel(0).data();
 
   for(std::size_t sample = 0; sample < N; sample++)
   {
@@ -284,7 +268,7 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
     auto N = i.channel(chan).size();
 
     auto i_ptr = i.channel(chan).data();
-    auto o_ptr  = o.channel(chan).data();
+    auto o_ptr = o.channel(chan).data();
 
     const auto vol = audio_out.pan[chan] * g;
     if(vol == 1.)
@@ -313,7 +297,7 @@ void process_audio_out_mono(ossia::audio_outlet& audio_out)
     return;
 
   const auto N = o.channel(0).size();
-  const auto o_ptr  = o.channel(0).data();
+  const auto o_ptr = o.channel(0).data();
 
   for(std::size_t sample = 0; sample < N; sample++)
   {
@@ -334,7 +318,7 @@ void process_audio_out_general(ossia::audio_outlet& audio_out)
   {
     auto N = o.channel(chan).size();
 
-    auto o_ptr  = o.channel(chan).data();
+    auto o_ptr = o.channel(chan).data();
 
     const auto vol = audio_out.pan[chan] * g;
     if(vol == 1.)
@@ -345,6 +329,5 @@ void process_audio_out_general(ossia::audio_outlet& audio_out)
     }
   }
 }
-
 
 }

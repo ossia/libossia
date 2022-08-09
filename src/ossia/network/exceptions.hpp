@@ -15,7 +15,8 @@ namespace ossia
  */
 struct OSSIA_EXPORT parse_error final : public std::runtime_error
 {
-  parse_error(std::string e) : std::runtime_error(std::move(e))
+  parse_error(std::string e)
+      : std::runtime_error(std::move(e))
   {
   }
   ~parse_error() override;
@@ -28,7 +29,8 @@ struct OSSIA_EXPORT parse_error final : public std::runtime_error
  */
 struct OSSIA_EXPORT connection_error final : public std::runtime_error
 {
-  connection_error(std::string e) : std::runtime_error(std::move(e))
+  connection_error(std::string e)
+      : std::runtime_error(std::move(e))
   {
   }
   ~connection_error() override;
@@ -44,7 +46,8 @@ struct OSSIA_EXPORT connection_error final : public std::runtime_error
  */
 struct OSSIA_EXPORT invalid_node_error final : public std::logic_error
 {
-  invalid_node_error(std::string e) : std::logic_error(std::move(e))
+  invalid_node_error(std::string e)
+      : std::logic_error(std::move(e))
   {
   }
   ~invalid_node_error() override;
@@ -55,7 +58,8 @@ struct OSSIA_EXPORT invalid_node_error final : public std::logic_error
  */
 struct OSSIA_EXPORT node_not_found_error final : public std::runtime_error
 {
-  node_not_found_error(std::string e) : std::runtime_error(std::move(e))
+  node_not_found_error(std::string e)
+      : std::runtime_error(std::move(e))
   {
   }
   ~node_not_found_error() override;
@@ -66,7 +70,8 @@ struct OSSIA_EXPORT node_not_found_error final : public std::runtime_error
  */
 struct OSSIA_EXPORT bad_request_error final : public std::runtime_error
 {
-  bad_request_error(std::string e) : std::runtime_error(std::move(e))
+  bad_request_error(std::string e)
+      : std::runtime_error(std::move(e))
   {
   }
   ~bad_request_error() override;
@@ -80,7 +85,8 @@ struct OSSIA_EXPORT bad_request_error final : public std::runtime_error
  */
 struct OSSIA_EXPORT invalid_value_type_error : public std::logic_error
 {
-  invalid_value_type_error(const char* e) : std::logic_error(e)
+  invalid_value_type_error(const char* e)
+      : std::logic_error(e)
   {
   }
   ~invalid_value_type_error() override;

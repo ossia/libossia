@@ -1,12 +1,16 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <verdigris>
+
+#include <ossia/preset/preset.hpp>
+
 #include <QDebug>
 #include <QFile>
 #include <QObject>
 #include <QQmlEngine>
 #include <QUrl>
-#include <ossia/preset/preset.hpp>
+
+#include <verdigris>
+
 #include <ossia-qt/score/qml_util.hpp>
 namespace spdlog
 {
@@ -31,7 +35,7 @@ public:
     Impulse, //! \see ossia::impulse
     Bool,    //! \see bool
     String,  //! \see std::string
-    List,   //! \see std::vector<ossia::value>
+    List,    //! \see std::vector<ossia::value>
     Char     //! \see char
   };
   W_ENUM(val_type, Float, Int, Vec2f, Vec3f, Vec4f, Impulse, Bool, String, List, Char)
@@ -83,7 +87,7 @@ class OSSIA_EXPORT qml_duration
 {
   W_GADGET(qml_duration)
 public:
-  enum duration: qint32
+  enum duration : qint32
   {
     Infinite = ossia::qt::infinite()
   };

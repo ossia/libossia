@@ -1,10 +1,14 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/network/context_functions.hpp>
+
 #include <QObject>
 #include <QPointer>
 #include <QVariantMap>
+
 #include <tsl/hopscotch_map.h>
+
 #include <verdigris>
 namespace ossia
 {
@@ -73,46 +77,68 @@ public:
 
   QString name() const;
 
-  const qpointer_set<qml_model_property>& models() const { return m_models; }
+  const qpointer_set<qml_model_property>& models() const
+  {
+    return m_models;
+  }
 
-  bool openOSC(const QString& ip, int localPort, int remotePort); W_INVOKABLE(openOSC)
-  bool openOSCQueryServer(int WSport, int oscPort); W_INVOKABLE(openOSCQueryServer)
-  bool openOSCQueryClient(const QString& address, int localOscPort); W_INVOKABLE(openOSCQueryClient)
-  bool openMIDIInputDevice(int device); W_INVOKABLE(openMIDIInputDevice)
-  bool openMIDIOutputDevice(int device); W_INVOKABLE(openMIDIOutputDevice)
-  QVariantMap getMIDIInputDevices() const; W_INVOKABLE(getMIDIInputDevices)
-  QVariantMap getMIDIOutputDevices() const; W_INVOKABLE(getMIDIOutputDevices)
+  bool openOSC(const QString& ip, int localPort, int remotePort);
+  W_INVOKABLE(openOSC)
+  bool openOSCQueryServer(int WSport, int oscPort);
+  W_INVOKABLE(openOSCQueryServer)
+  bool openOSCQueryClient(const QString& address, int localOscPort);
+  W_INVOKABLE(openOSCQueryClient)
+  bool openMIDIInputDevice(int device);
+  W_INVOKABLE(openMIDIInputDevice)
+  bool openMIDIOutputDevice(int device);
+  W_INVOKABLE(openMIDIOutputDevice)
+  QVariantMap getMIDIInputDevices() const;
+  W_INVOKABLE(getMIDIInputDevices)
+  QVariantMap getMIDIOutputDevices() const;
+  W_INVOKABLE(getMIDIOutputDevices)
 
-  void recreate(QObject* root); W_INVOKABLE(recreate)
-  void remap(QObject* root); W_INVOKABLE(remap)
+  void recreate(QObject* root);
+  W_INVOKABLE(recreate)
+  void remap(QObject* root);
+  W_INVOKABLE(remap)
 
-  void setReadPreset(bool readPreset); W_INVOKABLE(setReadPreset)
+  void setReadPreset(bool readPreset);
+  W_INVOKABLE(setReadPreset)
 
-  void savePreset(const QUrl& file); W_INVOKABLE(savePreset)
-  void loadPreset(QObject* root, const QString& file); W_INVOKABLE(loadPreset)
-  void saveDevice(const QUrl& file); W_INVOKABLE(saveDevice)
+  void savePreset(const QUrl& file);
+  W_INVOKABLE(savePreset)
+  void loadPreset(QObject* root, const QString& file);
+  W_INVOKABLE(loadPreset)
+  void saveDevice(const QUrl& file);
+  W_INVOKABLE(saveDevice)
 
-  void setName(QString name); W_INVOKABLE(setName)
+  void setName(QString name);
+  W_INVOKABLE(setName)
 
-  void cleanup(); W_INVOKABLE(cleanup)
-
+  void cleanup();
+  W_INVOKABLE(cleanup)
 
   void readPresetChanged(bool readPreset)
-  E_SIGNAL(OSSIA_EXPORT, readPresetChanged, readPreset)
+      E_SIGNAL(OSSIA_EXPORT, readPresetChanged, readPreset)
 
-  void presetFinishedLoading()
-  E_SIGNAL(OSSIA_EXPORT, presetFinishedLoading)
-  void presetFailedLoading(QString err)
-  E_SIGNAL(OSSIA_EXPORT, presetFailedLoading, err)
+          void presetFinishedLoading() E_SIGNAL(
+              OSSIA_EXPORT, presetFinishedLoading) void presetFailedLoading(QString err)
+              E_SIGNAL(OSSIA_EXPORT, presetFailedLoading, err)
 
-  void nameChanged(QString name)
-  E_SIGNAL(OSSIA_EXPORT, nameChanged, name)
+                  void nameChanged(QString name)
+                      E_SIGNAL(OSSIA_EXPORT, nameChanged, name)
 
-  W_PROPERTY(bool, readPreset READ readPreset WRITE setReadPreset NOTIFY readPresetChanged, W_Final)
-  W_PROPERTY(QString, name READ name WRITE setName NOTIFY nameChanged, W_Final)
+                          W_PROPERTY(
+                              bool,
+                              readPreset READ readPreset WRITE setReadPreset NOTIFY
+                                  readPresetChanged,
+                              W_Final)
+                              W_PROPERTY(
+                                  QString,
+                                  name READ name WRITE setName NOTIFY nameChanged,
+                                  W_Final)
 
-private:
-  void setupLocal();
+                                  private : void setupLocal();
   void clearEmptyElements();
 
   QString m_name{"device"};

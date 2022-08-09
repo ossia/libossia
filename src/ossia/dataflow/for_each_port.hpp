@@ -3,7 +3,7 @@
 #include <ossia/dataflow/port.hpp>
 namespace ossia
 {
-template<typename Fin>
+template <typename Fin>
 void for_each_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
 {
   for(auto port : node.root_inputs())
@@ -23,7 +23,7 @@ void for_each_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
   }
 }
 
-template<typename Fin>
+template <typename Fin>
 bool any_of_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
 {
   for(auto port : node.root_inputs())
@@ -48,7 +48,7 @@ bool any_of_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
   return false;
 }
 
-template<typename Fin>
+template <typename Fin>
 bool all_of_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
 {
   for(auto port : node.root_inputs())
@@ -73,7 +73,7 @@ bool all_of_inlet(const ossia::graph_node& node, Fin&& fin) noexcept
   return true;
 }
 
-template<typename Fout>
+template <typename Fout>
 void for_each_outlet(const ossia::graph_node& node, Fout&& fout) noexcept
 {
   for(auto port : node.root_outputs())
@@ -82,7 +82,7 @@ void for_each_outlet(const ossia::graph_node& node, Fout&& fout) noexcept
   }
 }
 
-template<typename Fout>
+template <typename Fout>
 bool any_of_outlet(const ossia::graph_node& node, Fout&& fout) noexcept
 {
   for(auto port : node.root_outputs())
@@ -93,7 +93,7 @@ bool any_of_outlet(const ossia::graph_node& node, Fout&& fout) noexcept
   return false;
 }
 
-template<typename Fout>
+template <typename Fout>
 bool all_of_outlet(const ossia::graph_node& node, Fout&& fout) noexcept
 {
   for(auto port : node.root_outputs())

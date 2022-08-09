@@ -3,9 +3,9 @@
 #include "leapmotion_device.hpp"
 
 #include <ossia/detail/logger.hpp>
-#include <ossia/network/context.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
 #include <Leap.h>
@@ -20,8 +20,8 @@ class leapmotion_protocol::leap_listener final : public Leap::Listener
 
 public:
   leap_listener(boost::asio::io_context& ctx, ossia::net::device_base& device)
-    : ctx{ctx}
-    , dev{device}
+      : ctx{ctx}
+      , dev{device}
   {
     left.init();
     right.init();
@@ -54,10 +54,10 @@ public:
     using namespace Leap;
     bool left_active = false, right_active = false;
     const auto& hands = frame.hands();
-    for (const auto& hand : hands)
+    for(const auto& hand : hands)
     {
       auto& handType = hand.isLeft() ? this->left : this->right;
-      if (hand.isLeft())
+      if(hand.isLeft())
         left_active = true;
       else
         right_active = true;
@@ -77,7 +77,7 @@ public:
         handType.roll.push_value(r);
         handType.yaw.push_value(y);
 
-        handType.orientation.push_value(ossia::vec3f{y,p,r});
+        handType.orientation.push_value(ossia::vec3f{y, p, r});
       }
 
       auto arm = hand.arm();
@@ -86,37 +86,31 @@ public:
       handType.wrist_position.push_value(to_value(arm.wristPosition()));
 
       // Get fingers
-      for (const auto& finger : hand.fingers())
+      for(const auto& finger : hand.fingers())
       {
-        switch (finger.type())
+        switch(finger.type())
         {
-          case Finger::TYPE_THUMB:
-          {
+          case Finger::TYPE_THUMB: {
             auto bone = finger.bone(Bone::Type::TYPE_DISTAL);
             handType.thumb_distal_begin.push_value(to_value(bone.prevJoint()));
             handType.thumb_distal_end.push_value(to_value(bone.nextJoint()));
           }
-          case Finger::TYPE_INDEX:
-          {
+          case Finger::TYPE_INDEX: {
             auto bone = finger.bone(Bone::Type::TYPE_DISTAL);
             handType.index_distal_begin.push_value(to_value(bone.prevJoint()));
             handType.index_distal_end.push_value(to_value(bone.nextJoint()));
           }
-          case Finger::TYPE_MIDDLE:
-          {
+          case Finger::TYPE_MIDDLE: {
             auto bone = finger.bone(Bone::Type::TYPE_DISTAL);
-            handType.middle_distal_begin.push_value(
-                to_value(bone.prevJoint()));
+            handType.middle_distal_begin.push_value(to_value(bone.prevJoint()));
             handType.middle_distal_end.push_value(to_value(bone.nextJoint()));
           }
-          case Finger::TYPE_RING:
-          {
+          case Finger::TYPE_RING: {
             auto bone = finger.bone(Bone::Type::TYPE_DISTAL);
             handType.ring_distal_begin.push_value(to_value(bone.prevJoint()));
             handType.ring_distal_end.push_value(to_value(bone.nextJoint()));
           }
-          case Finger::TYPE_PINKY:
-          {
+          case Finger::TYPE_PINKY: {
             auto bone = finger.bone(Bone::Type::TYPE_DISTAL);
             handType.pinky_distal_begin.push_value(to_value(bone.prevJoint()));
             handType.pinky_distal_end.push_value(to_value(bone.nextJoint()));
@@ -133,7 +127,7 @@ public:
   void onFrame(const Controller& controller) override
   {
     // Get the most recent frame and report some basic information
-    ctx.post([this, frame = controller.frame()] { processFrame(frame);  });
+    ctx.post([this, frame = controller.frame()] { processFrame(frame); });
   }
 
   void onFocusGained(const Controller&) override
@@ -170,7 +164,7 @@ public:
       const char* msg) override
   {
 
-    switch (severity)
+    switch(severity)
     {
       case Leap::MESSAGE_CRITICAL:
         ossia::logger().error("[LeapMotion Critical] {} : {}", t, msg);
@@ -194,26 +188,26 @@ public:
     ossia::net::parameter_base& active{
         *ossia::create_parameter(root, "/" + kind + "/active", "bool")};
 
-    ossia::net::parameter_base& thumb_distal_begin{*ossia::create_parameter(
-        root, "/" + kind + "/thumb/distal/begin", "xyz")};
-    ossia::net::parameter_base& index_distal_begin{*ossia::create_parameter(
-        root, "/" + kind + "/index/distal/begin", "xyz")};
-    ossia::net::parameter_base& middle_distal_begin{*ossia::create_parameter(
-        root, "/" + kind + "/middle/distal/begin", "xyz")};
-    ossia::net::parameter_base& ring_distal_begin{*ossia::create_parameter(
-        root, "/" + kind + "/ring/distal/begin", "xyz")};
-    ossia::net::parameter_base& pinky_distal_begin{*ossia::create_parameter(
-        root, "/" + kind + "/pinky/distal/begin", "xyz")};
-    ossia::net::parameter_base& thumb_distal_end{*ossia::create_parameter(
-        root, "/" + kind + "/thumb/distal/end", "xyz")};
-    ossia::net::parameter_base& index_distal_end{*ossia::create_parameter(
-        root, "/" + kind + "/index/distal/end", "xyz")};
-    ossia::net::parameter_base& middle_distal_end{*ossia::create_parameter(
-        root, "/" + kind + "/middle/distal/end", "xyz")};
-    ossia::net::parameter_base& ring_distal_end{*ossia::create_parameter(
-        root, "/" + kind + "/ring/distal/end", "xyz")};
-    ossia::net::parameter_base& pinky_distal_end{*ossia::create_parameter(
-        root, "/" + kind + "/pinky/distal/end", "xyz")};
+    ossia::net::parameter_base& thumb_distal_begin{
+        *ossia::create_parameter(root, "/" + kind + "/thumb/distal/begin", "xyz")};
+    ossia::net::parameter_base& index_distal_begin{
+        *ossia::create_parameter(root, "/" + kind + "/index/distal/begin", "xyz")};
+    ossia::net::parameter_base& middle_distal_begin{
+        *ossia::create_parameter(root, "/" + kind + "/middle/distal/begin", "xyz")};
+    ossia::net::parameter_base& ring_distal_begin{
+        *ossia::create_parameter(root, "/" + kind + "/ring/distal/begin", "xyz")};
+    ossia::net::parameter_base& pinky_distal_begin{
+        *ossia::create_parameter(root, "/" + kind + "/pinky/distal/begin", "xyz")};
+    ossia::net::parameter_base& thumb_distal_end{
+        *ossia::create_parameter(root, "/" + kind + "/thumb/distal/end", "xyz")};
+    ossia::net::parameter_base& index_distal_end{
+        *ossia::create_parameter(root, "/" + kind + "/index/distal/end", "xyz")};
+    ossia::net::parameter_base& middle_distal_end{
+        *ossia::create_parameter(root, "/" + kind + "/middle/distal/end", "xyz")};
+    ossia::net::parameter_base& ring_distal_end{
+        *ossia::create_parameter(root, "/" + kind + "/ring/distal/end", "xyz")};
+    ossia::net::parameter_base& pinky_distal_end{
+        *ossia::create_parameter(root, "/" + kind + "/pinky/distal/end", "xyz")};
 
     ossia::net::parameter_base& palm_velocity{
         *ossia::create_parameter(root, "/" + kind + "/palm/velocity", "xyz")};
@@ -224,8 +218,8 @@ public:
     ossia::net::parameter_base& palm_direction{
         *ossia::create_parameter(root, "/" + kind + "/palm/direction", "xyz")};
 
-    ossia::net::parameter_base& grab_strength{*ossia::create_parameter(
-        root, "/" + kind + "/grab_strength", "float")};
+    ossia::net::parameter_base& grab_strength{
+        *ossia::create_parameter(root, "/" + kind + "/grab_strength", "float")};
 
     ossia::net::parameter_base& wrist_position{
         *ossia::create_parameter(root, "/" + kind + "/wrist", "xyz")};
@@ -242,7 +236,7 @@ public:
         *ossia::create_parameter(root, "/" + kind + "/yaw", "float")};
 
     ossia::net::parameter_base& orientation{
-      *ossia::create_parameter(root, "/" + kind + "/orientation", "euler")};
+        *ossia::create_parameter(root, "/" + kind + "/orientation", "euler")};
 
     void init()
     {
@@ -280,7 +274,6 @@ public:
       elbow_position.set_domain(box_domain);
       arm_direction.set_domain(domain_minus1_1);
 
-
       ossia::domain_base<float> angle_domain;
       angle_domain.min = 0;
       angle_domain.max = 360;
@@ -317,7 +310,7 @@ void leapmotion_protocol::set_device(net::device_base& dev)
 
 leapmotion_protocol::~leapmotion_protocol()
 {
-  if (controller && listener)
+  if(controller && listener)
     controller->removeListener(*listener);
 }
 }
@@ -327,13 +320,13 @@ bool ossia::leapmotion_protocol::pull(ossia::net::parameter_base&)
   return false;
 }
 
-bool ossia::leapmotion_protocol::push(const ossia::net::parameter_base&, const ossia::value& v)
+bool ossia::leapmotion_protocol::push(
+    const ossia::net::parameter_base&, const ossia::value& v)
 {
   return false;
 }
 
-bool ossia::leapmotion_protocol::push_raw(
-    const ossia::net::full_parameter_data&)
+bool ossia::leapmotion_protocol::push_raw(const ossia::net::full_parameter_data&)
 {
   return false;
 }

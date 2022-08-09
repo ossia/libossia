@@ -1,10 +1,9 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
-#include <ossia/protocols/artnet/artnet_protocol.hpp>
-#include <ossia/network/common/device_parameter.hpp>
-
 #include <ossia/detail/flat_map.hpp>
+#include <ossia/network/common/device_parameter.hpp>
+#include <ossia/protocols/artnet/artnet_protocol.hpp>
 
 #include <cstdint>
 
@@ -15,7 +14,8 @@ class OSSIA_EXPORT dmx_parameter : public device_parameter
 {
 public:
   dmx_parameter(
-      net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min = 0, int max = 255);
+      net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min = 0,
+      int max = 255);
   ~dmx_parameter();
 
 private:
@@ -40,8 +40,8 @@ class artnet_range_parameter : public device_parameter
 
 public:
   artnet_range_parameter(
-      net::node_base& node, dmx_buffer& buffer, unsigned int channel, int min, int max);
-  ~artnet_range_parameter();
+      net::node_base& node, dmx_buffer& buffer, unsigned int channel, int min,
+int max); ~artnet_range_parameter();
 
 private:
   void device_update_value() override;

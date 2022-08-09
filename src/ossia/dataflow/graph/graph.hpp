@@ -5,7 +5,9 @@
 namespace ossia
 {
 
-class OSSIA_EXPORT graph final : public graph_util, public graph_base
+class OSSIA_EXPORT graph final
+    : public graph_util
+    , public graph_base
 {
 public:
   template <typename Comp_T>
@@ -14,31 +16,31 @@ public:
       Comp_T&& comp)
   {
     std::size_t executed = 0;
-    while (executed != active_nodes.size())
+    while(executed != active_nodes.size())
     {
       // Find all the nodes for which the inlets have executed
       // (or without cables on the inlets)
 
       auto end = active_nodes.end();
       auto cur_it = end;
-      for (auto it = active_nodes.begin(); it != end - executed; ++it)
+      for(auto it = active_nodes.begin(); it != end - executed; ++it)
       {
         auto node = *it;
-        if (cur_it != end)
+        if(cur_it != end)
         {
-          if (!comp(*cur_it, node) && can_execute(*node, e))
+          if(!comp(*cur_it, node) && can_execute(*node, e))
             cur_it = it;
         }
         else
         {
-          if (can_execute(*node, e))
+          if(can_execute(*node, e))
           {
             cur_it = it;
           }
         }
       }
 
-      if (cur_it != end)
+      if(cur_it != end)
       {
         g.exec_node(**cur_it, e);
 
@@ -58,34 +60,34 @@ public:
       Comp_T&& comp, ossia::logger_type& log)
   {
     std::size_t executed = 0;
-    while (executed != active_nodes.size())
+    while(executed != active_nodes.size())
     {
       // Find all the nodes for which the inlets have executed
       // (or without cables on the inlets)
 
       auto end = active_nodes.end();
       auto cur_it = end;
-      for (auto it = active_nodes.begin(); it != end - executed; ++it)
+      for(auto it = active_nodes.begin(); it != end - executed; ++it)
       {
         auto node = *it;
-        if (cur_it != end)
+        if(cur_it != end)
         {
-          if (!comp(*cur_it, node) && can_execute(*node, e))
+          if(!comp(*cur_it, node) && can_execute(*node, e))
             cur_it = it;
         }
         else
         {
-          if (can_execute(*node, e))
+          if(can_execute(*node, e))
           {
             cur_it = it;
           }
         }
       }
 
-      if (cur_it != end)
+      if(cur_it != end)
       {
         ossia::graph_node& node = **cur_it;
-        if (!node.logged())
+        if(!node.logged())
           g.exec_node(node, e);
         else
           g.exec_node(node, e, log);
@@ -216,7 +218,8 @@ public:
 
   struct simple_topo_sort
   {
-    simple_topo_sort(const graph_t& g) : impl{g}
+    simple_topo_sort(const graph_t& g)
+        : impl{g}
     {
     }
     const graph_t& impl;
@@ -231,7 +234,7 @@ public:
 
       nodes.clear();
       nodes.reserve(N);
-      for (auto vtx : m_topo_order_cache)
+      for(auto vtx : m_topo_order_cache)
       {
         nodes.push_back(gr[vtx].get());
       }
@@ -252,9 +255,9 @@ public:
     m_active_nodes.reserve(m_nodes.size());
 
     assert(m_node_static_sort.size() == boost::num_vertices(gr));
-    for (auto node : m_node_static_sort)
+    for(auto node : m_node_static_sort)
     {
-      if (node->enabled())
+      if(node->enabled())
         m_active_nodes.push_back(node);
     }
   }
@@ -268,7 +271,7 @@ public:
     {
       // TODO in the future, temporal_graph, space_graph that can be used as
       // processes.
-      if (m_dirty)
+      if(m_dirty)
       {
         sort_nodes();
         m_dirty = false;
@@ -278,11 +281,11 @@ public:
       m_enabled_cache.clear();
       m_enabled_cache.container.reserve(m_nodes.size());
 
-      for (auto it = boost::vertices(m_graph).first;
-           it != boost::vertices(m_graph).second; ++it)
+      for(auto it = boost::vertices(m_graph).first;
+          it != boost::vertices(m_graph).second; ++it)
       {
         ossia::graph_node& ptr = *m_graph[*it];
-        if (ptr.enabled())
+        if(ptr.enabled())
         {
           m_enabled_cache.insert(&ptr);
         }
@@ -292,16 +295,14 @@ public:
 
       // Start executing the nodes
       get_enabled_nodes(m_graph);
-      if (!logger)
+      if(!logger)
         tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e});
       else
-        tick(
-            *this, e, m_active_nodes, node_sorter{m_node_static_sort, e},
-            *logger);
+        tick(*this, e, m_active_nodes, node_sorter{m_node_static_sort, e}, *logger);
 
       finish_nodes(m_nodes);
     }
-    catch (const boost::not_a_dag&)
+    catch(const boost::not_a_dag&)
     {
       ossia::logger().error("Execution graph is not a DAG.");
       return;
@@ -312,8 +313,8 @@ public:
   {
     return m_graph;
   }
-  std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)>
-      sort_fun{simple_topo_sort{m_graph}};
+  std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun{
+      simple_topo_sort{m_graph}};
 
   std::shared_ptr<ossia::logger_type> logger;
 

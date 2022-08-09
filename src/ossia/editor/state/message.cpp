@@ -14,52 +14,45 @@ void message::launch()
   ossia::net::parameter_base& addr = dest.value.get();
   const auto& unit = dest.unit;
   auto addr_unit = addr.get_unit();
-  if (dest.index.empty())
+  if(dest.index.empty())
   {
-    if (!unit || unit == addr_unit)
+    if(!unit || unit == addr_unit)
     {
       addr.push_value(message_value);
     }
     else
     {
       // Convert from this message's unit to the address's unit
-      addr.push_value(
-          ossia::convert(message_value, unit, addr_unit));
+      addr.push_value(ossia::convert(message_value, unit, addr_unit));
     }
   }
   else
   {
-    if (!unit || !addr_unit || unit == addr_unit)
+    if(!unit || !addr_unit || unit == addr_unit)
     {
       auto cur = addr.value();
       auto cur_t = cur.get_type();
-      switch (cur_t)
+      switch(cur_t)
       {
         case ossia::val_type::VEC2F:
         case ossia::val_type::VEC3F:
-        case ossia::val_type::VEC4F:
-        {
-          ossia::apply(
-              vec_merger{dest, dest}, cur.v, message_value.v);
+        case ossia::val_type::VEC4F: {
+          ossia::apply(vec_merger{dest, dest}, cur.v, message_value.v);
 
           addr.push_value(std::move(cur));
           break;
         }
-        case ossia::val_type::LIST:
-        {
+        case ossia::val_type::LIST: {
           auto& cur_list = cur.get<std::vector<ossia::value>>();
           // Insert the value of this message in the existing value array
-          value_merger<true>::insert_in_list(
-              cur_list, message_value, dest.index);
+          value_merger<true>::insert_in_list(cur_list, message_value, dest.index);
           addr.push_value(std::move(cur));
           break;
         }
-        default:
-        {
+        default: {
           // Create a list and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
-          value_merger<true>::insert_in_list(
-              t, message_value, dest.index);
+          value_merger<true>::insert_in_list(t, message_value, dest.index);
           addr.push_value(std::move(t));
           break;
         }
@@ -80,7 +73,7 @@ void piecewise_message::launch()
 {
   // If values are missing, merge with the existing ones
   auto cur = address.get().value();
-  if (auto cur_list = cur.target<std::vector<ossia::value>>())
+  if(auto cur_list = cur.target<std::vector<ossia::value>>())
   {
     value_merger<true>::merge_list(*cur_list, std::move(message_value));
     address.get().push_value(std::move(cur));
@@ -96,22 +89,21 @@ void piecewise_vec_message<N>::launch()
 {
   ossia::net::parameter_base& addr = address.get();
   auto addr_unit = addr.get_unit();
-  if (!unit || !addr_unit || unit == addr_unit)
+  if(!unit || !addr_unit || unit == addr_unit)
   {
-    if (used_values.all())
+    if(used_values.all())
     {
       addr.push_value(std::move(message_value));
     }
     else
     {
       auto val = addr.value();
-      if (val.get_type()
-          == ossia::value_trait<std::array<float, N>>::ossia_enum)
+      if(val.get_type() == ossia::value_trait<std::array<float, N>>::ossia_enum)
       {
         auto& v = val.get<std::array<float, N>>();
-        for (std::size_t i = 0; i < N; i++)
+        for(std::size_t i = 0; i < N; i++)
         {
-          if (used_values.test(i))
+          if(used_values.test(i))
           {
             v[i] = message_value[i];
           }
@@ -124,7 +116,7 @@ void piecewise_vec_message<N>::launch()
   else // unit != addr_unit
   {
 
-    if (used_values.all())
+    if(used_values.all())
     {
       /*
       {
@@ -145,8 +137,7 @@ void piecewise_vec_message<N>::launch()
       }
       */
 
-      addr.push_value(
-          ossia::convert(std::move(message_value), unit, addr_unit));
+      addr.push_value(ossia::convert(std::move(message_value), unit, addr_unit));
     }
     else
     {
@@ -168,11 +159,10 @@ void piecewise_vec_message<N>::launch()
 
       addr.push_value(to_value( // Go from Unit domain to Value domain
           convert(              // Convert to the resulting address unit
-              merge(       // Merge the automation value with the "unit" value
-                  convert( // Put the current value in the Unit domain
+              merge(            // Merge the automation value with the "unit" value
+                  convert(      // Put the current value in the Unit domain
                       ossia::net::get_value(addr), unit),
-                  std::move(
-                      message_value), // Compute the output of the automation
+                  std::move(message_value), // Compute the output of the automation
                   used_values),
               addr.get_unit())));
     }

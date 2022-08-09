@@ -57,7 +57,7 @@ public:
   void add_note(note_data nd)
   {
     m_orig_notes.insert(nd);
-    if (nd.start > m_prev_date)
+    if(nd.start > m_prev_date)
     {
       m_notes.insert(nd);
     }
@@ -68,7 +68,7 @@ public:
     m_orig_notes.erase(nd);
     m_notes.erase(nd);
     auto it = m_playingnotes.find(nd);
-    if (it != m_playingnotes.end())
+    if(it != m_playingnotes.end())
     {
       m_toStop.insert(nd);
       m_playingnotes.erase(it);
@@ -88,9 +88,9 @@ public:
     m_playingnotes.clear();
 
     // 2. Re-add following notes
-    if (date < m_prev_date)
+    if(date < m_prev_date)
     {
-      if (date == 0_tv)
+      if(date == 0_tv)
       {
         m_notes = m_orig_notes;
       }
@@ -99,24 +99,24 @@ public:
         auto min_it = m_orig_notes.lower_bound({date});
         auto max_it = m_orig_notes.lower_bound({m_prev_date});
 
-        if (min_it != m_orig_notes.end())
+        if(min_it != m_orig_notes.end())
           m_notes.insert(min_it, max_it);
 
         // all of these will have it->start < date
-        for (auto it = m_orig_notes.begin(); it != min_it; ++it)
+        for(auto it = m_orig_notes.begin(); it != min_it; ++it)
         {
-          if ((it->start + it->duration) > date)
+          if((it->start + it->duration) > date)
           {
             m_notes.insert(*it);
           }
         }
       }
     }
-    else if (date > m_prev_date)
+    else if(date > m_prev_date)
     {
       // remove previous notes
       auto min_it = m_notes.lower_bound({date});
-      if (min_it != m_notes.begin() && min_it != m_notes.end())
+      if(min_it != m_notes.begin() && min_it != m_notes.end())
       {
         std::advance(min_it, -1);
         m_notes.erase(m_notes.begin(), min_it);
@@ -140,7 +140,7 @@ public:
     m_orig_notes = m_notes;
 
     auto max_it = m_notes.lower_bound({m_prev_date});
-    if (max_it != m_notes.begin()) // TODO handle hte begin case correctly
+    if(max_it != m_notes.begin()) // TODO handle hte begin case correctly
       m_notes.erase(m_notes.begin(), max_it);
   }
 
@@ -149,13 +149,14 @@ public:
   bool doTransport{};
 
 private:
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    struct scope_guard {
+    struct scope_guard
+    {
       midi& self;
       const ossia::token_request& t;
-      ~scope_guard() {
+      ~scope_guard()
+      {
         self.m_prev_date = t.date;
 
         if(self.requestTransport)
@@ -170,21 +171,18 @@ private:
     const auto samplesratio = e.modelToSamples();
     const auto tick_start = t.physical_start(samplesratio);
 
-
-    for (const note_data& note : m_toStop)
+    for(const note_data& note : m_toStop)
     {
-      mp.messages.push_back(
-          libremidi::message::note_off(m_channel, note.pitch, 0));
+      mp.messages.push_back(libremidi::message::note_off(m_channel, note.pitch, 0));
       mp.messages.back().timestamp = tick_start;
     }
     m_toStop.clear();
 
-    if (mustStop)
+    if(mustStop)
     {
-      for (auto& note : m_playingnotes)
+      for(auto& note : m_playingnotes)
       {
-        mp.messages.push_back(
-            libremidi::message::note_off(m_channel, note.pitch, 0));
+        mp.messages.push_back(libremidi::message::note_off(m_channel, note.pitch, 0));
         mp.messages.back().timestamp = tick_start;
       }
 
@@ -195,13 +193,13 @@ private:
     }
     else
     {
-      if (m_notes.empty() && m_playingnotes.empty())
+      if(m_notes.empty() && m_playingnotes.empty())
         return;
-      if (doTransport)
+      if(doTransport)
       {
         auto it = m_notes.begin();
 
-        while (it != m_notes.end() && it->start < t.date)
+        while(it != m_notes.end() && it->start < t.date)
         {
           auto& note = *it;
           mp.messages.push_back(
@@ -214,18 +212,18 @@ private:
         doTransport = false;
       }
 
-      if (t.forward())
+      if(t.forward())
       {
         // First send note offs
-        for (auto it = m_playingnotes.begin(); it != m_playingnotes.end();)
+        for(auto it = m_playingnotes.begin(); it != m_playingnotes.end();)
         {
           note_data& note = const_cast<note_data&>(*it);
           auto end_time = note.start + note.duration;
 
-          if (t.in_range({end_time}))
+          if(t.in_range({end_time}))
           {
-            mp.messages.push_back(libremidi::message::note_off(
-                m_channel, note.pitch, 0));
+            mp.messages.push_back(
+                libremidi::message::note_off(m_channel, note.pitch, 0));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(end_time, samplesratio);
 
@@ -239,15 +237,15 @@ private:
 
         // Look for all the messages
         auto max_it = m_notes.lower_bound({t.date});
-        for (auto it = m_notes.begin(); it < max_it;)
+        for(auto it = m_notes.begin(); it < max_it;)
         {
           note_data& note = const_cast<note_data&>(*it);
           auto start_time = note.start;
-          if (start_time >= t.prev_date && start_time < t.date)
+          if(start_time >= t.prev_date && start_time < t.date)
           {
             // Send note_on
-            mp.messages.push_back(libremidi::message::note_on(
-                m_channel, note.pitch, note.velocity));
+            mp.messages.push_back(
+                libremidi::message::note_on(m_channel, note.pitch, note.velocity));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(start_time, samplesratio);
 

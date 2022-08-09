@@ -1,9 +1,9 @@
 #pragma once
 
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/state/state_element_fwd.hpp>
-
-#include <ossia/detail/config.hpp>
 
 #include <memory>
 /**
@@ -66,11 +66,10 @@ public:
   void add(state_element&& e);
 
   template <class Optional_T>
-  auto add(Optional_T&& opt) -> decltype(
-      std::declval<typename std::remove_reference_t<Optional_T>::value_type>(),
-      void())
+  auto add(Optional_T&& opt)
+      -> decltype(std::declval<typename std::remove_reference_t<Optional_T>::value_type>(), void())
   {
-    if (opt)
+    if(opt)
       add(*std::forward<Optional_T>(opt));
   }
 
@@ -110,8 +109,7 @@ OSSIA_EXPORT void flatten_and_filter(state&, const state_element& element);
 OSSIA_EXPORT void flatten_and_filter(state&, state_element&& element);
 
 //! These will also merge single addresses.
-OSSIA_EXPORT void
-merge_flatten_and_filter(state&, const state_element& element);
+OSSIA_EXPORT void merge_flatten_and_filter(state&, const state_element& element);
 OSSIA_EXPORT void merge_flatten_and_filter(state&, state_element&& element);
 
 inline ossia::state_element& get_state_element(ossia::state_element* iterator)

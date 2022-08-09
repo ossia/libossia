@@ -1,8 +1,8 @@
 #pragma once
-#include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/port.hpp>
 namespace ossia::nodes
 {
 class forward_node : public ossia::nonowning_graph_node

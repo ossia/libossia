@@ -19,7 +19,6 @@ struct OSSIA_EXPORT control_message
   {
     return !(lhs == rhs);
   }
-
 };
 
 }

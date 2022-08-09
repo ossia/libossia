@@ -7,7 +7,8 @@
 namespace ppp
 {
 
-phidget_device::phidget_device(PhidgetHandle hdl) : m_handle{hdl}
+phidget_device::phidget_device(PhidgetHandle hdl)
+    : m_handle{hdl}
 {
   Phidget_retain(hdl);
   Phidget_getDeviceClass(m_handle, &m_class);
@@ -17,21 +18,20 @@ phidget_device::phidget_device(PhidgetHandle hdl) : m_handle{hdl}
   // Phidget_getSerialNumber(m_handle, &m_serial);
 
   const char* name;
-  if (!Phidget_getDeviceName(m_handle, &name))
+  if(!Phidget_getDeviceName(m_handle, &name))
     m_name = name;
 
   const char* type;
-  if (!Phidget_getDeviceClassName(m_handle, &type))
+  if(!Phidget_getDeviceClassName(m_handle, &type))
     m_type = type;
 
   const char* label;
-  if (!Phidget_getDeviceLabel(m_handle, &label))
+  if(!Phidget_getDeviceLabel(m_handle, &label))
     m_label = label;
 
-  switch (m_class)
+  switch(m_class)
   {
-    case PHIDCLASS_INTERFACEKIT:
-    {
+    case PHIDCLASS_INTERFACEKIT: {
       /*
       m_ik = std::make_unique<interface_kit>(m_serial);
 
@@ -90,21 +90,22 @@ void phidget_device::set_label(const std::string& n)
 }
 
 phidget_channel::phidget_channel(PhidgetHandle device, PhidgetHandle hdl)
-    : m_device{device}, m_handle{hdl}
+    : m_device{device}
+    , m_handle{hdl}
 {
   Phidget_getChannelClass(m_handle, &m_class);
   Phidget_getChannelSubclass(m_handle, &m_subclass);
   Phidget_getChannel(m_handle, &m_channel_id);
 
   const char* name;
-  if (!Phidget_getChannelName(m_handle, &name))
+  if(!Phidget_getChannelName(m_handle, &name))
     m_name = name;
 
   const char* type;
-  if (!Phidget_getChannelClassName(m_handle, &type))
+  if(!Phidget_getChannelClassName(m_handle, &type))
     m_className = type;
 
-  switch (m_class)
+  switch(m_class)
   {
     default:
       break;
@@ -151,65 +152,65 @@ void phidgets_manager::open()
   PhidgetManager_setOnAttachHandler(
       m_hdl,
       [](PhidgetManagerHandle phidm, void* ptr, PhidgetHandle phid) {
-        auto& self = *(phidgets_manager*)ptr;
-        int ok;
-        Phidget_getIsChannel(phid, &ok);
-        if (ok)
-        {
-          std::cerr << "phidget is channel !!! \n";
-          PhidgetHandle hub;
-          if (Phidget_getHub(phid, &hub) == EPHIDGET_OK)
-          {
-            std::cerr << "\thub ok: " << hub << std::endl;
-          }
+    auto& self = *(phidgets_manager*)ptr;
+    int ok;
+    Phidget_getIsChannel(phid, &ok);
+    if(ok)
+    {
+      std::cerr << "phidget is channel !!! \n";
+      PhidgetHandle hub;
+      if(Phidget_getHub(phid, &hub) == EPHIDGET_OK)
+      {
+        std::cerr << "\thub ok: " << hub << std::endl;
+      }
 
-          PhidgetHandle parent;
-          if (Phidget_getParent(phid, &parent) == EPHIDGET_OK)
+      PhidgetHandle parent;
+      if(Phidget_getParent(phid, &parent) == EPHIDGET_OK)
+      {
+        std::cerr << "\tparent ok: " << parent << std::endl;
+        auto oldpar = parent;
+        while(parent)
+        {
+          if(Phidget_getParent(parent, &parent) != EPHIDGET_OK)
           {
-            std::cerr << "\tparent ok: " << parent << std::endl;
-            auto oldpar = parent;
-            while (parent)
-            {
-              if (Phidget_getParent(parent, &parent) != EPHIDGET_OK)
-              {
-                std::cerr << "no parent anymore\n";
-                break;
-              }
-              else if (parent == oldpar)
-              {
-                std::cerr << "parent == oldpar\n";
-                break;
-              }
-              else
-              {
-                std::cerr << "\t new parent: " << parent << "\n";
-              }
-            }
+            std::cerr << "no parent anymore\n";
+            break;
+          }
+          else if(parent == oldpar)
+          {
+            std::cerr << "parent == oldpar\n";
+            break;
+          }
+          else
+          {
+            std::cerr << "\t new parent: " << parent << "\n";
           }
         }
+      }
+    }
 
-        std::shared_ptr<phidget_device> p{new phidget_device{phid}};
-        self.m_phidgets.push_back(p);
+    std::shared_ptr<phidget_device> p{new phidget_device{phid}};
+    self.m_phidgets.push_back(p);
 
-        if (self.onDeviceCreated)
-          self.onDeviceCreated(p);
+    if(self.onDeviceCreated)
+      self.onDeviceCreated(p);
       },
       this);
 
   PhidgetManager_setOnDetachHandler(
       m_hdl,
       [](PhidgetManagerHandle phidm, void* ptr, PhidgetHandle phid) {
-        auto& self = *(phidgets_manager*)ptr;
-        auto it = std::find_if(
-            self.m_phidgets.begin(), self.m_phidgets.end(),
-            [=](auto& e) { return e->handle() == phid; });
+    auto& self = *(phidgets_manager*)ptr;
+    auto it = std::find_if(self.m_phidgets.begin(), self.m_phidgets.end(), [=](auto& e) {
+      return e->handle() == phid;
+    });
 
-        if (it != self.m_phidgets.end())
-        {
-          if (self.onDeviceDestroyed)
-            self.onDeviceDestroyed(*it);
-          self.m_phidgets.erase(it);
-        }
+    if(it != self.m_phidgets.end())
+    {
+      if(self.onDeviceDestroyed)
+        self.onDeviceDestroyed(*it);
+      self.m_phidgets.erase(it);
+    }
       },
       this);
 

@@ -1,22 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "device.hpp"
+
 #include "model.hpp"
+#include "ossia-max.hpp"
 #include "parameter.hpp"
 #include "remote.hpp"
-#include "view.hpp"
 #include "utils.hpp"
-#include "ossia-max.hpp"
+#include "view.hpp"
 
 #include <ossia/detail/config.hpp>
-#include <ossia/network/osc/osc.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/oscquery_client.hpp>
-#include <ossia/network/minuit/minuit.hpp>
 
-#include <ossia/network/local/local.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/minuit/minuit.hpp>
+#include <ossia/network/osc/osc.hpp>
+#include <ossia/network/oscquery/oscquery_client.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <boost/algorithm/string/case_conv.hpp>
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
@@ -32,20 +34,20 @@ static void* phidgets_poll_clock = {};
 static bool phidgets_exposed = false;
 static void update_phidgets(void* x)
 {
-    auto dev = reinterpret_cast<device*>(x);
-    ossia::net::device_base* d = dev->m_device;
-    if(auto prot = dynamic_cast<ossia::net::multiplex_protocol*>(&d->get_protocol()))
+  auto dev = reinterpret_cast<device*>(x);
+  ossia::net::device_base* d = dev->m_device;
+  if(auto prot = dynamic_cast<ossia::net::multiplex_protocol*>(&d->get_protocol()))
+  {
+    for(auto& e : prot->get_protocols())
     {
-        for(auto& e : prot->get_protocols())
-        {
-            if(auto ph = dynamic_cast<ossia::phidget_protocol*>(e.get()))
-            {
-                ph->run_commands();
-            }
-        }
+      if(auto ph = dynamic_cast<ossia::phidget_protocol*>(e.get()))
+      {
+        ph->run_commands();
+      }
     }
+  }
 
-    clock_delay(phidgets_poll_clock, 2000);
+  clock_delay(phidgets_poll_clock, 2000);
 }
 #endif
 
@@ -71,62 +73,45 @@ namespace ossia
 namespace max_binding
 {
 
-void device::class_setup(t_class *c)
+void device::class_setup(t_class* c)
 {
   device_base::class_setup(c);
+  class_addmethod(c, (method)device::register_children, "register", A_NOTHING, 0);
+  class_addmethod(c, (method)device::expose, "expose", A_GIMME, 0);
   class_addmethod(
-      c, (method)device::register_children,
-      "register", A_NOTHING, 0);
+      c, (method)protocol_settings::print_protocol_help, "help", A_NOTHING, 0);
+  class_addmethod(c, (method)device::name, "name", A_GIMME, 0);
+  class_addmethod(c, (method)device::stop_expose, "stop", A_LONG, 0);
   class_addmethod(
-      c, (method)device::expose,
-      "expose", A_GIMME, 0);
-  class_addmethod(
-      c, (method)protocol_settings::print_protocol_help,
-      "help", A_NOTHING, 0);
-  class_addmethod(
-      c, (method)device::name,
-      "name", A_GIMME, 0);
-  class_addmethod(
-      c, (method) device::stop_expose,
-      "stop", A_LONG, 0);
-  class_addmethod(
-      c, (method) device::enable_buffering,
-      "enable_buffering", A_LONG, A_LONG, 0);
-  class_addmethod(
-      c, (method) device::send_buffer,
-      "send_buffer", A_LONG, 0);
-  class_addmethod(
-      c, (method) device::get_mess_cb,
-      "get", A_SYM, 0);
-  class_addmethod(
-      c, (method) device::notify,
-      "notify", A_CANT, 0);
-  class_addmethod(
-      c, (method) device::send_raw_osc,
-      "osc", A_GIMME, 0);
-  class_addmethod(
-      c, (method) device::resend_all_values,
-      "send_all_values", A_GIMME, 0);
+      c, (method)device::enable_buffering, "enable_buffering", A_LONG, A_LONG, 0);
+  class_addmethod(c, (method)device::send_buffer, "send_buffer", A_LONG, 0);
+  class_addmethod(c, (method)device::get_mess_cb, "get", A_SYM, 0);
+  class_addmethod(c, (method)device::notify, "notify", A_CANT, 0);
+  class_addmethod(c, (method)device::send_raw_osc, "osc", A_GIMME, 0);
+  class_addmethod(c, (method)device::resend_all_values, "send_all_values", A_GIMME, 0);
 
   CLASS_ATTR_LONG(c, "saveget", 0, device, m_saveget);
-  CLASS_ATTR_STYLE_LABEL(c, "saveget", 0, "onoff", "Save get parameters when snapshotting presets");
+  CLASS_ATTR_STYLE_LABEL(
+      c, "saveget", 0, "onoff", "Save get parameters when snapshotting presets");
   CLASS_ATTR_LONG(c, "saveset", 0, device, m_saveset);
-  CLASS_ATTR_STYLE_LABEL(c, "saveset", 0, "onoff", "Save set parameters when snapshotting presets");
-  CLASS_ATTR_LONG(c, "savebi", 0, device,  m_savebi);
-  CLASS_ATTR_STYLE_LABEL(c, "savebi", 0,  "onoff", "Save bi parameters when snapshotting presets");
+  CLASS_ATTR_STYLE_LABEL(
+      c, "saveset", 0, "onoff", "Save set parameters when snapshotting presets");
+  CLASS_ATTR_LONG(c, "savebi", 0, device, m_savebi);
+  CLASS_ATTR_STYLE_LABEL(
+      c, "savebi", 0, "onoff", "Save bi parameters when snapshotting presets");
 }
 
 void* device::create(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<device>();
 
-  if (x)
+  if(x)
   {
     critical_enter(0);
     auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
     if(!pat_desc.device && !pat_desc.client)
     {
-      pat_desc.device= x;
+      pat_desc.device = x;
     }
     else
     {
@@ -146,9 +131,9 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
     x->m_name = gensym("Max");
     x->m_otype = object_class::device;
 
-    if (argc && argv)
+    if(argc && argv)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
       }
@@ -159,11 +144,11 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
 
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
 
-    x->m_device = std::make_shared<ossia::net::generic_device>(std::move(local_proto_ptr),
-                                                               x->m_name->s_name);
+    x->m_device = std::make_shared<ossia::net::generic_device>(
+        std::move(local_proto_ptr), x->m_name->s_name);
     x->connect_slots();
 
-    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_max::instance().devices.push_back(x);
 
@@ -184,12 +169,12 @@ void device::destroy(device* x)
 
   // This is no more needed since all children
   // are connected to node.about_to_be_deleted
-  //x->unregister_children();
+  // x->unregister_children();
 
   {
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
-    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-        x->m_device->get_protocol());
+    auto& multiplex
+        = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol());
     auto& protos = multiplex.get_protocols();
 
     for(auto& proto : protos)
@@ -224,28 +209,29 @@ void device::destroy(device* x)
 // TODO do we still need this function ?
 void device::register_children(device* x)
 {
-  std::vector<std::shared_ptr<matcher>> matchers{std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
+  std::vector<std::shared_ptr<matcher>> matchers{
+      std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
   register_children_in_patcher_recursively(x->m_patcher, x);
   output_all_values(x->m_patcher, true);
 }
 
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
 {
-  if (argc && argv->a_type == A_SYM)
+  if(argc && argv->a_type == A_SYM)
   {
-    auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-          x->m_device->get_protocol());
+    auto& multiplex
+        = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol());
     const auto protocol = boost::to_lower_copy(std::string(atom_getsym(argv)->s_name));
 
-    if (protocol == "minuit")
+    if(protocol == "minuit")
     {
       protocol_settings::minuit settings{};
 
       argc--;
       argv++;
 
-      if (argc == 3 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG
-          && argv[2].a_type == A_LONG)
+      if(argc == 3 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG
+         && argv[2].a_type == A_LONG)
       {
         settings.remoteip = atom_getsym(argv++)->s_name;
         settings.remoteport = atom_getfloat(argv++);
@@ -255,10 +241,10 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       bool connected = true;
 
       t_atom a[5];
-      A_SETSYM(a+1, gensym("minuit"));
-      A_SETSYM(a+2, gensym(settings.remoteip.c_str()));
-      A_SETLONG(a+3, settings.remoteport);
-      A_SETLONG(a+4, settings.localport);
+      A_SETSYM(a + 1, gensym("minuit"));
+      A_SETSYM(a + 2, gensym(settings.remoteip.c_str()));
+      A_SETLONG(a + 3, settings.remoteport);
+      A_SETLONG(a + 4, settings.localport);
 
       try
       {
@@ -266,30 +252,30 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
             x->m_name->s_name, settings.remoteip, settings.remoteport,
             settings.localport);
 
-        A_SETSYM(a+2, gensym(minuit_proto->get_ip().c_str()));
-        A_SETLONG(a+3, minuit_proto->get_remote_port());
-        A_SETLONG(a+4, minuit_proto->get_local_port());
+        A_SETSYM(a + 2, gensym(minuit_proto->get_ip().c_str()));
+        A_SETLONG(a + 3, minuit_proto->get_remote_port());
+        A_SETLONG(a + 4, minuit_proto->get_local_port());
 
         multiplex.expose_to(std::move(minuit_proto));
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
         object_error((t_object*)x, "libossia error: '%s'", e.what());
       }
 
-      A_SETLONG(a, connected?1:0);
+      A_SETLONG(a, connected ? 1 : 0);
       outlet_anything(x->m_dumpout, gensym("expose"), 5, a);
     }
-    else if (protocol == "oscquery")
+    else if(protocol == "oscquery")
     {
       protocol_settings::oscquery settings{};
 
       argc--;
       argv++;
 
-      if (argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
+      if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
       {
         settings.oscport = atom_getlong(argv++);
         settings.wsport = atom_getlong(argv++);
@@ -298,42 +284,41 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       bool connected = true;
 
       t_atom a[4];
-      A_SETSYM(a+1, gensym("oscquery"));
-      A_SETLONG(a+2, settings.oscport);
-      A_SETLONG(a+3, settings.wsport);
+      A_SETSYM(a + 1, gensym("oscquery"));
+      A_SETLONG(a + 2, settings.oscport);
+      A_SETLONG(a + 3, settings.wsport);
 
       try
       {
         auto oscq_proto = std::make_unique<ossia::oscquery::oscquery_server_protocol>(
-              settings.oscport, settings.wsport);
+            settings.oscport, settings.wsport);
         x->m_device->set_echo(true);
 
-        A_SETSYM(a+1, gensym("oscquery"));
-        A_SETLONG(a+2, oscq_proto->get_osc_port());
-        A_SETLONG(a+3, oscq_proto->get_ws_port());
+        A_SETSYM(a + 1, gensym("oscquery"));
+        A_SETLONG(a + 2, oscq_proto->get_osc_port());
+        A_SETLONG(a + 3, oscq_proto->get_ws_port());
 
         multiplex.expose_to(std::move(oscq_proto));
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
         object_error((t_object*)x, "libossia error: '%s'", e.what());
       }
 
-      A_SETLONG(a, connected?1:0);
+      A_SETLONG(a, connected ? 1 : 0);
       outlet_anything(x->m_dumpout, gensym("expose"), 4, a);
-
     }
-    else if (protocol == "osc")
+    else if(protocol == "osc")
     {
       protocol_settings::osc settings{};
 
       argc--;
       argv++;
 
-      if (argc == 3 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG
-          && argv[2].a_type == A_LONG)
+      if(argc == 3 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG
+         && argv[2].a_type == A_LONG)
       {
         settings.remoteip = atom_getsym(argv++)->s_name;
         settings.remoteport = atom_getlong(argv++);
@@ -343,23 +328,23 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
       bool connected = true;
 
       t_atom a[5];
-      A_SETSYM(a+1,  gensym("osc"));
-      A_SETSYM(a+2,  gensym(settings.remoteip.c_str()));
-      A_SETLONG(a+3, settings.remoteport);
-      A_SETLONG(a+4, settings.localport);
+      A_SETSYM(a + 1, gensym("osc"));
+      A_SETSYM(a + 2, gensym(settings.remoteip.c_str()));
+      A_SETLONG(a + 3, settings.remoteport);
+      A_SETLONG(a + 4, settings.localport);
 
       try
       {
         auto proto = std::make_unique<ossia::net::osc_protocol>(
             settings.remoteip, settings.remoteport, settings.localport);
 
-        A_SETSYM(a+2,  gensym(proto->get_ip().c_str()));
-        A_SETLONG(a+3, proto->get_remote_port());
-        A_SETLONG(a+4, proto->get_local_port());
+        A_SETSYM(a + 2, gensym(proto->get_ip().c_str()));
+        A_SETLONG(a + 3, proto->get_remote_port());
+        A_SETLONG(a + 4, proto->get_local_port());
 
         multiplex.expose_to(std::move(proto));
       }
-      catch (const std::exception& e)
+      catch(const std::exception& e)
       {
         connected = false;
         object_error((t_object*)x, "can't connect, port might be already in use");
@@ -367,38 +352,38 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         return;
       }
 
-      A_SETLONG(a, connected?1:0);
+      A_SETLONG(a, connected ? 1 : 0);
       outlet_anything(x->m_dumpout, gensym("expose"), 5, a);
     }
 
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
     else if(protocol == "phidgets")
     {
-        if(!phidgets_exposed)
-        {
-            multiplex.expose_to(std::make_unique<ossia::phidget_protocol>());
-            std::vector<t_atom> a;
-            a.resize(1);
-            A_SETSYM(&a[0], gensym("phidgets"));
-            x->m_protocols.push_back(a);
+      if(!phidgets_exposed)
+      {
+        multiplex.expose_to(std::make_unique<ossia::phidget_protocol>());
+        std::vector<t_atom> a;
+        a.resize(1);
+        A_SETSYM(&a[0], gensym("phidgets"));
+        x->m_protocols.push_back(a);
 
-            phidgets_poll_clock = clock_new(x, (method)update_phidgets);
+        phidgets_poll_clock = clock_new(x, (method)update_phidgets);
 
-            clock_delay(phidgets_poll_clock, 1000);
-            phidgets_exposed = true;
-        }
-        else
-        {
-            error("Only a single Phidget device can be active at a given time");
-            return;
-        }
+        clock_delay(phidgets_poll_clock, 1000);
+        phidgets_exposed = true;
+      }
+      else
+      {
+        error("Only a single Phidget device can be active at a given time");
+        return;
+      }
     }
 #endif
 
 #if defined(OSSIA_PROTOCOL_LEAPMOTION)
     else if(protocol == "leapmotion")
     {
-        multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
+      multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
     }
 #endif
 
@@ -411,24 +396,30 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
     protocol_settings::print_protocol_help();
 }
 
-void device::name(device *x, t_symbol* s, long argc, t_atom* argv){
-  if( argc == 0 )
+void device::name(device* x, t_symbol* s, long argc, t_atom* argv)
+{
+  if(argc == 0)
   {
     t_atom a;
-    atom_setsym(&a,gensym(x->m_device->get_name().c_str()));
-    outlet_anything(x->m_dumpout,gensym("name"),1,&a);
-  } else if ( argv[0].a_type == A_SYM ) {
+    atom_setsym(&a, gensym(x->m_device->get_name().c_str()));
+    outlet_anything(x->m_dumpout, gensym("name"), 1, &a);
+  }
+  else if(argv[0].a_type == A_SYM)
+  {
     x->m_name = argv[0].a_w.w_sym;
     x->m_device->set_name(x->m_name->s_name);
-  } else {
-    object_error(&x->m_object,"bad argument to message 'name'");
+  }
+  else
+  {
+    object_error(&x->m_object, "bad argument to message 'name'");
   }
 }
 
 void device::enable_buffering(device* x, int index, int enable)
 {
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                        x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
   if(index >= 0 && index < protocols.size())
   {
     if(auto osc = dynamic_cast<ossia::net::osc_protocol*>(protocols[0].get()))
@@ -437,7 +428,8 @@ void device::enable_buffering(device* x, int index, int enable)
     }
     else
     {
-      std::cerr << "protocol at index " << index << " is not OSC. Only OSC Protocol support buffering." << std::endl;
+      std::cerr << "protocol at index " << index
+                << " is not OSC. Only OSC Protocol support buffering." << std::endl;
     }
   }
   else
@@ -446,11 +438,11 @@ void device::enable_buffering(device* x, int index, int enable)
   }
 }
 
-
 void device::send_buffer(device* x, int index)
 {
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                        x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
   if(index >= 0 && index < protocols.size())
   {
     if(auto osc = dynamic_cast<ossia::net::osc_protocol*>(protocols[0].get()))
@@ -459,7 +451,8 @@ void device::send_buffer(device* x, int index)
     }
     else
     {
-      std::cerr << "protocol at index " << index << " is not OSC. Only OSC Protocol support buffering." << std::endl;
+      std::cerr << "protocol at index " << index
+                << " is not OSC. Only OSC Protocol support buffering." << std::endl;
     }
   }
   else
@@ -470,14 +463,15 @@ void device::send_buffer(device* x, int index)
 
 void device::get_protocols(device* x)
 {
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                        x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
 
   int index = 0;
 
   t_atom a;
-  A_SETLONG(&a,protocols.size());
-  outlet_anything(x->m_dumpout,gensym("protocols"),1,&a);
+  A_SETLONG(&a, protocols.size());
+  outlet_anything(x->m_dumpout, gensym("protocols"), 1, &a);
 
   for(auto& p : protocols)
   {
@@ -491,7 +485,9 @@ void device::get_protocols(device* x)
       A_SETLONG(&vec[3], osc->get_remote_port());
       A_SETLONG(&vec[4], osc->get_local_port());
     }
-    else if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
+    else if(
+        auto oscq
+        = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
     {
       vec.resize(4);
       A_SETLONG(&vec[0], index++);
@@ -515,16 +511,18 @@ void device::get_protocols(device* x)
 
 void device::get_oscq_clients(device* x)
 {
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                        x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
 
-  std::vector<std::array<t_atom,2>> res;
+  std::vector<std::array<t_atom, 2>> res;
 
   for(auto& p : protocols)
   {
-    if(auto oscq = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
+    if(auto oscq
+       = dynamic_cast<const ossia::oscquery::oscquery_server_protocol*>(p.get()))
     {
-      oscq->for_each_client([&] (auto& c) {
+      oscq->for_each_client([&](auto& c) {
         std::array<t_atom, 2> atoms;
         A_SETSYM(&atoms[0], gensym(c.client_ip.c_str()));
         if(c.sender)
@@ -542,7 +540,7 @@ void device::get_oscq_clients(device* x)
   }
 
   t_atom a;
-  A_SETLONG(&a,res.size());
+  A_SETLONG(&a, res.size());
   outlet_anything(x->m_dumpout, gensym("oscquery_clients_size"), 1, &a);
 
   for(auto& r : res)
@@ -553,30 +551,30 @@ void device::get_oscq_clients(device* x)
 
 void device::get_mess_cb(device* x, t_symbol* s)
 {
-  if ( s == gensym("protocols") )
+  if(s == gensym("protocols"))
     device::get_protocols(x);
-  else if ( s == gensym("oscquery_clients") )
+  else if(s == gensym("oscquery_clients"))
     device::get_oscq_clients(x);
   else
-    device_base::get_mess_cb(x,s);
+    device_base::get_mess_cb(x, s);
 }
 
 void device::stop_expose(device* x, int index)
 {
-  auto& multiplex = static_cast<ossia::net::multiplex_protocol&>(
-      x->m_device->get_protocol());
+  auto& multiplex
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol());
   auto& protos = multiplex.get_protocols();
 
-  if ( index < protos.size() )
+  if(index < protos.size())
   {
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
-      if(dynamic_cast<ossia::phidget_protocol*>(protos[index].get()))
-      {
-          clock_unset(phidgets_poll_clock);
-          clock_free((t_object*)phidgets_poll_clock);
-          phidgets_poll_clock = nullptr;
-          phidgets_exposed = false;
-      }
+    if(dynamic_cast<ossia::phidget_protocol*>(protos[index].get()))
+    {
+      clock_unset(phidgets_poll_clock);
+      clock_free((t_object*)phidgets_poll_clock);
+      phidgets_poll_clock = nullptr;
+      phidgets_exposed = false;
+    }
 #endif
     multiplex.stop_expose_to(*protos[index]);
     t_atom a;
@@ -589,7 +587,7 @@ void device::stop_expose(device* x, int index)
 
 void device::assist(device* x, void*, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Device messages input");
   }
@@ -599,20 +597,23 @@ void device::assist(device* x, void*, long m, long a, char* s)
   }
 }
 
-void device::send_raw_osc(device *x, t_symbol *s, int argc, t_atom *argv)
+void device::send_raw_osc(device* x, t_symbol* s, int argc, t_atom* argv)
 {
   if(argc < 1)
   {
-    object_error(&x->m_object, "osc message need at least an address as symbol argument.");
+    object_error(
+        &x->m_object, "osc message need at least an address as symbol argument.");
     return;
   }
 
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                       x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
 
   ossia::net::full_parameter_data fpd;
   fpd.address = argv->a_w.w_sym->s_name;
-  argc--; argv++;
+  argc--;
+  argv++;
   fpd.set_value(atom2value(nullptr, argc, argv));
 
   for(auto& p : protocols)
@@ -621,12 +622,13 @@ void device::send_raw_osc(device *x, t_symbol *s, int argc, t_atom *argv)
   }
 }
 
-void device::resend_all_values(device *x, t_symbol *s)
+void device::resend_all_values(device* x, t_symbol* s)
 {
   auto children = ossia::net::list_all_children(&x->m_device->get_root_node());
 
-  auto& protocols = static_cast<ossia::net::multiplex_protocol&>(
-                        x->m_device->get_protocol()).get_protocols();
+  auto& protocols
+      = static_cast<ossia::net::multiplex_protocol&>(x->m_device->get_protocol())
+            .get_protocols();
 
   for(auto& p : protocols)
   {

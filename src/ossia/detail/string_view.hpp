@@ -27,7 +27,6 @@ template <typename... Args>
 constexpr std::array<ossia::string_view, sizeof...(Args)>
 make_string_array(Args&&... args) noexcept
 {
-  return std::array<ossia::string_view, sizeof...(Args)>{
-      make_string_view(args)...};
+  return std::array<ossia::string_view, sizeof...(Args)>{make_string_view(args)...};
 }
 }

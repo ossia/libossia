@@ -1,8 +1,8 @@
 #pragma once
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/nodes/sound_sampler.hpp>
 #include <ossia/dataflow/nodes/sound_utils.hpp>
-#include <ossia/dataflow/graph_node.hpp>
 
 namespace ossia::nodes
 {
@@ -49,8 +49,7 @@ public:
     m_sampler.set_sound(hdl, channels, sampleRate);
   }
 
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     return m_sampler.run(t, e);
   }
@@ -59,4 +58,3 @@ public:
   sound_sampler m_sampler{this, &audio_out.data};
 };
 }
-

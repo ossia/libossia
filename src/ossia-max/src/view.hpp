@@ -11,7 +11,6 @@ class device_base;
 class view : public node_base
 {
 public:
-
   using is_view = std::true_type;
 
   void do_registration();
@@ -30,5 +29,3 @@ public:
 
 } // max namespace
 } // ossia namespace
-
-

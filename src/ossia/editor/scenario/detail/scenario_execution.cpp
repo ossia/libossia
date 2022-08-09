@@ -31,9 +31,9 @@ small_sync_vec scenario::get_roots() const noexcept
   small_sync_vec res;
   res.reserve(4);
 
-  for (auto& tn : get_time_syncs())
+  for(auto& tn : get_time_syncs())
   {
-    if (tn->is_start())
+    if(tn->is_start())
     {
       res.push_back(tn.get());
     }
@@ -49,8 +49,8 @@ void scenario::make_happen(
   event.m_status = time_event::status::HAPPENED;
 
   // stop previous TimeIntervals
-  for (const std::shared_ptr<ossia::time_interval>& timeInterval :
-       event.previous_time_intervals())
+  for(const std::shared_ptr<ossia::time_interval>& timeInterval :
+      event.previous_time_intervals())
   {
     timeInterval->stop();
     mark_end_discontinuous{}(*timeInterval);
@@ -60,18 +60,18 @@ void scenario::make_happen(
   event.tick(0_tv, tick_offset);
 
   // setup next TimeIntervals
-  for (const std::shared_ptr<ossia::time_interval>& timeInterval :
-       event.next_time_intervals())
+  for(const std::shared_ptr<ossia::time_interval>& timeInterval :
+      event.next_time_intervals())
   {
     timeInterval->set_parent_speed(tok.speed);
     timeInterval->start();
-    //timeInterval->tick_current(tick_offset, tok);
+    // timeInterval->tick_current(tick_offset, tok);
     mark_start_discontinuous{}(*timeInterval);
 
     started.insert(timeInterval.get());
   }
 
-  if (event.m_callback)
+  if(event.m_callback)
     (event.m_callback)(event.m_status);
 
   reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
@@ -79,7 +79,7 @@ void scenario::make_happen(
 
 void scenario::make_dispose(time_event& event, interval_set& stopped)
 {
-  if (event.m_status == time_event::status::HAPPENED)
+  if(event.m_status == time_event::status::HAPPENED)
   {
     throw execution_error(
         "time_event::dispose: "
@@ -90,7 +90,7 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
   event.m_status = time_event::status::DISPOSED;
 
   // stop previous TimeIntervals
-  for (auto& timeInterval : event.previous_time_intervals())
+  for(auto& timeInterval : event.previous_time_intervals())
   {
     timeInterval->stop();
     mark_end_discontinuous{}(*timeInterval);
@@ -98,26 +98,26 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
   }
 
   // dispose next TimeIntervals end event if everything is disposed before
-  for (auto& nextTimeInterval : event.next_time_intervals())
+  for(auto& nextTimeInterval : event.next_time_intervals())
   {
     bool dispose = true;
 
-    for (auto& previousTimeInterval :
-         nextTimeInterval->get_end_event().previous_time_intervals())
+    for(auto& previousTimeInterval :
+        nextTimeInterval->get_end_event().previous_time_intervals())
     {
-      if (previousTimeInterval->get_start_event().get_status()
-          != time_event::status::DISPOSED)
+      if(previousTimeInterval->get_start_event().get_status()
+         != time_event::status::DISPOSED)
       {
         dispose = false;
         break;
       }
     }
 
-    if (dispose && !nextTimeInterval->graphal)
+    if(dispose && !nextTimeInterval->graphal)
       make_dispose(nextTimeInterval->get_end_event(), stopped);
   }
 
-  if (event.m_callback)
+  if(event.m_callback)
     (event.m_callback)(event.m_status);
 
   reinterpret_cast<uint8_t&>(event.m_status) |= uint8_t(time_event::status::FINISHED);
@@ -130,20 +130,16 @@ enum progress_mode
 
 static const constexpr progress_mode mode{PROGRESS_MAX};
 
-
 void scenario::run_interval(
-    ossia::time_interval& interval,
-    const ossia::token_request& tk,
-    const time_value& tick_ms,
-    ossia::time_value tick,
-    ossia::time_value offset)
+    ossia::time_interval& interval, const ossia::token_request& tk,
+    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset)
 {
   const auto& cst_old_date = interval.get_date();
   auto cst_max_dur = interval.get_max_duration();
   const auto end_node = &interval.get_end_event().get_time_sync();
 
   auto it = m_itv_end_map.find(&interval);
-  if (it != m_itv_end_map.end() && it->second < cst_max_dur)
+  if(it != m_itv_end_map.end() && it->second < cst_max_dur)
   {
     cst_max_dur = it->second;
   }
@@ -152,34 +148,33 @@ void scenario::run_interval(
 
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
-  if (!cst_max_dur.infinite())
+  if(!cst_max_dur.infinite())
   {
     if(auto s = interval.get_speed(interval.get_date()); BOOST_LIKELY(s >= 0.))
     {
       auto max_tick = time_value{cst_max_dur - cst_old_date};
       double diff = s * tick.impl - max_tick.impl;
-      if (diff <= 0.)
+      if(diff <= 0.)
       {
-        if (tick != 0_tv)
+        if(tick != 0_tv)
           interval.tick_offset(tick, offset, tk);
       }
       else
       {
-        if (max_tick != 0_tv)
+        if(max_tick != 0_tv)
         {
           interval.tick_offset_speed_precomputed(max_tick, offset, tk);
         }
 
-        const auto ot
-            = ossia::time_value{int64_t(diff)};
+        const auto ot = ossia::time_value{int64_t(diff)};
         const auto node_it = m_overticks.lower_bound(end_node);
-        if (node_it != m_overticks.end() && (end_node == node_it->first))
+        if(node_it != m_overticks.end() && (end_node == node_it->first))
         {
           auto& cur = const_cast<overtick&>(node_it->second);
 
-          if (ot < cur.min)
+          if(ot < cur.min)
             cur.min = ot;
-          if (ot > cur.max)
+          if(ot > cur.max)
           {
             cur.max = ot;
             cur.offset = tk.offset + tick_ms - cur.max;
@@ -188,33 +183,34 @@ void scenario::run_interval(
         else
         {
           m_overticks.insert(
-              node_it,
-              { end_node, overtick{ot, ot, tk.offset + tick_ms - ot} });
+              node_it, {end_node, overtick{ot, ot, tk.offset + tick_ms - ot}});
         }
       }
     }
     else
     {
-      if (tick * s < cst_old_date)
+      if(tick * s < cst_old_date)
       {
-        if (tick != 0_tv)
+        if(tick != 0_tv)
           interval.tick_offset(tick, offset, tk);
       }
       else
       {
-        if (tick != 0_tv)
+        if(tick != 0_tv)
         {
-          interval.tick_offset_speed_precomputed(ossia::time_value{-cst_old_date.impl}, offset, tk);
+          interval.tick_offset_speed_precomputed(
+              ossia::time_value{-cst_old_date.impl}, offset, tk);
         }
       }
-      // no overtick support for running backwards for now - we just stop at zero
+      // no overtick support for running backwards for now - we just stop at
+      // zero
     }
   }
   else
   {
     interval.tick_offset(tick, offset, tk);
   }
-  if (interval.get_date() >= interval.get_min_duration())
+  if(interval.get_date() >= interval.get_min_duration())
   {
     m_endNodes.insert(end_node);
 
@@ -250,9 +246,9 @@ void scenario::state_impl(const ossia::token_request& tk)
     m_endNodes.container.reserve(m_nodes.size());
     m_overticks.container.reserve(m_nodes.size());
 
-    for (auto it = m_runningIntervals.begin(); it != m_runningIntervals.end();)
+    for(auto it = m_runningIntervals.begin(); it != m_runningIntervals.end();)
     {
-      if ((*it)->get_end_event().get_status() == time_event::status::HAPPENED)
+      if((*it)->get_end_event().get_status() == time_event::status::HAPPENED)
         it = m_runningIntervals.erase(it);
       else
         ++it;
@@ -270,21 +266,21 @@ void scenario::state_impl(const ossia::token_request& tk)
     m_pendingEvents.clear();
     m_maxReachedEvents.clear();
 
-    for (auto& n : m_rootNodes)
+    for(auto& n : m_rootNodes)
     {
-      if (!n->is_observing_expression())
+      if(!n->is_observing_expression())
       {
         n->observe_expression(true, [n](bool b) {
-          if (b)
+          if(b)
           {
             n->start_trigger_request();
           }
         });
       }
 
-      if (n->trigger_request)
+      if(n->trigger_request)
       {
-        if (m_waitingNodes.find(n) != m_waitingNodes.end())
+        if(m_waitingNodes.find(n) != m_waitingNodes.end())
         {
           // it will execute soon after
           continue;
@@ -300,7 +296,7 @@ void scenario::state_impl(const ossia::token_request& tk)
       }
     }
 
-    for (auto it = m_waitingNodes.begin(); it != m_waitingNodes.end();)
+    for(auto it = m_waitingNodes.begin(); it != m_waitingNodes.end();)
     {
       auto n = *it;
       // Note: we pass m_runningIntervals as stopped because it does not
@@ -309,7 +305,7 @@ void scenario::state_impl(const ossia::token_request& tk)
       sync_status res = process_this(
           *n, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
           m_runningIntervals, tk.offset, tk);
-      switch (res)
+      switch(res)
       {
         case sync_status::NOT_READY:
           ++it;
@@ -327,9 +323,9 @@ void scenario::state_impl(const ossia::token_request& tk)
     m_pendingEvents.clear();
 
     // Check intervals that have been quantized
-    for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end(); )
+    for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end();)
     {
-      auto [itv,ratio] = *it;
+      auto [itv, ratio] = *it;
       if(auto date = tk.get_quantification_date(ratio))
       {
         if(itv->running())
@@ -338,8 +334,8 @@ void scenario::state_impl(const ossia::token_request& tk)
           itv->stop();
         }
         itv->start();
-        //itv->tick_current(*date, tk);
-        //mark_start_discontinuous{}(*itv);
+        // itv->tick_current(*date, tk);
+        // mark_start_discontinuous{}(*itv);
 
         m_runningIntervals.insert(itv);
         auto& start_ev = itv->get_start_event();
@@ -354,18 +350,19 @@ void scenario::state_impl(const ossia::token_request& tk)
         ++it;
       }
     }
-    for(auto it = m_itv_to_stop.begin(); it != m_itv_to_stop.end(); )
+    for(auto it = m_itv_to_stop.begin(); it != m_itv_to_stop.end();)
     {
-      auto [itv,ratio] = *it;
+      auto [itv, ratio] = *it;
       if(auto date = tk.get_quantification_date(ratio))
       {
         if(itv->running())
         {
-          //mark_end_discontinuous{}(*itv);
+          // mark_end_discontinuous{}(*itv);
           itv->stop();
         }
 
-        if(auto running_it = m_runningIntervals.find(itv); running_it != m_runningIntervals.end())
+        if(auto running_it = m_runningIntervals.find(itv);
+           running_it != m_runningIntervals.end())
           m_runningIntervals.erase(running_it);
 
         it = m_itv_to_stop.erase(it);
@@ -379,21 +376,21 @@ void scenario::state_impl(const ossia::token_request& tk)
     // First check timesyncs already past their min
     // for any that may have a quantization setting
 
-    for (time_interval* interval : m_runningIntervals)
+    for(time_interval* interval : m_runningIntervals)
     {
-      if (interval->get_date() >= interval->get_min_duration())
+      if(interval->get_date() >= interval->get_min_duration())
       {
         const auto end_node = &interval->get_end_event().get_time_sync();
         if(end_node->has_sync_rate())
         {
           m_endNodes.insert(end_node);
           process_this_musical(
-                *end_node, m_pendingEvents, m_maxReachedEvents, tk.offset, tk);
+              *end_node, m_pendingEvents, m_maxReachedEvents, tk.offset, tk);
         }
       }
     }
 
-    for (time_interval* interval : m_runningIntervals)
+    for(time_interval* interval : m_runningIntervals)
     {
       run_interval(*interval, tk, tick_ms, tick_ms, tk.offset);
     }
@@ -404,13 +401,13 @@ void scenario::state_impl(const ossia::token_request& tk)
 
     do
     {
-      for (const auto& timeEvent : m_maxReachedEvents)
+      for(const auto& timeEvent : m_maxReachedEvents)
       {
         time_event& ev = *timeEvent;
         auto& tn = ev.get_time_sync();
         // Propagate the remaining tick to the next intervals
         auto it = m_overticks.find(&tn);
-        if (it == m_overticks.end())
+        if(it == m_overticks.end())
         {
           continue;
         }
@@ -421,7 +418,7 @@ void scenario::state_impl(const ossia::token_request& tk)
 
           const auto offset = tk.offset + tick_ms - remaining_tick;
           const_cast<overtick&>(it->second).offset = offset;
-          for (const auto& interval : ev.next_time_intervals())
+          for(const auto& interval : ev.next_time_intervals())
           {
             run_interval(*interval, tk, tick_ms, remaining_tick, offset);
           }
@@ -430,11 +427,11 @@ void scenario::state_impl(const ossia::token_request& tk)
 
       m_maxReachedEvents.clear();
 
-      for (auto node : m_endNodes)
+      for(auto node : m_endNodes)
       {
         auto it = m_overticks.find(node);
         sync_status status{};
-        if (it != m_overticks.end())
+        if(it != m_overticks.end())
         {
           status = process_this(
               *node, m_pendingEvents, m_maxReachedEvents, m_runningIntervals,
@@ -449,8 +446,7 @@ void scenario::state_impl(const ossia::token_request& tk)
 
         switch(status)
         {
-          case sync_status::DONE:
-          {
+          case sync_status::DONE: {
             node->set_is_being_triggered(false);
             m_retry_syncs.erase(node);
             break;
@@ -463,22 +459,24 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
       }
 
-      m_endNodes.container.assign(m_retry_syncs.container.begin(), m_retry_syncs.container.end());
+      m_endNodes.container.assign(
+          m_retry_syncs.container.begin(), m_retry_syncs.container.end());
       m_retry_syncs.clear();
 
-    } while (!m_maxReachedEvents.empty() || !m_endNodes.empty());
+    } while(!m_maxReachedEvents.empty() || !m_endNodes.empty());
   }
 
   // ossia::logger().info("scenario::state ends");
 }
 
-scenario_graph::scenario_graph(scenario& sc) : scenar{sc}
+scenario_graph::scenario_graph(scenario& sc)
+    : scenar{sc}
 {
 }
 
 void scenario_graph::update_components_cache() const
 {
-  if (dirty)
+  if(dirty)
   {
     m_components_cache.resize(boost::num_vertices(graph));
     boost::connected_components(graph, m_components_cache.data());
@@ -493,19 +491,19 @@ void scenario_graph::reset_component(time_sync& sync) const
   std::vector<std::shared_ptr<ossia::time_sync>> to_disable_sync;
   std::vector<std::shared_ptr<ossia::time_interval>> to_disable_itv;
   auto comp = m_components_cache[vertices.at(&sync)];
-  for (auto s : scenar.get_time_syncs())
+  for(auto s : scenar.get_time_syncs())
   {
     auto this_comp = m_components_cache[vertices.at(s.get())];
-    if (this_comp == comp)
+    if(this_comp == comp)
     {
       to_disable_sync.push_back(s);
-      for (auto& ev : s->get_time_events())
+      for(auto& ev : s->get_time_events())
       {
-        for (auto& cst : ev->previous_time_intervals())
+        for(auto& cst : ev->previous_time_intervals())
         {
           to_disable_itv.push_back(cst);
         }
-        for (auto& cst : ev->next_time_intervals())
+        for(auto& cst : ev->next_time_intervals())
         {
           to_disable_itv.push_back(cst);
         }

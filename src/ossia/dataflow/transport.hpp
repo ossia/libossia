@@ -1,12 +1,14 @@
 #pragma once
-#include <ossia-config.hpp>
-#include <ossia/editor/scenario/time_value.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+
 #include <smallfun.hpp>
+
+#include <ossia-config.hpp>
 namespace ossia
 {
-// Used to notify an external transport system of the current state of the transport
-// in the score top-level interval.
+// Used to notify an external transport system of the current state of the
+// transport in the score top-level interval.
 struct tick_transport_info;
 using transport_info_fun = smallfun::function<void(const tick_transport_info&)>;
 
@@ -26,6 +28,5 @@ struct tick_transport_info
 
   transport_info_fun update_transport_info;
 };
-
 
 }

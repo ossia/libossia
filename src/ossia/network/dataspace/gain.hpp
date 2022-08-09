@@ -20,21 +20,21 @@ struct gain_unit
 /** Utility functions taken from Jamoma TTBase.h **/
 namespace detail
 {
-template<typename T>
+template <typename T>
 static const constexpr T DecibelHeadroom = 96.;
 /*
 template<typename T>
 const T GainMidiPower
-    = std::log(ossia::log1p(T(12.) / DecibelHeadroom<T>) / std::log(T(127. / 100.)))
-      / std::log(T(2.));
+    = std::log(ossia::log1p(T(12.) / DecibelHeadroom<T>) / std::log(T(127. /
+100.))) / std::log(T(2.));
 
 template<typename T>
 const T GainMidiPowPow2 = ossia::exp2(GainMidiPower<T>);
 */
-template<typename T>
+template <typename T>
 static const constexpr T GainMidiPower = -1.02098087016161476192621649;
 
-template<typename T>
+template <typename T>
 static const constexpr T GainMidiPowPow2 = 0.492781202603372214809951402;
 
 template <typename T>
@@ -47,7 +47,7 @@ template <typename T>
 T LinearGainToDecibelsClipped(const T value)
 {
   return value <= T(0.) ? -DecibelHeadroom<T>
-                     : ossia::max(T(20.0) * std::log10(value), -DecibelHeadroom<T>);
+                        : ossia::max(T(20.0) * std::log10(value), -DecibelHeadroom<T>);
 }
 
 template <typename T>
@@ -68,9 +68,8 @@ T MidiToLinearGain(const T value)
   return value <= T(0.)
              ? T(0.)
              : DecibelsToLinearGainClipped(
-                   DecibelHeadroom<T>
-                   * (std::pow(value / T(100.), GainMidiPowPow2<T>)
-                      - T(1.)));
+                 DecibelHeadroom<
+                     T> * (std::pow(value / T(100.), GainMidiPowPow2<T>) - T(1.)));
 }
 
 template <typename T>
@@ -80,8 +79,7 @@ T DecibelsToMidi(const T value)
              ? T(0.)
              : T(100.)
                    * std::exp(
-                         ossia::log1p(value / DecibelHeadroom<T>)
-                         / GainMidiPowPow2<T>);
+                       ossia::log1p(value / DecibelHeadroom<T>) / GainMidiPowPow2<T>);
 }
 
 template <typename T>
@@ -127,8 +125,7 @@ struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
     constexpr_return(ossia::make_string_array("midigain"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return detail::MidiToLinearGain(self.dataspace_value);
   }
@@ -156,8 +153,7 @@ struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
     constexpr_return(ossia::make_string_array("db", "dB"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return detail::DecibelsToLinearGainClipped(self.dataspace_value);
   }
@@ -185,8 +181,7 @@ struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>
     constexpr_return(ossia::make_string_array("db-raw", "dB-raw"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return detail::DecibelsToLinearGain(self.dataspace_value);
   }

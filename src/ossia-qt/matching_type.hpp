@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/network/value/value.hpp>
-#include <QString>
+
 #include <QChar>
+#include <QString>
 
 namespace ossia
 {

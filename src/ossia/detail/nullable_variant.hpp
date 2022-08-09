@@ -1,67 +1,93 @@
 #pragma once
-#include <stdexcept>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/variant.hpp>
+
 #include <boost/mp11.hpp>
+
+#include <stdexcept>
 namespace ossia
 {
-struct nullable_variant_index {
+struct nullable_variant_index
+{
   std::size_t value;
   OSSIA_MAXIMUM_INLINE constexpr bool valid() const noexcept
-  { return value != 0; }
+  {
+    return value != 0;
+  }
   OSSIA_MAXIMUM_INLINE constexpr std::size_t index() const noexcept
-  { return value; }
+  {
+    return value;
+  }
   OSSIA_MAXIMUM_INLINE constexpr std::size_t to_std_index() const noexcept
-  { return value - 1; }
+  {
+    return value - 1;
+  }
 };
-OSSIA_MAXIMUM_INLINE constexpr bool operator==(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
-{ return lhs.value == rhs.value; }
-OSSIA_MAXIMUM_INLINE constexpr bool operator!=(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
-{ return lhs.value != rhs.value; }
-OSSIA_MAXIMUM_INLINE constexpr bool operator<(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
-{ return lhs.value < rhs.value; }
-
-template<typename... Args>
-struct nullable_variant : public ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator==(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
 {
-  using base = typename ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>;
+  return lhs.value == rhs.value;
+}
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator!=(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
+{
+  return lhs.value != rhs.value;
+}
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<(nullable_variant_index lhs, nullable_variant_index rhs) noexcept
+{
+  return lhs.value < rhs.value;
+}
+
+template <typename... Args>
+struct nullable_variant
+    : public ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>
+{
+  using base =
+      typename ossia_variant_alias::variant<ossia_variant_alias::monostate, Args...>;
   using base::base;
 
   static constexpr nullable_variant_index npos{0};
 
-  template<typename T>
-  static constexpr nullable_variant_index index_of() noexcept {
+  template <typename T>
+  static constexpr nullable_variant_index index_of() noexcept
+  {
     if constexpr(!boost::mp11::mp_contains<base, T>::value)
       return npos;
     else
       return {boost::mp11::mp_find<base, T>::value};
   }
 
-  OSSIA_MAXIMUM_INLINE constexpr operator bool() const noexcept {
+  OSSIA_MAXIMUM_INLINE constexpr operator bool() const noexcept
+  {
     return this->index() != 0;
   }
 
-  OSSIA_MAXIMUM_INLINE constexpr nullable_variant_index which() const noexcept {
+  OSSIA_MAXIMUM_INLINE constexpr nullable_variant_index which() const noexcept
+  {
     return nullable_variant_index{this->index()};
   }
 
-  template<typename T>
-  OSSIA_MAXIMUM_INLINE constexpr T* target() noexcept {
+  template <typename T>
+  OSSIA_MAXIMUM_INLINE constexpr T* target() noexcept
+  {
     return ossia_variant_alias::get_if<T>(this);
   }
-  template<typename T>
-  OSSIA_MAXIMUM_INLINE constexpr const T* target() const noexcept {
+  template <typename T>
+  OSSIA_MAXIMUM_INLINE constexpr const T* target() const noexcept
+  {
     return ossia_variant_alias::get_if<T>(this);
   }
 
   // FIXME is this safe
-  [[deprecated]]
-  OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept {
+  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept
+  {
     return this;
   }
 
-  [[deprecated]]
-  OSSIA_MAXIMUM_INLINE constexpr const void* target() const noexcept {
+  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr const void* target() const noexcept
+  {
     return this;
   }
 };
@@ -74,28 +100,28 @@ OSSIA_MAXIMUM_INLINE auto visit(F&& visitor, Args&&... variants)
   return ossia_variant_alias::visit(visitor, static_cast<Args&&>(variants)...);
 }
 */
-template<typename F, typename... Args>
+template <typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>& variant)
-  -> decltype(auto)
+    -> decltype(auto)
 {
   return ossia_variant_alias::visit(visitor, variant);
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, const ossia::nullable_variant<Args...>& variant)
-  -> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto
+apply(F&& visitor, const ossia::nullable_variant<Args...>& variant) -> decltype(auto)
 {
   return ossia_variant_alias::visit(visitor, variant);
 }
-template<typename F, typename... Args>
+template <typename F, typename... Args>
 OSSIA_MAXIMUM_INLINE auto apply(F&& visitor, ossia::nullable_variant<Args...>&& variant)
-  -> decltype(auto)
+    -> decltype(auto)
 {
   return ossia_variant_alias::visit(visitor, std::move(variant));
 }
 
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& variant)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto
+apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& variant) -> decltype(auto)
 {
   if(variant)
   {
@@ -106,9 +132,10 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
     throw std::runtime_error("apply_nonnull called on invalid variant");
   }
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& variant)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto
+apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& variant)
+    -> decltype(auto)
 {
   if(variant)
   {
@@ -119,9 +146,9 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_varia
     throw std::runtime_error("apply_nonnull called on invalid variant");
   }
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& variant)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto
+apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& variant) -> decltype(auto)
 {
   if(variant)
   {
@@ -132,9 +159,10 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
     throw std::runtime_error("apply_nonnull called on invalid variant");
   }
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& v1, ossia::nullable_variant<Args...>& v2)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto apply_nonnull(
+    F&& visitor, ossia::nullable_variant<Args...>& v1,
+    ossia::nullable_variant<Args...>& v2) -> decltype(auto)
 {
   if(v1 && v2)
   {
@@ -145,9 +173,10 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
     throw std::runtime_error("apply_nonnull called on invalid variant");
   }
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& v1, const ossia::nullable_variant<Args...>& v2)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto apply_nonnull(
+    F&& visitor, const ossia::nullable_variant<Args...>& v1,
+    const ossia::nullable_variant<Args...>& v2) -> decltype(auto)
 {
   if(v1 && v2)
   {
@@ -158,9 +187,10 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, const ossia::nullable_varia
     throw std::runtime_error("apply_nonnull called on invalid variant");
   }
 }
-template<typename F, typename... Args>
-OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& v1, const ossia::nullable_variant<Args...>&& v2)
--> decltype(auto)
+template <typename F, typename... Args>
+OSSIA_MAXIMUM_INLINE auto apply_nonnull(
+    F&& visitor, ossia::nullable_variant<Args...>&& v1,
+    const ossia::nullable_variant<Args...>&& v2) -> decltype(auto)
 {
   if(v1 && v2)
   {
@@ -173,32 +203,52 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(F&& visitor, ossia::nullable_variant<Arg
 }
 
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator==(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) == ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator==(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         == ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) != ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator!=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         != ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) < ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         < ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) > ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         > ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) <= ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         <= ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 template <typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs) {
-  return ((const typename nullable_variant<Ts...>::base&) lhs) >= ((const typename nullable_variant<Ts...>::base&) rhs);
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>=(const nullable_variant<Ts...>& lhs, const nullable_variant<Ts...>& rhs)
+{
+  return ((const typename nullable_variant<Ts...>::base&)lhs)
+         >= ((const typename nullable_variant<Ts...>::base&)rhs);
 }
 
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator==(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator==(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -209,7 +259,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator==(const L& lhs, const nullable_vari
   }
 }
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator!=(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -221,7 +273,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const L& lhs, const nullable_vari
 }
 
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -235,7 +289,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<(const L& lhs, const nullable_varia
 }
 
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -248,7 +304,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>(const L& lhs, const nullable_varia
   }
 }
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<=(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -261,7 +319,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const L& lhs, const nullable_vari
   }
 }
 template <typename L, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const L& lhs, const nullable_variant<Ts...>& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>=(const L& lhs, const nullable_variant<Ts...>& rhs)
+{
   constexpr auto lhs_idx = nullable_variant<Ts...>::template index_of<L>();
   static_assert(lhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -274,7 +334,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const L& lhs, const nullable_vari
   }
 }
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator==(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator==(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -286,7 +348,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator==(const nullable_variant<Ts...>& lh
 }
 
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator!=(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -298,7 +362,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator!=(const nullable_variant<Ts...>& lh
 }
 
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -311,7 +377,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<(const nullable_variant<Ts...>& lhs
   }
 }
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -324,7 +392,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator>(const nullable_variant<Ts...>& lhs
   }
 }
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator<=(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {
@@ -337,7 +407,9 @@ OSSIA_MAXIMUM_INLINE constexpr bool operator<=(const nullable_variant<Ts...>& lh
   }
 }
 template <typename R, typename... Ts>
-OSSIA_MAXIMUM_INLINE constexpr bool operator>=(const nullable_variant<Ts...>& lhs, const R& rhs) {
+OSSIA_MAXIMUM_INLINE constexpr bool
+operator>=(const nullable_variant<Ts...>& lhs, const R& rhs)
+{
   constexpr auto rhs_idx = nullable_variant<Ts...>::template index_of<R>();
   static_assert(rhs_idx != nullable_variant<Ts...>::npos);
   {

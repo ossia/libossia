@@ -15,14 +15,12 @@ namespace net
 using tcp = boost::asio::ip::tcp;
 
 template <typename Fun, typename Err>
-class http_get_request
-    : public std::enable_shared_from_this<http_get_request<Fun, Err>>
+class http_get_request : public std::enable_shared_from_this<http_get_request<Fun, Err>>
 {
   fmt::memory_buffer m_request;
 
 public:
-  using std::enable_shared_from_this<
-      http_get_request<Fun, Err>>::shared_from_this;
+  using std::enable_shared_from_this<http_get_request<Fun, Err>>::shared_from_this;
   http_get_request(
       Fun f, Err err, boost::asio::io_context& ctx, const std::string& server,
       const std::string& path)
@@ -35,19 +33,20 @@ public:
     fmt::format_to(fmt::appender(m_request), "GET ");
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
-    for (auto c : path)
-      if (c != ' ')
+    for(auto c : path)
+      if(c != ' ')
         fmt::format_to(fmt::appender(m_request), "{}", c);
       else
         fmt::format_to(fmt::appender(m_request), "%20");
 
-
-    fmt::format_to(fmt::appender(m_request),
-                   " HTTP/1.1\r\n"
-                   "Host: {}"
-                   "\r\n"
-                   "Accept: */*\r\n"
-                   "Connection: close\r\n\r\n", server);
+    fmt::format_to(
+        fmt::appender(m_request),
+        " HTTP/1.1\r\n"
+        "Host: {}"
+        "\r\n"
+        "Accept: */*\r\n"
+        "Connection: close\r\n\r\n",
+        server);
   }
 
   void resolve(const std::string& server, const std::string& port)
@@ -57,7 +56,7 @@ public:
         [self = this->shared_from_this()](
             const boost::system::error_code& err,
             const tcp::resolver::results_type& endpoints) {
-          self->handle_resolve(err, endpoints);
+      self->handle_resolve(err, endpoints);
         });
   }
 
@@ -68,15 +67,14 @@ public:
 
 private:
   void handle_resolve(
-      const boost::system::error_code& err,
-      const tcp::resolver::results_type& endpoints)
+      const boost::system::error_code& err, const tcp::resolver::results_type& endpoints)
   {
-    if (!err)
+    if(!err)
     {
       boost::asio::async_connect(
           m_socket, endpoints,
           [self = shared_from_this()](const boost::system::error_code& err, auto&&...) {
-            self->handle_connect(err);
+        self->handle_connect(err);
           });
     }
     else
@@ -88,13 +86,14 @@ private:
 
   void handle_connect(const boost::system::error_code& err)
   {
-    if (!err)
+    if(!err)
     {
       boost::asio::const_buffer request(m_request.data(), m_request.size());
       boost::asio::async_write(
           m_socket, request,
-          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
-            self->handle_write_request(err, size);
+          [self = shared_from_this()](
+              const boost::system::error_code& err, std::size_t size) {
+        self->handle_write_request(err, size);
           });
     }
     else
@@ -106,12 +105,13 @@ private:
 
   void handle_write_request(const boost::system::error_code& err, std::size_t size)
   {
-    if (!err)
+    if(!err)
     {
       boost::asio::async_read_until(
           m_socket, m_response, "\r\n",
-          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
-            self->handle_read_status_line(err, size);
+          [self = shared_from_this()](
+              const boost::system::error_code& err, std::size_t size) {
+        self->handle_read_status_line(err, size);
           });
     }
     else
@@ -123,7 +123,7 @@ private:
 
   void handle_read_status_line(const boost::system::error_code& err, std::size_t size)
   {
-    if (!err)
+    if(!err)
     {
       // Check that response is OK.
       std::istream response_stream(&m_response);
@@ -133,12 +133,12 @@ private:
       response_stream >> status_code;
       std::string status_message;
       std::getline(response_stream, status_message);
-      if (!response_stream || http_version.substr(0, 5) != "HTTP/")
+      if(!response_stream || http_version.substr(0, 5) != "HTTP/")
       {
         ossia::logger().error("HTTP Error: Invalid response");
         return;
       }
-      if (status_code != 200)
+      if(status_code != 200)
       {
         ossia::logger().error("HTTP Error: status code {}", status_code);
         return;
@@ -147,8 +147,9 @@ private:
       // Read the response headers, which are terminated by a blank line.
       boost::asio::async_read_until(
           m_socket, m_response, "\r\n\r\n",
-          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
-            self->handle_read_headers(err, size);
+          [self = shared_from_this()](
+              const boost::system::error_code& err, std::size_t size) {
+        self->handle_read_headers(err, size);
           });
     }
     else
@@ -160,19 +161,20 @@ private:
 
   void handle_read_headers(const boost::system::error_code& err, std::size_t size)
   {
-    if (!err)
+    if(!err)
     {
       // Process the response headers.
       std::istream response_stream(&m_response);
       std::string header;
-      while (std::getline(response_stream, header) && header != "\r")
+      while(std::getline(response_stream, header) && header != "\r")
         ;
 
       // Start reading remaining data until EOF.
       boost::asio::async_read(
           m_socket, m_response, boost::asio::transfer_at_least(1),
-          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
-            self->handle_read_content(err, size);
+          [self = shared_from_this()](
+              const boost::system::error_code& err, std::size_t size) {
+        self->handle_read_content(err, size);
           });
     }
     else
@@ -184,21 +186,22 @@ private:
 
   void handle_read_content(const boost::system::error_code& err, std::size_t size)
   {
-    if (!err)
+    if(!err)
     {
       // Continue reading remaining data until EOF.
       boost::asio::async_read(
           m_socket, m_response, boost::asio::transfer_at_least(1),
-          [self = shared_from_this()](const boost::system::error_code& err, std::size_t size) {
-            self->handle_read_content(err, size);
+          [self = shared_from_this()](
+              const boost::system::error_code& err, std::size_t size) {
+        self->handle_read_content(err, size);
           });
     }
-    else if (err != boost::asio::error::eof)
+    else if(err != boost::asio::error::eof)
     {
       ossia::logger().error("HTTP Error: {}", err.message());
       m_err(*this);
     }
-    else if (err == boost::asio::error::eof)
+    else if(err == boost::asio::error::eof)
     {
       // Write all of the data that has been read so far.
       const auto& dat = m_response.data();
@@ -206,8 +209,7 @@ private:
       auto end = boost::asio::buffers_end(dat);
       auto sz = end - begin;
       std::string str;
-      str.reserve(
-          sz + 16); // for RapidJSON simd parsing which reads past bounds
+      str.reserve(sz + 16); // for RapidJSON simd parsing which reads past bounds
       str.assign(begin, end);
       m_fun(*this, str);
     }

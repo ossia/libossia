@@ -1,55 +1,54 @@
 #pragma once
 #define OSSIA_MAX_AUTOREGISTER 1
-#include <ossia/detail/config.hpp>
 #include "ext.h"
 #include "ext_obex.h"
 #include "jpatcher_api.h"
+
+#include <ossia/detail/config.hpp>
 #undef error
 #undef post
 
-#include <ossia-max/src/object_base.hpp>
+#include "ZeroconfMinuitListener.hpp"
+#include "ZeroconfOscqueryListener.hpp"
+#include "assert.hpp"
+#include "attribute.hpp"
+#include "client.hpp"
+#include "device.hpp"
+#include "explorer.hpp"
+#include "fuzzysearch.hpp"
+#include "logger.hpp"
+#include "model.hpp"
+#include "monitor.hpp"
+#include "ossia_object.hpp"
+#include "parameter.hpp"
+#include "remote.hpp"
+#include "router.hpp"
+#include "search.hpp"
+#include "view.hpp"
 
-#include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/detail/safe_vec.hpp>
+#include <ossia/network/common/websocket_log_sink.hpp>
+
+#include <ossia-max/src/object_base.hpp>
 #include <ossia-max_export.h>
 
-#include "attribute.hpp"
-#include "parameter.hpp"
-#include "model.hpp"
-#include "remote.hpp"
-#include "view.hpp"
-#include "device.hpp"
-#include "client.hpp"
-#include "ossia_object.hpp"
-#include "logger.hpp"
-#include "explorer.hpp"
-#include "monitor.hpp"
-#include "search.hpp"
-#include "router.hpp"
-#include "fuzzysearch.hpp"
-#include "assert.hpp"
-
-#include "ZeroconfOscqueryListener.hpp"
-#include "ZeroconfMinuitListener.hpp"
-
-extern "C"
-{
-    OSSIA_MAX_EXPORT void ossia_router_setup();
-    OSSIA_MAX_EXPORT void ossia_attribute_setup();
-    OSSIA_MAX_EXPORT void ossia_client_setup();
-    OSSIA_MAX_EXPORT void ossia_device_setup();
-    OSSIA_MAX_EXPORT void ossia_logger_setup();
-    OSSIA_MAX_EXPORT void ossia_model_setup();
-    OSSIA_MAX_EXPORT void ossia_parameter_setup();
-    OSSIA_MAX_EXPORT void ossia_remote_setup();
-    OSSIA_MAX_EXPORT void ossia_view_setup();
-    OSSIA_MAX_EXPORT void ossia_ossia_setup();
-    OSSIA_MAX_EXPORT void ossia_explorer_setup();
-    OSSIA_MAX_EXPORT void ossia_search_setup();
-    OSSIA_MAX_EXPORT void ossia_monitor_setup();
-    OSSIA_MAX_EXPORT void ossia_fuzzysearch_setup();
-    OSSIA_MAX_EXPORT void ossia_assert_setup();
-    OSSIA_MAX_EXPORT void ossia_equals_setup();
+extern "C" {
+OSSIA_MAX_EXPORT void ossia_router_setup();
+OSSIA_MAX_EXPORT void ossia_attribute_setup();
+OSSIA_MAX_EXPORT void ossia_client_setup();
+OSSIA_MAX_EXPORT void ossia_device_setup();
+OSSIA_MAX_EXPORT void ossia_logger_setup();
+OSSIA_MAX_EXPORT void ossia_model_setup();
+OSSIA_MAX_EXPORT void ossia_parameter_setup();
+OSSIA_MAX_EXPORT void ossia_remote_setup();
+OSSIA_MAX_EXPORT void ossia_view_setup();
+OSSIA_MAX_EXPORT void ossia_ossia_setup();
+OSSIA_MAX_EXPORT void ossia_explorer_setup();
+OSSIA_MAX_EXPORT void ossia_search_setup();
+OSSIA_MAX_EXPORT void ossia_monitor_setup();
+OSSIA_MAX_EXPORT void ossia_fuzzysearch_setup();
+OSSIA_MAX_EXPORT void ossia_assert_setup();
+OSSIA_MAX_EXPORT void ossia_equals_setup();
 }
 
 namespace ossia
@@ -60,79 +59,71 @@ namespace max_binding
 #pragma mark -
 #pragma mark Library
 
-struct max_msp_log_sink final :
-        public spdlog::sinks::sink
+struct max_msp_log_sink final : public spdlog::sinks::sink
 {
-    void log(const spdlog::details::log_msg& msg) override
+  void log(const spdlog::details::log_msg& msg) override
+  {
+    std::string s(msg.payload.data(), msg.payload.size());
+    switch(msg.level)
     {
-        std::string s(msg.payload.data(), msg.payload.size());
-        switch(msg.level)
-        {
-          case spdlog::level::warn:
-          case spdlog::level::err:
-          {
-            error("%s", s.c_str());
-            break;
-          }
-
-          default:
-            post("%s", s.c_str());
-            break;
-          }
+      case spdlog::level::warn:
+      case spdlog::level::err: {
+        error("%s", s.c_str());
+        break;
       }
 
-    void flush() override
-    {
+      default:
+        post("%s", s.c_str());
+        break;
     }
+  }
 
-    void set_pattern(const std::string &pattern) override { }
-    void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
+  void flush() override
+  {
+  }
+
+  void set_pattern(const std::string& pattern) override
+  {
+  }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override
+  {
+  }
 };
 
-struct patcher_descriptor{
+struct patcher_descriptor
+{
   ossia::safe_set<parameter*> parameters{};
-  ossia::safe_set<remote*>    remotes{};
+  ossia::safe_set<remote*> remotes{};
   ossia::safe_set<attribute*> attributes{};
-  model*     model{};
-  view*      view{};
-  device*    device{};
-  client*    client{};
+  model* model{};
+  view* view{};
+  device* device{};
+  client* client{};
 
   t_object* parent_patcher{};
   ossia::safe_set<t_object*> subpatchers{};
 
   bool loadbanged{}; // true if patcher have been loadbanged already
 
-  long poly_index{-1}; // 0 when not in a poly~, instance index otherwise, -1 uninitialized
+  long poly_index{
+      -1}; // 0 when not in a poly~, instance index otherwise, -1 uninitialized
 
   bool empty() const
   {
-    return parameters.empty()
-           && remotes.empty()
-           && attributes.empty()
-           && model  != nullptr
-           && view   != nullptr
-           && device != nullptr
+    return parameters.empty() && remotes.empty() && attributes.empty()
+           && model != nullptr && view != nullptr && device != nullptr
            && client != nullptr;
   }
 
   auto size() const
   {
-    return parameters.size()
-           + remotes.size()
-           + attributes.size()
-           + (model?1:0)
-           + (view?1:0)
-           + (device?1:0)
-           + (client?1:0);
+    return parameters.size() + remotes.size() + attributes.size() + (model ? 1 : 0)
+           + (view ? 1 : 0) + (device ? 1 : 0) + (client ? 1 : 0);
   }
 
   bool has_no_master_node()
   {
-    return model == nullptr
-          && view == nullptr
-          && device ==  nullptr
-          && client == nullptr;
+    return model == nullptr && view == nullptr && device == nullptr && client == nullptr;
   }
 };
 
@@ -153,23 +144,39 @@ public:
   // static void register_nodes(ossia_max* x);
   static void discover_network_devices(ossia_max* x);
 
-  template<typename T>
-  t_class* get_class() {
-    if(std::is_same<T, parameter>::value) return ossia_parameter_class;
-    if(std::is_same<T, remote>::value) return ossia_remote_class;
-    if(std::is_same<T, model>::value) return ossia_model_class;
-    if(std::is_same<T, view>::value) return ossia_view_class;
-    if(std::is_same<T, device>::value) return ossia_device_class;
-    if(std::is_same<T, client>::value) return ossia_client_class;
-    if(std::is_same<T, attribute>::value) return ossia_attribute_class;
-    if(std::is_same<T, ossia_object>::value) return ossia_ossia_class;
-    if(std::is_same<T, ossia::max_binding::logger>::value) return ossia_logger_class;
-    if(std::is_same<T, ossia::max_binding::explorer>::value) return ossia_explorer_class;
-    if(std::is_same<T, ossia::max_binding::monitor>::value) return ossia_monitor_class;
-    if(std::is_same<T, ossia::max_binding::search>::value) return ossia_search_class;
-    if(std::is_same<T, ossia::max_binding::router>::value) return ossia_router_class;
-    if(std::is_same<T, ossia::max_binding::fuzzysearch>::value) return ossia_fuzzysearch_class;
-    if(std::is_same<T, ossia::max_binding::oassert>::value) return ossia_assert_class;
+  template <typename T>
+  t_class* get_class()
+  {
+    if(std::is_same<T, parameter>::value)
+      return ossia_parameter_class;
+    if(std::is_same<T, remote>::value)
+      return ossia_remote_class;
+    if(std::is_same<T, model>::value)
+      return ossia_model_class;
+    if(std::is_same<T, view>::value)
+      return ossia_view_class;
+    if(std::is_same<T, device>::value)
+      return ossia_device_class;
+    if(std::is_same<T, client>::value)
+      return ossia_client_class;
+    if(std::is_same<T, attribute>::value)
+      return ossia_attribute_class;
+    if(std::is_same<T, ossia_object>::value)
+      return ossia_ossia_class;
+    if(std::is_same<T, ossia::max_binding::logger>::value)
+      return ossia_logger_class;
+    if(std::is_same<T, ossia::max_binding::explorer>::value)
+      return ossia_explorer_class;
+    if(std::is_same<T, ossia::max_binding::monitor>::value)
+      return ossia_monitor_class;
+    if(std::is_same<T, ossia::max_binding::search>::value)
+      return ossia_search_class;
+    if(std::is_same<T, ossia::max_binding::router>::value)
+      return ossia_router_class;
+    if(std::is_same<T, ossia::max_binding::fuzzysearch>::value)
+      return ossia_fuzzysearch_class;
+    if(std::is_same<T, ossia::max_binding::oassert>::value)
+      return ossia_assert_class;
     return nullptr;
   }
 
@@ -180,8 +187,7 @@ public:
     if(it != vec.end())
     {
       int level = it - vec.begin();
-      m_log_sink.get()->set_level(
-                  static_cast<spdlog::level::level_enum>(level));
+      m_log_sink.get()->set_level(static_cast<spdlog::level::level_enum>(level));
     }
     else
     {
@@ -236,7 +242,7 @@ public:
   static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
 
   // TODO is this still needed ?
-  bool registering_nodes=false;
+  bool registering_nodes = false;
 
   std::map<t_object*, patcher_descriptor> patchers;
 
@@ -247,9 +253,10 @@ public:
   static void* s_browse_clock;
 
   static ZeroconfOscqueryListener s_zeroconf_oscq_listener;
-  static ZeroconfMinuitListener   s_zeroconf_minuit_listener;
+  static ZeroconfMinuitListener s_zeroconf_minuit_listener;
 
   configuration config;
+
 private:
   ossia_max();
   ~ossia_max();
@@ -262,7 +269,7 @@ private:
   t_object* m_patcher_listener;
 };
 
-template<typename T, typename... Args>
+template <typename T, typename... Args>
 T* make_ossia(Args&&... args)
 {
   auto obj = object_alloc(ossia_max::instance().get_class<T>());

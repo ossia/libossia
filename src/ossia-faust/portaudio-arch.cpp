@@ -33,19 +33,19 @@
  ************************************************************************
  ************************************************************************/
 
-#include <cmath>
-#include <iostream>
-#include <libgen.h>
-#include <list>
-#include <stdlib.h>
-
+#include "OssiaUI.h"
 #include "faust/audio/portaudio-dsp.h"
 #include "faust/gui/FUI.h"
 #include "faust/gui/GUI.h"
 #include "faust/gui/console.h"
 #include "faust/misc.h"
 
-#include "OssiaUI.h"
+#include <cmath>
+#include <libgen.h>
+#include <stdlib.h>
+
+#include <iostream>
+#include <list>
 
 /**************************BEGIN USER SECTION **************************/
 /******************************************************************************
@@ -57,15 +57,15 @@ INTRINSICS
 *******************************************************************************
 *******************************************************************************/
 
-<<includeIntrinsic>>
+<< includeIntrinsic >>
 
-<<includeclass>>
+    << includeclass >>
 
-/***************************END USER SECTION ***************************/
+    /***************************END USER SECTION ***************************/
 
-/*******************BEGIN ARCHITECTURE SECTION (part 2/2)***************/
+    /*******************BEGIN ARCHITECTURE SECTION (part 2/2)***************/
 
-mydsp* DSP;
+    mydsp* DSP;
 
 std::list<GUI*> GUI::fGuiList;
 ztimedmap GUI::gTimedZoneMap;
@@ -75,23 +75,24 @@ ztimedmap GUI::gTimedZoneMap;
 //-------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    char* appname = basename(argv[0]);
+  char* appname = basename(argv[0]);
 
-    DSP = new mydsp();
-    if (DSP == 0) {
-        std::cerr << "Unable to allocate Faust DSP object" << std::endl;
-        exit(1);
-    }
+  DSP = new mydsp();
+  if(DSP == 0)
+  {
+    std::cerr << "Unable to allocate Faust DSP object" << std::endl;
+    exit(1);
+  }
 
-    OssiaUI ossia{1234, 5678};
-    DSP->buildUserInterface(&ossia);
+  OssiaUI ossia{1234, 5678};
+  DSP->buildUserInterface(&ossia);
 
-    portaudio audio(44100, 256);
-    audio.init(appname, DSP);
-    audio.start();
+  portaudio audio(44100, 256);
+  audio.init(appname, DSP);
+  audio.start();
 
-    ossia.run(50);
-    audio.stop();
+  ossia.run(50);
+  audio.stop();
 
-    return 0;
+  return 0;
 }

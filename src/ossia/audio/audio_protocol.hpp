@@ -8,8 +8,7 @@ namespace ossia
 class audio_parameter;
 class virtual_audio_parameter;
 class mapped_audio_parameter;
-class OSSIA_EXPORT audio_protocol final
-    : public ossia::net::protocol_base
+class OSSIA_EXPORT audio_protocol final : public ossia::net::protocol_base
 {
 public:
   audio_protocol();
@@ -23,8 +22,7 @@ public:
   bool push(const ossia::net::parameter_base&, const ossia::value& v) override;
   bool push_bundle(const std::vector<const ossia::net::parameter_base*>&) override;
   bool push_raw(const ossia::net::full_parameter_data&) override;
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>&) override;
+  bool push_raw_bundle(const std::vector<ossia::net::full_parameter_data>&) override;
   bool observe(ossia::net::parameter_base&, bool) override;
   bool update(ossia::net::node_base& node_base) override;
   void set_device(ossia::net::device_base& dev) override;

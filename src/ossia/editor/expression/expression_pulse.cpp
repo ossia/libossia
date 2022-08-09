@@ -8,7 +8,8 @@ namespace expressions
 {
 
 expression_pulse::expression_pulse(const ossia::destination& destination)
-    : m_destination(destination), m_result(false)
+    : m_destination(destination)
+    , m_result(false)
 {
   // start destination observation
   m_callback = m_destination.address().add_callback(

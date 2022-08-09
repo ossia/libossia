@@ -17,32 +17,30 @@ using color_u_list = brigand::list<
     /*, hsl_u, cmyk8_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u*/>;
 
 using distance_u_list = brigand::list<
-    meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u,
-    micrometer_u, nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
+    meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u,
+    nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
 
-using gain_u_list
-    = brigand::list<linear_u, midigain_u, decibel_u, decibel_raw_u>;
+using gain_u_list = brigand::list<linear_u, midigain_u, decibel_u, decibel_raw_u>;
 
 using orientation_u_list = brigand::list<quaternion_u, euler_u, axis_u>;
 
 using position_u_list = brigand::list<
-    cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, aed_u,
-    ad_u, opengl_u, cylindrical_u, azd_u>;
+    cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, aed_u, ad_u, opengl_u,
+    cylindrical_u, azd_u>;
 
 using speed_u_list = brigand::list<
     meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u,
     foot_per_second_u, foot_per_hour_u>;
 
 using timing_u_list = brigand::list<
-    second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u,
-    millisecond_u, playback_speed_u>;
+    second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u,
+    playback_speed_u>;
 
 using dataspace_variant_u_list = brigand::list<
-    distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u,
-    timing_u>;
+    distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, timing_u>;
 using dataspace_u_list = brigand::list<
-    distance_u_list, position_u_list, speed_u_list, orientation_u_list,
-    angle_u_list, color_u_list, gain_u_list, timing_u_list>;
+    distance_u_list, position_u_list, speed_u_list, orientation_u_list, angle_u_list,
+    color_u_list, gain_u_list, timing_u_list>;
 
 template <>
 struct matching_unit_u_list<angle_u>
@@ -147,16 +145,15 @@ using position_list = brigand::list<
     cartesian_3d, cartesian_2d, spherical, polar, aed, ad, opengl, cylindrical, azd>;
 
 using speed_list = brigand::list<
-    meter_per_second, miles_per_hour, kilometer_per_hour, knot,
-    foot_per_second, foot_per_hour>;
+    meter_per_second, miles_per_hour, kilometer_per_hour, knot, foot_per_second,
+    foot_per_hour>;
 
 using time_list = brigand::list<
-    second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond,
-    playback_speed>;
+    second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed>;
 
 using dataspace_list = brigand::list<
-    distance_list, position_list, speed_list, orientation_list, angle_list,
-    color_list, gain_list, time_list>;
+    distance_list, position_list, speed_list, orientation_list, angle_list, color_list,
+    gain_list, time_list>;
 
 using strong_value_variant_list = brigand::list<
     ossia::value, distance, position, speed, orientation, angle, color, gain,

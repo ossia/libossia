@@ -1,10 +1,10 @@
 #pragma once
+#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/network/dataspace/color.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <ossia/detail/fmt.hpp>
 #include <oscpack/osc/OscTypes.h>
 namespace ossia
 {
@@ -48,9 +48,9 @@ struct value_to_json
   template <std::size_t N>
   void operator()(const std::array<float, N>& t) const
   {
-    if constexpr (N == 4)
+    if constexpr(N == 4)
     {
-      if (unit == ossia::rgba8_u{})
+      if(unit == ossia::rgba8_u{})
       {
         auto r = (uint8_t)t[0];
         auto g = (uint8_t)t[1];
@@ -65,7 +65,7 @@ struct value_to_json
     }
 
     writer.StartArray();
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       writer.Double(t[i]);
     }
@@ -75,7 +75,7 @@ struct value_to_json
   void operator()(const std::vector<ossia::value>& vec) const
   {
     writer.StartArray();
-    for (const auto& sub : vec)
+    for(const auto& sub : vec)
     {
       sub.apply(*this);
     }
@@ -94,7 +94,8 @@ static inline auto from_hex(char c)
   struct Table
   {
     long long tab[128];
-    constexpr Table() : tab{}
+    constexpr Table()
+        : tab{}
     {
       tab[(int)'0'] = 0;
       tab[(int)'1'] = 1;
@@ -146,7 +147,7 @@ struct json_to_value
     typetag_cursor++;
 
     bool b = val.IsInt();
-    if (b)
+    if(b)
       res = val.GetInt();
     return b;
   }
@@ -156,7 +157,7 @@ struct json_to_value
     typetag_cursor++;
 
     bool b = val.IsNumber();
-    if (b)
+    if(b)
       res = (float)val.GetDouble();
     return b;
   }
@@ -177,7 +178,7 @@ struct json_to_value
         break;
       default:
         b = val.IsBool();
-        if (b)
+        if(b)
           res = val.GetBool();
     }
     typetag_cursor++;
@@ -189,7 +190,7 @@ struct json_to_value
     typetag_cursor++;
 
     bool b = val.IsString() && val.GetStringLength() > 0;
-    if (b)
+    if(b)
       res = val.GetString()[0];
     return b;
   }
@@ -201,7 +202,7 @@ struct json_to_value
     // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
 
     bool b = val.IsString();
-    if (b)
+    if(b)
       res = std::string(val.GetString(), val.GetStringLength());
     return b;
   }
@@ -209,17 +210,16 @@ struct json_to_value
   template <std::size_t N>
   bool operator()(std::array<float, N>& res) const
   {
-    if constexpr (N == 4)
+    if constexpr(N == 4)
     {
-      if (typetags[typetag_cursor]
-          == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
+      if(typetags[typetag_cursor] == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
       {
         typetag_cursor += 1;
         bool b = val.IsString();
-        if (b)
+        if(b)
         {
           std::string_view hex(val.GetString(), val.GetStringLength());
-          if (hex.size() == 9) // "#00000000"
+          if(hex.size() == 9) // "#00000000"
           {
             res[0] = (from_hex(hex[1]) * 16 + from_hex(hex[2]));
             res[1] = (from_hex(hex[3]) * 16 + from_hex(hex[4]));
@@ -234,14 +234,14 @@ struct json_to_value
 
     typetag_cursor += N;
     bool b = val.IsArray();
-    if (b)
+    if(b)
     {
       auto arr = val.GetArray();
-      if (arr.Size() == N)
+      if(arr.Size() == N)
       {
-        for (int i = 0; i < (int)N; i++)
+        for(int i = 0; i < (int)N; i++)
         {
-          if (arr[i].IsNumber())
+          if(arr[i].IsNumber())
           {
             res[i] = arr[i].GetDouble();
           }
@@ -260,44 +260,40 @@ struct json_to_value
     return b;
   }
 
-  bool handleVecElement(
-      const rapidjson::Value& elt, std::vector<ossia::value>& res) const
+  bool
+  handleVecElement(const rapidjson::Value& elt, std::vector<ossia::value>& res) const
   {
-    if ((int)typetags.size() > typetag_cursor)
+    if((int)typetags.size() > typetag_cursor)
     {
-      switch (typetags[typetag_cursor])
+      switch(typetags[typetag_cursor])
       {
-        case oscpack::TypeTagValues::INFINITUM_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::INFINITUM_TYPE_TAG: {
           ossia::impulse i;
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
           return true;
         }
-        case oscpack::TypeTagValues::INT32_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::INT32_TYPE_TAG: {
           int32_t i{};
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
           return true;
         }
-        case oscpack::TypeTagValues::FLOAT_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::FLOAT_TYPE_TAG: {
           float i{};
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
           return true;
         }
-        case oscpack::TypeTagValues::CHAR_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::CHAR_TYPE_TAG: {
           char i{};
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -305,10 +301,9 @@ struct json_to_value
         }
 
         case oscpack::TypeTagValues::TRUE_TYPE_TAG:
-        case oscpack::TypeTagValues::FALSE_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::FALSE_TYPE_TAG: {
           bool i{};
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(i);
@@ -316,23 +311,21 @@ struct json_to_value
         }
 
         case oscpack::TypeTagValues::STRING_TYPE_TAG:
-        case oscpack::TypeTagValues::SYMBOL_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::SYMBOL_TYPE_TAG: {
           std::string i;
-          if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+          if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
             return false;
 
           res.push_back(std::move(i));
           return true;
         }
 
-        case oscpack::TypeTagValues::ARRAY_BEGIN_TYPE_TAG:
-        {
+        case oscpack::TypeTagValues::ARRAY_BEGIN_TYPE_TAG: {
           if(can_read("[ff]"))
           {
             ++typetag_cursor; // We skip the '['
             std::array<float, 2> i;
-            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+            if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
             res.push_back(i);
@@ -342,7 +335,7 @@ struct json_to_value
           {
             ++typetag_cursor; // We skip the '['
             std::array<float, 3> i;
-            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+            if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
             res.push_back(i);
@@ -352,7 +345,7 @@ struct json_to_value
           {
             ++typetag_cursor; // We skip the '['
             std::array<float, 4> i;
-            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+            if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
             res.push_back(i);
@@ -362,7 +355,7 @@ struct json_to_value
           {
             std::vector<ossia::value> i;
             ++typetag_cursor; // We skip the '['
-            if (!json_to_value{elt, typetags, typetag_cursor, unit}(i))
+            if(!json_to_value{elt, typetags, typetag_cursor, unit}(i))
               return false;
 
             ++typetag_cursor; // We skip the ']'
@@ -371,8 +364,7 @@ struct json_to_value
           return true;
         }
         case oscpack::TypeTagValues::ARRAY_END_TYPE_TAG:
-        default:
-        {
+        default: {
           // We should never end up here
           return false;
         }
@@ -386,28 +378,28 @@ struct json_to_value
 
   bool can_read(ossia::string_view sv) const noexcept
   {
-      const auto res = typetags.find(sv);
-      if(res == std::string_view::npos)
-      {
-        return false;
-      }
-      else
-      {
-        return int64_t(res) == typetag_cursor;
-      }
+    const auto res = typetags.find(sv);
+    if(res == std::string_view::npos)
+    {
+      return false;
+    }
+    else
+    {
+      return int64_t(res) == typetag_cursor;
+    }
   }
 
   bool operator()(std::vector<ossia::value>& res) const
   {
     // TODO read from the typetag
     bool b = val.IsArray();
-    if (b)
+    if(b)
     {
       auto arr = val.GetArray();
 
-      for (const auto& elt : arr)
+      for(const auto& elt : arr)
       {
-        if (!handleVecElement(elt, res))
+        if(!handleVecElement(elt, res))
           return false;
       }
     }
@@ -433,7 +425,7 @@ struct json_to_single_value
   bool operator()(int& res) const
   {
     bool b = val.IsInt();
-    if (b)
+    if(b)
       res = val.GetInt();
     return b;
   }
@@ -441,20 +433,20 @@ struct json_to_single_value
   bool operator()(float& res) const
   {
     bool b = val.IsNumber();
-    if (b)
+    if(b)
       res = (float)val.GetDouble();
     return b;
   }
 
   bool operator()(bool& res) const
   {
-    bool b=false;
+    bool b = false;
     if(typetags == "F")
     {
       res = false;
       b = true;
     }
-    else if ( typetags == "T" )
+    else if(typetags == "T")
     {
       res = true;
       b = true;
@@ -465,7 +457,7 @@ struct json_to_single_value
       // then we expect that the value is not null
       // This doesn't follow the OSCQuery specification
       bool b = val.IsBool();
-      if (b)
+      if(b)
         res = val.GetBool();
     }
     return b;
@@ -474,7 +466,7 @@ struct json_to_single_value
   bool operator()(char& res) const
   {
     bool b = val.IsString() && val.GetStringLength() > 0;
-    if (b)
+    if(b)
       res = val.GetString()[0];
     return b;
   }
@@ -485,7 +477,7 @@ struct json_to_single_value
     // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
 
     bool b = val.IsString();
-    if (b)
+    if(b)
       res = std::string(val.GetString(), val.GetStringLength());
     return b;
   }
@@ -493,15 +485,15 @@ struct json_to_single_value
   template <std::size_t N>
   bool operator()(std::array<float, N>& res) const
   {
-    if constexpr (N == 4)
+    if constexpr(N == 4)
     {
-      if (typetags[0] == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
+      if(typetags[0] == oscpack::TypeTagValues::RGBA_COLOR_TYPE_TAG)
       {
         bool b = val.IsString();
-        if (b)
+        if(b)
         {
           std::string_view hex(val.GetString(), val.GetStringLength());
-          if (hex.size() == 9) // "#00000000"
+          if(hex.size() == 9) // "#00000000"
           {
             res[0] = (from_hex(hex[1]) * 16 + from_hex(hex[2]));
             res[1] = (from_hex(hex[3]) * 16 + from_hex(hex[4]));
@@ -530,13 +522,12 @@ struct json_to_single_value
 
 inline ossia::value ReadValue(const rapidjson::Value& val)
 {
-  switch (val.GetType())
+  switch(val.GetType())
   {
-    case rapidjson::kNumberType:
-    {
-      if (val.IsInt())
+    case rapidjson::kNumberType: {
+      if(val.IsInt())
         return val.GetInt();
-      else if (val.IsUint())
+      else if(val.IsUint())
         return (int)val.GetUint();
       // There is also int64 and uint64 but we'll get a better approximation
       // with double
@@ -548,11 +539,10 @@ inline ossia::value ReadValue(const rapidjson::Value& val)
     case rapidjson::kTrueType:
       return true;
 
-    case rapidjson::kArrayType:
-    {
+    case rapidjson::kArrayType: {
       std::vector<ossia::value> tpl;
       tpl.reserve(val.Size());
-      for (auto& elt : val.GetArray())
+      for(auto& elt : val.GetArray())
       {
         tpl.push_back(ReadValue(elt));
       }
@@ -578,25 +568,25 @@ struct json_to_value_unchecked
 
   void operator()(int& res) const
   {
-    if (val.IsInt())
+    if(val.IsInt())
       res = val.GetInt();
   }
 
   void operator()(float& res) const
   {
-    if (val.IsNumber())
+    if(val.IsNumber())
       res = (float)val.GetDouble();
   }
 
   void operator()(bool& res) const
   {
-    if (val.IsBool())
+    if(val.IsBool())
       res = val.GetBool();
   }
 
   void operator()(char& res) const
   {
-    if (val.IsString() && val.GetStringLength() > 0)
+    if(val.IsString() && val.GetStringLength() > 0)
       res = val.GetString()[0];
   }
 
@@ -605,19 +595,19 @@ struct json_to_value_unchecked
     // TODO handle base 64
     // bool b = Base64::Encode(get<coppa::Generic>(val).buf, &out);
 
-    if (val.IsString())
+    if(val.IsString())
       res = get_string(val);
   }
 
   template <std::size_t N>
   void operator()(std::array<float, N>& res) const
   {
-    if (val.IsArray())
+    if(val.IsArray())
     {
       auto arr = val.GetArray();
-      if (arr.Size() == N)
+      if(arr.Size() == N)
       {
-        for (int i = 0; i < (int)N; i++)
+        for(int i = 0; i < (int)N; i++)
         {
           res[i] = arr[i].GetDouble();
         }
@@ -627,11 +617,11 @@ struct json_to_value_unchecked
 
   void operator()(std::vector<ossia::value>& res) const
   {
-    if (val.IsArray())
+    if(val.IsArray())
     {
       res.clear();
       auto arr = val.GetArray();
-      for (const auto& elt : arr)
+      for(const auto& elt : arr)
       {
         res.push_back(ReadValue(elt));
       }

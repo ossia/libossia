@@ -1,12 +1,12 @@
 #pragma once
 #include <ossia/audio/audio_parameter.hpp>
 #include <ossia/audio/drwav_handle.hpp>
-#include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/port.hpp>
-#include <ossia/dataflow/nodes/sound.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
-#include <ossia/detail/pod_vector.hpp>
+#include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
+#include <ossia/dataflow/nodes/sound.hpp>
+#include <ossia/dataflow/port.hpp>
+#include <ossia/detail/pod_vector.hpp>
 
 #include <type_traits>
 
@@ -43,8 +43,7 @@ public:
     {
       switch(m_handle.translatedFormatTag())
       {
-        case DR_WAVE_FORMAT_PCM:
-        {
+        case DR_WAVE_FORMAT_PCM: {
           switch(m_handle.bitsPerSample())
           {
             case 8:
@@ -62,8 +61,7 @@ public:
           }
           break;
         }
-        case DR_WAVE_FORMAT_IEEE_FLOAT:
-        {
+        case DR_WAVE_FORMAT_IEEE_FLOAT: {
           switch(m_handle.bitsPerSample())
           {
             case 32:
@@ -87,7 +85,8 @@ public:
     m_resampler.transport(to_sample(date, m_handle.sampleRate()));
   }
 
-  void fetch_audio(int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
+  void fetch_audio(
+      int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
   {
     const int channels = this->channels();
     const int file_duration = this->duration();
@@ -110,11 +109,12 @@ public:
     {
       m_safetyBuffer.resize(samples_to_write * channels);
       frame_data = m_safetyBuffer.data();
-      // TODO detect if we happen to be in this case often, and if so, garbage collect at some point
+      // TODO detect if we happen to be in this case often, and if so, garbage
+      // collect at some point
     }
     else
     {
-      frame_data = (double*) alloca(sizeof(double) * samples_to_write * channels);
+      frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
     }
 
     if(m_loops)
@@ -122,7 +122,8 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos =  this->m_start_offset_samples + ((start + k) % this->m_loop_duration_samples);
+        int pos = this->m_start_offset_samples
+                  + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -197,11 +198,12 @@ public:
     {
       m_safetyBuffer.resize(samples_to_write * channels);
       frame_data = m_safetyBuffer.data();
-      // TODO detect if we happen to be in this case often, and if so, garbage collect at some point
+      // TODO detect if we happen to be in this case often, and if so, garbage
+      // collect at some point
     }
     else
     {
-      frame_data = (double*) alloca(sizeof(double) * samples_to_write * channels);
+      frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
     }
 
     if(m_loops)
@@ -209,7 +211,8 @@ public:
       for(int k = 0; k < samples_to_write; k++)
       {
         // TODO add a special case if [0; samples_to_write] don't loop around
-        int pos =  this->m_start_offset_samples + ((start + k) % this->m_loop_duration_samples);
+        int pos = this->m_start_offset_samples
+                  + ((start + k) % this->m_loop_duration_samples);
         if(pos >= file_duration)
         {
           for(int i = 0; i < channels; i++)
@@ -264,8 +267,7 @@ public:
     }
   }
 
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     if(!m_handle || !m_converter)
       return;
@@ -280,33 +282,38 @@ public:
     ossia::audio_port& ap = *audio_out;
     ap.set_channels(std::max((std::size_t)upmix, (std::size_t)channels));
 
-    const auto [samples_to_read, samples_to_write] = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
+    const auto [samples_to_read, samples_to_write]
+        = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
     if(samples_to_write <= 0)
       return;
 
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if (t.tempo > 0)
+    if(t.tempo > 0)
     {
       if(t.prev_date < m_prev_date)
       {
         // Sentinel: we never played.
-        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min}) {
-          if(t.prev_date != 0_tv) {
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
+        {
+          if(t.prev_date != 0_tv)
+          {
             transport(t.prev_date);
           }
-          else {
+          else
+          {
             // Otherwise we don't need transport, everything is alreayd at 0
             m_prev_date = 0_tv;
           }
         }
-        else {
+        else
+        {
           transport(t.prev_date);
         }
       }
 
-      for (std::size_t chan = 0; chan < channels; chan++)
+      for(std::size_t chan = 0; chan < channels; chan++)
       {
         ap.channel(chan).resize(e.bufferSize());
       }
@@ -314,17 +321,16 @@ public:
       double stretch_ratio = update_stretch(t, e);
 
       // Resample
-      m_resampler.run(*this, t, e,
-                      stretch_ratio,
-                      channels, len,
-                      samples_to_read, samples_to_write, samples_offset,
-                      ap);
+      m_resampler.run(
+          *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
+          samples_offset, ap);
 
-      for (std::size_t chan = 0; chan < channels; chan++)
+      for(std::size_t chan = 0; chan < channels; chan++)
       {
         // fade
-        snd::do_fade(t.start_discontinuous, t.end_discontinuous, ap.channel(chan),
-                     samples_offset, samples_to_write);
+        snd::do_fade(
+            t.start_discontinuous, t.end_discontinuous, ap.channel(chan), samples_offset,
+            samples_to_write);
       }
 
       ossia::snd::perform_upmix(this->upmix, channels, ap);
@@ -344,7 +350,7 @@ public:
   }
   [[nodiscard]] std::size_t duration() const
   {
-    return m_handle ? m_handle.totalPCMFrameCount(): 0;
+    return m_handle ? m_handle.totalPCMFrameCount() : 0;
   }
 
 private:
@@ -355,7 +361,8 @@ private:
   std::size_t start{};
   std::size_t upmix{};
 
-  using read_fn_t = void(*)(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples);
+  using read_fn_t
+      = void (*)(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples);
   read_fn_t m_converter{};
   std::vector<double> m_safetyBuffer;
   std::vector<std::vector<float>> m_resampleBuffer;

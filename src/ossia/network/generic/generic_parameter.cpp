@@ -14,9 +14,12 @@ namespace ossia
 {
 namespace net
 {
-struct dummy_lock {
-  template<typename T>
-  explicit dummy_lock(T&&) { }
+struct dummy_lock
+{
+  template <typename T>
+  explicit dummy_lock(T&&)
+  {
+  }
 };
 #if defined(OSSIA_PARAMETER_VALUE_SINGLETHREAD)
 using value_lock_t = dummy_lock;
@@ -43,8 +46,7 @@ generic_parameter::generic_parameter(
     , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
     , m_value(init_value(m_valueType))
 {
-  m_repetitionFilter
-      = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
+  m_repetitionFilter = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
   update_parameter_type(data.type, *this);
 }
 
@@ -68,8 +70,7 @@ void generic_parameter::request_value()
   m_protocol.request(*this);
 }
 
-ossia::net::generic_parameter&
-generic_parameter::push_value(const ossia::value& value)
+ossia::net::generic_parameter& generic_parameter::push_value(const ossia::value& value)
 {
   if(auto res = set_value(value); res.valid())
     m_protocol.push(*this, std::move(res));
@@ -77,8 +78,7 @@ generic_parameter::push_value(const ossia::value& value)
   return *this;
 }
 
-ossia::net::generic_parameter&
-generic_parameter::push_value(ossia::value&& value)
+ossia::net::generic_parameter& generic_parameter::push_value(ossia::value&& value)
 {
   if(auto res = set_value(std::move(value)); res.valid())
     m_protocol.push(*this, std::move(res));
@@ -105,15 +105,14 @@ ossia::value generic_parameter::value() const
   return m_value;
 }
 
-ossia::value
-generic_parameter::set_value(const ossia::value& val)
+ossia::value generic_parameter::set_value(const ossia::value& val)
 {
   ossia::value copy;
 
-  if (val.valid())
+  if(val.valid())
   {
     value_lock_t lock(m_valueMutex);
-    if (m_value.v.which() == val.v.which())
+    if(m_value.v.which() == val.v.which())
     {
       // TODO assess whether we would avoid an allocation on the return
       // if doing copy = std::move(m_previousValue)
@@ -137,10 +136,10 @@ ossia::value generic_parameter::set_value(ossia::value&& val)
 {
   using namespace ossia;
   ossia::value copy;
-  if (val.valid())
+  if(val.valid())
   {
     value_lock_t lock(m_valueMutex);
-    if (m_value.v.which() == val.v.which())
+    if(m_value.v.which() == val.v.which())
     {
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
       m_value = std::move(val);
@@ -162,10 +161,10 @@ ossia::value generic_parameter::set_value_quiet(const ossia::value& val)
 {
   ossia::value copy;
 
-  if (val.valid())
+  if(val.valid())
   {
     value_lock_t lock(m_valueMutex);
-    if (m_value.v.which() == val.v.which())
+    if(m_value.v.which() == val.v.which())
     {
       // TODO assess whether we would avoid an allocation on the return
       // if doing copy = std::move(m_previousValue)
@@ -188,10 +187,10 @@ ossia::value generic_parameter::set_value_quiet(ossia::value&& val)
 {
   using namespace ossia;
   ossia::value copy;
-  if (val.valid())
+  if(val.valid())
   {
     value_lock_t lock(m_valueMutex);
-    if (m_value.v.which() == val.v.which())
+    if(m_value.v.which() == val.v.which())
     {
       m_previousValue = std::move(m_value); // TODO also implement me for MIDI
       m_value = std::move(val);
@@ -211,7 +210,7 @@ ossia::value generic_parameter::set_value_quiet(ossia::value&& val)
 void generic_parameter::set_value_quiet(const destination& destination)
 {
   value_lock_t lock(m_valueMutex);
-  if (destination.address().get_value_type() == m_valueType)
+  if(destination.address().get_value_type() == m_valueType)
   {
     m_previousValue = std::move(m_value); // TODO also implement me for MIDI
     m_value = destination.address().fetch_value();
@@ -231,8 +230,7 @@ ossia::val_type generic_parameter::get_value_type() const
   return m_valueType;
 }
 
-ossia::net::generic_parameter&
-generic_parameter::set_value_type(ossia::val_type type)
+ossia::net::generic_parameter& generic_parameter::set_value_type(ossia::val_type type)
 {
   {
     value_lock_t lock(m_valueMutex);
@@ -241,7 +239,7 @@ generic_parameter::set_value_type(ossia::val_type type)
     m_valueType = type;
 
     m_value = init_value(type);
-    if (m_domain)
+    if(m_domain)
     {
       convert_compatible_domain(m_domain, m_valueType);
     }
@@ -258,7 +256,7 @@ ossia::access_mode generic_parameter::get_access() const
 ossia::net::generic_parameter&
 generic_parameter::set_access(ossia::access_mode accessMode)
 {
-  if (m_accessMode != accessMode)
+  if(m_accessMode != accessMode)
   {
     m_accessMode = accessMode;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_access_mode()));
@@ -271,10 +269,9 @@ const ossia::domain& generic_parameter::get_domain() const
   return m_domain;
 }
 
-ossia::net::generic_parameter&
-generic_parameter::set_domain(const ossia::domain& domain)
+ossia::net::generic_parameter& generic_parameter::set_domain(const ossia::domain& domain)
 {
-  if (m_domain != domain)
+  if(m_domain != domain)
   {
     m_domain = domain;
     convert_compatible_domain(m_domain, m_valueType);
@@ -292,7 +289,7 @@ ossia::bounding_mode generic_parameter::get_bounding() const
 ossia::net::generic_parameter&
 generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
 {
-  if (m_boundingMode != boundingMode && m_valueType != ossia::val_type::BOOL)
+  if(m_boundingMode != boundingMode && m_valueType != ossia::val_type::BOOL)
   {
     m_boundingMode = boundingMode;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_bounding_mode()));
@@ -324,14 +321,14 @@ generic_parameter& generic_parameter::set_unit(const unit_t& v)
     m_unit = v;
 
     // update the type to match the unit.
-    if (v)
+    if(v)
     {
       auto vt = ossia::matching_type(v);
-      if (vt != ossia::val_type::IMPULSE)
+      if(vt != ossia::val_type::IMPULSE)
       {
         m_valueType = vt;
         m_value = ossia::convert(m_value, m_valueType);
-        if (m_domain)
+        if(m_domain)
         {
           convert_compatible_domain(m_domain, m_valueType);
         }

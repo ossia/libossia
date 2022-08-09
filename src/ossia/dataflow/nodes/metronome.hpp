@@ -34,8 +34,7 @@ public:
   }
 
 private:
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     ossia::value_port& vp = *value_out;
     const auto date = t.date;
@@ -53,10 +52,10 @@ private:
 
     // TODO we should compute the derivative since the last tick in order to be
     // precise
-    if (date > t.prev_date)
+    if(date > t.prev_date)
     {
       time_value elapsed = date - t.prev_date;
-      if (m_metroPrevTick + elapsed < cur)
+      if(m_metroPrevTick + elapsed < cur)
       {
         // not yet
         m_metroPrevTick += elapsed;
@@ -66,13 +65,14 @@ private:
       {
         m_metroPrevTick = elapsed - cur;
         vp.write_value(
-            ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
+            ossia::impulse{},
+            t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
-    else if (date < t.prev_date)
+    else if(date < t.prev_date)
     {
       time_value elapsed = t.prev_date - date;
-      if (m_metroPrevTick + elapsed < cur)
+      if(m_metroPrevTick + elapsed < cur)
       {
         // not yet
         m_metroPrevTick += elapsed;
@@ -82,7 +82,8 @@ private:
       {
         m_metroPrevTick = elapsed - cur;
         vp.write_value(
-            ossia::impulse{}, t.physical_start(e.modelToSamples())); // TODO offset is wrong here
+            ossia::impulse{},
+            t.physical_start(e.modelToSamples())); // TODO offset is wrong here
       }
     }
   }

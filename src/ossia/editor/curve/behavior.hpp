@@ -3,11 +3,9 @@
 
 #include <ossia/editor/curve/curve_abstract.hpp>
 
-#include <ossia/detail/config.hpp>
-
 #include <memory>
-#include <vector>
 #include <stdexcept>
+#include <vector>
 
 /**
  * \file behavior.hpp
@@ -25,13 +23,15 @@ public:
   struct dummy_t
   {
   };
-  union Impl {
+  union Impl
+  {
     std::shared_ptr<ossia::curve_abstract> m_value0;
 
     std::vector<ossia::behavior> m_value1;
 
     dummy_t m_dummy;
-    Impl() : m_dummy{}
+    Impl()
+        : m_dummy{}
     {
     }
     ~Impl()
@@ -93,14 +93,17 @@ struct OSSIA_EXPORT behavior final
   behavior& operator=(const behavior&) = default;
   behavior& operator=(behavior&&) = default;
 
-  behavior(std::shared_ptr<ossia::curve_abstract> c) : v{std::move(c)}
+  behavior(std::shared_ptr<ossia::curve_abstract> c)
+      : v{std::move(c)}
   {
   }
   template <typename T, typename U>
-  behavior(std::shared_ptr<ossia::curve<T, U>> c) : v{curve_ptr{std::move(c)}}
+  behavior(std::shared_ptr<ossia::curve<T, U>> c)
+      : v{curve_ptr{std::move(c)}}
   {
   }
-  behavior(std::vector<ossia::behavior> c) : v{std::move(c)}
+  behavior(std::vector<ossia::behavior> c)
+      : v{std::move(c)}
   {
   }
 
@@ -186,9 +189,7 @@ auto apply_nonnull(Functor&& functor, behavior& var) -> decltype(auto)
 template <typename Functor>
 auto apply_nonnull(Functor&& functor, behavior&& var) -> decltype(auto)
 {
-  return ossia::apply_nonnull(
-      std::forward<Functor>(functor), std::move(var.v));
+  return ossia::apply_nonnull(std::forward<Functor>(functor), std::move(var.v));
 }
-
 
 }

@@ -14,12 +14,12 @@ namespace ossia
 // This library also tries to avoid dynamic allocation whenever possible.
 
 template <typename T, typename U>
-using enable_if_same_dataspace = std::enable_if_t<std::is_same<
-    typename T::dataspace_type, typename U::dataspace_type>::value>;
+using enable_if_same_dataspace = std::enable_if_t<
+    std::is_same<typename T::dataspace_type, typename U::dataspace_type>::value>;
 
 template <typename T, typename U>
-using enable_if_different_dataspace = std::enable_if_t<!std::is_same<
-    typename T::dataspace_type, typename U::dataspace_type>::value>;
+using enable_if_different_dataspace = std::enable_if_t<
+    !std::is_same<typename T::dataspace_type, typename U::dataspace_type>::value>;
 
 template <typename Unit>
 struct strong_value : Unit
@@ -30,15 +30,18 @@ struct strong_value : Unit
   using neutral_unit = typename Unit::neutral_unit;
   value_type dataspace_value;
 
-  OSSIA_INLINE constexpr strong_value() noexcept : dataspace_value{}
+  OSSIA_INLINE constexpr strong_value() noexcept
+      : dataspace_value{}
   {
   }
   OSSIA_INLINE constexpr strong_value(const strong_value& other) noexcept
-      : Unit{other}, dataspace_value{other.dataspace_value}
+      : Unit{other}
+      , dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE constexpr strong_value(strong_value&& other) noexcept
-      : Unit{other}, dataspace_value{other.dataspace_value}
+      : Unit{other}
+      , dataspace_value{other.dataspace_value}
   {
   }
   OSSIA_INLINE strong_value& operator=(const strong_value& other) noexcept
@@ -95,8 +98,8 @@ struct strong_value : Unit
   {
   }
   OSSIA_INLINE constexpr strong_value(std::array<double, 4> other) noexcept
-      : dataspace_value{(float)other[0], (float)other[1], (float)other[2],
-                        (float)other[3]}
+      : dataspace_value{
+          (float)other[0], (float)other[1], (float)other[2], (float)other[3]}
   {
   }
   OSSIA_INLINE constexpr strong_value(float f0, float f1) noexcept
@@ -107,8 +110,7 @@ struct strong_value : Unit
       : dataspace_value{f0, f1, f2}
   {
   }
-  OSSIA_INLINE constexpr strong_value(
-      float f0, float f1, float f2, float f3) noexcept
+  OSSIA_INLINE constexpr strong_value(float f0, float f1, float f2, float f3) noexcept
       : dataspace_value{f0, f1, f2, f3}
   {
   }
@@ -123,13 +125,11 @@ struct strong_value : Unit
         "Trying to convert between different dataspaces");
   }
 
-  OSSIA_INLINE friend bool
-  operator==(const strong_value& lhs, const strong_value& rhs)
+  OSSIA_INLINE friend bool operator==(const strong_value& lhs, const strong_value& rhs)
   {
     return lhs.dataspace_value == rhs.dataspace_value;
   }
-  OSSIA_INLINE friend bool
-  operator!=(const strong_value& lhs, const strong_value& rhs)
+  OSSIA_INLINE friend bool operator!=(const strong_value& lhs, const strong_value& rhs)
   {
     return lhs.dataspace_value != rhs.dataspace_value;
   }

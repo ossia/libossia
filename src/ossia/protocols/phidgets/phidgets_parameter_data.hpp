@@ -12,7 +12,8 @@ namespace ossia
 struct phidget_handle_t
 {
   PhidgetHandle phid;
-  phidget_handle_t(PhidgetHandle h) : phid{h}
+  phidget_handle_t(PhidgetHandle h)
+      : phid{h}
   {
   }
 
@@ -114,7 +115,7 @@ struct phidget_handle_t
 
   const char* phidget_id(Phidget_DeviceID cls)
   {
-    switch (cls)
+    switch(cls)
     {
       case PHIDID_NOTHING:
         return "PHIDID_NOTHING";
@@ -346,7 +347,7 @@ struct phidget_handle_t
 
   const char* phidget_name(Phidget_DeviceClass cls)
   {
-    switch (cls)
+    switch(cls)
     {
       case PHIDCLASS_ACCELEROMETER:
         return "ACCELEROMETER";
@@ -404,7 +405,7 @@ struct phidget_handle_t
 
   const char* phidget_name(Phidget_ChannelClass cls)
   {
-    switch (cls)
+    switch(cls)
     {
       case PHIDCHCLASS_NOTHING:
         return "NOTHING";
@@ -488,7 +489,7 @@ struct phidget_handle_t
 
   const char* phidget_name(Phidget_ChannelSubclass cls)
   {
-    switch (cls)
+    switch(cls)
     {
       case PHIDCHSUBCLASS_NONE:
         return "NONE";

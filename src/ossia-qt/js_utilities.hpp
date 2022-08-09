@@ -1,11 +1,13 @@
 #pragma once
 #if defined(QT_CORE_LIB)
 #include <ossia/detail/optional.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/value.hpp>
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/common/parameter_properties.hpp>
-#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/preset/preset.hpp>
+
 #include <QDebug>
 #include <QHash>
 #include <QLineF>
@@ -21,17 +23,18 @@
 #include <QtGui/QVector2D>
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
-#include <ossia/preset/preset.hpp>
+
 #include <ossia-qt/metatypes.hpp>
 #include <ossia-qt/name_utils.hpp>
 
 #if defined(QT_QML_LIB)
-#include <ossia-qt/qml_context.hpp>
 #include <QJSEngine>
 #include <QJSValue>
 #include <QJSValueIterator>
 #include <QQmlExtensionPlugin>
 #include <QQmlProperty>
+
+#include <ossia-qt/qml_context.hpp>
 #endif
 namespace ossia
 {
@@ -246,7 +249,7 @@ struct OSSIA_EXPORT qt_to_ossia
   {
     std::vector<ossia::value> tpl;
     tpl.reserve(v.size());
-    for (auto& val : v)
+    for(auto& val : v)
     {
       tpl.push_back(qt_to_ossia{}(val));
     }
@@ -256,7 +259,7 @@ struct OSSIA_EXPORT qt_to_ossia
   {
     std::vector<ossia::value> tpl;
     tpl.reserve(v.size());
-    for (auto& val : v)
+    for(auto& val : v)
     {
       tpl.push_back(val.toStdString());
     }
@@ -308,7 +311,7 @@ struct ossia_to_qvariant
   {
     typename QArray<N>::type vec;
 
-    for (std::size_t i = 0U; i < N; i++)
+    for(std::size_t i = 0U; i < N; i++)
       vec[i] = arr[i];
     return vec;
   }
@@ -335,7 +338,7 @@ struct ossia_to_qvariant
   {
     QVariantList v;
     v.reserve(val.size());
-    for (const ossia::value& e : val)
+    for(const ossia::value& e : val)
     {
       v.push_back(e.apply(*this));
     }
@@ -373,7 +376,7 @@ struct OSSIA_EXPORT js_value_outbound_visitor
   {
     auto array = engine.newArray(arr.size());
     int i = 0;
-    for (auto child : arr)
+    for(auto child : arr)
     {
       array.setProperty(i++, child);
     }
@@ -416,7 +419,7 @@ struct OSSIA_EXPORT js_string_outbound_visitor
     QString s = "[";
 
     s += QString::number(arr[0]);
-    for (std::size_t i = 1; i < N; i++)
+    for(std::size_t i = 1; i < N; i++)
     {
       s += ", " % QString::number(arr[i]);
     }
@@ -430,8 +433,7 @@ struct OSSIA_EXPORT js_string_outbound_visitor
 
   QString operator()() const;
 };
-struct OSSIA_EXPORT js_string_unquoted_outbound_visitor
-    : js_string_outbound_visitor
+struct OSSIA_EXPORT js_string_unquoted_outbound_visitor : js_string_outbound_visitor
 {
   using js_string_outbound_visitor::operator();
   QString operator()(char val) const;
@@ -469,12 +471,11 @@ inline QString value_to_js_string_unquoted(const ossia::value& cur)
 template <typename T>
 std::optional<T> get_enum(const QJSValue& val)
 {
-  if (val.isNumber())
+  if(val.isNumber())
   {
     const int n = val.toInt();
-    if (n >= 0
-        && n < QMetaEnum::fromType<typename matching_ossia_enum<T>::type>()
-                   .keyCount())
+    if(n >= 0
+       && n < QMetaEnum::fromType<typename matching_ossia_enum<T>::type>().keyCount())
     {
       return static_cast<T>(n);
     }
@@ -510,11 +511,11 @@ template <typename Device_T, typename Node_T, typename Protocol_T>
 /** @ingroup JSTreeCreation **/
 void create_device(Device_T& device, QJSValue root)
 {
-  if (!root.isArray())
+  if(!root.isArray())
     return;
 
   QJSValueIterator it(root);
-  while (it.hasNext())
+  while(it.hasNext())
   {
     it.next();
     create_node_rec<Device_T, Node_T, Protocol_T>(
@@ -527,7 +528,7 @@ template <typename Device_T, typename Node_T, typename Protocol_T>
 void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
 {
   auto data = Protocol_T::read_data(js);
-  if (data.name.empty())
+  if(data.name.empty())
     return;
 
   auto node = new Node_T{std::move(data), device, parent};
@@ -536,11 +537,11 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
   device.on_node_created(*node);
 
   QJSValue children = js.property("children");
-  if (!children.isArray())
+  if(!children.isArray())
     return;
 
   QJSValueIterator it(children);
-  while (it.hasNext())
+  while(it.hasNext())
   {
     it.next();
     create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, *node);
@@ -551,18 +552,16 @@ template <typename Methods>
 QMetaObject::Connection connectSignalToMatchingMethod(
     const QMetaMethod& sig, Methods& meth, QObject* source, QObject* target)
 {
-  switch (sig.parameterCount())
+  switch(sig.parameterCount())
   {
-    case 0:
-    {
+    case 0: {
       return QObject::connect(source, sig, target, meth[QVariant::Invalid]);
     }
-    case 1:
-    {
+    case 1: {
       auto t = sig.parameterType(0);
 
       auto method_it = meth.find((QVariant::Type)t);
-      if (method_it != meth.end())
+      if(method_it != meth.end())
       {
         return QObject::connect(source, sig, target, method_it->second);
       }
@@ -579,21 +578,18 @@ QMetaObject::Connection connectSignalToMatchingMethod(
 {
   auto meth = prop.method();
 
-  switch (meth.parameterCount())
+  switch(meth.parameterCount())
   {
-    case 0:
-    {
+    case 0: {
       return QObject::connect(source, prop.method(), target, variantMethod);
     }
-    case 1:
-    {
+    case 1: {
       auto t = meth.parameterType(0);
 
       auto method_it = methods.find((QVariant::Type)t);
-      if (method_it != methods.end())
+      if(method_it != methods.end())
       {
-        return QObject::connect(
-            source, prop.method(), target, method_it->second);
+        return QObject::connect(source, prop.method(), target, method_it->second);
       }
       break;
     }

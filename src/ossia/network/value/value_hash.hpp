@@ -1,12 +1,12 @@
 #pragma once
-#include <ossia/network/value/value.hpp>
 #include <ossia/detail/hash.hpp>
+#include <ossia/network/value/value.hpp>
 
 #include <functional>
 
 namespace std
 {
-template<>
+template <>
 struct hash<ossia::impulse>
 {
 
@@ -18,14 +18,13 @@ struct hash<ossia::impulse>
       return 3958788809ul;
   }
 };
-template<>
+template <>
 struct hash<std::vector<ossia::value>>
 {
-  inline
-  std::size_t operator()(const std::vector<ossia::value>& v) const;
+  inline std::size_t operator()(const std::vector<ossia::value>& v) const;
 };
 
-template<std::size_t N>
+template <std::size_t N>
 struct hash<std::array<float, N>>
 {
   std::size_t operator()(const std::array<float, N>& v) const
@@ -37,7 +36,7 @@ struct hash<std::array<float, N>>
   }
 };
 
-template<>
+template <>
 struct hash<ossia::value>
 {
   std::size_t operator()(const ossia::value& v) const
@@ -45,13 +44,14 @@ struct hash<ossia::value>
     std::size_t seed = 0;
     ossia::hash_combine(seed, v.v.which());
     if(v.valid())
-      ossia::apply_nonnull([&] (const auto& val) { ossia::hash_combine(seed, val); }, v.v);
+      ossia::apply_nonnull(
+          [&](const auto& val) { ossia::hash_combine(seed, val); }, v.v);
     return seed;
   }
 };
 
-inline
-std::size_t std::hash<std::vector<ossia::value>>::operator()(const std::vector<ossia::value>& v) const
+inline std::size_t std::hash<std::vector<ossia::value>>::operator()(
+    const std::vector<ossia::value>& v) const
 {
   std::size_t seed = 0;
   for(const auto& val : v)

@@ -1,14 +1,16 @@
 #pragma once
-#include <ossia/detail/optional.hpp>
-#include <ossia/detail/ptr_container.hpp>
-#include <ossia/editor/scenario/time_value.hpp>
-#include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/detail/config.hpp>
+
 #include <ossia/dataflow/transport.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flicks.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/detail/ptr_container.hpp>
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
-#include <ossia/detail/config.hpp>
+#include <ossia/editor/scenario/time_signature.hpp>
+#include <ossia/editor/scenario/time_value.hpp>
+
 #include <smallfun.hpp>
 
 #include <memory>
@@ -72,11 +74,17 @@ public:
   }
   tick_transport_info current_transport_info() const noexcept;
 
-  void tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
+  void
+  tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
 
-  void tick(ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
-  void tick_offset(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
-  void tick_offset_speed_precomputed(ossia::time_value, ossia::time_value offset, const ossia::token_request& parent_request);
+  void tick(
+      ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
+  void tick_offset(
+      ossia::time_value, ossia::time_value offset,
+      const ossia::token_request& parent_request);
+  void tick_offset_speed_precomputed(
+      ossia::time_value, ossia::time_value offset,
+      const ossia::token_request& parent_request);
 
   /*! to get the interval execution back
    \param const #TimeValue position
@@ -97,14 +105,12 @@ public:
    \param const #TimeValue& maximal duration of the #time_interval
    \return std::shared_ptr<#time_interval> */
   static std::shared_ptr<time_interval> create(
-      time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, ossia::time_value = Zero,
-      ossia::time_value = Infinite);
+      time_interval::exec_callback, time_event&, time_event&, time_value = Infinite,
+      ossia::time_value = Zero, ossia::time_value = Infinite);
 
   time_interval(
-      time_interval::exec_callback, time_event&, time_event&,
-      time_value = Infinite, ossia::time_value = Zero,
-      ossia::time_value = Infinite);
+      time_interval::exec_callback, time_event&, time_event&, time_value = Infinite,
+      ossia::time_value = Zero, ossia::time_value = Infinite);
 
   /*! desctructor */
   ~time_interval();
@@ -141,8 +147,7 @@ public:
 
   //! This callback won't compute the state.
   void set_stateless_callback(exec_callback);
-  void set_stateless_callback(
-      smallfun::function<void(bool, ossia::time_value), 32>);
+  void set_stateless_callback(smallfun::function<void(bool, ossia::time_value), 32>);
 
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
@@ -198,7 +203,10 @@ public:
     return m_processes;
   }
 
-  bool running() const noexcept { return m_running; }
+  bool running() const noexcept
+  {
+    return m_running;
+  }
   void cleanup();
   void mute(bool);
 
@@ -211,6 +219,7 @@ public:
 #endif
 
   bool graphal{};
+
 private:
   time_interval(const time_interval&) = delete;
   time_interval(time_interval&&) = delete;
@@ -224,13 +233,15 @@ private:
    \return std::shared_ptr<#State> */
   void state(ossia::time_value from, ossia::time_value to);
 
-  time_signature signature(time_value date, const ossia::token_request& parent_request) const noexcept;
-  double tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
+  time_signature
+  signature(time_value date, const ossia::token_request& parent_request) const noexcept;
+  double
+  tempo(time_value date, const ossia::token_request& parent_request) const noexcept;
   double tempo(time_value date) const noexcept;
 
   void tick_impl(
-      ossia::time_value old_date, ossia::time_value new_date,
-      ossia::time_value offset, const ossia::token_request& parent_request);
+      ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset,
+      const ossia::token_request& parent_request);
 
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
@@ -260,7 +271,7 @@ private:
   ossia::quarter_note m_musical_end_last_bar{};
   ossia::quarter_note m_musical_end_position{};
 
-  double m_speed{1.};         /// tick length is multiplied by this
+  double m_speed{1.}; /// tick length is multiplied by this
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   time_signature m_current_signature{};

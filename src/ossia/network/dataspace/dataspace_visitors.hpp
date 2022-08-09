@@ -86,8 +86,7 @@ ossia::unit_t parse_dataspace(ossia::string_view text);
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t
-parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
+ossia::unit_t parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
 
 /**
  * @brief parse_pretty_unit Create a unit from a valid unit in the format
@@ -154,8 +153,7 @@ inline ossia::val_type matching_type(ossia::unit_t&& u)
  * and convertible, else the input value
  */
 OSSIA_EXPORT
-ossia::value_with_unit
-convert(const ossia::value_with_unit& v, const ossia::unit_t& t);
+ossia::value_with_unit convert(const ossia::value_with_unit& v, const ossia::unit_t& t);
 
 /**
  * @brief convert Convert a value to another unit.
@@ -207,9 +205,8 @@ std::string to_pretty_string(const ossia::value_with_unit& v);
  * @return
  */
 OSSIA_EXPORT
-ossia::value_with_unit merge(
-    const ossia::value_with_unit&, const ossia::value&,
-    ossia::destination_index);
+ossia::value_with_unit
+merge(const ossia::value_with_unit&, const ossia::value&, ossia::destination_index);
 
 OSSIA_EXPORT
 ossia::value_with_unit

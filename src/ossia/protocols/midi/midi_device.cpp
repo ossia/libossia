@@ -9,7 +9,8 @@
 namespace ossia::net::midi
 {
 midi_device::midi_device(std::unique_ptr<protocol_base> prot)
-    : ossia::net::device_base{std::move(prot)}, midi_node{*this}
+    : ossia::net::device_base{std::move(prot)}
+    , midi_node{*this}
 {
   m_capabilities.change_tree = true;
   m_protocol->set_device(*this);
@@ -30,25 +31,28 @@ node_base& midi_device::set_name(std::string n)
   return *this;
 }
 
-const node_base&midi_device::get_root_node() const
+const node_base& midi_device::get_root_node() const
 {
   return *this;
 }
 
-node_base&midi_device::get_root_node()
+node_base& midi_device::get_root_node()
 {
   return *this;
 }
 
 std::unique_ptr<node_base> midi_device::make_child(const std::string& name)
 {
-  try {
+  try
+  {
     int chan = std::stoi(name);
     if(chan >= 1 && chan <= 16)
     {
       return std::make_unique<channel_node>(false, chan, *this, *this);
     }
-  } catch(...) {
+  }
+  catch(...)
+  {
   }
 
   return nullptr;
@@ -64,7 +68,7 @@ bool midi_device::create_full_tree()
 
   try
   {
-    for (int i = 1; i <= 16; i++)
+    for(int i = 1; i <= 16; i++)
     {
       auto ptr = std::make_unique<channel_node>(true, i, *this, *this);
 
@@ -72,11 +76,11 @@ bool midi_device::create_full_tree()
       m_children.push_back(std::move(ptr));
     }
   }
-  catch (std::exception& e)
+  catch(std::exception& e)
   {
     logger().error("midi_device::updateNamespace() catched: {}", e.what());
   }
-  catch (...)
+  catch(...)
   {
     logger().error("midi_device::updateNamespace() failed.");
     return false;

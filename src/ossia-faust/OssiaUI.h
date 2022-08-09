@@ -31,118 +31,124 @@
 #define FAUSTFLOAT float
 #endif
 
-#include "faust/gui/UI.h"
 #include "faust/gui/PathBuilder.h"
-#include <ossia/network/generic/generic_node.hpp>
+#include "faust/gui/UI.h"
+
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/domain/domain.hpp>
 
 class OssiaUI final : public PathBuilder, public UI
 {
-    ossia::net::generic_device m_dev;
-    ossia::net::node_base* m_curNode{};
+  ossia::net::generic_device m_dev;
+  ossia::net::node_base* m_curNode{};
 
-    std::vector<std::pair<ossia::net::parameter_base*, FAUSTFLOAT*>> m_values;
-    std::atomic_bool m_running;
+  std::vector<std::pair<ossia::net::parameter_base*, FAUSTFLOAT*>> m_values;
+  std::atomic_bool m_running;
 
 public:
-    OssiaUI(uint16_t osc_port, uint16_t ws_port)
+  OssiaUI(uint16_t osc_port, uint16_t ws_port)
       : m_dev{std::make_unique<ossia::oscquery::oscquery_server_protocol>(osc_port, ws_port), "Faust"}
       , m_curNode{&m_dev.get_root_node()}
-    {
-    }
+  {
+  }
 
-    ~OssiaUI()
-    {
-    }
+  ~OssiaUI()
+  {
+  }
 
-    void run(int ms)
+  void run(int ms)
+  {
+    while(true)
     {
-        while(true) {
-            std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-            for(auto p : m_values)
-                p.first->push_value(*p.second);
-        }
+      std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+      for(auto p : m_values)
+        p.first->push_value(*p.second);
     }
+  }
 
 private:
-    void openTabBox(const char* label) override
-    {
-        m_curNode = m_curNode->create_child(label);
-    }
-    void openHorizontalBox(const char* label) override
-    {
-        m_curNode = m_curNode->create_child(label);
-    }
-    void openVerticalBox(const char* label) override
-    {
-        m_curNode = m_curNode->create_child(label);
-    }
-    void closeBox() override
-    {
-        m_curNode = m_curNode->get_parent();
-    }
+  void openTabBox(const char* label) override
+  {
+    m_curNode = m_curNode->create_child(label);
+  }
+  void openHorizontalBox(const char* label) override
+  {
+    m_curNode = m_curNode->create_child(label);
+  }
+  void openVerticalBox(const char* label) override
+  {
+    m_curNode = m_curNode->create_child(label);
+  }
+  void closeBox() override
+  {
+    m_curNode = m_curNode->get_parent();
+  }
 
-    // -- active widgets
-    void addButton(const char* label, FAUSTFLOAT* zone) override
-    {
-        auto n = m_curNode->create_child(label);
-        auto a = n->create_parameter(ossia::val_type::BOOL);
-        a->add_callback([zone] (const ossia::value& val) {
-            *zone = val.get<bool>() ? 1.0 : 0.0;
-        });
-    }
+  // -- active widgets
+  void addButton(const char* label, FAUSTFLOAT* zone) override
+  {
+    auto n = m_curNode->create_child(label);
+    auto a = n->create_parameter(ossia::val_type::BOOL);
+    a->add_callback(
+        [zone](const ossia::value& val) { *zone = val.get<bool>() ? 1.0 : 0.0; });
+  }
 
-    void addCheckButton(const char* label, FAUSTFLOAT* zone) override
-    {
-		addButton(label, zone);
-    }
+  void addCheckButton(const char* label, FAUSTFLOAT* zone) override
+  {
+    addButton(label, zone);
+  }
 
-    void addVerticalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) override
-    {
-        auto n = m_curNode->create_child(label);
-        auto a = n->create_parameter(ossia::val_type::FLOAT);
-        ossia::net::set_default_value(*n, init);
-        ossia::net::set_domain(*n, ossia::make_domain(min, max));
-        ossia::net::set_value_step_size(*n, step);
-        a->add_callback([zone] (const ossia::value& val) {
-            *zone = val.get<float>();
-        });
-    }
+  void addVerticalSlider(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    auto n = m_curNode->create_child(label);
+    auto a = n->create_parameter(ossia::val_type::FLOAT);
+    ossia::net::set_default_value(*n, init);
+    ossia::net::set_domain(*n, ossia::make_domain(min, max));
+    ossia::net::set_value_step_size(*n, step);
+    a->add_callback([zone](const ossia::value& val) { *zone = val.get<float>(); });
+  }
 
-    void addHorizontalSlider(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) override
-    {
-        addVerticalSlider(label, zone, init, min, max, step);
-    }
+  void addHorizontalSlider(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    addVerticalSlider(label, zone, init, min, max, step);
+  }
 
-    void addNumEntry(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min, FAUSTFLOAT max, FAUSTFLOAT step) override
-    {
-        addVerticalSlider(label, zone, init, min, max, step);
-    }
+  void addNumEntry(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    addVerticalSlider(label, zone, init, min, max, step);
+  }
 
-    // -- passive widgets
-    void addHorizontalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
-    {
-        auto n = m_curNode->create_child(label);
-        auto a = n->create_parameter(ossia::val_type::FLOAT);
-        ossia::net::set_domain(*n, ossia::make_domain(min, max));
-        ossia::net::set_access_mode(*n, ossia::access_mode::GET);
+  // -- passive widgets
+  void addHorizontalBargraph(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
+  {
+    auto n = m_curNode->create_child(label);
+    auto a = n->create_parameter(ossia::val_type::FLOAT);
+    ossia::net::set_domain(*n, ossia::make_domain(min, max));
+    ossia::net::set_access_mode(*n, ossia::access_mode::GET);
 
-        m_values.push_back({a, zone});
-    }
-    void addVerticalBargraph(const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
-    {
-		addHorizontalBargraph(label, zone, min, max);
-    }
+    m_values.push_back({a, zone});
+  }
+  void addVerticalBargraph(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
+  {
+    addHorizontalBargraph(label, zone, min, max);
+  }
 
-    // -- metadata declarations
-    void declare(FAUSTFLOAT* zone, const char* key, const char* val) override
-    {
-        std::cout << "declare key : " << key << " val : " << val << std::endl;
-    }
-
+  // -- metadata declarations
+  void declare(FAUSTFLOAT* zone, const char* key, const char* val) override
+  {
+    std::cout << "declare key : " << key << " val : " << val << std::endl;
+  }
 };
 
 #endif

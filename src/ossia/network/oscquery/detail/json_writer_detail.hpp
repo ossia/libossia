@@ -32,7 +32,7 @@ struct json_writer_impl
   template <typename T, typename... Args>
   void writeValue(const std::optional<T>& t, Args&&... args) const
   {
-    if (t)
+    if(t)
     {
       writeValue(*t, std::forward<Args>(args)...);
     }
@@ -43,15 +43,13 @@ struct json_writer_impl
   }
 
   //! Writes a single attribute
-  void writeAttribute(
-      const ossia::net::node_base& n, ossia::string_view method) const;
+  void writeAttribute(const ossia::net::node_base& n, ossia::string_view method) const;
 
   //! Writes only the attributes
   void writeNodeAttributes(const ossia::net::node_base& n) const;
 
   //! Writes a node recursively. Creates a new object.
   void writeNode(const ossia::net::node_base& n);
-
 };
 }
 }

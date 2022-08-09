@@ -9,7 +9,6 @@ namespace max_binding
 class model : public node_base
 {
 public:
-
   using is_model = std::true_type;
 
   void do_registration();
@@ -21,4 +20,3 @@ public:
 
 } // max namespace
 } // ossia namespace
-

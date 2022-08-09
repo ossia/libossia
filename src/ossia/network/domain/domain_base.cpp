@@ -27,50 +27,50 @@ std::pair<std::optional<float>, std::optional<float>> get_float_minmax(const dom
 
 void set_min(domain& dom, const ossia::value& val)
 {
-  if (dom && val.valid())
+  if(dom && val.valid())
     return ossia::apply(domain_set_min_visitor{}, dom.v, val.v);
-  else if (dom && !val.valid()) // Remove the value
+  else if(dom && !val.valid()) // Remove the value
     return ossia::apply_nonnull(domain_set_min_visitor{}, dom.v);
-  else if (!dom && val.valid())
+  else if(!dom && val.valid())
     dom = ossia::apply_nonnull(domain_min_creation_visitor{}, val.v);
 }
 
 void set_max(domain& dom, const ossia::value& val)
 {
-  if (dom && val.valid())
+  if(dom && val.valid())
     return ossia::apply(domain_set_max_visitor{}, dom.v, val.v);
-  else if (dom)
+  else if(dom)
     return ossia::apply_nonnull(domain_set_max_visitor{}, dom.v);
-  else if (!dom && val.valid())
+  else if(!dom && val.valid())
     dom = ossia::apply_nonnull(domain_max_creation_visitor{}, val.v);
 }
 
 void set_values(domain& dom, const std::vector<ossia::value>& val)
 {
-  if (dom)
+  if(dom)
     return ossia::apply_nonnull(value_set_update_visitor{val}, dom.v);
 }
 
 std::vector<ossia::value> get_values(const domain& dom)
 {
-  if (dom)
+  if(dom)
     return ossia::apply_nonnull(value_set_get_visitor{}, dom.v);
   return {};
 }
 
 domain make_domain(const ossia::value& min, const ossia::value& max)
 {
-  if (min.valid() && max.valid())
+  if(min.valid() && max.valid())
   {
     return ossia::apply(domain_minmax_creation_visitor{}, min.v, max.v);
   }
-  else if (min.valid())
+  else if(min.valid())
   {
     auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, min.v);
     set_max(dom, ossia::value{});
     return dom;
   }
-  else if (max.valid())
+  else if(max.valid())
   {
     auto dom = ossia::apply(domain_minmax_creation_visitor{}, max.v, max.v);
     set_min(dom, ossia::value{});
@@ -96,7 +96,7 @@ domain make_domain(tcb::span<const char*> span)
 
 domain make_domain(const std::vector<ossia::value>& vals)
 {
-  if (vals.size() > 0)
+  if(vals.size() > 0)
   {
     auto dom = init_domain(vals[0].get_type());
     ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
@@ -109,20 +109,20 @@ domain make_domain(
     const ossia::value& min, const ossia::value& max,
     const std::vector<ossia::value>& vals)
 {
-  if (min.valid() && max.valid())
+  if(min.valid() && max.valid())
   {
     auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, max.v);
     set_values(dom, vals);
     return dom;
   }
-  else if (min.valid())
+  else if(min.valid())
   {
     auto dom = ossia::apply(domain_minmax_creation_visitor{}, min.v, min.v);
     set_max(dom, ossia::value{});
     set_values(dom, vals);
     return dom;
   }
-  else if (max.valid())
+  else if(max.valid())
   {
     auto dom = ossia::apply(domain_minmax_creation_visitor{}, max.v, max.v);
     set_min(dom, ossia::value{});
@@ -131,7 +131,7 @@ domain make_domain(
   }
   else
   {
-    if (vals.size() > 0)
+    if(vals.size() > 0)
     {
       auto dom = init_domain(vals[0].get_type());
       ossia::apply_nonnull(value_set_update_visitor{vals}, dom.v);
@@ -144,7 +144,7 @@ domain make_domain(
 domain make_domain_from_osc(
     const ossia::small_vector<ossia::value, 2>& val, const ossia::value& cur)
 {
-  if (val.size() == 2 && val[0].valid() && val[1].valid())
+  if(val.size() == 2 && val[0].valid() && val[1].valid())
   {
     return ossia::apply(domain_minmax_creation_visitor{}, val[0].v, val[1].v);
   }
@@ -161,14 +161,14 @@ ossia::domain make_domain_from_minmax(
   const auto s1 = min.size();
   const auto s2 = max.size();
 
-  if (s1 == s2)
+  if(s1 == s2)
   {
-    switch (s1)
+    switch(s1)
     {
       case 0:
         return {};
       case 1:
-        return ossia::make_domain(convert(min[0],v), convert(max[0],v));
+        return ossia::make_domain(convert(min[0], v), convert(max[0], v));
       case 2:
         return ossia::make_domain(
             convert<ossia::vec2f>(min), convert<ossia::vec2f>(max));
@@ -182,9 +182,9 @@ ossia::domain make_domain_from_minmax(
         return ossia::make_domain(ossia::value(min), ossia::value(max));
     }
   }
-  else if (s1 == 0)
+  else if(s1 == 0)
   {
-    switch (v)
+    switch(v)
     {
       case ossia::val_type::CHAR:
         return ossia::make_domain((char)0, max[0]);
@@ -193,11 +193,9 @@ ossia::domain make_domain_from_minmax(
       case ossia::val_type::INT:
         return ossia::make_domain((int)0, max[0]);
       case ossia::val_type::VEC2F:
-        return ossia::make_domain(
-            ossia::make_vec(0, 0), convert<ossia::vec2f>(max));
+        return ossia::make_domain(ossia::make_vec(0, 0), convert<ossia::vec2f>(max));
       case ossia::val_type::VEC3F:
-        return ossia::make_domain(
-            ossia::make_vec(0, 0, 0), convert<ossia::vec3f>(max));
+        return ossia::make_domain(ossia::make_vec(0, 0, 0), convert<ossia::vec3f>(max));
       case ossia::val_type::VEC4F:
         return ossia::make_domain(
             ossia::make_vec(0, 0, 0, 0), convert<ossia::vec4f>(max));
@@ -205,9 +203,9 @@ ossia::domain make_domain_from_minmax(
         break;
     }
   }
-  else if (s2 == 0)
+  else if(s2 == 0)
   {
-    switch (v)
+    switch(v)
     {
       case ossia::val_type::CHAR:
         return ossia::make_domain(min[0], (char)255);
@@ -216,11 +214,9 @@ ossia::domain make_domain_from_minmax(
       case ossia::val_type::INT:
         return ossia::make_domain(min[0], (int)1);
       case ossia::val_type::VEC2F:
-        return ossia::make_domain(
-            convert<ossia::vec2f>(min), ossia::make_vec(1, 1));
+        return ossia::make_domain(convert<ossia::vec2f>(min), ossia::make_vec(1, 1));
       case ossia::val_type::VEC3F:
-        return ossia::make_domain(
-            convert<ossia::vec3f>(min), ossia::make_vec(1, 1, 1));
+        return ossia::make_domain(convert<ossia::vec3f>(min), ossia::make_vec(1, 1, 1));
       case ossia::val_type::VEC4F:
         return ossia::make_domain(
             convert<ossia::vec4f>(min), ossia::make_vec(1, 1, 1, 1));
@@ -235,7 +231,7 @@ ossia::domain make_domain_from_minmax(
 
 value apply_domain(const domain& dom, bounding_mode b, const ossia::value& val)
 {
-  if (bool(dom) && bool(val.v))
+  if(bool(dom) && bool(val.v))
   {
     return ossia::apply(apply_domain_visitor{b}, val.v, dom.v);
   }
@@ -244,7 +240,7 @@ value apply_domain(const domain& dom, bounding_mode b, const ossia::value& val)
 
 value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val)
 {
-  if (bool(dom) && bool(val.v) && b != ossia::bounding_mode::FREE)
+  if(bool(dom) && bool(val.v) && b != ossia::bounding_mode::FREE)
   {
     return ossia::apply(apply_domain_visitor{b}, ossia::move(val.v), dom.v);
   }
@@ -253,7 +249,7 @@ value apply_domain(const domain& dom, bounding_mode b, ossia::value&& val)
 
 domain init_domain(ossia::val_type type)
 {
-  switch (type)
+  switch(type)
   {
     case val_type::IMPULSE:
       return domain_base<impulse>{};

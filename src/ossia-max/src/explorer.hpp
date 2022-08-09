@@ -1,7 +1,9 @@
 #pragma once
-#include <ossia-max/src/object_base.hpp>
 #include "search_filter.hpp"
+
 #include <set>
+
+#include <ossia-max/src/object_base.hpp>
 
 namespace ossia
 {
@@ -13,7 +15,9 @@ namespace max_binding
 #pragma mark -
 #pragma mark t_explorer structure declaration
 
-struct explorer : object_base, search_filter
+struct explorer
+    : object_base
+    , search_filter
 {
   using is_explorer = std::true_type;
 
@@ -34,9 +38,11 @@ struct explorer : object_base, search_filter
   bool register_node(std::vector<std::shared_ptr<matcher>>& node);
   bool unregister();
 
-  static void explore_mess_cb(ossia::max_binding::explorer* x, t_symbol* s, long argc, t_atom* argv);
+  static void
+  explore_mess_cb(ossia::max_binding::explorer* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max_binding::explorer* x);
-  static t_max_err notify(explorer *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static t_max_err
+  notify(explorer* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
   static void assist(explorer* x, void* b, long m, long a, char* s);
 
   static t_symbol* s_explore;

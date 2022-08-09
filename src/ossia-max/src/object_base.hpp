@@ -1,20 +1,20 @@
 #pragma once
-#include <ossia/detail/config.hpp>
 #include "ext.h"
-#include "ext_obex.h"
 #include "ext_critical.h"
-
+#include "ext_obex.h"
 #include "matcher.hpp"
 
-#include <ossia/detail/safe_vec.hpp>
-#include <ossia/detail/optional.hpp>
-#include <ossia/network/base/value_callback.hpp>
+#include <ossia/detail/config.hpp>
+
 #include <ossia/detail/callback_container.hpp>
-#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/detail/optional.hpp>
+#include <ossia/detail/safe_vec.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/osc_address.hpp>
-#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/base/value_callback.hpp>
 #include <ossia/network/common/path.hpp>
+#include <ossia/network/dataspace/dataspace.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 
 #include <iostream>
 #include <map>
@@ -74,7 +74,7 @@ public:
   void* m_set_out{};
   void* m_dumpout{};
 
-  //flags
+  // flags
   bool m_dead{false}; // wether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
@@ -93,7 +93,7 @@ public:
   std::vector<std::shared_ptr<matcher>> m_matchers{};
   std::vector<matcher*> m_node_selection{};
   std::optional<ossia::traversal::path> m_selection_path{};
-  static void class_setup(t_class*c);
+  static void class_setup(t_class* c);
 
   void fill_selection();
   void update_path();
@@ -109,16 +109,17 @@ public:
   object_base* find_parent_object();
 
   // return the first parent ossia object, nullptr otherwise
-  object_base* find_parent_object_recursively(t_object* patcher, bool look_for_model_view);
+  object_base*
+  find_parent_object_recursively(t_object* patcher, bool look_for_model_view);
 
   static void get_description(object_base* x, std::vector<matcher*> nodes);
   static void get_tags(object_base* x, std::vector<matcher*> nodes);
   static void get_priority(object_base* x, std::vector<matcher*> nodes);
   static void get_hidden(object_base* x, std::vector<matcher*> nodes);
-  static void get_zombie(object_base*x, std::vector<matcher*> nodes);
+  static void get_zombie(object_base* x, std::vector<matcher*> nodes);
   static void get_mess_cb(object_base* x, t_symbol* s);
   static void select_mess_cb(object_base* x, t_symbol* s, int argc, t_atom* argv);
-  static void get_recall_safe(object_base*x, std::vector<matcher*> nodes);
+  static void get_recall_safe(object_base* x, std::vector<matcher*> nodes);
 
   // default attributes
   t_symbol* m_name{};
@@ -152,15 +153,18 @@ public:
 
   std::mutex m_bind_mutex;
   // TODO check where this is filled
-  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the last is the root patcher
+  std::vector<t_object*> m_patcher_hierarchy; // canvas hierarchy in ascending order, the
+                                              // last is the root patcher
 
-  static void update_attribute(object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
-  static t_max_err notify(object_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static void update_attribute(
+      object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
+  static t_max_err
+  notify(object_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
   void on_node_removing(const ossia::net::node_base& n);
 
-  static void defer_set_output(object_base*x, t_symbol*s ,int argc, t_atom* argv);
+  static void defer_set_output(object_base* x, t_symbol* s, int argc, t_atom* argv);
   static void set(object_base* x, t_symbol* s, int argc, t_atom* argv);
-  static void get_address(object_base *x,  std::vector<matcher*> nodes);
+  static void get_address(object_base* x, std::vector<matcher*> nodes);
   static void lock_and_touch(object_base* x, t_symbol* s);
   static void loadbang(object_base* x);
   void save_children_state();
@@ -247,7 +251,7 @@ struct value2atom
   void operator()(std::array<float, N> vec) const
   {
     data.reserve(data.size() + N);
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       t_atom a;
       atom_setfloat(&a, vec[i]);
@@ -258,7 +262,7 @@ struct value2atom
   void operator()(const std::vector<ossia::value>& t) const
   {
     data.reserve(data.size() + t.size());
-    for (const auto& v : t)
+    for(const auto& v : t)
       v.apply(*this);
   }
 
@@ -276,12 +280,12 @@ struct value_visitor
 
   void set_out(t_atom& a) const
   {
-    if (x->m_set_out)
+    if(x->m_set_out)
     {
       if(x->m_defer_set)
       {
-        defer_low((t_object*)x,(method)object_base::defer_set_output,
-                  gensym("set"), 1, &a);
+        defer_low(
+            (t_object*)x, (method)object_base::defer_set_output, gensym("set"), 1, &a);
       }
       else
       {
@@ -292,12 +296,12 @@ struct value_visitor
 
   void set_out(int N, t_atom* a) const
   {
-    if (x->m_set_out)
+    if(x->m_set_out)
     {
       if(x->m_defer_set)
       {
-        defer_low((t_object*)x,(method)object_base::defer_set_output,
-                  gensym("set"), N, a);
+        defer_low(
+            (t_object*)x, (method)object_base::defer_set_output, gensym("set"), N, a);
       }
       else
       {
@@ -310,7 +314,7 @@ struct value_visitor
   {
     outlet_bang(x->m_data_out);
 
-    if (x->m_set_out)
+    if(x->m_set_out)
       outlet_bang(x->m_set_out);
   }
 
@@ -361,7 +365,7 @@ struct value_visitor
     set_out(a);
   }
 
-  template<std::size_t N>
+  template <std::size_t N>
   void operator()(std::array<float, N> vec) const
   {
     t_atom a[N];
@@ -381,11 +385,11 @@ struct value_visitor
     if(t.empty())
       return;
 
-    for (const auto& v : t)
+    for(const auto& v : t)
       v.apply(vm);
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
-    if (x->m_data_out)
+    if(x->m_data_out)
       outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
 
     set_out(va.size(), list_ptr);
@@ -393,8 +397,7 @@ struct value_visitor
 
   void operator()() const
   {
-    object_error(
-        (t_object*)x, "%s received an invalid data", x->m_name->s_name);
+    object_error((t_object*)x, "%s received an invalid data", x->m_name->s_name);
   }
 };
 

@@ -4,14 +4,15 @@
 
 #include <ossia/detail/logger.hpp>
 
-#include <spdlog/spdlog.h>
-#include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/sinks/null_sink.h>
+#include <spdlog/sinks/stdout_sinks.h>
+#include <spdlog/spdlog.h>
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/callback_container.hpp>
+
 #include <smallfun.hpp>
 
 #include <iostream>
@@ -47,7 +48,7 @@ invalid_callback_error::~invalid_callback_error()
 static void ossia_global_init()
 {
   static bool init = false;
-  if (!init)
+  if(!init)
   {
     // Create a logger for the library.
     logger();
@@ -98,8 +99,7 @@ std::vector<std::shared_ptr<spdlog::sinks::sink>>& bruh_logger::sinks()
 #else
 spdlog::logger& logger() noexcept
 {
-  static spdlog::logger& init
-      = []() -> spdlog::logger& { return *logger_ptr(); }();
+  static spdlog::logger& init = []() -> spdlog::logger& { return *logger_ptr(); }();
 
   return init;
 }
@@ -107,7 +107,7 @@ spdlog::logger& logger() noexcept
 std::shared_ptr<spdlog::logger> logger_ptr() noexcept
 try
 {
-  if (auto logger = spdlog::get("ossia"))
+  if(auto logger = spdlog::get("ossia"))
     return logger;
   else
     return spdlog::stderr_logger_mt("ossia");
@@ -118,4 +118,3 @@ catch(...)
 }
 #endif
 }
-

@@ -1,13 +1,15 @@
 #pragma once
 #include <ossia/network/base/protocol.hpp>
-#include <verdigris>
 #include <ossia/network/generic/wrapped_parameter.hpp>
-#include <ossia-qt/js_utilities.hpp>
 
 #include <QByteArray>
 #include <QJSValue>
 #include <QList>
 #include <QObject>
+
+#include <verdigris>
+
+#include <ossia-qt/js_utilities.hpp>
 
 class QQmlEngine;
 class QQmlComponent;
@@ -29,12 +31,12 @@ struct http_parameter_data_base
   http_parameter_data_base(const QJSValue& val)
   {
     auto r = val.property("request");
-    if (r.isString())
+    if(r.isString())
     {
       request = r.toString();
 
       auto a = val.property("answer");
-      if (a.isCallable())
+      if(a.isCallable())
       {
         answer = a;
       }
@@ -45,7 +47,9 @@ struct http_parameter_data_base
   QJSValue answer;
 };
 
-struct http_parameter_data : public parameter_data, public http_parameter_data_base
+struct http_parameter_data
+    : public parameter_data
+    , public http_parameter_data_base
 {
   using base_data_type = http_parameter_data_base;
   http_parameter_data() = default;
@@ -54,7 +58,8 @@ struct http_parameter_data : public parameter_data, public http_parameter_data_b
   http_parameter_data& operator=(const http_parameter_data&) = default;
   http_parameter_data& operator=(http_parameter_data&&) = default;
 
-  http_parameter_data(const std::string& name) : parameter_data{name}
+  http_parameter_data(const std::string& name)
+      : parameter_data{name}
   {
   }
 
@@ -64,7 +69,10 @@ struct http_parameter_data : public parameter_data, public http_parameter_data_b
   {
   }
 
-  bool valid() const noexcept { return !request.isEmpty() || type; }
+  bool valid() const noexcept
+  {
+    return !request.isEmpty() || type;
+  }
 };
 
 using http_parameter = wrapped_parameter<http_parameter_data>;
@@ -89,7 +97,8 @@ public:
 
   bool pull(ossia::net::parameter_base& parameter_base) override;
 
-  bool push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
+  bool
+  push(const ossia::net::parameter_base& parameter_base, const ossia::value& v) override;
   bool push_raw(const ossia::net::full_parameter_data& parameter_base) override;
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
@@ -100,11 +109,13 @@ public:
   {
     return js;
   }
-public:
-  void sig_push(const http_parameter* arg_1, const ossia::value& v) E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v)
 
-private:
-  void slot_push(const http_parameter*, const ossia::value& v); W_SLOT(slot_push);
+public:
+  void sig_push(const http_parameter* arg_1, const ossia::value& v)
+      E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v)
+
+          private : void slot_push(const http_parameter*, const ossia::value& v);
+  W_SLOT(slot_push);
 
 private:
   void apply_reply(QJSValue);

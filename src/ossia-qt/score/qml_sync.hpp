@@ -1,11 +1,14 @@
 #pragma once
-#include <QQuickItem>
-#include <verdigris>
-#include <QQmlExpression>
-#include <QQmlScriptString>
-#include <QQmlListProperty>
-#include <ossia-qt/score/qml_cond.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+
+#include <QQmlExpression>
+#include <QQmlListProperty>
+#include <QQmlScriptString>
+#include <QQuickItem>
+
+#include <verdigris>
+
+#include <ossia-qt/score/qml_cond.hpp>
 namespace ossia
 {
 namespace qt
@@ -13,36 +16,43 @@ namespace qt
 class qml_cond;
 class qml_sync : public QQuickItem
 {
-    W_OBJECT(qml_sync)
-    
+  W_OBJECT(qml_sync)
 
-  public:
-    qml_sync(QQuickItem* parent = nullptr);
-    ~qml_sync() override;
+public:
+  qml_sync(QQuickItem* parent = nullptr);
+  ~qml_sync() override;
 
-    QQmlScriptString expr() const;
-    qml_cond* defaultCond();
+  QQmlScriptString expr() const;
+  qml_cond* defaultCond();
 
-    void registerCond(qml_cond*);
-    void unregisterCond(qml_cond*);
+  void registerCond(qml_cond*);
+  void unregisterCond(qml_cond*);
 
-    void setup();
-    std::shared_ptr<ossia::time_sync> sync() const { return m_impl; }
-    void setSync(std::shared_ptr<ossia::time_sync> s) { m_impl = s; }
-  public:
-    void setExpr(QQmlScriptString expr); W_SLOT(setExpr);
+  void setup();
+  std::shared_ptr<ossia::time_sync> sync() const
+  {
+    return m_impl;
+  }
+  void setSync(std::shared_ptr<ossia::time_sync> s)
+  {
+    m_impl = s;
+  }
 
-  public:
-    void exprChanged(QQmlScriptString expr) E_SIGNAL(OSSIA_EXPORT, exprChanged, expr);
+public:
+  void setExpr(QQmlScriptString expr);
+  W_SLOT(setExpr);
 
-  private:
-    void reset();
-    QQmlScriptString m_expr;
-    std::shared_ptr<ossia::time_sync> m_impl;
-    qml_cond m_default;
-    tsl::hopscotch_set<qml_cond*> m_conds;
+public:
+  void exprChanged(QQmlScriptString expr) E_SIGNAL(OSSIA_EXPORT, exprChanged, expr);
 
-W_PROPERTY(QQmlScriptString, expr READ expr WRITE setExpr NOTIFY exprChanged)
+private:
+  void reset();
+  QQmlScriptString m_expr;
+  std::shared_ptr<ossia::time_sync> m_impl;
+  qml_cond m_default;
+  tsl::hopscotch_set<qml_cond*> m_conds;
+
+  W_PROPERTY(QQmlScriptString, expr READ expr WRITE setExpr NOTIFY exprChanged)
 };
 }
 }

@@ -1,8 +1,8 @@
 #pragma once
 
-#include <ossia/editor/scenario/time_value.hpp>
-
 #include <ossia/detail/config.hpp>
+
+#include <ossia/editor/scenario/time_value.hpp>
 
 #include <atomic>
 #include <chrono>

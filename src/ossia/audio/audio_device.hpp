@@ -8,8 +8,12 @@ namespace ossia
 class OSSIA_EXPORT audio_device
 {
 public:
-  audio_device(std::string name = "audio", int bufferSize = 512, int sampleRate = 44100, int inputs = 2, int outputs = 2);
-  audio_device(std::unique_ptr<audio_protocol>, std::string name = "audio", int bufferSize = 512, int sampleRate = 44100, int inputs = 2, int outputs = 2);
+  audio_device(
+      std::string name = "audio", int bufferSize = 512, int sampleRate = 44100,
+      int inputs = 2, int outputs = 2);
+  audio_device(
+      std::unique_ptr<audio_protocol>, std::string name = "audio", int bufferSize = 512,
+      int sampleRate = 44100, int inputs = 2, int outputs = 2);
   ~audio_device();
 
   ossia::audio_parameter& get_main_in();

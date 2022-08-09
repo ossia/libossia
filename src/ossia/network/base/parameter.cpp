@@ -1,10 +1,10 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/base/osc_address.hpp>
 
 #include <future>
 #include <iostream>
@@ -17,7 +17,6 @@ namespace ossia
 namespace net
 {
 parameter_base::~parameter_base() = default;
-
 
 std::future<void> parameter_base::pull_value_async()
 {
@@ -40,7 +39,7 @@ parameter_base::value(const std::vector<destination_index>& indices) const
   t.reserve(indices.size());
 
   auto v = value();
-  for (auto idx : indices)
+  for(auto idx : indices)
   {
     t.push_back(get_value_at_index(v, idx));
   }
@@ -69,10 +68,10 @@ ossia::repetition_filter parameter_base::get_repetition_filter() const
   return m_repetitionFilter;
 }
 
-ossia::net::parameter_base& parameter_base::set_repetition_filter(
-    ossia::repetition_filter repetitionFilter)
+ossia::net::parameter_base&
+parameter_base::set_repetition_filter(ossia::repetition_filter repetitionFilter)
 {
-  if (m_repetitionFilter != repetitionFilter)
+  if(m_repetitionFilter != repetitionFilter)
   {
     m_repetitionFilter = repetitionFilter;
     m_node.get_device().on_attribute_modified(
@@ -83,7 +82,7 @@ ossia::net::parameter_base& parameter_base::set_repetition_filter(
 
 parameter_base& parameter_base::set_unit(const unit_t& u)
 {
-  if (m_unit != u)
+  if(m_unit != u)
   {
     m_unit = u;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_unit()));
@@ -98,7 +97,7 @@ bool parameter_base::get_disabled() const
 
 parameter_base& parameter_base::set_disabled(bool v)
 {
-  if (m_disabled != v)
+  if(m_disabled != v)
   {
     m_disabled = v;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_disabled()));
@@ -113,7 +112,7 @@ bool parameter_base::get_muted() const
 
 parameter_base& parameter_base::set_muted(bool v)
 {
-  if (m_muted != v)
+  if(m_muted != v)
   {
     m_muted = v;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_muted()));
@@ -128,7 +127,7 @@ bool parameter_base::get_critical() const
 
 parameter_base& parameter_base::set_critical(bool v)
 {
-  if (m_critical != v)
+  if(m_critical != v)
   {
     m_critical = v;
     m_node.get_device().on_attribute_modified(m_node, std::string(text_critical()));
@@ -149,8 +148,7 @@ void push_value(const destination& d, const value_with_unit& v)
   addr.push_value(ossia::to_value(v)); // TODO what about destination_index ??
 }
 
-std::ostream&
-operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
+std::ostream& operator<<(std::ostream& s, const ossia::net::parameter_base& addr)
 {
   return s << ossia::net::address_string_from_node(addr);
 }

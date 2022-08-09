@@ -9,8 +9,11 @@ namespace max_binding
 class parameter_base : public object_base
 {
 public:
-  static void update_attribute(parameter_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
-  static t_max_err notify(parameter_base *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static void update_attribute(
+      parameter_base* x, ossia::string_view attribute,
+      const ossia::net::node_base* node);
+  static t_max_err
+  notify(parameter_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
 
   parameter_base();
 
@@ -30,12 +33,12 @@ public:
   void set_unit();
   void set_mute();
 
-  static void class_setup(t_class*c);
+  static void class_setup(t_class* c);
 
   static void get_mess_cb(parameter_base* x, t_symbol* s);
-  static void get_unit(parameter_base*x, std::vector<matcher*> nodes);
-  static void get_rate(parameter_base*x, std::vector<matcher*> nodes);
-  static void get_mute(parameter_base*x, std::vector<matcher*> nodes);
+  static void get_unit(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_rate(parameter_base* x, std::vector<matcher*> nodes);
+  static void get_mute(parameter_base* x, std::vector<matcher*> nodes);
   static void get_domain(parameter_base* x, std::vector<matcher*> nodes);
   static void get_min(parameter_base* x, std::vector<matcher*> nodes);
   static void get_max(parameter_base* x, std::vector<matcher*> nodes);
@@ -95,7 +98,6 @@ public:
   static void in_int(parameter_base* x, long int f);
   static void in_symbol(parameter_base* x, t_symbol* f);
 };
-
 
 } // namespace max
 } // namespace ossia

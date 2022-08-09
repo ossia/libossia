@@ -11,16 +11,14 @@ struct two_bit_color_map_fast
   IndexMap index;
   mutable std::vector<unsigned char> data;
 
-  BOOST_STATIC_CONSTANT(
-      int, bits_per_char = std::numeric_limits<unsigned char>::digits);
+  BOOST_STATIC_CONSTANT(int, bits_per_char = std::numeric_limits<unsigned char>::digits);
   BOOST_STATIC_CONSTANT(int, elements_per_char = bits_per_char / 2);
   typedef typename property_traits<IndexMap>::key_type key_type;
   typedef two_bit_color_type value_type;
   typedef void reference;
   typedef read_write_property_map_tag category;
 
-  explicit two_bit_color_map_fast(
-      std::size_t n, const IndexMap& index = IndexMap())
+  explicit two_bit_color_map_fast(std::size_t n, const IndexMap& index = IndexMap())
       : n(n)
       , index(index)
       , data((n + elements_per_char - 1) / elements_per_char)
@@ -43,8 +41,7 @@ get(const two_bit_color_map_fast<IndexMap>& pm,
     typename property_traits<IndexMap>::key_type key)
 {
   BOOST_STATIC_CONSTANT(
-      int,
-      elements_per_char = two_bit_color_map_fast<IndexMap>::elements_per_char);
+      int, elements_per_char = two_bit_color_map_fast<IndexMap>::elements_per_char);
   typename property_traits<IndexMap>::value_type i = get(pm.index, key);
   BOOST_ASSERT((std::size_t)i < pm.n);
 
@@ -60,8 +57,7 @@ put(const two_bit_color_map_fast<IndexMap>& pm,
     typename property_traits<IndexMap>::key_type key, two_bit_color_type value)
 {
   BOOST_STATIC_CONSTANT(
-      int,
-      elements_per_char = two_bit_color_map_fast<IndexMap>::elements_per_char);
+      int, elements_per_char = two_bit_color_map_fast<IndexMap>::elements_per_char);
   typename property_traits<IndexMap>::value_type i = get(pm.index, key);
   BOOST_ASSERT((std::size_t)i < pm.n);
   BOOST_ASSERT(value >= 0 && value < 4);
@@ -89,11 +85,9 @@ namespace ossia
 namespace bfs
 {
 template <
-    class IncidenceGraph, class Vertex, class Buffer, class BFSVisitor,
-    class ColorMap>
+    class IncidenceGraph, class Vertex, class Buffer, class BFSVisitor, class ColorMap>
 void breadth_first_visit_simple(
-    const IncidenceGraph& g, Vertex source, Buffer& Q, BFSVisitor& vis,
-    ColorMap& color)
+    const IncidenceGraph& g, Vertex source, Buffer& Q, BFSVisitor& vis, ColorMap& color)
 {
   using namespace boost;
   using GTraits = graph_traits<IncidenceGraph>;
@@ -105,18 +99,18 @@ void breadth_first_visit_simple(
   vis.discover_vertex(source, g);
   Q.push_back(source);
 
-  while (!Q.empty())
+  while(!Q.empty())
   {
     Vertex u = Q.front();
     Q.pop_front();
-    for (std::tie(ei, ei_end) = out_edges(u, g); ei != ei_end; ++ei)
+    for(std::tie(ei, ei_end) = out_edges(u, g); ei != ei_end; ++ei)
     {
       Vertex v = target(*ei, g);
       auto v_color = get(color, v);
-      if (v_color == two_bit_white)
+      if(v_color == two_bit_white)
       {
         put(color, v, two_bit_gray);
-        if (vis.discover_vertex(v, g))
+        if(vis.discover_vertex(v, g))
           return;
         Q.push_back(v);
       }
@@ -128,15 +122,15 @@ void breadth_first_visit_simple(
 template <class VertexListGraph, class Visitor, class Queue, class ColorMap>
 void breadth_first_search_simple(
     const VertexListGraph& g,
-    typename boost::graph_traits<VertexListGraph>::vertex_descriptor s,
-    Visitor& vis, Queue& Q, ColorMap& color)
+    typename boost::graph_traits<VertexListGraph>::vertex_descriptor s, Visitor& vis,
+    Queue& Q, ColorMap& color)
 {
   using namespace boost;
   // auto color = make_two_bit_color_map_fast(boost::num_vertices(g),
   // choose_const_pmap(get_param(vis, vertex_index), g, vertex_index));
   // make_two_bit_color_map_fast(boost::num_vertices(g), vertex_index);
   typename boost::graph_traits<VertexListGraph>::vertex_iterator i, i_end;
-  for (boost::tie(i, i_end) = vertices(g); i != i_end; ++i)
+  for(boost::tie(i, i_end) = vertices(g); i != i_end; ++i)
     put(color, *i, two_bit_white);
 
   breadth_first_visit_simple(g, s, Q, vis, color);

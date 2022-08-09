@@ -2,13 +2,13 @@
 #include <cstdint>
 #if SIZE_MAX == 0xFFFFFFFF // 32-bit
 #include <ossia/dataflow/audio_port.hpp>
-#include <ossia/dataflow/value_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/value_port.hpp>
 #endif
 
 #include <ossia/dataflow/dataflow_fwd.hpp>
-#include <ossia/dataflow/token_request.hpp>
 #include <ossia/dataflow/exec_state_facade.hpp>
+#include <ossia/dataflow/token_request.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -29,7 +29,8 @@ inline bool operator==(const token_request_vec& lhs, const simple_token_request_
   auto it1 = lhs.begin();
   auto it2 = rhs.begin();
   auto e1 = lhs.end();
-  for(; it1 < e1; ++it1, ++it2) {
+  for(; it1 < e1; ++it1, ++it2)
+  {
     if(*it1 == *it2)
       continue;
     else
@@ -46,7 +47,8 @@ inline bool operator!=(const token_request_vec& lhs, const simple_token_request_
   auto it1 = lhs.begin();
   auto it2 = rhs.begin();
   auto e1 = lhs.end();
-  for(; it1 < e1; ++it1, ++it2) {
+  for(; it1 < e1; ++it1, ++it2)
+  {
     if(*it1 != *it2)
       continue;
     else
@@ -137,8 +139,7 @@ public:
 
   [[nodiscard]] bool has_port_inputs() const noexcept;
   [[nodiscard]] bool has_global_inputs() const noexcept;
-  [[nodiscard]] bool
-  has_local_inputs(const execution_state& st) const noexcept;
+  [[nodiscard]] bool has_local_inputs(const execution_state& st) const noexcept;
 
   [[nodiscard]] const inlets& root_inputs() const noexcept
   {
@@ -156,7 +157,6 @@ public:
   {
     return m_outlets;
   }
-
 
   virtual void clear() noexcept;
 
@@ -224,8 +224,9 @@ public:
   void clear() noexcept override;
 };
 
-template<typename T, typename... Args>
-auto make_node(const execution_state& st, Args&&... args) {
+template <typename T, typename... Args>
+auto make_node(const execution_state& st, Args&&... args)
+{
   auto n = std::make_shared<T>(std::forward<Args>(args)...);
   n->prepare(st);
   return n;

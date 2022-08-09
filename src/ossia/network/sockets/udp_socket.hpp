@@ -1,13 +1,14 @@
 #pragma once
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
-#include <boost/asio/write.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
-#include <ossia/detail/logger.hpp>
 
 namespace ossia::net
 {
@@ -15,17 +16,17 @@ namespace ossia::net
 class udp_receive_socket
 {
   using proto = boost::asio::ip::udp;
+
 public:
   udp_receive_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}
-      , m_endpoint {boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket {ctx}
+      : m_context{ctx}
+      , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
+      , m_socket{ctx}
   {
   }
 
   ~udp_receive_socket()
   {
-
   }
 
   void open()
@@ -49,22 +50,21 @@ public:
   void receive(F f)
   {
     m_socket.async_receive_from(
-        boost::asio::buffer(m_data), m_endpoint,
-        [this, f](auto ec, std::size_t sz) {
-          if (ec == boost::asio::error::operation_aborted)
+        boost::asio::buffer(m_data), m_endpoint, [this, f](auto ec, std::size_t sz) {
+          if(ec == boost::asio::error::operation_aborted)
             return;
 
-          if (!ec && sz > 0)
+          if(!ec && sz > 0)
           {
             try
             {
               f(m_data, sz);
             }
-            catch (const std::exception& e)
+            catch(const std::exception& e)
             {
               ossia::logger().error("[udp_socket::receive]: {}", e.what());
             }
-            catch (...)
+            catch(...)
             {
               ossia::logger().error("[udp_socket::receive]: unknown error");
             }
@@ -85,18 +85,21 @@ public:
 class udp_send_socket
 {
   using proto = boost::asio::ip::udp;
+
 public:
   udp_send_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}
-      , m_endpoint {boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket {ctx}
+      : m_context{ctx}
+      , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
+      , m_socket{ctx}
   {
   }
 
-  udp_send_socket(const boost::asio::ip::address_v4& host, const uint16_t port, boost::asio::io_context& ctx)
-      : m_context {ctx}
-      , m_endpoint {host, port}
-      , m_socket {ctx}
+  udp_send_socket(
+      const boost::asio::ip::address_v4& host, const uint16_t port,
+      boost::asio::io_context& ctx)
+      : m_context{ctx}
+      , m_endpoint{host, port}
+      , m_socket{ctx}
   {
   }
 

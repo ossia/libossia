@@ -1,9 +1,12 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <QQmlExtensionPlugin>
-#include <verdigris>
+
 #include <QQmlExtensionInterface>
+#include <QQmlExtensionPlugin>
+
 #include <ossia_export.h>
+
+#include <verdigris>
 namespace ossia
 {
 namespace qt

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/mutex.hpp>
 
 #include <array>
@@ -26,7 +27,7 @@
 #elif defined(__sparc) || defined(__sparc__)
 #define ossia_rwlock_pause() __asm__ __volatile__("pause")
 #elif defined(__ppc__) || defined(_ARCH_PPC) || defined(_ARCH_PWR) \
-|| defined(_ARCH_PWR2) || defined(_POWER)
+    || defined(_ARCH_PWR2) || defined(_POWER)
 #define ossia_rwlock_pause() __asm__ volatile("or 27,27,27")
 #elif defined(_MSC_VER)
 #include <windows.h>
@@ -48,25 +49,25 @@ struct TS_CAPABILITY("mutex") audio_spin_mutex
     // (~ 1 ms), respectively, when measured on a 2.9 GHz Intel i9
     constexpr std::array iterations = {5, 10, 3000};
 
-    for (int i = 0; i < iterations[0]; ++i)
+    for(int i = 0; i < iterations[0]; ++i)
     {
-      if (try_lock())
+      if(try_lock())
         return;
     }
 
-    for (int i = 0; i < iterations[1]; ++i)
+    for(int i = 0; i < iterations[1]; ++i)
     {
-      if (try_lock())
+      if(try_lock())
         return;
 
       ossia_rwlock_pause();
     }
 
-    while (true)
+    while(true)
     {
-      for (int i = 0; i < iterations[2]; ++i)
+      for(int i = 0; i < iterations[2]; ++i)
       {
-        if (try_lock())
+        if(try_lock())
           return;
 
         ossia_rwlock_pause();
@@ -89,7 +90,8 @@ struct TS_CAPABILITY("mutex") audio_spin_mutex
 
   bool try_lock() TS_TRY_ACQUIRE(true)
   {
-    return !locked.load(std::memory_order_relaxed) && !locked.exchange(true, std::memory_order_acquire);
+    return !locked.load(std::memory_order_relaxed)
+           && !locked.exchange(true, std::memory_order_acquire);
   }
 
   void unlock() TS_RELEASE()
@@ -97,7 +99,10 @@ struct TS_CAPABILITY("mutex") audio_spin_mutex
     locked.store(false, std::memory_order_release);
   }
 
-  const auto& operator!() const { return *this; }
+  const auto& operator!() const
+  {
+    return *this;
+  }
 
 private:
   std::atomic<bool> locked{false};

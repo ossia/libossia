@@ -17,7 +17,8 @@ class message_queue final : public Nano::Observer
 {
 public:
   ossia::net::device_base& device;
-  message_queue(ossia::net::device_base& dev) : device{dev}
+  message_queue(ossia::net::device_base& dev)
+      : device{dev}
   {
     dev.on_parameter_removing.connect<&message_queue::on_param_removed>(*this);
   }
@@ -26,12 +27,12 @@ public:
   {
     try
     {
-      for (auto reg : m_reg)
+      for(auto reg : m_reg)
       {
         reg.first->remove_callback(reg.second.second);
       }
     }
-    catch (...)
+    catch(...)
     {
     }
   }
@@ -45,7 +46,7 @@ public:
   {
     auto ptr = &p;
     auto reg_it = m_reg.find(&p);
-    if (reg_it == m_reg.end())
+    if(reg_it == m_reg.end())
     {
       auto it = p.add_callback([this, ptr](const ossia::value& val) {
         m_queue.enqueue({ptr, val});
@@ -61,7 +62,7 @@ public:
   void unreg(ossia::net::parameter_base& p)
   {
     auto it = m_reg.find(&p);
-    if (it != m_reg.end())
+    if(it != m_reg.end())
     {
       it.value().first--;
       if(it.value().first <= 0)
@@ -76,7 +77,7 @@ private:
   void on_param_removed(const ossia::net::parameter_base& p)
   {
     auto it = m_reg.find(const_cast<ossia::net::parameter_base*>(&p));
-    if (it != m_reg.end())
+    if(it != m_reg.end())
       m_reg.erase(it);
   }
 
@@ -84,7 +85,7 @@ private:
 
   ossia::ptr_map<
       ossia::net::parameter_base*,
-        std::pair<int, ossia::net::parameter_base::callback_index>>
+      std::pair<int, ossia::net::parameter_base::callback_index>>
       m_reg;
 };
 

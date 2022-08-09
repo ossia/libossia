@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <cstdint>
 
 #define DMX_CHANNEL_COUNT 512

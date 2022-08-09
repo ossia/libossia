@@ -1,11 +1,12 @@
 #pragma once
 #include <ossia/network/sockets/configuration.hpp>
+
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/udp.hpp>
-#include <boost/asio/write.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
 
@@ -25,7 +26,6 @@ public:
   explicit tcp_listener(proto::socket sock)
       : m_socket{std::move(sock)}
   {
-
   }
 
   void close()
@@ -40,12 +40,10 @@ public:
 
   void on_close()
   {
-
   }
 
   void on_fail()
   {
-
   }
 
   proto::socket m_socket;
@@ -59,8 +57,9 @@ public:
   using listener = tcp_listener;
 
   tcp_server(const socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}
-      , m_acceptor {ctx, proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
+      : m_context{ctx}
+      , m_acceptor{
+            ctx, proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
   {
   }
 
@@ -75,9 +74,9 @@ public:
   using socket = typename proto::socket;
 
   tcp_client(const socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_context {ctx}
-      , m_endpoint {boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket {ctx}
+      : m_context{ctx}
+      , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
+      , m_socket{ctx}
   {
   }
 

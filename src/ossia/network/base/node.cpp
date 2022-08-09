@@ -44,7 +44,7 @@ void node_base::set_extended_attributes(const extended_attributes& e)
 ossia::any node_base::get_attribute(ossia::string_view str) const
 {
   auto it = m_extended.find(str);
-  if (it != m_extended.end())
+  if(it != m_extended.end())
     return it.value();
   return {};
 }
@@ -52,9 +52,9 @@ ossia::any node_base::get_attribute(ossia::string_view str) const
 void node_base::set(string_view str, bool value)
 {
   auto opt = ossia::has_attribute(*this, str);
-  if (opt != value)
+  if(opt != value)
   {
-    if (value)
+    if(value)
       ossia::set_attribute((extended_attributes&)*this, str);
     else
       ossia::unset_attribute((extended_attributes&)*this, str);
@@ -66,7 +66,7 @@ void node_base::set(string_view str, bool value)
 node_base* node_base::create_child(std::string name)
 {
   auto& dev = get_device();
-  if (!dev.get_capabilities().change_tree)
+  if(!dev.get_capabilities().change_tree)
     return nullptr;
   ossia::net::node_base* ptr{};
   {
@@ -75,13 +75,13 @@ node_base* node_base::create_child(std::string name)
     sanitize_name(name, m_children);
     auto res = make_child(name);
 
-    if ((ptr = res.get()))
+    if((ptr = res.get()))
     {
       m_children.push_back(std::move(res));
     }
   }
 
-  if (ptr)
+  if(ptr)
   {
     dev.on_node_created(*ptr);
   }
@@ -111,12 +111,12 @@ bool node_base::is_root_instance(const node_base& child) const
   SPDLOG_TRACE((&ossia::logger()), "locked(is_root_instance)");
 
   const auto& child_name = child.get_name();
-  for (auto& cld : m_children)
+  for(auto& cld : m_children)
   {
     const auto& bro_name = cld->get_name();
-    if ((bro_name.size() > (child_name.size() + 1))
-        && boost::starts_with(bro_name, child_name)
-        && (bro_name[child_name.size()] == '.'))
+    if((bro_name.size() > (child_name.size() + 1))
+       && boost::starts_with(bro_name, child_name)
+       && (bro_name[child_name.size()] == '.'))
     {
       // TODO to be sure we should do
       // a full regex check but is it really worth it..
@@ -131,7 +131,7 @@ bool node_base::is_root_instance(const node_base& child) const
 
 void node_base::on_address_change()
 {
-  for (auto& cld : m_children)
+  for(auto& cld : m_children)
   {
     cld->on_address_change();
   }
@@ -140,13 +140,13 @@ void node_base::on_address_change()
 node_base* node_base::add_child(std::unique_ptr<node_base> n)
 {
   auto& dev = get_device();
-  if (!dev.get_capabilities().change_tree)
+  if(!dev.get_capabilities().change_tree)
     return nullptr;
 
-  if (n)
+  if(n)
   {
     const auto& name = n->get_name();
-    if (name == sanitize_name(name, children_names()))
+    if(name == sanitize_name(name, children_names()))
     {
       auto ptr = n.get();
       {
@@ -166,9 +166,9 @@ node_base* node_base::find_child(ossia::string_view name)
     SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");
     read_lock_t lock{m_mutex};
     SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
-    for (auto& node : m_children)
+    for(auto& node : m_children)
     {
-      if (node->get_name() == name)
+      if(node->get_name() == name)
       {
         SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
         return node.get();
@@ -187,9 +187,9 @@ node_base* node_base::find_child(const QString& name)
     SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");
     read_lock_t lock{m_mutex};
     SPDLOG_TRACE((&ossia::logger()), "locked(findChild)");
-    for (auto& node : m_children)
+    for(auto& node : m_children)
     {
-      if (latin_compare(name, node->get_name()))
+      if(latin_compare(name, node->get_name()))
       {
         SPDLOG_TRACE((&ossia::logger()), "unlocked(findChild)");
         return node.get();
@@ -215,7 +215,7 @@ bool node_base::has_child(node_base& n)
 bool node_base::remove_child(const std::string& name)
 {
   auto& dev = get_device();
-  if (!dev.get_capabilities().change_tree)
+  if(!dev.get_capabilities().change_tree)
     return false;
 
   std::string n = name;
@@ -224,17 +224,16 @@ bool node_base::remove_child(const std::string& name)
   std::unique_ptr<ossia::net::node_base> cld;
   {
     write_lock_t lock{m_mutex};
-    auto it = find_if(
-        m_children, [&](const auto& c) { return c->get_name() == n; });
+    auto it = find_if(m_children, [&](const auto& c) { return c->get_name() == n; });
 
-    if (it != m_children.end())
+    if(it != m_children.end())
     {
       cld = std::move(*it);
       m_children.erase(it);
     }
   }
 
-  if (cld)
+  if(cld)
   {
     cld->clear_children();
     dev.on_node_removing(*cld);
@@ -251,23 +250,22 @@ bool node_base::remove_child(const std::string& name)
 bool node_base::remove_child(const node_base& n)
 {
   auto& dev = get_device();
-  if (!dev.get_capabilities().change_tree)
+  if(!dev.get_capabilities().change_tree)
     return false;
 
   std::unique_ptr<ossia::net::node_base> cld;
   {
     write_lock_t lock{m_mutex};
-    auto it
-        = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
+    auto it = find_if(m_children, [&](const auto& c) { return c.get() == &n; });
 
-    if (it != m_children.end())
+    if(it != m_children.end())
     {
       cld = std::move(*it);
       m_children.erase(it);
     }
   }
 
-  if (cld)
+  if(cld)
   {
     cld->clear_children();
     dev.on_node_removing(*cld);
@@ -284,7 +282,7 @@ bool node_base::remove_child(const node_base& n)
 void node_base::clear_children()
 {
   auto& dev = get_device();
-  if (!dev.get_capabilities().change_tree)
+  if(!dev.get_capabilities().change_tree)
     return;
 
   children_t to_remove;
@@ -294,7 +292,7 @@ void node_base::clear_children()
     to_remove = std::move(m_children);
   }
 
-  for (auto& child : to_remove)
+  for(auto& child : to_remove)
   {
     child->clear_children();
     child->remove_parameter();
@@ -312,7 +310,7 @@ std::vector<node_base*> node_base::children_copy() const
 
   SPDLOG_TRACE((&ossia::logger()), "locked(children_copy)");
   copy.reserve(m_children.size());
-  for (auto& e : m_children)
+  for(auto& e : m_children)
     copy.push_back(e.get());
 
   SPDLOG_TRACE((&ossia::logger()), "unlocking(children_copy)");

@@ -52,8 +52,7 @@ struct bark_u : public timing_unit<bark_u>
     constexpr_return(ossia::make_string_array("bark"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1.0f / (600.f * std::sinh(self.dataspace_value / 6.f));
   }
@@ -108,11 +107,9 @@ struct cent_u : public timing_unit<cent_u>
     constexpr_return(ossia::make_string_array("cents"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return 1.f
-           / (440.0f * ossia::exp2((self.dataspace_value - 6900.0f) / 1200.0f));
+    return 1.f / (440.0f * ossia::exp2((self.dataspace_value - 6900.0f) / 1200.0f));
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
@@ -169,8 +166,7 @@ struct mel_u : public timing_unit<mel_u>
     constexpr_return(ossia::make_string_array("mel"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1.0f / (700.0f * (std::pow(10.f, self.dataspace_value / 2595.0f) - 1.0f));
   }
@@ -198,8 +194,7 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
     constexpr_return(ossia::make_string_array("midinote", "midipitch", "pitch"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return 1.f / (440.0f * ossia::exp2((self.dataspace_value - 69.0f) / 12.0f));
   }
@@ -262,8 +257,7 @@ struct sample_u : public timing_unit<sample_u>
     rate = r;
   }
 
-  constexpr strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  constexpr strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return self.dataspace_value / rate;
   }
@@ -284,7 +278,7 @@ struct sample_u : public timing_unit<sample_u>
   }
 };
 
-template<typename T>
+template <typename T>
 static const T exp_69_12 = ossia::exp2(69. / 12.);
 struct playback_speed_u : public timing_unit<playback_speed_u>
 {
@@ -293,8 +287,7 @@ struct playback_speed_u : public timing_unit<playback_speed_u>
     constexpr_return(ossia::make_string_array("speed"));
   }
 
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return exp_69_12<float> / (440.0f * self.dataspace_value);
   }

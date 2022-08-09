@@ -1,6 +1,7 @@
 #pragma once
-#include <boost/asio/high_resolution_timer.hpp>
 #include <ossia/detail/logger.hpp>
+
+#include <boost/asio/high_resolution_timer.hpp>
 
 namespace ossia
 {
@@ -9,10 +10,9 @@ class timer
 {
 public:
   explicit timer(boost::asio::io_context& ctx)
-    : m_ctx{&ctx}
-    , m_timer{ctx}
+      : m_ctx{&ctx}
+      , m_timer{ctx}
   {
-
   }
 
   timer(const timer&) = delete;
@@ -30,11 +30,11 @@ public:
     m_delay = ms;
   }
 
-  template<typename F>
+  template <typename F>
   void start(F f)
   {
     m_timer.expires_from_now(m_delay);
-    m_timer.async_wait([this, ff = std::move(f)] (auto ec) {
+    m_timer.async_wait([this, ff = std::move(f)](auto ec) {
       if(ec)
       {
         ossia::logger().error("timer error: {}", ec.message());
@@ -48,9 +48,8 @@ public:
 
   void stop()
   {
-    m_ctx->post([tm = std::make_shared<boost::asio::high_resolution_timer>(std::move(m_timer))] () mutable {
-      tm->cancel();
-    });
+    m_ctx->post([tm = std::make_shared<boost::asio::high_resolution_timer>(
+                     std::move(m_timer))]() mutable { tm->cancel(); });
   }
 
 private:

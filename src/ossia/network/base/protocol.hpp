@@ -3,8 +3,8 @@
 
 #include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
+
 #include <nano_signal_slot.hpp>
-#include <ossia/detail/config.hpp>
 
 #include <future>
 #include <memory>
@@ -22,7 +22,6 @@ struct full_parameter_data;
 
 class protocol_base;
 
-
 /**
  * @brief The protocol_base class
  *
@@ -37,12 +36,19 @@ class protocol_base;
 class OSSIA_EXPORT protocol_base
 {
 public:
-  enum flags {
+  enum flags
+  {
     SupportsMultiplex = (1 << 0)
   };
 
-  explicit protocol_base(): m_flags{} { }
-  explicit protocol_base(flags f): m_flags{f} { }
+  explicit protocol_base()
+      : m_flags{}
+  {
+  }
+  explicit protocol_base(flags f)
+      : m_flags{f}
+  {
+  }
   protocol_base(const protocol_base&) = delete;
   protocol_base(protocol_base&&) = delete;
   protocol_base& operator=(const protocol_base&) = delete;
@@ -77,15 +83,16 @@ public:
   /**
    * @brief called when some protocol on the same device received a message.
    *
-   * This can be used to echo the message to other protocols on the same device.
+   * This can be used to echo the message to other protocols on the same
+   * device.
    */
-  virtual bool echo_incoming_message(const message_origin_identifier&, const parameter_base&, const ossia::value& v);
+  virtual bool echo_incoming_message(
+      const message_origin_identifier&, const parameter_base&, const ossia::value& v);
 
   /**
    * @brief Send many values in one go if the protocol supports it
    */
-  virtual bool
-  push_bundle(const std::vector<const ossia::net::parameter_base*>&);
+  virtual bool push_bundle(const std::vector<const ossia::net::parameter_base*>&);
 
   /**
    * @brief Send a value to the network.
@@ -129,7 +136,8 @@ public:
 
   /**
    * @brief If the protocol supports it, request the namespace corresponding
-   * to this node. If the update takes too long, nodes may be dropped as there is a default timeout.
+   * to this node. If the update takes too long, nodes may be dropped as there
+   * is a default timeout.
    */
   virtual bool update(node_base& node_base) = 0;
 
@@ -167,16 +175,22 @@ public:
   {
   }
 
-  flags get_flags() const noexcept { return m_flags;}
-  bool test_flag(flags f) const noexcept { return m_flags & f;}
+  flags get_flags() const noexcept
+  {
+    return m_flags;
+  }
+  bool test_flag(flags f) const noexcept
+  {
+    return m_flags & f;
+  }
+
 protected:
   const flags m_flags{};
   network_logger m_logger;
 };
 
-template<typename T>
-class can_learn
-    : public T
+template <typename T>
+class can_learn : public T
 {
 public:
   using T::T;

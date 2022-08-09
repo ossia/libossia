@@ -1,7 +1,8 @@
 #pragma once
 
-#include <ossia-pd/src/parameter_base.hpp>
 #include <ossia/detail/optional.hpp>
+
+#include <ossia-pd/src/parameter_base.hpp>
 
 namespace ossia
 {
@@ -26,11 +27,14 @@ public:
   void set_rate();
 
   void on_parameter_created_callback(const ossia::net::parameter_base& addr);
-  static void update_attribute(remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
+  static void update_attribute(
+      remote* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static void bind(remote* x, t_symbol* address);
-  static void click( remote* x, t_floatarg xpos, t_floatarg ypos,
-                     t_floatarg shift, t_floatarg ctrl, t_floatarg alt);
-  static t_pd_err notify(remote*x, t_symbol*s, t_symbol* msg, void* sender, void* data);
+  static void click(
+      remote* x, t_floatarg xpos, t_floatarg ypos, t_floatarg shift, t_floatarg ctrl,
+      t_floatarg alt);
+  static t_pd_err
+  notify(remote* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
 
   static void destroy(remote* x);
   static void* create(t_symbol* name, int argc, t_atom* argv);
@@ -38,10 +42,10 @@ public:
   static ossia::safe_set<remote*>& quarantine();
 
   static void get_mess_cb(remote* x, t_symbol* s);
-  static void get_unit(remote*x);
-  static void get_mute(remote*x);
-  static void get_rate(remote*x);
-  static void get_enable(remote*x);
+  static void get_unit(remote* x);
+  static void get_mute(remote* x);
+  static void get_rate(remote* x);
+  static void get_enable(remote* x);
 
   void on_device_deleted(const ossia::net::node_base&);
 };

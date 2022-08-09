@@ -11,7 +11,7 @@ struct midi_name_table
 {
   midi_name_table()
   {
-    for (int i = 0; i < 128; i++)
+    for(int i = 0; i < 128; i++)
       names[i] = boost::lexical_cast<std::string>(i);
   }
 
@@ -29,11 +29,13 @@ midi_node::~midi_node()
 }
 
 midi_node::midi_node(midi_device& aDevice, node_base& aParent)
-    : m_device{aDevice}, m_parent{&aParent}
+    : m_device{aDevice}
+    , m_parent{&aParent}
 {
 }
 
-midi_node::midi_node(midi_device& aDevice) : m_device{aDevice}
+midi_node::midi_node(midi_device& aDevice)
+    : m_device{aDevice}
 {
 }
 

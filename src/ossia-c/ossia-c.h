@@ -11,16 +11,22 @@
  *
  * There are mutiple namespaces :
  *
- * * The `ossia_protocol_*` functions allow interoperation with protocols supported by libossia.
- * * The `ossia_device_*`, `ossia_node_*`, `ossia_parameter_*` functions are used to configure local or remote device trees.
- * * The `ossia_domain_*` functions allow to define domains (min / max, or range of admissible values) for parameters.
- * * The `ossia_value_*` functions allow to create and read the content of libossia values.
- *   Simply put, such a value is an union of various types: int, float, string, etc.
- * * The `ossia_logger_*` functions can be usd to set-up a simple WebSocket-based logging infrastructure.
- *   The format of the logger messages is given [in this example](https://github.com/ossia/libossia/blob/master/docs/Examples/Common/Logger.cpp).
+ * * The `ossia_protocol_*` functions allow interoperation with protocols supported by
+ * libossia.
+ * * The `ossia_device_*`, `ossia_node_*`, `ossia_parameter_*` functions are used to
+ * configure local or remote device trees.
+ * * The `ossia_domain_*` functions allow to define domains (min / max, or range of
+ * admissible values) for parameters.
+ * * The `ossia_value_*` functions allow to create and read the content of libossia
+ * values. Simply put, such a value is an union of various types: int, float, string,
+ * etc.
+ * * The `ossia_logger_*` functions can be usd to set-up a simple WebSocket-based logging
+ * infrastructure. The format of the logger messages is given [in this
+ * example](https://github.com/ossia/libossia/blob/master/docs/Examples/Common/Logger.cpp).
  * * The `ossia_mq_*` functions can be used when a thread-safe lock-free queue is needed.
  *   In particular, note that callbacks will be executed in different threads.
- *   Hence, this mechanism is needed if the user of this API cannot make its program thread-safe.
+ *   Hence, this mechanism is needed if the user of this API cannot make its program
+ * thread-safe.
  *
  * ### Multithreading notes:
  *
@@ -44,7 +50,8 @@
  * * Safe: Can be safely called from multiple threads, may block.
  * * MT-Safe: Can be safely called from multiple threads, won't block.
  * * Data-safe: Can be safely called from multiple threads with the same device.
- *              For instance, `ossia_parameter_set_value` and `ossia_parameter_get_value`.
+ *              For instance, `ossia_parameter_set_value` and
+ * `ossia_parameter_get_value`.
  *
  * Only functions marked as data-safe can be called in parallel on the same device,
  * and no function with weaker guarantees shall be called on the device at the same time
@@ -68,8 +75,7 @@
 
 #include <ossia_export.h>
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 struct ossia_protocol;
 struct ossia_device;
@@ -98,11 +104,17 @@ struct ossia_value_callback_index;
 typedef struct ossia_value_callback_index* ossia_value_callback_idx_t;
 
 struct ossia_vec2f
-{ float val[2]; };
+{
+  float val[2];
+};
 struct ossia_vec3f
-{ float val[3]; };
+{
+  float val[3];
+};
 struct ossia_vec4f
-{ float val[4]; };
+{
+  float val[4];
+};
 
 /****************/
 /*** Protocol ***/
@@ -131,9 +143,7 @@ ossia_protocol_t ossia_protocol_multiplex_create();
  * @note Multithread guarantees: MT-safe
  */
 OSSIA_EXPORT
-void ossia_protocol_multiplex_expose_to(
-    ossia_protocol_t local,
-    ossia_protocol_t other);
+void ossia_protocol_multiplex_expose_to(ossia_protocol_t local, ossia_protocol_t other);
 
 /**
  * @brief Instantiate a raw OSC protocol
@@ -145,10 +155,8 @@ void ossia_protocol_multiplex_expose_to(
  * @note Multithread guarantees: MT-safe
  */
 OSSIA_EXPORT
-ossia_protocol_t ossia_protocol_osc_create(
-    const char* ip,
-    int remote_port,
-    int local_port);
+ossia_protocol_t
+ossia_protocol_osc_create(const char* ip, int remote_port, int local_port);
 
 /**
  * @brief Instantiate a Minuit protocol
@@ -162,10 +170,7 @@ ossia_protocol_t ossia_protocol_osc_create(
  */
 OSSIA_EXPORT
 ossia_protocol_t ossia_protocol_minuit_create(
-    const char* local_name,
-    const char* ip,
-    int remote_port,
-    int local_port);
+    const char* local_name, const char* ip, int remote_port, int local_port);
 
 /**
  * @brief Instantiate an OSCQuery server.
@@ -176,9 +181,7 @@ ossia_protocol_t ossia_protocol_minuit_create(
  * @note Multithread guarantees: MT-safe
  */
 OSSIA_EXPORT
-ossia_protocol_t ossia_protocol_oscquery_server_create(
-    int osc_port,
-    int ws_port);
+ossia_protocol_t ossia_protocol_oscquery_server_create(int osc_port, int ws_port);
 
 /**
  * @brief Instantiate an OSCQuery client.
@@ -188,16 +191,14 @@ ossia_protocol_t ossia_protocol_oscquery_server_create(
  * @note Multithread guarantees: MT-safe
  */
 OSSIA_EXPORT
-ossia_protocol_t ossia_protocol_oscquery_mirror_create(
-    const char* host);
+ossia_protocol_t ossia_protocol_oscquery_mirror_create(const char* host);
 
 /**
  * @brief Free the memory associated to a protocol.
  * @note Multithread guarantees: MT-safe
  */
 OSSIA_EXPORT
-void ossia_protocol_free(
-    ossia_protocol_t);
+void ossia_protocol_free(ossia_protocol_t);
 
 /** @}*/
 
@@ -221,17 +222,14 @@ void ossia_protocol_free(
  * @note Multithread guarantees: Safe
  */
 OSSIA_EXPORT
-ossia_device_t ossia_device_create(
-    ossia_protocol_t protocol,
-    const char* name);
+ossia_device_t ossia_device_create(ossia_protocol_t protocol, const char* name);
 
 /**
  * @brief Free a device instance
  * @note Multithread guarantees: Safe
  */
 OSSIA_EXPORT
-void ossia_device_free(
-    ossia_device_t device);
+void ossia_device_free(ossia_device_t device);
 
 /**
  * @brief Free the global device table.
@@ -252,8 +250,7 @@ void ossia_device_reset_static();
  * @note Multithread guarantees: MT-Safe
  */
 OSSIA_EXPORT
-int ossia_device_update_namespace(
-    ossia_device_t device);
+int ossia_device_update_namespace(ossia_device_t device);
 
 /**
  * @brief Get the root node of a device
@@ -265,8 +262,7 @@ int ossia_device_update_namespace(
  * @note Multithread guarantees: Data-Safe
  */
 OSSIA_EXPORT
-ossia_node_t ossia_device_get_root_node(
-    ossia_device_t device);
+ossia_node_t ossia_device_get_root_node(ossia_device_t device);
 
 /**
  * @brief Get the name of a device.
@@ -277,8 +273,7 @@ ossia_node_t ossia_device_get_root_node(
  * @note Multithread guarantees: MT-Safe
  */
 OSSIA_EXPORT
-const char* ossia_device_get_name(
-    ossia_device_t device);
+const char* ossia_device_get_name(ossia_device_t device);
 
 /**
  * @brief Add a callback called when a node is created in a device.
@@ -293,9 +288,7 @@ const char* ossia_device_get_name(
  */
 OSSIA_EXPORT
 ossia_node_callback_idx_t ossia_device_add_node_created_callback(
-    ossia_device_t device,
-    ossia_node_callback_t callback,
-    void* ctx);
+    ossia_device_t device, ossia_node_callback_t callback, void* ctx);
 
 /**
  * @brief Remove a callback added with ossia_device_add_node_created_callback
@@ -308,8 +301,7 @@ ossia_node_callback_idx_t ossia_device_add_node_created_callback(
  */
 OSSIA_EXPORT
 void ossia_device_remove_node_created_callback(
-    ossia_device_t device,
-    ossia_node_callback_idx_t index);
+    ossia_device_t device, ossia_node_callback_idx_t index);
 
 /**
  * @brief Add a callback called when a node is removed in a device.
@@ -324,9 +316,7 @@ void ossia_device_remove_node_created_callback(
  */
 OSSIA_EXPORT
 ossia_node_callback_idx_t ossia_device_add_node_removing_callback(
-    ossia_device_t device,
-    ossia_node_callback_t callback,
-    void* ctx);
+    ossia_device_t device, ossia_node_callback_t callback, void* ctx);
 /**
  * @brief Remove a callback added with ossia_device_add_node_removing_callback
  * @param device Device on which the callback must be removed.
@@ -338,8 +328,7 @@ ossia_node_callback_idx_t ossia_device_add_node_removing_callback(
  */
 OSSIA_EXPORT
 void ossia_device_remove_node_removing_callback(
-    ossia_device_t device,
-    ossia_node_callback_idx_t index);
+    ossia_device_t device, ossia_node_callback_idx_t index);
 
 /**
  * @brief Add a callback called when a parameter is removed in a device.
@@ -354,9 +343,7 @@ void ossia_device_remove_node_removing_callback(
  */
 OSSIA_EXPORT
 ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(
-    ossia_device_t device,
-    ossia_parameter_callback_t callback,
-    void* ctx);
+    ossia_device_t device, ossia_parameter_callback_t callback, void* ctx);
 /**
  * @brief Remove a callback added with ossia_device_add_parameter_deleting_callback
  * @param device Device on which the callback must be removed.
@@ -368,11 +355,9 @@ ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(
  */
 OSSIA_EXPORT
 void ossia_device_remove_parameter_deleting_callback(
-    ossia_device_t device,
-    ossia_parameter_callback_idx_t index);
+    ossia_device_t device, ossia_parameter_callback_idx_t index);
 
 /** @}*/
-
 
 /*****************/
 /*** Parameter ***/
@@ -429,121 +414,99 @@ typedef enum
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_node_t ossia_parameter_get_node(
-    ossia_parameter_t param);
+ossia_node_t ossia_parameter_get_node(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_access_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_access_mode(
-    ossia_parameter_t param,
-    ossia_access_mode am);
+void ossia_parameter_set_access_mode(ossia_parameter_t param, ossia_access_mode am);
 /**
  * @see ossia::net::get_access_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_access_mode ossia_parameter_get_access_mode(
-    ossia_parameter_t param);
+ossia_access_mode ossia_parameter_get_access_mode(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_bounding_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_bounding_mode(
-    ossia_parameter_t param,
-    ossia_bounding_mode bm);
+void ossia_parameter_set_bounding_mode(ossia_parameter_t param, ossia_bounding_mode bm);
 /**
  * @see ossia::net::get_bounding_mode
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_bounding_mode ossia_parameter_get_bounding_mode(
-    ossia_parameter_t param);
+ossia_bounding_mode ossia_parameter_get_bounding_mode(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_domain
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_domain(
-    ossia_parameter_t param,
-    ossia_domain_t domain);
+void ossia_parameter_set_domain(ossia_parameter_t param, ossia_domain_t domain);
 /**
  * @see ossia::net::get_domain
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_parameter_get_domain(
-    ossia_parameter_t param);
+ossia_domain_t ossia_parameter_get_domain(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_unit
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_unit(
-    ossia_parameter_t param,
-    const char* unit);
+void ossia_parameter_set_unit(ossia_parameter_t param, const char* unit);
 /**
  * @see ossia::net::get_unit
  * @note Multithread guarantees: Data-Safe.
  * @note No need to free
  */
 OSSIA_EXPORT
-const char* ossia_parameter_get_unit(
-    ossia_parameter_t param);
+const char* ossia_parameter_get_unit(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_muted
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_muted(
-    ossia_parameter_t param,
-    int muted);
+void ossia_parameter_set_muted(ossia_parameter_t param, int muted);
 /**
  * @see ossia::net::get_muted
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-int ossia_parameter_get_muted(
-    ossia_parameter_t param);
+int ossia_parameter_get_muted(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_disabled
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_disabled(
-    ossia_parameter_t param,
-    int disabled);
+void ossia_parameter_set_disabled(ossia_parameter_t param, int disabled);
 /**
  * @see ossia::net::get_disabled
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-int ossia_parameter_get_disabled(
-    ossia_parameter_t param);
+int ossia_parameter_get_disabled(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_critical
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_critical(
-    ossia_parameter_t param,
-    int critical);
+void ossia_parameter_set_critical(ossia_parameter_t param, int critical);
 /**
  * @see ossia::net::get_critical
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-int ossia_parameter_get_critical(
-    ossia_parameter_t param);
+int ossia_parameter_get_critical(ossia_parameter_t param);
 
 /**
  * @see ossia::net::set_repetition_filter
@@ -553,36 +516,27 @@ int ossia_parameter_get_critical(
  */
 OSSIA_EXPORT
 void ossia_parameter_set_repetition_filter(
-    ossia_parameter_t param,
-    int repetition_filter);
+    ossia_parameter_t param, int repetition_filter);
 /**
  * @see ossia::net::get_repetition_filter
  * @note Multithread guarantees: Data-Safe.
  * @note No need to free
  */
 OSSIA_EXPORT
-int ossia_parameter_get_repetition_filter(
-    ossia_parameter_t param);
+int ossia_parameter_get_repetition_filter(ossia_parameter_t param);
 
 /**
  * @see ossia::net::parameter_base::set_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_value(
-    ossia_parameter_t param,
-    ossia_value_t value);
+void ossia_parameter_set_value(ossia_parameter_t param, ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_value_t ossia_parameter_get_value(
-    ossia_parameter_t param);
-
-
-
-
+ossia_value_t ossia_parameter_get_value(ossia_parameter_t param);
 
 /**
  * @brief Get the value if it is an int.
@@ -635,7 +589,8 @@ OSSIA_EXPORT
 char ossia_parameter_to_char(ossia_parameter_t val);
 /**
  * @brief Get the value if it is a byte array.
- * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != STRING_T
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) !=
+ * STRING_T
  * @note Multithread guarantees: Data-Safe.
  *
  * Usage:
@@ -651,7 +606,8 @@ OSSIA_EXPORT
 void ossia_parameter_to_byte_array(ossia_parameter_t val, char** str, size_t* sz);
 /**
  * @brief Get the value if it is a null-terminated string.
- * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != STRING_T
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) !=
+ * STRING_T
  * @note Multithread guarantees: Data-Safe.
  *
  * @see ossia_string_free
@@ -665,11 +621,13 @@ const char* ossia_parameter_to_string(ossia_parameter_t val);
  * @see ossia_value_free_list
  */
 OSSIA_EXPORT
-void ossia_parameter_to_list(ossia_parameter_t val_in, ossia_value_t** out, size_t* size);
+void ossia_parameter_to_list(
+    ossia_parameter_t val_in, ossia_value_t** out, size_t* size);
 
 /**
  * @brief Get the value if it is a list of floats.
- * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T or any of the values are not FLOAT_T.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T
+ * or any of the values are not FLOAT_T.
  * @note Multithread guarantees: Data-Safe.
  * @see ossia_value_free_list
  */
@@ -678,41 +636,32 @@ void ossia_parameter_to_fn(ossia_parameter_t val_in, float** out, size_t* size);
 
 /**
  * @brief Get the value if it is a list of ints.
- * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T or any of the values are not INT_T.
+ * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != LIST_T
+ * or any of the values are not INT_T.
  * @note Multithread guarantees: Data-Safe.
  * @see ossia_value_free_list
  */
 OSSIA_EXPORT
 void ossia_parameter_to_in(ossia_parameter_t val_in, int** out, size_t* size);
 
-
-
-
-
-
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_value(
-    ossia_parameter_t param,
-    ossia_value_t value);
+void ossia_parameter_push_value(ossia_parameter_t param, ossia_value_t value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_impulse(
-    ossia_parameter_t param);
+void ossia_parameter_push_impulse(ossia_parameter_t param);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_i(
-    ossia_parameter_t param,
-    int value);
+void ossia_parameter_push_i(ossia_parameter_t param, int value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
@@ -720,57 +669,44 @@ void ossia_parameter_push_i(
  * b is a boolean, 0 for false, 1 for true.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_b(
-    ossia_parameter_t param,
-    int b);
+void ossia_parameter_push_b(ossia_parameter_t param, int b);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_f(
-    ossia_parameter_t param,
-    float value);
+void ossia_parameter_push_f(ossia_parameter_t param, float value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_2f(
-    ossia_parameter_t param,
-    float v1, float v2);
+void ossia_parameter_push_2f(ossia_parameter_t param, float v1, float v2);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_3f(
-    ossia_parameter_t param,
-    float v1, float v2, float v3);
+void ossia_parameter_push_3f(ossia_parameter_t param, float v1, float v2, float v3);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
 void ossia_parameter_push_4f(
-    ossia_parameter_t param,
-    float v1, float v2, float v3, float v4);
+    ossia_parameter_t param, float v1, float v2, float v3, float v4);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_c(
-    ossia_parameter_t param,
-    char value);
+void ossia_parameter_push_c(ossia_parameter_t param, char value);
 /**
  * @see ossia::net::parameter_base::push_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_s(
-    ossia_parameter_t param,
-    const char* value);
+void ossia_parameter_push_s(ossia_parameter_t param, const char* value);
 
 /**
  * @brief Push an array of integers.
@@ -778,10 +714,7 @@ void ossia_parameter_push_s(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_in(
-    ossia_parameter_t param,
-    const int* value,
-    size_t sz);
+void ossia_parameter_push_in(ossia_parameter_t param, const int* value, size_t sz);
 
 /**
  * @brief Push an array of floats.
@@ -789,10 +722,7 @@ void ossia_parameter_push_in(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_fn(
-    ossia_parameter_t param,
-    const float* value,
-    size_t sz);
+void ossia_parameter_push_fn(ossia_parameter_t param, const float* value, size_t sz);
 
 /**
  * @brief Push a string with known length.
@@ -800,10 +730,7 @@ void ossia_parameter_push_fn(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_push_cn(
-    ossia_parameter_t param,
-    const char* value,
-    size_t sz);
+void ossia_parameter_push_cn(ossia_parameter_t param, const char* value, size_t sz);
 
 /**
  * @brief Push an array of values.
@@ -812,9 +739,7 @@ void ossia_parameter_push_cn(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_list(
-    ossia_parameter_t param,
-    const ossia_value_t* value,
-    size_t sz);
+    ossia_parameter_t param, const ossia_value_t* value, size_t sz);
 
 /**
  * @brief Fetch the value of a parameter
@@ -823,17 +748,14 @@ void ossia_parameter_push_list(
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_value_t ossia_parameter_fetch_value(
-    ossia_parameter_t param);
+ossia_value_t ossia_parameter_fetch_value(ossia_parameter_t param);
 
 /**
  * @brief Enable or disable remote updates for a given address
  * @note Multithread guarantees: Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_set_listening(
-    ossia_parameter_t param,
-    int listening);
+void ossia_parameter_set_listening(ossia_parameter_t param, int listening);
 
 /**
  * @brief Add a callback called when the value of a parameter changes.
@@ -848,9 +770,7 @@ void ossia_parameter_set_listening(
  */
 OSSIA_EXPORT
 ossia_value_callback_idx_t ossia_parameter_add_callback(
-    ossia_parameter_t param,
-    ossia_value_callback_t callback,
-    void* ctx);
+    ossia_parameter_t param, ossia_value_callback_t callback, void* ctx);
 
 /**
  * @brief Add a callback called when the value of a parameter changes.
@@ -864,9 +784,7 @@ ossia_value_callback_idx_t ossia_parameter_add_callback(
  */
 OSSIA_EXPORT
 void ossia_parameter_push_callback(
-    ossia_parameter_t param,
-    ossia_value_callback_t callback,
-    void* ctx);
+    ossia_parameter_t param, ossia_value_callback_t callback, void* ctx);
 
 /**
  * @brief Remove a callback added with ossia_parameter_add_callback
@@ -878,19 +796,16 @@ void ossia_parameter_push_callback(
  */
 OSSIA_EXPORT
 void ossia_parameter_remove_callback(
-    ossia_parameter_t param,
-    ossia_value_callback_idx_t index);
+    ossia_parameter_t param, ossia_value_callback_idx_t index);
 
 /**
  * @brief Free a callback index
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_parameter_free_callback_idx(
-    ossia_value_callback_idx_t);
+void ossia_parameter_free_callback_idx(ossia_value_callback_idx_t);
 
 /** @}*/
-
 
 /************/
 /*** Node ***/
@@ -910,9 +825,7 @@ void ossia_parameter_free_callback_idx(
  * @note Multithread guarantees: Data-Safe.
  * @see ossia::net::find_node
  */
-OSSIA_EXPORT ossia_node_t ossia_node_find(
-    ossia_node_t root,
-    const char* path);
+OSSIA_EXPORT ossia_node_t ossia_node_find(ossia_node_t root, const char* path);
 
 /**
  * @brief Find nodes matching a wildcard pattern
@@ -935,10 +848,7 @@ OSSIA_EXPORT ossia_node_t ossia_node_find(
  * @see ossia::net::find_nodes
  */
 OSSIA_EXPORT void ossia_node_find_pattern(
-    ossia_node_t root,
-    const char* pattern,
-    ossia_node_t** data,
-    size_t* size);
+    ossia_node_t root, const char* pattern, ossia_node_t** data, size_t* size);
 
 /**
  * @brief Create a child node
@@ -958,9 +868,7 @@ OSSIA_EXPORT void ossia_node_find_pattern(
  * @note Multithread guarantees: MT-Safe.
  * @see ossia::net::create_node
  */
-OSSIA_EXPORT ossia_node_t ossia_node_create(
-    ossia_node_t root,
-    const char* path);
+OSSIA_EXPORT ossia_node_t ossia_node_create(ossia_node_t root, const char* path);
 
 /**
  * @brief Create nodes matching a brace expansion pattern
@@ -983,18 +891,15 @@ OSSIA_EXPORT ossia_node_t ossia_node_create(
  * @see ossia::net::create_nodes
  */
 OSSIA_EXPORT void ossia_node_create_pattern(
-    ossia_node_t root,
-    const char* pattern,
-    ossia_node_t** data,
-    size_t* size);
+    ossia_node_t root, const char* pattern, ossia_node_t** data, size_t* size);
 
 /**
- * @brief Free an array of nodes allocated with ossia_node_find_pattern or ossia_node_create_pattern.
+ * @brief Free an array of nodes allocated with ossia_node_find_pattern or
+ * ossia_node_create_pattern.
  *
  * @note Multithread guarantees: MT-Safe.
  */
-OSSIA_EXPORT void ossia_node_array_free(
-    ossia_node_t*);
+OSSIA_EXPORT void ossia_node_array_free(ossia_node_t*);
 
 /**
  * @brief Create a direct child node
@@ -1006,9 +911,7 @@ OSSIA_EXPORT void ossia_node_array_free(
  * @see ossia_node_create
  */
 OSSIA_EXPORT
-ossia_node_t ossia_node_add_child(
-    ossia_node_t node,
-    const char * name);
+ossia_node_t ossia_node_add_child(ossia_node_t node, const char* name);
 
 /**
  * @brief Removes a direct child node.
@@ -1019,9 +922,7 @@ ossia_node_t ossia_node_add_child(
  * @see ossia::net::node_base::remove_child
  */
 OSSIA_EXPORT
-void ossia_node_remove_child(
-    ossia_node_t node,
-    ossia_node_t name);
+void ossia_node_remove_child(ossia_node_t node, ossia_node_t name);
 
 /**
  * @brief Get the name of a node
@@ -1030,8 +931,7 @@ void ossia_node_remove_child(
  * @see ossia::net::node_base::get_name
  */
 OSSIA_EXPORT
-const char* ossia_node_get_name(
-    ossia_node_t node);
+const char* ossia_node_get_name(ossia_node_t node);
 
 /**
  * @brief Get the root device of a node
@@ -1041,8 +941,7 @@ const char* ossia_node_get_name(
  * @see ossia::net::node_base::get_device
  */
 OSSIA_EXPORT
-ossia_device_t ossia_node_get_device(
-    ossia_node_t node);
+ossia_device_t ossia_node_get_device(ossia_node_t node);
 
 /**
  * @brief Get the number of children of a node.
@@ -1050,8 +949,7 @@ ossia_device_t ossia_node_get_device(
  * @see ossia::net::node_base::children
  */
 OSSIA_EXPORT
-int ossia_node_child_size(
-    ossia_node_t node);
+int ossia_node_child_size(ossia_node_t node);
 
 /**
  * @brief Get a specific direct child of a node.
@@ -1059,9 +957,7 @@ int ossia_node_child_size(
  * @see ossia::net::node_base::children
  */
 OSSIA_EXPORT
-ossia_node_t ossia_node_get_child(
-    ossia_node_t node,
-    int child_n);
+ossia_node_t ossia_node_get_child(ossia_node_t node, int child_n);
 
 /**
  * @brief Find a direct child of a node by name.
@@ -1069,9 +965,7 @@ ossia_node_t ossia_node_get_child(
  * @see ossia::net::node_base::find_child
  */
 OSSIA_EXPORT
-ossia_node_t ossia_node_find_child(
-    ossia_node_t node,
-    const char* name);
+ossia_node_t ossia_node_find_child(ossia_node_t node, const char* name);
 
 /**
  * @brief Create a parameter in a node.
@@ -1080,9 +974,7 @@ ossia_node_t ossia_node_find_child(
  * @see ossia::net::node_base::create_parameter
  */
 OSSIA_EXPORT
-ossia_parameter_t ossia_node_create_parameter(
-    ossia_node_t node,
-    ossia_type type);
+ossia_parameter_t ossia_node_create_parameter(ossia_node_t node, ossia_type type);
 
 /**
  * @brief Create a child parameter.
@@ -1091,11 +983,8 @@ ossia_parameter_t ossia_node_create_parameter(
  * @see ossia::net::create_parameter
  */
 OSSIA_EXPORT
-ossia_parameter_t ossia_create_parameter(
-    ossia_node_t node,
-    const char* name,
-    const char* type);
-
+ossia_parameter_t
+ossia_create_parameter(ossia_node_t node, const char* name, const char* type);
 
 /**
  * @brief Get the address contained in a node if any.
@@ -1103,8 +992,7 @@ ossia_parameter_t ossia_create_parameter(
  * @see ossia::net::node_base::get_parameter
  */
 OSSIA_EXPORT
-ossia_parameter_t ossia_node_get_parameter(
-    ossia_node_t node);
+ossia_parameter_t ossia_node_get_parameter(ossia_node_t node);
 
 /**
  * @brief Remove the address contained in a node if any.
@@ -1112,8 +1000,7 @@ ossia_parameter_t ossia_node_get_parameter(
  * @see ossia::net::node_base::remove_parameter
  */
 OSSIA_EXPORT
-void ossia_node_remove_parameter(
-    ossia_node_t node);
+void ossia_node_remove_parameter(ossia_node_t node);
 
 /**
  * @brief Add a callback called when a node is about to be removed.
@@ -1128,9 +1015,7 @@ void ossia_node_remove_parameter(
  */
 OSSIA_EXPORT
 ossia_node_callback_idx_t ossia_node_add_deleting_callback(
-    ossia_node_t node,
-    ossia_node_callback_t callback,
-    void* ctx);
+    ossia_node_t node, ossia_node_callback_t callback, void* ctx);
 /**
  * @brief Remove a callback added with ossia_node_add_deleting_callback
  * @param node Node on which the callback must be removed.
@@ -1142,61 +1027,46 @@ ossia_node_callback_idx_t ossia_node_add_deleting_callback(
  */
 OSSIA_EXPORT
 void ossia_node_remove_deleting_callback(
-    ossia_node_t node,
-    ossia_node_callback_idx_t index);
-
+    ossia_node_t node, ossia_node_callback_idx_t index);
 
 /**
  * @see ossia::net::set_description
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_description(
-    ossia_node_t node,
-    const char* description);
+void ossia_node_set_description(ossia_node_t node, const char* description);
 /**
  * @see ossia::net::get_description, ossia_string_free
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-const char* ossia_node_get_description(
-    ossia_node_t node);
+const char* ossia_node_get_description(ossia_node_t node);
 
 /**
  * @see ossia::net::set_extended_type
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_extended_type(
-    ossia_node_t node,
-    const char* extended_type);
+void ossia_node_set_extended_type(ossia_node_t node, const char* extended_type);
 /**
  * @see ossia::net::get_extended_type, ossia_string_free
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-const char* ossia_node_get_extended_type(
-    ossia_node_t node);
-
+const char* ossia_node_get_extended_type(ossia_node_t node);
 
 /**
  * @see ossia::net::set_tags
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_tags(
-    ossia_node_t node,
-    const char** tags,
-    size_t sz);
+void ossia_node_set_tags(ossia_node_t node, const char** tags, size_t sz);
 /**
  * @see ossia::net::get_tags, ossia_tags_free
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_get_tags(
-    ossia_node_t node,
-    char*** tags,
-    size_t* sz);
+void ossia_node_get_tags(ossia_node_t node, char*** tags, size_t* sz);
 
 /**
  * @brief Free tags allocated with ossia_node_get_tags
@@ -1211,130 +1081,102 @@ void ossia_tags_free(char** tags, size_t sz);
  * hidden is a boolean value.
  */
 OSSIA_EXPORT
-void ossia_node_set_hidden(
-    ossia_node_t node,
-    int hidden);
+void ossia_node_set_hidden(ossia_node_t node, int hidden);
 /**
  * @see ossia::net::get_hidden
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-int ossia_node_get_hidden(
-    ossia_node_t node);
+int ossia_node_get_hidden(ossia_node_t node);
 
 /**
  * @see ossia::net::set_refresh_rate
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_refresh_rate(
-    ossia_node_t node,
-    int refresh_rate);
+void ossia_node_set_refresh_rate(ossia_node_t node, int refresh_rate);
 /**
  * @see ossia::net::set_refresh_rate
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_unset_refresh_rate(
-    ossia_node_t node);
+void ossia_node_unset_refresh_rate(ossia_node_t node);
 /**
  * @see ossia::net::get_refresh_rate
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-int ossia_node_get_refresh_rate(
-    ossia_node_t node,
-    int* ok);
+int ossia_node_get_refresh_rate(ossia_node_t node, int* ok);
 
 /**
  * @see ossia::net::set_priority
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_priority(
-    ossia_node_t node,
-    float priority);
+void ossia_node_set_priority(ossia_node_t node, float priority);
 /**
  * @see ossia::net::set_priority
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_unset_priority(
-    ossia_node_t node);
+void ossia_node_unset_priority(ossia_node_t node);
 /**
  * @see ossia::net::get_priority
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-float ossia_node_get_priority(
-    ossia_node_t node,
-    int* ok);
+float ossia_node_get_priority(ossia_node_t node, int* ok);
 
 /**
  * @see ossia::net::set_value_step_size
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_value_step_size(
-    ossia_node_t node,
-    double value_step_size);
+void ossia_node_set_value_step_size(ossia_node_t node, double value_step_size);
 /**
  * @see ossia::net::set_value_step_size
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_unset_value_step_size(
-    ossia_node_t node);
+void ossia_node_unset_value_step_size(ossia_node_t node);
 /**
  * @see ossia::net::get_value_step_size
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-double ossia_node_get_value_step_size(
-    ossia_node_t node,
-    int* ok);
-
+double ossia_node_get_value_step_size(ossia_node_t node, int* ok);
 
 /**
  * @see ossia::net::set_instance_bounds
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_instance_bounds(
-    ossia_node_t node,
-    int min, int max);
+void ossia_node_set_instance_bounds(ossia_node_t node, int min, int max);
 /**
  * @see ossia::net::set_instance_bounds
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_unset_instance_bounds(
-    ossia_node_t node);
+void ossia_node_unset_instance_bounds(ossia_node_t node);
 /**
  * @see ossia::net::get_instance_bounds
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_get_instance_bounds(
-    ossia_node_t node,
-    int* min, int* max,
-    int* ok);
+void ossia_node_get_instance_bounds(ossia_node_t node, int* min, int* max, int* ok);
 
 /**
  * @see ossia::net::set_default_value
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_node_set_default_value(
-    ossia_node_t node,
-    ossia_value_t default_value);
+void ossia_node_set_default_value(ossia_node_t node, ossia_value_t default_value);
 /**
  * @see ossia::net::get_default_value
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-ossia_value_t ossia_node_get_default_value(
-    ossia_node_t node);
+ossia_value_t ossia_node_get_default_value(ossia_node_t node);
 
 /** @}*/
 
@@ -1364,9 +1206,7 @@ ossia_domain_t ossia_domain_create(void);
  * @see ossia::make_domain
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_domain_make_min_max(
-    ossia_value_t min,
-    ossia_value_t max);
+ossia_domain_t ossia_domain_make_min_max(ossia_value_t min, ossia_value_t max);
 
 /**
  * @brief Get the min of a domain
@@ -1374,34 +1214,28 @@ ossia_domain_t ossia_domain_make_min_max(
  * @see ossia::get_min
  */
 OSSIA_EXPORT
-ossia_value_t ossia_domain_get_min(
-    ossia_domain_t domain);
+ossia_value_t ossia_domain_get_min(ossia_domain_t domain);
 /**
  * @brief Set the min of a domain
  * @note Multithread guarantees: MT-Safe.
  * @see ossia::set_min
  */
 OSSIA_EXPORT
-void ossia_domain_set_min(
-    ossia_domain_t domain,
-    ossia_value_t value);
+void ossia_domain_set_min(ossia_domain_t domain, ossia_value_t value);
 /**
  * @brief Get the max of a domain
  * @note Multithread guarantees: Data-Safe.
  * @see ossia::get_max
  */
 OSSIA_EXPORT
-ossia_value_t ossia_domain_get_max(
-    ossia_domain_t domain);
+ossia_value_t ossia_domain_get_max(ossia_domain_t domain);
 /**
  * @brief Set the max of a domain
  * @note Multithread guarantees: MT-Safe.
  * @see ossia::set_max
  */
 OSSIA_EXPORT
-void ossia_domain_set_max(
-    ossia_domain_t domain,
-    ossia_value_t value);
+void ossia_domain_set_max(ossia_domain_t domain, ossia_value_t value);
 
 /**
  * @brief Create a domain from a set of strings.
@@ -1410,9 +1244,7 @@ void ossia_domain_set_max(
  * @see ossia::make_domain
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_domain_make_string_set(
-        const char** strings,
-        size_t n);
+ossia_domain_t ossia_domain_make_string_set(const char** strings, size_t n);
 
 /**
  * @brief Create a domain from a set of ints.
@@ -1420,9 +1252,7 @@ ossia_domain_t ossia_domain_make_string_set(
  * @see ossia::make_domain
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_domain_make_int_set(
-        const int* values,
-        size_t n);
+ossia_domain_t ossia_domain_make_int_set(const int* values, size_t n);
 
 /**
  * @brief Create a domain from a set of floats.
@@ -1430,9 +1260,7 @@ ossia_domain_t ossia_domain_make_int_set(
  * @see ossia::make_domain
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_domain_make_float_set(
-        const float* values,
-        size_t n);
+ossia_domain_t ossia_domain_make_float_set(const float* values, size_t n);
 
 /**
  * @brief Create a domain from a set of values.
@@ -1440,37 +1268,28 @@ ossia_domain_t ossia_domain_make_float_set(
  * @see ossia::make_domain
  */
 OSSIA_EXPORT
-ossia_domain_t ossia_domain_make_value_set(
-        const ossia_value_t* values,
-        size_t n);
+ossia_domain_t ossia_domain_make_value_set(const ossia_value_t* values, size_t n);
 
 /**
  * @brief Get the values of a domain
  * @note Multithread guarantees: Data-Safe.
  */
 OSSIA_EXPORT
-void ossia_domain_get_values(
-    ossia_domain_t domain,
-    ossia_value_t** values,
-    size_t* n);
+void ossia_domain_get_values(ossia_domain_t domain, ossia_value_t** values, size_t* n);
 /**
  * @brief Set the values of a domain
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
 void ossia_domain_set_values(
-    ossia_domain_t domain,
-    const ossia_value_t* values,
-    size_t n);
-
+    ossia_domain_t domain, const ossia_value_t* values, size_t n);
 
 /**
  * @brief Free a domain
  * @note Multithread guarantees: MT-Safe.
  */
 OSSIA_EXPORT
-void ossia_domain_free(
-    ossia_domain_t domain);
+void ossia_domain_free(ossia_domain_t domain);
 
 /** @}*/
 
@@ -1701,7 +1520,8 @@ void ossia_value_free_list(ossia_value_t* out);
 
 /**
  * @brief Get the value if it is a list of floats.
- * @return Undefined if ossia_value_get_type(val) != LIST_T or any of the values are not FLOAT_T.
+ * @return Undefined if ossia_value_get_type(val) != LIST_T or any of the values are
+ * not FLOAT_T.
  * @note Multithread guarantees: Data-Safe.
  * @see ossia_value_free_list
  */
@@ -1715,7 +1535,8 @@ void ossia_value_free_fn(float* out);
 
 /**
  * @brief Get the value if it is a list of ints.
- * @return Undefined if ossia_value_get_type(val) != LIST_T or any of the values are not INT_T.
+ * @return Undefined if ossia_value_get_type(val) != LIST_T or any of the values are
+ * not INT_T.
  * @note Multithread guarantees: Data-Safe.
  * @see ossia_value_free_list
  */
@@ -1812,7 +1633,6 @@ struct ossia_vec3f ossia_value_convert_3f(ossia_value_t val);
 OSSIA_EXPORT
 struct ossia_vec4f ossia_value_convert_4f(ossia_value_t val);
 
-
 OSSIA_EXPORT
 void ossia_string_free(char*);
 
@@ -1826,7 +1646,16 @@ void ossia_string_free(char*);
  *  @{
  */
 /** Log levels available **/
-enum log_level { trace, debug, info, warn, error, critical, off };
+enum log_level
+{
+  trace,
+  debug,
+  info,
+  warn,
+  error,
+  critical,
+  off
+};
 
 /**
  * @brief Create a logger instance
@@ -1927,8 +1756,6 @@ OSSIA_EXPORT
 void ossia_mq_free(ossia_mq_t);
 
 /** @}*/
-
-
 
 /***************************/
 /*** Network context API ***/

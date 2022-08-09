@@ -82,7 +82,8 @@ public:
 protected:
   virtual void device_update_value()
   {
-    //  Here should be the code that actualy make the hardware update to current value
+    //  Here should be the code that actualy make the hardware update to
+    //  current value
   }
 
   auto& get_protocol()

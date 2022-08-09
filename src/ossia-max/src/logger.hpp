@@ -21,16 +21,22 @@ struct logger
   t_symbol* m_exec;
   long m_ival{};
 
-  enum Status { DISCONNECTED, CONNECTED } m_status;
+  enum Status
+  {
+    DISCONNECTED,
+    CONNECTED
+  } m_status;
 
   void* m_polling_clock{};
   void* m_dumpout{};
 
   void reset();
 
-  static void in_anything(ossia::max_binding::logger* x, t_symbol* s, long argc, t_atom* argv);
+  static void
+  in_anything(ossia::max_binding::logger* x, t_symbol* s, long argc, t_atom* argv);
   static void free(ossia::max_binding::logger* x);
-  static t_max_err notify(logger *x, t_symbol *s, t_symbol *msg, void *sender, void *data);
+  static t_max_err
+  notify(logger* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
   static void check_connection_status(logger* x);
 
   static void assist(logger* x, void* b, long m, long a, char* s);
@@ -39,7 +45,6 @@ struct logger
   std::shared_ptr<spdlog::logger> m_log;
   std::shared_ptr<ossia::websocket_heartbeat> m_beat;
   std::mutex m_mutex;
-
 };
 } // max namespace
 } // ossia namespace

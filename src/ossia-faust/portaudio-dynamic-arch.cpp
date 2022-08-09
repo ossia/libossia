@@ -33,20 +33,20 @@
  ************************************************************************
  ************************************************************************/
 
-#include <cmath>
-#include <iostream>
-#include <libgen.h>
-#include <list>
-#include <stdlib.h>
-
-#include "faust/dsp/llvm-dsp.h"
+#include "OssiaUI.h"
 #include "faust/audio/portaudio-dsp.h"
+#include "faust/dsp/llvm-dsp.h"
 #include "faust/gui/FUI.h"
 #include "faust/gui/GUI.h"
 #include "faust/gui/console.h"
 #include "faust/misc.h"
 
-#include "OssiaUI.h"
+#include <cmath>
+#include <libgen.h>
+#include <stdlib.h>
+
+#include <iostream>
+#include <list>
 
 std::list<GUI*> GUI::fGuiList;
 ztimedmap GUI::gTimedZoneMap;
@@ -56,30 +56,33 @@ ztimedmap GUI::gTimedZoneMap;
 //-------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
-    cout << "Libfaust version : " << getCLibFaustVersion () << endl;
+  cout << "Libfaust version : " << getCLibFaustVersion() << endl;
 
-    string error_msg;
-    dsp_factory* factory = createDSPFactoryFromFile(argv[argc-1], 0, nullptr, "", error_msg, -1);
-    if (factory == 0) {
-        std::cerr << "Unable to crate Faust DSP factory" << std::endl;
-        exit(1);
-    }
-    
-    dsp* DSP = factory->createDSPInstance();
-    if (DSP == 0) {
-        std::cerr << "Unable to allocate Faust DSP object" << std::endl;
-        exit(1);
-    }
+  string error_msg;
+  dsp_factory* factory
+      = createDSPFactoryFromFile(argv[argc - 1], 0, nullptr, "", error_msg, -1);
+  if(factory == 0)
+  {
+    std::cerr << "Unable to crate Faust DSP factory" << std::endl;
+    exit(1);
+  }
 
-    OssiaUI ossia{1234, 5678};
-    DSP->buildUserInterface(&ossia);
+  dsp* DSP = factory->createDSPInstance();
+  if(DSP == 0)
+  {
+    std::cerr << "Unable to allocate Faust DSP object" << std::endl;
+    exit(1);
+  }
 
-    portaudio audio(44100, 256);
-    audio.init("FaustDSP", DSP);
-    audio.start();
+  OssiaUI ossia{1234, 5678};
+  DSP->buildUserInterface(&ossia);
 
-    ossia.run(50);
-    audio.stop();
+  portaudio audio(44100, 256);
+  audio.init("FaustDSP", DSP);
+  audio.start();
 
-    return 0;
+  ossia.run(50);
+  audio.stop();
+
+  return 0;
 }

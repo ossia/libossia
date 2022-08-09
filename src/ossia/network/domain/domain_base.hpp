@@ -28,31 +28,39 @@ struct OSSIA_EXPORT domain
   }
 
   template <typename T>
-  domain(const ossia::domain_base<T>& arg) : v(arg)
+  domain(const ossia::domain_base<T>& arg)
+      : v(arg)
   {
   }
   template <typename T>
-  domain(ossia::domain_base<T>&& arg) : v(std::move(arg))
+  domain(ossia::domain_base<T>&& arg)
+      : v(std::move(arg))
   {
   }
-  domain(const vector_domain& arg) : v(arg)
+  domain(const vector_domain& arg)
+      : v(arg)
   {
   }
-  domain(vector_domain&& arg) : v(std::move(arg))
+  domain(vector_domain&& arg)
+      : v(std::move(arg))
   {
   }
   template <std::size_t N>
-  domain(const vecf_domain<N>& arg) : v(arg)
+  domain(const vecf_domain<N>& arg)
+      : v(arg)
   {
   }
   template <std::size_t N>
-  domain(vecf_domain<N>&& arg) : v(std::move(arg))
+  domain(vecf_domain<N>&& arg)
+      : v(std::move(arg))
   {
   }
-  domain(const domain& d) : v{d.v}
+  domain(const domain& d)
+      : v{d.v}
   {
   }
-  domain(domain&& d) : v{std::move(d.v)}
+  domain(domain&& d)
+      : v{std::move(d.v)}
   {
   }
   domain& operator=(const domain& d)
@@ -94,7 +102,7 @@ struct OSSIA_EXPORT domain
   {
     auto val = get_min();
     auto u = val.target<T>();
-    if (u)
+    if(u)
       return *u;
     else
       return {};
@@ -105,7 +113,7 @@ struct OSSIA_EXPORT domain
   {
     auto val = get_max();
     auto u = val.target<T>();
-    if (u)
+    if(u)
       return *u;
     else
       return {};
@@ -180,7 +188,6 @@ auto apply_nonnull(Functor&& functor, domain& var) -> decltype(auto)
 template <typename Functor>
 auto apply_nonnull(Functor&& functor, domain&& var) -> decltype(auto)
 {
-  return ossia::apply_nonnull(
-      std::forward<Functor>(functor), std::move(var.v));
+  return ossia::apply_nonnull(std::forward<Functor>(functor), std::move(var.v));
 }
 }

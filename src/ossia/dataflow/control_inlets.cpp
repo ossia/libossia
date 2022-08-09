@@ -52,7 +52,6 @@ minmax_float_inlet::minmax_float_inlet()
 
 minmax_float_inlet::~minmax_float_inlet()
 {
-
 }
 
 void minmax_float_inlet::pre_process()
@@ -70,7 +69,6 @@ minmax_float_outlet::minmax_float_outlet()
 
 minmax_float_outlet::~minmax_float_outlet()
 {
-
 }
 
 void minmax_float_outlet::pre_process()

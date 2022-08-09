@@ -1,6 +1,7 @@
 #include <ossia/audio/fft.hpp>
-#include <new>
+
 #include <algorithm>
+#include <new>
 
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
@@ -9,28 +10,28 @@ namespace ossia
 namespace
 {
 #if defined(OSSIA_FFTW_SINGLE_ONLY)
-  static const constexpr auto alloc_real = ::fftwf_alloc_real;
-  static const constexpr auto alloc_complex = ::fftwf_alloc_complex;
-  static const constexpr auto fft_free = ::fftwf_free;
-  static const constexpr auto create_plan_r2c = ::fftwf_plan_dft_r2c_1d;
-  static const constexpr auto run_plan_r2c = ::fftwf_execute_dft_r2c;
-  static const constexpr auto create_plan_c2r = ::fftwf_plan_dft_c2r_1d;
-  static const constexpr auto run_plan_c2r = ::fftwf_execute_dft_c2r;
-  static const constexpr auto destroy_plan = ::fftwf_destroy_plan;
-  static const constexpr auto cleanup = ::fftwf_cleanup;
-  static const constexpr auto alignment_of = ::fftwf_alignment_of;
+static const constexpr auto alloc_real = ::fftwf_alloc_real;
+static const constexpr auto alloc_complex = ::fftwf_alloc_complex;
+static const constexpr auto fft_free = ::fftwf_free;
+static const constexpr auto create_plan_r2c = ::fftwf_plan_dft_r2c_1d;
+static const constexpr auto run_plan_r2c = ::fftwf_execute_dft_r2c;
+static const constexpr auto create_plan_c2r = ::fftwf_plan_dft_c2r_1d;
+static const constexpr auto run_plan_c2r = ::fftwf_execute_dft_c2r;
+static const constexpr auto destroy_plan = ::fftwf_destroy_plan;
+static const constexpr auto cleanup = ::fftwf_cleanup;
+static const constexpr auto alignment_of = ::fftwf_alignment_of;
 
 #elif defined(OSSIA_FFTW_DOUBLE_ONLY)
-  static const constexpr auto alloc_real = ::fftw_alloc_real;
-  static const constexpr auto alloc_complex = ::fftw_alloc_complex;
-  static const constexpr auto fft_free = ::fftw_free;
-  static const constexpr auto create_plan_r2c = ::fftw_plan_dft_r2c_1d;
-  static const constexpr auto run_plan_r2c = ::fftw_execute_dft_r2c;
-  static const constexpr auto create_plan_c2r = ::fftw_plan_dft_c2r_1d;
-  static const constexpr auto run_plan_c2r = ::fftw_execute_dft_c2r;
-  static const constexpr auto destroy_plan = ::fftw_destroy_plan;
-  // static const constexpr auto cleanup = ::fftw_cleanup;
-  // static const constexpr auto alignment_of = ::fftw_alignment_of;
+static const constexpr auto alloc_real = ::fftw_alloc_real;
+static const constexpr auto alloc_complex = ::fftw_alloc_complex;
+static const constexpr auto fft_free = ::fftw_free;
+static const constexpr auto create_plan_r2c = ::fftw_plan_dft_r2c_1d;
+static const constexpr auto run_plan_r2c = ::fftw_execute_dft_r2c;
+static const constexpr auto create_plan_c2r = ::fftw_plan_dft_c2r_1d;
+static const constexpr auto run_plan_c2r = ::fftw_execute_dft_c2r;
+static const constexpr auto destroy_plan = ::fftw_destroy_plan;
+// static const constexpr auto cleanup = ::fftw_cleanup;
+// static const constexpr auto alignment_of = ::fftw_alignment_of;
 #else
 #define FFTW_DESTROY_INPUT 0
 #define FFTW_MEASURE 0
@@ -95,7 +96,7 @@ fft_complex* fft::execute(float* input, std::size_t sz) noexcept
 
 #if defined(FFTW_SINGLE_ONLY)
   const bool align_ok = alignment_of(input) == alignment_of(m_input);
-  if (align_ok && sz_ok)
+  if(align_ok && sz_ok)
   {
     run_plan_r2c(m_fw, input, m_output);
   }
@@ -177,11 +178,13 @@ fft_real* rfft::execute() noexcept
 }
 }
 #elif defined(OSSIA_FFT_KFR)
-#include <kfr/kfr.h>
-#include <kfr/dft.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
-struct fftw_plan_s : kfr::dft_plan_real<double> {
+#include <kfr/dft.hpp>
+#include <kfr/kfr.h>
+
+struct fftw_plan_s : kfr::dft_plan_real<double>
+{
   using dft_plan_real::dft_plan_real;
 };
 
@@ -190,25 +193,37 @@ namespace ossia
 static_assert(sizeof(kfr::c64) == sizeof(fft_complex));
 static const constexpr auto fft_real_allocator = pod_allocator_avx2<kfr::f64>{};
 static const constexpr auto fft_cplx_allocator = pod_allocator_avx2<kfr::c64>{};
-static const constexpr auto alloc_real = [] (std::size_t sz) { return fft_real_allocator.allocate(sz); };
-static const constexpr auto alloc_complex = [] (std::size_t sz) { return fft_cplx_allocator.allocate(sz); };
-static const constexpr struct {
-  void operator()(fft_real* p) const noexcept { fft_real_allocator.deallocate(p, 0); }
-  void operator()(fft_complex* p) const noexcept { fft_cplx_allocator.deallocate(
-          reinterpret_cast<kfr::c64*>(p), 0);
+static const constexpr auto alloc_real
+    = [](std::size_t sz) { return fft_real_allocator.allocate(sz); };
+static const constexpr auto alloc_complex
+    = [](std::size_t sz) { return fft_cplx_allocator.allocate(sz); };
+static const constexpr struct
+{
+  void operator()(fft_real* p) const noexcept
+  {
+    fft_real_allocator.deallocate(p, 0);
+  }
+  void operator()(fft_complex* p) const noexcept
+  {
+    fft_cplx_allocator.deallocate(reinterpret_cast<kfr::c64*>(p), 0);
   }
 } fft_free;
-static const constexpr auto create_plan_r2c = [] (std::size_t sz, ...) { return new fftw_plan_s(sz); };
-static const constexpr auto run_plan_r2c = [] (void* plan, fft_real* real, fft_complex* cplx, auto& temp) {
-  return ((fftw_plan_s*)plan)->execute((kfr::c64*)cplx, (kfr::f64*)real, temp.data(), kfr::cdirect_t{});
+static const constexpr auto create_plan_r2c
+    = [](std::size_t sz, ...) { return new fftw_plan_s(sz); };
+static const constexpr auto run_plan_r2c
+    = [](void* plan, fft_real* real, fft_complex* cplx, auto& temp) {
+  return ((fftw_plan_s*)plan)
+      ->execute((kfr::c64*)cplx, (kfr::f64*)real, temp.data(), kfr::cdirect_t{});
 };
 static const constexpr auto create_plan_c2r = create_plan_r2c;
-static const constexpr auto run_plan_c2r = [] (void* plan, fft_complex* cplx, fft_real* real, auto& temp) {
-  return ((fftw_plan_s*)plan)->execute((kfr::f64*)real, (kfr::c64*)cplx, temp.data(), kfr::cinvert_t{});
+static const constexpr auto run_plan_c2r
+    = [](void* plan, fft_complex* cplx, fft_real* real, auto& temp) {
+  return ((fftw_plan_s*)plan)
+      ->execute((kfr::f64*)real, (kfr::c64*)cplx, temp.data(), kfr::cinvert_t{});
 };
-static const constexpr auto destroy_plan = [] (auto&& p) { };
-static const constexpr auto cleanup = [] { };
-static const constexpr auto alignment_of = [] { };
+static const constexpr auto destroy_plan = [](auto&& p) {};
+static const constexpr auto cleanup = [] {};
+static const constexpr auto alignment_of = [] {};
 static const constexpr auto FFTW_DESTROY_INPUT = 0;
 static const constexpr auto FFTW_MEASURE = 0;
 fft::fft(std::size_t newSize) noexcept
@@ -302,48 +317,55 @@ fft_real* rfft::execute() noexcept
 }
 
 #else
-#include <complex>
 #include <ossia/detail/math.hpp>
+
+#include <complex>
 
 namespace ossia
 {
-namespace {
-// Minimal implementation taken from https://gist.github.com/lukicdarkoo/3f0d056e9244784f8b4a
-template<typename FP>
-static void fft_rec(std::complex<FP> *x, int N)
+namespace
+{
+// Minimal implementation taken from
+// https://gist.github.com/lukicdarkoo/3f0d056e9244784f8b4a
+template <typename FP>
+static void fft_rec(std::complex<FP>* x, int N)
 {
   using namespace std;
   using cplx = std::complex<FP>;
 
   // Check if it is splitted enough
-  if (N <= 1) {
+  if(N <= 1)
+  {
     return;
   }
 
   // Split even and odd
-  auto* odd = (cplx*)alloca(sizeof(cplx) * N/2);
-  auto* even = (cplx*)alloca(sizeof(cplx) * N/2);
-  for (int i = 0; i < N / 2; i++) {
-    even[i] = x[i*2];
-    odd[i] = x[i*2+1];
+  auto* odd = (cplx*)alloca(sizeof(cplx) * N / 2);
+  auto* even = (cplx*)alloca(sizeof(cplx) * N / 2);
+  for(int i = 0; i < N / 2; i++)
+  {
+    even[i] = x[i * 2];
+    odd[i] = x[i * 2 + 1];
   }
 
   // Split on tasks
-  fft_rec(even, N/2);
-  fft_rec(odd, N/2);
+  fft_rec(even, N / 2);
+  fft_rec(odd, N / 2);
 
   // Calculate DFT
-  for (int k = 0; k < N / 2; k++) {
+  for(int k = 0; k < N / 2; k++)
+  {
     cplx t = exp(cplx(0, -2 * ossia::pi * k / N)) * odd[k];
     x[k] = even[k] + t;
     x[N / 2 + k] = even[k] - t;
   }
 }
 
-template<typename FP>
+template <typename FP>
 static void do_fft(FP* x_in, std::complex<FP>* x_out, int N)
 {
-  for (int i = 0; i < N; i++) {
+  for(int i = 0; i < N; i++)
+  {
     x_out[i] = {x_in[i], 0};
   }
   fft_rec(x_out, N);

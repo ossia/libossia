@@ -15,8 +15,7 @@ protected:
 public:
   phidget_id id;
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
-  using const_iterator
-      = ossia::ptr_container<ossia::net::node_base>::const_iterator;
+  using const_iterator = ossia::ptr_container<ossia::net::node_base>::const_iterator;
 
   ~phidget_node();
 
@@ -26,8 +25,7 @@ public:
   }
   void set_parameter(std::unique_ptr<ossia::net::parameter_base> a) override;
 
-  phidget_node(
-      PhidgetHandle hdl, ossia::net::device_base& d, ossia::net::node_base& p);
+  phidget_node(PhidgetHandle hdl, ossia::net::device_base& d, ossia::net::node_base& p);
 
   ossia::net::device_base& get_device() const final override;
   ossia::net::node_base* get_parent() const override;
@@ -53,8 +51,7 @@ protected:
 
 public:
   using iterator = ossia::ptr_container<ossia::net::node_base>::iterator;
-  using const_iterator
-      = ossia::ptr_container<ossia::net::node_base>::const_iterator;
+  using const_iterator = ossia::ptr_container<ossia::net::node_base>::const_iterator;
 
   ~phidget_hub_port_node();
 
@@ -64,8 +61,7 @@ public:
   }
 
   phidget_hub_port_node(
-      PhidgetHandle hdl, int num, ossia::net::device_base& d,
-      ossia::net::node_base& p);
+      PhidgetHandle hdl, int num, ossia::net::device_base& d, ossia::net::node_base& p);
 
   ossia::net::device_base& get_device() const final override;
   ossia::net::node_base* get_parent() const override;

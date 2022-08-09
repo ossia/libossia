@@ -216,15 +216,15 @@ public:
   }
   bool operator()(const std::vector<ossia::value>& t) const
   {
-    if (lhs.size() != t.size())
+    if(lhs.size() != t.size())
       return false;
 
     bool result = true;
     auto tit = t.begin();
-    for (const auto& val : lhs)
+    for(const auto& val : lhs)
     {
       result &= fun(val, *tit);
-      if (!result)
+      if(!result)
         break;
       tit++;
     }
@@ -235,7 +235,7 @@ public:
   template <typename T>
   bool operator()(const T& v) const
   {
-    if (lhs.size() == 1)
+    if(lhs.size() == 1)
       return fun(lhs[0], rhs);
 
     return false;
@@ -291,8 +291,7 @@ public:
 };
 
 template <typename Fun>
-auto make_destination_visitor(
-    const destination& lhs, const ossia::value& val, Fun f)
+auto make_destination_visitor(const destination& lhs, const ossia::value& val, Fun f)
 {
   return DestinationVisitor<Fun>{lhs, val, f};
 }

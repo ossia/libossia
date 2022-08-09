@@ -6,9 +6,9 @@
 namespace ossia::qt
 {
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
+#if(QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 
-template<typename T, typename Fun>
+template <typename T, typename Fun>
 inline void run_async(T* self, Fun&& fun)
 {
   QMetaObject::invokeMethod(self, std::forward<Fun>(fun), Qt::QueuedConnection);
@@ -16,12 +16,15 @@ inline void run_async(T* self, Fun&& fun)
 
 #else
 
-template<typename T, typename Fun>
+template <typename T, typename Fun>
 inline void run_async(T* self, Fun&& fun)
 {
-  if constexpr(std::is_copy_constructible_v<Fun>) {
+  if constexpr(std::is_copy_constructible_v<Fun>)
+  {
     QTimer::singleShot(0, self, std::forward<Fun>(fun));
-  } else {
+  }
+  else
+  {
     // Old Qt did not support move-only types such as unique_ptr,
     // add a hack for that here
     auto f = new Fun{std::move(fun)};

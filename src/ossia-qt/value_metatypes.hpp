@@ -1,8 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <verdigris>
+
 #include <ossia/network/value/value.hpp>
+
 #include <QMetaType>
+
+#include <verdigris>
 
 Q_DECLARE_METATYPE(ossia::vec2f)
 Q_DECLARE_METATYPE(ossia::vec3f)

@@ -1,7 +1,8 @@
 #pragma once
 
-#include <ossia-max/src/parameter_base.hpp>
 #include <ossia/detail/optional.hpp>
+
+#include <ossia-max/src/parameter_base.hpp>
 
 namespace ossia
 {
@@ -27,8 +28,6 @@ public:
   void on_device_removing(device_base* obj);
   void on_device_created(device_base* obj);
   void on_node_renamed_callback(ossia::net::node_base& node, const std::string&);
-
 };
 } // namespace pd
 } // namespace ossia
-

@@ -18,8 +18,7 @@ namespace detail
 template <typename T>
 struct is_array
 {
-  static const constexpr bool value
-      = value_trait<std::remove_const_t<T>>::is_array;
+  static const constexpr bool value = value_trait<std::remove_const_t<T>>::is_array;
 };
 
 template <typename T, typename U, typename = void>
@@ -59,11 +58,10 @@ struct whole_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   {
     // copy the most possible values. T's value will be fixed at compile time.
     const auto n = std::min(value_unit.dataspace_value.size(), value.size());
-    for (std::size_t i = 0; i < n; i++)
+    for(std::size_t i = 0; i < n; i++)
     {
       value_unit.dataspace_value[i] = ossia::convert<
-          std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(
-          value[i]);
+          std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(value[i]);
     }
     return value_unit;
   }
@@ -115,12 +113,10 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   operator()(T value_unit, const U& value, const ossia::destination_index& idx)
   {
     auto i = idx[0];
-    if ((int64_t)value_unit.dataspace_value.size() > i
-        && (int64_t)value.size() > i)
+    if((int64_t)value_unit.dataspace_value.size() > i && (int64_t)value.size() > i)
     {
       value_unit.dataspace_value[i] = ossia::convert<
-          std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(
-          value[i]);
+          std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(value[i]);
     }
 
     return value_unit;
@@ -130,7 +126,7 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
   ossia::value_with_unit
   operator()(T value_unit, const U& value, const std::bitset<N>& idx)
   {
-    if (handle_vec(value_unit.dataspace_value, value, idx))
+    if(handle_vec(value_unit.dataspace_value, value, idx))
       return value_unit;
     return {};
   }
@@ -140,9 +136,9 @@ struct partial_value_merger_helper<T, U, enable_if_both_iterable<T, U>>
       std::array<float, N>& src, const std::array<float, N>& incoming,
       const std::bitset<N>& idx)
   {
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
-      if (idx.test(i))
+      if(idx.test(i))
       {
         src[i] = incoming[i];
       }
@@ -165,8 +161,7 @@ struct partial_value_merger_helper<T, U, enable_if_first_iterable<T, U>>
   {
     auto i = idx[0];
     value_unit.dataspace_value[i] = ossia::convert<
-        std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(
-        value);
+        std::remove_reference_t<decltype(value_unit.dataspace_value[i])>>(value);
     return value_unit;
   }
 
@@ -217,15 +212,13 @@ struct value_merger
   const ossia::destination_index& index;
 
   template <typename T, typename U>
-  ossia::value_with_unit
-  operator()(const strong_value<T>& value_unit, const U& value)
+  ossia::value_with_unit operator()(const strong_value<T>& value_unit, const U& value)
   {
     auto n = index.size();
-    switch (n)
+    switch(n)
     {
       case 0:
-        return whole_value_merger_helper<strong_value<T>, U>{}(
-            value_unit, value);
+        return whole_value_merger_helper<strong_value<T>, U>{}(value_unit, value);
       case 1:
         // The index is where the value should go
         return partial_value_merger_helper<strong_value<T>, U>{}(
@@ -263,15 +256,15 @@ struct vec_value_merger
   }
 
   template <typename T>
-  ossia::value_with_unit operator()(
-      const strong_value<T>& value_unit, const std::array<float, N>& value)
+  ossia::value_with_unit
+  operator()(const strong_value<T>& value_unit, const std::array<float, N>& value)
   {
-    if (index.all())
-      return whole_value_merger_helper<
-          strong_value<T>, std::array<float, N>>{}(value_unit, value);
-    else if (index.any())
-      return partial_value_merger_helper<
-          strong_value<T>, std::array<float, N>>{}(value_unit, value, index);
+    if(index.all())
+      return whole_value_merger_helper<strong_value<T>, std::array<float, N>>{}(
+          value_unit, value);
+    else if(index.any())
+      return partial_value_merger_helper<strong_value<T>, std::array<float, N>>{}(
+          value_unit, value, index);
     else
       return value_unit;
   }

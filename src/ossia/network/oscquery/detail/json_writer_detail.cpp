@@ -11,26 +11,25 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/detail/oscquery_units.hpp>
 #include <ossia/network/oscquery/detail/domain_to_json.hpp>
-#include <ossia/network/value/value.hpp>
+#include <ossia/network/oscquery/detail/oscquery_units.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/value/format_value.hpp>
+#include <ossia/network/value/value.hpp>
 namespace ossia
 {
 namespace oscquery
 {
 namespace detail
 {
-void json_writer_impl::writeValue(
-    const value& val, const ossia::unit_t& unit) const
+void json_writer_impl::writeValue(const value& val, const ossia::unit_t& unit) const
 {
   val.apply(value_to_json{writer, unit});
 }
 
 void json_writer_impl::writeValue(bounding_mode b) const
 {
-  switch (b)
+  switch(b)
   {
     case ossia::bounding_mode::FREE:
       writer.String("none");
@@ -57,7 +56,7 @@ void json_writer_impl::writeValue(bounding_mode b) const
 
 void json_writer_impl::writeValue(access_mode b) const
 {
-  switch (b)
+  switch(b)
   {
     case ossia::access_mode::GET:
       writer.Int(1);
@@ -89,7 +88,7 @@ void json_writer_impl::writeValue(const net::tags& tags) const
 {
   writer.StartArray();
 
-  for (const auto& tag : tags)
+  for(const auto& tag : tags)
   {
     writer.String(tag);
   }
@@ -107,12 +106,12 @@ void json_writer_impl::writeValue(int32_t i) const
 }
 void json_writer_impl::writeValue(float i) const
 {
-  if (!writer.Double(i))
+  if(!writer.Double(i))
     writer.Null();
 }
 void json_writer_impl::writeValue(double i) const
 {
-  if (!writer.Double(i))
+  if(!writer.Double(i))
     writer.Null();
 }
 void json_writer_impl::writeValue(bool i) const
@@ -136,8 +135,7 @@ void json_writer_impl::writeValue(const net::instance_bounds& i) const
   writer.EndArray();
 }
 
-using writer_map_fun
-    = void (*)(const json_writer_impl&, const ossia::net::node_base&);
+using writer_map_fun = void (*)(const json_writer_impl&, const ossia::net::node_base&);
 using writer_map_type = string_view_map<writer_map_fun>;
 
 template <typename Attr>
@@ -157,11 +155,10 @@ struct attr_pair_writer<ossia::net::value_attribute>
   auto operator()()
   {
     return [](const json_writer_impl& self, const ossia::net::node_base& n) {
-      if (auto p = n.get_parameter())
+      if(auto p = n.get_parameter())
         self.writeValue(ossia::net::value_attribute::getter(n), p->get_unit());
       else
-        self.writeValue(
-            ossia::net::value_attribute::getter(n), ossia::unit_t{});
+        self.writeValue(ossia::net::value_attribute::getter(n), ossia::unit_t{});
     };
   }
 };
@@ -172,12 +169,10 @@ struct attr_pair_writer<ossia::net::default_value_attribute>
   auto operator()()
   {
     return [](const json_writer_impl& self, const ossia::net::node_base& n) {
-      if (auto p = n.get_parameter())
-        self.writeValue(
-            ossia::net::default_value_attribute::getter(n), p->get_unit());
+      if(auto p = n.get_parameter())
+        self.writeValue(ossia::net::default_value_attribute::getter(n), p->get_unit());
       else
-        self.writeValue(
-            ossia::net::default_value_attribute::getter(n), ossia::unit_t{});
+        self.writeValue(ossia::net::default_value_attribute::getter(n), ossia::unit_t{});
     };
   }
 };
@@ -218,7 +213,7 @@ void json_writer_impl::writeAttribute(
   auto& attr_map = attributesMap();
 
   auto it = attr_map.find(method);
-  if (it != attr_map.end())
+  if(it != attr_map.end())
   {
     it.value()(*this, n);
   }
@@ -239,7 +234,7 @@ struct node_attribute_writer
   {
     using Attr = typename T::type;
     auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if(ossia::net::valid(res))
     {
       writer.writeKey(metadata<Attr>::key());
       writer.writeValue(res);
@@ -248,14 +243,14 @@ struct node_attribute_writer
 
   void operator()(const type_tag<ossia::net::unit_attribute>&)
   {
-    if (auto res = p.get_unit())
+    if(auto res = p.get_unit())
     {
       ossia::apply_nonnull(
           [&](const auto& d) {
-            if (d)
-            {
-              ossia::apply(unit_writer{writer}, d);
-            }
+        if(d)
+        {
+          ossia::apply(unit_writer{writer}, d);
+        }
           },
           res.v);
     }
@@ -263,12 +258,12 @@ struct node_attribute_writer
 
   void operator()(const type_tag<ossia::net::extended_type_attribute>&)
   {
-    if (!p.get_unit())
+    if(!p.get_unit())
     {
       using T = type_tag<ossia::net::extended_type_attribute>;
       using Attr = typename T::type;
       auto res = Attr::getter(n);
-      if (ossia::net::valid(res))
+      if(ossia::net::valid(res))
       {
         writer.writeKey(metadata<Attr>::key());
         writer.writer.StartArray();
@@ -280,7 +275,7 @@ struct node_attribute_writer
 
   void operator()(const type_tag<ossia::net::value_attribute>&)
   {
-    if (auto res = p.value(); res.valid())
+    if(auto res = p.value(); res.valid())
     {
       writer.writeKey(metadata<ossia::net::value_attribute>::key());
       writer.writeValue(res, p.get_unit());
@@ -292,7 +287,7 @@ struct node_attribute_writer
     using T = type_tag<ossia::net::default_value_attribute>;
     using Attr = typename T::type;
     auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if(ossia::net::valid(res))
     {
       writer.writeKey(metadata<Attr>::key());
       writer.writeValue(res, p.get_unit());
@@ -313,18 +308,17 @@ void json_writer_impl::writeNodeAttributes(const net::node_base& n) const
   writer.String(n.osc_address());
 
   // Handling of the types / values
-  if (addr)
+  if(addr)
   {
     // TODO it could be nice to have versions that take a parameter or a value
     // directly
-    ossia::for_each_tagged(
-        base_attributes{}, node_attribute_writer{n, *addr, *this});
+    ossia::for_each_tagged(base_attributes{}, node_attribute_writer{n, *addr, *this});
   }
 
   ossia::for_each_tagged(extended_attributes{}, [&](auto attr) {
     using Attr = typename decltype(attr)::type;
     auto res = Attr::getter(n);
-    if (ossia::net::valid(res))
+    if(ossia::net::valid(res))
     {
       this->writeKey(metadata<Attr>::key());
       this->writeValue(res);
@@ -339,11 +333,11 @@ void json_writer_impl::writeNode(const net::node_base& n)
 
   const auto& cld = n.children();
 
-  if (!cld.empty())
+  if(!cld.empty())
   {
     writeKey(detail::contents());
     writer.StartObject();
-    for (const auto& child : cld)
+    for(const auto& child : cld)
     {
       writer.String(child->get_name());
       writeNode(*child);
@@ -355,8 +349,7 @@ void json_writer_impl::writeNode(const net::node_base& n)
 }
 }
 
-void json_writer::path_added_impl(
-    detail::json_writer_impl& p, const net::node_base& n)
+void json_writer::path_added_impl(detail::json_writer_impl& p, const net::node_base& n)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -370,8 +363,7 @@ void json_writer::path_added_impl(
   wr.EndObject();
 }
 
-void json_writer::path_changed_impl(
-    detail::json_writer_impl& p, const net::node_base& n)
+void json_writer::path_changed_impl(detail::json_writer_impl& p, const net::node_base& n)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -385,8 +377,7 @@ void json_writer::path_changed_impl(
   wr.EndObject();
 }
 
-void json_writer::path_removed_impl(
-    json_writer::writer_t& wr, const std::string& path)
+void json_writer::path_removed_impl(json_writer::writer_t& wr, const std::string& path)
 {
   wr.StartObject();
 
@@ -420,8 +411,7 @@ void json_writer::path_renamed_impl(
 }
 
 void json_writer::attribute_changed_impl(
-    detail::json_writer_impl& p, const net::node_base& n,
-    ossia::string_view attr)
+    detail::json_writer_impl& p, const net::node_base& n, ossia::string_view attr)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -438,7 +428,7 @@ void json_writer::attribute_changed_impl(
 
     auto& map = ossia_to_oscquery_key();
     auto it = map.find(attr);
-    if (it != map.end())
+    if(it != map.end())
     {
       write_json_key(wr, it.value());
       p.writeAttribute(n, it.value());
@@ -475,10 +465,10 @@ void json_writer::attributes_changed_impl(
     write_json_key(wr, detail::attribute_full_path());
     wr.String(n.osc_address());
 
-    for (auto& attr : attributes)
+    for(auto& attr : attributes)
     {
       auto it = map.find(attr);
-      if (it != map.end())
+      if(it != map.end())
       {
         write_json_key(wr, it.value());
         p.writeAttribute(n, it.value());
@@ -675,7 +665,8 @@ json_writer::string_t json_writer::path_removed(const std::string& path)
   return buf;
 }
 
-json_writer::string_t json_writer::path_renamed(const std::string& old_path, const std::string& new_path)
+json_writer::string_t
+json_writer::path_renamed(const std::string& old_path, const std::string& new_path)
 {
   string_t buf;
   writer_t wr(buf);
@@ -685,8 +676,8 @@ json_writer::string_t json_writer::path_renamed(const std::string& old_path, con
   return buf;
 }
 
-json_writer::string_t json_writer::attributes_changed(
-    const net::node_base& n, ossia::string_view attribute)
+json_writer::string_t
+json_writer::attributes_changed(const net::node_base& n, ossia::string_view attribute)
 {
   string_t buf;
   writer_t wr(buf);
@@ -720,7 +711,7 @@ json_writer::paths_added(const std::vector<const net::node_base*>& vec)
   detail::json_writer_impl p{wr};
 
   wr.StartArray();
-  for (auto node : vec)
+  for(auto node : vec)
     path_added_impl(p, *node);
   wr.EndArray();
 
@@ -736,21 +727,20 @@ json_writer::paths_changed(const std::vector<const net::node_base*>& vec)
   detail::json_writer_impl p{wr};
 
   wr.StartArray();
-  for (auto node : vec)
+  for(auto node : vec)
     path_changed_impl(p, *node);
   wr.EndArray();
 
   return buf;
 }
 
-json_writer::string_t
-json_writer::paths_removed(const std::vector<std::string>& vec)
+json_writer::string_t json_writer::paths_removed(const std::vector<std::string>& vec)
 {
   string_t buf;
   writer_t wr(buf);
 
   wr.StartArray();
-  for (const auto& str : vec)
+  for(const auto& str : vec)
     path_removed_impl(wr, str);
   wr.EndArray();
 
@@ -758,8 +748,7 @@ json_writer::paths_removed(const std::vector<std::string>& vec)
 }
 
 json_writer::string_t json_writer::attributes_changed_array(
-    const std::vector<
-        std::pair<const net::node_base*, std::vector<ossia::string_view>>>&
+    const std::vector<std::pair<const net::node_base*, std::vector<ossia::string_view>>>&
         vec)
 {
   string_t buf;
@@ -768,13 +757,12 @@ json_writer::string_t json_writer::attributes_changed_array(
   detail::json_writer_impl p{wr};
 
   wr.StartArray();
-  for (const auto& val : vec)
+  for(const auto& val : vec)
     attributes_changed_impl(p, *val.first, val.second);
   wr.EndArray();
 
   return buf;
 }
-
 
 }
 }

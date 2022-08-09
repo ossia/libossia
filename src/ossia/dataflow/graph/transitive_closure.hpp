@@ -30,7 +30,7 @@ inline void union_successor_sets(
     std::vector<std::size_t>& s3)
 {
   BOOST_USING_STD_MIN();
-  for (std::size_t k = 0; k < s1.size(); ++k)
+  for(std::size_t k = 0; k < s1.size(); ++k)
     s3[k] = min BOOST_PREVENT_MACRO_SUBSTITUTION(s1[k], s2[k]);
 }
 
@@ -41,7 +41,8 @@ struct subscript_t
 {
   typedef VT& result_type;
 
-  subscript_t(TheContainer& c) : container(&c)
+  subscript_t(TheContainer& c)
+      : container(&c)
   {
   }
   VT& operator()(const ST& i) const
@@ -66,12 +67,10 @@ struct TransitiveClosureState
       typename boost::property_map<Graph, boost::vertex_index_t>::const_type;
 
   using vertex = typename boost::graph_traits<Graph>::vertex_descriptor;
-  using size_type =
-      typename boost::property_traits<VertexIndexMap>::value_type;
+  using size_type = typename boost::property_traits<VertexIndexMap>::value_type;
   using tc_vertex = typename boost::graph_traits<GraphTC>::vertex_descriptor;
   using cg_vertex = size_type;
-  using CG_t
-      = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>;
+  using CG_t = boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>;
 
   std::vector<tc_vertex> to_tc_vec;
 
@@ -106,7 +105,7 @@ void resize_and_fill(std::vector<std::vector<T>>& vec, const std::size_t N)
 {
   const auto cur = vec.size();
   vec.resize(N);
-  for (std::size_t i = 0; i < std::min(cur, N); i++)
+  for(std::size_t i = 0; i < std::min(cur, N); i++)
   {
     vec[i].clear();
   }
@@ -114,16 +113,15 @@ void resize_and_fill(std::vector<std::vector<T>>& vec, const std::size_t N)
 
 template <typename T>
 void resize_and_fill(
-    std::vector<std::vector<T>>& vec, const std::size_t N,
-    const std::size_t init_num, T init_val)
+    std::vector<std::vector<T>>& vec, const std::size_t N, const std::size_t init_num,
+    T init_val)
 {
   vec.resize(N);
-  for (std::size_t i = 0; i < N; i++)
+  for(std::size_t i = 0; i < N; i++)
   {
     auto cur = vec[i].size();
     vec[i].resize(init_num, init_val);
-    std::fill(
-        vec[i].begin(), vec[i].begin() + std::min(cur, init_num), init_val);
+    std::fill(vec[i].begin(), vec[i].begin() + std::min(cur, init_num), init_val);
   }
 }
 
@@ -131,11 +129,11 @@ template <
     typename Graph, typename GraphTC, typename G_to_TC_VertexMap,
     typename VertexIndexMap>
 void transitive_closure(
-    const Graph& g, GraphTC& tc, G_to_TC_VertexMap g_to_tc_map,
-    VertexIndexMap index_map, TransitiveClosureState<Graph, GraphTC>& state)
+    const Graph& g, GraphTC& tc, G_to_TC_VertexMap g_to_tc_map, VertexIndexMap index_map,
+    TransitiveClosureState<Graph, GraphTC>& state)
 {
   using namespace boost;
-  if (num_vertices(g) == 0)
+  if(num_vertices(g) == 0)
     return;
   typedef typename graph_traits<Graph>::vertex_descriptor vertex;
   typedef typename graph_traits<Graph>::vertex_iterator vertex_iterator;
@@ -161,28 +159,27 @@ void transitive_closure(
   resize_and_fill(components, num_scc);
   build_component_lists(g, num_scc, component_number, components);
 
-  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS>
-      CG_t;
+  typedef boost::adjacency_list<boost::vecS, boost::vecS, boost::directedS> CG_t;
   auto& CG = state.CG;
   CG = CG_t{num_scc}; // todo reuse memory/
 
-  for (cg_vertex s = 0; s < components.size(); ++s)
+  for(cg_vertex s = 0; s < components.size(); ++s)
   {
     auto& adj = state.adj;
     adj.clear();
-    for (size_type i = 0; i < components[s].size(); ++i)
+    for(size_type i = 0; i < components[s].size(); ++i)
     {
       const auto u = components[s][i];
-      for (auto [v, v_end] = adjacent_vertices(u, g); v != v_end; ++v)
+      for(auto [v, v_end] = adjacent_vertices(u, g); v != v_end; ++v)
       {
         const auto t = component_number[*v];
-        if (s != t) // Avoid loops in the condensation graph
+        if(s != t) // Avoid loops in the condensation graph
           adj.push_back(t);
       }
     }
 
     ossia::remove_duplicates(adj);
-    for (auto i = adj.begin(); i != adj.end(); ++i)
+    for(auto i = adj.begin(); i != adj.end(); ++i)
     {
       add_edge(s, *i, CG);
     }
@@ -195,23 +192,21 @@ void transitive_closure(
   auto& topo_number = state.topo_number;
   topo_number.resize(num_scc);
   topological_sort(
-      CG, std::back_inserter(topo_order),
-      vertex_index_map(identity_property_map()));
+      CG, std::back_inserter(topo_order), vertex_index_map(identity_property_map()));
   std::reverse(topo_order.begin(), topo_order.end());
   size_type n = 0;
-  for (auto iter = topo_order.begin(); iter != topo_order.end(); ++iter)
+  for(auto iter = topo_order.begin(); iter != topo_order.end(); ++iter)
     topo_number[*iter] = n++;
 
   auto& CG_vec = state.CG_vec;
   CG_vec.resize(num_scc);
-  for (size_type i = 0; i < num_scc; ++i)
+  for(size_type i = 0; i < num_scc; ++i)
   {
     auto pr = adjacent_vertices(i, CG);
     CG_vec[i].assign(pr.first, pr.second);
-    std::sort(
-        CG_vec[i].begin(), CG_vec[i].end(), [&](cg_vertex lhs, cg_vertex rhs) {
-          return topo_number[lhs] < topo_number[rhs];
-        });
+    std::sort(CG_vec[i].begin(), CG_vec[i].end(), [&](cg_vertex lhs, cg_vertex rhs) {
+      return topo_number[lhs] < topo_number[rhs];
+    });
   }
 
   auto& chains = state.chains;
@@ -220,20 +215,20 @@ void transitive_closure(
   {
     auto& in_a_chain = state.in_a_chain;
     resize_and_fill(in_a_chain, num_scc);
-    for (cg_vertex v : topo_order)
+    for(cg_vertex v : topo_order)
     {
-      if (!in_a_chain[v])
+      if(!in_a_chain[v])
       {
         chains.resize(chains.size() + 1);
         auto& chain = chains.back();
-        for (;;)
+        for(;;)
         {
           chain.push_back(v);
           in_a_chain[v] = true;
-          auto next = std::find_if(
-              CG_vec[v].begin(), CG_vec[v].end(),
-              [&](auto elt) { return !in_a_chain[elt]; });
-          if (next != CG_vec[v].end())
+          auto next = std::find_if(CG_vec[v].begin(), CG_vec[v].end(), [&](auto elt) {
+            return !in_a_chain[elt];
+          });
+          if(next != CG_vec[v].end())
             v = *next;
           else
             break; // end of chain, dead-end
@@ -245,8 +240,8 @@ void transitive_closure(
   chain_number.resize(num_scc); // resize_and_fill(chain_number, num_scc);
   auto& pos_in_chain = state.pos_in_chain;
   pos_in_chain.resize(num_scc); // resize_and_fill(pos_in_chain, num_scc);
-  for (size_type i = 0; i < chains.size(); ++i)
-    for (size_type j = 0; j < chains[i].size(); ++j)
+  for(size_type i = 0; i < chains.size(); ++i)
+    for(size_type j = 0; j < chains[i].size(); ++j)
     {
       const cg_vertex v = chains[i][j];
       chain_number[v] = i;
@@ -256,18 +251,17 @@ void transitive_closure(
   static const constexpr cg_vertex inf = std::numeric_limits<cg_vertex>::max();
   auto& successors = state.successors;
   resize_and_fill(successors, num_scc, chains.size(), inf);
-  for (auto i = topo_order.rbegin(); i != topo_order.rend(); ++i)
+  for(auto i = topo_order.rbegin(); i != topo_order.rend(); ++i)
   {
     const cg_vertex u = *i;
-    for (auto adj = CG_vec[u].begin(), adj_last = CG_vec[u].end();
-         adj != adj_last; ++adj)
+    for(auto adj = CG_vec[u].begin(), adj_last = CG_vec[u].end(); adj != adj_last; ++adj)
     {
       const cg_vertex v = *adj;
       auto& suc_u = successors[u];
       auto& suc_v = successors[v];
       auto& suc_u_v = suc_u[chain_number[v]];
       auto& topo_v = topo_number[v];
-      if (topo_v < suc_u_v)
+      if(topo_v < suc_u_v)
       {
         // Succ(u) = Succ(u) U Succ(v)
         detail::union_successor_sets(suc_u, suc_v, suc_u);
@@ -277,21 +271,21 @@ void transitive_closure(
     }
   }
 
-  for (size_type i = 0; i < CG_vec.size(); ++i)
+  for(size_type i = 0; i < CG_vec.size(); ++i)
     CG_vec[i].clear();
-  for (size_type i = 0; i < CG_vec.size(); ++i)
-    for (size_type j = 0; j < chains.size(); ++j)
+  for(size_type i = 0; i < CG_vec.size(); ++i)
+    for(size_type j = 0; j < chains.size(); ++j)
     {
       const size_type topo_num = successors[i][j];
-      if (topo_num < inf)
+      if(topo_num < inf)
       {
         cg_vertex v = topo_order[topo_num];
         const auto chain_j_size = chains[j].size();
         const auto pos_v = pos_in_chain[v];
-        if (chain_j_size > pos_v)
+        if(chain_j_size > pos_v)
         {
           CG_vec[i].reserve(CG_vec[i].size() + chain_j_size - pos_v);
-          for (size_type k = pos_v; k < chain_j_size; ++k)
+          for(size_type k = pos_v; k < chain_j_size; ++k)
             CG_vec[i].push_back(chains[j][k]);
         }
       }
@@ -300,28 +294,26 @@ void transitive_closure(
   // Add vertices to the transitive closure graph
   {
     vertex_iterator i, i_end;
-    for (boost::tie(i, i_end) = vertices(g); i != i_end; ++i)
+    for(boost::tie(i, i_end) = vertices(g); i != i_end; ++i)
       g_to_tc_map[*i] = add_vertex(tc);
   }
   // Add edges between all the vertices in two adjacent SCCs
-  for (auto si = CG_vec.begin(), si_end = CG_vec.end(); si != si_end; ++si)
+  for(auto si = CG_vec.begin(), si_end = CG_vec.end(); si != si_end; ++si)
   {
     cg_vertex s = si - CG_vec.begin();
-    for (auto i = CG_vec[s].begin(), i_end = CG_vec[s].end(); i != i_end; ++i)
+    for(auto i = CG_vec[s].begin(), i_end = CG_vec[s].end(); i != i_end; ++i)
     {
       cg_vertex t = *i;
-      for (size_type k = 0; k < components[s].size(); ++k)
-        for (size_type l = 0; l < components[t].size(); ++l)
-          add_edge(
-              g_to_tc_map[components[s][k]], g_to_tc_map[components[t][l]],
-              tc);
+      for(size_type k = 0; k < components[s].size(); ++k)
+        for(size_type l = 0; l < components[t].size(); ++l)
+          add_edge(g_to_tc_map[components[s][k]], g_to_tc_map[components[t][l]], tc);
     }
   }
   // Add edges connecting all vertices in a SCC
-  for (size_type i = 0; i < components.size(); ++i)
-    if (components[i].size() > 1)
-      for (size_type k = 0; k < components[i].size(); ++k)
-        for (size_type l = 0; l < components[i].size(); ++l)
+  for(size_type i = 0; i < components.size(); ++i)
+    if(components[i].size() > 1)
+      for(size_type k = 0; k < components[i].size(); ++k)
+        for(size_type l = 0; l < components[i].size(); ++l)
         {
           vertex u = components[i][k], v = components[i][l];
           add_edge(g_to_tc_map[u], g_to_tc_map[v], tc);
@@ -330,12 +322,12 @@ void transitive_closure(
   // Find loopbacks in the original graph.
   // Need to add it to transitive closure.
   {
-    for (auto [i, i_end] = vertices(g); i != i_end; ++i)
+    for(auto [i, i_end] = vertices(g); i != i_end; ++i)
     {
-      for (auto [ab, ae] = adjacent_vertices(*i, g); ab != ae; ++ab)
+      for(auto [ab, ae] = adjacent_vertices(*i, g); ab != ae; ++ab)
       {
-        if (*ab == *i)
-          if (components[component_number[*i]].size() == 1)
+        if(*ab == *i)
+          if(components[component_number[*i]].size() == 1)
             add_edge(g_to_tc_map[*i], g_to_tc_map[*i], tc);
       }
     }
@@ -344,21 +336,19 @@ void transitive_closure(
 
 template <typename Graph, typename GraphTC>
 void transitive_closure(
-    const Graph& g, GraphTC& tc,
-    TransitiveClosureState<Graph, GraphTC>& tc_state)
+    const Graph& g, GraphTC& tc, TransitiveClosureState<Graph, GraphTC>& tc_state)
 {
   using namespace boost;
-  if (num_vertices(g) == 0)
+  if(num_vertices(g) == 0)
     return;
-  typedef
-      typename property_map<Graph, vertex_index_t>::const_type VertexIndexMap;
+  typedef typename property_map<Graph, vertex_index_t>::const_type VertexIndexMap;
   VertexIndexMap index_map = get(vertex_index, g);
 
   typedef typename graph_traits<GraphTC>::vertex_descriptor tc_vertex;
 
   resize_and_fill(tc_state.to_tc_vec, num_vertices(g));
-  iterator_property_map<tc_vertex*, VertexIndexMap, tc_vertex, tc_vertex&>
-      g_to_tc_map(&tc_state.to_tc_vec[0], index_map);
+  iterator_property_map<tc_vertex*, VertexIndexMap, tc_vertex, tc_vertex&> g_to_tc_map(
+      &tc_state.to_tc_vec[0], index_map);
 
   transitive_closure(g, tc, g_to_tc_map, index_map, tc_state);
 }

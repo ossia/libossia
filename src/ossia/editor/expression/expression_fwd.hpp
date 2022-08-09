@@ -1,10 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/nullable_variant.hpp>
 
-#include <memory>
 #include <functional>
+#include <memory>
 
 /**
  * \file expression_fwd.hpp
@@ -18,10 +19,8 @@ namespace expressions
  */
 using expression_result_callback = std::function<void(bool)>;
 
-using expression_callback_container
-    = callback_container<expression_result_callback>;
-using expression_callback_iterator =
-    typename expression_callback_container::iterator;
+using expression_callback_container = callback_container<expression_result_callback>;
+using expression_callback_iterator = typename expression_callback_container::iterator;
 class expression_atom;
 class expression_bool;
 class expression_composition;

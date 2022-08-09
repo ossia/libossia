@@ -1,14 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "qml_property_reader.hpp"
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia-qt/device/qml_node.hpp>
-#include <ossia-qt/js_utilities.hpp>
 
 #include <ossia/network/generic/generic_device.hpp>
+
 #include <QDebug>
 
 #include <wobjectimpl.h>
+
+#include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::qt::qml_property_context)
 W_OBJECT_IMPL(ossia::qt::qml_property_reader)
 W_OBJECT_IMPL(ossia::qt::qml_property_writer)
@@ -20,9 +22,11 @@ namespace qt
 {
 qml_property_context::qml_property_context(
     QQmlProperty& p, net::parameter_base& addr, QObject* parent)
-    : QObject{parent}, targetProperty{p}, address{addr}
+    : QObject{parent}
+    , targetProperty{p}
+    , address{addr}
 {
-  if (targetProperty.hasNotifySignal())
+  if(targetProperty.hasNotifySignal())
   {
     targetProperty.connectNotifySignal(this, SLOT(qtVariantChanged()));
   }
@@ -42,7 +46,7 @@ qml_property_reader::qml_property_reader(QQuickItem* parent)
 
 qml_property_reader::~qml_property_reader()
 {
-  if (m_device)
+  if(m_device)
     m_device->remove(this);
   m_param = nullptr;
 }
@@ -57,14 +61,14 @@ void qml_property_reader::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
-  if (olddev != newdev)
+  if(olddev != newdev)
   {
-    if (olddev)
+    if(olddev)
     {
       olddev->remove(this);
     }
 
-    if (newdev)
+    if(newdev)
     {
       newdev->add(this);
     }
@@ -77,22 +81,20 @@ void qml_property_reader::resetNode()
 {
   clearNode();
 
-  if (m_device && m_userRequestedNode.startsWith('/'))
+  if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
         m_device->device().get_root_node(), m_userRequestedNode.toStdString());
 
-    if (m_ossia_node)
+    if(m_ossia_node)
     {
-      m_ossia_node->about_to_be_deleted
-          .connect<&qml_property_reader::on_node_deleted>(
-              this);
+      m_ossia_node->about_to_be_deleted.connect<&qml_property_reader::on_node_deleted>(
+          this);
       m_param = m_ossia_node->get_parameter();
 
-      if (m_param)
+      if(m_param)
       {
-        m_propCtx
-            = new qml_property_context{m_targetProperty, *m_param, this};
+        m_propCtx = new qml_property_context{m_targetProperty, *m_param, this};
         m_param->push_value(qt_to_ossia{}(m_targetProperty.read()));
       }
     }
@@ -111,7 +113,7 @@ void qml_property_reader::clearNode()
   m_param = nullptr;
   m_ossia_node = nullptr;
 
-  if (m_propCtx)
+  if(m_propCtx)
     delete m_propCtx;
   m_propCtx = nullptr;
 }
@@ -129,7 +131,7 @@ qml_property_writer::qml_property_writer(QQuickItem* parent)
 
 qml_property_writer::~qml_property_writer()
 {
-  if (m_device)
+  if(m_device)
     m_device->remove(this);
   m_param = nullptr;
 }
@@ -144,14 +146,14 @@ void qml_property_writer::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
-  if (olddev != newdev)
+  if(olddev != newdev)
   {
-    if (olddev)
+    if(olddev)
     {
       olddev->remove(this);
     }
 
-    if (newdev)
+    if(newdev)
     {
       newdev->add(this);
     }
@@ -164,21 +166,19 @@ void qml_property_writer::resetNode()
 {
   clearNode();
 
-  if (m_device && m_userRequestedNode.startsWith('/'))
+  if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
         m_device->device().get_root_node(), m_userRequestedNode.toStdString());
 
-    if (m_ossia_node)
+    if(m_ossia_node)
     {
-      m_ossia_node->about_to_be_deleted
-          .connect<&qml_property_writer::on_node_deleted>(
-              this);
+      m_ossia_node->about_to_be_deleted.connect<&qml_property_writer::on_node_deleted>(
+          this);
       m_param = m_ossia_node->get_parameter();
-      if (m_param)
+      if(m_param)
       {
-        m_cb = m_param->add_callback(
-            [=](const ossia::value& v) { setValue_sig(v); });
+        m_cb = m_param->add_callback([=](const ossia::value& v) { setValue_sig(v); });
         setValue_slot(m_param->value());
       }
     }
@@ -194,7 +194,7 @@ void qml_property_writer::clearNode()
 {
   m_node.clear();
   nodeChanged(m_node);
-  if (m_param)
+  if(m_param)
     m_param->remove_callback(m_cb);
   m_cb = {};
   m_param = nullptr;
@@ -204,13 +204,13 @@ void qml_property_writer::clearNode()
 void qml_property_writer::setValue_slot(const value& v)
 {
   auto cur = m_targetProperty.read();
-  auto next = ossia_to_qvariant{}(
-      (QVariant::Type)m_targetProperty.propertyType(), v);
-  if (cur != next)
+  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
+  if(cur != next)
     m_targetProperty.write(next);
 }
 
-qml_binding::qml_binding(QQuickItem* parent) : qml_node_base(parent)
+qml_binding::qml_binding(QQuickItem* parent)
+    : qml_node_base(parent)
 {
   setDevice(&qml_singleton_device::instance());
   resetNode();
@@ -218,7 +218,7 @@ qml_binding::qml_binding(QQuickItem* parent) : qml_node_base(parent)
 
 qml_binding::~qml_binding()
 {
-  if (m_device)
+  if(m_device)
     m_device->remove(this);
   m_param = nullptr;
 }
@@ -227,14 +227,14 @@ void qml_binding::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
-  if (olddev != newdev)
+  if(olddev != newdev)
   {
-    if (olddev)
+    if(olddev)
     {
       olddev->remove(this);
     }
 
-    if (newdev)
+    if(newdev)
     {
       newdev->add(this);
     }
@@ -247,18 +247,17 @@ void qml_binding::resetNode()
 {
   clearNode();
 
-  if (m_device && m_userRequestedNode.startsWith('/'))
+  if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
         m_device->device().get_root_node(), m_userRequestedNode.toStdString());
 
-    if (m_ossia_node)
+    if(m_ossia_node)
     {
-      m_ossia_node->about_to_be_deleted
-          .connect<&qml_binding::on_node_deleted>(this);
+      m_ossia_node->about_to_be_deleted.connect<&qml_binding::on_node_deleted>(this);
       m_param = m_ossia_node->get_parameter();
 
-      if (m_param)
+      if(m_param)
       {
         m_expr = std::make_unique<QQmlExpression>(m_on);
         m_expr->setNotifyOnValueChanged(true);
@@ -279,7 +278,7 @@ QQmlScriptString qml_binding::on() const
 
 void qml_binding::setOn(QQmlScriptString on)
 {
-  if (m_on == on)
+  if(m_on == on)
     return;
 
   m_on = on;
@@ -300,7 +299,8 @@ void qml_binding::clearNode()
   m_expr.reset();
 }
 
-qml_callback::qml_callback(QQuickItem* parent) : qml_node_base(parent)
+qml_callback::qml_callback(QQuickItem* parent)
+    : qml_node_base(parent)
 {
   connect(
       this, &qml_callback::setValue_sig, this, &qml_callback::setValue_slot,
@@ -312,7 +312,7 @@ qml_callback::qml_callback(QQuickItem* parent) : qml_node_base(parent)
 
 qml_callback::~qml_callback()
 {
-  if (m_device)
+  if(m_device)
     m_device->remove(this);
   m_param = nullptr;
 }
@@ -321,14 +321,14 @@ void qml_callback::setDevice(QObject* device)
 {
   auto olddev = m_device;
   auto newdev = qobject_cast<qml_device*>(device);
-  if (olddev != newdev)
+  if(olddev != newdev)
   {
-    if (olddev)
+    if(olddev)
     {
       olddev->remove(this);
     }
 
-    if (newdev)
+    if(newdev)
     {
       newdev->add(this);
     }
@@ -341,20 +341,18 @@ void qml_callback::resetNode()
 {
   clearNode();
 
-  if (m_device && m_userRequestedNode.startsWith('/'))
+  if(m_device && m_userRequestedNode.startsWith('/'))
   {
     m_ossia_node = ossia::net::find_node(
         m_device->device().get_root_node(), m_userRequestedNode.toStdString());
 
-    if (m_ossia_node)
+    if(m_ossia_node)
     {
-      m_ossia_node->about_to_be_deleted
-          .connect<&qml_callback::on_node_deleted>(this);
+      m_ossia_node->about_to_be_deleted.connect<&qml_callback::on_node_deleted>(this);
       m_param = m_ossia_node->get_parameter();
-      if (m_param)
+      if(m_param)
       {
-        m_cb = m_param->add_callback(
-            [=](const ossia::value& v) { setValue_sig(v); });
+        m_cb = m_param->add_callback([=](const ossia::value& v) { setValue_sig(v); });
         setValue_slot(m_param->value());
       }
     }
@@ -370,7 +368,7 @@ void qml_callback::clearNode()
 {
   m_node.clear();
   nodeChanged(m_node);
-  if (m_param)
+  if(m_param)
     m_param->remove_callback(m_cb);
   m_cb = {};
   m_param = nullptr;
@@ -389,7 +387,7 @@ QVariant qml_callback::value() const
 
 void qml_callback::setValue(QVariant value)
 {
-  if (m_value == value)
+  if(m_value == value)
     return;
 
   m_value = value;

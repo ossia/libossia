@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/network/common/parameter_properties.hpp>
 
 #include <vector>
@@ -28,8 +29,6 @@ OSSIA_EXPORT T convert(const T& cur, const ossia::value& val);
 template <typename T>
 OSSIA_EXPORT T convert(const std::vector<ossia::value>& val);
 
-OSSIA_EXPORT ossia::value
-convert(const ossia::value& val, ossia::val_type newtype);
-OSSIA_EXPORT ossia::value
-convert(const ossia::value& val, const ossia::value& cur);
+OSSIA_EXPORT ossia::value convert(const ossia::value& val, ossia::val_type newtype);
+OSSIA_EXPORT ossia::value convert(const ossia::value& val, const ossia::value& cur);
 }

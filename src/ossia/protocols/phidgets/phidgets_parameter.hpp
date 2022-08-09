@@ -25,7 +25,8 @@ class phidget_generic_parameter : public ossia::net::parameter_base
 
 public:
   phidget_generic_parameter(PhidgetHandle p, net::node_base& par)
-      : ossia::net::parameter_base{par}, m_phidget{p}
+      : ossia::net::parameter_base{par}
+      , m_phidget{p}
   {
     m_domain = get_impl().get_domain();
   }
@@ -69,11 +70,10 @@ public:
 
   net::parameter_base& set_value(const ossia::value& val) override
   {
-    if (!val.valid())
+    if(!val.valid())
       return *this;
 
-    get_impl().set_value(
-        ossia::convert<decltype(Impl{get_phidget()}.get_value())>(val));
+    get_impl().set_value(ossia::convert<decltype(Impl{get_phidget()}.get_value())>(val));
     send(val);
     return *this;
   }
@@ -85,8 +85,7 @@ public:
 
   val_type get_value_type() const override
   {
-    return ossia::value_trait<decltype(
-        Impl{get_phidget()}.get_value())>::ossia_enum;
+    return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
   }
 
   net::parameter_base& set_value_type(val_type) override
@@ -142,7 +141,8 @@ class phidget_control_parameter : public ossia::net::parameter_base
 
 public:
   phidget_control_parameter(PhidgetHandle p, net::node_base& par)
-      : ossia::net::parameter_base{par}, m_phidget{p}
+      : ossia::net::parameter_base{par}
+      , m_phidget{p}
   {
     m_domain = get_impl().get_domain();
   }
@@ -177,7 +177,7 @@ public:
 
   net::parameter_base& set_value(const ossia::value& val) override
   {
-    if (!val.valid())
+    if(!val.valid())
       return *this;
 
     auto v = ossia::convert<value_type>(val);
@@ -194,8 +194,7 @@ public:
 
   val_type get_value_type() const override
   {
-    return ossia::value_trait<decltype(
-        Impl{get_phidget()}.get_value())>::ossia_enum;
+    return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
   }
 
   net::parameter_base& set_value_type(val_type) override
@@ -238,7 +237,8 @@ class phidget_open_parameter : public ossia::net::parameter_base
 
 public:
   phidget_open_parameter(PhidgetHandle p, net::node_base& par)
-      : ossia::net::parameter_base{par}, m_phidget{p}
+      : ossia::net::parameter_base{par}
+      , m_phidget{p}
   {
   }
 
@@ -273,27 +273,25 @@ public:
 
   net::parameter_base& set_value(const ossia::value& val) override
   {
-    if (!val.valid())
+    if(!val.valid())
       return *this;
 
     auto res = ossia::convert<bool>(val);
-    if (res != value())
+    if(res != value())
     {
-      if (res)
+      if(res)
       {
         auto err = Phidget_openWaitForAttachment(m_phidget, 1000);
-        if (err != EPHIDGET_OK)
+        if(err != EPHIDGET_OK)
         {
           const char* err_txt{};
           Phidget_getErrorDescription(err, &err_txt);
-          if (err_txt)
+          if(err_txt)
             ossia::logger().error(
-                "Phidget Open error: {} ({})", this->get_node().osc_address(),
-                err_txt);
+                "Phidget Open error: {} ({})", this->get_node().osc_address(), err_txt);
           else
             ossia::logger().error(
-                "Phidget Open error: {} (timeout)",
-                this->get_node().osc_address());
+                "Phidget Open error: {} (timeout)", this->get_node().osc_address());
 
           res = false;
         }
@@ -357,7 +355,8 @@ class phidget_channel_parameter : public ossia::net::parameter_base
 
 public:
   phidget_channel_parameter(PhidgetHandle p, net::node_base& par)
-      : ossia::net::parameter_base{par}, m_phidget{p}
+      : ossia::net::parameter_base{par}
+      , m_phidget{p}
   {
   }
 
@@ -438,8 +437,7 @@ public:
 template <typename Impl, typename Parent>
 auto make_parameter(Parent& parent)
 {
-  return std::make_unique<phidget_generic_parameter<Impl>>(
-      parent.phidget(), parent);
+  return std::make_unique<phidget_generic_parameter<Impl>>(parent.phidget(), parent);
 }
 
 template <typename Impl>
@@ -450,7 +448,7 @@ struct Control_Double_parameter
   float get_value()
   {
     double val;
-    if (Impl::Get(phidget, &val) != EPHIDGET_OK)
+    if(Impl::Get(phidget, &val) != EPHIDGET_OK)
       val = 0.;
     return (float)val;
   }
@@ -463,9 +461,9 @@ struct Control_Double_parameter
   ossia::domain get_domain()
   {
     double min, max;
-    if (Impl::Min(phidget, &min) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &min) != EPHIDGET_OK)
       min = 0.;
-    if (Impl::Max(phidget, &max) != EPHIDGET_OK)
+    if(Impl::Max(phidget, &max) != EPHIDGET_OK)
       max = 0.;
     return ossia::make_domain(min, max);
   }
@@ -487,7 +485,7 @@ struct Control_UInt_parameter
   int get_value()
   {
     uint32_t val;
-    if (Impl::Get(phidget, &val) != EPHIDGET_OK)
+    if(Impl::Get(phidget, &val) != EPHIDGET_OK)
       val = 0;
     return (int)val;
   }
@@ -500,9 +498,9 @@ struct Control_UInt_parameter
   ossia::domain get_domain()
   {
     uint32_t min, max;
-    if (Impl::Min(phidget, &min) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &min) != EPHIDGET_OK)
       min = 0;
-    if (Impl::Max(phidget, &max) != EPHIDGET_OK)
+    if(Impl::Max(phidget, &max) != EPHIDGET_OK)
       max = 0;
     return ossia::make_domain((int)min, (int)max);
   }
@@ -524,7 +522,7 @@ struct Double_parameter
   float get_value()
   {
     double val;
-    if (Impl::Get(phidget, &val) != EPHIDGET_OK)
+    if(Impl::Get(phidget, &val) != EPHIDGET_OK)
       val = 0.;
     return (float)val;
   }
@@ -536,9 +534,9 @@ struct Double_parameter
   ossia::domain get_domain()
   {
     double min, max;
-    if (Impl::Min(phidget, &min) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &min) != EPHIDGET_OK)
       min = 0.;
-    if (Impl::Max(phidget, &max) != EPHIDGET_OK)
+    if(Impl::Max(phidget, &max) != EPHIDGET_OK)
       max = 0.;
     return ossia::make_domain(min, max);
   }
@@ -548,9 +546,8 @@ struct Double_parameter
     Impl::Change(
         phidget,
         [](typename Impl::handle_type ch, void* ctx, const double ratio) {
-          auto& p = *static_cast<phidget_generic_parameter<Double_parameter>*>(
-              ctx);
-          p.set_value(ratio);
+      auto& p = *static_cast<phidget_generic_parameter<Double_parameter>*>(ctx);
+      p.set_value(ratio);
         },
         &p);
   }
@@ -569,7 +566,7 @@ struct UInt_parameter
   int get_value()
   {
     uint32_t val;
-    if (Impl::Get(phidget, &val) != EPHIDGET_OK)
+    if(Impl::Get(phidget, &val) != EPHIDGET_OK)
       val = 0;
     return (int)val;
   }
@@ -581,9 +578,9 @@ struct UInt_parameter
   ossia::domain get_domain()
   {
     uint32_t min, max;
-    if (Impl::Min(phidget, &min) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &min) != EPHIDGET_OK)
       min = 0;
-    if (Impl::Max(phidget, &max) != EPHIDGET_OK)
+    if(Impl::Max(phidget, &max) != EPHIDGET_OK)
       max = 0;
     return ossia::make_domain((int)min, (int)max);
   }
@@ -593,9 +590,8 @@ struct UInt_parameter
     Impl::Change(
         phidget,
         [](typename Impl::handle_type ch, void* ctx, const uint32_t ratio) {
-          auto& p
-              = *static_cast<phidget_generic_parameter<UInt_parameter>*>(ctx);
-          p.set_value((int)ratio);
+      auto& p = *static_cast<phidget_generic_parameter<UInt_parameter>*>(ctx);
+      p.set_value((int)ratio);
         },
         &p);
   }
@@ -614,7 +610,7 @@ struct Vec3_parameter
   ossia::vec3f get_value()
   {
     double val[3]{};
-    if (Impl::Min(phidget, &val) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &val) != EPHIDGET_OK)
     {
       val[0] = 0;
       val[1] = 0;
@@ -631,13 +627,13 @@ struct Vec3_parameter
   {
     double min[3];
     double max[3];
-    if (Impl::Min(phidget, &min) != EPHIDGET_OK)
+    if(Impl::Min(phidget, &min) != EPHIDGET_OK)
     {
       min[0] = 0;
       min[1] = 0;
       min[2] = 0;
     }
-    if (Impl::Max(phidget, &max) != EPHIDGET_OK)
+    if(Impl::Max(phidget, &max) != EPHIDGET_OK)
     {
       max[0] = 0;
       max[1] = 0;
@@ -652,11 +648,9 @@ struct Vec3_parameter
   {
     Impl::Change(
         phidget,
-        [](typename Impl::handle_type ch, void* ctx, const double val[3],
-           double ts) {
-          auto& p
-              = *static_cast<phidget_generic_parameter<Vec3_parameter>*>(ctx);
-          p.set_value(ossia::make_vec(val[0], val[1], val[2]));
+        [](typename Impl::handle_type ch, void* ctx, const double val[3], double ts) {
+      auto& p = *static_cast<phidget_generic_parameter<Vec3_parameter>*>(ctx);
+      p.set_value(ossia::make_vec(val[0], val[1], val[2]));
         },
         &p);
   }
@@ -672,12 +666,11 @@ class phidget_control_node : public ossia::net::generic_node
 public:
   template <typename Desc>
   phidget_control_node(
-      Desc desc, std::string name, PhidgetHandle hdl,
-      ossia::net::device_base& dev, ossia::net::node_base& parent)
+      Desc desc, std::string name, PhidgetHandle hdl, ossia::net::device_base& dev,
+      ossia::net::node_base& parent)
       : generic_node{name, dev, parent}
   {
-    m_parameter
-        = std::make_unique<phidget_control_parameter<Desc>>(hdl, *this);
+    m_parameter = std::make_unique<phidget_control_parameter<Desc>>(hdl, *this);
     m_device.on_parameter_created(*m_parameter);
   }
 };
@@ -686,8 +679,7 @@ class phidget_open_node : public ossia::net::generic_node
 {
 public:
   phidget_open_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : generic_node{"open", dev, parent}
   {
     m_parameter = std::make_unique<phidget_open_parameter>(hdl, *this);
@@ -699,8 +691,7 @@ class phidget_channel_node : public ossia::net::generic_node
 {
 public:
   phidget_channel_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : generic_node{"channel", dev, parent}
   {
     m_parameter = std::make_unique<phidget_channel_parameter>(hdl, *this);
@@ -717,28 +708,22 @@ public:
     inline static const auto Get = PhidgetVoltageRatioInput_getVoltageRatio;
     inline static const auto Change
         = PhidgetVoltageRatioInput_setOnVoltageRatioChangeHandler;
-    inline static const auto Min
-        = PhidgetVoltageRatioInput_getMinVoltageRatio;
-    inline static const auto Max
-        = PhidgetVoltageRatioInput_getMaxVoltageRatio;
+    inline static const auto Min = PhidgetVoltageRatioInput_getMinVoltageRatio;
+    inline static const auto Max = PhidgetVoltageRatioInput_getMaxVoltageRatio;
   };
   struct rate_desc
   {
     using handle_type = PhidgetVoltageRatioInputHandle;
     inline static const auto Get = PhidgetVoltageRatioInput_getDataInterval;
     inline static const auto Set = PhidgetVoltageRatioInput_setDataInterval;
-    inline static const auto Min
-        = PhidgetVoltageRatioInput_getMinDataInterval;
-    inline static const auto Max
-        = PhidgetVoltageRatioInput_getMaxDataInterval;
+    inline static const auto Min = PhidgetVoltageRatioInput_getMinDataInterval;
+    inline static const auto Max = PhidgetVoltageRatioInput_getMaxDataInterval;
   };
   struct trigger_desc
   {
     using handle_type = PhidgetVoltageRatioInputHandle;
-    inline static const auto Get
-        = PhidgetVoltageRatioInput_getVoltageRatioChangeTrigger;
-    inline static const auto Set
-        = PhidgetVoltageRatioInput_setVoltageRatioChangeTrigger;
+    inline static const auto Get = PhidgetVoltageRatioInput_getVoltageRatioChangeTrigger;
+    inline static const auto Set = PhidgetVoltageRatioInput_setVoltageRatioChangeTrigger;
     inline static const auto Min
         = PhidgetVoltageRatioInput_getMinVoltageRatioChangeTrigger;
     inline static const auto Max
@@ -746,8 +731,7 @@ public:
   };
 
   phidget_voltage_ratio_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -757,18 +741,16 @@ public:
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
 
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
-        Control_Double_parameter<trigger_desc>{}, "trigger", m_hdl, m_device,
-        *this));
+        Control_Double_parameter<trigger_desc>{}, "trigger", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
         m_children[3]->get_parameter()->push_value();
@@ -784,8 +766,7 @@ public:
   {
     using handle_type = PhidgetCurrentInputHandle;
     inline static const auto Get = PhidgetCurrentInput_getCurrent;
-    inline static const auto Change
-        = PhidgetCurrentInput_setOnCurrentChangeHandler;
+    inline static const auto Change = PhidgetCurrentInput_setOnCurrentChangeHandler;
     inline static const auto Min = PhidgetCurrentInput_getMinCurrent;
     inline static const auto Max = PhidgetCurrentInput_getMaxCurrent;
   };
@@ -800,8 +781,7 @@ public:
   };
 
   phidget_current_input_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -810,15 +790,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -833,8 +812,7 @@ public:
   {
     using handle_type = PhidgetVoltageInputHandle;
     inline static const auto Get = PhidgetVoltageInput_getVoltage;
-    inline static const auto Change
-        = PhidgetVoltageInput_setOnVoltageChangeHandler;
+    inline static const auto Change = PhidgetVoltageInput_setOnVoltageChangeHandler;
     inline static const auto Min = PhidgetVoltageInput_getMinVoltage;
     inline static const auto Max = PhidgetVoltageInput_getMaxVoltage;
   };
@@ -850,19 +828,14 @@ public:
   struct trigger_desc
   {
     using handle_type = PhidgetVoltageInputHandle;
-    inline static const auto Get
-        = PhidgetVoltageInput_getVoltageChangeTrigger;
-    inline static const auto Set
-        = PhidgetVoltageInput_setVoltageChangeTrigger;
-    inline static const auto Min
-        = PhidgetVoltageInput_getMinVoltageChangeTrigger;
-    inline static const auto Max
-        = PhidgetVoltageInput_getMaxVoltageChangeTrigger;
+    inline static const auto Get = PhidgetVoltageInput_getVoltageChangeTrigger;
+    inline static const auto Set = PhidgetVoltageInput_setVoltageChangeTrigger;
+    inline static const auto Min = PhidgetVoltageInput_getMinVoltageChangeTrigger;
+    inline static const auto Max = PhidgetVoltageInput_getMaxVoltageChangeTrigger;
   };
 
   phidget_voltage_input_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -871,18 +844,16 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
-        Control_Double_parameter<trigger_desc>{}, "trigger", m_hdl, m_device,
-        *this));
+        Control_Double_parameter<trigger_desc>{}, "trigger", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
         m_children[3]->get_parameter()->push_value();
@@ -898,8 +869,7 @@ public:
   {
     using handle_type = PhidgetCapacitiveTouchHandle;
     inline static const auto Get = PhidgetCapacitiveTouch_getTouchValue;
-    inline static const auto Change
-        = PhidgetCapacitiveTouch_setOnTouchHandler;
+    inline static const auto Change = PhidgetCapacitiveTouch_setOnTouchHandler;
     inline static const auto Min = PhidgetCapacitiveTouch_getMinTouchValue;
     inline static const auto Max = PhidgetCapacitiveTouch_getMaxTouchValue;
   };
@@ -909,15 +879,12 @@ public:
     using handle_type = PhidgetCapacitiveTouchHandle;
     inline static const auto Get = PhidgetCapacitiveTouch_getDataInterval;
     inline static const auto Set = PhidgetCapacitiveTouch_setDataInterval;
-    inline static const auto Min
-        = PhidgetCapacitiveTouch_getMinDataInterval;
-    inline static const auto Max
-        = PhidgetCapacitiveTouch_getMaxDataInterval;
+    inline static const auto Min = PhidgetCapacitiveTouch_getMinDataInterval;
+    inline static const auto Max = PhidgetCapacitiveTouch_getMaxDataInterval;
   };
 
   phidget_capacitive_touch_input_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -926,15 +893,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -949,8 +915,7 @@ public:
   {
     using handle_type = PhidgetDistanceSensorHandle;
     inline static const auto Get = PhidgetDistanceSensor_getDistance;
-    inline static const auto Change
-        = PhidgetDistanceSensor_setOnDistanceChangeHandler;
+    inline static const auto Change = PhidgetDistanceSensor_setOnDistanceChangeHandler;
     inline static const auto Min = PhidgetDistanceSensor_getMinDistance;
     inline static const auto Max = PhidgetDistanceSensor_getMaxDistance;
   };
@@ -965,8 +930,7 @@ public:
   };
 
   phidget_distance_sensor_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -975,15 +939,14 @@ public:
   {
     m_parameter = make_parameter<UInt_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -998,8 +961,7 @@ public:
   {
     using handle_type = PhidgetHumiditySensorHandle;
     inline static const auto Get = PhidgetHumiditySensor_getHumidity;
-    inline static const auto Change
-        = PhidgetHumiditySensor_setOnHumidityChangeHandler;
+    inline static const auto Change = PhidgetHumiditySensor_setOnHumidityChangeHandler;
     inline static const auto Min = PhidgetHumiditySensor_getMinHumidity;
     inline static const auto Max = PhidgetHumiditySensor_getMaxHumidity;
   };
@@ -1014,8 +976,7 @@ public:
   };
 
   phidget_humidity_sensor_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1024,15 +985,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1047,8 +1007,7 @@ public:
   {
     using handle_type = PhidgetPressureSensorHandle;
     inline static const auto Get = PhidgetPressureSensor_getPressure;
-    inline static const auto Change
-        = PhidgetPressureSensor_setOnPressureChangeHandler;
+    inline static const auto Change = PhidgetPressureSensor_setOnPressureChangeHandler;
     inline static const auto Min = PhidgetPressureSensor_getMinPressure;
     inline static const auto Max = PhidgetPressureSensor_getMaxPressure;
   };
@@ -1063,8 +1022,7 @@ public:
   };
 
   phidget_pressure_sensor_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1073,15 +1031,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1106,15 +1063,12 @@ public:
     using handle_type = PhidgetResistanceInputHandle;
     inline static const auto Get = PhidgetResistanceInput_getDataInterval;
     inline static const auto Set = PhidgetResistanceInput_setDataInterval;
-    inline static const auto Min
-        = PhidgetResistanceInput_getMinDataInterval;
-    inline static const auto Max
-        = PhidgetResistanceInput_getMaxDataInterval;
+    inline static const auto Min = PhidgetResistanceInput_getMinDataInterval;
+    inline static const auto Max = PhidgetResistanceInput_getMaxDataInterval;
   };
 
   phidget_resistance_input_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1123,15 +1077,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1146,8 +1099,7 @@ public:
   {
     using handle_type = PhidgetLightSensorHandle;
     inline static const auto Get = PhidgetLightSensor_getIlluminance;
-    inline static const auto Change
-        = PhidgetLightSensor_setOnIlluminanceChangeHandler;
+    inline static const auto Change = PhidgetLightSensor_setOnIlluminanceChangeHandler;
     inline static const auto Min = PhidgetLightSensor_getMinIlluminance;
     inline static const auto Max = PhidgetLightSensor_getMaxIlluminance;
   };
@@ -1162,8 +1114,7 @@ public:
   };
 
   phidget_light_sensor_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1172,15 +1123,14 @@ public:
   {
     m_parameter = make_parameter<Double_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1216,8 +1166,8 @@ public:
       PhidgetDigitalInput_setOnStateChangeHandler(
           phidget,
           [](PhidgetDigitalInputHandle ch, void* ctx, const int ratio) {
-            auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
-            p.set_value(ratio);
+        auto& p = *static_cast<phidget_generic_parameter<Parameter>*>(ctx);
+        p.set_value(ratio);
           },
           &p);
     }
@@ -1229,8 +1179,7 @@ public:
   };
 
   phidget_digital_input_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1239,8 +1188,7 @@ public:
   {
     m_parameter = make_parameter<Parameter>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
   }
@@ -1280,8 +1228,7 @@ public:
   };
 
   phidget_digital_output_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1290,8 +1237,7 @@ public:
   {
     m_parameter = make_parameter<Parameter>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
   }
@@ -1319,8 +1265,7 @@ public:
   };
 
   phidget_magnetometer_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1329,15 +1274,14 @@ public:
   {
     m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1368,8 +1312,7 @@ public:
   };
 
   phidget_accelerometer_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1378,15 +1321,14 @@ public:
   {
     m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1401,8 +1343,7 @@ public:
   {
     using handle_type = PhidgetGyroscopeHandle;
     inline static const auto Get = PhidgetGyroscope_getAngularRate;
-    inline static const auto Change
-        = PhidgetGyroscope_setOnAngularRateUpdateHandler;
+    inline static const auto Change = PhidgetGyroscope_setOnAngularRateUpdateHandler;
     inline static const auto Min = PhidgetGyroscope_getMinAngularRate;
     inline static const auto Max = PhidgetGyroscope_getMaxAngularRate;
   };
@@ -1417,8 +1358,7 @@ public:
   };
 
   phidget_gyroscope_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1428,15 +1368,14 @@ public:
     m_parameter = make_parameter<Vec3_parameter<param_desc>>(*this);
     m_device.on_parameter_created(*m_parameter);
 
-    add_child_simple(
-        std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
+    add_child_simple(std::make_unique<ossia::phidget_open_node>(m_hdl, m_device, *this));
     add_child_simple(
         std::make_unique<ossia::phidget_channel_node>(m_hdl, m_device, *this));
     add_child_simple(std::make_unique<ossia::phidget_control_node>(
         Control_UInt_parameter<rate_desc>{}, "rate", m_hdl, m_device, *this));
     m_children[0]->get_parameter()->add_callback([=](const ossia::value& val) {
       bool b = ossia::convert<bool>(val);
-      if (b)
+      if(b)
       {
         m_children[2]->get_parameter()->push_value();
       }
@@ -1448,8 +1387,7 @@ class phidget_hub_node : public ossia::phidget_node
 {
 public:
   phidget_hub_node(
-      PhidgetHandle hdl, ossia::net::device_base& dev,
-      ossia::net::node_base& parent)
+      PhidgetHandle hdl, ossia::net::device_base& dev, ossia::net::node_base& parent)
       : phidget_node{hdl, dev, parent}
   {
   }
@@ -1460,8 +1398,7 @@ public:
 
 template <typename T, typename... Args>
 auto make(
-    PhidgetHandle phid, ossia::net::device_base& dev,
-    ossia::net::node_base& par_node)
+    PhidgetHandle phid, ossia::net::device_base& dev, ossia::net::node_base& par_node)
 {
   static std::vector<std::future<void>> vec;
   auto node = new T{phid, dev, par_node};

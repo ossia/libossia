@@ -12,13 +12,12 @@ namespace ossia
 using audio_channel = ossia::pod_vector<double>;
 using audio_vector = std::vector<audio_channel>;
 
-
 // Used for audio files
 using audio_sample = float;
 using audio_array = ossia::small_vector<ossia::pod_vector<audio_sample>, 2>;
-template<typename T>
+template <typename T>
 using audio_span = ossia::small_vector<tcb::span<const T>, 8>;
-template<typename T>
+template <typename T>
 using mutable_audio_span = ossia::small_vector<tcb::span<T>, 8>;
 
 struct audio_data

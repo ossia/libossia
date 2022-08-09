@@ -8,33 +8,27 @@ namespace oscquery
 {
 namespace detail
 {
-inline void
-write_json(ossia::json_writer& writer, int v)
+inline void write_json(ossia::json_writer& writer, int v)
 {
   writer.Int(v);
 }
-inline void
-write_json(ossia::json_writer& writer, double v)
+inline void write_json(ossia::json_writer& writer, double v)
 {
   writer.Double(v);
 }
-inline void
-write_json(ossia::json_writer& writer, float v)
+inline void write_json(ossia::json_writer& writer, float v)
 {
   writer.Double(v);
 }
-inline void
-write_json(ossia::json_writer& writer, bool v)
+inline void write_json(ossia::json_writer& writer, bool v)
 {
   writer.Bool(v);
 }
-inline void write_json(
-    ossia::json_writer& writer, const std::string& v)
+inline void write_json(ossia::json_writer& writer, const std::string& v)
 {
   writer.String(v);
 }
-inline void write_json(
-    ossia::json_writer& writer, const ossia::value& v)
+inline void write_json(ossia::json_writer& writer, const ossia::value& v)
 {
   v.apply(value_to_json{writer, {}});
 }
@@ -72,25 +66,25 @@ struct domain_to_json
     bool has_min = bool(dom.min);
     bool has_max = bool(dom.max);
     bool has_values = !dom.values.empty();
-    if (has_min || has_max || has_values)
+    if(has_min || has_max || has_values)
     {
       writer.StartArray();
       writer.StartObject();
-      if (has_min)
+      if(has_min)
       {
         writer.Key("MIN");
         write_json(writer, *dom.min);
       }
-      if (has_max)
+      if(has_max)
       {
         writer.Key("MAX");
         write_json(writer, *dom.max);
       }
-      if (has_values)
+      if(has_values)
       {
         writer.Key("VALS");
         writer.StartArray();
-        for (auto val : dom.values)
+        for(auto val : dom.values)
           write_json(writer, val);
         writer.EndArray();
       }
@@ -105,13 +99,13 @@ struct domain_to_json
 
   void operator()(const ossia::domain_base<std::string>& dom)
   {
-    if (!dom.values.empty())
+    if(!dom.values.empty())
     {
       writer.StartArray();
       writer.StartObject();
       writer.Key("VALS");
       writer.StartArray();
-      for (auto val : dom.values)
+      for(auto val : dom.values)
         write_json(writer, val);
       writer.EndArray();
       writer.EndObject();
@@ -129,36 +123,36 @@ struct domain_to_json
     const auto max_count = dom.max.size();
     const auto values_count = dom.values.size();
     const auto N = std::max(std::max(min_count, max_count), values_count);
-    if (N > 0)
+    if(N > 0)
     {
       writer.StartArray();
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
       {
-        if (values_count > i && !dom.values[i].empty())
+        if(values_count > i && !dom.values[i].empty())
         {
           writer.StartObject();
 
           writer.Key("VALS");
           writer.StartArray();
 
-          for (const auto& val : dom.values[i])
+          for(const auto& val : dom.values[i])
             write_json(writer, val);
 
           writer.EndArray();
           writer.EndObject();
         }
-        else if (
+        else if(
             (min_count > i && dom.min[i].valid())
             || (max_count > i && dom.max[i].valid()))
         {
           writer.StartObject();
-          if (dom.min[i].valid())
+          if(dom.min[i].valid())
           {
             writer.Key("MIN");
             write_json(writer, dom.min[i]);
           }
 
-          if (dom.max[i].valid())
+          if(dom.max[i].valid())
           {
             writer.Key("MAX");
             write_json(writer, dom.max[i]);
@@ -183,31 +177,31 @@ struct domain_to_json
   {
     // TODO handle rgba case
     writer.StartArray();
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
-      if (!dom.values[i].empty())
+      if(!dom.values[i].empty())
       {
         writer.StartObject();
 
         writer.Key("VALS");
         writer.StartArray();
 
-        for (const auto val : dom.values[i])
+        for(const auto val : dom.values[i])
           writer.Double(val);
 
         writer.EndArray();
         writer.EndObject();
       }
-      else if (dom.min[i] || dom.max[i])
+      else if(dom.min[i] || dom.max[i])
       {
         writer.StartObject();
-        if (dom.min[i])
+        if(dom.min[i])
         {
           writer.Key("MIN");
           write_json(writer, *dom.min[i]);
         }
 
-        if (dom.max[i])
+        if(dom.max[i])
         {
           writer.Key("MAX");
           write_json(writer, *dom.max[i]);

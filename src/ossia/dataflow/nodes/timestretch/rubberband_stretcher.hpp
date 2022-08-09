@@ -1,10 +1,11 @@
 #pragma once
 #if __has_include(<RubberBandStretcher.h>)
+#include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/token_request.hpp>
-#include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
+#include <ossia/dataflow/token_request.hpp>
+
 #include <RubberBandStretcher.h>
 
 #include <iostream>
@@ -47,16 +48,13 @@ static constexpr auto get_rubberband_preset(ossia::audio_stretch_mode mode)
 struct rubberband_stretcher
 {
   rubberband_stretcher(
-      uint32_t opt,
-      std::size_t channels,
-      std::size_t sampleRate,
-      int64_t pos)
-    : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(sampleRate, channels, opt)}
-    , next_sample_to_read{pos}
-    , options{opt}
+      uint32_t opt, std::size_t channels, std::size_t sampleRate, int64_t pos)
+      : m_rubberBand{std::make_unique<RubberBand::RubberBandStretcher>(
+          sampleRate, channels, opt)}
+      , next_sample_to_read{pos}
+      , options{opt}
 
   {
-
   }
 
   rubberband_stretcher(const rubberband_stretcher&) = delete;
@@ -74,36 +72,32 @@ struct rubberband_stretcher
     next_sample_to_read = date;
   }
 
-  template<typename T>
-  void run(
-      T& audio_fetcher,
-      const ossia::token_request& t,
-      ossia::exec_state_facade e,
-      double tempo_ratio,
-      const std::size_t chan,
-      const std::size_t len,
-      int64_t samples_to_read,
-      const int64_t samples_to_write,
-      const int64_t samples_offset,
-      const ossia::mutable_audio_span<double>& ap) noexcept
+  template <typename T>
+  void
+  run(T& audio_fetcher, const ossia::token_request& t, ossia::exec_state_facade e,
+      double tempo_ratio, const std::size_t chan, const std::size_t len,
+      int64_t samples_to_read, const int64_t samples_to_write,
+      const int64_t samples_offset, const ossia::mutable_audio_span<double>& ap) noexcept
   {
     if(tempo_ratio != m_rubberBand->getTimeRatio())
     {
       m_rubberBand->setTimeRatio(tempo_ratio);
     }
 
-    if (t.forward())
+    if(t.forward())
     {
-      // TODO : if T::sample_type == float we could leverage it directly as input
+      // TODO : if T::sample_type == float we could leverage it directly as
+      // input
       float** const input = (float**)alloca(sizeof(float*) * chan);
       float** const output = (float**)alloca(sizeof(float*) * chan);
       for(std::size_t i = 0; i < chan; i++)
       {
-        input[i] =  (float*) alloca(sizeof(float) * std::max((int64_t)16, samples_to_read));
-        output[i] = (float*) alloca(sizeof(float) * samples_to_write);
+        input[i]
+            = (float*)alloca(sizeof(float) * std::max((int64_t)16, samples_to_read));
+        output[i] = (float*)alloca(sizeof(float) * samples_to_write);
       }
 
-      while (m_rubberBand->available() < samples_to_write)
+      while(m_rubberBand->available() < samples_to_write)
       {
         audio_fetcher.fetch_audio(next_sample_to_read, samples_to_read, input);
 
@@ -113,11 +107,12 @@ struct rubberband_stretcher
         samples_to_read = 16;
       }
 
-      m_rubberBand->retrieve(output, std::min((int)samples_to_write, m_rubberBand->available()));
+      m_rubberBand->retrieve(
+          output, std::min((int)samples_to_write, m_rubberBand->available()));
 
-      for (std::size_t i = 0; i < chan; i++)
+      for(std::size_t i = 0; i < chan; i++)
       {
-        for (int64_t j = 0; j < samples_to_write; j++)
+        for(int64_t j = 0; j < samples_to_write; j++)
         {
           ap[i][j + samples_offset] = double(output[i][j]);
         }

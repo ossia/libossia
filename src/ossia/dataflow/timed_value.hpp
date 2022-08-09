@@ -5,18 +5,22 @@ namespace ossia
 {
 struct timed_value
 {
-  explicit timed_value(ossia::value&& v) : value{std::move(v)}
+  explicit timed_value(ossia::value&& v)
+      : value{std::move(v)}
   {
   }
-  explicit timed_value(const ossia::value& v) : value{v}
+  explicit timed_value(const ossia::value& v)
+      : value{v}
   {
   }
   explicit timed_value(ossia::value&& v, int64_t ts)
-      : value{std::move(v)}, timestamp{ts}
+      : value{std::move(v)}
+      , timestamp{ts}
   {
   }
   explicit timed_value(const ossia::value& v, int64_t ts)
-      : value{v}, timestamp{ts}
+      : value{v}
+      , timestamp{ts}
   {
   }
 

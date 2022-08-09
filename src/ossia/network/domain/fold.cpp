@@ -20,26 +20,22 @@ struct fold_functor
 ossia::value
 fold(const ossia::value& val, const ossia::value& min, const ossia::value& max)
 {
-  if (val.valid() && min.valid() && max.valid())
-    return ossia::apply(
-        apply_ternary_fun_visitor<fold_functor>{}, val.v, min.v, max.v);
+  if(val.valid() && min.valid() && max.valid())
+    return ossia::apply(apply_ternary_fun_visitor<fold_functor>{}, val.v, min.v, max.v);
   return val;
 }
 
 #if defined(FAST_COMPILES)
-ossia::value
-fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
   return fold(val, min, max);
 }
 #else
-ossia::value
-fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
+ossia::value fold(ossia::value&& val, const ossia::value& min, const ossia::value& max)
 {
-  if (val.valid() && min.valid() && max.valid())
+  if(val.valid() && min.valid() && max.valid())
     return ossia::apply(
-        apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v,
-        max.v);
+        apply_ternary_fun_visitor<fold_functor>{}, ossia::move(val).v, min.v, max.v);
   return val;
 }
 #endif

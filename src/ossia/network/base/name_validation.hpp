@@ -22,9 +22,9 @@ sanitize_name(std::string name_base, const std::vector<std::string>& brethren);
 template <typename Char_T>
 bool is_valid_character_for_device(Char_T c)
 {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-         || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
-         || (c == '(') || (c == ')') || (c == '-') || (c == ' ')  || (c == '=');
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+         || (c == '.') || (c == '~') || (c == '_') || (c == '(') || (c == ')')
+         || (c == '-') || (c == ' ') || (c == '=');
 }
 /**
  * @brief Checks that a character is fit to be part of an address.
@@ -32,9 +32,9 @@ bool is_valid_character_for_device(Char_T c)
 template <typename Char_T>
 bool is_valid_character_for_name(Char_T c)
 {
-  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
-         || (c >= '0' && c <= '9') || (c == '.') || (c == '~') || (c == '_')
-         || (c == '(') || (c == ')') || (c == '-') || (c == ':') || (c == ' ') || (c == '=');
+  return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9')
+         || (c == '.') || (c == '~') || (c == '_') || (c == '(') || (c == ')')
+         || (c == '-') || (c == ':') || (c == ' ') || (c == '=');
 }
 
 /**

@@ -33,8 +33,8 @@ public:
 
   //! Reply to a query of attributes : /foo/bar?VALUE&RANGE
   template <typename StringVec_T>
-  static string_t query_attributes(
-      const ossia::net::node_base& node, const StringVec_T& methods)
+  static string_t
+  query_attributes(const ossia::net::node_base& node, const StringVec_T& methods)
   {
     string_t buf;
     writer_t wr(buf);
@@ -43,7 +43,7 @@ public:
 
     // Here we just write the attributes in the object directly
     wr.StartObject();
-    for (auto& method : methods)
+    for(auto& method : methods)
     {
       // Here we reply to the query which already has
       // the key in the "oscquery" format so no need to convert
@@ -60,8 +60,7 @@ public:
   static string_t ignore(ossia::string_view address);
 
   // Extensions
-  static string_t
-  start_osc_streaming(int local_server_port, int local_sender_port);
+  static string_t start_osc_streaming(int local_server_port, int local_sender_port);
 
   // Update messages
   //! Sent when a new node is added
@@ -76,31 +75,28 @@ public:
   //! Sent when a node is renamed
   static string_t path_renamed(const std::string& old_path, const std::string& new_path);
 
-  static string_t attributes_changed(
-      const ossia::net::node_base& n, ossia::string_view attribute);
-
-  static string_t attributes_changed(
-      const ossia::net::node_base& n,
-      const std::vector<ossia::string_view>& attributes);
-
   static string_t
-  paths_added(const std::vector<const ossia::net::node_base*>& vec);
+  attributes_changed(const ossia::net::node_base& n, ossia::string_view attribute);
 
-  static string_t
-  paths_changed(const std::vector<const ossia::net::node_base*>& vec);
+  static string_t attributes_changed(
+      const ossia::net::node_base& n, const std::vector<ossia::string_view>& attributes);
+
+  static string_t paths_added(const std::vector<const ossia::net::node_base*>& vec);
+
+  static string_t paths_changed(const std::vector<const ossia::net::node_base*>& vec);
 
   static string_t paths_removed(const std::vector<std::string>& vec);
 
   static string_t attributes_changed_array(
-      const std::vector<std::pair<
-          const ossia::net::node_base*, std::vector<ossia::string_view>>>&
+      const std::vector<
+          std::pair<const ossia::net::node_base*, std::vector<ossia::string_view>>>&
           vec);
 
 private:
   static void
   path_added_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
-  static void path_changed_impl(
-      detail::json_writer_impl& p, const ossia::net::node_base& n);
+  static void
+  path_changed_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void path_removed_impl(writer_t& wr, const std::string& path);
   static void path_renamed_impl(
       json_writer::writer_t& wr, const std::string& path, const std::string& old);

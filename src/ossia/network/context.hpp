@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 
-#include <boost/asio/io_context.hpp>
 #include <boost/asio/executor_work_guard.hpp>
+#include <boost/asio/io_context.hpp>
 
 #include <memory>
 
@@ -14,14 +14,20 @@ struct network_context
 
   void run()
   {
-    using work_guard = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
+    using work_guard
+        = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
 
     work_guard wg{context.get_executor()};
-    try {
+    try
+    {
       context.run();
-    } catch (std::exception& e) {
+    }
+    catch(std::exception& e)
+    {
       ossia::logger().error("Error while processing network events: {}", e.what());
-    } catch (...) {
+    }
+    catch(...)
+    {
       ossia::logger().error("Error while processing network events.");
     }
   }

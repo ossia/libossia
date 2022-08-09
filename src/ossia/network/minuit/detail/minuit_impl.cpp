@@ -77,8 +77,7 @@ static const auto& attribute_unordered_map()
       {make_string_view("rangeBounds"), minuit_attribute::RangeBounds},
       {make_string_view("rangeClipmode"), minuit_attribute::RangeClipMode},
       {make_string_view("description"), minuit_attribute::Description},
-      {make_string_view("repetitionsFilter"),
-       minuit_attribute::RepetitionFilter},
+      {make_string_view("repetitionsFilter"), minuit_attribute::RepetitionFilter},
       {make_string_view("tags"), minuit_attribute::Tags},
       {make_string_view("active"), minuit_attribute::Active},
       {make_string_view("valueDefault"), minuit_attribute::ValueDefault},
@@ -97,7 +96,7 @@ minuit_attribute get_attribute(ossia::string_view str)
 {
   const auto& map = attribute_unordered_map();
   auto it = map.find(str);
-  if (it != map.end())
+  if(it != map.end())
     return it->second;
   else
     throw parse_error("get_attribute: unhandled attribute");
@@ -106,7 +105,7 @@ minuit_attribute get_attribute(ossia::string_view str)
 
 ossia::string_view to_minuit_attribute_text(minuit_attribute str)
 {
-  switch (str)
+  switch(str)
   {
     case minuit_attribute::Value:
       constexpr_return(ossia::make_string_view("value"));

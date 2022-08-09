@@ -1,12 +1,11 @@
 #ifndef _ossia_API_NAMESPACE_
 #define _ossia_API_NAMESPACE_
 
-#include <ossia-c/preset/result.h>
 #include <ossia-c/ossia-c.h>
+#include <ossia-c/preset/result.h>
 
 #if defined(__cplusplus)
-extern "C"
-{
+extern "C" {
 #endif
 
 struct ossia_preset;
@@ -21,9 +20,7 @@ typedef enum ossia_preset_result_enum ossia_preset_result;
  * @return A result code
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_read_json(
-        const char*,
-        ossia_preset_t*);
+ossia_preset_result ossia_presets_read_json(const char*, ossia_preset_t*);
 
 /**
  * @brief ossia_preset_free
@@ -37,9 +34,7 @@ ossia_preset_result ossia_presets_read_json(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_free(
-        ossia_preset_t);
-
+ossia_preset_result ossia_presets_free(ossia_preset_t);
 
 /**
  * @brief ossia_presets_write_json
@@ -49,10 +44,8 @@ ossia_preset_result ossia_presets_free(
  * @return A result code
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_write_json(
-    const ossia_preset_t,
-    const char* device,
-    const char**);
+ossia_preset_result
+ossia_presets_write_json(const ossia_preset_t, const char* device, const char**);
 
 /**
  * @brief ossia_presets_size
@@ -62,9 +55,7 @@ ossia_preset_result ossia_presets_write_json(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_size(
-        const ossia_preset_t,
-        int*);
+ossia_preset_result ossia_presets_size(const ossia_preset_t, int*);
 
 /**
  * @brief ossia_presets_to_string
@@ -74,36 +65,27 @@ ossia_preset_result ossia_presets_size(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_to_string(
-        const ossia_preset_t,
-        const char **);
-
+ossia_preset_result ossia_presets_to_string(const ossia_preset_t, const char**);
 
 /**
  * @brief True if the preset has the given key
  */
 OSSIA_EXPORT
-bool ossia_presets_has_key(
-        const ossia_preset_t,
-        const char* key);
+bool ossia_presets_has_key(const ossia_preset_t, const char* key);
 
 /**
  * @brief Convert a single key of a preset to a string
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_key_to_string(
-        const ossia_preset_t,
-        const char* key,
-        const char** value);
+ossia_preset_result
+ossia_presets_key_to_string(const ossia_preset_t, const char* key, const char** value);
 
 /**
  * @brief Convert a single key of a preset to a value
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_presets_key_to_value(
-        const ossia_preset_t,
-        const char* key,
-        ossia_value_t* value);
+ossia_preset_result
+ossia_presets_key_to_value(const ossia_preset_t, const char* key, ossia_value_t* value);
 
 /// Device handling ///
 
@@ -115,10 +97,7 @@ ossia_preset_result ossia_presets_key_to_value(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_write_json(
-        const ossia_device_t,
-        const char**);
-
+ossia_preset_result ossia_devices_write_json(const ossia_device_t, const char**);
 
 /**
  * @brief ossia_devices_apply_preset
@@ -129,10 +108,8 @@ ossia_preset_result ossia_devices_write_json(
  * Applies the values of a preset into a device
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_apply_preset(
-        ossia_device_t,
-        ossia_preset_t,
-        bool keep_arch = true);
+ossia_preset_result
+ossia_devices_apply_preset(ossia_device_t, ossia_preset_t, bool keep_arch = true);
 
 /**
  * @brief ossia_devices_make_preset
@@ -141,9 +118,7 @@ ossia_preset_result ossia_devices_apply_preset(
  * @return A result code
  */
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_make_preset(
-        ossia_device_t,
-        ossia_preset_t*);
+ossia_preset_result ossia_devices_make_preset(ossia_device_t, ossia_preset_t*);
 
 /**
  * @brief ossia_devices_to_string
@@ -153,9 +128,7 @@ ossia_preset_result ossia_devices_make_preset(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_to_string(
-        ossia_device_t,
-        const char**);
+ossia_preset_result ossia_devices_to_string(ossia_device_t, const char**);
 
 /// Miscellaneous ///
 
@@ -168,10 +141,7 @@ ossia_preset_result ossia_devices_to_string(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_get_node(
-        ossia_device_t,
-        const char *,
-        ossia_node_t*);
+ossia_preset_result ossia_devices_get_node(ossia_device_t, const char*, ossia_node_t*);
 
 /**
  * @brief ossia_devices_get_child
@@ -182,10 +152,7 @@ ossia_preset_result ossia_devices_get_node(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_devices_get_child(
-        ossia_node_t,
-        const char*,
-        ossia_node_t*);
+ossia_preset_result ossia_devices_get_child(ossia_node_t, const char*, ossia_node_t*);
 
 /**
  * @brief ossia_free_string
@@ -196,8 +163,7 @@ ossia_preset_result ossia_devices_get_child(
  */
 
 OSSIA_EXPORT
-ossia_preset_result ossia_free_string(
-        const char*);
+ossia_preset_result ossia_free_string(const char*);
 
 #if defined(__cplusplus)
 }

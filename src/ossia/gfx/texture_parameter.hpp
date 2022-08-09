@@ -1,6 +1,6 @@
 #pragma once
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/gfx/port_index.hpp>
+#include <ossia/network/base/parameter.hpp>
 
 namespace ossia::gfx
 {

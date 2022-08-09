@@ -1,17 +1,13 @@
 #pragma once
-#include <ossia/detail/math.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
+#include <ossia/detail/math.hpp>
 
 namespace ossia
 {
-template<typename T>
+template <typename T>
 static void read_audio_from_buffer(
-    const audio_span<float>& data,
-    const int64_t start,
-    const int64_t samples_to_write,
-    const int64_t start_offset,
-    const int64_t loop_duration,
-    const bool loops,
+    const audio_span<float>& data, const int64_t start, const int64_t samples_to_write,
+    const int64_t start_offset, const int64_t loop_duration, const bool loops,
     T** const audio_array) noexcept
 {
   const auto channels = data.size();
@@ -88,9 +84,7 @@ static void read_audio_from_buffer(
       if(file_duration >= start + samples_to_write + start_offset)
       {
         // Absolute best case where we can copy the whole buffer
-        for(int64_t k = 0, pos = start + start_offset;
-             k < samples_to_write;
-             k++, pos++)
+        for(int64_t k = 0, pos = start + start_offset; k < samples_to_write; k++, pos++)
         {
           dst[k] = src[pos];
         }
@@ -98,10 +92,9 @@ static void read_audio_from_buffer(
       else
       {
         // This buffer will have the end of the file
-        const int64_t max = ossia::clamp(file_duration - (start + start_offset), (int64_t)0, samples_to_write);
-        for(int64_t k = 0, pos = start + start_offset;
-             k < max;
-             k++, pos++)
+        const int64_t max = ossia::clamp(
+            file_duration - (start + start_offset), (int64_t)0, samples_to_write);
+        for(int64_t k = 0, pos = start + start_offset; k < max; k++, pos++)
         {
           dst[k] = src[pos];
         }

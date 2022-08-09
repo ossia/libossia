@@ -1,8 +1,7 @@
 #pragma once
+#include <ossia/detail/nullable_variant.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
-
-#include <ossia/detail/nullable_variant.hpp>
 namespace ossia
 {
 struct unit_t;
@@ -25,7 +24,8 @@ struct parameter_data;
  *
  * TODO maybe replace val_type by small_vector<val_type> ?
  */
-using complex_type = ossia::nullable_variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
+using complex_type
+    = ossia::nullable_variant<ossia::val_type, ossia::unit_t, ossia::extended_type>;
 
 //! Get the implementation type of a high level type. If unknown will be
 //! ossia::impulse.
@@ -43,17 +43,15 @@ ossia::net::parameter_base*
 try_setup_parameter(std::string t, ossia::net::node_base& node);
 
 OSSIA_EXPORT
-ossia::net::parameter_base* create_parameter(
-    ossia::net::node_base& parent, std::string name, std::string type);
+ossia::net::parameter_base*
+create_parameter(ossia::net::node_base& parent, std::string name, std::string type);
 
 //! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT
-void update_parameter_type(
-    const complex_type& t, ossia::net::parameter_base& node);
+void update_parameter_type(const complex_type& t, ossia::net::parameter_base& node);
 
 OSSIA_EXPORT
-const ossia::net::parameter_data*
-default_parameter_for_type(std::string_view type);
+const ossia::net::parameter_data* default_parameter_for_type(std::string_view type);
 
 OSSIA_EXPORT
 ossia::value convert(

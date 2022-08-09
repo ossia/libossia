@@ -1,8 +1,8 @@
 #pragma once
+#include <ossia/detail/for_each.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/detail/dataspace_list.hpp>
-#include <ossia/detail/hash_map.hpp>
-#include <ossia/detail/for_each.hpp>
 
 namespace ossia::detail
 {
@@ -58,8 +58,6 @@ struct unit_text_visitor
     return {};
   }
 };
-
-
 
 struct unit_accessor_visitor
 {
@@ -141,7 +139,6 @@ std::string make_pretty_unit_text()
 
   return res;
 }
-
 
 struct unit_pretty_texts
 {

@@ -12,7 +12,7 @@ public:
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> controls;
   ossia::small_vector<std::pair<ossia::value_port*, FAUSTFLOAT*>, 8> displays;
   faust_fx(std::shared_ptr<llvm_dsp> dsp)
-    : m_dsp{std::move(dsp)}
+      : m_dsp{std::move(dsp)}
   {
     m_inlets.push_back(new ossia::audio_inlet);
     m_outlets.push_back(new ossia::audio_outlet);
@@ -35,7 +35,6 @@ public:
   }
 };
 
-
 class faust_synth final : public ossia::graph_node
 {
   std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> m_dsp{};
@@ -46,7 +45,7 @@ public:
 
   std::array<int8_t, 128> in_flight{};
   faust_synth(std::shared_ptr<ossia::nodes::custom_dsp_poly_effect> dsp)
-    : m_dsp{std::move(dsp)}
+      : m_dsp{std::move(dsp)}
   {
     m_inlets.push_back(new ossia::audio_inlet);
     m_inlets.push_back(new ossia::midi_inlet);

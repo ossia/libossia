@@ -81,7 +81,7 @@ ossia::string_view to_minuit_type_text(const ossia::value& val);
 inline ossia::string_view to_minuit_type_text(ossia::val_type val)
 {
   // integer, decimal, string, generic, boolean, none, array.
-  switch (val)
+  switch(val)
   {
     case val_type::IMPULSE:
       constexpr_return(ossia::make_string_view("none"));
@@ -110,7 +110,7 @@ inline ossia::value value_from_minuit_type_text(ossia::string_view str)
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
 
-  switch (str[0])
+  switch(str[0])
   {
     case 'i': // integer
       return int32_t{};
@@ -135,7 +135,7 @@ inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
 
-  switch (str[0])
+  switch(str[0])
   {
     case 'i': // integer
       return ossia::val_type::INT;
@@ -157,7 +157,7 @@ inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
 
 inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
 {
-  switch (acc)
+  switch(acc)
   {
     case ossia::access_mode::BI:
       constexpr_return(ossia::make_string_view("parameter"));
@@ -173,7 +173,7 @@ inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
 
 inline ossia::access_mode from_minuit_service_text(ossia::string_view str)
 {
-  switch (str[0])
+  switch(str[0])
   {
     case 'p':
       return ossia::access_mode::BI;
@@ -189,7 +189,7 @@ inline ossia::access_mode from_minuit_service_text(ossia::string_view str)
 
 inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
 {
-  switch (b)
+  switch(b)
   {
     case ossia::bounding_mode::FREE:
       constexpr_return(ossia::make_string_view("none"));
@@ -211,7 +211,7 @@ inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
 
 inline ossia::bounding_mode from_minuit_bounding_text(ossia::string_view str)
 {
-  switch (str[0])
+  switch(str[0])
   {
     case 'n': // none
       return ossia::bounding_mode::FREE;
@@ -233,7 +233,7 @@ inline ossia::bounding_mode from_minuit_bounding_text(ossia::string_view str)
 
 inline minuit_command get_command(char str)
 {
-  switch (str)
+  switch(str)
   {
     case '?':
     case ':':
@@ -247,7 +247,7 @@ inline minuit_command get_command(char str)
 
 inline minuit_type get_type(char str)
 {
-  switch (str)
+  switch(str)
   {
     case 'A':
     case 'C':
@@ -265,7 +265,7 @@ inline minuit_type get_type(char str)
 
 inline minuit_operation get_operation(char str)
 {
-  switch (str)
+  switch(str)
   {
     case 'l':
     case 'n':

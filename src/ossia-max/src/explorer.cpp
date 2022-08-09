@@ -1,13 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-max/src/explorer.hpp>
-
-#include <ossia-max/src/ossia-max.hpp>
-#include <ossia-max/src/utils.hpp>
-
 #include <ossia/network/common/path.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
+
+#include <ossia-max/src/explorer.hpp>
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/utils.hpp>
 
 using namespace ossia::max_binding;
 
@@ -29,15 +28,9 @@ extern "C" void ossia_explorer_setup()
       (long)sizeof(explorer), 0L, A_GIMME, 0);
 
   auto& c = ossia_library.ossia_explorer_class;
-  class_addmethod(
-      c, (method)explorer::explore_mess_cb,
-      "explore", A_GIMME, 0);
-  class_addmethod(
-      c, (method)explorer::assist,
-      "assist", A_CANT, 0);
-  class_addmethod(
-      c, (method)explorer::notify,
-      "notify", A_CANT, 0);
+  class_addmethod(c, (method)explorer::explore_mess_cb, "explore", A_GIMME, 0);
+  class_addmethod(c, (method)explorer::assist, "assist", A_CANT, 0);
+  class_addmethod(c, (method)explorer::notify, "notify", A_CANT, 0);
 
   search_filter::setup_attribute<explorer>(c);
 
@@ -63,22 +56,22 @@ extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
 
 void explorer::free(explorer* x)
 {
-  if (x)
+  if(x)
   {
     ossia_max::instance().explorers.remove_all(x);
     x->~explorer();
   }
 }
 
-t_max_err explorer::notify(
-    explorer* x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+t_max_err
+explorer::notify(explorer* x, t_symbol* s, t_symbol* msg, void* sender, void* data)
 {
   return 0;
 }
 
-void explorer::assist(explorer *x, void *b, long m, long a, char *s)
+void explorer::assist(explorer* x, void* b, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Log messages inlet");
   }
@@ -87,9 +80,8 @@ void explorer::assist(explorer *x, void *b, long m, long a, char *s)
 #pragma mark -
 #pragma mark t_explorer structure functions
 
-explorer::explorer(long argc, t_atom *argv)
+explorer::explorer(long argc, t_atom* argv)
 {
-
 }
 
 explorer::~explorer()
@@ -120,7 +112,8 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
     }
     else
     {
-      matchers = {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+      matchers = {std::make_shared<matcher>(
+          &ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
       x->m_name = gensym("/");
       x->m_addr_scope = ossia::net::address_scope::absolute;
     }
@@ -130,7 +123,8 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
     matchers = x->find_or_create_matchers();
     if(matchers.empty())
     {
-      matchers = {std::make_shared<matcher>(&ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
+      matchers = {std::make_shared<matcher>(
+          &ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
     }
   }
 
@@ -142,9 +136,8 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
     nodes.insert(nodes.end(), vec.begin(), vec.end());
   }
 
-  ossia::remove_erase_if(nodes, [&](const ossia::net::node_base* m){
-    return x->filter(*m);
-  });
+  ossia::remove_erase_if(
+      nodes, [&](const ossia::net::node_base* m) { return x->filter(*m); });
 
   t_atom a;
   A_SETLONG(&a, nodes.size());
@@ -175,4 +168,3 @@ bool explorer::unregister()
 
   return true;
 }
-

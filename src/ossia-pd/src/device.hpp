@@ -75,8 +75,7 @@ public:
   static void get_mess_cb(device* x, t_symbol* s);
   static void get_protocols(device* x);
   static void get_oscq_clients(device* x);
-  static void stop_expose(device*x, float index);
-
+  static void stop_expose(device* x, float index);
 };
 
 }

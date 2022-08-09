@@ -1,8 +1,8 @@
 #pragma once
 #include <ossia-config.hpp>
 #if defined(OSSIA_PARALLEL)
-#include <ossia/detail/hash_map.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/detail/hash_map.hpp>
 /*
 #include <tbb/flow_graph.h>
 
@@ -113,8 +113,8 @@ private:
 
   Impl impl;
   execution_state* cur_state{};
-  std::unique_ptr<tbb::flow::broadcast_node<tbb::flow::continue_msg>> start_node;
-  std::vector<graph_node*> nodes_with_incoming_edges;
+  std::unique_ptr<tbb::flow::broadcast_node<tbb::flow::continue_msg>>
+start_node; std::vector<graph_node*> nodes_with_incoming_edges;
 
   tbb::flow::graph flow_graph;
   ossia::fast_hash_map<graph_node*, std::unique_ptr<cont_node>> flow_nodes;
@@ -175,7 +175,9 @@ public:
         {
           graph_node* node = n.first.get();
           (*perf_map)[node] = std::nullopt;
-          flow_nodes[node] = flow_graph.emplace(node_exec_logger_bench{cur_state, *perf_map, *logger, *node});
+          flow_nodes[node] =
+flow_graph.emplace(node_exec_logger_bench{cur_state, *perf_map, *logger,
+*node});
         }
       }
       else
@@ -183,7 +185,8 @@ public:
         for (auto n : nodes)
         {
           graph_node* node = n.first.get();
-          flow_nodes[node] = flow_graph.emplace(node_exec_logger{cur_state, *logger, *node});
+          flow_nodes[node] = flow_graph.emplace(node_exec_logger{cur_state,
+*logger, *node});
         }
       }
     }

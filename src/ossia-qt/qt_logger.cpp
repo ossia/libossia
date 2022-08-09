@@ -1,26 +1,30 @@
-#include <ossia-qt/qt_logger.hpp>
-#include <ossia/network/base/name_validation.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/small_vector.hpp>
-#include <wobjectimpl.h>
+#include <ossia/network/base/name_validation.hpp>
+
 #include <QString>
 #include <QStringBuilder>
 #include <qobjectdefs.h>
+
+#include <wobjectimpl.h>
+
 #include <algorithm>
 #include <string>
 #include <vector>
-//MOVEME
-// Taken from https://stackoverflow.com/a/18230916/1495627
+
+#include <ossia-qt/qt_logger.hpp>
+// MOVEME
+//  Taken from https://stackoverflow.com/a/18230916/1495627
 OSSIA_EXPORT bool latin_compare(const QString& qstr, const std::string& str)
 {
-  if (qstr.length() != (int)str.size())
+  if(qstr.length() != (int)str.size())
     return false;
 
   const QChar* qstrData = qstr.data();
   const int N = qstr.length();
-  for (int i = 0; i < N; ++i)
+  for(int i = 0; i < N; ++i)
   {
-    if (qstrData[i].toLatin1() != str[i])
+    if(qstrData[i].toLatin1() != str[i])
       return false;
   }
   return true;
@@ -33,9 +37,9 @@ namespace net
 OSSIA_EXPORT void sanitize_device_name(QString& ret)
 {
   const QChar underscore = '_';
-  for (auto& c : ret)
+  for(auto& c : ret)
   {
-    if (ossia::net::is_valid_character_for_device(c))
+    if(ossia::net::is_valid_character_for_device(c))
       continue;
     else
       c = underscore;
@@ -46,9 +50,9 @@ OSSIA_EXPORT
 void sanitize_name(QString& ret)
 {
   const QChar underscore = '_';
-  for (auto& c : ret)
+  for(auto& c : ret)
   {
-    if (ossia::net::is_valid_character_for_name(c))
+    if(ossia::net::is_valid_character_for_name(c))
       continue;
     else
       c = underscore;
@@ -69,11 +73,11 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
   QString root_name = name;
   {
     auto pos = name.lastIndexOf('.');
-    if (pos != -1)
+    if(pos != -1)
     {
       bool res = false;
       name_instance = name.mid(pos + 1).toInt(&res);
-      if (res)
+      if(res)
         root_name = name.mid(0, pos);
     }
   }
@@ -81,52 +85,52 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
   const auto root_len = root_name.size();
   // QStringView::toInt comes in 5.15.2
 #if QT_VERSION < QT_VERSION_CHECK(5, 15, 2)
-  for (const QString& n_name : brethren)
+  for(const QString& n_name : brethren)
 #else
-  for (QStringView n_name : brethren)
+  for(QStringView n_name : brethren)
 #endif
   {
-    if (n_name == name)
+    if(n_name == name)
     {
       is_here = true;
     }
 
-    if (n_name.size() < (root_len + 1))
+    if(n_name.size() < (root_len + 1))
       continue;
 
     bool same_root = true;
-    for (int i = 0; i < root_len; i++)
+    for(int i = 0; i < root_len; i++)
     {
-      if (n_name[i] != root_name[i])
+      if(n_name[i] != root_name[i])
       {
         same_root = false;
         break;
       }
     }
 
-    if (same_root && (n_name[root_len] == '.'))
+    if(same_root && (n_name[root_len] == '.'))
     {
       // Instance
       bool b = false;
       int n = n_name.mid(root_len + 1).toInt(&b);
-      if (b)
+      if(b)
         instance_num.push_back(n);
     }
     // case where we have the "default" instance without .0
-    else if (same_root && root_len == n_name.length())
+    else if(same_root && root_len == n_name.length())
     {
       instance_num.push_back(0);
     }
   }
 
-  if (!is_here)
+  if(!is_here)
   {
     return name;
   }
   else
   {
     auto n = instance_num.size();
-    if ((n == 0) || ((n == 1) && (instance_num[0] == 0)))
+    if((n == 0) || ((n == 1) && (instance_num[0] == 0)))
     {
       return root_name + QStringLiteral(".1");
     }
@@ -139,7 +143,6 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
 }
 }
 }
-
 
 W_OBJECT_IMPL(ossia::qt::log_sink)
 ossia::qt::log_sink::~log_sink() = default;

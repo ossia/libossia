@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/pod_vector.hpp>
 
 #if !defined(OSSIA_NO_SMALLVECTOR)

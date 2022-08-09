@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <cmath>
 
 namespace ossia
@@ -17,12 +18,14 @@ OSSIA_INLINE bool safe_isnan(double val) noexcept
 #else
   // On gcc / clang, with -ffast-math, std::isnan always returns 0
   // There's __isnan but it's not always available.
-  union {
+  union
+  {
     double fp;
     uint64_t bits;
   } num{.fp = val};
 
-  return ((unsigned)(num.bits >> 32) & 0x7fffffff) + ((unsigned)num.bits != 0) > 0x7ff00000;
+  return ((unsigned)(num.bits >> 32) & 0x7fffffff) + ((unsigned)num.bits != 0)
+         > 0x7ff00000;
 #endif
 #else
   return std::isnan(val);
@@ -41,12 +44,14 @@ OSSIA_INLINE bool safe_isinf(double val) noexcept
 #else
   // On gcc / clang, with -ffast-math, std::isinf always returns 0
   // There's __isinf but it's not always available.
-  union {
+  union
+  {
     double fp;
     uint64_t bits;
   } num{.fp = val};
 
-  return ((unsigned)(num.bits >> 32) & 0x7fffffff) == 0x7ff00000 && (unsigned)num.bits == 0;
+  return ((unsigned)(num.bits >> 32) & 0x7fffffff) == 0x7ff00000
+         && (unsigned)num.bits == 0;
 #endif
 #else
   return std::isinf(val);

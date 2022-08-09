@@ -17,12 +17,11 @@ public:
   {
   }
 
-  void
-  run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
+  void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     // We want to send a trigger for each value change that happened between
     // last_t and now
-    if (t.forward())
+    if(t.forward())
     {
       auto& port = *m_outlets[0]->target<ossia::value_port>();
       const int64_t d = dur.impl * e.samplesToModel();
@@ -32,7 +31,8 @@ public:
       while(t.in_range(time_value{prev_step}))
       {
         port.write_value(
-            values[quo % values.size()], t.to_physical_time_in_tick(prev_step, e.modelToSamples()));
+            values[quo % values.size()],
+            t.to_physical_time_in_tick(prev_step, e.modelToSamples()));
         prev_step += d;
         quo++;
       }

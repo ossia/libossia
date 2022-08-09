@@ -1,6 +1,7 @@
 #pragma once
-#include <string>
 #include <ossia_export.h>
+
+#include <string>
 
 namespace ossia
 {

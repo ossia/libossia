@@ -6,13 +6,13 @@ namespace ossia
 {
 
 template <typename Value_T>
-inline ossia::value bound_value(
-    const ossia::domain& dom, Value_T&& base_val, ossia::bounding_mode mode)
+inline ossia::value
+bound_value(const ossia::domain& dom, Value_T&& base_val, ossia::bounding_mode mode)
 {
-  if (dom)
+  if(dom)
   {
     auto res = ossia::apply_domain(dom, mode, std::forward<Value_T>(base_val));
-    if (res.valid())
+    if(res.valid())
       return res;
     else
       return {};
@@ -26,10 +26,9 @@ inline ossia::value bound_value(
 template <typename Addr_T>
 inline ossia::value bound_value(const Addr_T& addr, const ossia::value& v)
 {
-  auto val
-      = bound_value(addr.get_domain(), v, addr.get_bounding());
+  auto val = bound_value(addr.get_domain(), v, addr.get_bounding());
   auto filtered = addr.filter_value(val);
-  if (!filtered)
+  if(!filtered)
     return val;
   return {};
 }
@@ -37,10 +36,9 @@ inline ossia::value bound_value(const Addr_T& addr, const ossia::value& v)
 template <typename Addr_T>
 inline ossia::value bound_value(const Addr_T& addr, ossia::value&& v)
 {
-  auto val
-      = bound_value(addr.get_domain(), std::move(v), addr.get_bounding());
+  auto val = bound_value(addr.get_domain(), std::move(v), addr.get_bounding());
   auto filtered = addr.filter_value(val);
-  if (!filtered)
+  if(!filtered)
     return val;
   return {};
 }

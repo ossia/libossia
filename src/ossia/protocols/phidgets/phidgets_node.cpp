@@ -24,18 +24,19 @@ phidget_node::~phidget_node()
 
 void phidget_node::set_parameter(std::unique_ptr<net::parameter_base> a)
 {
-  if (!a && m_parameter)
+  if(!a && m_parameter)
     m_device.on_parameter_removing(*m_parameter);
 
   m_parameter = std::move(a);
 
-  if (m_parameter)
+  if(m_parameter)
     m_device.on_parameter_created(*m_parameter);
 }
 
-phidget_node::phidget_node(
-    PhidgetHandle hdl, net::device_base& d, net::node_base& p)
-    : m_hdl{hdl}, m_device{d}, m_parent{p}
+phidget_node::phidget_node(PhidgetHandle hdl, net::device_base& d, net::node_base& p)
+    : m_hdl{hdl}
+    , m_device{d}
+    , m_parent{p}
 {
   id = phidget_handle_t{m_hdl};
   std::string name = "Phidget";
@@ -43,21 +44,20 @@ phidget_node::phidget_node(
   const char* arr{};
   int chan{false};
   Phidget_getIsChannel(hdl, &chan);
-  if (chan)
+  if(chan)
   {
     Phidget_getChannelName(hdl, &arr);
-    if (arr && strlen(arr) > 0)
+    if(arr && strlen(arr) > 0)
     {
       name = arr;
       {
         uint32_t chan_count;
-        auto err = Phidget_getDeviceChannelCount(
-            hdl, PHIDCHCLASS_NOTHING, &chan_count);
-        if (err == EPHIDGET_OK && chan_count > 1)
+        auto err = Phidget_getDeviceChannelCount(hdl, PHIDCHCLASS_NOTHING, &chan_count);
+        if(err == EPHIDGET_OK && chan_count > 1)
         {
           int c;
           err = Phidget_getChannel(hdl, &c);
-          if (err == EPHIDGET_OK)
+          if(err == EPHIDGET_OK)
           {
             name += "." + std::to_string(c);
           }
@@ -67,7 +67,7 @@ phidget_node::phidget_node(
     else
     {
       Phidget_getChannelClassName(hdl, &arr);
-      if (arr && strlen(arr) > 0)
+      if(arr && strlen(arr) > 0)
       {
         name = arr;
       }
@@ -76,7 +76,7 @@ phidget_node::phidget_node(
   else
   {
     Phidget_getDeviceLabel(hdl, &arr);
-    if (arr && strlen(arr) > 0)
+    if(arr && strlen(arr) > 0)
     {
       name = arr;
     }
@@ -84,14 +84,14 @@ phidget_node::phidget_node(
     {
 
       Phidget_getDeviceName(hdl, &arr);
-      if (arr && strlen(arr) > 0)
+      if(arr && strlen(arr) > 0)
       {
         name = arr;
       }
       else
       {
         Phidget_getDeviceClassName(hdl, &arr);
-        if (arr && strlen(arr) > 0)
+        if(arr && strlen(arr) > 0)
         {
           name = arr;
         }
@@ -142,8 +142,7 @@ bool phidget_node::remove_parameter()
   return false;
 }
 
-std::unique_ptr<net::node_base>
-phidget_node::make_child(const std::string& name)
+std::unique_ptr<net::node_base> phidget_node::make_child(const std::string& name)
 {
   return {};
 }
@@ -173,7 +172,9 @@ phidget_hub_port_node::~phidget_hub_port_node()
 
 phidget_hub_port_node::phidget_hub_port_node(
     PhidgetHandle hdl, int num, net::device_base& d, net::node_base& p)
-    : m_hdl{hdl}, m_device{d}, m_parent{p}
+    : m_hdl{hdl}
+    , m_device{d}
+    , m_parent{p}
 {
   std::string name = "Port." + std::to_string(num);
   m_name = ossia::net::sanitize_name(name, p.children_names());

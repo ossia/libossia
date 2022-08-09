@@ -1,10 +1,11 @@
 #pragma once
 #include <ossia/dataflow/timed_value.hpp>
 #include <ossia/dataflow/typed_value.hpp>
-#include <ossia/network/common/complex_type.hpp>
 #include <ossia/dataflow/value_vector.hpp>
-#include <ossia/network/domain/domain_base.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/domain/domain_base.hpp>
+
 #include <optional>
 
 namespace ossia
@@ -29,11 +30,9 @@ struct OSSIA_EXPORT value_port
   void add_port_values(const ossia::value_port& other);
 
   void add_global_values(
-      const ossia::net::parameter_base& param,
-      const value_vector<ossia::value>& vec);
+      const ossia::net::parameter_base& param, const value_vector<ossia::value>& vec);
 
-  void add_global_value(
-      const ossia::net::parameter_base& other, ossia::value v);
+  void add_global_value(const ossia::net::parameter_base& other, ossia::value v);
 
   void set_data(const value_vector<ossia::timed_value>& vec);
 
@@ -61,19 +60,15 @@ struct value_delay_line
 
 OSSIA_EXPORT
 void process_control_value(
-    ossia::value& v,
-    const ossia::domain& source_domain,
+    ossia::value& v, const ossia::domain& source_domain,
     const ossia::domain& sink_domain) noexcept;
 OSSIA_EXPORT
 void process_control_value(
-    ossia::value& v,
-    const ossia::complex_type& source_type,
+    ossia::value& v, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept;
 OSSIA_EXPORT
 void process_control_value(
-    ossia::value& v,
-    const ossia::domain& source_domain,
-    const ossia::domain& sink_domain,
-    const ossia::complex_type& source_type,
+    ossia::value& v, const ossia::domain& source_domain,
+    const ossia::domain& sink_domain, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept;
 }

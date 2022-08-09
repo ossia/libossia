@@ -1,11 +1,14 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
-#include <verdigris>
+
 #include <QObject>
 #include <QQmlExpression>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>
 #include <QQmlScriptString>
+
+#include <verdigris>
+
 #include <ossia-qt/device/qml_node_base.hpp>
 #include <ossia-qt/qml_context.hpp>
 #include <ossia-qt/value_metatypes.hpp>
@@ -24,12 +27,15 @@ public:
 
   QQmlProperty& targetProperty;
   ossia::net::parameter_base& address;
+
 public:
-  void qtVariantChanged(); W_SLOT(qtVariantChanged);
+  void qtVariantChanged();
+  W_SLOT(qtVariantChanged);
 };
 
-class qml_property_reader : public qml_node_base,
-                            public QQmlPropertyValueSource
+class qml_property_reader
+    : public qml_node_base
+    , public QQmlPropertyValueSource
 {
   W_OBJECT(qml_property_reader)
   W_INTERFACE(QQmlPropertyValueSource)
@@ -52,8 +58,9 @@ private:
   qml_property_context* m_propCtx{};
 };
 
-class qml_property_writer : public qml_node_base,
-                            public QQmlPropertyValueSource
+class qml_property_writer
+    : public qml_node_base
+    , public QQmlPropertyValueSource
 {
   W_OBJECT(qml_property_writer)
   W_INTERFACE(QQmlPropertyValueSource)
@@ -70,7 +77,8 @@ public:
   void setValue_sig(const value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
 private:
-  void setValue_slot(const value&); W_SLOT(setValue_slot);
+  void setValue_slot(const value&);
+  W_SLOT(setValue_slot);
 
 private:
   void setupAddress(bool reading);
@@ -96,7 +104,8 @@ public:
   QQmlScriptString on() const;
 
 public:
-  void setOn(QQmlScriptString on); W_SLOT(setOn);
+  void setOn(QQmlScriptString on);
+  W_SLOT(setOn);
 
 public:
   void onChanged(QQmlScriptString on) E_SIGNAL(OSSIA_EXPORT, onChanged, on);
@@ -109,7 +118,7 @@ private:
   ossia::net::parameter_base* m_param{};
   QQmlScriptString m_on;
 
-W_PROPERTY(QQmlScriptString, on READ on WRITE setOn NOTIFY onChanged)
+  W_PROPERTY(QQmlScriptString, on READ on WRITE setOn NOTIFY onChanged)
 };
 
 class qml_callback : public qml_node_base
@@ -127,11 +136,14 @@ public:
 
 public:
   void valueChanged(QVariant arg_1) E_SIGNAL(OSSIA_EXPORT, valueChanged, arg_1);
-  void setValue_sig(const ossia::value& arg_1) E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
+  void setValue_sig(const ossia::value& arg_1)
+      E_SIGNAL(OSSIA_EXPORT, setValue_sig, arg_1);
 
 public:
-  void setValue(QVariant value); W_SLOT(setValue);
-  void setValue_slot(const ossia::value&); W_SLOT(setValue_slot);
+  void setValue(QVariant value);
+  W_SLOT(setValue);
+  void setValue_slot(const ossia::value&);
+  W_SLOT(setValue_slot);
 
 private:
   void on_node_deleted(const ossia::net::node_base&);
@@ -141,7 +153,7 @@ private:
   QVariant m_value;
   ossia::net::parameter_base::iterator m_cb;
 
-W_PROPERTY(QVariant, value READ value WRITE setValue NOTIFY valueChanged)
+  W_PROPERTY(QVariant, value READ value WRITE setValue NOTIFY valueChanged)
 };
 }
 }

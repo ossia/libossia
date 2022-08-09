@@ -1,6 +1,7 @@
 #pragma once
-#include <flat_map.hpp>
 #include <ossia/detail/pod_vector.hpp>
+
+#include <flat_map.hpp>
 namespace ossia
 {
 /* Too hard to make work
@@ -25,10 +26,12 @@ using pod_pair_allocator = std::conditional_t<
     std::allocator<std::pair<K,V>>
 >;
 
-template <typename K, typename V, typename Compare = std::less<void>, typename Alloc = pod_pair_allocator<K, V>>
-using flat_map = fc::flat_map<std::vector<pod_pair_type<K,V>, Alloc>, Compare>;
+template <typename K, typename V, typename Compare = std::less<void>, typename
+Alloc = pod_pair_allocator<K, V>> using flat_map =
+fc::flat_map<std::vector<pod_pair_type<K,V>, Alloc>, Compare>;
 */
-template <typename K, typename V, typename Compare = std::less<void>, typename Alloc = std::allocator<std::pair<K, V>>>
-using flat_map = fc::flat_map<std::vector<std::pair<K,V>, Alloc>, Compare>;
+template <
+    typename K, typename V, typename Compare = std::less<void>,
+    typename Alloc = std::allocator<std::pair<K, V>>>
+using flat_map = fc::flat_map<std::vector<std::pair<K, V>, Alloc>, Compare>;
 }
-

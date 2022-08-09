@@ -1,10 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "model.hpp"
+
 #include "parameter.hpp"
 #include "remote.hpp"
-#include "view.hpp"
 #include "utils.hpp"
+#include "view.hpp"
 
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/node_functions.hpp>
@@ -22,16 +23,12 @@ extern "C" void ossia_model_setup()
 
   node_base::class_setup(c);
 
-  class_addmethod(
-      c, (method)model::assist,
-        "assist", A_CANT, 0);
+  class_addmethod(c, (method)model::assist, "assist", A_CANT, 0);
 
-  class_addmethod(c, (method) address_mess_cb<model>, "address",   A_SYM, 0);
-  class_addmethod(c, (method) model::get_mess_cb, "get",   A_SYM, 0);
+  class_addmethod(c, (method)address_mess_cb<model>, "address", A_SYM, 0);
+  class_addmethod(c, (method)model::get_mess_cb, "get", A_SYM, 0);
 
-  class_addmethod(
-        c, (method)model::notify,
-        "notify", A_CANT, 0);
+  class_addmethod(c, (method)model::notify, "notify", A_CANT, 0);
 
   class_register(CLASS_BOX, c);
 
@@ -48,11 +45,11 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<model>();
 
-  if (x)
+  if(x)
   {
     critical_enter(0);
     auto& pat_desc = ossia_max::get_patcher_descriptor(x->m_patcher);
-    if( !pat_desc.model && !pat_desc.view)
+    if(!pat_desc.model && !pat_desc.view)
     {
       pat_desc.model = x;
     }
@@ -78,16 +75,16 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
     // check name argument
     x->m_name = _sym_nothing;
-    if (argc > 0 && attrstart > 0 )
+    if(argc > 0 && attrstart > 0)
     {
-      if (atom_gettype(argv) == A_SYM)
+      if(atom_gettype(argv) == A_SYM)
       {
         x->m_name = atom_getsym(argv);
         x->m_addr_scope = ossia::net::get_address_scope(x->m_name->s_name);
       }
     }
 
-    defer_low(x, (method) object_base::loadbang, nullptr, 0, nullptr);
+    defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
     ossia_max::instance().models.push_back(x);
     critical_exit(0);
@@ -117,7 +114,7 @@ void model::destroy(model* x)
 
 void model::assist(model*, void*, long m, long, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Model input");
   }

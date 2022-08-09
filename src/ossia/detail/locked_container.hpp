@@ -15,7 +15,8 @@ class locked_container
 {
 public:
   locked_container(Container& src, shared_mutex_t& mutex)
-      : m_ref{src}, m_mutex{mutex}
+      : m_ref{src}
+      , m_mutex{mutex}
   {
     //     SPDLOG_TRACE((&ossia::logger()), "locking(container)");
   }

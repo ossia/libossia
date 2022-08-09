@@ -5,19 +5,17 @@ namespace ossia
 namespace qt
 {
 
-qml_sync::qml_sync(QQuickItem* parent):
-  QQuickItem{parent}
-, m_default{this}
+qml_sync::qml_sync(QQuickItem* parent)
+    : QQuickItem{parent}
+    , m_default{this}
 {
   m_impl = std::make_shared<ossia::time_sync>();
-  connect(this, &QQuickItem::parentChanged,
-          this, &qml_sync::reset);
+  connect(this, &QQuickItem::parentChanged, this, &qml_sync::reset);
   reset();
 }
 
 qml_sync::~qml_sync()
 {
-
 }
 
 QQmlScriptString qml_sync::expr() const
@@ -32,8 +30,10 @@ qml_cond* qml_sync::defaultCond()
 
 void qml_sync::setup()
 {
-  m_impl->set_expression(make_expression(m_expr, this, ossia::expressions::make_expression_true()));
-  for(qml_cond* ev : this->findChildren<qml_cond*>(QString{}, Qt::FindDirectChildrenOnly))
+  m_impl->set_expression(
+      make_expression(m_expr, this, ossia::expressions::make_expression_true()));
+  for(qml_cond* ev :
+      this->findChildren<qml_cond*>(QString{}, Qt::FindDirectChildrenOnly))
   {
     ev->setSync(this);
     ev->setup();
@@ -49,7 +49,7 @@ void qml_sync::setup()
 
 void qml_sync::setExpr(QQmlScriptString expr)
 {
-  if (m_expr == expr)
+  if(m_expr == expr)
     return;
 
   m_expr = expr;
@@ -58,7 +58,6 @@ void qml_sync::setExpr(QQmlScriptString expr)
 
 void qml_sync::reset()
 {
-
 }
 
 void qml_sync::registerCond(qml_cond* s)

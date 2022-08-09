@@ -9,8 +9,7 @@ template <typename TernaryFun>
 struct apply_ternary_fun_visitor
 {
   template <typename T, typename U, typename V>
-  OSSIA_INLINE ossia::value
-  operator()(const T& val, const U& min, const V& max)
+  OSSIA_INLINE ossia::value operator()(const T& val, const U& min, const V& max)
   {
     return val;
   }
@@ -21,20 +20,17 @@ struct apply_ternary_fun_visitor
     return std::move(val);
   }
   template <typename U, typename V>
-  OSSIA_INLINE ossia::value
-  operator()(const List& val, const U& min, const V& max)
+  OSSIA_INLINE ossia::value operator()(const List& val, const U& min, const V& max)
   {
     return val;
   }
   template <typename U, typename V>
-  OSSIA_INLINE ossia::value
-  operator()(String&& val, const U& min, const V& max)
+  OSSIA_INLINE ossia::value operator()(String&& val, const U& min, const V& max)
   {
     return std::move(val);
   }
   template <typename U, typename V>
-  OSSIA_INLINE ossia::value
-  operator()(const String& val, const U& min, const V& max)
+  OSSIA_INLINE ossia::value operator()(const String& val, const U& min, const V& max)
   {
     return val;
   }
@@ -62,7 +58,7 @@ struct apply_ternary_fun_visitor
       std::array<float, N> val, const std::array<float, N>& min,
       const std::array<float, N>& max)
   {
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = TernaryFun::compute(val[i], min[i], max[i]);
     }
@@ -72,7 +68,7 @@ struct apply_ternary_fun_visitor
   template <std::size_t N>
   ossia::value operator()(std::array<float, N> val, float min, float max)
   {
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = TernaryFun::compute(val[i], min, max);
     }
@@ -82,18 +78,17 @@ struct apply_ternary_fun_visitor
   // TODO handle clamping of List between two values of other types
   // (see apply_domain.hpp)
   ossia::value operator()(
-      const std::vector<ossia::value>& incoming,
-      const std::vector<ossia::value>& min,
+      const std::vector<ossia::value>& incoming, const std::vector<ossia::value>& min,
       const std::vector<ossia::value>& max)
   {
     std::vector<ossia::value> val;
     const auto N = incoming.size();
     const auto nmin = min.size();
     const auto nmax = max.size();
-    if (N == nmin && N == nmax)
+    if(N == nmin && N == nmax)
     {
       val.reserve(N);
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
       {
         val.push_back(ossia::apply(*this, incoming[i].v, min[i].v, max[i].v));
       }
@@ -108,9 +103,9 @@ struct apply_ternary_fun_visitor
     const auto N = val.size();
     const auto nmin = min.size();
     const auto nmax = max.size();
-    if (N == nmin && N == nmax)
+    if(N == nmin && N == nmax)
     {
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
       {
         val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v, max[i].v);
       }
@@ -125,7 +120,7 @@ struct apply_ternary_fun_visitor
     std::vector<ossia::value> val;
     const auto N = incoming.size();
     val.reserve(N);
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val.push_back(ossia::apply(*this, incoming[i].v, min.v, max.v));
     }
@@ -133,26 +128,24 @@ struct apply_ternary_fun_visitor
   }
 
   ossia::value operator()(
-      std::vector<ossia::value>&& val, const ossia::value& min,
-      const ossia::value& max)
+      std::vector<ossia::value>&& val, const ossia::value& min, const ossia::value& max)
   {
     const auto N = val.size();
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = ossia::apply(*this, std::move(val)[i].v, min.v, max.v);
     }
     return std::move(val);
   }
 
-  ossia::value operator()(
-      const ossia::value& val, const ossia::value& min,
-      const ossia::value& max)
+  ossia::value
+  operator()(const ossia::value& val, const ossia::value& min, const ossia::value& max)
   {
     return ossia::apply(*this, val.v, min.v, max.v);
   }
 
-  ossia::value operator()(
-      ossia::value&& val, const ossia::value& min, const ossia::value& max)
+  ossia::value
+  operator()(ossia::value&& val, const ossia::value& min, const ossia::value& max)
   {
     return ossia::apply(*this, std::move(val.v), min.v, max.v);
   }
@@ -209,10 +202,9 @@ struct apply_binary_fun_visitor
   }
 
   template <std::size_t N>
-  ossia::value
-  operator()(std::array<float, N> val, const std::array<float, N>& min)
+  ossia::value operator()(std::array<float, N> val, const std::array<float, N>& min)
   {
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = BinaryFun::compute(val[i], min[i]);
     }
@@ -222,7 +214,7 @@ struct apply_binary_fun_visitor
   template <std::size_t N>
   ossia::value operator()(std::array<float, N> val, float min)
   {
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = BinaryFun::compute(val[i], min);
     }
@@ -232,16 +224,15 @@ struct apply_binary_fun_visitor
   // TODO handle clamping of List between two values of other types
   // (see apply_domain.hpp)
   ossia::value operator()(
-      const std::vector<ossia::value>& incoming,
-      const std::vector<ossia::value>& min)
+      const std::vector<ossia::value>& incoming, const std::vector<ossia::value>& min)
   {
     std::vector<ossia::value> val;
     const auto N = incoming.size();
     const auto nmin = min.size();
-    if (N == nmin)
+    if(N == nmin)
     {
       val.reserve(N);
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
       {
         val.push_back(ossia::apply(*this, incoming[i].v, min[i].v));
       }
@@ -249,14 +240,14 @@ struct apply_binary_fun_visitor
     return val;
   }
 
-  ossia::value operator()(
-      std::vector<ossia::value>&& val, const std::vector<ossia::value>& min)
+  ossia::value
+  operator()(std::vector<ossia::value>&& val, const std::vector<ossia::value>& min)
   {
     const auto N = val.size();
     const auto nmin = min.size();
-    if (N == nmin)
+    if(N == nmin)
     {
-      for (std::size_t i = 0; i < N; i++)
+      for(std::size_t i = 0; i < N; i++)
       {
         val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v);
       }
@@ -264,24 +255,23 @@ struct apply_binary_fun_visitor
     return std::move(val);
   }
 
-  ossia::value operator()(
-      const std::vector<ossia::value>& incoming, const ossia::value& min)
+  ossia::value
+  operator()(const std::vector<ossia::value>& incoming, const ossia::value& min)
   {
     std::vector<ossia::value> val;
     const auto N = incoming.size();
     val.reserve(N);
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val.push_back(ossia::apply(*this, incoming[i].v, min.v));
     }
     return val;
   }
 
-  ossia::value
-  operator()(std::vector<ossia::value>&& val, const ossia::value& min)
+  ossia::value operator()(std::vector<ossia::value>&& val, const ossia::value& min)
   {
     const auto N = val.size();
-    for (std::size_t i = 0; i < N; i++)
+    for(std::size_t i = 0; i < N; i++)
     {
       val[i] = ossia::apply(*this, std::move(val)[i].v, min.v);
     }

@@ -10,10 +10,8 @@ struct list_clamp
 {
   const vector_domain& domain;
 
-  ossia::value
-  operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
-  ossia::value
-  operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
+  ossia::value operator()(bounding_mode b, const std::vector<ossia::value>& val) const;
+  ossia::value operator()(bounding_mode b, std::vector<ossia::value>&& val) const;
   // TODO numeric_list_clamp that will be used instead
   // of the loops in domain_clamp_visitor
 };

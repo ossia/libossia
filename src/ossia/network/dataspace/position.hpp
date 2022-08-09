@@ -27,8 +27,7 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(
-        ossia::make_string_array("distance.m", "distance.m", "distance.m"));
+    constexpr_return(ossia::make_string_array("distance.m", "distance.m", "distance.m"));
   }
   using value_type = vec3f;
   static constexpr strong_value<neutral_unit>
@@ -44,8 +43,8 @@ struct OSSIA_EXPORT cartesian_3d_u : public position_unit<cartesian_3d_u>
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain<3>{ossia::make_vec(-1.f, -1.f, -1.f),
-          ossia::make_vec(1.f, 1.f, 1.f)};
+    return vecf_domain<3>{
+        ossia::make_vec(-1.f, -1.f, -1.f), ossia::make_vec(1.f, 1.f, 1.f)};
   }
 
   static constexpr auto bounding()
@@ -69,8 +68,7 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
     constexpr_return(ossia::make_string_array("distance.m", "distance.m"));
   }
   using value_type = vec2f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return {self.dataspace_value[0], self.dataspace_value[1], 0.f};
   }
@@ -82,8 +80,7 @@ struct OSSIA_EXPORT cartesian_2d_u : public position_unit<cartesian_2d_u>
 
   static ossia::vecf_domain<2> domain()
   {
-    return vecf_domain{ossia::make_vec(-1.f, -1.f),
-          ossia::make_vec(1.f, 1.f)};
+    return vecf_domain{ossia::make_vec(-1.f, -1.f), ossia::make_vec(1.f, 1.f)};
   }
 
   static constexpr auto bounding()
@@ -104,19 +101,18 @@ struct OSSIA_EXPORT spherical_u : public position_unit<spherical_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(ossia::make_string_array(
-        "distance.m", "angle.radiant", "angle.radiant"));
+    constexpr_return(
+        ossia::make_string_array("distance.m", "angle.radiant", "angle.radiant"));
   }
   using value_type = vec3f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self);
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain<3>{ossia::make_vec(0.f, -pi, -half_pi),
-                          ossia::make_vec(1.f, pi, half_pi)};
+    return vecf_domain<3>{
+        ossia::make_vec(0.f, -pi, -half_pi), ossia::make_vec(1.f, pi, half_pi)};
   }
 
   static constexpr auto bounding()
@@ -140,8 +136,7 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
     constexpr_return(ossia::make_string_array("distance.m", "angle.radiant"));
   }
   using value_type = vec2f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     const auto r = self.dataspace_value[0];
     const auto t = self.dataspace_value[1];
@@ -154,14 +149,12 @@ struct OSSIA_EXPORT polar_u : public position_unit<polar_u>
     const auto x = self.dataspace_value[0];
     const auto y = self.dataspace_value[1];
 
-    return {(float)(ossia::norm(x, y)),
-          (float)(std::atan2(y, x))};
+    return {(float)(ossia::norm(x, y)), (float)(std::atan2(y, x))};
   }
 
   static ossia::vecf_domain<2> domain()
   {
-    return vecf_domain<2>{ossia::make_vec(0.f, -pi),
-                          ossia::make_vec(1.f, pi)};
+    return vecf_domain<2>{ossia::make_vec(0.f, -pi), ossia::make_vec(1.f, pi)};
   }
 
   static constexpr auto bounding()
@@ -182,19 +175,18 @@ struct OSSIA_EXPORT aed_u : public position_unit<aed_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(ossia::make_string_array(
-                       "angle.degree", "angle.degree", "distance.m"));
+    constexpr_return(
+        ossia::make_string_array("angle.degree", "angle.degree", "distance.m"));
   }
   using value_type = vec3f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self);
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain<3>{ossia::make_vec(-180.f, -180.f, 0.f),
-          ossia::make_vec(180.f, 180.f, 1.f)};
+    return vecf_domain<3>{
+        ossia::make_vec(-180.f, -180.f, 0.f), ossia::make_vec(180.f, 180.f, 1.f)};
   }
 
   static constexpr auto bounding()
@@ -218,8 +210,7 @@ struct OSSIA_EXPORT ad_u : public position_unit<ad_u>
     constexpr_return(ossia::make_string_array("angle.degree", "distance.m"));
   }
   using value_type = vec2f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     const auto a = self.dataspace_value[0] * deg_to_rad - half_pi;
     const auto d = self.dataspace_value[1];
@@ -232,14 +223,13 @@ struct OSSIA_EXPORT ad_u : public position_unit<ad_u>
     const auto x = self.dataspace_value[0];
     const auto y = self.dataspace_value[1];
 
-    return {-(float)(std::atan2(y, x) + half_pi * rad_to_deg),
-          (float)(ossia::norm(x, y))};
+    return {
+        -(float)(std::atan2(y, x) + half_pi * rad_to_deg), (float)(ossia::norm(x, y))};
   }
 
   static ossia::vecf_domain<2> domain()
   {
-    return vecf_domain<2>{ossia::make_vec(-180.f, 0.f),
-          ossia::make_vec(180.f, 0.f)};
+    return vecf_domain<2>{ossia::make_vec(-180.f, 0.f), ossia::make_vec(180.f, 0.f)};
   }
 
   static constexpr auto bounding()
@@ -260,27 +250,23 @@ struct OSSIA_EXPORT opengl_u : public position_unit<opengl_u>
   }
   static constexpr auto units()
   {
-    constexpr_return(
-        ossia::make_string_array("distance.m", "distance.m", "distance.m"));
+    constexpr_return(ossia::make_string_array("distance.m", "distance.m", "distance.m"));
   }
   using value_type = vec3f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self)
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
-    return {self.dataspace_value[0], -self.dataspace_value[2],
-            self.dataspace_value[1]};
+    return {self.dataspace_value[0], -self.dataspace_value[2], self.dataspace_value[1]};
   }
 
   static value_type from_neutral(strong_value<neutral_unit> self)
   {
-    return {self.dataspace_value[0], self.dataspace_value[2],
-            -self.dataspace_value[1]};
+    return {self.dataspace_value[0], self.dataspace_value[2], -self.dataspace_value[1]};
   }
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain{ossia::make_vec(-1.f, -1.f, -1.f),
-          ossia::make_vec(1.f, 1.f, 1.f)};
+    return vecf_domain{
+        ossia::make_vec(-1.f, -1.f, -1.f), ossia::make_vec(1.f, 1.f, 1.f)};
   }
 
   static constexpr auto bounding()
@@ -305,15 +291,14 @@ struct OSSIA_EXPORT cylindrical_u : public position_unit<cylindrical_u>
         ossia::make_string_array("distance.m", "angle.degree", "distance.m"));
   }
   using value_type = vec3f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self);
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain<3>{ossia::make_vec(0.f, -180.f, 0.f),
-                          ossia::make_vec(1.f, 180.f, 1.f)};
+    return vecf_domain<3>{
+        ossia::make_vec(0.f, -180.f, 0.f), ossia::make_vec(1.f, 180.f, 1.f)};
   }
   static constexpr auto bounding()
   {
@@ -334,18 +319,17 @@ struct OSSIA_EXPORT azd_u : public position_unit<azd_u>
   static constexpr auto units()
   {
     constexpr_return(
-          ossia::make_string_array("angle.degree", "distance.m", "distance.m"));
+        ossia::make_string_array("angle.degree", "distance.m", "distance.m"));
   }
   using value_type = vec3f;
-  static strong_value<neutral_unit>
-  to_neutral(strong_value<concrete_type> self);
+  static strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self);
 
   static value_type from_neutral(strong_value<neutral_unit> self);
 
   static ossia::vecf_domain<3> domain()
   {
-    return vecf_domain<3>{ossia::make_vec(-180.f, -1.f, 0.f),
-          ossia::make_vec(180.f, 1.f, 1.f)};
+    return vecf_domain<3>{
+        ossia::make_vec(-180.f, -1.f, 0.f), ossia::make_vec(180.f, 1.f, 1.f)};
   }
   static constexpr auto bounding()
   {

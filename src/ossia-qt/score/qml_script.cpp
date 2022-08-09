@@ -1,19 +1,20 @@
 #include "qml_script.hpp"
-#include <ossia-qt/js_utilities.hpp>
+
 #include <ossia/network/base/node_functions.hpp>
+
+#include <ossia-qt/js_utilities.hpp>
 namespace ossia
 {
 namespace qt
 {
 qml_script::qml_script(QQuickItem* parent)
-  : qml_process{parent}
+    : qml_process{parent}
 {
   reset();
 }
 
 qml_script::~qml_script()
 {
-
 }
 
 void qml_script::setup()
@@ -29,13 +30,10 @@ std::shared_ptr<time_process> qml_script::process() const
 
 void qml_script::reset_impl()
 {
-
 }
 
-
 void qml_script_process::state(
-    ossia::time_value date, double pos,
-    ossia::time_value tick_offset, double gspeed)
+    ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)
 {
   /*
   auto script = static_cast<qml_script*>(expr->scopeObject());
@@ -82,28 +80,27 @@ void qml_script_process::state(
 
 state_element qml_message::toState() const
 {
-  auto cld = ossia::net::find_nodes(device()->device().get_root_node(), address().toStdString());
+  auto cld = ossia::net::find_nodes(
+      device()->device().get_root_node(), address().toStdString());
 
-  auto to_message = [&] (const ossia::net::node_base* node) -> ossia::state_element {
+  auto to_message = [&](const ossia::net::node_base* node) -> ossia::state_element {
     auto param = node->get_parameter();
     if(param)
     {
-      return ossia::message{*param, param->value().apply(ossia::qt::variant_inbound_visitor{value()})};
+      return ossia::message{
+          *param, param->value().apply(ossia::qt::variant_inbound_visitor{value()})};
     }
     return {};
   };
   switch(cld.size())
   {
-    case 0:
-    {
+    case 0: {
       return {};
     }
-    case 1:
-    {
+    case 1: {
       return to_message(cld.front());
     }
-    default:
-    {
+    default: {
       ossia::state s;
       for(auto p : cld)
       {

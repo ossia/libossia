@@ -1,11 +1,13 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-max/src/router.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
-#include <ossia-max/src/ossia-max.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
+
 #include <regex>
+
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/router.hpp>
 
 using namespace ossia::max_binding;
 
@@ -22,12 +24,8 @@ extern "C" void ossia_router_setup()
       (long)sizeof(router), 0L, A_GIMME, 0);
 
   auto& c = ossia_library.ossia_router_class;
-  class_addmethod(
-      c, (method)router::in_anything,
-      "anything", A_GIMME, 0);
-  class_addmethod(
-      c, (method)router::assist,
-      "assist", A_CANT, 0);
+  class_addmethod(c, (method)router::in_anything, "anything", A_GIMME, 0);
+  class_addmethod(c, (method)router::assist, "assist", A_CANT, 0);
 
   CLASS_ATTR_LONG(c, "truncate", 0, router, m_truncate);
   CLASS_ATTR_STYLE(c, "truncate", 0, "onoff");
@@ -41,7 +39,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   auto x = make_ossia<router>(argc, argv);
 
   x->m_patterns.reserve(argc);
-  x->m_outlets.reserve(argc+1);
+  x->m_outlets.reserve(argc + 1);
 
   // extra outlet for non matching addresses
   x->m_outlets.push_back(outlet_new(x, nullptr));
@@ -66,7 +64,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
       {
         std::string pattern(argv[argc].a_w.w_sym->s_name);
         x->change_pattern(inlet_id++, pattern);
-        x->m_inlets.push_back(proxy_new(x, argc+1, 0L));
+        x->m_inlets.push_back(proxy_new(x, argc + 1, 0L));
 
         x->m_outlets.push_back(outlet_new(x, nullptr));
       }
@@ -82,16 +80,19 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
 
 void router::change_pattern(int index, std::string pattern)
 {
-  if(!pattern.empty() && pattern[0]=='/')
+  if(!pattern.empty() && pattern[0] == '/')
   {
     pattern = pattern.substr(1);
   }
   ossia::net::expand_ranges(pattern);
   pattern = ossia::traversal::substitute_characters(pattern);
 
-  try {
+  try
+  {
     m_patterns[index] = std::regex("^/?" + pattern + "($|/)");
-  } catch (std::exception& e) {
+  }
+  catch(std::exception& e)
+  {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
 }
@@ -109,7 +110,7 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   else
   {
     bool match = false;
-    for(int i = 0 ; i < x->m_patterns.size(); i++)
+    for(int i = 0; i < x->m_patterns.size(); i++)
     {
       const auto& pattern_regex = x->m_patterns[i];
 
@@ -120,13 +121,13 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
         std::string newaddress = address;
         if(x->m_truncate)
           newaddress = smatch.suffix();
-        if( newaddress.size() > 0)
+        if(newaddress.size() > 0)
         {
-          outlet_anything(x->m_outlets[i+1], gensym(newaddress.c_str()), argc, argv);
+          outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
         }
         else
         {
-          outlet_list(x->m_outlets[i+1], nullptr, argc, argv);
+          outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
         }
       }
     }
@@ -138,7 +139,7 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 
 void router::free(router* x)
 {
-  if (x)
+  if(x)
   {
     for(auto out : x->m_outlets)
       outlet_delete(out);
@@ -148,9 +149,9 @@ void router::free(router* x)
   }
 }
 
-void router::assist(router *x, void *b, long m, long a, char *s)
+void router::assist(router* x, void* b, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Address input");
   }
@@ -163,6 +164,6 @@ void router::assist(router *x, void *b, long m, long a, char *s)
 #pragma mark -
 #pragma mark t_router structure functions
 
-router::router(long argc, t_atom *argv)
+router::router(long argc, t_atom* argv)
 {
 }

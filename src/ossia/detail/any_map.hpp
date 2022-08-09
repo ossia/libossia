@@ -34,10 +34,10 @@ template <typename T>
 auto get_attribute(const any_map& e, ossia::string_view name)
 {
   auto it = e.find(name);
-  if (it != e.cend())
+  if(it != e.cend())
   {
     auto val = ossia::any_cast<T>(&it.value());
-    if (val)
+    if(val)
       return *val;
   }
 
@@ -60,10 +60,10 @@ template <typename T>
 std::optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
 {
   auto it = e.find(name);
-  if (it != e.cend())
+  if(it != e.cend())
   {
     auto val = ossia::any_cast<T>(&it.value());
-    if (val)
+    if(val)
       return *val;
   }
 
@@ -100,11 +100,11 @@ void unset_attribute(any_map& e, ossia::string_view str);
 template <typename T>
 void set_attribute(any_map& e, ossia::string_view str, const T& val)
 {
-  if (!is_empty_value{}(val))
+  if(!is_empty_value{}(val))
   {
     // TODO insert_or_assign
     auto it = e.find(str);
-    if (it != e.end())
+    if(it != e.end())
       it.value() = val;
     else
       e.insert(std::make_pair(std::string(str), ossia::any{val}));
@@ -127,11 +127,11 @@ void set_attribute(any_map& e, ossia::string_view str);
 template <typename T>
 void set_attribute(any_map& e, ossia::string_view str, T&& val)
 {
-  if (!is_empty_value{}(val))
+  if(!is_empty_value{}(val))
   {
     // TODO insert_or_assign
     auto it = e.find(str);
-    if (it != e.end())
+    if(it != e.end())
       it.value() = std::move(val);
     else
       e.insert(std::make_pair(std::string(str), ossia::any{std::move(val)}));
@@ -151,17 +151,16 @@ template <typename T>
 void set_optional_attribute(
     any_map& e, ossia::string_view str, const std::optional<T>& opt)
 {
-  if (opt && !is_empty_value{}(*opt))
+  if(opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *opt);
   else
     set_attribute(e, str, std::nullopt);
 }
 
 template <typename T>
-void set_optional_attribute(
-    any_map& e, ossia::string_view str, std::optional<T>&& opt)
+void set_optional_attribute(any_map& e, ossia::string_view str, std::optional<T>&& opt)
 {
-  if (opt && !is_empty_value{}(*opt))
+  if(opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *std::move(opt));
   else
     set_attribute(e, str, std::nullopt);

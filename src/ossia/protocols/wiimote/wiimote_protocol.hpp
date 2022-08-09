@@ -1,16 +1,15 @@
 #pragma once
-#include <ossia/network/context_functions.hpp>
+#include <ossia/detail/timer.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/device_parameter.hpp>
+#include <ossia/network/context_functions.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/detail/timer.hpp>
-
 #include <ossia/protocols/wiimote/wiimote_parameter.hpp>
 
 #include <array>
-#include <cstdint>
 #include <cinttypes>
+#include <cstdint>
 #include <map>
 #include <thread>
 
@@ -43,9 +42,7 @@ class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
   };
 
 public:
-  wiimote_protocol(
-      ossia::net::network_context_ptr ptr,
-      const bool enable_ir);
+  wiimote_protocol(ossia::net::network_context_ptr ptr, const bool enable_ir);
   ~wiimote_protocol();
 
   void set_device(ossia::net::device_base& dev) override;

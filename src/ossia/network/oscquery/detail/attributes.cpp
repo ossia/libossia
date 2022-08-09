@@ -51,7 +51,7 @@ ossia_to_oscquery_key(ossia::string_view s)
 {
   auto& m = ossia_to_oscquery_key();
   auto it = m.find(s);
-  if (it != m.end())
+  if(it != m.end())
     return it.value();
   return std::nullopt;
 }
@@ -61,7 +61,7 @@ oscquery_to_ossia_key(ossia::string_view s)
 {
   auto& m = oscquery_to_ossia_key();
   auto it = m.find(s);
-  if (it != m.end())
+  if(it != m.end())
     return it.value();
   return std::nullopt;
 }

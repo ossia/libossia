@@ -12,7 +12,7 @@ class node_base : public object_base
 public:
   node_base(t_eclass* x);
 
-  static void preset(node_base *x, t_symbol* s, int argc, t_atom* argv);
+  static void preset(node_base* x, t_symbol* s, int argc, t_atom* argv);
   static void class_setup(t_eclass* c);
   static void set(node_base* x, t_symbol* s, int argc, t_atom* argv);
   static void push_default_value(node_base* x);
@@ -24,7 +24,6 @@ public:
    * @details with argc = 0, it will return only parameter (no node without parameter)
    */
   static void get_namespace(object_base* x, t_symbol* s, long argc, t_atom* argv);
-
 };
 
 } // namespace pd

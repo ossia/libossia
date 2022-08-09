@@ -1,14 +1,18 @@
 #pragma once
 #include <ossia/detail/optional.hpp>
-#include <verdigris>
 #include <ossia/network/base/parameter.hpp>
+
+#include <boost/any.hpp>
+
 #include <QObject>
+#include <QPointer>
 #include <QQuickItem>
 #include <QString>
 #include <QVariantMap>
-#include <boost/any.hpp>
+
 #include <nano_observer.hpp>
-#include <QPointer>
+
+#include <verdigris>
 namespace ossia
 {
 namespace net
@@ -19,7 +23,9 @@ class parameter_base;
 namespace qt
 {
 class qml_device;
-class OSSIA_EXPORT qml_node_base : public QQuickItem, public Nano::Observer
+class OSSIA_EXPORT qml_node_base
+    : public QQuickItem
+    , public Nano::Observer
 {
   W_OBJECT(qml_node_base)
 
@@ -50,36 +56,55 @@ public:
   QString extendedType() const;
 
 public:
-  void setNode(QString node); W_SLOT(setNode);
-  virtual void setDevice(QObject* device); W_SLOT(setDevice);
+  void setNode(QString node);
+  W_SLOT(setNode);
+  virtual void setDevice(QObject* device);
+  W_SLOT(setDevice);
 
-  void setParentNode(qml_node_base* parentNode); W_SLOT(setParentNode);
-  void setPriority(qreal priority); W_SLOT(setPriority);
-  void setDescription(QString description); W_SLOT(setDescription);
-  void setTags(QStringList tags); W_SLOT(setTags);
-  void setExtendedType(QString extendedType); W_SLOT(setExtendedType);
-  void setRefreshRate(qint32 refreshRate); W_SLOT(setRefreshRate);
-  void setStepSize(qreal stepSize); W_SLOT(setStepSize);
-  void setDefaultValue(QVariant defaultValue); W_SLOT(setDefaultValue);
-  void setCritical(bool critical); W_SLOT(setCritical);
-  void setHidden(bool hidden); W_SLOT(setHidden);
-  void setDisabled(bool disabled); W_SLOT(setDisabled);
-  void setMuted(bool muted); W_SLOT(setMuted);
+  void setParentNode(qml_node_base* parentNode);
+  W_SLOT(setParentNode);
+  void setPriority(qreal priority);
+  W_SLOT(setPriority);
+  void setDescription(QString description);
+  W_SLOT(setDescription);
+  void setTags(QStringList tags);
+  W_SLOT(setTags);
+  void setExtendedType(QString extendedType);
+  W_SLOT(setExtendedType);
+  void setRefreshRate(qint32 refreshRate);
+  W_SLOT(setRefreshRate);
+  void setStepSize(qreal stepSize);
+  W_SLOT(setStepSize);
+  void setDefaultValue(QVariant defaultValue);
+  W_SLOT(setDefaultValue);
+  void setCritical(bool critical);
+  W_SLOT(setCritical);
+  void setHidden(bool hidden);
+  W_SLOT(setHidden);
+  void setDisabled(bool disabled);
+  W_SLOT(setDisabled);
+  void setMuted(bool muted);
+  W_SLOT(setMuted);
 
 public:
   void nodeChanged(QString node) E_SIGNAL(OSSIA_EXPORT, nodeChanged, node);
   void deviceChanged(qml_device* device) E_SIGNAL(OSSIA_EXPORT, deviceChanged, device);
   void pathChanged(QString path) E_SIGNAL(OSSIA_EXPORT, pathChanged, path);
 
-  void parentNodeChanged(qml_node_base* parentNode) E_SIGNAL(OSSIA_EXPORT, parentNodeChanged, parentNode);
+  void parentNodeChanged(qml_node_base* parentNode)
+      E_SIGNAL(OSSIA_EXPORT, parentNodeChanged, parentNode);
 
   void priorityChanged(qreal priority) E_SIGNAL(OSSIA_EXPORT, priorityChanged, priority);
-  void descriptionChanged(QString description) E_SIGNAL(OSSIA_EXPORT, descriptionChanged, description);
-  void extendedTypeChanged(QString extendedType) E_SIGNAL(OSSIA_EXPORT, extendedTypeChanged, extendedType);
+  void descriptionChanged(QString description)
+      E_SIGNAL(OSSIA_EXPORT, descriptionChanged, description);
+  void extendedTypeChanged(QString extendedType)
+      E_SIGNAL(OSSIA_EXPORT, extendedTypeChanged, extendedType);
   void tagsChanged(QStringList tags) E_SIGNAL(OSSIA_EXPORT, tagsChanged, tags);
-  void refreshRateChanged(qint32 refreshRate) E_SIGNAL(OSSIA_EXPORT, refreshRateChanged, refreshRate);
+  void refreshRateChanged(qint32 refreshRate)
+      E_SIGNAL(OSSIA_EXPORT, refreshRateChanged, refreshRate);
   void stepSizeChanged(qreal stepSize) E_SIGNAL(OSSIA_EXPORT, stepSizeChanged, stepSize);
-  void defaultValueChanged(QVariant defaultValue) E_SIGNAL(OSSIA_EXPORT, defaultValueChanged, defaultValue);
+  void defaultValueChanged(QVariant defaultValue)
+      E_SIGNAL(OSSIA_EXPORT, defaultValueChanged, defaultValue);
   void criticalChanged(bool critical) E_SIGNAL(OSSIA_EXPORT, criticalChanged, critical);
   void hiddenChanged(bool hidden) E_SIGNAL(OSSIA_EXPORT, hiddenChanged, hidden);
   void disabledChanged(bool d) E_SIGNAL(OSSIA_EXPORT, disabledChanged, d);
@@ -90,8 +115,7 @@ protected:
   ossia::net::node_base& get_parent(QObject* obj, bool relative);
 
   void setPath(QString str);
-  ossia::net::node_base&
-  findClosestParent(QObject* obj, ossia::net::node_base& root);
+  ossia::net::node_base& findClosestParent(QObject* obj, ossia::net::node_base& root);
 
   QString m_node;
   QString m_userRequestedNode;
@@ -113,38 +137,55 @@ protected:
   bool m_disabled{};
   bool m_muted{};
 
-
   bool m_was_destroyed{false};
 
-W_PROPERTY(bool, muted READ muted WRITE setMuted NOTIFY mutedChanged, W_Final)
+  W_PROPERTY(bool, muted READ muted WRITE setMuted NOTIFY mutedChanged, W_Final)
 
-W_PROPERTY(bool, disabled READ disabled WRITE setDisabled NOTIFY disabledChanged, W_Final)
+  W_PROPERTY(
+      bool, disabled READ disabled WRITE setDisabled NOTIFY disabledChanged, W_Final)
 
-W_PROPERTY(bool, hidden READ hidden WRITE setHidden NOTIFY hiddenChanged, W_Final)
+  W_PROPERTY(bool, hidden READ hidden WRITE setHidden NOTIFY hiddenChanged, W_Final)
 
-W_PROPERTY(bool, critical READ critical WRITE setCritical NOTIFY criticalChanged, W_Final)
+  W_PROPERTY(
+      bool, critical READ critical WRITE setCritical NOTIFY criticalChanged, W_Final)
 
-W_PROPERTY(QVariant, defaultValue READ defaultValue WRITE setDefaultValue NOTIFY defaultValueChanged, W_Final)
+  W_PROPERTY(
+      QVariant,
+      defaultValue READ defaultValue WRITE setDefaultValue NOTIFY defaultValueChanged,
+      W_Final)
 
-W_PROPERTY(qreal, stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged, W_Final)
+  W_PROPERTY(
+      qreal, stepSize READ stepSize WRITE setStepSize NOTIFY stepSizeChanged, W_Final)
 
-W_PROPERTY(qint32, refreshRate READ refreshRate WRITE setRefreshRate NOTIFY refreshRateChanged, W_Final)
+  W_PROPERTY(
+      qint32,
+      refreshRate READ refreshRate WRITE setRefreshRate NOTIFY refreshRateChanged,
+      W_Final)
 
-W_PROPERTY(qreal, priority READ priority WRITE setPriority NOTIFY priorityChanged, W_Final)
+  W_PROPERTY(
+      qreal, priority READ priority WRITE setPriority NOTIFY priorityChanged, W_Final)
 
-W_PROPERTY(QStringList, tags READ tags WRITE setTags NOTIFY tagsChanged, W_Final)
+  W_PROPERTY(QStringList, tags READ tags WRITE setTags NOTIFY tagsChanged, W_Final)
 
-W_PROPERTY(QString, extendedType READ extendedType WRITE setExtendedType NOTIFY extendedTypeChanged, W_Final)
+  W_PROPERTY(
+      QString,
+      extendedType READ extendedType WRITE setExtendedType NOTIFY extendedTypeChanged,
+      W_Final)
 
-W_PROPERTY(QString, description READ description WRITE setDescription NOTIFY descriptionChanged, W_Final)
+  W_PROPERTY(
+      QString,
+      description READ description WRITE setDescription NOTIFY descriptionChanged,
+      W_Final)
 
-W_PROPERTY(qml_node_base*, parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged, W_Final)
+  W_PROPERTY(
+      qml_node_base*,
+      parentNode READ parentNode WRITE setParentNode NOTIFY parentNodeChanged, W_Final)
 
-W_PROPERTY(QObject*, device READ device WRITE setDevice NOTIFY deviceChanged)
+  W_PROPERTY(QObject*, device READ device WRITE setDevice NOTIFY deviceChanged)
 
-W_PROPERTY(QString, path READ path NOTIFY pathChanged, W_Final)
+  W_PROPERTY(QString, path READ path NOTIFY pathChanged, W_Final)
 
-W_PROPERTY(QString, node READ node WRITE setNode NOTIFY nodeChanged, W_Final)
+  W_PROPERTY(QString, node READ node WRITE setNode NOTIFY nodeChanged, W_Final)
 };
 
 class OSSIA_EXPORT qml_property_base : public qml_node_base

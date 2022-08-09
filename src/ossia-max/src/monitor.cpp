@@ -1,13 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia-max/src/monitor.hpp>
-
-#include <ossia-max/src/ossia-max.hpp>
-#include <ossia-max/src/utils.hpp>
-
 #include <ossia/network/common/path.hpp>
 
 #include <boost/algorithm/string/predicate.hpp>
+
+#include <ossia-max/src/monitor.hpp>
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/utils.hpp>
 
 using namespace ossia::max_binding;
 
@@ -32,15 +31,9 @@ extern "C" void ossia_monitor_setup()
       (long)sizeof(monitor), 0L, A_GIMME, 0);
 
   auto& c = ossia_library.ossia_monitor_class;
-  class_addmethod(
-      c, (method)monitor::execute_method,
-      "monitor", A_GIMME, 0);
-  class_addmethod(
-      c, (method)monitor::assist,
-      "assist", A_CANT, 0);
-  class_addmethod(
-      c, (method)monitor::notify,
-      "notify", A_CANT, 0);
+  class_addmethod(c, (method)monitor::execute_method, "monitor", A_GIMME, 0);
+  class_addmethod(c, (method)monitor::assist, "assist", A_CANT, 0);
+  class_addmethod(c, (method)monitor::notify, "notify", A_CANT, 0);
 
   search_filter::setup_attribute<monitor>(c);
 
@@ -63,8 +56,9 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 
   if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
   {
-    x->parse_args(argv[0].a_w.w_sym, argc-1, argv+1);
-    // need to schedule a loadbang because objects only receive a loadbang when patcher loads.
+    x->parse_args(argv[0].a_w.w_sym, argc - 1, argv + 1);
+    // need to schedule a loadbang because objects only receive a loadbang when patcher
+    // loads.
     defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
   }
   return x;
@@ -72,22 +66,22 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 
 void monitor::free(monitor* x)
 {
-  if (x)
+  if(x)
   {
     ossia_max::instance().monitors.remove_all(x);
     x->~monitor();
   }
 }
 
-t_max_err monitor::notify(
-    monitor* x, t_symbol *s, t_symbol *msg, void *sender, void *data)
+t_max_err
+monitor::notify(monitor* x, t_symbol* s, t_symbol* msg, void* sender, void* data)
 {
   return 0;
 }
 
-void monitor::assist(monitor *x, void *b, long m, long a, char *s)
+void monitor::assist(monitor* x, void* b, long m, long a, char* s)
 {
-  if (m == ASSIST_INLET)
+  if(m == ASSIST_INLET)
   {
     sprintf(s, "Log messages inlet");
   }
@@ -96,9 +90,8 @@ void monitor::assist(monitor *x, void *b, long m, long a, char *s)
 #pragma mark -
 #pragma mark t_monitor structure functions
 
-monitor::monitor(long argc, t_atom *argv)
+monitor::monitor(long argc, t_atom* argv)
 {
-
 }
 
 monitor::~monitor()
@@ -115,8 +108,10 @@ void monitor::stop_monitoring()
     dev->on_node_removing.disconnect<&monitor::on_node_removing_callback>(this);
     dev->on_node_renamed.disconnect<&monitor::on_node_renamed_callback>(this);
     dev->on_parameter_created.disconnect<&monitor::on_parameter_created_callback>(this);
-    dev->on_parameter_removing.disconnect<&monitor::on_parameter_removing_callback>(this);
-    dev->get_root_node().about_to_be_deleted.disconnect<&monitor::on_device_deleted>(this);
+    dev->on_parameter_removing.disconnect<&monitor::on_parameter_removing_callback>(
+        this);
+    dev->get_root_node().about_to_be_deleted.disconnect<&monitor::on_device_deleted>(
+        this);
   }
   m_devices.clear();
 }
@@ -176,7 +171,8 @@ void monitor::on_node_removing_callback(const ossia::net::node_base& node)
   handle_modification(node, s_node, s_created);
 }
 
-void monitor::on_node_renamed_callback(const ossia::net::node_base& node, const std::string&)
+void monitor::on_node_renamed_callback(
+    const ossia::net::node_base& node, const std::string&)
 {
   handle_modification(node, s_node, s_created);
 }
@@ -191,30 +187,31 @@ void monitor::on_parameter_removing_callback(const ossia::net::parameter_base& p
   handle_modification(param.get_node(), s_parameter, s_removing);
 }
 
-void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
+void monitor::handle_modification(
+    const ossia::net::node_base& node, t_symbol* type, t_symbol* action)
 {
   for(auto& p : m_paths)
   {
     auto path = ossia::traversal::make_path(p);
     {
-      if( path && ossia::traversal::match(*path, node) )
+      if(path && ossia::traversal::match(*path, node))
       {
         t_atom a[3];
         A_SETSYM(a, s_parameter);
-        A_SETSYM(a+1, s_created);
+        A_SETSYM(a + 1, s_created);
         std::string address = ossia::net::osc_parameter_string_with_device(node);
-        A_SETSYM(a+2, gensym(address.c_str()));
+        A_SETSYM(a + 2, gensym(address.c_str()));
         outlet_anything(m_dumpout, s_monitor, 3, a);
       }
       else
       {
         std::string address = ossia::net::osc_parameter_string_with_device(node);
-        if( address == p )
+        if(address == p)
         {
           t_atom a[3];
           A_SETSYM(a, s_parameter);
-          A_SETSYM(a+1, s_created);
-          A_SETSYM(a+2, gensym(address.c_str()));
+          A_SETSYM(a + 1, s_created);
+          A_SETSYM(a + 2, gensym(address.c_str()));
           outlet_anything(m_dumpout, s_monitor, 3, a);
         }
       }
@@ -222,7 +219,7 @@ void monitor::handle_modification(const ossia::net::node_base& node, t_symbol* t
   }
 }
 
-void monitor::on_device_deleted(const ossia::net::node_base & node)
+void monitor::on_device_deleted(const ossia::net::node_base& node)
 {
   auto it = m_devices.find(&node.get_device());
   if(it != m_devices.end())

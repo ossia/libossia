@@ -1,11 +1,15 @@
 #include "search_filter.hpp"
+
 #include "ext_obex_util.h"
-#include <ossia/network/base/node_attributes.hpp>
-#include <ossia/detail/algorithms.hpp>
 #include "utils.hpp"
 
-namespace ossia {
-namespace max_binding {
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/network/base/node_attributes.hpp>
+
+namespace ossia
+{
+namespace max_binding
+{
 
 bool search_filter::filter(const ossia::net::node_base& node)
 {
@@ -44,13 +48,14 @@ bool search_filter::filter(const ossia::net::node_base& node)
     switch(m_filter_visible)
     {
       case 1:
-        if(hidden) return true;
+        if(hidden)
+          return true;
         break;
       case 2:
-        if(!hidden) return true;
+        if(!hidden)
+          return true;
         break;
-      default:
-          ;
+      default:;
     }
   }
 
@@ -60,7 +65,7 @@ bool search_filter::filter(const ossia::net::node_base& node)
     if(!access_opt.has_value())
       return true;
     bool match = false;
-    for(int i = 0; i<m_filter_modes_size; i++)
+    for(int i = 0; i < m_filter_modes_size; i++)
     {
       if(symbol2access_mode(m_filter_modes[i]) == *access_opt)
       {

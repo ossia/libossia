@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -8,13 +9,12 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/osc/detail/bundle.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/osc_messages.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/osc/detail/receiver.hpp>
 #include <ossia/network/osc/detail/sender.hpp>
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/value/value.hpp>
-#include <ossia/detail/algorithms.hpp>
 
 #include <boost/algorithm/string.hpp>
 
@@ -95,17 +95,18 @@ void osc_protocol::update_sender()
 
 void osc_protocol::update_receiver()
 {
-  if (m_local_port == 0) {
+  if(m_local_port == 0)
+  {
     m_receiver.reset();
     return;
   }
   m_receiver = std::make_unique<osc::receiver>(
-      m_local_port, [this](const oscpack::ReceivedMessage& m,
-                        const oscpack::IpEndpointName& ip) {
-        this->on_received_message(m, ip);
+      m_local_port,
+      [this](const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip) {
+    this->on_received_message(m, ip);
       });
 
-  if (m_receiver->port() != m_local_port)
+  if(m_receiver->port() != m_local_port)
   {
     throw ossia::connection_error{
         "osc_protocol: "
@@ -118,7 +119,8 @@ void osc_protocol::update_receiver()
 
 void osc_protocol::update_zeroconf()
 {
-  if (!m_expose || m_local_port == 0) {
+  if(!m_expose || m_local_port == 0)
+  {
     m_zeroconfServer = {};
     return;
   }
@@ -127,11 +129,11 @@ void osc_protocol::update_zeroconf()
     m_zeroconfServer = net::make_zeroconf_server(
         *m_expose, "_osc._udp", *m_expose, m_local_port, m_remote_port);
   }
-  catch (const std::exception& e)
+  catch(const std::exception& e)
   {
     logger().error("osc_protocol::update_zeroconf: {}", e.what());
   }
-  catch (...)
+  catch(...)
   {
     logger().error("osc_protocol::update_zeroconf: error.");
   }
@@ -160,17 +162,17 @@ bool osc_protocol::pull(ossia::net::parameter_base& address)
 
 bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
+  if(addr.get_access() == ossia::access_mode::GET)
     return false;
 
   auto val = bound_value(addr, v);
-  if (val.valid())
+  if(val.valid())
   {
     if(m_buffering)
     {
       std::string address = ossia::net::osc_address(addr);
       std::lock_guard lock(m_buffer_mutex);
-      m_buffer.push_back(ossia::net::full_parameter_data{address,val});
+      m_buffer.push_back(ossia::net::full_parameter_data{address, val});
     }
     else
     {
@@ -183,16 +185,16 @@ bool osc_protocol::push(const ossia::net::parameter_base& addr, const ossia::val
 
 bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
 {
-  if (addr.get_access() == ossia::access_mode::GET)
+  if(addr.get_access() == ossia::access_mode::GET)
     return false;
 
   auto val = bound_value(addr, addr.value());
-  if (val.valid())
+  if(val.valid())
   {
     if(m_buffering)
     {
       std::lock_guard lock(m_buffer_mutex);
-      m_buffer.push_back(ossia::net::full_parameter_data{addr.address,val});
+      m_buffer.push_back(ossia::net::full_parameter_data{addr.address, val});
     }
     else
     {
@@ -203,10 +205,10 @@ bool osc_protocol::push_raw(const ossia::net::full_parameter_data& addr)
   return false;
 }
 
-bool osc_protocol::push_bundle(
-    const std::vector<const parameter_base*>& addresses)
+bool osc_protocol::push_bundle(const std::vector<const parameter_base*>& addresses)
 {
-  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses))
+  {
     m_sender->socket().Send(bundle->data.data(), bundle->data.size());
     ossia::buffer_pool::instance().release(std::move(bundle->data));
     return true;
@@ -224,7 +226,8 @@ void osc_protocol::send_buffer()
 bool osc_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
-  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses)) {
+  if(auto bundle = make_bundle(bundle_server_policy<osc_1_0_policy>{}, addresses))
+  {
     m_sender->socket().Send(bundle->data.data(), bundle->data.size());
     ossia::buffer_pool::instance().release(std::move(bundle->data));
     return true;
@@ -234,9 +237,8 @@ bool osc_protocol::push_raw_bundle(
 
 bool osc_protocol::observe(ossia::net::parameter_base& address, bool enable)
 {
-  if (enable)
-    m_listening.insert(
-        std::make_pair(address.get_node().osc_address(), &address));
+  if(enable)
+    m_listening.insert(std::make_pair(address.get_node().osc_address(), &address));
   else
     m_listening.erase(address.get_node().osc_address());
 
@@ -256,8 +258,7 @@ bool osc_protocol::echo_incoming_message(
 void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  [[unlikely]]
-  if(m_learning)
+  [[unlikely]] if(m_learning)
   {
     auto already_learned = ossia::net::osc_learn(&m_device->get_root_node(), m);
     if(!already_learned)
@@ -265,12 +266,9 @@ void osc_protocol::on_received_message(
   }
 
   ossia::net::on_input_message<false>(
-      m.AddressPattern(),
-      ossia::net::osc_message_applier{m_id, m},
-      m_listening, *m_device, m_logger);
+      m.AddressPattern(), ossia::net::osc_message_applier{m_id, m}, m_listening,
+      *m_device, m_logger);
 }
-
-
 
 void osc_protocol::set_device(device_base& dev)
 {

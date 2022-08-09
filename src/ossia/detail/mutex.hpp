@@ -27,68 +27,56 @@ using read_lock_t = std::lock_guard<mutex_t>;
 // Enable thread safety attributes only with clang.
 // The attributes can be safely erased when compiling with other compilers.
 #if defined(__clang__) && (!defined(SWIG))
-#define THREAD_ANNOTATION_ATTRIBUTE__(x)   __attribute__((x))
+#define THREAD_ANNOTATION_ATTRIBUTE__(x) __attribute__((x))
 #else
-#define THREAD_ANNOTATION_ATTRIBUTE__(x)   // no-op
+#define THREAD_ANNOTATION_ATTRIBUTE__(x) // no-op
 #endif
 
-#define TS_CAPABILITY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
+#define TS_CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(capability(x))
 
-#define TS_SCOPED_CAPABILITY \
-THREAD_ANNOTATION_ATTRIBUTE__(scoped_lockable)
+#define TS_SCOPED_CAPABILITY THREAD_ANNOTATION_ATTRIBUTE__(scoped_lockable)
 
-#define TS_GUARDED_BY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
+#define TS_GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(guarded_by(x))
 
-#define TS_PT_GUARDED_BY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(pt_guarded_by(x))
+#define TS_PT_GUARDED_BY(x) THREAD_ANNOTATION_ATTRIBUTE__(pt_guarded_by(x))
 
 #define TS_ACQUIRED_BEFORE(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(acquired_before(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(acquired_before(__VA_ARGS__))
 
-#define TS_ACQUIRED_AFTER(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(acquired_after(__VA_ARGS__))
+#define TS_ACQUIRED_AFTER(...) THREAD_ANNOTATION_ATTRIBUTE__(acquired_after(__VA_ARGS__))
 
-#define TS_REQUIRES(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
+#define TS_REQUIRES(...) THREAD_ANNOTATION_ATTRIBUTE__(requires_capability(__VA_ARGS__))
 
 #define TS_REQUIRES_SHARED(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(requires_shared_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(requires_shared_capability(__VA_ARGS__))
 
-#define TS_ACQUIRE(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(acquire_capability(__VA_ARGS__))
+#define TS_ACQUIRE(...) THREAD_ANNOTATION_ATTRIBUTE__(acquire_capability(__VA_ARGS__))
 
 #define TS_ACQUIRE_SHARED(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(acquire_shared_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(acquire_shared_capability(__VA_ARGS__))
 
-#define TS_RELEASE(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(release_capability(__VA_ARGS__))
+#define TS_RELEASE(...) THREAD_ANNOTATION_ATTRIBUTE__(release_capability(__VA_ARGS__))
 
 #define TS_RELEASE_SHARED(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(release_shared_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(release_shared_capability(__VA_ARGS__))
 
 #define TS_RELEASE_GENERIC(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(release_generic_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(release_generic_capability(__VA_ARGS__))
 
 #define TS_TRY_ACQUIRE(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_capability(__VA_ARGS__))
 
 #define TS_TRY_ACQUIRE_SHARED(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_shared_capability(__VA_ARGS__))
+  THREAD_ANNOTATION_ATTRIBUTE__(try_acquire_shared_capability(__VA_ARGS__))
 
-#define TS_EXCLUDES(...) \
-THREAD_ANNOTATION_ATTRIBUTE__(locks_excluded(__VA_ARGS__))
+#define TS_EXCLUDES(...) THREAD_ANNOTATION_ATTRIBUTE__(locks_excluded(__VA_ARGS__))
 
-#define TS_ASSERT_CAPABILITY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(assert_capability(x))
+#define TS_ASSERT_CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(assert_capability(x))
 
 #define TS_ASSERT_SHARED_CAPABILITY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(assert_shared_capability(x))
+  THREAD_ANNOTATION_ATTRIBUTE__(assert_shared_capability(x))
 
-#define TS_RETURN_CAPABILITY(x) \
-THREAD_ANNOTATION_ATTRIBUTE__(lock_returned(x))
+#define TS_RETURN_CAPABILITY(x) THREAD_ANNOTATION_ATTRIBUTE__(lock_returned(x))
 
 #define TS_NO_THREAD_SAFETY_ANALYSIS \
-THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
-
+  THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)

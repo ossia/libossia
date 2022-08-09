@@ -1,12 +1,13 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
-#include <ossia/protocols/artnet/dmx_buffer.hpp>
+#include <ossia/detail/timer.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/context.hpp>
-#include <ossia/detail/timer.hpp>
+#include <ossia/network/domain/domain.hpp>
+#include <ossia/protocols/artnet/dmx_buffer.hpp>
+
 #include <array>
 #include <cstdint>
 
@@ -15,8 +16,7 @@ using artnet_node = void*;
 namespace ossia::net
 {
 struct dmx_config;
-class OSSIA_EXPORT artnet_protocol final
-    : public ossia::net::protocol_base
+class OSSIA_EXPORT artnet_protocol final : public ossia::net::protocol_base
 {
 public:
   artnet_protocol(ossia::net::network_context_ptr, const dmx_config& conf);
@@ -31,7 +31,11 @@ public:
 
   bool update(ossia::net::node_base&) override;
 
-  dmx_buffer& buffer() noexcept { return m_buffer; }
+  dmx_buffer& buffer() noexcept
+  {
+    return m_buffer;
+  }
+
 private:
   void update_function();
 

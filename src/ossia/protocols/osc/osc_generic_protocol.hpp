@@ -1,24 +1,23 @@
 #pragma once
-#include <ossia/detail/mutex.hpp>
-#include <ossia/detail/logger.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
-
+#include <ossia/detail/logger.hpp>
+#include <ossia/detail/mutex.hpp>
 #include <ossia/network/base/listening.hpp>
-#include <ossia/network/base/protocol.hpp>
-#include <ossia/network/sockets/writers.hpp>
-#include <ossia/network/context.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/base/protocol.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/exceptions.hpp>
-#include <ossia/network/sockets/null_socket.hpp>
-#include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/osc/detail/osc_protocol_common.hpp>
 #include <ossia/network/osc/detail/osc_1_0_policy.hpp>
-#include <ossia/network/osc/detail/osc_1_1_policy.hpp>
 #include <ossia/network/osc/detail/osc_1_1_extended_policy.hpp>
+#include <ossia/network/osc/detail/osc_1_1_policy.hpp>
+#include <ossia/network/osc/detail/osc_protocol_common.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/null_socket.hpp>
+#include <ossia/network/sockets/writers.hpp>
+#include <ossia/network/value/value.hpp>
 
 #include <tsl/hopscotch_map.h>
 
@@ -27,16 +26,16 @@
 
 namespace ossia::net
 {
-template<typename OscMode, typename SendSocket, typename RecvSocket>
-class osc_generic_bidir_protocol
-    : public can_learn<ossia::net::protocol_base>
+template <typename OscMode, typename SendSocket, typename RecvSocket>
+class osc_generic_bidir_protocol : public can_learn<ossia::net::protocol_base>
 {
 public:
-  //using socket_type = Socket;
+  // using socket_type = Socket;
   using writer_type = socket_writer<SendSocket>;
 
   osc_generic_bidir_protocol(
-      network_context_ptr ctx, const send_fd_configuration& send_conf, const receive_fd_configuration& recv_conf)
+      network_context_ptr ctx, const send_fd_configuration& send_conf,
+      const receive_fd_configuration& recv_conf)
       : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
@@ -46,18 +45,17 @@ public:
     from_client.open();
     to_client.connect();
 
-    from_client.receive(
-        [this] (const char* data, std::size_t sz) {
-          if(!m_device)
-            return;
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
-        }
-    );
+    from_client.receive([this](const char* data, std::size_t sz) {
+      if(!m_device)
+        return;
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+    });
   }
 
   osc_generic_bidir_protocol(
-      network_context_ptr ctx, const send_socket_configuration& send_conf, const receive_socket_configuration& recv_conf)
+      network_context_ptr ctx, const send_socket_configuration& send_conf,
+      const receive_socket_configuration& recv_conf)
       : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
@@ -67,14 +65,12 @@ public:
     from_client.open();
     to_client.connect();
 
-    from_client.receive(
-        [this] (const char* data, std::size_t sz) {
-          if(!m_device)
-            return;
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
-        }
-    );
+    from_client.receive([this](const char* data, std::size_t sz) {
+      if(!m_device)
+        return;
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+    });
   }
 
   osc_generic_bidir_protocol(
@@ -96,14 +92,12 @@ public:
   {
     from_client.open();
 
-    from_client.receive(
-        [this] (const char* data, std::size_t sz) {
-          if(!m_device)
-            return;
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
-        }
-        );
+    from_client.receive([this](const char* data, std::size_t sz) {
+      if(!m_device)
+        return;
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+    });
   }
 
   osc_generic_bidir_protocol(
@@ -125,14 +119,12 @@ public:
   {
     from_client.open();
 
-    from_client.receive(
-        [this] (const char* data, std::size_t sz) {
-          if(!m_device)
-            return;
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
-        }
-        );
+    from_client.receive([this](const char* data, std::size_t sz) {
+      if(!m_device)
+        return;
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
+    });
   }
 
   osc_generic_bidir_protocol(const osc_generic_bidir_protocol&) = delete;
@@ -167,7 +159,8 @@ public:
   }
 
   bool echo_incoming_message(
-      const message_origin_identifier& id, const parameter_base& addr, const value& val) override
+      const message_origin_identifier& id, const parameter_base& addr,
+      const value& val) override
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
@@ -215,8 +208,7 @@ public:
     }
   }
 
-  bool push_bundle(
-      const std::vector<const parameter_base*>& addresses) override
+  bool push_bundle(const std::vector<const parameter_base*>& addresses) override
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
@@ -228,8 +220,8 @@ public:
     }
   }
 
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>& addresses) override
+  bool
+  push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses) override
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
@@ -270,17 +262,15 @@ public:
   SendSocket to_client;
 };
 
-template<typename OscMode, typename Socket>
-class osc_generic_server_protocol
-    : public can_learn<ossia::net::protocol_base>
+template <typename OscMode, typename Socket>
+class osc_generic_server_protocol : public can_learn<ossia::net::protocol_base>
 {
 public:
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
-  template<typename Configuration>
-  osc_generic_server_protocol(
-      network_context_ptr ctx, const Configuration& conf)
+  template <typename Configuration>
+  osc_generic_server_protocol(network_context_ptr ctx, const Configuration& conf)
       : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
@@ -291,11 +281,10 @@ public:
 
   void init()
   {
-    m_server.listen(
-        [this] (const unsigned char* data, std::size_t sz) {
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
-        });
+    m_server.listen([this](const unsigned char* data, std::size_t sz) {
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
+    });
   }
 
   osc_generic_server_protocol(const osc_generic_server_protocol&) = delete;
@@ -323,7 +312,8 @@ public:
   }
 
   bool echo_incoming_message(
-      const message_origin_identifier& id, const parameter_base& addr, const value& val) override
+      const message_origin_identifier& id, const parameter_base& addr,
+      const value& val) override
   {
     return OscMode::echo_incoming_message(*this, id, addr, val);
   }
@@ -343,14 +333,13 @@ public:
     return OscMode::push_raw(*this, addr);
   }
 
-  bool push_bundle(
-      const std::vector<const parameter_base*>& addresses) override
+  bool push_bundle(const std::vector<const parameter_base*>& addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>& addresses) override
+  bool
+  push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }
@@ -380,18 +369,15 @@ public:
   Socket m_server;
 };
 
-
-template<typename OscMode, typename Socket>
-class osc_generic_client_protocol
-    : public can_learn<ossia::net::protocol_base>
+template <typename OscMode, typename Socket>
+class osc_generic_client_protocol : public can_learn<ossia::net::protocol_base>
 {
 public:
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
-  template<typename Configuration>
-  osc_generic_client_protocol(
-      network_context_ptr ctx, const Configuration& conf)
+  template <typename Configuration>
+  osc_generic_client_protocol(network_context_ptr ctx, const Configuration& conf)
       : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
@@ -407,11 +393,10 @@ public:
     m_client.on_fail.connect(this->on_connection_failure);
 
     m_client.connect();
-    m_client.receive(
-        [this] (const unsigned char* data, std::size_t sz) {
-          auto on_message = [this] (auto&& msg) { this->on_received_message(msg); };
-          osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
-        });
+    m_client.receive([this](const unsigned char* data, std::size_t sz) {
+      auto on_message = [this](auto&& msg) { this->on_received_message(msg); };
+      osc_packet_processor<decltype(on_message)>{on_message}((const char*)data, sz);
+    });
   }
 
   osc_generic_client_protocol(const osc_generic_client_protocol&) = delete;
@@ -439,7 +424,8 @@ public:
   }
 
   bool echo_incoming_message(
-      const message_origin_identifier& id, const parameter_base& addr, const value& val) override
+      const message_origin_identifier& id, const parameter_base& addr,
+      const value& val) override
   {
     return OscMode::echo_incoming_message(*this, id, addr, val);
   }
@@ -459,14 +445,13 @@ public:
     return OscMode::push_raw(*this, addr);
   }
 
-  bool push_bundle(
-      const std::vector<const parameter_base*>& addresses) override
+  bool push_bundle(const std::vector<const parameter_base*>& addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_raw_bundle(
-      const std::vector<ossia::net::full_parameter_data>& addresses) override
+  bool
+  push_raw_bundle(const std::vector<ossia::net::full_parameter_data>& addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }

@@ -29,7 +29,7 @@ struct address_info
 
   ossia::val_type matchingType()
   {
-    switch (type)
+    switch(type)
     {
       case Type::NoteOn:
       case Type::NoteOff:
@@ -50,7 +50,7 @@ struct address_info
 
   std::string address()
   {
-    switch (type)
+    switch(type)
     {
       case Type::NoteOn:
         return "/" + boost::lexical_cast<std::string>(channel) + "/note/on";
@@ -82,7 +82,7 @@ struct address_info
 
   ossia::value defaultValue(int32_t val)
   {
-    switch (type)
+    switch(type)
     {
       case Type::NoteOn:
       case Type::NoteOff:
@@ -104,21 +104,26 @@ struct address_info
 
   ossia::domain defaultDomain()
   {
-    if (type != Type::PB && type != Type::Any)
+    if(type != Type::PB && type != Type::Any)
       return ossia::make_domain(defaultValue(0), defaultValue(127));
     return ossia::make_domain(0, 16384);
   }
 
-  address_info(Type t) : type{t}
+  address_info(Type t)
+      : type{t}
   {
   }
 
-  address_info(Type t, midi_size_t n) : type{t}, note{n}
+  address_info(Type t, midi_size_t n)
+      : type{t}
+      , note{n}
   {
   }
 
   address_info(midi_size_t chan, Type t, midi_size_t n)
-      : channel{chan}, type{t}, note{n}
+      : channel{chan}
+      , type{t}
+      , note{n}
   {
   }
   midi_size_t channel{};
