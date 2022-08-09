@@ -4,15 +4,15 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 
-#include <boost/algorithm/string/case_conv.hpp>
-
-#include <regex>
-#include <sstream>
-
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/utils.hpp>
+
+#include <boost/algorithm/string/case_conv.hpp>
+
+#include <regex>
+#include <sstream>
 
 namespace ossia::pd
 {

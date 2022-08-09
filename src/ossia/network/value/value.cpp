@@ -71,7 +71,7 @@ convert<std::array<float, 3>>(const std::vector<ossia::value>& val);
 template OSSIA_EXPORT std::array<float, 4>
 convert<std::array<float, 4>>(const std::vector<ossia::value>& val);
 
-destination::destination(const destination& other) noexcept = default;
+destination::destination(const destination& other) = default;
 destination::destination(destination&& other) noexcept
     : value{std::move(other.value)}
     , index{std::move(other.index)}
@@ -79,7 +79,7 @@ destination::destination(destination&& other) noexcept
 {
 }
 
-destination& destination::operator=(const destination& other) noexcept = default;
+destination& destination::operator=(const destination& other) = default;
 
 destination& destination::operator=(destination&& other) noexcept
 {

@@ -3,11 +3,11 @@
 #include <ossia/detail/thread.hpp>
 #include <ossia/network/common/path.hpp>
 
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/search.hpp>
 #include <ossia-max/src/utils.hpp>
+
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace ossia::max_binding;
 

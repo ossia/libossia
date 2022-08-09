@@ -232,7 +232,8 @@ bounding_mode alias_path::get_bounding() const
   return {};
 }
 
-parameter_base& alias_path::set_bounding(bounding_mode){
+parameter_base& alias_path::set_bounding(bounding_mode)
+{
   return *this;
 }
 }

@@ -8,6 +8,9 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 
+#include <ossia-qt/metatypes.hpp>
+#include <ossia-qt/name_utils.hpp>
+
 #include <QDebug>
 #include <QHash>
 #include <QLineF>
@@ -24,17 +27,14 @@
 #include <QtGui/QVector3D>
 #include <QtGui/QVector4D>
 
-#include <ossia-qt/metatypes.hpp>
-#include <ossia-qt/name_utils.hpp>
-
 #if defined(QT_QML_LIB)
+#include <ossia-qt/qml_context.hpp>
+
 #include <QJSEngine>
 #include <QJSValue>
 #include <QJSValueIterator>
 #include <QQmlExtensionPlugin>
 #include <QQmlProperty>
-
-#include <ossia-qt/qml_context.hpp>
 #endif
 namespace ossia::qt
 {

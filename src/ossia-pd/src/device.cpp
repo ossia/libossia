@@ -5,10 +5,10 @@
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include <boost/algorithm/string.hpp>
-
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/utils.hpp>
+
+#include <boost/algorithm/string.hpp>
 
 namespace ossia::pd
 {

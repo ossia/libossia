@@ -6,11 +6,11 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 
+#include <ossia-qt/device/qml_device.hpp>
+
 #include <boost/algorithm/string.hpp>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/device/qml_device.hpp>
 W_OBJECT_IMPL(ossia::qt::qml_model_property)
 namespace ossia
 {

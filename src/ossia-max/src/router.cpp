@@ -2,12 +2,12 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/common/websocket_log_sink.hpp>
 
+#include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/router.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <regex>
-
-#include <ossia-max/src/ossia-max.hpp>
-#include <ossia-max/src/router.hpp>
 
 using namespace ossia::max_binding;
 

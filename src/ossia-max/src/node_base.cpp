@@ -2,14 +2,14 @@
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/preset/preset.hpp>
 
+#include <ossia-max/src/node_base.hpp>
+#include <ossia-max/src/utils.hpp>
+
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/prettywriter.h>
-
-#include <ossia-max/src/node_base.hpp>
-#include <ossia-max/src/utils.hpp>
 
 namespace ossia
 {

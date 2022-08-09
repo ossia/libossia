@@ -1,12 +1,12 @@
 #pragma once
 #include <ossia/editor/loop/loop.hpp>
 
-#include <verdigris>
-
 #include <ossia-qt/score/qml_autom.hpp>
 #include <ossia-qt/score/qml_cond.hpp>
 #include <ossia-qt/score/qml_interval.hpp>
 #include <ossia-qt/score/qml_sync.hpp>
+
+#include <verdigris>
 
 namespace ossia
 {

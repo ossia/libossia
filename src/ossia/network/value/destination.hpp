@@ -50,9 +50,9 @@ public:
   destination(net::parameter_base& v, destination_index, const ossia::unit_t&) noexcept;
   destination(net::parameter_base& v, const ossia::unit_t&) noexcept;
 
-  destination(const destination& other) noexcept;
+  destination(const destination& other);
   destination(destination&& other) noexcept;
-  destination& operator=(const destination&) noexcept;
+  destination& operator=(const destination&);
   destination& operator=(destination&&) noexcept;
 
   bool operator==(const ossia::value&) const noexcept;

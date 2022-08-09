@@ -1,6 +1,10 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
 
+#include <ossia-qt/device/qml_node_base.hpp>
+#include <ossia-qt/qml_context.hpp>
+#include <ossia-qt/value_metatypes.hpp>
+
 #include <QObject>
 #include <QQmlExpression>
 #include <QQmlProperty>
@@ -8,10 +12,6 @@
 #include <QQmlScriptString>
 
 #include <verdigris>
-
-#include <ossia-qt/device/qml_node_base.hpp>
-#include <ossia-qt/qml_context.hpp>
-#include <ossia-qt/value_metatypes.hpp>
 namespace ossia
 {
 namespace qt

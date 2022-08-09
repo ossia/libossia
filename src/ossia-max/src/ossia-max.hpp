@@ -30,6 +30,7 @@
 #include <ossia/network/common/websocket_log_sink.hpp>
 
 #include <ossia-max/src/object_base.hpp>
+
 #include <ossia-max_export.h>
 
 extern "C" {

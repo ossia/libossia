@@ -214,7 +214,8 @@ inline behavior_variant_type::behavior_variant_type(const behavior_variant_type&
   }
 }
 
-inline behavior_variant_type::behavior_variant_type(behavior_variant_type&& other) noexcept
+inline behavior_variant_type::behavior_variant_type(
+    behavior_variant_type&& other) noexcept
     : m_type{other.m_type}
 {
   switch(m_type)

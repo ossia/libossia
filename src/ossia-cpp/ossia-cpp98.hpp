@@ -1,8 +1,8 @@
 #ifndef OSSIA_CPP98_HPP_2017_07_07
 #define OSSIA_CPP98_HPP_2017_07_07
 #include <ossia_export.h>
-#include <cstddef>
 
+#include <cstddef>
 #include <string>
 #include <vector>
 #if(__cplusplus >= 201103L) || (defined(_MSC_VER) && (_MSC_VER >= 1900))

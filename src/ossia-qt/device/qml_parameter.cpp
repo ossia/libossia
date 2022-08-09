@@ -5,14 +5,14 @@
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
+#include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QDebug>
 #include <QTimer>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia-qt/device/qml_node.hpp>
-#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::qt::qml_parameter)
 namespace ossia
 {

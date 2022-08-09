@@ -1,14 +1,14 @@
 #pragma once
 #include <ossia/editor/scenario/time_sync.hpp>
 
+#include <ossia-qt/score/qml_cond.hpp>
+
 #include <QQmlExpression>
 #include <QQmlListProperty>
 #include <QQmlScriptString>
 #include <QQuickItem>
 
 #include <verdigris>
-
-#include <ossia-qt/score/qml_cond.hpp>
 namespace ossia
 {
 namespace qt

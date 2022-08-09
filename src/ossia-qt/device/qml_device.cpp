@@ -9,11 +9,6 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/local/local.hpp>
 
-#include <QDebug>
-#include <QQmlContext>
-#include <QQmlEngine>
-#include <QTimer>
-
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/device/qml_parameter.hpp>
@@ -21,6 +16,11 @@
 #include <ossia-qt/device/qml_property_reader.hpp>
 #include <ossia-qt/device/qml_signal.hpp>
 #include <ossia-qt/qml_context.hpp>
+
+#include <QDebug>
+#include <QQmlContext>
+#include <QQmlEngine>
+#include <QTimer>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/protocols/midi/midi.hpp>
 #endif

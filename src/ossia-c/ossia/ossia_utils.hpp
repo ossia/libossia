@@ -9,13 +9,13 @@
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/network/value/value.hpp>
 
+#include <ossia-c/log/ossia_log.h>
+#include <ossia-c/ossia-c.h>
+
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <mutex>
-
-#include <ossia-c/log/ossia_log.h>
-#include <ossia-c/ossia-c.h>
 
 struct ossia_protocol
 {

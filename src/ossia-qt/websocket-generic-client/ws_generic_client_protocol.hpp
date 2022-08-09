@@ -3,14 +3,14 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
 
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QByteArray>
 #include <QJSValue>
 #include <QList>
 #include <QObject>
 
 #include <verdigris>
-
-#include <ossia-qt/js_utilities.hpp>
 
 class QQmlEngine;
 class QQmlComponent;

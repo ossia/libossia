@@ -2618,7 +2618,6 @@ public:
     Npos = std::numeric_limits<int8_t>::max()
   };
 
-
   Impl m_impl;
   Type m_type;
 
@@ -3018,7 +3017,6 @@ public:
     Type8,
     Npos = std::numeric_limits<int8_t>::max()
   };
-
 
   Impl m_impl;
   Type m_type;
@@ -5338,7 +5336,6 @@ public:
   }
   ~unit_variant() noexcept
   {
-
   }
   unit_variant(ossia::distance_u v) noexcept
       : m_type{Type0}

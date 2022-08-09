@@ -13,6 +13,7 @@
 #include <QTimer>
 
 #include <spdlog/spdlog.h>
+
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(ossia::qt::qml_logger)
 namespace ossia

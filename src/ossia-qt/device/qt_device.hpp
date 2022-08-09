@@ -4,13 +4,13 @@
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 
+#include <ossia-qt/device/qt_object_node.hpp>
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QMetaObject>
 #include <QMetaProperty>
 #include <QObject>
 #include <QtQml/QQmlProperty>
-
-#include <ossia-qt/device/qt_object_node.hpp>
-#include <ossia-qt/js_utilities.hpp>
 namespace ossia
 {
 namespace qt

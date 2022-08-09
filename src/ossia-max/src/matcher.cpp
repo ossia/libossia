@@ -4,12 +4,12 @@
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/preset/preset.hpp>
 
-#include <regex>
-
 #include <ossia-max/src/matcher.hpp>
 #include <ossia-max/src/object_base.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
+
+#include <regex>
 
 namespace ossia
 {

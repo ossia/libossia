@@ -4,13 +4,13 @@
 
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <QDebug>
-
-#include <wobjectimpl.h>
-
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_node.hpp>
 #include <ossia-qt/js_utilities.hpp>
+
+#include <QDebug>
+
+#include <wobjectimpl.h>
 W_OBJECT_IMPL(ossia::qt::qml_property_context)
 W_OBJECT_IMPL(ossia::qt::qml_property_reader)
 W_OBJECT_IMPL(ossia::qt::qml_property_writer)

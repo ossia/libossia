@@ -4,9 +4,6 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/domain/domain.hpp>
 
-#include <chrono>
-#include <iostream>
-
 #include <ossia-pd/src/client.hpp>
 #include <ossia-pd/src/model.hpp>
 #include <ossia-pd/src/object_base.hpp>
@@ -14,6 +11,9 @@
 #include <ossia-pd/src/parameter.hpp>
 #include <ossia-pd/src/remote.hpp>
 #include <ossia-pd/src/view.hpp>
+
+#include <chrono>
+#include <iostream>
 
 namespace ossia::pd
 {

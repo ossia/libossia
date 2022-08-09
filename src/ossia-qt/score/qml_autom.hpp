@@ -2,14 +2,14 @@
 #include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 
+#include <ossia-qt/device/qml_node_base.hpp>
+#include <ossia-qt/score/qml_interval.hpp>
+
 #include <QEasingCurve>
 #include <QPointer>
 #include <QQuickItem>
 
 #include <verdigris>
-
-#include <ossia-qt/device/qml_node_base.hpp>
-#include <ossia-qt/score/qml_interval.hpp>
 
 namespace ossia
 {

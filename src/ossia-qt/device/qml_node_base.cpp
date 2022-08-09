@@ -4,14 +4,14 @@
 
 #include <ossia/network/base/node.hpp>
 
+#include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QDebug>
 #include <QtQuick/QQuickItem>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia-qt/device/qml_node.hpp>
-#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::qt::qml_node_base)
 namespace ossia
 {

@@ -3,9 +3,10 @@
 #include <ossia/detail/nullable_variant.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
 
-#include <readerwriterqueue.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
+
+#include <readerwriterqueue.h>
 
 #include <atomic>
 

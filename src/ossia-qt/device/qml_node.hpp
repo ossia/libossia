@@ -1,7 +1,7 @@
 #pragma once
-#include <verdigris>
-
 #include <ossia-qt/device/qml_node_base.hpp>
+
+#include <verdigris>
 
 namespace ossia
 {

@@ -40,9 +40,9 @@
 #include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
 #endif
 
-#include <qqml.h>
-
 #include <ossia-qt/js_utilities.hpp>
+
+#include <qqml.h>
 namespace ossia::qt
 {
 

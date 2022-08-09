@@ -4,10 +4,11 @@
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
 
-#include <nano_signal_slot.hpp>
 #include <websocketpp/client.hpp>
 #include <websocketpp/common/thread.hpp>
 #include <websocketpp/config/asio_no_tls_client.hpp>
+
+#include <nano_signal_slot.hpp>
 
 namespace ossia::net
 {

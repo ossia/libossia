@@ -5,11 +5,11 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 
-#include <algorithm>
-#include <sstream>
-
 #include <ossia-pd/src/parameter_base.hpp>
 #include <ossia-pd/src/utils.hpp>
+
+#include <algorithm>
+#include <sstream>
 
 namespace ossia::pd
 {

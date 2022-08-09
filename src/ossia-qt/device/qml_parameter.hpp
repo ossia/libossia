@@ -1,13 +1,13 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
 
+#include <ossia-qt/device/qml_node_base.hpp>
+#include <ossia-qt/qml_context.hpp>
+
 #include <QObject>
 #include <QQmlProperty>
 
 #include <verdigris>
-
-#include <ossia-qt/device/qml_node_base.hpp>
-#include <ossia-qt/qml_context.hpp>
 namespace ossia
 {
 namespace qt

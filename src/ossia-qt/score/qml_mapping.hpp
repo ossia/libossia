@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/editor/mapper/mapper.hpp>
 
-#include <verdigris>
-
 #include <ossia-qt/score/qml_autom.hpp>
+
+#include <verdigris>
 
 namespace ossia
 {

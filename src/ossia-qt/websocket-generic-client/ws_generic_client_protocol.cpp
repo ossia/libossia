@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "ws_generic_client_protocol.hpp"
 
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QJSValueIterator>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -9,8 +11,6 @@
 #include <QWebSocket>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::net::ws_generic_client_protocol)
 namespace ossia
 {

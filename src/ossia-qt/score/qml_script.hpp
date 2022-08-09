@@ -1,10 +1,10 @@
 #pragma once
+#include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/score/qml_autom.hpp>
+
 #include <QQmlScriptString>
 
 #include <verdigris>
-
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia-qt/score/qml_autom.hpp>
 namespace ossia
 {
 namespace qt

@@ -2,8 +2,9 @@
 
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <m_pd.h>
 #include <servus/servus.h>
+
+#include <m_pd.h>
 
 #include <memory>
 

@@ -2,6 +2,8 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "http_protocol.hpp"
 
+#include <ossia-qt/js_utilities.hpp>
+
 #include <QJSValueIterator>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
@@ -10,8 +12,6 @@
 #include <QQmlEngine>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/js_utilities.hpp>
 W_OBJECT_IMPL(ossia::net::http_protocol)
 namespace ossia::net
 {

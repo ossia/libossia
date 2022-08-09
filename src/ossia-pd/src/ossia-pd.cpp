@@ -5,12 +5,12 @@
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include <git_info.h>
-#include <ossia_pd_export.h>
-
 #include <ossia-pd/src/device.hpp>
 #include <ossia-pd/src/ossia-pd.hpp>
 #include <ossia-pd/src/utils.hpp>
+
+#include <git_info.h>
+#include <ossia_pd_export.h>
 
 namespace ossia::pd
 {

@@ -7,12 +7,13 @@
 #include <ossia/detail/dylib_loader.hpp>
 #include <ossia/detail/logger.hpp>
 
-#include <cmath>
 #include <pipewire/core.h>
 #include <pipewire/filter.h>
 #include <pipewire/pipewire.h>
 #include <spa/pod/builder.h>
 #include <spa/utils/result.h>
+
+#include <cmath>
 
 #include <cassert>
 #include <cerrno>

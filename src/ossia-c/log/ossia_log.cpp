@@ -6,10 +6,10 @@
 
 #include <ossia/network/common/websocket_log_sink.hpp>
 
+#include <ossia-c/ossia-c.h>
+
 #include <cstdio>
 #include <memory>
-
-#include <ossia-c/ossia-c.h>
 
 extern "C" {
 void basic_log(const char* error)
@@ -32,7 +32,8 @@ void ossia_log_error(const char* error)
 struct ossia_logger
 {
   ossia_logger(std::string host, std::string name)
-      : connection{std::make_shared<ossia::websocket_threaded_connection>(std::move(host))}
+      : connection{std::make_shared<ossia::websocket_threaded_connection>(
+          std::move(host))}
       , logger{"", std::make_shared<ossia::websocket_log_sink>(connection, name)}
       , heartbeat{connection, "name", std::chrono::seconds(5)}
   {

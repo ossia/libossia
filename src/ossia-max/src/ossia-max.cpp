@@ -7,15 +7,13 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 
-#include <commonsyms.h>
-
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
-#pragma mark -
-#pragma mark library
 
-#include <git_info.h>
 #include <rapidjson/istreamwrapper.h>
+
+#include <commonsyms.h>
+#include <git_info.h>
 
 #include <codecvt>
 #include <fstream>

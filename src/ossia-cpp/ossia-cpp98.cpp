@@ -14,10 +14,10 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/preset/preset.hpp>
 
+#include <ossia-cpp/ossia-cpp98.hpp>
+
 #include <array>
 #include <iostream>
-
-#include <ossia-cpp/ossia-cpp98.hpp>
 
 namespace opp
 {

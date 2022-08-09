@@ -2,6 +2,8 @@
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/name_validation.hpp>
 
+#include <ossia-qt/qt_logger.hpp>
+
 #include <QString>
 #include <QStringBuilder>
 #include <qobjectdefs.h>
@@ -11,8 +13,6 @@
 #include <algorithm>
 #include <string>
 #include <vector>
-
-#include <ossia-qt/qt_logger.hpp>
 // MOVEME
 //  Taken from https://stackoverflow.com/a/18230916/1495627
 OSSIA_EXPORT bool latin_compare(const QString& qstr, const std::string& str)

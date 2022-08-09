@@ -5,14 +5,14 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 
+#include <ossia-max/src/parameter_base.hpp>
+#include <ossia-max/src/utils.hpp>
+
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <algorithm>
 #include <sstream>
-
-#include <ossia-max/src/parameter_base.hpp>
-#include <ossia-max/src/utils.hpp>
 
 namespace ossia
 {

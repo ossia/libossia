@@ -3,10 +3,10 @@
 #include <ossia/detail/thread.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
-#include <git_info.h>
-
 #include <ossia-max/src/logger.hpp>
 #include <ossia-max/src/ossia-max.hpp>
+
+#include <git_info.h>
 
 using namespace ossia::max_binding;
 

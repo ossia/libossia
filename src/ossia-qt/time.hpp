@@ -1,9 +1,9 @@
 #pragma once
 #include <ossia/editor/scenario/time_signature.hpp>
 
-#include <verdigris>
-
 #include <ossia-qt/time_value.hpp>
+
+#include <verdigris>
 
 namespace ossia
 {

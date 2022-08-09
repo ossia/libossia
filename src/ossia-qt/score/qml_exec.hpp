@@ -1,15 +1,15 @@
 #pragma once
 #include <ossia/editor/scenario/clock.hpp>
 
+#include <ossia-qt/score/qml_interval.hpp>
+#include <ossia-qt/score/qml_util.hpp>
+
 #include <QPointer>
 #include <QQuickItem>
 
 #include <readerwriterqueue.h>
 
 #include <verdigris>
-
-#include <ossia-qt/score/qml_interval.hpp>
-#include <ossia-qt/score/qml_util.hpp>
 namespace ossia
 {
 namespace qt

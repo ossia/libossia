@@ -8,8 +8,9 @@
 #include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
-#include <nano_signal_slot.hpp>
 #include <tsl/hopscotch_map.h>
+
+#include <nano_signal_slot.hpp>
 
 #include <atomic>
 namespace osc

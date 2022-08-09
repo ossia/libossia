@@ -2,15 +2,15 @@
 #pragma once
 #include <ossia/network/base/parameter.hpp>
 
+#include <ossia-qt/device/qml_node_base.hpp>
+#include <ossia-qt/value_metatypes.hpp>
+
 #include <QAbstractItemModel>
 #include <QObject>
 #include <QQmlProperty>
 #include <QQmlPropertyValueSource>
 
 #include <verdigris>
-
-#include <ossia-qt/device/qml_node_base.hpp>
-#include <ossia-qt/value_metatypes.hpp>
 namespace ossia
 {
 namespace qt

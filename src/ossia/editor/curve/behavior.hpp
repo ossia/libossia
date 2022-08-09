@@ -34,7 +34,9 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl() { }
+    ~Impl()
+    {
+    }
   };
 
   enum Type : int8_t

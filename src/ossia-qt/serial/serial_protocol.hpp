@@ -10,6 +10,8 @@
 #include <ossia/network/sockets/size_prefix_framing.hpp>
 #include <ossia/network/sockets/slip_framing.hpp>
 
+#include <ossia-qt/js_utilities.hpp>
+
 #include <boost/asio/error.hpp>
 #include <boost/asio/streambuf.hpp>
 
@@ -17,8 +19,6 @@
 #include <QSerialPort>
 
 #include <verdigris>
-
-#include <ossia-qt/js_utilities.hpp>
 
 class QQmlEngine;
 class QQmlComponent;

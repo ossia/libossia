@@ -1,11 +1,11 @@
 #pragma once
 #include <ossia/dataflow/token_request.hpp>
 
+#include <ossia-qt/time.hpp>
+
 #include <QDataStream>
 
 #include <verdigris>
-
-#include <ossia-qt/time.hpp>
 
 inline QDataStream& operator<<(QDataStream& i, const ossia::token_request& sel)
 {

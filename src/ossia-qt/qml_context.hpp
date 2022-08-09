@@ -3,6 +3,8 @@
 
 #include <ossia/preset/preset.hpp>
 
+#include <ossia-qt/score/qml_util.hpp>
+
 #include <QDebug>
 #include <QFile>
 #include <QObject>
@@ -10,8 +12,6 @@
 #include <QUrl>
 
 #include <verdigris>
-
-#include <ossia-qt/score/qml_util.hpp>
 namespace spdlog
 {
 class logger;

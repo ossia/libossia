@@ -26,7 +26,6 @@ namespace py = pybind11;
 #include <ossia/preset/preset.hpp>
 #include <ossia/protocols/midi/midi.hpp>
 
-#include <Python.h>
 #include <pybind11/functional.h>
 #include <pybind11/operators.h>
 #include <pybind11/pybind11.h>
@@ -34,6 +33,8 @@ namespace py = pybind11;
 #include <pybind11/stl_bind.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
+
+#include <Python.h>
 
 #include <string_view>
 

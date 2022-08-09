@@ -2,11 +2,11 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/common/path.hpp>
 
-#include <boost/algorithm/string/predicate.hpp>
-
 #include <ossia-max/src/explorer.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
+
+#include <boost/algorithm/string/predicate.hpp>
 
 using namespace ossia::max_binding;
 

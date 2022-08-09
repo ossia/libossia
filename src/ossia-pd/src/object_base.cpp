@@ -5,10 +5,10 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 
-#include <regex>
-
 #include <ossia-pd/src/object_base.hpp>
 #include <ossia-pd/src/utils.hpp>
+
+#include <regex>
 
 extern void glist_noselect(t_glist* x);
 extern void canvas_vis(t_canvas* x, t_floatarg f);

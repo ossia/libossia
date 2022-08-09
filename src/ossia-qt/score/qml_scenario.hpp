@@ -1,12 +1,12 @@
 #pragma once
 #include <ossia/editor/scenario/scenario.hpp>
 
+#include <ossia-qt/score/qml_autom.hpp>
+#include <ossia-qt/score/qml_sync.hpp>
+
 #include <tsl/hopscotch_set.h>
 
 #include <verdigris>
-
-#include <ossia-qt/score/qml_autom.hpp>
-#include <ossia-qt/score/qml_sync.hpp>
 
 namespace ossia
 {

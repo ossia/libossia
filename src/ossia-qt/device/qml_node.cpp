@@ -7,11 +7,11 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 
+#include <ossia-qt/device/qml_device.hpp>
+
 #include <QDebug>
 
 #include <wobjectimpl.h>
-
-#include <ossia-qt/device/qml_device.hpp>
 W_OBJECT_IMPL(ossia::qt::qml_node)
 namespace ossia
 {

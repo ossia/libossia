@@ -6,16 +6,16 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
+#include <ossia-pd/src/client.hpp>
+#include <ossia-pd/src/ossia-pd.hpp>
+#include <ossia-pd/src/utils.hpp>
+
 #include <boost/algorithm/string.hpp>
 
 #include <functional>
 #include <iostream>
 #include <memory>
 #include <sstream>
-
-#include <ossia-pd/src/client.hpp>
-#include <ossia-pd/src/ossia-pd.hpp>
-#include <ossia-pd/src/utils.hpp>
 
 namespace ossia::pd
 {
