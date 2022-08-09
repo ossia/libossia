@@ -14,6 +14,7 @@ jobs:
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja \
           -DOSSIA_PYTHON_ONLY=1 \
+          -DOSSIA_CI=1 \
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
     - name: Code Signing
@@ -63,7 +64,7 @@ jobs:
         sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
     - name: Build ossia-python
       run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1
+        cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1 -DOSSIA_CI=1
         cmake --build build
         cmake --build build --target install
 #    - name: Build Wheel

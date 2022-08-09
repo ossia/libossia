@@ -19,6 +19,7 @@ jobs:
           -DOSSIA_CPP_ONLY=1 \
           -DCMAKE_INSTALL_PREFIX=install \
           -DCMAKE_BUILD_TYPE=Release \
+          -DOSSIA_CI=1 \
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
         cmake --build build --target install 
@@ -38,7 +39,7 @@ jobs:
         brew install ninja
     - name: Build
       run: |
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CPP_ONLY=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CPP_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install 
     - name: Code Signing
@@ -74,7 +75,7 @@ jobs:
         popd
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_CPP_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_CI=1 -DOSSIA_CPP_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install
     - name: Archive Package

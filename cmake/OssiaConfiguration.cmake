@@ -125,11 +125,6 @@ endif()
 # So that make install after make all_unity does not rebuild everything :
 set(CMAKE_SKIP_INSTALL_ALL_DEPENDENCY True)
 
-# We disable debug infos on OS X on travis because it takes up too much space
-if(OSSIA_CI AND APPLE)
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -g0")
-endif()
-
 if(OSSIA_STATIC)
   set(BUILD_SHARED_LIBS OFF)
   set(OSSIA_FRAMEWORK OFF)
@@ -180,10 +175,6 @@ else()
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
       -Wl,-Bsymbolic-functions
     )
-  endif()
-
-  if(OSSIA_CI AND NOT OSSIA_STATIC_EXPORT)
-    set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -s)
   endif()
 
   if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang")
@@ -244,12 +235,6 @@ else()
         -Wno-variadic-macros
         -Wno-zero-length-array
     )
-  endif()
-
-  if(OSSIA_CI)
-    if ("${CMAKE_CXX_COMPILER_ID}" MATCHES "Clang" AND NOT OSSIA_STATIC_EXPORT)
-      set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS} -Wl,-S)
-    endif()
   endif()
 
   if("${SUPPORTS_MISLEADING_INDENT_FLAG}")

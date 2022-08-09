@@ -28,7 +28,7 @@ jobs:
           cd benchmark/
           mkdir build
           cd build/
-          cmake -GNinja .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=inst -DBUILD_SHARED_LIBS=OFF
+          cmake -GNinja .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=inst -DBUILD_SHARED_LIBS=OFF -DOSSIA_CI=1
           ninja
           ninja install
         )
