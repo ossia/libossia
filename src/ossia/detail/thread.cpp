@@ -59,8 +59,8 @@ std::string get_module_path()
 }
 }
 #elif __has_include(<ossia/../../3rdparty/whereami/src/whereami.c>)
-#include <ossia/../../3rdparty/whereami/src/whereami.c>
 #include <ossia/../../3rdparty/whereami/src/whereami.h>
+#include <ossia/../../3rdparty/whereami/src/whereami.c>
 namespace ossia
 {
 std::string get_exe_path()
