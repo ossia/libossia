@@ -12,6 +12,7 @@
 
 #include <rapidfuzz/fuzz.hpp>
 #include <re2/re2.h>
+
 #include <ctre.hpp>
 
 #include <bitset>
@@ -391,95 +392,52 @@ List expand(const Range& range)
 
 void expand_ranges(std::string& str)
 {
-  using namespace ctre::literals;
   if(str.find('{') != std::string::npos)
   {
-  {
-    struct rx_triple
     {
-      std::size_t start{}, length{};
-      int64_t first{}, last{}, increment{};
-    };
-    ossia::small_vector<rx_triple, 4> positions;
+      struct rx_triple
+      {
+        std::size_t start{}, length{};
+        int64_t first{}, last{}, increment{};
+      };
+      ossia::small_vector<rx_triple, 4> positions;
 
-    {
-      constexpr auto rex = R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"_ctre;
-      const auto s = rex.range(str);
-      for(auto& it : s)
       {
-        int fst = it.get<1>().to_number();
-        int lst = it.get<2>().to_number();
-        int inc = it.get<3>().to_number();
-        if(inc != 0)
+        constexpr auto rex
+            = ctre::range<R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_">;
+        for(auto& it : rex(str))
         {
-          positions.push_back(rx_triple{(std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst), inc});
-        }
-      }
-    }
-
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
-    {
-      std::string rep{"{"};
-      rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
-      if(it->increment > 0)
-      {
-        for(int64_t v = it->first; v <= it->last; v += it->increment)
-        {
-          rep += std::to_string(v);
-          rep += ',';
-        }
-      }
-      else
-      {
-        for(int64_t v = it->last; v <= it->first; v += it->increment)
-        {
-          rep += std::to_string(v);
-          rep += ',';
+          int fst = it.get<1>().to_number();
+          int lst = it.get<2>().to_number();
+          int inc = it.get<3>().to_number();
+          if(inc != 0)
+          {
+            positions.push_back(rx_triple{
+                (std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(),
+                std::min(fst, lst), std::max(fst, lst), inc});
+          }
         }
       }
 
-      if(rep.back() == ',')
+      for(auto it = positions.rbegin(); it != positions.rend(); ++it)
       {
-        rep.back() = '}';
-        str.replace(it->start, it->length, rep);
-      }
-    }
-  }
-
-  {
-    struct rx_double
-    {
-      std::size_t start{}, length{};
-      int64_t first{}, last{};
-    };
-    ossia::small_vector<rx_double, 4> positions;
-
-    {
-      constexpr auto rex = R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"_ctre;
-      const auto s = rex.range(str);
-      for(auto& it : s)
-      {
-        int fst = it.get<1>().to_number();
-        int lst = it.get<2>().to_number();
-        positions.push_back(rx_double{(std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst)});
-      }
-    }
-
-    for(auto it = positions.rbegin(); it != positions.rend(); ++it)
-    {
-      if(it->last == it->first)
-      {
-        str.replace(it->start, it->length, std::to_string(it->first));
-      }
-      else
-      {
-        std::string rep;
-        rep.reserve(3 * std::abs((it->last - it->first)) + 2);
-        rep.push_back('{');
-        for(int64_t v = it->first; v <= it->last; v++)
+        std::string rep{"{"};
+        rep.reserve(3 * std::abs((it->last - it->first) / it->increment));
+        if(it->increment > 0)
         {
-          rep += std::to_string(v);
-          rep += ',';
+          for(int64_t v = it->first; v <= it->last; v += it->increment)
+          {
+            rep += std::to_string(v);
+            rep += ',';
+          }
+        }
+        else
+        {
+          for(int64_t v = it->last; v <= it->first; v += it->increment)
+          {
+            rep += std::to_string(v);
+            rep += ',';
+          }
         }
 
         if(rep.back() == ',')
@@ -489,26 +447,25 @@ void expand_ranges(std::string& str)
         }
       }
     }
-  }
 
-  {
-    constexpr auto reg_alpha_low = R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"_ctre;
-    constexpr auto reg_alpha_up = R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"_ctre;
-
-    struct rx_char
     {
-      std::size_t start{}, length{};
-      char first{}, last{};
-    };
-    auto apply = [&] (auto& reg) {
-      ossia::small_vector<rx_char, 4> positions;
-
-      const auto s = reg.range(str);
-      for(auto& it : s)
+      struct rx_double
       {
-        char fst = it.template get<1>().data()[0];
-        char lst = it.template get<2>().data()[0];
-        positions.push_back(rx_char{(std::size_t)(it.template get<0>().data() - str.data()), (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst)});
+        std::size_t start{}, length{};
+        int64_t first{}, last{};
+      };
+      ossia::small_vector<rx_double, 4> positions;
+
+      {
+        constexpr auto rex = ctre::range<R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_">;
+        for(auto& it : rex.range(str))
+        {
+          int fst = it.get<1>().to_number();
+          int lst = it.get<2>().to_number();
+          positions.push_back(rx_double{
+              (std::size_t)(it.get<0>().data() - str.data()), (std::size_t)it.size(),
+              std::min(fst, lst), std::max(fst, lst)});
+        }
       }
 
       for(auto it = positions.rbegin(); it != positions.rend(); ++it)
@@ -522,9 +479,9 @@ void expand_ranges(std::string& str)
           std::string rep;
           rep.reserve(3 * std::abs((it->last - it->first)) + 2);
           rep.push_back('{');
-          for(char v = it->first; v <= it->last; v++)
+          for(int64_t v = it->first; v <= it->last; v++)
           {
-            rep += v;
+            rep += std::to_string(v);
             rep += ',';
           }
 
@@ -535,10 +492,57 @@ void expand_ranges(std::string& str)
           }
         }
       }
-    };
-    apply(reg_alpha_low);
-    apply(reg_alpha_up);
-  }
+    }
+
+    {
+      constexpr auto reg_alpha_low = ctre::range<R"_(\{(-?[a-z])\.\.(-?[a-z])\})_">;
+      constexpr auto reg_alpha_up = ctre::range<R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_">;
+
+      struct rx_char
+      {
+        std::size_t start{}, length{};
+        char first{}, last{};
+      };
+      auto apply = [&](auto& reg) {
+        ossia::small_vector<rx_char, 4> positions;
+
+        for(auto& it : reg(str))
+        {
+          char fst = it.template get<1>().data()[0];
+          char lst = it.template get<2>().data()[0];
+          positions.push_back(rx_char{
+              (std::size_t)(it.template get<0>().data() - str.data()),
+              (std::size_t)it.size(), std::min(fst, lst), std::max(fst, lst)});
+        }
+
+        for(auto it = positions.rbegin(); it != positions.rend(); ++it)
+        {
+          if(it->last == it->first)
+          {
+            str.replace(it->start, it->length, std::to_string(it->first));
+          }
+          else
+          {
+            std::string rep;
+            rep.reserve(3 * std::abs((it->last - it->first)) + 2);
+            rep.push_back('{');
+            for(char v = it->first; v <= it->last; v++)
+            {
+              rep += v;
+              rep += ',';
+            }
+
+            if(rep.back() == ',')
+            {
+              rep.back() = '}';
+              str.replace(it->start, it->length, rep);
+            }
+          }
+        }
+      };
+      apply(reg_alpha_low);
+      apply(reg_alpha_up);
+    }
   }
 }
 
@@ -546,7 +550,6 @@ std::string canonicalize_str(std::string str)
 {
   {
     // 1. find all [a-z0-9XYZ]
-    using namespace ctre::literals;
     std::replace(str.begin(), str.end(), '|', ',');
 
     struct rx_pos
@@ -556,8 +559,8 @@ std::string canonicalize_str(std::string str)
     };
     ossia::small_vector<rx_pos, 4> positions;
 
-    constexpr auto rx_class  = R"(\[[a-zA-Z0-9\-]+\])"_ctre;
-    for(auto& it : rx_class.range(str))
+    constexpr auto rx_class = ctre::range<R"(\[[a-zA-Z0-9\-]+\])">;
+    for(auto& it : rx_class(str))
     {
       const auto theStr = it.view().substr(1, it.size() - 2);
       std::bitset<128> bits;
@@ -666,14 +669,13 @@ list_all_children(ossia::net::node_base* node, unsigned int depth)
   std::vector<ossia::net::node_base*> children = node->children_copy();
   std::vector<ossia::net::node_base*> list;
 
-  using namespace ctre::literals;
-  constexpr auto pattern = "\\.([0-9]+)"_ctre;
+  constexpr auto pattern = ctre::search<"\\.([0-9]+)">;
   ossia::sort(children, [&](auto n1, auto n2) {
     const auto& s1 = n1->get_name();
     const auto& s2 = n2->get_name();
 
-    auto r1 = pattern.search(s1);
-    auto r2 = pattern.search(s2);
+    auto r1 = pattern(s1);
+    auto r2 = pattern(s2);
     if(r1.matched() && r2.matched())
     {
       auto p1 = std::string_view(s1.data(), r1.data() - s1.data());
