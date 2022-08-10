@@ -399,7 +399,6 @@ void expand_ranges(std::string& str)
     {
       std::size_t start{}, length{};
       int64_t first{}, last{}, increment{};
-      bool operator==(const rx_triple&) const noexcept = default;
     };
     ossia::small_vector<rx_triple, 4> positions;
 
