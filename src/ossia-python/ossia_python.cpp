@@ -51,10 +51,7 @@ namespace python
  */
 struct to_python_value
 {
-  py::object operator()(const ossia::impulse& i) const
-  {
-    return py::none{};
-  }
+  py::object operator()(const ossia::impulse& i) const { return py::none{}; }
 
   template <typename T>
   py::object operator()(const T& t) const
@@ -73,10 +70,7 @@ struct to_python_value
     return py::cast(vec);
   }
 
-  py::object operator()()
-  {
-    return py::none{};
-  }
+  py::object operator()() { return py::none{}; }
 };
 
 ossia::value from_python_value(PyObject* source)
@@ -152,16 +146,10 @@ public:
   {
   }
 
-  operator ossia::net::generic_device&()
-  {
-    return m_device;
-  }
+  operator ossia::net::generic_device&() { return m_device; }
   /** get local device name
   \return std::string */
-  std::string get_name()
-  {
-    return m_device.get_name();
-  }
+  std::string get_name() { return m_device.get_name(); }
 
   /** Make the local device able to handle oscquery request
   \param int port where OSC requests have to be sent by any remote client to
@@ -331,10 +319,7 @@ public:
     return ossia::net::find_node(m_device.get_root_node(), address);
   }
 
-  ossia::net::node_base* get_root_node()
-  {
-    return &m_device.get_root_node();
-  }
+  ossia::net::node_base* get_root_node() { return &m_device.get_root_node(); }
 };
 
 /**
@@ -356,25 +341,16 @@ public:
   {
   }
 
-  operator ossia::net::generic_device&()
-  {
-    return m_device;
-  }
+  operator ossia::net::generic_device&() { return m_device; }
 
-  bool update()
-  {
-    return m_oscquery_protocol.update(m_device.get_root_node());
-  }
+  bool update() { return m_oscquery_protocol.update(m_device.get_root_node()); }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
     return ossia::net::find_node(m_device.get_root_node(), address);
   }
 
-  ossia::net::node_base* get_root_node()
-  {
-    return &m_device.get_root_node();
-  }
+  ossia::net::node_base* get_root_node() { return &m_device.get_root_node(); }
 };
 
 /**
@@ -396,25 +372,16 @@ public:
   {
   }
 
-  operator ossia::net::generic_device&()
-  {
-    return m_device;
-  }
+  operator ossia::net::generic_device&() { return m_device; }
 
-  bool update()
-  {
-    return m_protocol.update(m_device.get_root_node());
-  }
+  bool update() { return m_protocol.update(m_device.get_root_node()); }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
     return ossia::net::find_node(m_device.get_root_node(), address);
   }
 
-  ossia::net::node_base* get_root_node()
-  {
-    return &m_device.get_root_node();
-  }
+  ossia::net::node_base* get_root_node() { return &m_device.get_root_node(); }
 };
 
 /**
@@ -436,20 +403,11 @@ public:
   {
   }
 
-  operator ossia::net::generic_device&()
-  {
-    return m_device;
-  }
+  operator ossia::net::generic_device&() { return m_device; }
 
-  bool get_learning()
-  {
-    return m_osc_protocol.learning();
-  }
+  bool get_learning() { return m_osc_protocol.learning(); }
 
-  void set_learning(bool l)
-  {
-    m_osc_protocol.set_learning(l);
-  }
+  void set_learning(bool l) { m_osc_protocol.set_learning(l); }
 
   ossia::net::node_base* add_node(const std::string& address)
   {
@@ -461,10 +419,7 @@ public:
     return ossia::net::find_node(m_device.get_root_node(), address);
   }
 
-  ossia::net::node_base* get_root_node()
-  {
-    return &m_device.get_root_node();
-  }
+  ossia::net::node_base* get_root_node() { return &m_device.get_root_node(); }
 };
 
 /**
@@ -484,10 +439,7 @@ struct ossia_network_context
       : context{ossia::net::create_network_context()}
   {
   }
-  void poll()
-  {
-    ossia::net::poll_network_context(*context);
-  }
+  void poll() { ossia::net::poll_network_context(*context); }
   ossia::net::network_context_ptr context;
 };
 
@@ -507,20 +459,14 @@ public:
     m_device.create_full_tree();
   }
 
-  operator ossia::net::midi::midi_device&()
-  {
-    return m_device;
-  }
+  operator ossia::net::midi::midi_device&() { return m_device; }
 
   ossia::net::node_base* find_node(const std::string& address)
   {
     return ossia::net::find_node(m_device.get_root_node(), address);
   }
 
-  ossia::net::node_base* get_root_node()
-  {
-    return &m_device.get_root_node();
-  }
+  ossia::net::node_base* get_root_node() { return &m_device.get_root_node(); }
 };
 
 class ossia_device_callback : public Nano::Observer

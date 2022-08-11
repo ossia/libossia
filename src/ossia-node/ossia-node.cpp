@@ -58,9 +58,7 @@ public:
   {
   }
 
-  ~OscQueryServer()
-  {
-  }
+  ~OscQueryServer() { }
 
   static NAN_METHOD(New)
   {
@@ -114,10 +112,7 @@ public:
   {
   }
 
-  ~Node()
-  {
-    std::cerr << "Node destoryed\n";
-  }
+  ~Node() { std::cerr << "Node destoryed\n"; }
 
   static NAN_METHOD(New)
   {
@@ -174,10 +169,7 @@ public:
   {
   }
 
-  ~Device()
-  {
-    std::cerr << "Device destoryed\n";
-  }
+  ~Device() { std::cerr << "Device destoryed\n"; }
 
   static NAN_METHOD(New)
   {

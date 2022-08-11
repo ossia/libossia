@@ -6,9 +6,8 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
-#include <utility>
-
 #include <type_traits>
+#include <utility>
 
 /**
  * \file algorithms.hpp

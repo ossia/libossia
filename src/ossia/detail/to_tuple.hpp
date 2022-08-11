@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <tuple>
-
 #include <type_traits>
 // Taken from
 // https://www.reddit.com/r/cpp/comments/4yp7fv/c17_structured_bindings_convert_struct_to_a_tuple/

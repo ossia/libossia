@@ -109,10 +109,7 @@ public:
   struct vec2f
   {
     float data[2];
-    float& operator[](int i)
-    {
-      return data[i];
-    }
+    float& operator[](int i) { return data[i]; }
   };
   /**
    * A container for a vector of 3 floats, supports sub-scripting
@@ -121,10 +118,7 @@ public:
   struct vec3f
   {
     float data[3];
-    float& operator[](int i)
-    {
-      return data[i];
-    }
+    float& operator[](int i) { return data[i]; }
   };
   /** A container for a vector of 4 floats, supports sub-scripting
    * @brief container for a vector of 4 floats
@@ -132,10 +126,7 @@ public:
   struct vec4f
   {
     float data[4];
-    float& operator[](int i)
-    {
-      return data[i];
-    }
+    float& operator[](int i) { return data[i]; }
   };
 
   /**
@@ -1873,10 +1864,7 @@ public:
    * in opp:: namespace (but requires some more computer skill)
    * @return ossia::net::device_base*
    */
-  ossia::net::device_base* get_raw_device_pointer()
-  {
-    return m_dev;
-  }
+  ossia::net::device_base* get_raw_device_pointer() { return m_dev; }
 
 private:
   void on_connection(const std::string&);
@@ -1966,10 +1954,7 @@ public:
    * @brief is_connected
    * @return true if mirror is already connected
    */
-  bool is_connected() const
-  {
-    return m_dev != nullptr;
-  }
+  bool is_connected() const { return m_dev != nullptr; }
 
   /**
    * @brief set a callback to be called when a parameter is created
@@ -2099,10 +2084,7 @@ public:
    * in opp:: namespace (but requires some more computer skill)
    * @return
    */
-  ossia::net::device_base* get_raw_device_pointer()
-  {
-    return m_dev;
-  }
+  ossia::net::device_base* get_raw_device_pointer() { return m_dev; }
 
 private:
   void on_parameter_created(const ossia::net::parameter_base&);

@@ -10,10 +10,9 @@
 #include <alsa/asoundlib.h>
 
 #include <atomic>
+#include <string_view>
 #include <thread>
 #include <vector>
-
-#include <string_view>
 
 #define OSSIA_AUDIO_ALSA 1
 

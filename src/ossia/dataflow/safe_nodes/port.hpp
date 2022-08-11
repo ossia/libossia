@@ -2,7 +2,6 @@
 
 #include <array>
 #include <cstdint>
-
 #include <string_view>
 
 namespace ossia::safe_nodes

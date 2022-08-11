@@ -4,9 +4,8 @@
 #include <cinttypes>
 #include <cstddef>
 #include <cstdlib>
-#include <vector>
-
 #include <type_traits>
+#include <vector>
 
 namespace ossia
 {

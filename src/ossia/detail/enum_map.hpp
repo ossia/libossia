@@ -1,9 +1,8 @@
 #pragma once
 #include <cassert>
 #include <cinttypes>
-#include <utility>
-
 #include <type_traits>
+#include <utility>
 
 namespace ossia
 {

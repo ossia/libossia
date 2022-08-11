@@ -5,7 +5,6 @@
 #include <ossia/network/value/vec.hpp>
 
 #include <bitset>
-
 #include <type_traits>
 
 /**

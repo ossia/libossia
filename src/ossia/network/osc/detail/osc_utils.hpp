@@ -6,7 +6,6 @@
 #include <oscpack/osc/OscTypes.h>
 
 #include <any>
-
 #include <string_view>
 
 namespace ossia::net

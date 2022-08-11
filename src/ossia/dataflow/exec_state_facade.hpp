@@ -2,7 +2,6 @@
 #include <ossia/detail/config.hpp>
 
 #include <cinttypes>
-
 #include <string_view>
 
 namespace ossia

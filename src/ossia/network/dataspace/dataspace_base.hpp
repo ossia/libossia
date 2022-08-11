@@ -4,7 +4,6 @@
 #include <ossia/network/value/vec.hpp>
 
 #include <ratio>
-
 #include <type_traits>
 namespace ossia
 {

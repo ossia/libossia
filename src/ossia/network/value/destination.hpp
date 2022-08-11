@@ -7,11 +7,10 @@
 #include <ossia/network/value/value.hpp>
 
 #include <functional>
+#include <initializer_list>
 #include <memory>
 #include <utility>
 #include <vector>
-
-#include <initializer_list>
 /**
  * \file destination.hpp
  */
