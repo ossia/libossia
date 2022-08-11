@@ -3,6 +3,7 @@
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/ssize.hpp>
 #include <ossia/network/base/node.hpp>
 
 #include <boost/algorithm/string/classification.hpp>
