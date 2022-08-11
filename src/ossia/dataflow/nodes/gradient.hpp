@@ -31,10 +31,7 @@ public:
     m_outlets.push_back(std::move(vp));
   }
 
-  void set_gradient(grad_type t)
-  {
-    m_data = std::move(t);
-  }
+  void set_gradient(grad_type t) { m_data = std::move(t); }
 
   void handle_before_first(const ossia::token_request& tk, int64_t tick_start)
   {
@@ -147,9 +144,6 @@ class gradient_process final : public ossia::node_process
 {
 public:
   using ossia::node_process::node_process;
-  void start() override
-  {
-    static_cast<gradient*>(node.get())->tween = std::nullopt;
-  }
+  void start() override { static_cast<gradient*>(node.get())->tween = std::nullopt; }
 };
 }

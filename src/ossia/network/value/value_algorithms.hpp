@@ -387,10 +387,7 @@ struct destination_index_retriever
     return {};
   }
 
-  ossia::value operator()()
-  {
-    return {};
-  }
+  ossia::value operator()() { return {}; }
 };
 }
 }

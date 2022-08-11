@@ -29,9 +29,7 @@ void behavior::reset()
         ossia::apply_nonnull(*this, b);
     }
 
-    void operator()()
-    {
-    }
+    void operator()() { }
   };
 
   ossia::apply(behavior_reset{}, *this);

@@ -33,15 +33,9 @@ inline void write_json(ossia::json_writer& writer, const ossia::value& v)
 struct domain_to_json
 {
   ossia::json_writer& writer;
-  void operator()()
-  {
-    writer.Null();
-  }
+  void operator()() { writer.Null(); }
 
-  void operator()(const ossia::domain_base<impulse>& dom)
-  {
-    writer.Null();
-  }
+  void operator()(const ossia::domain_base<impulse>& dom) { writer.Null(); }
 
   void operator()(const ossia::domain_base<bool>& dom)
   {

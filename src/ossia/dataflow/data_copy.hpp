@@ -13,61 +13,32 @@ namespace ossia
 
 struct clear_data
 {
-  void operator()(value_port& p) const
-  {
-    p.clear();
-  }
+  void operator()(value_port& p) const { p.clear(); }
 
-  void operator()(midi_port& p) const
-  {
-    p.messages.clear();
-  }
+  void operator()(midi_port& p) const { p.messages.clear(); }
 
-  void operator()(audio_port& p) const
-  {
-    p.set_channels(0);
-  }
+  void operator()(audio_port& p) const { p.set_channels(0); }
 
-  void operator()(geometry_port& p) const
-  {
-    p.clear();
-  }
+  void operator()(geometry_port& p) const { p.clear(); }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 struct data_size
 {
-  std::size_t operator()(const value_delay_line& p) const
-  {
-    return p.data.size();
-  }
+  std::size_t operator()(const value_delay_line& p) const { return p.data.size(); }
 
-  std::size_t operator()(const midi_delay_line& p) const
-  {
-    return p.messages.size();
-  }
+  std::size_t operator()(const midi_delay_line& p) const { return p.messages.size(); }
 
-  std::size_t operator()(const audio_delay_line& p) const
-  {
-    return p.samples.size();
-  }
+  std::size_t operator()(const audio_delay_line& p) const { return p.samples.size(); }
 
   std::size_t operator()(const geometry_delay_line& p) const
   {
     return p.geometries.size();
   }
 
-  std::size_t operator()(const ossia::monostate&) const
-  {
-    return 0;
-  }
-  std::size_t operator()() const
-  {
-    return 0;
-  }
+  std::size_t operator()(const ossia::monostate&) const { return 0; }
+  std::size_t operator()() const { return 0; }
 };
 
 struct move_data

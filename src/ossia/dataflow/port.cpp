@@ -40,13 +40,8 @@ struct push_data
     }
   }
 
-  [[noreturn]] void operator()(const geometry_port& p) const
-  {
-    assert(false);
-  }
-  void operator()() const noexcept
-  {
-  }
+  [[noreturn]] void operator()(const geometry_port& p) const { assert(false); }
+  void operator()() const noexcept { }
 };
 /*
 void process_port_values(
@@ -71,21 +66,13 @@ inlet::~inlet() = default;
 
 outlet::~outlet() = default;
 
-void inlet::pre_process()
-{
-}
+void inlet::pre_process() { }
 
-void inlet::post_process()
-{
-}
+void inlet::post_process() { }
 
-void outlet::pre_process()
-{
-}
+void outlet::pre_process() { }
 
-void outlet::post_process()
-{
-}
+void outlet::post_process() { }
 
 struct outlet_inserter
 {

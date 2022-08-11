@@ -141,10 +141,7 @@ public:
     {
     }
 
-    ~disabled_callback()
-    {
-      self.replace_callbacks(std::move(old_callbacks));
-    }
+    ~disabled_callback() { self.replace_callbacks(std::move(old_callbacks)); }
 
   private:
     callback_container& self;
@@ -219,18 +216,14 @@ protected:
    *
    * \see \ref on_removing_last_callback
    */
-  virtual void on_first_callback_added()
-  {
-  }
+  virtual void on_first_callback_added() { }
 
   /**
    * @brief on_removing_last_callback
    *
    * \see \ref on_first_callback_added
    */
-  virtual void on_removing_last_callback()
-  {
-  }
+  virtual void on_removing_last_callback() { }
 
 private:
   impl m_callbacks TS_GUARDED_BY(m_mutx);

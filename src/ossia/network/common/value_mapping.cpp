@@ -9,9 +9,7 @@ struct scale_visitor
   U dst_min{};
   V ratio{};
 
-  void operator()(ossia::impulse) const noexcept
-  {
-  }
+  void operator()(ossia::impulse) const noexcept { }
 
   template <typename Val>
   void operator()(Val& v) const noexcept
@@ -40,9 +38,7 @@ struct scale_visitor
       value.apply(*this);
   }
 
-  void operator()() const noexcept
-  {
-  }
+  void operator()() const noexcept { }
 };
 
 template <typename T>

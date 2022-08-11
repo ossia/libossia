@@ -50,9 +50,6 @@ struct state_print_visitor
         << ossia::value_to_pretty_string(m.message_value) << "\n";
   }
 
-  void operator()(const ossia::monostate&)
-  {
-    out << "no state\n";
-  }
+  void operator()(const ossia::monostate&) { out << "no state\n"; }
 };
 }

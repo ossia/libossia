@@ -309,20 +309,14 @@ public:
     }
   }
 
-  [[nodiscard]] const graph_t& impl() const
-  {
-    return m_graph;
-  }
+  [[nodiscard]] const graph_t& impl() const { return m_graph; }
   std::function<void(const graph_t& gr, std::vector<graph_node*>& nodes)> sort_fun{
       simple_topo_sort{m_graph}};
 
   std::shared_ptr<ossia::logger_type> logger;
 
 private:
-  void print(std::ostream& stream) override
-  {
-    print_graph(m_graph, stream);
-  }
+  void print(std::ostream& stream) override { print_graph(m_graph, stream); }
 
   node_flat_set m_enabled_cache;
   node_flat_set m_disabled_cache;

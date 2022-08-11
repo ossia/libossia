@@ -19,44 +19,21 @@ struct osc_common_outbound_dynamic_policy
   oscpack::OutboundPacketStream& p;
   const ossia::unit_t& unit;
 
-  void operator()(int32_t i) const
-  {
-    p << i;
-  }
+  void operator()(int32_t i) const { p << i; }
 
-  void operator()(float f) const
-  {
-    p << f;
-  }
+  void operator()(float f) const { p << f; }
 
-  void operator()(const std::string& str) const
-  {
-    p << (ossia::string_view)str;
-  }
+  void operator()(const std::string& str) const { p << (ossia::string_view)str; }
 
-  void operator()(oscpack::Blob str) const
-  {
-    p << str;
-  }
+  void operator()(oscpack::Blob str) const { p << str; }
 
-  void operator()(vec2f vec) const
-  {
-    p << vec[0] << vec[1];
-  }
+  void operator()(vec2f vec) const { p << vec[0] << vec[1]; }
 
-  void operator()(vec3f vec) const
-  {
-    p << vec[0] << vec[1] << vec[2];
-  }
+  void operator()(vec3f vec) const { p << vec[0] << vec[1] << vec[2]; }
 
-  void operator()(vec4f vec) const
-  {
-    p << vec[0] << vec[1] << vec[2] << vec[3];
-  }
+  void operator()(vec4f vec) const { p << vec[0] << vec[1] << vec[2] << vec[3]; }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 // Since most of the time we have known types, we can optimize a fair bit the

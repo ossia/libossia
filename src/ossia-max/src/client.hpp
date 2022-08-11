@@ -52,14 +52,8 @@ public:
   ossia::oscquery::oscquery_mirror_protocol* m_oscq_protocol{};
 
   bool m_zeroconf{true};
-  bool is_zeroconf() const
-  {
-    return m_zeroconf;
-  }
-  std::string get_name() const
-  {
-    return m_name ? std::string(m_name->s_name) : "";
-  }
+  bool is_zeroconf() const { return m_zeroconf; }
+  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
 
   static void connect(client*);
   static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);

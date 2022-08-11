@@ -35,9 +35,7 @@ struct OSSIA_EXPORT domain_base
   std::optional<value_type> max;
   std::vector<value_type> values;
 
-  domain_base() noexcept
-  {
-  }
+  domain_base() noexcept { }
   domain_base(const domain_base& other) noexcept
       : min{other.min}
       , max{other.max}
@@ -152,9 +150,7 @@ struct OSSIA_EXPORT vector_domain
   value_type max;
   std::vector<ossia::flat_set<ossia::value>> values;
 
-  vector_domain() noexcept
-  {
-  }
+  vector_domain() noexcept { }
   vector_domain(const vector_domain& other) noexcept
       : min(other.min)
       , max(other.max)
@@ -185,9 +181,7 @@ struct OSSIA_EXPORT vector_domain
     return *this;
   }
 
-  vector_domain(std::nullopt_t, std::nullopt_t)
-  {
-  }
+  vector_domain(std::nullopt_t, std::nullopt_t) { }
 
   vector_domain(const value_type& v1, const value_type& v2)
       : min(v1)
@@ -234,9 +228,7 @@ struct OSSIA_EXPORT vecf_domain
   std::array<std::optional<float>, N> max;
   std::array<ossia::flat_set<float>, N> values;
 
-  vecf_domain() noexcept
-  {
-  }
+  vecf_domain() noexcept { }
   vecf_domain(const vecf_domain& other) noexcept
       : min{std::move(other.min)}
       , max{std::move(other.max)}
@@ -320,9 +312,7 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   std::optional<value_type> max;
   std::vector<value_type> values;
 
-  domain_base() noexcept
-  {
-  }
+  domain_base() noexcept { }
   domain_base(const domain_base<value_type>& other) noexcept
       : min{std::move(other.min)}
       , max{std::move(other.max)}

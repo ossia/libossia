@@ -72,8 +72,7 @@ ossia::audio_parameter& audio_device::get_main_out()
   auto node = ossia::net::find_node(device.get_root_node(), "/out/main");
   assert(node);
   assert(node->get_parameter());
-  return static_cast<ossia::audio_parameter&>(
-      *node->get_parameter());
+  return static_cast<ossia::audio_parameter&>(*node->get_parameter());
 }
 
 }

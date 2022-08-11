@@ -32,27 +32,13 @@ public:
   ~expression_generic() override;
   std::unique_ptr<expression_generic_base> expr;
 
-  void update() const
-  {
-    expr->update();
-  }
-  bool evaluate() const
-  {
-    return expr->evaluate();
-  }
+  void update() const { expr->update(); }
+  bool evaluate() const { return expr->evaluate(); }
 
-  void reset() const
-  {
-  }
+  void reset() const { }
 
 private:
-  void on_first_callback_added() override
-  {
-    expr->on_first_callback_added(*this);
-  }
-  void on_removing_last_callback() override
-  {
-    expr->on_removing_last_callback(*this);
-  }
+  void on_first_callback_added() override { expr->on_first_callback_added(*this); }
+  void on_removing_last_callback() override { expr->on_removing_last_callback(*this); }
 };
 }

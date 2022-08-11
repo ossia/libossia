@@ -30,10 +30,7 @@ struct OSSIA_EXPORT message
   ossia::destination dest;
   ossia::value message_value;
 
-  const ossia::unit_t& get_unit() const
-  {
-    return dest.unit;
-  }
+  const ossia::unit_t& get_unit() const { return dest.unit; }
   void launch();
 
   friend bool operator==(const message& lhs, const message& rhs)
@@ -80,10 +77,7 @@ struct OSSIA_EXPORT piecewise_message
   std::vector<ossia::value> message_value;
   ossia::unit_t unit;
 
-  const ossia::unit_t& get_unit() const
-  {
-    return unit;
-  }
+  const ossia::unit_t& get_unit() const { return unit; }
   void launch();
 
   friend bool operator==(const piecewise_message& lhs, const piecewise_message& rhs)
@@ -107,10 +101,7 @@ struct piecewise_vec_message
   ossia::unit_t unit;
   std::bitset<N> used_values; // True for each value that has been set.
 
-  const ossia::unit_t& get_unit() const
-  {
-    return unit;
-  }
+  const ossia::unit_t& get_unit() const { return unit; }
   void launch();
 
   friend bool

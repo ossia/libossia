@@ -57,15 +57,9 @@ public:
     return instance;
   }
 
-  joystick_protocol_manager()
-  {
-    sdl_joystick_context::instance();
-  }
+  joystick_protocol_manager() { sdl_joystick_context::instance(); }
 
-  ~joystick_protocol_manager()
-  {
-    SDL_Quit();
-  }
+  ~joystick_protocol_manager() { SDL_Quit(); }
 
   bool joystick_is_registered(const SDL_JoystickID joystick_id)
   {

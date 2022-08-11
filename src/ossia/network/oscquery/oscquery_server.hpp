@@ -61,20 +61,11 @@ public:
   void run_commands();
   void set_device(net::device_base& dev) override;
   void stop() override;
-  ossia::net::device_base& get_device() const
-  {
-    return *m_device;
-  }
+  ossia::net::device_base& get_device() const { return *m_device; }
 
-  int get_osc_port() const
-  {
-    return m_oscPort;
-  }
+  int get_osc_port() const { return m_oscPort; }
 
-  int get_ws_port() const
-  {
-    return m_wsPort;
-  }
+  int get_ws_port() const { return m_wsPort; }
 
   template <typename F>
   void for_each_client(F&& f) const

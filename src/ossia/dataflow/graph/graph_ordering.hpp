@@ -199,15 +199,9 @@ struct init_node_visitor
     return false;
   }
 
-  bool operator()(dependency_connection) const
-  {
-    return true;
-  }
+  bool operator()(dependency_connection) const { return true; }
 
-  bool operator()() const
-  {
-    return true;
-  }
+  bool operator()() const { return true; }
 };
 struct init_must_copy_visitor
 {
@@ -218,30 +212,15 @@ struct init_must_copy_visitor
     return !edge.out_node->enabled();
   }
 
-  bool operator()(const immediate_strict_connection&) const
-  {
-    return false;
-  }
+  bool operator()(const immediate_strict_connection&) const { return false; }
 
-  bool operator()(const delayed_glutton_connection&) const
-  {
-    return false;
-  }
+  bool operator()(const delayed_glutton_connection&) const { return false; }
 
-  bool operator()(const delayed_strict_connection&) const
-  {
-    return false;
-  }
+  bool operator()(const delayed_strict_connection&) const { return false; }
 
-  bool operator()(const dependency_connection&) const
-  {
-    return true;
-  }
+  bool operator()(const dependency_connection&) const { return true; }
 
-  bool operator()() const
-  {
-    return true;
-  }
+  bool operator()() const { return true; }
 };
 
 struct env_writer
@@ -325,13 +304,7 @@ struct env_writer
     }
     return false;
   }
-  bool operator()(const dependency_connection&) const
-  {
-    return false;
-  }
-  bool operator()() const
-  {
-    return false;
-  }
+  bool operator()(const dependency_connection&) const { return false; }
+  bool operator()() const { return false; }
 };
 }

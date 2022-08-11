@@ -16,18 +16,9 @@ template <typename T>
 struct dummy_container
 {
   static constexpr bool is_event = false;
-  static constexpr auto begin()
-  {
-    return (T*)nullptr;
-  }
-  static constexpr auto end()
-  {
-    return (T*)nullptr;
-  }
-  static constexpr std::size_t size()
-  {
-    return 0;
-  }
+  static constexpr auto begin() { return (T*)nullptr; }
+  static constexpr auto end() { return (T*)nullptr; }
+  static constexpr std::size_t size() { return 0; }
 };
 
 struct dummy_t

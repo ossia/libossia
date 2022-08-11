@@ -93,15 +93,9 @@ private:
 class taskflow
 {
 public:
-  void clear()
-  {
-    m_tasks.clear();
-  }
+  void clear() { m_tasks.clear(); }
 
-  void reserve(std::size_t sz)
-  {
-    m_tasks.reserve(sz);
-  }
+  void reserve(std::size_t sz) { m_tasks.reserve(sz); }
 
   task* emplace(ossia::graph_node& node)
   {
@@ -147,10 +141,7 @@ public:
     }
   }
 
-  void set_task_executor(task_function f)
-  {
-    m_func = std::move(f);
-  }
+  void set_task_executor(task_function f) { m_func = std::move(f); }
 
   void run(taskflow& tf)
   {

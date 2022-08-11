@@ -39,27 +39,15 @@ namespace ossia::nodes
 class automation final : public ossia::nonowning_graph_node
 {
 public:
-  automation()
-  {
-    m_outlets.push_back(&value_out);
-  }
+  automation() { m_outlets.push_back(&value_out); }
 
   ~automation() override = default;
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "automation";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "automation"; }
 
-  void set_behavior(const ossia::behavior& b)
-  {
-    m_drive = b;
-  }
+  void set_behavior(const ossia::behavior& b) { m_drive = b; }
 
-  void reset_drive()
-  {
-    m_drive.reset();
-  }
+  void reset_drive() { m_drive.reset(); }
 
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
@@ -83,27 +71,15 @@ private:
 class float_automation final : public ossia::nonowning_graph_node
 {
 public:
-  float_automation()
-  {
-    m_outlets.push_back(&value_out);
-  }
+  float_automation() { m_outlets.push_back(&value_out); }
 
   ~float_automation() override = default;
 
-  std::string label() const noexcept override
-  {
-    return "automation (float)";
-  }
+  std::string label() const noexcept override { return "automation (float)"; }
 
-  void set_behavior(ossia::curve<double, float> b)
-  {
-    m_drive = std::move(b);
-  }
+  void set_behavior(ossia::curve<double, float> b) { m_drive = std::move(b); }
 
-  void reset_drive()
-  {
-    m_drive.reset();
-  }
+  void reset_drive() { m_drive.reset(); }
 
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override

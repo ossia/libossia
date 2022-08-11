@@ -622,9 +622,7 @@ void qml_device::setReadPreset(bool readPreset)
   readPresetChanged(readPreset);
 }
 
-qml_device::~qml_device()
-{
-}
+qml_device::~qml_device() { }
 
 void qml_device::timerEvent(QTimerEvent* ev)
 {
@@ -691,10 +689,7 @@ void qml_device::loadPreset(QObject* root, const QString& file)
   struct set_to_false
   {
     bool& value;
-    ~set_to_false()
-    {
-      value = false;
-    }
+    ~set_to_false() { value = false; }
   };
   set_to_false _1{m_loadingPreset};
   set_to_false _2{m_readPreset};
@@ -826,9 +821,7 @@ qml_singleton_device::qml_singleton_device()
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
-qml_singleton_device::~qml_singleton_device()
-{
-}
+qml_singleton_device::~qml_singleton_device() { }
 
 qml_singleton_device& qml_singleton_device::instance()
 {

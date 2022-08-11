@@ -66,15 +66,9 @@ public:
     }
   }
 
-  void write(const char* data, std::size_t sz)
-  {
-    m_encoder.write(data, sz);
-  }
+  void write(const char* data, std::size_t sz) { m_encoder.write(data, sz); }
 
-  bool connected() const noexcept
-  {
-    return true;
-  }
+  bool connected() const noexcept { return true; }
 
   Nano::Signal<void()> on_open;
   Nano::Signal<void()> on_close;

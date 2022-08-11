@@ -50,10 +50,7 @@ struct OSSIA_EXPORT quaternion_u : public orientation_unit<quaternion_u>
         ossia::make_vec(0.f, 0.f, 0.f, 0.f), ossia::make_vec(1.f, 1.f, 1.f, 1.f)};
   }
 
-  static constexpr auto bounding()
-  {
-    return ossia::bounding_mode::FREE;
-  }
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
@@ -82,10 +79,7 @@ struct OSSIA_EXPORT euler_u : public orientation_unit<euler_u>
     return vecf_domain<3>{
         ossia::make_vec(0.f, 0.f, 0.f), ossia::make_vec(360.f, 360.f, 360.f)};
   }
-  static constexpr auto bounding()
-  {
-    return ossia::bounding_mode::WRAP;
-  }
+  static constexpr auto bounding() { return ossia::bounding_mode::WRAP; }
 };
 
 struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
@@ -115,9 +109,6 @@ struct OSSIA_EXPORT axis_u : public orientation_unit<axis_u>
         ossia::make_vec(0.f, 0.f, 0.f, 0.f), ossia::make_vec(1.f, 1.f, 1.f, 360.f)};
   }
 
-  static constexpr auto bounding()
-  {
-    return ossia::bounding_mode::FREE;
-  }
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 }

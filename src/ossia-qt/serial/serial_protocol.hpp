@@ -152,10 +152,7 @@ public:
   void set_device(ossia::net::device_base& dev) override;
   void stop() override;
 
-  static serial_parameter_data read_data(const QJSValue& js)
-  {
-    return js;
-  }
+  static serial_parameter_data read_data(const QJSValue& js) { return js; }
 
 private:
   void create(

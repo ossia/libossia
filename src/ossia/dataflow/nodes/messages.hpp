@@ -8,9 +8,7 @@ namespace ossia::nodes
 class messages final : public ossia::graph_node
 {
 public:
-  messages()
-  {
-  }
+  messages() { }
 
   void run(const ossia::token_request&, ossia::exec_state_facade e) noexcept override
   {

@@ -29,17 +29,11 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "mapping";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "mapping"; }
 
   ~mapping() override = default;
 
-  void set_behavior(const ossia::behavior& b)
-  {
-    m_drive = b;
-  }
+  void set_behavior(const ossia::behavior& b) { m_drive = b; }
 
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override

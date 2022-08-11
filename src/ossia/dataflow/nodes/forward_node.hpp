@@ -72,10 +72,7 @@ public:
       m_inlets.resize(1);
     }
   }
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Interval";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Interval"; }
 
   void run(const token_request& t, exec_state_facade f) noexcept override
   {
@@ -108,18 +105,12 @@ class loop final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Loop";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Loop"; }
 };
 class scenario final : public forward_node
 {
 public:
   using forward_node::forward_node;
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Scenario";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Scenario"; }
 };
 }

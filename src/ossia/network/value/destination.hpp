@@ -36,14 +36,8 @@ public:
   ossia::unit_t unit;
 
   ossia::value pull() const;
-  ossia::net::parameter_base& address()
-  {
-    return value.get();
-  }
-  ossia::net::parameter_base& address() const
-  {
-    return value.get();
-  }
+  ossia::net::parameter_base& address() { return value.get(); }
+  ossia::net::parameter_base& address() const { return value.get(); }
 
   destination(net::parameter_base& v) noexcept;
   destination(net::parameter_base& v, destination_index) noexcept;

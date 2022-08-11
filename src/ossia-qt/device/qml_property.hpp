@@ -112,15 +112,9 @@ public:
     }
   };
   W_SLOT(resetFilterRepetitions)
-  void resetMin()
-  {
-    setMin(QVariant{});
-  };
+  void resetMin() { setMin(QVariant{}); };
   W_SLOT(resetMin)
-  void resetMax()
-  {
-    setMax(QVariant{});
-  };
+  void resetMax() { setMax(QVariant{}); };
   W_SLOT(resetMax)
   void resetValues()
   {

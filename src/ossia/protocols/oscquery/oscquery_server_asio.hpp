@@ -71,20 +71,11 @@ public:
 
   void set_device(net::device_base& dev) override;
   void stop() override;
-  ossia::net::device_base& get_device() const
-  {
-    return *m_device;
-  }
+  ossia::net::device_base& get_device() const { return *m_device; }
 
-  int get_osc_port() const
-  {
-    return m_oscPort;
-  }
+  int get_osc_port() const { return m_oscPort; }
 
-  int get_ws_port() const
-  {
-    return m_wsPort;
-  }
+  int get_ws_port() const { return m_wsPort; }
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;

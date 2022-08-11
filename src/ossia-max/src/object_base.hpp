@@ -56,10 +56,7 @@ struct search_result
   t_symbol* classname{};
   int level{}; // relative hierarchy level
 
-  friend bool operator<(search_result a, search_result b)
-  {
-    return a.level < b.level;
-  }
+  friend bool operator<(search_result a, search_result b) { return a.level < b.level; }
 };
 
 struct object_base
@@ -266,9 +263,7 @@ struct value2atom
       v.apply(*this);
   }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 // Template typed function switcher to convert t_atom or standard type into
@@ -339,10 +334,7 @@ struct value_visitor
     set_out(a);
   }
 
-  void operator()(bool b) const
-  {
-    (*this)(b ? 1 : 0);
-  }
+  void operator()(bool b) const { (*this)(b ? 1 : 0); }
 
   void operator()(const std::string& str) const
   {

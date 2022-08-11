@@ -77,10 +77,7 @@ public:
 
   QString name() const;
 
-  const qpointer_set<qml_model_property>& models() const
-  {
-    return m_models;
-  }
+  const qpointer_set<qml_model_property>& models() const { return m_models; }
 
   bool openOSC(const QString& ip, int localPort, int remotePort);
   W_INVOKABLE(openOSC)

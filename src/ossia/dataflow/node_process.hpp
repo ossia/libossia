@@ -13,10 +13,7 @@ public:
   void offset_impl(ossia::time_value) override;
   void transport_impl(ossia::time_value date) override;
 
-  void state_impl(const ossia::token_request& req)
-  {
-    node->request(req);
-  }
+  void state_impl(const ossia::token_request& req) { node->request(req); }
 
   void start() override;
   void stop() override;

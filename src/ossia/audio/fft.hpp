@@ -65,20 +65,14 @@ public:
 
   ~fft();
 
-  static constexpr double norm(std::size_t sz) noexcept
-  {
-    return 1. / sz;
-  }
+  static constexpr double norm(std::size_t sz) noexcept { return 1. / sz; }
 
   void reset(std::size_t newSize);
 
   fft_complex* execute(float* input, std::size_t sz) noexcept;
   fft_complex* execute() noexcept;
 
-  [[nodiscard]] fft_real* input() const noexcept
-  {
-    return m_input;
-  }
+  [[nodiscard]] fft_real* input() const noexcept { return m_input; }
 
 private:
   fft_plan m_fw = {};
@@ -94,20 +88,14 @@ public:
   explicit rfft(std::size_t newSize) noexcept;
   ~rfft();
 
-  static constexpr double norm(std::size_t sz) noexcept
-  {
-    return 1. / sz;
-  }
+  static constexpr double norm(std::size_t sz) noexcept { return 1. / sz; }
 
   void reset(std::size_t newSize);
 
   fft_real* execute(fft_complex* input) noexcept;
   fft_real* execute() noexcept;
 
-  [[nodiscard]] fft_complex* input() const noexcept
-  {
-    return m_input;
-  }
+  [[nodiscard]] fft_complex* input() const noexcept { return m_input; }
 
 private:
   fft_plan m_fw = {};

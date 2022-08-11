@@ -13,9 +13,7 @@ qml_script::qml_script(QQuickItem* parent)
   reset();
 }
 
-qml_script::~qml_script()
-{
-}
+qml_script::~qml_script() { }
 
 void qml_script::setup()
 {
@@ -28,9 +26,7 @@ std::shared_ptr<time_process> qml_script::process() const
   return m_impl;
 }
 
-void qml_script::reset_impl()
-{
-}
+void qml_script::reset_impl() { }
 
 void qml_script_process::state(
     ossia::time_value date, double pos, ossia::time_value tick_offset, double gspeed)

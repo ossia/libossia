@@ -32,9 +32,7 @@ qml_logger::qml_logger()
   QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
 }
 
-qml_logger::~qml_logger()
-{
-}
+qml_logger::~qml_logger() { }
 
 qml_logger& qml_logger::instance()
 {

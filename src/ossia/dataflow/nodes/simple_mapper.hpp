@@ -34,14 +34,9 @@ public:
     m_outlets.push_back(&value_out);
   }
 
-  std::string label() const noexcept override
-  {
-    return "simple_mapping";
-  }
+  std::string label() const noexcept override { return "simple_mapping"; }
 
-  ~simple_mapping() override
-  {
-  }
+  ~simple_mapping() override { }
 
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override

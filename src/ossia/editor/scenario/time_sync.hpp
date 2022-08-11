@@ -143,10 +143,7 @@ public:
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  ptr_container<time_event>& get_time_events() noexcept
-  {
-    return m_timeEvents;
-  }
+  ptr_container<time_event>& get_time_events() noexcept { return m_timeEvents; }
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
@@ -188,10 +185,7 @@ public:
   void cleanup();
 
   void mute(bool b);
-  [[nodiscard]] bool muted() const noexcept
-  {
-    return m_muted;
-  }
+  [[nodiscard]] bool muted() const noexcept { return m_muted; }
 
   /*! Execution callbacks
    *
@@ -205,43 +199,25 @@ public:
     DONE_TRIGGERED,
     DONE_MAX_REACHED
   };
-  [[nodiscard]] status get_status() const noexcept
-  {
-    return m_status;
-  }
+  [[nodiscard]] status get_status() const noexcept { return m_status; }
 
-  void set_sync_rate(double syncRatio) noexcept
-  {
-    m_sync_rate = syncRatio;
-  }
-  [[nodiscard]] double get_sync_rate() const noexcept
-  {
-    return m_sync_rate;
-  }
-  [[nodiscard]] bool has_sync_rate() const noexcept
-  {
-    return m_sync_rate > 0;
-  }
+  void set_sync_rate(double syncRatio) noexcept { m_sync_rate = syncRatio; }
+  [[nodiscard]] double get_sync_rate() const noexcept { return m_sync_rate; }
+  [[nodiscard]] bool has_sync_rate() const noexcept { return m_sync_rate > 0; }
 
   void set_trigger_date(time_value v) noexcept
   {
     m_trigger_date = v;
     callbacks.trigger_date_fixed(v);
   }
-  [[nodiscard]] time_value get_trigger_date() const noexcept
-  {
-    return m_trigger_date;
-  }
+  [[nodiscard]] time_value get_trigger_date() const noexcept { return m_trigger_date; }
   [[nodiscard]] bool has_trigger_date() const noexcept
   {
     return !m_trigger_date.infinite();
   }
 
   void set_is_being_triggered(bool v) noexcept;
-  [[nodiscard]] bool is_being_triggered() const noexcept
-  {
-    return m_is_being_triggered;
-  }
+  [[nodiscard]] bool is_being_triggered() const noexcept { return m_is_being_triggered; }
 
 private:
   ossia::expression_ptr m_expression;

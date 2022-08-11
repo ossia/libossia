@@ -58,10 +58,7 @@ public:
         });
   }
 
-  void close()
-  {
-    m_socket.close();
-  }
+  void close() { m_socket.close(); }
 
 private:
   void handle_resolve(

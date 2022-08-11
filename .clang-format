@@ -1,20 +1,4 @@
 BasedOnStyle: WebKit
-AccessModifierOffset: -2
-AlignAfterOpenBracket: AlwaysBreak
-AlignEscapedNewlinesLeft: true
-AlignOperands: true
-AlignTrailingComments: true
-AlignConsecutiveDeclarations: false
-AllowAllArgumentsOnNextLine: true
-AllowAllParametersOfDeclarationOnNextLine: true
-AllowShortBlocksOnASingleLine: false
-AllowShortCaseLabelsOnASingleLine: false
-AllowShortFunctionsOnASingleLine: None
-AllowShortIfStatementsOnASingleLine: false
-AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterDefinitionReturnType: false
-AlwaysBreakBeforeMultilineStrings: true
-AlwaysBreakTemplateDeclarations: true
 
 BraceWrapping:
   AfterClass:      true
@@ -28,21 +12,39 @@ BraceWrapping:
   BeforeCatch:     true
   BeforeElse:      true
   IndentBraces:    false
-  
-BreakBeforeConceptDeclarations: true
+
+AccessModifierOffset: -2
+AlignAfterOpenBracket: AlwaysBreak
+AlignConsecutiveDeclarations: false
+AlignEscapedNewlinesLeft: true
+AlignOperands: true
+AlignTrailingComments: true
+AllowAllArgumentsOnNextLine: true
+AllowAllParametersOfDeclarationOnNextLine: true
+AllowShortBlocksOnASingleLine: false
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: Inline
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+AlwaysBreakAfterDefinitionReturnType: false
+AlwaysBreakBeforeMultilineStrings: true
+AlwaysBreakTemplateDeclarations: true
 BinPackArguments: true
 BinPackParameters: true
 BreakBeforeBinaryOperators: All
 BreakBeforeBraces: Custom
+BreakBeforeConceptDeclarations: true
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeComma
+BreakConstructorInitializersBeforeComma: true
 BreakInheritanceList: BeforeComma
 ColumnLimit: 89
-CommentPragmas: '^ IWYU pragma:'
+CommentPragmas: '^ clang-format:'
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DerivePointerAlignment: false
+IncludeBlocks: Regroup
 IndentCaseLabels: true
 IndentExternBlock: NoIndent
 IndentWidth: 2
@@ -61,6 +63,8 @@ PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 60
 PointerAlignment: Left
 ReferenceAlignment: Left
+ReflowComments: false
+SortIncludes: true
 SpaceAfterCStyleCast: false
 SpaceAroundPointerQualifiers: Default
 SpaceBeforeAssignmentOperators: true
@@ -69,16 +73,15 @@ SpaceBeforeParens: Never
 SpaceInEmptyParentheses: false
 SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
-SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
+SpacesInCStyleCastParentheses: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
 Standard: Latest
 TabWidth: 2
 UseTab: Never
 
-SortIncludes: true
-IncludeBlocks: Regroup
+
 IncludeCategories:
   - Regex:           '<.*\.(c|cpp)>'
     Priority:        1000

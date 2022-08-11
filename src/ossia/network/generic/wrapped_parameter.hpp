@@ -32,10 +32,7 @@ public:
       m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
 
-  ~wrapped_node() override
-  {
-    clear();
-  }
+  ~wrapped_node() override { clear(); }
 
   void clear()
   {
@@ -46,35 +43,20 @@ public:
     m_parameter.reset();
   }
 
-  device_base& get_device() const final override
-  {
-    return m_device;
-  }
+  device_base& get_device() const final override { return m_device; }
 
-  node_base* get_parent() const final override
-  {
-    return m_parent;
-  }
+  node_base* get_parent() const final override { return m_parent; }
 
-  node_base& set_name(std::string) final override
-  {
-    return *this;
-  }
+  node_base& set_name(std::string) final override { return *this; }
 
-  parameter_base* get_parameter() const final override
-  {
-    return m_parameter.get();
-  }
+  parameter_base* get_parameter() const final override { return m_parameter.get(); }
 
   parameter_base* create_parameter(val_type = val_type::IMPULSE) final override
   {
     return nullptr;
   }
 
-  bool remove_parameter() final override
-  {
-    return false;
-  }
+  bool remove_parameter() final override { return false; }
 
   void add_child(std::unique_ptr<ossia::net::node_base> p)
   {
@@ -91,9 +73,7 @@ private:
     return nullptr;
   }
 
-  void removing_child(node_base& node_base) final override
-  {
-  }
+  void removing_child(node_base& node_base) final override { }
 };
 
 template <typename T>
@@ -113,20 +93,11 @@ public:
   wrapped_parameter(wrapped_parameter&& other) = delete;
   wrapped_parameter& operator=(const wrapped_parameter& other) = delete;
   wrapped_parameter& operator=(wrapped_parameter&& other) = delete;
-  ~wrapped_parameter()
-  {
-    callback_container<value_callback>::callbacks_clear();
-  }
+  ~wrapped_parameter() { callback_container<value_callback>::callbacks_clear(); }
 
-  const base_data_type& data() const
-  {
-    return m_data;
-  }
+  const base_data_type& data() const { return m_data; }
 
-  base_data_type& data()
-  {
-    return m_data;
-  }
+  base_data_type& data() { return m_data; }
 
 private:
   base_data_type m_data;
@@ -151,14 +122,8 @@ public:
     m_protocol->set_device(*this);
   }
 
-  const ossia::net::node_base& get_root_node() const override
-  {
-    return *this;
-  }
-  ossia::net::node_base& get_root_node() override
-  {
-    return *this;
-  }
+  const ossia::net::node_base& get_root_node() const override { return *this; }
+  ossia::net::node_base& get_root_node() override { return *this; }
 
   using Node_T::get_name;
   using Node_T::set_name;

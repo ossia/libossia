@@ -311,30 +311,15 @@ struct osc_inbound_visitor
   oscpack::ReceivedMessageArgumentIterator end_it;
   int numArguments = 1;
 
-  ossia::value operator()(ossia::impulse imp) const
-  {
-    return imp;
-  }
+  ossia::value operator()(ossia::impulse imp) const { return imp; }
 
-  ossia::value operator()(int32_t i) const
-  {
-    return osc_utilities::get_int(cur_it, i);
-  }
+  ossia::value operator()(int32_t i) const { return osc_utilities::get_int(cur_it, i); }
 
-  ossia::value operator()(float f) const
-  {
-    return osc_utilities::get_float(cur_it, f);
-  }
+  ossia::value operator()(float f) const { return osc_utilities::get_float(cur_it, f); }
 
-  ossia::value operator()(bool b) const
-  {
-    return osc_utilities::get_bool(cur_it, b);
-  }
+  ossia::value operator()(bool b) const { return osc_utilities::get_bool(cur_it, b); }
 
-  ossia::value operator()(char c) const
-  {
-    return osc_utilities::get_char(cur_it, c);
-  }
+  ossia::value operator()(char c) const { return osc_utilities::get_char(cur_it, c); }
 
   ossia::value operator()(const std::string& str) const
   {
@@ -413,10 +398,7 @@ struct osc_inbound_visitor
     return osc_utilities::create_list(cur_it, end_it);
   }
 
-  ossia::value operator()() const
-  {
-    return {};
-  }
+  ossia::value operator()() const { return {}; }
 };
 
 struct osc_inbound_impulse_visitor
@@ -427,10 +409,7 @@ struct osc_inbound_impulse_visitor
     return t;
   }
 
-  ossia::value operator()() const
-  {
-    return {};
-  }
+  ossia::value operator()() const { return {}; }
 };
 
 inline ossia::value to_value(
@@ -506,17 +485,11 @@ struct osc_write_domain_visitor
     vis(true);
   }
 
-  void operator()(const domain_base<ossia::impulse>& dom)
-  {
-  }
+  void operator()(const domain_base<ossia::impulse>& dom) { }
 
-  void operator()(const domain_base<std::string>& dom)
-  {
-  }
+  void operator()(const domain_base<std::string>& dom) { }
 
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 }
 

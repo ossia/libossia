@@ -44,34 +44,16 @@ class OSSIA_EXPORT time_interval
 public:
   const std::shared_ptr<ossia::graph_node> node;
 
-  auto get_date() const noexcept
-  {
-    return m_date;
-  }
-  auto get_offset() const noexcept
-  {
-    return m_offset;
-  }
-  double get_internal_speed() const noexcept
-  {
-    return m_speed;
-  }
+  auto get_date() const noexcept { return m_date; }
+  auto get_offset() const noexcept { return m_offset; }
+  double get_internal_speed() const noexcept { return m_speed; }
 
   double get_speed(time_value date) const noexcept;
-  void set_offset(ossia::time_value g) noexcept
-  {
-    m_offset = g;
-  }
+  void set_offset(ossia::time_value g) noexcept { m_offset = g; }
 
-  void set_speed(double g) noexcept
-  {
-    m_speed = g;
-  }
+  void set_speed(double g) noexcept { m_speed = g; }
 
-  void set_parent_speed(double sp) noexcept
-  {
-    m_parentSpeed = sp;
-  }
+  void set_parent_speed(double sp) noexcept { m_parentSpeed = sp; }
   tick_transport_info current_transport_info() const noexcept;
 
   void
@@ -203,10 +185,7 @@ public:
     return m_processes;
   }
 
-  bool running() const noexcept
-  {
-    return m_running;
-  }
+  bool running() const noexcept { return m_running; }
   void cleanup();
   void mute(bool);
 

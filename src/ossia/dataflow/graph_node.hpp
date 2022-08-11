@@ -113,24 +113,12 @@ public:
   graph_node() noexcept;
   virtual ~graph_node();
 
-  [[nodiscard]] bool enabled() const noexcept
-  {
-    return !requested_tokens.empty();
-  }
+  [[nodiscard]] bool enabled() const noexcept { return !requested_tokens.empty(); }
 
-  [[nodiscard]] bool executed() const noexcept
-  {
-    return m_executed;
-  }
+  [[nodiscard]] bool executed() const noexcept { return m_executed; }
 
-  void set_start_discontinuous(bool b) noexcept
-  {
-    m_start_discontinuous = b;
-  }
-  void set_end_discontinuous(bool b) noexcept
-  {
-    m_end_discontinuous = b;
-  }
+  void set_start_discontinuous(bool b) noexcept { m_start_discontinuous = b; }
+  void set_end_discontinuous(bool b) noexcept { m_end_discontinuous = b; }
 
   virtual void prepare(const execution_state& st) noexcept;
   [[nodiscard]] virtual bool consumes(const execution_state&) const noexcept;
@@ -141,22 +129,10 @@ public:
   [[nodiscard]] bool has_global_inputs() const noexcept;
   [[nodiscard]] bool has_local_inputs(const execution_state& st) const noexcept;
 
-  [[nodiscard]] const inlets& root_inputs() const noexcept
-  {
-    return m_inlets;
-  }
-  [[nodiscard]] const outlets& root_outputs() const noexcept
-  {
-    return m_outlets;
-  }
-  inlets& root_inputs() noexcept
-  {
-    return m_inlets;
-  }
-  outlets& root_outputs() noexcept
-  {
-    return m_outlets;
-  }
+  [[nodiscard]] const inlets& root_inputs() const noexcept { return m_inlets; }
+  [[nodiscard]] const outlets& root_outputs() const noexcept { return m_outlets; }
+  inlets& root_inputs() noexcept { return m_inlets; }
+  outlets& root_outputs() noexcept { return m_outlets; }
 
   virtual void clear() noexcept;
 
@@ -164,40 +140,19 @@ public:
   {
     return m_start_discontinuous;
   }
-  [[nodiscard]] bool end_discontinuous() const noexcept
-  {
-    return m_end_discontinuous;
-  }
+  [[nodiscard]] bool end_discontinuous() const noexcept { return m_end_discontinuous; }
 
-  void set_executed(bool b) noexcept
-  {
-    m_executed = b;
-  }
+  void set_executed(bool b) noexcept { m_executed = b; }
 
   void request(const ossia::token_request& req) noexcept;
 
-  void disable() noexcept
-  {
-    requested_tokens.clear();
-  }
+  void disable() noexcept { requested_tokens.clear(); }
 
-  void set_logging(bool b) noexcept
-  {
-    m_logging = b;
-  }
-  [[nodiscard]] bool logged() const noexcept
-  {
-    return m_logging;
-  }
+  void set_logging(bool b) noexcept { m_logging = b; }
+  [[nodiscard]] bool logged() const noexcept { return m_logging; }
 
-  void set_mute(bool b) noexcept
-  {
-    m_muted = b;
-  }
-  [[nodiscard]] bool muted() const noexcept
-  {
-    return m_muted;
-  }
+  void set_mute(bool b) noexcept { m_muted = b; }
+  [[nodiscard]] bool muted() const noexcept { return m_muted; }
 
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;

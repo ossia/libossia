@@ -30,15 +30,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -355,15 +349,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -1199,15 +1187,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -2168,15 +2150,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -2623,15 +2599,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -3023,15 +2993,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -3852,15 +3816,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -4475,15 +4433,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -5310,15 +5262,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const noexcept
-  {
-    return m_type;
-  }
+  int which() const noexcept { return m_type; }
 
-  operator bool() const noexcept
-  {
-    return m_type != npos;
-  }
+  operator bool() const noexcept { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -5334,9 +5280,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~unit_variant() noexcept
-  {
-  }
+  ~unit_variant() noexcept { }
   unit_variant(ossia::distance_u v) noexcept
       : m_type{Type0}
   {

@@ -13,10 +13,7 @@ template <typename T>
 struct socket_writer
 {
   T& socket;
-  void operator()(const char* data, std::size_t sz) const
-  {
-    socket.write(data, sz);
-  }
+  void operator()(const char* data, std::size_t sz) const { socket.write(data, sz); }
 };
 
 template <typename Socket>

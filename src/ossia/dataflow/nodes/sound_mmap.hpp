@@ -16,22 +16,13 @@ namespace ossia::nodes
 class sound_mmap final : public ossia::sound_node
 {
 public:
-  sound_mmap()
-  {
-    m_outlets.push_back(&audio_out);
-  }
+  sound_mmap() { m_outlets.push_back(&audio_out); }
 
   ~sound_mmap() = default;
 
-  void set_start(std::size_t v)
-  {
-    start = v;
-  }
+  void set_start(std::size_t v) { start = v; }
 
-  void set_upmix(std::size_t v)
-  {
-    upmix = v;
-  }
+  void set_upmix(std::size_t v) { upmix = v; }
 
   void set_sound(drwav_handle hdl)
   {

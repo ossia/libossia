@@ -37,10 +37,7 @@ public:
     }
   }
 
-  bool try_dequeue(ossia::received_value& v)
-  {
-    return m_queue.try_dequeue(v);
-  }
+  bool try_dequeue(ossia::received_value& v) { return m_queue.try_dequeue(v); }
 
   void reg(ossia::net::parameter_base& p)
   {
@@ -102,10 +99,7 @@ public:
     m_queue.enqueue({const_cast<ossia::net::parameter_base*>(&p), p.value()});
   }
 
-  bool try_dequeue(ossia::received_value& v)
-  {
-    return m_queue.try_dequeue(v);
-  }
+  bool try_dequeue(ossia::received_value& v) { return m_queue.try_dequeue(v); }
 
 private:
   moodycamel::ConcurrentQueue<received_value> m_queue;

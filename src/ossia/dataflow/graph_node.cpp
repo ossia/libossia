@@ -26,13 +26,9 @@ node_process::node_process(node_ptr n)
   node = std::move(n);
 }
 
-void node_process::offset_impl(time_value date)
-{
-}
+void node_process::offset_impl(time_value date) { }
 
-void node_process::transport_impl(time_value date)
-{
-}
+void node_process::transport_impl(time_value date) { }
 
 void node_process::start()
 {
@@ -45,17 +41,11 @@ void node_process::stop()
     node->all_notes_off();
 }
 
-void node_process::pause()
-{
-}
+void node_process::pause() { }
 
-void node_process::resume()
-{
-}
+void node_process::resume() { }
 
-void node_process::mute_impl(bool)
-{
-}
+void node_process::mute_impl(bool) { }
 
 node_process::~node_process() = default;
 /*
@@ -142,15 +132,9 @@ void graph_node::prepare(const execution_state& st) noexcept
         c.reserve(buffer_size);
       }
     }
-    void operator()(ossia::midi_port& p) const noexcept
-    {
-    }
-    void operator()(ossia::value_port& p) const noexcept
-    {
-    }
-    void operator()(ossia::geometry_port& p) const noexcept
-    {
-    }
+    void operator()(ossia::midi_port& p) const noexcept { }
+    void operator()(ossia::value_port& p) const noexcept { }
+    void operator()(ossia::geometry_port& p) const noexcept { }
   } vis;
   for(auto& in : this->m_inlets)
   {
@@ -169,9 +153,7 @@ bool graph_node::consumes(const execution_state&) const noexcept
   return false;
 }
 
-void graph_node::run(const token_request& t, exec_state_facade) noexcept
-{
-}
+void graph_node::run(const token_request& t, exec_state_facade) noexcept { }
 
 std::string graph_node::label() const noexcept
 {
@@ -256,9 +238,7 @@ void graph_node::request(const token_request& req) noexcept
   requested_tokens.push_back(std::move(req));
 }
 
-void graph_node::all_notes_off() noexcept
-{
-}
+void graph_node::all_notes_off() noexcept { }
 
 nonowning_graph_node::~nonowning_graph_node()
 {

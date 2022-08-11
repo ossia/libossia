@@ -69,9 +69,6 @@ public:
     }
   }
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Stereo Merger";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Stereo Merger"; }
 };
 }

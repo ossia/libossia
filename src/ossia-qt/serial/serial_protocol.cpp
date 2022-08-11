@@ -51,10 +51,7 @@ struct serial_wrapper_init
     m_socket.receive(serial_wrapper_read{self});
   }
 
-  void operator()(auto& sock)
-  {
-    common_init(sock);
-  }
+  void operator()(auto& sock) { common_init(sock); }
 
   void operator()(line_framing_socket& sock)
   {
@@ -114,9 +111,7 @@ void serial_wrapper::close()
   }
 }
 
-serial_wrapper::~serial_wrapper() noexcept
-{
-}
+serial_wrapper::~serial_wrapper() noexcept { }
 
 serial_protocol::serial_protocol(
     const ossia::net::network_context_ptr& ctx, const QByteArray& code,
@@ -379,9 +374,7 @@ void serial_protocol::stop()
   this->m_port->close();
 }
 
-serial_protocol::~serial_protocol()
-{
-}
+serial_protocol::~serial_protocol() { }
 
 }
 }

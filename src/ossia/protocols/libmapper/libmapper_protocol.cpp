@@ -24,9 +24,7 @@ struct libmapper_send
   mpr_signal signal{};
   mpr_time timetag{};
 
-  void operator()(impulse v) const noexcept
-  {
-  }
+  void operator()(impulse v) const noexcept { }
   void operator()(int v) const noexcept
   {
     mpr_sig_set_value(signal, 0, 1, MPR_INT32, &v);
@@ -39,10 +37,7 @@ struct libmapper_send
   {
     mpr_sig_set_value(signal, 0, 1, MPR_BOOL, &v);
   }
-  void operator()(char v) const noexcept
-  {
-    (*this)(int(v));
-  }
+  void operator()(char v) const noexcept { (*this)(int(v)); }
   void operator()(vec2f v) const noexcept
   {
     mpr_sig_set_value(signal, 0, 2, MPR_FLT, v.data());
@@ -55,10 +50,7 @@ struct libmapper_send
   {
     mpr_sig_set_value(signal, 0, 4, MPR_FLT, v.data());
   }
-  void operator()(const std::string& v) const noexcept
-  {
-    (*this)(std::stof(v));
-  }
+  void operator()(const std::string& v) const noexcept { (*this)(std::stof(v)); }
   void operator()(const std::vector<ossia::value>& v) const noexcept
   {
     // float* sub = (float*)alloca(sizeof(float) * v.size());
@@ -66,9 +58,7 @@ struct libmapper_send
     //   sub[i] = ossia::convert<float>(v[i]);
     // mapper_signal_update(signal, sub, v.size(), timetag);
   }
-  void operator()() const noexcept
-  {
-  }
+  void operator()() const noexcept { }
 };
 
 template <typename T>
@@ -78,26 +68,11 @@ struct libmapper_receive
   const T* value;
   int count;
 
-  void operator()(impulse v) const
-  {
-    param.set_value(ossia::impulse{});
-  }
-  void operator()(int v) const
-  {
-    param.set_value((int)value[0]);
-  }
-  void operator()(float v) const
-  {
-    param.set_value((float)value[0]);
-  }
-  void operator()(bool v) const
-  {
-    param.set_value((bool)value[0]);
-  }
-  void operator()(char v) const
-  {
-    param.set_value((char)value[0]);
-  }
+  void operator()(impulse v) const { param.set_value(ossia::impulse{}); }
+  void operator()(int v) const { param.set_value((int)value[0]); }
+  void operator()(float v) const { param.set_value((float)value[0]); }
+  void operator()(bool v) const { param.set_value((bool)value[0]); }
+  void operator()(char v) const { param.set_value((char)value[0]); }
   void operator()(vec2f v) const
   {
     if(count >= 2)
@@ -122,56 +97,30 @@ struct libmapper_receive
   {
     param.set_value(std::vector<ossia::value>{value[0]});
   }
-  void operator()() const noexcept
-  {
-  }
+  void operator()() const noexcept { }
 };
 
 struct libmapper_create_param
 {
   libmapper_server_protocol& proto;
   const ossia::net::parameter_base& param;
-  void operator()(impulse v) const noexcept
-  {
-  }
-  void operator()(int v) const noexcept
-  {
-    proto.create_1d_parameter<int, int>(param);
-  }
+  void operator()(impulse v) const noexcept { }
+  void operator()(int v) const noexcept { proto.create_1d_parameter<int, int>(param); }
   void operator()(float v) const noexcept
   {
     proto.create_1d_parameter<float, float>(param);
   }
-  void operator()(bool v) const noexcept
-  {
-    proto.create_1d_parameter<bool, int>(param);
-  }
-  void operator()(char v) const noexcept
-  {
-    proto.create_1d_parameter<char, int>(param);
-  }
-  void operator()(vec2f v) const noexcept
-  {
-    proto.create_array_parameter<2>(param);
-  }
-  void operator()(vec3f v) const noexcept
-  {
-    proto.create_array_parameter<3>(param);
-  }
-  void operator()(vec4f v) const noexcept
-  {
-    proto.create_array_parameter<4>(param);
-  }
-  void operator()(const std::string& v) const noexcept
-  {
-  }
+  void operator()(bool v) const noexcept { proto.create_1d_parameter<bool, int>(param); }
+  void operator()(char v) const noexcept { proto.create_1d_parameter<char, int>(param); }
+  void operator()(vec2f v) const noexcept { proto.create_array_parameter<2>(param); }
+  void operator()(vec3f v) const noexcept { proto.create_array_parameter<3>(param); }
+  void operator()(vec4f v) const noexcept { proto.create_array_parameter<4>(param); }
+  void operator()(const std::string& v) const noexcept { }
   void operator()(const std::vector<ossia::value>& v) const noexcept
   {
     proto.create_vector_parameter(param);
   }
-  void operator()() const noexcept
-  {
-  }
+  void operator()() const noexcept { }
 };
 
 struct libmapper_apply_control
@@ -204,9 +153,7 @@ param->value());
 }
 */
 
-libmapper_server_protocol::libmapper_server_protocol()
-{
-}
+libmapper_server_protocol::libmapper_server_protocol() { }
 
 libmapper_server_protocol::~libmapper_server_protocol()
 {
@@ -290,17 +237,11 @@ bool libmapper_server_protocol::update(ossia::net::node_base&)
   return true;
 }
 
-void libmapper_server_protocol::stop()
-{
-}
+void libmapper_server_protocol::stop() { }
 
-void libmapper_server_protocol::on_nodeCreated(const node_base& n)
-{
-}
+void libmapper_server_protocol::on_nodeCreated(const node_base& n) { }
 
-void libmapper_server_protocol::on_nodeRemoved(const node_base&)
-{
-}
+void libmapper_server_protocol::on_nodeRemoved(const node_base&) { }
 
 template <typename OssiaType, typename LibmapperType>
 void libmapper_server_protocol::create_1d_parameter(const parameter_base& p)
@@ -799,8 +740,6 @@ bool libmapper_client_protocol::update()
   return true;
 }
 
-void libmapper_client_protocol::stop()
-{
-}
+void libmapper_client_protocol::stop() { }
 
 }

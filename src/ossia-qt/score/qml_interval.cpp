@@ -16,9 +16,7 @@ qml_interval::qml_interval(QQuickItem* parent)
   reset();
 }
 
-qml_interval::~qml_interval()
-{
-}
+qml_interval::~qml_interval() { }
 
 qint32 qml_interval::nominalDuration() const
 {
@@ -100,13 +98,9 @@ void qml_interval::setup()
   */
 }
 
-void qml_interval::registerProcess(qml_process*)
-{
-}
+void qml_interval::registerProcess(qml_process*) { }
 
-void qml_interval::unregisterProcess(qml_process*)
-{
-}
+void qml_interval::unregisterProcess(qml_process*) { }
 
 void qml_interval::setNominalDuration(qint32 nominalDuration)
 {

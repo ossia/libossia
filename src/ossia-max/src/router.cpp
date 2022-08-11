@@ -164,6 +164,4 @@ void router::assist(router* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_router structure functions
 
-router::router(long argc, t_atom* argv)
-{
-}
+router::router(long argc, t_atom* argv) { }

@@ -15,20 +15,11 @@ namespace ossia::net
 struct osc_1_1_outbound_array_policy : osc_common_outbound_dynamic_policy
 {
   using osc_common_outbound_dynamic_policy::operator();
-  void operator()(impulse) const
-  {
-    p << oscpack::Infinitum();
-  }
+  void operator()(impulse) const { p << oscpack::Infinitum(); }
 
-  void operator()(bool b) const
-  {
-    p << b;
-  }
+  void operator()(bool b) const { p << b; }
 
-  void operator()(char c) const
-  {
-    p << int32_t(c);
-  }
+  void operator()(char c) const { p << int32_t(c); }
 
   // Arrays are flattened
   void operator()(const std::vector<value>& t) const

@@ -20,15 +20,9 @@ public:
   timer& operator=(const timer&) = delete;
   timer& operator=(timer&&) = default;
 
-  ~timer()
-  {
-    stop();
-  }
+  ~timer() { stop(); }
 
-  void set_delay(std::chrono::milliseconds ms) noexcept
-  {
-    m_delay = ms;
-  }
+  void set_delay(std::chrono::milliseconds ms) noexcept { m_delay = ms; }
 
   template <typename F>
   void start(F f)

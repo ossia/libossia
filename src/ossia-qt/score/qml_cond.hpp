@@ -23,19 +23,10 @@ public:
   {
   }
 
-  void update() override
-  {
-  }
-  bool evaluate() const override
-  {
-    return m_expr->evaluate().toBool();
-  }
-  void on_first_callback_added(expressions::expression_generic&) override
-  {
-  }
-  void on_removing_last_callback(expressions::expression_generic&) override
-  {
-  }
+  void update() override { }
+  bool evaluate() const override { return m_expr->evaluate().toBool(); }
+  void on_first_callback_added(expressions::expression_generic&) override { }
+  void on_removing_last_callback(expressions::expression_generic&) override { }
 
 private:
   std::unique_ptr<QQmlExpression> m_expr;
@@ -60,14 +51,8 @@ public:
   void registerState(qml_state*);
   void unregisterState(qml_state*);
 
-  std::shared_ptr<ossia::time_event> cond() const
-  {
-    return m_impl;
-  }
-  void setCond(std::shared_ptr<ossia::time_event> c)
-  {
-    m_impl = c;
-  }
+  std::shared_ptr<ossia::time_event> cond() const { return m_impl; }
+  void setCond(std::shared_ptr<ossia::time_event> c) { m_impl = c; }
 
 public:
   void setExpr(QQmlScriptString expr);

@@ -36,10 +36,7 @@ struct hash<std::pair<ossia::net::parameter_base*, ossia::unit_t>>
       return t.which();
     }
 
-    std::size_t operator()()
-    {
-      return ossia::unit_variant::npos;
-    }
+    std::size_t operator()() { return ossia::unit_variant::npos; }
   };
   std::size_t
   operator()(const std::pair<ossia::net::parameter_base*, ossia::unit_t>& k) const
@@ -75,45 +72,18 @@ public:
   OSSIA_EXPORT friend bool operator==(const state& lhs, const state& rhs);
   OSSIA_EXPORT friend bool operator!=(const state& lhs, const state& rhs);
 
-  auto begin()
-  {
-    return m_children.begin();
-  }
-  auto end()
-  {
-    return m_children.end();
-  }
-  auto begin() const
-  {
-    return m_children.begin();
-  }
-  auto end() const
-  {
-    return m_children.end();
-  }
-  auto cbegin() const
-  {
-    return m_children.cbegin();
-  }
-  auto cend() const
-  {
-    return m_children.cend();
-  }
+  auto begin() { return m_children.begin(); }
+  auto end() { return m_children.end(); }
+  auto begin() const { return m_children.begin(); }
+  auto end() const { return m_children.end(); }
+  auto cbegin() const { return m_children.cbegin(); }
+  auto cend() const { return m_children.cend(); }
 
-  auto& children() const
-  {
-    return m_children;
-  }
+  auto& children() const { return m_children; }
 
-  std::size_t size() const
-  {
-    return m_children.size();
-  }
+  std::size_t size() const { return m_children.size(); }
 
-  bool empty() const
-  {
-    return m_children.empty();
-  }
+  bool empty() const { return m_children.empty(); }
 
   void launch()
   {
@@ -226,14 +196,8 @@ public:
       std::pair<ossia::net::parameter_base*, ossia::unit_t>, state_element>;
   using iterator = map_t::iterator;
   using const_iterator = map_t::const_iterator;
-  void remove(iterator it)
-  {
-    m_children.erase(it);
-  }
-  void remove(const_iterator it)
-  {
-    m_children.erase(it);
-  }
+  void remove(iterator it) { m_children.erase(it); }
+  void remove(const_iterator it) { m_children.erase(it); }
 
   template <std::size_t N>
   void remove(const ossia::piecewise_vec_message<N>& e)
@@ -241,14 +205,8 @@ public:
     m_children.erase(std::make_pair(&e.address.get(), e.get_unit()));
   }
 
-  void reserve(std::size_t n)
-  {
-    m_children.reserve(n);
-  }
-  void clear()
-  {
-    m_children.clear();
-  }
+  void reserve(std::size_t n) { m_children.reserve(n); }
+  void clear() { m_children.clear(); }
 
 private:
   map_t m_children;

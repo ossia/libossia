@@ -27,27 +27,15 @@ public:
     right.init();
   }
 
-  ossia::vec3f to_value(Vector v)
-  {
-    return ossia::vec3f{v.x, v.y, v.z};
-  }
+  ossia::vec3f to_value(Vector v) { return ossia::vec3f{v.x, v.y, v.z}; }
 
-  void onInit(const Controller&) override
-  {
-    ossia::logger().error("OnInit");
-  }
-  void onConnect(const Controller&) override
-  {
-    ossia::logger().error("OnConnect");
-  }
+  void onInit(const Controller&) override { ossia::logger().error("OnInit"); }
+  void onConnect(const Controller&) override { ossia::logger().error("OnConnect"); }
   void onDisconnect(const Controller&) override
   {
     ossia::logger().error("onDisconnect");
   }
-  void onExit(const Controller&) override
-  {
-    ossia::logger().error("onExit");
-  }
+  void onExit(const Controller&) override { ossia::logger().error("onExit"); }
 
   void processFrame(const Leap::Frame& frame)
   {
@@ -134,10 +122,7 @@ public:
   {
     ossia::logger().error("onFocusGained");
   }
-  void onFocusLost(const Controller&) override
-  {
-    ossia::logger().error("onFocusLost");
-  }
+  void onFocusLost(const Controller&) override { ossia::logger().error("onFocusLost"); }
   void onDeviceChange(const Controller&) override
   {
     ossia::logger().error("onDeviceChange");
@@ -152,12 +137,8 @@ public:
   }
 
 #if defined(_WIN32)
-  void onServiceChange(const Controller&) override
-  {
-  }
-  void onDeviceFailure(const Controller&) override
-  {
-  }
+  void onServiceChange(const Controller&) override { }
+  void onDeviceFailure(const Controller&) override { }
 
   void onLogMessage(
       const Controller&, Leap::MessageSeverity severity, int64_t t,

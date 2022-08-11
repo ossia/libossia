@@ -263,9 +263,7 @@ std::future<void> phidget_protocol::pull_async(net::parameter_base&)
   return {};
 }
 
-void phidget_protocol::request(net::parameter_base&)
-{
-}
+void phidget_protocol::request(net::parameter_base&) { }
 
 bool phidget_protocol::push(const net::parameter_base&, const ossia::value& v)
 {

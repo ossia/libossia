@@ -43,16 +43,10 @@ struct pd_log_sink final : public spdlog::sinks::sink
     }
   }
 
-  void flush() override
-  {
-  }
+  void flush() override { }
 
-  void set_pattern(const std::string& pattern) override
-  {
-  }
-  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override
-  {
-  }
+  void set_pattern(const std::string& pattern) override { }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 };
 
 extern "C" void setup_ossia0x2eassert(void);
@@ -138,14 +132,8 @@ public:
     bool is_loadbanged{};
     unsigned long count{}; // number of object under this root
 
-    unsigned long inc()
-    {
-      return ++count;
-    }
-    unsigned long dec()
-    {
-      return --count;
-    }
+    unsigned long inc() { return ++count; }
+    unsigned long dec() { return --count; }
   };
 
   typedef std::map<t_canvas*, root_descriptor> RootMap;

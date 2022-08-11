@@ -8,20 +8,11 @@ namespace ossia::nodes
 
 struct sound_sampler
 {
-  void set_start(std::size_t v)
-  {
-    start = v;
-  }
+  void set_start(std::size_t v) { start = v; }
 
-  void set_upmix(std::size_t v)
-  {
-    upmix = v;
-  }
+  void set_upmix(std::size_t v) { upmix = v; }
 
-  [[nodiscard]] std::size_t channels() const
-  {
-    return m_data.size();
-  }
+  [[nodiscard]] std::size_t channels() const { return m_data.size(); }
 
   [[nodiscard]] std::size_t duration() const
   {

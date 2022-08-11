@@ -23,14 +23,8 @@ struct OSSIA_EXPORT value_with_unit final
   {
   }
 
-  auto which() const
-  {
-    return v.which();
-  }
-  operator bool() const
-  {
-    return bool(v);
-  }
+  auto which() const { return v.which(); }
+  operator bool() const { return bool(v); }
 
   template <typename T>
   const T* target() const noexcept

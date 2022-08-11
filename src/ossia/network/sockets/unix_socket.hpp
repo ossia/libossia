@@ -99,23 +99,13 @@ public:
   {
   }
 
-  void close()
-  {
-    m_socket.close();
-  }
+  void close() { m_socket.close(); }
 
-  void write(const boost::asio::const_buffer& buf)
-  {
-    boost::asio::write(m_socket, buf);
-  }
+  void write(const boost::asio::const_buffer& buf) { boost::asio::write(m_socket, buf); }
 
-  void on_close()
-  {
-  }
+  void on_close() { }
 
-  void on_fail()
-  {
-  }
+  void on_fail() { }
 
   proto::socket m_socket;
 };
@@ -163,10 +153,7 @@ public:
     on_open();
   }
 
-  bool connected() const
-  {
-    return m_connected;
-  }
+  bool connected() const { return m_connected; }
 
   void close()
   {

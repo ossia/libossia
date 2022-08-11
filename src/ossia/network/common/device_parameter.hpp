@@ -38,22 +38,13 @@ public:
   ossia::value set_value(ossia::value&& v) override;
 
   ossia::val_type get_value_type() const override;
-  ossia::net::parameter_base& set_value_type(ossia::val_type) override
-  {
-    return *this;
-  }
+  ossia::net::parameter_base& set_value_type(ossia::val_type) override { return *this; }
 
   ossia::access_mode get_access() const override;
-  ossia::net::parameter_base& set_access(ossia::access_mode) override
-  {
-    return *this;
-  }
+  ossia::net::parameter_base& set_access(ossia::access_mode) override { return *this; }
 
   const ossia::domain& get_domain() const override;
-  ossia::net::parameter_base& set_domain(const ossia::domain&) override
-  {
-    return *this;
-  }
+  ossia::net::parameter_base& set_domain(const ossia::domain&) override { return *this; }
 
   ossia::bounding_mode get_bounding() const override;
   ossia::net::parameter_base& set_bounding(ossia::bounding_mode) override
@@ -86,10 +77,7 @@ protected:
     //  current value
   }
 
-  auto& get_protocol()
-  {
-    return get_node().get_device().get_protocol();
-  }
+  auto& get_protocol() { return get_node().get_device().get_protocol(); }
 
   ossia::value m_current_value{};
 

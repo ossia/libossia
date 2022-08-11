@@ -13,11 +13,7 @@ struct state_execution_visitor
     std::forward<T>(m).launch();
   }
 
-  void operator()(ossia::monostate)
-  {
-  }
-  void operator()()
-  {
-  }
+  void operator()(ossia::monostate) { }
+  void operator()() { }
 };
 }

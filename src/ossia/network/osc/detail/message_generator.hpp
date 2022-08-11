@@ -53,20 +53,14 @@ public:
   const oscpack::OutboundPacketStream& operator()(ossia::string_view name, const char* v)
       = delete;
 
-  void write(const char* arg)
-  {
-    p << std::string_view(arg);
-  }
+  void write(const char* arg) { p << std::string_view(arg); }
 
   template <typename Arg>
   void write(const Arg& arg)
   {
     p << arg;
   }
-  void write(const ossia::value& v)
-  {
-    v.apply(ValueWriter{{p, ossia::unit_t{}}});
-  };
+  void write(const ossia::value& v) { v.apply(ValueWriter{{p, ossia::unit_t{}}}); };
   void write(const std::vector<ossia::value>& v)
   {
     ValueWriter{{p, ossia::unit_t{}}}(v);
@@ -82,10 +76,7 @@ public:
     return p;
   }
 
-  const oscpack::OutboundPacketStream& stream() const
-  {
-    return p;
-  }
+  const oscpack::OutboundPacketStream& stream() const { return p; }
 
   oscpack::OutboundPacketStream& p;
 };

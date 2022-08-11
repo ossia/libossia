@@ -99,13 +99,9 @@ void qml_exec::stop(qml_interval* itvl)
   m_timer = std::nullopt;
 }
 
-qml_exec::qml_exec()
-{
-}
+qml_exec::qml_exec() { }
 
-qml_exec::~qml_exec()
-{
-}
+qml_exec::~qml_exec() { }
 
 void qml_exec::timerEvent(QTimerEvent* event)
 {

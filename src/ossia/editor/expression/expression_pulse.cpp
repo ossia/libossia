@@ -37,13 +37,9 @@ void expression_pulse::reset()
   m_result = false;
 }
 
-void expression_pulse::on_first_callback_added()
-{
-}
+void expression_pulse::on_first_callback_added() { }
 
-void expression_pulse::on_removing_last_callback()
-{
-}
+void expression_pulse::on_removing_last_callback() { }
 
 const destination& expression_pulse::get_destination() const
 {

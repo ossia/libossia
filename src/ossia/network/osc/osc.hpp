@@ -64,10 +64,7 @@ public:
       const ossia::net::message_origin_identifier&, const ossia::net::parameter_base&,
       const ossia::value& v) override;
 
-  void enable_buffering(bool b)
-  {
-    m_buffering = b;
-  }
+  void enable_buffering(bool b) { m_buffering = b; }
   void send_buffer();
 
 private:

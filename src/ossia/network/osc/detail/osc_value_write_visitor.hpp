@@ -129,9 +129,7 @@ struct osc_value_send_visitor
     ossia::logger().error("osc_value_send_visitor: unknown error");
   }
 
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 
 template <typename Parameter, typename OscPolicy>
@@ -197,8 +195,6 @@ struct osc_value_write_visitor
       }
     }
   }
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 }

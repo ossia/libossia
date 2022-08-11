@@ -123,10 +123,7 @@ public:
   /**
    * @brief Begin observation without notifying the other computers.
    */
-  virtual bool observe_quietly(parameter_base&, bool)
-  {
-    return false;
-  }
+  virtual bool observe_quietly(parameter_base&, bool) { return false; }
 
   /**
    * @brief If the protocol supports it, request the namespace corresponding
@@ -149,15 +146,9 @@ public:
   virtual void set_device(ossia::net::device_base& dev);
 
   //! Replace the loggers used
-  virtual void set_logger(const network_logger& l)
-  {
-    m_logger = l;
-  }
+  virtual void set_logger(const network_logger& l) { m_logger = l; }
 
-  virtual const network_logger& get_logger() const noexcept
-  {
-    return m_logger;
-  }
+  virtual const network_logger& get_logger() const noexcept { return m_logger; }
 
   virtual bool connected() const noexcept;
   virtual void connect();
@@ -165,24 +156,12 @@ public:
   Nano::Signal<void()> on_connection_closed;
   Nano::Signal<void()> on_connection_failure;
 
-  virtual void start_execution()
-  {
-  }
-  virtual void stop_execution()
-  {
-  }
-  virtual void stop()
-  {
-  }
+  virtual void start_execution() { }
+  virtual void stop_execution() { }
+  virtual void stop() { }
 
-  flags get_flags() const noexcept
-  {
-    return m_flags;
-  }
-  bool test_flag(flags f) const noexcept
-  {
-    return m_flags & f;
-  }
+  flags get_flags() const noexcept { return m_flags; }
+  bool test_flag(flags f) const noexcept { return m_flags & f; }
 
 protected:
   const flags m_flags{};
@@ -195,15 +174,9 @@ class can_learn : public T
 public:
   using T::T;
 
-  bool learning() const noexcept
-  {
-    return m_learning;
-  }
+  bool learning() const noexcept { return m_learning; }
 
-  void set_learning(bool v) noexcept
-  {
-    m_learning = v;
-  }
+  void set_learning(bool v) noexcept { m_learning = v; }
 
 private:
   std::atomic_bool m_learning{};

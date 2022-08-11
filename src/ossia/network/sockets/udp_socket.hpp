@@ -101,10 +101,7 @@ public:
   {
   }
 
-  void connect()
-  {
-    m_socket.open(boost::asio::ip::udp::v4());
-  }
+  void connect() { m_socket.open(boost::asio::ip::udp::v4()); }
 
   void close()
   {

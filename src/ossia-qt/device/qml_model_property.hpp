@@ -33,10 +33,7 @@ public:
   QString node() const;
   QObject* parentNode() const;
   QObject* device() const;
-  auto parentOssiaNode() const
-  {
-    return m_parentOssiaNode;
-  }
+  auto parentOssiaNode() const { return m_parentOssiaNode; }
 
   void updateCount();
   void reloadParentNode();

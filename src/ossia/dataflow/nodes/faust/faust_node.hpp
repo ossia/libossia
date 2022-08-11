@@ -25,14 +25,9 @@ public:
     faust_node_utils{}.exec(*this, *m_dsp, tk, e);
   }
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Faust";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Faust"; }
 
-  void all_notes_off() noexcept override
-  {
-  }
+  void all_notes_off() noexcept override { }
 };
 
 class faust_synth final : public ossia::graph_node
@@ -59,10 +54,7 @@ public:
     faust_node_utils{}.exec_synth(*this, *m_dsp, tk, e);
   }
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Faust Synth";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Faust Synth"; }
 
   void all_notes_off() noexcept override
   {

@@ -27,35 +27,14 @@ public:
   OSSIA_EXPORT friend bool operator==(const state& lhs, const state& rhs);
   OSSIA_EXPORT friend bool operator!=(const state& lhs, const state& rhs);
 
-  auto begin()
-  {
-    return m_children.begin();
-  }
-  auto end()
-  {
-    return m_children.end();
-  }
-  auto begin() const
-  {
-    return m_children.begin();
-  }
-  auto end() const
-  {
-    return m_children.end();
-  }
-  auto cbegin() const
-  {
-    return m_children.cbegin();
-  }
-  auto cend() const
-  {
-    return m_children.cend();
-  }
+  auto begin() { return m_children.begin(); }
+  auto end() { return m_children.end(); }
+  auto begin() const { return m_children.begin(); }
+  auto end() const { return m_children.end(); }
+  auto cbegin() const { return m_children.cbegin(); }
+  auto cend() const { return m_children.cend(); }
 
-  auto& children() const
-  {
-    return m_children;
-  }
+  auto& children() const { return m_children; }
 
   std::size_t size() const;
   bool empty() const;

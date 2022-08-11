@@ -30,10 +30,7 @@ struct static_html_builder_impl
 <body>)_");
   }
 
-  void build_footer()
-  {
-    out = fmt::format_to(out, R"_(</body></html>)_");
-  }
+  void build_footer() { out = fmt::format_to(out, R"_(</body></html>)_"); }
 
   void build_node(ossia::net::node_base& node)
   {

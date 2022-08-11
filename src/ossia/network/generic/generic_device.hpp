@@ -19,14 +19,8 @@ public:
   generic_device(
       std::unique_ptr<ossia::net::protocol_base> protocol_base, std::string name);
 
-  const ossia::net::node_base& get_root_node() const override
-  {
-    return *this;
-  }
-  ossia::net::node_base& get_root_node() override
-  {
-    return *this;
-  }
+  const ossia::net::node_base& get_root_node() const override { return *this; }
+  ossia::net::node_base& get_root_node() override { return *this; }
 
   using generic_node::get_name;
   using generic_node::set_name;

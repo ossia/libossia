@@ -32,10 +32,7 @@ public:
   void register_parameter(virtual_audio_parameter& p);
   void unregister_parameter(virtual_audio_parameter& p);
 
-  [[nodiscard]] ossia::net::device_base& get_device() const
-  {
-    return *m_dev;
-  }
+  [[nodiscard]] ossia::net::device_base& get_device() const { return *m_dev; }
   ossia::audio_parameter* main_audio_in{};
   ossia::audio_parameter* main_audio_out{};
   std::vector<ossia::audio_parameter*> audio_ins;

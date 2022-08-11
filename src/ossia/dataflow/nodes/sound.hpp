@@ -107,10 +107,7 @@ struct at_end
       : func{t}
   {
   }
-  ~at_end()
-  {
-    func();
-  }
+  ~at_end() { func(); }
 };
 
 struct resampler
@@ -259,10 +256,7 @@ struct sound_processing_info
     m_resampler.transport(date);
   }
 
-  void set_native_tempo(double v)
-  {
-    tempo = v;
-  }
+  void set_native_tempo(double v) { tempo = v; }
 
   double update_stretch(
       const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
@@ -306,9 +300,7 @@ public:
     m_outlets.push_back(&audio_out);
   }
 
-  void transport(time_value date) override
-  {
-  }
+  void transport(time_value date) override { }
 
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {

@@ -26,10 +26,7 @@ public:
   UpdateImpl update_fun{*this};
   TickImpl tick_fun{*this};
 
-  ~graph_static() override
-  {
-    clear();
-  }
+  ~graph_static() override { clear(); }
 
   void sort_all_nodes(const graph_t& gr)
   {

@@ -34,9 +34,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -112,10 +110,7 @@ struct OSSIA_EXPORT behavior final
    */
   void reset();
 
-  operator bool() const
-  {
-    return bool(v);
-  }
+  operator bool() const { return bool(v); }
 
   template <typename T>
   const T& get() const

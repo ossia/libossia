@@ -269,10 +269,7 @@ struct osc_inbound_numeric_visitor
   }
 
   oscpack::ReceivedMessageArgumentIterator cur_it;
-  ossia::value operator()(ossia::impulse imp) const
-  {
-    return imp;
-  }
+  ossia::value operator()(ossia::impulse imp) const { return imp; }
 
   ossia::value operator()(int32_t i) const
   {
@@ -294,10 +291,7 @@ struct osc_inbound_numeric_visitor
     return ossia::net::osc_utilities::get_char(cur_it, c);
   }
 
-  ossia::value operator()(const std::string& str) const
-  {
-    return str;
-  }
+  ossia::value operator()(const std::string& str) const { return str; }
 
   template <std::size_t N>
   ossia::value operator()(std::array<float, N> vec) const
@@ -311,10 +305,7 @@ struct osc_inbound_numeric_visitor
         cur_it, !t.empty() ? ossia::convert<float>(t[0]) : 0.f);
   }
 
-  ossia::value operator()() const
-  {
-    return {};
-  }
+  ossia::value operator()() const { return {}; }
 };
 
 inline ossia::value to_numeric_value(

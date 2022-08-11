@@ -10,31 +10,16 @@ namespace ossia::oscquery
 struct osc_type_visitor
 {
   std::string& type;
-  void operator()()
-  {
-    type += oscpack::TypeTagValues::NIL_TYPE_TAG;
-  }
-  void operator()(impulse)
-  {
-    type += oscpack::TypeTagValues::INFINITUM_TYPE_TAG;
-  }
-  void operator()(int v)
-  {
-    type += oscpack::TypeTagValues::INT32_TYPE_TAG;
-  }
-  void operator()(float v)
-  {
-    type += oscpack::TypeTagValues::FLOAT_TYPE_TAG;
-  }
+  void operator()() { type += oscpack::TypeTagValues::NIL_TYPE_TAG; }
+  void operator()(impulse) { type += oscpack::TypeTagValues::INFINITUM_TYPE_TAG; }
+  void operator()(int v) { type += oscpack::TypeTagValues::INT32_TYPE_TAG; }
+  void operator()(float v) { type += oscpack::TypeTagValues::FLOAT_TYPE_TAG; }
   void operator()(bool v)
   {
     type += v ? oscpack::TypeTagValues::TRUE_TYPE_TAG
               : oscpack::TypeTagValues::FALSE_TYPE_TAG;
   }
-  void operator()(char v)
-  {
-    type += oscpack::TypeTagValues::CHAR_TYPE_TAG;
-  }
+  void operator()(char v) { type += oscpack::TypeTagValues::CHAR_TYPE_TAG; }
   void operator()(const std::string& v)
   {
     type += oscpack::TypeTagValues::STRING_TYPE_TAG;

@@ -56,9 +56,7 @@ std::unique_ptr<node_base> alias_node::make_child(const std::string& name)
   return nullptr;
 }
 
-void alias_node::removing_child(node_base&)
-{
-}
+void alias_node::removing_child(node_base&) { }
 
 void alias_node::on_deletion(const node_base& orig)
 {
@@ -114,22 +112,16 @@ std::unique_ptr<node_base> alias_path::make_child(const std::string& name)
   return {};
 }
 
-void alias_path::removing_child(node_base&)
-{
-}
+void alias_path::removing_child(node_base&) { }
 
-void alias_path::pull_value()
-{
-}
+void alias_path::pull_value() { }
 
 std::future<void> alias_path::pull_value_async()
 {
   return {};
 }
 
-void alias_path::request_value()
-{
-}
+void alias_path::request_value() { }
 
 value alias_path::value() const
 {

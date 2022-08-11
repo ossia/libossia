@@ -43,14 +43,8 @@ struct parameter_data
 
   extended_attributes extended;
 
-  operator const ossia::extended_attributes&() const
-  {
-    return extended;
-  }
-  operator ossia::extended_attributes&()
-  {
-    return extended;
-  }
+  operator const ossia::extended_attributes&() const { return extended; }
+  operator ossia::extended_attributes&() { return extended; }
 };
 
 /**
@@ -101,14 +95,8 @@ public:
 
   extended_attributes extended;
 
-  operator const ossia::extended_attributes&() const
-  {
-    return extended;
-  }
-  operator ossia::extended_attributes&()
-  {
-    return extended;
-  }
+  operator const ossia::extended_attributes&() const { return extended; }
+  operator ossia::extended_attributes&() { return extended; }
 
   void set_value(const ossia::value& v)
   {
@@ -128,45 +116,15 @@ public:
                && v == previous_val);
   }
 
-  const ossia::value& value() const
-  {
-    return this->val;
-  }
-  ossia::val_type get_value_type() const
-  {
-    return type;
-  }
-  access_mode get_access() const
-  {
-    return access;
-  }
-  const ossia::domain& get_domain() const
-  {
-    return domain;
-  }
-  bounding_mode get_bounding() const
-  {
-    return bounding;
-  }
-  repetition_filter get_repetition_filter() const
-  {
-    return rep_filter;
-  }
-  const ossia::unit_t& get_unit() const
-  {
-    return unit;
-  }
-  bool get_disabled() const
-  {
-    return muted;
-  }
-  bool get_muted() const
-  {
-    return muted;
-  }
-  bool get_critical() const
-  {
-    return critical;
-  }
+  const ossia::value& value() const { return this->val; }
+  ossia::val_type get_value_type() const { return type; }
+  access_mode get_access() const { return access; }
+  const ossia::domain& get_domain() const { return domain; }
+  bounding_mode get_bounding() const { return bounding; }
+  repetition_filter get_repetition_filter() const { return rep_filter; }
+  const ossia::unit_t& get_unit() const { return unit; }
+  bool get_disabled() const { return muted; }
+  bool get_muted() const { return muted; }
+  bool get_critical() const { return critical; }
 };
 }

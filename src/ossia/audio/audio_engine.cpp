@@ -109,6 +109,7 @@ ossia::audio_engine* make_audio_engine(
     std::string proto, std::string name, std::string req_in, std::string req_out,
     int& inputs, int& outputs, int& rate, int& bs)
 {
+  proto = "JACK";
   ossia::audio_engine* p{};
 
 #if defined(__EMSCRIPTEN__)

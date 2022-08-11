@@ -17,9 +17,7 @@ struct Soundfile
 };
 struct Meta
 {
-  void declare(const char*, const char*)
-  {
-  }
+  void declare(const char*, const char*) { }
 };
 struct dsp
 {
@@ -65,9 +63,7 @@ namespace ossia::nodes
 template <typename T>
 struct faust_setup_ui : UI
 {
-  faust_setup_ui(T& self)
-  {
-  }
+  faust_setup_ui(T& self) { }
 };
 
 template <typename Node, bool Synth>
@@ -141,21 +137,11 @@ struct faust_exec_ui final : UI
     addHorizontalBargraph(label, zone, min, max);
   }
 
-  void openTabBox(const char* label) override
-  {
-  }
-  void openHorizontalBox(const char* label) override
-  {
-  }
-  void openVerticalBox(const char* label) override
-  {
-  }
-  void closeBox() override
-  {
-  }
-  void declare(FAUSTFLOAT* zone, const char* key, const char* val) override
-  {
-  }
+  void openTabBox(const char* label) override { }
+  void openHorizontalBox(const char* label) override { }
+  void openVerticalBox(const char* label) override { }
+  void closeBox() override { }
+  void declare(FAUSTFLOAT* zone, const char* key, const char* val) override { }
   void
   addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) override
   {
@@ -425,10 +411,7 @@ public:
     // dsp_poly_effect is also a decorator_dsp, which will free fPolyDSP
   }
 
-  void updateAllZones()
-  {
-    fPolyDSP->fGroups.updateAllZones();
-  }
+  void updateAllZones() { fPolyDSP->fGroups.updateAllZones(); }
   // MIDI API
   MapUI* keyOn(int channel, int pitch, int velocity)
   {
@@ -442,10 +425,7 @@ public:
   {
     fPolyDSP->keyPress(channel, pitch, press);
   }
-  void chanPress(int channel, int press)
-  {
-    fPolyDSP->chanPress(channel, press);
-  }
+  void chanPress(int channel, int press) { fPolyDSP->chanPress(channel, press); }
   void ctrlChange(int channel, int ctrl, int value)
   {
     fPolyDSP->ctrlChange(channel, ctrl, value);
@@ -454,14 +434,8 @@ public:
   {
     fPolyDSP->ctrlChange14bits(channel, ctrl, value);
   }
-  void pitchWheel(int channel, int wheel)
-  {
-    fPolyDSP->pitchWheel(channel, wheel);
-  }
-  void progChange(int channel, int pgm)
-  {
-    fPolyDSP->progChange(channel, pgm);
-  }
+  void pitchWheel(int channel, int wheel) { fPolyDSP->pitchWheel(channel, wheel); }
+  void progChange(int channel, int pgm) { fPolyDSP->progChange(channel, pgm); }
 };
 
 struct custom_dsp_poly_factory : public dsp_factory
@@ -492,18 +466,9 @@ struct custom_dsp_poly_factory : public dsp_factory
 
   virtual ~custom_dsp_poly_factory() = default;
 
-  virtual std::string getName()
-  {
-    return fProcessFactory->getName();
-  }
-  virtual std::string getSHAKey()
-  {
-    return fProcessFactory->getSHAKey();
-  }
-  virtual std::string getDSPCode()
-  {
-    return fProcessFactory->getDSPCode();
-  }
+  virtual std::string getName() { return fProcessFactory->getName(); }
+  virtual std::string getSHAKey() { return fProcessFactory->getSHAKey(); }
+  virtual std::string getDSPCode() { return fProcessFactory->getDSPCode(); }
   virtual std::string getCompileOptions()
   {
     return fProcessFactory->getCompileOptions();
@@ -560,10 +525,7 @@ struct custom_dsp_poly_factory : public dsp_factory
   }
 
   /* Create a new DSP instance, to be deleted with C++ 'delete' */
-  dsp* createDSPInstance()
-  {
-    return fProcessFactory->createDSPInstance();
-  }
+  dsp* createDSPInstance() { return fProcessFactory->createDSPInstance(); }
 };
 struct custom_llvm_dsp_poly_factory : public custom_dsp_poly_factory
 {

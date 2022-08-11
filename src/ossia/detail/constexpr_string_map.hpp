@@ -7,19 +7,10 @@ namespace ossia
 {
 struct small_string
 {
-  static constexpr int size()
-  {
-    return 64;
-  }
+  static constexpr int size() { return 64; }
   char arr[64];
-  constexpr const char& operator[](int i) const
-  {
-    return arr[i];
-  }
-  constexpr char& operator[](int i)
-  {
-    return arr[i];
-  }
+  constexpr const char& operator[](int i) const { return arr[i]; }
+  constexpr char& operator[](int i) { return arr[i]; }
 
   friend constexpr small_string operator+(small_string lhs, small_string rhs)
   {

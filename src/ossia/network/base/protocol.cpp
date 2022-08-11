@@ -11,9 +11,7 @@ protocol_base::~protocol_base() = default;
 network_logger::network_logger() = default;
 network_logger::~network_logger() = default;
 
-void protocol_base::request(parameter_base&)
-{
-}
+void protocol_base::request(parameter_base&) { }
 
 bool protocol_base::push(const parameter_base& param, value&& v)
 {
@@ -61,18 +59,14 @@ std::future<void> protocol_base::update_async(node_base& node_base)
   return promise.get_future();
 }
 
-void protocol_base::set_device(device_base& dev)
-{
-}
+void protocol_base::set_device(device_base& dev) { }
 
 bool protocol_base::connected() const noexcept
 {
   return true;
 }
 
-void protocol_base::connect()
-{
-}
+void protocol_base::connect() { }
 
 std::future<void> protocol_base::pull_async(parameter_base&)
 {

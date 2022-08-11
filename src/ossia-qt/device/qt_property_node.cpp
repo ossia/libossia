@@ -121,8 +121,6 @@ std::unique_ptr<net::node_base> qt_property_node::make_child(const std::string& 
   return nullptr;
 }
 
-void qt_property_node::removing_child(net::node_base&)
-{
-}
+void qt_property_node::removing_child(net::node_base&) { }
 }
 }

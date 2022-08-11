@@ -43,10 +43,7 @@ public:
   using QQuickItem::QQuickItem;
   std::function<float(double, float, float)> segment();
 
-  QEasingCurve::Type type() const
-  {
-    return m_type;
-  }
+  QEasingCurve::Type type() const { return m_type; }
 
 public:
   void typeChanged(QEasingCurve::Type arg_1) E_SIGNAL(OSSIA_EXPORT, typeChanged, arg_1);

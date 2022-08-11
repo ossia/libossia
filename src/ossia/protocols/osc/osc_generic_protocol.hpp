@@ -134,15 +134,9 @@ public:
 
   ~osc_generic_bidir_protocol() override = default;
 
-  bool update(ossia::net::node_base& node_base) override
-  {
-    return false;
-  }
+  bool update(ossia::net::node_base& node_base) override { return false; }
 
-  bool pull(ossia::net::parameter_base& parameter_base) override
-  {
-    return false;
-  }
+  bool pull(ossia::net::parameter_base& parameter_base) override { return false; }
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override
   {
@@ -239,15 +233,9 @@ public:
     }
   }
 
-  void set_device(ossia::net::device_base& dev) override
-  {
-    m_device = &dev;
-  }
+  void set_device(ossia::net::device_base& dev) override { m_device = &dev; }
 
-  auto writer() noexcept
-  {
-    return writer_type{to_client};
-  }
+  auto writer() noexcept { return writer_type{to_client}; }
 
   using ossia::net::protocol_base::m_logger;
   ossia::net::network_context_ptr m_ctx;
@@ -292,15 +280,9 @@ public:
 
   ~osc_generic_server_protocol() override = default;
 
-  bool update(ossia::net::node_base& node_base) override
-  {
-    return false;
-  }
+  bool update(ossia::net::node_base& node_base) override { return false; }
 
-  bool pull(ossia::net::parameter_base& parameter_base) override
-  {
-    return false;
-  }
+  bool pull(ossia::net::parameter_base& parameter_base) override { return false; }
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override
   {
@@ -345,15 +327,9 @@ public:
     return OscMode::on_received_message(*this, m);
   }
 
-  void set_device(ossia::net::device_base& dev) override
-  {
-    m_device = &dev;
-  }
+  void set_device(ossia::net::device_base& dev) override { m_device = &dev; }
 
-  auto writer() noexcept
-  {
-    return writer_type{m_server};
-  }
+  auto writer() noexcept { return writer_type{m_server}; }
 
   using ossia::net::protocol_base::m_logger;
   ossia::net::network_context_ptr m_ctx;
@@ -402,15 +378,9 @@ public:
 
   ~osc_generic_client_protocol() override = default;
 
-  bool update(ossia::net::node_base& node_base) override
-  {
-    return false;
-  }
+  bool update(ossia::net::node_base& node_base) override { return false; }
 
-  bool pull(ossia::net::parameter_base& parameter_base) override
-  {
-    return false;
-  }
+  bool pull(ossia::net::parameter_base& parameter_base) override { return false; }
 
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override
   {
@@ -455,25 +425,13 @@ public:
     return OscMode::on_received_message(*this, m);
   }
 
-  void set_device(ossia::net::device_base& dev) override
-  {
-    m_device = &dev;
-  }
+  void set_device(ossia::net::device_base& dev) override { m_device = &dev; }
 
-  auto writer() noexcept
-  {
-    return writer_type{m_client};
-  }
+  auto writer() noexcept { return writer_type{m_client}; }
 
-  bool connected() const noexcept override
-  {
-    return m_client.connected();
-  }
+  bool connected() const noexcept override { return m_client.connected(); }
 
-  void connect() override
-  {
-    return m_client.connect();
-  }
+  void connect() override { return m_client.connect(); }
 
   using ossia::net::protocol_base::m_logger;
   ossia::net::network_context_ptr m_ctx;

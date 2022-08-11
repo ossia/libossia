@@ -101,9 +101,7 @@ struct value2atom
       v.apply(*this);
   }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 template <typename T>
@@ -212,10 +210,7 @@ struct value_visitor
       outlet_anything(x->m_setout, ossia_pd::o_sym_set, va.size(), list_ptr);
   }
 
-  void operator()() const
-  {
-    pd_error(x, "%s received invalid data", x->m_name->s_name);
-  }
+  void operator()() const { pd_error(x, "%s received invalid data", x->m_name->s_name); }
 };
 
 struct domain_visitor
@@ -338,9 +333,7 @@ struct domain_visitor
     // TODO range
     x->m_range_size = 0;
   }
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 
 ossia::value atom2value(t_symbol* s, int argc, t_atom* argv);

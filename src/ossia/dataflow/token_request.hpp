@@ -172,22 +172,13 @@ struct token_request
   }
 
   //! Does the tick go forward
-  [[nodiscard]] constexpr bool forward() const noexcept
-  {
-    return date > prev_date;
-  }
+  [[nodiscard]] constexpr bool forward() const noexcept { return date > prev_date; }
 
   //! Is the tick not advancing
-  [[nodiscard]] constexpr bool paused() const noexcept
-  {
-    return date == prev_date;
-  }
+  [[nodiscard]] constexpr bool paused() const noexcept { return date == prev_date; }
 
   //! Does the tick go backward (e.g. speed < 0)
-  [[nodiscard]] constexpr bool backward() const noexcept
-  {
-    return date < prev_date;
-  }
+  [[nodiscard]] constexpr bool backward() const noexcept { return date < prev_date; }
 
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
   //! return the next occuring quantification date, if such date is in the tick

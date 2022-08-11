@@ -65,10 +65,7 @@ struct jack_client
     if(client)
       jack_client_close(client);
   }
-  operator jack_client_t*() const noexcept
-  {
-    return client;
-  }
+  operator jack_client_t*() const noexcept { return client; }
 
   jack_client_t* client{};
 };

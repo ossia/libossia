@@ -112,10 +112,7 @@ public:
       stop();
   }
 
-  bool connected() const
-  {
-    return m_open;
-  }
+  bool connected() const { return m_open; }
 
   void stop()
   {
@@ -133,18 +130,9 @@ public:
     m_open = false;
   }
 
-  auto& client()
-  {
-    return m_client;
-  }
-  auto& handle()
-  {
-    return m_hdl;
-  }
-  bool after_connect()
-  {
-    return m_connected;
-  }
+  auto& client() { return m_client; }
+  auto& handle() { return m_hdl; }
+  bool after_connect() { return m_connected; }
 
   void connect(const std::string& uri)
   {

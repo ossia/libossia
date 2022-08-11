@@ -109,15 +109,9 @@ struct convert_to_value_visitor
     return val.dataspace_value;
   }
 
-  OSSIA_INLINE ossia::value operator()(ossia::value val)
-  {
-    return val;
-  }
+  OSSIA_INLINE ossia::value operator()(ossia::value val) { return val; }
 
-  OSSIA_INLINE ossia::value operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::value operator()() { return {}; }
 };
 
 struct convert_to_unit_visitor
@@ -161,14 +155,8 @@ struct convert_to_unit_visitor
     return typename T::unit_type{};
   }
 
-  OSSIA_INLINE ossia::unit_t operator()(ossia::value val)
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::unit_t operator()(ossia::value val) { return {}; }
 
-  OSSIA_INLINE ossia::unit_t operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::unit_t operator()() { return {}; }
 };
 }

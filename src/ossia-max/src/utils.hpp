@@ -432,9 +432,7 @@ struct domain_visitor
     // TODO range
     x->m_range_size = 0;
   }
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 
 } // namespace max

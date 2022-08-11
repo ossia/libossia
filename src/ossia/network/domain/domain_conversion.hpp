@@ -84,10 +84,7 @@ struct domain_conversion<domain_base<bool>>
 template <>
 struct domain_conversion<vector_domain>
 {
-  OSSIA_INLINE domain operator()(const vector_domain& src)
-  {
-    return src;
-  }
+  OSSIA_INLINE domain operator()(const vector_domain& src) { return src; }
 
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
@@ -99,10 +96,7 @@ struct domain_conversion<vector_domain>
 template <std::size_t N>
 struct domain_conversion<vecf_domain<N>>
 {
-  OSSIA_INLINE domain operator()(const vecf_domain<N>& src)
-  {
-    return src;
-  }
+  OSSIA_INLINE domain operator()(const vecf_domain<N>& src) { return src; }
   vecf_domain<N> list_func(const vector_domain& t)
   {
     vecf_domain<N> dom;
@@ -129,10 +123,7 @@ struct domain_conversion<vecf_domain<N>>
     return dom;
   }
 
-  OSSIA_INLINE domain operator()(const vector_domain& t)
-  {
-    return list_func(t);
-  }
+  OSSIA_INLINE domain operator()(const vector_domain& t) { return list_func(t); }
 
   OSSIA_INLINE domain operator()(const domain_base<int>& d)
   {
@@ -166,10 +157,7 @@ struct domain_conversion<vecf_domain<N>>
     return res;
   }
 
-  OSSIA_INLINE domain operator()(const domain_base<float>& d)
-  {
-    return d;
-  }
+  OSSIA_INLINE domain operator()(const domain_base<float>& d) { return d; }
 
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)
@@ -181,10 +169,7 @@ struct domain_conversion<vecf_domain<N>>
 template <>
 struct domain_conversion<domain_base<std::string>>
 {
-  OSSIA_INLINE domain operator()(const domain_base<std::string>& src)
-  {
-    return src;
-  }
+  OSSIA_INLINE domain operator()(const domain_base<std::string>& src) { return src; }
 
   template <typename T>
   OSSIA_INLINE domain operator()(const T&)

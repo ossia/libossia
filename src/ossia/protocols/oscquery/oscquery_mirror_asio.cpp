@@ -158,9 +158,7 @@ void oscquery_mirror_asio_protocol::stop()
   }
 }
 
-void oscquery_mirror_asio_protocol::cleanup_connections()
-{
-}
+void oscquery_mirror_asio_protocol::cleanup_connections() { }
 
 void oscquery_mirror_asio_protocol::http_send_message(const std::string& str)
 {

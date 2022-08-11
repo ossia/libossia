@@ -21,9 +21,7 @@ std::future<void> parameter_base::pull_value_async()
   return {};
 }
 
-void parameter_base::request_value()
-{
-}
+void parameter_base::request_value() { }
 
 value parameter_base::value(destination_index idx) const
 {

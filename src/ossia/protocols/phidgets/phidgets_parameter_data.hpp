@@ -24,10 +24,7 @@ struct phidget_handle_t
     return sn;
   }
 
-  operator PhidgetHandle() const
-  {
-    return phid;
-  }
+  operator PhidgetHandle() const { return phid; }
 
   phidget_handle_t get_parent() const
   {
@@ -96,22 +93,10 @@ struct phidget_handle_t
     return dc;
   }
 
-  std::string get_device_classname()
-  {
-    return phidget_name(get_device_class());
-  }
-  std::string get_channel_classname()
-  {
-    return phidget_name(get_channel_class());
-  }
-  std::string get_channel_subclassname()
-  {
-    return phidget_name(get_channel_subclass());
-  }
-  std::string get_device_id_name()
-  {
-    return phidget_id(get_device_id());
-  }
+  std::string get_device_classname() { return phidget_name(get_device_class()); }
+  std::string get_channel_classname() { return phidget_name(get_channel_class()); }
+  std::string get_channel_subclassname() { return phidget_name(get_channel_subclass()); }
+  std::string get_device_id_name() { return phidget_id(get_device_id()); }
 
   const char* phidget_id(Phidget_DeviceID cls)
   {

@@ -44,12 +44,8 @@ auto alloc_complex(std::size_t)
 {
   return nullptr;
 }
-auto fft_free(void*)
-{
-}
-auto destroy_plan(void*)
-{
-}
+auto fft_free(void*) { }
+auto destroy_plan(void*) { }
 auto create_plan_r2c(std::size_t, void*, void*, int)
 {
   return fft_plan{};
@@ -58,9 +54,7 @@ auto create_plan_c2r(std::size_t, void*, void*, int)
 {
   return fft_plan{};
 }
-auto run_plan_r2c(fft_plan, void*, void*)
-{
-}
+auto run_plan_r2c(fft_plan, void*, void*) { }
 auto run_plan_c2r(fft_plan, void*, void*)
 {
   return fft_plan{};
@@ -199,10 +193,7 @@ static const constexpr auto alloc_complex
     = [](std::size_t sz) { return fft_cplx_allocator.allocate(sz); };
 static const constexpr struct
 {
-  void operator()(fft_real* p) const noexcept
-  {
-    fft_real_allocator.deallocate(p, 0);
-  }
+  void operator()(fft_real* p) const noexcept { fft_real_allocator.deallocate(p, 0); }
   void operator()(fft_complex* p) const noexcept
   {
     fft_cplx_allocator.deallocate(reinterpret_cast<kfr::c64*>(p), 0);

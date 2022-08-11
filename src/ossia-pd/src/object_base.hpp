@@ -68,18 +68,9 @@ public:
 
   void enqueue_value(ossia::value v);
   void output_value();
-  auto get_node() const
-  {
-    return node;
-  }
-  auto get_owner() const
-  {
-    return owner;
-  }
-  t_atom* get_atom_addr_ptr()
-  {
-    return &m_addr;
-  }
+  auto get_node() const { return node; }
+  auto get_owner() const { return owner; }
+  t_atom* get_atom_addr_ptr() { return &m_addr; }
   void set_owner_addr();
 
   inline bool operator==(const t_matcher& rhs) const noexcept

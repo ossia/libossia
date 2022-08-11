@@ -18,10 +18,7 @@ class phidget_generic_parameter : public ossia::net::parameter_base
   {
     return reinterpret_cast<decltype(Impl::phidget)>(m_phidget);
   }
-  auto get_impl() const
-  {
-    return Impl{get_phidget()};
-  }
+  auto get_impl() const { return Impl{get_phidget()}; }
 
 public:
   phidget_generic_parameter(PhidgetHandle p, net::node_base& par)
@@ -31,27 +28,14 @@ public:
     m_domain = get_impl().get_domain();
   }
 
-  void on_first_callback_added() override
-  {
-    get_impl().enable_callbacks(*this);
-  }
-  void on_removing_last_callback() override
-  {
-    get_impl().disable_callbacks();
-  }
+  void on_first_callback_added() override { get_impl().enable_callbacks(*this); }
+  void on_removing_last_callback() override { get_impl().disable_callbacks(); }
 
-  ~phidget_generic_parameter()
-  {
-  }
+  ~phidget_generic_parameter() { }
 
-  void pull_value() override
-  {
-  }
+  void pull_value() override { }
 
-  ossia::value value() const override
-  {
-    return get_impl().get_value();
-  }
+  ossia::value value() const override { return get_impl().get_value(); }
 
   net::parameter_base& push_value(const ossia::value& val) override
   {
@@ -63,10 +47,7 @@ public:
     set_value(val);
     return *this;
   }
-  net::parameter_base& push_value() override
-  {
-    return *this;
-  }
+  net::parameter_base& push_value() override { return *this; }
 
   net::parameter_base& set_value(const ossia::value& val) override
   {
@@ -78,47 +59,23 @@ public:
     return *this;
   }
 
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return set_value(v);
-  }
+  net::parameter_base& set_value(ossia::value&& v) override { return set_value(v); }
 
   val_type get_value_type() const override
   {
     return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
   }
 
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
+  net::parameter_base& set_value_type(val_type) override { return *this; }
 
-  access_mode get_access() const override
-  {
-    return ossia::access_mode::BI;
-  }
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
+  access_mode get_access() const override { return ossia::access_mode::BI; }
+  net::parameter_base& set_access(access_mode) override { return *this; }
 
-  const domain& get_domain() const override
-  {
-    return m_domain;
-  }
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
+  const domain& get_domain() const override { return m_domain; }
+  net::parameter_base& set_domain(const domain&) override { return *this; }
 
-  bounding_mode get_bounding() const override
-  {
-    return ossia::bounding_mode::FREE;
-  }
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
+  bounding_mode get_bounding() const override { return ossia::bounding_mode::FREE; }
+  net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
 template <typename Impl>
@@ -128,10 +85,7 @@ class phidget_control_parameter : public ossia::net::parameter_base
   {
     return reinterpret_cast<decltype(Impl::phidget)>(m_phidget);
   }
-  auto get_impl() const
-  {
-    return Impl{get_phidget()};
-  }
+  auto get_impl() const { return Impl{get_phidget()}; }
 
   PhidgetHandle m_phidget{};
   ossia::domain m_domain;
@@ -147,18 +101,11 @@ public:
     m_domain = get_impl().get_domain();
   }
 
-  ~phidget_control_parameter() override
-  {
-  }
+  ~phidget_control_parameter() override { }
 
-  ossia::value value() const override
-  {
-    return m_value;
-  }
+  ossia::value value() const override { return m_value; }
 
-  void pull_value() override
-  {
-  }
+  void pull_value() override { }
   net::parameter_base& push_value(const ossia::value& val) override
   {
     set_value(val);
@@ -187,47 +134,23 @@ public:
     return *this;
   }
 
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return set_value(v);
-  }
+  net::parameter_base& set_value(ossia::value&& v) override { return set_value(v); }
 
   val_type get_value_type() const override
   {
     return ossia::value_trait<decltype(Impl{get_phidget()}.get_value())>::ossia_enum;
   }
 
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
+  net::parameter_base& set_value_type(val_type) override { return *this; }
 
-  access_mode get_access() const override
-  {
-    return ossia::access_mode::BI;
-  }
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
+  access_mode get_access() const override { return ossia::access_mode::BI; }
+  net::parameter_base& set_access(access_mode) override { return *this; }
 
-  const domain& get_domain() const override
-  {
-    return m_domain;
-  }
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
+  const domain& get_domain() const override { return m_domain; }
+  net::parameter_base& set_domain(const domain&) override { return *this; }
 
-  bounding_mode get_bounding() const override
-  {
-    return ossia::bounding_mode::FREE;
-  }
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
+  bounding_mode get_bounding() const override { return ossia::bounding_mode::FREE; }
+  net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
 class phidget_open_parameter : public ossia::net::parameter_base
@@ -242,19 +165,11 @@ public:
   {
   }
 
-  ~phidget_open_parameter() override
-  {
-    Phidget_close(m_phidget);
-  }
+  ~phidget_open_parameter() override { Phidget_close(m_phidget); }
 
-  ossia::value value() const override
-  {
-    return m_open;
-  }
+  ossia::value value() const override { return m_open; }
 
-  void pull_value() override
-  {
-  }
+  void pull_value() override { }
 
   net::parameter_base& push_value(const ossia::value& val) override
   {
@@ -266,10 +181,7 @@ public:
     set_value(val);
     return *this;
   }
-  net::parameter_base& push_value() override
-  {
-    return *this;
-  }
+  net::parameter_base& push_value() override { return *this; }
 
   net::parameter_base& set_value(const ossia::value& val) override
   {
@@ -306,47 +218,23 @@ public:
     return *this;
   }
 
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return set_value(v);
-  }
+  net::parameter_base& set_value(ossia::value&& v) override { return set_value(v); }
 
-  val_type get_value_type() const override
-  {
-    return ossia::val_type::BOOL;
-  }
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
+  val_type get_value_type() const override { return ossia::val_type::BOOL; }
+  net::parameter_base& set_value_type(val_type) override { return *this; }
 
-  access_mode get_access() const override
-  {
-    return ossia::access_mode::BI;
-  }
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
+  access_mode get_access() const override { return ossia::access_mode::BI; }
+  net::parameter_base& set_access(access_mode) override { return *this; }
 
   const domain& get_domain() const override
   {
     static const domain d = ossia::make_domain(false, true);
     return d;
   }
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
+  net::parameter_base& set_domain(const domain&) override { return *this; }
 
-  bounding_mode get_bounding() const override
-  {
-    return ossia::bounding_mode::CLIP;
-  }
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
+  bounding_mode get_bounding() const override { return ossia::bounding_mode::CLIP; }
+  net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
 class phidget_channel_parameter : public ossia::net::parameter_base
@@ -360,9 +248,7 @@ public:
   {
   }
 
-  ~phidget_channel_parameter() override
-  {
-  }
+  ~phidget_channel_parameter() override { }
 
   ossia::value value() const override
   {
@@ -371,67 +257,29 @@ public:
     return c;
   }
 
-  void pull_value() override
-  {
-  }
+  void pull_value() override { }
 
-  net::parameter_base& push_value(const ossia::value& val) override
-  {
-    return *this;
-  }
-  net::parameter_base& push_value(ossia::value&& val) override
-  {
-    return *this;
-  }
-  net::parameter_base& push_value() override
-  {
-    return *this;
-  }
-  net::parameter_base& set_value(const ossia::value& val) override
-  {
-    return *this;
-  }
-  net::parameter_base& set_value(ossia::value&& v) override
-  {
-    return *this;
-  }
+  net::parameter_base& push_value(const ossia::value& val) override { return *this; }
+  net::parameter_base& push_value(ossia::value&& val) override { return *this; }
+  net::parameter_base& push_value() override { return *this; }
+  net::parameter_base& set_value(const ossia::value& val) override { return *this; }
+  net::parameter_base& set_value(ossia::value&& v) override { return *this; }
 
-  val_type get_value_type() const override
-  {
-    return ossia::val_type::INT;
-  }
-  net::parameter_base& set_value_type(val_type) override
-  {
-    return *this;
-  }
+  val_type get_value_type() const override { return ossia::val_type::INT; }
+  net::parameter_base& set_value_type(val_type) override { return *this; }
 
-  access_mode get_access() const override
-  {
-    return ossia::access_mode::GET;
-  }
-  net::parameter_base& set_access(access_mode) override
-  {
-    return *this;
-  }
+  access_mode get_access() const override { return ossia::access_mode::GET; }
+  net::parameter_base& set_access(access_mode) override { return *this; }
 
   const domain& get_domain() const override
   {
     static const domain d = ossia::make_domain(0, 1024);
     return d;
   }
-  net::parameter_base& set_domain(const domain&) override
-  {
-    return *this;
-  }
+  net::parameter_base& set_domain(const domain&) override { return *this; }
 
-  bounding_mode get_bounding() const override
-  {
-    return ossia::bounding_mode::CLIP;
-  }
-  net::parameter_base& set_bounding(bounding_mode) override
-  {
-    return *this;
-  }
+  bounding_mode get_bounding() const override { return ossia::bounding_mode::CLIP; }
+  net::parameter_base& set_bounding(bounding_mode) override { return *this; }
 };
 
 template <typename Impl, typename Parent>
@@ -453,10 +301,7 @@ struct Control_Double_parameter
     return (float)val;
   }
 
-  void set_value(float v)
-  {
-    Impl::Set(phidget, v);
-  }
+  void set_value(float v) { Impl::Set(phidget, v); }
 
   ossia::domain get_domain()
   {
@@ -468,13 +313,9 @@ struct Control_Double_parameter
     return ossia::make_domain(min, max);
   }
 
-  void enable_callbacks(phidget_generic_parameter<Control_Double_parameter>& p)
-  {
-  }
+  void enable_callbacks(phidget_generic_parameter<Control_Double_parameter>& p) { }
 
-  void disable_callbacks()
-  {
-  }
+  void disable_callbacks() { }
 };
 
 template <typename Impl>
@@ -490,10 +331,7 @@ struct Control_UInt_parameter
     return (int)val;
   }
 
-  void set_value(int v)
-  {
-    Impl::Set(phidget, v);
-  }
+  void set_value(int v) { Impl::Set(phidget, v); }
 
   ossia::domain get_domain()
   {
@@ -505,13 +343,9 @@ struct Control_UInt_parameter
     return ossia::make_domain((int)min, (int)max);
   }
 
-  void enable_callbacks(phidget_generic_parameter<Control_UInt_parameter>& p)
-  {
-  }
+  void enable_callbacks(phidget_generic_parameter<Control_UInt_parameter>& p) { }
 
-  void disable_callbacks()
-  {
-  }
+  void disable_callbacks() { }
 };
 
 template <typename Impl>
@@ -527,9 +361,7 @@ struct Double_parameter
     return (float)val;
   }
 
-  void set_value(float)
-  {
-  }
+  void set_value(float) { }
 
   ossia::domain get_domain()
   {
@@ -552,10 +384,7 @@ struct Double_parameter
         &p);
   }
 
-  void disable_callbacks()
-  {
-    Impl::Change(phidget, nullptr, nullptr);
-  }
+  void disable_callbacks() { Impl::Change(phidget, nullptr, nullptr); }
 };
 
 template <typename Impl>
@@ -571,9 +400,7 @@ struct UInt_parameter
     return (int)val;
   }
 
-  void set_value(int)
-  {
-  }
+  void set_value(int) { }
 
   ossia::domain get_domain()
   {
@@ -596,10 +423,7 @@ struct UInt_parameter
         &p);
   }
 
-  void disable_callbacks()
-  {
-    Impl::Change(phidget, nullptr, nullptr);
-  }
+  void disable_callbacks() { Impl::Change(phidget, nullptr, nullptr); }
 };
 
 template <typename Impl>
@@ -619,9 +443,7 @@ struct Vec3_parameter
     return ossia::make_vec(val[0], val[1], val[2]);
   }
 
-  void set_value(ossia::vec3f)
-  {
-  }
+  void set_value(ossia::vec3f) { }
 
   ossia::domain get_domain()
   {
@@ -655,10 +477,7 @@ struct Vec3_parameter
         &p);
   }
 
-  void disable_callbacks()
-  {
-    Impl::Change(phidget, nullptr, nullptr);
-  }
+  void disable_callbacks() { Impl::Change(phidget, nullptr, nullptr); }
 };
 
 class phidget_control_node : public ossia::net::generic_node
@@ -1152,14 +971,9 @@ public:
       return val == 1;
     }
 
-    void set_value(bool)
-    {
-    }
+    void set_value(bool) { }
 
-    ossia::domain get_domain()
-    {
-      return {};
-    }
+    ossia::domain get_domain() { return {}; }
 
     void enable_callbacks(phidget_generic_parameter<Parameter>& p)
     {
@@ -1208,23 +1022,13 @@ public:
       return val == 1;
     }
 
-    void set_value(bool v)
-    {
-      PhidgetDigitalOutput_setState(phidget, (int)v);
-    }
+    void set_value(bool v) { PhidgetDigitalOutput_setState(phidget, (int)v); }
 
-    ossia::domain get_domain()
-    {
-      return {};
-    }
+    ossia::domain get_domain() { return {}; }
 
-    void enable_callbacks(phidget_generic_parameter<Parameter>& p)
-    {
-    }
+    void enable_callbacks(phidget_generic_parameter<Parameter>& p) { }
 
-    void disable_callbacks()
-    {
-    }
+    void disable_callbacks() { }
   };
 
   phidget_digital_output_node(
@@ -1391,9 +1195,7 @@ public:
       : phidget_node{hdl, dev, parent}
   {
   }
-  void init()
-  {
-  }
+  void init() { }
 };
 
 template <typename T, typename... Args>

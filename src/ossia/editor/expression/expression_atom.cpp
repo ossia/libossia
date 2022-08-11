@@ -75,9 +75,7 @@ void expression_atom::update() const
   }
 }
 
-void expression_atom::reset()
-{
-}
+void expression_atom::reset() { }
 
 const expression_atom::val_t& expression_atom::get_first_operand() const
 {

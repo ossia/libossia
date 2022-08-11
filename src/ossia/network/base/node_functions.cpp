@@ -410,18 +410,9 @@ public:
     return _tbegin != _end;
   }
 
-  ForwardIterator begin() const
-  {
-    return _tbegin;
-  }
-  ForwardIterator end() const
-  {
-    return _tend;
-  }
-  bool operator==(char c)
-  {
-    return *_tbegin == c;
-  }
+  ForwardIterator begin() const { return _tbegin; }
+  ForwardIterator end() const { return _tend; }
+  bool operator==(char c) { return *_tbegin == c; }
 };
 
 template <typename List>

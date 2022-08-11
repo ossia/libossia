@@ -143,74 +143,26 @@ public:
 
 struct OSSIA_EXPORT qt_to_ossia
 {
-  ossia::value operator()()
-  {
-    return ossia::impulse{};
-  }
-  ossia::value operator()(bool v)
-  {
-    return v;
-  }
-  ossia::value operator()(QTime v)
-  {
-    return v.msec();
-  }
-  ossia::value operator()(qint32 v)
-  {
-    return v;
-  }
-  ossia::value operator()(quint32 v)
-  {
-    return (int)v;
-  }
-  ossia::value operator()(qint64 v)
-  {
-    return (int)v;
-  }
-  ossia::value operator()(quint64 v)
-  {
-    return (int)v;
-  }
-  ossia::value operator()(char v)
-  {
-    return v;
-  }
-  ossia::value operator()(QChar v)
-  {
-    return v.toLatin1();
-  }
-  ossia::value operator()(const QString& v)
-  {
-    return v.toStdString();
-  }
-  ossia::value operator()(const QByteArray& v)
-  {
-    return v.toStdString();
-  }
-  ossia::value operator()(double v)
-  {
-    return v;
-  }
+  ossia::value operator()() { return ossia::impulse{}; }
+  ossia::value operator()(bool v) { return v; }
+  ossia::value operator()(QTime v) { return v.msec(); }
+  ossia::value operator()(qint32 v) { return v; }
+  ossia::value operator()(quint32 v) { return (int)v; }
+  ossia::value operator()(qint64 v) { return (int)v; }
+  ossia::value operator()(quint64 v) { return (int)v; }
+  ossia::value operator()(char v) { return v; }
+  ossia::value operator()(QChar v) { return v.toLatin1(); }
+  ossia::value operator()(const QString& v) { return v.toStdString(); }
+  ossia::value operator()(const QByteArray& v) { return v.toStdString(); }
+  ossia::value operator()(double v) { return v; }
   ossia::value operator()(QColor v)
   {
     return make_vec(v.alphaF(), v.redF(), v.greenF(), v.blueF());
   }
-  ossia::value operator()(QPoint v)
-  {
-    return make_vec(v.x(), v.y());
-  }
-  ossia::value operator()(QPointF v)
-  {
-    return make_vec(v.x(), v.y());
-  }
-  ossia::value operator()(QSize v)
-  {
-    return make_vec(v.width(), v.height());
-  }
-  ossia::value operator()(QSizeF v)
-  {
-    return make_vec(v.width(), v.height());
-  }
+  ossia::value operator()(QPoint v) { return make_vec(v.x(), v.y()); }
+  ossia::value operator()(QPointF v) { return make_vec(v.x(), v.y()); }
+  ossia::value operator()(QSize v) { return make_vec(v.width(), v.height()); }
+  ossia::value operator()(QSizeF v) { return make_vec(v.width(), v.height()); }
   ossia::value operator()(QRect v)
   {
     return make_vec(v.x(), v.y(), v.width(), v.height());
@@ -227,18 +179,9 @@ struct OSSIA_EXPORT qt_to_ossia
   {
     return make_vec(v.p1().x(), v.p1().y(), v.p2().x(), v.p2().y());
   }
-  ossia::value operator()(QVector2D v)
-  {
-    return make_vec(v.x(), v.y());
-  }
-  ossia::value operator()(QVector3D v)
-  {
-    return make_vec(v.x(), v.y(), v.z());
-  }
-  ossia::value operator()(QVector4D v)
-  {
-    return make_vec(v.x(), v.y(), v.z(), v.w());
-  }
+  ossia::value operator()(QVector2D v) { return make_vec(v.x(), v.y()); }
+  ossia::value operator()(QVector3D v) { return make_vec(v.x(), v.y(), v.z()); }
+  ossia::value operator()(QVector4D v) { return make_vec(v.x(), v.y(), v.z(), v.w()); }
   ossia::value operator()(QQuaternion v)
   {
     return make_vec(v.scalar(), v.x(), v.y(), v.z());
@@ -263,10 +206,7 @@ struct OSSIA_EXPORT qt_to_ossia
     }
     return tpl;
   }
-  ossia::value operator()(const QDate& v)
-  {
-    return v.toString().toStdString();
-  }
+  ossia::value operator()(const QDate& v) { return v.toString().toStdString(); }
 
   ossia::value operator()(const QVariant& v);
 };
@@ -275,28 +215,13 @@ struct ossia_to_qvariant
 {
   QVariant operator()(QVariant::Type type, const ossia::value& ossia_val);
 
-  QVariant operator()(impulse) const
-  {
-    return {};
-  }
+  QVariant operator()(impulse) const { return {}; }
 
-  QVariant operator()(int32_t val) const
-  {
-    return val;
-  }
+  QVariant operator()(int32_t val) const { return val; }
 
-  QVariant operator()(float val) const
-  {
-    return val;
-  }
-  QVariant operator()(bool val) const
-  {
-    return val;
-  }
-  QVariant operator()(char val) const
-  {
-    return val;
-  }
+  QVariant operator()(float val) const { return val; }
+  QVariant operator()(bool val) const { return val; }
+  QVariant operator()(char val) const { return val; }
 
   QVariant operator()(const std::string& val) const
   {
@@ -314,23 +239,11 @@ struct ossia_to_qvariant
     return vec;
   }
 
-  QVariant operator()(vec2f val) const
-  {
-    return make_array(val);
-  }
-  QVariant operator()(vec3f val) const
-  {
-    return make_array(val);
-  }
-  QVariant operator()(vec4f val) const
-  {
-    return make_array(val);
-  }
+  QVariant operator()(vec2f val) const { return make_array(val); }
+  QVariant operator()(vec3f val) const { return make_array(val); }
+  QVariant operator()(vec4f val) const { return make_array(val); }
 
-  QVariant operator()() const
-  {
-    return {};
-  }
+  QVariant operator()() const { return {}; }
 
   QVariant operator()(const std::vector<ossia::value>& val) const
   {

@@ -42,13 +42,9 @@ void explorer::search(ossia::pd::explorer* x, t_symbol* s, int argc, t_atom* arg
   }
 }
 
-void explorer::monitor(ossia::pd::explorer* x, t_symbol* s, int argc, t_atom* argv)
-{
-}
+void explorer::monitor(ossia::pd::explorer* x, t_symbol* s, int argc, t_atom* argv) { }
 
-void explorer::stop_monitoring()
-{
-}
+void explorer::stop_monitoring() { }
 
 t_max_err
 explorer::notify(explorer* x, t_symbol* s, t_symbol* msg, void* sender, void* data)

@@ -45,10 +45,7 @@ struct subscript_t
       : container(&c)
   {
   }
-  VT& operator()(const ST& i) const
-  {
-    return (*container)[i];
-  }
+  VT& operator()(const ST& i) const { return (*container)[i]; }
 
 protected:
   TheContainer* container;

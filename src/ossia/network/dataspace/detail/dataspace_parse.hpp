@@ -58,10 +58,7 @@ struct unit_factory_visitor
     return it != units.end() ? it->second : ossia::unit_t{};
   }
 
-  OSSIA_INLINE ossia::unit_t operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::unit_t operator()() { return {}; }
 };
 
 template <typename Unit>

@@ -94,15 +94,9 @@ struct TS_CAPABILITY("mutex") audio_spin_mutex
            && !locked.exchange(true, std::memory_order_acquire);
   }
 
-  void unlock() TS_RELEASE()
-  {
-    locked.store(false, std::memory_order_release);
-  }
+  void unlock() TS_RELEASE() { locked.store(false, std::memory_order_release); }
 
-  const auto& operator!() const
-  {
-    return *this;
-  }
+  const auto& operator!() const { return *this; }
 
 private:
   std::atomic<bool> locked{false};

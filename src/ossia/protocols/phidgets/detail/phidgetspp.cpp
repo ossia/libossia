@@ -112,9 +112,7 @@ phidget_channel::phidget_channel(PhidgetHandle device, PhidgetHandle hdl)
   }
 }
 
-phidget_channel::~phidget_channel()
-{
-}
+phidget_channel::~phidget_channel() { }
 
 PhidgetHandle phidget_channel::handle() const
 {
@@ -129,9 +127,7 @@ const std::string& phidget_channel::className() const
   return m_className;
 }
 
-phidgets_manager::phidgets_manager()
-{
-}
+phidgets_manager::phidgets_manager() { }
 
 phidgets_manager::~phidgets_manager()
 {

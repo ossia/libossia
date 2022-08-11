@@ -158,16 +158,10 @@ struct websocket_log_sink final
     }
   }
 
-  void flush() override
-  {
-  }
+  void flush() override { }
 
-  void set_pattern(const std::string& pattern) override
-  {
-  }
-  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override
-  {
-  }
+  void set_pattern(const std::string& pattern) override { }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 
 private:
   rapidjson::StringBuffer buffer;
@@ -253,15 +247,9 @@ public:
     struct
     {
       ossia::json_writer& writer;
-      void operator()(const std::string& s)
-      {
-        writer.String(s);
-      }
+      void operator()(const std::string& s) { writer.String(s); }
 
-      void operator()(int s)
-      {
-        writer.Int(s);
-      }
+      void operator()(int s) { writer.Int(s); }
     } sw{writer};
 
     for(const auto& pair : map)

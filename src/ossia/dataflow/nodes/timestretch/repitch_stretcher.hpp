@@ -64,10 +64,7 @@ struct repitch_stretcher
   std::vector<resample_channel> repitchers;
   int64_t next_sample_to_read{};
 
-  void transport(int64_t date)
-  {
-    next_sample_to_read = date;
-  }
+  void transport(int64_t date) { next_sample_to_read = date; }
 
   template <typename T>
   void

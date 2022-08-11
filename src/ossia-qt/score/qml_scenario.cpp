@@ -19,9 +19,7 @@ qml_scenario::qml_scenario(QQuickItem* parent)
   reset();
 }
 
-qml_scenario::~qml_scenario()
-{
-}
+qml_scenario::~qml_scenario() { }
 
 void qml_scenario::registerInterval(qml_interval* itv)
 {
@@ -136,9 +134,7 @@ void qml_scenario::setStartSync(qml_sync* s)
   }
 }
 
-void qml_scenario::reset_impl()
-{
-}
+void qml_scenario::reset_impl() { }
 
 }
 }

@@ -80,9 +80,7 @@ void explorer::assist(explorer* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_explorer structure functions
 
-explorer::explorer(long argc, t_atom* argv)
-{
-}
+explorer::explorer(long argc, t_atom* argv) { }
 
 explorer::~explorer()
 {

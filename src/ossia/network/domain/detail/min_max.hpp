@@ -237,19 +237,13 @@ struct domain_float_minmax_visitor_helper<domain_base<ossia::value>>
 template <>
 struct domain_float_minmax_visitor_helper<vector_domain>
 {
-  OSSIA_INLINE float_minmax operator()(const vector_domain& value) const
-  {
-    return {};
-  }
+  OSSIA_INLINE float_minmax operator()(const vector_domain& value) const { return {}; }
 };
 
 template <std::size_t N>
 struct domain_float_minmax_visitor_helper<vecf_domain<N>>
 {
-  OSSIA_INLINE float_minmax operator()(const vecf_domain<N>& value) const
-  {
-    return {};
-  }
+  OSSIA_INLINE float_minmax operator()(const vecf_domain<N>& value) const { return {}; }
 };
 
 }
@@ -346,9 +340,7 @@ struct domain_set_min_visitor
   {
     domain.min = incoming;
   }
-  OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
-  {
-  }
+  OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming) { }
   OSSIA_INLINE void
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
   {
@@ -428,9 +420,7 @@ struct domain_set_max_visitor
   {
     domain.max = incoming;
   }
-  OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming)
-  {
-  }
+  OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming) { }
   OSSIA_INLINE void
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
   {
@@ -502,10 +492,7 @@ struct domain_minmax_creation_visitor
     return domain_base<T>(min, max);
   }
 
-  OSSIA_INLINE domain operator()(bool min, bool max)
-  {
-    return domain_base<bool>{};
-  }
+  OSSIA_INLINE domain operator()(bool min, bool max) { return domain_base<bool>{}; }
 
   template <std::size_t N>
   OSSIA_INLINE domain
@@ -525,10 +512,7 @@ struct domain_minmax_creation_visitor
     return vector_domain(std::move(min), std::move(max));
   }
 
-  OSSIA_INLINE domain operator()(impulse, impulse)
-  {
-    return domain_base<impulse>{};
-  }
+  OSSIA_INLINE domain operator()(impulse, impulse) { return domain_base<impulse>{}; }
 
   OSSIA_INLINE domain operator()(const std::string&, const std::string&)
   {
@@ -553,10 +537,7 @@ struct domain_min_creation_visitor
     return dom;
   }
 
-  OSSIA_INLINE domain operator()(bool min)
-  {
-    return domain_base<bool>{};
-  }
+  OSSIA_INLINE domain operator()(bool min) { return domain_base<bool>{}; }
 
   template <std::size_t N>
   OSSIA_INLINE domain operator()(const std::array<float, N>& min)
@@ -580,10 +561,7 @@ struct domain_min_creation_visitor
     return vector_domain(std::move(min), std::vector<ossia::value>(min.size()));
   }
 
-  OSSIA_INLINE domain operator()(impulse)
-  {
-    return domain_base<impulse>{};
-  }
+  OSSIA_INLINE domain operator()(impulse) { return domain_base<impulse>{}; }
 
   OSSIA_INLINE domain operator()(const std::string&)
   {
@@ -601,10 +579,7 @@ struct domain_max_creation_visitor
     return dom;
   }
 
-  OSSIA_INLINE domain operator()(bool max)
-  {
-    return domain_base<bool>{};
-  }
+  OSSIA_INLINE domain operator()(bool max) { return domain_base<bool>{}; }
 
   template <std::size_t N>
   OSSIA_INLINE domain operator()(const std::array<float, N>& max)
@@ -628,10 +603,7 @@ struct domain_max_creation_visitor
     return vector_domain(std::move(max), std::vector<ossia::value>(max.size()));
   }
 
-  OSSIA_INLINE domain operator()(impulse)
-  {
-    return domain_base<impulse>{};
-  }
+  OSSIA_INLINE domain operator()(impulse) { return domain_base<impulse>{}; }
 
   OSSIA_INLINE domain operator()(const std::string&)
   {
@@ -661,10 +633,7 @@ struct domain_value_set_creation_visitor
     return dom;
   }
 
-  domain operator()(bool)
-  {
-    return domain_base<bool>{};
-  }
+  domain operator()(bool) { return domain_base<bool>{}; }
 
   domain operator()(const std::vector<ossia::value>& orig)
   {
@@ -702,9 +671,6 @@ struct domain_value_set_creation_visitor
     return {};
   }
 
-  domain operator()(const impulse&)
-  {
-    return domain{};
-  }
+  domain operator()(const impulse&) { return domain{}; }
 };
 }

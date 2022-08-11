@@ -79,16 +79,10 @@ struct max_msp_log_sink final : public spdlog::sinks::sink
     }
   }
 
-  void flush() override
-  {
-  }
+  void flush() override { }
 
-  void set_pattern(const std::string& pattern) override
-  {
-  }
-  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override
-  {
-  }
+  void set_pattern(const std::string& pattern) override { }
+  void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
 };
 
 struct patcher_descriptor

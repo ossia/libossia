@@ -14,9 +14,7 @@ qml_cond::qml_cond(QQuickItem* parent)
   reset();
 }
 
-qml_cond::~qml_cond()
-{
-}
+qml_cond::~qml_cond() { }
 
 QQmlScriptString qml_cond::expr() const
 {
@@ -79,9 +77,7 @@ void qml_cond::setSync(qml_sync* sync)
   syncChanged(m_sync);
 }
 
-void qml_cond::reset()
-{
-}
+void qml_cond::reset() { }
 
 }
 }

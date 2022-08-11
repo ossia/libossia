@@ -58,10 +58,7 @@ public:
   using callback_index = callback_container<value_callback>::iterator;
   virtual ~parameter_base();
 
-  ossia::net::node_base& get_node() const
-  {
-    return m_node;
-  }
+  ossia::net::node_base& get_node() const { return m_node; }
 
   /// Value getters ///
   /**
@@ -132,10 +129,7 @@ public:
   virtual ossia::value set_value(ossia::value&&) = 0;
 
   //! Reimplement to provide a way that does not call the observers.
-  virtual ossia::value set_value_quiet(const ossia::value& v)
-  {
-    return set_value(v);
-  }
+  virtual ossia::value set_value_quiet(const ossia::value& v) { return set_value(v); }
   virtual ossia::value set_value_quiet(ossia::value&& v)
   {
     return set_value(std::move(v));
@@ -163,10 +157,7 @@ public:
     return m_disabled || m_muted;
   } //! by default there is no filter
 
-  const ossia::unit_t& get_unit() const
-  {
-    return m_unit;
-  }
+  const ossia::unit_t& get_unit() const { return m_unit; }
   virtual parameter_base& set_unit(const ossia::unit_t& v);
 
   // Shared across the network

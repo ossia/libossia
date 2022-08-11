@@ -36,10 +36,7 @@ struct value_converter<ossia::impulse>
     return {};
   }
 
-  ossia::impulse operator()()
-  {
-    return {};
-  }
+  ossia::impulse operator()() { return {}; }
 };
 
 template <typename T>
@@ -47,30 +44,12 @@ struct numeric_value_converter
 {
   T cur{};
 
-  T operator()(impulse) const
-  {
-    return T{};
-  }
-  T operator()(int32_t v)
-  {
-    return v;
-  }
-  T operator()(float v)
-  {
-    return v;
-  }
-  T operator()(bool v)
-  {
-    return v;
-  }
-  T operator()(char v)
-  {
-    return v;
-  }
-  T operator()() const
-  {
-    return T{};
-  }
+  T operator()(impulse) const { return T{}; }
+  T operator()(int32_t v) { return v; }
+  T operator()(float v) { return v; }
+  T operator()(bool v) { return v; }
+  T operator()(char v) { return v; }
+  T operator()() const { return T{}; }
 
   T operator()(const std::string& v) const
   {
@@ -84,18 +63,9 @@ struct numeric_value_converter
     }
   }
 
-  T operator()(const vec2f& v) const
-  {
-    return v[0];
-  }
-  T operator()(const vec3f& v) const
-  {
-    return v[0];
-  }
-  T operator()(const vec4f& v) const
-  {
-    return v[0];
-  }
+  T operator()(const vec2f& v) const { return v[0]; }
+  T operator()(const vec3f& v) const { return v[0]; }
+  T operator()(const vec4f& v) const { return v[0]; }
 
   T operator()(const std::vector<ossia::value>& v) const
   {
@@ -173,18 +143,9 @@ struct fmt_writer
 {
   fmt::memory_buffer& wr;
 
-  void operator()(impulse) const
-  {
-    fmt::format_to(fmt::appender(wr), "impulse");
-  }
-  void operator()(int32_t v) const
-  {
-    fmt::format_to(fmt::appender(wr), "{}", v);
-  }
-  void operator()(float v) const
-  {
-    fmt::format_to(fmt::appender(wr), "{}", v);
-  }
+  void operator()(impulse) const { fmt::format_to(fmt::appender(wr), "impulse"); }
+  void operator()(int32_t v) const { fmt::format_to(fmt::appender(wr), "{}", v); }
+  void operator()(float v) const { fmt::format_to(fmt::appender(wr), "{}", v); }
   void operator()(bool v) const
   {
     if(v)
@@ -192,17 +153,12 @@ struct fmt_writer
     else
       fmt::format_to(fmt::appender(wr), "false");
   }
-  void operator()(char v) const
-  {
-    fmt::format_to(fmt::appender(wr), "{}", v);
-  }
+  void operator()(char v) const { fmt::format_to(fmt::appender(wr), "{}", v); }
   void operator()(const std::string& v) const
   {
     fmt::format_to(fmt::appender(wr), "{}", v);
   }
-  void operator()() const
-  {
-  }
+  void operator()() const { }
   template <std::size_t N>
   void operator()(std::array<float, N> v) const
   {
@@ -235,36 +191,18 @@ struct value_converter<std::string>
 {
   const std::string& cur;
   using T = std::string;
-  T operator()(impulse) const
-  {
-    return "impulse";
-  }
-  T operator()(int32_t v) const
-  {
-    return fmt::format("{}", v);
-  }
-  T operator()(float v) const
-  {
-    return fmt::format("{}", v);
-  }
+  T operator()(impulse) const { return "impulse"; }
+  T operator()(int32_t v) const { return fmt::format("{}", v); }
+  T operator()(float v) const { return fmt::format("{}", v); }
   T operator()(bool v) const
   {
     using namespace std::literals;
     return v ? "true"s : "false"s;
   }
-  T operator()(char v) const
-  {
-    return std::string(1, v);
-  }
-  T operator()(const std::string& v) const
-  {
-    return v;
-  }
+  T operator()(char v) const { return std::string(1, v); }
+  T operator()(const std::string& v) const { return v; }
 
-  T operator()() const
-  {
-    return {};
-  }
+  T operator()() const { return {}; }
 
   template <std::size_t N>
   T operator()(std::array<float, N> v) const
@@ -308,19 +246,13 @@ struct value_converter<std::vector<ossia::value>>
     return v;
   }
 
-  std::vector<ossia::value> operator()(const std::vector<ossia::value>& t)
-  {
-    return t;
-  }
+  std::vector<ossia::value> operator()(const std::vector<ossia::value>& t) { return t; }
   std::vector<ossia::value> operator()(std::vector<ossia::value>&& t)
   {
     return std::move(t);
   }
 
-  std::vector<ossia::value> operator()()
-  {
-    return {};
-  }
+  std::vector<ossia::value> operator()() { return {}; }
 };
 
 template <std::size_t N>
@@ -333,10 +265,7 @@ struct value_converter<std::array<float, N>>
     return {};
   }
 
-  std::array<float, N> operator()(std::array<float, N> v)
-  {
-    return v;
-  }
+  std::array<float, N> operator()(std::array<float, N> v) { return v; }
 
   template <std::size_t M>
   std::array<float, N> operator()(std::array<float, M> v)
@@ -382,10 +311,7 @@ struct value_converter<std::array<float, N>>
     return convert<std::array<float, N>>(t);
   }
 
-  std::array<float, N> operator()()
-  {
-    return {};
-  }
+  std::array<float, N> operator()() { return {}; }
 };
 }
 

@@ -55,8 +55,6 @@ protected:
 private:
   std::unique_ptr<node_base> make_child(const std::string& name) final override;
 
-  void removing_child(node_base&) final override
-  {
-  }
+  void removing_child(node_base&) final override { }
 };
 }

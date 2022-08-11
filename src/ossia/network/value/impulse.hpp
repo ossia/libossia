@@ -28,35 +28,17 @@ struct OSSIA_EXPORT impulse
   constexpr impulse& operator=(const impulse&) noexcept = default;
   constexpr impulse& operator=(impulse&&) noexcept = default;
 
-  constexpr bool operator==(const ossia::impulse&) const
-  {
-    return true;
-  }
+  constexpr bool operator==(const ossia::impulse&) const { return true; }
 
-  constexpr bool operator!=(const ossia::impulse&) const
-  {
-    return false;
-  }
+  constexpr bool operator!=(const ossia::impulse&) const { return false; }
 
-  constexpr bool operator>(const ossia::impulse&) const
-  {
-    return false;
-  }
+  constexpr bool operator>(const ossia::impulse&) const { return false; }
 
-  constexpr bool operator>=(const ossia::impulse&) const
-  {
-    return true;
-  }
+  constexpr bool operator>=(const ossia::impulse&) const { return true; }
 
-  constexpr bool operator<(const ossia::impulse&) const
-  {
-    return false;
-  }
+  constexpr bool operator<(const ossia::impulse&) const { return false; }
 
-  constexpr bool operator<=(const ossia::impulse&) const
-  {
-    return true;
-  }
+  constexpr bool operator<=(const ossia::impulse&) const { return true; }
 };
 
 template <typename T>

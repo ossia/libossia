@@ -9,13 +9,9 @@ qml_state::qml_state(QQuickItem* parent)
 {
 }
 
-qml_state::~qml_state()
-{
-}
+qml_state::~qml_state() { }
 
-void qml_state::reset()
-{
-}
+void qml_state::reset() { }
 
 }
 }

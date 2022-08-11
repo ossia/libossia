@@ -594,22 +594,10 @@ ossia::presets::read_json(const std::string& str, bool skip_first_level)
 struct value_to_json_preset_value
 {
   rapidjson::Document::AllocatorType& allocator;
-  rapidjson::Value operator()(ossia::impulse) const
-  {
-    return rapidjson::Value{};
-  }
-  rapidjson::Value operator()(int v) const
-  {
-    return rapidjson::Value{v};
-  }
-  rapidjson::Value operator()(float v) const
-  {
-    return rapidjson::Value{v};
-  }
-  rapidjson::Value operator()(bool v) const
-  {
-    return rapidjson::Value{v};
-  }
+  rapidjson::Value operator()(ossia::impulse) const { return rapidjson::Value{}; }
+  rapidjson::Value operator()(int v) const { return rapidjson::Value{v}; }
+  rapidjson::Value operator()(float v) const { return rapidjson::Value{v}; }
+  rapidjson::Value operator()(bool v) const { return rapidjson::Value{v}; }
   rapidjson::Value operator()(char v) const
   {
     return rapidjson::Value{&v, 1, allocator};

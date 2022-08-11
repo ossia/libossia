@@ -24,30 +24,15 @@ public:
       p << oscpack::Infinitum();
   }
 
-  void operator()(int32_t i) const
-  {
-    p << i;
-  }
+  void operator()(int32_t i) const { p << i; }
 
-  void operator()(float f) const
-  {
-    p << f;
-  }
+  void operator()(float f) const { p << f; }
 
-  void operator()(bool b) const
-  {
-    p << b;
-  }
+  void operator()(bool b) const { p << b; }
 
-  void operator()(char c) const
-  {
-    p << c;
-  }
+  void operator()(char c) const { p << c; }
 
-  void operator()(const std::string& str) const
-  {
-    p << std::string_view{str};
-  }
+  void operator()(const std::string& str) const { p << std::string_view{str}; }
 
   void operator()(vec2f vec) const
   {
@@ -129,9 +114,7 @@ public:
     p << oscpack::RgbaColor(r + g + b + a);
   }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 
 private:
   mutable int m_depth = 0;

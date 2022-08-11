@@ -77,9 +77,7 @@ void search::assist(search* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_search structure functions
 
-search::search(long argc, t_atom* argv)
-{
-}
+search::search(long argc, t_atom* argv) { }
 
 search::~search()
 {

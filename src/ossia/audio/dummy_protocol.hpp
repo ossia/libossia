@@ -21,10 +21,7 @@ public:
     setup_thread();
   }
 
-  bool running() const override
-  {
-    return m_active;
-  }
+  bool running() const override { return m_active; }
 
   void setup_thread()
   {

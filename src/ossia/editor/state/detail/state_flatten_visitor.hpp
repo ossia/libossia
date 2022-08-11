@@ -584,14 +584,8 @@ struct state_flatten_impl_same_address
   {
     return incoming.get_unit() == m.get_unit();
   }
-  bool operator()(const ossia::state& t)
-  {
-    return false;
-  }
-  bool operator()(const ossia::monostate& t)
-  {
-    return false;
-  }
+  bool operator()(const ossia::state& t) { return false; }
+  bool operator()(const ossia::monostate& t) { return false; }
 };
 
 template <typename T>
@@ -614,14 +608,8 @@ struct state_flatten_impl_different_address
   {
     return &m.address.get() == address && incoming.get_unit() == m.get_unit();
   }
-  bool operator()(const ossia::state& t)
-  {
-    return false;
-  }
-  bool operator()(const ossia::monostate& t)
-  {
-    return false;
-  }
+  bool operator()(const ossia::state& t) { return false; }
+  bool operator()(const ossia::monostate& t) { return false; }
 };
 
 template <typename State_T, bool MergeSingleValues, bool AssumeSameAddresses = false>
@@ -712,15 +700,9 @@ public:
     }
   }
 
-  void operator()(const ossia::monostate&)
-  {
-  }
-  void operator()(ossia::monostate&&)
-  {
-  }
+  void operator()(const ossia::monostate&) { }
+  void operator()(ossia::monostate&&) { }
 
-  void operator()()
-  {
-  }
+  void operator()() { }
 };
 }

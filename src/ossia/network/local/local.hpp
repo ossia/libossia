@@ -59,10 +59,7 @@ public:
   void clear();
 
   //! The protocols we are currently exposing this device through.
-  const auto& get_protocols() const
-  {
-    return m_protocols;
-  }
+  const auto& get_protocols() const { return m_protocols; }
 
 private:
   std::vector<std::unique_ptr<ossia::net::protocol_base>>

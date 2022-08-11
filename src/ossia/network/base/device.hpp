@@ -72,29 +72,14 @@ public:
   virtual const ossia::net::node_base& get_root_node() const = 0;
   virtual ossia::net::node_base& get_root_node() = 0;
 
-  device_capabilities get_capabilities() const
-  {
-    return m_capabilities;
-  }
+  device_capabilities get_capabilities() const { return m_capabilities; }
 
-  void set_name(const std::string& str)
-  {
-    get_root_node().set_name(str);
-  }
-  std::string get_name() const
-  {
-    return get_root_node().get_name();
-  }
+  void set_name(const std::string& str) { get_root_node().set_name(str); }
+  std::string get_name() const { return get_root_node().get_name(); }
 
-  bool has_echo()
-  {
-    return m_echo;
-  }
+  bool has_echo() { return m_echo; }
 
-  void set_echo(bool echo)
-  {
-    m_echo = echo;
-  }
+  void set_echo(bool echo) { m_echo = echo; }
 
   void apply_incoming_message(
       const message_origin_identifier& id, ossia::net::parameter_base& param,

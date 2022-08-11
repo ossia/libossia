@@ -618,10 +618,7 @@ public:
     this->effective_outputs = setup.outputs.size();
   }
 
-  uint32_t filter_node_id()
-  {
-    return this->loop->pw.filter_get_node_id(this->filter);
-  }
+  uint32_t filter_node_id() { return this->loop->pw.filter_get_node_id(this->filter); }
 
   void autoconnect()
   {

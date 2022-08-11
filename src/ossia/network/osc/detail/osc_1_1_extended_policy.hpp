@@ -15,20 +15,11 @@ struct osc_extended_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
 {
   using osc_common_outbound_dynamic_policy::operator();
   mutable int m_depth = 0;
-  void operator()(impulse) const
-  {
-    p << oscpack::Infinitum();
-  }
+  void operator()(impulse) const { p << oscpack::Infinitum(); }
 
-  void operator()(bool b) const
-  {
-    p << b;
-  }
+  void operator()(bool b) const { p << b; }
 
-  void operator()(char c) const
-  {
-    p << c;
-  }
+  void operator()(char c) const { p << c; }
 
   void operator()(vec2f vec) const
   {

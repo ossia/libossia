@@ -37,10 +37,7 @@ struct distance_ratio : public linear_unit<distance_unit<distance_ratio<T>>, T>
 {
   using linear_unit<distance_unit<distance_ratio<T>>, T>::linear_unit;
 
-  static ossia::domain domain()
-  {
-    return {};
-  }
+  static ossia::domain domain() { return {}; }
 };
 
 struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
@@ -52,14 +49,8 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
   using value_type = float;
   float ppm{}; // pixels per meter
 
-  void set_ppcm(float v)
-  {
-    ppm = v * 100.f;
-  }
-  void set_dpi(float v)
-  {
-    ppm = v / 254.f;
-  }
+  void set_ppcm(float v) { ppm = v * 100.f; }
+  void set_dpi(float v) { ppm = v / 254.f; }
   strong_value<neutral_unit> to_neutral(strong_value<concrete_type> self)
   {
     return float(self.dataspace_value / ppm);
@@ -70,15 +61,9 @@ struct OSSIA_EXPORT pixel_u : public distance_unit<pixel_u>
     return float(self.dataspace_value * ppm);
   }
 
-  static ossia::domain domain()
-  {
-    return {};
-  }
+  static ossia::domain domain() { return {}; }
 
-  static constexpr auto bounding()
-  {
-    return ossia::bounding_mode::FREE;
-  }
+  static constexpr auto bounding() { return ossia::bounding_mode::FREE; }
 };
 
 template <>
@@ -166,9 +151,6 @@ struct unit_traits<foot_u>
 template <>
 struct unit_traits<mile_u>
 {
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("miles"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("miles")); }
 };
 }

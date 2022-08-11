@@ -122,12 +122,8 @@ struct value_set_update_visitor
     }
   }
 
-  void operator()(ossia::domain_base<impulse>&)
-  {
-  }
+  void operator()(ossia::domain_base<impulse>&) { }
 
-  void operator()(ossia::domain_base<bool>&)
-  {
-  }
+  void operator()(ossia::domain_base<bool>&) { }
 };
 }

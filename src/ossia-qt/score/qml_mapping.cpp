@@ -10,9 +10,7 @@ qml_mapping::qml_mapping(QQuickItem* parent)
   reset();
 }
 
-qml_mapping::~qml_mapping()
-{
-}
+qml_mapping::~qml_mapping() { }
 
 std::shared_ptr<time_process> qml_mapping::process() const
 {
@@ -22,9 +20,7 @@ std::shared_ptr<time_process> qml_mapping::process() const
   */
 }
 
-void qml_mapping::reset_impl()
-{
-}
+void qml_mapping::reset_impl() { }
 
 }
 }

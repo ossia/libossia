@@ -90,9 +90,7 @@ void monitor::assist(monitor* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_monitor structure functions
 
-monitor::monitor(long argc, t_atom* argv)
-{
-}
+monitor::monitor(long argc, t_atom* argv) { }
 
 monitor::~monitor()
 {

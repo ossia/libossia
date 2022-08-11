@@ -48,14 +48,8 @@ public:
 
   bool m_zeroconf{true}; // true if we should lookup for device name with zeroconf
 
-  bool is_zeroconf() const
-  {
-    return m_zeroconf;
-  }
-  std::string get_name() const
-  {
-    return m_name ? std::string(m_name->s_name) : "";
-  }
+  bool is_zeroconf() const { return m_zeroconf; }
+  std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
 
   static void get_mess_cb(client* x, t_symbol* s);
 

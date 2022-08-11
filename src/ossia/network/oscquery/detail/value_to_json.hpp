@@ -14,26 +14,14 @@ struct value_to_json
 {
   ossia::json_writer& writer;
   const ossia::unit_t& unit;
-  void operator()(impulse) const
-  {
-    writer.Null();
-  }
-  void operator()(int v) const
-  {
-    writer.Int(v);
-  }
-  void operator()(float v) const
-  {
-    writer.Double(v);
-  }
+  void operator()(impulse) const { writer.Null(); }
+  void operator()(int v) const { writer.Int(v); }
+  void operator()(float v) const { writer.Double(v); }
   void operator()(bool v) const
   {
     writer.Null(); // the value is already encoded in the typetag
   }
-  void operator()(char v) const
-  {
-    write_json(writer, v);
-  }
+  void operator()(char v) const { write_json(writer, v); }
   void operator()(const std::string& v) const
   {
     // TODO handle base 64
@@ -77,10 +65,7 @@ struct value_to_json
     }
     writer.EndArray();
   }
-  void operator()() const
-  {
-    throw std::runtime_error("value_to_json: no type");
-  }
+  void operator()() const { throw std::runtime_error("value_to_json: no type"); }
 };
 
 static inline auto from_hex(char c)
@@ -117,10 +102,7 @@ static inline auto from_hex(char c)
       tab[(int)'F'] = 15;
     }
 
-    constexpr auto operator[](const std::size_t idx) const
-    {
-      return tab[idx];
-    }
+    constexpr auto operator[](const std::size_t idx) const { return tab[idx]; }
   };
   static constexpr Table t;
   return t[c];
@@ -402,10 +384,7 @@ struct json_to_value
     return b;
   }
 
-  bool operator()() const
-  {
-    throw std::runtime_error("json_to_value: no type");
-  }
+  bool operator()() const { throw std::runtime_error("json_to_value: no type"); }
 };
 
 struct json_to_single_value
@@ -413,10 +392,7 @@ struct json_to_single_value
   const rapidjson::Value& val;
   std::string_view typetags;
 
-  bool operator()(impulse) const
-  {
-    return val.IsNull();
-  }
+  bool operator()(impulse) const { return val.IsNull(); }
 
   bool operator()(int& res) const
   {
@@ -505,15 +481,9 @@ struct json_to_single_value
     return false;
   }
 
-  bool operator()(std::vector<ossia::value>& res) const
-  {
-    return false;
-  }
+  bool operator()(std::vector<ossia::value>& res) const { return false; }
 
-  bool operator()() const
-  {
-    throw std::runtime_error("json_to_value: no type");
-  }
+  bool operator()() const { throw std::runtime_error("json_to_value: no type"); }
 };
 
 inline ossia::value ReadValue(const rapidjson::Value& val)
@@ -558,9 +528,7 @@ inline ossia::value ReadValue(const rapidjson::Value& val)
 struct json_to_value_unchecked
 {
   const rapidjson::Value& val;
-  void operator()(impulse) const
-  {
-  }
+  void operator()(impulse) const { }
 
   void operator()(int& res) const
   {

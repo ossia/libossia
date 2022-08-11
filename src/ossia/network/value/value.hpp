@@ -71,9 +71,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -311,9 +309,7 @@ public:
     return *this;
   }
 
-  value() noexcept
-  {
-  }
+  value() noexcept { }
   ~value() noexcept;
   value(const value& other) noexcept
       : v(other.v)
@@ -334,14 +330,8 @@ public:
     return *this;
   }
 
-  operator value_type&()
-  {
-    return v;
-  }
-  operator const value_type&() const
-  {
-    return v;
-  }
+  operator value_type&() { return v; }
+  operator const value_type&() const { return v; }
 
   // Operations
   template <typename T>
@@ -383,15 +373,9 @@ public:
     return static_cast<ossia::val_type>(t);
   }
 
-  bool valid() const noexcept
-  {
-    return bool(v);
-  }
+  bool valid() const noexcept { return bool(v); }
 
-  void reset() noexcept
-  {
-    v = value_type{};
-  }
+  void reset() noexcept { v = value_type{}; }
 
   template <typename Visitor>
   auto apply(Visitor&& vis) -> decltype(auto);

@@ -72,9 +72,7 @@ std::unique_ptr<node_base> midi_node::make_child(const std::string& name)
   return nullptr;
 }
 
-void midi_node::removing_child(node_base& node)
-{
-}
+void midi_node::removing_child(node_base& node) { }
 
 midi_node* midi_node::add_midi_node(std::unique_ptr<midi_node> n)
 {

@@ -72,27 +72,12 @@ public:
 
   void stop() override;
   void set_device(net::device_base& dev) override;
-  ossia::net::device_base& get_device() const
-  {
-    return *m_device;
-  }
+  ossia::net::device_base& get_device() const { return *m_device; }
 
-  bool ws_connected() const noexcept
-  {
-    return m_hasWS;
-  }
-  bool osc_connected() const noexcept
-  {
-    return bool(m_oscSender);
-  }
-  osc_sender_impl& osc_sender() const noexcept
-  {
-    return *m_oscSender;
-  }
-  ossia::net::websocket_client& ws_client() const noexcept
-  {
-    return *m_websocketClient;
-  }
+  bool ws_connected() const noexcept { return m_hasWS; }
+  bool osc_connected() const noexcept { return bool(m_oscSender); }
+  osc_sender_impl& osc_sender() const noexcept { return *m_oscSender; }
+  ossia::net::websocket_client& ws_client() const noexcept { return *m_websocketClient; }
 
   /**
    * @brief Request a new node from the server
@@ -127,26 +112,17 @@ public:
    * @brief Get zombie on removed move
    * @return
    */
-  bool get_zombie_on_remove() const noexcept
-  {
-    return m_zombie_on_remove;
-  }
+  bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
 
   ossia::oscquery::host_info get_host_info() const noexcept;
 
-  bool connected() const noexcept override
-  {
-    return m_hasWS;
-  }
+  bool connected() const noexcept override { return m_hasWS; }
   void connect() override;
 
 private:
   friend struct http_async_answer;
   using connection_handler = std::weak_ptr<void>;
-  void on_ws_disconnected()
-  {
-    m_hasWS = false;
-  }
+  void on_ws_disconnected() { m_hasWS = false; }
 
   void init();
 

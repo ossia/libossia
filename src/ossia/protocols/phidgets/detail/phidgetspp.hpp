@@ -67,14 +67,8 @@ public:
     return (bool)ok;
   }
 
-  Phidget_DeviceClass device_class() const
-  {
-    return m_class;
-  }
-  Phidget_DeviceID device_id() const
-  {
-    return m_id;
-  }
+  Phidget_DeviceClass device_class() const { return m_class; }
+  Phidget_DeviceID device_id() const { return m_id; }
 
   void set_label(const std::string& n);
 
@@ -173,10 +167,7 @@ public:
 
   void open();
 
-  const std::vector<phidget_ptr>& phidgets() const
-  {
-    return m_phidgets;
-  }
+  const std::vector<phidget_ptr>& phidgets() const { return m_phidgets; }
 
 private:
   PhidgetManagerHandle m_hdl{};

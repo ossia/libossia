@@ -65,10 +65,7 @@ struct OSSIA_EXPORT instance_bounds
   {
     return os;
   }
-  friend std::istream& operator>>(std::istream& is, instance_bounds& c)
-  {
-    return is;
-  }
+  friend std::istream& operator>>(std::istream& is, instance_bounds& c) { return is; }
 };
 
 //! Tags applied to a node: {"model", "interesting", ...}
@@ -289,10 +286,7 @@ struct is_parameter_attribute : public std::false_type
   struct OSSIA_EXPORT Name##_attribute                            \
   {                                                               \
     using type = Type;                                            \
-    static auto text()                                            \
-    {                                                             \
-      return ossia::net::text_##Name();                           \
-    }                                                             \
+    static auto text() { return ossia::net::text_##Name(); }      \
     template <typename... Args>                                   \
     static auto getter(Args&&... args)                            \
     {                                                             \
@@ -316,10 +310,7 @@ struct is_parameter_attribute : public std::false_type
   struct OSSIA_EXPORT Name##_attribute                \
   {                                                   \
     using type = Type;                                \
-    static auto text()                                \
-    {                                                 \
-      return Text();                                  \
-    }                                                 \
+    static auto text() { return Text(); }             \
     template <typename... Args>                       \
     static auto getter(Args&&... args)                \
     {                                                 \

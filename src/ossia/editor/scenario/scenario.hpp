@@ -131,10 +131,7 @@ public:
       const ptr_container<time_sync>&, const ptr_container<time_interval>&,
       time_sync& root);
 
-  ossia::time_value last_date() const noexcept
-  {
-    return m_last_date;
-  }
+  ossia::time_value last_date() const noexcept { return m_last_date; }
 
 private:
   ossia::time_value m_last_date{ossia::Infinite};
@@ -159,10 +156,7 @@ private:
   {
     ossia::time_interval* interval{};
     double quantization_ratio{};
-    operator ossia::time_interval*() const noexcept
-    {
-      return interval;
-    }
+    operator ossia::time_interval*() const noexcept { return interval; }
   };
 
   ossia::small_vector<quantized_interval, 2> m_itv_to_start;

@@ -45,10 +45,7 @@ protected:
   {
   }
 
-  inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
 public:
   virtual ~inlet();
@@ -60,10 +57,7 @@ public:
       sources.push_back(e);
   }
 
-  void disconnect(graph_edge* e) noexcept
-  {
-    ossia::remove_erase(sources, e);
-  }
+  void disconnect(graph_edge* e) noexcept { ossia::remove_erase(sources, e); }
 
   [[nodiscard]] virtual std::size_t which() const noexcept = 0;
 
@@ -80,14 +74,8 @@ public:
   template <typename T>
   auto visit(const T& t) const;
 
-  auto& cables() noexcept
-  {
-    return sources;
-  }
-  [[nodiscard]] auto& cables() const noexcept
-  {
-    return sources;
-  }
+  auto& cables() noexcept { return sources; }
+  [[nodiscard]] auto& cables() const noexcept { return sources; }
 
   virtual void pre_process();
   virtual void post_process();
@@ -115,10 +103,7 @@ protected:
   {
   }
 
-  outlet(graph_edge& edge) noexcept
-  {
-    targets.push_back(&edge);
-  }
+  outlet(graph_edge& edge) noexcept { targets.push_back(&edge); }
 
 public:
   virtual ~outlet();
@@ -130,10 +115,7 @@ public:
       targets.push_back(e);
   }
 
-  void disconnect(graph_edge* e) noexcept
-  {
-    ossia::remove_erase(targets, e);
-  }
+  void disconnect(graph_edge* e) noexcept { ossia::remove_erase(targets, e); }
 
   void write(execution_state& e);
 
@@ -155,14 +137,8 @@ public:
   virtual void pre_process();
   virtual void post_process();
 
-  auto& cables() noexcept
-  {
-    return targets;
-  }
-  [[nodiscard]] auto& cables() const noexcept
-  {
-    return targets;
-  }
+  auto& cables() noexcept { return targets; }
+  [[nodiscard]] auto& cables() const noexcept { return targets; }
 
   destination_t address;
   ossia::small_vector<graph_edge*, 2> targets;
@@ -187,29 +163,14 @@ struct OSSIA_EXPORT audio_inlet : public ossia::inlet
   {
   }
 
-  audio_inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  audio_inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
   ~audio_inlet();
 
-  const ossia::audio_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::audio_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::audio_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::audio_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::audio_port& operator*() const noexcept { return data; }
+  const ossia::audio_port* operator->() const noexcept { return &data; }
+  ossia::audio_port& operator*() noexcept { return data; }
+  ossia::audio_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -233,29 +194,14 @@ struct OSSIA_EXPORT midi_inlet : public ossia::inlet
   {
   }
 
-  midi_inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  midi_inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
   ~midi_inlet();
 
-  const ossia::midi_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::midi_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::midi_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::midi_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::midi_port& operator*() const noexcept { return data; }
+  const ossia::midi_port* operator->() const noexcept { return &data; }
+  ossia::midi_port& operator*() noexcept { return data; }
+  ossia::midi_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -279,29 +225,14 @@ struct OSSIA_EXPORT value_inlet : public ossia::inlet
   {
   }
 
-  value_inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  value_inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
   ~value_inlet();
 
-  const ossia::value_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::value_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::value_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::value_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::value_port& operator*() const noexcept { return data; }
+  const ossia::value_port* operator->() const noexcept { return &data; }
+  ossia::value_port& operator*() noexcept { return data; }
+  ossia::value_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -327,10 +258,7 @@ void process_audio_out_general(ossia::audio_port& i, ossia::audio_outlet& audio_
 
 struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 {
-  audio_outlet() noexcept
-  {
-    init();
-  }
+  audio_outlet() noexcept { init(); }
 
   audio_outlet(destination_t dest) noexcept
       : outlet{std::move(dest)}
@@ -352,22 +280,10 @@ struct OSSIA_EXPORT audio_outlet : public ossia::outlet
 
   ~audio_outlet();
 
-  const ossia::audio_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::audio_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::audio_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::audio_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::audio_port& operator*() const noexcept { return data; }
+  const ossia::audio_port* operator->() const noexcept { return &data; }
+  ossia::audio_port& operator*() noexcept { return data; }
+  ossia::audio_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -415,28 +331,13 @@ struct OSSIA_EXPORT midi_outlet : public ossia::outlet
   {
   }
 
-  midi_outlet(graph_edge& edge) noexcept
-  {
-    targets.push_back(&edge);
-  }
+  midi_outlet(graph_edge& edge) noexcept { targets.push_back(&edge); }
   ~midi_outlet();
 
-  const ossia::midi_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::midi_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::midi_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::midi_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::midi_port& operator*() const noexcept { return data; }
+  const ossia::midi_port* operator->() const noexcept { return &data; }
+  ossia::midi_port& operator*() noexcept { return data; }
+  ossia::midi_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -460,28 +361,13 @@ struct OSSIA_EXPORT value_outlet : public ossia::outlet
   {
   }
 
-  value_outlet(graph_edge& edge) noexcept
-  {
-    targets.push_back(&edge);
-  }
+  value_outlet(graph_edge& edge) noexcept { targets.push_back(&edge); }
   ~value_outlet();
 
-  const ossia::value_port& operator*() const noexcept
-  {
-    return data;
-  }
-  const ossia::value_port* operator->() const noexcept
-  {
-    return &data;
-  }
-  ossia::value_port& operator*() noexcept
-  {
-    return data;
-  }
-  ossia::value_port* operator->() noexcept
-  {
-    return &data;
-  }
+  const ossia::value_port& operator*() const noexcept { return data; }
+  const ossia::value_port* operator->() const noexcept { return &data; }
+  ossia::value_port& operator*() noexcept { return data; }
+  ossia::value_port* operator->() noexcept { return &data; }
 
   [[nodiscard]] std::size_t which() const noexcept final override
   {
@@ -510,10 +396,7 @@ struct OSSIA_EXPORT texture_inlet : public ossia::inlet
   {
   }
 
-  texture_inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  texture_inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
   ~texture_inlet();
 
@@ -537,10 +420,7 @@ struct OSSIA_EXPORT texture_outlet : public ossia::outlet
   {
   }
 
-  texture_outlet(graph_edge& edge) noexcept
-  {
-    targets.push_back(&edge);
-  }
+  texture_outlet(graph_edge& edge) noexcept { targets.push_back(&edge); }
   ~texture_outlet();
 
   [[nodiscard]] std::size_t which() const noexcept final override
@@ -563,10 +443,7 @@ struct OSSIA_EXPORT geometry_inlet : public ossia::inlet
   {
   }
 
-  geometry_inlet(graph_edge& edge) noexcept
-  {
-    sources.push_back(&edge);
-  }
+  geometry_inlet(graph_edge& edge) noexcept { sources.push_back(&edge); }
 
   ~geometry_inlet();
 
@@ -592,10 +469,7 @@ struct OSSIA_EXPORT geometry_outlet : public ossia::outlet
   {
   }
 
-  geometry_outlet(graph_edge& edge) noexcept
-  {
-    targets.push_back(&edge);
-  }
+  geometry_outlet(graph_edge& edge) noexcept { targets.push_back(&edge); }
   ~geometry_outlet();
 
   [[nodiscard]] std::size_t which() const noexcept final override

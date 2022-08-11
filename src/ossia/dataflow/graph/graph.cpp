@@ -256,9 +256,7 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
       i++;
     }
 
-    void operator()() const noexcept
-    {
-    }
+    void operator()() const noexcept { }
   } vis{logger, i};
 
   for_each_inlet(n, [&](auto& in) { in.visit(vis); });
@@ -312,9 +310,7 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
       // logger.log(spdlog::level::debug, "output {} (geometry)");
       i++;
     }
-    void operator()() const noexcept
-    {
-    }
+    void operator()() const noexcept { }
   } vis{logger, i};
 
   for_each_outlet(n, [&](auto& out) { out.visit(vis); });

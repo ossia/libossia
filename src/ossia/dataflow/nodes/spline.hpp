@@ -14,17 +14,11 @@ namespace ossia::nodes
 class spline final : public ossia::nonowning_graph_node
 {
 public:
-  spline()
-  {
-    m_outlets.push_back(&value_out);
-  }
+  spline() { m_outlets.push_back(&value_out); }
 
   ~spline() override = default;
 
-  std::string label() const noexcept override
-  {
-    return "spline";
-  }
+  std::string label() const noexcept override { return "spline"; }
 
   void set_spline(const spline_data& t)
   {
@@ -58,17 +52,11 @@ private:
 class spline3d final : public ossia::nonowning_graph_node
 {
 public:
-  spline3d()
-  {
-    m_outlets.push_back(&value_out);
-  }
+  spline3d() { m_outlets.push_back(&value_out); }
 
   ~spline3d() override = default;
 
-  std::string label() const noexcept override
-  {
-    return "spline";
-  }
+  std::string label() const noexcept override { return "spline"; }
 
   void set_spline(const spline3d_data& t)
   {

@@ -26,15 +26,8 @@ public:
 
   ~expression_bool();
 
-  bool evaluate() const
-  {
-    return m_result;
-  }
-  void update() const
-  {
-  }
-  void reset() const
-  {
-  }
+  bool evaluate() const { return m_result; }
+  void update() const { }
+  void reset() const { }
 };
 }

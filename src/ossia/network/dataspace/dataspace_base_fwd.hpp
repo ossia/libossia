@@ -10,20 +10,14 @@ template <>
 struct dataspace_traits<angle_u>
 {
   using neutral_unit = radian_u;
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("angle"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("angle")); }
 };
 
 template <>
 struct dataspace_traits<color_u>
 {
   using neutral_unit = argb_u;
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("color"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("color")); }
 };
 
 template <>
@@ -40,10 +34,7 @@ template <>
 struct dataspace_traits<gain_u>
 {
   using neutral_unit = linear_u;
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("gain"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("gain")); }
 };
 
 template <>
@@ -69,19 +60,13 @@ template <>
 struct dataspace_traits<speed_u>
 {
   using neutral_unit = meter_per_second_u;
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("speed"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("speed")); }
 };
 
 template <>
 struct dataspace_traits<timing_u>
 {
   using neutral_unit = second_u;
-  static constexpr auto text()
-  {
-    constexpr_return(ossia::make_string_array("time"));
-  }
+  static constexpr auto text() { constexpr_return(ossia::make_string_array("time")); }
 };
 }

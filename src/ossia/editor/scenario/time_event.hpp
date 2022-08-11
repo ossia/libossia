@@ -130,10 +130,7 @@ public:
 
   /*! get next time contraints attached to the event
    \return #Container<#time_interval> */
-  ptr_container<time_interval>& next_time_intervals()
-  {
-    return m_next_time_intervals;
-  }
+  ptr_container<time_interval>& next_time_intervals() { return m_next_time_intervals; }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */

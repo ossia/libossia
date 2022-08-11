@@ -20,13 +20,9 @@ qml_process::qml_process(QQuickItem* parent)
   connect(this, &QQuickItem::parentChanged, this, &qml_process::reset);
 }
 
-qml_process::~qml_process()
-{
-}
+qml_process::~qml_process() { }
 
-void qml_process::setup()
-{
-}
+void qml_process::setup() { }
 
 std::shared_ptr<time_process> qml_process::process() const
 {
@@ -46,9 +42,7 @@ void qml_process::reset()
   }
 }
 
-void qml_process::reset_impl()
-{
-}
+void qml_process::reset_impl() { }
 
 qml_autom::qml_autom(QQuickItem* parent)
     : qml_process{parent}
@@ -59,9 +53,7 @@ qml_autom::qml_autom(QQuickItem* parent)
   */
 }
 
-qml_autom::~qml_autom()
-{
-}
+qml_autom::~qml_autom() { }
 
 void qml_autom::setup()
 {
@@ -210,9 +202,7 @@ void qml_autom::setYMax(double yMax)
   yMaxChanged(m_yMax);
 }
 
-void qml_autom::reset_impl()
-{
-}
+void qml_autom::reset_impl() { }
 
 std::function<float(double, float, float)> qml_breakpoint::segment()
 {

@@ -8,10 +8,7 @@ namespace ossia::nodes
 class step final : public ossia::graph_node
 {
 public:
-  step()
-  {
-    m_outlets.push_back(new ossia::value_outlet);
-  }
+  step() { m_outlets.push_back(new ossia::value_outlet); }
 
   ~step() override = default;
 
@@ -39,9 +36,6 @@ public:
   ossia::float_vector values;
   ossia::time_value dur{};
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Step";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Step"; }
 };
 }

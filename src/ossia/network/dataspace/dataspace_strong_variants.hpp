@@ -15,9 +15,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -40,15 +38,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -64,10 +56,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~angle()
-  {
-    destruct_impl();
-  }
+  ~angle() { destruct_impl(); }
   angle(ossia::degree v)
       : m_type{Type0}
   {
@@ -371,9 +360,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -403,15 +390,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -427,10 +408,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~color()
-  {
-    destruct_impl();
-  }
+  ~color() { destruct_impl(); }
   color(ossia::argb v)
       : m_type{Type0}
   {
@@ -1277,9 +1255,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -1311,15 +1287,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -1335,10 +1305,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~distance()
-  {
-    destruct_impl();
-  }
+  ~distance() { destruct_impl(); }
   distance(ossia::meter v)
       : m_type{Type0}
   {
@@ -2325,9 +2292,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -2352,15 +2317,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -2376,10 +2335,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~gain()
-  {
-    destruct_impl();
-  }
+  ~gain() { destruct_impl(); }
   gain(ossia::linear v)
       : m_type{Type0}
   {
@@ -2825,9 +2781,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -2851,15 +2805,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -2875,10 +2823,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~orientation()
-  {
-    destruct_impl();
-  }
+  ~orientation() { destruct_impl(); }
   orientation(ossia::quaternion v)
       : m_type{Type0}
   {
@@ -3259,9 +3204,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -3291,15 +3234,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -3315,10 +3252,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~position()
-  {
-    destruct_impl();
-  }
+  ~position() { destruct_impl(); }
   position(ossia::cartesian_3d v)
       : m_type{Type0}
   {
@@ -4155,9 +4089,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -4184,15 +4116,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -4208,10 +4134,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~speed()
-  {
-    destruct_impl();
-  }
+  ~speed() { destruct_impl(); }
   speed(ossia::meter_per_second v)
       : m_type{Type0}
   {
@@ -4825,9 +4748,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -4857,15 +4778,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -4881,10 +4796,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~timing()
-  {
-    destruct_impl();
-  }
+  ~timing() { destruct_impl(); }
   timing(ossia::second v)
       : m_type{Type0}
   {
@@ -5727,9 +5639,7 @@ public:
         : m_dummy{}
     {
     }
-    ~Impl()
-    {
-    }
+    ~Impl() { }
   };
 
   enum Type : int8_t
@@ -5762,15 +5672,9 @@ public:
 
 public:
   static const constexpr auto npos = Npos;
-  int which() const
-  {
-    return m_type;
-  }
+  int which() const { return m_type; }
 
-  operator bool() const
-  {
-    return m_type != npos;
-  }
+  operator bool() const { return m_type != npos; }
   template <typename T>
   const T* target() const;
   template <typename T>
@@ -5786,10 +5690,7 @@ public:
       : m_type{Npos}
   {
   }
-  ~strong_value_variant()
-  {
-    destruct_impl();
-  }
+  ~strong_value_variant() { destruct_impl(); }
   strong_value_variant(const ossia::value& v)
       : m_type{Type0}
   {

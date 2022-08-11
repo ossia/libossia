@@ -42,17 +42,9 @@ public:
   int effective_inputs{};
   int effective_outputs{};
 
-  void tick_start()
-  {
-    load_audio_tick();
-  }
-  void tick_clear()
-  {
-    stop_received = true;
-  }
-  void tick_end()
-  {
-  }
+  void tick_start() { load_audio_tick(); }
+  void tick_clear() { stop_received = true; }
+  void tick_end() { }
 
 private:
   std::shared_ptr<audio_engine> self;

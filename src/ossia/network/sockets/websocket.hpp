@@ -24,9 +24,7 @@ struct websocket_simple_client : websocket_client
     m_client->init_asio(&ctx);
   }
 
-  void connect()
-  {
-  }
+  void connect() { }
 
   template <typename F>
   void receive(F onMessage)

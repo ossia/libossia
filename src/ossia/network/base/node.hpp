@@ -67,10 +67,7 @@ public:
    *
    * \see ossia::net::address_string_from_node
    */
-  const std::string& get_name() const
-  {
-    return m_name;
-  }
+  const std::string& get_name() const { return m_name; }
   virtual node_base& set_name(std::string) = 0;
 
   //! Allows a node to carry a value

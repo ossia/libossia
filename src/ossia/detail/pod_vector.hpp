@@ -27,15 +27,9 @@ struct pod_allocator
   pod_allocator& operator=(const pod_allocator&) noexcept = default;
   pod_allocator& operator=(pod_allocator&&) noexcept = default;
 
-  static inline T* allocate(std::size_t num) noexcept
-  {
-    return new T[num];
-  }
+  static inline T* allocate(std::size_t num) noexcept { return new T[num]; }
 
-  static inline void deallocate(T* p, std::size_t) noexcept
-  {
-    delete[] p;
-  }
+  static inline void deallocate(T* p, std::size_t) noexcept { delete[] p; }
 
   friend inline bool
   operator==(const pod_allocator& lhs, const pod_allocator& rhs) noexcept
@@ -76,10 +70,7 @@ struct pod_allocator
     return (T*)std::malloc(sizeof(T) * num);
   }
 
-  static inline void deallocate(T* p, std::size_t) noexcept
-  {
-    std::free(p);
-  }
+  static inline void deallocate(T* p, std::size_t) noexcept { std::free(p); }
 
   friend inline bool operator==(pod_allocator lhs, pod_allocator rhs) noexcept
   {

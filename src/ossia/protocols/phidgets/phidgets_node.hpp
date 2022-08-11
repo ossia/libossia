@@ -19,10 +19,7 @@ public:
 
   ~phidget_node();
 
-  auto phidget() const
-  {
-    return m_hdl;
-  }
+  auto phidget() const { return m_hdl; }
   void set_parameter(std::unique_ptr<ossia::net::parameter_base> a) override;
 
   phidget_node(PhidgetHandle hdl, ossia::net::device_base& d, ossia::net::node_base& p);
@@ -55,10 +52,7 @@ public:
 
   ~phidget_hub_port_node();
 
-  auto phidget() const
-  {
-    return m_hdl;
-  }
+  auto phidget() const { return m_hdl; }
 
   phidget_hub_port_node(
       PhidgetHandle hdl, int num, ossia::net::device_base& d, ossia::net::node_base& p);

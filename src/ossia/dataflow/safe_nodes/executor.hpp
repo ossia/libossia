@@ -359,10 +359,7 @@ public:
     }
   }
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "Control";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "Control"; }
 };
 
 struct value_adder
@@ -381,9 +378,6 @@ struct control_updater
 {
   T& control;
   T v;
-  void operator()()
-  {
-    control = std::move(v);
-  }
+  void operator()() { control = std::move(v); }
 };
 }

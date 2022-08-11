@@ -69,14 +69,8 @@ struct clock_count_bench
 };
 struct callgrind_bench
 {
-  callgrind_bench()
-  {
-    CALLGRIND_START_INSTRUMENTATION;
-  }
-  ~callgrind_bench()
-  {
-    CALLGRIND_STOP_INSTRUMENTATION;
-  }
+  callgrind_bench() { CALLGRIND_START_INSTRUMENTATION; }
+  ~callgrind_bench() { CALLGRIND_STOP_INSTRUMENTATION; }
 };
 }
 #endif
@@ -90,10 +84,7 @@ struct tick_all_nodes
   ossia::execution_state& e;
   ossia::graph_interface& g;
 
-  void operator()(const ossia::audio_tick_state& st)
-  {
-    (*this)(st.frames, st.seconds);
-  }
+  void operator()(const ossia::audio_tick_state& st) { (*this)(st.frames, st.seconds); }
 
   void operator()(unsigned long samples, double) const
   {
@@ -123,10 +114,7 @@ struct buffer_tick
   ossia::scenario& scenar;
   ossia::transport_info_fun transport;
 
-  void operator()(const ossia::audio_tick_state& st)
-  {
-    (*this)(st.frames, st.seconds);
-  }
+  void operator()(const ossia::audio_tick_state& st) { (*this)(st.frames, st.seconds); }
 
   void operator()(unsigned long frameCount, double seconds)
   {
@@ -204,10 +192,7 @@ struct precise_score_tick
   ossia::time_interval& itv;
   ossia::transport_info_fun transport;
 
-  void operator()(const ossia::audio_tick_state& st)
-  {
-    (*this)(st.frames, st.seconds);
-  }
+  void operator()(const ossia::audio_tick_state& st) { (*this)(st.frames, st.seconds); }
 
   void operator()(unsigned long frameCount, double seconds)
   {
@@ -357,20 +342,14 @@ struct benchmark_score_tick
   BaseTick base;
   ossia::double_vector m_tickDurations;
 
-  void operator()(const ossia::audio_tick_state& st)
-  {
-    (*this)(st.frames, st.seconds);
-  }
+  void operator()(const ossia::audio_tick_state& st) { (*this)(st.frames, st.seconds); }
 
   void operator()(unsigned long frameCount, double seconds)
   {
     cycle_count_bench bench{m_tickDurations};
     base(frameCount, seconds);
   }
-  benchmark_score_tick()
-  {
-    m_tickDurations.reserve(100000);
-  }
+  benchmark_score_tick() { m_tickDurations.reserve(100000); }
   ~benchmark_score_tick()
   {
     QFile f("/tmp/out.data");

@@ -27,10 +27,7 @@ struct spline
       ts_bspline_free(&m_spline);
   }
 
-  operator bool() const noexcept
-  {
-    return m_net.pImpl;
-  }
+  operator bool() const noexcept { return m_net.pImpl; }
 
   void set_points(const tsReal* points, std::size_t numPoints) noexcept
   {

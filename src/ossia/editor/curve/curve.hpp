@@ -312,34 +312,13 @@ inline Y curve<X, Y>::convert_to_template_type_value(
   struct visitor
   {
     destination_index::const_iterator index;
-    Y operator()(int32_t i) const
-    {
-      return i;
-    }
-    Y operator()(float f) const
-    {
-      return f;
-    }
-    Y operator()(bool b) const
-    {
-      return b;
-    }
-    Y operator()(char c) const
-    {
-      return c;
-    }
-    Y operator()(vec2f vec) const
-    {
-      return vec[*index];
-    }
-    Y operator()(vec3f vec) const
-    {
-      return vec[*index];
-    }
-    Y operator()(vec4f vec) const
-    {
-      return vec[*index];
-    }
+    Y operator()(int32_t i) const { return i; }
+    Y operator()(float f) const { return f; }
+    Y operator()(bool b) const { return b; }
+    Y operator()(char c) const { return c; }
+    Y operator()(vec2f vec) const { return vec[*index]; }
+    Y operator()(vec3f vec) const { return vec[*index]; }
+    Y operator()(vec4f vec) const { return vec[*index]; }
     Y operator()(const std::vector<ossia::value>& t) const
     {
       auto& val = t[*index];
@@ -397,10 +376,7 @@ public:
   constant_curve& operator=(const constant_curve&) = delete;
   constant_curve& operator=(constant_curve&&) = delete;
 
-  [[nodiscard]] ossia::value value() const
-  {
-    return mValue;
-  }
+  [[nodiscard]] ossia::value value() const { return mValue; }
 
   [[nodiscard]] curve_type get_type() const override
   {
@@ -408,9 +384,7 @@ public:
         ossia::curve_segment_type::DOUBLE, ossia::curve_segment_type::ANY);
   }
 
-  void reset() override
-  {
-  }
+  void reset() override { }
 
 private:
   const ossia::value mValue;

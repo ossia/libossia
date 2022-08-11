@@ -18,20 +18,11 @@ struct osc_1_0_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
   // Note: infinitum is not in OSC 1.0.
   // But then we have no way to represent an array of impulses, which is
   // *technically* possible in ossia
-  void operator()(impulse) const
-  {
-    p << int32_t(0);
-  }
+  void operator()(impulse) const { p << int32_t(0); }
 
-  void operator()(bool b) const
-  {
-    p << int32_t(b);
-  }
+  void operator()(bool b) const { p << int32_t(b); }
 
-  void operator()(char c) const
-  {
-    p << int32_t(c);
-  }
+  void operator()(char c) const { p << int32_t(c); }
 
   // Arrays are flattened
   void operator()(const std::vector<value>& t) const
@@ -46,9 +37,7 @@ struct osc_1_0_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
 struct osc_1_0_outbound_stream_visitor : osc_1_0_outbound_dynamic_policy
 {
   using osc_1_0_outbound_dynamic_policy::operator();
-  void operator()(impulse) const
-  {
-  }
+  void operator()(impulse) const { }
 
   void operator()(const std::vector<value>& t) const
   {

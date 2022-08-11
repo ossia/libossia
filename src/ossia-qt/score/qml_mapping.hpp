@@ -17,9 +17,7 @@ public:
   qml_mapping(QQuickItem* parent = nullptr);
   ~qml_mapping() override;
 
-  void setup() override
-  {
-  }
+  void setup() override { }
   std::shared_ptr<ossia::time_process> process() const override;
 
 private:

@@ -147,9 +147,7 @@ std::unique_ptr<net::node_base> phidget_node::make_child(const std::string& name
   return {};
 }
 
-void phidget_node::removing_child(net::node_base& node_base)
-{
-}
+void phidget_node::removing_child(net::node_base& node_base) { }
 
 void phidget_node::add_child_simple(std::unique_ptr<net::node_base> n)
 {
@@ -166,9 +164,7 @@ void phidget_node::add_child_simple(std::unique_ptr<net::node_base> n)
 namespace ossia
 {
 
-phidget_hub_port_node::~phidget_hub_port_node()
-{
-}
+phidget_hub_port_node::~phidget_hub_port_node() { }
 
 phidget_hub_port_node::phidget_hub_port_node(
     PhidgetHandle hdl, int num, net::device_base& d, net::node_base& p)
@@ -217,9 +213,7 @@ phidget_hub_port_node::make_child(const std::string& name)
   return {};
 }
 
-void phidget_hub_port_node::removing_child(net::node_base& node_base)
-{
-}
+void phidget_hub_port_node::removing_child(net::node_base& node_base) { }
 
 void phidget_hub_port_node::add_child_simple(std::unique_ptr<net::node_base> n)
 {

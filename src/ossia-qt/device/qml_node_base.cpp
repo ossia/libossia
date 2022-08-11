@@ -435,9 +435,7 @@ void qml_property_base::on_node_deleted(const net::node_base& n)
   m_callback = std::nullopt;
 }
 
-qml_property_base::~qml_property_base()
-{
-}
+qml_property_base::~qml_property_base() { }
 
 void qml_property_base::clearNode(bool reading)
 {

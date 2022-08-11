@@ -57,25 +57,13 @@ public:
     send_base(address, std::forward<Args>(args)...);
   }
 
-  const std::string& ip() const
-  {
-    return m_ip;
-  }
+  const std::string& ip() const { return m_ip; }
 
-  int port() const
-  {
-    return m_port;
-  }
+  int port() const { return m_port; }
 
-  int localPort() const
-  {
-    return m_socket.LocalPort();
-  }
+  int localPort() const { return m_socket.LocalPort(); }
 
-  oscpack::UdpTransmitSocket& socket()
-  {
-    return m_socket;
-  }
+  oscpack::UdpTransmitSocket& socket() { return m_socket; }
 
 private:
   void debug(const oscpack::OutboundPacketStream& out)

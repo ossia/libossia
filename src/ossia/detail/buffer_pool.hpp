@@ -19,10 +19,7 @@ struct object_pool
     return b;
   }
 
-  void release(Obj_T b)
-  {
-    buffers.enqueue(std::move(b));
-  }
+  void release(Obj_T b) { buffers.enqueue(std::move(b)); }
 };
 
 // TODO categorized_object_pool with more generic user-defined categorization ?
@@ -95,18 +92,9 @@ struct sized_object_pool
 template <typename T>
 struct container_memory_manager
 {
-  static constexpr void resize(T& t, std::size_t sz) noexcept
-  {
-    t.resize(sz);
-  }
-  static constexpr void reserve(T& t, std::size_t sz) noexcept
-  {
-    t.reserve(sz);
-  }
-  static constexpr std::size_t size(const T& t) noexcept
-  {
-    return t.size();
-  }
+  static constexpr void resize(T& t, std::size_t sz) noexcept { t.resize(sz); }
+  static constexpr void reserve(T& t, std::size_t sz) noexcept { t.reserve(sz); }
+  static constexpr std::size_t size(const T& t) noexcept { return t.size(); }
 };
 
 struct buffer_pool

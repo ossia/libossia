@@ -42,10 +42,7 @@ const x3::rule<class o_list_, std::vector<ossia::value>> o_list_ = "list";
 
 struct EscapedChar : x3::symbols<const char>
 {
-  EscapedChar()
-  {
-    add("\\\"", '\"');
-  }
+  EscapedChar() { add("\\\"", '\"'); }
 };
 using float_p = real_parser<float, x3::real_policies<float>>;
 

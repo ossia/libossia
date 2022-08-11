@@ -13,10 +13,7 @@ struct evaluate_visitor
   {
     return e.evaluate();
   }
-  bool operator()(const ossia::monostate& e)
-  {
-    return false;
-  }
+  bool operator()(const ossia::monostate& e) { return false; }
 };
 
 struct update_visitor
@@ -26,10 +23,7 @@ struct update_visitor
   {
     e.update();
   }
-  void operator()(const ossia::monostate& e)
-  {
-    return;
-  }
+  void operator()(const ossia::monostate& e) { return; }
 };
 
 struct reset_visitor
@@ -39,10 +33,7 @@ struct reset_visitor
   {
     e.reset();
   }
-  void operator()(ossia::monostate& e)
-  {
-    return;
-  }
+  void operator()(ossia::monostate& e) { return; }
 };
 
 struct add_callback_visitor
@@ -55,10 +46,7 @@ struct add_callback_visitor
     return e.add_callback(std::move(cb));
   }
 
-  expression_callback_iterator operator()(ossia::monostate& e)
-  {
-    return {};
-  }
+  expression_callback_iterator operator()(ossia::monostate& e) { return {}; }
 };
 
 struct remove_callback_visitor
@@ -69,9 +57,7 @@ struct remove_callback_visitor
   {
     e.remove_callback(it);
   }
-  void operator()(ossia::monostate& e)
-  {
-  }
+  void operator()(ossia::monostate& e) { }
 };
 
 struct get_callback_count_visitor
@@ -81,10 +67,7 @@ struct get_callback_count_visitor
   {
     return e.callback_count();
   }
-  std::size_t operator()(const ossia::monostate& e)
-  {
-    return 0;
-  }
+  std::size_t operator()(const ossia::monostate& e) { return 0; }
 };
 
 struct different_visitor

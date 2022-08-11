@@ -253,10 +253,7 @@ struct OSSIA_EXPORT time_value
 
   /*! is the time value infinite ?
    \return bool infinite */
-  [[nodiscard]] constexpr bool infinite() const noexcept
-  {
-    return impl >= infinite_min;
-  }
+  [[nodiscard]] constexpr bool infinite() const noexcept { return impl >= infinite_min; }
   constexpr time_value operator%(time_value d) const noexcept
   {
     return time_value{impl % d.impl};

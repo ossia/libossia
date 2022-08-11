@@ -77,14 +77,8 @@ struct is_empty_value
   {
     return false;
   }
-  bool operator()(const std::string& v) noexcept
-  {
-    return v.empty();
-  }
-  bool operator()(const ossia::string_view& v) noexcept
-  {
-    return v.empty();
-  }
+  bool operator()(const std::string& v) noexcept { return v.empty(); }
+  bool operator()(const ossia::string_view& v) noexcept { return v.empty(); }
   template <typename T>
   bool operator()(const std::vector<T>& v) noexcept
   {

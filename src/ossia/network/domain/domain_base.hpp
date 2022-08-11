@@ -23,9 +23,7 @@ struct OSSIA_EXPORT domain
 {
   domain_base_variant v;
 
-  domain() noexcept
-  {
-  }
+  domain() noexcept { }
 
   template <typename T>
   domain(const ossia::domain_base<T>& arg)
@@ -77,14 +75,8 @@ struct OSSIA_EXPORT domain
   value get_min() const;
   value get_max() const;
 
-  operator bool() const
-  {
-    return bool(v);
-  }
-  auto which() const
-  {
-    return v.which();
-  }
+  operator bool() const { return bool(v); }
+  auto which() const { return v.which(); }
 
   template <typename T>
   OSSIA_INLINE T get_min() const

@@ -11,14 +11,8 @@ namespace ossia
 struct nullable_variant_index
 {
   std::size_t value;
-  OSSIA_MAXIMUM_INLINE constexpr bool valid() const noexcept
-  {
-    return value != 0;
-  }
-  OSSIA_MAXIMUM_INLINE constexpr std::size_t index() const noexcept
-  {
-    return value;
-  }
+  OSSIA_MAXIMUM_INLINE constexpr bool valid() const noexcept { return value != 0; }
+  OSSIA_MAXIMUM_INLINE constexpr std::size_t index() const noexcept { return value; }
   OSSIA_MAXIMUM_INLINE constexpr std::size_t to_std_index() const noexcept
   {
     return value - 1;
@@ -81,10 +75,7 @@ struct nullable_variant
   }
 
   // FIXME is this safe
-  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept
-  {
-    return this;
-  }
+  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept { return this; }
 
   [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr const void* target() const noexcept
   {

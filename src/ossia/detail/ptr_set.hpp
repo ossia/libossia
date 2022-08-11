@@ -15,10 +15,7 @@ template <typename T>
 struct PointerPredicate
 {
   using is_transparent = std::true_type;
-  bool operator()(const T* lhs, const T* rhs) const noexcept
-  {
-    return lhs == rhs;
-  }
+  bool operator()(const T* lhs, const T* rhs) const noexcept { return lhs == rhs; }
   bool operator()(const std::shared_ptr<T>& lhs, const T* rhs) const noexcept
   {
     return lhs.get() == rhs;

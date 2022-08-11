@@ -9,9 +9,7 @@ namespace ossia
 {
 struct do_nothing_for_nodes
 {
-  void operator()(ossia::net::node_base* node, bool) const noexcept
-  {
-  }
+  void operator()(ossia::net::node_base* node, bool) const noexcept { }
 };
 
 template <typename Fun, typename NodeFun, typename DeviceList_T>

@@ -19,14 +19,8 @@ namespace ossia
 struct val_type_visitor
 {
   using ret = ossia::val_type;
-  ret operator()(ossia::val_type v) const
-  {
-    return v;
-  }
-  ret operator()(const ossia::unit_t& v) const
-  {
-    return ossia::matching_type(v);
-  }
+  ret operator()(ossia::val_type v) const { return v; }
+  ret operator()(const ossia::unit_t& v) const { return ossia::matching_type(v); }
   ret operator()(const ossia::extended_type& v) const
   {
     auto t = ossia::underlying_type(v);
@@ -37,15 +31,9 @@ struct val_type_visitor
     return ossia::val_type::IMPULSE;
   }
 
-  ret operator()(ossia::monostate)
-  {
-    return ossia::val_type::IMPULSE;
-  }
+  ret operator()(ossia::monostate) { return ossia::val_type::IMPULSE; }
 
-  ret operator()()
-  {
-    return ossia::val_type::IMPULSE;
-  }
+  ret operator()() { return ossia::val_type::IMPULSE; }
 };
 
 ossia::val_type underlying_type(const complex_type& t)
@@ -104,15 +92,9 @@ struct setup_parameter_visitor
     return nullptr;
   }
 
-  ret operator()(ossia::monostate)
-  {
-    return nullptr;
-  }
+  ret operator()(ossia::monostate) { return nullptr; }
 
-  ret operator()()
-  {
-    return nullptr;
-  }
+  ret operator()() { return nullptr; }
 };
 
 net::parameter_base* setup_parameter(const complex_type& t, net::node_base& node)
@@ -288,14 +270,8 @@ struct update_parameter_visitor
 {
   using ret = void;
   ossia::net::parameter_base& addr;
-  ret operator()(ossia::val_type v) const
-  {
-    addr.set_value_type(v);
-  }
-  ret operator()(const ossia::unit_t& v) const
-  {
-    addr.set_unit(v);
-  }
+  ret operator()(ossia::val_type v) const { addr.set_value_type(v); }
+  ret operator()(const ossia::unit_t& v) const { addr.set_unit(v); }
   ret operator()(const ossia::extended_type& v) const
   {
     auto t = ossia::underlying_type(v);
@@ -306,12 +282,8 @@ struct update_parameter_visitor
     ossia::net::set_extended_type(addr.get_node(), v);
   }
 
-  ret operator()(ossia::monostate)
-  {
-  }
-  ret operator()()
-  {
-  }
+  ret operator()(ossia::monostate) { }
+  ret operator()() { }
 };
 
 void update_parameter_type(const complex_type& t, net::parameter_base& addr)

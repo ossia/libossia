@@ -407,9 +407,7 @@ private:
     return 0;
   }
 
-  static void success_cb(pa_stream*, int, void*)
-  {
-  }
+  static void success_cb(pa_stream*, int, void*) { }
   static void output_callback(pa_stream* stream, size_t requested_bytes, void* userdata)
   {
     auto& self = *static_cast<pulseaudio_engine*>(userdata);

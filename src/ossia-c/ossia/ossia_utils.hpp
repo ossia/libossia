@@ -170,10 +170,7 @@ struct node_cb
 {
   ossia_node_callback_t m_cb{};
   void* m_ctx{};
-  void operator()(const ossia::net::node_base& node)
-  {
-    m_cb(m_ctx, convert(&node));
-  }
+  void operator()(const ossia::net::node_base& node) { m_cb(m_ctx, convert(&node)); }
 };
 struct address_cb
 {

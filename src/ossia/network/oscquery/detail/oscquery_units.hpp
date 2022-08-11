@@ -26,18 +26,10 @@ namespace ossia::oscquery::detail
 struct unit_writer
 {
   const json_writer_impl& writer;
-  void operator()()
-  {
-  }
+  void operator()() { }
 
-  void operator()(const ossia::degree_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::radian_u& u)
-  {
-    write_unit(u);
-  }
+  void operator()(const ossia::degree_u& u) { write_unit(u); }
+  void operator()(const ossia::radian_u& u) { write_unit(u); }
 
   void operator()(const ossia::argb_u&)
   {
@@ -186,109 +178,34 @@ struct unit_writer
     writer.writer.EndArray();
   }
 
-  void operator()(const ossia::meter_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::kilometer_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::decimeter_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const centimeter_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const millimeter_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const micrometer_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const nanometer_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const picometer_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const inch_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const foot_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const mile_u& u)
-  {
-    write_unit(u);
-  }
+  void operator()(const ossia::meter_u& u) { write_unit(u); }
+  void operator()(const ossia::kilometer_u& u) { write_unit(u); }
+  void operator()(const ossia::decimeter_u& u) { write_unit(u); }
+  void operator()(const centimeter_u& u) { write_unit(u); }
+  void operator()(const millimeter_u& u) { write_unit(u); }
+  void operator()(const micrometer_u& u) { write_unit(u); }
+  void operator()(const nanometer_u& u) { write_unit(u); }
+  void operator()(const picometer_u& u) { write_unit(u); }
+  void operator()(const inch_u& u) { write_unit(u); }
+  void operator()(const foot_u& u) { write_unit(u); }
+  void operator()(const mile_u& u) { write_unit(u); }
 
-  void operator()(const linear_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const midigain_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const decibel_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const decibel_raw_u& u)
-  {
-    write_unit(u);
-  }
+  void operator()(const linear_u& u) { write_unit(u); }
+  void operator()(const midigain_u& u) { write_unit(u); }
+  void operator()(const decibel_u& u) { write_unit(u); }
+  void operator()(const decibel_raw_u& u) { write_unit(u); }
 
-  void operator()(const quaternion_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const euler_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const axis_u& u)
-  {
-    write_extended(u);
-  }
+  void operator()(const quaternion_u& u) { write_extended(u); }
+  void operator()(const euler_u& u) { write_extended(u); }
+  void operator()(const axis_u& u) { write_extended(u); }
 
-  void operator()(const spherical_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const polar_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const aed_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const ad_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const opengl_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const cylindrical_u& u)
-  {
-    write_extended(u);
-  }
-  void operator()(const azd_u& u)
-  {
-    write_extended(u);
-  }
+  void operator()(const spherical_u& u) { write_extended(u); }
+  void operator()(const polar_u& u) { write_extended(u); }
+  void operator()(const aed_u& u) { write_extended(u); }
+  void operator()(const ad_u& u) { write_extended(u); }
+  void operator()(const opengl_u& u) { write_extended(u); }
+  void operator()(const cylindrical_u& u) { write_extended(u); }
+  void operator()(const azd_u& u) { write_extended(u); }
 
   void operator()(const cartesian_3d_u&)
   {
@@ -309,67 +226,22 @@ struct unit_writer
     writer.writer.EndArray();
   }
 
-  void operator()(const ossia::meter_per_second_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::miles_per_hour_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::kilometer_per_hour_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::knot_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::foot_per_hour_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::foot_per_second_u& u)
-  {
-    write_unit(u);
-  }
+  void operator()(const ossia::meter_per_second_u& u) { write_unit(u); }
+  void operator()(const ossia::miles_per_hour_u& u) { write_unit(u); }
+  void operator()(const ossia::kilometer_per_hour_u& u) { write_unit(u); }
+  void operator()(const ossia::knot_u& u) { write_unit(u); }
+  void operator()(const ossia::foot_per_hour_u& u) { write_unit(u); }
+  void operator()(const ossia::foot_per_second_u& u) { write_unit(u); }
 
-  void operator()(const ossia::second_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::bark_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::bpm_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::cent_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::frequency_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::mel_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::midi_pitch_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::millisecond_u& u)
-  {
-    write_unit(u);
-  }
-  void operator()(const ossia::playback_speed_u& u)
-  {
-    write_unit(u);
-  }
+  void operator()(const ossia::second_u& u) { write_unit(u); }
+  void operator()(const ossia::bark_u& u) { write_unit(u); }
+  void operator()(const ossia::bpm_u& u) { write_unit(u); }
+  void operator()(const ossia::cent_u& u) { write_unit(u); }
+  void operator()(const ossia::frequency_u& u) { write_unit(u); }
+  void operator()(const ossia::mel_u& u) { write_unit(u); }
+  void operator()(const ossia::midi_pitch_u& u) { write_unit(u); }
+  void operator()(const ossia::millisecond_u& u) { write_unit(u); }
+  void operator()(const ossia::playback_speed_u& u) { write_unit(u); }
 
   template <typename T>
   void write_unit(const T&)
@@ -424,8 +296,7 @@ struct unit_parser
        ossia::argb8_u{}},
       {{"color.hsv.h", "color.hsv.s", "color.hsv.v"}, ossia::hsv_u{}},
       {{"color.cmyk8.c", "color.cmyk8.m", "color.cmyk8.y"}, ossia::cmy8_u{}},
-      {{"color.ciexyz.x", "color.ciexyz.y", "color.ciexyz.z"},
-       ossia::xyz_u{}}, /*
+      {{"color.ciexyz.x", "color.ciexyz.y", "color.ciexyz.z"}, ossia::xyz_u{}}, /*
 { { "color.hsl.h", "color.hsl.s", "color.hsl.l" }, ossia::hsl_u{} },
 { { "color.cmyk8.c", "color.cmyk8.m", "color.cmyk8.y", "color.cmyk8.k" },
 ossia::cmyk8_u{} }, { { "color.cieYxy.y", "color.cieYxy.x",

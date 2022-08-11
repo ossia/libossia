@@ -32,10 +32,7 @@ public:
   ossia::net::parameter_base* create_parameter(ossia::val_type type) final override;
   bool remove_parameter() final override;
 
-  QObject& object() const
-  {
-    return mObject;
-  }
+  QObject& object() const { return mObject; }
 
 private:
   void init(QObject&);

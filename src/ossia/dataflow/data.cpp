@@ -20,27 +20,13 @@ struct process_float_control_visitor
   float dst_min{};
   float ratio{};
 
-  void operator()(ossia::impulse) const noexcept
-  {
-  }
+  void operator()(ossia::impulse) const noexcept { }
 
-  void operator()(int& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
-  void operator()(float& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
-  void operator()(bool& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
+  void operator()(int& v) const noexcept { v = dst_min + ratio * (v - src_min); }
+  void operator()(float& v) const noexcept { v = dst_min + ratio * (v - src_min); }
+  void operator()(bool& v) const noexcept { v = dst_min + ratio * (v - src_min); }
 
-  void operator()(char& v) const noexcept
-  {
-    v = dst_min + ratio * (v - src_min);
-  }
+  void operator()(char& v) const noexcept { v = dst_min + ratio * (v - src_min); }
   void operator()(std::string& str) const noexcept
   {
     for(char& v : str)
@@ -72,9 +58,7 @@ struct process_float_control_visitor
       value.apply(*this);
   }
 
-  void operator()() const noexcept
-  {
-  }
+  void operator()() const noexcept { }
 };
 
 bool should_process_control(
@@ -481,8 +465,6 @@ value_vector<ossia::timed_value>& value_port::get_data()
   return data;
 }
 
-void geometry_port::clear()
-{
-}
+void geometry_port::clear() { }
 
 }

@@ -38,10 +38,7 @@ public:
 
   bool update(ossia::net::node_base&) override;
 
-  dmx_buffer& buffer() noexcept
-  {
-    return m_buffer;
-  }
+  dmx_buffer& buffer() noexcept { return m_buffer; }
 
 private:
   void update_function();

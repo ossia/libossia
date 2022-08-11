@@ -71,10 +71,7 @@ struct ws_generic_client_parameter_data
   {
   }
 
-  bool valid() const noexcept
-  {
-    return !request.isNull() || type;
-  }
+  bool valid() const noexcept { return !request.isNull() || type; }
 };
 
 using ws_generic_client_parameter = wrapped_parameter<ws_generic_client_parameter_data>;
@@ -109,10 +106,7 @@ public:
 
   void set_device(ossia::net::device_base& dev) override;
 
-  static ws_generic_client_parameter_data read_data(const QJSValue& js)
-  {
-    return js;
-  }
+  static ws_generic_client_parameter_data read_data(const QJSValue& js) { return js; }
 
 public:
   void sig_push(const ws_generic_client_parameter* arg_1, const ossia::value& v)

@@ -9,24 +9,12 @@ namespace ossia
 {
 
 time_sync_callback::~time_sync_callback() = default;
-void time_sync_callback::triggered()
-{
-}
-void time_sync_callback::entered_evaluation()
-{
-}
-void time_sync_callback::entered_triggering()
-{
-}
-void time_sync_callback::trigger_date_fixed(ossia::time_value)
-{
-}
-void time_sync_callback::left_evaluation()
-{
-}
-void time_sync_callback::finished_evaluation(bool)
-{
-}
+void time_sync_callback::triggered() { }
+void time_sync_callback::entered_evaluation() { }
+void time_sync_callback::entered_triggering() { }
+void time_sync_callback::trigger_date_fixed(ossia::time_value) { }
+void time_sync_callback::left_evaluation() { }
+void time_sync_callback::finished_evaluation(bool) { }
 
 time_sync::time_sync()
     : m_expression(expressions::make_expression_true())

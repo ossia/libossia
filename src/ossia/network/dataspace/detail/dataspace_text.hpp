@@ -48,35 +48,20 @@ struct unit_text_visitor
     constexpr_return(ossia::unit_traits<Unit>::text()[0]);
   }
 
-  OSSIA_INLINE ossia::string_view operator()(const ossia::value&)
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()(const ossia::value&) { return {}; }
 
-  OSSIA_INLINE ossia::string_view operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()() { return {}; }
 };
 
 struct unit_accessor_visitor
 {
-  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace)
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace) { return {}; }
   OSSIA_INLINE ossia::string_view operator()(const color_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace)
-  {
-    return {};
-  }
-  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace)
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace) { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace) { return {}; }
   OSSIA_INLINE ossia::string_view operator()(const position_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
@@ -85,14 +70,8 @@ struct unit_accessor_visitor
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace)
-  {
-    return {};
-  }
-  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace)
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace) { return {}; }
+  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace) { return {}; }
 
   template <typename Unit>
   OSSIA_INLINE ossia::string_view operator()(Unit)
@@ -100,10 +79,7 @@ struct unit_accessor_visitor
     return Unit::array_parameters();
   }
 
-  OSSIA_INLINE ossia::string_view operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()() { return {}; }
 };
 
 struct dataspace_text_visitor
@@ -114,10 +90,7 @@ struct dataspace_text_visitor
     constexpr_return(ossia::dataspace_traits<Dataspace>::text()[0]);
   }
 
-  OSSIA_INLINE ossia::string_view operator()()
-  {
-    return {};
-  }
+  OSSIA_INLINE ossia::string_view operator()() { return {}; }
 };
 
 using unit_pretty_text_map = ossia::fast_hash_map<ossia::unit_t, std::string>;

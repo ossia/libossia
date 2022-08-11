@@ -12,9 +12,7 @@ qml_loop::qml_loop(QQuickItem* parent)
   reset();
 }
 
-qml_loop::~qml_loop()
-{
-}
+qml_loop::~qml_loop() { }
 
 qml_interval* qml_loop::interval() const
 {
@@ -116,9 +114,7 @@ void qml_loop::setEndTrig(QQmlScriptString s)
   }
 }
 
-void qml_loop::reset_impl()
-{
-}
+void qml_loop::reset_impl() { }
 
 }
 }

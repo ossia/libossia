@@ -25,9 +25,7 @@ namespace ossia::net
 {
 node_base::~node_base() = default;
 
-void node_base::set_parameter(std::unique_ptr<parameter_base>)
-{
-}
+void node_base::set_parameter(std::unique_ptr<parameter_base>) { }
 
 const extended_attributes& node_base::get_extended_attributes() const
 {

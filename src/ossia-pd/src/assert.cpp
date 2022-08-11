@@ -74,9 +74,7 @@ void assert::quit()
     logpost(this, 0, "crash!!!");
 }
 
-void assert::destroy(assert* x)
-{
-}
+void assert::destroy(assert* x) { }
 
 extern "C" void setup_ossia0x2eassert(void)
 {

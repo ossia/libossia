@@ -50,10 +50,7 @@ public:
     return (T)dlsym(impl, sym);
   }
 
-  operator bool() const
-  {
-    return bool(impl);
-  }
+  operator bool() const { return bool(impl); }
 
 private:
   void* impl{};

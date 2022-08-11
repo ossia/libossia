@@ -159,18 +159,12 @@ struct linear_unit : public T
 template <typename T>
 struct unit_traits
 {
-  static constexpr auto text()
-  {
-    constexpr_return(T::text());
-  }
+  static constexpr auto text() { constexpr_return(T::text()); }
 };
 
 template <typename T>
 struct unit_traits<strong_value<T>>
 {
-  static constexpr auto text()
-  {
-    constexpr_return(unit_traits<T>::text());
-  }
+  static constexpr auto text() { constexpr_return(unit_traits<T>::text()); }
 };
 }

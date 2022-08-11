@@ -225,23 +225,14 @@ constexpr auto query_value()
 struct OSSIA_EXPORT full_path_attribute
 {
   using type = std::string;
-  static auto text()
-  {
-    return detail::attribute_full_path();
-  }
-  static auto getter(const ossia::net::node_base& n)
-  {
-    return n.osc_address();
-  }
+  static auto text() { return detail::attribute_full_path(); }
+  static auto getter(const ossia::net::node_base& n) { return n.osc_address(); }
 };
 
 struct OSSIA_EXPORT typetag_attribute
 {
   using type = std::string;
-  static auto text()
-  {
-    return ossia::net::text_value_type();
-  }
+  static auto text() { return ossia::net::text_value_type(); }
   static auto getter(const ossia::net::node_base& n)
   {
     return oscquery::get_osc_typetag(n);
@@ -259,180 +250,114 @@ struct metadata;
 template <>
 struct metadata<full_path_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_full_path();
-  }
+  static constexpr auto key() { return detail::attribute_full_path(); }
 };
 template <>
 struct metadata<typetag_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_typetag();
-  }
+  static constexpr auto key() { return detail::attribute_typetag(); }
 };
 
 // common attributes
 template <>
 struct metadata<net::value_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_value();
-  }
+  static constexpr auto key() { return detail::attribute_value(); }
 };
 template <>
 struct metadata<net::domain_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_range();
-  }
+  static constexpr auto key() { return detail::attribute_range(); }
 };
 template <>
 struct metadata<net::access_mode_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_accessmode();
-  }
+  static constexpr auto key() { return detail::attribute_accessmode(); }
 };
 template <>
 struct metadata<net::bounding_mode_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_clipmode();
-  }
+  static constexpr auto key() { return detail::attribute_clipmode(); }
 };
 template <>
 struct metadata<net::unit_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_unit();
-  }
+  static constexpr auto key() { return detail::attribute_unit(); }
 };
 template <>
 struct metadata<net::default_value_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_default_value();
-  }
+  static constexpr auto key() { return detail::attribute_default_value(); }
 };
 template <>
 struct metadata<net::tags_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_tags();
-  }
+  static constexpr auto key() { return detail::attribute_tags(); }
 };
 template <>
 struct metadata<net::refresh_rate_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_refresh_rate();
-  }
+  static constexpr auto key() { return detail::attribute_refresh_rate(); }
 };
 template <>
 struct metadata<net::priority_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_priority();
-  }
+  static constexpr auto key() { return detail::attribute_priority(); }
 };
 template <>
 struct metadata<net::value_step_size_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_step_size();
-  }
+  static constexpr auto key() { return detail::attribute_step_size(); }
 };
 template <>
 struct metadata<net::instance_bounds_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_instance_bounds();
-  }
+  static constexpr auto key() { return detail::attribute_instance_bounds(); }
 };
 template <>
 struct metadata<net::critical_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_critical();
-  }
+  static constexpr auto key() { return detail::attribute_critical(); }
 };
 template <>
 struct metadata<net::hidden_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_hidden();
-  }
+  static constexpr auto key() { return detail::attribute_hidden(); }
 };
 template <>
 struct metadata<net::disabled_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_disabled();
-  }
+  static constexpr auto key() { return detail::attribute_disabled(); }
 };
 template <>
 struct metadata<net::extended_type_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_extended_type();
-  }
+  static constexpr auto key() { return detail::attribute_extended_type(); }
 };
 template <>
 struct metadata<net::description_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_description();
-  }
+  static constexpr auto key() { return detail::attribute_description(); }
 };
 template <>
 struct metadata<net::repetition_filter_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_repetition_filter();
-  }
+  static constexpr auto key() { return detail::attribute_repetition_filter(); }
 };
 template <>
 struct metadata<net::app_version_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_app_version();
-  }
+  static constexpr auto key() { return detail::attribute_app_version(); }
 };
 template <>
 struct metadata<net::app_creator_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_app_creator();
-  }
+  static constexpr auto key() { return detail::attribute_app_creator(); }
 };
 template <>
 struct metadata<net::app_name_attribute>
 {
-  static constexpr auto key()
-  {
-    return detail::attribute_app_name();
-  }
+  static constexpr auto key() { return detail::attribute_app_name(); }
 };
 
 using base_attributes = brigand::list<

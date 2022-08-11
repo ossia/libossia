@@ -6,9 +6,7 @@ texture_input_parameter::~texture_input_parameter() = default;
 
 texture_parameter::~texture_parameter() = default;
 
-void texture_parameter::pull_value()
-{
-}
+void texture_parameter::pull_value() { }
 
 net::parameter_base& texture_parameter::push_value(const ossia::value&)
 {

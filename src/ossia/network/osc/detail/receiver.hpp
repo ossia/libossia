@@ -26,10 +26,7 @@ struct ClearListener : public oscpack::TimerListener
   }
   UdpSocket<Impl_T>& socket;
 
-  void TimerExpired() override
-  {
-    socket.AsynchronousBreak();
-  }
+  void TimerExpired() override { socket.AsynchronousBreak(); }
 };
 
 template <typename Impl_T>
@@ -46,16 +43,10 @@ public:
     mux_.AttachSocketListener(&this->impl_, listener_);
   }
 
-  ~ReceiveSocket()
-  {
-    mux_.DetachSocketListener(&this->impl_, listener_);
-  }
+  ~ReceiveSocket() { mux_.DetachSocketListener(&this->impl_, listener_); }
 
   // see SocketReceiveMultiplexer above for the behaviour of these methods...
-  void Run()
-  {
-    mux_.Run();
-  }
+  void Run() { mux_.Run(); }
   void Break()
   {
     ClearListener<Impl_T> l{*this};
@@ -174,10 +165,7 @@ public:
     return *this;
   }
 
-  ~receiver()
-  {
-    stop();
-  }
+  ~receiver() { stop(); }
 
   void run()
   {
@@ -239,10 +227,7 @@ public:
     }
   }
 
-  unsigned int port() const
-  {
-    return m_port;
-  }
+  unsigned int port() const { return m_port; }
 
   unsigned int setPort(unsigned int port)
   {

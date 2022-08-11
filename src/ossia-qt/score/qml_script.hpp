@@ -35,32 +35,14 @@ public:
       , m_value{v}
   {
   }
-  qml_device* device() const
-  {
-    return m_dev;
-  }
-  void setDevice(qml_device* d)
-  {
-    m_dev = d;
-  }
+  qml_device* device() const { return m_dev; }
+  void setDevice(qml_device* d) { m_dev = d; }
 
-  QString address() const
-  {
-    return m_addr;
-  }
-  void setAddress(QString d)
-  {
-    m_addr = d;
-  }
+  QString address() const { return m_addr; }
+  void setAddress(QString d) { m_addr = d; }
 
-  QVariant value() const
-  {
-    return m_value;
-  }
-  void setValue(QVariant d)
-  {
-    m_value = d;
-  }
+  QVariant value() const { return m_value; }
+  void setValue(QVariant d) { m_value = d; }
 
   ossia::state_element toState() const;
 
@@ -98,31 +80,13 @@ public:
   void setup() override;
   std::shared_ptr<ossia::time_process> process() const override;
 
-  void setDate(time_value date)
-  {
-    m_date = date;
-  }
-  void setPosition(double pos)
-  {
-    m_pos = pos;
-  }
+  void setDate(time_value date) { m_date = date; }
+  void setPosition(double pos) { m_pos = pos; }
 
-  int32_t date() const
-  {
-    return m_date.impl;
-  }
-  double position() const
-  {
-    return m_pos;
-  }
-  QQmlScriptString script() const
-  {
-    return m_script;
-  }
-  void setScript(QQmlScriptString s)
-  {
-    m_script = s;
-  }
+  int32_t date() const { return m_date.impl; }
+  double position() const { return m_pos; }
+  QQmlScriptString script() const { return m_script; }
+  void setScript(QQmlScriptString s) { m_script = s; }
 
 public:
   void dateChanged(qint32 arg_1) E_SIGNAL(OSSIA_EXPORT, dateChanged, arg_1);

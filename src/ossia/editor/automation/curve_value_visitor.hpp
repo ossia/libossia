@@ -93,10 +93,7 @@ struct compute_value_uninformed_visitor
     return error();
   }
 
-  ossia::value operator()() const
-  {
-    return error();
-  }
+  ossia::value operator()() const { return error(); }
 
   ossia::value operator()(const curve_ptr& c) const
   {
@@ -189,10 +186,7 @@ struct compute_value_visitor
     return error();
   }
 
-  ossia::value operator()() const
-  {
-    return error();
-  }
+  ossia::value operator()() const { return error(); }
 
   ossia::value operator()(const curve_ptr& c) const
   {

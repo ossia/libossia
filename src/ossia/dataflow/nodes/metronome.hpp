@@ -9,27 +9,15 @@ namespace ossia::nodes
 class metronome final : public ossia::nonowning_graph_node
 {
 public:
-  metronome()
-  {
-    m_outlets.push_back(&value_out);
-  }
+  metronome() { m_outlets.push_back(&value_out); }
 
   ~metronome() override = default;
 
-  [[nodiscard]] std::string label() const noexcept override
-  {
-    return "metronome";
-  }
+  [[nodiscard]] std::string label() const noexcept override { return "metronome"; }
 
-  void set_curve(std::shared_ptr<curve<double, float>> b)
-  {
-    m_curve = std::move(b);
-  }
+  void set_curve(std::shared_ptr<curve<double, float>> b) { m_curve = std::move(b); }
 
-  void reset()
-  {
-    m_metroPrevTick = ossia::time_value{};
-  }
+  void reset() { m_metroPrevTick = ossia::time_value{}; }
 
 private:
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
@@ -95,9 +83,6 @@ class metronome_process final : public ossia::node_process
 {
 public:
   using ossia::node_process::node_process;
-  void start() override
-  {
-    static_cast<ossia::nodes::metronome*>(node.get())->reset();
-  }
+  void start() override { static_cast<ossia::nodes::metronome*>(node.get())->reset(); }
 };
 }

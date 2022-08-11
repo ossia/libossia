@@ -50,9 +50,7 @@ void audio_parameter::push_value(const audio_port& port)
   }
 }
 
-void audio_parameter::pull_value()
-{
-}
+void audio_parameter::pull_value() { }
 
 ossia::net::parameter_base& audio_parameter::push_value(const ossia::value& v)
 {

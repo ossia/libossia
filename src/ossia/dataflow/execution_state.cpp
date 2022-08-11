@@ -68,10 +68,7 @@ struct local_pull_visitor
     return false;
   }
 
-  bool operator()() const
-  {
-    return false;
-  }
+  bool operator()() const { return false; }
 };
 
 struct global_pull_visitor
@@ -135,9 +132,7 @@ struct global_pull_visitor
     assert(false);
   }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 struct global_pull_node_visitor
@@ -202,9 +197,7 @@ struct global_pull_node_visitor
     assert(false);
   }
 
-  void operator()() const
-  {
-  }
+  void operator()() const { }
 };
 
 execution_state::~execution_state() = default;
@@ -984,13 +977,9 @@ struct state_exec_visitor
   {
   }
 
-  void operator()(const ossia::piecewise_message& st)
-  {
-  }
+  void operator()(const ossia::piecewise_message& st) { }
 
-  void operator()(const ossia::monostate&)
-  {
-  }
+  void operator()(const ossia::monostate&) { }
 };
 
 void execution_state::insert(const ossia::state& v)
