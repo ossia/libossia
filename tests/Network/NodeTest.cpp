@@ -9,7 +9,9 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
+
 #include <regex>
+#include <string_view>
 
 #if defined(OSSIA_QT)
  #include <ossia-qt/js_utilities.hpp>
@@ -124,6 +126,7 @@ TEST_CASE ("test_edition", "test_edition")
 
 TEST_CASE ("test_list_all_children", "list_all_children")
 {
+  using namespace std::literals;
   ossia::net::generic_device dev{"mydevice"};
 
   auto& root = dev.get_root_node();
@@ -140,7 +143,7 @@ TEST_CASE ("test_list_all_children", "list_all_children")
   auto p4z10 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.10"))->get_node();
   auto p4a1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/a.10"))->get_node();
 
-  auto matrix = dev.find_child("matrix");
+  auto matrix = dev.find_child("matrix"sv);
   std::vector<ossia::net::node_base*> vec = ossia::net::list_all_children(&root);
 
   std::vector<ossia::net::node_base*> sorted{matrix, p1, p2, p3, p4, p4a1, p4x, p4y, p4z1, p4z3, p4z10, p5};
