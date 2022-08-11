@@ -23,6 +23,7 @@ add_library(re2 STATIC
   ${OSSIA_3RDPARTY_FOLDER}/re2/util/strutil.cc
 )
 
+set_target_properties(re2 PROPERTIES UNITY_BUILD 0)
 if(MSVC)
   target_compile_definitions(re2 PRIVATE /utf-8)
 endif()

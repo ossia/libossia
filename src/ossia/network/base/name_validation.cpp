@@ -21,8 +21,9 @@ namespace ossia::net
 std::string& sanitize_device_name(std::string& ret)
 {
   // Note : if this is changed, also change the Qt version in js_utilities.cpp
-  for(auto& c : ret)
+  for(int i = 0; i < std::ssize(ret); i++)
   {
+    char& c = ret[i];
     if(is_valid_character_for_device(c))
       continue;
     else
@@ -34,8 +35,9 @@ std::string& sanitize_device_name(std::string& ret)
 std::string& sanitize_name(std::string& ret)
 {
   // Note : if this is changed, also change the Qt version in js_utilities.cpp
-  for(auto& c : ret)
+  for(int i = 0; i < std::ssize(ret); i++)
   {
+    char& c = ret[i];
     if(is_valid_character_for_name(c))
       continue;
     else

@@ -122,6 +122,31 @@ TEST_CASE ("test_edition", "test_edition")
   }
 }
 
+TEST_CASE ("test_list_all_children", "list_all_children")
+{
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  auto p1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.1"))->get_node();
+  auto p5 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"))->get_node();
+  auto p4 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"))->get_node();
+  auto p3 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.3"))->get_node();
+  auto p4x = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/x"))->get_node();
+  auto p4y = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/y"))->get_node();
+  auto p4z3 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.3"))->get_node();
+  auto p2 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.2"))->get_node();
+  auto p4z1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.1"))->get_node();
+  auto p4z10 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.10"))->get_node();
+  auto p4a1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/a.10"))->get_node();
+
+  auto matrix = dev.find_child("matrix");
+  std::vector<ossia::net::node_base*> vec = ossia::net::list_all_children(&root);
+
+  std::vector<ossia::net::node_base*> sorted{matrix, p1, p2, p3, p4, p4a1, p4x, p4y, p4z1, p4z3, p4z10, p5};
+  REQUIRE(vec == sorted);
+}
+
 TEST_CASE ("test_path", "test_path")
 {
   using namespace ossia::regex_path;

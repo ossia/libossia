@@ -44,6 +44,7 @@ audio_device::audio_device(
   engine = std::unique_ptr<ossia::audio_engine>(make_audio_engine(
       default_protocol, name, default_in, default_out, ins, outs, rate, bs));
 
+  protocol.setup_tree(engine->effective_inputs, engine->effective_outputs);
   m_bs = bs;
   m_sr = rate;
 }
@@ -68,8 +69,11 @@ ossia::audio_parameter& audio_device::get_main_in()
 
 ossia::audio_parameter& audio_device::get_main_out()
 {
+  auto node = ossia::net::find_node(device.get_root_node(), "/out/main");
+  assert(node);
+  assert(node->get_parameter());
   return static_cast<ossia::audio_parameter&>(
-      *ossia::net::find_node(device.get_root_node(), "/out/main")->get_parameter());
+      *node->get_parameter());
 }
 
 }

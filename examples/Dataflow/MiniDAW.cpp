@@ -22,11 +22,13 @@ struct tick
 {
   ossia::execution_state& st;
   ossia::graph_interface& g;
+  ossia::audio_protocol& proto;
   ossia::time_interval& itv;
   ossia::time_value prev_date{};
 
   void operator()(const ossia::audio_tick_state& st)
   {
+    proto.setup_buffers(st);
     (*this)(st.frames, st.seconds);
   }
 
@@ -236,6 +238,10 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
   g.connect(make_glutton_edge(0, 0, low_sine_node, main_interval->node));
 
   // Easy shortcut for the 1/2 outputs on your soundcard
+  assert(main_interval);
+  assert(main_interval->node);
+  assert(main_interval->node->root_outputs().size() > 0);
+  assert(main_interval->node->root_outputs()[0]);
   main_interval->node->root_outputs()[0]->address = &audio.get_main_out();
 
   // Set some parameters
@@ -271,7 +277,7 @@ int main(int argc, char** argv)
   auto root_interval = create_score(graph, audio);
   root_interval->start();
 
-  audio.engine->set_tick(tick{e, graph, *root_interval});
+  audio.engine->set_tick(tick{e, graph, audio.protocol, *root_interval});
 
   std::this_thread::sleep_for(20s);
 
