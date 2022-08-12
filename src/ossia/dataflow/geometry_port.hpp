@@ -1,9 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 #include <ossia/detail/small_vector.hpp>
 
-#include <boost/container/static_vector.hpp>
+#include <memory>
 
 namespace ossia
 {
@@ -94,18 +93,24 @@ struct geometry
   bool dirty{};
 };
 
+struct mesh_list
+{
+  std::vector<geometry> meshes;
+  bool dirty{};
+};
+
 struct OSSIA_EXPORT geometry_port
 {
   static const constexpr int which = 4;
 
   void clear();
 
-  struct geometry geometry;
+  mesh_list meshes;
 };
 
 struct geometry_delay_line
 {
-  std::vector<geometry> geometries;
+  std::vector<mesh_list> meshes;
 };
 
 }

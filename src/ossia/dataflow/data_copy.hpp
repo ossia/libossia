@@ -34,7 +34,7 @@ struct data_size
 
   std::size_t operator()(const geometry_delay_line& p) const
   {
-    return p.geometries.size();
+    return p.meshes.size();
   }
 
   std::size_t operator()(const ossia::monostate&) const { return 0; }
@@ -64,8 +64,9 @@ struct move_data
 
   void operator()(geometry_port& out, geometry_port& in)
   {
-    if(out.geometry.dirty)
-      in.geometry = std::move(out.geometry);
+    // OPTIMIZEME
+    if(out.meshes.dirty)
+      in.meshes = std::move(out.meshes);
   }
 };
 
@@ -155,22 +156,22 @@ struct copy_data
   void operator()(const geometry_port& out, geometry_port& in)
   {
     // Called in init_node_visitor::copy, when copying from a node to another
-    if(out.geometry.dirty)
-      in.geometry = out.geometry;
+    if(out.meshes.dirty)
+      in.meshes = out.meshes;
   }
 
-  void operator()(const geometry& out, geometry_port& in)
+  void operator()(const mesh_list& out, geometry_port& in)
   {
     // Called in copy_data_pos below
     if(out.dirty)
-      in.geometry = out;
+      in.meshes = out;
   }
 
   void operator()(const geometry_port& out, geometry_delay_line& in)
   {
     // Called in env_writer, when copying from a node to a delay line
-    if(out.geometry.dirty)
-      in.geometries.push_back(out.geometry);
+    if(out.meshes.dirty)
+      in.meshes.push_back(out.meshes);
   }
 };
 
@@ -208,9 +209,9 @@ struct copy_data_pos
   }
   void operator()(const geometry_delay_line& out, geometry_port& in)
   {
-    if(pos < out.geometries.size())
+    if(pos < out.meshes.size())
     {
-      copy_data{}(out.geometries[pos], in);
+      copy_data{}(out.meshes[pos], in);
     }
   }
 };
