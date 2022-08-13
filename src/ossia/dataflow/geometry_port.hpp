@@ -11,7 +11,7 @@ struct geometry
   struct buffer
   {
     std::shared_ptr<void> data{};
-    int size{};
+    int64_t size{};
     bool dirty{};
   };
 
@@ -49,7 +49,7 @@ struct geometry
   struct input
   {
     int buffer{};
-    int offset{};
+    int64_t offset{};
   };
 
   ossia::small_vector<buffer, 2> buffers;
@@ -82,7 +82,7 @@ struct geometry
   struct
   {
     int buffer{-1};
-    int offset{};
+    int64_t offset{};
     enum
     {
       uint16,
