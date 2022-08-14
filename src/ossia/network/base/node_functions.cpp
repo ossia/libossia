@@ -536,6 +536,15 @@ List expand(const Range& range)
   return expand<Iterator, String, List>(std::begin(range), std::end(range));
 }
 
+static constexpr auto expand_ranges_3_regex
+    = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
+static constexpr auto expand_ranges_2_regex
+    = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
+
+static constexpr auto reg_alpha_low_rex
+    = ctll::fixed_string{R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"};
+static constexpr auto reg_alpha_up_rex
+    = ctll::fixed_string{R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"};
 void expand_ranges(std::string& str)
 {
   if(str.find('{') != std::string::npos)
@@ -549,9 +558,7 @@ void expand_ranges(std::string& str)
       ossia::small_vector<rx_triple, 4> positions;
 
       {
-        constexpr auto rex_
-            = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
-        constexpr auto rex = ctre::range<rex_>;
+        constexpr auto rex = ctre::range<expand_ranges_3_regex>;
         for(auto& it : rex(str))
         {
           int fst = it.get<1>().to_number();
@@ -604,8 +611,7 @@ void expand_ranges(std::string& str)
       ossia::small_vector<rx_double, 4> positions;
 
       {
-        constexpr auto rex_ = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
-        constexpr auto rex = ctre::range<rex_>;
+        constexpr auto rex = ctre::range<expand_ranges_2_regex>;
         for(auto& it : rex.range(str))
         {
           int fst = it.get<1>().to_number();
@@ -643,10 +649,6 @@ void expand_ranges(std::string& str)
     }
 
     {
-      constexpr auto reg_alpha_low_rex
-          = ctll::fixed_string{R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"};
-      constexpr auto reg_alpha_up_rex
-          = ctll::fixed_string{R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"};
       constexpr auto reg_alpha_low = ctre::range<reg_alpha_low_rex>;
       constexpr auto reg_alpha_up = ctre::range<reg_alpha_up_rex>;
 
@@ -698,6 +700,7 @@ void expand_ranges(std::string& str)
   }
 }
 
+static constexpr auto canonicalize_regex = ctll::fixed_string{R"(\[[a-zA-Z0-9\-]+\])"};
 std::string canonicalize_str(std::string str)
 {
   {
@@ -711,8 +714,7 @@ std::string canonicalize_str(std::string str)
     };
     ossia::small_vector<rx_pos, 4> positions;
 
-    constexpr auto rex_ = ctll::fixed_string{R"(\[[a-zA-Z0-9\-]+\])"};
-    constexpr auto rx_class = ctre::range<rex_>;
+    constexpr auto rx_class = ctre::range<canonicalize_regex>;
     for(auto& it : rx_class(str))
     {
       const auto theStr = it.view().substr(1, it.size() - 2);
