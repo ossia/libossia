@@ -549,8 +549,9 @@ void expand_ranges(std::string& str)
       ossia::small_vector<rx_triple, 4> positions;
 
       {
-        constexpr auto rex
-            = ctre::range<R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_">;
+        constexpr auto rex_
+            = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
+        constexpr auto rex = ctre::range<rex_>;
         for(auto& it : rex(str))
         {
           int fst = it.get<1>().to_number();
@@ -603,7 +604,8 @@ void expand_ranges(std::string& str)
       ossia::small_vector<rx_double, 4> positions;
 
       {
-        constexpr auto rex = ctre::range<R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_">;
+        constexpr auto rex_ = ctll::fixed_string{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
+        constexpr auto rex = ctre::range<rex_>;
         for(auto& it : rex.range(str))
         {
           int fst = it.get<1>().to_number();
@@ -641,8 +643,12 @@ void expand_ranges(std::string& str)
     }
 
     {
-      constexpr auto reg_alpha_low = ctre::range<R"_(\{(-?[a-z])\.\.(-?[a-z])\})_">;
-      constexpr auto reg_alpha_up = ctre::range<R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_">;
+      constexpr auto reg_alpha_low_rex
+          = ctll::fixed_string{R"_(\{(-?[a-z])\.\.(-?[a-z])\})_"};
+      constexpr auto reg_alpha_up_rex
+          = ctll::fixed_string{R"_(\{(-?[A-Z])\.\.(-?[A-Z])\})_"};
+      constexpr auto reg_alpha_low = ctre::range<reg_alpha_low_rex>;
+      constexpr auto reg_alpha_up = ctre::range<reg_alpha_up_rex>;
 
       struct rx_char
       {
@@ -705,7 +711,8 @@ std::string canonicalize_str(std::string str)
     };
     ossia::small_vector<rx_pos, 4> positions;
 
-    constexpr auto rx_class = ctre::range<R"(\[[a-zA-Z0-9\-]+\])">;
+    constexpr auto rex_ = ctll::fixed_string{R"(\[[a-zA-Z0-9\-]+\])"};
+    constexpr auto rx_class = ctre::range<rex_>;
     for(auto& it : rx_class(str))
     {
       const auto theStr = it.view().substr(1, it.size() - 2);
