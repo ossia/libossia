@@ -148,6 +148,73 @@ struct faust_exec_ui final : UI
   }
 };
 
+template <typename Clone>
+struct faust_exec_ui_clone final : UI
+{
+  Clone& self;
+  int i = 0;
+  int o = 0;
+  faust_exec_ui_clone(Clone& s)
+      : self{s}
+  {
+  }
+
+  void addButton(const char* label, FAUSTFLOAT* zone) override
+  {
+    *zone = *self.controls[i].second;
+    self.controls[i++].second = zone;
+  }
+
+  void addCheckButton(const char* label, FAUSTFLOAT* zone) override
+  {
+    addButton(label, zone);
+  }
+
+  void addVerticalSlider(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    *zone = *self.controls[i].second;
+    self.controls[i++].second = zone;
+  }
+
+  void addHorizontalSlider(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    addVerticalSlider(label, zone, init, min, max, step);
+  }
+
+  void addNumEntry(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
+      FAUSTFLOAT max, FAUSTFLOAT step) override
+  {
+    addVerticalSlider(label, zone, init, min, max, step);
+  }
+
+  void addHorizontalBargraph(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
+  {
+    self.controls[o++].second = zone;
+  }
+
+  void addVerticalBargraph(
+      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
+  {
+    addHorizontalBargraph(label, zone, min, max);
+  }
+
+  void openTabBox(const char* label) override { }
+  void openHorizontalBox(const char* label) override { }
+  void openVerticalBox(const char* label) override { }
+  void closeBox() override { }
+  void declare(FAUSTFLOAT* zone, const char* key, const char* val) override { }
+  void
+  addSoundfile(const char* label, const char* filename, Soundfile** sf_zone) override
+  {
+  }
+};
+
 struct faust_node_utils
 {
   template <typename Node>
@@ -203,6 +270,26 @@ struct faust_node_utils
         {
           input_n[i][j] = 0.f;
         }
+      }
+    }
+  }
+  template <typename Node>
+  static void copy_input_mono(
+      Node& self, int64_t d, int64_t i, float* input,
+      const ossia::audio_channel& audio_in)
+  {
+    // TODO offset !!!
+    auto num_samples = std::min((int64_t)d, (int64_t)audio_in.size());
+    for(int64_t j = 0; j < num_samples; j++)
+    {
+      input[j] = (float)audio_in[j];
+    }
+
+    if(d > int64_t(audio_in.size()))
+    {
+      for(int64_t j = audio_in.size(); j < d; j++)
+      {
+        input[j] = 0.f;
       }
     }
   }
@@ -298,6 +385,7 @@ struct faust_node_utils
         = self.root_inputs()[0]->template cast<ossia::audio_port>();
     ossia::audio_port& audio_out
         = self.root_outputs()[0]->template cast<ossia::audio_port>();
+
     const int64_t n_in = dsp.getNumInputs();
     const int64_t n_out = dsp.getNumOutputs();
     audio_in.set_channels(n_in);
@@ -359,6 +447,102 @@ struct faust_node_utils
       if(d == 0)
         return;
       do_exec(self, dsp, tk, e);
+      copy_displays(self, st);
+    }
+  }
+
+  template <typename Node, typename Dsp>
+  static void do_exec_mono_fx(
+      Node& self, Dsp& dsp, const ossia::token_request& tk,
+      const ossia::exec_state_facade& e)
+  {
+    const auto [st, d] = e.timings(tk);
+    ossia::audio_port& audio_in
+        = self.root_inputs()[0]->template cast<ossia::audio_port>();
+    ossia::audio_port& audio_out
+        = self.root_outputs()[0]->template cast<ossia::audio_port>();
+
+    const int64_t n_in = audio_in.channels();
+    audio_out.set_channels(n_in);
+    while(self.clones.size() < n_in)
+    {
+      self.clones.emplace_back(dsp.clone(), self.clones[0]);
+    }
+
+    {
+      for(int k = 0; k < self.controls.size(); ++k)
+      {
+        auto ctrl = self.controls[k];
+        auto& dat = ctrl.first->get_data();
+        if(!dat.empty())
+        {
+          float v = ossia::convert<float>(dat.back().value);
+          self.set_control(k, v);
+        }
+      }
+    }
+
+    if constexpr(std::is_same_v<FAUSTFLOAT, float>)
+    {
+      float* input = (float*)alloca(d * sizeof(float));
+      float* output = (float*)alloca(d * sizeof(float));
+
+      for(int i = 0; i < n_in; i++)
+      {
+        auto& in_chan = audio_in.channel(i);
+        auto& out_chan = audio_out.channel(i);
+        in_chan.resize(e.bufferSize());
+
+        memset(output, 0.f, d * sizeof(float));
+        copy_input_mono(self, d, n_in, input, in_chan);
+
+        {
+          auto i = input + st;
+          auto o = output + st;
+
+          self.clones[i].fx->compute(d, &i, &o);
+        }
+
+        std::copy_n(output + st, d, out_chan.data() + st);
+      }
+    }
+    else
+    {
+      for(int i = 0; i < n_in; i++)
+      {
+        auto& in_chan = audio_in.channel(i);
+        auto& out_chan = audio_out.channel(i);
+        in_chan.resize(e.bufferSize());
+
+        if(BOOST_LIKELY(st == 0 && d == e.bufferSize()))
+        {
+          out_chan.resize(e.bufferSize(), boost::container::default_init);
+        }
+        else
+        {
+          out_chan.resize(e.bufferSize());
+        }
+
+        double* input = in_chan.data() + st;
+        double* output = out_chan.data() + st;
+
+        self.clones[i].fx->compute(d, &input, &output);
+      }
+    }
+  }
+
+  template <typename Node, typename Dsp>
+  static void exec_mono_fx(
+      Node& self, Dsp& dsp, const ossia::token_request& tk,
+      const ossia::exec_state_facade& e)
+  {
+    if(tk.forward())
+    {
+      const auto [st, d] = e.timings(tk);
+
+      if(d == 0)
+        return;
+      do_exec_mono_fx(self, dsp, tk, e);
       copy_displays(self, st);
     }
   }
@@ -529,7 +713,6 @@ struct custom_dsp_poly_factory : public dsp_factory
 };
 struct custom_llvm_dsp_poly_factory : public custom_dsp_poly_factory
 {
-
   custom_llvm_dsp_poly_factory(
       const std::string& name_app, const std::string& dsp_content, int argc,
       const char* argv[], const std::string& target, std::string& error_msg,
