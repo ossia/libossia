@@ -54,7 +54,7 @@ public:
   void receive(F f)
   {
     m_socket.async_receive_from(
-        boost::asio::buffer(m_data), m_endpoint,
+        boost::asio::mutable_buffer(&m_data[0], std::size(m_data)), m_endpoint,
         [this, f](boost::system::error_code ec, std::size_t sz) {
       if(ec == boost::asio::error::operation_aborted)
         return;

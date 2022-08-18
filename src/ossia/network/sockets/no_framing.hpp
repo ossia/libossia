@@ -54,7 +54,7 @@ struct no_framing
     void receive(F f)
     {
       socket.async_read_some(
-          boost::asio::buffer(m_data.prepare(1024)),
+          boost::asio::mutable_buffer(m_data.prepare(1024)),
           [this,
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
         if(!f.validate_stream(ec))

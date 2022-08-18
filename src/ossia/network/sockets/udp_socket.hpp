@@ -48,27 +48,28 @@ public:
   void receive(F f)
   {
     m_socket.async_receive_from(
-        boost::asio::buffer(m_data), m_endpoint, [this, f](auto ec, std::size_t sz) {
-          if(ec == boost::asio::error::operation_aborted)
-            return;
+        boost::asio::mutable_buffer(&m_data[0], std::size(m_data)), m_endpoint,
+        [this, f](auto ec, std::size_t sz) {
+      if(ec == boost::asio::error::operation_aborted)
+        return;
 
-          if(!ec && sz > 0)
-          {
-            try
-            {
-              f(m_data, sz);
-            }
-            catch(const std::exception& e)
-            {
-              ossia::logger().error("[udp_socket::receive]: {}", e.what());
-            }
-            catch(...)
-            {
-              ossia::logger().error("[udp_socket::receive]: unknown error");
-            }
-          }
+      if(!ec && sz > 0)
+      {
+        try
+        {
+          f(m_data, sz);
+        }
+        catch(const std::exception& e)
+        {
+          ossia::logger().error("[udp_socket::receive]: {}", e.what());
+        }
+        catch(...)
+        {
+          ossia::logger().error("[udp_socket::receive]: unknown error");
+        }
+      }
 
-          this->receive(f);
+      this->receive(f);
         });
   }
 

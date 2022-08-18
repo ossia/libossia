@@ -30,7 +30,7 @@ struct size_prefix_decoder
   {
     // Receive the size prefix
     socket.async_read_some(
-        boost::asio::buffer(&m_next_packet_size, sizeof(int32_t)),
+        boost::asio::mutable_buffer(&m_next_packet_size, sizeof(int32_t)),
         [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
       read_size(std::move(f), ec, sz);
         });
@@ -48,7 +48,7 @@ struct size_prefix_decoder
 
     m_data.resize(m_next_packet_size);
     boost::asio::async_read(
-        socket, boost::asio::buffer(m_data.data(), m_next_packet_size),
+        socket, boost::asio::mutable_buffer(m_data.data(), m_next_packet_size),
         boost::asio::transfer_exactly(m_next_packet_size),
         [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
       read_data(std::move(f), ec, sz);
