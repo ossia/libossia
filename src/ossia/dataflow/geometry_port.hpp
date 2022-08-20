@@ -89,23 +89,33 @@ struct geometry
       uint32
     } format{};
   } index;
-
-  bool dirty{};
 };
 
 struct mesh_list
 {
   std::vector<geometry> meshes;
-  bool dirty{};
+};
+
+struct transform3d
+{
+  float matrix[16]{
+                      1., 0., 0., 0.,
+                      0., 1., 0., 0.,
+                      0., 0., 1., 0.,
+                      0., 0., 0., 1.,
+  };
 };
 
 struct OSSIA_EXPORT geometry_port
 {
   static const constexpr int which = 4;
+  enum dirt_flags { dirty_transform = 0x1, dirty_meshes = 0x2 };
 
   void clear();
 
   mesh_list meshes;
+  transform3d transform;
+  uint8_t flags{};
 };
 
 struct geometry_delay_line
