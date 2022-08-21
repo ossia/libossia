@@ -1,14 +1,12 @@
 #pragma once
-#include <ossia/detail/packed_struct.hpp>
-
 #include <ossia-config.hpp>
 #define DR_WAV_NO_STDIO
 #include <dr_wav.h>
 
 namespace ossia
 {
-
-packed_struct acid_chunk
+#pragma pack(push, 1)
+struct acid_chunk
 {
   // https://github.com/erikd/libsndfile/blob/master/src/wav.c#L1427
   int32_t file_type{};
@@ -20,9 +18,9 @@ packed_struct acid_chunk
   int16_t meter_num{};
   float tempo{};
 };
-end_packed_struct
+#pragma pack(pop)
 
-    struct drwav_handle final
+struct drwav_handle final
 {
 public:
   static const constexpr drwav_allocation_callbacks drwav_allocs{

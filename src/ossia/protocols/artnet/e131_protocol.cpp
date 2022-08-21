@@ -3,7 +3,6 @@
 #include "e131_protocol.hpp"
 
 #include <ossia/detail/fmt.hpp>
-#include <ossia/detail/packed_struct.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
 #include <boost/asio/ip/host_name.hpp>
@@ -13,7 +12,8 @@
 
 #include <chrono>
 
-packed_struct e131_acn_root_layer
+#pragma pack(push, 1)
+struct e131_acn_root_layer
 {                          /* ACN Root Layer: 38 bytes */
   uint16_t preamble_size;  /* Preamble Size */
   uint16_t postamble_size; /* Post-amble Size */
@@ -22,9 +22,8 @@ packed_struct e131_acn_root_layer
   uint32_t vector;         /* Layer Vector */
   uint8_t cid[16];         /* Component Identifier (UUID) */
 };
-end_packed_struct
 
-    packed_struct e131_framing
+struct e131_framing
 {
   uint16_t flength;        /* Flags (high 4 bits) & Length (low 12 bits) */
   uint32_t vector;         /* Layer Vector */
@@ -37,9 +36,8 @@ end_packed_struct
                               terminated) */
   uint16_t universe;       /* DMX Universe Number */
 };
-end_packed_struct
 
-    packed_struct e131_device_management_protocol
+struct e131_device_management_protocol
 {                        /* Device Management Protocol (DMP) Layer: 523 bytes */
   uint16_t flength;      /* Flags (high 4 bits) / Length (low 12 bits) */
   uint8_t vector;        /* Layer Vector */
@@ -49,22 +47,22 @@ end_packed_struct
   uint16_t prop_val_cnt; /* Property Value Count (1 + number of slots) */
   uint8_t prop_val[513]; /* Property Values (DMX start code + slots data) */
 };
-end_packed_struct
 
-    packed_struct e131_packet
+struct e131_packet
 {
   e131_acn_root_layer root;
   e131_framing frame;
   e131_device_management_protocol dmp;
 };
-end_packed_struct
 
-    /* E1.31 Framing Options Type */
-    enum class e131_option_t {
-      E131_OPT_TERMINATED = 6,
-      E131_OPT_PREVIEW = 7,
-    };
+/* E1.31 Framing Options Type */
+enum class e131_option_t
+{
+  E131_OPT_TERMINATED = 6,
+  E131_OPT_PREVIEW = 7,
+};
 
+#pragma pack(pop)
 static_assert(sizeof(e131_packet) == 638);
 
 namespace ossia::net
