@@ -3,59 +3,11 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/logger.hpp>
 
+#include <faust/gui/UI.h>
+
 #include <iostream>
 
-#if __has_include(<faust/dsp/poly-llvm-dsp.h>)
 #include <faust/dsp/poly-llvm-dsp.h>
-#else
-#ifndef FAUSTFLOAT
-#define FAUSTFLOAT float
-#endif
-
-struct Soundfile
-{
-};
-struct Meta
-{
-  void declare(const char*, const char*) { }
-};
-struct dsp
-{
-};
-struct UI
-{
-  virtual ~UI() = default;
-
-  virtual void openTabBox(const char* label) = 0;
-  virtual void openHorizontalBox(const char* label) = 0;
-  virtual void openVerticalBox(const char* label) = 0;
-  virtual void closeBox() = 0;
-  virtual void declare(FAUSTFLOAT* zone, const char* key, const char* val) = 0;
-  virtual void addSoundfile(const char* label, const char* filename, Soundfile** sf_zone)
-      = 0;
-  virtual void addButton(const char* label, FAUSTFLOAT* zone) = 0;
-  virtual void addCheckButton(const char* label, FAUSTFLOAT* zone) = 0;
-  virtual void addVerticalSlider(
-      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
-      FAUSTFLOAT max, FAUSTFLOAT step)
-      = 0;
-  virtual void addHorizontalSlider(
-      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
-      FAUSTFLOAT max, FAUSTFLOAT step)
-      = 0;
-  virtual void addNumEntry(
-      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT init, FAUSTFLOAT min,
-      FAUSTFLOAT max, FAUSTFLOAT step)
-      = 0;
-  virtual void addHorizontalBargraph(
-      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
-      = 0;
-  virtual void addVerticalBargraph(
-      const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max)
-      = 0;
-};
-
-#endif
 
 namespace ossia::nodes
 {
@@ -457,6 +409,9 @@ struct faust_node_utils
       const ossia::exec_state_facade& e)
   {
     const auto [st, d] = e.timings(tk);
+    if(d == 0)
+      return;
+
     ossia::audio_port& audio_in
         = self.root_inputs()[0]->template cast<ossia::audio_port>();
     ossia::audio_port& audio_out
@@ -485,25 +440,37 @@ struct faust_node_utils
     if constexpr(std::is_same_v<FAUSTFLOAT, float>)
     {
       float* input = (float*)alloca(d * sizeof(float));
+      memset(input, 0, d * sizeof(float));
       float* output = (float*)alloca(d * sizeof(float));
 
       for(int i = 0; i < n_in; i++)
       {
         auto& in_chan = audio_in.channel(i);
         auto& out_chan = audio_out.channel(i);
+        auto& clone = self.clones[i];
         in_chan.resize(e.bufferSize());
+        out_chan.resize(e.bufferSize());
 
-        memset(output, 0.f, d * sizeof(float));
         copy_input_mono(self, d, n_in, input, in_chan);
-
+        memset(output, 0, d * sizeof(float));
+        for(int z = 0; z < d; z++)
         {
-          auto i = input + st;
-          auto o = output + st;
-
-          self.clones[i].fx->compute(d, &i, &o);
+          assert(!std::isnan(input[z]));
+          assert(!std::isinf(input[z]));
+        }
+        clone.fx->compute(d, &input, &output);
+        for(int z = 0; z < d; z++)
+        {
+          if(std::fpclassify(output[z]) != FP_NORMAL)
+            output[z] = 0.f;
         }
 
-        std::copy_n(output + st, d, out_chan.data() + st);
+        std::copy_n(output, d, out_chan.data() + st);
+        for(int z = 0; z < e.bufferSize(); z++)
+        {
+          assert(!std::isnan(out_chan[z]));
+          assert(!std::isinf(out_chan[z]));
+        }
       }
     }
     else
@@ -513,15 +480,7 @@ struct faust_node_utils
         auto& in_chan = audio_in.channel(i);
         auto& out_chan = audio_out.channel(i);
         in_chan.resize(e.bufferSize());
-
-        if(BOOST_LIKELY(st == 0 && d == e.bufferSize()))
-        {
-          out_chan.resize(e.bufferSize(), boost::container::default_init);
-        }
-        else
-        {
-          out_chan.resize(e.bufferSize());
-        }
+        out_chan.resize(e.bufferSize());
 
         double* input = in_chan.data() + st;
         double* output = out_chan.data() + st;
