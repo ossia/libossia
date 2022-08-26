@@ -20,7 +20,8 @@ namespace expressions
 /**
  * A callback for expressions.
  */
-using expression_result_callback = smallfun::function<void(bool)>;
+using expression_result_callback
+    = smallfun::function<void(bool), smallfun::DefaultSize * 2>;
 
 class expression_callback_container
 {

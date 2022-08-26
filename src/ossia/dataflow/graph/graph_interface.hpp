@@ -3,11 +3,11 @@
 #include <ossia/dataflow/transport.hpp>
 #include <ossia/detail/logger_fwd.hpp>
 
+#include <boost/pool/pool.hpp>
+
 #include <tcb/span.hpp>
 
 #include <smallfun.hpp>
-
-#include <memory_resource>
 
 namespace spdlog
 {
@@ -15,6 +15,15 @@ class logger;
 }
 namespace ossia
 {
+
+using boost_pool = boost::pool<boost::default_user_allocator_malloc_free>;
+
+struct edge_pool
+{
+  boost_pool pool{1024 * 1024};
+  ossia::audio_spin_mutex execution_storage_mut;
+};
+
 struct bench_map;
 struct connection;
 class time_interval;
@@ -44,9 +53,7 @@ public:
   [[nodiscard]] virtual tcb::span<ossia::graph_node* const>
   get_nodes() const noexcept = 0;
 
-  char buf[1024 * 1024];
-  std::pmr::monotonic_buffer_resource execution_storage;
-  ossia::audio_spin_mutex execution_storage_mut;
+  std::shared_ptr<edge_pool> pool;
 
   ossia::edge_ptr allocate_edge(
       connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,

@@ -12,21 +12,69 @@
 #include <ossia/network/value/format_value.hpp>
 
 #include <spdlog/spdlog.h>
+
 namespace ossia
 {
+template <typename T>
+struct edge_pool_alloc
+{
+  using value_type = T;
+
+  template <typename U>
+  using rebind = edge_pool_alloc<U>;
+
+  edge_pool_alloc(std::shared_ptr<edge_pool>& pool) noexcept
+      : m_pool(pool)
+  {
+    assert(pool_size() >= sizeof(T));
+  }
+
+  template <typename U>
+  edge_pool_alloc(edge_pool_alloc<U> const& other) noexcept
+      : m_pool(other.m_pool)
+  {
+    assert(pool_size() >= sizeof(T));
+  }
+
+  T* allocate(const size_t n) noexcept
+  {
+    T* ret{};
+    {
+      std::lock_guard lck{m_pool->execution_storage_mut};
+      ret = static_cast<T*>(m_pool->pool.ordered_malloc(n));
+    }
+    return ret;
+  }
+
+  void deallocate(T* ptr, const size_t n) noexcept
+  {
+    if(ptr && n)
+    {
+      std::lock_guard lck{m_pool->execution_storage_mut};
+      m_pool->pool.ordered_free(ptr, n);
+    }
+  }
+
+  // for comparing
+  size_t pool_size() const noexcept
+  {
+    std::lock_guard lck{m_pool->execution_storage_mut};
+    return m_pool->pool.get_requested_size();
+  }
+
+  std::shared_ptr<edge_pool> m_pool;
+};
+
 graph_interface::graph_interface()
-    : execution_storage{buf, std::size(buf)}
+    : pool{std::make_shared<edge_pool>()}
 {
 }
 
 edge_ptr graph_interface::allocate_edge(
     connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node, node_ptr pin_node)
 {
-  std::lock_guard l{execution_storage_mut};
-
-  return std::allocate_shared<
-      ossia::graph_edge, std::pmr::polymorphic_allocator<ossia::graph_edge>>(
-      &execution_storage, c, pout, pin, pout_node, pin_node);
+  return std::allocate_shared<ossia::graph_edge, edge_pool_alloc<graph_edge>>(
+      pool, c, pout, pin, pout_node, pin_node);
 }
 
 std::shared_ptr<bench_map> bench_ptr()
