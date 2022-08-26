@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/dataflow/graph/small_graph.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/pod_vector.hpp>
@@ -11,16 +12,17 @@
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
+
+#include <ankerl/unordered_dense.h>
 namespace ossia
 {
-class graph;
 class time_event;
 class time_interval;
 class time_sync;
 using interval_set = ossia::flat_set<time_interval*>;
 using sync_set = ossia::flat_set<time_sync*>;
 using small_sync_vec = ossia::small_vector<time_sync*, 4>;
-using small_event_vec = ossia::small_vector<time_event*, 4>;
+using small_event_vec = std::vector<time_event*>;
 struct overtick
 {
   ossia::time_value min;
@@ -33,14 +35,26 @@ class scenario;
 using scenario_graph_vertex = time_sync*;
 using scenario_graph_edge = time_interval*;
 
+using scenario_graph_t = boost::adjacency_list<
+    boost::smallvecS, boost::smallvecS, boost::undirectedS, scenario_graph_vertex,
+    scenario_graph_edge>;
+
+inline void
+remove_vertex(typename scenario_graph_t::vertex_descriptor v, scenario_graph_t& g)
+{
+  typedef typename scenario_graph_t::directed_category Cat;
+  g.removing_vertex(v, boost::graph_detail::iterator_stability(g.m_vertices));
+  boost::detail::remove_vertex_dispatch(g, v, Cat());
+}
+
+/*
+template <typename T, typename V>
+using dense_ptr_map = ankerl::unordered_dense::map<
+    T, V, EgurHash<std::remove_pointer_t<T>>, std::equal_to<T>,
+    ossia::small_vector<std::pair<T, V>, 1024>>;
 struct scenario_graph
 {
-  using graph_t = boost::adjacency_list<
-      boost::vecS, boost::vecS, boost::undirectedS, scenario_graph_vertex,
-      scenario_graph_edge>;
-
   scenario& scenar;
-  graph_t graph;
 
   scenario_graph(scenario& sc);
 
@@ -54,11 +68,15 @@ struct scenario_graph
 private:
   void recompute_maps();
   void update_components_cache() const;
+  scenario_graph_t graph;
   mutable ossia::int_vector m_components_cache;
   mutable bool dirty = false;
-  ossia::ptr_map<const time_sync*, graph_t::vertex_descriptor> vertices;
-  ossia::ptr_map<const time_interval*, graph_t::edge_descriptor> edges;
-};
+  ossia::dense_ptr_map<const time_sync*, scenario_graph_t::vertex_descriptor> vertices;
+  ossia::dense_ptr_map<const time_interval*, scenario_graph_t::edge_descriptor> edges;
+
+  std::vector<std::shared_ptr<ossia::time_sync>> to_disable_sync;
+  std::vector<std::shared_ptr<ossia::time_interval>> to_disable_itv;
+};  */
 
 class OSSIA_EXPORT scenario final : public looping_process<scenario>
 {
@@ -149,8 +167,10 @@ private:
   ossia::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_retry_syncs; // used as cache
   sync_set m_endNodes;    // used as cache
-  scenario_graph m_sg;    // used as cache
+  // scenario_graph m_sg;    // used as cache
 
+  sync_set m_component_visit_cache;
+  std::vector<ossia::time_sync*> m_component_visit_stack;
   // Used to start intervals off-time
   struct quantized_interval
   {
@@ -195,5 +215,7 @@ private:
   void run_interval(
       ossia::time_interval& interval, const ossia::token_request& tk,
       const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset);
+
+  void reset_component(ossia::time_sync& n);
 };
 }

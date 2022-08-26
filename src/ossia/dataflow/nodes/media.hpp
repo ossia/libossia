@@ -10,7 +10,7 @@ namespace ossia
 {
 // Used in nodes
 using audio_channel = ossia::pod_vector<double>;
-using audio_vector = std::vector<audio_channel>;
+using audio_vector = ossia::small_vector<audio_channel, 2>;
 
 // Used for audio files
 using audio_sample = float;

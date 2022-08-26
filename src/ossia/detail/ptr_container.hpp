@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/small_vector.hpp>
+
 #include <memory>
 #include <vector>
 
@@ -17,4 +19,6 @@ namespace ossia
 template <typename T>
 using ptr_container
     = std::vector<std::shared_ptr<T>, std::allocator<std::shared_ptr<T>>>;
+template <typename T, std::size_t N>
+using small_ptr_container = ossia::small_vector<std::shared_ptr<T>, N>;
 }

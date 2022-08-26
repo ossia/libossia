@@ -124,3 +124,6 @@
 [submodule "3rdparty/compile-time-regular-expressions"]
 	path = 3rdparty/compile-time-regular-expressions
 	url = https://github.com/hanickadot/compile-time-regular-expressions
+[submodule "3rdparty/unordered_dense"]
+	path = 3rdparty/unordered_dense
+	url = https://github.com/martinus/unordered_dense

@@ -14,6 +14,7 @@ namespace ossia
 template <typename T>
 struct EgurHash
 {
+  using is_transparent = std::true_type;
   std::size_t operator()(const T* val) const noexcept
   {
     static const constexpr std::size_t shift = constexpr_log2(1 + sizeof(T));

@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/graph/graph_utils.hpp>
 #include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
@@ -13,12 +14,28 @@ namespace ossia
 {
 
 scenario::scenario()
-    : m_sg{*this}
+// : m_sg{*this}
 {
   // create the start TimeSync
   node = std::make_shared<ossia::nodes::scenario>();
   add_time_sync(std::make_shared<time_sync>());
   this->m_nodes.front()->set_start(true);
+
+  ((ossia::nodes::forward_node*)this->node.get())->audio_in.sources.reserve(1024);
+  m_intervals.reserve(1024);
+  m_nodes.reserve(1024);
+  m_pendingEvents.reserve(m_nodes.capacity() * 2);
+  m_maxReachedEvents.reserve(m_nodes.capacity() * 2);
+  m_overticks.container.reserve(m_nodes.capacity());
+  m_itv_end_map.container.reserve(m_intervals.capacity());
+  m_endNodes.container.reserve(m_nodes.capacity());
+  m_retry_syncs.container.reserve(8);
+  // m_rootNodes.reserve(1024);
+
+  m_runningIntervals.container.reserve(1024);
+  m_waitingNodes.container.reserve(1024);
+  m_component_visit_cache.container.reserve(1024);
+  m_component_visit_stack.reserve(1024);
 }
 
 scenario::~scenario()
@@ -32,11 +49,14 @@ scenario::~scenario()
 void scenario::start()
 {
   m_runningIntervals.container.reserve(m_intervals.size());
+  m_waitingNodes.container.reserve(m_nodes.size());
   m_pendingEvents.reserve(m_nodes.size() * 2);
   m_maxReachedEvents.reserve(m_nodes.size() * 2);
   m_overticks.container.reserve(m_nodes.size());
   m_itv_end_map.container.reserve(m_intervals.size());
   m_endNodes.container.reserve(m_nodes.size());
+  m_component_visit_cache.container.reserve(m_nodes.size());
+  m_component_visit_stack.reserve(m_nodes.size());
   m_retry_syncs.container.reserve(8);
   m_rootNodes = get_roots();
 
@@ -176,7 +196,7 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
       if(t.is_start())
         end_root = &t;
     }
-    m_sg.add_edge(itv.get());
+    // m_sg.add_edge(itv.get());
     if(node->muted())
       itv->mute(true);
     m_intervals.push_back(std::move(itv));
@@ -193,7 +213,7 @@ void scenario::remove_time_interval(const std::shared_ptr<time_interval>& itv)
 {
   if(itv)
   {
-    m_sg.remove_edge(itv.get());
+    // m_sg.remove_edge(itv.get());
 
     if(m_last_date != ossia::Infinite)
     {
@@ -224,7 +244,7 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   if(!contains(m_nodes, timeSync))
   {
     auto& t = *timeSync;
-    m_sg.add_vertice(&t);
+    // m_sg.add_vertice(&t);
     if(node->muted())
       t.mute(true);
     m_nodes.push_back(std::move(timeSync));
@@ -244,7 +264,7 @@ void scenario::remove_time_sync(const std::shared_ptr<time_sync>& timeSync)
 {
   if(timeSync)
   {
-    m_sg.remove_vertice(timeSync.get());
+    // m_sg.remove_vertice(timeSync.get());
     m_waitingNodes.erase(timeSync.get());
     auto it = ossia::find(m_rootNodes, timeSync.get());
     if(it != m_rootNodes.end())
@@ -309,6 +329,59 @@ void scenario::stop_interval(time_interval& itv, double ratio)
   m_itv_to_stop.emplace_back(quantized_interval{&itv, ratio});
 }
 
+void scenario::reset_component(ossia::time_sync& n)
+{
+  auto& stack = m_component_visit_stack;
+  auto& cache = m_component_visit_cache;
+
+  stack.clear();
+  cache.clear();
+
+  cache.insert(&n);
+  stack.push_back(&n);
+
+  auto disable_itv = [&](ossia::time_interval& itv) {
+    itv.stop();
+    m_runningIntervals.erase(&itv);
+    m_itv_end_map.erase(&itv);
+  };
+
+  while(!stack.empty())
+  {
+    auto n = stack.back();
+    stack.pop_back();
+
+    // Disable the node
+    n->reset();
+    for(auto& ev : n->get_time_events())
+    {
+      for(auto& cst : ev->previous_time_intervals())
+      {
+        disable_itv(*cst);
+
+        auto& pn = cst->get_start_event().get_time_sync();
+        if(cache.find(&pn) == cache.end())
+        {
+          cache.insert(&pn);
+          stack.push_back(&pn);
+        }
+      }
+
+      for(auto& cst : ev->next_time_intervals())
+      {
+        disable_itv(*cst);
+
+        auto& pn = cst->get_end_event().get_time_sync();
+        if(cache.find(&pn) == cache.end())
+        {
+          cache.insert(&pn);
+          stack.push_back(&pn);
+        }
+      }
+    }
+  }
+}
+/*
 void scenario_graph::add_vertice(scenario_graph_vertex timeSync)
 {
   vertices[timeSync] = boost::add_vertex(timeSync, graph);
@@ -332,7 +405,7 @@ void scenario_graph::remove_vertice(scenario_graph_vertex timeSync)
   if(it != vertices.end())
   {
     boost::clear_vertex(it->second, graph);
-    boost::remove_vertex(it->second, graph);
+    remove_vertex(it->second, graph);
     recompute_maps();
     dirty = true;
   }
@@ -376,4 +449,5 @@ void scenario_graph::recompute_maps()
     }
   }
 }
+*/
 }

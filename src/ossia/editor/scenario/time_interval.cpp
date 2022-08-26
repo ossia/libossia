@@ -544,6 +544,11 @@ void time_interval::remove_time_process(time_process* timeProcess)
   }
 }
 
+void time_interval::reserve_processes(std::size_t sz)
+{
+  m_processes.reserve(sz);
+}
+
 void time_interval::cleanup()
 {
   m_processes.clear();

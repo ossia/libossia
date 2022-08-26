@@ -1,16 +1,22 @@
 #pragma once
 #include <cstdint>
 
-// TODO currently flat_hash_map is not available on 32 bit systems.
-#if(INTPTR_MAX == INT64_MAX)
-#include <flat_hash_map.hpp>
+#if defined(_GLIBCXX_DEBUG)
+#define OSSIA_NO_FAST_CONTAINERS
+#elif defined(_LIBCPP_DEBUG_LEVEL) && _LIBCPP_DEBUG_LEVEL > 0
+#define OSSIA_NO_FAST_CONTAINERS
+#elif defined(_ITERATOR_DEBUG_LEVEL) && _ITERATOR_DEBUG_LEVEL > 0
+#define OSSIA_NO_FAST_CONTAINERS
+#endif
+
+#if !defined(OSSIA_NO_FAST_CONTAINERS)
+#include <ankerl/unordered_dense.h>
 namespace ossia
 {
 template <
     typename K, typename V, typename H = std::hash<K>, typename E = std::equal_to<K>>
-using fast_hash_map = ska::flat_hash_map<K, V, H, E>;
+using fast_hash_map = ankerl::unordered_dense::map<K, V, H, E>;
 }
-
 #else
 #include <unordered_map>
 namespace ossia

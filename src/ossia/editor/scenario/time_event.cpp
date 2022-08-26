@@ -18,6 +18,8 @@ time_event::time_event(
     , m_status(time_event::status::NONE)
     , m_expression(std::move(anExpression))
 {
+  m_previous_time_intervals.reserve(4);
+  m_next_time_intervals.reserve(4);
   if(!m_expression)
     m_expression = ossia::expressions::make_expression_true();
 }

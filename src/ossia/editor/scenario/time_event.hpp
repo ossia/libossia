@@ -75,11 +75,7 @@ public:
 
   void add_time_process(std::shared_ptr<time_process>);
   void remove_time_process(time_process*);
-  [[nodiscard]] const std::vector<std::shared_ptr<time_process>>&
-  get_time_processes() const
-  {
-    return m_processes;
-  }
+  [[nodiscard]] const auto& get_time_processes() const { return m_processes; }
 
   void tick(ossia::time_value date, ossia::time_value offset);
 
@@ -116,28 +112,22 @@ public:
 
   /*! get previous time contraints attached to the event
    \return #Container<#time_interval> */
-  ptr_container<time_interval>& previous_time_intervals()
-  {
-    return m_previous_time_intervals;
-  }
+  auto& previous_time_intervals() { return m_previous_time_intervals; }
 
   /*! get previous time contraints attached to the event
    \return #Container<#TimeProcess> */
-  [[nodiscard]] const ptr_container<time_interval>& previous_time_intervals() const
+  [[nodiscard]] const auto& previous_time_intervals() const
   {
     return m_previous_time_intervals;
   }
 
   /*! get next time contraints attached to the event
    \return #Container<#time_interval> */
-  ptr_container<time_interval>& next_time_intervals() { return m_next_time_intervals; }
+  auto& next_time_intervals() { return m_next_time_intervals; }
 
   /*! get next time contraints attached to the event
    \return #Container<#TimeProcess> */
-  [[nodiscard]] const ptr_container<time_interval>& next_time_intervals() const
-  {
-    return m_next_time_intervals;
-  }
+  [[nodiscard]] const auto& next_time_intervals() const { return m_next_time_intervals; }
 
   void set_status(status s);
 
@@ -152,13 +142,13 @@ private:
   time_event::exec_callback m_callback;
 
   time_sync* m_timesync{};
-  std::vector<std::shared_ptr<time_process>> m_processes;
+  ossia::small_vector<std::shared_ptr<time_process>, 1> m_processes;
   status m_status;
   offset_behavior m_offset{offset_behavior::EXPRESSION_TRUE};
 
   expression_ptr m_expression;
 
-  ptr_container<time_interval> m_previous_time_intervals;
-  ptr_container<time_interval> m_next_time_intervals;
+  small_ptr_container<time_interval, 1> m_previous_time_intervals;
+  small_ptr_container<time_interval, 1> m_next_time_intervals;
 };
 }

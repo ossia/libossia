@@ -42,7 +42,11 @@ struct dependency_connection
 {
 };
 
-using connection = ossia::nullable_variant<
-    immediate_glutton_connection, immediate_strict_connection,
-    delayed_glutton_connection, delayed_strict_connection, dependency_connection>;
+struct connection
+    : ossia::nullable_variant<
+          immediate_glutton_connection, immediate_strict_connection,
+          delayed_glutton_connection, delayed_strict_connection, dependency_connection>
+{
+  using nullable_variant::nullable_variant;
+};
 }

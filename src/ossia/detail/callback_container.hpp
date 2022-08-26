@@ -89,13 +89,12 @@ public:
    * @param callback must be a std::function or similar.
    * @return iterator to save in order to be able to remove the callback.
    */
-  iterator add_callback(T callback)
+  iterator add_callback(T&& callback)
   {
-    T cb = callback;
-    if(cb)
+    if(callback)
     {
       lock_guard lck{m_mutx};
-      auto it = m_callbacks.insert(m_callbacks.begin(), std::move(cb));
+      auto it = m_callbacks.insert(m_callbacks.begin(), std::move(callback));
       if(m_callbacks.size() == 1)
         on_first_callback_added();
       return it;

@@ -26,6 +26,7 @@ time_sync::time_sync()
     , m_autotrigger{}
     , m_is_being_triggered{}
 {
+  m_timeEvents.reserve(4);
 }
 
 time_sync::~time_sync()

@@ -44,7 +44,7 @@ struct OSSIA_EXPORT time_sync_callback
 
 struct OSSIA_EXPORT time_sync_callbacks
 {
-  boost::container::small_vector<time_sync_callback*, 2> callbacks;
+  ossia::small_vector<time_sync_callback*, 2> callbacks;
 
   void clear()
   {
@@ -104,8 +104,9 @@ class OSSIA_EXPORT time_sync final
   friend class ossia::scenario;
 
 public:
-  using iterator = ptr_container<time_event>::iterator;
-  using const_iterator = ptr_container<time_event>::const_iterator;
+  using container = ossia::small_vector<std::shared_ptr<time_event>, 2>;
+  using iterator = container::iterator;
+  using const_iterator = container::const_iterator;
 
   time_sync();
   ~time_sync();
@@ -143,14 +144,11 @@ public:
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  ptr_container<time_event>& get_time_events() noexcept { return m_timeEvents; }
+  auto& get_time_events() noexcept { return m_timeEvents; }
 
   /*! get the #time_events of the #time_sync
  \return #Container<#time_event> */
-  [[nodiscard]] const ptr_container<time_event>& get_time_events() const noexcept
-  {
-    return m_timeEvents;
-  }
+  [[nodiscard]] const auto& get_time_events() const noexcept { return m_timeEvents; }
 
   // Interface to be used for set-up by other time processes
   [[nodiscard]] bool is_observing_expression() const noexcept;
@@ -221,7 +219,7 @@ public:
 
 private:
   ossia::expression_ptr m_expression;
-  ptr_container<time_event> m_timeEvents;
+  container m_timeEvents;
 
   std::optional<expressions::expression_callback_iterator> m_callback;
 

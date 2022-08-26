@@ -14,6 +14,21 @@
 #include <spdlog/spdlog.h>
 namespace ossia
 {
+graph_interface::graph_interface()
+    : execution_storage{buf, std::size(buf)}
+{
+}
+
+edge_ptr graph_interface::allocate_edge(
+    connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node, node_ptr pin_node)
+{
+  std::lock_guard l{execution_storage_mut};
+
+  return std::allocate_shared<
+      ossia::graph_edge, std::pmr::polymorphic_allocator<ossia::graph_edge>>(
+      &execution_storage, c, pout, pin, pout_node, pin_node);
+}
+
 std::shared_ptr<bench_map> bench_ptr()
 {
   static std::shared_ptr<bench_map> b = std::make_shared<bench_map>();

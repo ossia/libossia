@@ -6,7 +6,7 @@
 
 namespace ossia
 {
-
+/*
 inline auto
 make_strict_edge(int pout, int pin, ossia::node_ptr nout, ossia::node_ptr nin)
 {
@@ -38,7 +38,7 @@ make_delayed_glutton_edge(int pout, int pin, ossia::node_ptr nout, ossia::node_p
       ossia::delayed_glutton_connection{}, nout->root_outputs()[pout],
       nin->root_inputs()[pin], nout, nin);
 }
-
+*/
 /**
  * Replaces the ports of a node by a new set of ports
  */

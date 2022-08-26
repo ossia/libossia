@@ -7,6 +7,7 @@
 #include <ossia/dataflow/graph/breadth_first_search.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph/graph_ordering.hpp>
+#include <ossia/dataflow/graph/small_graph.hpp>
 #include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
@@ -19,18 +20,249 @@
 #include <boost/graph/graphviz.hpp>
 #include <boost/graph/topological_sort.hpp>
 
+#include <ankerl/unordered_dense.h>
 class DataflowTest;
-
 namespace ossia
 {
 using graph_t = boost::adjacency_list<
-    boost::vecS, boost::vecS, boost::directedS, node_ptr, std::shared_ptr<graph_edge>>;
+    boost::smallvecS, boost::smallvecS, boost::directedS, node_ptr,
+    std::shared_ptr<graph_edge>>;
+}
+namespace boost::detail
+{
+
+template <>
+class stored_edge_property<unsigned long, std::shared_ptr<ossia::graph_edge>>
+    : public stored_edge<unsigned long>
+{
+  using Vertex = unsigned long;
+  using Property = std::shared_ptr<ossia::graph_edge>;
+  typedef stored_edge_property self;
+  typedef stored_edge<Vertex> Base;
+
+public:
+  typedef Property property_type;
+  inline stored_edge_property() { }
+  inline stored_edge_property(Vertex target, Property p = {})
+      : stored_edge<Vertex>(target)
+      , m_property(std::move(p))
+  {
+  }
+  stored_edge_property(self&& x) noexcept
+      : Base(static_cast<Base&&>(x))
+      , m_property(std::move(x.m_property))
+  {
+  }
+  stored_edge_property(self const& x)
+      : Base(static_cast<Base const&>(x))
+      , m_property(std::move(const_cast<self&>(x).m_property))
+  {
+  }
+  self& operator=(self&& x)
+  {
+    // NOTE: avoid 'Base::operator=(x);' broken on SGI MIPSpro (bug
+    // 55771 of Mozilla).
+    static_cast<Base&>(*this) = static_cast<Base&&>(x);
+    m_property = std::move(x.m_property);
+    return *this;
+  }
+  self& operator=(self const& x)
+  {
+    // NOTE: avoid 'Base::operator=(x);' broken on SGI MIPSpro (bug
+    // 55771 of Mozilla).
+    static_cast<Base&>(*this) = static_cast<Base const&>(x);
+    m_property = std::move(const_cast<self&>(x).m_property);
+    return *this;
+  }
+  inline Property& get_property() noexcept { return m_property; }
+  inline const Property& get_property() const noexcept { return m_property; }
+
+protected:
+  Property m_property;
+};
+
+}
+
+namespace boost
+{
+namespace detail
+{
+template <typename G>
+using DFSVertexInfo = std::pair<
+    typename graph_traits<G>::vertex_descriptor,
+    std::pair<
+        boost::optional<typename graph_traits<G>::edge_descriptor>,
+        std::pair<
+            typename graph_traits<G>::out_edge_iterator,
+            typename graph_traits<G>::out_edge_iterator>>>;
+
+template <class IncidenceGraph, class DFSVisitor, class ColorMap>
+void custom_depth_first_visit_impl(
+    const IncidenceGraph& g, typename graph_traits<IncidenceGraph>::vertex_descriptor u,
+    DFSVisitor& vis, ColorMap color, std::vector<DFSVertexInfo<IncidenceGraph>>& stack)
+{
+  constexpr detail::nontruth2 func;
+  BOOST_CONCEPT_ASSERT((IncidenceGraphConcept<IncidenceGraph>));
+  BOOST_CONCEPT_ASSERT((DFSVisitorConcept<DFSVisitor, IncidenceGraph>));
+  typedef typename graph_traits<IncidenceGraph>::vertex_descriptor Vertex;
+  typedef typename graph_traits<IncidenceGraph>::edge_descriptor Edge;
+  BOOST_CONCEPT_ASSERT((ReadWritePropertyMapConcept<ColorMap, Vertex>));
+  typedef typename property_traits<ColorMap>::value_type ColorValue;
+  BOOST_CONCEPT_ASSERT((ColorValueConcept<ColorValue>));
+  typedef color_traits<ColorValue> Color;
+  typedef typename graph_traits<IncidenceGraph>::out_edge_iterator Iter;
+  typedef std::pair<Vertex, std::pair<boost::optional<Edge>, std::pair<Iter, Iter>>>
+      VertexInfo;
+
+  boost::optional<Edge> src_e;
+  Iter ei, ei_end;
+
+  // Possible optimization for vector
+  stack.clear();
+  stack.reserve(num_vertices(g));
+
+  put(color, u, Color::gray());
+  vis.discover_vertex(u, g);
+  boost::tie(ei, ei_end) = out_edges(u, g);
+  if(func(u, g))
+  {
+    // If this vertex terminates the search, we push empty range
+    stack.push_back(std::make_pair(
+        u, std::make_pair(boost::optional<Edge>(), std::make_pair(ei_end, ei_end))));
+  }
+  else
+  {
+    stack.push_back(std::make_pair(
+        u, std::make_pair(boost::optional<Edge>(), std::make_pair(ei, ei_end))));
+  }
+  while(!stack.empty())
+  {
+    VertexInfo& back = stack.back();
+    u = back.first;
+    src_e = back.second.first;
+    boost::tie(ei, ei_end) = back.second.second;
+    stack.pop_back();
+    // finish_edge has to be called here, not after the
+    // loop. Think of the pop as the return from a recursive call.
+    if(src_e)
+    {
+      call_finish_edge(vis, src_e.get(), g);
+    }
+    while(ei != ei_end)
+    {
+      Vertex v = target(*ei, g);
+      vis.examine_edge(*ei, g);
+      ColorValue v_color = get(color, v);
+      if(v_color == Color::white())
+      {
+        vis.tree_edge(*ei, g);
+        src_e = *ei;
+        stack.push_back(
+            std::make_pair(u, std::make_pair(src_e, std::make_pair(++ei, ei_end))));
+        u = v;
+        put(color, u, Color::gray());
+        vis.discover_vertex(u, g);
+        boost::tie(ei, ei_end) = out_edges(u, g);
+        if(func(u, g))
+        {
+          ei = ei_end;
+        }
+      }
+      else
+      {
+        if(v_color == Color::gray())
+        {
+          vis.back_edge(*ei, g);
+        }
+        else
+        {
+          vis.forward_or_cross_edge(*ei, g);
+        }
+        call_finish_edge(vis, *ei, g);
+        ++ei;
+      }
+    }
+    put(color, u, Color::black());
+    vis.finish_vertex(u, g);
+  }
+}
+}
+
+template <class VertexListGraph, class DFSVisitor, class ColorMap>
+void custom_depth_first_search(
+    const VertexListGraph& g, DFSVisitor vis, ColorMap color,
+    typename graph_traits<VertexListGraph>::vertex_descriptor start_vertex,
+    std::vector<boost::detail::DFSVertexInfo<VertexListGraph>>& stack)
+{
+  typedef typename graph_traits<VertexListGraph>::vertex_descriptor Vertex;
+  BOOST_CONCEPT_ASSERT((DFSVisitorConcept<DFSVisitor, VertexListGraph>));
+  typedef typename property_traits<ColorMap>::value_type ColorValue;
+  typedef color_traits<ColorValue> Color;
+
+  typename graph_traits<VertexListGraph>::vertex_iterator ui, ui_end;
+  for(boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
+  {
+    Vertex u = implicit_cast<Vertex>(*ui);
+    put(color, u, Color::white());
+    vis.initialize_vertex(u, g);
+  }
+
+  if(start_vertex != detail::get_default_starting_vertex(g))
+  {
+    vis.start_vertex(start_vertex, g);
+    detail::custom_depth_first_visit_impl(g, start_vertex, vis, color, stack);
+  }
+
+  for(boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
+  {
+    Vertex u = implicit_cast<Vertex>(*ui);
+    ColorValue u_color = get(color, u);
+    if(u_color == Color::white())
+    {
+      vis.start_vertex(u, g);
+      detail::custom_depth_first_visit_impl(g, u, vis, color, stack);
+    }
+  }
+}
+
+}
+namespace ossia
+{
+inline void remove_vertex(typename graph_t::vertex_descriptor v, graph_t& g)
+{
+  typedef typename graph_t::directed_category Cat;
+  g.removing_vertex(v, boost::graph_detail::iterator_stability(g.m_vertices));
+  boost::detail::remove_vertex_dispatch(g, v, Cat());
+}
+
+template <typename VertexListGraph, typename OutputIterator>
+void custom_topological_sort(
+    VertexListGraph& g, OutputIterator result,
+    std::vector<boost::default_color_type>& color_map,
+    std::vector<boost::detail::DFSVertexInfo<VertexListGraph>>& stack)
+{
+  color_map.clear();
+  color_map.resize(boost::num_vertices(g));
+
+  auto map = boost::make_iterator_property_map(
+      color_map.begin(), boost::get(boost::vertex_index, g), color_map[0]);
+
+  boost::custom_depth_first_search(
+      g, boost::topo_sort_visitor<OutputIterator>(result), map,
+      boost::detail::get_default_starting_vertex(g), stack);
+
+  // depth_first_search(g, params.visitor(TopoVisitor(result)));
+}
 
 using graph_vertex_t = graph_t::vertex_descriptor;
 using graph_edge_t = graph_t::edge_descriptor;
 
-using node_map = ossia::shared_ptr_map<ossia::graph_node, graph_vertex_t>;
-using edge_map = ossia::shared_ptr_map<ossia::graph_edge, graph_edge_t>;
+template <typename T, typename V>
+using dense_shared_ptr_map = ankerl::unordered_dense::map<
+    std::shared_ptr<T>, V, EgurHash<T>, PointerPredicate<T>,
+    ossia::small_vector<std::pair<std::shared_ptr<T>, V>, 1024>>;
+using node_map = ossia::dense_shared_ptr_map<ossia::graph_node, graph_vertex_t>;
+using edge_map = ossia::dense_shared_ptr_map<ossia::graph_edge, graph_edge_t>;
 
 using node_flat_set = ossia::flat_set<graph_node*>;
 enum class node_ordering
@@ -425,10 +657,15 @@ struct OSSIA_EXPORT graph_util
 
 struct OSSIA_EXPORT graph_base : graph_interface
 {
-  [[nodiscard]] const std::vector<ossia::graph_node*>&
+  graph_base() noexcept
+  {
+    m_nodes.reserve(1024);
+    m_edges.reserve(1024);
+  }
+  [[nodiscard]] tcb::span<ossia::graph_node* const>
   get_nodes() const noexcept final override
   {
-    return m_node_list;
+    return tcb::span{m_node_list};
   }
 
   void recompute_maps()
@@ -437,6 +674,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
     m_nodes.clear();
     m_edges.clear();
     auto vertices = boost::vertices(m_graph);
+    m_nodes.reserve(m_graph.m_vertices.size());
     for(auto it = vertices.first; it != vertices.second; ++it)
     {
       graph_vertex_t k = *it;
@@ -452,6 +690,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
 #pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 #endif
     auto edges = boost::edges(m_graph);
+    m_edges.reserve(std::distance(edges.first, edges.second));
     for(auto it = edges.first; it != edges.second; ++it)
     {
       graph_edge_t k = *it;
@@ -506,7 +745,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
       if(std::find(vtx.first, vtx.second, it->second) != vtx.second)
       {
         boost::clear_vertex(it->second, m_graph);
-        boost::remove_vertex(it->second, m_graph);
+        remove_vertex(it->second, m_graph);
 
         recompute_maps();
       }
@@ -598,7 +837,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
   node_map m_nodes;
   edge_map m_edges;
-  std::vector<ossia::graph_node*> m_node_list;
+  ossia::small_vector<ossia::graph_node*, 1024> m_node_list;
 
   graph_t m_graph;
 

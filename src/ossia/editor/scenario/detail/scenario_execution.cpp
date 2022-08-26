@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/dataflow/nodes/forward_node.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
@@ -287,7 +288,7 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
         else
         {
-          m_sg.reset_component(*n);
+          reset_component(*n);
           if(n->is_autotrigger())
             n->m_evaluating = true;
 
@@ -468,10 +469,12 @@ void scenario::state_impl(const ossia::token_request& tk)
 
   // ossia::logger().info("scenario::state ends");
 }
-
+/*
 scenario_graph::scenario_graph(scenario& sc)
     : scenar{sc}
 {
+  graph.m_vertices.reserve(1024);
+
 }
 
 void scenario_graph::update_components_cache() const
@@ -512,5 +515,5 @@ void scenario_graph::reset_component(time_sync& sync) const
   }
 
   scenar.reset_subgraph(to_disable_sync, to_disable_itv, sync);
-}
+}*/
 }

@@ -105,13 +105,21 @@ struct precise_tick
   }
 };
 
-struct default_tick
+struct default_tick_controls
 {
   template <typename TickFun, typename... Args>
   void operator()(
       TickFun&& f, const ossia::token_request& req, const ossia::timed_vec<Args>&... arg)
   {
     f(req, arg...);
+  }
+};
+struct default_tick
+{
+  template <typename TickFun, typename... Args>
+  void operator()(TickFun&& f, const ossia::token_request& req)
+  {
+    f(req);
   }
 };
 
@@ -125,6 +133,15 @@ struct last_tick
     tuplet::apply(
         [&](const auto&... it) { std::forward<TickFun>(f)(req, it->second...); },
         tuplet::make_tuple(--arg.end()...));
+  }
+};
+
+struct last_tick_values
+{
+  template <typename TickFun, typename... Args>
+  void operator()(TickFun&& f, const ossia::token_request& req, const Args&... arg)
+  {
+    std::forward<TickFun>(f)(req, arg...);
   }
 };
 

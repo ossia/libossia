@@ -12,6 +12,43 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 #include <bitset>
+namespace ossia
+{
+
+template <typename T, std::size_t N>
+struct ebo_array
+{
+  T arr[N];
+  constexpr T& operator[](std::size_t i) noexcept { return arr[i]; }
+  constexpr const T& operator[](std::size_t i) const noexcept { return arr[i]; }
+};
+template <typename T>
+struct ebo_array<T, 0>
+{
+  // constexpr const T operator[](std::size_t i) const noexcept { return {}; }
+};
+
+template <typename T, std::size_t N>
+constexpr const T* begin(const ebo_array<T, N>& e)
+{
+  return e.arr;
+}
+template <typename T, std::size_t N>
+constexpr const T* end(const ebo_array<T, N>& e)
+{
+  return e.arr + N;
+}
+template <typename T, std::size_t N>
+constexpr T* begin(ebo_array<T, N>& e)
+{
+  return e.arr;
+}
+template <typename T, std::size_t N>
+constexpr T* end(ebo_array<T, N>& e)
+{
+  return e.arr + N;
+}
+}
 namespace ossia::safe_nodes
 {
 
@@ -113,16 +150,16 @@ public:
   ossia::spsc_queue<control_outs_values_type> control_outs_queue;
   control_out_tuple_t control_outs_tuple;
 
-  std::array<ossia::audio_inlet, info::audio_in_count> audio_in_ports;
-  std::array<ossia::midi_inlet, info::midi_in_count> midi_in_ports;
-  std::array<ossia::value_inlet, info::value_in_count> value_in_ports;
-  std::array<ossia::value_inlet, info::address_in_count> address_in_ports;
-  std::array<ossia::value_inlet, info::control_count> control_in_ports;
+  ebo_array<ossia::audio_inlet, info::audio_in_count> audio_in_ports;
+  ebo_array<ossia::midi_inlet, info::midi_in_count> midi_in_ports;
+  ebo_array<ossia::value_inlet, info::value_in_count> value_in_ports;
+  ebo_array<ossia::value_inlet, info::address_in_count> address_in_ports;
+  ebo_array<ossia::value_inlet, info::control_count> control_in_ports;
 
-  std::array<ossia::audio_outlet, info::audio_out_count> audio_out_ports;
-  std::array<ossia::midi_outlet, info::midi_out_count> midi_out_ports;
-  std::array<ossia::value_outlet, info::value_out_count> value_out_ports;
-  std::array<ossia::value_outlet, info::control_out_count> control_out_ports;
+  ebo_array<ossia::audio_outlet, info::audio_out_count> audio_out_ports;
+  ebo_array<ossia::midi_outlet, info::midi_out_count> midi_out_ports;
+  ebo_array<ossia::value_outlet, info::value_out_count> value_out_ports;
+  ebo_array<ossia::value_outlet, info::control_out_count> control_out_ports;
 
   safe_node() noexcept
   {
@@ -148,18 +185,20 @@ public:
         m_inlets.push_back(std::addressof(port));
 
     if constexpr(info::control_count > 0)
+    {
       for(auto& port : this->control_in_ports)
       {
         (*port).is_event = true;
         m_inlets.push_back(std::addressof(port));
       }
 
-    {
-      int ctrl_i = 0;
-      for_each_in_tuple(Node_T::Metadata::controls, [&](auto& ctrl_info) {
-        ctrl_info.setup_exec(this->control_in_ports[ctrl_i]);
-        ctrl_i++;
-      });
+      {
+        int ctrl_i = 0;
+        for_each_in_tuple(Node_T::Metadata::controls, [&](auto& ctrl_info) {
+          ctrl_info.setup_exec(this->control_in_ports[ctrl_i]);
+          ctrl_i++;
+        });
+      }
     }
 
     if constexpr(info::audio_out_count > 0)
@@ -198,6 +237,7 @@ public:
     using val_type = typename control_type::type;
 
     ossia::timed_vec<val_type>& vec = get<N>(this->control_tuple);
+
     vec.clear();
     const auto& vp = static_cast<ossia::value_inlet*>(inl[idx])->data.get_data();
     vec.container.reserve(vp.size() + 1);
@@ -333,12 +373,12 @@ public:
       bool ok = false;
       ossia::for_each_in_tuples_ref(
           this->control_outs_tuple, this->control_outs,
-          [&](auto&& control_in, auto&& control_out) {
-        if(!control_in.empty())
+          [&](auto&& current_ctrls, auto&& control_out) {
+        if(!current_ctrls.empty())
         {
           ok = true;
-          control_out = std::move(control_in.container.back().second);
-          control_in.clear();
+          control_out = std::move(current_ctrls.container.back().second);
+          current_ctrls.clear();
         }
 
         i++;
@@ -349,6 +389,410 @@ public:
         this->control_outs_queue.enqueue(this->control_outs);
       }
     }
+  }
+
+  void all_notes_off() noexcept override
+  {
+    if constexpr(info::midi_in_count > 0)
+    {
+      // TODO
+    }
+  }
+
+  [[nodiscard]] std::string label() const noexcept override { return "Control"; }
+};
+
+template <typename T>
+struct controls_feedback_type
+{
+  using type = T;
+};
+
+template <>
+struct controls_feedback_type<std::string>
+{
+  using type = std::string_view;
+};
+template <typename T>
+using controls_feedback_type_t = typename controls_feedback_type<T>::type;
+
+template <typename Node_T>
+requires std::is_same_v<typename Node_T::control_policy, ossia::safe_nodes::last_tick>
+class safe_node<Node_T> final
+    : public ossia::nonowning_graph_node
+    , public get_state<Node_T>::type
+{
+public:
+  using info = info_functions<Node_T>;
+  static const constexpr bool has_state = has_state_t<Node_T>::value;
+  using state_type = typename get_state<Node_T>::type;
+
+  using controls_changed_list = std::bitset<info_functions<Node_T>::control_count>;
+  using controls_type = typename info_functions<Node_T>::controls_type;
+  using controls_values_type = typename info_functions<Node_T>::controls_values_type;
+  using controls_values_feedback = boost::mp11::mp_transform<
+      controls_feedback_type_t, typename info_functions<Node_T>::controls_values_type>;
+
+  // std::tuple<float, int...> : current running values of the controls
+  controls_values_type controls;
+
+  // bitset : 1 if the control has changed since the last tick, 0 else
+  controls_changed_list controls_changed;
+
+  // used to communicate control changes from the ui
+  ossia::spsc_queue<controls_values_feedback> cqueue;
+
+  using control_outs_changed_list
+      = std::bitset<info_functions<Node_T>::control_out_count>;
+  using control_outs_type = typename info_functions<Node_T>::control_outs_type;
+  using control_outs_values_type =
+      typename info_functions<Node_T>::control_outs_values_type;
+
+  control_outs_values_type control_outs;
+  control_outs_changed_list control_outs_changed;
+  ossia::spsc_queue<control_outs_values_type> control_outs_queue;
+
+  ebo_array<ossia::audio_inlet, info::audio_in_count> audio_in_ports;
+  ebo_array<ossia::midi_inlet, info::midi_in_count> midi_in_ports;
+  ebo_array<ossia::value_inlet, info::value_in_count> value_in_ports;
+  ebo_array<ossia::value_inlet, info::address_in_count> address_in_ports;
+  ebo_array<ossia::value_inlet, info::control_count> control_in_ports;
+
+  ebo_array<ossia::audio_outlet, info::audio_out_count> audio_out_ports;
+  ebo_array<ossia::midi_outlet, info::midi_out_count> midi_out_ports;
+  ebo_array<ossia::value_outlet, info::value_out_count> value_out_ports;
+  ebo_array<ossia::value_outlet, info::control_out_count> control_out_ports;
+
+  safe_node() noexcept
+  {
+    m_inlets.reserve(info_functions<Node_T>::inlet_size);
+    m_outlets.reserve(info_functions<Node_T>::outlet_size);
+    if constexpr(info::audio_in_count > 0)
+      for(auto& port : this->audio_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::midi_in_count > 0)
+      for(auto& port : this->midi_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::value_in_count > 0)
+      for(std::size_t i = 0; i < info::value_in_count; i++)
+      {
+        (*value_in_ports[i]).is_event = Node_T::Metadata::value_ins[i].is_event;
+        m_inlets.push_back(std::addressof(value_in_ports[i]));
+      }
+
+    if constexpr(info::address_in_count > 0)
+      for(auto& port : this->address_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::control_count > 0)
+    {
+      for(auto& port : this->control_in_ports)
+      {
+        (*port).is_event = true;
+        m_inlets.push_back(std::addressof(port));
+      }
+
+      {
+        int ctrl_i = 0;
+        for_each_in_tuple(Node_T::Metadata::controls, [&](auto& ctrl_info) {
+          ctrl_info.setup_exec(this->control_in_ports[ctrl_i]);
+          ctrl_i++;
+        });
+      }
+    }
+
+    if constexpr(info::audio_out_count > 0)
+      for(auto& port : this->audio_out_ports)
+        m_outlets.push_back(std::addressof(port));
+
+    if constexpr(info::midi_out_count > 0)
+      for(auto& port : this->midi_out_ports)
+        m_outlets.push_back(std::addressof(port));
+
+    if constexpr(info::value_out_count > 0)
+      for(std::size_t i = 0; i < info::value_out_count; i++)
+      {
+        auto& port = value_out_ports[i];
+        if(auto& type = Node_T::Metadata::value_outs[i].type; !type.empty())
+        {
+          port->type = ossia::parse_dataspace(type);
+        }
+        m_outlets.push_back(std::addressof(port));
+      }
+
+    if constexpr(info::control_out_count > 0)
+      for(auto& port : this->control_out_ports)
+        m_outlets.push_back(std::addressof(port));
+  }
+
+  template <std::size_t N>
+  constexpr const auto& get_control_accessor(const ossia::inlets& inl) noexcept
+  {
+    constexpr const auto idx = info::control_start + N;
+    static_assert(info::control_count > 0);
+    static_assert(N < info::control_count);
+
+    using control_type =
+        typename std::tuple_element<N, decltype(Node_T::Metadata::controls)>::type;
+
+    const auto& vp = static_cast<ossia::value_inlet*>(inl[idx])->data.get_data();
+
+    if(!vp.empty())
+    {
+      // copy the last value
+      apply_control<control_type::must_validate, N>(
+          get<N>(this->controls), vp.back().value);
+    }
+    return get<N>(this->controls);
+  }
+
+  template <std::size_t N>
+  constexpr auto& get_control_outlet_accessor(const ossia::outlets& outl) noexcept
+  {
+    static_assert(info::control_out_count > 0);
+    static_assert(N < info::control_out_count);
+
+    return get<N>(this->control_outs_tuple);
+  }
+
+  template <bool Validate, std::size_t N, typename Ctl>
+  void apply_control(Ctl& ctl, const ossia::value& v) noexcept
+  {
+    constexpr const auto ctrl = get<N>(Node_T::Metadata::controls);
+    if constexpr(Validate)
+    {
+      if(auto res = ctrl.fromValue(v))
+      {
+        ctl = *std::move(res);
+        this->controls_changed.set(N);
+      }
+    }
+    else
+    {
+      ctl = ctrl.fromValue(v);
+      this->controls_changed.set(N);
+    }
+  }
+  /////////////////
+
+  controls_values_feedback controls_feedback(const controls_values_type& t)
+  {
+    return tuplet::apply(
+        []<typename... Args>(const Args&... args) {
+      return controls_values_feedback{args...};
+        },
+        t);
+  }
+
+  template <std::size_t... I, std::size_t... CI, std::size_t... O, std::size_t... CO>
+  void apply_all_impl(
+      const std::index_sequence<I...>&, const std::index_sequence<CI...>&,
+      const std::index_sequence<O...>&, const std::index_sequence<CO...>&,
+      ossia::token_request tk, ossia::exec_state_facade st) noexcept
+  {
+    ossia::inlets& inlets = this->root_inputs();
+    ossia::outlets& outlets = this->root_outputs();
+
+    if constexpr(has_state)
+    {
+      if constexpr(info::control_count > 0)
+      {
+        using policy = last_tick_values;
+        policy{}(
+            [&](const ossia::token_request& sub_tk, auto&&... ctls) {
+          Node_T::run(
+              get_inlet_accessor<info, I>(inlets)...,
+              std::forward<decltype(ctls)>(ctls)...,
+              get_outlet_accessor<info, O>(outlets)...,
+              get_control_outlet_accessor<CO>(outlets)..., sub_tk, st,
+              static_cast<state_type&>(*this));
+            },
+            tk, get_control_accessor<CI>(inlets)...);
+      }
+      else
+      {
+        Node_T::run(
+            get_inlet_accessor<info, I>(inlets)...,
+            get_outlet_accessor<info, O>(outlets)...,
+            get_control_outlet_accessor<CO>(outlets)..., tk, st,
+            static_cast<state_type&>(*this));
+      }
+    }
+    else
+    {
+      if constexpr(info::control_count > 0)
+      {
+        using policy = last_tick_values;
+        policy{}(
+            [&](const ossia::token_request& sub_tk, auto&&... ctls) {
+          Node_T::run(
+              get_inlet_accessor<info, I>(inlets)...,
+              std::forward<decltype(ctls)>(ctls)...,
+              get_outlet_accessor<info, O>(outlets)...,
+              get_control_outlet_accessor<CO>(outlets)..., sub_tk, st);
+            },
+            tk, get_control_accessor<CI>(inlets)...);
+      }
+      else
+      {
+        Node_T::run(
+            get_inlet_accessor<info, I>(inlets)...,
+            get_outlet_accessor<info, O>(outlets)...,
+            get_control_outlet_accessor<CO>(outlets)..., tk, st);
+      }
+    }
+  }
+
+  void run(const ossia::token_request& tk, ossia::exec_state_facade st) noexcept override
+  {
+    using inlets_indices = std::make_index_sequence<info::control_start>;
+    using controls_indices = std::make_index_sequence<info::control_count>;
+    using outlets_indices = std::make_index_sequence<info::control_out_start>;
+    using control_outs_indices = std::make_index_sequence<info::control_out_count>;
+
+    apply_all_impl(
+        inlets_indices{}, controls_indices{}, outlets_indices{}, control_outs_indices{},
+        tk, st);
+
+    if constexpr(info::control_count > 0)
+    {
+      if(cqueue.size_approx() < 1 && controls_changed.any())
+      {
+        cqueue.try_enqueue(controls_feedback(controls));
+        controls_changed.reset();
+      }
+    }
+
+    if constexpr(info::control_out_count > 0)
+    {
+      std::size_t i = 0;
+      bool ok = false;
+      ossia::for_each_in_tuples_ref(
+          this->control_outs_tuple, this->control_outs,
+          [&](auto&& current_ctrls, auto&& control_out) {
+        if(!current_ctrls.empty())
+        {
+          ok = true;
+          control_out = std::move(current_ctrls.container.back().second);
+          current_ctrls.clear();
+        }
+
+        i++;
+          });
+
+      if(ok)
+      {
+        this->control_outs_queue.enqueue(this->control_outs);
+      }
+    }
+  }
+
+  void all_notes_off() noexcept override
+  {
+    if constexpr(info::midi_in_count > 0)
+    {
+      // TODO
+    }
+  }
+
+  [[nodiscard]] std::string label() const noexcept override { return "Control"; }
+};
+template <typename Node_T>
+requires std::is_same_v<typename Node_T::control_policy, ossia::safe_nodes::default_tick>
+class safe_node<Node_T> final
+    : public ossia::nonowning_graph_node
+    , public get_state<Node_T>::type
+{
+public:
+  using info = info_functions<Node_T>;
+  static_assert(info::control_count == 0);
+  static_assert(info::control_out_count == 0);
+  static const constexpr bool has_state = has_state_t<Node_T>::value;
+  using state_type = typename get_state<Node_T>::type;
+
+  ebo_array<ossia::audio_inlet, info::audio_in_count> audio_in_ports;
+  ebo_array<ossia::midi_inlet, info::midi_in_count> midi_in_ports;
+  ebo_array<ossia::value_inlet, info::value_in_count> value_in_ports;
+  ebo_array<ossia::value_inlet, info::address_in_count> address_in_ports;
+
+  ebo_array<ossia::audio_outlet, info::audio_out_count> audio_out_ports;
+  ebo_array<ossia::midi_outlet, info::midi_out_count> midi_out_ports;
+  ebo_array<ossia::value_outlet, info::value_out_count> value_out_ports;
+
+  safe_node() noexcept
+  {
+    m_inlets.reserve(info_functions<Node_T>::inlet_size);
+    m_outlets.reserve(info_functions<Node_T>::outlet_size);
+    if constexpr(info::audio_in_count > 0)
+      for(auto& port : this->audio_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::midi_in_count > 0)
+      for(auto& port : this->midi_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::value_in_count > 0)
+      for(std::size_t i = 0; i < info::value_in_count; i++)
+      {
+        (*value_in_ports[i]).is_event = Node_T::Metadata::value_ins[i].is_event;
+        m_inlets.push_back(std::addressof(value_in_ports[i]));
+      }
+
+    if constexpr(info::address_in_count > 0)
+      for(auto& port : this->address_in_ports)
+        m_inlets.push_back(std::addressof(port));
+
+    if constexpr(info::audio_out_count > 0)
+      for(auto& port : this->audio_out_ports)
+        m_outlets.push_back(std::addressof(port));
+
+    if constexpr(info::midi_out_count > 0)
+      for(auto& port : this->midi_out_ports)
+        m_outlets.push_back(std::addressof(port));
+
+    if constexpr(info::value_out_count > 0)
+      for(std::size_t i = 0; i < info::value_out_count; i++)
+      {
+        auto& port = value_out_ports[i];
+        if(auto& type = Node_T::Metadata::value_outs[i].type; !type.empty())
+        {
+          port->type = ossia::parse_dataspace(type);
+        }
+        m_outlets.push_back(std::addressof(port));
+      }
+  }
+
+  template <std::size_t... I, std::size_t... O>
+  void apply_all_impl(
+      const std::index_sequence<I...>&, const std::index_sequence<O...>&,
+      ossia::token_request tk, ossia::exec_state_facade st) noexcept
+  {
+    ossia::inlets& inlets = this->root_inputs();
+    ossia::outlets& outlets = this->root_outputs();
+
+    if constexpr(has_state)
+    {
+      Node_T::run(
+          get_inlet_accessor<info, I>(inlets)...,
+          get_outlet_accessor<info, O>(outlets)..., tk, st,
+          static_cast<state_type&>(*this));
+    }
+    else
+    {
+      Node_T::run(
+          get_inlet_accessor<info, I>(inlets)...,
+          get_outlet_accessor<info, O>(outlets)..., tk, st);
+    }
+  }
+
+  void run(const ossia::token_request& tk, ossia::exec_state_facade st) noexcept override
+  {
+    using inlets_indices = std::make_index_sequence<info::control_start>;
+    using outlets_indices = std::make_index_sequence<info::control_out_start>;
+
+    apply_all_impl(inlets_indices{}, outlets_indices{}, tk, st);
   }
 
   void all_notes_off() noexcept override

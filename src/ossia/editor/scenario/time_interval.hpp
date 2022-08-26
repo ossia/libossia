@@ -178,6 +178,8 @@ public:
    \param std::shared_ptr<#TimeProcess> to insert */
   void remove_time_process(time_process*);
 
+  void reserve_processes(std::size_t sz);
+
   /*! get time processes attached to the #time_interval
    \return #Container<#TimeProcess> */
   const std::vector<std::shared_ptr<time_process>>& get_time_processes() const

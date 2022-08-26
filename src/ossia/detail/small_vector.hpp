@@ -3,6 +3,14 @@
 
 #include <ossia/detail/pod_vector.hpp>
 
+#if defined(_GLIBCXX_DEBUG)
+#define OSSIA_NO_SMALLVECTOR
+#elif defined(_LIBCPP_DEBUG_LEVEL) && _LIBCPP_DEBUG_LEVEL > 0
+#define OSSIA_NO_SMALLVECTOR
+#elif defined(_ITERATOR_DEBUG_LEVEL) && _ITERATOR_DEBUG_LEVEL > 0
+#define OSSIA_NO_SMALLVECTOR
+#endif
+
 #if !defined(OSSIA_NO_SMALLVECTOR)
 #define OSSIA_SMALL_VECTOR
 #include <boost/container/small_vector.hpp>

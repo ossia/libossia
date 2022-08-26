@@ -17,17 +17,24 @@ struct init_delay_line
   void operator()() const noexcept { }
 };
 
+class graph_interface;
+/*
+template <typename... Args>
+std::shared_ptr<ossia::graph_edge> make_edge(Args&&... args);
+*/
 // A pure dependency edge does not have in/out ports set
 struct OSSIA_EXPORT graph_edge
 {
+  friend graph_interface;
+  /*
+  template <typename... Args>
+  friend std::shared_ptr<ossia::graph_edge> make_edge(Args&&...);
+*/
+public:
   graph_edge(
       connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,
       node_ptr pin_node) noexcept;
-  /*
-    graph_edge(
-        connection c, std::size_t pout, std::size_t pin, node_ptr pout_node,
-        node_ptr pin_node) noexcept;
-  */
+
   void init() noexcept;
 
   ~graph_edge();
@@ -40,10 +47,12 @@ struct OSSIA_EXPORT graph_edge
   node_ptr out_node{};
   node_ptr in_node{};
 };
-
+/*
 template <typename... Args>
-auto make_edge(Args&&... args)
+std::shared_ptr<ossia::graph_edge> make_edge(Args&&... args)
 {
-  return std::make_shared<ossia::graph_edge>(std::forward<Args>(args)...);
+  return std::shared_ptr<ossia::graph_edge>(
+      new ossia::graph_edge(std::forward<Args>(args)...));
 }
+*/
 }

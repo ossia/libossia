@@ -16,7 +16,6 @@
 
 namespace ossia
 {
-
 template <typename UpdateImpl, typename TickImpl>
 struct graph_static final
     : public graph_util
@@ -25,7 +24,16 @@ struct graph_static final
 public:
   UpdateImpl update_fun{*this};
   TickImpl tick_fun{*this};
-
+  std::vector<boost::default_color_type> m_color_map_cache;
+  std::vector<boost::detail::DFSVertexInfo<graph_t>> m_stack_cache;
+  graph_static()
+  {
+    m_all_nodes.reserve(1024);
+    m_enabled_cache.container.reserve(1024);
+    m_topo_order_cache.reserve(1024);
+    m_color_map_cache.reserve(1024);
+    m_stack_cache.reserve(1024);
+  }
   ~graph_static() override { clear(); }
 
   void sort_all_nodes(const graph_t& gr)
@@ -39,7 +47,8 @@ public:
       // TODO this should be doable with a single vector
       m_topo_order_cache.clear();
       m_topo_order_cache.reserve(m_nodes.size());
-      boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
+      custom_topological_sort(
+          gr, std::back_inserter(m_topo_order_cache), m_color_map_cache, m_stack_cache);
 
       // First put the ones without any I/O (most likely states)
       for(auto vtx : m_topo_order_cache)
@@ -201,7 +210,7 @@ public:
           auto sink_it = m_nodes.find(n2);
           assert(src_it != m_nodes.end());
           assert(sink_it != m_nodes.end());
-          auto edge = ossia::make_edge(
+          auto edge = g.allocate_edge(
               ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
               src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
@@ -217,7 +226,7 @@ public:
         {
           auto src_it = m_nodes.find(n2);
           auto sink_it = m_nodes.find(n1);
-          auto edge = ossia::make_edge(
+          auto edge = g.allocate_edge(
               ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
               src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
@@ -291,7 +300,7 @@ public:
 
     impl.update(m_sub_graph);
 
-    tc_add_addresses(g.m_graph, m_sub_graph, g.m_nodes, g.m_all_nodes, impl, devices);
+    tc_add_addresses(g, g.m_graph, m_sub_graph, g.m_nodes, g.m_all_nodes, impl, devices);
 
     g.sort_all_nodes(m_sub_graph);
   }
@@ -303,8 +312,8 @@ private:
       typename BaseGraph, typename TCGraph, typename NodeMap, typename AllNodes,
       typename TC, typename Devices>
   static void tc_add_addresses(
-      BaseGraph& m_graph, TCGraph& m_sub_graph, NodeMap& m_nodes, AllNodes& m_all_nodes,
-      TC& tc, Devices& devices)
+      auto& impl, BaseGraph& m_graph, TCGraph& m_sub_graph, NodeMap& m_nodes,
+      AllNodes& m_all_nodes, TC& tc, Devices& devices)
   {
     // m_active_nodes is in topo order
 
@@ -346,7 +355,7 @@ private:
         {
           auto src_it = m_nodes.find(n1);
           auto sink_it = m_nodes.find(n2);
-          auto edge = ossia::make_edge(
+          auto edge = impl.allocate_edge(
               ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
               src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);
@@ -364,7 +373,7 @@ private:
         {
           auto src_it = m_nodes.find(n2);
           auto sink_it = m_nodes.find(n1);
-          auto edge = ossia::make_edge(
+          auto edge = impl.allocate_edge(
               ossia::dependency_connection{}, ossia::outlet_ptr{}, ossia::inlet_ptr{},
               src_it->first, sink_it->first);
           boost::add_edge(sink_it->second, src_it->second, edge, m_sub_graph);

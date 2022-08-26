@@ -210,6 +210,7 @@ void audio_buffer_pool::set_channels(audio_vector& samples, std::size_t channels
     samples.pop_back();
   }
 
+  samples.reserve(channels);
   while(samples.size() < channels)
   {
     samples.push_back(pool.acquire());

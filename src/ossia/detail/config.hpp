@@ -129,6 +129,10 @@
 #define BOOST_SYSTEM_NO_LIB 1
 #endif
 
+// #if !defined(BOOST_GRAPH_NO_BUNDLED_PROPERTIES)
+// #define BOOST_GRAPH_NO_BUNDLED_PROPERTIES 1
+// #endif
+
 #if !defined(QT_NO_KEYWORDS)
 #define QT_NO_KEYWORDS 1
 #endif

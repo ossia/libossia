@@ -155,6 +155,7 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rnd/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/PerlinNoise>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
