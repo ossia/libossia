@@ -30,30 +30,13 @@ class expression_callback_container
 
 public:
   using T = expression_result_callback;
-  expression_callback_container() = default;
-  expression_callback_container(const expression_callback_container& other)
-  {
-    lock_guard lck{other.m_mutx};
-    m_callbacks = other.m_callbacks;
-  }
-  expression_callback_container(expression_callback_container&& other) noexcept
-  {
-    lock_guard lck{other.m_mutx};
-    m_callbacks = std::move(other.m_callbacks);
-  }
+  expression_callback_container() noexcept = default;
+  expression_callback_container(const expression_callback_container& other) = delete;
+  expression_callback_container(expression_callback_container&& other) noexcept = delete;
   expression_callback_container& operator=(const expression_callback_container& other)
-  {
-    lock_guard lck{other.m_mutx};
-    m_callbacks = other.m_callbacks;
-    return *this;
-  }
+      = delete;
   expression_callback_container&
-  operator=(expression_callback_container&& other) noexcept
-  {
-    lock_guard lck{other.m_mutx};
-    m_callbacks = std::move(other.m_callbacks);
-    return *this;
-  }
+  operator=(expression_callback_container&& other) noexcept = delete;
 
   virtual ~expression_callback_container() = default;
 
@@ -96,47 +79,6 @@ public:
     if(m_callbacks.size() == 1)
       on_removing_last_callback();
     m_callbacks.erase(it);
-  }
-
-  /**
-   * @brief Replaces an existing callback with another function.
-   */
-  void replace_callback(iterator it, T&& cb)
-  {
-    lock_guard lck{m_mutx};
-    *m_callbacks.erase(it, it) = std::move(cb);
-  }
-  void replace_callbacks(impl&& cbs)
-  {
-    lock_guard lck{m_mutx};
-    m_callbacks = std::move(cbs);
-  }
-
-  class disabled_callback
-  {
-  public:
-    explicit disabled_callback(expression_callback_container& self)
-        : self{self}
-        , old_callbacks{self.m_callbacks}
-    {
-    }
-
-    ~disabled_callback() { self.replace_callbacks(std::move(old_callbacks)); }
-
-  private:
-    expression_callback_container& self;
-    expression_callback_container::impl old_callbacks;
-  };
-
-  disabled_callback disable_callback(iterator it)
-  {
-    lock_guard lck{m_mutx};
-    disabled_callback dis{*this};
-
-    // TODO should we also call on_removing_last_blah ?
-    // I don't think so : it's supposed to be a short operation
-    m_callbacks.erase(it);
-    return dis;
   }
 
   /**
