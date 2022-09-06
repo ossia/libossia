@@ -1,5 +1,5 @@
-
 #pragma once
+
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
 #include <ossia/detail/timer.hpp>
@@ -7,27 +7,23 @@
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/domain/domain.hpp>
-#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/network/sockets/serial_socket.hpp>
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
+#include <boost/asio/serial_port.hpp>
 
 #include <array>
 #include <cstdint>
 
 namespace ossia::net
 {
-// Implementation mostly based on https://github.com/hhromic/libe131
-
-class OSSIA_EXPORT e131_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT dmxusbpro_protocol final : public ossia::net::protocol_base
 {
 public:
-  static constexpr uint16_t default_port = 5568;
-  static constexpr uint8_t default_priority = 100;
-
-  e131_protocol(
+  dmxusbpro_protocol(
       ossia::net::network_context_ptr, const dmx_config& conf,
-      const ossia::net::socket_configuration& socket);
+      const ossia::net::serial_configuration& socket);
 
-  ~e131_protocol();
+  ~dmxusbpro_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
 
@@ -50,10 +46,8 @@ private:
 
   ossia::net::device_base* m_device{};
 
-  ossia::net::udp_send_socket m_socket;
-  uint16_t m_universe{};
+  boost::asio::serial_port m_port;
   bool m_autocreate{};
 };
-
 }
 #endif

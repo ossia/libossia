@@ -234,15 +234,14 @@ void e131_protocol::update_function()
   }
   catch(std::exception& e)
   {
-
-    ossia::logger().error("write faileure: {}", e.what());
+    ossia::logger().error("write failure: {}", e.what());
   }
   catch(...)
   {
-
-    ossia::logger().error("write faileure");
+    ossia::logger().error("write failure");
   }
 }
+
 }
 
 #endif
