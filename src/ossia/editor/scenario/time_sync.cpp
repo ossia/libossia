@@ -42,14 +42,13 @@ time_value time_sync::get_date() const noexcept
   {
     for(auto& timeEvent : get_time_events())
     {
-      if(!timeEvent->previous_time_intervals().empty())
+      auto& prev = timeEvent->previous_time_intervals();
+      if(!prev.empty())
       {
-        if(timeEvent->previous_time_intervals()[0]->get_nominal_duration() > Zero)
-          return timeEvent->previous_time_intervals()[0]->get_nominal_duration()
-                 + timeEvent->previous_time_intervals()[0]
-                       ->get_start_event()
-                       .get_time_sync()
-                       .get_date();
+        auto& prev_itv = *prev[0];
+        if(!prev_itv.graphal)
+          return prev_itv.get_nominal_duration()
+                 + prev_itv.get_start_event().get_time_sync().get_date();
       }
     }
   }
