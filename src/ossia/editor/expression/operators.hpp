@@ -10,7 +10,8 @@ enum class comparator
   GREATER,       //! >
   LOWER,         //! <
   GREATER_EQUAL, //! >=
-  LOWER_EQUAL    //! <=
+  LOWER_EQUAL,   //! <=
+  CONTAINS
 };
 
 //! Represents a binary operation between expressions

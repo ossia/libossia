@@ -124,6 +124,26 @@ void expression_atom::on_removing_last_callback()
   }
 }
 
+struct contains_comparator
+{
+  template <typename U>
+  bool operator()(const std::vector<ossia::value>& lhs, const U& rhs) noexcept
+  {
+    return ossia::contains(lhs, rhs);
+  }
+
+  bool operator()(const std::string& lhs, const std::string& rhs) noexcept
+  {
+    return lhs.find(rhs) != std::string::npos;
+  }
+
+  template <typename T, typename U>
+  bool operator()(const T& lhs, const U& rhs) noexcept
+  {
+    return false;
+  }
+};
+
 bool expression_atom::operator()(
     const ossia::value& first, const ossia::value& second) const
 {
@@ -146,6 +166,9 @@ bool expression_atom::operator()(
     }
     case comparator::LOWER_EQUAL: {
       return first <= second;
+    }
+    case comparator::CONTAINS: {
+      return ossia::apply(contains_comparator{}, first, second);
     }
     default:
       return false;
