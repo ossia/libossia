@@ -371,7 +371,10 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
   const auto& processes = get_time_processes();
   const auto N = processes.size();
 
-  if(N > 0)
+  // We process this interval's node if we have processes,
+  // but also if we have a tempo process that has been set
+  // (as we need to get the input value)
+  if(N > 0 || m_hasTempo || m_hasSignature)
   {
     ossia::token_request tok{
         from,           to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature,
@@ -574,7 +577,11 @@ void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
     {
       n->root_inputs().push_back(new ossia::value_inlet{});
       n->root_inputs().push_back(new ossia::value_inlet{});
-      n->root_inputs().push_back(new ossia::value_inlet{});
+      {
+        auto pos = new ossia::value_inlet{};
+        pos->data.is_event = true;
+        n->root_inputs().push_back(pos);
+      }
     }
   }
   else
