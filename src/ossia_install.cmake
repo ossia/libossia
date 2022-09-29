@@ -188,6 +188,13 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/rapidjson/include/"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/ankerl"
+        DESTINATION include
+        COMPONENT Devel
+        MESSAGE_NEVER
+        ${3RDPARTY_INSTALL_PATTERN}
+)
+
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand"
         DESTINATION include
         COMPONENT Devel
