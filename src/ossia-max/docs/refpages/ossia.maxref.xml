@@ -78,7 +78,7 @@ all parameters and models will be registered (until an [ossia.device object is a
 
 		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
-				Descirption of this node
+				Description of this node
 			</digest>
 			<description>
 				The <at>description</at> attribute allows to give a textual description for this node. This helps documenting the parameter.

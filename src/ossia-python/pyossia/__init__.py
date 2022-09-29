@@ -4,7 +4,7 @@
 """
 Introduction
 ============
-pyossia module will add usefull access for end users to C++ binded objects of libossia
+pyossia module will add useful access for end users to C++ binded objects of libossia
 
 
 Change log
@@ -20,7 +20,7 @@ pyossia methods
 #import sys to get exception description
 import sys
 
-# these few lines are used to get versionning from git
+# these few lines are used to get versioning from git
 from ._version import get_versions
 __version__ = get_versions()['version']
 del get_versions
@@ -84,7 +84,7 @@ def expose(self, protocol='oscquery', host='localhost', listening_port=3456, sen
         print('ossia warning : ' + protocol + ' is not implemented')
 
 ######################################################
-# Following functions are here for conveniance over ossia_python bindings
+# Following functions are here for convenience over ossia_python bindings
 # and might be add to libossia bindings later.
 ######################################################
 
@@ -154,7 +154,7 @@ def get_nodes(self, node=None, depth=0):
 def get_parameters(self, node=None, depth=0):
     """
     return a list of all params for the device
-    depth = 0 returns parameters recursivly for all its children
+    depth = 0 returns parameters recursively for all its children
     depth = 1 returns only the parameters for this node
     depth = 2 returns only the parameters for this node and its children
     """

@@ -513,7 +513,7 @@ typedef void (*attribute_modified_callback)(void*, const opp::node&, const std::
  */
 typedef bool (*rename_node_callback)(void*, const std::string&, const std::string&);
 /** @brief container for a node remove request callback
- * sould return true if node could be remove
+ * should return true if node could be remove
  */
 typedef bool (*remove_node_callback)(void*, const std::string&);
 /** @brief container for a node creation request callback
@@ -858,7 +858,7 @@ public:
    */
   void set_decibel();
   /**
-   * midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the
+   * midigain: a value in the [0 127] range mimicking a MIDI gain controller. 100 for the
    * nominal level, 127 for +12dB
    * @brief adds a float parameter to the current node, with the gain.midigain unit
    */
@@ -1142,7 +1142,7 @@ public:
    */
   node create_decibel(std::string addr);
   /**
-   * midigain: a value in the [0 127] range mimicing a MIDI gain controller. 100 for the
+   * midigain: a value in the [0 127] range mimicking a MIDI gain controller. 100 for the
    * nominal level, 127 for +12dB
    * @brief creates a child node with tne given name,
    * and a float parameter with the gain.midigain unit in the [0 127) range
@@ -1463,7 +1463,7 @@ public:
    *   + **linear**:
    * A linear gain in the [0. 1.] range, with 1. being the nominal level
    *   + **midigain**:
-   * A value in the [0 127] range mimicing a MIDI gain controller. 100 for the nominal
+   * A value in the [0 127] range mimicking a MIDI gain controller. 100 for the nominal
    * level, 127 for +12dB
    *   + **decibel** (*db*, *dB*):
    * A single float value expressed in a logarithmic scale, typically to describe an
@@ -1664,7 +1664,7 @@ public:
   node& unset_instance_bounds();
   /**
    * @brief gets how many instances this node can have
-   * @return a std::pair with the minimum and maxium number sof instances this node can
+   * @return a std::pair with the minimum and maximum number of instances this node can
    * have
    */
   std::pair<int, int> get_instance_bounds() const;

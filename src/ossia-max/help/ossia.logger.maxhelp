@@ -172,7 +172,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 289.5, 163.0, 22.0 ],
-					"text" : "warning My warnin message"
+					"text" : "warning My warning message"
 				}
 
 			}

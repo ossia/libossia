@@ -329,7 +329,7 @@ object_base::~object_base()
 
     // or not... because if the patcher is not closed but
     // all its ossia objects are deleted, then if we add one
-    // it can't be registred because it won't find its root
+    // it can't be registered because it won't find its root
     // in the root patcher list.
 
     // TODO fix this, as of 2019.06.24 this seems weird and I think we can remove the

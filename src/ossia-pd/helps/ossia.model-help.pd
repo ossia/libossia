@@ -31,7 +31,7 @@
 #X connect 2 0 3 0;
 #X restore 121 215 pd print-namespace;
 #X text 36 38 This helps creating complex and nested address hierarchies
-(a.k.a. namespaces) to sort numerous parameters by functionnality.
+(a.k.a. namespaces) to sort numerous parameters by functionality.
 , f 94;
 #X text 36 18 [ø.model] creates a node under which several [ø.param]s
 (and models) can subscribe, f 94;

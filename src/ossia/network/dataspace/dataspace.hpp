@@ -18,7 +18,7 @@ namespace ossia
 //! They are sorted by categories: every unit in a category is convertible to
 //! the other units in the same category.<br> Every category (coined
 //! "dataspace") has a neutral unit to/from which conversions are made.<br>
-//! \see opp::node::set_unit for a list of all availble units
+//! \see opp::node::set_unit for a list of all available units
 
 struct OSSIA_EXPORT unit_t final
 {

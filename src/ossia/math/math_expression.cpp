@@ -69,7 +69,7 @@ struct perlin;
 template <typename T>
 struct perlin<T, 1> : public exprtk::ifunction<T>
 {
-  const siv::PerlinNoise engine{4u}; // choosen by fair dice roll
+  const siv::PerlinNoise engine{4u}; // chosen by fair dice roll
 
   perlin()
       : exprtk::ifunction<T>{3}

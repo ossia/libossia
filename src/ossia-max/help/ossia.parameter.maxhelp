@@ -613,7 +613,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 137.0, 441.5, 174.0, 35.0 ],
-									"text" : "See syntaxe details",
+									"text" : "See syntax details",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -716,7 +716,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 17.0, 11.0, 502.0, 194.0 ],
-													"text" : "Syntax is:\n* will match everything until the next slash\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} wil match instances for all numbers between 1 and 12 \n{A|b|some|things} will match all strings between pipes or commas - avoid spaces\n\n? will match any character (but just one)\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers, but only one digit at a time (use braces for higher numbers)\n\n// will match across disparate branches of the address tree and at any depth \n(e.g. //bar will match: /foo/bar, /bar, /foo/sub/level/bar) ",
+													"text" : "Syntax is:\n* will match everything until the next slash\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} will match instances for all numbers between 1 and 12 \n{A|b|some|things} will match all strings between pipes or commas - avoid spaces\n\n? will match any character (but just one)\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers, but only one digit at a time (use braces for higher numbers)\n\n// will match across disparate branches of the address tree and at any depth \n(e.g. //bar will match: /foo/bar, /bar, /foo/sub/level/bar) ",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 												}
 
@@ -746,7 +746,7 @@
 										"tags" : ""
 									}
 ,
-									"text" : "p Syntaxe details"
+									"text" : "p Syntax details"
 								}
 
 							}
@@ -773,7 +773,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 28.0, 297.0, 647.5, 136.0 ],
-									"text" : "Syntax is:\n{some|words|or|others} wil create one instance per word between the '|' (pipe)\n{1..12} wil create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 3 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n\n[a-u] will create one of each character between  a and u\n[abc] will create one of each character (a, b and c)\n[1-5] this works also for numbers (one digit at a time, see above for numbers above 10)",
+									"text" : "Syntax is:\n{some|words|or|others} will create one instance per word between the '|' (pipe)\n{1..12} will create instances for all numbers between 1 and 12 \n{3..13..3} will create instances for all numbers between 3 and 13, with a step of 3 (i.e. 3, 6, 9, 12 \n{A,b,some,things} will create an instance for each string between commas (avoid spaces)\n\n[a-u] will create one of each character between  a and u\n[abc] will create one of each character (a, b and c)\n[1-5] this works also for numbers (one digit at a time, see above for numbers above 10)",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 

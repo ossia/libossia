@@ -94,7 +94,7 @@ public:
       time_interval::exec_callback, time_event&, time_event&, time_value = Infinite,
       ossia::time_value = Zero, ossia::time_value = Infinite);
 
-  /*! desctructor */
+  /*! destructor */
   ~time_interval();
 
   /*! start #time_interval */

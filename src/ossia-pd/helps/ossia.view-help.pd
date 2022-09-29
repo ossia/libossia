@@ -40,7 +40,7 @@ leading slash), f 66;
 #X connect 2 0 1 0;
 #X restore 301 182 pd subview;
 #X text 29 129 Also \, models and views can coexist in the same patcher
-(because remotes would'nt know which one to refer to);
+(because remotes wouldn't know which one to refer to);
 #X connect 0 0 5 0;
 #X connect 5 0 0 0;
 #X restore 178 56 pd view;

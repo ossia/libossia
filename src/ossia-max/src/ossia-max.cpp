@@ -365,7 +365,7 @@ std::vector<object_base*> find_children_to_register(
         if(current == subclassname || (!found_view && current == gensym("ossia.remote")))
         {
 
-          // the object itself shouln't be stored
+          // the object itself shouldn't be stored
           if(object_box != next_box)
           {
             object_base* o = (object_base*)jbox_get_object(next_box);

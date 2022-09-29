@@ -289,7 +289,7 @@ static void filter_value(
 
 void value_port::add_local_value(const ossia::typed_value& other)
 {
-  // These values come from the local environemnt
+  // These values come from the local environment
   // Convert to the correct type / index
   if(other.index == index && other.type == type)
   {

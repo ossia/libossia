@@ -9,7 +9,7 @@
  *
  * The API can be used to declare or interact with a tree of parameters.
  *
- * There are mutiple namespaces :
+ * There are multiple namespaces :
  *
  * * The `ossia_protocol_*` functions allow interoperation with protocols supported by
  * libossia.
@@ -284,7 +284,7 @@ const char* ossia_device_get_name(ossia_device_t device);
  *
  * @see ossia::net::device_base::on_node_created
  * @note Multithread guarantees: MT-Safe.
- *       The callback is called from the thread where the modification occured.
+ *       The callback is called from the thread where the modification occurred.
  */
 OSSIA_EXPORT
 ossia_node_callback_idx_t ossia_device_add_node_created_callback(
@@ -312,7 +312,7 @@ void ossia_device_remove_node_created_callback(
  *
  * @see ossia::net::device_base::on_node_removing
  * @note Multithread guarantees: MT-Safe.
- *       The callback is called from the thread where the modification occured.
+ *       The callback is called from the thread where the modification occurred.
  */
 OSSIA_EXPORT
 ossia_node_callback_idx_t ossia_device_add_node_removing_callback(
@@ -339,7 +339,7 @@ void ossia_device_remove_node_removing_callback(
  *
  * @see ossia::net::device_base::on_parameter_removing
  * @note Multithread guarantees: MT-Safe.
- *       The callback is called from the thread where the modification occured.
+ *       The callback is called from the thread where the modification occurred.
  */
 OSSIA_EXPORT
 ossia_parameter_callback_idx_t ossia_device_add_parameter_deleting_callback(

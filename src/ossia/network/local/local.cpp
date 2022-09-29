@@ -97,7 +97,7 @@ void multiplex_protocol::set_device(device_base& dev)
   {
     p->set_device(*m_device);
 
-    // Expose all the adresses with callbacks
+    // Expose all the addresses with callbacks
     observe_rec(*p, m_device->get_root_node());
 
     m_protocols.push_back(std::move(p));
@@ -122,7 +122,7 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
     {
       p->set_device(*m_device);
 
-      // Expose all the adresses with callbacks
+      // Expose all the addresses with callbacks
       observe_rec(*p, m_device->get_root_node());
 
       m_protocols.push_back(std::move(p));

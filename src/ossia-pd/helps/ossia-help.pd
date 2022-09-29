@@ -75,7 +75,7 @@ you used the default ports More queries are possible in this way \,
 e.g. http://localhost:5678/foo or http://localhost:5678/foo?VALUE,
 f 116;
 #X text 145 310 allows to get the namespace \, i.e. the list of the
-adresses registered to the global device., f 96;
+addresses registered to the global device., f 96;
 #X text 27 783 ________________________________________________________________________________________________________________
 , f 122;
 #X text 30 815 Please report bugs on: https://github.com/ossia/libossia/issues

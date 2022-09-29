@@ -1389,7 +1389,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 142.0, 365.5, 369.0, 35.0 ],
-					"text" : "Get the namespace (all adresses registered to the global device)",
+					"text" : "Get the namespace (all addresses registered to the global device)",
 					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 				}
 

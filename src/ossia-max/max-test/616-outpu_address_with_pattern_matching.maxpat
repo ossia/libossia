@@ -136,7 +136,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 280.0, 380.0, 214.0, 24.0 ],
-					"text" : "2.communicate with frequncy = fine"
+					"text" : "2.communicate with frequency = fine"
 				}
 
 			}

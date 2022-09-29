@@ -7,9 +7,9 @@
 \, RGB color;
 #X text 668 207 vec4f : list of 4 float values \, useful for RGBA color
 ;
-#X text 653 649 @tags <symbol> string list to decribe some key features
+#X text 653 649 @tags <symbol> string list to describe some key features
 (like audio \, video \, synthesis \, effect...);
-#X text 653 678 @description <symbol> textual decription of the parameter
+#X text 653 678 @description <symbol> textual description of the parameter
 ;
 #X text 649 51 @type <symbol> define value type \, could be one of
 :;

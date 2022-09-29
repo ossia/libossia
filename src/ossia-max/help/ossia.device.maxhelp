@@ -508,7 +508,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 608.5, 473.0, 266.0, 79.0 ],
-									"text" : "Parameters in a device can be remotely bound to using 'device_name:/model/parameter' absolute address syntaxe",
+									"text" : "Parameters in a device can be remotely bound to using 'device_name:/model/parameter' absolute address syntax",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 

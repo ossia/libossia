@@ -723,7 +723,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 709.0, 669.5, 174.0, 35.0 ],
-									"text" : "See syntaxe details",
+									"text" : "See syntax details",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 
@@ -826,7 +826,7 @@
 													"numinlets" : 1,
 													"numoutlets" : 0,
 													"patching_rect" : [ 17.0, 11.0, 502.0, 194.0 ],
-													"text" : "Syntax is:\n* will match everything until the next slash\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} wil match instances for all numbers between 1 and 12 \n{A|b|some|things} will match all strings between pipes or commas - avoid spaces\n\n? will match any character (but just one)\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers, but only one digit at a time (use braces for higher numbers)\n\n// will match across disparate branches of the address tree and at any depth \n(e.g. //bar will match: /foo/bar, /bar, /foo/sub/level/bar) ",
+													"text" : "Syntax is:\n* will match everything until the next slash\n! will match all instances of a node, including the original (e.g. /foo, /foo.1 and /foo.A)\n{1..12} will match instances for all numbers between 1 and 12 \n{A|b|some|things} will match all strings between pipes or commas - avoid spaces\n\n? will match any character (but just one)\n[a-u] will match  each character between  a and u\n[abu] will match a, b and u\n[1-5] this works also for numbers, but only one digit at a time (use braces for higher numbers)\n\n// will match across disparate branches of the address tree and at any depth \n(e.g. //bar will match: /foo/bar, /bar, /foo/sub/level/bar) ",
 													"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 												}
 
@@ -856,7 +856,7 @@
 										"tags" : ""
 									}
 ,
-									"text" : "p Syntaxe details"
+									"text" : "p Syntax details"
 								}
 
 							}
@@ -952,7 +952,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 58.0, 560.0, 231.0, 35.0 ],
-									"text" : "you can also access a row of parameteres \nwith a list thanks to ossia.remote_array",
+									"text" : "you can also access a row of parameters \nwith a list thanks to ossia.remote_array",
 									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
 								}
 
@@ -2824,7 +2824,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 55.5, 269.5, 211.5, 64.0 ],
-									"text" : "1st outlet is deffered (useful  for UI that do not need high refresh rate)",
+									"text" : "1st outlet is deferred (useful  for UI that do not need high refresh rate)",
 									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
 								}
 

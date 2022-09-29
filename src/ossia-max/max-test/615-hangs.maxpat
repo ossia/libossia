@@ -158,7 +158,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 184.0, 217.5, 160.0, 24.0 ],
-					"text" : "workaroud for issue #588"
+					"text" : "workaround for issue #588"
 				}
 
 			}

@@ -16,7 +16,7 @@ joystick_protocol::joystick_protocol(
     , m_joystick_id{joystick_id}
 {
   //  Check That (ID, Index) is a valid combinaison
-  //  Could happen if a joystick is unpluged bettween settings and here
+  //  Could happen if a joystick is unplugged between settings and here
   if(joystick_id != SDL_JoystickGetDeviceInstanceID(joystick_index))
     throw std::runtime_error("Invalid Settings");
 
@@ -46,7 +46,7 @@ void joystick_protocol::set_device(ossia::net::device_base& dev)
   m_device = &dev;
   auto& root = dev.get_root_node();
 
-  //  Retrive Joystick Info
+  //  Retrieve Joystick Info
   const int axis_count = SDL_JoystickNumAxes(m_joystick);
   // const int ball_count = SDL_JoystickNumBalls(m_joystick);
   const int hat_count = SDL_JoystickNumHats(m_joystick);

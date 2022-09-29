@@ -85,7 +85,7 @@ public:
 
     if(!joystick_is_registered(joystick_id))
       throw std::runtime_error(
-          "Cannot unregister a protocol that havent been registered");
+          "Cannot unregister a protocol that haven't been registered");
 
     {
       std::lock_guard<std::mutex> _{m_joystick_protocols_mutex};

@@ -269,7 +269,7 @@ void clock::thread_callback()
   }
   catch(...)
   {
-    logger().error("An error occured in clock::threadCallback()");
+    logger().error("An error occurred in clock::threadCallback()");
   }
 }
 }

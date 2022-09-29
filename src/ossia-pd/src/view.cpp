@@ -203,7 +203,7 @@ void* view::create(t_symbol* name, int argc, t_atom* argv)
 
     if(find_peer(x))
     {
-      error("Only one [ø.model]/[ø.view] intance per patcher is allowed.");
+      error("Only one [ø.model]/[ø.view] instance per patcher is allowed.");
       view::destroy(x);
       free(x);
       x = nullptr;

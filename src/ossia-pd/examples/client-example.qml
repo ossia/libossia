@@ -9,7 +9,7 @@ import Ossia 1.0 as Ossia
  * provided by the qml-creative-controls library, with libossia and PureData.
  *
  * In the current example, the application we are writing acts as a client:
- * that is, it connects to existing adresses / parameters of a remote
+ * that is, it connects to existing addresses / parameters of a remote
  * software / hardware. It is meant to be used with device-example.pd patch.
  * Open the device-example.pd patch in PureData
  * then open this QML application with qmlscene for example.
