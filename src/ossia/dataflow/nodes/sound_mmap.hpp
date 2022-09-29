@@ -292,7 +292,7 @@ public:
           }
           else
           {
-            // Otherwise we don't need transport, everything is alreayd at 0
+            // Otherwise we don't need transport, everything is already at 0
             m_prev_date = 0_tv;
           }
         }

@@ -1209,7 +1209,7 @@ void ossia::presets::apply_preset(
     if(remove_first)
     {
       if(!keys.empty())
-        keys.erase(keys.begin()); // first subtring is empty
+        keys.erase(keys.begin()); // first substring is empty
     }
     if(!allow_nonterminal)
     {

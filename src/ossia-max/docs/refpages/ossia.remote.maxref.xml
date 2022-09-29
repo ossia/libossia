@@ -222,7 +222,7 @@
 		
 		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
-				Descrption of this node
+				Description of this node
 			</digest>
 			<description>
 				The <at>description</at> attribute allows to agive a textual description for this node. This helps documenting the parameter.

@@ -10,7 +10,7 @@ DESTINATION_FOLDER=${REPO_ROOT}/help
 echo "watch $SOURCE_FOLDER and target $DESTINATION_FOLDER"
 
 if [[ ! -e $SOURCE_FOLDER ]]; then
-	echo "Souce folder $SOURCE_FOLDER doesn't exist"
+	echo "Source folder $SOURCE_FOLDER doesn't exist"
 	echo "Usage: ${0} <build folder>"
 	exit 1
 fi

@@ -96,7 +96,7 @@ struct sound_sampler
           }
           else
           {
-            // Otherwise we don't need transport, everything is alreayd at 0
+            // Otherwise we don't need transport, everything is already at 0
             info->m_prev_date = 0_tv;
           }
         }

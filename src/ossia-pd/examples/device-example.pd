@@ -104,7 +104,7 @@ time" @tags envelope @default 10, f 51;
 #X connect 12 0 9 0;
 #X restore 25 79 pd randomtest;
 #X obj 392 550 loadbang;
-#X text 214 23 A simple synth to demonstrate communiation between Ossia
+#X text 214 23 A simple synth to demonstrate communication between Ossia
 device and client., f 42;
 #X floatatom 141 197 5 0 0 0 - - -, f 5;
 #X obj 145 576 loadbang;

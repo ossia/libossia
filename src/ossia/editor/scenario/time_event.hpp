@@ -100,32 +100,32 @@ public:
 
   /**
    * @brief getOffsetValue Returns the value of the condition if
-   * we are offseting past this time event.
+   * we are offsetting past this time event.
    */
   [[nodiscard]] offset_behavior get_offset_behavior() const;
 
   /**
-   * @brief setOffsetValue Sets the value of the condition if we are offseting
+   * @brief setOffsetValue Sets the value of the condition if we are offsetting
    * past this time event.
    */
   time_event& set_offset_behavior(offset_behavior);
 
-  /*! get previous time contraints attached to the event
+  /*! get previous time constraints attached to the event
    \return #Container<#time_interval> */
   auto& previous_time_intervals() { return m_previous_time_intervals; }
 
-  /*! get previous time contraints attached to the event
+  /*! get previous time constraints attached to the event
    \return #Container<#TimeProcess> */
   [[nodiscard]] const auto& previous_time_intervals() const
   {
     return m_previous_time_intervals;
   }
 
-  /*! get next time contraints attached to the event
+  /*! get next time constraints attached to the event
    \return #Container<#time_interval> */
   auto& next_time_intervals() { return m_next_time_intervals; }
 
-  /*! get next time contraints attached to the event
+  /*! get next time constraints attached to the event
    \return #Container<#TimeProcess> */
   [[nodiscard]] const auto& next_time_intervals() const { return m_next_time_intervals; }
 

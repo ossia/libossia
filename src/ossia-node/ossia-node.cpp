@@ -112,7 +112,7 @@ public:
   {
   }
 
-  ~Node() { std::cerr << "Node destoryed\n"; }
+  ~Node() { std::cerr << "Node destroyed\n"; }
 
   static NAN_METHOD(New)
   {
@@ -169,7 +169,7 @@ public:
   {
   }
 
-  ~Device() { std::cerr << "Device destoryed\n"; }
+  ~Device() { std::cerr << "Device destroyed\n"; }
 
   static NAN_METHOD(New)
   {

@@ -286,7 +286,7 @@ void wiimote_protocol::handle_wiimote_event(const unsigned int wiimote_id)
     }
   }
 
-  // If a nunchuk is pluged
+  // If a nunchuk is plugged
   if(m_wiimotes[wiimote_id]->exp.type == EXP_NUNCHUK)
   {
     struct nunchuk_t* nunchuk = (nunchuk_t*)&(m_wiimotes[wiimote_id]->exp.nunchuk);

@@ -154,7 +154,7 @@ public:
     m_orig_notes = m_notes;
 
     auto max_it = m_notes.lower_bound({m_prev_date});
-    if(max_it != m_notes.begin()) // TODO handle hte begin case correctly
+    if(max_it != m_notes.begin()) // TODO handle the begin case correctly
       m_notes.erase(m_notes.begin(), max_it);
   }
 

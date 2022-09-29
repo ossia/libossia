@@ -181,7 +181,7 @@ the models to see this in action, f 65;
 #X obj 145 80 ossia.remote /sub/bar;
 #X floatatom 108 81 5 0 0 0 - - -, f 5;
 #X text 33 29 when there are several levels of hierarchies \, one can
-use absolute addresses \, refering to the current device's root \,
+use absolute addresses \, referring to the current device's root \,
 and starting with a leading slash:;
 #X text 29 120 NB: There is no [ossia.device] here so all ossia objects
 refer to the default global device - see [ossia] for more on that,
@@ -225,7 +225,7 @@ on the param, f 38;
 #X obj 54 365 ossia.remote Attrs;
 #X text 49 447 only 3 attributes are local to each ø.remote:;
 #N canvas 1186 472 430 103 rate 0;
-#X text 22 31 the rate atrribute determines the update rate at which
+#X text 22 31 the rate attribute determines the update rate at which
 values are polled/triggered in pd;
 #X restore 203 487 pd rate;
 #N canvas 1154 344 469 433 unit 0;

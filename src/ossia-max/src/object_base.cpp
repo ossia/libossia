@@ -216,7 +216,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         // For ossia.parameter:
         //    if we find a node, then we check if it already has a parameter.
         //        If no, create a parameter
-        //        If yes, return a new node with incremeted suffix with a parameter
+        //        If yes, return a new node with incremented suffix with a parameter
         //    else we create a new node and a parameter
         // For ossia.model: if we found a node, duplicate it, otherwise create it.
         // For others: if we found a node, return it.
@@ -373,7 +373,7 @@ void object_base::loadbang(object_base* x)
   else
   {
     // if patcher has not been loadbanged, register all objects in that patcher
-    // this happens when the patcher is loaded or instanciated as an abstraction
+    // this happens when the patcher is loaded or instantiated as an abstraction
     // and also when it is pasted / duplicated
     register_children_in_patcher_recursively(root_patcher, nullptr);
     output_all_values(root_patcher, true);

@@ -96,7 +96,7 @@ ossia::val_type symbol2val_type(t_symbol* s);
 t_symbol* val_type2symbol(ossia::val_type t);
 
 /**
- * @brief symbol2bounding_mode convert t_symbol* to corresponging ossia::bounding_mode
+ * @brief symbol2bounding_mode convert t_symbol* to corresponding ossia::bounding_mode
  * @param t_symbol* bounding_mode
  * @return ossia::bounding_mode
  */

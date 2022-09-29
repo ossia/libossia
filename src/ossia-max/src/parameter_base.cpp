@@ -1139,7 +1139,7 @@ void parameter_base::class_setup(t_class* c)
 
   CLASS_ATTR_SYM(c, "mode", 0, parameter_base, m_access_mode);
   CLASS_ATTR_ENUM(c, "mode", 0, "bi get set");
-  CLASS_ATTR_LABEL(c, "mode", 0, "Acces Mode");
+  CLASS_ATTR_LABEL(c, "mode", 0, "Access Mode");
 
   CLASS_ATTR_ATOM_VARSIZE(
       c, "default", 0, parameter_base, m_default, m_default_size,

@@ -7,7 +7,7 @@ namespace Ossia
 {
 
   //! Expose an object through ossia.
-  //! This shows only the transform and the fields explicitely marked with [Ossia.Expose].
+  //! This shows only the transform and the fields explicitly marked with [Ossia.Expose].
   public class ExposeAttributes : ExposedObject
   {
     void RegisterComponent(Component component)

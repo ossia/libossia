@@ -32,7 +32,7 @@ public:
   std::unique_ptr<node_base> make_child(const std::string& name) override;
   void removing_child(node_base& node_base) final override;
 
-  //! Explicitely add a child node (which has to be valid)
+  //! Explicitly add a child node (which has to be valid)
   midi_node* add_midi_node(std::unique_ptr<midi_node> n);
 };
 }

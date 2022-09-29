@@ -72,7 +72,7 @@ public:
   void* m_dumpout{};
 
   // flags
-  bool m_dead{false}; // wether this object is being deleted or not;
+  bool m_dead{false}; // whether this object is being deleted or not;
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
   bool m_local_mute{false};

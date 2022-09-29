@@ -76,7 +76,7 @@ void* client::create(t_symbol* name, int argc, t_atom* argv)
 
     if(find_peer(x))
     {
-      error("Only one [ø.device]/[ø.client] intance per patcher is allowed.");
+      error("Only one [ø.device]/[ø.client] instance per patcher is allowed.");
       client::destroy(x);
       free(x);
       x = nullptr;

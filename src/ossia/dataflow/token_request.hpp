@@ -181,7 +181,7 @@ struct token_request
   [[nodiscard]] constexpr bool backward() const noexcept { return date < prev_date; }
 
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
-  //! return the next occuring quantification date, if such date is in the tick
+  //! return the next occurring quantification date, if such date is in the tick
   //! defined by this token_request.
   [[nodiscard]] constexpr std::optional<time_value>
   get_quantification_date(double rate) const noexcept

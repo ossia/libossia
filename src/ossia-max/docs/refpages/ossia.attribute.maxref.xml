@@ -33,8 +33,8 @@
 	<!--OUTLETS-->
 	<outletlist>
 		<outlet id="0" name="Value output" type="any">
-			<digest>Parameter attrbute value</digest>
-			<description>Parameter attrbute value</description>
+			<digest>Parameter attribute value</digest>
+			<description>Parameter attribute value</description>
 		</outlet>
 	</outletlist>
 	
@@ -161,7 +161,7 @@
 
 		<attribute name="description" get="1" set="1" type="atom" size="1">
 			<digest>
-				Descrption of bound parameter 
+				Description of bound parameter 
 			</digest>
 			<description>
 				The <at>description</at> attribute allows to give the bound parameter a textual description. This helps documenting the parameter.

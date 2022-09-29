@@ -643,7 +643,7 @@ struct custom_dsp_poly_factory : public dsp_factory
    *
    * @param nvoices - number of polyphony voices, should be at least 1
    * @param control - whether voices will be dynamically allocated and
-   * controlled (typically by a MIDI controler). If false all voices are always
+   * controlled (typically by a MIDI controller). If false all voices are always
    * running.
    * @param group - if true, voices are not individually accessible, a global
    * "Voices" tab will automatically dispatch a given control on all voices,

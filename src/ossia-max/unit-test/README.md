@@ -1,7 +1,7 @@
 ossia-max unit tests
 ====================
 
-This folder contains a `logger-server.js` that loads sequencially each patcher which name ends with ".ossia-max-test.maxpat".
+This folder contains a `logger-server.js` that loads sequentially each patcher which name ends with ".ossia-max-test.maxpat".
 Those patchers should contains one or more `ossia.assert` objects and a `ossia.test-logger` object.
 
 Please disable the "Restore Windows on Launch" Max's option to prevent Max from reloading other patchers then the one we want to test.

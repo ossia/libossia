@@ -40,7 +40,7 @@ artnet_protocol::artnet_protocol(
   //  It seem to be possible to send only some value and thus
   //   update at higher frequencies => Work TODO
 
-  //  Do not specify ip adress for now, artnet will choose one
+  //  Do not specify ip address for now, artnet will choose one
   m_node = artnet_new(nullptr, 1);
 
   if(m_node == NULL)
