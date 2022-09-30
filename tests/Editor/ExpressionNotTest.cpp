@@ -62,7 +62,7 @@ TEST_CASE ("test_comparison", "test_comparison")
   REQUIRE(*not_exprB != *not_exprC);
 }
 
-/*! test callback managment */
+/*! test callback management */
 TEST_CASE ("test_callback", "test_callback")
 {
   // Local device

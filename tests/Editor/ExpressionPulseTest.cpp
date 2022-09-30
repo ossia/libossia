@@ -171,7 +171,7 @@ TEST_CASE ("test_comparison", "test_comparison")
   REQUIRE(*testExprB != *testExprC);
 }
 
-/*! test callback managment */
+/*! test callback management */
 TEST_CASE ("test_callback", "test_callback")
 {/* TODO
     // Local device

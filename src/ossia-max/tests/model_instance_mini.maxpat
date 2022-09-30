@@ -95,7 +95,7 @@
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 277.5, 169.0, 67.0, 22.0 ],
 					"style" : "",
-					"text" : "namepace"
+					"text" : "namespace"
 				}
 
 			}
@@ -121,7 +121,7 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 78.5, 114.0, 150.0, 33.0 ],
 					"style" : "",
-					"text" : "they have to be re-buil (e.g. delets -> undo)",
+					"text" : "they have to be re-built (e.g. deletes -> undo)",
 					"textcolor" : [ 0.784314, 0.145098, 0.023529, 1.0 ]
 				}
 
