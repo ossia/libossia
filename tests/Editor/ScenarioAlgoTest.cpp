@@ -753,7 +753,7 @@ TEST_CASE ("test_tokens_max", "test_tokens_max")
   s.interval->start();
   s.interval->tick(700_tv, default_request());
 
-  // In this case (when there are flexible bounsd) we go as far as possible in the tick.
+  // In this case (when there are flexible bounds) we go as far as possible in the tick.
   // Else this would cause deadlocks if one interval reached its max before another reached its min
   ossia::simple_token_request_vec expected0 {
       {.prev_date = 0_tv, .date = 0_tv,   .parent_duration = 300_tv, .offset = 0_tv},

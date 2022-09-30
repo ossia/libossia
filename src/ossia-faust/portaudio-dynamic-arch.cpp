@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
       = createDSPFactoryFromFile(argv[argc - 1], 0, nullptr, "", error_msg, -1);
   if(factory == 0)
   {
-    std::cerr << "Unable to crate Faust DSP factory" << std::endl;
+    std::cerr << "Unable to create Faust DSP factory" << std::endl;
     exit(1);
   }
 

@@ -15,7 +15,7 @@ joystick_protocol::joystick_protocol(
     , m_ctx{ptr}
     , m_joystick_id{joystick_id}
 {
-  //  Check That (ID, Index) is a valid combinaison
+  //  Check That (ID, Index) is a valid combination
   //  Could happen if a joystick is unplugged between settings and here
   if(joystick_id != SDL_JoystickGetDeviceInstanceID(joystick_index))
     throw std::runtime_error("Invalid Settings");

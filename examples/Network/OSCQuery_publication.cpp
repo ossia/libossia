@@ -61,7 +61,7 @@ int main()
     // Addresses allow nodes to have values.
     auto address = node.create_parameter(val_type::IMPULSE);
 
-    // Called whenver the value is changed
+    // Called whenever the value is changed
     address->add_callback(printValueCallback);
 
     // Send a message. Impulse is a message without any content.

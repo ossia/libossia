@@ -406,47 +406,47 @@ public:
   void set_impulse();
   /**
    * @brief sets the value as a character
-   * @param v int is moved intoto the value object
+   * @param v int is moved into the value object
    */
   void set_char(char v);
   /**
    * @brief sets the value as an int
-   * @param v int is moved intoto the value object
+   * @param v int is moved into the value object
    */
   void set_int(int v);
   /**
    * @brief sets the value as a float
-   * @param v float is moved intoto the value object
+   * @param v float is moved into the value object
    */
   void set_float(float v);
   /**
    * @brief sets the value as a bool
-   * @param v bool is moved intoto the value object
+   * @param v bool is moved into the value object
    */
   void set_bool(bool v);
   /**
    * @brief sets the value as a vec2f
-   * @param v vec2f is moved intoto the value object
+   * @param v vec2f is moved into the value object
    */
   void set_vec2f(vec2f v);
   /**
    * @brief sets the value as a vec3f
-   * @param v vec3f is moved intoto the value object
+   * @param v vec3f is moved into the value object
    */
   void set_vec3f(vec3f v);
   /**
    * @brief sets the value as a vec4f
-   * @param v vec4f is moved intoto the value object
+   * @param v vec4f is moved into the value object
    */
   void set_vec4f(vec4f v);
   /**
    * @brief sets the value as a vector of opp::values
-   * @param v vector of opp::values is moved intoto the value object
+   * @param v vector of opp::values is moved into the value object
    */
   void set_list(std::vector<opp::value> v);
   /**
    * @brief sets the value as a string
-   * @param v string is moved intoto the value object
+   * @param v string is moved into the value object
    */
   void set_string(std::string v);
 

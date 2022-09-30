@@ -146,7 +146,7 @@ TEST_CASE ("test_traversal", "test_traversal")
 {
   // Note : to allow access to character classes, we have to change :
   // - in expressions, the { } characters for delimitation. Maybe # ?
-  // - in adresses, the [ ] characters for [dataspace.unit] or [0].
+  // - in addresses, the [ ] characters for [dataspace.unit] or [0].
   // Maybe a space ? foo:/bar 345, foo:/bar color.rgb
 
   ossia::net::generic_device device1{"test"};

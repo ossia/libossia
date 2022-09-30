@@ -244,7 +244,7 @@ TEST_CASE ("test_int32_t", "test_int32_t")
   //! \todo <= comparison with behavior
 }
 
-/*! test flaot */
+/*! test float */
 TEST_CASE ("test_float", "test_float")
 {
   float f1(5);

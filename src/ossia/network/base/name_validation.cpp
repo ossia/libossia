@@ -178,7 +178,7 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
       name_instance = parse_instance(root_name.substr(pos + 1));
       if(name_instance)
       {
-        // !!! horror storry that happened here:
+        // !!! horror story that happened here:
         // root_name = name.substr(...)
         // but name.substr() is a temporary std::string...
         root_name = root_name.substr(0, pos);

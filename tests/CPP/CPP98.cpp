@@ -154,7 +154,7 @@ TEST_CASE ("preset", "[preset]")
     root.load_preset("test.json");
 
 
-    // /foor/bar/baz is not saved because it has access_mode == GET
+    // /foo/bar/baz is not saved because it has access_mode == GET
     // (must be BI to save)
     REQUIRE(n2.get_value().to_float() == 0.0f);
 
@@ -273,7 +273,7 @@ TEST_CASE ("various", "[various]")
   opp::node remote_n2 = remote_dev.get_root_node().find_child("/foo/bar/baz");
   REQUIRE(remote_n2);
 
-  // After some time n2 wil get the value that we send here:
+  // After some time n2 will get the value that we send here:
   remote_n2.set_value(0.1);
   // It will however be filtered according to the domain we set, e.g.
   // the result will be argb(0.5, 0.2, 0.5, 0.9).
