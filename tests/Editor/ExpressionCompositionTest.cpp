@@ -93,7 +93,7 @@ TEST_CASE ("test_comparison", "test_comparison")
   REQUIRE(!(*composition1 == *composition2));
 }
 
-/*! test callback managment */
+/*! test callback management */
 TEST_CASE ("test_callback", "test_callback")
 {
   // Local device

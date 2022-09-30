@@ -39,7 +39,7 @@ namespace protocol_settings
 
 struct minuit
 {
-  std::string remoteip{"locahost"};
+  std::string remoteip{"localhost"};
   unsigned int remoteport = 13579;
   unsigned int localport = 9998;
 };
