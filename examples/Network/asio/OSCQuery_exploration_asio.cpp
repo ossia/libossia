@@ -29,7 +29,7 @@ int main()
   auto protocol = new ossia::oscquery_asio::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
   protocol->set_logger(network_logger{ossia::logger_ptr(), ossia::logger_ptr()});
 
-  // Create a device that wil attach to this protocol
+  // Create a device that will attach to this protocol
   ossia::net::generic_device device{std::unique_ptr<protocol_base>(protocol), "B"};
 
   // Explore the tree of B

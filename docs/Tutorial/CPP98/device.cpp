@@ -66,7 +66,7 @@ int main()
     if(!remote_n2)
       return 1;
 
-    // After some time n2 wil get the value that we send here:
+    // After some time n2 will get the value that we send here:
     remote_n2.set_value(0.1);
     // It will however be filtered according to the domain we set, e.g.
     // the result will be argb(0.5, 0.2, 0.5, 0.9).

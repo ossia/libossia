@@ -73,7 +73,7 @@ std::vector<std::string> parse_tags_symbol(t_symbol** tags_symbol, long size);
 std::vector<ossia::net::generic_device*> get_all_devices();
 
 /**
- * @brief get_parameter_type: return address type (relative, absolute or globale)
+ * @brief get_parameter_type: return address type (relative, absolute or global)
  * @param addr: the address to process
  * @return
  */

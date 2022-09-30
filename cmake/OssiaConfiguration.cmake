@@ -28,7 +28,7 @@ if(PLATFORM)
       message(FATAL_ERROR "kqueue NOT found!")
     endif()
 
-    # Hook up XCTest for the supported plaforms (all but WatchOS)
+    # Hook up XCTest for the supported platforms (all but WatchOS)
     if(NOT PLATFORM MATCHES ".*WATCHOS.*")
       # Use the standard find_package, broken between 3.14.0 and 3.14.4 at least for XCtest...
       find_package(XCTest REQUIRED)

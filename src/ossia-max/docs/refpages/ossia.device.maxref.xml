@@ -63,7 +63,7 @@
 			</digest>
 			<description>
 				Sending the <m>expose</m> message without any argument will print in Max Console various protocol and configuration options available
-				Sending the <m>expose</m> message followed by a protocol name will explose the device to the network using the optional configuration option (ie. network ports)
+				Sending the <m>expose</m> message followed by a protocol name will expose the device to the network using the optional configuration option (ie. network ports)
 			</description>
 		</method>
 

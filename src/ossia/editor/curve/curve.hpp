@@ -360,7 +360,7 @@ inline Y curve<X, Y>::convert_to_template_type_value(
  *
  * [ 1, "a string", [ "another", 'c' ] ]
  *
- * while keeping the reste of the list intact.
+ * while keeping the rest of the list intact.
  */
 class OSSIA_EXPORT constant_curve final : public curve_abstract
 {

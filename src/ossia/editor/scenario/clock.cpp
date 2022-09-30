@@ -34,7 +34,7 @@ void clock::start_and_tick()
   if(m_running)
     return;
 
-  // reset timing informations
+  // reset timing information
   m_running = true;
   m_paused = false;
   m_shouldStop = false;

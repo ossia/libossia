@@ -18,7 +18,7 @@ enum class address_scope
 
 /**
  * @brief get_address_scope: return address scope (relative, absolute or
- * globale)
+ * global)
  * @param addr: the address to process
  * @return the scope
  */

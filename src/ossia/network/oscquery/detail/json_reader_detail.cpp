@@ -1104,7 +1104,7 @@ void json_parser::parse_path_added(
   }
   else
   {
-    // Neither the node nore its parent exists
+    // Neither the node nor its parent exists
     auto& cld = ossia::net::create_node(root, full_path);
     detail::json_parser_impl::readObject(cld, obj);
   }
