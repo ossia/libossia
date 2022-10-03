@@ -21,7 +21,7 @@ namespace ossia
 {
 namespace net
 {
-
+class WS;
 struct ws_generic_client_parameter_data_base
 {
   ws_generic_client_parameter_data_base() = default;
@@ -117,11 +117,12 @@ public:
   W_SLOT(slot_push);
 
 private:
+  void on_ready(const QString& host);
   void apply_reply(QJSValue);
 
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
-  QObject* m_object{};
+  WS* m_object{};
 
   QWebSocket* m_websocket{};
 
@@ -134,6 +135,11 @@ using ws_generic_client_device
     = ossia::net::wrapped_device<ws_generic_client_node, ws_generic_client_protocol>;
 class OSSIA_EXPORT WS : public QObject
 {
+  W_OBJECT(WS)
+
+  W_INLINE_PROPERTY_VALUE(
+      bool, processFromJson, = false, processFromJson, setProcessFromJson,
+      processFromJsonChanged);
 };
 }
 }

@@ -12,6 +12,7 @@
 
 #include <wobjectimpl.h>
 W_OBJECT_IMPL(ossia::net::ws_generic_client_protocol)
+W_OBJECT_IMPL(ossia::net::WS)
 namespace ossia
 {
 namespace net
@@ -22,7 +23,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
     , m_engine{new QQmlEngine}
     , m_component{new QQmlComponent{m_engine}}
     , m_websocket{new QWebSocket{"ossia-api"}}
-    , m_code{code}
+    , m_code{std::move(code)}
 {
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
@@ -32,52 +33,9 @@ ws_generic_client_protocol::ws_generic_client_protocol(
 
     switch(status)
     {
-      case QQmlComponent::Status::Ready: {
-        m_object = m_component->create();
-        m_object->setParent(m_engine->rootContext());
-
-        QVariant ret;
-        QMetaObject::invokeMethod(m_object, "createTree", Q_RETURN_ARG(QVariant, ret));
-        qt::create_device<
-            ossia::net::device_base, ws_generic_client_node, ws_generic_client_protocol>(
-            *m_device, ret.value<QJSValue>());
-
-        m_websocket->open(addr);
-
-        QObject::connect(m_websocket, &QWebSocket::connected, this, [=] {
-          QVariant ret;
-          QMetaObject::invokeMethod(
-              m_object, "onConnected", Q_RETURN_ARG(QVariant, ret));
-          apply_reply(ret.value<QJSValue>());
-        });
-        QObject::connect(m_websocket, &QWebSocket::disconnected, this, [=] {
-          QVariant ret;
-          QMetaObject::invokeMethod(
-              m_object, "onDisonnected", Q_RETURN_ARG(QVariant, ret));
-          apply_reply(ret.value<QJSValue>());
-        });
-
-        QObject::connect(
-            m_websocket, &QWebSocket::binaryMessageReceived, this,
-            [=](const QByteArray& arr) {
-          // qDebug() << "array" << arr;
-          QVariant ret;
-          QMetaObject::invokeMethod(
-              m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
-              Q_ARG(QVariant, QString(arr)));
-          apply_reply(ret.value<QJSValue>());
-            });
-        QObject::connect(
-            m_websocket, &QWebSocket::textMessageReceived, this,
-            [=](const QString& mess) {
-          // qDebug() << "text" << mess;
-          QVariant ret;
-          QMetaObject::invokeMethod(
-              m_object, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, mess));
-          apply_reply(ret.value<QJSValue>());
-            });
+      case QQmlComponent::Status::Ready:
+        on_ready(addr);
         return;
-      }
       case QQmlComponent::Status::Loading:
         return;
       case QQmlComponent::Status::Null:
@@ -176,6 +134,78 @@ void ws_generic_client_protocol::slot_push(
           dat.toString().replace("$val", qt::value_to_js_string(addr.value())));
     }
   }
+}
+
+void ws_generic_client_protocol::on_ready(const QString& host)
+{
+  auto obj = m_component->create();
+  m_object = qobject_cast<WS*>(obj);
+  if(!m_object)
+  {
+    qDebug() << "Invalid object type for WebSocket: " << obj;
+    return;
+  }
+
+  m_object->setParent(m_engine->rootContext());
+
+  // Create the ossia tree from the spec given in QML
+  QVariant ret;
+  QMetaObject::invokeMethod(m_object, "createTree", Q_RETURN_ARG(QVariant, ret));
+  qt::create_device<
+      ossia::net::device_base, ws_generic_client_node, ws_generic_client_protocol>(
+      *m_device, ret.value<QJSValue>());
+
+  // Websocket management
+  m_websocket->open(host);
+
+  QObject::connect(m_websocket, &QWebSocket::connected, this, [=] {
+    return;
+    QVariant ret;
+    QMetaObject::invokeMethod(m_object, "onConnected", Q_RETURN_ARG(QVariant, ret));
+    apply_reply(ret.value<QJSValue>());
+  });
+  QObject::connect(m_websocket, &QWebSocket::disconnected, this, [=] {
+    return;
+    QVariant ret;
+    QMetaObject::invokeMethod(m_object, "onDisonnected", Q_RETURN_ARG(QVariant, ret));
+    apply_reply(ret.value<QJSValue>());
+  });
+
+  // Messages from the server
+  QObject::connect(
+      m_websocket, &QWebSocket::binaryMessageReceived, this, [=](const QByteArray& arr) {
+        if(m_object->processFromJson())
+        {
+          auto str = arr.toStdString();
+          ossia::presets::apply_json(str, this->m_device->get_root_node());
+        }
+        else
+        {
+          QVariant ret;
+          QMetaObject::invokeMethod(
+              m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
+              Q_ARG(QVariant, QString(arr)));
+          apply_reply(ret.value<QJSValue>());
+        }
+      });
+
+  QObject::connect(
+      m_websocket, &QWebSocket::textMessageReceived, this, [=](const QString& mess) {
+        if(m_object->processFromJson())
+        {
+          auto str = mess.toStdString();
+          ossia::presets::apply_json(str, this->m_device->get_root_node());
+        }
+        else
+        {
+          QVariant ret;
+          QMetaObject::invokeMethod(
+              m_object, "onMessage", Q_RETURN_ARG(QVariant, ret), Q_ARG(QVariant, mess));
+          apply_reply(ret.value<QJSValue>());
+        }
+      });
+
+  return;
 }
 
 void ws_generic_client_protocol::apply_reply(QJSValue arr)
