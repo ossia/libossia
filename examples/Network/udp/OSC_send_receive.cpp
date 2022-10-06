@@ -10,18 +10,18 @@ void send_main()
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   using conf = ossia::net::osc_protocol_configuration;
-  conf mirror_config {
+  conf mirror_config{
       .mode = conf::MIRROR,
       .version = conf::OSC1_1,
-      .transport = ossia::net::udp_configuration {{
-          .local = std::nullopt,
-          .remote = ossia::net::send_socket_configuration {{"127.0.0.1", 1234}}
-  }}};
+      .transport = ossia::net::udp_configuration{
+          {.local = std::nullopt,
+           .remote = ossia::net::send_socket_configuration{{"127.0.0.1", 1234}}}}};
 
-  ossia::net::generic_device device {
+  ossia::net::generic_device device{
       ossia::net::make_osc_protocol(ctx, mirror_config), "P"};
 
-  do {
+  do
+  {
     for(int i = 0; i < 10; i++)
     {
       device.get_protocol().push_raw({"/foo", i});
@@ -35,17 +35,15 @@ void receive_main()
   auto ctx = std::make_shared<ossia::net::network_context>();
 
   using conf = ossia::net::osc_protocol_configuration;
-  conf host_config {
+  conf host_config{
       .mode = conf::HOST,
       .version = conf::OSC1_1,
-      .transport = ossia::net::udp_configuration {{
-          .local = ossia::net::receive_socket_configuration {{"0.0.0.0", 1234}},
-          .remote = std::nullopt
-  }}};
+      .transport = ossia::net::udp_configuration{
+          {.local = ossia::net::receive_socket_configuration{{"0.0.0.0", 1234}},
+           .remote = std::nullopt}}};
 
-  ossia::net::generic_device device {
-      ossia::net::make_osc_protocol(ctx, host_config),
-      "P"};
+  ossia::net::generic_device device{
+      ossia::net::make_osc_protocol(ctx, host_config), "P"};
 
   auto cb = [&](ossia::string_view v, const ossia::value& val) {
     ossia::logger().info("{} => {}\n", v, val);

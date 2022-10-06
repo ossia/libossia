@@ -1,14 +1,12 @@
-#include <ossia/network/generic/generic_device.hpp>
-#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+#include <ossia/detail/timer.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/context_functions.hpp>
-#include <ossia/detail/timer.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
 namespace
 {
-void setup_small(
-    ossia::net::network_context& ctx,
-    ossia::net::generic_device& device)
+void setup_small(ossia::net::network_context& ctx, ossia::net::generic_device& device)
 {
   using namespace ossia::net;
 
@@ -37,9 +35,7 @@ void setup_small(
 }
 
 void setup_large(
-    ossia::net::network_context& ctx,
-    ossia::net::generic_device& device,
-    int ns_size)
+    ossia::net::network_context& ctx, ossia::net::generic_device& device, int ns_size)
 {
   static int64_t pushed_messages{};
   static float current_value{};
@@ -69,9 +65,7 @@ void setup_large(
 
   ossia::timer print_timer{ctx.context};
   print_timer.set_delay(1000ms);
-  print_timer.start([&] {
-    ossia::logger().info("Sent: {} messages", pushed_messages);
-  });
+  print_timer.start([&] { ossia::logger().info("Sent: {} messages", pushed_messages); });
   ctx.run();
 }
 }
@@ -95,8 +89,8 @@ int main(int argc, char** argv)
   auto ctx = std::make_shared<ossia::net::network_context>();
   // Create a device which will listen on the websocket port 5678 and osc port 1234
   generic_device device{
-    std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, 1234, 5678),
-    "my_device"};
+      std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx, 1234, 5678),
+      "my_device"};
 
   if(large_ns)
     setup_large(*ctx, device, ns_size);

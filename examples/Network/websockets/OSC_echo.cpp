@@ -1,11 +1,13 @@
 #include <ossia/detail/config.hpp>
-#include <ossia/protocols/osc/osc_factory.hpp>
-#include <ossia/network/context.hpp>
-#include <ossia/network/common/debug.hpp>
+
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/common/debug.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <memory>
+#include <ossia/protocols/osc/osc_factory.hpp>
+
 #include <functional>
+#include <memory>
 
 int main(int argc, char** argv)
 {
@@ -13,16 +15,12 @@ int main(int argc, char** argv)
 
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
-    ossia::net::make_osc_protocol(ctx,
-          {
-            conf::HOST,
-            conf::OSC1_1,
-            conf::SLIP,
-            ossia::net::ws_server_configuration{1234}
-          }),
-        "P"};
+      ossia::net::make_osc_protocol(
+          ctx, {conf::HOST, conf::OSC1_1, conf::SLIP,
+                ossia::net::ws_server_configuration{1234}}),
+      "P"};
 
-  auto cb = [&] (ossia::string_view v, const ossia::value& val) {
+  auto cb = [&](ossia::string_view v, const ossia::value& val) {
     ossia::logger().info("{} => {}\n", v, ossia::value_to_pretty_string(val));
     device.get_protocol().push_raw({"/ok", ossia::value{true}});
   };

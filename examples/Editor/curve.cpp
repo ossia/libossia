@@ -10,9 +10,11 @@
  * http://www.cecill.info
  */
 #include <ossia/detail/config.hpp>
-#include <ossia/network/generic/generic_device.hpp>
+
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+
 #include <iostream>
 
 using namespace ossia;

@@ -6,8 +6,8 @@ int main()
   using namespace ossia::net;
   // Create a device which will listen on the websocket port 5678 and osc port 1234
   generic_device device{
-    std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
-    "my_device"};
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
+      "my_device"};
 
   // Create a few float parameters
   std::vector<parameter_base*> my_params;
@@ -20,7 +20,7 @@ int main()
     my_params.push_back(param);
   }
 
-  while (true)
+  while(true)
   {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(100ms);

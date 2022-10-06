@@ -1,6 +1,6 @@
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/value/format_value.hpp>
 
 int main()
@@ -9,15 +9,17 @@ int main()
   using namespace ossia::net;
   // Create a device which will listen on the websocket port 5678 and osc port 1234
   generic_device device{
-    std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
-    "my_device"};
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
+      "my_device"};
 
   // Create a few float parameters
-  struct print_callback {
-      ossia::net::parameter_base& p;
-      void operator()(const ossia::value& v) {
-        fmt::print("{} : {}\n", p.get_node().osc_address(), v);
-      }
+  struct print_callback
+  {
+    ossia::net::parameter_base& p;
+    void operator()(const ossia::value& v)
+    {
+      fmt::print("{} : {}\n", p.get_node().osc_address(), v);
+    }
   };
   auto p0 = create_parameter(device.get_root_node(), "/play", "bool");
   p0->add_callback(print_callback{*p0});
@@ -30,7 +32,7 @@ int main()
   auto p4 = create_parameter(device.get_root_node(), "/pulse", "impulse");
   p4->add_callback(print_callback{*p4});
 
-  while (true)
+  while(true)
   {
     using namespace std::chrono_literals;
     std::this_thread::sleep_for(200ms);

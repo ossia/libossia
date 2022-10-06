@@ -1,13 +1,15 @@
-#include <ossia/protocols/osc/osc_factory.hpp>
-#include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/context.hpp>
-#include <ossia/audio/audio_protocol.hpp>
 #include <ossia/audio/audio_device.hpp>
+#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
-#include <ossia/dataflow/execution_state.hpp>
-#include <boost/lexical_cast.hpp>
+#include <ossia/network/context.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/value/format_value.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
+
+#include <boost/lexical_cast.hpp>
+
 #include <iostream>
 
 std::string osc_address;
@@ -43,7 +45,7 @@ int main(int argc, char** argv)
   using namespace std::literals;
   if(argc < 5)
   {
-      fprintf(stderr, R"_(Usage:
+    fprintf(stderr, R"_(Usage:
 
   ./SynthOSC <OSC Address> <port> <min input> <max input>
 
@@ -51,7 +53,7 @@ Example:
 
   ./SynthOSC /arduino/my/sensor 4567 -1.0 1.0
 )_");
-      return 1;
+    return 1;
   }
 
   osc_address = argv[1];
@@ -63,30 +65,26 @@ Example:
   /// Setup our datastructures ///
   ossia::audio_device audio{
       "minisine", // name, for APIs like JACK
-      256, // buffer size
-      48000, // sample rate
-      0, 2 // inputs, outputs
+      256,        // buffer size
+      48000,      // sample rate
+      0, 2        // inputs, outputs
   };
 
   /// Set-up the network device ///
   auto ctx = std::make_shared<ossia::net::network_context>();
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
-    ossia::net::make_osc_protocol(ctx,
-          {conf::HOST
-         , conf::OSC1_1
-         , conf::SLIP
-         , ossia::net::udp_configuration{{
-             ossia::net::receive_socket_configuration{{
-               .host = "0.0.0.0",
-               .port = listen_port
-             }},
-             ossia::net::send_socket_configuration{{"127.0.0.1", 9977}}}}
-          }),
-        "P"};
+      ossia::net::make_osc_protocol(
+          ctx, {conf::HOST, conf::OSC1_1, conf::SLIP,
+                ossia::net::udp_configuration{
+                    {ossia::net::receive_socket_configuration{
+                         {.host = "0.0.0.0", .port = listen_port}},
+                     ossia::net::send_socket_configuration{{"127.0.0.1", 9977}}}}}),
+      "P"};
 
-  auto b = [] (const std::string s, const ossia::value& val) {
-      std::cerr << "Received unhandled message: " << s << ":" << fmt::format("{}", val) << std::endl;
+  auto b = [](const std::string s, const ossia::value& val) {
+    std::cerr << "Received unhandled message: " << s << ":" << fmt::format("{}", val)
+              << std::endl;
   };
   device.on_unhandled_message.connect(b);
   auto param = ossia::create_parameter(device, osc_address, "float");

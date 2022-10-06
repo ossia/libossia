@@ -1,7 +1,7 @@
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/libmapper/libmapper_protocol.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/libmapper/libmapper_protocol.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
 int main()
 {
   auto source_proto = std::make_unique<ossia::net::libmapper_server_protocol>();
@@ -15,7 +15,6 @@ int main()
   auto target_proto = std::make_unique<ossia::net::libmapper_client_protocol>();
   auto& tgt = *target_proto;
   ossia::net::generic_device target_dev{std::move(target_proto), "target"};
-
 
   while(true)
   {

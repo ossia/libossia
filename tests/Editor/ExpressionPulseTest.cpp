@@ -1,10 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
@@ -21,7 +23,7 @@ void result_callback(bool result)
   m_result_callback_called = true;
 }
 /*! evaluate expressions with destination values */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   // Local device
   ossia::net::generic_device device{"test"};
@@ -148,7 +150,7 @@ TEST_CASE ("test_basic", "test_basic")
 }
 
 /*! test comparison operator */
-TEST_CASE ("test_comparison", "test_comparison")
+TEST_CASE("test_comparison", "test_comparison")
 {
   // Local device
   ossia::net::generic_device device{"test"};
@@ -172,8 +174,8 @@ TEST_CASE ("test_comparison", "test_comparison")
 }
 
 /*! test callback management */
-TEST_CASE ("test_callback", "test_callback")
-{/* TODO
+TEST_CASE("test_callback", "test_callback")
+{ /* TODO
     // Local device
     impl::BasicDevice device{std::make_unique<ossia::net::Local2>(), "test"};
 

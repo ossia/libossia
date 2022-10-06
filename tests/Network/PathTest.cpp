@@ -1,18 +1,21 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
-#include <regex>
-#include <iostream>
-#include <set>
-
-#include <ossia/network/common/path.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/osc_address.hpp>
+#include <ossia/network/common/path.hpp>
+
 #include <boost/algorithm/string/replace.hpp>
-#include "TestUtils.hpp"
+
+#include <catch.hpp>
+
+#include <iostream>
+#include <regex>
+#include <set>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;
@@ -26,15 +29,13 @@ void debug(std::vector<ossia::net::node_base*> t)
 std::vector<std::string> to_string(const std::vector<ossia::net::node_base*>& match)
 {
   std::vector<std::string> addresses;
-  ossia::transform(
-        match,
-        std::back_inserter(addresses),
-        [] (auto n) { return ossia::net::osc_parameter_string(*n); });
+  ossia::transform(match, std::back_inserter(addresses), [](auto n) {
+    return ossia::net::osc_parameter_string(*n);
+  });
   return addresses;
 }
 
-
-TEST_CASE ("test_regex", "test_regex")
+TEST_CASE("test_regex", "test_regex")
 {
   {
     std::regex r("b[a-z][a-z]");
@@ -49,8 +50,8 @@ TEST_CASE ("test_regex", "test_regex")
     REQUIRE(std::regex_match("bar", r));
   }
   {
-    // std::regex r("b[a-zA-Z0-9_~().-]?[a-zA-Z0-9_~().-]*?");
-    // REQUIRE(std::regex_match("bar", r));
+      // std::regex r("b[a-zA-Z0-9_~().-]?[a-zA-Z0-9_~().-]*?");
+      // REQUIRE(std::regex_match("bar", r));
   }
 
   {
@@ -73,7 +74,7 @@ TEST_CASE ("test_regex", "test_regex")
     std::regex reg{"\\[[a-zA-Z0-9-]+\\]"};
 
     std::string ex1 = "foo[0-9]b[a-b5-6]ar";
-    std::regex_iterator<std::string::iterator> rit ( ex1.begin(), ex1.end(), reg);
+    std::regex_iterator<std::string::iterator> rit(ex1.begin(), ex1.end(), reg);
     std::regex_iterator<std::string::iterator> rend;
     REQUIRE(rit != rend);
     REQUIRE(rit->str() == "[0-9]");
@@ -86,7 +87,7 @@ TEST_CASE ("test_regex", "test_regex")
     std::regex reg{"[a-zA-Z0-9]-[a-zA-Z0-9]"};
     {
       std::string ex = "[0-9]";
-      std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+      std::regex_iterator<std::string::iterator> rit(ex.begin(), ex.end(), reg);
       std::regex_iterator<std::string::iterator> rend;
 
       REQUIRE(rit != rend);
@@ -94,7 +95,7 @@ TEST_CASE ("test_regex", "test_regex")
     }
     {
       std::string ex = "[a-b5-6xyz]";
-      std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+      std::regex_iterator<std::string::iterator> rit(ex.begin(), ex.end(), reg);
       std::regex_iterator<std::string::iterator> rend;
 
       REQUIRE(rit != rend);
@@ -107,7 +108,7 @@ TEST_CASE ("test_regex", "test_regex")
     std::regex reg{R"_(\{(-?[0-9]+)\.\.(-?[0-9]+)\})_"};
     {
       std::string ex = "{0..32}";
-      std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+      std::regex_iterator<std::string::iterator> rit(ex.begin(), ex.end(), reg);
       std::regex_iterator<std::string::iterator> rend;
 
       REQUIRE(rit != rend);
@@ -116,7 +117,7 @@ TEST_CASE ("test_regex", "test_regex")
     }
     {
       std::string ex = "{-50..50}";
-      std::regex_iterator<std::string::iterator> rit ( ex.begin(), ex.end(), reg);
+      std::regex_iterator<std::string::iterator> rit(ex.begin(), ex.end(), reg);
       std::regex_iterator<std::string::iterator> rend;
 
       REQUIRE(rit != rend);
@@ -124,25 +125,23 @@ TEST_CASE ("test_regex", "test_regex")
       REQUIRE(rit->str(2) == "50");
     }
   }
-
 }
 
-
-TEST_CASE ("test_is_pattern", "test_is_pattern")
+TEST_CASE("test_is_pattern", "test_is_pattern")
 {
   REQUIRE(ossia::traversal::is_pattern("/foo*ba?r/"));
   REQUIRE(ossia::traversal::is_pattern("//foo/bar"));
   REQUIRE(!ossia::traversal::is_pattern("/foo/r/"));
 }
 
-TEST_CASE ("test_root_only", "test_root_only")
+TEST_CASE("test_root_only", "test_root_only")
 {
   using namespace std::literals;
   auto parts = ossia::net::address_parts("/"sv);
   ossia::traversal::make_path("/"sv);
 }
 
-TEST_CASE ("test_traversal", "test_traversal")
+TEST_CASE("test_traversal", "test_traversal")
 {
   // Note : to allow access to character classes, we have to change :
   // - in expressions, the { } characters for delimitation. Maybe # ?
@@ -165,9 +164,12 @@ TEST_CASE ("test_traversal", "test_traversal")
   auto& n4 = ossia::net::find_or_create_node(device2, "foo/baz.2/blop");
 
   {
-    auto p = traversal::make_path("foo/b??" "/b?*"); // separated because trigraphs...
+    auto p = traversal::make_path(
+        "foo/b??"
+        "/b?*"); // separated because trigraphs...
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     debug(vec);
 
@@ -178,7 +180,8 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("//baz");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     std::vector<ossia::net::node_base*> expected{&n1, &n3};
     REQUIRE(vec == expected);
@@ -187,7 +190,8 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("//baz.*/*");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     std::vector<ossia::net::node_base*> expected{&n4};
     REQUIRE(vec == expected);
@@ -196,7 +200,8 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("//baz/..");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     std::vector<ossia::net::node_base*> expected{n1.get_parent(), n3.get_parent()};
     REQUIRE(vec == expected);
@@ -205,7 +210,8 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("//bar/../war/waz");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     std::vector<ossia::net::node_base*> expected{&n5};
     REQUIRE(vec == expected);
@@ -214,7 +220,8 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("foo/[bw]*/[bw]*");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     debug(vec);
     std::vector<ossia::net::node_base*> expected{&n1, &n2, &n5, &n4};
@@ -224,17 +231,20 @@ TEST_CASE ("test_traversal", "test_traversal")
   {
     auto p = traversal::make_path("test:/foo/*");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     debug(vec);
-    std::vector<ossia::net::node_base*> expected{&test_foo_bar, &test_foo_war, &test_foo_kar};
+    std::vector<ossia::net::node_base*> expected{
+        &test_foo_bar, &test_foo_war, &test_foo_kar};
     CHECK(vec == expected);
   }
 
   {
     auto p = traversal::make_path("*:/foo/*/blop");
     REQUIRE(bool(p));
-    std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+    std::vector<ossia::net::node_base*> vec{
+        &device1.get_root_node(), &device2.get_root_node()};
     traversal::apply(*p, vec);
     debug(vec);
     std::vector<ossia::net::node_base*> expected{&n2, &n4};
@@ -242,12 +252,12 @@ TEST_CASE ("test_traversal", "test_traversal")
   }
 }
 
-TEST_CASE ("test_traversal_relative", "test_traversal_relative")
+TEST_CASE("test_traversal_relative", "test_traversal_relative")
 {
   ossia::net::generic_device device1{"test"};
 
   auto& foo = ossia::net::find_or_create_node(device1, "foo");
-  auto& bar= ossia::net::find_or_create_node(device1, "foo/bar");
+  auto& bar = ossia::net::find_or_create_node(device1, "foo/bar");
   auto& n1 = ossia::net::find_or_create_node(device1, "foo/bar/foo/bar.0");
   auto& n2 = ossia::net::find_or_create_node(device1, "foo/bar/foo/bar.1");
 
@@ -323,15 +333,14 @@ TEST_CASE ("test_traversal_relative", "test_traversal_relative")
   }
 }
 
-
-TEST_CASE ("test_traversal_relative2", "test_traversal_relative2")
+TEST_CASE("test_traversal_relative2", "test_traversal_relative2")
 {
   ossia::net::generic_device device1{"test"};
 
   ossia::net::find_or_create_node(device1, "model");
-  auto& t1= ossia::net::find_or_create_node(device1, "model/tutu.1");
-  auto& t2= ossia::net::find_or_create_node(device1, "model/tutu.2");
-  auto& t3= ossia::net::find_or_create_node(device1, "model/tutu.3");
+  auto& t1 = ossia::net::find_or_create_node(device1, "model/tutu.1");
+  auto& t2 = ossia::net::find_or_create_node(device1, "model/tutu.2");
+  auto& t3 = ossia::net::find_or_create_node(device1, "model/tutu.3");
 
   {
     auto p = traversal::make_path("//tutu!");
@@ -343,7 +352,7 @@ TEST_CASE ("test_traversal_relative2", "test_traversal_relative2")
   }
 }
 
-TEST_CASE ("test_match", "test_match")
+TEST_CASE("test_match", "test_match")
 {
   ossia::net::generic_device device1{"test"};
 
@@ -370,14 +379,14 @@ TEST_CASE ("test_match", "test_match")
     REQUIRE(traversal::match(p, n5));
     REQUIRE(traversal::match(p, n6));
   }
-
 }
 
-TEST_CASE ("test_create", "test_create")
+TEST_CASE("test_create", "test_create")
 {
   ossia::net::generic_device device1{};
 
-  auto created = ossia::net::create_nodes(device1, "/foo[0-9]/{bar,baz}/{a{b,c,d},e}[x-z]");
+  auto created
+      = ossia::net::create_nodes(device1, "/foo[0-9]/{bar,baz}/{a{b,c,d},e}[x-z]");
 
   auto addresses = to_string(created);
   REQUIRE(ossia::contains(addresses, "/foo0/bar/abx"));
@@ -398,10 +407,10 @@ TEST_CASE ("test_create", "test_create")
   REQUIRE(ossia::contains(addresses, "/foo9/bar/ez"));
   REQUIRE(ossia::contains(addresses, "/foo9/baz/adx"));
 
-  REQUIRE(addresses.size() == std::size_t(10*2*4*3));
+  REQUIRE(addresses.size() == std::size_t(10 * 2 * 4 * 3));
 }
 
-TEST_CASE ("test_create_range", "test_create_range")
+TEST_CASE("test_create_range", "test_create_range")
 {
   ossia::net::generic_device device1{};
 
@@ -430,7 +439,7 @@ TEST_CASE ("test_create_range", "test_create_range")
   REQUIRE(addresses.size() == std::size_t(15));
 }
 
-TEST_CASE ("test_match_range", "test_match_range")
+TEST_CASE("test_match_range", "test_match_range")
 {
   {
     ossia::net::generic_device device{};
@@ -467,21 +476,22 @@ TEST_CASE ("test_match_range", "test_match_range")
 
     for(int start = 1; start < 25; start++)
     {
-      auto match = ossia::net::find_nodes(device, "/foo.{" + std::to_string(start) + "..25}");
+      auto match
+          = ossia::net::find_nodes(device, "/foo.{" + std::to_string(start) + "..25}");
       std::set<ossia::net::node_base*> match_set(match.begin(), match.end());
 
       auto addresses = to_string(match);
       debug(match);
-      for(int i = start; i <= 25; i++) {
+      for(int i = start; i <= 25; i++)
+      {
         REQUIRE(ossia::contains(addresses, "/foo." + std::to_string(i)));
       }
       REQUIRE((int)match_set.size() == (25 - start + 1));
     }
   }
-
 }
 
-TEST_CASE ("test_match_range_bug_588", "test_match_range_bug_588")
+TEST_CASE("test_match_range_bug_588", "test_match_range_bug_588")
 {
   {
     ossia::net::generic_device device{};
@@ -500,7 +510,7 @@ TEST_CASE ("test_match_range_bug_588", "test_match_range_bug_588")
   }
 }
 
-TEST_CASE ("test_match_instances", "test_match_instances")
+TEST_CASE("test_match_instances", "test_match_instances")
 
 {
   ossia::net::generic_device device1{"test"};
@@ -509,7 +519,6 @@ TEST_CASE ("test_match_instances", "test_match_instances")
   ossia::net::create_node(device1, "foo/bar/baz");
   ossia::net::create_node(device1, "foo/bar/baz");
   ossia::net::create_node(device1, "foo/bar/baz");
-
 
   {
     auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!");
@@ -525,7 +534,6 @@ TEST_CASE ("test_match_instances", "test_match_instances")
   ossia::net::create_node(device1, "foo/bar/baz.1.1");
   ossia::net::create_node(device1, "foo/bar/baz.1.1");
   ossia::net::create_node(device1, "foo/bar/baz.1.1");
-
 
   {
     auto match = ossia::net::find_nodes(device1, "/foo/bar/baz!");
@@ -611,10 +619,9 @@ TEST_CASE ("test_match_instances", "test_match_instances")
       REQUIRE(ossia::contains(addresses, "/spot.count"));
     }
   }
-
 }
 
-TEST_CASE ("test_device", "test_device")
+TEST_CASE("test_device", "test_device")
 {
   ossia::net::generic_device device1{"test"};
 
@@ -627,9 +634,9 @@ TEST_CASE ("test_device", "test_device")
   auto& b2 = ossia::net::create_node(device2, "foo/bar");
 
   auto p = *traversal::make_path("boo:/*/bar.1");
-  std::vector<ossia::net::node_base*> vec{&device1.get_root_node(), &device2.get_root_node()};
+  std::vector<ossia::net::node_base*> vec{
+      &device1.get_root_node(), &device2.get_root_node()};
   traversal::apply(p, vec);
 
   REQUIRE(vec == (std::vector<ossia::net::node_base*>{&b2}));
-
 }

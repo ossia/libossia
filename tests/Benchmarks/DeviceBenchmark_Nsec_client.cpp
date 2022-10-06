@@ -1,20 +1,21 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
-#include <boost/range/algorithm/find_if.hpp>
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/generic/generic_device.hpp>
-#include <iostream>
 #include "Random.hpp"
-#include<thread>
+
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
 #include <boost/range/algorithm/find_if.hpp>
+
+#include <iostream>
+#include <thread>
 #if __has_include(<valgrind/callgrind.h>)
 #include <valgrind/callgrind.h>
 #endif
 Random r;
-const ossia::net::node_base* goToRandomNode(
-    const ossia::net::node_base* root)
+const ossia::net::node_base* goToRandomNode(const ossia::net::node_base* root)
 {
   // Get a random number between 1 and 100
   auto depth = 1 + r.getRandomUInt() % 100;
@@ -30,7 +31,6 @@ const ossia::net::node_base* goToRandomNode(
 
     auto node_num = r.getRandomUInt() % currentNode->children().size();
     currentNode = currentNode->children()[node_num].get();
-
   }
 
   return currentNode;
@@ -41,9 +41,8 @@ auto goToRandomNode(std::vector<ossia::net::parameter_base*>& p)
   return p[r.getRandomUInt() % (p.size() - 1)];
 }
 
-
-void add_children(ossia::net::node_base& root,
-                  std::vector<ossia::net::parameter_base*>& nodes)
+void add_children(
+    ossia::net::node_base& root, std::vector<ossia::net::parameter_base*>& nodes)
 {
   for(auto& child : root.children())
   {
@@ -56,8 +55,10 @@ void add_children(ossia::net::node_base& root,
 int main(int argc, char** argv)
 {
   auto proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678");
-  ossia::net::generic_device remote{std::unique_ptr<ossia::oscquery::oscquery_mirror_protocol>{proto}, "B"};
-  if(proto->update_async(remote.get_root_node()).wait_for(std::chrono::seconds(10)) != std::future_status::ready)
+  ossia::net::generic_device remote{
+      std::unique_ptr<ossia::oscquery::oscquery_mirror_protocol>{proto}, "B"};
+  if(proto->update_async(remote.get_root_node()).wait_for(std::chrono::seconds(10))
+     != std::future_status::ready)
     return 1;
   ossia::net::parameter_base* start_addr{};
   ossia::net::parameter_base* stop_addr{};
@@ -80,7 +81,7 @@ int main(int argc, char** argv)
   std::atomic_bool a = false;
   std::atomic_bool b = false;
   std::chrono::steady_clock::duration dur;
-  std::thread checktime([&] () {
+  std::thread checktime([&]() {
     a = true;
     auto t0 = std::chrono::steady_clock::now();
     while(true)
@@ -95,7 +96,8 @@ int main(int argc, char** argv)
     }
   });
 
-  while(!a);
+  while(!a)
+    ;
 
   int num_sent = 0;
   start_addr->push_value(ossia::impulse{});
@@ -108,16 +110,15 @@ int main(int argc, char** argv)
     auto p = goToRandomNode(other_addr);
     p->push_value(0.f);
 
-    num_sent ++;
+    num_sent++;
   }
 #if __has_include(<valgrind/callgrind.h>)
   CALLGRIND_STOP_INSTRUMENTATION;
   CALLGRIND_DUMP_STATS;
 #endif
-  std::cout << "Sent " << num_sent
-            << " values in "
+  std::cout << "Sent " << num_sent << " values in "
             << std::chrono::duration_cast<std::chrono::milliseconds>(dur).count()
-            <<  " milliseconds" << std::endl;
+            << " milliseconds" << std::endl;
   stop_addr->push_value(ossia::impulse{});
 
   checktime.join();

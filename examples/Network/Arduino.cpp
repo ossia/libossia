@@ -1,8 +1,10 @@
-#include <ossia-qt/serial/serial_protocol.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/context.hpp>
-#include <QSerialPortInfo>
+#include <ossia/network/generic/generic_device.hpp>
+
+#include <ossia-qt/serial/serial_protocol.hpp>
+
 #include <QCoreApplication>
+#include <QSerialPortInfo>
 
 int main(int argc, char** argv)
 {
@@ -33,7 +35,6 @@ Ossia.Serial
 
   qDebug() << serialport.portName() << serialport.manufacturer();
   ossia::net::generic_device dev{
-    std::make_unique<ossia::net::serial_protocol>(code, serialport),
-    "arduino"};
+      std::make_unique<ossia::net::serial_protocol>(code, serialport), "arduino"};
   app.exec();
 }

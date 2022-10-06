@@ -11,13 +11,15 @@
  */
 
 #include <ossia/detail/config.hpp>
+
 #include <ossia/network/common/debug.hpp>
-#include <ossia/network/local/local.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/osc/osc.hpp>
+
+#include <functional>
 #include <iostream>
 #include <memory>
-#include <functional>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -30,8 +32,9 @@ int main()
 {
   // declare this program "P" as an OSC device
   ossia::net::generic_device device{
-    std::make_unique<ossia::net::osc_protocol>("127.0.0.1", 9996, 9997, std::string("mydevice")),
-        "P"};
+      std::make_unique<ossia::net::osc_protocol>(
+          "127.0.0.1", 9996, 9997, std::string("mydevice")),
+      "P"};
 
   /* publish each feature of program "P" as address into a tree
      /test
@@ -82,7 +85,7 @@ int main()
 
   oscTupleAddress->set_value(std::vector<ossia::value>{0.1, 0.2, 0.3});
 
-  while (true)
+  while(true)
     ;
 }
 
@@ -90,4 +93,3 @@ void printValueCallback(const value& v)
 {
   std::cout << "Callback: " << value_to_pretty_string(v) << std::endl;
 }
-

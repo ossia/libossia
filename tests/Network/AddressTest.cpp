@@ -1,22 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include "../Benchmarks/Random.hpp"
+
 #include <ossia/detail/config.hpp>
 
-#include <catch.hpp>
-
+#include <ossia/detail/for_each.hpp>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
-#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/domain/domain.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
-#include <ossia/detail/for_each.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include "../Benchmarks/Random.hpp"
 
 using namespace ossia;
-TEST_CASE( "Nodes", "[Nodes]" )
+TEST_CASE("Nodes", "[Nodes]")
 {
   ossia::net::generic_device device{"test"};
   auto cld = device.create_child("child");
@@ -55,11 +56,11 @@ TEST_CASE( "Nodes", "[Nodes]" )
 }
 
 // TODO add some checks
-TEST_CASE( "Units", "[Units]" )
+TEST_CASE("Units", "[Units]")
 {
-  ossia::for_each_tagged(dataspace_u_list{}, [] (auto d_t) {
+  ossia::for_each_tagged(dataspace_u_list{}, [](auto d_t) {
     using type = typename decltype(d_t)::type;
-    ossia::for_each_tagged(type{}, [] (auto u_t) {
+    ossia::for_each_tagged(type{}, [](auto u_t) {
       using utype = typename decltype(u_t)::type;
       std::cerr << ossia::get_pretty_unit_text(utype{}) << std::endl;
     });

@@ -4,7 +4,7 @@
 
 #include <catch.hpp>
 
-TEST_CASE ("test_cuts", "test_cuts")
+TEST_CASE("test_cuts", "test_cuts")
 {
   using namespace ossia;
 
@@ -21,6 +21,4 @@ TEST_CASE ("test_cuts", "test_cuts")
   // from 7 to 9
   // from 9 to 10
   // from 10
-
-
 }

@@ -1,27 +1,31 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include "TestUtils.hpp"
+
+#include <catch.hpp>
+
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;
 
-TEST_CASE ("test_oscquery_rename_node", "test_oscquery_rename_node")
+TEST_CASE("test_oscquery_rename_node", "test_oscquery_rename_node")
 {
   // check if node renaming is reflected in client and value is correctly updated
 
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
 
   dev.float_addr->push_value(-1234.56789f);
   auto node = dev.device.create_child("node");
@@ -30,8 +34,10 @@ TEST_CASE ("test_oscquery_rename_node", "test_oscquery_rename_node")
   param->push_value(9876.5432f);
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -96,32 +102,31 @@ TEST_CASE ("test_oscquery_rename_node", "test_oscquery_rename_node")
   REQUIRE(v == 12.3456f);
 }
 
-TEST_CASE ("test_oscquery_rename_node_callback", "test_oscquery_rename_node_callback")
+TEST_CASE("test_oscquery_rename_node_callback", "test_oscquery_rename_node_callback")
 {
   // check if callback are still after renaming a node
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
-  ossia::net::parameter_base* param = serv.create_child("float")->create_parameter(val_type::FLOAT);
+  ossia::net::parameter_base* param
+      = serv.create_child("float")->create_parameter(val_type::FLOAT);
   auto node = serv.create_child("node");
   auto child = node->create_child("param");
   auto nested_param = child->create_parameter(val_type::FLOAT);
 
   float cb_float{};
   float client_cb_float{};
-  param->add_callback([&](const value& v){
-    cb_float = v.get<float>();
-  });
+  param->add_callback([&](const value& v) { cb_float = v.get<float>(); });
 
   float nested_cb_float{};
   float client_nested_cb_float{};
-  nested_param->add_callback([&](const value& v){
-    nested_cb_float = v.get<float>();
-  });
+  nested_param->add_callback([&](const value& v) { nested_cb_float = v.get<float>(); });
 
-   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  // WS client
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -134,18 +139,14 @@ TEST_CASE ("test_oscquery_rename_node_callback", "test_oscquery_rename_node_call
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    p->add_callback([&](const value& v){
-      client_cb_float = v.get<float>();
-    });
+    p->add_callback([&](const value& v) { client_cb_float = v.get<float>(); });
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/node/param");
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    p->add_callback([&](const value& v){
-      client_nested_cb_float = v.get<float>();
-    });
+    p->add_callback([&](const value& v) { client_nested_cb_float = v.get<float>(); });
   }
 
   param->push_value(-1234.56789f);

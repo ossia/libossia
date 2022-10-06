@@ -1,18 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/expression/expression.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
 using namespace ossia;
 using namespace ossia::expressions;
 
-
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   auto expr_default = make_expression_bool(false);
   REQUIRE(expr_default != nullptr);
@@ -31,7 +32,7 @@ TEST_CASE ("test_basic", "test_basic")
 }
 
 /*! test comparison operator */
-TEST_CASE ("test_comparison", "test_comparison")
+TEST_CASE("test_comparison", "test_comparison")
 {
   REQUIRE(expressions::expression_false() == expressions::expression_false());
   REQUIRE(expressions::expression_false() != expressions::expression_true());

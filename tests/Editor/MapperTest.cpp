@@ -1,5 +1,2 @@
 // TODO
-int main()
-{
-
-}
+int main() { }

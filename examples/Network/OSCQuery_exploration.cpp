@@ -11,16 +11,18 @@
  */
 
 #include <ossia/detail/config.hpp>
-#include <ossia/network/domain/domain.hpp>
-#include <ossia/network/common/debug.hpp>
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
-#include <ossia/network/http/http_client.hpp>
-#include <ossia/network/base/parameter_data.hpp>
+
 #include <ossia/network/base/osc_address.hpp>
+#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/common/debug.hpp>
+#include <ossia/network/domain/domain.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/http/http_client.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+
+#include <functional>
 #include <iostream>
 #include <memory>
-#include <functional>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -49,8 +51,9 @@ int main()
     protocol->run_commands();
   }
 
-  ossia::net::find_node(device, "/test/my_string")->get_parameter()->push_value("fheakoezp");
-
+  ossia::net::find_node(device, "/test/my_string")
+      ->get_parameter()
+      ->push_value("fheakoezp");
 
   auto node = ossia::net::find_node(device, "/test/my_float");
   // Request to add an instance :
@@ -74,14 +77,14 @@ int main()
 
 void explore(const ossia::net::node_base& node)
 {
-  for (const auto& child : node.children_copy())
+  for(const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_parameter())
+    if(auto addr = child->get_parameter())
     {
       // attach to callback to display value update
-      addr->add_callback([=] (const value& v) {
-        std::cerr << "[message] " << osc_parameter_string(*addr)
-                  << " <- " <<  value_to_pretty_string(v) << std::endl;
+      addr->add_callback([=](const value& v) {
+        std::cerr << "[message] " << osc_parameter_string(*addr) << " <- "
+                  << value_to_pretty_string(v) << std::endl;
       });
 
       // update the value

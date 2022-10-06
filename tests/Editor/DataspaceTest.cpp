@@ -1,17 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/for_each.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_convert.hpp>
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>
 #include <ossia/network/dataspace/detail/dataspace_parse.hpp>
-#include <ossia/detail/algorithms.hpp>
-#include <ossia/detail/for_each.hpp>
-#include <ossia/detail/logger.hpp>
+
+#include <catch.hpp>
+
 #include <iostream>
 
 constexpr int computed_unit_count()
@@ -19,9 +21,7 @@ constexpr int computed_unit_count()
   int k = 0;
   ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
     using dataspace_type = typename decltype(t)::type;
-    ossia::for_each_tagged(dataspace_type{}, [&](auto u) {
-      k++;
-    });
+    ossia::for_each_tagged(dataspace_type{}, [&](auto u) { k++; });
   });
   return k;
 }
@@ -37,8 +37,9 @@ static constexpr auto constexpr_min(float f1, float f2)
 static constexpr inline bool fuzzy_equals(float p1, float p2)
 {
   using namespace std;
-  return (constexpr_abs(p1 - p2) * 100000.f
-          <= constexpr_min(constexpr_abs(p1), constexpr_abs(p2)));
+  return (
+      constexpr_abs(p1 - p2) * 100000.f
+      <= constexpr_min(constexpr_abs(p1), constexpr_abs(p2)));
 }
 
 namespace ossia
@@ -53,18 +54,15 @@ struct parameter_data
 
 }
 
-
-template<typename T>
+template <typename T>
 void test_conversions_impl()
 {
   // Conversion
-  ossia::for_each_tagged(T{}, [&] (auto unit_1)
-  {
+  ossia::for_each_tagged(T{}, [&](auto unit_1) {
     using unit_1_type = typename decltype(unit_1)::type;
     unit_1_type unit_1_v;
 
-    ossia::for_each_tagged(T{}, [&] (auto unit_2)
-    {
+    ossia::for_each_tagged(T{}, [&](auto unit_2) {
       using unit_2_type = typename decltype(unit_2)::type;
       // Conversion at construction
       unit_2_type unit_2_v(unit_1_v);
@@ -73,19 +71,20 @@ void test_conversions_impl()
       // Conversion by convert function
       auto res = convert(unit_1_v, typename unit_2_type::unit_type{});
       auto val = to_value(res);
-      (void) val;
+      (void)val;
       auto str = to_pretty_string(res);
-      (void) str;
+      (void)str;
     });
   });
 }
 
 /*! test impulse */
-TEST_CASE ("test_dataspace_simple", "test_dataspace_simple")
+TEST_CASE("test_dataspace_simple", "test_dataspace_simple")
 {
-  static_assert(std::is_same<
-                ossia::centimeter::dataspace_type,
-                ossia::millimeter::dataspace_type>::value, "invalid");
+  static_assert(
+      std::is_same<
+          ossia::centimeter::dataspace_type, ossia::millimeter::dataspace_type>::value,
+      "invalid");
   //using t1 = ossia::enable_if_same_dataspace<ossia::centimeter, ossia::millimeter>;
   //using t2 = ossia::enable_if_same_dataspace<ossia::rgb, ossia::millimeter>;
 
@@ -95,7 +94,7 @@ TEST_CASE ("test_dataspace_simple", "test_dataspace_simple")
   REQUIRE(m.dataspace_value == 23.f);
 }
 
-TEST_CASE ("test_dataspace", "test_dataspace")
+TEST_CASE("test_dataspace", "test_dataspace")
 {
 #if !defined(_MSC_VER)
   // Dataspace : enforces a family of units
@@ -106,16 +105,30 @@ TEST_CASE ("test_dataspace", "test_dataspace")
 
   static_assert(m.dataspace_value == 23., "");
 
-  static_assert(fuzzy_equals(ossia::centimeter{ossia::inch{1.}}.dataspace_value, 2.54f), "");
-  static_assert(fuzzy_equals(ossia::meter{ossia::mile{1.}}.dataspace_value, 1609.34f), "");
+  static_assert(
+      fuzzy_equals(ossia::centimeter{ossia::inch{1.}}.dataspace_value, 2.54f), "");
+  static_assert(
+      fuzzy_equals(ossia::meter{ossia::mile{1.}}.dataspace_value, 1609.34f), "");
 
+  static_assert(
+      fuzzy_equals(
+          ossia::kilometer_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 3.6f),
+      "");
+  static_assert(
+      fuzzy_equals(
+          ossia::miles_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 2.236936f),
+      "");
+  static_assert(
+      fuzzy_equals(
+          ossia::foot_per_second{ossia::meter_per_second{1.}}.dataspace_value,
+          3.280840f),
+      "");
+  static_assert(
+      fuzzy_equals(ossia::knot{ossia::meter_per_second{1}}.dataspace_value, 1.943844f),
+      "");
 
-  static_assert(fuzzy_equals(ossia::kilometer_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 3.6f), "");
-  static_assert(fuzzy_equals(ossia::miles_per_hour{ossia::meter_per_second{1.}}.dataspace_value, 2.236936f), "");
-  static_assert(fuzzy_equals(ossia::foot_per_second{ossia::meter_per_second{1.}}.dataspace_value, 3.280840f), "");
-  static_assert(fuzzy_equals(ossia::knot{ossia::meter_per_second{1}}.dataspace_value, 1.943844f), "");
-
-  static_assert(fuzzy_equals(ossia::radian{ossia::degree{180}}.dataspace_value, 3.14159f), "");
+  static_assert(
+      fuzzy_equals(ossia::radian{ossia::degree{180}}.dataspace_value, 3.14159f), "");
 
   // Ex. 1 : making an automation of the correct type ? e.g. circular for circular units...
 
@@ -174,19 +187,19 @@ TEST_CASE ("test_dataspace", "test_dataspace")
 #endif
 }
 
-TEST_CASE ("test_conversions_at_construction", "test_conversions_at_construction")
+TEST_CASE("test_conversions_at_construction", "test_conversions_at_construction")
 {
   ossia::unit_t unit;
 
   // Construction
-  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&x=unit] (auto t) {
-    ossia::for_each_tagged(typename decltype(t)::type{}, [&y=x] (auto u) {
+  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&x = unit](auto t) {
+    ossia::for_each_tagged(typename decltype(t)::type{}, [&y = x](auto u) {
       y = typename decltype(u)::type{};
     });
   });
 }
 
-TEST_CASE ("test_conversions", "test_conversions")
+TEST_CASE("test_conversions", "test_conversions")
 {
   test_conversions_impl<ossia::distance_list>();
   test_conversions_impl<ossia::angle_list>();
@@ -198,40 +211,38 @@ TEST_CASE ("test_conversions", "test_conversions")
   test_conversions_impl<ossia::time_list>();
 }
 
-
-template<typename dataspace_type>
+template <typename dataspace_type>
 struct unit_test_visitor
 {
-  template<typename T>
+  template <typename T>
   void operator()(T u)
   {
-      using unit_type = typename T::type;
-      auto unit_text_array = ossia::unit_traits<unit_type>::text();
+    using unit_type = typename T::type;
+    auto unit_text_array = ossia::unit_traits<unit_type>::text();
 
-      for (auto unit_text : unit_text_array)
+    for(auto unit_text : unit_text_array)
+    {
+      using dataspace_correct_type =
+          typename ossia::matching_unit_u_list<dataspace_type>::type;
+      auto parsed_unit = ossia::parse_unit(unit_text, dataspace_correct_type{});
+      if(unit_text == "cart3D")
       {
-        using dataspace_correct_type =
-            typename ossia::matching_unit_u_list<dataspace_type>::type;
-        auto parsed_unit
-            = ossia::parse_unit(unit_text, dataspace_correct_type {});
-        if (unit_text == "cart3D")
-        {
-          ossia::parse_unit(unit_text, dataspace_correct_type {});
-        }
-        REQUIRE(parsed_unit == unit_type {});
+        ossia::parse_unit(unit_text, dataspace_correct_type{});
       }
-
+      REQUIRE(parsed_unit == unit_type{});
+    }
   }
 };
 
-TEST_CASE ("test_visitors", "test_visitors")
+TEST_CASE("test_visitors", "test_visitors")
 {
   // get_unit_text
   ossia::get_unit_text(ossia::unit_t{});
-  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
-    using dataspace_t = typename ossia::matching_unit_u_list<typename decltype(t)::type>::type;
+  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
+    using dataspace_t =
+        typename ossia::matching_unit_u_list<typename decltype(t)::type>::type;
     ossia::get_unit_text(dataspace_t{});
-    ossia::for_each_tagged(typename decltype(t)::type{}, [&] (auto u) {
+    ossia::for_each_tagged(typename decltype(t)::type{}, [&](auto u) {
       ossia::get_unit_text(typename decltype(u)::type{});
     });
   });
@@ -246,20 +257,20 @@ TEST_CASE ("test_visitors", "test_visitors")
   REQUIRE(!p1);
   auto p2 = ossia::parse_unit("rgb", ossia::unit_t{});
   REQUIRE(!p2);
-  REQUIRE(ossia::cartesian_3d_u{} == ossia::parse_unit("cart3D", ossia::position_u {}));
+  REQUIRE(ossia::cartesian_3d_u{} == ossia::parse_unit("cart3D", ossia::position_u{}));
 
-  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&] (auto t) {
+  ossia::for_each_tagged(ossia::dataspace_u_list{}, [&](auto t) {
     using dataspace_type = typename decltype(t)::type;
-        using dataspace_correct_type = typename ossia::matching_unit_u_list<dataspace_type>::type;
-   //  ossia::logger().error(
-   //          "dataspace: {}",
-   //          ossia::get_pretty_unit_text(dataspace_correct_type {}));
-    ossia::for_each_tagged(dataspace_type {}, unit_test_visitor<dataspace_type> {});
+    using dataspace_correct_type =
+        typename ossia::matching_unit_u_list<dataspace_type>::type;
+    //  ossia::logger().error(
+    //          "dataspace: {}",
+    //          ossia::get_pretty_unit_text(dataspace_correct_type {}));
+    ossia::for_each_tagged(dataspace_type{}, unit_test_visitor<dataspace_type>{});
   });
-
 }
 
-TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
+TEST_CASE("test_get_dataspace_text", "test_get_dataspace_text")
 {
   using namespace ossia;
 
@@ -313,7 +324,6 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
     REQUIRE(get_unit_accessor(ossia::rgb_u{}, 3) == 0);
     REQUIRE(get_unit_accessor(ossia::rgb_u{}, -1) == 0);
     REQUIRE(get_unit_accessor(ossia::rgb_u{}, 255) == 0);
-
   }
 
   {
@@ -349,20 +359,39 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
   }
 
   {
-    std::cerr <<  ossia::to_pretty_string(make_value(int32_t{ 10 }, ossia::centimeter_u{})).c_str() << '\n';
-    REQUIRE(make_value(int32_t{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
-    REQUIRE(make_value(char{10}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{10}});
-    REQUIRE(make_value(bool{true}, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{1}});
-    REQUIRE(make_value(1.2, ossia::centimeter_u{}) == ossia::value_with_unit{ossia::centimeter{1.2}});
+    std::cerr << ossia::to_pretty_string(make_value(int32_t{10}, ossia::centimeter_u{}))
+                     .c_str()
+              << '\n';
+    REQUIRE(
+        make_value(int32_t{10}, ossia::centimeter_u{})
+        == ossia::value_with_unit{ossia::centimeter{10}});
+    REQUIRE(
+        make_value(char{10}, ossia::centimeter_u{})
+        == ossia::value_with_unit{ossia::centimeter{10}});
+    REQUIRE(
+        make_value(bool{true}, ossia::centimeter_u{})
+        == ossia::value_with_unit{ossia::centimeter{1}});
+    REQUIRE(
+        make_value(1.2, ossia::centimeter_u{})
+        == ossia::value_with_unit{ossia::centimeter{1.2}});
     REQUIRE(make_value(1.2, ossia::rgb_u{}) == ossia::value_with_unit{});
     REQUIRE(make_value(ossia::impulse{}, ossia::rgb_u{}) == ossia::value_with_unit{});
     REQUIRE(make_value(ossia::impulse{}, ossia::rgba_u{}) == ossia::value_with_unit{});
-    REQUIRE(make_value(ossia::impulse{}, ossia::cartesian_2d_u{}) == ossia::value_with_unit{});
-    REQUIRE(make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{}) == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
-    REQUIRE(make_value(make_vec(1.2, 1.3, 32.5, 0.7), ossia::rgba_u{}) == ossia::value_with_unit{ossia::rgba{make_vec(1.2, 1.3, 32.5, 0.7)}});
-    REQUIRE(make_value(make_vec(1.2, 1.3), ossia::cartesian_2d_u{}) == ossia::value_with_unit{ossia::cartesian_2d{make_vec(1.2, 1.3)}});
-    REQUIRE(make_value(std::vector<ossia::value>{1.2, 1.3, 32.5}, ossia::rgb_u{}) == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
-
+    REQUIRE(
+        make_value(ossia::impulse{}, ossia::cartesian_2d_u{})
+        == ossia::value_with_unit{});
+    REQUIRE(
+        make_value(make_vec(1.2, 1.3, 32.5), ossia::rgb_u{})
+        == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
+    REQUIRE(
+        make_value(make_vec(1.2, 1.3, 32.5, 0.7), ossia::rgba_u{})
+        == ossia::value_with_unit{ossia::rgba{make_vec(1.2, 1.3, 32.5, 0.7)}});
+    REQUIRE(
+        make_value(make_vec(1.2, 1.3), ossia::cartesian_2d_u{})
+        == ossia::value_with_unit{ossia::cartesian_2d{make_vec(1.2, 1.3)}});
+    REQUIRE(
+        make_value(std::vector<ossia::value>{1.2, 1.3, 32.5}, ossia::rgb_u{})
+        == ossia::value_with_unit{ossia::rgb{make_vec(1.2, 1.3, 32.5)}});
   }
 
   {
@@ -387,25 +416,47 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
   }
 
   {
-    REQUIRE(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{}) == ossia::value_with_unit{ossia::bgr{make_vec(32.5, 1.3, 1.2)}});
-    REQUIRE(convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::centimeter_u{}) == ossia::value_with_unit{});
-    REQUIRE(convert(ossia::value_with_unit{}, ossia::centimeter_u{}) == ossia::value_with_unit{});
+    REQUIRE(
+        convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::bgr_u{})
+        == ossia::value_with_unit{ossia::bgr{make_vec(32.5, 1.3, 1.2)}});
+    REQUIRE(
+        convert(ossia::rgb{make_vec(1.2, 1.3, 32.5)}, ossia::centimeter_u{})
+        == ossia::value_with_unit{});
+    REQUIRE(
+        convert(ossia::value_with_unit{}, ossia::centimeter_u{})
+        == ossia::value_with_unit{});
     // UP
-    REQUIRE(fuzzy_equals(convert(ossia::polar{make_vec(1., half_pi)}, ossia::cartesian_2d_u{}), ossia::value_with_unit{ossia::cartesian_2d{make_vec(0., 1.)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::polar{make_vec(1., half_pi)}, ossia::cartesian_2d_u{}),
+        ossia::value_with_unit{ossia::cartesian_2d{make_vec(0., 1.)}}));
     // DOWN
-    REQUIRE(convert(ossia::cartesian_2d{make_vec(0., -0.3)}, ossia::polar_u{}) == ossia::value_with_unit{ossia::polar{make_vec(0.3, -half_pi)}});
+    REQUIRE(
+        convert(ossia::cartesian_2d{make_vec(0., -0.3)}, ossia::polar_u{})
+        == ossia::value_with_unit{ossia::polar{make_vec(0.3, -half_pi)}});
     // LEFT
-    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(-1.1, 0., 0.)}, ossia::aed_u{}), ossia::value_with_unit{ossia::aed{make_vec(-90., 0., 1.1)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::cartesian_3d{make_vec(-1.1, 0., 0.)}, ossia::aed_u{}),
+        ossia::value_with_unit{ossia::aed{make_vec(-90., 0., 1.1)}}));
     // RIGHT
-    REQUIRE(fuzzy_equals(convert(ossia::aed{make_vec(90., 0., 0.6)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(0.6, 0., 0.)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::aed{make_vec(90., 0., 0.6)}, ossia::cartesian_3d_u{}),
+        ossia::value_with_unit{ossia::cartesian_3d{make_vec(0.6, 0., 0.)}}));
     // ABOVE
-    REQUIRE(fuzzy_equals(convert(ossia::azd{make_vec(45., 0.1, 0.)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(0., 0., 0.9)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::azd{make_vec(45., 0.1, 0.)}, ossia::cartesian_3d_u{}),
+        ossia::value_with_unit{ossia::cartesian_3d{make_vec(0., 0., 0.9)}}));
     // BELOW
-    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(0., 0., -0.4)}, ossia::azd_u{}), ossia::value_with_unit{ossia::azd{make_vec(0., -0.4, 0.)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::cartesian_3d{make_vec(0., 0., -0.4)}, ossia::azd_u{}),
+        ossia::value_with_unit{ossia::azd{make_vec(0., -0.4, 0.)}}));
     // OPENGL to CART3D
-    REQUIRE(fuzzy_equals(convert(ossia::opengl{make_vec(1., 1., 1.)}, ossia::cartesian_3d_u{}), ossia::value_with_unit{ossia::cartesian_3d{make_vec(1., -1., 1.)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::opengl{make_vec(1., 1., 1.)}, ossia::cartesian_3d_u{}),
+        ossia::value_with_unit{ossia::cartesian_3d{make_vec(1., -1., 1.)}}));
     // CART3D to OPENGL
-    REQUIRE(fuzzy_equals(convert(ossia::cartesian_3d{make_vec(1., 1., 1.)}, ossia::opengl_u{}), ossia::value_with_unit{ossia::opengl{make_vec(1., 1., -1.)}}));
+    REQUIRE(fuzzy_equals(
+        convert(ossia::cartesian_3d{make_vec(1., 1., 1.)}, ossia::opengl_u{}),
+        ossia::value_with_unit{ossia::opengl{make_vec(1., 1., -1.)}}));
   }
 
   {
@@ -423,7 +474,7 @@ TEST_CASE ("test_get_dataspace_text", "test_get_dataspace_text")
   get_unit_parser();
 }
 
-TEST_CASE ("test_convertible", "test_convertible")
+TEST_CASE("test_convertible", "test_convertible")
 {
   using namespace ossia;
   REQUIRE(check_units_convertible(ossia::rgb_u{}, ossia::hsv_u{}));
@@ -432,7 +483,7 @@ TEST_CASE ("test_convertible", "test_convertible")
   REQUIRE(!check_units_convertible(ossia::rgb_u{}, ossia::cartesian_3d_u{}));
 }
 
-TEST_CASE ("convert_benchmark", "convert_benchmark")
+TEST_CASE("convert_benchmark", "convert_benchmark")
 {
   const int N = 100000;
   auto t1 = std::chrono::high_resolution_clock::now();
@@ -441,5 +492,7 @@ TEST_CASE ("convert_benchmark", "convert_benchmark")
   auto t2 = std::chrono::high_resolution_clock::now();
 
   std::cerr << "convert time: "
-           << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count() / double(N) << '\n';
+            << std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count()
+                   / double(N)
+            << '\n';
 }

@@ -2,22 +2,26 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
 #include "../catch/catch.hpp"
-#include <ossia/detail/config.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
-#include <boost/range/algorithm/find_if.hpp>
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/generic/generic_device.hpp>
-#include <iostream>
 #include "Random.hpp"
-#include <thread>
+
+#include <ossia/detail/config.hpp>
+
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <boost/range/algorithm/find_if.hpp>
+
 #include <cmath>
+
+#include <iostream>
+#include <thread>
 
 static Random r;
 using namespace ossia;
 
-const ossia::net::node_base* goToRandomNode(
-    const ossia::net::node_base* root)
+const ossia::net::node_base* goToRandomNode(const ossia::net::node_base* root)
 {
   // Get a random number between 1 and 100
   auto depth = 1 + r.getRandomUInt() % 100;
@@ -33,7 +37,6 @@ const ossia::net::node_base* goToRandomNode(
 
     auto node_num = r.getRandomUInt() % currentNode->children().size();
     currentNode = currentNode->children()[node_num].get();
-
   }
 
   return currentNode;
@@ -44,9 +47,11 @@ auto goToRandomNode(std::vector<ossia::net::parameter_base*>& p)
   return p[r.getRandomUInt() % (p.size() - 1)];
 }
 
-TEST_CASE ("device_benchmark_client", "device_benchmark_client")
+TEST_CASE("device_benchmark_client", "device_benchmark_client")
 {
-  ossia::net::generic_device remote{std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "B"};
+  ossia::net::generic_device remote{
+      std::make_unique<ossia::oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"),
+      "B"};
   remote.get_protocol().update(remote.get_root_node());
   ossia::net::parameter_base* start_addr{};
   ossia::net::parameter_base* stop_addr{};
@@ -83,7 +88,6 @@ TEST_CASE ("device_benchmark_client", "device_benchmark_client")
 
   stop_addr->push_value(ossia::impulse{});
   std::cout << "Sending: " << iter << ": "
-            << std::chrono::duration <double, std::milli> (total_dur).count() / float(iter)
-      << "" << std::endl;
+            << std::chrono::duration<double, std::milli>(total_dur).count() / float(iter)
+            << "" << std::endl;
 }
-

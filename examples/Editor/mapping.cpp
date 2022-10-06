@@ -19,7 +19,6 @@
 #include "Editor/TimeEvent.h"
 #include "Editor/TimeSync.h"
 #include "Editor/value.h"
-
 #include "Network/Address.h"
 #include "Network/Device.h"
 #include "Network/Node.h"
@@ -27,65 +26,68 @@
 
 using namespace ossia;
 
-#include <thread>
 #include <iostream>
+#include <thread>
 
 using namespace std;
 
-void interval_callback(ossia::time_value position, ossia::time_value date, std::shared_ptr<StateElement> element)
+void interval_callback(
+    ossia::time_value position, ossia::time_value date,
+    std::shared_ptr<StateElement> element)
 {
-    element->launch();
+  element->launch();
 }
 
-void event_callback(TimeEvent::Status newStatus)
-{}
+void event_callback(TimeEvent::Status newStatus) { }
 
-void float_parameter_callback(const value& v)
-{}
+void float_parameter_callback(const value& v) { }
 
-void int_parameter_callback(const value& v)
-{}
+void int_parameter_callback(const value& v) { }
 
 int main()
 {
-    auto local_protocol = Local::create();
-    auto local_device = Device::create(local_protocol, "test");
-    
-    local_device->emplace(local_device->children().begin(), "float");
-    auto float_address = local_device->children().front()->create_parameter(Type::FLOAT);
-    float_address->addCallback([&] (const value& v) { float_parameter_callback(v); });
-    
-    auto int_address = local_device->children().front()->create_parameter(Type::INT);
-    int_address->addCallback([&] (const value& v) { int_parameter_callback(v); });
-    
-    auto curve = Curve<float, int>::create();
-    auto linearSegment = CurveSegmentLinear<int>::create(curve);
-    curve->setInitialvalue(0);
-    curve->add_point(0.5, 5, linearSegment);
-    curve->add_point(1., 10, linearSegment);
-    Behavior b(curve);
-    auto mapper = Mapper::create(float_address, int_address, &b);
-    
-    auto start_node = TimeSync::create();
-    auto end_node = TimeSync::create();
-    auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
-    auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
-    auto interval = TimeConstraint::create(&interval_callback, start_event, end_event, 100.);
-    interval->add_time_process(mapper);
-    
-    interval->set_granularity(10.);
-    interval->start();
-    
-    while (interval->running())
-    {
-        double position = interval->getPosition();
-        const Float* current_float = static_cast<const Float*>(float_address->getvalue());
-        const Int* current_int = static_cast<const Int*>(int_address->getvalue());
+  auto local_protocol = Local::create();
+  auto local_device = Device::create(local_protocol, "test");
 
-        std::cout << "at " << position << " : float = " << current_float->value << ", int = " << current_int->value << std::endl;
-        
-        std::this_thread::sleep_for( std::chrono::milliseconds(10));
-        
-        float_address->pushvalue(new Float(current_float->value + 0.1));
-    }
+  local_device->emplace(local_device->children().begin(), "float");
+  auto float_address = local_device->children().front()->create_parameter(Type::FLOAT);
+  float_address->addCallback([&](const value& v) { float_parameter_callback(v); });
+
+  auto int_address = local_device->children().front()->create_parameter(Type::INT);
+  int_address->addCallback([&](const value& v) { int_parameter_callback(v); });
+
+  auto curve = Curve<float, int>::create();
+  auto linearSegment = CurveSegmentLinear<int>::create(curve);
+  curve->setInitialvalue(0);
+  curve->add_point(0.5, 5, linearSegment);
+  curve->add_point(1., 10, linearSegment);
+  Behavior b(curve);
+  auto mapper = Mapper::create(float_address, int_address, &b);
+
+  auto start_node = TimeSync::create();
+  auto end_node = TimeSync::create();
+  auto start_event
+      = *(start_node->emplace(start_node->get_time_events().begin(), event_callback));
+  auto end_event
+      = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
+  auto interval
+      = TimeConstraint::create(&interval_callback, start_event, end_event, 100.);
+  interval->add_time_process(mapper);
+
+  interval->set_granularity(10.);
+  interval->start();
+
+  while(interval->running())
+  {
+    double position = interval->getPosition();
+    const Float* current_float = static_cast<const Float*>(float_address->getvalue());
+    const Int* current_int = static_cast<const Int*>(int_address->getvalue());
+
+    std::cout << "at " << position << " : float = " << current_float->value
+              << ", int = " << current_int->value << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
+    float_address->pushvalue(new Float(current_float->value + 0.1));
+  }
 }

@@ -1,14 +1,14 @@
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/node_process.hpp>
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/editor/scenario/clock.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
+#include <ossia/editor/scenario/time_interval.hpp>
+#include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/editor/scenario/time_interval.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/clock.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
 
 /** utility functions to move somewhere else **/
 struct root_scenario
@@ -16,18 +16,21 @@ struct root_scenario
   std::shared_ptr<ossia::time_sync> start_node{std::make_shared<ossia::time_sync>()};
   std::shared_ptr<ossia::time_sync> end_node{std::make_shared<ossia::time_sync>()};
 
-  std::shared_ptr<ossia::time_event> start_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *start_node, ossia::expressions::make_expression_true())};
-  std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *end_node, ossia::expressions::make_expression_true())};
+  std::shared_ptr<ossia::time_event> start_event{std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *start_node,
+      ossia::expressions::make_expression_true())};
+  std::shared_ptr<ossia::time_event> end_event{std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *end_node,
+      ossia::expressions::make_expression_true())};
 
   std::shared_ptr<ossia::time_interval> interval;
   std::shared_ptr<ossia::scenario> scenario;
 
   std::shared_ptr<ossia::time_event> scenario_start;
-  root_scenario(ossia::time_value dur):
-    interval{ossia::time_interval::create(
-               {},
-               *start_event, *end_event, dur, dur, dur)}
-  , scenario{std::make_shared<ossia::scenario>()}
+  root_scenario(ossia::time_value dur)
+      : interval{ossia::time_interval::create(
+          {}, *start_event, *end_event, dur, dur, dur)}
+      , scenario{std::make_shared<ossia::scenario>()}
   {
     using namespace ossia;
     start_node->insert(start_node->get_time_events().end(), start_event);
@@ -36,35 +39,36 @@ struct root_scenario
     interval->add_time_process(this->scenario);
     auto scen_sn = this->scenario->get_start_time_sync();
     auto scen_se = std::make_shared<ossia::time_event>(
-          ossia::time_event::exec_callback{},
-          *scen_sn,
-          ossia::expressions::make_expression_true());
+        ossia::time_event::exec_callback{}, *scen_sn,
+        ossia::expressions::make_expression_true());
     scen_sn->insert(scen_sn->get_time_events().end(), scen_se);
     scenario_start = scen_se;
   }
 
-  auto& add_event() {
+  auto& add_event()
+  {
     auto tn = std::make_shared<ossia::time_sync>();
     scenario->add_time_sync(tn);
     auto ev = std::make_shared<ossia::time_event>(
-          ossia::time_event::exec_callback{},
-          *tn,
-          ossia::expressions::make_expression_true());
+        ossia::time_event::exec_callback{}, *tn,
+        ossia::expressions::make_expression_true());
     tn->insert(tn->get_time_events().end(), ev);
     return *ev;
   }
 
-  auto& add_interval(ossia::time_value tv, ossia::time_event& sev, ossia::time_event& eev)
+  auto&
+  add_interval(ossia::time_value tv, ossia::time_event& sev, ossia::time_event& eev)
   {
-    auto itv = ossia::time_interval::create(ossia::time_interval::exec_callback{}, sev, eev, tv, tv, tv);
+    auto itv = ossia::time_interval::create(
+        ossia::time_interval::exec_callback{}, sev, eev, tv, tv, tv);
     scenario->add_time_interval(itv);
     return *itv;
   }
 };
 
-
-template<typename T>
-std::optional<T> pop_value(const ossia::inlet_ptr& p) {
+template <typename T>
+std::optional<T> pop_value(const ossia::inlet_ptr& p)
+{
   if(p)
   {
     auto ip = p->target<ossia::value_port>();
@@ -82,7 +86,8 @@ std::optional<T> pop_value(const ossia::inlet_ptr& p) {
   return std::nullopt;
 }
 
-void push_value(const ossia::outlet_ptr& p, ossia::value val) {
+void push_value(const ossia::outlet_ptr& p, ossia::value val)
+{
   if(p)
   {
     if(auto op = p->target<ossia::value_port>())
@@ -90,17 +95,23 @@ void push_value(const ossia::outlet_ptr& p, ossia::value val) {
   }
 }
 
-struct my_node final : ossia::graph_node {
-    my_node() {
-      m_inlets.push_back(new ossia::value_inlet);
-      m_outlets.push_back(new ossia::value_outlet);
-    }
+struct my_node final : ossia::graph_node
+{
+  my_node()
+  {
+    m_inlets.push_back(new ossia::value_inlet);
+    m_outlets.push_back(new ossia::value_outlet);
+  }
 
-    void run(const ossia::token_request& t, ossia::exec_state_facade) noexcept override {
-      if(auto a_float = pop_value<float>(this->root_inputs()[0])) {
-        push_value(this->root_outputs()[0], 100 + 50 * std::cos(*a_float) * std::sin(10. * t.position()));
-      }
+  void run(const ossia::token_request& t, ossia::exec_state_facade) noexcept override
+  {
+    if(auto a_float = pop_value<float>(this->root_inputs()[0]))
+    {
+      push_value(
+          this->root_outputs()[0],
+          100 + 50 * std::cos(*a_float) * std::sin(10. * t.position()));
     }
+  }
 };
 int main()
 {
@@ -108,7 +119,9 @@ int main()
   using namespace ossia::net;
   using namespace std::literals;
 
-  generic_device device(std::make_unique<oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"), "max");
+  generic_device device(
+      std::make_unique<oscquery::oscquery_mirror_protocol>("ws://127.0.0.1:5678"),
+      "max");
 
   device.get_protocol().update(device.get_root_node());
   auto foo_p = ossia::net::find_node(device.get_root_node(), "/saw");
@@ -157,7 +170,7 @@ int main()
   itv3.add_time_process(std::make_shared<ossia::node_process>(node2));
 
   // What do we do at each tick
-  score.interval->set_callback(ossia::time_interval::exec_callback{[&] (auto&&...) {
+  score.interval->set_callback(ossia::time_interval::exec_callback{[&](auto&&...) {
     ossia::execution_state e;
     g->state(e);
     e.commit();
@@ -168,5 +181,6 @@ int main()
   clck.set_granularity(100ms);
   clck.start_and_tick();
 
-  while(clck.running()) ;
+  while(clck.running())
+    ;
 }

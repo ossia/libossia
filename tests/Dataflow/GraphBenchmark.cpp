@@ -1,20 +1,26 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include "../Editor/TestUtils.hpp"
+
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/detail/for_each.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/osc_address.hpp>
-#include "../Editor/TestUtils.hpp"
-#include <valgrind/callgrind.h>
-#include <ossia/detail/for_each.hpp>
-#include <brigand/sequences/list.hpp>
-#include <random>
+
 #include <QCoreApplication>
-#include <QTextStream>
 #include <QFile>
+#include <QTextStream>
+
+#include <brigand/sequences/list.hpp>
+#include <valgrind/callgrind.h>
+
+#include <random>
 
 static const constexpr int NUM_TAKES = 2;
-static const constexpr auto NUM_NODES = {1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 150, 200, 250, 300, 400, 500/*, 600, 700, 800, 900, 1000*/};
+static const constexpr auto NUM_NODES
+    = {1,  10,  20,  30,  40,  50,  60,  70, 80,
+       90, 100, 150, 200, 250, 300, 400, 500 /*, 600, 700, 800, 900, 1000*/};
 //static const constexpr auto NUM_NODES = {1, 30, 50};
 
 static std::random_device rd{};
@@ -35,38 +41,40 @@ std::string graph_kind(const ossia::tc_graph& g)
 }
 namespace ossia
 {
-template<typename Port_T>
+template <typename Port_T>
 auto make_inlet()
 {
-    if constexpr(std::is_same_v<Port_T, value_port>) return new ossia::value_inlet{};
-    if constexpr(std::is_same_v<Port_T, audio_port>) return new ossia::audio_inlet{};
-    if constexpr(std::is_same_v<Port_T, midi_port>) return new ossia::midi_inlet{};
+  if constexpr(std::is_same_v<Port_T, value_port>)
+    return new ossia::value_inlet{};
+  if constexpr(std::is_same_v<Port_T, audio_port>)
+    return new ossia::audio_inlet{};
+  if constexpr(std::is_same_v<Port_T, midi_port>)
+    return new ossia::midi_inlet{};
 }
-template<typename Port_T>
+template <typename Port_T>
 auto make_outlet()
 {
-    if constexpr(std::is_same_v<Port_T, value_port>) return new ossia::value_outlet{};
-    if constexpr(std::is_same_v<Port_T, audio_port>) return new ossia::audio_outlet{};
-    if constexpr(std::is_same_v<Port_T, midi_port>) return new ossia::midi_outlet{};
+  if constexpr(std::is_same_v<Port_T, value_port>)
+    return new ossia::value_outlet{};
+  if constexpr(std::is_same_v<Port_T, audio_port>)
+    return new ossia::audio_outlet{};
+  if constexpr(std::is_same_v<Port_T, midi_port>)
+    return new ossia::midi_outlet{};
 }
 }
-template<typename Port_T>
-class node_empty_mock final : public graph_node {
+template <typename Port_T>
+class node_empty_mock final : public graph_node
+{
 public:
   std::string lbl{};
-  std::string label() const noexcept override
-  {
-    return lbl;
-  }
+  std::string label() const noexcept override { return lbl; }
   node_empty_mock()
   {
     m_inlets.push_back(ossia::make_inlet<Port_T>());
     m_outlets.push_back(ossia::make_outlet<Port_T>());
   }
 
-  void run(const token_request& t, exec_state_facade e) noexcept override
-  {
-  }
+  void run(const token_request& t, exec_state_facade e) noexcept override { }
 };
 
 using value_mock = node_empty_mock<ossia::value_port>;
@@ -83,73 +91,76 @@ struct benchmarks
   benchmark boost_tc;
 };
 
-
 struct measure_dirty_tick
 {
-template<typename T, typename U>
-auto operator()(T& g, const U& nodes)
-{
-  ossia::execution_state e;
-
-  double count = 0;
-  for(int i = 0; i < NUM_TAKES; i++)
+  template <typename T, typename U>
+  auto operator()(T& g, const U& nodes)
   {
-    g.mark_dirty();
-    for(auto& node : nodes)
-      node->request({});
-    auto t0 = std::chrono::high_resolution_clock::now();
-    CALLGRIND_START_INSTRUMENTATION;
-    g.state(e);
-    CALLGRIND_STOP_INSTRUMENTATION;
-    auto t1 = std::chrono::high_resolution_clock::now();
-    auto this_count = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-    if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0) > std::chrono::milliseconds(50))
-      throw std::runtime_error("too long");
-    count += this_count;
+    ossia::execution_state e;
 
+    double count = 0;
+    for(int i = 0; i < NUM_TAKES; i++)
+    {
+      g.mark_dirty();
+      for(auto& node : nodes)
+        node->request({});
+      auto t0 = std::chrono::high_resolution_clock::now();
+      CALLGRIND_START_INSTRUMENTATION;
+      g.state(e);
+      CALLGRIND_STOP_INSTRUMENTATION;
+      auto t1 = std::chrono::high_resolution_clock::now();
+      auto this_count
+          = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+      if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0)
+         > std::chrono::milliseconds(50))
+        throw std::runtime_error("too long");
+      count += this_count;
+    }
+    return count / double(NUM_TAKES);
   }
-  return count / double(NUM_TAKES);
-}
 };
 
 struct measure_clean_tick
 {
-template<typename T, typename U>
-auto operator()(T& g, const U& nodes)
-{
-  ossia::execution_state e;
-
-  // ensure that a tick happens to make it clean
-  g.state(e);
-
-  // measure
-  double count = 0;
-  for(int i = 0; i < NUM_TAKES; i++)
+  template <typename T, typename U>
+  auto operator()(T& g, const U& nodes)
   {
-    for(auto& node : nodes)
-      node->request({});
-    auto t0 = std::chrono::high_resolution_clock::now();
-    CALLGRIND_START_INSTRUMENTATION;
-    g.state(e);
-    CALLGRIND_STOP_INSTRUMENTATION;
-    auto t1 = std::chrono::high_resolution_clock::now();
-    auto this_count = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
-    if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0) > std::chrono::milliseconds(50))
-      throw std::runtime_error("too long");
-    count += this_count;
-  }
+    ossia::execution_state e;
 
-  return count / double(NUM_TAKES);
-}
+    // ensure that a tick happens to make it clean
+    g.state(e);
+
+    // measure
+    double count = 0;
+    for(int i = 0; i < NUM_TAKES; i++)
+    {
+      for(auto& node : nodes)
+        node->request({});
+      auto t0 = std::chrono::high_resolution_clock::now();
+      CALLGRIND_START_INSTRUMENTATION;
+      g.state(e);
+      CALLGRIND_STOP_INSTRUMENTATION;
+      auto t1 = std::chrono::high_resolution_clock::now();
+      auto this_count
+          = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+      if(std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0)
+         > std::chrono::milliseconds(50))
+        throw std::runtime_error("too long");
+      count += this_count;
+    }
+
+    return count / double(NUM_TAKES);
+  }
 };
 
-template<typename Fun>
+template <typename Fun>
 auto test_graph(Fun setup_fun)
 {
-  auto do_bench = [&] (auto graph_t, auto measure_fun, auto& bench_kind) {
+  auto do_bench = [&](auto graph_t, auto measure_fun, auto& bench_kind) {
     for(int num_nodes : NUM_NODES)
     {
-      try {
+      try
+      {
         double count = 0;
         for(int i = 0; i < NUM_TAKES; i++)
         {
@@ -158,7 +169,11 @@ auto test_graph(Fun setup_fun)
         }
         count = count / double(NUM_TAKES);
         bench_kind.insert({num_nodes, count});
-      } catch(...) { break; }
+      }
+      catch(...)
+      {
+        break;
+      }
     }
   };
 
@@ -172,10 +187,9 @@ auto test_graph(Fun setup_fun)
   return benchs;
 }
 
-
 struct setup_serial_connected
 {
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
@@ -186,9 +200,9 @@ struct setup_serial_connected
       auto n = std::make_shared<value_mock>();
       if(prev)
       {
-        g.connect(ossia::make_edge(ossia::immediate_strict_connection{}
-                                   , prev->root_outputs()[0], n->root_inputs()[0]
-            , prev, n));
+        g.connect(ossia::make_edge(
+            ossia::immediate_strict_connection{}, prev->root_outputs()[0],
+            n->root_inputs()[0], prev, n));
       }
       prev = n;
       nodes.push_back(n);
@@ -201,16 +215,19 @@ struct setup_serial_connected
 struct setup_serial_address
 {
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
 
-    auto prev_addr = ossia::net::create_node(dev.device.get_root_node(), "0").create_parameter(ossia::val_type::FLOAT);
+    auto prev_addr = ossia::net::create_node(dev.device.get_root_node(), "0")
+                         .create_parameter(ossia::val_type::FLOAT);
 
     for(int i = 0; i < num_nodes; i++)
     {
-      auto next_addr = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
+      auto next_addr
+          = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i + 1))
+                .create_parameter(ossia::val_type::FLOAT);
       auto n = std::make_shared<value_mock>();
       n->root_inputs()[0]->address = prev_addr;
       n->root_outputs()[0]->address = next_addr;
@@ -225,7 +242,7 @@ struct setup_serial_address
 struct setup_parallel_1node_address
 {
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_port, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
@@ -239,12 +256,16 @@ struct setup_parallel_1node_address
     nodes.push_back(n2);
     for(int i = 0; i < num_port; i++)
     {
-      auto out_addr = ossia::net::create_node(dev.device.get_root_node(), "out" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
+      auto out_addr = ossia::net::create_node(
+                          dev.device.get_root_node(), "out" + std::to_string(i + 1))
+                          .create_parameter(ossia::val_type::FLOAT);
       auto outlet = new ossia::value_outlet;
       outlet->address = out_addr;
       n1->root_outputs().push_back(outlet);
 
-      auto in_addr = ossia::net::create_node(dev.device.get_root_node(), "in" + std::to_string(i+1)).create_parameter(ossia::val_type::FLOAT);
+      auto in_addr = ossia::net::create_node(
+                         dev.device.get_root_node(), "in" + std::to_string(i + 1))
+                         .create_parameter(ossia::val_type::FLOAT);
       auto inlet = new ossia::value_inlet;
       inlet->address = in_addr;
       n2->root_inputs().push_back(inlet);
@@ -256,7 +277,7 @@ struct setup_parallel_1node_address
 struct setup_parallel_1node_connected
 {
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_port, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
@@ -276,7 +297,8 @@ struct setup_parallel_1node_connected
       auto inlet = new ossia::value_inlet;
       n2->root_inputs().push_back(inlet);
 
-      auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);
+      auto edge = ossia::make_edge(
+          ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);
       g.connect(edge);
     }
     return nodes;
@@ -286,14 +308,15 @@ struct setup_parallel_1node_connected
 struct setup_parallel_address
 {
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
 
-    for(int i = 0; i < num_nodes; i+=2)
+    for(int i = 0; i < num_nodes; i += 2)
     {
-      auto addr = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i)).create_parameter(ossia::val_type::FLOAT);
+      auto addr = ossia::net::create_node(dev.device.get_root_node(), std::to_string(i))
+                      .create_parameter(ossia::val_type::FLOAT);
       auto n1 = std::make_shared<value_mock>();
       auto n2 = std::make_shared<value_mock>();
       n1->root_outputs()[0]->address = addr;
@@ -311,12 +334,12 @@ struct setup_parallel_address
 struct setup_parallel_connected
 {
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<std::shared_ptr<ossia::graph_node>> nodes;
 
-    for(int i = 0; i < num_nodes; i+=2)
+    for(int i = 0; i < num_nodes; i += 2)
     {
       auto n1 = std::make_shared<value_mock>();
       auto n2 = std::make_shared<value_mock>();
@@ -324,7 +347,9 @@ struct setup_parallel_connected
       nodes.push_back(n1);
       nodes.push_back(n2);
 
-      auto edge = ossia::make_edge(ossia::immediate_strict_connection{}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2);
+      auto edge = ossia::make_edge(
+          ossia::immediate_strict_connection{}, n1->root_outputs()[0],
+          n2->root_inputs()[0], n1, n2);
       g.add_node(std::move(n1));
       g.add_node(std::move(n2));
       g.connect(edge);
@@ -334,9 +359,9 @@ struct setup_parallel_connected
   }
 };
 
-
-template<typename T>
-void setup_random_edges(const std::vector<std::shared_ptr<value_mock>>& nodes, T& g, double edge_chance)
+template <typename T>
+void setup_random_edges(
+    const std::vector<std::shared_ptr<value_mock>>& nodes, T& g, double edge_chance)
 {
   for(std::size_t i = 0; i < nodes.size(); i++)
   {
@@ -344,16 +369,18 @@ void setup_random_edges(const std::vector<std::shared_ptr<value_mock>>& nodes, T
     {
       if(std::uniform_real_distribution<double>{0., 1.}(mt) < edge_chance)
       {
-        auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                     nodes[i]->root_outputs()[0], nodes[j]->root_inputs()[0],
-                                     nodes[i], nodes[j]);
+        auto edge = ossia::make_edge(
+            ossia::immediate_strict_connection{}, nodes[i]->root_outputs()[0],
+            nodes[j]->root_inputs()[0], nodes[i], nodes[j]);
         g.connect(edge);
       }
     }
   }
 }
 
-void setup_random_address(value_mock& node, const std::vector<ossia::net::parameter_base*>& addresses, double addr_chance)
+void setup_random_address(
+    value_mock& node, const std::vector<ossia::net::parameter_base*>& addresses,
+    double addr_chance)
 {
   if(!addresses.empty())
   {
@@ -367,11 +394,11 @@ void setup_random_address(value_mock& node, const std::vector<ossia::net::parame
     {
       auto idx = std::uniform_int_distribution<std::size_t>{0, addresses.size() - 1}(mt);
       node.root_outputs()[0]->address = addresses[idx];
-      node.lbl += "\nout: " + ossia::net::osc_parameter_string(addresses[idx]->get_node());
+      node.lbl
+          += "\nout: " + ossia::net::osc_parameter_string(addresses[idx]->get_node());
     }
   }
 }
-
 
 struct setup_random
 {
@@ -379,7 +406,7 @@ struct setup_random
   double addr_chance{1.}; // 0: no edges. 1: maximal.
   int num_addresses{0};
   mutable TestDevice dev{};
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<ossia::net::parameter_base*> addresses;
@@ -387,7 +414,9 @@ struct setup_random
 
     for(int i = 0; i < num_addresses; i++)
     {
-      addresses.push_back(ossia::net::create_node(dev.device.get_root_node(), std::to_string(i)).create_parameter(ossia::val_type::FLOAT));
+      addresses.push_back(
+          ossia::net::create_node(dev.device.get_root_node(), std::to_string(i))
+              .create_parameter(ossia::val_type::FLOAT));
     }
 
     for(int i = 0; i < num_nodes; i++)
@@ -406,65 +435,142 @@ struct setup_random
 int main()
 {
   ossia::string_map<benchmarks> benchs;
-  benchs.insert(std::make_pair("serial connected", test_graph(setup_serial_connected{})));
+  benchs.insert(
+      std::make_pair("serial connected", test_graph(setup_serial_connected{})));
   benchs.insert(std::make_pair("serial address", test_graph(setup_serial_address{})));
 
-  benchs.insert(std::make_pair("parallel 1 node connected", test_graph(setup_parallel_1node_connected{})));
-  benchs.insert(std::make_pair("parallel 1 node address", test_graph(setup_parallel_1node_address{})));
+  benchs.insert(std::make_pair(
+      "parallel 1 node connected", test_graph(setup_parallel_1node_connected{})));
+  benchs.insert(std::make_pair(
+      "parallel 1 node address", test_graph(setup_parallel_1node_address{})));
 
-  benchs.insert(std::make_pair("parallel connected", test_graph(setup_parallel_connected{})));
-  benchs.insert(std::make_pair("parallel address", test_graph(setup_parallel_address{})));
+  benchs.insert(
+      std::make_pair("parallel connected", test_graph(setup_parallel_connected{})));
+  benchs.insert(
+      std::make_pair("parallel address", test_graph(setup_parallel_address{})));
 
   benchs.insert(std::make_pair("random edge (10p)", test_graph(setup_random{0.1})));
   benchs.insert(std::make_pair("random edge (50p)", test_graph(setup_random{0.5})));
   benchs.insert(std::make_pair("random edge (90p)", test_graph(setup_random{0.9})));
   benchs.insert(std::make_pair("random edge (100p)", test_graph(setup_random{1.})));
 
-  benchs.insert(std::make_pair("random 10 addresses (10p)", test_graph(setup_random{0., 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (50p)", test_graph(setup_random{0., 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (90p)", test_graph(setup_random{0., 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (100p)", test_graph(setup_random{0., 1., 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (10p)", test_graph(setup_random{0., 0.1, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (50p)", test_graph(setup_random{0., 0.5, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (90p)", test_graph(setup_random{0., 0.9, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (100p)", test_graph(setup_random{0., 1., 10})));
 
-  benchs.insert(std::make_pair("random 100 addresses (10p)", test_graph(setup_random{0., 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (50p)", test_graph(setup_random{0., 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (90p)", test_graph(setup_random{0., 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (100p)", test_graph(setup_random{0., 1., 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (10p)", test_graph(setup_random{0., 0.1, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (50p)", test_graph(setup_random{0., 0.5, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (90p)", test_graph(setup_random{0., 0.9, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (100p)", test_graph(setup_random{0., 1., 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 10p)", test_graph(setup_random{0.1, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 50p)", test_graph(setup_random{0.1, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 90p)", test_graph(setup_random{0.1, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 10p, addr 100p)", test_graph(setup_random{0.1, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 10p)", test_graph(setup_random{0.1, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 50p)", test_graph(setup_random{0.1, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 90p)", test_graph(setup_random{0.1, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 10p, addr 100p)", test_graph(setup_random{0.1, 1.0, 100})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 10p, addr 10p)",
+      test_graph(setup_random{0.1, 0.1, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 10p, addr 50p)",
+      test_graph(setup_random{0.1, 0.5, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 10p, addr 90p)",
+      test_graph(setup_random{0.1, 0.9, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 10p, addr 100p)",
+      test_graph(setup_random{0.1, 1., 10})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 10p, addr 10p)",
+      test_graph(setup_random{0.1, 0.1, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 10p, addr 50p)",
+      test_graph(setup_random{0.1, 0.5, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 10p, addr 90p)",
+      test_graph(setup_random{0.1, 0.9, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 10p, addr 100p)",
+      test_graph(setup_random{0.1, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 10p)", test_graph(setup_random{0.5, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 50p)", test_graph(setup_random{0.5, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 90p)", test_graph(setup_random{0.5, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 50p, addr 100p)", test_graph(setup_random{0.5, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 10p)", test_graph(setup_random{0.5, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 50p)", test_graph(setup_random{0.5, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 90p)", test_graph(setup_random{0.5, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 50p, addr 100p)", test_graph(setup_random{0.5, 1.0, 100})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 50p, addr 10p)",
+      test_graph(setup_random{0.5, 0.1, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 50p, addr 50p)",
+      test_graph(setup_random{0.5, 0.5, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 50p, addr 90p)",
+      test_graph(setup_random{0.5, 0.9, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 50p, addr 100p)",
+      test_graph(setup_random{0.5, 1., 10})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 50p, addr 10p)",
+      test_graph(setup_random{0.5, 0.1, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 50p, addr 50p)",
+      test_graph(setup_random{0.5, 0.5, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 50p, addr 90p)",
+      test_graph(setup_random{0.5, 0.9, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 50p, addr 100p)",
+      test_graph(setup_random{0.5, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 10p)", test_graph(setup_random{0.9, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 50p)", test_graph(setup_random{0.9, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 90p)", test_graph(setup_random{0.9, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 90p, addr 100p)", test_graph(setup_random{0.9, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 10p)", test_graph(setup_random{0.9, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 50p)", test_graph(setup_random{0.9, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 90p)", test_graph(setup_random{0.9, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 90p, addr 100p)", test_graph(setup_random{0.9, 1.0, 100})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 90p, addr 10p)",
+      test_graph(setup_random{0.9, 0.1, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 90p, addr 50p)",
+      test_graph(setup_random{0.9, 0.5, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 90p, addr 90p)",
+      test_graph(setup_random{0.9, 0.9, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 90p, addr 100p)",
+      test_graph(setup_random{0.9, 1., 10})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 90p, addr 10p)",
+      test_graph(setup_random{0.9, 0.1, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 90p, addr 50p)",
+      test_graph(setup_random{0.9, 0.5, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 90p, addr 90p)",
+      test_graph(setup_random{0.9, 0.9, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 90p, addr 100p)",
+      test_graph(setup_random{0.9, 1.0, 100})));
 
-  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 10p)", test_graph(setup_random{1.0, 0.1, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 50p)", test_graph(setup_random{1.0, 0.5, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 90p)", test_graph(setup_random{1.0, 0.9, 10})));
-  benchs.insert(std::make_pair("random 10 addresses (edge 100p, addr 100p)", test_graph(setup_random{1.0, 1., 10})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 10p)", test_graph(setup_random{1.0, 0.1, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 50p)", test_graph(setup_random{1.0, 0.5, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 90p)", test_graph(setup_random{1.0, 0.9, 100})));
-  benchs.insert(std::make_pair("random 100 addresses (edge 100p, addr 100p)", test_graph(setup_random{1.0, 1.0, 100})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 100p, addr 10p)",
+      test_graph(setup_random{1.0, 0.1, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 100p, addr 50p)",
+      test_graph(setup_random{1.0, 0.5, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 100p, addr 90p)",
+      test_graph(setup_random{1.0, 0.9, 10})));
+  benchs.insert(std::make_pair(
+      "random 10 addresses (edge 100p, addr 100p)",
+      test_graph(setup_random{1.0, 1., 10})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 100p, addr 10p)",
+      test_graph(setup_random{1.0, 0.1, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 100p, addr 50p)",
+      test_graph(setup_random{1.0, 0.5, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 100p, addr 90p)",
+      test_graph(setup_random{1.0, 0.9, 100})));
+  benchs.insert(std::make_pair(
+      "random 100 addresses (edge 100p, addr 100p)",
+      test_graph(setup_random{1.0, 1.0, 100})));
 
   // The plots we want:
   // For each bench: comparison between dynamic, bfs and transitive closure, in the clean and dirty case. So 6 curves
@@ -474,15 +580,20 @@ int main()
     f.open(QIODevice::WriteOnly);
     QTextStream ts(&f);
     // NumNodes Dynamic StaticClean BfsDirty TClosDirty
-    ts << "$N$"          << "\t"
-       << "Dyn"          << "\t"
-       << "StaticClean"  << "\t"
-       << "BFSDirty"     << "\t"
-       << "TCDirty"      << "\n";
+    ts << "$N$"
+       << "\t"
+       << "Dyn"
+       << "\t"
+       << "StaticClean"
+       << "\t"
+       << "BFSDirty"
+       << "\t"
+       << "TCDirty"
+       << "\n";
 
     for(int n : NUM_NODES)
     {
-      auto add_value = [&] (const benchmark& bench) {
+      auto add_value = [&](const benchmark& bench) {
         auto it = bench.find(n);
         if(it != bench.end())
           ts << it->second;

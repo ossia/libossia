@@ -1,20 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
-#include <ossia-qt/device/qt_device.hpp>
-#include <iostream>
-#include <verdigris>
-#include <wobjectimpl.h>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include <QVector>
-#include <QTimer>
+#include <ossia-qt/device/qt_device.hpp>
+
 #include <QCoreApplication>
+#include <QTimer>
+#include <QVector>
 #include <QtGui/QVector3D>
+
+#include <catch.hpp>
+#include <wobjectimpl.h>
+
+#include <iostream>
+#include <verdigris>
 
 class SomeObject : public QObject
 {
@@ -27,24 +30,15 @@ class SomeObject : public QObject
 
 public:
   using QObject::QObject;
-  QVector3D vec3() const
-  {
-    return m_vec3;
-  }
-  QString str() const
-  {
-    return m_str;
-  }
+  QVector3D vec3() const { return m_vec3; }
+  QString str() const { return m_str; }
 
-  int tutu() const
-  {
-    return m_tutu;
-  }
+  int tutu() const { return m_tutu; }
 
 public:
   void setVec3(QVector3D vec3)
   {
-    if (m_vec3 == vec3)
+    if(m_vec3 == vec3)
       return;
 
     m_vec3 = vec3;
@@ -52,7 +46,7 @@ public:
   }
   void setStr(QString str)
   {
-    if (m_str == str)
+    if(m_str == str)
       return;
 
     m_str = str;
@@ -61,7 +55,7 @@ public:
 
   void setTutu(int tutu)
   {
-    if (m_tutu == tutu)
+    if(m_tutu == tutu)
       return;
 
     m_tutu = tutu;
@@ -75,13 +69,13 @@ public:
   W_PROPERTY(int, tutu READ tutu WRITE setTutu NOTIFY tutuChanged)
   W_PROPERTY(QString, str READ str WRITE setStr NOTIFY strChanged)
   W_PROPERTY(QVector3D, vec3 READ vec3 WRITE setVec3 NOTIFY vec3Changed)
-
 };
 using namespace ossia;
 
-TEST_CASE ("test_device", "test_device")
+TEST_CASE("test_device", "test_device")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
 
   QObject obj1{&app};
@@ -92,12 +86,12 @@ TEST_CASE ("test_device", "test_device")
   ossia::context context;
 
   ossia::qt::qt_device dev{
-    app, std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice" };
+      app, std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice"};
 
   obj2.setTutu(555);
   obj2.setVec3({1, 2, 3});
 
-  QTimer::singleShot(3000, [&] () { app.exit(); });
+  QTimer::singleShot(3000, [&]() { app.exit(); });
 
   app.exec();
 }

@@ -11,15 +11,15 @@
  */
 
 #include <ossia/detail/config.hpp>
-#include <ossia/network/local/local.hpp>
+
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/value/value.hpp>
 
+#include <functional>
 #include <iostream>
 #include <memory>
-#include <functional>
-
 
 using namespace ossia;
 using namespace std;
@@ -44,7 +44,6 @@ int main()
      /test/my_destination
      /test/my_tuple
      */
-
 
   auto localTestNode = device.create_child("test");
 
@@ -86,9 +85,10 @@ int main()
   localTupleAddress->push_value(std::vector<ossia::value>{0., 1., 2.});
 
   // declare a distant program as a Minuit device
-  local_proto.expose_to(std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));
+  local_proto.expose_to(
+      std::make_unique<net::minuit_protocol>("B", "127.0.0.1", 9999, 6666));
 
-  while (true)
+  while(true)
     ;
 }
 
@@ -96,4 +96,3 @@ void printValueCallback(const value& v)
 {
   cerr << "Callback: " << value_to_pretty_string(v) << "\n";
 }
-

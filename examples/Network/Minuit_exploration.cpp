@@ -11,14 +11,16 @@
  */
 
 #include <ossia/detail/config.hpp>
-#include <ossia/network/local/local.hpp>
+
 #include <ossia/network/base/osc_address.hpp>
-#include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/common/debug.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/minuit/minuit.hpp>
+
+#include <functional>
 #include <iostream>
 #include <memory>
-#include <functional>
 using namespace ossia;
 using namespace ossia::net;
 using namespace std;
@@ -29,8 +31,7 @@ int main()
 {
   // This program is named "A" and mirrors a remote device named "B".
   ossia::net::generic_device device{
-    std::make_unique<ossia::net::minuit_protocol>("A", "127.0.0.1", 6666, 9999),
-        "B"};
+      std::make_unique<ossia::net::minuit_protocol>("A", "127.0.0.1", 6666, 9999), "B"};
 
   // explore the tree of B
   device.get_protocol().update(device);
@@ -41,14 +42,14 @@ int main()
 
 void explore(const ossia::net::node_base& node)
 {
-  for (const auto& child : node.children_copy())
+  for(const auto& child : node.children_copy())
   {
-    if (auto addr = child->get_parameter())
+    if(auto addr = child->get_parameter())
     {
       // attach to callback to display value update
-      addr->add_callback([=] (const value& v) {
-        std::cerr << "Callback: " << osc_parameter_string(*addr)
-                  << " : " <<  value_to_pretty_string(v) << std::endl;
+      addr->add_callback([=](const value& v) {
+        std::cerr << "Callback: " << osc_parameter_string(*addr) << " : "
+                  << value_to_pretty_string(v) << std::endl;
       });
 
       // update the value

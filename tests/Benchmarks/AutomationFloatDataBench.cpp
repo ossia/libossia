@@ -1,50 +1,51 @@
 #include <ossia/detail/any.hpp>
-#include <valgrind/callgrind.h>
 #include <ossia/detail/pod_vector.hpp>
+
 #include <boost/graph/adjacency_list.hpp>
+
+#include <valgrind/callgrind.h>
+
 #include <flat_hash_map.hpp>
+
 #include <random>
 #include <sstream>
 
 #define private public
 #include "../Editor/TestUtils.hpp"
+
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-
-
 
 static const constexpr int NUM_TAKES = 100;
-static const constexpr auto NUM_CURVES = {1, 10, 20, 30, 40,
-                                          50, 60, 70, 80, 90,
-                                          100, 150, 200, 250,
-                                          300, 400, 500
-                                          , 600, 700, 800, 900, 1000};
-
+static const constexpr auto NUM_CURVES
+    = {1,   10,  20,  30,  40,  50,  60,  70,  80,  90,  100,
+       150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000};
 
 struct tick_nodes_custom
 {
-    ossia::execution_state& e;
-    ossia::graph_base& g;
+  ossia::execution_state& e;
+  ossia::graph_base& g;
 
-    template<typename Fun>
-    void operator()(unsigned long samples, Fun f) const
-    {
-      using namespace ossia;
-      e.clear_local_state();
-      e.get_new_values();
-      e.samples_since_start += samples;
+  template <typename Fun>
+  void operator()(unsigned long samples, Fun f) const
+  {
+    using namespace ossia;
+    e.clear_local_state();
+    e.get_new_values();
+    e.samples_since_start += samples;
 
-      for(auto& node : g.m_nodes)
-        node.first->request(ossia::simple_token_request{0_tv, ossia::time_value{e.samples_since_start}});
+    for(auto& node : g.m_nodes)
+      node.first->request(
+          ossia::simple_token_request{0_tv, ossia::time_value{e.samples_since_start}});
 
-      g.state(e);
-      (e.*f)();
-    }
+    g.state(e);
+    (e.*f)();
+  }
 };
 int main()
 {
@@ -61,10 +62,12 @@ int main()
     for(int i = 0; i < N; i++)
     {
       auto node = std::make_shared<ossia::nodes::automation>();
-      node->root_outputs()[0]->address = t.float_params[std::abs(rand()) % t.float_params.size()];
+      node->root_outputs()[0]->address
+          = t.float_params[std::abs(rand()) % t.float_params.size()];
 
       auto v = std::make_shared<ossia::curve<double, float>>();
-      v->set_x0(0.); v->set_y0(0.);
+      v->set_x0(0.);
+      v->set_y0(0.);
       v->add_point(ossia::easing::ease{}, 1., 1.);
       node->set_behavior(v);
       g.add_node(node);
@@ -72,7 +75,7 @@ int main()
 
     ossia::execution_state e;
     e.register_device(&t.device);
-    tick_nodes_custom tick{e,g};
+    tick_nodes_custom tick{e, g};
     ossia::time_value v{};
     // run a first tick to init the graph
 
@@ -81,7 +84,9 @@ int main()
     tick(i++, &execution_state::commit_ordered);
     tick(i++, &execution_state::commit_merged);
     ossia::double_vector counts;
-    for(auto fun : {&execution_state::commit, &execution_state::commit_ordered, &execution_state::commit_merged})
+    for(auto fun :
+        {&execution_state::commit, &execution_state::commit_ordered,
+         &execution_state::commit_merged})
     {
       int64_t count = 0;
 
@@ -98,7 +103,8 @@ int main()
       counts.push_back(count / double(NUM_TAKES));
     }
 
-    std::cout << N << "\t" << counts[0] << "\t" << counts[1] << "\t" << counts[2] << std::endl;
+    std::cout << N << "\t" << counts[0] << "\t" << counts[1] << "\t" << counts[2]
+              << std::endl;
   }
   CALLGRIND_DUMP_STATS;
 }

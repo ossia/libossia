@@ -1,28 +1,30 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "../Editor/TestUtils.hpp"
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/pod_vector.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
+
+#include <catch.hpp>
+
+#include <atomic>
 #include <iostream>
 #include <thread>
-#include <atomic>
-#include "../Editor/TestUtils.hpp"
-#include <ossia/detail/pod_vector.hpp>
 #if __has_include(<valgrind/callgrind.h>)
 #include <valgrind/callgrind.h>
 #define USE_CALLGRIND 1
 #endif
 using namespace ossia;
 std::vector<ossia::double_vector> data{4};
-static const constexpr int benchmark_range[] = {0, 1, 2, 5, 10, 50, 100, 200, 300, 400, 500, 600,
-                                                700, 800, 900, 1000, 2000, 3000, 4000, 5000
-                                                 , 6000, 7000, 8000, 9000, 10000
-                                                // , 100000
+static const constexpr int benchmark_range[] = {
+    0,   1,   2,    5,    10,   50,   100,  200,  300,  400,  500,  600,  700,
+    800, 900, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000, 10000
+    // , 100000
 
-                                                };
+};
 
 void print_states(const ossia::scenario& s)
 {
@@ -41,9 +43,7 @@ void print_states(const ossia::scenario& s)
 }
 
 void add_interval_parallel(
-    ossia::scenario& s,
-    ossia::time_value def = 100._tv,
-    ossia::time_value min = 100._tv,
+    ossia::scenario& s, ossia::time_value def = 100._tv, ossia::time_value min = 100._tv,
     ossia::time_value max = 100._tv)
 {
   using namespace ossia;
@@ -52,31 +52,32 @@ void add_interval_parallel(
   auto en = std::make_shared<ossia::time_sync>();
   s.add_time_sync(en);
   en->set_expression(ossia::expressions::make_expression_false());
-  auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
+  auto ee = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *en,
+      ossia::expressions::make_expression_true());
   en->insert(en->get_time_events().end(), ee);
-  auto c = ossia::time_interval::create([] (auto&&...) {}, *se, *ee, def, min, max);
+  auto c = ossia::time_interval::create([](auto&&...) {}, *se, *ee, def, min, max);
   s.add_time_interval(c);
 }
 
 ossia::time_event* add_interval_serial(
-    ossia::scenario& s,
-    ossia::time_event& se,
-    ossia::time_value def = 100._tv,
-    ossia::time_value min = 100._tv,
-    ossia::time_value max = 100._tv)
+    ossia::scenario& s, ossia::time_event& se, ossia::time_value def = 100._tv,
+    ossia::time_value min = 100._tv, ossia::time_value max = 100._tv)
 {
   using namespace ossia;
   auto en = std::make_shared<ossia::time_sync>();
   s.add_time_sync(en);
   en->set_expression(ossia::expressions::make_expression_false());
-  auto ee = std::make_shared<ossia::time_event>(ossia::time_event::exec_callback{}, *en, ossia::expressions::make_expression_true());
+  auto ee = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *en,
+      ossia::expressions::make_expression_true());
   en->insert(en->get_time_events().end(), ee);
-  auto c = ossia::time_interval::create([] (auto&&...) {}, se, *ee, def, min, max);
+  auto c = ossia::time_interval::create([](auto&&...) {}, se, *ee, def, min, max);
   s.add_time_interval(c);
   return ee.get();
 }
 
-TEST_CASE ("test_states_rigid", "test_states_rigid")
+TEST_CASE("test_states_rigid", "test_states_rigid")
 {
   root_scenario root;
   add_interval_parallel(*root.scenario, 2_tv, 2_tv, 2_tv);
@@ -106,7 +107,7 @@ TEST_CASE ("test_states_rigid", "test_states_rigid")
   print_states(*root.scenario);
 }
 
-TEST_CASE ("test_states_flexible", "test_states_flexible")
+TEST_CASE("test_states_flexible", "test_states_flexible")
 {
   root_scenario root;
   add_interval_parallel(*root.scenario, 3_tv, 2_tv, 4_tv);
@@ -140,7 +141,7 @@ TEST_CASE ("test_states_flexible", "test_states_flexible")
   print_states(*root.scenario);
 }
 
-TEST_CASE ("test_states_flexible_no_min", "test_states_flexible_no_min")
+TEST_CASE("test_states_flexible_no_min", "test_states_flexible_no_min")
 {
   root_scenario root;
   add_interval_parallel(*root.scenario, 3_tv, 0_tv, 4_tv);
@@ -174,7 +175,7 @@ TEST_CASE ("test_states_flexible_no_min", "test_states_flexible_no_min")
   print_states(*root.scenario);
 }
 
-TEST_CASE ("test_states_flexible_no_max", "test_states_flexible_no_max")
+TEST_CASE("test_states_flexible_no_max", "test_states_flexible_no_max")
 {
   root_scenario root;
   add_interval_parallel(*root.scenario, 3_tv, 2_tv, ossia::Infinite);
@@ -216,7 +217,7 @@ void cleanup_tokens(root_scenario& rt)
     itv->node->requested_tokens.clear();
 }
 
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   root_scenario root;
 
@@ -240,7 +241,7 @@ TEST_CASE ("test_basic", "test_basic")
   std::cerr << tick_us << "\n";
 }
 
-TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
+TEST_CASE("test_graph_parallel_fixed", "test_graph_parallel_fixed")
 {
   std::map<int, double> dur;
   for(auto k : benchmark_range)
@@ -277,7 +278,6 @@ TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
   CALLGRIND_DUMP_STATS;
 #endif
 
-
   for(auto e : dur)
   {
     data[0].push_back(e.second);
@@ -285,7 +285,7 @@ TEST_CASE ("test_graph_parallel_fixed", "test_graph_parallel_fixed")
   }
 }
 
-TEST_CASE ("test_graph_parallel_infinite", "test_graph_parallel_infinite")
+TEST_CASE("test_graph_parallel_infinite", "test_graph_parallel_infinite")
 {
   std::map<int, double> dur;
   for(auto k : benchmark_range)
@@ -322,7 +322,6 @@ TEST_CASE ("test_graph_parallel_infinite", "test_graph_parallel_infinite")
   CALLGRIND_DUMP_STATS;
 #endif
 
-
   for(auto e : dur)
   {
     data[1].push_back(e.second);
@@ -330,7 +329,7 @@ TEST_CASE ("test_graph_parallel_infinite", "test_graph_parallel_infinite")
   }
 }
 
-TEST_CASE ("test_graph_serial", "test_graph_serial")
+TEST_CASE("test_graph_serial", "test_graph_serial")
 {
   std::map<int, double> dur;
   for(auto k : benchmark_range)
@@ -374,7 +373,7 @@ TEST_CASE ("test_graph_serial", "test_graph_serial")
   }
 }
 
-TEST_CASE ("test_graph_random", "test_graph_random")
+TEST_CASE("test_graph_random", "test_graph_random")
 {
   std::map<int, double> dur;
   for(auto k : benchmark_range)
@@ -426,7 +425,7 @@ TEST_CASE ("test_graph_random", "test_graph_random")
   }
 }
 
-TEST_CASE ("output", "output")
+TEST_CASE("output", "output")
 {
   int i = 0;
 
@@ -434,13 +433,9 @@ TEST_CASE ("output", "output")
   std::cerr << "count parfixed parinf serial random\n";
   for(auto k : benchmark_range)
   {
-    std::cerr << k << ' '
-              << data[0][i] << ' '
-              << data[1][i] << ' '
-              << data[2][i] << ' '
+    std::cerr << k << ' ' << data[0][i] << ' ' << data[1][i] << ' ' << data[2][i] << ' '
               << data[3][i] << '\n';
     i++;
-
   }
   std::cerr << std::endl;
 }

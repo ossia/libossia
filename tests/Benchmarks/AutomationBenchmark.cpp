@@ -1,24 +1,23 @@
+#include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia/detail/any.hpp>
+#include <ossia/detail/hash_map.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/dataflow/nodes/automation.hpp>
-#include <ossia/detail/hash_map.hpp>
+
 #include <sstream>
 #define private public
-#include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/editor/scenario/scenario.hpp>
-#include <valgrind/callgrind.h>
 #include "../Editor/TestUtils.hpp"
 
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/editor/scenario/scenario.hpp>
+
+#include <valgrind/callgrind.h>
 
 static const constexpr int NUM_TAKES = 100;
-static const constexpr auto NUM_CURVES = {1, 10, 20, 30, 40,
-                                          50, 60, 70, 80, 90,
-                                          100, 150, 200, 250,
-                                          300, 400, 500
-                                          , 600, 700, 800, 900, 1000};
-
+static const constexpr auto NUM_CURVES
+    = {1,   10,  20,  30,  40,  50,  60,  70,  80,  90,  100,
+       150, 200, 250, 300, 400, 500, 600, 700, 800, 900, 1000};
 
 int main()
 {
@@ -27,7 +26,6 @@ int main()
   // Benchmark: how many automations can run at the same time
   // We need a graph
 
-
   for(int N : NUM_CURVES)
   {
     TestDevice t;
@@ -35,7 +33,8 @@ int main()
     scenario s;
     g.add_node(s.node);
 
-    auto sev = *s.get_start_time_sync()->emplace(s.get_start_time_sync()->get_time_events().end(), {}, {});
+    auto sev = *s.get_start_time_sync()->emplace(
+        s.get_start_time_sync()->get_time_events().end(), {}, {});
     for(int i = 0; i < N; i++)
     {
       std::shared_ptr<time_sync> tn = std::make_shared<time_sync>();
@@ -48,10 +47,12 @@ int main()
 
       auto node = std::make_shared<ossia::nodes::automation>();
       auto autom = std::make_shared<ossia::nodes::automation_process>(node);
-      node->root_outputs()[0]->address = t.all_params[std::abs(rand()) % t.all_params.size()];
+      node->root_outputs()[0]->address
+          = t.all_params[std::abs(rand()) % t.all_params.size()];
 
       auto v = std::make_shared<ossia::curve<double, float>>();
-      v->set_x0(0.); v->set_y0(0.);
+      v->set_x0(0.);
+      v->set_y0(0.);
       v->add_point(ossia::easing::ease{}, 1., 1.);
       node->set_behavior(v);
 

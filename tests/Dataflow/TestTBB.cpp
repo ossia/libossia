@@ -1,7 +1,8 @@
-#include <ossia/dataflow/graph/graph_parallel.hpp>
-#include <ossia/dataflow/graph_node.hpp>
-#include <ossia/dataflow/graph_edge_helpers.hpp>
 #include <ossia/dataflow/execution_state.hpp>
+#include <ossia/dataflow/graph/graph_parallel.hpp>
+#include <ossia/dataflow/graph_edge_helpers.hpp>
+#include <ossia/dataflow/graph_node.hpp>
+
 #include <random>
 #define NUM_TAKES 10000
 #define NUM_NODES 2500
@@ -10,13 +11,11 @@ using namespace ossia;
 
 static std::mt19937 mt;
 std::atomic<int> sum = 0;
-class node_empty_mock final : public graph_node {
+class node_empty_mock final : public graph_node
+{
 public:
   std::string lbl{};
-  std::string label() const noexcept override
-  {
-    return lbl;
-  }
+  std::string label() const noexcept override { return lbl; }
   node_empty_mock()
   {
     m_inlets.push_back(new ossia::value_inlet);
@@ -25,11 +24,11 @@ public:
 
   void run(const token_request& t, exec_state_facade e) noexcept override
   {
-   //sum++;
+    //sum++;
   }
 };
 
-template<typename T>
+template <typename T>
 void setup_random_edges(const std::vector<std::shared_ptr<node_empty_mock>>& nodes, T& g)
 {
   for(std::size_t i = 0; i < nodes.size(); i++)
@@ -38,9 +37,9 @@ void setup_random_edges(const std::vector<std::shared_ptr<node_empty_mock>>& nod
     {
       if(std::uniform_real_distribution<double>{0., 1.}(mt))
       {
-        auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                     nodes[i]->root_outputs()[0], nodes[j]->root_inputs()[0],
-                                     nodes[i], nodes[j]);
+        auto edge = ossia::make_edge(
+            ossia::immediate_strict_connection{}, nodes[i]->root_outputs()[0],
+            nodes[j]->root_inputs()[0], nodes[i], nodes[j]);
         g.connect(edge);
       }
     }
@@ -49,7 +48,7 @@ void setup_random_edges(const std::vector<std::shared_ptr<node_empty_mock>>& nod
 
 struct setup_random
 {
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     std::vector<std::shared_ptr<node_empty_mock>> nodes;
@@ -66,11 +65,10 @@ struct setup_random
   }
 };
 
-
 struct setup_dawlike
 {
   int chain_count = 100;
-  template<typename T>
+  template <typename T>
   auto operator()(int num_nodes, T& g) const
   {
     using chain = std::vector<std::shared_ptr<node_empty_mock>>;
@@ -93,9 +91,9 @@ struct setup_dawlike
         chain.push_back(nodes.back());
         if(prev_node)
         {
-          auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                       prev_node->root_outputs()[0], new_node->root_inputs()[0],
-                                       prev_node, new_node);
+          auto edge = ossia::make_edge(
+              ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
+              new_node->root_inputs()[0], prev_node, new_node);
           g.connect(edge);
         }
       }
@@ -115,13 +113,12 @@ struct setup_dawlike
       for(int end = j + 4; j < end; j++)
       {
         auto& prev_node = chains[j].back();
-        auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                     prev_node->root_outputs()[0], new_node->root_inputs()[0],
-                                     prev_node, new_node);
+        auto edge = ossia::make_edge(
+            ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
+            new_node->root_inputs()[0], prev_node, new_node);
         g.connect(edge);
       }
     }
-
 
     {
 
@@ -131,9 +128,9 @@ struct setup_dawlike
 
       for(auto& prev_node : groups_1)
       {
-        auto edge = ossia::make_edge(ossia::immediate_strict_connection{},
-                                     prev_node->root_outputs()[0], new_node->root_inputs()[0],
-                                     prev_node, new_node);
+        auto edge = ossia::make_edge(
+            ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
+            new_node->root_inputs()[0], prev_node, new_node);
         g.connect(edge);
       }
     }
@@ -144,22 +141,22 @@ struct setup_dawlike
 
 struct measure_clean_tick
 {
-template<typename T, typename U>
-auto operator()(T& g, const U& nodes)
-{
-  ossia::execution_state e;
-
-  // ensure that a tick happens to make it clean
-  g.state(e);
-
-  // measure
-  for(int i = 0; i < NUM_TAKES; i++)
+  template <typename T, typename U>
+  auto operator()(T& g, const U& nodes)
   {
-    for(auto& node : nodes)
-      node->request({});
+    ossia::execution_state e;
+
+    // ensure that a tick happens to make it clean
     g.state(e);
+
+    // measure
+    for(int i = 0; i < NUM_TAKES; i++)
+    {
+      for(auto& node : nodes)
+        node->request({});
+      g.state(e);
+    }
   }
-}
 };
 
 int main()
@@ -179,7 +176,9 @@ int main()
   measure_clean_tick{}(*graph, nodes);
 
   auto t1 = std::chrono::high_resolution_clock::now();
-  auto this_count = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count() / NUM_TAKES;
+  auto this_count
+      = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count()
+        / NUM_TAKES;
 
   std::cerr << "Done\n" << this_count << " => " << sum << std::endl;
   delete graph;

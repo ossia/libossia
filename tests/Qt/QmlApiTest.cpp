@@ -1,26 +1,30 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/device.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/context.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/common/debug.hpp>
+#include <ossia/network/domain/domain.hpp>
+
 #include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_logger.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia-qt/device/qml_property.hpp>
 #include <ossia-qt/qml_plugin.hpp>
-#include <ossia/network/common/debug.hpp>
-#include <ossia/network/domain/domain.hpp>
-#include <fmt/format.h>
+
+#include <QCoreApplication>
 #include <QDir>
+#include <QQmlComponent>
 #include <QQmlEngine>
 #include <QTimer>
-#include <QQmlComponent>
-#include <QCoreApplication>
-#include <ossia-qt/device/qml_logger.hpp>
+
+#include <fmt/format.h>
+
+#include <catch.hpp>
 
 static int n = 0;
 void dumpTree(QQuickItem* root);
@@ -63,14 +67,16 @@ void dumpTree(QQuickItem* root)
 void print_device()
 {
   auto& dev = ossia::qt::qml_singleton_device::instance();
-  std::string c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+  std::string c;
+  ossia::net::debug_recursively(c, dev.device().get_root_node());
   qDebug() << c.c_str();
 }
 
 void cleanup(QObject* item)
 {
   QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
-  for(auto cld : item->children()) {
+  for(auto cld : item->children())
+  {
     QQmlEngine::setObjectOwnership(cld, QQmlEngine::CppOwnership);
     delete cld;
   }
@@ -84,9 +90,10 @@ void cleanup(QObject* item)
   dev.cleanup();
 }
 
-TEST_CASE ("test_logger", "test_logger")
+TEST_CASE("test_logger", "test_logger")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   ossia::qt::qml_logger log;
@@ -97,9 +104,10 @@ TEST_CASE ("test_logger", "test_logger")
     QCoreApplication::processEvents();
 }
 
-TEST_CASE ("test_import", "test_import")
+TEST_CASE("test_import", "test_import")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -109,13 +117,15 @@ TEST_CASE ("test_import", "test_import")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
                       Item {
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -125,10 +135,10 @@ TEST_CASE ("test_import", "test_import")
   }
 }
 
-
-TEST_CASE ("test_logFilter", "test_logFilter")
+TEST_CASE("test_logFilter", "test_logFilter")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -138,7 +148,8 @@ TEST_CASE ("test_logFilter", "test_logFilter")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -175,32 +186,33 @@ TEST_CASE ("test_logFilter", "test_logFilter")
                       console.log("autre")
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
     auto item = component.create();
     REQUIRE(item);
     QList<QVariant> listMsgFiltered = QQmlProperty::read(item, "msgFiltered").toList();
-    REQUIRE(listMsgFiltered.length() ==2);
+    REQUIRE(listMsgFiltered.length() == 2);
     REQUIRE(listMsgFiltered[1].toString() == "cameraBin");
-    REQUIRE(listMsgFiltered[0].toString() =="touchpoint");
+    REQUIRE(listMsgFiltered[0].toString() == "touchpoint");
 
-    QList<QVariant> listLogTypeFiltered = QQmlProperty::read(item, "logTypeFiltered").toList();
-    REQUIRE(listLogTypeFiltered.length() ==2);
+    QList<QVariant> listLogTypeFiltered
+        = QQmlProperty::read(item, "logTypeFiltered").toList();
+    REQUIRE(listLogTypeFiltered.length() == 2);
     REQUIRE(listLogTypeFiltered[1].toInt() == 0);
 
-    QTimer::singleShot(2000, [&] {
-      app.exit();
-    });
+    QTimer::singleShot(2000, [&] { app.exit(); });
     app.exec();
     cleanup(item);
   }
 }
 
-TEST_CASE ("test_parameter", "test_parameter")
+TEST_CASE("test_parameter", "test_parameter")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -212,7 +224,8 @@ TEST_CASE ("test_parameter", "test_parameter")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -243,7 +256,8 @@ TEST_CASE ("test_parameter", "test_parameter")
                       }
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -251,7 +265,8 @@ TEST_CASE ("test_parameter", "test_parameter")
     REQUIRE(item);
 
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/foo/bar/float");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/foo/bar/float");
       REQUIRE(node);
       auto addr = node->get_parameter();
       REQUIRE(addr);
@@ -264,13 +279,13 @@ TEST_CASE ("test_parameter", "test_parameter")
       REQUIRE(addr->get_unit() == ossia::centimeter_u{});
     }
     cleanup(item);
-
   }
 }
 
-TEST_CASE ("test_model", "test_model")
+TEST_CASE("test_model", "test_model")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -281,7 +296,8 @@ TEST_CASE ("test_model", "test_model")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -295,20 +311,20 @@ TEST_CASE ("test_model", "test_model")
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     print_device();
 
-    for(int i = 0; i < 10;i ++)
+    for(int i = 0; i < 10; i++)
     {
       ossia::net::node_base* node = ossia::net::find_node(
-            dev.device().get_root_node(),
-            "/foo." + std::to_string(i) + "/x");
+          dev.device().get_root_node(), "/foo." + std::to_string(i) + "/x");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
@@ -321,7 +337,6 @@ TEST_CASE ("test_model", "test_model")
       qDebug() << m << m->QObject::parent();
     auto props = item->findChildren<ossia::qt::qml_property*>();
 
-
     qDebug() << "Props: " << props.size();
     for(auto p : props)
       qDebug() << p << p->parent() << p->parentItem();
@@ -331,9 +346,10 @@ TEST_CASE ("test_model", "test_model")
   }
 }
 
-TEST_CASE ("test_model_sub_child", "test_model_sub_child")
+TEST_CASE("test_model_sub_child", "test_model_sub_child")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -344,7 +360,8 @@ TEST_CASE ("test_model_sub_child", "test_model_sub_child")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -359,26 +376,25 @@ TEST_CASE ("test_model_sub_child", "test_model_sub_child")
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     for(int k = 0; k < 10; k++)
     {
       dev.recreate(item);
 
-      ossia::net::node_base* tata = ossia::net::find_node(
-            dev.device().get_root_node(),
-            "/tata");
+      ossia::net::node_base* tata
+          = ossia::net::find_node(dev.device().get_root_node(), "/tata");
       REQUIRE(tata->children().size() == 10);
-      for(int i = 0; i < 10;i ++)
+      for(int i = 0; i < 10; i++)
       {
         ossia::net::node_base* node = ossia::net::find_node(
-              dev.device().get_root_node(),
-              "/tata/foo." + std::to_string(i) + "/x");
+            dev.device().get_root_node(), "/tata/foo." + std::to_string(i) + "/x");
         REQUIRE(node);
         REQUIRE(node->get_parameter());
         REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
@@ -389,10 +405,10 @@ TEST_CASE ("test_model_sub_child", "test_model_sub_child")
   }
 }
 
-
-TEST_CASE ("test_model_sub_child_noparent", "test_model_sub_child_noparent")
+TEST_CASE("test_model_sub_child_noparent", "test_model_sub_child_noparent")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -403,7 +419,8 @@ TEST_CASE ("test_model_sub_child_noparent", "test_model_sub_child_noparent")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -417,22 +434,22 @@ TEST_CASE ("test_model_sub_child_noparent", "test_model_sub_child_noparent")
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     for(int k = 0; k < 10; k++)
     {
       dev.recreate(item);
       REQUIRE(dev.device().get_root_node().children().size() == 10);
-      for(int i = 0; i < 10;i ++)
+      for(int i = 0; i < 10; i++)
       {
         ossia::net::node_base* node = ossia::net::find_node(
-              dev.device().get_root_node(),
-              "/foo." + std::to_string(i) + "/x");
+            dev.device().get_root_node(), "/foo." + std::to_string(i) + "/x");
         REQUIRE(node);
         REQUIRE(node->get_parameter());
         REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
@@ -443,9 +460,10 @@ TEST_CASE ("test_model_sub_child_noparent", "test_model_sub_child_noparent")
   }
 }
 
-TEST_CASE ("test_model_sub_child_device_parent", "test_model_sub_child_device_parent")
+TEST_CASE("test_model_sub_child_device_parent", "test_model_sub_child_device_parent")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -456,7 +474,8 @@ TEST_CASE ("test_model_sub_child_device_parent", "test_model_sub_child_device_pa
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -470,22 +489,22 @@ TEST_CASE ("test_model_sub_child_device_parent", "test_model_sub_child_device_pa
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     for(int k = 0; k < 10; k++)
     {
       dev.recreate(item);
       REQUIRE(dev.device().get_root_node().children().size() == 10);
-      for(int i = 0; i < 10;i ++)
+      for(int i = 0; i < 10; i++)
       {
         ossia::net::node_base* node = ossia::net::find_node(
-              dev.device().get_root_node(),
-              "/foo." + std::to_string(i) + "/x");
+            dev.device().get_root_node(), "/foo." + std::to_string(i) + "/x");
         REQUIRE(node);
         REQUIRE(node->get_parameter());
         REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
@@ -496,9 +515,10 @@ TEST_CASE ("test_model_sub_child_device_parent", "test_model_sub_child_device_pa
   }
 }
 
-TEST_CASE ("test_sub_item", "test_sub_item")
+TEST_CASE("test_sub_item", "test_sub_item")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -509,7 +529,8 @@ TEST_CASE ("test_sub_item", "test_sub_item")
 
   print_device();
   QQmlComponent component(&engine);
-  component.setData(R"_(
+  component.setData(
+      R"_(
                     import Ossia 1.0 as Ossia
                     import QtQuick 2.5
 
@@ -531,18 +552,20 @@ TEST_CASE ("test_sub_item", "test_sub_item")
                     Ossia.Property on scale { parentNode: sub }
                     }
                     }
-                    )_", QUrl{});
+                    )_",
+      QUrl{});
 
   qDebug() << component.errorString();
   REQUIRE(component.errors().empty());
-  auto item = (QQuickItem*) component.create();
+  auto item = (QQuickItem*)component.create();
   REQUIRE(item);
 
   dev.recreate(item);
   app.processEvents();
 
   print_device();
-  auto child_scale = ossia::net::find_node(dev.device().get_root_node(), "/foo.0/tata/scale");
+  auto child_scale
+      = ossia::net::find_node(dev.device().get_root_node(), "/foo.0/tata/scale");
   qDebug() << child_scale;
 
   dumpTree(item);
@@ -550,7 +573,6 @@ TEST_CASE ("test_sub_item", "test_sub_item")
   REQUIRE(child_scale);
   cleanup(item);
 }
-
 
 /* What we want but not possible due to
      * https://bugreports.qt.io/browse/QTBUG-60121
@@ -605,12 +627,10 @@ TEST_CASE ("test_sub_item", "test_sub_item")
     }
     */
 
-
-
-
-TEST_CASE ("test_property", "test_property")
+TEST_CASE("test_property", "test_property")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -622,7 +642,8 @@ TEST_CASE ("test_property", "test_property")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -641,7 +662,8 @@ TEST_CASE ("test_property", "test_property")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -652,70 +674,81 @@ TEST_CASE ("test_property", "test_property")
     print_device();
 
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/x");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/x");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/y");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/y");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theInt");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theInt");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::INT);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theFloat");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theFloat");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theDouble");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theDouble");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::FLOAT);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theString");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theString");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::STRING);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theBool");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theBool");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::BOOL);
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theColor");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theColor");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::VEC4F);
       REQUIRE(node->get_parameter()->get_unit() == ossia::argb_u{});
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/thePoint");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/thePoint");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::VEC2F);
       REQUIRE(node->get_parameter()->get_unit() == ossia::cartesian_2d_u{});
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theVector2D");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theVector2D");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::VEC2F);
       REQUIRE(node->get_parameter()->get_unit() == ossia::cartesian_2d_u{});
     }
     {
-      ossia::net::node_base* node = ossia::net::find_node(dev.device().get_root_node(), "/theVector3D");
+      ossia::net::node_base* node
+          = ossia::net::find_node(dev.device().get_root_node(), "/theVector3D");
       REQUIRE(node);
       REQUIRE(node->get_parameter());
       REQUIRE(node->get_parameter()->get_value_type() == ossia::val_type::VEC3F);
@@ -725,9 +758,10 @@ TEST_CASE ("test_property", "test_property")
   }
 }
 
-TEST_CASE ("test_signal", "test_signal")
+TEST_CASE("test_signal", "test_signal")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -739,7 +773,8 @@ TEST_CASE ("test_signal", "test_signal")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -751,7 +786,8 @@ TEST_CASE ("test_signal", "test_signal")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -768,9 +804,10 @@ TEST_CASE ("test_signal", "test_signal")
   }
 }
 
-TEST_CASE ("test_hierarchy", "test_hierarchy")
+TEST_CASE("test_hierarchy", "test_hierarchy")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -782,7 +819,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -793,7 +831,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -813,10 +852,10 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
     cleanup(item);
   }
 
-
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -827,7 +866,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -845,10 +885,10 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
     cleanup(item);
   }
 
-
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -861,7 +901,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -880,7 +921,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
   }
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -894,7 +936,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -921,7 +964,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
   }
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -935,7 +979,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -962,7 +1007,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
   }
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.5
                       import Ossia 1.0 as Ossia
 
@@ -981,7 +1027,8 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
 
                       Component.onCompleted: Ossia.SingleDevice.recreate(this)
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
@@ -1009,5 +1056,4 @@ TEST_CASE ("test_hierarchy", "test_hierarchy")
     }
     cleanup(item);
   }
-
 }

@@ -1,19 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+
 #include <ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp>
-#include <iostream>
+
 #include <QCoreApplication>
 #include <QTimer>
+
+#include <catch.hpp>
+
+#include <iostream>
 using namespace ossia;
 
-TEST_CASE ("test_websockets", "test_websockets")
+TEST_CASE("test_websockets", "test_websockets")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
 
   ossia::context context;
@@ -21,14 +26,13 @@ TEST_CASE ("test_websockets", "test_websockets")
   f.open(QFile::ReadOnly);
 
   ossia::net::ws_generic_client_device ws_device{
-    std::make_unique<ossia::net::ws_generic_client_protocol>(
-          "ws://echo.websocket.org",
-          f.readAll()),
-        "test" };
+      std::make_unique<ossia::net::ws_generic_client_protocol>(
+          "ws://echo.websocket.org", f.readAll()),
+      "test"};
 
   // We have to wait a bit for the event loop to run.
   QTimer t;
-  QObject::connect(&t, &QTimer::timeout, [&] () {
+  QObject::connect(&t, &QTimer::timeout, [&]() {
     auto node = ossia::net::find_node(ws_device, "/tata/tutu");
     if(node)
     {
@@ -39,7 +43,7 @@ TEST_CASE ("test_websockets", "test_websockets")
   t.setSingleShot(true);
   t.start();
 
-  QTimer::singleShot(3000, [&] () { app.exit(); });
+  QTimer::singleShot(3000, [&]() { app.exit(); });
 
   app.exec();
 }

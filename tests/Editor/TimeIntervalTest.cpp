@@ -1,29 +1,32 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
-#include <ossia/detail/config.hpp>
 #include "TestUtils.hpp"
 
+#include <ossia/detail/config.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
 using namespace ossia;
 
-void event_callback(time_event::status newStatus)
-{
-}
+void event_callback(time_event::status newStatus) { }
 
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   auto start_node = std::make_shared<time_sync>();
-  auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
+  auto start_event
+      = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
   auto end_node = std::make_shared<time_sync>();
-  auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
+  auto end_event
+      = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) {  }}, *start_event, *end_event, 1000._tv);
+  auto interval = time_interval::create(
+      ossia::time_interval::exec_callback{[](auto&&... args) {}}, *start_event,
+      *end_event, 1000._tv);
   ossia::clock c{*interval};
   REQUIRE(interval != nullptr);
 
@@ -60,15 +63,19 @@ TEST_CASE ("test_basic", "test_basic")
 }
 
 /*! test edition functions */
-TEST_CASE ("test_edition", "test_edition")
+TEST_CASE("test_edition", "test_edition")
 {
   auto start_node = std::make_shared<time_sync>();
-  auto start_event = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
+  auto start_event
+      = *(start_node->emplace(start_node->get_time_events().begin(), &event_callback));
 
   auto end_node = std::make_shared<time_sync>();
-  auto end_event = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
+  auto end_event
+      = *(end_node->emplace(end_node->get_time_events().begin(), &event_callback));
 
-  auto interval = time_interval::create(ossia::time_interval::exec_callback{[] (auto&&... args) { }}, *start_event, *end_event, 1000._tv);
+  auto interval = time_interval::create(
+      ossia::time_interval::exec_callback{[](auto&&... args) {}}, *start_event,
+      *end_event, 1000._tv);
   auto scenar = std::make_unique<scenario>();
 
   auto scenar_ptr = scenar.get();
@@ -80,7 +87,7 @@ TEST_CASE ("test_edition", "test_edition")
 }
 
 /*! test execution functions */
-TEST_CASE ("test_execution", "test_execution")
+TEST_CASE("test_execution", "test_execution")
 {
   //      TestDevice t;
   //      auto start_node = std::make_shared<time_sync>();

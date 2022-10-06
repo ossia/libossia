@@ -1,14 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
+
+#include <catch.hpp>
+
 #include <iostream>
 
-
-TEST_CASE ("bool", "[bool]")
+TEST_CASE("bool", "[bool]")
 {
   ossia::curve_segment_linear<bool> curveSegment;
 
@@ -19,7 +21,7 @@ TEST_CASE ("bool", "[bool]")
   REQUIRE(curveSegment(1., false, true) == true);
 }
 
-TEST_CASE ("int", "[int]")
+TEST_CASE("int", "[int]")
 {
   ossia::curve_segment_linear<int> curveSegment;
 
@@ -30,7 +32,7 @@ TEST_CASE ("int", "[int]")
   REQUIRE(curveSegment(1., 0, 1) == 1);
 }
 
-TEST_CASE ("float", "[float]")
+TEST_CASE("float", "[float]")
 {
   ossia::curve_segment_linear<float> curveSegment;
 

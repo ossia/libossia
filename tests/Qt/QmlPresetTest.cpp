@@ -1,28 +1,32 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/device.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/context.hpp>
-#include <fmt/format.h>
-#include <QQmlEngine>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+
+#include <QDir>
 #include <QQmlComponent>
 #include <QQmlContext>
-#include <QDir>
+#include <QQmlEngine>
+
+#include <fmt/format.h>
+
+#include <catch.hpp>
+
 #include <regex>
 #define private public
-#include <ossia-qt/device/qml_device.hpp>
-#include <ossia-qt/device/qml_model_property.hpp>
-#include <ossia-qt/device/qml_property.hpp>
-#include <ossia-qt/device/qml_node.hpp>
-#include <ossia-qt/qml_plugin.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/domain/domain.hpp>
+
+#include <ossia-qt/device/qml_device.hpp>
+#include <ossia-qt/device/qml_model_property.hpp>
+#include <ossia-qt/device/qml_node.hpp>
+#include <ossia-qt/device/qml_property.hpp>
+#include <ossia-qt/qml_plugin.hpp>
 
 static int n = 0;
 void dumpTree(QQuickItem* root);
@@ -65,18 +69,19 @@ void dumpTree(QQuickItem* root)
   n--;
 }
 
-
 void print_device()
 {
   auto& dev = ossia::qt::qml_singleton_device::instance();
-  std::string c; ossia::net::debug_recursively(c, dev.device().get_root_node());
+  std::string c;
+  ossia::net::debug_recursively(c, dev.device().get_root_node());
   qDebug() << c.c_str();
 }
 
 void cleanup(QObject* item)
 {
   QQmlEngine::setObjectOwnership(item, QQmlEngine::CppOwnership);
-  for(auto cld : item->children()) {
+  for(auto cld : item->children())
+  {
     QQmlEngine::setObjectOwnership(cld, QQmlEngine::CppOwnership);
     delete cld;
   }
@@ -90,11 +95,11 @@ void cleanup(QObject* item)
   dev.cleanup();
 }
 
-
-TEST_CASE ("test_model_recursive_static", "test_model_recursive_static")
+TEST_CASE("test_model_recursive_static", "test_model_recursive_static")
 {
   auto& dev = ossia::qt::qml_singleton_device::instance();
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -104,7 +109,8 @@ TEST_CASE ("test_model_recursive_static", "test_model_recursive_static")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import Ossia 1.0 as Ossia
                       import QtQuick 2.5
 
@@ -141,11 +147,12 @@ TEST_CASE ("test_model_recursive_static", "test_model_recursive_static")
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     dev.recreate(item);
@@ -158,18 +165,20 @@ TEST_CASE ("test_model_recursive_static", "test_model_recursive_static")
     dev.saveDevice(QUrl::fromLocalFile("/tmp/device.json"));
     print_device();
 
-
     for(auto node : {
-        "/foo.0/x", "/foo.0/y", "/foo.1/x", "/foo.1/y",
-        "/foo.0/tata/buzz.0/x",
-        "/foo.0/tata/buzz.0/y",
-        "/foo.0/tata/buzz.1/x",
-        "/foo.0/tata/buzz.1/y",
-        "/foo.1/tata/buzz.0/x",
-        "/foo.1/tata/buzz.0/y",
-        "/foo.1/tata/buzz.1/x",
-        "/foo.1/tata/buzz.1/y",
-  })
+            "/foo.0/x",
+            "/foo.0/y",
+            "/foo.1/x",
+            "/foo.1/y",
+            "/foo.0/tata/buzz.0/x",
+            "/foo.0/tata/buzz.0/y",
+            "/foo.0/tata/buzz.1/x",
+            "/foo.0/tata/buzz.1/y",
+            "/foo.1/tata/buzz.0/x",
+            "/foo.1/tata/buzz.0/y",
+            "/foo.1/tata/buzz.1/x",
+            "/foo.1/tata/buzz.1/y",
+        })
     {
       qDebug() << node;
       auto found = ossia::net::find_node(dev.device().get_root_node(), node);
@@ -179,10 +188,11 @@ TEST_CASE ("test_model_recursive_static", "test_model_recursive_static")
     cleanup(item);
   }
 }
-TEST_CASE ("test_qml_repeater", "test_qml_repeater")
+TEST_CASE("test_qml_repeater", "test_qml_repeater")
 {
 
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -196,7 +206,7 @@ TEST_CASE ("test_qml_repeater", "test_qml_repeater")
 
   qDebug() << component.errorString();
   REQUIRE(component.errors().empty());
-  auto item = (QQuickItem*) component.create();
+  auto item = (QQuickItem*)component.create();
   REQUIRE(item);
 
   for(int i = 0; i < 100; i++)
@@ -207,9 +217,10 @@ TEST_CASE ("test_qml_repeater", "test_qml_repeater")
 // does not work on Qt on windows :
 // https://bugreports.qt.io/browse/QTBUG-65261
 #if !defined(_MSC_VER)
-TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
+TEST_CASE("test_model_recursive_preset", "test_model_recursive_preset")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -226,37 +237,39 @@ TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
 
     print_device();
 
-    dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+    dev.loadPreset(
+        item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
     //dev.recreate(item);
 
     print_device();
 
-    auto check_preset = [&]
-    {
+    auto check_preset = [&] {
       auto& root = dev.device().get_root_node();
       for(auto node : {
-          "/foo.0/x", "/foo.0/y",
-          "/foo.1/x", "/foo.1/y",
-          "/foo.0/tata/bar.0/x",
-          "/foo.0/tata/bar.0/y",
-          "/foo.0/tata/bar.1/x",
-          "/foo.0/tata/bar.1/y",
-          "/foo.1/tata/bar.0/x",
-          "/foo.1/tata/bar.0/y",
-          "/foo.1/tata/bar.0/papa",
-          "/foo.1/tata/bar.0/papa/baz.0",
-          "/foo.1/tata/bar.0/papa/baz.0/x",
-          "/foo.1/tata/bar.0/papa/baz.0/y",
-          "/foo.1/tata/bar.0/papa/baz.1/x",
-          "/foo.1/tata/bar.0/papa/baz.1/y",
-          "/foo.1/tata/bar.1/x",
-          "/foo.1/tata/bar.1/y",
-    })
+              "/foo.0/x",
+              "/foo.0/y",
+              "/foo.1/x",
+              "/foo.1/y",
+              "/foo.0/tata/bar.0/x",
+              "/foo.0/tata/bar.0/y",
+              "/foo.0/tata/bar.1/x",
+              "/foo.0/tata/bar.1/y",
+              "/foo.1/tata/bar.0/x",
+              "/foo.1/tata/bar.0/y",
+              "/foo.1/tata/bar.0/papa",
+              "/foo.1/tata/bar.0/papa/baz.0",
+              "/foo.1/tata/bar.0/papa/baz.0/x",
+              "/foo.1/tata/bar.0/papa/baz.0/y",
+              "/foo.1/tata/bar.0/papa/baz.1/x",
+              "/foo.1/tata/bar.0/papa/baz.1/y",
+              "/foo.1/tata/bar.1/x",
+              "/foo.1/tata/bar.1/y",
+          })
       {
         auto found = ossia::net::find_node(root, node);
         REQUIRE(found);
@@ -300,18 +313,21 @@ TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
       qApp->processEvents();
     check_preset();
 
-    dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+    dev.loadPreset(
+        item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
 
     for(int i = 0; i < 10; i++)
       qApp->processEvents();
 
     check_preset();
-    dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+    dev.loadPreset(
+        item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
 
     for(int i = 0; i < 10; i++)
       qApp->processEvents();
     check_preset();
-    dev.loadPreset(item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
+    dev.loadPreset(
+        item, QDir().absolutePath() + "/testdata/qml/recursive_model_preset.json");
 
     for(int i = 0; i < 10; i++)
       qApp->processEvents();
@@ -321,9 +337,10 @@ TEST_CASE ("test_model_recursive_preset", "test_model_recursive_preset")
 }
 #endif
 
-TEST_CASE ("test_model_preset_2", "test_model_preset_2")
+TEST_CASE("test_model_preset_2", "test_model_preset_2")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   ossia::context context;
   QQmlEngine engine;
@@ -335,7 +352,8 @@ TEST_CASE ("test_model_preset_2", "test_model_preset_2")
 
   {
     QQmlComponent component(&engine);
-    component.setData(R"_(
+    component.setData(
+        R"_(
                       import QtQuick 2.2
                       import Ossia 1.0 as Ossia
 
@@ -383,11 +401,12 @@ TEST_CASE ("test_model_preset_2", "test_model_preset_2")
                       }
                       }
                       }
-                      )_", QUrl{});
+                      )_",
+        QUrl{});
 
     qDebug() << component.errorString();
     REQUIRE(component.errors().empty());
-    auto item = (QQuickItem*) component.create();
+    auto item = (QQuickItem*)component.create();
     REQUIRE(item);
     dev.recreate(item);
     app.processEvents();
@@ -395,23 +414,30 @@ TEST_CASE ("test_model_preset_2", "test_model_preset_2")
     qDebug() << item->findChildren<ossia::qt::qml_node_base*>().size();
     qDebug() << dev.m_nodes.size();
     REQUIRE(dev.m_nodes.size() == 7);
-    for(auto node :  dev.m_nodes)
+    for(auto node : dev.m_nodes)
     {
       REQUIRE(node.first);
       REQUIRE(node.first->ossiaNode());
     }
 
     {
-      auto chocobox = ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes");
+      auto chocobox
+          = ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes");
       REQUIRE(chocobox);
       qDebug() << chocobox->children().size();
       REQUIRE(chocobox->children().size() == 6);
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.0"));
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.1"));
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.2"));
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.3"));
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.4"));
-      REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.5"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.0"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.1"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.2"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.3"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.4"));
+      REQUIRE(ossia::net::find_node(
+          dev.device().get_root_node(), "/chocolateBoxes/boxes.5"));
     }
 
     for(int i = 0; i < 2; i++)
@@ -431,15 +457,22 @@ TEST_CASE ("test_model_preset_2", "test_model_preset_2")
           }
           */
       {
-        auto chocobox = ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes");
+        auto chocobox
+            = ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes");
         REQUIRE(chocobox);
         REQUIRE(chocobox->children().size() == 6);
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.0"));
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.1"));
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.2"));
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.3"));
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.4"));
-        REQUIRE(ossia::net::find_node(dev.device().get_root_node(), "/chocolateBoxes/boxes.5"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.0"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.1"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.2"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.3"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.4"));
+        REQUIRE(ossia::net::find_node(
+            dev.device().get_root_node(), "/chocolateBoxes/boxes.5"));
       }
 
       qDebug(" ===== PRESET LOADED SUCCESSFULLY ");

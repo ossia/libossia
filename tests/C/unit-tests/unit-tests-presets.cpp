@@ -1,21 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/generic/generic_parameter.hpp>
+
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/generic/generic_parameter.hpp>
+#include <ossia/network/value/value.hpp>
+#include <ossia/preset/preset.hpp>
+
+#include <ossia-c/preset/preset.h>
 
 #include <catch2/catch.hpp>
+#include <rapidjson/document.h>
 
 #include <iostream>
 #include <string>
-#include <rapidjson/document.h>
-#include <ossia-c/preset/preset.h>
-#include <ossia/preset/preset.hpp>
 
 namespace Catch
 {
-std::string toString(ossia::value const& value) {
+std::string toString(ossia::value const& value)
+{
   return ossia::value_to_pretty_string(value);
 }
 }
@@ -35,30 +38,41 @@ auto find(ossia::presets::preset& p, const char* t)
   return find(p, ossia::string_view{t});
 }
 }
-TEST_CASE ("JSON array") {
-  SECTION ("Basic array parsing") {
+TEST_CASE("JSON array")
+{
+  SECTION("Basic array parsing")
+  {
 
     std::string json = R"_({"a":[1, 2, 4, 8]})_";
     REQUIRE(ossia::presets::read_json(json).size() == 1);
-    REQUIRE(ossia::presets::read_json(json)[0].second == (std::vector<ossia::value>{1,2,4,8}));
+    REQUIRE(
+        ossia::presets::read_json(json)[0].second
+        == (std::vector<ossia::value>{1, 2, 4, 8}));
   }
 
-  SECTION ("Contents of array") {
+  SECTION("Contents of array")
+  {
     std::string json2 = R"_({"a":[[3, -6], [9, 2, 11]]})_";
     ossia::presets::preset p = ossia::presets::read_json(json2);
     REQUIRE(p.size() == 1);
-    REQUIRE(p[0].second == (std::vector<ossia::value>{std::vector<ossia::value>{3, -6},std::vector<ossia::value>{9, 2, 11}}));
+    REQUIRE(
+        p[0].second
+        == (std::vector<ossia::value>{
+            std::vector<ossia::value>{3, -6}, std::vector<ossia::value>{9, 2, 11}}));
   }
 
-  SECTION ("Empty array") {
+  SECTION("Empty array")
+  {
     std::string json3 = R"_({"empty":[]})_";
     REQUIRE(ossia::presets::read_json(json3).size() == 1);
     REQUIRE(ossia::presets::read_json(json3)[0].second == (std::vector<ossia::value>{}));
   }
 }
 
-TEST_CASE ("Parsing nested objects") {
-  std::string json = R"_({"a":{"c":{"d":13,"e":5}}, "b":{"f1":true, "f2":{"f3":false}}})_";
+TEST_CASE("Parsing nested objects")
+{
+  std::string json
+      = R"_({"a":{"c":{"d":13,"e":5}}, "b":{"f1":true, "f2":{"f3":false}}})_";
   ossia::presets::preset p = ossia::presets::read_json(json, false);
 
   REQUIRE(p.size() == 4);
@@ -76,20 +90,24 @@ TEST_CASE ("Parsing nested objects") {
   REQUIRE(bf2f3 == false);
 }
 
-TEST_CASE ("Empty object") {
+TEST_CASE("Empty object")
+{
 
-  SECTION("Basic empty object") {
+  SECTION("Basic empty object")
+  {
     std::string empty = R"_({"empty":{}})_";
     REQUIRE(ossia::presets::read_json(empty).size() == 0);
   }
 
-  SECTION ("Complex empty object") {
+  SECTION("Complex empty object")
+  {
     std::string empty = R"_({"a":{"b":[{"d":{}},{}]},"e":{"g":[{},{},{}]}})_";
     REQUIRE(ossia::presets::read_json(empty, false).size() == 0);
   }
 }
 
-TEST_CASE ("Parsing types") {
+TEST_CASE("Parsing types")
+{
   std::string json = R"_({"a":1,"b":2.34234,"c":false, "d":"hello world","e":true})_";
   ossia::presets::preset p = ossia::presets::read_json(json, false);
   REQUIRE(ossia::find(p, "/a") != p.end());
@@ -104,16 +122,18 @@ TEST_CASE ("Parsing types") {
   REQUIRE(ossia::find(p, "/e")->second.get_type() == ossia::val_type::BOOL);
 }
 
-TEST_CASE ("Building JSON array") {
+TEST_CASE("Building JSON array")
+{
 
-  SECTION("Basic array") {
+  SECTION("Basic array")
+  {
     ossia::presets::preset p;
 
-    int32_t i1 (5);
-    int32_t i2 (4);
-    int32_t i3 (3);
-    int32_t i4 (2);
-    int32_t i5 (1);
+    int32_t i1(5);
+    int32_t i2(4);
+    int32_t i3(3);
+    int32_t i4(2);
+    int32_t i5(1);
 
     p.push_back(std::make_pair("/a.0", i1));
     p.push_back(std::make_pair("/a.1", i2));
@@ -135,30 +155,32 @@ TEST_CASE ("Building JSON array") {
     REQUIRE(d.MemberCount() == 1);
     REQUIRE(d.HasMember("a"));
     REQUIRE(d["a"].IsArray());
-    rapidjson::Value arr (rapidjson::kArrayType);
+    rapidjson::Value arr(rapidjson::kArrayType);
     arr = d["a"];
     REQUIRE(arr.Size() == 5);
-    for (int i = 0; i < 5; ++i) {
+    for(int i = 0; i < 5; ++i)
+    {
       REQUIRE(arr[i] == 5 - i);
     }
   }
 
-  SECTION ("Nested array") {
+  SECTION("Nested array")
+  {
     ossia::presets::preset p;
 
-    int32_t i1 (1);
-    int32_t i2 (2);
-    int32_t i3 (3);
-    int32_t i4 (4);
-    int32_t i5 (5);
-    int32_t i6 (6);
+    int32_t i1(1);
+    int32_t i2(2);
+    int32_t i3(3);
+    int32_t i4(4);
+    int32_t i5(5);
+    int32_t i6(6);
 
-    p.push_back(std::make_pair ("/a.0.0.0", i1));
-    p.push_back(std::make_pair ("/a.0.1.0", i2));
-    p.push_back(std::make_pair ("/a.0.1.1", i3));
-    p.push_back(std::make_pair ("/a.0.1.2", i4));
-    p.push_back(std::make_pair ("/a.1.0", i5));
-    p.push_back(std::make_pair ("/a.1.1", i6));
+    p.push_back(std::make_pair("/a.0.0.0", i1));
+    p.push_back(std::make_pair("/a.0.1.0", i2));
+    p.push_back(std::make_pair("/a.0.1.1", i3));
+    p.push_back(std::make_pair("/a.0.1.2", i4));
+    p.push_back(std::make_pair("/a.1.0", i5));
+    p.push_back(std::make_pair("/a.1.1", i6));
 
     // a = [[[1], [2, 3, 4]], [5, 6]]
 
@@ -195,7 +217,7 @@ TEST_CASE ("Building JSON array") {
   }
 }
 
-TEST_CASE ("Preset from node with parameter and subnode")
+TEST_CASE("Preset from node with parameter and subnode")
 {
   {
     ossia::net::generic_device dev{""};
@@ -203,17 +225,29 @@ TEST_CASE ("Preset from node with parameter and subnode")
     auto& node = ossia::net::create_node(r, "/source");
     node.create_parameter(ossia::val_type::STRING)->push_value("Movie Player");
     auto& player_node = ossia::net::create_node(node, "/movie_player");
-    ossia::net::create_node(player_node, "/play").create_parameter(ossia::val_type::BOOL)->push_value(true);
-    ossia::net::create_node(player_node, "/speed").create_parameter(ossia::val_type::FLOAT)->push_value(0.5);
-    ossia::net::create_node(player_node, "/position").create_parameter(ossia::val_type::VEC2F)->push_value(ossia::vec2f{0.5f, -0.8f});
+    ossia::net::create_node(player_node, "/play")
+        .create_parameter(ossia::val_type::BOOL)
+        ->push_value(true);
+    ossia::net::create_node(player_node, "/speed")
+        .create_parameter(ossia::val_type::FLOAT)
+        ->push_value(0.5);
+    ossia::net::create_node(player_node, "/position")
+        .create_parameter(ossia::val_type::VEC2F)
+        ->push_value(ossia::vec2f{0.5f, -0.8f});
 
     auto& grabber_node = ossia::net::create_node(node, "/video_grabber");
-    ossia::net::create_node(grabber_node, "/source").create_parameter(ossia::val_type::STRING)->push_value("/dev/video0");
-    ossia::net::create_node(grabber_node, "/brightness").create_parameter(ossia::val_type::INT)->push_value(1564);
-    ossia::net::create_node(grabber_node, "/strange_param").create_parameter(ossia::val_type::CHAR)->push_value('e');
+    ossia::net::create_node(grabber_node, "/source")
+        .create_parameter(ossia::val_type::STRING)
+        ->push_value("/dev/video0");
+    ossia::net::create_node(grabber_node, "/brightness")
+        .create_parameter(ossia::val_type::INT)
+        ->push_value(1564);
+    ossia::net::create_node(grabber_node, "/strange_param")
+        .create_parameter(ossia::val_type::CHAR)
+        ->push_value('e');
 
     auto json = ossia::presets::make_json_preset(r);
-    ossia::presets::write_file(json,"preset.json");
+    ossia::presets::write_file(json, "preset.json");
   }
 
   {
@@ -224,29 +258,35 @@ TEST_CASE ("Preset from node with parameter and subnode")
 
     auto& player_node = ossia::net::create_node(node, "/movie_player");
 
-    auto play = ossia::net::create_node(player_node, "/play").create_parameter(ossia::val_type::BOOL);
+    auto play = ossia::net::create_node(player_node, "/play")
+                    .create_parameter(ossia::val_type::BOOL);
     play->push_value(false);
 
-    auto speed = ossia::net::create_node(player_node, "/speed").create_parameter(ossia::val_type::FLOAT);
+    auto speed = ossia::net::create_node(player_node, "/speed")
+                     .create_parameter(ossia::val_type::FLOAT);
     speed->push_value(5.64);
 
-    auto position = ossia::net::create_node(player_node, "/position").create_parameter(ossia::val_type::VEC2F);
-    position->push_value(ossia::vec2f{.57f,-40.8f});
+    auto position = ossia::net::create_node(player_node, "/position")
+                        .create_parameter(ossia::val_type::VEC2F);
+    position->push_value(ossia::vec2f{.57f, -40.8f});
 
     auto& grabber_node = ossia::net::create_node(node, "/video_grabber");
 
-    auto source = ossia::net::create_node(grabber_node, "/source").create_parameter(ossia::val_type::STRING);
+    auto source = ossia::net::create_node(grabber_node, "/source")
+                      .create_parameter(ossia::val_type::STRING);
     source->push_value("/dev/null");
 
-    auto brightness = ossia::net::create_node(grabber_node, "/brightness").create_parameter(ossia::val_type::INT);
+    auto brightness = ossia::net::create_node(grabber_node, "/brightness")
+                          .create_parameter(ossia::val_type::INT);
     brightness->push_value(6542);
 
-    auto strange = ossia::net::create_node(grabber_node, "/strange_param").create_parameter(ossia::val_type::CHAR);
+    auto strange = ossia::net::create_node(grabber_node, "/strange_param")
+                       .create_parameter(ossia::val_type::CHAR);
     strange->push_value('a');
 
     REQUIRE_NOTHROW([&] {
       auto json = ossia::presets::read_file("preset.json");
-      ossia::presets::apply_json(json,r);
+      ossia::presets::apply_json(json, r);
     }());
 
     REQUIRE(node.get_parameter()->value().get<std::string>() == "Movie Player");
@@ -260,18 +300,19 @@ TEST_CASE ("Preset from node with parameter and subnode")
   }
 }
 
-TEST_CASE ("Building object"){
+TEST_CASE("Building object")
+{
   ossia::presets::preset p;
 
-  int32_t i1 (1);
-  int32_t i2 (2);
-  int32_t i3 (3);
-  int32_t i4 (4);
+  int32_t i1(1);
+  int32_t i2(2);
+  int32_t i3(3);
+  int32_t i4(4);
 
-  p.push_back(std::make_pair ("/a", i1));
-  p.push_back(std::make_pair ("/b/c", i2));
-  p.push_back(std::make_pair ("/b/d", i3));
-  p.push_back(std::make_pair ("/b/e/f", i4));
+  p.push_back(std::make_pair("/a", i1));
+  p.push_back(std::make_pair("/b/c", i2));
+  p.push_back(std::make_pair("/b/d", i3));
+  p.push_back(std::make_pair("/b/e/f", i4));
 
   std::string json = ossia::presets::write_json("device", p);
 
@@ -308,12 +349,11 @@ void make_preset(const ossia::net::node_base& n, ossia::presets::preset& p)
 {
   if(auto addr = n.get_parameter())
   {
-
   }
 }
 
-
-TEST_CASE ("Device") {
+TEST_CASE("Device")
+{
   ossia::net::generic_device dev{""};
   auto& r = dev.get_root_node();
   ossia::net::create_node(r, "/width").create_parameter(ossia::val_type::FLOAT);
@@ -325,10 +365,14 @@ TEST_CASE ("Device") {
   ossia::net::create_node(r, "/leText.1/color").create_parameter(ossia::val_type::INT);
   ossia::net::create_node(r, "/leText.2/color").create_parameter(ossia::val_type::INT);
   ossia::net::create_node(r, "/leText.3/color").create_parameter(ossia::val_type::INT);
-  ossia::net::create_node(r, "/leText.0/font.pointSize").create_parameter(ossia::val_type::INT);
-  ossia::net::create_node(r, "/leText.1/font.pointSize").create_parameter(ossia::val_type::INT);
-  ossia::net::create_node(r, "/leText.2/font.pointSize").create_parameter(ossia::val_type::INT);
-  ossia::net::create_node(r, "/leText.3/font.pointSize").create_parameter(ossia::val_type::INT);
+  ossia::net::create_node(r, "/leText.0/font.pointSize")
+      .create_parameter(ossia::val_type::INT);
+  ossia::net::create_node(r, "/leText.1/font.pointSize")
+      .create_parameter(ossia::val_type::INT);
+  ossia::net::create_node(r, "/leText.2/font.pointSize")
+      .create_parameter(ossia::val_type::INT);
+  ossia::net::create_node(r, "/leText.3/font.pointSize")
+      .create_parameter(ossia::val_type::INT);
 
   auto p = ossia::presets::make_preset(dev);
   REQUIRE(p.size() == 13);
@@ -339,23 +383,24 @@ TEST_CASE ("Device") {
   d.Parse(json.c_str());
 }
 
-TEST_CASE ("Instances") {
+TEST_CASE("Instances")
+{
   ossia::presets::preset p;
   using namespace std::literals;
 
-  p.push_back(std::make_pair ("/width", 123));
-  p.push_back(std::make_pair ("/leText.0/text", "foo"s));
-  p.push_back(std::make_pair ("/leText.0/color", "bar"s));
-  p.push_back(std::make_pair ("/leText.0/font.pointSize", 456));
-  p.push_back(std::make_pair ("/leText.1/text", "foo"s));
-  p.push_back(std::make_pair ("/leText.1/color", "bar"s));
-  p.push_back(std::make_pair ("/leText.1/font.pointSize", 456));
-  p.push_back(std::make_pair ("/leText.2/text", "foo"s));
-  p.push_back(std::make_pair ("/leText.2/color", "bar"s));
-  p.push_back(std::make_pair ("/leText.2/font.pointSize", 456));
-  p.push_back(std::make_pair ("/leText.3/text", "foo"s));
-  p.push_back(std::make_pair ("/leText.3/color", "bar"s));
-  p.push_back(std::make_pair ("/leText.3/font.pointSize", 456));
+  p.push_back(std::make_pair("/width", 123));
+  p.push_back(std::make_pair("/leText.0/text", "foo"s));
+  p.push_back(std::make_pair("/leText.0/color", "bar"s));
+  p.push_back(std::make_pair("/leText.0/font.pointSize", 456));
+  p.push_back(std::make_pair("/leText.1/text", "foo"s));
+  p.push_back(std::make_pair("/leText.1/color", "bar"s));
+  p.push_back(std::make_pair("/leText.1/font.pointSize", 456));
+  p.push_back(std::make_pair("/leText.2/text", "foo"s));
+  p.push_back(std::make_pair("/leText.2/color", "bar"s));
+  p.push_back(std::make_pair("/leText.2/font.pointSize", 456));
+  p.push_back(std::make_pair("/leText.3/text", "foo"s));
+  p.push_back(std::make_pair("/leText.3/color", "bar"s));
+  p.push_back(std::make_pair("/leText.3/font.pointSize", 456));
 
   std::string json = ossia::presets::write_json("device", p);
 
@@ -363,18 +408,19 @@ TEST_CASE ("Instances") {
   d.Parse(json.c_str());
 }
 
-TEST_CASE ("Nested arrays and objects") {
+TEST_CASE("Nested arrays and objects")
+{
   ossia::presets::preset p;
 
-  int32_t i1 (1);
-  int32_t i2 (2);
-  int32_t i3 (3);
-  int32_t i4 (4);
+  int32_t i1(1);
+  int32_t i2(2);
+  int32_t i3(3);
+  int32_t i4(4);
 
-  p.push_back(std::make_pair ("/a.0/b/c.0", i1));
-  p.push_back(std::make_pair ("/a.0/b/c.1", i2));
-  p.push_back(std::make_pair ("/a.1/b.0/c", i3));
-  p.push_back(std::make_pair ("/a.1/b.0/d", i4));
+  p.push_back(std::make_pair("/a.0/b/c.0", i1));
+  p.push_back(std::make_pair("/a.0/b/c.1", i2));
+  p.push_back(std::make_pair("/a.1/b.0/c", i3));
+  p.push_back(std::make_pair("/a.1/b.0/d", i4));
 
   std::string json = ossia::presets::write_json("device", p);
 
@@ -413,25 +459,26 @@ TEST_CASE ("Nested arrays and objects") {
   REQUIRE(d["a"][1]["b"][0]["d"].GetInt() == i4);
 }
 
-TEST_CASE ("Types conversion") {
+TEST_CASE("Types conversion")
+{
   ossia::presets::preset p;
 
-  bool btrue (true);
-  bool bfalse (false);
-  char c ('2');
-  int32_t i (15551);
-  float f (3.566);
-  std::string s ("bonjour");
+  bool btrue(true);
+  bool bfalse(false);
+  char c('2');
+  int32_t i(15551);
+  float f(3.566);
+  std::string s("bonjour");
 
   ossia::value v = c;
   REQUIRE(v.get_type() == ossia::val_type::CHAR);
   REQUIRE(*v.target<char>() == '2');
-  p.push_back(std::make_pair ("/true", btrue));
-  p.push_back(std::make_pair ("/false", bfalse));
-  p.push_back(std::make_pair ("/char", c));
-  p.push_back(std::make_pair ("/int", i));
-  p.push_back(std::make_pair ("/float", f));
-  p.push_back(std::make_pair ("/string", s));
+  p.push_back(std::make_pair("/true", btrue));
+  p.push_back(std::make_pair("/false", bfalse));
+  p.push_back(std::make_pair("/char", c));
+  p.push_back(std::make_pair("/int", i));
+  p.push_back(std::make_pair("/float", f));
+  p.push_back(std::make_pair("/string", s));
 
   std::string json = ossia::presets::write_json("device", p);
 
@@ -443,40 +490,47 @@ TEST_CASE ("Types conversion") {
   REQUIRE(doc.HasMember("device") == 1);
   auto& d = doc["device"];
 
-  SECTION ("Bool") {
+  SECTION("Bool")
+  {
     REQUIRE(d.HasMember("true"));
     REQUIRE(d["true"].GetType() == rapidjson::kTrueType);
     REQUIRE(d.HasMember("false"));
     REQUIRE(d["false"].GetType() == rapidjson::kFalseType);
   }
 
-  SECTION ("Char") {
+  SECTION("Char")
+  {
     REQUIRE(d.HasMember("char"));
     REQUIRE(d["char"].IsString());
     REQUIRE(std::strcmp(d["char"].GetString(), "2") == 0);
   }
 
-  SECTION ("String") {
+  SECTION("String")
+  {
     REQUIRE(d.HasMember("string"));
     REQUIRE(d["string"].IsString());
     REQUIRE(std::strcmp(d["string"].GetString(), "bonjour") == 0);
   }
 
-  SECTION ("Int") {
+  SECTION("Int")
+  {
     REQUIRE(d.HasMember("int"));
     REQUIRE(d["int"].IsInt());
     REQUIRE(d["int"].GetInt() == 15551);
   }
 
-  SECTION ("Float") {
+  SECTION("Float")
+  {
     REQUIRE(d.HasMember("float"));
     REQUIRE(d["float"].IsDouble());
     REQUIRE(d["float"].GetDouble() == Catch::Detail::Approx(3.566f).epsilon(0.001));
   }
 }
 
-TEST_CASE ("Exceptions") {
-  SECTION ("Invalid JSON") {
+TEST_CASE("Exceptions")
+{
+  SECTION("Invalid JSON")
+  {
     std::string invalidjson = R"_({{"a":true})_";
     REQUIRE_THROWS(ossia::presets::read_json(invalidjson));
   }

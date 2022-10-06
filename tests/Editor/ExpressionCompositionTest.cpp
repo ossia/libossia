@@ -1,17 +1,18 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
 using namespace ossia;
 using namespace ossia::expressions;
 using namespace std::placeholders;
-
 
 bool m_result;
 bool m_result_callback_called;
@@ -23,21 +24,27 @@ void result_callback(bool result)
 }
 
 auto make_exprA()
-{ return make_expression_atom(true, comparator::EQUAL, true); }
+{
+  return make_expression_atom(true, comparator::EQUAL, true);
+}
 auto make_exprB()
-{ return make_expression_atom(false, comparator::EQUAL, false); }
+{
+  return make_expression_atom(false, comparator::EQUAL, false);
+}
 auto make_exprC()
-{ return make_expression_atom(false, comparator::DIFFERENT, false); }
+{
+  return make_expression_atom(false, comparator::DIFFERENT, false);
+}
 
 /*! test AND operator */
-TEST_CASE ("test_AND", "test_AND")
+TEST_CASE("test_AND", "test_AND")
 {
-  auto composition1 = make_expression_composition(
-        make_exprA(), binary_operator::AND, make_exprB());
+  auto composition1
+      = make_expression_composition(make_exprA(), binary_operator::AND, make_exprB());
   REQUIRE(evaluate(composition1) == true);
 
-  auto composition2 = make_expression_composition(
-        make_exprA(), binary_operator::AND, make_exprC());
+  auto composition2
+      = make_expression_composition(make_exprA(), binary_operator::AND, make_exprC());
 
   REQUIRE(evaluate(composition2) == false);
 
@@ -45,46 +52,40 @@ TEST_CASE ("test_AND", "test_AND")
 }
 
 /*! test OR operator */
-TEST_CASE ("test_OR", "test_OR")
+TEST_CASE("test_OR", "test_OR")
 {
-  auto composition1 = make_expression_composition(make_exprA(),
-                                                  binary_operator::OR,
-                                                  make_exprB());
+  auto composition1
+      = make_expression_composition(make_exprA(), binary_operator::OR, make_exprB());
   REQUIRE(evaluate(composition1) == true);
 
-  auto composition2 = make_expression_composition(make_exprA(),
-                                                  binary_operator::OR,
-                                                  make_exprC());
+  auto composition2
+      = make_expression_composition(make_exprA(), binary_operator::OR, make_exprC());
   REQUIRE(evaluate(composition2) == true);
 
   //! \todo test clone()
 }
 
 /*! test XOR operator */
-TEST_CASE ("test_XOR", "test_XOR")
+TEST_CASE("test_XOR", "test_XOR")
 {
-  auto composition1 = make_expression_composition(make_exprA(),
-                                                  binary_operator::XOR,
-                                                  make_exprB());
+  auto composition1
+      = make_expression_composition(make_exprA(), binary_operator::XOR, make_exprB());
   REQUIRE(evaluate(composition1) == false);
 
-  auto composition2 = make_expression_composition(make_exprA(),
-                                                  binary_operator::XOR,
-                                                  make_exprC());
+  auto composition2
+      = make_expression_composition(make_exprA(), binary_operator::XOR, make_exprC());
   REQUIRE(evaluate(composition2) == true);
 
   //! \todo test clone()
 }
 
 /*! test comparison operator */
-TEST_CASE ("test_comparison", "test_comparison")
+TEST_CASE("test_comparison", "test_comparison")
 {
-  auto composition1 = make_expression_composition(make_exprA(),
-                                                  binary_operator::XOR,
-                                                  make_exprB());
-  auto composition2 = make_expression_composition(make_exprA(),
-                                                  binary_operator::XOR,
-                                                  make_exprC());
+  auto composition1
+      = make_expression_composition(make_exprA(), binary_operator::XOR, make_exprB());
+  auto composition2
+      = make_expression_composition(make_exprA(), binary_operator::XOR, make_exprC());
 
   REQUIRE(expressions::expression_false() != *composition1);
   REQUIRE(expressions::expression_true() != *composition1);
@@ -94,7 +95,7 @@ TEST_CASE ("test_comparison", "test_comparison")
 }
 
 /*! test callback management */
-TEST_CASE ("test_callback", "test_callback")
+TEST_CASE("test_callback", "test_callback")
 {
   // Local device
   ossia::net::generic_device device{"test"};
@@ -106,17 +107,15 @@ TEST_CASE ("test_callback", "test_callback")
   auto localIntNode3 = device.create_child("my_int.3");
   auto localIntAddress3 = localIntNode3->create_parameter(val_type::INT);
 
-  auto testDestinationExprA = make_expression_atom(destination(*localIntAddress1),
-                                                   comparator::LOWER,
-                                                   destination(*localIntAddress2));
+  auto testDestinationExprA = make_expression_atom(
+      destination(*localIntAddress1), comparator::LOWER, destination(*localIntAddress2));
 
-  auto testDestinationExprB = make_expression_atom(destination(*localIntAddress2),
-                                                   comparator::LOWER,
-                                                   destination(*localIntAddress3));
+  auto testDestinationExprB = make_expression_atom(
+      destination(*localIntAddress2), comparator::LOWER, destination(*localIntAddress3));
 
-  auto testDestinationComposition = make_expression_composition(std::move(testDestinationExprA),
-                                                                binary_operator::AND,
-                                                                std::move(testDestinationExprB));
+  auto testDestinationComposition = make_expression_composition(
+      std::move(testDestinationExprA), binary_operator::AND,
+      std::move(testDestinationExprB));
 
   expression_result_callback callback = std::bind(&result_callback, _1);
   auto callback_index = add_callback(*testDestinationComposition, callback);

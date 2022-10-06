@@ -1,38 +1,53 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
-#include <iostream>
-#include <ossia/network/value/value.hpp>
-#include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include "TestUtils.hpp"
+#include <ossia/network/value/detail/value_parse_impl.hpp>
+#include <ossia/network/value/value.hpp>
+
+#include <catch.hpp>
+
+#include <iostream>
 using namespace ossia;
 
-TEST_CASE ("test_parse", "test_parse")
+TEST_CASE("test_parse", "test_parse")
 {
   REQUIRE(ossia::parse_pretty_value("impulse") == ossia::impulse{});
   REQUIRE(ossia::parse_pretty_value("float: 12.3") == ossia::value{12.3});
   REQUIRE(ossia::parse_pretty_value("int: 123") == ossia::value{123});
   REQUIRE(ossia::parse_pretty_value("char: 'x'") == ossia::value{'x'});
-  REQUIRE(ossia::parse_pretty_value("string: \"foo bar baz\"") == ossia::value{"foo bar baz"});
-  REQUIRE(ossia::parse_pretty_value("string: \"foo \\\"bar\\\" baz\"") == ossia::value{"foo \"bar\" baz"});
+  REQUIRE(
+      ossia::parse_pretty_value("string: \"foo bar baz\"")
+      == ossia::value{"foo bar baz"});
+  REQUIRE(
+      ossia::parse_pretty_value("string: \"foo \\\"bar\\\" baz\"")
+      == ossia::value{"foo \"bar\" baz"});
   REQUIRE(ossia::parse_pretty_value("vec2f: [1.2, 3.4]") == ossia::make_vec(1.2, 3.4));
-  REQUIRE(ossia::parse_pretty_value("vec3f: [1.2, 3.4, 5.6]") == ossia::make_vec(1.2, 3.4, 5.6));
-  REQUIRE(ossia::parse_pretty_value("list: []") == ossia::value(std::vector<ossia::value>{}));
-  REQUIRE(ossia::parse_pretty_value("list: [int: 123]") == ossia::value(std::vector<ossia::value>{123}));
-  REQUIRE(ossia::parse_pretty_value("list: [float: 1.2, char: 'c', string: \"foo\"]") == ossia::value(std::vector<ossia::value>{1.2, 'c', "foo"}));
+  REQUIRE(
+      ossia::parse_pretty_value("vec3f: [1.2, 3.4, 5.6]")
+      == ossia::make_vec(1.2, 3.4, 5.6));
+  REQUIRE(
+      ossia::parse_pretty_value("list: []")
+      == ossia::value(std::vector<ossia::value>{}));
+  REQUIRE(
+      ossia::parse_pretty_value("list: [int: 123]")
+      == ossia::value(std::vector<ossia::value>{123}));
+  REQUIRE(
+      ossia::parse_pretty_value("list: [float: 1.2, char: 'c', string: \"foo\"]")
+      == ossia::value(std::vector<ossia::value>{1.2, 'c', "foo"}));
 }
-TEST_CASE ("test_wrapped", "test_wrapped")
+TEST_CASE("test_wrapped", "test_wrapped")
 {
   REQUIRE(impulse() == true);
   REQUIRE(ossia::value(impulse()) == ossia::value(true));
 }
 
 /*! test impulse */
-TEST_CASE ("test_impulse", "test_impulse")
+TEST_CASE("test_impulse", "test_impulse")
 {
   impulse p1;
   impulse p2;
@@ -105,7 +120,7 @@ TEST_CASE ("test_impulse", "test_impulse")
 }
 
 /*! test bool */
-TEST_CASE ("test_bool", "test_bool")
+TEST_CASE("test_bool", "test_bool")
 {
   bool b1(true), b2(true);
   REQUIRE(b1 == b2);
@@ -172,7 +187,7 @@ TEST_CASE ("test_bool", "test_bool")
 }
 
 /*! test int */
-TEST_CASE ("test_int32_t", "test_int32_t")
+TEST_CASE("test_int32_t", "test_int32_t")
 {
   int32_t i1(5), i2(5);
 
@@ -245,7 +260,7 @@ TEST_CASE ("test_int32_t", "test_int32_t")
 }
 
 /*! test float */
-TEST_CASE ("test_float", "test_float")
+TEST_CASE("test_float", "test_float")
 {
   float f1(5);
   float f2 = f1;
@@ -318,7 +333,7 @@ TEST_CASE ("test_float", "test_float")
 }
 
 /*! test char */
-TEST_CASE ("test_char", "test_char")
+TEST_CASE("test_char", "test_char")
 {
   char c1(5);
   char c2 = c1;
@@ -391,7 +406,7 @@ TEST_CASE ("test_char", "test_char")
 }
 
 /*! test string */
-TEST_CASE ("test_value_string", "test_value_string")
+TEST_CASE("test_value_string", "test_value_string")
 {
   auto s1 = value::make<std::string>("qsd");
   auto s2 = s1;
@@ -466,7 +481,7 @@ TEST_CASE ("test_value_string", "test_value_string")
 }
 
 /*! test std::vector<ossia::value> */
-TEST_CASE ("test_tuple", "test_tuple")
+TEST_CASE("test_tuple", "test_tuple")
 {
   std::vector<ossia::value> t1{int32_t(5), float(0.2), std::string("abc")};
   REQUIRE(t1[0].get_type() == val_type::INT);
@@ -546,7 +561,7 @@ TEST_CASE ("test_tuple", "test_tuple")
   //! \todo <= comparison with behavior
 }
 
-TEST_CASE ("test_link", "test_link")
+TEST_CASE("test_link", "test_link")
 {
   {
     ossia::value v;
@@ -559,17 +574,16 @@ TEST_CASE ("test_link", "test_link")
     v.target<const float>();
     v.target<const std::array<float, 3>>();
   }
-
 }
 
 /*! test generic */
-TEST_CASE ("test_generic", "test_generic")
+TEST_CASE("test_generic", "test_generic")
 {
   //! \todo test clone()
 }
 
 /*! test destination */
-TEST_CASE ("test_destination", "test_destination")
+TEST_CASE("test_destination", "test_destination")
 {
   //! \todo test clone()
 
@@ -595,9 +609,8 @@ TEST_CASE ("test_destination", "test_destination")
   REQUIRE(&d4.value.get() == &d3.value.get());
 }
 
-
 /*! test behavior */
-TEST_CASE ("test_behavior", "test_behavior")
+TEST_CASE("test_behavior", "test_behavior")
 {
   //! \todo test clone()
 }

@@ -1,10 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
@@ -15,9 +17,8 @@ void event_callback(time_event::status newStatus)
   ;
 }
 
-
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   auto node = std::make_shared<time_sync>();
   REQUIRE(node != nullptr);
@@ -39,14 +40,14 @@ TEST_CASE ("test_basic", "test_basic")
 }
 
 /*! test edition functions */
-TEST_CASE ("test_edition", "test_edition")
+TEST_CASE("test_edition", "test_edition")
 {
   auto node = std::make_shared<time_sync>();
   REQUIRE(node != nullptr);
 
   auto event = *(node->emplace(
-                   node->get_time_events().begin(),
-                   &event_callback, expressions::make_expression_true()));
+      node->get_time_events().begin(), &event_callback,
+      expressions::make_expression_true()));
 
   REQUIRE(event != nullptr);
 

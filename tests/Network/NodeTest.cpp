@@ -1,28 +1,28 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <iostream>
+#include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/path.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
-#include <ossia/network/common/complex_type.hpp>
 
+#include <catch.hpp>
+
+#include <iostream>
 #include <regex>
 #include <string_view>
 
 #if defined(OSSIA_QT)
- #include <ossia-qt/js_utilities.hpp>
+#include <ossia-qt/js_utilities.hpp>
 #endif
 using namespace ossia;
 using namespace ossia::net;
 using namespace std::placeholders;
 
-
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   ossia::net::generic_device device{"test"};
   REQUIRE(device.get_name() == "test");
@@ -49,7 +49,7 @@ TEST_CASE ("test_basic", "test_basic")
   REQUIRE(brother->get_name() == "foo.1");
 }
 
-TEST_CASE ("test_instances", "test_instances")
+TEST_CASE("test_instances", "test_instances")
 {
   ossia::net::generic_device dev;
   REQUIRE((ossia::net::create_node(dev, "/foo/bar").get_name()) == "bar");
@@ -74,7 +74,7 @@ TEST_CASE ("test_instances", "test_instances")
 }
 
 /*! test edition functions */
-TEST_CASE ("test_edition", "test_edition")
+TEST_CASE("test_edition", "test_edition")
 {
   ossia::net::generic_device device{"test"};
 
@@ -102,20 +102,19 @@ TEST_CASE ("test_edition", "test_edition")
   }
 
   {
-    auto params = ossia::net::find_or_create_parameter(device.get_root_node(), "child", "float");
+    auto params
+        = ossia::net::find_or_create_parameter(device.get_root_node(), "child", "float");
     REQUIRE(params.size() == 1);
   }
 
   {
-    auto complex_param = ossia::net::find_or_create_parameter(device.get_root_node(),
-                                                              "myspat.1/source.1/gain.L",
-                                                              "gain.linear");
+    auto complex_param = ossia::net::find_or_create_parameter(
+        device.get_root_node(), "myspat.1/source.1/gain.L", "gain.linear");
 
     REQUIRE(complex_param.size() == 1);
 
-    auto params = ossia::net::find_or_create_parameter(device.get_root_node(),
-                                                      "myspat.1/source.1/gain.L",
-                                                      "gain.linear");
+    auto params = ossia::net::find_or_create_parameter(
+        device.get_root_node(), "myspat.1/source.1/gain.L", "gain.linear");
 
     REQUIRE(params.size() == 1);
 
@@ -124,37 +123,60 @@ TEST_CASE ("test_edition", "test_edition")
   }
 }
 
-TEST_CASE ("test_list_all_children", "list_all_children")
+TEST_CASE("test_list_all_children", "list_all_children")
 {
   using namespace std::literals;
   ossia::net::generic_device dev{"mydevice"};
 
   auto& root = dev.get_root_node();
 
-  auto p1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.1"))->get_node();
-  auto p5 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"))->get_node();
-  auto p4 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"))->get_node();
-  auto p3 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.3"))->get_node();
-  auto p4x = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/x"))->get_node();
-  auto p4y = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/y"))->get_node();
-  auto p4z3 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.3"))->get_node();
-  auto p2 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.2"))->get_node();
-  auto p4z1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.1"))->get_node();
-  auto p4z10 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/z.10"))->get_node();
-  auto p4a1 = &ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4/a.10"))->get_node();
+  auto p1 = &ossia::try_setup_parameter(
+                 "vec4", ossia::net::create_node(root, "/matrix/color.1"))
+                 ->get_node();
+  auto p5 = &ossia::try_setup_parameter(
+                 "vec4", ossia::net::create_node(root, "/matrix/color.5"))
+                 ->get_node();
+  auto p4 = &ossia::try_setup_parameter(
+                 "vec4", ossia::net::create_node(root, "/matrix/color.4"))
+                 ->get_node();
+  auto p3 = &ossia::try_setup_parameter(
+                 "vec4", ossia::net::create_node(root, "/matrix/color.3"))
+                 ->get_node();
+  auto p4x = &ossia::try_setup_parameter(
+                  "vec4", ossia::net::create_node(root, "/matrix/color.4/x"))
+                  ->get_node();
+  auto p4y = &ossia::try_setup_parameter(
+                  "vec4", ossia::net::create_node(root, "/matrix/color.4/y"))
+                  ->get_node();
+  auto p4z3 = &ossia::try_setup_parameter(
+                   "vec4", ossia::net::create_node(root, "/matrix/color.4/z.3"))
+                   ->get_node();
+  auto p2 = &ossia::try_setup_parameter(
+                 "vec4", ossia::net::create_node(root, "/matrix/color.2"))
+                 ->get_node();
+  auto p4z1 = &ossia::try_setup_parameter(
+                   "vec4", ossia::net::create_node(root, "/matrix/color.4/z.1"))
+                   ->get_node();
+  auto p4z10 = &ossia::try_setup_parameter(
+                    "vec4", ossia::net::create_node(root, "/matrix/color.4/z.10"))
+                    ->get_node();
+  auto p4a1 = &ossia::try_setup_parameter(
+                   "vec4", ossia::net::create_node(root, "/matrix/color.4/a.10"))
+                   ->get_node();
 
   auto matrix = dev.find_child("matrix"sv);
   std::vector<ossia::net::node_base*> vec = ossia::net::list_all_children(&root);
 
-  std::vector<ossia::net::node_base*> sorted{matrix, p1, p2, p3, p4, p4a1, p4x, p4y, p4z1, p4z3, p4z10, p5};
+  std::vector<ossia::net::node_base*> sorted{matrix, p1,  p2,   p3,   p4,    p4a1,
+                                             p4x,    p4y, p4z1, p4z3, p4z10, p5};
   REQUIRE(vec == sorted);
 }
 
-TEST_CASE ("test_path", "test_path")
+TEST_CASE("test_path", "test_path")
 {
   using namespace ossia::regex_path;
-    // Apple's regex implementation is a failure
-    // TODO switch to ctre for this use case
+  // Apple's regex implementation is a failure
+  // TODO switch to ctre for this use case
 #if !defined(__APPLE__)
   {
     auto path = device("foo") / "bar" / any_instance("baz");
@@ -207,14 +229,14 @@ TEST_CASE ("test_path", "test_path")
 }
 
 /*! test callback notifications */
-TEST_CASE ("test_callback", "test_callback")
+TEST_CASE("test_callback", "test_callback")
 {
   ossia::net::generic_device device{"test"};
 
   /* TODO */
 }
 
-TEST_CASE ("test_complex_type", "test_complex_type")
+TEST_CASE("test_complex_type", "test_complex_type")
 {
 
   ossia::net::generic_device device;
@@ -228,7 +250,7 @@ TEST_CASE ("test_complex_type", "test_complex_type")
   REQUIRE(ossia::try_setup_parameter("hz", device.get_root_node()));
 }
 
-TEST_CASE ("test_sanitize", "test_sanitize")
+TEST_CASE("test_sanitize", "test_sanitize")
 {
   using namespace std::literals;
   REQUIRE(sanitize_name("foo") == "foo"s);
@@ -249,38 +271,58 @@ TEST_CASE ("test_sanitize", "test_sanitize")
   REQUIRE(sanitize_name("foo.3"s, {"foo"}) == "foo.3"s);
   REQUIRE(sanitize_name("foo.3"s, {"foo", "foo.1"}) == "foo.3"s);
 
-
   REQUIRE((ossia::net::sanitize_name("foo"s, {"foo"})) == "foo.1");
   REQUIRE((ossia::net::sanitize_name("foo"s, {"foo", "foo.1"})) == "foo.2");
 
 #if defined(OSSIA_QT)
   REQUIRE((ossia::net::sanitize_name(QString("foo"), {QString("foo")})) == "foo.1");
-  REQUIRE((ossia::net::sanitize_name(QString("foo"), {QString("foo"), QString("foo.1")})) == "foo.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(QString("foo"), {QString("foo"), QString("foo.1")}))
+      == "foo.2");
 
-  REQUIRE((ossia::net::sanitize_name(QString("foo34"), {QString("foo34")})) == "foo34.1");
-  REQUIRE((ossia::net::sanitize_name(QString("foo34"), {QString("foo34"), QString("foo34.1")})) == "foo34.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(QString("foo34"), {QString("foo34")})) == "foo34.1");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString("foo34"), {QString("foo34"), QString("foo34.1")}))
+      == "foo34.2");
 
-  std::cerr <<ossia::net::sanitize_name(QString("State.1"), {QString("State.1")}).toStdString();
-  REQUIRE((ossia::net::sanitize_name(QString("State.1"), {QString("State.1")})) == "State.2");
-  REQUIRE((ossia::net::sanitize_name(QString("State.1"), {QString("State.1"), QString("State.2")})) == "State.3");
-  REQUIRE((ossia::net::sanitize_name(QString("State.1"), {QString("State.1"), QString("State.2")})) == "State.3");
+  std::cerr << ossia::net::sanitize_name(QString("State.1"), {QString("State.1")})
+                   .toStdString();
+  REQUIRE(
+      (ossia::net::sanitize_name(QString("State.1"), {QString("State.1")}))
+      == "State.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString("State.1"), {QString("State.1"), QString("State.2")}))
+      == "State.3");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString("State.1"), {QString("State.1"), QString("State.2")}))
+      == "State.3");
 
-
-  REQUIRE((ossia::net::sanitize_name(QString("State.2"), {QString("State.1")})) == "State.2");
-  REQUIRE((ossia::net::sanitize_name(QString("State.2"), {QString("State.1"), QString("State.2")})) == "State.3");
+  REQUIRE(
+      (ossia::net::sanitize_name(QString("State.2"), {QString("State.1")}))
+      == "State.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString("State.2"), {QString("State.1"), QString("State.2")}))
+      == "State.3");
 
   const char state1[]{'S', 't', 'a', 't', 'e', '.', '1'};
-  REQUIRE((ossia::net::sanitize_name(
-             QString("State.1"),
-  {"TimeSync.0", "Event.0", "State.0", "TimeSync.1", "bogs3tone68", "State.1"})) == "State.2");
-  REQUIRE((ossia::net::sanitize_name(
-             QString::fromLatin1(state1, 7),
-  {QString::fromLatin1(state1, 7)})) == "State.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString("State.1"),
+          {"TimeSync.0", "Event.0", "State.0", "TimeSync.1", "bogs3tone68", "State.1"}))
+      == "State.2");
+  REQUIRE(
+      (ossia::net::sanitize_name(
+          QString::fromLatin1(state1, 7), {QString::fromLatin1(state1, 7)}))
+      == "State.2");
 #endif
 }
 
-
-TEST_CASE ("test_attributes", "test_attributes")
+TEST_CASE("test_attributes", "test_attributes")
 {
   generic_device dev{"A"};
   ossia::net::node_base& n = find_or_create_node(dev, "/main");
@@ -353,7 +395,6 @@ TEST_CASE ("test_attributes", "test_attributes")
   REQUIRE(!tgs->empty());
   REQUIRE((*tgs == the_tags));
 
-
   REQUIRE((bool)get_tags(n));
   REQUIRE(*get_tags(n) == the_tags);
 
@@ -382,7 +423,8 @@ TEST_CASE ("test_attributes", "test_attributes")
 
   n.set(description_attribute{}, "Such a fancy node?! Incredible! すごい!!");
   REQUIRE((bool)get_description(n));
-  REQUIRE(*get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
+  REQUIRE(
+      *get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
 
   n.set(extended_type_attribute{}, "custom");
   REQUIRE((bool)get_extended_type(n));
@@ -401,8 +443,7 @@ TEST_CASE ("test_attributes", "test_attributes")
   REQUIRE(*get_app_creator(n) == std::string("Lelouch vi Brittania"));
 }
 
-
-TEST_CASE ("test_attributes_2", "test_attributes_2")
+TEST_CASE("test_attributes_2", "test_attributes_2")
 {
   generic_device dev{"A"};
   ossia::net::node_base& n = find_or_create_node(dev, "/main");
@@ -467,7 +508,8 @@ TEST_CASE ("test_attributes_2", "test_attributes_2")
 
   set_description(n, "Such a fancy node?! Incredible! すごい!!");
   REQUIRE((bool)get_description(n));
-  REQUIRE(*get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
+  REQUIRE(
+      *get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
 
   set_extended_type(n, ossia::filesystem_path_type());
   REQUIRE((bool)get_extended_type(n));
@@ -486,7 +528,7 @@ TEST_CASE ("test_attributes_2", "test_attributes_2")
   REQUIRE(*get_app_creator(n) == std::string("Lelouch vi Brittania"));
 }
 
-TEST_CASE ("test_pattern_matching", "test_pattern_matching")
+TEST_CASE("test_pattern_matching", "test_pattern_matching")
 {
   generic_device dev{"A"};
   {

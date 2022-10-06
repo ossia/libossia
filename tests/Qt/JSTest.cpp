@@ -1,53 +1,51 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <ossia/network/base/node.hpp>
-#include <ossia/network/base/device.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include <ossia/context.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/common/debug.hpp>
+#include <ossia/network/domain/domain.hpp>
+
 #include <ossia-qt/device/qml_device.hpp>
 #include <ossia-qt/device/qml_model_property.hpp>
 #include <ossia-qt/device/qml_property.hpp>
-#include <ossia-qt/qml_plugin.hpp>
 #include <ossia-qt/js_utilities.hpp>
-#include <ossia/network/common/debug.hpp>
-#include <ossia/network/domain/domain.hpp>
-#include <fmt/format.h>
-#include <QQmlEngine>
-#include <QQmlComponent>
+#include <ossia-qt/qml_plugin.hpp>
+
 #include <QCoreApplication>
+#include <QQmlComponent>
+#include <QQmlEngine>
+
+#include <fmt/format.h>
+
+#include <catch.hpp>
 
 std::vector<ossia::value> testOssiaValues()
 {
   std::vector<ossia::value> vals{
-    ossia::value{},
-    ossia::value{ossia::impulse{}},
-    ossia::value{123},
-    ossia::value{456.},
-    ossia::value{"foo"},
-    ossia::value{true},
-    ossia::value{false},
-    ossia::value{ossia::make_vec(1, 2)},
-    ossia::value{ossia::make_vec(1, 2, 3)},
-    ossia::value{ossia::make_vec(1, 2, 3, 4)},
-    ossia::value{std::vector<ossia::value>{3, "foo", 'c'}}
-  };
+      ossia::value{},
+      ossia::value{ossia::impulse{}},
+      ossia::value{123},
+      ossia::value{456.},
+      ossia::value{"foo"},
+      ossia::value{true},
+      ossia::value{false},
+      ossia::value{ossia::make_vec(1, 2)},
+      ossia::value{ossia::make_vec(1, 2, 3)},
+      ossia::value{ossia::make_vec(1, 2, 3, 4)},
+      ossia::value{std::vector<ossia::value>{3, "foo", 'c'}}};
   return vals;
 }
 
 std::vector<QJSValue> testJSValues()
 {
-  std::vector<QJSValue> vals{
-    QJSValue{},
-    QJSValue{1234},
-    QJSValue{true},
-    QJSValue{false},
-    QJSValue{123.5456},
-    QJSValue{"foo bar baz"}
-  };
+  std::vector<QJSValue> vals{QJSValue{},         QJSValue{1234},
+                             QJSValue{true},     QJSValue{false},
+                             QJSValue{123.5456}, QJSValue{"foo bar baz"}};
   {
     QJSValue vec2;
     vec2.setProperty(0, 1.23);
@@ -102,7 +100,7 @@ std::vector<QJSValue> testJSValues()
   return vals;
 }
 
-TEST_CASE ("test_value_conversion", "test_value_conversion")
+TEST_CASE("test_value_conversion", "test_value_conversion")
 {
   // TODO test undefined oscquery
 
@@ -147,8 +145,8 @@ TEST_CASE ("test_value_conversion", "test_value_conversion")
     auto val = ossia::qt::value_to_js_string(o);
   }
 
-
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app{argc, argv};
   QJSEngine e;
   for(auto& v : testOssiaValues())

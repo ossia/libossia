@@ -13,7 +13,7 @@ int main(int argc, char** argv)
   vco_node->create_child("cyclic_ratio")->create_parameter();
 
   auto filter_node = device.create_child("filter");
-  for(int i = 0; i<4; i++)
+  for(int i = 0; i < 4; i++)
   {
     auto band = filter_node->create_child("band.1");
     band->create_child("Q")->create_parameter();
@@ -34,8 +34,7 @@ int main(int argc, char** argv)
 
   for(const auto& m : matches)
   {
-    std::cout << m.score << "\t"
-              << m.oscname << std::endl;
+    std::cout << m.score << "\t" << m.oscname << std::endl;
   }
 
   std::cout << "Second round, search for 'band' and 'gain'" << std::endl;
@@ -44,8 +43,7 @@ int main(int argc, char** argv)
 
   for(const auto& m : matches)
   {
-    std::cout << m.score << "\t"
-              << m.oscname << std::endl;
+    std::cout << m.score << "\t" << m.oscname << std::endl;
   }
 
   return 0;

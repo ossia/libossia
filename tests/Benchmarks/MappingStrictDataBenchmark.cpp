@@ -1,28 +1,33 @@
 #include <ossia/detail/any.hpp>
-#include <random>
-#include <valgrind/callgrind.h>
 #include <ossia/detail/pod_vector.hpp>
+
 #include <boost/graph/adjacency_list.hpp>
+
+#include <valgrind/callgrind.h>
+
 #include <flat_hash_map.hpp>
+
+#include <random>
 
 #define private public
 #include "../Editor/TestUtils.hpp"
+
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
 
 static const constexpr int NUM_TAKES = 5;
-static const constexpr auto NUM_CURVES = { 10, 20, 30, 40,
-                                           50, 60, 70, 80, 90,
-                                           100, 150, 200, 250,
-                                           300, 400, 500
-                                           , 600, 700, 800, 900, 1000};
+static const constexpr auto NUM_CURVES
+    = {10,  20,  30,  40,  50,  60,  70,  80,  90,  100, 150,
+       200, 250, 300, 400, 500, 600, 700, 800, 900, 1000};
 
-static const constexpr auto CABLE_PROBABILITY = { 0.00001, 0.0001, 0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 0.01/*, 0.02, 0.03 */};
+static const constexpr auto CABLE_PROBABILITY
+    = {0.00001, 0.0001, 0.001, 0.002, 0.003, 0.004,
+       0.005,   0.006,  0.007, 0.008, 0.009, 0.01 /*, 0.02, 0.03 */};
 
 std::size_t num_messages(ossia::execution_state& e)
 {
@@ -30,7 +35,6 @@ std::size_t num_messages(ossia::execution_state& e)
   for(auto& mq : e.m_valueState)
   {
     count += mq.second.size();
-
   }
   return count;
 }
@@ -41,7 +45,6 @@ int main()
   using namespace ossia;
   // Benchmark: how many automations can run at the same time
   // We need a graph
-
 
   for(double D : CABLE_PROBABILITY)
   {
@@ -62,12 +65,13 @@ int main()
         std::vector<ossia::node_ptr> mappings;
         for(int i = 0; i < N; i++)
         {
-          if(i%2)
+          if(i % 2)
           {
             auto node = std::make_shared<ossia::nodes::automation>();
 
             auto v = std::make_shared<ossia::curve<double, float>>();
-            v->set_x0(0.); v->set_y0(0.);
+            v->set_x0(0.);
+            v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
             automs.push_back(node);
@@ -78,10 +82,12 @@ int main()
             auto node = std::make_shared<ossia::nodes::mapping>();
 
             auto v = std::make_shared<ossia::curve<float, float>>();
-            v->set_x0(0.); v->set_y0(0.);
+            v->set_x0(0.);
+            v->set_y0(0.);
             v->add_point(ossia::easing::ease{}, 1., 1.);
             node->set_behavior(v);
-            node->value_out.address = t.float_params[std::abs(rand()) % t.float_params.size()];
+            node->value_out.address
+                = t.float_params[std::abs(rand()) % t.float_params.size()];
             mappings.push_back(node);
             g.add_node(std::move(node));
           }
@@ -98,7 +104,9 @@ int main()
           const auto& autom = automs[i];
           const auto& mapping = mappings[i];
 
-          g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, autom->root_outputs()[0], mapping->root_inputs()[0], autom, mapping));
+          g.connect(ossia::make_edge(
+              ossia::immediate_strict_connection{}, autom->root_outputs()[0],
+              mapping->root_inputs()[0], autom, mapping));
           num_cables++;
         }
 
@@ -110,7 +118,9 @@ int main()
             const auto& target = mappings[j];
             if(bdist{D}(mt))
             {
-              g.connect(ossia::make_edge(ossia::immediate_strict_connection{}, source->root_outputs()[0], target->root_inputs()[0], source, target));
+              g.connect(ossia::make_edge(
+                  ossia::immediate_strict_connection{}, source->root_outputs()[0],
+                  target->root_inputs()[0], source, target));
 
               num_cables++;
             }
@@ -129,7 +139,6 @@ int main()
         ossia::time_value old_v{}, v{};
         // run a first tick to init the graph
 
-
         e.clear_local_state();
         e.get_new_values();
         for(auto& n : g.m_nodes)
@@ -147,9 +156,10 @@ int main()
         avg_num_cables += num_cables;
         e.commit();
 
-
         int k = 0;
-        for(auto fun : {&execution_state::commit, &execution_state::commit_ordered, &execution_state::commit_merged})
+        for(auto fun :
+            {&execution_state::commit, &execution_state::commit_ordered,
+             &execution_state::commit_merged})
         {
           int64_t count = 0;
           for(auto& n : g.m_nodes)
@@ -163,7 +173,8 @@ int main()
           (e.*fun)();
           CALLGRIND_STOP_INSTRUMENTATION;
           auto t1 = std::chrono::steady_clock::now();
-          auto t = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
+          auto t
+              = std::chrono::duration_cast<std::chrono::microseconds>(t1 - t0).count();
           if(t > 5000)
           {
             must_break = true;
@@ -180,13 +191,10 @@ int main()
       }
       if(must_break)
         break;
-      std::cout << N
-                << "\t" << avg_num_cables / double(NUM_TAKES)
-                << "\t" << avg_msg_count / double(NUM_TAKES)
-                << "\t" << counts[0] / double(NUM_TAKES)
-                << "\t" << counts[1] / double(NUM_TAKES) << "\t"
-                << counts[2] / double(NUM_TAKES) << std::endl;
-
+      std::cout << N << "\t" << avg_num_cables / double(NUM_TAKES) << "\t"
+                << avg_msg_count / double(NUM_TAKES) << "\t"
+                << counts[0] / double(NUM_TAKES) << "\t" << counts[1] / double(NUM_TAKES)
+                << "\t" << counts[2] / double(NUM_TAKES) << std::endl;
     }
   }
   CALLGRIND_DUMP_STATS;

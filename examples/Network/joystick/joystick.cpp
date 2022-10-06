@@ -1,10 +1,10 @@
-#include <ossia/network/local/local.hpp>
-#include <ossia/protocols/joystick/joystick_protocol.hpp>
-#include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/base/osc_address.hpp>
-#include <ossia/network/value/format_value.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/detail/fmt.hpp>
+#include <ossia/network/base/osc_address.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/value/format_value.hpp>
+#include <ossia/protocols/joystick/joystick_protocol.hpp>
 
 int main()
 {
@@ -19,15 +19,13 @@ int main()
 
   auto ctx = ossia::net::create_network_context();
   ossia::net::generic_device source_dev{
-    std::make_unique<ossia::net::multiplex_protocol>(
+      std::make_unique<ossia::net::multiplex_protocol>(
           std::make_unique<ossia::net::joystick_protocol>(ctx, 0, 0),
-          std::make_unique<ossia::oscquery::oscquery_server_protocol>(5579, 5589)
-    ),
-    "joystick"
-  };
+          std::make_unique<ossia::oscquery::oscquery_server_protocol>(5579, 5589)),
+      "joystick"};
   source_dev.set_echo(true);
 
-  auto on_message = [] (const ossia::net::parameter_base& param) {
+  auto on_message = [](const ossia::net::parameter_base& param) {
     fmt::print("{}: {}\n", ossia::net::osc_address(param), param.value());
   };
   source_dev.on_message.connect(on_message);

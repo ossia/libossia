@@ -1,23 +1,27 @@
-    // This is an open source non-commercial project. Dear PVS-Studio, please check it.
+// This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/osc/detail/osc_receive.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <iostream>
+#include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/oscquery/detail/osc_writer.hpp>
-#include <ossia/network/osc/detail/osc_receive.hpp>
+
 #include <boost/endian/conversion.hpp>
-#include "TestUtils.hpp"
+
+#include <catch.hpp>
+
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;
-TEST_CASE ("test_osc_writer_send_rgba8", "test_osc_writer_send_rgba8")
+TEST_CASE("test_osc_writer_send_rgba8", "test_osc_writer_send_rgba8")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -25,7 +29,8 @@ TEST_CASE ("test_osc_writer_send_rgba8", "test_osc_writer_send_rgba8")
 
   dev.vec4f_addr->set_unit(ossia::rgba8_u{});
 
-  auto res = ossia::oscquery::osc_writer::to_message(*dev.vec4f_addr, ossia::make_vec(0, 59, 111, 255));
+  auto res = ossia::oscquery::osc_writer::to_message(
+      *dev.vec4f_addr, ossia::make_vec(0, 59, 111, 255));
 
   uint32_t exp = boost::endian::native_to_big((0 << 24) + (59 << 16) + (111 << 8) + 255);
   const char* data = reinterpret_cast<const char*>(&exp);
@@ -33,7 +38,7 @@ TEST_CASE ("test_osc_writer_send_rgba8", "test_osc_writer_send_rgba8")
   REQUIRE(res == expected);
 }
 
-TEST_CASE ("test_osc_receive_rgba8", "test_osc_receive_rgba8")
+TEST_CASE("test_osc_receive_rgba8", "test_osc_receive_rgba8")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -50,14 +55,13 @@ TEST_CASE ("test_osc_receive_rgba8", "test_osc_receive_rgba8")
   network_logger l;
 
   ossia::net::on_input_message<true>(
-        m.AddressPattern(),
-        ossia::net::osc_message_applier{{serv.get_protocol()}, m},
-        p,  dev.device, l);
+      m.AddressPattern(), ossia::net::osc_message_applier{{serv.get_protocol()}, m}, p,
+      dev.device, l);
 
   REQUIRE(dev.vec4f_addr->value() == ossia::value{ossia::make_vec(0, 59, 111, 255)});
 }
 
-TEST_CASE ("test_json_rgba8", "test_json_rgba8")
+TEST_CASE("test_json_rgba8", "test_json_rgba8")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -82,7 +86,7 @@ TEST_CASE ("test_json_rgba8", "test_json_rgba8")
     REQUIRE(doc["VALUE"][0].GetString() == "#003B6FFF"s);
   }
 }
-TEST_CASE ("test_parse_json_rgba8", "test_parse_json_rgba8")
+TEST_CASE("test_parse_json_rgba8", "test_parse_json_rgba8")
 {
   using namespace std::literals;
 

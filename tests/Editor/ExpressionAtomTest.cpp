@@ -1,9 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
+
 #include <ossia/editor/expression/expression.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
@@ -20,23 +22,20 @@ void result_callback(bool result)
   m_result_callback_called = true;
 }
 
-
 /*! evaluate expressions with impulse values */
-TEST_CASE ("test_impulse", "test_impulse")
+TEST_CASE("test_impulse", "test_impulse")
 {
   // evaluate expressions with Impulse
-  auto testImpulseExprA = make_expression_atom(
-        impulse(), comparator::EQUAL, impulse());
+  auto testImpulseExprA = make_expression_atom(impulse(), comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testImpulseExprA) == true);
 
-  auto testImpulseExprB = make_expression_atom(
-        impulse(), comparator::DIFFERENT, impulse());
+  auto testImpulseExprB
+      = make_expression_atom(impulse(), comparator::DIFFERENT, impulse());
 
   REQUIRE(evaluate(testImpulseExprB) == false);
 
-  auto testImpulseExprC = make_expression_atom(
-        impulse(), comparator::EQUAL, true);
+  auto testImpulseExprC = make_expression_atom(impulse(), comparator::EQUAL, true);
   auto first_op = testImpulseExprC->target<expression_atom>()->get_first_operand();
   auto first_val = first_op.target<ossia::value>();
   auto second_op = testImpulseExprC->target<expression_atom>()->get_second_operand();
@@ -48,28 +47,25 @@ TEST_CASE ("test_impulse", "test_impulse")
 
   REQUIRE(evaluate(testImpulseExprC) == true);
 
-  auto testImpulseExprD = make_expression_atom(
-        impulse(), comparator::EQUAL, 0);
+  auto testImpulseExprD = make_expression_atom(impulse(), comparator::EQUAL, 0);
 
   REQUIRE(evaluate(testImpulseExprD) == true);
 
-  auto testImpulseExprE = make_expression_atom(
-        impulse(), comparator::EQUAL, 0.0);
+  auto testImpulseExprE = make_expression_atom(impulse(), comparator::EQUAL, 0.0);
 
   REQUIRE(evaluate(testImpulseExprE) == true);
 
-  auto testImpulseExprF = make_expression_atom(
-        impulse(), comparator::EQUAL, char{0});
+  auto testImpulseExprF = make_expression_atom(impulse(), comparator::EQUAL, char{0});
 
   REQUIRE(evaluate(testImpulseExprF) == true);
 
-  auto testImpulseExprG = make_expression_atom(
-        impulse(), comparator::EQUAL, std::string{});
+  auto testImpulseExprG
+      = make_expression_atom(impulse(), comparator::EQUAL, std::string{});
 
   REQUIRE(evaluate(testImpulseExprG) == true);
 
-  auto testImpulseExprH = make_expression_atom(
-        impulse(), comparator::EQUAL, std::vector<ossia::value>{});
+  auto testImpulseExprH
+      = make_expression_atom(impulse(), comparator::EQUAL, std::vector<ossia::value>{});
 
   REQUIRE(evaluate(testImpulseExprH) == true);
 
@@ -77,20 +73,17 @@ TEST_CASE ("test_impulse", "test_impulse")
 }
 
 /*! evaluate expressions with bool values */
-TEST_CASE ("test_bool", "test_bool")
+TEST_CASE("test_bool", "test_bool")
 {
-  auto testBoolExprA = make_expression_atom(
-        true, comparator::EQUAL, true);
+  auto testBoolExprA = make_expression_atom(true, comparator::EQUAL, true);
 
   REQUIRE(evaluate(testBoolExprA) == true);
 
-  auto testBoolExprB = make_expression_atom(
-        true, comparator::DIFFERENT, true);
+  auto testBoolExprB = make_expression_atom(true, comparator::DIFFERENT, true);
 
   REQUIRE(evaluate(testBoolExprB) == false);
 
-  auto testBoolExprC = make_expression_atom(
-        true, comparator::EQUAL, impulse());
+  auto testBoolExprC = make_expression_atom(true, comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testBoolExprC) == true);
 
@@ -98,23 +91,17 @@ TEST_CASE ("test_bool", "test_bool")
 }
 
 /*! evaluate expressions with int values */
-TEST_CASE ("test_int", "test_int")
+TEST_CASE("test_int", "test_int")
 {
-  auto testIntExprA = make_expression_atom(10,
-                                           comparator::GREATER,
-                                           5);
+  auto testIntExprA = make_expression_atom(10, comparator::GREATER, 5);
 
   REQUIRE(evaluate(testIntExprA) == true);
 
-  auto testIntExprB = make_expression_atom(10,
-                                           comparator::LOWER,
-                                           5);
+  auto testIntExprB = make_expression_atom(10, comparator::LOWER, 5);
 
   REQUIRE(evaluate(testIntExprB) == false);
 
-  auto testIntExprC = make_expression_atom(10,
-                                           comparator::EQUAL,
-                                           impulse());
+  auto testIntExprC = make_expression_atom(10, comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testIntExprC) == true);
 
@@ -122,23 +109,17 @@ TEST_CASE ("test_int", "test_int")
 }
 
 /*! evaluate expressions with float values */
-TEST_CASE ("test_float", "test_float")
+TEST_CASE("test_float", "test_float")
 {
-  auto testFloatExprA = make_expression_atom(10.,
-                                             comparator::GREATER_EQUAL,
-                                             10.);
+  auto testFloatExprA = make_expression_atom(10., comparator::GREATER_EQUAL, 10.);
 
   REQUIRE(evaluate(testFloatExprA) == true);
 
-  auto testFloatExprB = make_expression_atom(10.,
-                                             comparator::LOWER_EQUAL,
-                                             10.);
+  auto testFloatExprB = make_expression_atom(10., comparator::LOWER_EQUAL, 10.);
 
   REQUIRE(evaluate(testFloatExprB) == true);
 
-  auto testFloatExprC = make_expression_atom(10.,
-                                             comparator::EQUAL,
-                                             impulse());
+  auto testFloatExprC = make_expression_atom(10., comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testFloatExprC) == true);
 
@@ -146,23 +127,20 @@ TEST_CASE ("test_float", "test_float")
 }
 
 /*! evaluate expressions with string values */
-TEST_CASE ("test_string", "test_string")
+TEST_CASE("test_string", "test_string")
 {
-  auto testStringExprA = make_expression_atom(std::string("abc"),
-                                              comparator::GREATER_EQUAL,
-                                              std::string("bcd"));
+  auto testStringExprA = make_expression_atom(
+      std::string("abc"), comparator::GREATER_EQUAL, std::string("bcd"));
 
   REQUIRE(evaluate(testStringExprA) == false);
 
-  auto testStringExprB = make_expression_atom(std::string("abc"),
-                                              comparator::LOWER_EQUAL,
-                                              std::string("bcd"));
+  auto testStringExprB = make_expression_atom(
+      std::string("abc"), comparator::LOWER_EQUAL, std::string("bcd"));
 
   REQUIRE(evaluate(testStringExprB) == true);
 
-  auto testStringExprC = make_expression_atom(std::string("abc"),
-                                              comparator::EQUAL,
-                                              impulse());
+  auto testStringExprC
+      = make_expression_atom(std::string("abc"), comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testStringExprC) == true);
 
@@ -170,26 +148,20 @@ TEST_CASE ("test_string", "test_string")
 }
 
 /*! evaluate expressions with tuple values */
-TEST_CASE ("test_tuple", "test_tuple")
+TEST_CASE("test_tuple", "test_tuple")
 {
   std::vector<value> value1{0.1, 0.2, 0.3};
   std::vector<value> value2{0.2, 0.3, 0.4};
 
-  auto testTupleExprA = make_expression_atom(value1,
-                                             comparator::GREATER,
-                                             value2);
+  auto testTupleExprA = make_expression_atom(value1, comparator::GREATER, value2);
 
   REQUIRE(evaluate(testTupleExprA) == false);
 
-  auto testTupleExprB = make_expression_atom(value1,
-                                             comparator::LOWER,
-                                             value2);
+  auto testTupleExprB = make_expression_atom(value1, comparator::LOWER, value2);
 
   REQUIRE(evaluate(testTupleExprB) == true);
 
-  auto testTupleExprC = make_expression_atom(value1,
-                                             comparator::EQUAL,
-                                             impulse());
+  auto testTupleExprC = make_expression_atom(value1, comparator::EQUAL, impulse());
 
   REQUIRE(evaluate(testTupleExprC) == true);
 
@@ -197,7 +169,7 @@ TEST_CASE ("test_tuple", "test_tuple")
 }
 
 /*! evaluate expressions with destination values */
-TEST_CASE ("test_destination", "test_destination")
+TEST_CASE("test_destination", "test_destination")
 {
   /* TODO
         // Local device
@@ -326,19 +298,13 @@ TEST_CASE ("test_destination", "test_destination")
 }
 
 /*! test comparison operator */
-TEST_CASE ("test_comparison", "test_comparison")
+TEST_CASE("test_comparison", "test_comparison")
 {
-  auto testExprA = make_expression_atom(true,
-                                        comparator::EQUAL,
-                                        true);
+  auto testExprA = make_expression_atom(true, comparator::EQUAL, true);
 
-  auto testExprB = make_expression_atom(true,
-                                        comparator::DIFFERENT,
-                                        true);
+  auto testExprB = make_expression_atom(true, comparator::DIFFERENT, true);
 
-  auto testExprC = make_expression_atom(true,
-                                        comparator::EQUAL,
-                                        true);
+  auto testExprC = make_expression_atom(true, comparator::EQUAL, true);
 
   REQUIRE(expression_false() != *testExprA);
   REQUIRE(expression_true() != *testExprA);
@@ -349,7 +315,7 @@ TEST_CASE ("test_comparison", "test_comparison")
 }
 
 /*! test callback management */
-TEST_CASE ("test_callback", "test_callback")
+TEST_CASE("test_callback", "test_callback")
 {
   /* TODO
         // Local device

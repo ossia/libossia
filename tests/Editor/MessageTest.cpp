@@ -1,17 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <ossia/network/generic/generic_device.hpp>
+
 #include <ossia/editor/state/message.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+
+#include <catch.hpp>
 
 #include <iostream>
 
 using namespace ossia;
 
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   // Local device
   ossia::net::generic_device device{"test"};
@@ -26,7 +28,7 @@ TEST_CASE ("test_basic", "test_basic")
 }
 
 /*! test execution functions */
-TEST_CASE ("test_execution", "test_execution")
+TEST_CASE("test_execution", "test_execution")
 {
   ;
 }

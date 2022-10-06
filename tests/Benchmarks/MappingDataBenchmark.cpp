@@ -1,30 +1,34 @@
 
-#include <flat_hash_map.hpp>
 #include "../Editor/TestUtils.hpp"
+
 #include <ossia/detail/pod_vector.hpp>
+
 #include <valgrind/callgrind.h>
+
+#include <flat_hash_map.hpp>
+
 #include <random>
 
 #define private public
+#include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/nodes/automation.hpp>
 #include <ossia/dataflow/nodes/mapping.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
+#include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/editor/scenario/time_event.hpp>
-#include <ossia/dataflow/graph/graph_static.hpp>
-
 
 static const constexpr int NUM_TAKES = 500;
-static const constexpr auto NUM_CURVES = { 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41
-                                           /*1, 10, 20, 30, 40
+static const constexpr auto NUM_CURVES = {
+    1,  3,  5,  7,  9,  11, 13, 15, 17, 19, 21,
+    23, 25, 27, 29, 31, 33, 35, 37, 39, 41
+    /*1, 10, 20, 30, 40
                                                                                      ,
                                                                                      50, 60, 70, 80, 90,
                                                                                      100, 150, 200, 250,
                                                                                      300, 400, 500
                                                                                      , 600, 700, 800, 900, 1000*/
-                                         };
-
+};
 
 std::size_t num_messages(ossia::execution_state& e)
 {
@@ -32,7 +36,6 @@ std::size_t num_messages(ossia::execution_state& e)
   for(auto& mq : e.m_valueState)
   {
     count += mq.second.size();
-
   }
   return count;
 }
@@ -55,13 +58,14 @@ int main()
       tc_graph g;
       for(int i = 0; i < N; i++)
       {
-        if(i%2)
+        if(i % 2)
         {
           auto node = std::make_shared<ossia::nodes::automation>();
           node->root_outputs()[0]->address = t.float_params[dist(rand)];
 
           auto v = std::make_shared<ossia::curve<double, float>>();
-          v->set_x0(0.); v->set_y0(0.);
+          v->set_x0(0.);
+          v->set_y0(0.);
           v->add_point(ossia::easing::ease{}, 1., 1.);
           node->set_behavior(v);
           g.add_node(node);
@@ -73,7 +77,8 @@ int main()
           node->value_out.address = t.float_params[dist(rand)];
 
           auto v = std::make_shared<ossia::curve<float, float>>();
-          v->set_x0(0.); v->set_y0(0.);
+          v->set_x0(0.);
+          v->set_y0(0.);
           v->add_point(ossia::easing::ease{}, 1., 1.);
           node->set_behavior(v);
           g.add_node(node);
@@ -97,7 +102,9 @@ int main()
 
       int k = 0;
 
-      for(auto fun : {&execution_state::commit, &execution_state::commit_ordered, &execution_state::commit_merged})
+      for(auto fun :
+          {&execution_state::commit, &execution_state::commit_ordered,
+           &execution_state::commit_merged})
       {
         int64_t count = 0;
         for(auto& n : g.m_nodes)
@@ -118,12 +125,9 @@ int main()
       }
     }
 
-    std::cout << N
-              << "\t" << avg_msg_count / double(NUM_TAKES)
-              << "\t" << counts[0] / double(NUM_TAKES)
-              << "\t" << counts[1] / double(NUM_TAKES)
-              << "\t" << counts[2] / double(NUM_TAKES)
-              << std::endl;
+    std::cout << N << "\t" << avg_msg_count / double(NUM_TAKES) << "\t"
+              << counts[0] / double(NUM_TAKES) << "\t" << counts[1] / double(NUM_TAKES)
+              << "\t" << counts[2] / double(NUM_TAKES) << std::endl;
   }
   CALLGRIND_DUMP_STATS;
 }

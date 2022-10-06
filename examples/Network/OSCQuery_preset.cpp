@@ -1,13 +1,14 @@
-#include <ossia/network/oscquery/oscquery_mirror.hpp>
+#include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/oscquery/oscquery_mirror.hpp>
+
 #include <boost/lexical_cast.hpp>
 
-#include <iostream>
 #include <fstream>
-#include <memory>
 #include <functional>
+#include <iostream>
+#include <memory>
 
 int main(int argc, char** argv)
 {
@@ -89,9 +90,10 @@ int main(int argc, char** argv)
       s << file.rdbuf();
 
       json_example = s.str();
-
     }
-    catch(...) { }
+    catch(...)
+    {
+    }
   }
 
   ossia::oscquery::load_oscquery_device(device, json_example);
@@ -100,6 +102,3 @@ int main(int argc, char** argv)
   ossia::net::debug_recursively(w, device.get_root_node());
   std::cout << w << std::endl;
 }
-
-
-

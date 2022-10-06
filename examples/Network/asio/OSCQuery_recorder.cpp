@@ -1,16 +1,17 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
+
+#include <ossia/context.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/timer.hpp>
-#include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
-#include <ossia/network/context.hpp>
-#include <ossia/context.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/base/message_queue.hpp>
+#include <ossia/network/context.hpp>
+#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/detail/typetag.hpp>
-#include <chrono>
+#include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
 
+#include <chrono>
 
 // OSC dump format:
 // header: index table:
@@ -20,7 +21,8 @@
 // data:
 // [ index ] [ timestamp ] [ f32 ] [ f32 ]
 
-struct recorder {
+struct recorder
+{
   FILE* file{};
   int64_t pos{};
 
@@ -67,8 +69,7 @@ static uint32_t message_data_size(ossia::net::parameter_base& b)
       return 0;
   }
 }
-static
-void write_header(recorder& ctx, const std::vector<ossia::net::node_base*>& nodes)
+static void write_header(recorder& ctx, const std::vector<ossia::net::node_base*>& nodes)
 {
   auto file = ctx.file;
 
@@ -100,15 +101,16 @@ void write_header(recorder& ctx, const std::vector<ossia::net::node_base*>& node
     static constexpr int index_size = sizeof(int64_t);
     static constexpr int timestamp_size = sizeof(int64_t);
 
-    uint32_t osc_message_sz = index_size + timestamp_size + message_data_size(*node->get_parameter());
+    uint32_t osc_message_sz
+        = index_size + timestamp_size + message_data_size(*node->get_parameter());
     fwrite(&osc_message_sz, sizeof(osc_message_sz), 1, file);
     ctx.pos += 4;
   }
 }
 
 static int64_t received_messages{};
-static
-auto write_message(recorder& ctx, ossia::net::node_base* node, const ossia::value& v)
+static auto
+write_message(recorder& ctx, ossia::net::node_base* node, const ossia::value& v)
 {
   using clk = std::chrono::high_resolution_clock;
 
@@ -134,8 +136,10 @@ int main(int argc, char** argv)
 
   if(argc != 4)
   {
-    ossia::logger().error("Invalid number of arguments.\n"
-                          "Invocation: ./OSCQuery_recorder <ip:port> <osc address pattern> <output file>\n");
+    ossia::logger().error(
+        "Invalid number of arguments.\n"
+        "Invocation: ./OSCQuery_recorder <ip:port> <osc address pattern> <output "
+        "file>\n");
     return 1;
   }
 
@@ -144,15 +148,15 @@ int main(int argc, char** argv)
   std::string file = argv[3];
 
   auto ctx = std::make_shared<ossia::net::network_context>();
-  auto protocol = new ossia::oscquery_asio::oscquery_mirror_asio_protocol{ctx, "ws://127.0.0.1:5678"};
+  auto protocol = new ossia::oscquery_asio::oscquery_mirror_asio_protocol{
+      ctx, "ws://127.0.0.1:5678"};
 
-  ossia::net::generic_device device{std::unique_ptr<ossia::net::protocol_base>(protocol), "B"};
+  ossia::net::generic_device device{
+      std::unique_ptr<ossia::net::protocol_base>(protocol), "B"};
   device.get_protocol().update(device);
 
   auto nodes = ossia::net::find_nodes(device.get_root_node(), pattern);
-  ossia::remove_erase_if(nodes, [] (auto n) {
-    return !n->get_parameter();
-  });
+  ossia::remove_erase_if(nodes, [](auto n) { return !n->get_parameter(); });
 
   auto f = fopen(file.c_str(), "w");
   recorder rec{.file = f};
@@ -164,17 +168,15 @@ int main(int argc, char** argv)
   for(auto& node : nodes)
   {
     ossia::logger().warn("Found node: {}", node->osc_address());
-    node->get_parameter()->add_callback([&, node] (const ossia::value& v) {
-      write_message(rec, node, v);
-    });
+    node->get_parameter()->add_callback(
+        [&, node](const ossia::value& v) { write_message(rec, node, v); });
   }
 
   using namespace std::chrono_literals;
   ossia::timer print_timer{ctx->context};
   print_timer.set_delay(1000ms);
-  print_timer.start([&] {
-    ossia::logger().info("Received: {} messages", received_messages);
-  });
+  print_timer.start(
+      [&] { ossia::logger().info("Received: {} messages", received_messages); });
 
   ctx->context.run_for(10s);
 

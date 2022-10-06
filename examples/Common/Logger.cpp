@@ -2,12 +2,14 @@
 
 int main()
 {
-    auto connection = std::make_shared<ossia::websocket_threaded_connection>("ws://127.0.0.1:1337");
-    auto log_sink = std::make_shared<ossia::websocket_log_sink>(connection, "name of the app");
-    spdlog::logger logger("", log_sink);
+  auto connection
+      = std::make_shared<ossia::websocket_threaded_connection>("ws://127.0.0.1:1337");
+  auto log_sink
+      = std::make_shared<ossia::websocket_log_sink>(connection, "name of the app");
+  spdlog::logger logger("", log_sink);
 
-    logger.info("hello, {} {}", "text", 123);
-    /* This sends:
+  logger.info("hello, {} {}", "text", 123);
+  /* This sends:
     {
         "operation": "log",
         "level": "info",
@@ -16,29 +18,24 @@ int main()
     }
     */
 
-    logger.error("text: {} {}", "text", "blah");
-    logger.debug("text: {} {}", "text", "blah");
-    logger.critical("text: {} {}", "text", "blah");
-    logger.warn("text: {} {}", "text", "blah");
+  logger.error("text: {} {}", "text", "blah");
+  logger.debug("text: {} {}", "text", "blah");
+  logger.critical("text: {} {}", "text", "blah");
+  logger.warn("text: {} {}", "text", "blah");
 
-    // Note: don't do
-    logger.debug("my whole message");
-    // instead do
-    logger.debug("{}", "my whole message");
-    // else there can be problems if there are { } in the log message.
+  // Note: don't do
+  logger.debug("my whole message");
+  // instead do
+  logger.debug("{}", "my whole message");
+  // else there can be problems if there are { } in the log message.
 
-    // The connection is shared between the log and the heartbeat.
-    ossia::websocket_heartbeat heartbeat{
-                connection,
-                "the app name",
-                std::chrono::seconds(2)};
+  // The connection is shared between the log and the heartbeat.
+  ossia::websocket_heartbeat heartbeat{
+      connection, "the app name", std::chrono::seconds(2)};
 
-    heartbeat.send_init({
-                          {"pid", getpid()}
-                        , {"cmd", "c:\\myapp\\app.exe"}
-                        });
+  heartbeat.send_init({{"pid", getpid()}, {"cmd", "c:\\myapp\\app.exe"}});
 
-    // Now an "alive" message will be sent every 2 seconds as long as
-    // the heartbeat is in scope.
-    std::this_thread::sleep_for(std::chrono::seconds(6));
+  // Now an "alive" message will be sent every 2 seconds as long as
+  // the heartbeat is in scope.
+  std::this_thread::sleep_for(std::chrono::seconds(6));
 }

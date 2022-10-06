@@ -1,14 +1,16 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <iostream>
-#include <ossia/network/dataspace/dataspace_visitors.hpp>
-#include <ossia/network/base/parameter.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 #include <ossia/editor/state/state_element.hpp>
+#include <ossia/network/base/parameter.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+
+#include <catch.hpp>
+
+#include <iostream>
 using namespace ossia;
 
 /*
@@ -112,11 +114,9 @@ struct mock_autom2
   }
   */
 
-
-
 using namespace ossia::net;
 /*! test life cycle and accessors functions */
-TEST_CASE ("test_basic", "test_basic")
+TEST_CASE("test_basic", "test_basic")
 {
   state s;
 
@@ -126,7 +126,6 @@ TEST_CASE ("test_basic", "test_basic")
   s.add(substate);
   REQUIRE((int32_t)s.size() == 1);
 
-
   state parent;
   parent.add(std::move(s));
   REQUIRE((int32_t)parent.size() == 1);
@@ -134,10 +133,9 @@ TEST_CASE ("test_basic", "test_basic")
 
   state copy{parent};
   REQUIRE((int32_t)copy.size() == 1);
-
 }
 
-TEST_CASE ("test_compare", "test_compare")
+TEST_CASE("test_compare", "test_compare")
 {
   generic_device dev{"test"};
   auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
@@ -156,10 +154,9 @@ TEST_CASE ("test_compare", "test_compare")
 
   s2.add(m1);
   REQUIRE(s1 == s2);
-
 }
 
-TEST_CASE ("test_remove", "test_remove")
+TEST_CASE("test_remove", "test_remove")
 {
   generic_device dev{"test"};
   auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
@@ -172,7 +169,7 @@ TEST_CASE ("test_remove", "test_remove")
   REQUIRE((int)s.size() == 0);
 }
 
-TEST_CASE ("test_flatten", "test_flatten")
+TEST_CASE("test_flatten", "test_flatten")
 {
   generic_device dev{"test"};
   auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
@@ -209,7 +206,6 @@ TEST_CASE ("test_flatten", "test_flatten")
   REQUIRE(s1 == s3);
   REQUIRE(s2 == s3);
 
-
   flatten_and_filter(s1, m0);
   REQUIRE(s1 == s2);
 
@@ -219,11 +215,12 @@ TEST_CASE ("test_flatten", "test_flatten")
 
   ossia::print(std::cerr, s1.children()[0]);
   std::cerr << std::endl;
-  state_element expected_bis = piecewise_message{*n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
+  state_element expected_bis = piecewise_message{
+      *n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
   REQUIRE(s1.children()[0] == expected_bis);
 }
 
-TEST_CASE ("test_flatten_move", "test_flatten_move")
+TEST_CASE("test_flatten_move", "test_flatten_move")
 {
   generic_device dev{"test"};
   auto n1 = dev.create_child("n1")->create_parameter(val_type::LIST);
@@ -260,7 +257,6 @@ TEST_CASE ("test_flatten_move", "test_flatten_move")
   REQUIRE(s1 == s3);
   REQUIRE(s2 == s3);
 
-
   flatten_and_filter(s1, std::move(m0));
   REQUIRE(s1 == s2);
 
@@ -269,13 +265,12 @@ TEST_CASE ("test_flatten_move", "test_flatten_move")
   flatten_and_filter(s1, m0_bis);
 
   state_element expected_bis = piecewise_message{
-      *n1,
-      std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
+      *n1, std::vector<ossia::value>{float{7.}, float{10.}, float{15.}}, {}};
   REQUIRE(s1.children()[0] == expected_bis);
 }
 
 /*! test execution functions */
-TEST_CASE ("test_execution", "test_execution")
+TEST_CASE("test_execution", "test_execution")
 {
   //! \todo test launch()
 }

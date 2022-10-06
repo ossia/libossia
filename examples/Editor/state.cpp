@@ -10,14 +10,16 @@
  */
 
 #include <ossia/detail/config.hpp>
-#include <ossia/network/local/local.hpp>
-#include <ossia/network/generic/generic_device.hpp>
-#include <ossia/network/oscquery/oscquery_server.hpp>
+
 #include <ossia/editor/state/message.hpp>
 #include <ossia/editor/state/state.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/local/local.hpp>
+#include <ossia/network/oscquery/oscquery_server.hpp>
+
 #include <iostream>
-#include <thread>
 #include <memory>
+#include <thread>
 
 using namespace ossia;
 using namespace ossia::net;
@@ -30,8 +32,7 @@ int main()
 {
   // Local device
   ossia::net::generic_device device{
-         std::make_unique<ossia::oscquery::oscquery_server_protocol>(),
-        "newDevice"};
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(), "newDevice"};
 
   // Minuit tree building
   device.get_protocol().update(device.get_root_node());
@@ -45,15 +46,15 @@ int main()
   parameter_base* samplerateAddress{};
   std::optional<message> samplerateMessage;
 
-  for (const auto& module : device.children())
+  for(const auto& module : device.children())
   {
-    if (module->get_name() == "deg")
+    if(module->get_name() == "deg")
     {
-      for (const auto& parameter : module->children())
+      for(const auto& parameter : module->children())
       {
         string parameter_name = parameter->get_name();
 
-        if (parameter_name == "bitdepth")
+        if(parameter_name == "bitdepth")
         {
           cout << "/deg/bitdepth node found" << endl;
 
@@ -67,7 +68,7 @@ int main()
           // attach to callback to display later value update
           bitdepthAddress->add_callback(printValueCallback);
         }
-        else if (parameter_name == "samplerate_ratio")
+        else if(parameter_name == "samplerate_ratio")
         {
           cout << "/deg/samplerate_ratio node found" << endl;
 
@@ -104,18 +105,17 @@ int main()
 
   // wait while samplerate_ratio > 0.5
   bool wait = true;
-  while (wait)
+  while(wait)
   {
-    this_thread::sleep_for( std::chrono::milliseconds(500));
+    this_thread::sleep_for(std::chrono::milliseconds(500));
 
     auto f = samplerateAddress->value().get<float>();
     wait = f > 0.5;
 
-    if (!wait)
+    if(!wait)
       cout << "done !" << endl;
   }
 }
-
 
 void printValueCallback(const value& v)
 {

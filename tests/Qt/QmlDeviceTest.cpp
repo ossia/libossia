@@ -1,22 +1,25 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
-#include <ossia/network/base/node_functions.hpp>
-#include <ossia/network/base/device.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node_functions.hpp>
+
 #include <ossia-qt/device/qml_device.hpp>
-#include <QQmlEngine>
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QQmlComponent>
+#include <QQmlEngine>
 
+#include <catch.hpp>
 
-TEST_CASE ("test_client", "test_client")
+TEST_CASE("test_client", "test_client")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   QQmlEngine engine;
   ossia::context context;
@@ -28,10 +31,10 @@ TEST_CASE ("test_client", "test_client")
   REQUIRE(item);
 }
 
-
-TEST_CASE ("test_device", "test_device")
+TEST_CASE("test_device", "test_device")
 {
-  int argc{}; char** argv{};
+  int argc{};
+  char** argv{};
   QCoreApplication app(argc, argv);
   QQmlEngine engine;
   ossia::context context;
@@ -46,4 +49,3 @@ TEST_CASE ("test_device", "test_device")
   auto node = ossia::net::find_node(dev.device().get_root_node(), "/bar/x");
   REQUIRE(node);
 }
-

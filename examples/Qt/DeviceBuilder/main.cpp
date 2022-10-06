@@ -1,19 +1,18 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <QWidget>
-#include <QMainWindow>
-#include <QGridLayout>
-#include <QApplication>
-#include <QPushButton>
-#include <QLabel>
-#include <QTreeWidget>
-#include <QDoubleSpinBox>
-#include <QLabel>
-#include <QDebug>
-
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
+#include <QApplication>
+#include <QDebug>
+#include <QDoubleSpinBox>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QTreeWidget>
+#include <QWidget>
 
 using namespace ossia;
 
@@ -29,8 +28,8 @@ int main(int argc, char** argv)
   using namespace ossia::net;
   // Create a device which will listen on the websocket port 5678 and osc port 1234
   generic_device device{
-    std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
-    "my_device"};
+      std::make_unique<ossia::oscquery::oscquery_server_protocol>(1234, 5678),
+      "my_device"};
 
   auto add_btn = new QPushButton("Add Parameter");
   auto add_node_btn = new QPushButton("Add Node (without parameter)");
@@ -39,7 +38,7 @@ int main(int argc, char** argv)
   tree->setColumnCount(2);
   tree->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-  auto add_node = [&](bool with_param = false){
+  auto add_node = [&](bool with_param = false) {
     QTreeWidgetItem* item{};
     node_base* node{};
 
@@ -59,7 +58,7 @@ int main(int argc, char** argv)
       item = new QTreeWidgetItem(parent);
       parent->setExpanded(true);
 
-      auto parent_node = parent->data(0,Qt::UserRole).value<node_base*>();
+      auto parent_node = parent->data(0, Qt::UserRole).value<node_base*>();
       if(parent_node)
         node = &create_node(*parent_node, name);
       else
@@ -85,12 +84,11 @@ int main(int argc, char** argv)
       spin->setMaximum(std::numeric_limits<double>::max());
       tree->setItemWidget(item, 1, spin);
 
-      QObject::connect(spin, qOverload<double>(&QDoubleSpinBox::valueChanged),
-                       [param](double v){
-                         param->push_value(static_cast<float>(v));
-                       });
+      QObject::connect(
+          spin, qOverload<double>(&QDoubleSpinBox::valueChanged),
+          [param](double v) { param->push_value(static_cast<float>(v)); });
 
-      param->add_callback([spin](const ossia::value& v){
+      param->add_callback([spin](const ossia::value& v) {
         spin->blockSignals(true);
         spin->setValue(v.get<float>());
         spin->blockSignals(false);
@@ -99,9 +97,9 @@ int main(int argc, char** argv)
   };
 
   QObject::connect(add_node_btn, &QPushButton::clicked, add_node);
-  QObject::connect(add_btn, &QPushButton::clicked, [&](){ add_node(true); });
+  QObject::connect(add_btn, &QPushButton::clicked, [&]() { add_node(true); });
 
-  QObject::connect(rem_btn, &QPushButton::clicked, [&](){
+  QObject::connect(rem_btn, &QPushButton::clicked, [&]() {
     auto items = tree->selectedItems();
     for(auto i : items)
     {
@@ -114,12 +112,11 @@ int main(int argc, char** argv)
     }
   });
 
-  QObject::connect(tree, &QTreeWidget::itemChanged,
-    [&](QTreeWidgetItem *item){
-      auto name = item->text(0).toStdString();
-      auto node = item->data(0,Qt::UserRole).value<node_base*>();
-      if(node && node->get_name() != name)
-        node->set_name(name);
+  QObject::connect(tree, &QTreeWidget::itemChanged, [&](QTreeWidgetItem* item) {
+    auto name = item->text(0).toStdString();
+    auto node = item->data(0, Qt::UserRole).value<node_base*>();
+    if(node && node->get_name() != name)
+      node->set_name(name);
   });
 
   lay.addWidget(add_node_btn, 0, 0);

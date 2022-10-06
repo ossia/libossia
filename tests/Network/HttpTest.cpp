@@ -1,21 +1,24 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
+#include <ossia/network/http/http_query_parser.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/network/http/http_query_parser.hpp>
-#include "TestUtils.hpp"
+
+#include <catch.hpp>
+
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;
-TEST_CASE ("test_http", "test_http")
+TEST_CASE("test_http", "test_http")
 {
   {
     auto res = ossia::net::parse_http_methods_encoded("foo=bar");
@@ -48,7 +51,7 @@ TEST_CASE ("test_http", "test_http")
   }
 }
 
-TEST_CASE ("test_parse", "test_parse")
+TEST_CASE("test_parse", "test_parse")
 {
   generic_device dev{"A"};
 
@@ -85,7 +88,7 @@ TEST_CASE ("test_parse", "test_parse")
 
   // Parse json
   rapidjson::Document doc;
-  doc.Parse( str.GetString() );
+  doc.Parse(str.GetString());
 
   // Json -> node
   ossia::oscquery::json_parser::parse_namespace(dev, doc);
@@ -129,7 +132,8 @@ TEST_CASE ("test_parse", "test_parse")
     REQUIRE(*get_priority(n) == 50.f);
 
     REQUIRE((bool)get_description(n));
-    REQUIRE(*get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
+    REQUIRE(
+        *get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
 
     REQUIRE((bool)get_app_name(n));
     REQUIRE(*get_app_name(n) == std::string("AppName"));

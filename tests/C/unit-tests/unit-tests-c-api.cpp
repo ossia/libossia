@@ -2,16 +2,19 @@
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/config.hpp>
 
+#include <ossia/network/generic/generic_device.hpp>
+
+#include <ossia-c/ossia-c.h>
+#include <ossia-c/ossia/ossia_utils.hpp>
+#include <ossia-c/preset/preset.h>
+#include <ossia-c/preset/result.h>
+
 #include <catch.hpp>
 
 #include <iostream>
-#include <ossia-c/preset/result.h>
-#include <ossia-c/preset/preset.h>
-#include <ossia-c/ossia-c.h>
-#include <ossia-c/ossia/ossia_utils.hpp>
-#include <ossia/network/generic/generic_device.hpp>
 
-TEST_CASE ("C API: Read JSON", "[read]") {
+TEST_CASE("C API: Read JSON", "[read]")
+{
   const char* json = R"_(
                      {"scene":
                      {"cubes":
@@ -36,7 +39,8 @@ TEST_CASE ("C API: Read JSON", "[read]") {
   ossia_presets_free(p);
 }
 
-TEST_CASE ("C API: Apply preset", "[apply]") {
+TEST_CASE("C API: Apply preset", "[apply]")
+{
 
   const char* json = R"_(
                      {"scene":
@@ -56,9 +60,7 @@ TEST_CASE ("C API: Apply preset", "[apply]") {
 
   code = ossia_presets_read_json(json, &p);
 
-  ossia_device dev_c{
-    std::make_unique<ossia::net::generic_device>(
-          "scene")};
+  ossia_device dev_c{std::make_unique<ossia::net::generic_device>("scene")};
 
   code = ossia_devices_apply_preset(&dev_c, p, false);
   REQUIRE(code == OSSIA_PRESETS_OK);
@@ -67,16 +69,18 @@ TEST_CASE ("C API: Apply preset", "[apply]") {
   REQUIRE(code == OSSIA_PRESETS_OK);
 }
 
-
-TEST_CASE ("C API: create pattern", "[pattern]") {
+TEST_CASE("C API: create pattern", "[pattern]")
+{
   auto proto = ossia_protocol_multiplex_create();
   auto dev = ossia_device_create(proto, "foo");
   ossia_node_t* n{};
   size_t sz;
-  ossia_node_create_pattern(ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n, &sz);
+  ossia_node_create_pattern(
+      ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n, &sz);
   ossia_node_t* n2{};
   size_t sz2;
-  ossia_node_find_pattern(ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n2, &sz2);
+  ossia_node_find_pattern(
+      ossia_device_get_root_node(dev), "/{foo,bar}/baz[1-5]", &n2, &sz2);
   REQUIRE(n != nullptr);
   REQUIRE(n2 != nullptr);
   REQUIRE(sz == 10);

@@ -1,22 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
 #include <ossia/detail/config.hpp>
 
-#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/detail/json.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
+#include <ossia/network/common/complex_type.hpp>
+#include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
-#include <ossia/network/common/complex_type.hpp>
-#include <ossia/network/value/detail/value_parse_impl.hpp>
 
-#include <ossia/detail/json.hpp>
+#include <catch.hpp>
+
 #include <iostream>
 
-TEST_CASE ("test_device", "test_device")
+TEST_CASE("test_device", "test_device")
 {
   using namespace std::literals;
 
@@ -51,7 +52,7 @@ TEST_CASE ("test_device", "test_device")
   ossia::presets::write_json(dev);
 }
 
-TEST_CASE ("test_nodes", "test_nodes")
+TEST_CASE("test_nodes", "test_nodes")
 {
   ossia::net::generic_device dev{"mydevice"};
 
@@ -63,100 +64,69 @@ TEST_CASE ("test_nodes", "test_nodes")
   ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.4"));
   ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/matrix/color.5"));
 
-
   auto preset = ossia::presets::make_preset(dev);
   auto presetJSON = ossia::presets::write_json("mydevice", preset);
 }
 
-TEST_CASE ("test_parse", "test_parse")
+TEST_CASE("test_parse", "test_parse")
 {
-  for(std::string str : {
-      "/foo/bar/baz",
-      "/foo/bar.1",
-      "/",
-      "/a",
-      "/.0",
-      "/.1"
-}) {
+  for(std::string str : {"/foo/bar/baz", "/foo/bar.1", "/", "/a", "/.0", "/.1"})
+  {
     std::string res;
-    bool ok = boost::spirit::x3::phrase_parse(str.begin(), str.end(), ossia::detail::parse::address_,
-                                              boost::spirit::x3::ascii::space, res);
+    bool ok = boost::spirit::x3::phrase_parse(
+        str.begin(), str.end(), ossia::detail::parse::address_,
+        boost::spirit::x3::ascii::space, res);
     REQUIRE(ok);
   }
 
   {
     std::string str = "vec4f: [0, 0, 0, 0]";
     auto beg = str.begin(), end = str.end();
-    std::array<float,4> v;
+    std::array<float, 4> v;
     bool ok = boost::spirit::x3::phrase_parse(
-          beg, end,
-          ossia::detail::parse::o_vec4_,
-          boost::spirit::x3::ascii::space,
-          v
-          );
+        beg, end, ossia::detail::parse::o_vec4_, boost::spirit::x3::ascii::space, v);
     REQUIRE(ok);
   }
 
-
-  for(std::string str : {
-      "vec4f: [0, 0, 0, 0]",
-      "int: 1234",
-      "string: \"hello\"",
-      "char: 'x'",
-      "float: 1.2345",
-      "bool: true",
-      "bool: false",
-      "list: []",
-      "list: [ ]",
-      "list: [char: '0']",
-      "list: [ char: '0' ]",
-      "list: [ int: 1234 ]",
-      "list: [ char: '0', int: 1234 ]",
-      "list: [char: '0',int: 1234]"
-}) {
+  for(std::string str :
+      {"vec4f: [0, 0, 0, 0]", "int: 1234", "string: \"hello\"", "char: 'x'",
+       "float: 1.2345", "bool: true", "bool: false", "list: []", "list: [ ]",
+       "list: [char: '0']", "list: [ char: '0' ]", "list: [ int: 1234 ]",
+       "list: [ char: '0', int: 1234 ]", "list: [char: '0',int: 1234]"})
+  {
     ossia::value v;
     auto beg = str.begin(), end = str.end();
-    bool ok = boost::spirit::x3::phrase_parse(beg, end,
-                                              ossia::detail::parse::value_,
-                                              boost::spirit::x3::ascii::space,
-                                              v);
+    bool ok = boost::spirit::x3::phrase_parse(
+        beg, end, ossia::detail::parse::value_, boost::spirit::x3::ascii::space, v);
     REQUIRE(ok);
   }
 
-  for(std::string str : {
-      "/foo/bar.1\t",
-      "/foo/bar/baz\t"
-}) {
+  for(std::string str : {"/foo/bar.1\t", "/foo/bar/baz\t"})
+  {
     std::string v;
     using namespace ossia::detail::parse;
     auto beg = str.begin(), end = str.end();
     bool ok = boost::spirit::x3::phrase_parse(
-          beg, end,
-          x3::lexeme [ address_ >> x3::lit("\t") ],
-        boost::spirit::x3::ascii::space,
+        beg, end, x3::lexeme[address_ >> x3::lit("\t")], boost::spirit::x3::ascii::space,
         v);
     REQUIRE(ok);
   }
 
-  for(std::string str : {
-      "/foo/bar.1\tint: 1234",
-      "/foo/bar/baz\tvec4f: [0, 0, 0, 0]",
-      "/\tstring: \"hello\"",
-      "/a\tchar: 'x'",
-      "/.0\tfloat: 1.2345",
-      "/.1\tlist: [ char: '0', int: 1234 ]"
-}) {
+  for(std::string str :
+      {"/foo/bar.1\tint: 1234", "/foo/bar/baz\tvec4f: [0, 0, 0, 0]",
+       "/\tstring: \"hello\"", "/a\tchar: 'x'", "/.0\tfloat: 1.2345",
+       "/.1\tlist: [ char: '0', int: 1234 ]"})
+  {
     ossia::presets::preset_pair v;
     auto beg = str.begin(), end = str.end();
-    bool ok = boost::spirit::x3::phrase_parse(beg, end,
-                                              ossia::detail::parse::preset_pair_,
-                                              boost::spirit::x3::ascii::space,
-                                              v);
+    bool ok = boost::spirit::x3::phrase_parse(
+        beg, end, ossia::detail::parse::preset_pair_, boost::spirit::x3::ascii::space,
+        v);
     REQUIRE(ok);
   }
 }
 
-TEST_CASE ("test_nodes_txt", "test_nodes_txt")
+TEST_CASE("test_nodes_txt", "test_nodes_txt")
 {
   ossia::net::generic_device dev{"mydevice"};
 
@@ -174,10 +144,9 @@ TEST_CASE ("test_nodes_txt", "test_nodes_txt")
   auto loadPreset = ossia::presets::from_string(presetStr);
   auto presetStr2 = ossia::presets::to_string(loadPreset);
   REQUIRE(loadPreset == preset);
-
 }
 
-TEST_CASE ("test_vecnf", "test_vecnf")
+TEST_CASE("test_vecnf", "test_vecnf")
 {
   ossia::net::generic_device dev{"mydevice"};
 
@@ -191,7 +160,9 @@ TEST_CASE ("test_vecnf", "test_vecnf")
   p1->push_value(ossia::make_vec(1., -1.));
   p2->push_value(ossia::make_vec(2., -2.5, -123.));
   p3->push_value(ossia::make_vec(1e2, -0., 999, 1.));
-  p4->push_value(std::vector<ossia::value>{1, 12, 17, -4, 5, .2, 15, "toto", 'a', std::vector<ossia::value>{"foo","bar",0.25}, std::vector<ossia::value>{}});
+  p4->push_value(std::vector<ossia::value>{
+      1, 12, 17, -4, 5, .2, 15, "toto", 'a',
+      std::vector<ossia::value>{"foo", "bar", 0.25}, std::vector<ossia::value>{}});
 
   const auto preset = ossia::presets::make_preset(dev);
   const auto presetStr = ossia::presets::to_string(preset);
@@ -203,19 +174,21 @@ TEST_CASE ("test_vecnf", "test_vecnf")
   const auto json = ossia::presets::write_json("whatever", loadPreset);
   const auto read_json = ossia::presets::read_json(json, false);
   ossia::presets::to_string(read_json);
-
 }
 
-TEST_CASE ("test_values", "test_values")
+TEST_CASE("test_values", "test_values")
 {
   ossia::net::generic_device dev{"mydevice"};
 
   auto& root = dev.get_root_node();
 
   auto p1 = ossia::try_setup_parameter("int", ossia::net::create_node(root, "/my_int"));
-  auto p2 = ossia::try_setup_parameter("float", ossia::net::create_node(root, "/my_float"));
-  auto p3 = ossia::try_setup_parameter("char", ossia::net::create_node(root, "/my_char"));
-  auto p4 = ossia::try_setup_parameter("bool", ossia::net::create_node(root, "/my_bool"));
+  auto p2
+      = ossia::try_setup_parameter("float", ossia::net::create_node(root, "/my_float"));
+  auto p3
+      = ossia::try_setup_parameter("char", ossia::net::create_node(root, "/my_char"));
+  auto p4
+      = ossia::try_setup_parameter("bool", ossia::net::create_node(root, "/my_bool"));
 
   p1->push_value(-5);
   p2->push_value(1e2);
@@ -232,10 +205,9 @@ TEST_CASE ("test_values", "test_values")
   const auto json = ossia::presets::write_json("whatever", loadPreset);
   const auto read_json = ossia::presets::read_json(json, false);
   ossia::presets::to_string(read_json);
-
 }
 
-TEST_CASE ("test_bool", "test_bool")
+TEST_CASE("test_bool", "test_bool")
 {
   using namespace std::literals;
   ossia::net::generic_device dev{"mydevice"};
@@ -260,27 +232,28 @@ TEST_CASE ("test_bool", "test_bool")
 
     REQUIRE(preset == np);
     REQUIRE_NOTHROW([&] {
-      ossia::presets::apply_preset(root, np, ossia::presets::keep_arch_on, {}, false, false);
-    } ());
+      ossia::presets::apply_preset(
+          root, np, ossia::presets::keep_arch_on, {}, false, false);
+    }());
     REQUIRE(a1->value() == ossia::value{true});
     REQUIRE(a2->value() == ossia::value{false});
   }
   {
-      auto presetTXT = ossia::presets::to_string(preset);
-      a1->push_value(false);
-      a2->push_value(true);
-      auto np = ossia::presets::from_string(presetTXT);
-      REQUIRE(preset == np);
-      REQUIRE_NOTHROW([&] {
-        ossia::presets::apply_preset(root, np, ossia::presets::keep_arch_on, {}, false, false);
-      } ());
-      REQUIRE(a1->value() == ossia::value{true});
-      REQUIRE(a2->value() == ossia::value{false});
+    auto presetTXT = ossia::presets::to_string(preset);
+    a1->push_value(false);
+    a2->push_value(true);
+    auto np = ossia::presets::from_string(presetTXT);
+    REQUIRE(preset == np);
+    REQUIRE_NOTHROW([&] {
+      ossia::presets::apply_preset(
+          root, np, ossia::presets::keep_arch_on, {}, false, false);
+    }());
+    REQUIRE(a1->value() == ossia::value{true});
+    REQUIRE(a2->value() == ossia::value{false});
   }
 }
 
-
-TEST_CASE ("test_impulse_json", "test_impulse")
+TEST_CASE("test_impulse_json", "test_impulse")
 {
   GIVEN("A device with impulse members")
   {
@@ -313,18 +286,18 @@ TEST_CASE ("test_impulse_json", "test_impulse")
 
     THEN("The json preset does not have them")
     {
-       auto presetJSON = ossia::presets::make_json_preset(root);
-       INFO(presetJSON);
-       rapidjson::Document doc;
-       doc.Parse(presetJSON);
-       REQUIRE(doc.IsObject());
-       REQUIRE(doc["foo"].IsNumber());
-       REQUIRE(doc.FindMember("bar") == doc.MemberEnd());
+      auto presetJSON = ossia::presets::make_json_preset(root);
+      INFO(presetJSON);
+      rapidjson::Document doc;
+      doc.Parse(presetJSON);
+      REQUIRE(doc.IsObject());
+      REQUIRE(doc["foo"].IsNumber());
+      REQUIRE(doc.FindMember("bar") == doc.MemberEnd());
     }
   }
 }
 
-TEST_CASE ("test_get_set_bi_json", "test_get_set_bi")
+TEST_CASE("test_get_set_bi_json", "test_get_set_bi")
 {
   GIVEN("A device with bi/get/set members")
   {
@@ -332,9 +305,12 @@ TEST_CASE ("test_get_set_bi_json", "test_get_set_bi")
 
     auto& root = dev.get_root_node();
 
-    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/get"))->set_access(ossia::access_mode::GET);
-    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/set"))->set_access(ossia::access_mode::SET);
-    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/bi"))->set_access(ossia::access_mode::BI);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/get"))
+        ->set_access(ossia::access_mode::GET);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/set"))
+        ->set_access(ossia::access_mode::SET);
+    ossia::try_setup_parameter("float", ossia::net::create_node(root, "/bi"))
+        ->set_access(ossia::access_mode::BI);
 
     auto preset = ossia::presets::make_preset(dev);
 
@@ -360,14 +336,14 @@ TEST_CASE ("test_get_set_bi_json", "test_get_set_bi")
 
     THEN("The json preset does not have them")
     {
-       auto presetJSON = ossia::presets::make_json_preset(root);
-       INFO(presetJSON);
-       rapidjson::Document doc;
-       doc.Parse(presetJSON);
-       REQUIRE(doc.IsObject());
-       REQUIRE(doc["bi"].IsNumber());
-       REQUIRE(doc.FindMember("get") == doc.MemberEnd());
-       REQUIRE(doc.FindMember("set") == doc.MemberEnd());
+      auto presetJSON = ossia::presets::make_json_preset(root);
+      INFO(presetJSON);
+      rapidjson::Document doc;
+      doc.Parse(presetJSON);
+      REQUIRE(doc.IsObject());
+      REQUIRE(doc["bi"].IsNumber());
+      REQUIRE(doc.FindMember("get") == doc.MemberEnd());
+      REQUIRE(doc.FindMember("set") == doc.MemberEnd());
     }
   }
 }
