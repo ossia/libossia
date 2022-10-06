@@ -71,7 +71,7 @@ public:
   void for_each_client(F&& f) const
       noexcept(noexcept(f(std::declval<const oscquery_client&>())))
   {
-    std::lock_guard<std::mutex> lck{m_clientsMutex};
+    ossia::lock_t lck{m_clientsMutex};
     for(auto& clt : m_clients)
     {
       f(*clt);

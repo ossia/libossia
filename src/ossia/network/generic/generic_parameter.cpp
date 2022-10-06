@@ -22,7 +22,7 @@ struct dummy_lock
 #if defined(OSSIA_PARAMETER_VALUE_SINGLETHREAD)
 using value_lock_t = dummy_lock;
 #else
-using value_lock_t = std::lock_guard<std::mutex>;
+using value_lock_t = ossia::lock_t;
 #endif
 
 generic_parameter::generic_parameter(ossia::net::node_base& node)
