@@ -9,8 +9,14 @@
 namespace ossia
 {
 #if defined(OSSIA_SHARED_MUTEX_AVAILABLE)
+// https://stackoverflow.com/questions/69990339/why-is-stdmutex-so-much-worse-than-stdshared-mutex-in-visual-c
+#if !defined(_MSC_VER)
 using mutex_t = std::mutex;
 using lock_t = std::lock_guard<mutex_t>;
+#else
+using mutex_t = std::shared_mutex;
+using lock_t = std::lock_guard<mutex_t>;
+#endif
 
 using shared_mutex_t = std::shared_timed_mutex;
 using write_lock_t = std::lock_guard<shared_mutex_t>;
