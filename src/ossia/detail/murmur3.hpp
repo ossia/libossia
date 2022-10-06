@@ -4,6 +4,9 @@
 **/
 #pragma once
 #include <cstdint>
+#pragma clang attribute push( \
+    __attribute__((no_sanitize("undefined"))), apply_to = function)
+
 namespace ossia
 {
 namespace murmur
@@ -390,3 +393,5 @@ constexpr void murmur3_x64_128(
 }
 }
 }
+
+#pragma clang attribute pop
