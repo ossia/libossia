@@ -16,7 +16,6 @@ struct TestDevice
     bool_addr = device.create_child("bool")->create_parameter(val_type::BOOL);
     int_addr = device.create_child("int")->create_parameter(val_type::INT);
     float_addr = device.create_child("float")->create_parameter(val_type::FLOAT);
-    char_addr = device.create_child("char")->create_parameter(val_type::CHAR);
     string_addr = device.create_child("string")->create_parameter(val_type::STRING);
     vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
     vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);
@@ -79,7 +78,6 @@ struct TestDevice
     all_params.push_back(bool_addr);
     all_params.push_back(int_addr);
     all_params.push_back(float_addr);
-    all_params.push_back(char_addr);
     all_params.push_back(string_addr);
     all_params.push_back(vec2f_addr);
     all_params.push_back(vec3f_addr);
@@ -106,7 +104,6 @@ struct TestDevice
   ossia::net::parameter_base* bool_addr;
   ossia::net::parameter_base* int_addr;
   ossia::net::parameter_base* float_addr;
-  ossia::net::parameter_base* char_addr;
   ossia::net::parameter_base* string_addr;
   ossia::net::parameter_base* vec2f_addr;
   ossia::net::parameter_base* vec3f_addr;
@@ -147,7 +144,6 @@ struct TestDeviceRef
   ossia::net::parameter_base* bool_addr = device.create_child("bool")->create_parameter(val_type::BOOL);
   ossia::net::parameter_base* int_addr = device.create_child("int")->create_parameter(val_type::INT);
   ossia::net::parameter_base* float_addr = device.create_child("float")->create_parameter(val_type::FLOAT);
-  ossia::net::parameter_base* char_addr = device.create_child("char")->create_parameter(val_type::CHAR);
   ossia::net::parameter_base* string_addr = device.create_child("string")->create_parameter(val_type::STRING);
   ossia::net::parameter_base* vec2f_addr = device.create_child("vec2f")->create_parameter(val_type::VEC2F);
   ossia::net::parameter_base* vec3f_addr = device.create_child("vec3f")->create_parameter(val_type::VEC3F);

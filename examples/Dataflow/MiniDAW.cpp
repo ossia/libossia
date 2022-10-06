@@ -1,22 +1,20 @@
+#include <ossia/audio/audio_device.hpp>
+#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
-#include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/graph_edge_helpers.hpp>
-#include <ossia/audio/audio_protocol.hpp>
-#include <ossia/audio/audio_device.hpp>
+#include <ossia/dataflow/nodes/automation.hpp>
+#include <ossia/dataflow/nodes/gain.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
-#include <ossia/dataflow/nodes/gain.hpp>
-#include <ossia/dataflow/nodes/automation.hpp>
-
-#include <ossia/editor/curve/curve_segment/linear.hpp>
+#include <ossia/detail/flicks.hpp>
 #include <ossia/editor/curve/curve_segment/easing.hpp>
+#include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
-#include <ossia/detail/flicks.hpp>
 
 struct tick
 {
@@ -79,11 +77,13 @@ struct tick
   }
 };
 
-constexpr ossia::time_value seconds(double s) noexcept {
+constexpr ossia::time_value seconds(double s) noexcept
+{
   return ossia::time_value{int64_t(s * ossia::flicks_per_second<int64_t>)};
 }
 
-struct box {
+struct box
+{
   ossia::time_sync& start_sync;
   ossia::time_sync& end_sync;
   ossia::time_event& start_event;
@@ -91,7 +91,9 @@ struct box {
   ossia::time_interval& interval;
 };
 
-box create_box_after(ossia::scenario& scenario, ossia::time_event& start_event, ossia::time_value duration)
+box create_box_after(
+    ossia::scenario& scenario, ossia::time_event& start_event,
+    ossia::time_value duration)
 {
   auto& start_sync = start_event.get_time_sync();
 
@@ -104,8 +106,7 @@ box create_box_after(ossia::scenario& scenario, ossia::time_event& start_event, 
   scenario.add_time_sync(end_sync);
 
   auto itv = ossia::time_interval::create(
-    {}, start_event, *end_event, duration, duration, duration
-  );
+      {}, start_event, *end_event, duration, duration, duration);
   scenario.add_time_interval(itv);
 
   return box{start_sync, *end_sync, start_event, *end_event, *itv};
@@ -125,7 +126,8 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
     crv->set_y0(20);
 
     // To 2000 Hz at 70% with an easing function
-    crv->add_point(ossia::curve_segment_ease<float, ossia::easing::bounceInOut>(), 0.7, 2000);
+    crv->add_point(
+        ossia::curve_segment_ease<float, ossia::easing::bounceInOut>(), 0.7, 2000);
 
     // To 200 Hz at 100%
     crv->add_point(ossia::curve_segment_linear<float>(), 1., 200);
@@ -155,25 +157,25 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
   auto main_start_node = std::make_shared<time_sync>();
   auto main_end_node = std::make_shared<time_sync>();
 
-  auto main_start_event = *(main_start_node->emplace(main_start_node->get_time_events().begin(), {}));
-  auto main_end_event = *(main_end_node->emplace(main_end_node->get_time_events().begin(), {}));
+  auto main_start_event
+      = *(main_start_node->emplace(main_start_node->get_time_events().begin(), {}));
+  auto main_end_event
+      = *(main_end_node->emplace(main_end_node->get_time_events().begin(), {}));
 
   const ossia::time_value main_duration = seconds(20);
   auto main_interval = time_interval::create(
-                             {},
-                             *main_start_event,
-                             *main_end_event,
-                             main_duration,
-                             main_duration,
-                             main_duration);
+      {}, *main_start_event, *main_end_event, main_duration, main_duration,
+      main_duration);
 
   {
     // The scenario process is what allows a finer temporal organization of things
     std::shared_ptr<ossia::scenario> scenar = std::make_shared<ossia::scenario>();
-    scenar->get_start_time_sync()->set_expression(ossia::expressions::make_expression_true());
+    scenar->get_start_time_sync()->set_expression(
+        ossia::expressions::make_expression_true());
     scenar->get_start_time_sync()->set_start(true);
 
-    auto start_event = *(scenar->get_start_time_sync()->emplace(scenar->get_start_time_sync()->get_time_events().begin(), {}));
+    auto start_event = *(scenar->get_start_time_sync()->emplace(
+        scenar->get_start_time_sync()->get_time_events().begin(), {}));
 
     // Create a first interval in this scenario, from the start to t = 5
     const auto& first_box = create_box_after(*scenar, *start_event, seconds(5));
@@ -186,17 +188,15 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
 
     // Loop back from the end of the third box to the beginning of the second box
     auto loop_interval = time_interval::create(
-                               {},
-                               third_box.end_event,
-                               second_box.start_event,
-                               0_tv, 0_tv, ossia::Infinite);
+        {}, third_box.end_event, second_box.start_event, 0_tv, 0_tv, ossia::Infinite);
     loop_interval->graphal = true;
 
     scenar->add_time_interval(loop_interval);
 
     // Add the processes to the boxes, the processes are what convert the temporal domain requests
     // into token requests for the dataflow graph
-    auto automation_process = std::make_shared<ossia::nodes::automation_process>(automation_node);
+    auto automation_process
+        = std::make_shared<ossia::nodes::automation_process>(automation_node);
     first_box.interval.add_time_process(automation_process);
     g.add_node(automation_node);
 
@@ -231,11 +231,11 @@ auto create_score(ossia::graph_interface& g, ossia::audio_device& audio)
   g.add_node(gain_node);
 
   // Create the connections
-  g.connect(make_glutton_edge(0, 0, automation_node, sine_node));
-  g.connect(make_glutton_edge(0, 0, rand_node, sine_node));
-  g.connect(make_glutton_edge(0, 0, sine_node, gain_node));
-  g.connect(make_glutton_edge(0, 0, gain_node, main_interval->node));
-  g.connect(make_glutton_edge(0, 0, low_sine_node, main_interval->node));
+  g.connect(make_glutton_edge(g, 0, 0, automation_node, sine_node));
+  g.connect(make_glutton_edge(g, 0, 0, rand_node, sine_node));
+  g.connect(make_glutton_edge(g, 0, 0, sine_node, gain_node));
+  g.connect(make_glutton_edge(g, 0, 0, gain_node, main_interval->node));
+  g.connect(make_glutton_edge(g, 0, 0, low_sine_node, main_interval->node));
 
   // Easy shortcut for the 1/2 outputs on your soundcard
   assert(main_interval);
@@ -260,9 +260,9 @@ int main(int argc, char** argv)
   ossia::tc_graph graph;
   ossia::audio_device audio{
       "minidaw", // name, for APIs like JACK
-      256, // buffer size
-      48000, // sample rate
-      0, 2 // inputs, outputs
+      256,       // buffer size
+      48000,     // sample rate
+      0, 2       // inputs, outputs
   };
 
   ossia::execution_state e;

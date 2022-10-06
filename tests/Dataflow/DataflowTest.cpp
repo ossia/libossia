@@ -1,24 +1,25 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
-#include <ossia/detail/config.hpp>
-#include <ossia/dataflow/graph/graph.hpp>
-#include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/network/base/parameter.hpp>
 #include "../Editor/TestUtils.hpp"
 #include "../Network/TestUtils.hpp"
 
+#include <ossia/detail/config.hpp>
+
+#include <ossia/dataflow/graph/graph.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/network/base/parameter.hpp>
+
+#include <catch.hpp>
+
 namespace ossia
 {
-class node_mock final : public graph_node {
+class node_mock final : public graph_node
+{
 
 public:
   const char* lbl{};
-  std::string label() const noexcept override
-  {
-    return lbl;
-  }
+  std::string label() const noexcept override { return lbl; }
 
   node_mock(inlets in, outlets out)
   {
@@ -46,8 +47,7 @@ public:
   }
 };
 
-
-template<typename T>
+template <typename T>
 auto pop_front(std::vector<T>& vec)
 {
   if(!vec.empty())
@@ -62,7 +62,7 @@ auto pop_front(std::vector<T>& vec)
   }
 }
 
-template<typename T, std::size_t N>
+template <typename T, std::size_t N>
 auto pop_front(ossia::small_vector<T, N>& vec)
 {
   if(!vec.empty())
@@ -92,13 +92,16 @@ auto pop_front(ossia::value_vector<ossia::timed_value> container)
   }
 }
 
-
 struct debug_mock
 {
-  debug_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
+  debug_mock(int f, std::weak_ptr<node_mock> p)
+      : factor{f}
+      , node{p}
+  {
+  }
   const int factor = 1;
   std::weak_ptr<node_mock> node;
-  void operator()(ossia::token_request tk, ossia::exec_state_facade )
+  void operator()(ossia::token_request tk, ossia::exec_state_facade)
   {
     if(auto n = node.lock())
     {
@@ -111,7 +114,11 @@ struct debug_mock
 std::vector<std::pair<int, int>> debug_mock::messages;
 struct execution_mock
 {
-  execution_mock(int f, std::weak_ptr<node_mock> p): factor{f}, node{p} { }
+  execution_mock(int f, std::weak_ptr<node_mock> p)
+      : factor{f}
+      , node{p}
+  {
+  }
   const int factor = 1;
   std::weak_ptr<node_mock> node;
   void operator()(ossia::token_request tk, ossia::exec_state_facade)
@@ -126,7 +133,7 @@ struct execution_mock
       if(auto val = elt.value.target<std::vector<ossia::value>>())
       {
         auto v = *val;
-        v.push_back(ossia::value {int32_t(factor * (1 + tk.date.impl))});
+        v.push_back(ossia::value{int32_t(factor * (1 + tk.date.impl))});
         out_port.write_value(std::move(v), 0);
       }
     }
@@ -141,10 +148,7 @@ struct base_graph
   ossia::tc_graph g;
   ossia::execution_state e;
 
-  base_graph(ossia::TestDevice& test)
-  {
-    e.register_device(&test.device);
-  }
+  base_graph(ossia::TestDevice& test) { e.register_device(&test.device); }
 
   void state()
   {
@@ -153,11 +157,11 @@ struct base_graph
     e.commit();
   }
 };
-struct simple_explicit_graph: base_graph
+struct simple_explicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2;
-  simple_explicit_graph(ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2;
+  simple_explicit_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
     auto n1_in = new value_inlet(*test.tuple_addr);
@@ -174,18 +178,18 @@ struct simple_explicit_graph: base_graph
 
     g.add_node(n1);
     g.add_node(n2);
-    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
+    g.connect(g.allocate_edge(c, n1_out, n2_in, n1, n2));
 
     this->n1 = n1.get();
     this->n2 = n2.get();
   }
 };
 
-struct simple_implicit_graph: base_graph
+struct simple_implicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2;
-  simple_implicit_graph(ossia::TestDevice& test):
-    base_graph{test}
+  ossia::node_mock *n1, *n2;
+  simple_implicit_graph(ossia::TestDevice& test)
+      : base_graph{test}
   {
     using namespace ossia;
     auto n1_in = new value_inlet(*test.tuple_addr);
@@ -203,19 +207,19 @@ struct simple_implicit_graph: base_graph
     g.add_node(n1);
     g.add_node(n2);
 
-    g.connect(make_edge(ossia::dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
+    g.connect(g.allocate_edge(
+        ossia::dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
 
     this->n1 = n1.get();
     this->n2 = n2.get();
   }
-
 };
 
-struct no_parameter_explicit_graph: base_graph
+struct no_parameter_explicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2;
-  no_parameter_explicit_graph(ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2;
+  no_parameter_explicit_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
     auto n1_out = new value_outlet;
@@ -231,20 +235,18 @@ struct no_parameter_explicit_graph: base_graph
 
     g.add_node(n1);
     g.add_node(n2);
-    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
+    g.connect(g.allocate_edge(c, n1_out, n2_in, n1, n2));
 
     this->n1 = n1.get();
     this->n2 = n2.get();
   }
-
 };
 
-struct three_outputs_one_input_explicit_graph: base_graph
+struct three_outputs_one_input_explicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2, *n3, *nin;
-  three_outputs_one_input_explicit_graph(
-      ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2, *n3, *nin;
+  three_outputs_one_input_explicit_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
 
@@ -277,12 +279,14 @@ struct three_outputs_one_input_explicit_graph: base_graph
     g.add_node(n3);
     g.add_node(nin);
 
-    g.connect(make_edge(c, n1_out, nin_in, n1, nin));
-    g.connect(make_edge(c, n2_out, nin_in, n2, nin));
-    g.connect(make_edge(c, n3_out, nin_in, n3, nin));
+    g.connect(g.allocate_edge(c, n1_out, nin_in, n1, nin));
+    g.connect(g.allocate_edge(c, n2_out, nin_in, n2, nin));
+    g.connect(g.allocate_edge(c, n3_out, nin_in, n3, nin));
 
-    g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
-    g.connect(make_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n2, n3));
+    g.connect(
+        g.allocate_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2));
+    g.connect(
+        g.allocate_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n2, n3));
 
     this->n1 = n1.get();
     this->n2 = n2.get();
@@ -291,13 +295,11 @@ struct three_outputs_one_input_explicit_graph: base_graph
   }
 };
 
-
-struct three_serial_nodes_explicit_graph: base_graph
+struct three_serial_nodes_explicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2, *n3;
-  three_serial_nodes_explicit_graph(
-      ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2, *n3;
+  three_serial_nodes_explicit_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
 
@@ -323,8 +325,8 @@ struct three_serial_nodes_explicit_graph: base_graph
     g.add_node(n2);
     g.add_node(n3);
 
-    g.connect(make_edge(c, n1_out, n2_in, n1, n2));
-    g.connect(make_edge(c, n2_out, n3_in, n2, n3));
+    g.connect(g.allocate_edge(c, n1_out, n2_in, n1, n2));
+    g.connect(g.allocate_edge(c, n2_out, n3_in, n2, n3));
 
     this->n1 = n1.get();
     this->n2 = n2.get();
@@ -332,13 +334,11 @@ struct three_serial_nodes_explicit_graph: base_graph
   }
 };
 
-
-struct three_serial_nodes_implicit_graph: base_graph
+struct three_serial_nodes_implicit_graph : base_graph
 {
-  ossia::node_mock* n1, *n2, *n3;
-  three_serial_nodes_implicit_graph(
-      ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2, *n3;
+  three_serial_nodes_implicit_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
 
@@ -369,12 +369,11 @@ struct three_serial_nodes_implicit_graph: base_graph
     this->n3 = n3.get();
   }
 };
-struct ab_bc_graph: base_graph
+struct ab_bc_graph : base_graph
 {
-  ossia::node_mock* n1, *n2;
-  ab_bc_graph(
-      ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2;
+  ab_bc_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
 
@@ -398,12 +397,11 @@ struct ab_bc_graph: base_graph
   }
 };
 
-struct bc_ab_graph: base_graph
+struct bc_ab_graph : base_graph
 {
-  ossia::node_mock* n1, *n2;
-  bc_ab_graph(
-      ossia::TestDevice& test, ossia::connection c):
-    base_graph{test}
+  ossia::node_mock *n1, *n2;
+  bc_ab_graph(ossia::TestDevice& test, ossia::connection c)
+      : base_graph{test}
   {
     using namespace ossia;
 
@@ -427,7 +425,7 @@ struct bc_ab_graph: base_graph
   }
 };
 
-TEST_CASE ("test_bfs", "test_bfs")
+TEST_CASE("test_bfs", "test_bfs")
 {
   using namespace ossia;
   ossia::bfs_graph g;
@@ -440,16 +438,22 @@ TEST_CASE ("test_bfs", "test_bfs")
 
   REQUIRE(g.update_fun.find_path(n1, n3, g.impl()));
 }
-TEST_CASE ("test_bfs_addr", "test_bfs_addr")
+TEST_CASE("test_bfs_addr", "test_bfs_addr")
 {
   using namespace ossia;
 
   TestDevice test;
 
   ossia::bfs_graph g;
-  auto n1 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.a)}, ossia::outlets{new value_outlet(*test.b)});
-  auto n2 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.b)}, ossia::outlets{new value_outlet(*test.c)});
-  auto n3 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.c)}, ossia::outlets{new value_outlet(*test.a)});
+  auto n1 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.a)},
+      ossia::outlets{new value_outlet(*test.b)});
+  auto n2 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.b)},
+      ossia::outlets{new value_outlet(*test.c)});
+  auto n3 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.c)},
+      ossia::outlets{new value_outlet(*test.a)});
 
   g.add_node(n1);
   g.add_node(n2);
@@ -457,16 +461,22 @@ TEST_CASE ("test_bfs_addr", "test_bfs_addr")
 
   g.update_fun(g, std::vector<ossia::net::device_base*>{&test.device});
 }
-TEST_CASE ("test_tcl_addr", "test_tcl_addr")
+TEST_CASE("test_tcl_addr", "test_tcl_addr")
 {
   using namespace ossia;
 
   TestDevice test;
 
   ossia::tc_graph g;
-  auto n1 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.a)}, ossia::outlets{new value_outlet(*test.b)});
-  auto n2 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.b)}, ossia::outlets{new value_outlet(*test.c)});
-  auto n3 = std::make_shared<node_mock>(ossia::inlets{new value_inlet(*test.c)}, ossia::outlets{new value_outlet(*test.a)});
+  auto n1 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.a)},
+      ossia::outlets{new value_outlet(*test.b)});
+  auto n2 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.b)},
+      ossia::outlets{new value_outlet(*test.c)});
+  auto n3 = std::make_shared<node_mock>(
+      ossia::inlets{new value_inlet(*test.c)},
+      ossia::outlets{new value_outlet(*test.a)});
 
   g.add_node(n1);
   g.add_node(n2);
@@ -475,16 +485,23 @@ TEST_CASE ("test_tcl_addr", "test_tcl_addr")
   g.update_fun(g, std::vector<ossia::net::device_base*>{&test.device});
 }
 
-TEST_CASE ("test_mock", "test_mock")
+TEST_CASE("test_mock", "test_mock")
 {
   using namespace ossia;
   graph g;
 
-  auto n1 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n2 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n3 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n4 = std::make_shared<node_mock>(inlets{new value_inlet, new value_inlet}, outlets{new value_outlet, new value_outlet});
-  auto n5 = std::make_shared<node_mock>(inlets{new value_inlet, new value_inlet}, outlets{new value_outlet, new value_outlet});
+  auto n1
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n2
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n3
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n4 = std::make_shared<node_mock>(
+      inlets{new value_inlet, new value_inlet},
+      outlets{new value_outlet, new value_outlet});
+  auto n5 = std::make_shared<node_mock>(
+      inlets{new value_inlet, new value_inlet},
+      outlets{new value_outlet, new value_outlet});
 
   g.add_node(n1);
   g.add_node(n2);
@@ -492,13 +509,25 @@ TEST_CASE ("test_mock", "test_mock")
   g.add_node(n4);
   g.add_node(n5);
 
-  auto c1 = make_edge(connection{immediate_glutton_connection{}}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2);
-  auto c2 = make_edge(connection{immediate_glutton_connection{}}, n1->root_outputs()[0], n3->root_inputs()[0], n1, n3);
-  auto c3 = make_edge(connection{immediate_glutton_connection{}}, n2->root_outputs()[0], n4->root_inputs()[0], n2, n4);
-  auto c4 = make_edge(connection{immediate_glutton_connection{}}, n3->root_outputs()[0], n4->root_inputs()[1], n3, n4);
+  auto c1 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n1->root_outputs()[0],
+      n2->root_inputs()[0], n1, n2);
+  auto c2 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n1->root_outputs()[0],
+      n3->root_inputs()[0], n1, n3);
+  auto c3 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n2->root_outputs()[0],
+      n4->root_inputs()[0], n2, n4);
+  auto c4 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n3->root_outputs()[0],
+      n4->root_inputs()[1], n3, n4);
 
-  auto c5 = make_edge(connection{immediate_glutton_connection{}}, n4->root_outputs()[0], n5->root_inputs()[0], n4, n5);
-  auto c6 = make_edge(connection{immediate_glutton_connection{}}, n4->root_outputs()[1], n5->root_inputs()[1], n4, n5);
+  auto c5 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n4->root_outputs()[0],
+      n5->root_inputs()[0], n4, n5);
+  auto c6 = g.allocate_edge(
+      connection{immediate_glutton_connection{}}, n4->root_outputs()[1],
+      n5->root_inputs()[1], n4, n5);
 
   g.connect(c1);
   g.connect(c2);
@@ -510,7 +539,8 @@ TEST_CASE ("test_mock", "test_mock")
   REQUIRE(n1->root_outputs()[0]->targets[0]);
   REQUIRE(n1->root_outputs()[0]->targets[0]->in_node == std::shared_ptr<graph_node>(n2));
   REQUIRE(n1->root_outputs()[0]->targets[0]->in == n2->root_inputs()[0]);
-  REQUIRE(n1->root_outputs()[0]->targets[0]->out_node == std::shared_ptr<graph_node>(n1));
+  REQUIRE(
+      n1->root_outputs()[0]->targets[0]->out_node == std::shared_ptr<graph_node>(n1));
   REQUIRE(n1->root_outputs()[0]->targets[0]->out == n1->root_outputs()[0]);
 
   REQUIRE(n2->root_inputs()[0]->sources[0]);
@@ -520,34 +550,45 @@ TEST_CASE ("test_mock", "test_mock")
   REQUIRE(n2->root_inputs()[0]->sources[0]->out == n1->root_outputs()[0]);
 }
 
-
-TEST_CASE ("test_disable_strict_nodes", "test_disable_strict_nodes")
+TEST_CASE("test_disable_strict_nodes", "test_disable_strict_nodes")
 {
   using namespace ossia;
   ossia::graph g;
-  auto disable_nodes = [&] (std::vector<std::shared_ptr<node_mock>> nodes) {
+  auto disable_nodes = [&](std::vector<std::shared_ptr<node_mock>> nodes) {
     node_flat_set enabled, disabled;
-    for(auto node: nodes)
+    for(auto node : nodes)
       if(node->enabled())
         enabled.insert(node.get());
     g.disable_strict_nodes(enabled, disabled);
     return disabled;
   };
 
-  auto n1 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n2 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n3 = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
-  auto n4 = std::make_shared<node_mock>(inlets{new value_inlet, new value_inlet}, outlets{new value_outlet});
+  auto n1
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n2
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n3
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n4 = std::make_shared<node_mock>(
+      inlets{new value_inlet, new value_inlet}, outlets{new value_outlet});
 
   g.add_node(n1);
   g.add_node(n2);
   g.add_node(n3);
   g.add_node(n4);
 
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->root_outputs()[0], n2->root_inputs()[0], n1, n2));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n1->root_outputs()[0], n3->root_inputs()[0], n1, n3));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n2->root_outputs()[0], n4->root_inputs()[0], n2, n4));
-  g.connect(make_edge(connection{immediate_strict_connection{}}, n3->root_outputs()[0], n4->root_inputs()[1], n3, n4));
+  g.connect(g.allocate_edge(
+      connection{immediate_strict_connection{}}, n1->root_outputs()[0],
+      n2->root_inputs()[0], n1, n2));
+  g.connect(g.allocate_edge(
+      connection{immediate_strict_connection{}}, n1->root_outputs()[0],
+      n3->root_inputs()[0], n1, n3));
+  g.connect(g.allocate_edge(
+      connection{immediate_strict_connection{}}, n2->root_outputs()[0],
+      n4->root_inputs()[0], n2, n4));
+  g.connect(g.allocate_edge(
+      connection{immediate_strict_connection{}}, n3->root_outputs()[0],
+      n4->root_inputs()[1], n3, n4));
 
   {
     n1->set_enabled(true);
@@ -617,7 +658,7 @@ TEST_CASE ("test_disable_strict_nodes", "test_disable_strict_nodes")
   }
 }
 
-TEST_CASE ("strict_explicit_relationship_simple", "strict_explicit_relationship_simple")
+TEST_CASE("strict_explicit_relationship_simple", "strict_explicit_relationship_simple")
 {
   using namespace ossia;
   TestDevice test;
@@ -635,16 +676,19 @@ TEST_CASE ("strict_explicit_relationship_simple", "strict_explicit_relationship_
   g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 
   g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // nothing
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
 }
 
-
-TEST_CASE ("strict_explicit_relationship_serial", "strict_explicit_relationship_serial")
+TEST_CASE("strict_explicit_relationship_serial", "strict_explicit_relationship_serial")
 {
   using namespace ossia;
   TestDevice test;
@@ -658,12 +702,12 @@ TEST_CASE ("strict_explicit_relationship_serial", "strict_explicit_relationship_
   g.n3->request(simple_token_request{0_tv, 0_tv});
 
   g.state(); // nothing
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
-
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1, 100 * 1}));
 }
 
-
-TEST_CASE ("implicit_ab_bc", "implicit_ab_bc")
+TEST_CASE("implicit_ab_bc", "implicit_ab_bc")
 {
   using namespace ossia;
   TestDevice test;
@@ -677,9 +721,8 @@ TEST_CASE ("implicit_ab_bc", "implicit_ab_bc")
   g.state(); // nothing
   REQUIRE(test.b->value() == ossia::value(std::vector<ossia::value>{1 * 1}));
   REQUIRE(test.c->value() == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
-
 }
-TEST_CASE ("implicit_bc_ab", "implicit_bc_ab")
+TEST_CASE("implicit_bc_ab", "implicit_bc_ab")
 {
   using namespace ossia;
   TestDevice test;
@@ -695,7 +738,7 @@ TEST_CASE ("implicit_bc_ab", "implicit_bc_ab")
   REQUIRE(test.c->value() == ossia::value(std::vector<ossia::value>{10 * 1, 1 * 1}));
 }
 
-TEST_CASE ("glutton_implicit_relationship", "glutton_implicit_relationship")
+TEST_CASE("glutton_implicit_relationship", "glutton_implicit_relationship")
 {
   using namespace ossia;
   TestDevice test;
@@ -712,16 +755,19 @@ TEST_CASE ("glutton_implicit_relationship", "glutton_implicit_relationship")
   g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
   g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // f2
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
-
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
 }
 
-TEST_CASE ("glutton_explicit_relationship", "glutton_explicit_relationship")
+TEST_CASE("glutton_explicit_relationship", "glutton_explicit_relationship")
 {
   // Does it make sense ??
   // Cables : used to reduce "where" things go, so yeah, makes sense
@@ -740,17 +786,19 @@ TEST_CASE ("glutton_explicit_relationship", "glutton_explicit_relationship")
   g.n2->request(simple_token_request{0_tv, 1_tv});
 
   g.state(); // f2 o f1
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2}));
 
   g.n2->request(simple_token_request{1_tv, 2_tv});
 
   g.state(); // f2
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
-
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 1 * 2, 10 * 2, 10 * 3}));
 }
 
-
-TEST_CASE ("glutton_explicit_relationship_2", "glutton_explicit_relationship_2")
+TEST_CASE("glutton_explicit_relationship_2", "glutton_explicit_relationship_2")
 {
   // Does it make sense ??
   // Cables : used to reduce "where" things go, so yeah, makes sense
@@ -777,10 +825,9 @@ TEST_CASE ("glutton_explicit_relationship_2", "glutton_explicit_relationship_2")
   debug_mock::messages.clear();
   g.state(); // f2
   REQUIRE((debug_mock::messages == std::vector<std::pair<int, int>>{{10, 2}}));
-
 }
 
-TEST_CASE ("delayed_relationship", "delayed_relationship")
+TEST_CASE("delayed_relationship", "delayed_relationship")
 {
   using namespace ossia;
   TestDevice test;
@@ -788,7 +835,6 @@ TEST_CASE ("delayed_relationship", "delayed_relationship")
   simple_explicit_graph g(test, delayed_strict_connection{});
   g.n1->root_outputs()[0]->address = {};
   REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{}));
-
 
   g.n1->request(simple_token_request{0_tv, 0_tv});
 
@@ -803,23 +849,23 @@ TEST_CASE ("delayed_relationship", "delayed_relationship")
   // f1(1) = 2
   // f2(f1(0), 0) = [1, 10]
   g.state();
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 1, 10 * 1}));
 
   g.n2->request(simple_token_request{0_tv, 1_tv});
 
   // f2(f1(1), 1) = [2, 20]
   g.state(); // f2 o f1(t-1)
-  REQUIRE(test.tuple_addr->value() == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
+  REQUIRE(
+      test.tuple_addr->value()
+      == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
   // 10 * 1 is not here because we start from {1 * 1} from the point of view of f1(t-1)
-
 }
 
-TEST_CASE ("reduced_implicit_relationship", "reduced_implicit_relationship")
-{
+TEST_CASE("reduced_implicit_relationship", "reduced_implicit_relationship") { }
 
-}
-
-TEST_CASE ("reduced_explicit_relationship", "reduced_explicit_relationship")
+TEST_CASE("reduced_explicit_relationship", "reduced_explicit_relationship")
 {
   //    using namespace ossia;
   //    TestUtils test;
@@ -842,11 +888,9 @@ TEST_CASE ("reduced_explicit_relationship", "reduced_explicit_relationship")
   //    g.state();
 
   //    // The reduction operation for values just take the last.
-
-
 }
 
-TEST_CASE ("replaced_implicit_relationship", "replaced_implicit_relationship")
+TEST_CASE("replaced_implicit_relationship", "replaced_implicit_relationship")
 {
   //    using namespace ossia;
   //    TestUtils test;
@@ -867,13 +911,9 @@ TEST_CASE ("replaced_implicit_relationship", "replaced_implicit_relationship")
   //    g.state();
 }
 
-TEST_CASE ("replaced_explicit_relationship", "replaced_explicit_relationship")
-{
+TEST_CASE("replaced_explicit_relationship", "replaced_explicit_relationship") { }
 
-}
-
-
-TEST_CASE ("temporal_ordering", "temporal_ordering")
+TEST_CASE("temporal_ordering", "temporal_ordering")
 {
   /*
     // what if both happen at exact same time.
@@ -947,10 +987,6 @@ TEST_CASE ("temporal_ordering", "temporal_ordering")
       REQUIRE(test.tuple_addr->value(), ossia::value(std::vector<ossia::value>{1 * 1, 10 * 2, 1 * 2, 10 * 3 == 1 * 3}));
     }
     */
-
 }
 
-TEST_CASE ("hierarchical_ordering", "hierarchical_ordering")
-{
-
-}
+TEST_CASE("hierarchical_ordering", "hierarchical_ordering") { }

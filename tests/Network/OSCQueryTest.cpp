@@ -1,20 +1,23 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
-#include <catch.hpp>
+#include "TestUtils.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/context.hpp>
 #include <ossia/network/oscquery/detail/json_parser.hpp>
 #include <ossia/network/oscquery/detail/json_writer.hpp>
-#include <iostream>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include "TestUtils.hpp"
+
+#include <catch.hpp>
+
+#include <iostream>
 
 using namespace ossia;
 using namespace ossia::net;
-TEST_CASE ("test_oscquery", "test_oscquery")
+TEST_CASE("test_oscquery", "test_oscquery")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
@@ -42,8 +45,6 @@ TEST_CASE ("test_oscquery", "test_oscquery")
   n.set(app_version_attribute{}, "1.0.0");
   n.set(app_creator_attribute{}, "Lelouch vi Brittania");
 
-
-
   // Node -> json
   auto str = ossia::oscquery::json_writer::query_namespace(dev);
   std::cerr << str.GetString() << std::endl;
@@ -53,7 +54,7 @@ TEST_CASE ("test_oscquery", "test_oscquery")
 
   // Parse json
   rapidjson::Document doc;
-  doc.Parse( str.GetString() );
+  doc.Parse(str.GetString());
 
   // Json -> node
   ossia::oscquery::json_parser::parse_namespace(dev, doc);
@@ -97,7 +98,8 @@ TEST_CASE ("test_oscquery", "test_oscquery")
     REQUIRE(*get_priority(n) == 50.f);
 
     REQUIRE((bool)get_description(n));
-    REQUIRE(*get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
+    REQUIRE(
+        *get_description(n) == std::string("Such a fancy node?! Incredible! すごい!!"));
 
     REQUIRE((bool)get_app_name(n));
     REQUIRE(*get_app_name(n) == std::string("AppName"));
@@ -110,7 +112,7 @@ TEST_CASE ("test_oscquery", "test_oscquery")
   }
 }
 
-TEST_CASE ("test_oscquery_unit_1", "test_oscquery_unit_1")
+TEST_CASE("test_oscquery_unit_1", "test_oscquery_unit_1")
 {
   generic_device serv{"A"};
 
@@ -125,7 +127,7 @@ TEST_CASE ("test_oscquery_unit_1", "test_oscquery_unit_1")
 
   // Parse json
   rapidjson::Document doc;
-  doc.Parse( str.GetString() );
+  doc.Parse(str.GetString());
 
   // Json -> node
   ossia::oscquery::json_parser::parse_namespace(serv, doc);
@@ -140,7 +142,7 @@ TEST_CASE ("test_oscquery_unit_1", "test_oscquery_unit_1")
   }
 }
 
-TEST_CASE ("test_oscquery_unit_2", "test_oscquery_unit_2")
+TEST_CASE("test_oscquery_unit_2", "test_oscquery_unit_2")
 {
   generic_device serv{"A"};
 
@@ -155,7 +157,7 @@ TEST_CASE ("test_oscquery_unit_2", "test_oscquery_unit_2")
 
   // Parse json
   rapidjson::Document doc;
-  doc.Parse( str.GetString() );
+  doc.Parse(str.GetString());
 
   // Json -> node
   ossia::oscquery::json_parser::parse_namespace(serv, doc);
@@ -170,7 +172,7 @@ TEST_CASE ("test_oscquery_unit_2", "test_oscquery_unit_2")
   }
 }
 
-TEST_CASE ("test_oscquery_unit_3", "test_oscquery_unit_3")
+TEST_CASE("test_oscquery_unit_3", "test_oscquery_unit_3")
 {
   generic_device serv{"A"};
 
@@ -185,7 +187,7 @@ TEST_CASE ("test_oscquery_unit_3", "test_oscquery_unit_3")
 
   // Parse json
   rapidjson::Document doc;
-  doc.Parse( str.GetString() );
+  doc.Parse(str.GetString());
 
   // Json -> node
   ossia::oscquery::json_parser::parse_namespace(serv, doc);
@@ -200,8 +202,7 @@ TEST_CASE ("test_oscquery_unit_3", "test_oscquery_unit_3")
   }
 }
 
-
-TEST_CASE ("test_json_impulse", "test_json_impulse")
+TEST_CASE("test_json_impulse", "test_json_impulse")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -229,7 +230,7 @@ TEST_CASE ("test_json_impulse", "test_json_impulse")
   }
 }
 
-TEST_CASE ("test_json_bool", "test_json_bool")
+TEST_CASE("test_json_bool", "test_json_bool")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -285,7 +286,7 @@ TEST_CASE ("test_json_bool", "test_json_bool")
   }
 }
 
-TEST_CASE ("test_json_int", "test_json_int")
+TEST_CASE("test_json_int", "test_json_int")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -317,7 +318,7 @@ TEST_CASE ("test_json_int", "test_json_int")
   }
 }
 
-TEST_CASE ("test_json_float", "test_json_float")
+TEST_CASE("test_json_float", "test_json_float")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -349,7 +350,7 @@ TEST_CASE ("test_json_float", "test_json_float")
   }
 }
 
-TEST_CASE ("test_json_string", "test_json_string")
+TEST_CASE("test_json_string", "test_json_string")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -381,41 +382,7 @@ TEST_CASE ("test_json_string", "test_json_string")
   }
 }
 
-
-TEST_CASE ("test_json_char", "test_json_char")
-{
-  using namespace std::literals;
-  generic_device serv{"foo"};
-  TestDeviceRef dev{serv};
-
-  dev.char_addr->push_value('x');
-  auto json = oscquery::json_writer{}.query_namespace(dev.char_addr->get_node());
-  std::cerr << json.GetString();
-  {
-    rapidjson::Document doc;
-    doc.Parse(json.GetString());
-    REQUIRE(doc.IsObject());
-    REQUIRE(doc.HasMember("TYPE"));
-    REQUIRE(doc.HasMember("VALUE"));
-    REQUIRE(doc["TYPE"].IsString());
-    REQUIRE(doc["TYPE"].GetString() == "c"s);
-
-    if(doc["VALUE"].IsArray())
-    {
-      REQUIRE(doc["VALUE"].GetArray().Size() == 1);
-      REQUIRE(doc["VALUE"][0].IsString());
-      REQUIRE(doc["VALUE"][0].GetString() == "x"s);
-    }
-    else
-    {
-      REQUIRE(doc["VALUE"].IsString());
-      REQUIRE(doc["VALUE"].GetString() == "x"s);
-    }
-  }
-}
-
-
-TEST_CASE ("test_json_vec2f", "test_json_vec2f")
+TEST_CASE("test_json_vec2f", "test_json_vec2f")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -442,7 +409,7 @@ TEST_CASE ("test_json_vec2f", "test_json_vec2f")
   }
 }
 
-TEST_CASE ("test_json_vec3f", "test_json_vec3f")
+TEST_CASE("test_json_vec3f", "test_json_vec3f")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -471,8 +438,7 @@ TEST_CASE ("test_json_vec3f", "test_json_vec3f")
   }
 }
 
-
-TEST_CASE ("test_json_vec4f", "test_json_vec4f")
+TEST_CASE("test_json_vec4f", "test_json_vec4f")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -503,19 +469,14 @@ TEST_CASE ("test_json_vec4f", "test_json_vec4f")
   }
 }
 
-
-TEST_CASE ("test_json_list", "test_json_list")
+TEST_CASE("test_json_list", "test_json_list")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
   TestDeviceRef dev{serv};
 
-  dev.tuple_addr->push_value(
-        std::vector<ossia::value>{1.234,
-                                  "foobar",
-                                  std::vector<ossia::value>{ 45, 43},
-                                  std::vector<ossia::value>{ }
-        });
+  dev.tuple_addr->push_value(std::vector<ossia::value>{
+      1.234, "foobar", std::vector<ossia::value>{45, 43}, std::vector<ossia::value>{}});
   auto json = oscquery::json_writer{}.query_namespace(dev.tuple_addr->get_node());
   std::cerr << json.GetString();
   {
@@ -541,7 +502,7 @@ TEST_CASE ("test_json_list", "test_json_list")
     REQUIRE(doc["VALUE"][3].GetArray().Size() == (unsigned int)0);
   }
 }
-TEST_CASE ("test_json_rgba8", "test_json_rgba8")
+TEST_CASE("test_json_rgba8", "test_json_rgba8")
 {
   /*
       using namespace std::literals;
@@ -575,7 +536,7 @@ TEST_CASE ("test_json_rgba8", "test_json_rgba8")
       */
 }
 
-TEST_CASE ("test_json_unit_float", "test_json_unit_float")
+TEST_CASE("test_json_unit_float", "test_json_unit_float")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -612,7 +573,7 @@ TEST_CASE ("test_json_unit_float", "test_json_unit_float")
   }
 }
 
-TEST_CASE ("test_json_unit_vec3", "test_json_unit_vec3")
+TEST_CASE("test_json_unit_vec3", "test_json_unit_vec3")
 {
   using namespace std::literals;
   generic_device serv{"foo"};
@@ -647,11 +608,12 @@ TEST_CASE ("test_json_unit_vec3", "test_json_unit_vec3")
     REQUIRE(doc["EXTENDED_TYPE"].GetArray()[2] == "position.cartesian.z"s);
   }
 }
-TEST_CASE ("test_oscquery_http", "test_oscquery_http")
+TEST_CASE("test_oscquery_http", "test_oscquery_http")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
   ossia::net::parameter_base* a{};
   {
     auto& n = find_or_create_node(serv, "/main");
@@ -678,23 +640,28 @@ TEST_CASE ("test_oscquery_http", "test_oscquery_http")
   }
 
   // HTTP client
-  auto http_proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
-  auto http_clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"};
-
+  auto http_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
+  auto http_clt
+      = new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   http_proto->update(http_clt->get_root_node());
 
   {
-    net::full_parameter_data d; d.address = "/float"; d.set_value(123.f);
+    net::full_parameter_data d;
+    d.address = "/float";
+    d.set_value(123.f);
     http_proto->push_raw(d);
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  auto ws_clt = new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  auto ws_clt
+      = new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -711,7 +678,9 @@ TEST_CASE ("test_oscquery_http", "test_oscquery_http")
   auto b = param->value();
   ossia::value expected_value{d};
 
-  net::full_parameter_data d2; d2.address = "/int"; d2.set_value(546);
+  net::full_parameter_data d2;
+  d2.address = "/int";
+  d2.set_value(546);
   ws_proto->push_raw(d2);
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -723,11 +692,12 @@ TEST_CASE ("test_oscquery_http", "test_oscquery_http")
   REQUIRE(b == expected_value);
 }
 
-TEST_CASE ("test_oscquery_critical_http", "test_oscquery_critical_http")
+TEST_CASE("test_oscquery_critical_http", "test_oscquery_critical_http")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
   ossia::net::parameter_base* a{};
   {
     auto& n = find_or_create_node(serv, "/main");
@@ -737,9 +707,10 @@ TEST_CASE ("test_oscquery_critical_http", "test_oscquery_critical_http")
   }
 
   // HTTP client
-  auto http_proto = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
-  std::unique_ptr<generic_device> http_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"}};
-
+  auto http_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("http://127.0.0.1:5678", 10000);
+  std::unique_ptr<generic_device> http_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(http_proto), "B"}};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -752,19 +723,22 @@ TEST_CASE ("test_oscquery_critical_http", "test_oscquery_critical_http")
   REQUIRE(param->value().get<float>() == 6.f);
 
   {
-    net::full_parameter_data d; d.address = "/main"; d.set_value(4.5f);
-    http_proto->push_raw(d); //  no way to send raw OSC through http requests: this will god through the OSC port
+    net::full_parameter_data d;
+    d.address = "/main";
+    d.set_value(4.5f);
+    http_proto->push_raw(
+        d); //  no way to send raw OSC through http requests: this will god through the OSC port
   }
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
   REQUIRE(a->value().get<float>() == 4.5f);
 }
 
-
-TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
+TEST_CASE("test_oscquery_critical_ws", "test_oscquery_critical_ws")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
   ossia::net::parameter_base* a{};
   {
     auto& n = find_or_create_node(serv, "/main");
@@ -774,8 +748,10 @@ TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
   }
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -793,15 +769,15 @@ TEST_CASE ("test_oscquery_critical_ws", "test_oscquery_critical_ws")
 
   // should use QCOMPARE after device cleaning to avoid hang
   REQUIRE(a->value().get<float>() == 4.5f);
-
 }
 
-TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
+TEST_CASE("test_oscquery_list_value", "test_oscquery_list_value")
 {
   // Here we check that a nested list is not flatten when sent by OSC
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
   ossia::net::parameter_base* a{};
 
   auto& n = find_or_create_node(serv, "/main");
@@ -811,12 +787,14 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   val.push_back(0);
   val.push_back(4.5f);
   val.push_back(false);
-  val.push_back(std::vector<ossia::value>{"reg","fruh", "tot"});
+  val.push_back(std::vector<ossia::value>{"reg", "fruh", "tot"});
   a->push_value(val);
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
@@ -831,7 +809,7 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   val.push_back(4.5f);
   val.push_back(1);
   val.push_back(false);
-  val.push_back(std::vector<ossia::value>{"reg","fruh", "tot"});
+  val.push_back(std::vector<ossia::value>{"reg", "fruh", "tot"});
 
   {
     param->push_value(val); // This will go through the WS port
@@ -842,26 +820,26 @@ TEST_CASE ("test_oscquery_list_value", "test_oscquery_list_value")
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 }
 
-TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value")
+TEST_CASE("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value")
 {
-  std::vector<ossia::value> val{0.1,0.2};
+  std::vector<ossia::value> val{0.1, 0.2};
 
   // Here we check that a nested list is not flatten when sent by OSC
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   std::this_thread::sleep_for(std::chrono::milliseconds(100));
 
   auto& n = find_or_create_node(serv, "/dynamic_list");
   ossia::net::parameter_base* a = n.create_parameter(ossia::val_type::LIST);
 
-  a->add_callback([&](const ossia::value& v){
-    REQUIRE(v == val);
-  });
+  a->add_callback([&](const ossia::value& v) { REQUIRE(v == val); });
 
   std::cerr << " *** updating client *** \n";
   ws_proto->update(ws_clt->get_root_node());
@@ -888,8 +866,7 @@ TEST_CASE ("test_oscquery_dynamic_list_value", "test_oscquery_dynamic_list_value
   REQUIRE(a->value().get<std::vector<ossia::value>>() == val);
 }
 
-
-TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
+TEST_CASE("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
 {
   // Here we check that the fullpath JSON is correctly parsed
   // and that all mirror parameter value are set correctly
@@ -899,24 +876,26 @@ TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
   {
-      auto p = serv.create_child("list2")->create_parameter(val_type::LIST);
-      ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
-      p->push_value(std::vector<value>{1.1f,2.2f});
+    auto p = serv.create_child("list2")->create_parameter(val_type::LIST);
+    ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
+    p->push_value(std::vector<value>{1.1f, 2.2f});
   }
   {
-      auto p = serv.create_child("list3")->create_parameter(val_type::LIST);
-      ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
-      p->push_value(std::vector<value>{1.1f,2.2f,3.3f});
+    auto p = serv.create_child("list3")->create_parameter(val_type::LIST);
+    ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
+    p->push_value(std::vector<value>{1.1f, 2.2f, 3.3f});
   }
   {
-      auto p = serv.create_child("list4")->create_parameter(val_type::LIST);
-      ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
-      p->push_value(std::vector<value>{1.1f,2.2f,3.3f,4.4f});
+    auto p = serv.create_child("list4")->create_parameter(val_type::LIST);
+    ossia::net::set_extended_type(p->get_node(), ossia::float_array_type());
+    p->push_value(std::vector<value>{1.1f, 2.2f, 3.3f, 4.4f});
   }
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -931,7 +910,7 @@ TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::VEC2F);
     auto v = p->value().get<vec2f>();
-    REQUIRE(v == vec2f{1.1f,2.2f});
+    REQUIRE(v == vec2f{1.1f, 2.2f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/list3");
@@ -940,7 +919,7 @@ TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::VEC3F);
     auto v = p->value().get<vec3f>();
-    REQUIRE(v == vec3f{1.1f,2.2f,3.3f});
+    REQUIRE(v == vec3f{1.1f, 2.2f, 3.3f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/list4");
@@ -949,23 +928,25 @@ TEST_CASE ("test_oscquery_list_to_vec", "test_oscquery_list_to_vec")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::VEC4F);
     auto v = p->value().get<vec4f>();
-    REQUIRE(v == vec4f{1.1f,2.2f,3.3f,4.4f});
+    REQUIRE(v == vec4f{1.1f, 2.2f, 3.3f, 4.4f});
   }
 }
 
-TEST_CASE ("test_oscquery_sublist", "test_oscquery_sublist")
+TEST_CASE("test_oscquery_sublist", "test_oscquery_sublist")
 {
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
   {
-      auto p = serv.create_child("list")->create_parameter(val_type::LIST);
-      p->push_value(std::vector<value>{ossia::vec2f{1.1f,2.2f}});
+    auto p = serv.create_child("list")->create_parameter(val_type::LIST);
+    p->push_value(std::vector<value>{ossia::vec2f{1.1f, 2.2f}});
   }
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -983,11 +964,12 @@ TEST_CASE ("test_oscquery_sublist", "test_oscquery_sublist")
 
     REQUIRE(v.size() == 1);
     REQUIRE(v[0].get_type() == val_type::VEC2F);
-    REQUIRE(v[0].get<ossia::vec2f>() == vec2f{1.1f,2.2f});;
+    REQUIRE(v[0].get<ossia::vec2f>() == vec2f{1.1f, 2.2f});
+    ;
   }
 }
 
-TEST_CASE ("test_oscquery_tuple", "test_oscquery_tuple")
+TEST_CASE("test_oscquery_tuple", "test_oscquery_tuple")
 {
   // Here we check that the fullpath JSON is correctly parsed
   // and that all mirror parameter value are set correctly
@@ -997,13 +979,16 @@ TEST_CASE ("test_oscquery_tuple", "test_oscquery_tuple")
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
 
   {
-      auto p = serv.create_child("tuple")->create_parameter(val_type::LIST);
-      p->push_value(std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+    auto p = serv.create_child("tuple")->create_parameter(val_type::LIST);
+    p->push_value(
+        std::vector<value>{"yes", true, std::vector<value>{2, 3}, 4.4f, 2, 'a'});
   }
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -1018,11 +1003,12 @@ TEST_CASE ("test_oscquery_tuple", "test_oscquery_tuple")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::LIST);
     auto v = p->value().get<std::vector<value>>();
-    REQUIRE(v == std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+    REQUIRE(
+        v == std::vector<value>{"yes", true, std::vector<value>{2, 3}, 4.4f, 2, 'a'});
   }
 }
 
-TEST_CASE ("test_oscquery_value", "test_oscquery_value")
+TEST_CASE("test_oscquery_value", "test_oscquery_value")
 {
   // Here we check that the fullpath JSON is correctly parsed
   // and that all mirror parameter value are set correctly
@@ -1030,22 +1016,24 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
 
   auto serv_proto = new ossia::oscquery::oscquery_server_protocol{1234, 5678};
   generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
-  TestDeviceRef dev{serv}; (void) dev;
+  TestDeviceRef dev{serv};
+  (void)dev;
 
   dev.bool_addr->push_value(true);
   dev.int_addr->push_value(-23);
   dev.float_addr->push_value(-1234.56789f);
-  dev.char_addr->push_value('a');
   dev.string_addr->push_value("My sup€r $Ŧringø");
-  dev.vec2f_addr->push_value(vec2f{1.1f,2.2f});
-  dev.vec3f_addr->push_value(vec3f{1.1f,2.2f,3.3f});
-  dev.vec4f_addr->push_value(vec4f{1.1f,2.2f,3.3f,4.4f});
-  dev.tuple_addr->push_value(std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
-
+  dev.vec2f_addr->push_value(vec2f{1.1f, 2.2f});
+  dev.vec3f_addr->push_value(vec3f{1.1f, 2.2f, 3.3f});
+  dev.vec4f_addr->push_value(vec4f{1.1f, 2.2f, 3.3f, 4.4f});
+  dev.tuple_addr->push_value(
+      std::vector<value>{"yes", true, std::vector<value>{2, 3}, 4.4f, 2, 'a'});
 
   // WS client
-  auto ws_proto = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
-  std::unique_ptr<generic_device> ws_clt{new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10001);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
 
   ws_proto->update(ws_clt->get_root_node());
 
@@ -1081,15 +1069,6 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(v == -1234.56789f);
   }
   {
-    auto n = find_node(ws_clt->get_root_node(), "/char");
-    REQUIRE(n);
-    auto p = n->get_parameter();
-    REQUIRE(p);
-    REQUIRE(p->get_value_type() == val_type::CHAR);
-    auto v = p->value().get<char>();
-    REQUIRE(v == 'a');
-  }
-  {
     auto n = find_node(ws_clt->get_root_node(), "/string");
     REQUIRE(n);
     auto p = n->get_parameter();
@@ -1103,9 +1082,11 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(n);
     auto p = n->get_parameter();
     REQUIRE(p);
-    REQUIRE(p->get_value_type() == val_type::VEC2F); // Oscquery limitation : all vecnf become list
+    REQUIRE(
+        p->get_value_type()
+        == val_type::VEC2F); // Oscquery limitation : all vecnf become list
     auto v = p->value().get<vec2f>();
-    REQUIRE(v == vec2f{1.1f,2.2f});
+    REQUIRE(v == vec2f{1.1f, 2.2f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/vec3f");
@@ -1114,7 +1095,7 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::VEC3F);
     auto v = p->value().get<vec3f>();
-    REQUIRE(v == vec3f{1.1f,2.2f,3.3f});
+    REQUIRE(v == vec3f{1.1f, 2.2f, 3.3f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/vec4f");
@@ -1123,7 +1104,7 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::VEC4F);
     auto v = p->value().get<vec4f>();
-    REQUIRE(v == vec4f{1.1f,2.2f,3.3f,4.4f});
+    REQUIRE(v == vec4f{1.1f, 2.2f, 3.3f, 4.4f});
   }
   {
     auto n = find_node(ws_clt->get_root_node(), "/tuple");
@@ -1132,6 +1113,7 @@ TEST_CASE ("test_oscquery_value", "test_oscquery_value")
     REQUIRE(p);
     REQUIRE(p->get_value_type() == val_type::LIST);
     auto v = p->value().get<std::vector<value>>();
-    REQUIRE(v == std::vector<value>{"yes",true,std::vector<value>{2,3},4.4f,2,'a'});
+    REQUIRE(
+        v == std::vector<value>{"yes", true, std::vector<value>{2, 3}, 4.4f, 2, 'a'});
   }
 }

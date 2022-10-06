@@ -27,9 +27,6 @@ template<>
 struct matching_domain<ossia::val_type::FLOAT>
 { using type = ossia::domain_base<float>; };
 template<>
-struct matching_domain<ossia::val_type::CHAR>
-{ using type = ossia::domain_base<char>; };
-template<>
 struct matching_domain<ossia::val_type::STRING>
 { using type = ossia::domain_base<std::string>; };
 template<>

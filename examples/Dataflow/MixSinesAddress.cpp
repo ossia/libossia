@@ -1,26 +1,27 @@
-#include <ossia/dataflow/graph/graph_static.hpp>
-#include <ossia/dataflow/graph_edge_helpers.hpp>
-#include <ossia/audio/audio_protocol.hpp>
 #include <ossia/audio/audio_device.hpp>
+#include <ossia/audio/audio_protocol.hpp>
+#include <ossia/dataflow/graph/graph_static.hpp>
+#include <ossia/dataflow/graph/tick_methods.hpp>
+#include <ossia/dataflow/graph_edge_helpers.hpp>
+#include <ossia/dataflow/nodes/gain.hpp>
 #include <ossia/dataflow/nodes/rand_float.hpp>
 #include <ossia/dataflow/nodes/sine.hpp>
-#include <ossia/dataflow/nodes/gain.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
-#include <ossia/dataflow/graph/tick_methods.hpp>
 
 class OSSIA_EXPORT simple_device
 {
-  public:
-    ossia::net::generic_device device;
+public:
+  ossia::net::generic_device device;
 };
-int main(int argc, char** argv) {
+int main(int argc, char** argv)
+{
   int nodes = 60;
   if(argc > 1)
     nodes = std::atoi(argv[1]);
   using namespace ossia;
   using namespace std::literals;
   oscquery_device osc; // a device to expose parameters over the network
-  tc_graph g; // graph implementation with static scheduling
+  tc_graph g;          // graph implementation with static scheduling
   execution_state e;
   audio_device audio; // a device that maps to the sound card inputs & outputs
 
@@ -42,9 +43,10 @@ int main(int argc, char** argv) {
 
   // 60 sine generators, each with their frequency controllable by
   // an OSC address of the form /freq.1 /freq.2 /freq.3 ...
-  for(int i = 0; i < nodes; i++) {
+  for(int i = 0; i < nodes; i++)
+  {
     auto node = std::make_shared<ossia::nodes::sine>();
-    g.connect(make_strict_edge(0, 0, node, gain));
+    g.connect(make_strict_edge(g, 0, 0, node, gain));
 
     auto freq_param = ossia::create_parameter(osc.device, "/freq", "hz");
     freq_param->push_value(200 + 12 * i);
