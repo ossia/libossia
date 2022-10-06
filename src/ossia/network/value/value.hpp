@@ -219,11 +219,11 @@ public:
   {
   }
 
-  explicit value(std::string&& val) noexcept
+  value(std::string&& val) noexcept
       : v(std::move(val))
   {
   }
-  explicit value(std::vector<ossia::value>&& val) noexcept
+  value(std::vector<ossia::value>&& val) noexcept
       : v(std::move(val))
   {
   }
