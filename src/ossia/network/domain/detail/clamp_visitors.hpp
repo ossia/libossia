@@ -93,7 +93,7 @@ struct apply_ternary_fun_visitor
         val.push_back(ossia::apply(*this, incoming[i].v, min[i].v, max[i].v));
       }
     }
-    return val;
+    return ossia::value{std::move(val)};
   }
 
   ossia::value operator()(
@@ -110,7 +110,7 @@ struct apply_ternary_fun_visitor
         val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v, max[i].v);
       }
     }
-    return std::move(val);
+    return ossia::value{std::move(val)};
   }
 
   ossia::value operator()(
@@ -124,7 +124,7 @@ struct apply_ternary_fun_visitor
     {
       val.push_back(ossia::apply(*this, incoming[i].v, min.v, max.v));
     }
-    return val;
+    return ossia::value{std::move(val)};
   }
 
   ossia::value operator()(
@@ -135,7 +135,7 @@ struct apply_ternary_fun_visitor
     {
       val[i] = ossia::apply(*this, std::move(val)[i].v, min.v, max.v);
     }
-    return std::move(val);
+    return ossia::value{std::move(val)};
   }
 
   ossia::value
@@ -237,7 +237,7 @@ struct apply_binary_fun_visitor
         val.push_back(ossia::apply(*this, incoming[i].v, min[i].v));
       }
     }
-    return val;
+    return ossia::value{std::move(val)};
   }
 
   ossia::value
@@ -252,7 +252,7 @@ struct apply_binary_fun_visitor
         val[i] = ossia::apply(*this, std::move(val)[i].v, min[i].v);
       }
     }
-    return std::move(val);
+    return ossia::value{std::move(val)};
   }
 
   ossia::value
@@ -265,7 +265,7 @@ struct apply_binary_fun_visitor
     {
       val.push_back(ossia::apply(*this, incoming[i].v, min.v));
     }
-    return val;
+    return ossia::value{std::move(val)};
   }
 
   ossia::value operator()(std::vector<ossia::value>&& val, const ossia::value& min)
@@ -275,7 +275,7 @@ struct apply_binary_fun_visitor
     {
       val[i] = ossia::apply(*this, std::move(val)[i].v, min.v);
     }
-    return std::move(val);
+    return ossia::value{std::move(val)};
   }
 
   ossia::value operator()(const ossia::value& val, const ossia::value& min)

@@ -29,13 +29,16 @@ using strong_value_impl_t = decltype(T::dataspace_value);
 
 template <typename T, typename U>
 const constexpr bool both_iterable
-    = is_array<strong_value_impl_t<T>>::value&& is_array<U>::value;
+    = is_array<strong_value_impl_t<T>>::value&& is_array<U>::value&&
+          ossia::value_trait<U>::ossia_enum
+      != ossia::val_type::MAP;
 template <typename T, typename U>
 const constexpr bool first_iterable
     = is_array<strong_value_impl_t<T>>::value && !is_array<U>::value;
 template <typename T, typename U>
 const constexpr bool second_iterable
-    = !is_array<strong_value_impl_t<T>>::value && is_array<U>::value;
+    = !is_array<strong_value_impl_t<T>>::value && is_array<U>::value
+      && ossia::value_trait<U>::ossia_enum != ossia::val_type::MAP;
 template <typename T, typename U>
 const constexpr bool neither_iterable
     = !is_array<strong_value_impl_t<T>>::value && !is_array<U>::value;
@@ -232,6 +235,12 @@ struct value_merger
   template <typename T>
   OSSIA_INLINE ossia::value_with_unit
   operator()(const strong_value<T>& value_unit, impulse value)
+  {
+    return value_unit;
+  }
+  template <typename T>
+  OSSIA_INLINE ossia::value_with_unit
+  operator()(const strong_value<T>& value_unit, const value_map_type& value)
   {
     return value_unit;
   }

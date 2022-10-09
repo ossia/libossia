@@ -23,7 +23,7 @@ enum class val_type : int8_t
   BOOL,    //! bool
   STRING,  //! std::string
   LIST,    //! std::vector<value>
-  CHAR,    //! char
+  MAP,     //! map<string, value>
   NONE = std::numeric_limits<int8_t>::max()
 };
 

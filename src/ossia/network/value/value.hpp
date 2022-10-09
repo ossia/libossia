@@ -1,9 +1,12 @@
 #pragma once
+#include <ossia/detail/concepts.hpp>
 #include <ossia/detail/destination_index.hpp>
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/value/value_base.hpp>
+
+#include <boost/container/flat_map.hpp>
 
 #include <limits>
 #include <string>
@@ -38,6 +41,14 @@ class value;
 OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 OSSIA_EXPORT ossia::value parse_pretty_value(ossia::string_view str);
 
+using value_map_element = std::pair<std::string, ossia::value>;
+struct value_map_type : std::vector<value_map_element>
+{
+  using vector::vector;
+
+  ossia::value& operator[](std::string_view str) noexcept;
+};
+
 struct value_variant_type
 {
 public:
@@ -64,7 +75,7 @@ public:
 
     std::vector<ossia::value> m_value8;
 
-    char m_value9;
+    value_map_type m_value9;
 
     dummy_t m_dummy;
     Impl()
@@ -120,9 +131,11 @@ public:
   value_variant_type(bool v);
   value_variant_type(const std::string& v);
   value_variant_type(std::string&& v);
+
   value_variant_type(const std::vector<ossia::value>& v);
   value_variant_type(std::vector<ossia::value>&& v) noexcept;
-  value_variant_type(char v);
+  value_variant_type(const value_map_type& v);
+  value_variant_type(value_map_type&& v);
   value_variant_type(const value_variant_type& other);
   value_variant_type(value_variant_type&& other) noexcept;
   value_variant_type& operator=(const value_variant_type& other);
@@ -186,10 +199,6 @@ public:
       : v{(int)val}
   {
   }
-  value(char val) noexcept
-      : v{val}
-  {
-  }
   value(float val) noexcept
       : v{val}
   {
@@ -202,7 +211,13 @@ public:
       : v{val}
   {
   }
+
   value(const std::vector<ossia::value>& val) noexcept
+      : v(val)
+  {
+  }
+
+  value(const value_map_type& val) noexcept
       : v(val)
   {
   }
@@ -224,6 +239,11 @@ public:
   {
   }
   value(std::vector<ossia::value>&& val) noexcept
+      : v(std::move(val))
+  {
+  }
+
+  value(value_map_type&& val) noexcept
       : v(std::move(val))
   {
   }
@@ -267,17 +287,17 @@ public:
     v = val;
     return *this;
   }
-  value& operator=(char val) noexcept
-  {
-    v = val;
-    return *this;
-  }
   value& operator=(const std::string& val) noexcept
   {
     v = val;
     return *this;
   }
   value& operator=(const std::vector<ossia::value>& val) noexcept
+  {
+    v = val;
+    return *this;
+  }
+  value& operator=(const value_map_type& val) noexcept
   {
     v = val;
     return *this;
@@ -304,6 +324,11 @@ public:
     return *this;
   }
   value& operator=(std::vector<ossia::value>&& val) noexcept
+  {
+    v = std::move(val);
+    return *this;
+  }
+  value& operator=(value_map_type&& val) noexcept
   {
     v = std::move(val);
     return *this;
@@ -416,12 +441,12 @@ inline ossia::value init_value(ossia::val_type type)
       return int32_t{};
     case val_type::FLOAT:
       return float{};
-    case val_type::CHAR:
-      return char{};
     case val_type::STRING:
-      return std::string{};
+      return value{std::string{}}; // value needed for explicit ctor
     case val_type::LIST:
-      return std::vector<ossia::value>{};
+      return value{std::vector<ossia::value>{}};
+    case val_type::MAP:
+      return value{value_map_type{}};
     case val_type::VEC2F:
       return vec2f{};
     case val_type::VEC3F:
@@ -458,15 +483,39 @@ get_value_at_index(const ossia::value& val, const ossia::destination_index& idx)
 
 #include <ossia/network/value/value_variant_impl.hpp>
 
+#if defined(OSSIA_HAS_CONCEPTS)
+template <typename T>
+concept ossia_visitor = requires(T t)
+{
+  t();
+  t(std::declval<float&>());
+  t(std::declval<int&>());
+  t(std::declval<ossia::vec2f&>());
+  t(std::declval<ossia::vec3f&>());
+  t(std::declval<ossia::vec4f&>());
+  t(std::declval<ossia::impulse&>());
+  t(std::declval<bool&>());
+  t(std::declval<std::string&>());
+  t(std::declval<std::vector<ossia::value>&>());
+  t(std::declval<value_map_type&>());
+};
+#endif
+
 template <typename Visitor>
 inline auto value::apply(Visitor&& vis) -> decltype(auto)
 {
+#if defined(OSSIA_HAS_CONCEPTS)
+  static_assert(ossia_visitor<Visitor>, "Not a valid ossia::value visitor");
+#endif
   return ossia::apply(std::forward<Visitor>(vis), this->v);
 }
 
 template <typename Visitor>
 inline auto value::apply(Visitor&& vis) const -> decltype(auto)
 {
+#if defined(OSSIA_HAS_CONCEPTS)
+  static_assert(ossia_visitor<Visitor>, "Not a valid ossia::value visitor");
+#endif
   return ossia::apply(std::forward<Visitor>(vis), this->v);
 }
 }

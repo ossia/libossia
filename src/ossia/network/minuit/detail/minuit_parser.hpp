@@ -305,6 +305,7 @@ struct osc_inbound_numeric_visitor
         cur_it, !t.empty() ? ossia::convert<float>(t[0]) : 0.f);
   }
 
+  ossia::value operator()(const value_map_type& t) { return {}; }
   ossia::value operator()() const { return {}; }
 };
 

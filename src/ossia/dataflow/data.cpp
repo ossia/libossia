@@ -8,6 +8,8 @@
 #include <ossia/network/common/value_mapping.hpp>
 #include <ossia/network/value/format_value.hpp>
 
+#include <iostream>
+
 namespace ossia
 {
 namespace
@@ -22,7 +24,11 @@ struct process_float_control_visitor
 
   void operator()(ossia::impulse) const noexcept { }
 
-  void operator()(int& v) const noexcept { v = dst_min + ratio * (v - src_min); }
+  void operator()(int& v) const noexcept
+  {
+    std::cerr << "mapped value: " << v << (dst_min + ratio * (v - src_min)) << std::endl;
+    v = dst_min + ratio * (v - src_min);
+  }
   void operator()(float& v) const noexcept { v = dst_min + ratio * (v - src_min); }
   void operator()(bool& v) const noexcept { v = dst_min + ratio * (v - src_min); }
 
@@ -55,6 +61,11 @@ struct process_float_control_visitor
   void operator()(std::vector<ossia::value>& v) const noexcept
   {
     for(auto& value : v)
+      value.apply(*this);
+  }
+  void operator()(value_map_type& v) const noexcept
+  {
+    for(auto& [k, value] : v)
       value.apply(*this);
   }
 
@@ -121,8 +132,12 @@ void process_control_value(
     const ossia::domain& sink_domain, const ossia::complex_type& source_type,
     const ossia::complex_type& sink_type) noexcept
 {
-  process_control_value(v, source_type, sink_type);
+  // FIXME check that it works:
+  // with an int source (e.g. a MIDI address)
+  // with an int sink (e.g. an IntSlider port)
+  // with both int source and sink
   process_control_value(v, source_domain, sink_domain); // TODO does that make sense
+  process_control_value(v, source_type, sink_type);
 }
 
 void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec)

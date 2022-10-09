@@ -66,6 +66,27 @@ value js_value_inbound_visitor::operator()(const std::vector<ossia::value>& v) c
   return t;
 }
 
+value js_value_inbound_visitor::operator()(const value_map_type& v) const
+{
+  value_map_type t;
+  if(val.isObject())
+  {
+    QJSValueIterator it(val);
+    while(it.hasNext())
+    {
+      it.next();
+      t.emplace_back(it.name().toStdString(), value_from_js(it.value()));
+    }
+  }
+  else
+  {
+    qDebug() << "js_value_inbound_visitor: map: got " << val.toString()
+             << val.toVariant();
+    t = v;
+  }
+  return t;
+}
+
 value js_value_inbound_visitor::operator()(vec2f v) const
 {
   if(val.isArray())
@@ -313,14 +334,6 @@ QJSValue js_value_outbound_visitor::operator()(bool val) const
   return v;
 }
 
-QJSValue js_value_outbound_visitor::operator()(char val) const
-{
-  QJSValue v = engine.newObject();
-  v.setProperty("type", to_enum(qml_val_type::val_type::Char));
-  v.setProperty("value", val);
-  return v;
-}
-
 QJSValue js_value_outbound_visitor::operator()(const std::string& val) const
 {
   QJSValue v = engine.newObject();
@@ -348,6 +361,23 @@ js_value_outbound_visitor::operator()(const std::vector<ossia::value>& val) cons
   QJSValue v = engine.newObject();
   v.setProperty("type", to_enum(qml_val_type::val_type::List));
   v.setProperty("value", make_list(val));
+  return v;
+}
+
+QJSValue js_value_outbound_visitor::operator()(const value_map_type& val) const
+{
+  QJSValue v = engine.newObject();
+  v.setProperty("type", to_enum(qml_val_type::val_type::Map));
+  {
+    auto object = engine.newObject();
+
+    for(const auto& [key, child] : val)
+    {
+      object.setProperty(QString::fromStdString(key), value_to_js_value(child, engine));
+    }
+
+    v.setProperty("value", object);
+  }
   return v;
 }
 
@@ -429,6 +459,28 @@ js_string_outbound_visitor::operator()(const std::vector<ossia::value>& val) con
   return s;
 }
 
+QString js_string_outbound_visitor::operator()(const value_map_type& val) const
+{
+  QString s = "{";
+
+  std::size_t n = val.size();
+  if(n != 0)
+  {
+    auto it = val.begin();
+    s += QString{"\"%1\": "}.arg(QLatin1String(it->first.data(), it->first.size()));
+    s += value_to_js_string(it->second);
+
+    for(++it; it != val.end(); ++it)
+    {
+      s += QString{", \"%1\": "}.arg(QLatin1String(it->first.data(), it->first.size()));
+      s += value_to_js_string(it->second);
+    }
+  }
+
+  s += "}";
+  return s;
+}
+
 QString js_string_outbound_visitor::operator()(vec2f val) const
 {
   return make_array(val);
@@ -506,10 +558,8 @@ void set_parameter_type(QVariant::Type type, net::parameter_base& addr)
     case QVariant::Int:
     case QVariant::UInt:
     case QVariant::ULongLong:
-      addr.set_value_type(ossia::val_type::INT);
-      break;
     case QVariant::Char:
-      addr.set_value_type(ossia::val_type::CHAR);
+      addr.set_value_type(ossia::val_type::INT);
       break;
     case QVariant::String:
     case QVariant::ByteArray:
@@ -709,6 +759,8 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toRectF());
     case QVariant::List:
       return operator()(v.toList());
+    case QVariant::Map:
+      return operator()(v.toMap());
     case QVariant::StringList:
       return operator()(v.toStringList());
     case QVariant::Date:

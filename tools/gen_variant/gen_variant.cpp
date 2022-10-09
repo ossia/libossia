@@ -143,13 +143,6 @@ template<> struct var_member<ossia::domain_base<bool>>
   const std::string ctor_str = "domain_base";
   static const constexpr bool is_trivial = false;
 };
-template<> struct var_member<ossia::domain_base<char>>
-{
-  using type = ossia::domain_base<char>;
-  const std::string type_str = "ossia::domain_base<char>";
-  const std::string ctor_str = "domain_base";
-  static const constexpr bool is_trivial = false;
-};
 template<> struct var_member<ossia::domain_base<std::string>>
 {
   using type = ossia::domain_base<std::string>;
@@ -936,7 +929,7 @@ int main()
 
   using domain_list = brigand::list<
     domain_base<impulse>, domain_base<bool>, domain_base<int32_t>,
-    domain_base<float>, domain_base<char>, domain_base<std::string>,
+    domain_base<float>, domain_base<std::string>,
     vector_domain, vecf_domain<2>, vecf_domain<3>, vecf_domain<4>,
     domain_base<ossia::value>>;
   static const constexpr int domain_size = brigand::size<domain_list>::value;

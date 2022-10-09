@@ -99,6 +99,8 @@ public:
     }
   }
 
+  void operator()(const value_map_type& t) const { }
+
   template <typename T, typename U>
   void operator()(const T& t, const U& u) const
   {

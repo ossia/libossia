@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/transport.hpp>
+#include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/logger_fwd.hpp>
 #include <ossia/detail/audio_spin_mutex.hpp>
 

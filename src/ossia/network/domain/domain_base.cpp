@@ -186,8 +186,6 @@ ossia::domain make_domain_from_minmax(
   {
     switch(v)
     {
-      case ossia::val_type::CHAR:
-        return ossia::make_domain((char)0, max[0]);
       case ossia::val_type::FLOAT:
         return ossia::make_domain((float)0, max[0]);
       case ossia::val_type::INT:
@@ -207,8 +205,6 @@ ossia::domain make_domain_from_minmax(
   {
     switch(v)
     {
-      case ossia::val_type::CHAR:
-        return ossia::make_domain(min[0], (char)255);
       case ossia::val_type::FLOAT:
         return ossia::make_domain(min[0], (float)1);
       case ossia::val_type::INT:
@@ -259,8 +255,6 @@ domain init_domain(ossia::val_type type)
       return domain_base<float>{};
     case val_type::BOOL:
       return domain_base<bool>{};
-    case val_type::CHAR:
-      return domain_base<char>{};
     case val_type::STRING:
       return domain_base<std::string>();
     case val_type::LIST:

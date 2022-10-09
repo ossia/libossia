@@ -14,8 +14,6 @@ public:
 
     ossia::domain_base<float> m_value3;
 
-    ossia::domain_base<char> m_value4;
-
     ossia::domain_base<std::string> m_value5;
 
     ossia::vector_domain m_value6;
@@ -67,9 +65,6 @@ public:
         break;
       case Type::Type3:
         m_impl.m_value3.~domain_base();
-        break;
-      case Type::Type4:
-        m_impl.m_value4.~domain_base();
         break;
       case Type::Type5:
         m_impl.m_value5.~domain_base();
@@ -157,16 +152,6 @@ public:
   {
     new(&m_impl.m_value3) ossia::domain_base<float>{std::move(v)};
   }
-  domain_base_variant(const ossia::domain_base<char>& v)
-      : m_type{Type4}
-  {
-    new(&m_impl.m_value4) ossia::domain_base<char>{v};
-  }
-  domain_base_variant(ossia::domain_base<char>&& v)
-      : m_type{Type4}
-  {
-    new(&m_impl.m_value4) ossia::domain_base<char>{std::move(v)};
-  }
   domain_base_variant(const ossia::domain_base<std::string>& v)
       : m_type{Type5}
   {
@@ -244,9 +229,6 @@ public:
       case Type::Type3:
         new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
         break;
-      case Type::Type4:
-        new(&m_impl.m_value4) ossia::domain_base<char>{other.m_impl.m_value4};
-        break;
       case Type::Type5:
         new(&m_impl.m_value5) ossia::domain_base<std::string>{other.m_impl.m_value5};
         break;
@@ -287,9 +269,6 @@ public:
       case Type::Type3:
         new(&m_impl.m_value3)
             ossia::domain_base<float>{std::move(other.m_impl.m_value3)};
-        break;
-      case Type::Type4:
-        new(&m_impl.m_value4) ossia::domain_base<char>{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
         new(&m_impl.m_value5)
@@ -333,9 +312,6 @@ public:
       case Type::Type3:
         new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
         break;
-      case Type::Type4:
-        new(&m_impl.m_value4) ossia::domain_base<char>{other.m_impl.m_value4};
-        break;
       case Type::Type5:
         new(&m_impl.m_value5) ossia::domain_base<std::string>{other.m_impl.m_value5};
         break;
@@ -378,9 +354,6 @@ public:
       case Type::Type3:
         new(&m_impl.m_value3)
             ossia::domain_base<float>{std::move(other.m_impl.m_value3)};
-        break;
-      case Type::Type4:
-        new(&m_impl.m_value4) ossia::domain_base<char>{std::move(other.m_impl.m_value4)};
         break;
       case Type::Type5:
         new(&m_impl.m_value5)
@@ -434,13 +407,6 @@ inline const ossia::domain_base<float>* domain_base_variant::target() const
 {
   if(m_type == Type3)
     return &m_impl.m_value3;
-  return nullptr;
-}
-template <>
-inline const ossia::domain_base<char>* domain_base_variant::target() const
-{
-  if(m_type == Type4)
-    return &m_impl.m_value4;
   return nullptr;
 }
 template <>
@@ -514,13 +480,6 @@ inline ossia::domain_base<float>* domain_base_variant::target()
   return nullptr;
 }
 template <>
-inline ossia::domain_base<char>* domain_base_variant::target()
-{
-  if(m_type == Type4)
-    return &m_impl.m_value4;
-  return nullptr;
-}
-template <>
 inline ossia::domain_base<std::string>* domain_base_variant::target()
 {
   if(m_type == Type5)
@@ -588,13 +547,6 @@ inline const ossia::domain_base<float>& domain_base_variant::get() const
 {
   if(m_type == Type3)
     return m_impl.m_value3;
-  throw std::runtime_error("domain_variant_impl: bad type");
-}
-template <>
-inline const ossia::domain_base<char>& domain_base_variant::get() const
-{
-  if(m_type == Type4)
-    return m_impl.m_value4;
   throw std::runtime_error("domain_variant_impl: bad type");
 }
 template <>
@@ -668,13 +620,6 @@ inline ossia::domain_base<float>& domain_base_variant::get()
   throw std::runtime_error("domain_variant_impl: bad type");
 }
 template <>
-inline ossia::domain_base<char>& domain_base_variant::get()
-{
-  if(m_type == Type4)
-    return m_impl.m_value4;
-  throw std::runtime_error("domain_variant_impl: bad type");
-}
-template <>
 inline ossia::domain_base<std::string>& domain_base_variant::get()
 {
   if(m_type == Type5)
@@ -729,8 +674,6 @@ auto apply_nonnull(Visitor&& functor, const domain_base_variant& var)
       return functor(var.m_impl.m_value2);
     case domain_base_variant::Type::Type3:
       return functor(var.m_impl.m_value3);
-    case domain_base_variant::Type::Type4:
-      return functor(var.m_impl.m_value4);
     case domain_base_variant::Type::Type5:
       return functor(var.m_impl.m_value5);
     case domain_base_variant::Type::Type6:
@@ -760,8 +703,6 @@ auto apply_nonnull(Visitor&& functor, domain_base_variant& var)
       return functor(var.m_impl.m_value2);
     case domain_base_variant::Type::Type3:
       return functor(var.m_impl.m_value3);
-    case domain_base_variant::Type::Type4:
-      return functor(var.m_impl.m_value4);
     case domain_base_variant::Type::Type5:
       return functor(var.m_impl.m_value5);
     case domain_base_variant::Type::Type6:
@@ -791,8 +732,6 @@ auto apply_nonnull(Visitor&& functor, domain_base_variant&& var)
       return functor(std::move(var.m_impl.m_value2));
     case domain_base_variant::Type::Type3:
       return functor(std::move(var.m_impl.m_value3));
-    case domain_base_variant::Type::Type4:
-      return functor(std::move(var.m_impl.m_value4));
     case domain_base_variant::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
     case domain_base_variant::Type::Type6:
@@ -822,8 +761,6 @@ auto apply(Visitor&& functor, const domain_base_variant& var)
       return functor(var.m_impl.m_value2);
     case domain_base_variant::Type::Type3:
       return functor(var.m_impl.m_value3);
-    case domain_base_variant::Type::Type4:
-      return functor(var.m_impl.m_value4);
     case domain_base_variant::Type::Type5:
       return functor(var.m_impl.m_value5);
     case domain_base_variant::Type::Type6:
@@ -853,8 +790,6 @@ auto apply(Visitor&& functor, domain_base_variant& var)
       return functor(var.m_impl.m_value2);
     case domain_base_variant::Type::Type3:
       return functor(var.m_impl.m_value3);
-    case domain_base_variant::Type::Type4:
-      return functor(var.m_impl.m_value4);
     case domain_base_variant::Type::Type5:
       return functor(var.m_impl.m_value5);
     case domain_base_variant::Type::Type6:
@@ -884,8 +819,6 @@ auto apply(Visitor&& functor, domain_base_variant&& var)
       return functor(std::move(var.m_impl.m_value2));
     case domain_base_variant::Type::Type3:
       return functor(std::move(var.m_impl.m_value3));
-    case domain_base_variant::Type::Type4:
-      return functor(std::move(var.m_impl.m_value4));
     case domain_base_variant::Type::Type5:
       return functor(std::move(var.m_impl.m_value5));
     case domain_base_variant::Type::Type6:
@@ -916,8 +849,6 @@ inline bool operator==(const domain_base_variant& lhs, const domain_base_variant
         return lhs.m_impl.m_value2 == rhs.m_impl.m_value2;
       case domain_base_variant::Type::Type3:
         return lhs.m_impl.m_value3 == rhs.m_impl.m_value3;
-      case domain_base_variant::Type::Type4:
-        return lhs.m_impl.m_value4 == rhs.m_impl.m_value4;
       case domain_base_variant::Type::Type5:
         return lhs.m_impl.m_value5 == rhs.m_impl.m_value5;
       case domain_base_variant::Type::Type6:
@@ -950,8 +881,6 @@ inline bool operator!=(const domain_base_variant& lhs, const domain_base_variant
       return lhs.m_impl.m_value2 != rhs.m_impl.m_value2;
     case domain_base_variant::Type::Type3:
       return lhs.m_impl.m_value3 != rhs.m_impl.m_value3;
-    case domain_base_variant::Type::Type4:
-      return lhs.m_impl.m_value4 != rhs.m_impl.m_value4;
     case domain_base_variant::Type::Type5:
       return lhs.m_impl.m_value5 != rhs.m_impl.m_value5;
     case domain_base_variant::Type::Type6:
@@ -1064,30 +993,6 @@ operator!=(const ossia::domain_base<float>& lhs, const domain_base_variant& rhs)
 {
   return (rhs.m_type != domain_base_variant::Type::Type3)
          || (rhs.m_impl.m_value3 != lhs);
-}
-inline bool
-operator==(const domain_base_variant& lhs, const ossia::domain_base<char>& rhs)
-{
-  return (lhs.m_type == domain_base_variant::Type::Type4)
-         && (lhs.m_impl.m_value4 == rhs);
-}
-inline bool
-operator==(const ossia::domain_base<char>& lhs, const domain_base_variant& rhs)
-{
-  return (rhs.m_type == domain_base_variant::Type::Type4)
-         && (rhs.m_impl.m_value4 == lhs);
-}
-inline bool
-operator!=(const domain_base_variant& lhs, const ossia::domain_base<char>& rhs)
-{
-  return (lhs.m_type != domain_base_variant::Type::Type4)
-         || (lhs.m_impl.m_value4 != rhs);
-}
-inline bool
-operator!=(const ossia::domain_base<char>& lhs, const domain_base_variant& rhs)
-{
-  return (rhs.m_type != domain_base_variant::Type::Type4)
-         || (rhs.m_impl.m_value4 != lhs);
 }
 inline bool
 operator==(const domain_base_variant& lhs, const ossia::domain_base<std::string>& rhs)
@@ -1370,43 +1275,6 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           throw std::runtime_error("domain_variant_impl: bad type");
       }
     }
-    case domain_base_variant::Type::Type4: {
-      switch(arg1.m_type)
-      {
-        case value_variant_type::Type::Type0: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value0);
-        }
-        case value_variant_type::Type::Type1: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
-        }
-        case value_variant_type::Type::Type2: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
-        }
-        case value_variant_type::Type::Type3: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
-        }
-        case value_variant_type::Type::Type4: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
-        }
-        case value_variant_type::Type::Type5: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
-        }
-        case value_variant_type::Type::Type6: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value6);
-        }
-        case value_variant_type::Type::Type7: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
-        }
-        case value_variant_type::Type::Type8: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
-        }
-        case value_variant_type::Type::Type9: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
-        }
-        default:
-          throw std::runtime_error("domain_variant_impl: bad type");
-      }
-    }
     case domain_base_variant::Type::Type5: {
       switch(arg1.m_type)
       {
@@ -1654,9 +1522,6 @@ auto apply(
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
         }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value4);
-        }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
         }
@@ -1693,9 +1558,6 @@ auto apply(
         }
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
-        }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value4);
         }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
@@ -1734,9 +1596,6 @@ auto apply(
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
         }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value4);
-        }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
         }
@@ -1773,9 +1632,6 @@ auto apply(
         }
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
-        }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value4);
         }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
@@ -1814,9 +1670,6 @@ auto apply(
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
         }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value4);
-        }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
         }
@@ -1853,9 +1706,6 @@ auto apply(
         }
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
-        }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value4);
         }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
@@ -1894,9 +1744,6 @@ auto apply(
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
         }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value4);
-        }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
         }
@@ -1933,9 +1780,6 @@ auto apply(
         }
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
-        }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value4);
         }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
@@ -1974,9 +1818,6 @@ auto apply(
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
         }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value4);
-        }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
         }
@@ -2013,9 +1854,6 @@ auto apply(
         }
         case domain_base_variant::Type::Type3: {
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
-        }
-        case domain_base_variant::Type::Type4: {
-          return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value4);
         }
         case domain_base_variant::Type::Type5: {
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);

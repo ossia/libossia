@@ -313,9 +313,6 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
     case ossia::val_type::BOOL:
       str.replace("$val", v.get<bool>() ? "1" : "0");
       break;
-    case ossia::val_type::CHAR:
-      str.replace("$val", QString{v.get<char>()});
-      break;
     case ossia::val_type::VEC2F: {
       auto& vec = v.get<ossia::vec2f>();
       str.replace("$val", QString{"%1 %2"}.arg(vec[0]).arg(vec[1]));
@@ -334,6 +331,9 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
       break;
     }
     case ossia::val_type::LIST:
+      str.replace("$val", "TODO");
+      break;
+    case ossia::val_type::MAP:
       str.replace("$val", "TODO");
       break;
     case ossia::val_type::IMPULSE:

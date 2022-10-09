@@ -70,7 +70,7 @@ node_base* osc_learn(node_base* n, const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
+            value{osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd())});
       }
       break;
     }
@@ -85,7 +85,7 @@ node_base* osc_learn(node_base* n, const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
+            value{osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd())});
       }
       break;
     }
@@ -100,13 +100,14 @@ node_base* osc_learn(node_base* n, const oscpack::ReceivedMessage& m)
       {
         auto addr = n->create_parameter(ossia::val_type::LIST);
         addr->set_value(
-            osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
+            value{osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd())});
       }
       break;
     }
     default: {
       auto addr = n->create_parameter(ossia::val_type::LIST);
-      addr->set_value(osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd()));
+      addr->set_value(
+          value{osc_utilities::create_list(m.ArgumentsBegin(), m.ArgumentsEnd())});
       break;
     }
   }

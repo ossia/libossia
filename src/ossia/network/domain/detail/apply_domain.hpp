@@ -66,7 +66,6 @@ struct apply_domain_visitor
   ossia::value operator()(int32_t value, const domain_base<float>& domain) const;
   ossia::value operator()(float value, const domain_base<int32_t>& domain) const;
   ossia::value operator()(float value, const domain_base<float>& domain) const;
-  ossia::value operator()(char value, const domain_base<char>& domain) const;
   ossia::value operator()(bool value, const domain_base<bool>& domain) const;
 
   // Strings
@@ -112,8 +111,6 @@ struct apply_domain_visitor
   ossia::value
   operator()(const std::array<float, 2>& value, const domain_base<bool>& domain) const;
   ossia::value
-  operator()(const std::array<float, 2>& value, const domain_base<char>& domain) const;
-  ossia::value
   operator()(const std::array<float, 2>& value, const vecf_domain<2>& domain) const;
   ossia::value
   operator()(const std::array<float, 2>& value, const vector_domain& domain) const;
@@ -125,8 +122,6 @@ struct apply_domain_visitor
   ossia::value
   operator()(const std::array<float, 3>& value, const domain_base<bool>& domain) const;
   ossia::value
-  operator()(const std::array<float, 3>& value, const domain_base<char>& domain) const;
-  ossia::value
   operator()(const std::array<float, 3>& value, const vecf_domain<3>& domain) const;
   ossia::value
   operator()(const std::array<float, 3>& value, const vector_domain& domain) const;
@@ -137,8 +132,6 @@ struct apply_domain_visitor
       const std::array<float, 4>& value, const domain_base<int32_t>& domain) const;
   ossia::value
   operator()(const std::array<float, 4>& value, const domain_base<bool>& domain) const;
-  ossia::value
-  operator()(const std::array<float, 4>& value, const domain_base<char>& domain) const;
   ossia::value
   operator()(const std::array<float, 4>& value, const vecf_domain<4>& domain) const;
   ossia::value
@@ -169,7 +162,7 @@ ossia::value apply_domain_visitor::operator()(
       val = ossia::apply_nonnull(
           list_apply_domain_helper<domain_base<T>>{*this, domain}, val.v);
   }
-  return res;
+  return ossia::value{std::move(res)};
 }
 
 template <typename T>
@@ -184,6 +177,6 @@ ossia::value apply_domain_visitor::operator()(
   }
   // TODO currently other values (strings, etc...) are ignored; what should we
   // do here ?
-  return std::move(value);
+  return ossia::value{std::move(value)};
 }
 }

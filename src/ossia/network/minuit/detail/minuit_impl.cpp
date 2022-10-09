@@ -53,6 +53,10 @@ ossia::string_view to_minuit_type_text(const ossia::value& val)
     {
       constexpr_return(ossia::make_string_view("array"));
     }
+    ossia::string_view operator()(const value_map_type& t) const
+    {
+      constexpr_return(ossia::make_string_view("map"));
+    }
     ossia::string_view operator()() const
     {
       throw invalid_value_type_error(

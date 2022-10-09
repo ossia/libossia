@@ -324,6 +324,13 @@ inline Y curve<X, Y>::convert_to_template_type_value(
       auto& val = t[*index];
       return convert_to_template_type_value(val, index + 1);
     }
+    Y operator()(const value_map_type& t) const
+    {
+      throw invalid_value_type_error(
+          "curve_impl::convertToTemplateTypeValue: "
+          "Cannot convert Map to a numeric type");
+      return {};
+    }
 
     Y operator()(impulse) const
     {

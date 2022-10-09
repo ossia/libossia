@@ -53,11 +53,21 @@ struct value_trait<bool>
 template <>
 struct value_trait<char>
 {
-  using ossia_type = char;
+  using ossia_type = int;
   using value_type = char;
-  static const constexpr auto ossia_enum = val_type::CHAR;
+  static const constexpr auto ossia_enum = val_type::INT;
   static const constexpr bool is_numeric = true;
   static const constexpr bool is_array = false;
+};
+
+template <>
+struct value_trait<value_map_type>
+{
+  using ossia_type = value_map_type;
+  using value_type = value_map_type;
+  static const constexpr auto ossia_enum = val_type::MAP;
+  static const constexpr bool is_numeric = false;
+  static const constexpr bool is_array = true;
 };
 
 template <>

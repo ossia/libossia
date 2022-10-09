@@ -89,7 +89,6 @@ inline ossia::string_view to_minuit_type_text(ossia::val_type val)
       constexpr_return(ossia::make_string_view("decimal"));
     case val_type::BOOL:
       constexpr_return(ossia::make_string_view("boolean"));
-    case val_type::CHAR:
     case val_type::STRING:
       constexpr_return(ossia::make_string_view("string"));
     case val_type::VEC2F:
@@ -97,6 +96,8 @@ inline ossia::string_view to_minuit_type_text(ossia::val_type val)
     case val_type::VEC4F:
     case val_type::LIST:
       constexpr_return(ossia::make_string_view("array"));
+    case val_type::MAP:
+      constexpr_return(ossia::make_string_view("map"));
     default:
       throw invalid_value_type_error("to_minuit_type_text: Invalid type");
   }
@@ -122,7 +123,7 @@ inline ossia::value value_from_minuit_type_text(ossia::string_view str)
       return ossia::impulse{};
     case 'a': // array
     case 'g': // generic
-      return std::vector<ossia::value>{};
+      return value{std::vector<ossia::value>{}};
     default:
       return {};
   }

@@ -87,9 +87,9 @@ struct address_info
       case Type::NoteOn:
       case Type::NoteOff:
       case Type::CC:
-        return std::vector<ossia::value>{int32_t{val}, int32_t{val}};
+        return value{std::vector<ossia::value>{int32_t{val}, int32_t{val}}};
       case Type::Any:
-        return std::vector<ossia::value>{};
+        return value{std::vector<ossia::value>{}};
       case Type::NoteOn_N:
       case Type::NoteOff_N:
       case Type::CC_N:

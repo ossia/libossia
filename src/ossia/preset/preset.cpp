@@ -472,13 +472,13 @@ static ossia::value json_to_ossia_value(const rapidjson::Value& value)
           if(value[0].IsDouble() && value[1].GetDouble())
             return ossia::make_vec(value[0].GetDouble(), value[1].GetDouble());
           else
-            return handle_vec(value);
+            return ossia::value{handle_vec(value)};
         case 3:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble())
             return ossia::make_vec(
                 value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble());
           else
-            return handle_vec(value);
+            return ossia::value{handle_vec(value)};
         case 4:
           if(value[0].IsDouble() && value[1].GetDouble() && value[2].GetDouble()
              && value[3].GetDouble())
@@ -486,9 +486,9 @@ static ossia::value json_to_ossia_value(const rapidjson::Value& value)
                 value[0].GetDouble(), value[1].GetDouble(), value[2].GetDouble(),
                 value[3].GetDouble());
           else
-            return handle_vec(value);
+            return ossia::value{handle_vec(value)};
         default:
-          return handle_vec(value);
+          return ossia::value{handle_vec(value)};
       }
     }
     default:
@@ -624,6 +624,16 @@ struct value_to_json_preset_value
     for(std::size_t i = 0; i < vec.size(); i++)
     {
       v.PushBack(vec[i].apply(*this), allocator);
+    }
+    return v;
+  }
+  rapidjson::Value operator()(const ossia::value_map_type& vec) const
+  {
+    rapidjson::Value v(rapidjson::kObjectType);
+    for(auto& [k, val] : vec)
+    {
+      rapidjson::Value key(k, allocator);
+      v.AddMember(key, val.apply(*this), allocator);
     }
     return v;
   }
@@ -808,9 +818,6 @@ static std::string ossia_value_to_std_string(const ossia::value& val)
     case ossia::val_type::FLOAT:
       ss << "Float " << val.get<float>();
       break;
-    case ossia::val_type::CHAR:
-      ss << "Char " << val.get<char>();
-      break;
     case ossia::val_type::STRING:
       ss << "String " << val.get<std::string>();
       break;
@@ -941,16 +948,6 @@ export_nodes_to_json(const ossia::net::node_base& node, rapidjson::Document& d)
         {
           v.AddMember("valueStepSize", *valueStepSize, alloc);
         }
-        break;
-      }
-      case ossia::val_type::CHAR: {
-        v.AddMember("type", "char", alloc);
-        if(default_value)
-          if(auto valueDefault = default_value->target<char>())
-          {
-            v.AddMember("valueDefault", *valueDefault, alloc);
-          }
-
         break;
       }
       case ossia::val_type::STRING: {

@@ -29,6 +29,8 @@ struct osc_1_1_outbound_array_policy : osc_common_outbound_dynamic_policy
       val.apply(*this);
     }
   }
+
+  void operator()(const value_map_type& t) const { }
 };
 
 struct osc_1_1_outbound_value_policy : osc_common_outbound_static_policy

@@ -71,6 +71,10 @@ struct numeric_value_converter
   {
     return !v.empty() ? convert<T>(v[0]) : T{};
   }
+  T operator()(const value_map_type& v) const
+  {
+    return !v.empty() ? convert<T>(v.begin()->second) : T{};
+  }
 };
 
 template <>
@@ -184,6 +188,25 @@ struct fmt_writer
     }
     fmt::format_to(fmt::appender(wr), "]");
   }
+  void operator()(const value_map_type& v) const
+  {
+    using namespace std::literals;
+    fmt::format_to(fmt::appender(wr), "{{");
+    const auto n = v.size();
+    if(n > 0)
+    {
+      auto it = v.begin();
+      fmt::format_to(fmt::appender(wr), "\"{}\": ", it->first);
+      it->second.apply(*this);
+
+      for(++it; it != v.end(); ++it)
+      {
+        fmt::format_to(fmt::appender(wr), ", \"{}\": ", it->first);
+        it->second.apply(*this);
+      }
+    }
+    fmt::format_to(fmt::appender(wr), "}}");
+  }
 };
 
 template <>
@@ -223,6 +246,14 @@ struct value_converter<std::string>
     fmt_writer{wr}(v);
     return {wr.data(), wr.size()};
   }
+
+  T operator()(const value_map_type& v) const
+  {
+    using namespace std::literals;
+    fmt::memory_buffer wr;
+    fmt_writer{wr}(v);
+    return {wr.data(), wr.size()};
+  }
 };
 
 template <>
@@ -253,6 +284,52 @@ struct value_converter<std::vector<ossia::value>>
   }
 
   std::vector<ossia::value> operator()() { return {}; }
+};
+
+template <>
+struct value_converter<value_map_type>
+{
+  const value_map_type& cur;
+  template <typename U>
+  value_map_type operator()(const U& u)
+  {
+    return value_map_type{{"0", u}};
+  }
+
+  template <std::size_t N>
+  value_map_type operator()(const std::array<float, N>& u)
+  {
+    value_map_type v;
+    for(std::size_t i = 0; i < N; i++)
+    {
+      v[std::to_string(i)] = float{u[i]};
+    }
+    return v;
+  }
+
+  value_map_type operator()(const std::vector<ossia::value>& t)
+  {
+    value_map_type v;
+    for(std::size_t i = 0; i < t.size(); i++)
+    {
+      v[std::to_string(i)] = t[i];
+    }
+    return v;
+  }
+  value_map_type operator()(std::vector<ossia::value>&& t)
+  {
+    value_map_type v;
+    for(std::size_t i = 0; i < t.size(); i++)
+    {
+      v[std::to_string(i)] = std::move(t[i]);
+    }
+    return v;
+  }
+
+  value_map_type operator()(const value_map_type& t) { return t; }
+  value_map_type operator()(value_map_type&& t) { return std::move(t); }
+
+  value_map_type operator()() { return {}; }
 };
 
 template <std::size_t N>
@@ -311,6 +388,8 @@ struct value_converter<std::array<float, N>>
     return convert<std::array<float, N>>(t);
   }
 
+  std::array<float, N> operator()(const value_map_type& t) { return {}; }
+
   std::array<float, N> operator()() { return {}; }
 };
 }
@@ -358,8 +437,8 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       return f(ossia::value_trait<int32_t>{}, std::forward<Args>(args)...);
     case val_type::FLOAT:
       return f(ossia::value_trait<float>{}, std::forward<Args>(args)...);
-    case val_type::CHAR:
-      return f(ossia::value_trait<char>{}, std::forward<Args>(args)...);
+    case val_type::MAP:
+      return f(ossia::value_trait<value_map_type>{}, std::forward<Args>(args)...);
     case val_type::STRING:
       return f(ossia::value_trait<std::string>{}, std::forward<Args>(args)...);
     case val_type::LIST:

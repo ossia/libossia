@@ -30,6 +30,19 @@ template class std::experimental::optional<ossia::value>;
 */
 namespace ossia
 {
+ossia::value& value_map_type::operator[](std::string_view str) noexcept
+{
+  auto it = ossia::find_if(*this, [str](const auto& e) { return e.first == str; });
+  if(it != this->end())
+  {
+    return it->second;
+  }
+  else
+  {
+    auto& e = this->emplace_back(str, ossia::value{});
+    return e.second;
+  }
+}
 
 template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::value& val);
 template OSSIA_EXPORT int convert<int>(const ossia::value& val);
@@ -37,6 +50,7 @@ template OSSIA_EXPORT float convert<float>(const ossia::value& val);
 template OSSIA_EXPORT double convert<double>(const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
 template OSSIA_EXPORT char convert<char>(const ossia::value& val);
+template OSSIA_EXPORT value_map_type convert<value_map_type>(const ossia::value& val);
 template OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
 template OSSIA_EXPORT std::vector<ossia::value>
 convert<std::vector<ossia::value>>(const ossia::value& val);
@@ -54,6 +68,8 @@ template OSSIA_EXPORT float convert<float>(const float&, const ossia::value& val
 template OSSIA_EXPORT double convert<double>(const double&, const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const bool&, const ossia::value& val);
 template OSSIA_EXPORT char convert<char>(const char&, const ossia::value& val);
+template OSSIA_EXPORT value_map_type
+convert<value_map_type>(const value_map_type&, const ossia::value& val);
 template OSSIA_EXPORT std::string
 convert<std::string>(const std::string&, const ossia::value& val);
 template OSSIA_EXPORT std::vector<ossia::value> convert<std::vector<ossia::value>>(
@@ -265,6 +281,15 @@ struct value_comparison_visitor2
     return Comparator{}(lhs, rhs);
   }
 
+  template <typename T, typename U>
+  requires(
+      std::is_same_v<
+          T, ossia::value_map_type> || std::is_same_v<U, ossia::value_map_type>) bool
+  operator()(const T& lhs, const U& rhs) const
+  {
+    return false;
+  }
+
   template <typename T>
   bool operator()(const T& lhs, const T& rhs) const
   {
@@ -388,6 +413,20 @@ struct value_comparison_visitor2
     return result;
   }
 
+  bool operator()(const value_map_type& lhs, const value_map_type& rhs) const
+  {
+    if(lhs.size() != rhs.size())
+      return false;
+
+    for(const auto& pair : lhs)
+    {
+      bool ok = ossia::contains(rhs, pair);
+      if(!ok)
+        return false;
+    }
+
+    return true;
+  }
   template <std::size_t N>
   bool
   operator()(const std::vector<ossia::value>& lhs, const std::array<float, N>& v) const
@@ -596,7 +635,7 @@ struct lift_convert
   template <typename T>
   ossia::value operator()(const T& cur)
   {
-    return convert(cur, newval);
+    return ossia::value{convert(cur, newval)};
   }
 
   [[noreturn]] ossia::value operator()()
@@ -625,7 +664,7 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
   {
     return lift(newtype, [&](auto t) -> ossia::value {
       using ossia_type = typename decltype(t)::ossia_type;
-      return convert<ossia_type>(val);
+      return ossia::value{convert<ossia_type>(val)};
     });
   }
   return ossia::value{};

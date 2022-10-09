@@ -288,7 +288,7 @@ struct osc_utilities
       case 1:
         return create_value(cur_it);
       default:
-        return create_list(cur_it, end);
+        return value{create_list(cur_it, end)};
     }
   }
 };
@@ -395,8 +395,10 @@ struct osc_inbound_visitor
     }
   }
   */
-    return osc_utilities::create_list(cur_it, end_it);
+    return value{osc_utilities::create_list(cur_it, end_it)};
   }
+
+  ossia::value operator()(const value_map_type&) { return value{value_map_type{}}; }
 
   ossia::value operator()() const { return {}; }
 };
@@ -406,7 +408,7 @@ struct osc_inbound_impulse_visitor
   template <typename T>
   ossia::value operator()(T&& t) const
   {
-    return t;
+    return ossia::value{std::forward<T>(t)};
   }
 
   ossia::value operator()() const { return {}; }

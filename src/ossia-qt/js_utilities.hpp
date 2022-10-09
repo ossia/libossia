@@ -110,6 +110,7 @@ public:
 
   ossia::value operator()(const std::string& v) const;
   ossia::value operator()(const std::vector<ossia::value>& v) const;
+  ossia::value operator()(const value_map_type& v) const;
 
   ossia::value operator()(vec2f v) const;
   ossia::value operator()(vec3f v) const;
@@ -133,6 +134,7 @@ public:
 
   ossia::value operator()(const std::string& v) const;
   ossia::value operator()(const std::vector<ossia::value>& v) const;
+  ossia::value operator()(const value_map_type& v) const;
 
   ossia::value operator()(vec2f v) const;
   ossia::value operator()(vec3f v) const;
@@ -196,6 +198,16 @@ struct OSSIA_EXPORT qt_to_ossia
     }
     return tpl;
   }
+  auto operator()(const QVariantMap& v)
+  {
+    value_map_type tpl;
+    tpl.reserve(v.size());
+    for(auto it = v.cbegin(); it != v.cend(); ++it)
+    {
+      tpl.emplace_back(it.key().toStdString(), qt_to_ossia{}(it.value()));
+    }
+    return tpl;
+  }
   ossia::value operator()(const QStringList& v)
   {
     std::vector<ossia::value> tpl;
@@ -255,6 +267,16 @@ struct ossia_to_qvariant
     }
     return v;
   }
+
+  QVariant operator()(const value_map_type& val) const
+  {
+    QVariantMap v;
+    for(const auto& [k, e] : val)
+    {
+      v.insert(QString::fromStdString(k), e.apply(*this));
+    }
+    return v;
+  }
 };
 
 #if defined(QT_QML_LIB)
@@ -274,13 +296,13 @@ struct OSSIA_EXPORT js_value_outbound_visitor
   QJSValue operator()(int32_t val) const;
   QJSValue operator()(float val) const;
   QJSValue operator()(bool val) const;
-  QJSValue operator()(char val) const;
 
   QJSValue operator()(const std::string& val) const;
 
   [[nodiscard]] QJSValue make_list(const std::vector<ossia::value>& arr) const;
 
   QJSValue operator()(const std::vector<ossia::value>& val) const;
+  QJSValue operator()(const value_map_type& val) const;
 
   template <std::size_t N>
   QJSValue make_array(const std::array<float, N>& arr) const
@@ -322,6 +344,7 @@ struct OSSIA_EXPORT js_string_outbound_visitor
   QString operator()(const std::string& val) const;
 
   QString operator()(const std::vector<ossia::value>& val) const;
+  QString operator()(const value_map_type& val) const;
 
   template <std::size_t N>
   QString make_array(const std::array<float, N>& arr) const

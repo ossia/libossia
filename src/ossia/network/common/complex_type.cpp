@@ -159,9 +159,13 @@ static const ossia::string_map<net::parameter_data>& parameter_creation_map()
     add_simple("bool", ossia::val_type::BOOL);
     add_simple("boolean", ossia::val_type::BOOL);
 
-    add_simple("char", ossia::val_type::CHAR);
-    add_simple("character", ossia::val_type::CHAR);
-    add_simple("byte", ossia::val_type::CHAR);
+    add_simple("char", ossia::val_type::INT);
+    add_simple("character", ossia::val_type::INT);
+    add_simple("byte", ossia::val_type::INT);
+
+    add_simple("map", ossia::val_type::MAP);
+    add_simple("dict", ossia::val_type::MAP);
+    add_simple("dictionary", ossia::val_type::MAP);
 
     add_simple("vec2", ossia::val_type::VEC2F);
     add_simple("vec3", ossia::val_type::VEC3F);

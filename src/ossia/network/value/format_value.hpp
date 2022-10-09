@@ -25,6 +25,7 @@ struct value_prettyprint_visitor
   fmt_ctx::iterator operator()(vec3f vec) const;
   fmt_ctx::iterator operator()(vec4f vec) const;
   fmt_ctx::iterator operator()(const std::vector<ossia::value>& t) const;
+  fmt_ctx::iterator operator()(const value_map_type& t) const;
   fmt_ctx::iterator operator()() const;
 };
 }
@@ -125,6 +126,12 @@ inline fmt_ctx::iterator
 value_prettyprint_visitor::operator()(const std::vector<value>& t) const
 {
   return fmt::format_to(ctx.out(), "list: {}", t);
+}
+
+inline fmt_ctx::iterator
+value_prettyprint_visitor::operator()(const value_map_type& t) const
+{
+  return fmt::format_to(ctx.out(), "map: {}", t);
 }
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()() const

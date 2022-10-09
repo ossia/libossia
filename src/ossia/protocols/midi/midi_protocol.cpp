@@ -131,7 +131,7 @@ bool midi_protocol::pull(parameter_base& address)
       const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{
           int32_t{chan.note_on.first}, int32_t{chan.note_on.second}};
-      address.set_value(val);
+      address.set_value(ossia::value{std::move(val)});
       return true;
     }
 
@@ -146,7 +146,7 @@ bool midi_protocol::pull(parameter_base& address)
       const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{
           int32_t{chan.note_off.first}, int32_t{chan.note_off.second}};
-      address.set_value(val);
+      address.set_value(ossia::value{std::move(val)});
       return true;
     }
 
@@ -160,7 +160,7 @@ bool midi_protocol::pull(parameter_base& address)
     case address_info::Type::CC: {
       const midi_channel& chan = m_channels[adrinfo.channel - 1];
       std::vector<ossia::value> val{int32_t{chan.cc.first}, int32_t{chan.cc.second}};
-      address.set_value(val);
+      address.set_value(ossia::value{std::move(val)});
       return true;
     }
 
@@ -382,7 +382,7 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       if(auto ptr = c.callback_note_on)
       {
         std::vector<ossia::value> t{int32_t{c.note_on.first}, int32_t{c.note_on.second}};
-        value_callback(*ptr, t);
+        value_callback(*ptr, ossia::value{std::move(t)});
       }
       if(auto ptr = c.callback_note_on_N[c.note_on.first])
       {
@@ -398,7 +398,7 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       {
         std::vector<ossia::value> t{
             int32_t{c.note_off.first}, int32_t{c.note_off.second}};
-        value_callback(*ptr, t);
+        value_callback(*ptr, ossia::value{std::move(t)});
       }
       if(auto ptr = c.callback_note_off_N[c.note_off.first])
       {
@@ -413,7 +413,7 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       if(auto ptr = c.callback_cc)
       {
         std::vector<ossia::value> t{int32_t{c.cc.first}, int32_t{c.cc.second}};
-        value_callback(*ptr, t);
+        value_callback(*ptr, ossia::value{std::move(t)});
       }
       if(auto ptr = c.callback_cc_N[c.cc.first])
       {

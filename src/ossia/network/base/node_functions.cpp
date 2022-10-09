@@ -818,23 +818,26 @@ ossia::net::address_scope get_address_scope(ossia::string_view addr)
   return type;
 }
 
+static bool node_sort(ossia::net::node_base* n1, ossia::net::node_base* n2)
+{
+  const auto& s1 = n1->get_name();
+  const auto& s2 = n2->get_name();
+  int order = strnatcmp<true>(s1.data(), s2.data());
+  if(order < 0)
+    return true;
+  else if(order == 0)
+    return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
+  else
+    return false;
+}
+
 static void list_all_children_rec(
     ossia::net::node_base* node, unsigned int depth,
     std::vector<ossia::net::node_base*>& list)
 {
   std::vector<ossia::net::node_base*> children = node->children_copy();
 
-  ossia::sort(children, [&](auto n1, auto n2) {
-    const auto& s1 = n1->get_name();
-    const auto& s2 = n2->get_name();
-    int order = strnatcmp<true>(s1.data(), s2.data());
-    if(order < 0)
-      return true;
-    else if(order == 0)
-      return ossia::net::get_priority(*n1) > ossia::net::get_priority(*n2);
-    else
-      return false;
-  });
+  ossia::sort(children, node_sort);
 
   int next_depth = -1;
   if(depth > 0)
@@ -850,12 +853,33 @@ static void list_all_children_rec(
   }
 }
 
+static void list_all_children_rec(
+    ossia::net::node_base* node, std::vector<ossia::net::node_base*>& list)
+{
+  std::vector<ossia::net::node_base*> children = node->children_copy();
+
+  ossia::sort(children, node_sort);
+
+  for(auto* child : children)
+  {
+    list.push_back(child);
+    list_all_children_rec(child, list);
+  }
+}
+
 std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node, unsigned int depth)
 {
   std::vector<ossia::net::node_base*> list;
   list.reserve(250);
-  list_all_children_rec(node, depth, list);
+  if(depth == 0) // No limit
+  {
+    list_all_children_rec(node, list);
+  }
+  else
+  {
+    list_all_children_rec(node, depth, list);
+  }
   return list;
 }
 
@@ -968,7 +992,7 @@ std::vector<parameter_base*> find_or_create_parameter(
       ossia::remove_one_if(names, [&](auto& s) { return s == address; });
   }
 
-  for(auto s : names)
+  for(const auto& s : names)
     nodes.push_back(&ossia::net::create_node(node, s));
 
   std::vector<parameter_base*> parameters{};
@@ -982,4 +1006,27 @@ std::vector<parameter_base*> find_or_create_parameter(
 
   return parameters;
 }
+
+value_map_type to_map(const node_base& n) noexcept
+{
+  ossia::value_map_type map;
+  auto cld = n.children();
+  for(auto& node : cld)
+  {
+    if(cld.size() > 0)
+    {
+      map[node->get_name()] = to_map(*node);
+    }
+    else if(auto p = node->get_parameter())
+    {
+      map[node->get_name()] = p->value();
+    }
+    else
+    {
+      map[node->get_name()] = ossia::value{};
+    }
+  }
+  return map;
+}
+
 }

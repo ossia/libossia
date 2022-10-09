@@ -53,7 +53,7 @@ void message::launch()
           // Create a list and put the existing value at [0]
           std::vector<ossia::value> t{std::move(cur)};
           value_merger<true>::insert_in_list(t, message_value, dest.index);
-          addr.push_value(std::move(t));
+          addr.push_value(ossia::value{std::move(t)});
           break;
         }
       }
@@ -80,7 +80,7 @@ void piecewise_message::launch()
   }
   else
   {
-    address.get().push_value(std::move(message_value));
+    address.get().push_value(ossia::value{std::move(message_value)});
   }
 }
 

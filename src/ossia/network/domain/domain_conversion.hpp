@@ -47,19 +47,6 @@ struct domain_conversion
     f.max = 1;
     return f;
   }
-
-  domain operator()(const domain_base<char>& t)
-  {
-    U f;
-    if(t.min)
-      f.min = *t.min;
-    if(t.max)
-      f.max = *t.max;
-    if(!t.values.empty())
-      for(auto val : t.values)
-        f.values.push_back(val);
-    return f;
-  }
 };
 
 template <>
@@ -137,18 +124,6 @@ struct domain_conversion<vecf_domain<N>>
     return res;
   }
 
-  OSSIA_INLINE domain operator()(const domain_base<char>& d)
-  {
-    domain_base<float> res;
-    if(d.min)
-      res.min = *d.min;
-    if(d.max)
-      res.max = *d.max;
-    for(auto& val : d.values)
-      res.values.push_back(val);
-    return res;
-  }
-
   OSSIA_INLINE domain operator()(const domain_base<bool>& d)
   {
     domain_base<float> res;
@@ -192,8 +167,6 @@ inline domain convert_domain(const domain& dom, ossia::val_type newtype)
       return ossia::apply_nonnull(domain_conversion<domain_base<float>>{}, dom);
     case val_type::BOOL:
       return ossia::apply_nonnull(domain_conversion<domain_base<bool>>{}, dom);
-    case val_type::CHAR:
-      return ossia::apply_nonnull(domain_conversion<domain_base<char>>{}, dom);
     case val_type::STRING:
       return ossia::apply_nonnull(domain_conversion<domain_base<std::string>>{}, dom);
     case val_type::LIST:

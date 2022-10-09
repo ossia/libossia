@@ -208,7 +208,7 @@ static std::vector<ossia::value> result_to_vec(auto& r)
         vec.reserve(t.size);
         for(std::size_t i = 0; i < t.size; i++)
           vec.emplace_back(t.vec_data[t.size]);
-        ret.push_back(std::move(vec));
+        ret.emplace_back(ossia::value{std::move(vec)});
         break;
       }
 
@@ -246,7 +246,7 @@ static ossia::value result_to_value(auto& r)
       break;
   }
 
-  return result_to_vec(r);
+  return ossia::value{result_to_vec(r)};
 }
 
 ossia::value math_expression::result()
@@ -255,7 +255,7 @@ ossia::value math_expression::result()
   if(!ossia::safe_isnan(v))
     return v;
   else
-    return result_to_value(impl->expr.results());
+    return ossia::value{result_to_value(impl->expr.results())};
 }
 
 }

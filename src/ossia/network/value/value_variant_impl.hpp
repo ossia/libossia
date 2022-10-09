@@ -64,7 +64,7 @@ inline const std::vector<ossia::value>* value_variant_type::target() const
   return nullptr;
 }
 template <>
-inline const char* value_variant_type::target() const
+inline const value_map_type* value_variant_type::target() const
 {
   if(m_type == Type9)
     return &m_impl.m_value9;
@@ -134,7 +134,7 @@ inline std::vector<ossia::value>* value_variant_type::target()
   return nullptr;
 }
 template <>
-inline char* value_variant_type::target()
+inline value_map_type* value_variant_type::target()
 {
   if(m_type == Type9)
     return &m_impl.m_value9;
@@ -204,7 +204,7 @@ inline const std::vector<ossia::value>& value_variant_type::get() const
   throw std::runtime_error("value_variant: bad type");
 }
 template <>
-inline const char& value_variant_type::get() const
+inline const value_map_type& value_variant_type::get() const
 {
   if(m_type == Type9)
     return m_impl.m_value9;
@@ -274,7 +274,7 @@ inline std::vector<ossia::value>& value_variant_type::get()
   throw std::runtime_error("value_variant: bad type");
 }
 template <>
-inline char& value_variant_type::get()
+inline value_map_type& value_variant_type::get()
 {
   if(m_type == Type9)
     return m_impl.m_value9;
@@ -13023,6 +13023,9 @@ inline void value_variant_type::destruct_impl()
     case Type::Type8:
       m_impl.m_value8.~vector<ossia::value>();
       break;
+    case Type::Type9:
+      m_impl.m_value9.~vector<value_map_element>();
+      break;
     default:
       break;
   }
@@ -13114,10 +13117,16 @@ inline value_variant_type::value_variant_type(std::vector<ossia::value>&& v) noe
   new(&m_impl.m_value8) std::vector<ossia::value>(std::move(v));
 }
 
-inline value_variant_type::value_variant_type(char v)
+inline value_variant_type::value_variant_type(const value_map_type& v)
     : m_type{Type9}
 {
-  new(&m_impl.m_value9) char{v};
+  new(&m_impl.m_value9) value_map_type(v);
+}
+
+inline value_variant_type::value_variant_type(value_map_type&& v)
+    : m_type{Type9}
+{
+  new(&m_impl.m_value9) value_map_type(std::move(v));
 }
 
 inline value_variant_type::value_variant_type(const value_variant_type& other)
@@ -13153,7 +13162,7 @@ inline value_variant_type::value_variant_type(const value_variant_type& other)
       new(&m_impl.m_value8) std::vector<ossia::value>(other.m_impl.m_value8);
       break;
     case Type::Type9:
-      new(&m_impl.m_value9) char{other.m_impl.m_value9};
+      new(&m_impl.m_value9) value_map_type(other.m_impl.m_value9);
       break;
     default:
       break;
@@ -13193,7 +13202,7 @@ inline value_variant_type::value_variant_type(value_variant_type&& other) noexce
       new(&m_impl.m_value8) std::vector<ossia::value>(std::move(other.m_impl.m_value8));
       break;
     case Type::Type9:
-      new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
+      new(&m_impl.m_value9) value_map_type{std::move(other.m_impl.m_value9)};
       break;
     default:
       break;
@@ -13236,7 +13245,7 @@ inline value_variant_type& value_variant_type::operator=(const value_variant_typ
         new(&m_impl.m_value8) std::vector<ossia::value>(other.m_impl.m_value8);
         break;
       case Type::Type9:
-        new(&m_impl.m_value9) char{other.m_impl.m_value9};
+        new(&m_impl.m_value9) value_map_type{other.m_impl.m_value9};
         break;
       default:
         break;
@@ -13321,7 +13330,7 @@ value_variant_type::operator=(value_variant_type&& other) noexcept
             std::vector<ossia::value>(std::move(other.m_impl.m_value8));
         break;
       case Type::Type9:
-        new(&m_impl.m_value9) char{std::move(other.m_impl.m_value9)};
+        new(&m_impl.m_value9) value_map_type{std::move(other.m_impl.m_value9)};
         break;
       default:
         break;

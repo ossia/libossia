@@ -431,7 +431,7 @@ public:
     return {
         {ossia::message{
              *c[0]->get_parameter(),
-             std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+             value{std::vector<ossia::value>{int32_t{note}, int32_t{vel}}}},
          ossia::message{*c[0]->children()[note]->get_parameter(), int32_t{vel}}}};
   }
 
@@ -441,7 +441,7 @@ public:
     return {
         {ossia::message{
              *c[1]->get_parameter(),
-             std::vector<ossia::value>{int32_t{note}, int32_t{vel}}},
+             value{std::vector<ossia::value>{int32_t{note}, int32_t{vel}}}},
          ossia::message{*c[1]->children()[note]->get_parameter(), int32_t{vel}}}};
   }
 

@@ -129,6 +129,8 @@ struct osc_value_send_visitor
     ossia::logger().error("osc_value_send_visitor: unknown error");
   }
 
+  void operator()(const value_map_type& v) const noexcept { }
+
   void operator()() { }
 };
 
@@ -195,6 +197,9 @@ struct osc_value_write_visitor
       }
     }
   }
+
+  void operator()(const value_map_type& v) const noexcept { }
+
   void operator()() { }
 };
 }

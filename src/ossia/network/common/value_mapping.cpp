@@ -38,6 +38,12 @@ struct scale_visitor
       value.apply(*this);
   }
 
+  void operator()(value_map_type& v) const noexcept
+  {
+    for(auto& [k, value] : v)
+      value.apply(*this);
+  }
+
   void operator()() const noexcept { }
 };
 

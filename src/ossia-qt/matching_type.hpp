@@ -64,16 +64,16 @@ struct qt_property_converter<QString>
 template <>
 struct qt_property_converter<char>
 {
-  static constexpr const auto val = ossia::val_type::CHAR;
-  using type = char;
-  static auto convert(char f) { return f; }
+  static constexpr const auto val = ossia::val_type::INT;
+  using type = int;
+  static int convert(char f) { return f; }
 };
 
 template <>
 struct qt_property_converter<QChar>
 {
-  static constexpr const auto val = ossia::val_type::CHAR;
-  using type = char;
+  static constexpr const auto val = ossia::val_type::INT;
+  using type = int;
   static auto convert(QChar f) { return f.toLatin1(); }
 };
 
@@ -108,5 +108,14 @@ struct qt_property_converter<std::vector<ossia::value>>
   using type = std::vector<ossia::value>;
   static auto convert(const std::vector<ossia::value>& t) { return t; }
   static auto convert(std::vector<ossia::value>&& t) { return std::move(t); }
+};
+
+template <>
+struct qt_property_converter<value_map_type>
+{
+  static constexpr const auto val = ossia::val_type::MAP;
+  using type = value_map_type;
+  static auto convert(const value_map_type& t) { return t; }
+  static auto convert(value_map_type&& t) { return std::move(t); }
 };
 }

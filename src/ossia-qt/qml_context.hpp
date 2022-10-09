@@ -34,9 +34,9 @@ public:
     Bool,    //! \see bool
     String,  //! \see std::string
     List,    //! \see std::vector<ossia::value>
-    Char     //! \see char
+    Map      //! \see value_map_type
   };
-  W_ENUM(val_type, Float, Int, Vec2f, Vec3f, Vec4f, Impulse, Bool, String, List, Char)
+  W_ENUM(val_type, Float, Int, Vec2f, Vec3f, Vec4f, Impulse, Bool, String, List, Map)
 };
 
 class OSSIA_EXPORT qml_access_mode

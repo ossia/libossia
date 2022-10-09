@@ -232,9 +232,6 @@ struct value_merger
         case ossia::val_type::FLOAT:
           f = (float)val.template get<float>();
           break;
-        case ossia::val_type::CHAR:
-          f = (float)val.template get<char>();
-          break;
         case ossia::val_type::BOOL:
           f = (float)val.template get<bool>();
           break;
@@ -344,7 +341,7 @@ struct destination_index_retriever
   {
     if(it == index.end())
     {
-      return t;
+      return ossia::value{t};
     }
     else if((int64_t)t.size() > *it)
     {

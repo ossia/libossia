@@ -65,6 +65,8 @@ struct value_to_json
     }
     writer.EndArray();
   }
+
+  void operator()(const value_map_type& vec) const { }
   void operator()() const { throw std::runtime_error("value_to_json: no type"); }
 };
 
@@ -384,6 +386,7 @@ struct json_to_value
     return b;
   }
 
+  bool operator()(ossia::value_map_type& res) const { return false; }
   bool operator()() const { throw std::runtime_error("json_to_value: no type"); }
 };
 
@@ -482,6 +485,7 @@ struct json_to_single_value
   }
 
   bool operator()(std::vector<ossia::value>& res) const { return false; }
+  bool operator()(ossia::value_map_type& res) const { return false; }
 
   bool operator()() const { throw std::runtime_error("json_to_value: no type"); }
 };
@@ -512,7 +516,7 @@ inline ossia::value ReadValue(const rapidjson::Value& val)
       {
         tpl.push_back(ReadValue(elt));
       }
-      return tpl;
+      return ossia::value{std::move(tpl)};
     }
 
     case rapidjson::kStringType:
@@ -591,6 +595,8 @@ struct json_to_value_unchecked
       }
     }
   }
+
+  void operator()(value_map_type& res) const { }
 
   void operator()() const
   {

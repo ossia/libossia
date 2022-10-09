@@ -47,6 +47,8 @@ struct osc_type_visitor
     }
     type += oscpack::TypeTagValues::ARRAY_END_TYPE_TAG;
   }
+
+  void operator()(const value_map_type& vec) { }
 };
 
 static std::string get_osc_typetag_impl(const net::parameter_base& addr)
@@ -122,7 +124,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
           return ossia::val_type::FLOAT;
 
         case oscpack::TypeTagValues::CHAR_TYPE_TAG:
-          return ossia::val_type::CHAR;
+          return ossia::val_type::INT;
 
         case oscpack::TypeTagValues::TRUE_TYPE_TAG:
         case oscpack::TypeTagValues::FALSE_TYPE_TAG:

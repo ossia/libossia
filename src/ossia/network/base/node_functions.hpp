@@ -160,5 +160,26 @@ void fuzzysearch(
     const std::vector<std::string>& patterns, std::vector<fuzzysearch_result>& results,
     fuzzysearch_options = {});
 
+/**
+ * @brief Converts a node in a map of values
+ *
+ * e.g. given the tree
+ * ```
+ * /foo/bar: 10
+ * /foo/baz
+ * /foo/baz/bux: [1.3, 5.]
+ * ```
+ *
+ * then `to_map(foo)` gives something more or less like:
+ *
+ * map{
+ *  { "bar", 10 },
+ *  { "baz", map{ { "bux", vector{1.3, 5} } } }
+ * }
+ *
+ */
+OSSIA_EXPORT
+ossia::value_map_type to_map(const ossia::net::node_base& n) noexcept;
+
 }
 }

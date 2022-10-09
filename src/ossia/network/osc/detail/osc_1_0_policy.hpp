@@ -32,6 +32,8 @@ struct osc_1_0_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
       val.apply(*this);
     }
   }
+
+  void operator()(const value_map_type& t) const { }
 };
 
 struct osc_1_0_outbound_stream_visitor : osc_1_0_outbound_dynamic_policy

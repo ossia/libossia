@@ -73,7 +73,7 @@ struct osc_extended_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
     }
   }
 
-  // Arrays are flattened
+  // Arrays are nested
   void operator()(const std::vector<value>& t) const
   {
     if(m_depth > 0)
@@ -93,6 +93,8 @@ struct osc_extended_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
       p << oscpack::EndArray();
     }
   }
+
+  void operator()(const value_map_type& t) const { }
 };
 
 struct osc_extended_outbound_static_policy : osc_common_outbound_static_policy

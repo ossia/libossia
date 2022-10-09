@@ -318,7 +318,7 @@ value list_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& v
   if(b == bounding_mode::FREE)
   {
     res = val;
-    return res;
+    return value{std::move(res)};
   }
 
   // We handle values by checking component by component
@@ -432,7 +432,7 @@ value list_clamp::operator()(bounding_mode b, const std::vector<ossia::value>& v
       res[i] = val[i];
     }
   }
-  return res;
+  return value{std::move(res)};
 }
 
 template <>
@@ -471,13 +471,12 @@ ossia::value numeric_clamp<domain_base<bool>>::operator()(
 
 value list_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
-  std::vector<ossia::value> res;
   if(b == bounding_mode::FREE)
   {
-    res = val;
-    return res;
+    return value{std::move(val)};
   }
 
+  std::vector<ossia::value> res;
   // We handle values by checking component by component
 
   const auto N = val.size();
@@ -588,7 +587,7 @@ value list_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) c
       res[i] = std::move(val[i]);
     }
   }
-  return res;
+  return value{std::move(res)};
 }
 
 template <std::size_t N>
@@ -851,7 +850,7 @@ value generic_clamp::operator()(
           return val;
       }
 
-      return res;
+      return value{std::move(res)};
     }
     else if(has_min)
     {
@@ -866,7 +865,7 @@ value generic_clamp::operator()(
           {
             res.push_back(ossia::clamp_min(v, min));
           }
-          return res;
+          return value{std::move(res)};
         }
         default:
           return val;
@@ -885,7 +884,7 @@ value generic_clamp::operator()(
           {
             res.push_back(ossia::clamp_max(v, max));
           }
-          return res;
+          return value{std::move(res)};
         }
         default:
           return val;
@@ -914,7 +913,7 @@ value generic_clamp::operator()(
 value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val) const
 {
   if(b == bounding_mode::FREE)
-    return std::move(val);
+    return value{std::move(val)};
 
   const auto& values = domain.values;
   if(values.empty())
@@ -948,10 +947,10 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
             v = ossia::clamp_max(v, max);
           break;
         default:
-          return std::move(val);
+          return value{std::move(val)};
       }
 
-      return std::move(val);
+      return value{std::move(val)};
     }
     else if(has_min)
     {
@@ -962,10 +961,10 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
         case bounding_mode::LOW: {
           for(auto& v : val)
             v = ossia::clamp_min(v, min);
-          return std::move(val);
+          return value{std::move(val)};
         }
         default:
-          return std::move(val);
+          return value{std::move(val)};
       }
     }
     else if(has_max)
@@ -977,15 +976,15 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
         case bounding_mode::HIGH: {
           for(auto& v : val)
             v = ossia::clamp_max(v, max);
-          return std::move(val);
+          return value{std::move(val)};
         }
         default:
-          return std::move(val);
+          return value{std::move(val)};
       }
     }
     else
     {
-      return std::move(val);
+      return value{std::move(val)};
     }
   }
   else
@@ -1002,7 +1001,7 @@ value generic_clamp::operator()(bounding_mode b, std::vector<ossia::value>&& val
         return {};
       }
     }
-    return std::move(val);
+    return value{std::move(val)};
   }
 }
 
@@ -1032,11 +1031,6 @@ value apply_domain_visitor::operator()(
   return numeric_clamp<domain_base<float>>{domain}(b, value);
 }
 
-value apply_domain_visitor::operator()(char value, const domain_base<char>& domain) const
-{
-  return numeric_clamp<domain_base<char>>{domain}(b, value);
-}
-
 value apply_domain_visitor::operator()(bool value, const domain_base<bool>& domain) const
 {
   return numeric_clamp<domain_base<bool>>{domain}(b, value);
@@ -1051,7 +1045,7 @@ ossia::value apply_domain_visitor::operator()(
   {
     val = generic_clamp{domain}(b, val);
   }
-  return res;
+  return ossia::value{std::move(res)};
 }
 
 ossia::value apply_domain_visitor::operator()(
@@ -1063,7 +1057,7 @@ ossia::value apply_domain_visitor::operator()(
   }
   // TODO currently other values (strings, etc...) are ignored; what should we
   // do here ?
-  return std::move(value);
+  return ossia::value{std::move(value)};
 }
 
 // Second case : we filter a whole list.
@@ -1098,12 +1092,6 @@ ossia::value apply_domain_visitor::operator()(
 }
 
 ossia::value apply_domain_visitor::operator()(
-    const std::array<float, 2>& value, const domain_base<char>& domain) const
-{
-  return numeric_clamp<domain_base<char>>{domain}(b, value);
-}
-
-ossia::value apply_domain_visitor::operator()(
     const std::array<float, 2>& value, const vecf_domain<2>& domain) const
 {
   return vec_clamp<2>{domain}(b, value);
@@ -1135,12 +1123,6 @@ ossia::value apply_domain_visitor::operator()(
 }
 
 ossia::value apply_domain_visitor::operator()(
-    const std::array<float, 3>& value, const domain_base<char>& domain) const
-{
-  return numeric_clamp<domain_base<char>>{domain}(b, value);
-}
-
-ossia::value apply_domain_visitor::operator()(
     const std::array<float, 3>& value, const vecf_domain<3>& domain) const
 {
   return vec_clamp<3>{domain}(b, value);
@@ -1169,12 +1151,6 @@ ossia::value apply_domain_visitor::operator()(
     const std::array<float, 4>& value, const domain_base<bool>& domain) const
 {
   return numeric_clamp<domain_base<bool>>{domain}(b, value);
-}
-
-ossia::value apply_domain_visitor::operator()(
-    const std::array<float, 4>& value, const domain_base<char>& domain) const
-{
-  return numeric_clamp<domain_base<char>>{domain}(b, value);
 }
 
 ossia::value apply_domain_visitor::operator()(
