@@ -101,8 +101,11 @@ jobs:
       run: | 
         sudo apt-get update -yqq 
         sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
+        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
     - name: Build
+      env: 
+        CC: gcc-11
+        CXX: g++-11
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_PURR_DATA=1 -DOSSIA_CI=1 -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
         cmake --build build

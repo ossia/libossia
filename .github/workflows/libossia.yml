@@ -121,11 +121,14 @@ jobs:
       run: | 
         sudo apt-get update -yqq 
         sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
+        sudo apt-get install -yqq build-essential g++-11 gcc-11 ninja-build libavahi-client-dev
     - name: Build
       env: 
         STATIC: ${{ matrix.static }}
         BUILD_TYPE: ${{ matrix.build_type }}
+        CC: gcc-11
+        CXX: g++-11
+
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
           -DCMAKE_INSTALL_PREFIX=install \

@@ -12,8 +12,11 @@ jobs:
     - name: Install Build Dependencies
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev
+        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
     - name: Build
+      env: 
+        CC: gcc-11
+        CXX: g++-11
       run: |
         cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build

@@ -12,20 +12,14 @@ jobs:
       run: |
         sudo gem install coveralls-lcov
 
-        sudo apt-get install -yqq python3 python3-pip
+        sudo apt-get install -yqq python3 python3-pip lcov gcc-11 g++-11 gcovr
         sudo pip3 install --upgrade wheel setuptools
         sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
 
-        # For some reason gcov seems to be not available anymore...
-        wget -nv https://github.com/ossia/sdk/releases/download/sdk14/gcov
-        file ./gcov
-        chmod +x ./gcov
-        sudo cp ./gcov /usr/bin/gcov
-        sudo cp ./gcov /usr/bin/gcov-9
-
-        gcov-9 --version
-
     - name: Build
+      env: 
+        CC: gcc-11
+        CXX: g++-11
       run: |
         QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
         set +e
