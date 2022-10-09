@@ -13024,7 +13024,7 @@ inline void value_variant_type::destruct_impl()
       m_impl.m_value8.~vector<ossia::value>();
       break;
     case Type::Type9:
-      m_impl.m_value9.~vector<value_map_element>();
+      m_impl.m_value9.~value_map_type();
       break;
     default:
       break;
