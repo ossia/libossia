@@ -207,10 +207,17 @@ void serial_protocol::create(
     conf.framing = ossia::net::framing::none;
   }
 
-  m_port = std::make_shared<serial_wrapper>(ctx, conf);
-  QObject::connect(
-      m_port.get(), &serial_wrapper::read, this, &serial_protocol::on_read,
-      Qt::QueuedConnection);
+  try
+  {
+    m_port = std::make_shared<serial_wrapper>(ctx, conf);
+
+    QObject::connect(
+        m_port.get(), &serial_wrapper::read, this, &serial_protocol::on_read,
+        Qt::QueuedConnection);
+  }
+  catch(...)
+  {
+  }
   return;
 }
 
@@ -288,6 +295,24 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
   }
   else if(req.isCallable())
   {
+    auto r1 = req.call({qt::value_to_js_value(v, *m_engine)});
+    if(!r1.isError())
+    {
+      auto var = r1.toVariant();
+      if(var.type() == QMetaType::QByteArray)
+      {
+        auto ba = var.toByteArray();
+        m_port->on_write(ba);
+      }
+      else
+      {
+        auto ba = var.toString().toUtf8();
+        m_port->on_write(ba);
+      }
+
+      return true;
+    }
+
     auto res = req.call();
     if(res.isError())
       return false;
@@ -371,7 +396,8 @@ void serial_protocol::set_device(device_base& dev)
 
 void serial_protocol::stop()
 {
-  this->m_port->close();
+  if(m_port)
+    m_port->close();
 }
 
 serial_protocol::~serial_protocol() { }
