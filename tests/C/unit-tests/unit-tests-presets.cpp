@@ -242,9 +242,6 @@ TEST_CASE("Preset from node with parameter and subnode")
     ossia::net::create_node(grabber_node, "/brightness")
         .create_parameter(ossia::val_type::INT)
         ->push_value(1564);
-    ossia::net::create_node(grabber_node, "/strange_param")
-        .create_parameter(ossia::val_type::CHAR)
-        ->push_value('e');
 
     auto json = ossia::presets::make_json_preset(r);
     ossia::presets::write_file(json, "preset.json");
@@ -280,10 +277,6 @@ TEST_CASE("Preset from node with parameter and subnode")
                           .create_parameter(ossia::val_type::INT);
     brightness->push_value(6542);
 
-    auto strange = ossia::net::create_node(grabber_node, "/strange_param")
-                       .create_parameter(ossia::val_type::CHAR);
-    strange->push_value('a');
-
     REQUIRE_NOTHROW([&] {
       auto json = ossia::presets::read_file("preset.json");
       ossia::presets::apply_json(json, r);
@@ -296,7 +289,6 @@ TEST_CASE("Preset from node with parameter and subnode")
     REQUIRE(position->value().get<ossia::vec2f>() == val);
     REQUIRE(source->value().get<std::string>() == "/dev/video0");
     REQUIRE(brightness->value().get<int>() == 1564);
-    REQUIRE(strange->value().get<char>() == 'e');
   }
 }
 
@@ -465,17 +457,13 @@ TEST_CASE("Types conversion")
 
   bool btrue(true);
   bool bfalse(false);
-  char c('2');
   int32_t i(15551);
   float f(3.566);
   std::string s("bonjour");
 
-  ossia::value v = c;
-  REQUIRE(v.get_type() == ossia::val_type::CHAR);
-  REQUIRE(*v.target<char>() == '2');
+  ossia::value v;
   p.push_back(std::make_pair("/true", btrue));
   p.push_back(std::make_pair("/false", bfalse));
-  p.push_back(std::make_pair("/char", c));
   p.push_back(std::make_pair("/int", i));
   p.push_back(std::make_pair("/float", f));
   p.push_back(std::make_pair("/string", s));

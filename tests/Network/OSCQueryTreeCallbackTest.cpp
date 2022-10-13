@@ -471,7 +471,6 @@ TEST_CASE(
     std::cout << "-> Check parameter creation callback for each type" << std::endl;
 
     serv.create_child("my_bool")->create_parameter(ossia::val_type::BOOL);
-    serv.create_child("my_char")->create_parameter(ossia::val_type::CHAR);
     serv.create_child("my_float")->create_parameter(ossia::val_type::FLOAT);
     serv.create_child("my_impulse")->create_parameter(ossia::val_type::IMPULSE);
     serv.create_child("m_int")->create_parameter(ossia::val_type::INT);

@@ -893,13 +893,6 @@ public:
    */
   node create_impulse(std::string addr);
   /**
-   * Char: 8-bit char.
-   * @brief creates a child node with tne given name, and a char parameter
-   * @param addr: the name of the created node
-   * @return the created opp::node object
-   */
-  node create_char(std::string addr);
-  /**
    * Integer: 32-bit int.
    * @brief creates a child node with tne given name, and an int parameter
    * @param addr: the name of the created node

@@ -104,9 +104,6 @@ TEST_CASE("preset", "[preset]")
     auto n11 = n1.create_string("my_string");
     n11.set_value("truc muche");
 
-    auto n12 = n1.create_char("my_char");
-    n12.set_value('e');
-
     root.save_preset("test.json");
   }
 
@@ -144,7 +141,6 @@ TEST_CASE("preset", "[preset]")
     auto n9 = n1.create_int("my_int");
     auto n10 = n1.create_bool("my_bool");
     auto n11 = n1.create_string("my_string");
-    auto n12 = n1.create_char("my_char");
 
     root.load_preset("test.json");
 
@@ -187,8 +183,6 @@ TEST_CASE("preset", "[preset]")
     REQUIRE(n10.get_value().to_bool() == true);
 
     REQUIRE(n11.get_value().to_string() == std::string("truc muche"));
-
-    REQUIRE(n12.get_value().to_char() == 'e');
   }
 }
 

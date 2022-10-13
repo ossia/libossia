@@ -220,19 +220,6 @@ int ossia_parameter_to_bool(ossia_parameter_t address)
   });
 }
 
-char ossia_parameter_to_char(ossia_parameter_t address)
-{
-  return safe_function(__func__, [=]() -> char {
-    if(!address)
-    {
-      ossia_log_error("ossia_parameter_to_char: address is null");
-      return {};
-    }
-
-    return convert_parameter(address)->value().get<char>();
-  });
-}
-
 void ossia_parameter_to_byte_array(ossia_parameter_t address, char** out, size_t* size)
 {
   return safe_function(__func__, [=]() -> void {

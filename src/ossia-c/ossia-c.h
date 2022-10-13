@@ -580,13 +580,7 @@ struct ossia_vec4f ossia_parameter_to_4f(ossia_parameter_t val);
  */
 OSSIA_EXPORT
 int ossia_parameter_to_bool(ossia_parameter_t val);
-/**
- * @brief Get the value if it is a char.
- * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) != CHAR_T
- * @note Multithread guarantees: Data-Safe.
- */
-OSSIA_EXPORT
-char ossia_parameter_to_char(ossia_parameter_t val);
+
 /**
  * @brief Get the value if it is a byte array.
  * @return Undefined if ossia_value_get_type(ossia_parameter_get_value(val)) !=
@@ -1472,13 +1466,6 @@ struct ossia_vec4f ossia_value_to_4f(ossia_value_t val);
  */
 OSSIA_EXPORT
 int ossia_value_to_bool(ossia_value_t val);
-/**
- * @brief Get the value if it is a char.
- * @return Undefined if ossia_value_get_type(val) != CHAR_T
- * @note Multithread guarantees: Data-Safe.
- */
-OSSIA_EXPORT
-char ossia_value_to_char(ossia_value_t val);
 /**
  * @brief Get the value if it is a byte array.
  * @return Undefined if ossia_value_get_type(val) != STRING_T

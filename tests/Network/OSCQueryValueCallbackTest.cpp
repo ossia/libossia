@@ -64,15 +64,6 @@ TEST_CASE(
     }
 
     {
-      auto param = serv.create_child("my_char")->create_parameter(ossia::val_type::CHAR);
-      param->add_callback(param_cb);
-      ossia::value val = 'f';
-      busy_flag = true;
-      expected_value = val;
-      param->push_value(val);
-      wait();
-    }
-    {
       auto param
           = serv.create_child("my_float")->create_parameter(ossia::val_type::FLOAT);
       param->add_callback(param_cb);

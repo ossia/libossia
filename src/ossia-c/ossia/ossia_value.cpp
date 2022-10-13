@@ -161,11 +161,6 @@ int ossia_value_to_bool(ossia_value_t val)
   return get_value<bool>(val);
 }
 
-char ossia_value_to_char(ossia_value_t val)
-{
-  return get_value<char>(val);
-}
-
 void ossia_value_to_byte_array(ossia_value_t val, char** out, size_t* size)
 {
   if(!val || !out || !size)

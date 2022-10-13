@@ -120,6 +120,19 @@ public:
 
   template <typename T>
   static Type matching_type();
+
+  template <>
+  const char* target<char>() const = delete;
+  template <>
+  char* target() = delete;
+  template <>
+  const char& get() const = delete;
+  template <>
+  char& get<char>() = delete;
+
+  template <>
+  static Type matching_type<char>() = delete;
+
   value_variant_type();
   ~value_variant_type();
   value_variant_type(float v);
