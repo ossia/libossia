@@ -101,6 +101,11 @@ struct value2atom
       v.apply(*this);
   }
 
+  void operator()(const ossia::value_map_type& t) const
+  {
+    // FIXME
+  }
+
   void operator()() const { }
 };
 
@@ -163,16 +168,6 @@ struct value_visitor
     if(x->m_setout)
       outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
   }
-  void operator()(char c) const
-  {
-    t_atom a;
-    SETFLOAT(&a, (float)c);
-    if(x->m_dataout)
-      outlet_float(x->m_dataout, (float)c);
-
-    if(x->m_setout)
-      outlet_anything(x->m_setout, ossia_pd::o_sym_set, 1, &a);
-  }
 
   template <std::size_t N>
   void operator()(std::array<float, N> vec) const
@@ -209,6 +204,8 @@ struct value_visitor
     if(x->m_setout)
       outlet_anything(x->m_setout, ossia_pd::o_sym_set, va.size(), list_ptr);
   }
+
+  void operator()(const ossia::value_map_type& t) const { }
 
   void operator()() const { pd_error(x, "%s received invalid data", x->m_name->s_name); }
 };

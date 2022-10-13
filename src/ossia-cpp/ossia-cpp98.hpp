@@ -227,11 +227,6 @@ public:
    */
   bool is_impulse() const;
   /**
-   * @brief Is the value of type char ?
-   * @return True if the value is a char, false, otherwise
-   */
-  bool is_char() const;
-  /**
    * @brief Is the value of type int ?
    * @return True if the value is an int, false, otherwise
    */
@@ -404,11 +399,6 @@ public:
    * @brief sets the value as an impulse (a value-less signal)
    */
   void set_impulse();
-  /**
-   * @brief sets the value as a character
-   * @param v int is moved into the value object
-   */
-  void set_char(char v);
   /**
    * @brief sets the value as an int
    * @param v int is moved into the value object

@@ -150,7 +150,6 @@ void parameter_base::set_minmax()
     switch(param->get_value_type())
     {
       case ossia::val_type::BOOL:
-      case ossia::val_type::CHAR:
       case ossia::val_type::INT:
       case ossia::val_type::FLOAT:
         min.resize(1);
@@ -171,6 +170,8 @@ void parameter_base::set_minmax()
       case ossia::val_type::LIST:
         min.resize(OSSIA_PD_MAX_ATTR_SIZE);
         max.resize(OSSIA_PD_MAX_ATTR_SIZE);
+        break;
+      case ossia::val_type::MAP:
         break;
       default:
         continue;
@@ -219,7 +220,6 @@ void parameter_base::set_range()
       {
         case ossia::val_type::FLOAT:
         case ossia::val_type::INT:
-        case ossia::val_type::CHAR:
           min = {fmin};
           max = {fmax};
           break;
@@ -240,6 +240,8 @@ void parameter_base::set_range()
           max.resize(OSSIA_PD_MAX_ATTR_SIZE);
           ossia::fill(min, fmin);
           ossia::fill(max, fmax);
+          break;
+        case ossia::val_type::MAP:
           break;
         default:;
       }
@@ -311,7 +313,6 @@ void parameter_base::set_default()
         break;
       }
       case ossia::val_type::FLOAT:
-      case ossia::val_type::CHAR:
       case ossia::val_type::INT:
       case ossia::val_type::BOOL: {
         if(m_default[0].a_type == A_FLOAT)
@@ -334,6 +335,9 @@ void parameter_base::set_default()
 
           ossia::net::set_default_value(*node, def);
         }
+        break;
+      }
+      case ossia::val_type::MAP: {
         break;
       }
       default:;

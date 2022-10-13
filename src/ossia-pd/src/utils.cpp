@@ -450,8 +450,6 @@ ossia::val_type symbol2val_type(t_symbol* s)
     return ossia::val_type::BOOL;
   else if(type == "list")
     return ossia::val_type::LIST;
-  else if(type == "char")
-    return ossia::val_type::CHAR;
   else
     return ossia::val_type::NONE;
 }
@@ -487,9 +485,7 @@ t_symbol* val_type2symbol(ossia::val_type type)
     case ossia::val_type::LIST:
       return gensym("list");
       break;
-    case ossia::val_type::CHAR:
-      return gensym("char");
-      break;
+    case ossia::val_type::MAP:
     case ossia::val_type::NONE:
     default:
       return gensym("none");
