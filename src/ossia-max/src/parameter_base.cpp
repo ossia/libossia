@@ -222,7 +222,6 @@ void parameter_base::set_minmax()
       switch(param->get_value_type())
       {
         case ossia::val_type::BOOL:
-        case ossia::val_type::CHAR:
         case ossia::val_type::INT:
         case ossia::val_type::FLOAT:
           min.resize(1);
@@ -244,6 +243,8 @@ void parameter_base::set_minmax()
           min.resize(OSSIA_MAX_MAX_ATTR_SIZE);
           max.resize(OSSIA_MAX_MAX_ATTR_SIZE);
           break;
+        case ossia::val_type::MAP:
+            break;
         default:
           continue;
       }
@@ -370,7 +371,6 @@ void parameter_base::set_range()
         {
           case ossia::val_type::FLOAT:
           case ossia::val_type::INT:
-          case ossia::val_type::CHAR:
             min = {fmin};
             max = {fmax};
             break;
@@ -393,7 +393,9 @@ void parameter_base::set_range()
             ossia::fill(min, fmin);
             ossia::fill(max, fmax);
             break;
-          default:;
+          case ossia::val_type::MAP:
+          default:
+            break;
         }
 
         auto domain = make_domain_from_minmax(min, max, param->get_value_type());
@@ -486,7 +488,6 @@ void parameter_base::set_default()
             ossia::net::set_default_value(*node, to_vec<2>(m_default));
           break;
         case ossia::val_type::FLOAT:
-        case ossia::val_type::CHAR:
         case ossia::val_type::INT:
         case ossia::val_type::BOOL: {
           if(m_default[0].a_type == A_FLOAT)
@@ -514,7 +515,9 @@ void parameter_base::set_default()
           }
           break;
         }
-        default:;
+        case ossia::val_type::MAP:
+        default:
+          break;
       }
     }
   }

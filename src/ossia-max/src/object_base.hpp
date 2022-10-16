@@ -247,13 +247,6 @@ struct value2atom
     data.push_back(a);
   }
 
-  void operator()(char c) const
-  {
-    t_atom a;
-    atom_setfloat(&a, (float)c);
-    data.push_back(a);
-  }
-
   template <std::size_t N>
   void operator()(std::array<float, N> vec) const
   {
@@ -271,6 +264,10 @@ struct value2atom
     data.reserve(data.size() + t.size());
     for(const auto& v : t)
       v.apply(*this);
+  }
+
+  void operator()(const ossia::value_map_type& t) const
+  {
   }
 
   void operator()() const { }
@@ -357,16 +354,6 @@ struct value_visitor
     set_out(a);
   }
 
-  void operator()(char c) const
-  {
-    t_atom a;
-
-    atom_setlong(&a, (long)c);
-    outlet_int(x->m_data_out, (long)c);
-
-    set_out(a);
-  }
-
   template <std::size_t N>
   void operator()(std::array<float, N> vec) const
   {
@@ -395,6 +382,10 @@ struct value_visitor
       outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
 
     set_out(va.size(), list_ptr);
+  }
+
+  void operator()(const ossia::value_map_type& t) const
+  {
   }
 
   void operator()() const

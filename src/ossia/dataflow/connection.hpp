@@ -48,5 +48,18 @@ struct connection
           delayed_glutton_connection, delayed_strict_connection, dependency_connection>
 {
   using nullable_variant::nullable_variant;
+  connection() noexcept = default;
+  ~connection() = default;
+  connection(const connection&) = default;
+  connection(connection&&) noexcept = default;
+  connection& operator=(const connection&) = default;
+  connection& operator=(connection&&) noexcept = default;
+  connection(immediate_glutton_connection c) noexcept: nullable_variant{c} { }
+  connection(immediate_strict_connection c) noexcept: nullable_variant{c} { }
+  connection(delayed_glutton_connection&& c) noexcept: nullable_variant{std::move(c)} { }
+  connection(delayed_strict_connection&& c) noexcept: nullable_variant{std::move(c)} { }
+  connection(const delayed_glutton_connection& c) noexcept: nullable_variant{c} { }
+  connection(const delayed_strict_connection& c) noexcept: nullable_variant{c} { }
+  connection(dependency_connection c) noexcept: nullable_variant{c} { }
 };
 }
