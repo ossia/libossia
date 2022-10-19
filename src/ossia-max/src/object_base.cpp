@@ -7,11 +7,13 @@
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/preset/preset.hpp>
 
+#include <ossia/detail/string_map.hpp>
 #include <ossia-max/src/object_base.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 
-#include <regex>
+#include <re2/re2.h>
+#include <ctre.hpp>
 
 namespace ossia
 {
@@ -146,45 +148,56 @@ void object_base::reset_color(object_base* x)
   x->m_highlight_clock = nullptr;
 }
 
+static std::mutex regex_cache_mutex;
+static ossia::string_map<re2::RE2*> regex_cache;
+
+bool regex_match_with_cache(std::string_view regex, std::string_view str)
+{
+    re2::RE2* r{};
+
+    {
+        std::lock_guard<std::mutex> lock{regex_cache_mutex};
+        auto it = regex_cache.find(regex);
+        if(it == regex_cache.end())
+        {
+            auto res = regex_cache.emplace(regex, new re2::RE2{regex});
+            it = res.first;
+            assert(res.second);
+        }
+        r = it.value();
+    }
+
+    return re2::RE2::FullMatch(str, *r);
+}
+
 std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 {
   std::vector<std::shared_ptr<matcher>> matchers;
 
   update_path(); // TODO this might not always be necessary here
-  for(auto& addr : m_paths)
+  for(const std::string_view addr : m_paths)
   {
     size_t pos = addr.find(":/");
     if(pos == std::string::npos)
       return {};
 
-    std::string prefix = addr.substr(0, pos);
+    const std::string_view prefix = addr.substr(0, pos);
     // remove 'device_name:' prefix
-    std::string osc_name = addr.substr(pos + 1);
+    const std::string_view osc_name = addr.substr(pos + 1);
 
     bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
     bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-    std::regex pattern;
-    try
-    {
-      pattern
-          = std::regex(prefix.data(), prefix.size(), std::regex_constants::ECMAScript);
-    }
-    catch(std::exception& e)
-    {
-      error("'%s' bad regex: %s", prefix.data(), e.what());
-      return {};
-    }
 
     for(auto dev : get_all_devices())
     {
-      std::string name = dev->get_name();
+      const std::string& name = dev->get_name();
 
       bool match;
       if(is_prefix_pattern)
       {
         try
         {
-          match = std::regex_match(name, pattern);
+          match = regex_match_with_cache(prefix, name);
         }
         catch(std::exception& e)
         {
@@ -193,7 +206,9 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
         }
       }
       else
+      {
         match = (name == prefix);
+      }
 
       // If we found a matching device, then we look for nodes
       if(match)
@@ -381,9 +396,31 @@ void object_base::loadbang(object_base* x)
   critical_exit(0);
 }
 
+void object_base::on_parameter_removing(const ossia::net::parameter_base& n)
+{
+    for(auto& matcher : m_matchers)
+    {
+        if(matcher && matcher->orig_param)
+        if(matcher->orig_param == &n)
+        {
+            matcher->callbackit.reset();
+            matcher->orig_param = nullptr;
+
+            auto& node = n.get_node();
+            auto& dev = node.get_device();
+            dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(this);
+
+
+        }
+    }
+}
+
 void object_base::on_node_removing(const ossia::net::node_base& n)
 {
   m_is_deleted = true;
+  auto& dev = n.get_device();
+  dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(this);
+
   // TODO why is it necessary to iterate over m_node_selection AND m_matchers ?
   // the former is a subset of the later
   // isn't it enough to call fill_selection() after ?
@@ -405,18 +442,12 @@ void object_base::on_node_removing(const ossia::net::node_base& n)
       nd->set_dead();
     }
   }
-  m_node_selection.erase(
-      ossia::remove_if(
-          m_node_selection,
-          [&](const matcher* m) { return (m->get_node() == &n) && !m->is_locked(); }),
-      m_node_selection.end());
-  m_matchers.erase(
-      ossia::remove_if(
-          m_matchers,
+  ossia::remove_erase_if(m_node_selection,
+          [&](const matcher* m) { return (m->get_node() == &n) && !m->is_locked(); });
+  ossia::remove_erase_if(m_matchers,
           [&](const std::shared_ptr<matcher>& m) {
     return (m->get_node() == &n) && !m->is_locked();
-          }),
-      m_matchers.end());
+          });
   set_matchers_index();
   m_is_deleted = false;
 }
@@ -1021,6 +1052,8 @@ void object_base::make_global_paths(const std::string& name)
   }
 }
 
+static constexpr auto numbers_regex
+    = ctll::fixed_string{"\\.[0-9]+$"};
 void object_base::update_path()
 {
   m_paths.clear();
@@ -1029,14 +1062,16 @@ void object_base::update_path()
   auto name = std::string(m_name->s_name);
 
   // check if we already have an instance number and override it or just append it
-  std::regex regex("\\.[0-9]+$");
-  std::smatch smatch;
+
+  constexpr auto regex = ctre::search<numbers_regex>;
   auto index = poly_index();
   if(index > 0)
   {
-    if(std::regex_search(name, smatch, regex))
+    if(auto res = regex(name))
     {
-      name = std::string(smatch.prefix()) + "." + std::to_string(index);
+      auto end = res.to_view().data();
+      auto prefix = std::string(name.data(), end - name.data());
+      name = std::string(name.data(), end - name.data()) + "." + std::to_string(index);
     }
     else
     {
@@ -1076,7 +1111,12 @@ void object_base::update_path()
 
 void save_children_recursively(t_object* patcher)
 {
-  auto& pat_desc = ossia_max::instance().patchers[patcher];
+  auto& patchers = ossia_max::instance().patchers;
+  auto it = patchers.find(patcher);
+  if(it == patchers.end())
+      return;
+
+  auto& pat_desc = it->second;
 
   for(auto x : pat_desc.parameters)
   {

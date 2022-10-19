@@ -19,11 +19,13 @@ public:
   matcher(ossia::net::node_base* n, object_base* p); // constructor
   ~matcher();
   matcher(const matcher&) = delete;
-  matcher(matcher&& other);
+  matcher(matcher&& other) = delete;
   matcher& operator=(const matcher&) = delete;
-  matcher& operator=(matcher&& other);
+  matcher& operator=(matcher&& other) = delete;
 
   void output_value(ossia::value v);
+  void remove_callback();
+
   ossia::net::node_base* get_node() const { return node; }
   object_base* get_owner() const
   {
@@ -44,9 +46,10 @@ public:
   // this is used to output the 'instance' number of a ossia.remote with pattern matching
   int m_index{0};
 
-private:
+//private:
   // TODO rename those as m_node/m_owner/m_callbackit
   ossia::net::node_base* node{};
+  ossia::net::parameter_base* orig_param{};
   object_base* owner{};
 
   std::optional<ossia::callback_container<ossia::value_callback>::iterator> callbackit

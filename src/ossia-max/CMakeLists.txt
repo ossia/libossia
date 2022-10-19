@@ -96,7 +96,7 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY})
+target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY} $<LINK_ONLY:re2>)
 
 generate_export_header(${PROJECT_NAME})
 
@@ -110,7 +110,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 if(APPLE)
     target_compile_definitions(${PROJECT_NAME} PRIVATE MAC_VERSION)
     target_include_directories(${PROJECT_NAME} PRIVATE ${FILE_H_DIR})
-    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++1z>)
+    target_compile_options(${PROJECT_NAME} PRIVATE $<$<COMPILE_LANGUAGE:CXX>:-std=c++2a>)
     target_link_libraries(${PROJECT_NAME} PRIVATE -Wl,-undefined,dynamic_lookup)
 elseif(WIN32)
     target_compile_definitions(${PROJECT_NAME} PRIVATE WIN_VERSION _CRT_SECURE_NO_WARNINGS)

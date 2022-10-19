@@ -47,7 +47,9 @@ void device_base::on_parameter_deleted_callback(const ossia::net::parameter_base
 void device_base::on_attribute_modified_callback(
     ossia::net::node_base& node, const std::string& attribute)
 {
-  auto& matchers = ossia_max::instance().s_node_matchers_map[&node];
+  auto& omax = ossia_max::instance();
+  std::lock_guard _{omax.s_node_matchers_mut};
+  auto& matchers = omax.s_node_matchers_map[&node];
 
   for(const auto& m : matchers)
   {

@@ -153,8 +153,6 @@ bool monitor::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
-  ossia_max::instance().nr_monitors.push_back(this);
-
   stop_monitoring();
   return true;
 }

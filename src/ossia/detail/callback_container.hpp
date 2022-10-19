@@ -1,11 +1,12 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <ossia/detail/audio_spin_mutex.hpp>
+#include <ossia/detail/mutex.hpp>
 
-#include <list>
+#include <map>
 #include <mutex>
 #include <stdexcept>
+#include <fmt/printf.h>
 
 /**
  * \file callback_container.hpp
@@ -46,8 +47,8 @@ template <typename T>
  */
 class callback_container
 {
-  using mutex = ossia::audio_spin_mutex;
-  using lock_guard = std::lock_guard<ossia::audio_spin_mutex>;
+  using mutex = ossia::mutex_t;
+  using lock_guard = std::lock_guard<mutex>;
 
 public:
   callback_container() = default;
@@ -81,8 +82,11 @@ public:
    * A list is used since iterators to other callbacks
    * must not be invalidated upon removal.
    */
-  using impl = typename std::list<T>;
-  using iterator = typename impl::iterator;
+  using impl = typename std::map<int, T>;
+  struct iterator {
+    std::weak_ptr<int> id;
+    int index;
+  };
 
   /**
    * @brief add_callback Add a new callback.
@@ -94,10 +98,14 @@ public:
     if(callback)
     {
       lock_guard lck{m_mutx};
-      auto it = m_callbacks.insert(m_callbacks.begin(), std::move(callback));
+      assert(m_callbacks.count(current_callback_index) == 0);
+      auto it = m_callbacks.emplace(current_callback_index, std::move(callback));
       if(m_callbacks.size() == 1)
         on_first_callback_added();
-      return it;
+      current_callback_index_zero++;
+      current_callback_index++;
+      // fmt::print(stderr, "++: Map: {} ; 0-idex: {} ; idex: {}\n", start_callback_index, current_callback_index_zero -1, current_callback_index-1);
+      return {start_callback_index, current_callback_index - 1};
     }
     else
     {
@@ -114,12 +122,18 @@ public:
     lock_guard lck{m_mutx};
     if(m_callbacks.size() == 1)
       on_removing_last_callback();
-    m_callbacks.erase(it);
+    // fmt::print(stderr, "--: Map: {} ; 0-idex: {} ; idex: {} : removed {}\n", start_callback_index, current_callback_index_zero, current_callback_index, it);
+
+    const auto count = m_callbacks.count(it.index);
+    assert(count == 1);
+    m_callbacks.erase(it.index);
+
   }
 
   /**
    * @brief Replaces an existing callback with another function.
    */
+  /*
   void replace_callback(iterator it, T&& cb)
   {
     lock_guard lck{m_mutx};
@@ -130,7 +144,7 @@ public:
     lock_guard lck{m_mutx};
     m_callbacks = std::move(cbs);
   }
-
+*/
   class disabled_callback
   {
   public:
@@ -186,7 +200,7 @@ public:
   void send(Args&&... args)
   {
     lock_guard lck{m_mutx};
-    for(auto& callback : m_callbacks)
+    for(auto& [i, callback] : m_callbacks)
     {
       if(callback)
         callback(std::forward<Args>(args)...);
@@ -224,8 +238,12 @@ protected:
    */
   virtual void on_removing_last_callback() { }
 
-private:
+//private:
+public:
   impl m_callbacks TS_GUARDED_BY(m_mutx);
-  mutable ossia::audio_spin_mutex m_mutx;
+  std::shared_ptr<int> start_callback_index{std::make_shared<int>(rand())};
+  int current_callback_index_zero{};
+  int current_callback_index{*start_callback_index};
+  mutable mutex m_mutx;
 };
 }

@@ -177,8 +177,6 @@ bool parameter::unregister()
   m_node_selection.clear();
   m_matchers.clear();
 
-  ossia_max::instance().nr_parameters.push_back(this);
-
   m_registered = false;
 
   return true;

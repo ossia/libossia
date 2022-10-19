@@ -222,7 +222,7 @@ public:
   ossia::safe_vector<search*> searchs;
   ossia::safe_vector<logger*> loggers;
   ossia::safe_vector<oassert*> oasserts;
-
+/*
   // TODO remove all those nr* vectors, should not be needed anymore
   // list of non-registered objects
   ossia::safe_set<parameter*> nr_parameters;
@@ -233,8 +233,9 @@ public:
   ossia::safe_set<client*> nr_clients;
   ossia::safe_set<attribute*> nr_attributes;
   ossia::safe_set<monitor*> nr_monitors;
-
+*/
   static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
+  static std::recursive_mutex s_node_matchers_mut;
 
   // TODO is this still needed ?
   bool registering_nodes = false;
@@ -255,6 +256,8 @@ public:
 private:
   ossia_max();
   ~ossia_max();
+  ossia_max(const ossia_max&) = delete;
+  ossia_max(ossia_max&&) = delete;
 
   ossia::net::local_protocol* m_localProtocol{};
   std::shared_ptr<ossia::net::generic_device> m_device;

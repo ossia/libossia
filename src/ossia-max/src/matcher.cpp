@@ -27,9 +27,15 @@ matcher::matcher(ossia::net::node_base* n, object_base* p)
     {
       case object_class::remote:
       case object_class::param:
-        if(auto param = node->get_parameter())
+        orig_param = node->get_parameter();
+        if(orig_param)
+        {
           callbackit
-              = param->add_callback([=](const ossia::value& v) { output_value(v); });
+              = orig_param->add_callback([=](const ossia::value& v) { output_value(v); });
+
+          auto& dev = n->get_device();
+          dev.on_parameter_removing.connect<&object_base::on_parameter_removing>(owner);
+        }
         break;
       default:
         break;
@@ -40,115 +46,43 @@ matcher::matcher(ossia::net::node_base* n, object_base* p)
 
   set_addr_symbol();
 
-  ossia_max::instance().s_node_matchers_map[node].push_back(this);
-}
-
-matcher::matcher(matcher&& other)
-{
-  node = other.node;
-  other.node = nullptr;
-
-  owner = other.owner;
-  other.owner = nullptr;
-
-  callbackit = other.callbackit;
-  other.callbackit = std::nullopt;
-
-  m_addr = other.m_addr;
-  m_dead = other.m_dead;
-
-  if(node && !m_dead)
-  {
-    if(auto param = node->get_parameter())
-    {
-      if(callbackit)
-        param->remove_callback(*callbackit);
-
-      if(owner)
-      {
-        switch(owner->m_otype)
-        {
-          case object_class::remote:
-          case object_class::param:
-            callbackit
-                = param->add_callback([=](const ossia::value& v) { output_value(v); });
-            break;
-          default:
-            break;
-        }
-
-        set_addr_symbol();
-      }
-    }
-  }
-
-  ossia_max::instance().s_node_matchers_map[node].remove_all(&other);
-  ossia_max::instance().s_node_matchers_map[node].push_back(this);
-}
-
-matcher& matcher::operator=(matcher&& other)
-{
-  node = other.node;
-  other.node = nullptr;
-
-  owner = other.owner;
-  other.owner = nullptr;
-
-  callbackit = other.callbackit;
-  other.callbackit = std::nullopt;
-
-  m_addr = other.m_addr;
-  m_dead = other.m_dead;
-
-  if(node && !m_dead)
-  {
-    if(auto param = node->get_parameter())
-    {
-      if(callbackit)
-        param->remove_callback(*callbackit);
-
-      if(owner && !owner->m_is_deleted)
-      {
-        switch(owner->m_otype)
-        {
-          case object_class::remote:
-          case object_class::param:
-            callbackit
-                = param->add_callback([=](const ossia::value& v) { output_value(v); });
-            break;
-          default:
-            break;
-        }
-
-        set_addr_symbol();
-      }
-    }
-  }
-
-  ossia_max::instance().s_node_matchers_map[node].remove_all(&other);
-  ossia_max::instance().s_node_matchers_map[node].push_back(this);
-
-  return *this;
+  auto& omax = ossia_max::instance();
+  std::lock_guard _{omax.s_node_matchers_mut};
+  omax.s_node_matchers_map[node].push_back(this);
 }
 
 matcher::~matcher()
 {
-  auto& map = ossia_max::instance().s_node_matchers_map;
-  map[node].remove_all(this);
+  auto& omax = ossia_max::instance();
+  std::lock_guard _{omax.s_node_matchers_mut};
+
+  auto& map = omax.s_node_matchers_map;
+  {
+  auto it = map.find(node);
+  if(it != map.end())
+  {
+    it->second.remove_all(this);
+    if(it->second.empty())
+      map.erase(it);
+  }
+  }
+
   if(owner)
   {
     // purge selection
     ossia::remove_one(owner->m_node_selection, this);
 
+    auto& dev = node->get_device();
+    if(orig_param)
+      dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(owner);
+    node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
+    remove_callback();
+
+
     if(owner->m_otype == object_class::param || owner->m_otype == object_class::model)
     {
       if(!owner->m_is_deleted)
       {
-        auto param = node->get_parameter();
-        if(param && callbackit)
-          param->remove_callback(*callbackit);
-        node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
-
         if(owner->m_otype == object_class::param)
         {
           node->remove_parameter();
@@ -180,13 +114,6 @@ matcher::~matcher()
           }
         }
       }
-    }
-    else
-    {
-      auto param = node->get_parameter();
-      if(param && callbackit)
-        param->remove_callback(*callbackit);
-      node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
     }
     owner = nullptr;
   }
@@ -239,6 +166,22 @@ void matcher::output_value(ossia::value v)
       owner->m_local_mute = false;
     }
   }
+}
+
+void matcher::remove_callback()
+{
+    auto param = node->get_parameter();
+    if(param && callbackit)
+    {
+      assert(param);
+      assert(param == orig_param);
+      assert(callbackit);
+      assert(callbackit->id.lock());
+      assert(callbackit->id.lock() == param->start_callback_index);
+      auto cb = std::move(callbackit);
+      callbackit.reset();
+      param->remove_callback(*cb);
+    }
 }
 
 void matcher::set_addr_symbol()

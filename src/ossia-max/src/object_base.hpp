@@ -157,6 +157,7 @@ public:
       object_base* x, ossia::string_view attribute, const ossia::net::node_base* node);
   static t_max_err
   notify(object_base* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
+  void on_parameter_removing(const ossia::net::parameter_base& n);
   void on_node_removing(const ossia::net::node_base& n);
 
   static void defer_set_output(object_base* x, t_symbol* s, int argc, t_atom* argv);

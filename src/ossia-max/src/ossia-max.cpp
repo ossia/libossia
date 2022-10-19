@@ -37,12 +37,13 @@ ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_max::s_zeroconf_minuit_listener;
 std::map<ossia::net::node_base*, ossia::safe_set<matcher*>>
     ossia_max::s_node_matchers_map{};
+std::recursive_mutex ossia_max::s_node_matchers_mut;
 t_class* ossia_max::ossia_patcher_listener_class;
 
 void patcher_listener_notify(
     t_object* x, t_symbol* s, t_symbol* msg, t_object* sender, void* data)
 {
-  if(msg == gensym("willfree"))
+  if((msg == gensym("willfree")) || (msg == gensym("free")))
   {
     ossia_max::remove_patcher_descriptor(sender);
   }

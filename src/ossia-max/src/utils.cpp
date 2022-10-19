@@ -415,7 +415,9 @@ void register_objects_by_type(const ossia::safe_set<T>& objs)
     if(!obj->m_dead && obj->m_name && obj->m_name != _sym_nothing)
     {
       obj->m_node_selection.clear();
+      auto m = std::move(obj->m_matchers);
       obj->m_matchers.clear();
+      m.clear();
       obj->update_path();
       obj->do_registration();
     }

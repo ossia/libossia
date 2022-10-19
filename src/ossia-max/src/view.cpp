@@ -177,8 +177,6 @@ void view::unregister()
     }
   }
 
-  ossia_max::instance().nr_views.push_back(this);
-
   m_registered = false;
 }
 

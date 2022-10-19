@@ -102,8 +102,13 @@ void model::destroy(model* x)
   x->m_matchers.clear();
   x->m_registered = false;
 
-  register_children_in_patcher_recursively(x->m_patcher, x->find_parent_object());
-  output_all_values(x->m_patcher, true);
+  // We don't want to register children if the entire patcher was deleted
+  auto& omax = ossia_max::instance();
+  if(auto it = omax.patchers.find(x->m_patcher) ; it != omax.patchers.end())
+  {
+    register_children_in_patcher_recursively(x->m_patcher, x->find_parent_object());
+    output_all_values(x->m_patcher, true);
+  }
 
   ossia_max::instance().models.remove_all(x);
   if(x->m_dumpout)

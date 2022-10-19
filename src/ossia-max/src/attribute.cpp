@@ -138,7 +138,6 @@ void attribute::unregister()
     }
   }
 
-  ossia_max::instance().nr_attributes.push_back(this);
   m_registered = false;
 }
 

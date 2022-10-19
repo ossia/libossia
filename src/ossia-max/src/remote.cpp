@@ -359,8 +359,6 @@ void remote::unregister()
     }
   }
 
-  ossia_max::instance().nr_remotes.push_back(this);
-
   m_registered = false;
 }
 
