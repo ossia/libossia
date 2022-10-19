@@ -131,6 +131,9 @@ void model::assist(model*, void*, long m, long, char* s)
 
 void model::do_registration()
 {
+    if (m_registering)
+        return;
+  m_registering = true;
   m_registered = true;
 
   m_matchers = find_or_create_matchers();
@@ -143,6 +146,7 @@ void model::do_registration()
   set_tags();
   set_hidden();
   set_recall_safe();
+  m_registering = false;
 }
 
 } // max namespace

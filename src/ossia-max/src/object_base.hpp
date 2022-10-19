@@ -76,6 +76,7 @@ public:
   bool m_is_deleted{};
   bool m_lock{false}; // attribute lock
   bool m_local_mute{false};
+  bool m_registering{}; // true while registering to prevent recursive registration
   bool m_registered{}; // true if register_node() have been called at least once
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
