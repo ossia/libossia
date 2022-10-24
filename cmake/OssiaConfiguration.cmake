@@ -40,6 +40,7 @@ else()
     set(OSSIA_PLATFORM macos)
 endif()
 
+# Linux
 if(UNIX AND NOT APPLE)
   find_program(LSB_RELEASE lsb_release)
   if(LSB_RELEASE)
@@ -49,6 +50,17 @@ if(UNIX AND NOT APPLE)
       )
   endif()
 endif()
+
+# macOS
+if(APPLE)
+  # Calling aligned_alloc in pre 10.15 just reuslts in a crash
+  if(CMAKE_OSX_DEPLOYMENT_TARGET)
+    if(CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.15)
+      add_definitions(-DBOOST_ASIO_DISABLE_STD_ALIGNED_ALLOC=1)
+    endif()
+  endif()
+endif()
+
 
 if(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*arm.*")
     set(OSSIA_ARCHITECTURE arm)
