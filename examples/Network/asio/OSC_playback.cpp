@@ -168,7 +168,11 @@ int main(int argc, char** argv)
   int fd = open(file.c_str(), O_RDONLY, 0);
   assert(fd != -1);
 
-  void* data = mmap(NULL, filesize, PROT_READ, MAP_PRIVATE | MAP_POPULATE, fd, 0);
+  auto mmap_flags = MAP_PRIVATE;
+#if defined(__linux__)
+  mmap_flags |= MAP_POPULATE;
+#endif
+  void* data = mmap(NULL, filesize, PROT_READ, mmap_flags, fd, 0);
   assert(data != MAP_FAILED);
 
   recorded_automations ret;

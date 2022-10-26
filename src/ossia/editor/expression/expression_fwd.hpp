@@ -4,6 +4,7 @@
 #include <ossia/detail/callback_container.hpp>
 #include <ossia/detail/nullable_variant.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/audio_spin_mutex.hpp>
 
 #include <smallfun.hpp>
 

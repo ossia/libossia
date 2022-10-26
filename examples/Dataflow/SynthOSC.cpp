@@ -25,7 +25,7 @@ struct tick
   {
     using namespace ossia;
     ossia::token_request req{};
-    req.date = time_value{int64_t(st.frames)};
+    req.date = ossia::time_value{int64_t(st.frames)};
 
     float val = ossia::convert<float>(osc_param.value());
     float freq = (val - value_min) / (value_max - value_min);

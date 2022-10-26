@@ -1,12 +1,10 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
 #include <ossia/detail/mutex.hpp>
 
-#include <map>
+#include <list>
 #include <mutex>
-#include <stdexcept>
-#include <fmt/printf.h>
+#include <exception>
 
 /**
  * \file callback_container.hpp
@@ -82,11 +80,8 @@ public:
    * A list is used since iterators to other callbacks
    * must not be invalidated upon removal.
    */
-  using impl = typename std::map<int, T>;
-  struct iterator {
-    std::weak_ptr<int> id;
-    int index;
-  };
+  using impl = std::list<T>;
+  using iterator = typename impl::iterator;
 
   /**
    * @brief add_callback Add a new callback.
@@ -98,14 +93,10 @@ public:
     if(callback)
     {
       lock_guard lck{m_mutx};
-      assert(m_callbacks.count(current_callback_index) == 0);
-      auto it = m_callbacks.emplace(current_callback_index, std::move(callback));
+      auto it = m_callbacks.insert(m_callbacks.begin(), std::move(callback));
       if(m_callbacks.size() == 1)
         on_first_callback_added();
-      current_callback_index_zero++;
-      current_callback_index++;
-      // fmt::print(stderr, "++: Map: {} ; 0-idex: {} ; idex: {}\n", start_callback_index, current_callback_index_zero -1, current_callback_index-1);
-      return {start_callback_index, current_callback_index - 1};
+      return it;
     }
     else
     {
@@ -122,12 +113,8 @@ public:
     lock_guard lck{m_mutx};
     if(m_callbacks.size() == 1)
       on_removing_last_callback();
-    // fmt::print(stderr, "--: Map: {} ; 0-idex: {} ; idex: {} : removed {}\n", start_callback_index, current_callback_index_zero, current_callback_index, it);
 
-    const auto count = m_callbacks.count(it.index);
-    assert(count == 1);
-    m_callbacks.erase(it.index);
-
+    m_callbacks.erase(it);
   }
 
   /**
@@ -200,7 +187,7 @@ public:
   void send(Args&&... args)
   {
     lock_guard lck{m_mutx};
-    for(auto& [i, callback] : m_callbacks)
+    for(auto& callback : m_callbacks)
     {
       if(callback)
         callback(std::forward<Args>(args)...);
@@ -241,9 +228,6 @@ protected:
 //private:
 public:
   impl m_callbacks TS_GUARDED_BY(m_mutx);
-  std::shared_ptr<int> start_callback_index{std::make_shared<int>(rand())};
-  int current_callback_index_zero{};
-  int current_callback_index{*start_callback_index};
   mutable mutex m_mutx;
 };
 }
