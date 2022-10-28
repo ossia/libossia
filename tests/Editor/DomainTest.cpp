@@ -280,6 +280,7 @@ TEST_CASE("test_visit", "test_visit")
   auto range = ossia::make_domain(-1, 1);
   struct my_vis
   {
+    void operator()(ossia::domain_base<char>) { }
     void operator()(ossia::domain_base<int>& d)
     {
       if(d.min)
