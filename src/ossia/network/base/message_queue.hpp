@@ -1,9 +1,12 @@
 #pragma once
+#include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/parameter.hpp>
 
-#include <concurrentqueue.h>
+#include <ankerl/unordered_dense.h>
+
+#include <smallfun.hpp>
 
 namespace ossia
 {
@@ -78,7 +81,7 @@ private:
       m_reg.erase(it);
   }
 
-  moodycamel::ConcurrentQueue<received_value> m_queue;
+  ossia::mpmc_queue<received_value> m_queue;
 
   ossia::ptr_map<
       ossia::net::parameter_base*,
@@ -102,6 +105,40 @@ public:
   bool try_dequeue(ossia::received_value& v) { return m_queue.try_dequeue(v); }
 
 private:
-  moodycamel::ConcurrentQueue<received_value> m_queue;
+  ossia::mpmc_queue<received_value> m_queue;
+};
+
+struct coalescing_queue
+{
+public:
+  smallfun::function<void(ossia::net::parameter_base&, ossia::value)> callback;
+
+  ossia::mpmc_queue<ossia::received_value> noncritical;
+  ossia::mpmc_queue<ossia::received_value> critical;
+
+  ankerl::unordered_dense::map<ossia::net::parameter_base*, ossia::value> coalesce;
+
+  void process_messages()
+  {
+    ossia::received_value v;
+
+    while(critical.try_dequeue(v))
+    {
+      callback(*v.address, v.value);
+    }
+
+    coalesce.clear();
+    while(noncritical.try_dequeue(v))
+    {
+      coalesce[v.address] = v.value;
+    }
+
+    for(auto& [p, v] : coalesce)
+    {
+      callback(*p, v);
+    }
+
+    coalesce.clear();
+  }
 };
 }

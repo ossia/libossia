@@ -6,6 +6,10 @@
 
 #include "serial_protocol.hpp"
 
+#include <ossia/detail/lockfree_queue.hpp>
+
+#include <ossia-qt/invoke.hpp>
+
 #include <QDebug>
 #include <QQmlComponent>
 #include <QQmlContext>
@@ -77,8 +81,7 @@ void serial_wrapper::on_write(const QByteArray& b) noexcept
 
 void serial_wrapper::on_read(const QByteArray& arr)
 {
-  QString str = QString::fromLatin1(arr);
-  read(str, arr);
+  read(QString::fromLatin1(arr), arr);
 }
 
 framed_serial_socket serial_wrapper::make_socket(
@@ -113,57 +116,52 @@ void serial_wrapper::close()
 
 serial_wrapper::~serial_wrapper() noexcept { }
 
-serial_protocol::serial_protocol(
-    const ossia::net::network_context_ptr& ctx, const QByteArray& code,
-    const ossia::net::serial_configuration& cfg)
-    : protocol_base{flags{}}
-    , m_engine{new QQmlEngine}
-    , m_component{new QQmlComponent{m_engine}}
-    , m_code{code}
+struct serial_protocol_object
 {
-  QObject::connect(
-      m_component, &QQmlComponent::statusChanged, this,
-      [this, ctx, cfg](QQmlComponent::Status status) {
-    qDebug() << status;
-    qDebug() << m_component->errorString();
-    if(!m_device)
-      return;
+  QObject* m_object{};
+  QJSValue m_jsObj{};
 
-    switch(status)
-    {
-      case QQmlComponent::Status::Ready:
-        this->create(ctx, cfg);
-        return;
-      case QQmlComponent::Status::Loading:
-        return;
-      case QQmlComponent::Status::Null:
-      case QQmlComponent::Status::Error:
-        qDebug() << m_component->errorString();
-        return;
-    }
-      });
-}
+  QJSValue m_onTextMessage;
+  QJSValue m_onBinaryMessage;
+  QJSValue m_onRead;
 
-void serial_protocol::create(
-    const ossia::net::network_context_ptr& ctx,
+  ossia::qt::deferred_js_node<serial_parameter_data> nodes;
+  std::shared_ptr<serial_wrapper> m_port;
+
+  double m_coalesce{};
+};
+
+serial_protocol_object serial_protocol::load_serial_object_from_qml(
+    serial_protocol& proto, const ossia::net::network_context_ptr& ctx,
     const ossia::net::serial_configuration& cfg)
 {
-  m_object = m_component->create();
-  m_object->setParent(m_engine->rootContext());
+  serial_protocol_object r;
 
-  QVariant ret;
-  QMetaObject::invokeMethod(m_object, "createTree", Q_RETURN_ARG(QVariant, ret));
+  auto m_engine = proto.m_engine;
+  auto m_component = proto.m_component;
 
-  qt::create_device<ossia::net::device_base, serial_node, serial_protocol>(
-      *m_device, ret.value<QJSValue>());
+  r.m_object = m_component->create();
+  r.m_object->setParent(m_engine->rootContext());
 
-  m_jsObj = m_engine->newQObject(m_object);
+  QVariant createTree_ret;
+  QMetaObject::invokeMethod(
+      r.m_object, "createTree", Q_RETURN_ARG(QVariant, createTree_ret));
+
+  // We have to lock the main thread while this happens
+  // or.... create the object in the other thread and just add it to the device in the main one.
+  r.nodes = ossia::qt::create_device_nodes_deferred<serial_protocol>(
+      createTree_ret.value<QJSValue>());
+
+  r.m_jsObj = m_engine->newQObject(r.m_object);
+
+  // Read object properties
+  r.m_coalesce = r.m_jsObj.property("coalesce").toNumber();
 
   ossia::net::serial_protocol_configuration conf;
   conf.transport = cfg;
 
-  auto delim = m_jsObj.property("delimiter").toString();
-  auto frm = m_jsObj.property("framing").toString().toLower();
+  auto delim = r.m_jsObj.property("delimiter").toString();
+  auto frm = r.m_jsObj.property("framing").toString().toLower();
 
   conf.framing = ossia::net::framing::none;
   if(frm == "slip")
@@ -189,19 +187,19 @@ void serial_protocol::create(
       conf.line_framing_delimiter = delim.toStdString();
   }
 
-  m_onTextMessage = m_jsObj.property("onMessage");
-  m_onBinaryMessage = m_jsObj.property("onBinary");
-  m_onRead = m_jsObj.property("onRead");
+  r.m_onTextMessage = r.m_jsObj.property("onMessage");
+  r.m_onBinaryMessage = r.m_jsObj.property("onBinary");
+  r.m_onRead = r.m_jsObj.property("onRead");
 
-  if(m_onTextMessage.isCallable())
+  if(r.m_onTextMessage.isCallable())
   {
     // Argument: parsed as message, passed to JS as QString
   }
-  else if(m_onBinaryMessage.isCallable())
+  else if(r.m_onBinaryMessage.isCallable())
   {
     // Argument: parsed as message, passed to JS as QByteArray
   }
-  else if(m_onRead.isCallable())
+  else if(r.m_onRead.isCallable())
   {
     // Argument: raw un-processed data, passed to JS as QByteArray
     conf.framing = ossia::net::framing::none;
@@ -209,16 +207,109 @@ void serial_protocol::create(
 
   try
   {
-    m_port = std::make_shared<serial_wrapper>(ctx, conf);
+    r.m_port = std::make_shared<serial_wrapper>(ctx, conf);
 
+    // on_read has to execute in the serial thread as it calls QQmlEngine methods
     QObject::connect(
-        m_port.get(), &serial_wrapper::read, this, &serial_protocol::on_read,
+        r.m_port.get(), &serial_wrapper::read, proto.m_threadWorker,
+        [&proto](const QString& l, const QByteArray& b) { proto.on_read(l, b); },
         Qt::QueuedConnection);
   }
   catch(...)
   {
   }
-  return;
+
+  return r;
+}
+
+struct serial_worker : public QObject
+{
+  coalescing_queue& m_queue;
+
+  explicit serial_worker(coalescing_queue& q)
+      : m_queue{q}
+  {
+  }
+
+  void timerEvent(QTimerEvent* ev) { m_queue.process_messages(); }
+};
+
+serial_protocol::serial_protocol(
+    const ossia::net::network_context_ptr& ctx, const QByteArray& code,
+    const ossia::net::serial_configuration& cfg)
+    : protocol_base{flags{}}
+    , m_code{code}
+{
+  m_thread.setObjectName("Serial Thread");
+  m_thread.start();
+
+  // Only needed for the sake of invoking a method on the QThread
+  m_threadWorker = new serial_worker{m_queue};
+  m_threadWorker->moveToThread(&m_thread);
+
+  ossia::qt::run_async(m_threadWorker, [this, ctx, cfg] {
+    // Serial thread
+
+    m_engine = new QQmlEngine;
+    m_component = new QQmlComponent{m_engine};
+    m_engine->moveToThread(&m_thread);
+    m_component->moveToThread(&m_thread);
+
+    // Serial thread to main thread
+    QObject::connect(
+        m_component, &QQmlComponent::statusChanged, m_component,
+        [this, ctx, cfg](QQmlComponent::Status status) {
+      // Serial thread
+      qDebug() << "Serial error:" << m_component->errorString();
+      if(!m_device)
+        return;
+
+      switch(status)
+      {
+        case QQmlComponent::Status::Ready: {
+          // Any call to the QQmlEngine needs to be done in its thread.
+          auto res = load_serial_object_from_qml(*this, ctx, cfg);
+
+          // Move the objects back to the main thread in one go
+          ossia::qt::run_async(this, [this, res = std::move(res)]() mutable {
+            // Main thread - just copying is safe as it's just a classic Qt dptr
+            m_object = res.m_object;
+            m_jsObj = res.m_jsObj;
+            m_onTextMessage = res.m_onTextMessage;
+            m_onBinaryMessage = res.m_onBinaryMessage;
+            m_onRead = res.m_onRead;
+            m_port = res.m_port;
+            if(res.m_coalesce > 0.)
+            {
+              m_coalesce = res.m_coalesce;
+              m_queue.callback
+                  = [this](ossia::net::parameter_base& p, const ossia::value& v) {
+                do_write(p, v);
+              };
+              qDebug() << "start timer in ms: " << (int)m_coalesce.value();
+
+              ossia::qt::run_async(m_threadWorker, [this] {
+                m_threadWorker->startTimer(m_coalesce.value(), Qt::PreciseTimer);
+              });
+            }
+
+            // Now we can finally create our tree :-)
+            ossia::qt::apply_deferred_device<
+                ossia::net::device_base, serial_node, serial_parameter_data>(
+                *this->m_device, res.nodes);
+          });
+          return;
+        }
+        case QQmlComponent::Status::Loading:
+          return;
+        case QQmlComponent::Status::Null:
+        case QQmlComponent::Status::Error:
+          qDebug() << m_component->errorString();
+          return;
+      }
+        },
+        Qt::DirectConnection);
+  });
 }
 
 bool serial_protocol::pull(parameter_base&)
@@ -262,6 +353,9 @@ void serial_protocol::on_read(const QString& txt, const QByteArray& a)
     if(!addr.isString())
       continue;
 
+    // FIXME since this executes in a separate thread we have to be super
+    // confident that the user cannot remove nodes while read operations are
+    // taking place
     auto addr_txt = addr.toString().toStdString();
     auto n = find_node(m_device->get_root_node(), addr_txt);
     if(!n)
@@ -280,14 +374,17 @@ void serial_protocol::on_read(const QString& txt, const QByteArray& a)
     }
   }
 }
-bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
-{
-  // Prevent pushes when the device has not been set yet
-  if(!m_port)
-    return false;
 
-  auto& ad = const_cast<serial_parameter&>(dynamic_cast<const serial_parameter&>(addr));
+void serial_protocol::do_write(
+    const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  auto& engine = *m_engine;
+  auto& port = *m_port;
+
+  auto& ad = const_cast<serial_parameter&>(static_cast<const serial_parameter&>(addr));
+
   QJSValue& req = ad.data().request;
+
   QString str;
   if(req.isString())
   {
@@ -295,36 +392,35 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
   }
   else if(req.isCallable())
   {
-    auto r1 = req.call({qt::value_to_js_value(v, *m_engine)});
+    auto r1 = req.call({qt::value_to_js_value(v, engine)});
     if(!r1.isError())
     {
       auto var = r1.toVariant();
-      if(var.type() == QMetaType::QByteArray)
+      if(var.type() == (QVariant::Type)QMetaType::QByteArray)
       {
         auto ba = var.toByteArray();
-        m_port->on_write(ba);
+        port.on_write(ba);
       }
       else
       {
         auto ba = var.toString().toUtf8();
-        m_port->on_write(ba);
+        port.on_write(ba);
       }
-
-      return true;
+      return;
     }
 
     auto res = req.call();
     if(res.isError())
-      return false;
+      return;
 
     str = res.toString();
   }
   else
   {
-    return false;
+    return;
   }
 
-  switch(addr.get_value_type())
+  switch(ad.get_value_type())
   {
     case ossia::val_type::FLOAT:
       str.replace("$val", QString::number(v.get<float>(), 'g', 4));
@@ -365,11 +461,36 @@ bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::
       str.replace("$val", "TODO");
       break;
     default:
-      throw std::runtime_error("serial_protocol::push: bad type");
+      qDebug() << "serial_protocol::push: bad type";
   }
 
-  // qDebug() << str;
-  m_port->on_write(str.toUtf8());
+  port.on_write(str.toUtf8());
+  return;
+}
+
+bool serial_protocol::push(const ossia::net::parameter_base& addr, const ossia::value& v)
+{
+  // Prevent pushes when the device has not been set yet
+  if(!m_port)
+    return false;
+
+  // we have to rate limit: if the thread is busy writing messages
+  // we must not overload it
+  // if not critical, we just send an event to write
+  // find a way to collapse events in Qt
+  // -> new request -> write it down -> use the last value
+
+  if(!this->m_coalesce)
+  {
+    ossia::qt::run_async(m_threadWorker, [this, &addr, v] { do_write(addr, v); });
+  }
+  else
+  {
+    auto critical = ossia::net::get_critical(addr.get_node());
+    auto& q = critical ? this->m_queue.critical : this->m_queue.noncritical;
+    q.enqueue(ossia::received_value{(ossia::net::parameter_base*)&addr, v});
+  }
+
   return false;
 }
 
@@ -391,16 +512,26 @@ bool serial_protocol::update(ossia::net::node_base& node_base)
 void serial_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-  m_component->setData(m_code, QUrl{});
+  // run in the engine thread
+  ossia::qt::run_async(m_threadWorker, [this] { m_component->setData(m_code, QUrl{}); });
 }
 
 void serial_protocol::stop()
 {
-  if(m_port)
-    m_port->close();
+  // run in the engine thread
+  ossia::qt::run_async(m_threadWorker, [port = m_port] {
+    if(port)
+      port->close();
+  });
 }
 
-serial_protocol::~serial_protocol() { }
+serial_protocol::~serial_protocol()
+{
+  m_thread.quit();
+  m_thread.wait();
+
+  delete m_threadWorker;
+}
 
 }
 }

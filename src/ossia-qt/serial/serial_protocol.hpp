@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/variant.hpp>
+#include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
@@ -17,6 +18,7 @@
 
 #include <QObject>
 #include <QSerialPort>
+#include <QThread>
 
 #include <verdigris>
 
@@ -130,6 +132,9 @@ private:
   bool m_open{};
 };
 
+class serial_protocol;
+struct serial_protocol_object;
+
 using serial_parameter = wrapped_parameter<serial_parameter_data>;
 using serial_node = ossia::net::wrapped_node<serial_parameter_data, serial_parameter>;
 class OSSIA_EXPORT serial_protocol final
@@ -155,10 +160,14 @@ public:
   static serial_parameter_data read_data(const QJSValue& js) { return js; }
 
 private:
+  static serial_protocol_object load_serial_object_from_qml(
+      serial_protocol& proto, const ossia::net::network_context_ptr& ctx,
+      const ossia::net::serial_configuration& cfg);
   void create(
       const ossia::net::network_context_ptr&,
       const ossia::net::serial_configuration& cfg);
   void on_read(const QString& txt, const QByteArray&);
+  void do_write(const ossia::net::parameter_base&, const ossia::value& v);
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
 
@@ -170,6 +179,12 @@ private:
   QJSValue m_onRead{};
   std::shared_ptr<serial_wrapper> m_port;
   QByteArray m_code;
+
+  QObject* m_threadWorker{};
+  QThread m_thread{};
+
+  coalescing_queue m_queue;
+  std::optional<double> m_coalesce{};
 };
 using serial_device = ossia::net::wrapped_device<serial_node, serial_protocol>;
 

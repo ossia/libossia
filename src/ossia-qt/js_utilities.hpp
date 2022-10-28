@@ -5,6 +5,7 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
+#include <ossia/network/generic/generic_node.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 
@@ -479,6 +480,90 @@ void create_node_rec(QJSValue js, Device_T& device, Node_T& parent)
   {
     it.next();
     create_node_rec<Device_T, Node_T, Protocol_T>(it.value(), device, *node);
+  }
+}
+
+template <typename Data>
+/** @ingroup JSTreeCreation **/
+struct deferred_js_node
+{
+  Data data;
+  std::vector<deferred_js_node> children;
+};
+
+template <typename Data, typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+void create_node_deferred_rec(QJSValue js, deferred_js_node<Data>& parent)
+{
+  auto data = Protocol_T::read_data(js);
+  if(data.name.empty())
+    return;
+
+  parent.children.push_back(deferred_js_node<Data>{std::move(data), {}});
+
+  QJSValue children = js.property("children");
+  if(!children.isArray())
+    return;
+
+  deferred_js_node<Data>& node = parent.children.back();
+
+  node.children.reserve(children.property("length").toInt());
+  QJSValueIterator it(children);
+  while(it.hasNext())
+  {
+    it.next();
+    create_node_deferred_rec<Data, Protocol_T>(it.value(), node);
+  }
+}
+
+template <typename Protocol_T>
+/** @ingroup JSTreeCreation **/
+auto create_device_nodes_deferred(QJSValue root)
+{
+  using data_type = decltype(Protocol_T::read_data(root));
+  deferred_js_node<data_type> node_root;
+
+  if(!root.isArray())
+    return node_root;
+
+  node_root.children.reserve(root.property("length").toInt());
+  QJSValueIterator it(root);
+  while(it.hasNext())
+  {
+    it.next();
+    create_node_deferred_rec<data_type, Protocol_T>(it.value(), node_root);
+  }
+
+  return node_root;
+}
+
+template <typename Device_T, typename Node_T, typename Data>
+/** @ingroup JSTreeCreation **/
+void apply_deferred_device_rec(
+    Device_T& device, Node_T& parent_ossia, deferred_js_node<Data>& node_js)
+{
+  auto node = new Node_T{std::move(node_js.data), device, parent_ossia};
+  parent_ossia.add_child(std::unique_ptr<ossia::net::node_base>(node));
+
+  for(auto& cld : node_js.children)
+  {
+    apply_deferred_device_rec<Device_T, Node_T, Data>(device, *node, cld);
+  }
+}
+
+template <typename Device_T, typename Node_T, typename Data>
+/** @ingroup JSTreeCreation **/
+void apply_deferred_device(Device_T& device, deferred_js_node<Data>& root)
+{
+  for(auto& cld : root.children)
+  {
+    apply_deferred_device_rec<Device_T, Node_T, Data>(
+        device, static_cast<Node_T&>(device.get_root_node()), cld);
+  }
+
+  for(auto& node : device.get_root_node().children())
+  {
+    device.on_node_created(*node);
   }
 }
 

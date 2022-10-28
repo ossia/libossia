@@ -28,6 +28,7 @@
 #cmakedefine OSSIA_QML_SCORE
 #cmakedefine OSSIA_EDITOR
 #cmakedefine OSSIA_PARALLEL
+#cmakedefine OSSIA_TESTING
 
 // FFT support
 #cmakedefine OSSIA_ENABLE_FFT

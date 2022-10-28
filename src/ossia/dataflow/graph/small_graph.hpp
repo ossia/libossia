@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/small_vector.hpp>
+
 #include <boost/graph/adjacency_list.hpp>
 
 #if defined(OSSIA_SMALL_VECTOR)
