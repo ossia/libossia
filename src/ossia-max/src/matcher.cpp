@@ -173,11 +173,6 @@ void matcher::remove_callback()
     auto param = node->get_parameter();
     if(param && callbackit)
     {
-      assert(param);
-      assert(param == orig_param);
-      assert(callbackit);
-      assert(callbackit->id.lock());
-      assert(callbackit->id.lock() == param->start_callback_index);
       auto cb = std::move(callbackit);
       callbackit.reset();
       param->remove_callback(*cb);
