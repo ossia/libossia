@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/small_vector.hpp>
 
 #include <memory>
@@ -109,7 +110,11 @@ struct transform3d
 struct OSSIA_EXPORT geometry_port
 {
   static const constexpr int which = 4;
-  enum dirt_flags { dirty_transform = 0x1, dirty_meshes = 0x2 };
+  enum dirt_flags
+  {
+    dirty_transform = 0x1,
+    dirty_meshes = 0x2
+  };
 
   void clear();
 

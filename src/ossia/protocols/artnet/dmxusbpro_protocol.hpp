@@ -9,6 +9,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/sockets/serial_socket.hpp>
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
+
 #include <boost/asio/serial_port.hpp>
 
 #include <array>

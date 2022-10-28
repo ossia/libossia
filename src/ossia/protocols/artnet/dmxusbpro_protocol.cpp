@@ -79,7 +79,6 @@ bool dmxusbpro_protocol::update(ossia::net::node_base&)
   return true;
 }
 
-
 void dmxusbpro_protocol::update_function()
 {
   try
@@ -89,10 +88,10 @@ void dmxusbpro_protocol::update_function()
       // 126 6 (channel nb+1) 0 0 (channel1 channel2 channel3 …) 231
       constexpr unsigned char channels = 254;
       constexpr int bufsize = 5 + channels + 1;
-      unsigned char buf[bufsize] { 126, 6, channels+1, 0, 0 };
+      unsigned char buf[bufsize]{126, 6, channels + 1, 0, 0};
 
       for(int i = 0; i < channels; i++)
-        buf[5+i] = m_buffer.data[i];
+        buf[5 + i] = m_buffer.data[i];
       buf[bufsize - 1] = 231;
 
       boost::asio::write(m_port, boost::asio::buffer(buf));
