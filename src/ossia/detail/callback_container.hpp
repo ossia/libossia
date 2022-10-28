@@ -1,10 +1,11 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+
 #include <ossia/detail/mutex.hpp>
 
+#include <exception>
 #include <list>
 #include <mutex>
-#include <exception>
 
 /**
  * \file callback_container.hpp
@@ -125,6 +126,7 @@ public:
     lock_guard lck{m_mutx};
     *m_callbacks.erase(it, it) = std::move(cb);
   }
+
   void replace_callbacks(impl&& cbs)
   {
     lock_guard lck{m_mutx};
@@ -224,7 +226,7 @@ protected:
    */
   virtual void on_removing_last_callback() { }
 
-//private:
+  //private:
 public:
   impl m_callbacks TS_GUARDED_BY(m_mutx);
   mutable mutex m_mutx;
