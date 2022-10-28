@@ -33,7 +33,14 @@ template <class ValueType>
 struct container_gen<smallvecS, ValueType>
 {
   // using Allocator =  typename Alloc::template rebind<ValueType>::other Allocator;
-  typedef ossia::small_vector<ValueType, 1024> type;
+
+  // Needed because tests allocate graphs on the stack and that's too much
+#if defined(OSSIA_TESTNG)
+  static constexpr std::size_t small_vec_size = 16;
+#else
+  static constexpr std::size_t small_vec_size = 1024;
+#endif
+  typedef ossia::small_vector<ValueType, small_vec_size> type;
 };
 
 template <>
@@ -45,15 +52,13 @@ struct parallel_edge_traits<smallvecS>
 namespace container
 {
 template <class T, std::size_t N>
-graph_detail::vector_tag
-container_category(const ossia::small_vector<T, N>&)
+graph_detail::vector_tag container_category(const ossia::small_vector<T, N>&)
 {
   return graph_detail::vector_tag();
 }
 
 template <class T, std::size_t N>
-graph_detail::unstable_tag
-iterator_stability(const ossia::small_vector<T, N>&)
+graph_detail::unstable_tag iterator_stability(const ossia::small_vector<T, N>&)
 {
   return graph_detail::unstable_tag();
 }
@@ -71,7 +76,6 @@ struct container_traits<ossia::small_vector<T, N>>
   typedef unstable_tag iterator_stability;
 };
 }
-
 
 using container::container_category;
 using container::iterator_stability;
