@@ -120,7 +120,6 @@ public:
   /**
    * @brief Replaces an existing callback with another function.
    */
-  /*
   void replace_callback(iterator it, T&& cb)
   {
     lock_guard lck{m_mutx};
@@ -131,7 +130,7 @@ public:
     lock_guard lck{m_mutx};
     m_callbacks = std::move(cbs);
   }
-*/
+
   class disabled_callback
   {
   public:
