@@ -131,11 +131,7 @@ void parameter::assist(parameter* x, void* b, long m, long a, char* s)
 
 void parameter::do_registration()
 {
-  m_matchers = find_or_create_matchers();
-  set_matchers_index();
-
-  m_selection_path.reset();
-  fill_selection();
+  clear_and_init_registration();
 
   set_priority();
   set_hidden();

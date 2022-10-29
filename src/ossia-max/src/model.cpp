@@ -136,10 +136,7 @@ void model::do_registration()
   m_registering = true;
   m_registered = true;
 
-  m_matchers = find_or_create_matchers();
-
-  m_selection_path.reset();
-  fill_selection();
+  clear_and_init_registration();
 
   set_priority();
   set_description();

@@ -75,31 +75,7 @@ void wrapper(void* x)
 void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  auto cpy = m_matchers;
-  for(const auto& m : cpy)
-  {
-    if(m->get_node() == &node)
-    {
-      m_matchers.erase(
-          std::remove(std::begin(m_matchers), std::end(m_matchers), m),
-          m_matchers.end());
-    }
-    else
-    {
-      auto parent = m->get_node()->get_parent();
-      while(parent)
-      {
-        if(parent == &node)
-        {
-          m_matchers.erase(
-              std::remove(std::begin(m_matchers), std::end(m_matchers), m),
-              m_matchers.end());
-          break;
-        }
-        parent = parent->get_parent();
-      }
-    }
-  }
+  remove_matchers(node);
 
   schedule(this, (method)wrapper, 0, nullptr, 0, nullptr);
 }
@@ -111,13 +87,9 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 
 void attribute::do_registration()
 {
-  if(m_name && std::string(m_name->s_name) != "")
+  if(m_name && std::string_view(m_name->s_name) != "")
   {
-    m_matchers = find_or_create_matchers();
-    set_matchers_index();
-
-    m_selection_path.reset();
-    fill_selection();
+    clear_and_init_registration();
 
     m_registered = true;
   }

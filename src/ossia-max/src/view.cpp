@@ -129,15 +129,11 @@ void view::destroy(view* x)
 
 void view::do_registration()
 {
-  if(m_name && std::string(m_name->s_name) != "")
+  if(m_name && std::string_view(m_name->s_name) != "")
   {
     m_registered = true;
 
-    m_matchers = find_or_create_matchers();
-    set_matchers_index();
-
-    m_selection_path.reset();
-    fill_selection();
+    clear_and_init_registration();
   }
 }
 
@@ -183,30 +179,7 @@ void view::unregister()
 void view::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
 {
   // first remove the matcher with old name
-  for(const auto& m : m_matchers)
-  {
-    if(m->get_node() == &node)
-    {
-      m_matchers.erase(
-          std::remove(std::begin(m_matchers), std::end(m_matchers), m),
-          m_matchers.end());
-    }
-    else
-    {
-      auto parent = m->get_node()->get_parent();
-      while(parent)
-      {
-        if(parent == &node)
-        {
-          m_matchers.erase(
-              std::remove(std::begin(m_matchers), std::end(m_matchers), m),
-              m_matchers.end());
-          break;
-        }
-        parent = parent->get_parent();
-      }
-    }
-  }
+  remove_matchers(node);
 
   // try to find a new match for the new name
   on_node_created_callback(node);

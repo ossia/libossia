@@ -23,15 +23,19 @@ std::vector<ossia::net::generic_device*> get_all_devices()
   for(auto device_obj : instance.devices.reference())
   {
     auto dev = device_obj->m_device;
-    if(dev)
+    if(dev && !ossia::contains(devs, dev.get()))
+    {
       devs.push_back(dev.get());
+    }
   }
 
   for(auto client_obj : instance.clients.reference())
   {
     auto dev = client_obj->m_device;
-    if(dev)
+    if(dev && !ossia::contains(devs, dev.get()))
+    {
       devs.push_back(dev.get());
+    }
   }
 
   return devs;

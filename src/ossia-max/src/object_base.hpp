@@ -88,7 +88,8 @@ public:
   float m_rate{10.f};
 
   std::shared_ptr<ossia::net::generic_device> m_device{};
-  std::vector<std::shared_ptr<matcher>> m_matchers{};
+  using matcher_vector = std::vector<std::shared_ptr<matcher>>;
+  matcher_vector m_matchers{};
   std::vector<matcher*> m_node_selection{};
   std::optional<ossia::traversal::path> m_selection_path{};
   static void class_setup(t_class* c);
@@ -168,6 +169,8 @@ public:
   static void loadbang(object_base* x);
   void save_children_state();
   void highlight();
+  void clear_and_init_registration();
+
   static void reset_color(object_base* x);
 
   void push_parameter_value(ossia::net::parameter_base* param, const ossia::value& val);
@@ -177,6 +180,11 @@ public:
 
 protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
+  void remove_matchers(const ossia::net::node_base& m);
+  void remove_matcher(const std::shared_ptr<matcher>& m);
+
+  [[nodiscard]]
+  matcher_vector::iterator remove_matcher(matcher_vector::iterator m);
 
   std::map<std::string, ossia::value> m_value_map{};
 
