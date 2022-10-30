@@ -144,8 +144,8 @@ struct execution_mock
 
 struct base_graph
 {
-  //ossia::graph g;
-  ossia::tc_graph g;
+  std::unique_ptr<ossia::tc_graph> gg = std::make_unique<ossia::tc_graph>();
+  ossia::tc_graph& g = *gg;
   ossia::execution_state e;
 
   base_graph(ossia::TestDevice& test) { e.register_device(&test.device); }
@@ -428,7 +428,8 @@ struct bc_ab_graph : base_graph
 TEST_CASE("test_bfs", "test_bfs")
 {
   using namespace ossia;
-  ossia::bfs_graph g;
+  auto gg = std::make_unique<bfs_graph>();
+  auto& g = *gg;
   auto n1 = boost::add_vertex({}, g.impl());
   auto n2 = boost::add_vertex({}, g.impl());
   auto n3 = boost::add_vertex({}, g.impl());
@@ -444,7 +445,8 @@ TEST_CASE("test_bfs_addr", "test_bfs_addr")
 
   TestDevice test;
 
-  ossia::bfs_graph g;
+  auto gg = std::make_unique<bfs_graph>();
+  auto& g = *gg;
   auto n1 = std::make_shared<node_mock>(
       ossia::inlets{new value_inlet(*test.a)},
       ossia::outlets{new value_outlet(*test.b)});
@@ -488,7 +490,8 @@ TEST_CASE("test_tcl_addr", "test_tcl_addr")
 TEST_CASE("test_mock", "test_mock")
 {
   using namespace ossia;
-  graph g;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
 
   auto n1
       = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
@@ -553,7 +556,8 @@ TEST_CASE("test_mock", "test_mock")
 TEST_CASE("test_disable_strict_nodes", "test_disable_strict_nodes")
 {
   using namespace ossia;
-  ossia::graph g;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
   auto disable_nodes = [&](std::vector<std::shared_ptr<node_mock>> nodes) {
     node_flat_set enabled, disabled;
     for(auto node : nodes)

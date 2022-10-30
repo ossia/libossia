@@ -257,7 +257,7 @@ int main(int argc, char** argv)
   using namespace std::literals;
 
   // Setup our datastructures
-  ossia::tc_graph graph;
+  auto graph = std::make_unique<ossia::tc_graph>();
   ossia::audio_device audio{
       "minidaw", // name, for APIs like JACK
       256,       // buffer size
@@ -274,10 +274,10 @@ int main(int argc, char** argv)
   e.samplesToModelRatio = ossia::flicks_per_second<double> / audio.get_sample_rate();
   e.register_device(&audio.device);
 
-  auto root_interval = create_score(graph, audio);
+  auto root_interval = create_score(*graph, audio);
   root_interval->start();
 
-  audio.engine->set_tick(tick{e, graph, audio.protocol, *root_interval});
+  audio.engine->set_tick(tick{e, *graph, audio.protocol, *root_interval});
 
   std::this_thread::sleep_for(20s);
 

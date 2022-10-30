@@ -623,7 +623,8 @@ TEST_CASE("test_simulated_state", "test_simulated_state")
 
   REQUIRE(utils.float_addr->value() == ossia::value(float(0.)));
 
-  ossia::graph g;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
   ossia::execution_state e;
   g.add_node(msg_node);
   g.state(e);
@@ -913,7 +914,9 @@ TEST_CASE("test_percentage", "test_percentage")
   using namespace ossia;
   root_scenario s;
   TestDevice utils;
-  ossia::graph g;
+
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
 
   ossia::scenario& scenario = *s.scenario;
   std::shared_ptr<time_event> e0 = start_event(scenario);
@@ -966,7 +969,8 @@ TEST_CASE("test_percentage_long", "test_percentage_long")
   using namespace ossia;
   root_scenario s;
   TestDevice utils;
-  ossia::graph g;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
 
   ossia::scenario& scenario = *s.scenario;
   std::shared_ptr<time_event> e0 = start_event(scenario);

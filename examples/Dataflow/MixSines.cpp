@@ -47,7 +47,8 @@ int main(int argc, char** argv)
   using namespace ossia;
   using namespace std::literals;
 
-  tc_graph g;
+  auto gg = std::make_unique<tc_graph>(); // graph implementation with static scheduling
+  auto& g = *gg;
   execution_state e;
   audio_device audio;
 

@@ -26,6 +26,15 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   endif()
 endif()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 10.0)
+    target_compile_options(ossia
+      PUBLIC
+        -fconcepts
+    )
+  endif()
+endif()
+
 if(WIN32)
   if(MSVC)
     target_compile_definitions(ossia PUBLIC

@@ -21,7 +21,8 @@ int main(int argc, char** argv)
   using namespace ossia;
   using namespace std::literals;
   oscquery_device osc; // a device to expose parameters over the network
-  tc_graph g;          // graph implementation with static scheduling
+  auto gg = std::make_unique<tc_graph>(); // graph implementation with static scheduling
+  auto& g = *gg;
   execution_state e;
   audio_device audio; // a device that maps to the sound card inputs & outputs
 

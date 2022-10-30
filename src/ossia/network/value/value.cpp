@@ -16,6 +16,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <sstream>
+#include <type_traits>
 
 /*
 template class std::vector<ossia::value>;
