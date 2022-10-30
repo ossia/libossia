@@ -469,7 +469,8 @@ TEST_CASE("test_tcl_addr", "test_tcl_addr")
 
   TestDevice test;
 
-  ossia::tc_graph g;
+  auto gg = std::make_unique<tc_graph>();
+  auto& g = *gg;
   auto n1 = std::make_shared<node_mock>(
       ossia::inlets{new value_inlet(*test.a)},
       ossia::outlets{new value_outlet(*test.b)});
