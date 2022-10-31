@@ -20,12 +20,15 @@ void push_all_values_async(
     for(const ossia::value& val : value_to_test)
     {
       local_addr[i][j]->set_value_type(val.get_type());
+      ctx.context.poll();
       local_addr[i][j]->push_value(val);
       REQUIRE(local_addr[i][j]->value() == val);
       j++;
+      ctx.context.poll();
     }
-    ctx.context.poll();
   }
+
+  ctx.context.run_for(std::chrono::milliseconds(100));
 
   for(int i = 0; i < N; i++)
   {
@@ -34,19 +37,28 @@ void push_all_values_async(
     {
       REQUIRE(remote_addr[i][j]->value() == val);
       remote_addr[i][j]->push_value(val);
+      ctx.context.poll();
       j++;
     }
-    ctx.context.poll();
   }
 
-  int j = 0;
+  ctx.context.run_for(std::chrono::milliseconds(100));
+
+  // Check that nothing goes too wrong even if we change the origina value types
   for(int i = 0; i < N; i++)
   {
-    local_addr[i][j]->set_value_type((ossia::val_type) i);
-    local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
-    j++;
-    ctx.context.poll();
+    int jmax = std::min(int(local_addr[i].size()), (int)ossia::val_type::NONE);
+    for(int j = 0; j < jmax; j++)
+    {
+      local_addr[i][j]->set_value_type((ossia::val_type) i);
+      ctx.context.poll();
+      local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
+      ctx.context.poll();
+    }
   }
+
+  ctx.context.run_for(std::chrono::milliseconds(100));
+
 
   for(int i = 0; i < N; i++)
   {
@@ -54,9 +66,27 @@ void push_all_values_async(
     for(const ossia::value& val : value_to_test)
     {
       remote_addr[i][j]->push_value(ossia::init_value((ossia::val_type) val.get_type()));
+      ctx.context.poll();
+      remote_addr[i][j]->push_value(1234);
+      ctx.context.poll();
       j++;
     }
-    ctx.context.poll();
+  }
+
+  ctx.context.run_for(std::chrono::milliseconds(100));
+
+  // Reset the local values in the initial state
+  for(int i = 0; i < N; i++)
+  {
+    int j = 0;
+    for(const ossia::value& val : value_to_test)
+    {
+      local_addr[i][j]->set_value_type((ossia::val_type) val.get_type());
+      ctx.context.poll();
+      local_addr[i][j]->push_value(val);
+      ctx.context.poll();
+      j++;
+    }
   }
 }
 
@@ -72,10 +102,11 @@ void push_all_values_domain_async(
     for(const ossia::value& val : value_to_test)
     {
       local_addr[i][j]->set_value_type(val.get_type());
+      ctx.context.poll();
       local_addr[i][j]->push_value(val);
+      ctx.context.poll();
       j++;
     }
-    ctx.context.poll();
   }
 
   for(int i = 0; i < N; i++)
@@ -84,18 +115,21 @@ void push_all_values_domain_async(
     for(const ossia::value& val : value_to_test)
     {
       remote_addr[i][j]->push_value(val);
+      ctx.context.poll();
       j++;
     }
-    ctx.context.poll();
   }
 
-  int j = 0;
   for(int i = 0; i < N; i++)
   {
-    local_addr[i][j]->set_value_type((ossia::val_type) i);
-    local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
-    j++;
-    ctx.context.poll();
+    int jmax = std::min(int(local_addr[i].size()), (int)ossia::val_type::NONE);
+    for(int j = 0; j < jmax; j++)
+    {
+      local_addr[i][j]->set_value_type((ossia::val_type) i);
+      ctx.context.poll();
+      local_addr[i][j]->push_value(ossia::init_value((ossia::val_type) i));
+      ctx.context.poll();
+    }
   }
 
   for(int i = 0; i < N; i++)
@@ -104,9 +138,9 @@ void push_all_values_domain_async(
     for(const ossia::value& val : value_to_test)
     {
       remote_addr[i][j]->push_value(ossia::init_value((ossia::val_type) val.get_type()));
+      ctx.context.poll();
       j++;
     }
-    ctx.context.poll();
   }
 }
 
@@ -118,7 +152,7 @@ void test_comm_generic_async(
     FunProto2 remote_proto,
     ossia::net::network_context& ctx)
 {
-  int N = 10;
+  int N = NUM_ADDRESSES_TO_TEST;
   remote_data rem{std::move(local_proto), std::move(remote_proto)};
 
   // Connect is async, it runs there
@@ -151,23 +185,25 @@ void test_comm_generic_async(
   {
     for(int access_i = 0; access_i < 3; access_i++)
     {
-      for(int i = 0; i < N; i++)
+      INFO(fmt::format("Access: {}", access_i));
+      for(auto param : vec)
       {
-        vec[i]->set_access(access_mode(access_i));
+        param->set_access(access_mode(access_i));
       }
 
       push_all_values_domain_async(N, local_addr, remote_addr, ctx);
 
       for(int bounding_i = 0 ; bounding_i < 6; bounding_i++)
       {
-        for(int i = 0; i < N; i++)
+        INFO(fmt::format("Bounding: {}", bounding_i));
+        for(auto param : vec)
         {
-          vec[i]->set_bounding(bounding_mode(bounding_i));
+          param->set_bounding(bounding_mode(bounding_i));
         }
 
         push_all_values_domain_async(N, local_addr, remote_addr, ctx);
 
-        for(int domain_i = 0; domain_i < N; domain_i++)
+        for(int domain_i = 0; domain_i < std::min(N, (int)vec.size()); domain_i++)
         {
           vec[domain_i]->set_domain(init_domain(ossia::val_type(domain_i)));
         }
@@ -175,7 +211,7 @@ void test_comm_generic_async(
         push_all_values_domain_async(N, local_addr, remote_addr, ctx);
 
 
-        for(int domain_i = 0; domain_i < N; domain_i++)
+        for(int domain_i = 0; domain_i < std::min(N, (int)vec.size()); domain_i++)
         {
           auto val = ossia::init_value((ossia::val_type) domain_i);
           auto dom = ossia::make_domain(val, val);
@@ -183,19 +219,16 @@ void test_comm_generic_async(
         }
 
         push_all_values_domain_async(N, local_addr, remote_addr, ctx);
-
       }
     }
   };
 
-  int k = 0;
+
   for(auto& vec : local_addr)
   {
     test_all_values(vec);
   }
 
-
-  k = 0;
   for(auto& vec : remote_addr)
   {
     test_all_values(vec);

@@ -405,10 +405,17 @@ struct osc_inbound_visitor
 
 struct osc_inbound_impulse_visitor
 {
+  // If our address is any type, e.g. float, etc., we treat an "empty" message as a bang on it
   template <typename T>
   ossia::value operator()(T&& t) const
   {
     return ossia::value{std::forward<T>(t)};
+  }
+
+  // If the address is a list otoh, it means that we're getting an empty list
+  ossia::value operator()(const std::vector<ossia::value>& t) const
+  {
+    return ossia::value{std::vector<ossia::value>{}};
   }
 
   ossia::value operator()() const { return {}; }
