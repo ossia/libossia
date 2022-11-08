@@ -24,6 +24,7 @@ struct audio_data
 {
   audio_array data;
   std::string path;
+  int rate{};
 };
 
 #if BOOST_VERSION >= 107200
