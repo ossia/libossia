@@ -62,10 +62,10 @@ struct move_data
   void operator()(geometry_port& out, geometry_port& in)
   {
     // OPTIMIZEME
-    if(out.flags & geometry_port::dirty_meshes)
-      in.meshes = std::move(out.meshes);
-    if(out.flags & geometry_port::dirty_transform)
-      in.transform = out.transform;
+    // if(out.flags & geometry_port::dirty_meshes)
+    in.meshes = out.meshes; //std::move(out.meshes);
+    // if(out.flags & geometry_port::dirty_transform)
+    in.transform = out.transform;
     in.flags = out.flags;
     out.flags = {};
   }
@@ -157,14 +157,14 @@ struct copy_data
   void operator()(const geometry_port& out, geometry_port& in)
   {
     // Called in init_node_visitor::copy, when copying from a node to another
-    if(out.flags & geometry_port::dirty_meshes)
-      in.meshes = out.meshes;
-    if(out.flags & geometry_port::dirty_transform)
-      in.transform = out.transform;
+    //if(out.flags & geometry_port::dirty_meshes)
+    in.meshes = out.meshes;
+    //if(out.flags & geometry_port::dirty_transform)
+    in.transform = out.transform;
     in.flags = out.flags;
   }
 
-  void operator()(const mesh_list& out, geometry_port& in)
+  void operator()(const mesh_list_ptr& out, geometry_port& in)
   {
     // Called in copy_data_pos below
     in.meshes = out;
@@ -173,8 +173,8 @@ struct copy_data
   void operator()(const geometry_port& out, geometry_delay_line& in)
   {
     // Called in env_writer, when copying from a node to a delay line
-    if(out.flags & geometry_port::dirty_meshes)
-      in.meshes.push_back(out.meshes);
+    // if(out.flags & geometry_port::dirty_meshes)
+    in.meshes.push_back(out.meshes);
   }
 };
 

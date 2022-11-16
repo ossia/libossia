@@ -95,15 +95,13 @@ struct geometry
 struct mesh_list
 {
   std::vector<geometry> meshes;
+  int64_t dirty_index{};
 };
-
+using mesh_list_ptr = std::shared_ptr<mesh_list>;
 struct transform3d
 {
   float matrix[16]{
-                      1., 0., 0., 0.,
-                      0., 1., 0., 0.,
-                      0., 0., 1., 0.,
-                      0., 0., 0., 1.,
+      1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1., 0., 0., 0., 0., 1.,
   };
 };
 
@@ -118,14 +116,14 @@ struct OSSIA_EXPORT geometry_port
 
   void clear();
 
-  mesh_list meshes;
+  mesh_list_ptr meshes;
   transform3d transform;
   uint8_t flags{};
 };
 
 struct geometry_delay_line
 {
-  std::vector<mesh_list> meshes;
+  std::vector<mesh_list_ptr> meshes;
 };
 
 }
