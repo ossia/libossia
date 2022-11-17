@@ -19,6 +19,36 @@ bool search_filter::filter(const ossia::net::node_base& node)
       return true;
   }
 
+  if(m_filter_type_size > 0)
+  {
+    if(auto p = node.get_parameter())
+    {
+        auto type = p->get_value_type();
+        symbol2val_type(nullptr);
+        // for(auto)
+       // FIXME
+    }
+    else
+    {
+        return true;
+    }
+    /*
+    const auto& access_opt = os
+    if(!access_opt.has_value())
+      return true;
+    bool match = false;
+    for(int i = 0; i < m_filter_modes_size; i++)
+    {
+      if(symbol2access_mode(m_filter_modes[i]) == *access_opt)
+      {
+        match = true;
+        break;
+      }
+    }
+    if(!match)
+      return true;*/
+  }
+
   if(m_filter_tags_size > 0)
   {
     bool match = true;

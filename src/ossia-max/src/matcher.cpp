@@ -10,12 +10,12 @@
 #include <ossia-max/src/utils.hpp>
 
 #include <regex>
-
+#include <fmt/ranges.h>
+#include <fmt/ostream.h>
 namespace ossia
 {
 namespace max_binding
 {
-
 matcher::matcher(ossia::net::node_base* n, object_base* p)
     : node{n}
     , owner{p}

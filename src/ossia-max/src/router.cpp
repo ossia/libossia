@@ -5,6 +5,8 @@
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/router.hpp>
 
+#include <ossia/network/common/path.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <regex>
@@ -84,17 +86,70 @@ void router::change_pattern(int index, std::string pattern)
   {
     pattern = pattern.substr(1);
   }
-  ossia::net::expand_ranges(pattern);
+
+  const bool simple = ossia::traversal::is_pattern(pattern);
+  ossia::net::expand_ranges(pattern); // FIXME check if this shouldn't be "canonicalize_str" ??
   pattern = ossia::traversal::substitute_characters(pattern);
 
+  std::string peepee = "^/?" + pattern + "($|/)";
+  post("ossia max : trying to use pattern : %d =>  %s (%d)",  m_patterns.size(), peepee.c_str(), (int) simple);
   try
   {
-    m_patterns[index] = std::regex("^/?" + pattern + "($|/)");
+    m_patterns[index].pattern = pattern;
+    m_patterns[index].simple = simple;
+    if(!simple)
+      m_patterns[index].regex = std::regex("^/?" + pattern + "($|/)");
   }
   catch(std::exception& e)
   {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
+}
+
+static bool process_simple(router* x, const std::string& address, int i, long argc, t_atom* argv)
+{
+  const auto& pattern_regex = x->m_patterns[i].regex;
+
+  std::smatch smatch;
+  if(std::regex_search(address, smatch, pattern_regex))
+  {
+    const std::string& newaddress = (x->m_truncate) ? smatch.suffix() : address;
+    if(newaddress.size() > 0)
+    {
+      outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
+    }
+    else
+    {
+      outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+static bool process_regex(router* x, const std::string& address, int i, long argc, t_atom* argv)
+{
+  const auto& pattern_regex = x->m_patterns[i].regex;
+
+  std::smatch smatch;
+  if(std::regex_search(address, smatch, pattern_regex))
+  {
+    const std::string& newaddress = (x->m_truncate) ? smatch.suffix() : address;
+    if(newaddress.size() > 0)
+    {
+      outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
+    }
+    else
+    {
+      outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
@@ -110,9 +165,14 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   else
   {
     bool match = false;
-    for(int i = 0; i < x->m_patterns.size(); i++)
+    for(std::size_t i = 0; i < x->m_patterns.size(); i++)
     {
-      const auto& pattern_regex = x->m_patterns[i];
+        auto& pat = x->m_patterns[i];
+        if(pat.simple)
+        {
+
+        }
+      const auto& pattern_regex = x->m_patterns[i].regex;
 
       std::smatch smatch;
       if(std::regex_search(address, smatch, pattern_regex))

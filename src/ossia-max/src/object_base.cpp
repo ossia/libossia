@@ -836,7 +836,15 @@ void object_base::fill_selection()
     for(const auto& m : m_matchers)
     {
       if(ossia::traversal::match(*m_selection_path, *m->get_node()))
+      {
         m_node_selection.push_back(m.get());
+
+        assert(m.get());
+        assert(m->get_node());
+        assert(!m->is_dead());
+        assert(!m->is_locked());
+        assert(!m->is_zombie());
+      }
     }
   }
   else
@@ -844,6 +852,11 @@ void object_base::fill_selection()
     for(const auto& m : m_matchers)
     {
       m_node_selection.push_back(m.get());
+      assert(m.get());
+      assert(m->get_node());
+      assert(!m->is_dead());
+      assert(!m->is_locked());
+      assert(!m->is_zombie());
     }
   }
 }
