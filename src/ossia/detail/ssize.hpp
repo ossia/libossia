@@ -4,7 +4,7 @@
 #include <version>
 // MacOSX11.3 SDK provides ssize but does not define it...
 #if __cpp_lib_ssize >= 201902L                                             \
-    || (__MAC_OS_X_VERSION_MIN_REQUIRED >= 113000 && _LIBCPP_STD_VER > 17) \
+    || (__MAC_OS_X_VERSION_MIN_REQUIRED >= 114000 && _LIBCPP_STD_VER > 17) \
     || defined(__EMSCRIPTEN__)
 #include <iterator>
 #define OSSIA_HAS_STD_SSIZE 1

@@ -23,7 +23,7 @@ namespace ossia::traversal
 using rexp = std::shared_ptr<re2::RE2>;
 static inline bool rexp_match(std::string_view m, const rexp& r)
 {
-  return re2::RE2::FullMatch(m, *r);
+  return re2::RE2::FullMatch(re2::StringPiece(m.data(), m.size()), *r);
 }
 
 void apply(const path& p, std::vector<ossia::net::node_base*>& nodes)
@@ -369,7 +369,7 @@ bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_ba
 bool match(std::string_view address, const regex_path::path_element& e)
 {
   re2::RE2 rex{e.address};
-  return re2::RE2::FullMatch(address, rex);
+  return re2::RE2::FullMatch(re2::StringPiece(address.data(), address.size()), rex);
 }
 
 }
