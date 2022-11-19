@@ -191,6 +191,13 @@ auto last_before(T&& container, const K& k)
   return it;
 }
 
+template <typename T, typename K>
+auto find_key(T&& vec, const K& key) noexcept
+{
+  return std::find_if(
+      vec.begin(), vec.end(), [&](const auto& elt) { return elt.first == key; });
+}
+
 template <std::size_t N>
 struct num
 {
@@ -268,4 +275,16 @@ auto insert_at_end(D& dest, S<T, Alloc>&& src)
       std::make_move_iterator(src.end()));
 }
 
+// https://stackoverflow.com/questions/45447361/how-to-move-certain-elements-of-stdvector-to-a-new-index-within-the-vector
+template <typename T>
+void change_item_position(T& v, size_t oldIndex, size_t newIndex)
+{
+  assert(oldIndex < v.size() && newIndex < v.size());
+
+  if(oldIndex > newIndex)
+    std::rotate(v.rend() - oldIndex - 1, v.rend() - oldIndex, v.rend() - newIndex);
+  else
+    std::rotate(
+        v.begin() + oldIndex, v.begin() + oldIndex + 1, v.begin() + newIndex + 1);
+}
 }

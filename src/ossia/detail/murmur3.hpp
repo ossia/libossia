@@ -5,7 +5,7 @@
 #pragma once
 #include <cstdint>
 #pragma clang attribute push( \
-    __attribute__((no_sanitize("undefined"))), apply_to = function)
+    __attribute__((no_sanitize("integer"))), apply_to = function)
 
 namespace ossia
 {
