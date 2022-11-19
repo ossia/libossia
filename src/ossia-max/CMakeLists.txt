@@ -35,6 +35,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(PROJECT_SRCS
     src/assert.hpp
     src/assert.cpp
+    src/cue.hpp
+    src/cue.cpp
     src/ossia-max.cpp
     src/ossia-max.hpp
     src/object_base.cpp
@@ -154,6 +156,7 @@ set(OSSIA_EXT_LIST
     ossia.monitor
     ossia.assert
     ossia.equals
+    ossia.cue
 )
 set(OSSIA_MAX_SYMBOLS "")
 foreach(ossiaExt ${OSSIA_EXT_LIST})

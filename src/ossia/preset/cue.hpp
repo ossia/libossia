@@ -8,6 +8,10 @@
 #include <unordered_set>
 namespace ossia
 {
+namespace net {
+class node_base;
+class device_base;
+}
 struct cue
 {
   std::string name{};

@@ -2,7 +2,8 @@
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/common/path.hpp>
-
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/base/device.hpp>
 #include <cassert>
 #include <iostream>
 
