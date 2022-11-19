@@ -140,6 +140,7 @@ set(API_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/cue.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.hpp"
 
@@ -228,6 +229,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/rate_limiting_protocol.cpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/cue.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/exception.cpp"
 
