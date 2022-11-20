@@ -234,7 +234,6 @@ void device::register_children(device* xx)
     // this happens when the patcher is loaded or instantiated as an abstraction
     // and also when it is pasted / duplicated
     register_children_in_patcher_recursively(root_patcher, nullptr);
-    output_all_values(root_patcher, true);
   }
 
   for(remote* remote : ossia_max::instance().remotes.copy())
@@ -246,6 +245,9 @@ void device::register_children(device* xx)
     obj->do_registration();
     register_children_in_patcher_recursively(obj->m_patcher, obj);
   }
+
+  // Finally output everything
+  output_all_values(root_patcher, true);
   critical_exit(0);
 }
 
