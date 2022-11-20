@@ -12,6 +12,56 @@ namespace ossia
 
 namespace
 {
+void apply_map(ossia::net::node_base& dest, const ossia::value& v)
+{
+  if(dest.children().empty())
+    return;
+
+  const auto& m = *v.target<ossia::value_map_type>();
+  for(const auto& [k, child_v] : m)
+  {
+    if(auto cld = dest.find_child(k))
+    {
+      if(!cld->children().empty())
+      {
+        if(child_v.get_type() == ossia::val_type::MAP)
+          apply_map(*cld, child_v);
+      }
+      else if(cld->get_parameter())
+      {
+        if(child_v.get_type() != ossia::val_type::MAP)
+          cld->get_parameter()->push_value(child_v);
+      }
+    }
+  }
+}
+
+struct push_data_to_node
+{
+  ossia::net::node_base& dest;
+  void operator()(const value_port& p) const
+  {
+    // TODO do the unit conversion
+    for(auto& val : p.get_data())
+    {
+      if(val.value.get_type() == ossia::val_type::MAP)
+      {
+        apply_map(dest, val.value);
+      }
+    }
+  }
+
+  void operator()(const midi_port& p) const
+  {
+  }
+
+  void operator()(const audio_port& p) const
+  {
+  }
+
+  [[noreturn]] void operator()(const geometry_port& p) const { assert(false); }
+  void operator()() const noexcept { }
+};
 struct push_data
 {
   ossia::net::parameter_base& dest;
@@ -156,7 +206,9 @@ void outlet::write(execution_state& e)
       }
     }
       },
-      do_nothing_for_nodes{});
+  [&](ossia::net::node_base* node, bool) {
+    visit(push_data_to_node{*node});
+  });
 }
 
 value_inlet::~value_inlet() = default;
