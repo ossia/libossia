@@ -279,8 +279,6 @@ auto insert_at_end(D& dest, S<T, Alloc>&& src)
 template <typename T>
 void change_item_position(T& v, size_t oldIndex, size_t newIndex)
 {
-  assert(oldIndex < v.size() && newIndex < v.size());
-
   if(oldIndex > newIndex)
     std::rotate(v.rend() - oldIndex - 1, v.rend() - oldIndex, v.rend() - newIndex);
   else
