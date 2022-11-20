@@ -42,7 +42,7 @@
 #cmakedefine OSSIA_FFT_KFR
 
 // Code configuration
-#cmakedefine OSSIA_CALLBACK_CONTAINER_MUTEX
+#cmakedefine OSSIA_CALLBACK_CONTAINER_MUTEX @OSSIA_CALLBACK_CONTAINER_MUTEX@
 
 // In score we only have one level of callback.
 // But in e.g. Max it's possible for someone to write
