@@ -1010,20 +1010,21 @@ std::vector<parameter_base*> find_or_create_parameter(
 value_map_type to_map(const node_base& n) noexcept
 {
   ossia::value_map_type map;
-  auto cld = n.children();
+  const auto& cld = n.children();
   for(auto& node : cld)
   {
-    if(cld.size() > 0)
+    auto& e = map[node->get_name()];
+    if(node->children().size() > 0)
     {
-      map[node->get_name()] = to_map(*node);
+      e = to_map(*node);
     }
     else if(auto p = node->get_parameter())
     {
-      map[node->get_name()] = p->value();
+      e = p->value();
     }
     else
     {
-      map[node->get_name()] = ossia::value{};
+      e = ossia::value{};
     }
   }
   return map;
