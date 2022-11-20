@@ -22,6 +22,8 @@ struct cue
 class OSSIA_EXPORT cues : Nano::Observer
 {
 public:
+  std::vector<cue> cues{{.name{"Init"}}};
+
   void set_device(ossia::net::device_base* dev);
 
   int size() const noexcept { return cues.size(); }
@@ -31,7 +33,8 @@ public:
     return (idx >= 0 && idx < std::ssize(cues)) ? &cues[idx] : nullptr;
   }
   std::optional<int> find_cue(std::string_view name);
-  std::vector<cue> cues{{.name{"Init"}}};
+  int get_cue(std::string_view name);
+
 
   void create(std::string_view name);
 
@@ -63,19 +66,8 @@ public:
 
   //private:
   ossia::net::device_base* dev{};
-  int get_cue(std::string_view name);
   int m_current{0};
 
-  struct selector
-  {
-    enum
-    {
-      Add,
-      Remove
-    } mode{Add};
-    std::string pattern{"/"};
-  };
-  std::vector<selector> m_selectors{selector{}};
   std::unordered_set<ossia::net::node_base*> m_selection;
 };
 }

@@ -230,7 +230,7 @@ int cues::get_cue(std::string_view name)
       cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
   if(BOOST_UNLIKELY(it == cues.end()))
   {
-    cues.push_back(cue{.name{name}});
+    cues.push_back(cue{.name = std::string(name)});
     return cues.size() - 1;
   }
   else
