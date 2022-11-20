@@ -27,8 +27,8 @@
 #include "search.hpp"
 #include "view.hpp"
 
-#include <ossia/detail/safe_vec.hpp>
 #include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/safe_vec.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
 #include <ossia-max/src/object_base.hpp>
@@ -116,8 +116,8 @@ struct patcher_descriptor
 
   auto size() const
   {
-    return parameters.size() + remotes.size() + attributes.size() + cues.size() + (model ? 1 : 0)
-           + (view ? 1 : 0) + (device ? 1 : 0) + (client ? 1 : 0);
+    return parameters.size() + remotes.size() + attributes.size() + cues.size()
+           + (model ? 1 : 0) + (view ? 1 : 0) + (device ? 1 : 0) + (client ? 1 : 0);
   }
 
   bool has_no_master_node()
@@ -224,7 +224,8 @@ public:
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<logger*> loggers;
 
-  static ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
+  static ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
+      s_node_matchers_map;
   static std::recursive_mutex s_node_matchers_mut;
 
   // TODO is this still needed ?

@@ -1,18 +1,19 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/string_map.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 #include <ossia/preset/preset.hpp>
 
-#include <ossia/detail/string_map.hpp>
 #include <ossia-max/src/object_base.hpp>
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 
 #include <re2/re2.h>
+
 #include <ctre.hpp>
 
 namespace ossia
@@ -139,17 +140,17 @@ void object_base::highlight()
 
 void object_base::clear_and_init_registration()
 {
-    // Matchers must be cleared *before* find_or_create so that
-    // nodes that are killed on "m_matchers = "
-    // don't get found during the find_or_create_matchers()
-    m_node_selection.clear();
-    m_matchers.clear();
+  // Matchers must be cleared *before* find_or_create so that
+  // nodes that are killed on "m_matchers = "
+  // don't get found during the find_or_create_matchers()
+  m_node_selection.clear();
+  m_matchers.clear();
 
-    m_matchers = find_or_create_matchers();
-    set_matchers_index();
+  m_matchers = find_or_create_matchers();
+  set_matchers_index();
 
-    m_selection_path.reset();
-    fill_selection();
+  m_selection_path.reset();
+  fill_selection();
 }
 
 void object_base::reset_color(object_base* x)
@@ -171,28 +172,30 @@ static ossia::string_map<re2::RE2*> regex_cache;
 
 bool regex_match_with_cache(std::string_view regex, std::string_view str)
 {
-    re2::RE2* r{};
+  re2::RE2* r{};
 
+  {
+    std::lock_guard<std::mutex> lock{regex_cache_mutex};
+    auto it = regex_cache.find(regex);
+    if(it == regex_cache.end())
     {
-        std::lock_guard<std::mutex> lock{regex_cache_mutex};
-        auto it = regex_cache.find(regex);
-        if(it == regex_cache.end())
-        {
-            auto res = regex_cache.emplace(regex, new re2::RE2{regex});
-            it = res.first;
-            assert(res.second);
-        }
-        r = it.value();
+      auto res = regex_cache.emplace(regex, new re2::RE2{regex});
+      it = res.first;
+      assert(res.second);
     }
+    r = it.value();
+  }
 
-    return re2::RE2::FullMatch(str, *r);
+  return re2::RE2::FullMatch(str, *r);
 }
 
-template<typename T>
+template <typename T>
 static void move_vector_into_another(std::vector<T>&& src, std::vector<T>& dst)
 {
-    dst.insert(dst.end(), std::make_move_iterator(src.begin()), std::make_move_iterator(src.end()));
-    src.clear();
+  dst.insert(
+      dst.end(), std::make_move_iterator(src.begin()),
+      std::make_move_iterator(src.end()));
+  src.clear();
 }
 
 std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
@@ -213,7 +216,6 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
     bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
     bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-
 
     for(auto dev : get_all_devices())
     {
@@ -292,23 +294,24 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
             {
               auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
               // Node were create in a callback directly inside m_matchers... rapatriate them
-              if(!m_matchers.empty()) {
-                  move_vector_into_another(std::move(m_matchers), matchers);
-                  for(auto n : new_nodes)
-                  {
-                    ossia::try_setup_parameter(
-                        static_cast<parameter*>(this)->m_type->s_name, *n);
-                  }
+              if(!m_matchers.empty())
+              {
+                move_vector_into_another(std::move(m_matchers), matchers);
+                for(auto n : new_nodes)
+                {
+                  ossia::try_setup_parameter(
+                      static_cast<parameter*>(this)->m_type->s_name, *n);
+                }
               }
               else
               {
-                  matchers.reserve(new_nodes.size());
-                  for(auto n : new_nodes)
-                  {
-                    ossia::try_setup_parameter(
-                        static_cast<parameter*>(this)->m_type->s_name, *n);
-                    matchers.push_back(std::make_shared<matcher>(n, this));
-                  }
+                matchers.reserve(new_nodes.size());
+                for(auto n : new_nodes)
+                {
+                  ossia::try_setup_parameter(
+                      static_cast<parameter*>(this)->m_type->s_name, *n);
+                  matchers.push_back(std::make_shared<matcher>(n, this));
+                }
               }
             }
             else
@@ -324,15 +327,15 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
                 // Node were create in a callback directly inside m_matchers... rapatriate them
                 if(!m_matchers.empty())
                 {
-                    assert(m_matchers.size() == 1);
-                    matchers.push_back(std::move(m_matchers.front()));
-                    m_matchers.clear();
+                  assert(m_matchers.size() == 1);
+                  matchers.push_back(std::move(m_matchers.front()));
+                  m_matchers.clear();
                 }
                 else
                 {
-                    ossia::try_setup_parameter(
-                        static_cast<parameter*>(this)->m_type->s_name, *n);
-                    matchers.push_back(std::make_shared<matcher>(n, this));
+                  ossia::try_setup_parameter(
+                      static_cast<parameter*>(this)->m_type->s_name, *n);
+                  matchers.push_back(std::make_shared<matcher>(n, this));
                 }
               }
             }
@@ -344,15 +347,15 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
               auto new_nodes = ossia::net::create_nodes(dev->get_root_node(), osc_name);
               if(!m_matchers.empty())
               {
-                  move_vector_into_another(std::move(m_matchers), matchers);
+                move_vector_into_another(std::move(m_matchers), matchers);
               }
               else
               {
-              matchers.reserve(new_nodes.size());
-              for(auto n : new_nodes)
-              {
-                matchers.push_back(std::make_shared<matcher>(n, this));
-              }
+                matchers.reserve(new_nodes.size());
+                for(auto n : new_nodes)
+                {
+                  matchers.push_back(std::make_shared<matcher>(n, this));
+                }
               }
             }
             else
@@ -364,13 +367,13 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
                 if(!m_matchers.empty())
                 {
-                    assert(m_matchers.size() == 1);
-                    matchers.push_back(std::move(m_matchers.front()));
-                    m_matchers.clear();
+                  assert(m_matchers.size() == 1);
+                  matchers.push_back(std::move(m_matchers.front()));
+                  m_matchers.clear();
                 }
                 else
                 {
-                    matchers.push_back(std::make_shared<matcher>(n, this));
+                  matchers.push_back(std::make_shared<matcher>(n, this));
                 }
               }
             }
@@ -401,47 +404,46 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
 void object_base::remove_matchers(const ossia::net::node_base& node)
 {
-    for(auto it = m_matchers.begin(); it != m_matchers.end(); )
+  for(auto it = m_matchers.begin(); it != m_matchers.end();)
+  {
+    bool removed = false;
+    auto& m = *it;
+    if(m->get_node() == &node)
     {
-      bool removed = false;
-      auto& m = *it;
-      if(m->get_node() == &node)
-      {
-        it = remove_matcher(it);
-        removed = true;
-      }
-      else
-      {
-        auto parent = m->get_node()->get_parent();
-        while(parent)
-        {
-          if(parent == &node)
-          {
-            it = remove_matcher(it);
-            removed = true;
-            break;
-          }
-          parent = parent->get_parent();
-        }
-      }
-
-      if(!removed)
-          ++it;
+      it = remove_matcher(it);
+      removed = true;
     }
+    else
+    {
+      auto parent = m->get_node()->get_parent();
+      while(parent)
+      {
+        if(parent == &node)
+        {
+          it = remove_matcher(it);
+          removed = true;
+          break;
+        }
+        parent = parent->get_parent();
+      }
+    }
+
+    if(!removed)
+      ++it;
+  }
 }
 
 void object_base::remove_matcher(const std::shared_ptr<matcher>& m)
 {
-    ossia::remove_erase(m_node_selection, m.get());
-    ossia::remove_erase(m_matchers, m);
+  ossia::remove_erase(m_node_selection, m.get());
+  ossia::remove_erase(m_matchers, m);
 }
 
-auto object_base::remove_matcher(matcher_vector::iterator it)
--> matcher_vector::iterator
+auto object_base::remove_matcher(matcher_vector::iterator it) -> matcher_vector::iterator
 {
-    auto& m = *it;
-    ossia::remove_erase(m_node_selection, m.get());
-    return m_matchers.erase(it);
+  auto& m = *it;
+  ossia::remove_erase(m_node_selection, m.get());
+  return m_matchers.erase(it);
 }
 
 void object_base::loadbang(object_base* x)
@@ -513,21 +515,19 @@ void object_base::loadbang(object_base* x)
 
 void object_base::on_parameter_removing(const ossia::net::parameter_base& n)
 {
-    for(auto& matcher : m_matchers)
-    {
-        if(matcher && matcher->orig_param)
-        if(matcher->orig_param == &n)
-        {
-            matcher->callbackit.reset();
-            matcher->orig_param = nullptr;
+  for(auto& matcher : m_matchers)
+  {
+    if(matcher && matcher->orig_param)
+      if(matcher->orig_param == &n)
+      {
+        matcher->callbackit.reset();
+        matcher->orig_param = nullptr;
 
-            auto& node = n.get_node();
-            auto& dev = node.get_device();
-            dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(this);
-
-
-        }
-    }
+        auto& node = n.get_node();
+        auto& dev = node.get_device();
+        dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(this);
+      }
+  }
 }
 
 void object_base::on_node_removing(const ossia::net::node_base& n)
@@ -557,12 +557,12 @@ void object_base::on_node_removing(const ossia::net::node_base& n)
       nd->set_dead();
     }
   }
-  ossia::remove_erase_if(m_node_selection,
-          [&](const matcher* m) { return (m->get_node() == &n) && !m->is_locked(); });
-  ossia::remove_erase_if(m_matchers,
-          [&](const std::shared_ptr<matcher>& m) {
+  ossia::remove_erase_if(m_node_selection, [&](const matcher* m) {
     return (m->get_node() == &n) && !m->is_locked();
-          });
+  });
+  ossia::remove_erase_if(m_matchers, [&](const std::shared_ptr<matcher>& m) {
+    return (m->get_node() == &n) && !m->is_locked();
+  });
   set_matchers_index();
   m_is_deleted = false;
 }
@@ -1167,8 +1167,7 @@ void object_base::make_global_paths(const std::string& name)
   }
 }
 
-static constexpr auto numbers_regex
-    = ctll::fixed_string{"\\.[0-9]+$"};
+static constexpr auto numbers_regex = ctll::fixed_string{"\\.[0-9]+$"};
 void object_base::update_path()
 {
   m_paths.clear();
@@ -1229,7 +1228,7 @@ void save_children_recursively(t_object* patcher)
   auto& patchers = ossia_max::instance().patchers;
   auto it = patchers.find(patcher);
   if(it == patchers.end())
-      return;
+    return;
 
   auto& pat_desc = it->second;
 

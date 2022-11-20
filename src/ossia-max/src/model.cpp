@@ -103,7 +103,7 @@ void model::destroy(model* x)
 
   // We don't want to register children if the entire patcher was deleted
   auto& omax = ossia_max::instance();
-  if(auto it = omax.patchers.find(x->m_patcher) ; it != omax.patchers.end())
+  if(auto it = omax.patchers.find(x->m_patcher); it != omax.patchers.end())
   {
     register_children_in_patcher_recursively(x->m_patcher, x->find_parent_object());
     output_all_values(x->m_patcher, true);
@@ -129,8 +129,8 @@ void model::assist(model*, void*, long m, long, char* s)
 
 void model::do_registration()
 {
-    if (m_registering)
-        return;
+  if(m_registering)
+    return;
   m_registering = true;
   m_registered = true;
 

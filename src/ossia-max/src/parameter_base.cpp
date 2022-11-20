@@ -244,7 +244,7 @@ void parameter_base::set_minmax()
           max.resize(OSSIA_MAX_MAX_ATTR_SIZE);
           break;
         case ossia::val_type::MAP:
-            break;
+          break;
         default:
           continue;
       }

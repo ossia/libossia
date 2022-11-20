@@ -308,7 +308,7 @@ void remote::do_registration()
 {
   if(m_name && std::string_view(m_name->s_name) != "")
   {
-      clear_and_init_registration();
+    clear_and_init_registration();
 
     set_unit();
     m_registered = true;

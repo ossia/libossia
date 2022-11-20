@@ -94,15 +94,14 @@ static configuration read_configuration_file()
     return {};
 
   configuration conf;
-  auto read_bool = [&] (auto member, std::string_view name) {
-
-      if(auto it = doc.FindMember(name.data()); it != doc.MemberEnd())
+  auto read_bool = [&](auto member, std::string_view name) {
+    if(auto it = doc.FindMember(name.data()); it != doc.MemberEnd())
+    {
+      if(it->value.IsBool())
       {
-        if(it->value.IsBool())
-        {
-          conf.*member = it->value.GetBool();
-        }
+        conf.*member = it->value.GetBool();
       }
+    }
   };
 
   read_bool(&configuration::defer_by_default, "default_deferlow");
@@ -154,7 +153,7 @@ ossia_max::ossia_max()
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
-    /*
+  /*
   m_device->on_attribute_modified
       .disconnect<&device_base::on_attribute_modified_callback>();
 

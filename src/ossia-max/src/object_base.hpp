@@ -78,7 +78,7 @@ public:
   bool m_lock{false}; // attribute lock
   bool m_local_mute{false};
   bool m_registering{}; // true while registering to prevent recursive registration
-  bool m_registered{}; // true if register_node() have been called at least once
+  bool m_registered{};  // true if register_node() have been called at least once
   ossia::net::address_scope m_addr_scope{};
   object_class m_otype{};
 
@@ -184,8 +184,7 @@ protected:
   void remove_matchers(const ossia::net::node_base& m);
   void remove_matcher(const std::shared_ptr<matcher>& m);
 
-  [[nodiscard]]
-  matcher_vector::iterator remove_matcher(matcher_vector::iterator m);
+  [[nodiscard]] matcher_vector::iterator remove_matcher(matcher_vector::iterator m);
 
   std::map<std::string, ossia::value> m_value_map{};
 
@@ -267,9 +266,7 @@ struct value2atom
       v.apply(*this);
   }
 
-  void operator()(const ossia::value_map_type& t) const
-  {
-  }
+  void operator()(const ossia::value_map_type& t) const { }
 
   void operator()() const { }
 };
@@ -385,9 +382,7 @@ struct value_visitor
     set_out(va.size(), list_ptr);
   }
 
-  void operator()(const ossia::value_map_type& t) const
-  {
-  }
+  void operator()(const ossia::value_map_type& t) const { }
 
   void operator()() const
   {

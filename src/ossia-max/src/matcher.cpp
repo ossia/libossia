@@ -30,8 +30,8 @@ matcher::matcher(ossia::net::node_base* n, object_base* p)
         orig_param = node->get_parameter();
         if(orig_param)
         {
-          callbackit
-              = orig_param->add_callback([=](const ossia::value& v) { output_value(v); });
+          callbackit = orig_param->add_callback(
+              [=](const ossia::value& v) { output_value(v); });
 
           auto& dev = n->get_device();
           dev.on_parameter_removing.connect<&object_base::on_parameter_removing>(owner);
@@ -58,13 +58,13 @@ matcher::~matcher()
 
   auto& map = omax.s_node_matchers_map;
   {
-  auto it = map.find(node);
-  if(it != map.end())
-  {
-    it->second.remove_all(this);
-    if(it->second.empty())
-      map.erase(it);
-  }
+    auto it = map.find(node);
+    if(it != map.end())
+    {
+      it->second.remove_all(this);
+      if(it->second.empty())
+        map.erase(it);
+    }
   }
 
   if(owner)
@@ -77,7 +77,6 @@ matcher::~matcher()
       dev.on_parameter_removing.disconnect<&object_base::on_parameter_removing>(owner);
     node->about_to_be_deleted.disconnect<&object_base::on_node_removing>(owner);
     remove_callback();
-
 
     if(owner->m_otype == object_class::param || owner->m_otype == object_class::model)
     {
@@ -170,13 +169,13 @@ void matcher::output_value(ossia::value v)
 
 void matcher::remove_callback()
 {
-    auto param = node->get_parameter();
-    if(param && callbackit)
-    {
-      auto cb = std::move(callbackit);
-      callbackit.reset();
-      param->remove_callback(*cb);
-    }
+  auto param = node->get_parameter();
+  if(param && callbackit)
+  {
+    auto cb = std::move(callbackit);
+    callbackit.reset();
+    param->remove_callback(*cb);
+  }
 }
 
 void matcher::set_addr_symbol()

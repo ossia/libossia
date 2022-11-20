@@ -46,7 +46,7 @@ public:
   // this is used to output the 'instance' number of a ossia.remote with pattern matching
   int m_index{0};
 
-//private:
+  //private:
   // TODO rename those as m_node/m_owner/m_callbackit
   ossia::net::node_base* node{};
   ossia::net::parameter_base* orig_param{};
