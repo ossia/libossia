@@ -1,9 +1,10 @@
 #include "cue.hpp"
 
 #include <ossia/detail/algorithms.hpp>
-#include <ossia/network/common/path.hpp>
-#include <ossia/network/base/node.hpp>
 #include <ossia/network/base/device.hpp>
+#include <ossia/network/base/node.hpp>
+#include <ossia/network/common/path.hpp>
+
 #include <cassert>
 #include <iostream>
 
@@ -53,8 +54,8 @@ static void list_all_children_unsorted_rec(ossia::net::node_base* node, auto& se
 {
   for(auto& n : node->unsafe_children())
   {
-    if(n->get_parameter())
-      set.insert(n.get());
+    //if(n->get_parameter())
+    set.insert(n.get());
     list_all_children_unsorted_rec(n.get(), set);
   }
 }
@@ -94,12 +95,14 @@ void cues::set_device(ossia::net::device_base* dev)
 
   if(this->dev)
   {
+    this->dev->on_node_created.disconnect<&cues::on_node_created>(this);
     this->dev->on_node_removing.disconnect<&cues::on_node_removed>(this);
   }
 
   this->dev = dev;
   if(this->dev)
   {
+    this->dev->on_node_created.connect<&cues::on_node_created>(this);
     this->dev->on_node_removing.connect<&cues::on_node_removed>(this);
   }
 
@@ -110,7 +113,7 @@ void cues::recall(int idx)
 {
   if(idx < 0)
     return;
-  if(idx >= std::ssize(m_cues))
+  if(idx >= std::ssize(cues))
     return;
   m_current = idx;
   recall();
@@ -119,12 +122,13 @@ void cues::recall(int idx)
 void cues::recall()
 {
   auto& root = dev->get_root_node();
-  for(auto& [addr, val] : m_cues[m_current].preset)
+  for(auto& [addr, val] : cues[m_current].preset)
   {
     // No pattern in saved cue
     if(auto n = ossia::net::find_node(root, addr))
       if(auto p = n->get_parameter())
-        p->push_value(val);
+        if(!ossia::net::get_recall_safe(*n))
+          p->push_value(val);
     // if(ossia::traversal::is_pattern(name))
     // {
     //   ossia::traversal::make_path(name);
@@ -149,8 +153,8 @@ void cues::namespace_select(std::string_view name)
   auto nodes = ossia::net::find_nodes(dev->get_root_node(), name);
   for(auto n : nodes)
   {
-    if(n->get_parameter())
-      this->m_selection.insert(n);
+    //if(n->get_parameter())
+    this->m_selection.insert(n);
     list_all_children_unsorted_rec(n, this->m_selection);
   }
 }
@@ -191,36 +195,60 @@ void cues::namespace_deselect(std::string_view pattern)
   }
 }
 
+void cues::namespace_grab(std::string_view name)
+{
+  if(!dev)
+    return;
+}
+
+void cues::on_node_created(const net::node_base& n)
+{
+  if(m_selection.contains(&dev->get_root_node()))
+  {
+    m_selection.insert(const_cast<net::node_base*>(&n));
+  }
+  else
+  {
+    while(auto parent = n.get_parent())
+    {
+      if(m_selection.contains(parent))
+      {
+        m_selection.insert(const_cast<net::node_base*>(&n));
+      }
+    }
+  }
+}
+
 void cues::on_node_removed(const net::node_base& n)
 {
-  m_selection.erase((net::node_base*)&n);
+  m_selection.erase(const_cast<net::node_base*>(&n));
 }
 
 int cues::get_cue(std::string_view name)
 {
   auto it = std::find_if(
-      m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
-  if(BOOST_UNLIKELY(it == m_cues.end()))
+      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
+  if(BOOST_UNLIKELY(it == cues.end()))
   {
-    m_cues.push_back(cue{.name{name}});
-    return m_cues.size() - 1;
+    cues.push_back(cue{.name{name}});
+    return cues.size() - 1;
   }
   else
   {
-    return std::distance(m_cues.begin(), it);
+    return std::distance(cues.begin(), it);
   }
 }
 std::optional<int> cues::find_cue(std::string_view name)
 {
   auto it = std::find_if(
-      m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
-  if(BOOST_UNLIKELY(it == m_cues.end()))
+      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
+  if(BOOST_UNLIKELY(it == cues.end()))
   {
     return std::nullopt;
   }
   else
   {
-    return std::distance(m_cues.begin(), it);
+    return std::distance(cues.begin(), it);
   }
 }
 
@@ -235,10 +263,10 @@ void cues::remove(int idx)
 {
   if(idx < 0)
     return;
-  if(idx >= std::ssize(m_cues))
+  if(idx >= std::ssize(cues))
     return;
 
-  m_cues.erase(m_cues.begin() + idx);
+  cues.erase(cues.begin() + idx);
 
   if(m_current < idx)
   {
@@ -247,7 +275,7 @@ void cues::remove(int idx)
   else if(m_current == idx)
   {
     // We keep the same index selected
-    if(m_current >= std::ssize(m_cues))
+    if(m_current >= std::ssize(cues))
     {
       m_current -= 1;
     }
@@ -259,9 +287,9 @@ void cues::remove(int idx)
     m_current -= 1;
   }
 
-  if(m_cues.empty())
+  if(cues.empty())
   {
-    m_cues.push_back({.name{"Init"}});
+    cues.push_back({.name{"Init"}});
     m_current = 0;
   }
 }
@@ -269,11 +297,11 @@ void cues::remove(int idx)
 void cues::remove(std::string_view name)
 {
   auto it = std::find_if(
-      m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
+      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
 
-  if(it != m_cues.end())
+  if(it != cues.end())
   {
-    int idx = std::distance(m_cues.begin(), it);
+    int idx = std::distance(cues.begin(), it);
     remove(idx);
   }
 }
@@ -291,8 +319,8 @@ void cues::update(int idx)
   if(!dev)
     return;
   assert(idx >= 0);
-  assert(idx < std::ssize(m_cues));
-  auto& cue = m_cues[idx];
+  assert(idx < std::ssize(cues));
+  auto& cue = cues[idx];
 
   // v1
   /*
@@ -380,7 +408,7 @@ void cues::output(std::string_view name, std::string_view pattern)
 
 void cues::clear()
 {
-  m_cues.clear();
+  cues.clear();
 }
 
 void cues::move(std::string_view name, int to)
@@ -393,6 +421,6 @@ void cues::move(int from, int to)
 {
   if(from < 0 || to < 0 || from == to)
     return;
-  change_item_position(m_cues, from, to);
+  change_item_position(cues, from, to);
 }
 }

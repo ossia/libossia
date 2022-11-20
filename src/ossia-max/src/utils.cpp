@@ -412,6 +412,22 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
 }
 
 template <class T>
+void register_unnamed_objects_by_type(const ossia::safe_set<T>& objs)
+{
+  for(auto obj : objs)
+  {
+    if(!obj->m_dead)
+    {
+      obj->m_node_selection.clear();
+      auto m = std::move(obj->m_matchers);
+      obj->m_matchers.clear();
+      m.clear();
+      obj->update_path();
+      obj->do_registration();
+    }
+  }
+}
+template <class T>
 void register_objects_by_type(const ossia::safe_set<T>& objs)
 {
   for(auto obj : objs)
@@ -491,6 +507,7 @@ void register_children_in_patcher_recursively(t_object* patcher, object_base* ca
   register_objects_by_type(pat_desc.parameters);
   register_objects_by_type(pat_desc.remotes);
   register_objects_by_type(pat_desc.attributes);
+  register_unnamed_objects_by_type(pat_desc.cues);
 
   for(auto subpatcher : pat_desc.subpatchers)
   {

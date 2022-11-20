@@ -42,7 +42,8 @@ enum class object_class
   explorer,
   search,
   monitor,
-  fuzzysearch
+  fuzzysearch,
+  cue
 };
 
 struct object_base;

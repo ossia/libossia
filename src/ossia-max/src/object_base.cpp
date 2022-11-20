@@ -78,6 +78,9 @@ object_base::~object_base()
       case object_class::remote:
         pat_desc.remotes.remove_all(static_cast<remote*>(this));
         break;
+      case object_class::cue:
+        pat_desc.cues.remove_all(static_cast<ocue*>(this));
+        break;
       case object_class::view:
         if(pat_desc.view == this)
           pat_desc.view = nullptr;

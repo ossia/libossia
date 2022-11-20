@@ -8,7 +8,8 @@
 #include <unordered_set>
 namespace ossia
 {
-namespace net {
+namespace net
+{
 class node_base;
 class device_base;
 }
@@ -23,8 +24,14 @@ class OSSIA_EXPORT cues : Nano::Observer
 public:
   void set_device(ossia::net::device_base* dev);
 
-  int size() const noexcept { return m_cues.size(); }
-  cue& current_cue() noexcept { return m_cues[m_current]; }
+  int size() const noexcept { return cues.size(); }
+  cue& current_cue() noexcept { return cues[m_current]; }
+  cue* get_cue(int idx) noexcept
+  {
+    return (idx >= 0 && idx < std::ssize(cues)) ? &cues[idx] : nullptr;
+  }
+  std::optional<int> find_cue(std::string_view name);
+  std::vector<cue> cues{{.name{"Init"}}};
 
   void create(std::string_view name);
 
@@ -51,15 +58,24 @@ public:
   void namespace_deselect(std::string_view pat);
   void namespace_grab(std::string_view pat);
 
+  void on_node_created(const ossia::net::node_base& n);
   void on_node_removed(const ossia::net::node_base& n);
 
   //private:
   ossia::net::device_base* dev{};
   int get_cue(std::string_view name);
-  std::optional<int> find_cue(std::string_view name);
   int m_current{0};
-  std::vector<std::string> selection{"/"};
+
+  struct selector
+  {
+    enum
+    {
+      Add,
+      Remove
+    } mode{Add};
+    std::string pattern{"/"};
+  };
+  std::vector<selector> m_selectors{selector{}};
   std::unordered_set<ossia::net::node_base*> m_selection;
-  std::vector<cue> m_cues{{.name{"Init"}}};
 };
 }

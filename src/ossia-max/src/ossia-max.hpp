@@ -13,6 +13,7 @@
 #include "assert.hpp"
 #include "attribute.hpp"
 #include "client.hpp"
+#include "cue.hpp"
 #include "device.hpp"
 #include "explorer.hpp"
 #include "fuzzysearch.hpp"
@@ -49,6 +50,7 @@ OSSIA_MAX_EXPORT void ossia_search_setup();
 OSSIA_MAX_EXPORT void ossia_monitor_setup();
 OSSIA_MAX_EXPORT void ossia_fuzzysearch_setup();
 OSSIA_MAX_EXPORT void ossia_assert_setup();
+OSSIA_MAX_EXPORT void ossia_cue_setup();
 OSSIA_MAX_EXPORT void ossia_equals_setup();
 }
 
@@ -90,6 +92,7 @@ struct patcher_descriptor
   ossia::safe_set<parameter*> parameters{};
   ossia::safe_set<remote*> remotes{};
   ossia::safe_set<attribute*> attributes{};
+  ossia::safe_set<ocue*> cues{};
   model* model{};
   view* view{};
   device* device{};
@@ -105,14 +108,14 @@ struct patcher_descriptor
 
   bool empty() const
   {
-    return parameters.empty() && remotes.empty() && attributes.empty()
+    return parameters.empty() && remotes.empty() && attributes.empty() && cues.empty()
            && model != nullptr && view != nullptr && device != nullptr
            && client != nullptr;
   }
 
   auto size() const
   {
-    return parameters.size() + remotes.size() + attributes.size() + (model ? 1 : 0)
+    return parameters.size() + remotes.size() + attributes.size() + cues.size() + (model ? 1 : 0)
            + (view ? 1 : 0) + (device ? 1 : 0) + (client ? 1 : 0);
   }
 
@@ -172,6 +175,8 @@ public:
       return ossia_fuzzysearch_class;
     if(std::is_same<T, ossia::max_binding::oassert>::value)
       return ossia_assert_class;
+    if(std::is_same<T, ossia::max_binding::ocue>::value)
+      return ossia_cue_class;
     return nullptr;
   }
 
@@ -205,6 +210,7 @@ public:
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
   t_class* ossia_assert_class{};
+  t_class* ossia_cue_class{};
   t_class* ossia_equals_class{};
   static t_class* ossia_patcher_listener_class;
 
@@ -222,6 +228,7 @@ public:
   ossia::safe_vector<search*> searchs;
   ossia::safe_vector<logger*> loggers;
   ossia::safe_vector<oassert*> oasserts;
+  ossia::safe_vector<ocue*> ocues;
 /*
   // TODO remove all those nr* vectors, should not be needed anymore
   // list of non-registered objects
