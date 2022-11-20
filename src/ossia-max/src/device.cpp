@@ -207,12 +207,46 @@ void device::destroy(device* x)
 }
 
 // TODO do we still need this function ?
-void device::register_children(device* x)
+void device::register_children(device* xx)
 {
-  std::vector<std::shared_ptr<matcher>> matchers{
-      std::make_shared<matcher>(&x->m_device->get_root_node(), x)};
-  register_children_in_patcher_recursively(x->m_patcher, x);
-  output_all_values(x->m_patcher, true);
+    object_base* x = xx;
+
+    // if(x->m_registered)
+    // {
+    //   return;
+    // }
+
+    if(!x->m_name || x->m_name == _sym_nothing)
+      return;
+
+    critical_enter(0);
+    t_object* patcher = x->m_patcher;
+    t_object* root_patcher = patcher;
+
+    while(patcher && !ossia_max::instance().patchers[patcher].loadbanged)
+    {
+      root_patcher = patcher;
+      patcher = get_patcher(patcher);
+    }
+
+    {
+      // if patcher has not been loadbanged, register all objects in that patcher
+      // this happens when the patcher is loaded or instantiated as an abstraction
+      // and also when it is pasted / duplicated
+      register_children_in_patcher_recursively(root_patcher, nullptr);
+      output_all_values(root_patcher, true);
+    }
+
+    for(remote* remote : ossia_max::instance().remotes.copy())
+    {
+        remote->do_registration();
+    }
+    for(auto obj : ossia_max::instance().views.copy())
+    {
+        obj->do_registration();
+        register_children_in_patcher_recursively(obj->m_patcher, obj);
+    }
+    critical_exit(0);
 }
 
 void device::expose(device* x, t_symbol*, long argc, t_atom* argv)

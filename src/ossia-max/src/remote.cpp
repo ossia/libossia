@@ -104,6 +104,7 @@ void* remote::create(t_symbol* name, long argc, t_atom* argv)
 
     defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
+    ossia_max::instance().remotes.push_back(x);
     critical_exit(0);
   }
 
@@ -299,7 +300,8 @@ void remote::on_node_renamed_callback(ossia::net::node_base& node, const std::st
 
 void remote::on_parameter_created_callback(const ossia::net::parameter_base& addr)
 {
-  do_registration();
+  if(ossia_max::instance().config.autoregister)
+    do_registration();
 }
 
 void remote::do_registration()

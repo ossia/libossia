@@ -86,7 +86,6 @@ void* model::create(t_symbol*, long argc, t_atom* argv)
 
     defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
-    ossia_max::instance().models.push_back(x);
     critical_exit(0);
   }
 
@@ -110,7 +109,6 @@ void model::destroy(model* x)
     output_all_values(x->m_patcher, true);
   }
 
-  ossia_max::instance().models.remove_all(x);
   if(x->m_dumpout)
     outlet_delete(x->m_dumpout);
   x->~model();

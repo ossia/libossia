@@ -446,6 +446,9 @@ auto object_base::remove_matcher(matcher_vector::iterator it)
 
 void object_base::loadbang(object_base* x)
 {
+  if(!ossia_max::instance().config.autoregister)
+    return;
+
   if(x->m_registered)
     return;
 

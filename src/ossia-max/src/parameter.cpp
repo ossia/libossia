@@ -89,7 +89,6 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
 
     defer_low(x, (method)object_base::loadbang, nullptr, 0, nullptr);
 
-    ossia_max::instance().parameters.push_back(x);
     critical_exit(0);
   }
 
@@ -101,7 +100,6 @@ void parameter::destroy(parameter* x)
   critical_enter(0);
   x->m_dead = true;
   x->unregister();
-  ossia_max::instance().parameters.remove_all(x);
   outlet_delete(x->m_data_out);
   outlet_delete(x->m_dumpout);
   x->~parameter();

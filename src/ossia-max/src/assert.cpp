@@ -52,7 +52,6 @@ extern "C" void* ossia_assert_create(t_symbol* s, long argc, t_atom* argv)
     object_attach_byptr_register(x, x, CLASS_BOX);
 
     oassert::reset(x);
-    ossia_max::instance().oasserts.push_back(x);
   }
 
   return x;
@@ -183,7 +182,6 @@ void oassert::free(oassert* x)
 {
   if(x)
   {
-    ossia_max::instance().oasserts.remove_all(x);
     outlet_delete(x->m_dumpout);
     x->~oassert();
   }

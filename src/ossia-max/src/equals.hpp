@@ -14,7 +14,7 @@ namespace max_binding
 /** like == but can compare floating-point numbers while tolerating the floating-point
  * (im)precision.
  */
-typedef struct equals
+struct equals
 {
   t_object x_ob;    ///< header
   void* x_outlet;   ///< float/list for sampled values

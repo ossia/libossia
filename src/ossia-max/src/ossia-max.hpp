@@ -28,6 +28,7 @@
 #include "view.hpp"
 
 #include <ossia/detail/safe_vec.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
 #include <ossia-max/src/object_base.hpp>
@@ -128,6 +129,7 @@ struct patcher_descriptor
 struct configuration
 {
   bool defer_by_default = true;
+  bool autoregister = true;
 };
 
 class ossia_max
@@ -216,32 +218,13 @@ public:
 
   // keep list of all objects
   // TODO is it still needed ?
-  ossia::safe_vector<parameter*> parameters;
   ossia::safe_vector<remote*> remotes;
-  ossia::safe_vector<model*> models;
   ossia::safe_vector<view*> views;
   ossia::safe_vector<device*> devices;
   ossia::safe_vector<client*> clients;
-  ossia::safe_vector<attribute*> attributes;
-  ossia::safe_vector<explorer*> explorers;
-  ossia::safe_vector<monitor*> monitors;
-  ossia::safe_vector<search*> searchs;
   ossia::safe_vector<logger*> loggers;
-  ossia::safe_vector<oassert*> oasserts;
-  ossia::safe_vector<ocue*> ocues;
-/*
-  // TODO remove all those nr* vectors, should not be needed anymore
-  // list of non-registered objects
-  ossia::safe_set<parameter*> nr_parameters;
-  ossia::safe_set<remote*> nr_remotes;
-  ossia::safe_set<model*> nr_models;
-  ossia::safe_set<view*> nr_views;
-  ossia::safe_set<device*> nr_devices;
-  ossia::safe_set<client*> nr_clients;
-  ossia::safe_set<attribute*> nr_attributes;
-  ossia::safe_set<monitor*> nr_monitors;
-*/
-  static std::map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
+
+  static ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>> s_node_matchers_map;
   static std::recursive_mutex s_node_matchers_mut;
 
   // TODO is this still needed ?

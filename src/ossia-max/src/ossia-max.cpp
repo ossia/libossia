@@ -35,7 +35,7 @@ using namespace ossia::max_binding;
 void* ossia_max::s_browse_clock;
 ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_max::s_zeroconf_minuit_listener;
-std::map<ossia::net::node_base*, ossia::safe_set<matcher*>>
+ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
     ossia_max::s_node_matchers_map{};
 std::recursive_mutex ossia_max::s_node_matchers_mut;
 t_class* ossia_max::ossia_patcher_listener_class;
@@ -94,14 +94,19 @@ static configuration read_configuration_file()
     return {};
 
   configuration conf;
+  auto read_bool = [&] (auto member, std::string_view name) {
 
-  if(auto it = doc.FindMember("default_deferlow"); it != doc.MemberEnd())
-  {
-    if(it->value.IsBool())
-    {
-      conf.defer_by_default = it->value.GetBool();
-    }
-  }
+      if(auto it = doc.FindMember(name.data()); it != doc.MemberEnd())
+      {
+        if(it->value.IsBool())
+        {
+          conf.*member = it->value.GetBool();
+        }
+      }
+  };
+
+  read_bool(&configuration::defer_by_default, "default_deferlow");
+  read_bool(&configuration::autoregister, "autoregister");
 
   return conf;
 }
@@ -121,15 +126,10 @@ ossia_max::ossia_max()
   m_device->on_attribute_modified
       .connect<&device_base::on_attribute_modified_callback>();
 
-  parameters.reserve(2048);
   remotes.reserve(1024);
-  attributes.reserve(512);
-  models.reserve(512);
   views.reserve(512);
   devices.reserve(8);
   clients.reserve(8);
-  explorers.reserve(128);
-  oasserts.reserve(32);
 
   s_browse_clock = clock_new(this, (method)ossia_max::discover_network_devices);
   clock_delay(ossia_max::s_browse_clock, 100.);
@@ -154,6 +154,7 @@ ossia_max::ossia_max()
 // ossia-max library destructor
 ossia_max::~ossia_max()
 {
+    /*
   m_device->on_attribute_modified
       .disconnect<&device_base::on_attribute_modified_callback>();
 
@@ -184,6 +185,7 @@ ossia_max::~ossia_max()
   {
     x->m_matchers.clear();
   }
+  */
 }
 
 // ossia-max library instance

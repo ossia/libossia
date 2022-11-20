@@ -49,8 +49,6 @@ extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
-  ossia_max::instance().explorers.push_back(x);
-
   return x;
 }
 
@@ -58,7 +56,6 @@ void explorer::free(explorer* x)
 {
   if(x)
   {
-    ossia_max::instance().explorers.remove_all(x);
     x->~explorer();
   }
 }

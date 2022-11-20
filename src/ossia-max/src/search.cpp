@@ -47,8 +47,6 @@ extern "C" void* ossia_search_new(t_symbol*, long argc, t_atom* argv)
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
-  ossia_max::instance().searchs.push_back(x);
-
   return x;
 }
 
@@ -56,7 +54,6 @@ void search::free(search* x)
 {
   if(x)
   {
-    ossia_max::instance().searchs.remove_all(x);
     x->~search();
   }
 }
@@ -168,8 +165,6 @@ bool search::unregister()
 {
   m_node_selection.clear();
   m_matchers.clear();
-
-  ossia_max::instance().searchs.push_back(this);
 
   return true;
 }

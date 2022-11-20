@@ -13,9 +13,9 @@ public:
   safe_vector() { static_assert(sizeof(T) <= 64, "use this only for small types"); }
 
   safe_vector(const safe_vector&) = delete;
-  safe_vector(safe_vector&&) = delete;
+  safe_vector(safe_vector&&) noexcept = default;
   safe_vector& operator=(const safe_vector&) = delete;
-  safe_vector& operator=(safe_vector&&) = delete;
+  safe_vector& operator=(safe_vector&&) noexcept = default;
 
   bool contains(T t) noexcept { return ossia::contains(impl, t); }
 
@@ -45,12 +45,12 @@ template <typename T>
 class safe_set
 {
 public:
-  safe_set() { static_assert(sizeof(T) <= 64, "use this only for small types"); }
-
-  safe_set(const safe_set&) = delete;
-  safe_set(safe_set&&) = delete;
-  safe_set& operator=(const safe_set&) = delete;
-  safe_set& operator=(safe_set&&) = delete;
+  static_assert(sizeof(T) <= 64, "use this only for small types");
+  safe_set() = default;
+  safe_set(const safe_set&) = default;
+  safe_set(safe_set&&) noexcept = default;
+  safe_set& operator=(const safe_set&) = default;
+  safe_set& operator=(safe_set&&) noexcept = default;
 
   bool contains(T t) { return ossia::contains(impl, t); }
 

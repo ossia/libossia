@@ -52,8 +52,6 @@ extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 
   object_attach_byptr_register(x, x, CLASS_BOX);
 
-  ossia_max::instance().monitors.push_back(x);
-
   if(argc > 1 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
   {
     x->parse_args(argv[0].a_w.w_sym, argc - 1, argv + 1);
@@ -68,7 +66,6 @@ void monitor::free(monitor* x)
 {
   if(x)
   {
-    ossia_max::instance().monitors.remove_all(x);
     x->~monitor();
   }
 }

@@ -187,6 +187,9 @@ void view::on_node_renamed_callback(ossia::net::node_base& node, const std::stri
 
 void view::on_node_created_callback(ossia::net::node_base& node)
 {
+  if(!ossia_max::instance().config.autoregister)
+    return;
+
   do_registration();
 
   // update all children objects
