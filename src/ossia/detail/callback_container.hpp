@@ -46,7 +46,7 @@ template <typename T>
  */
 class callback_container
 {
-  using mutex = ossia::mutex_t;
+  using mutex = OSSIA_CALLBACK_CONTAINER_MUTEX;
   using lock_guard = std::lock_guard<mutex>;
 
 public:

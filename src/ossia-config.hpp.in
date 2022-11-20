@@ -40,3 +40,15 @@
 #cmakedefine OSSIA_FFTW_DOUBLE_ONLY
 
 #cmakedefine OSSIA_FFT_KFR
+
+// Code configuration
+#cmakedefine OSSIA_CALLBACK_CONTAINER_MUTEX
+
+// In score we only have one level of callback.
+// But in e.g. Max it's possible for someone to write
+// a patch where multiple ossia.remote with pattern matches are cascaded,
+// leading to multiple callback calls to a single object
+#if !defined(OSSIA_CALLBACK_CONTAINER_MUTEX)
+#define OSSIA_CALLBACK_CONTAINER_MUTEX std::recursive_mutex
+#endif
+
