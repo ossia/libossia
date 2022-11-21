@@ -1,11 +1,11 @@
 #include "cue.hpp"
 
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/string_algorithms.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/path.hpp>
 
-#include <boost/algorithm/string/predicate.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/map.hpp>
 #include <boost/container/small_vector.hpp>
@@ -17,7 +17,7 @@ namespace ossia
 static constexpr bool
 pattern_is_child_of_path(std::string_view path, std::string_view pattern)
 {
-  if(boost::starts_with(path, pattern))
+  if(ossia::string_starts_with(path, pattern))
   {
     if(path == pattern || path[pattern.size()] == '/')
     {

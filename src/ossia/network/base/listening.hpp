@@ -2,19 +2,11 @@
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/string_algorithms.hpp>
 #include <ossia/detail/string_map.hpp>
 
 namespace ossia
 {
-static inline bool string_starts_with(const std::string& src, const std::string& prefix)
-{
-#if defined(__cpp_lib_starts_ends_with)
-  return src.starts_with(prefix);
-#else
-  return src.rfind(prefix, 0) == 0;
-#endif
-}
-
 // MOVEME
 template <typename T>
 struct locked_map
