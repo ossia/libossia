@@ -4,6 +4,7 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/path.hpp>
+#include <boost/container/flat_map.hpp>
 
 #include <cassert>
 #include <iostream>
@@ -119,20 +120,30 @@ void cues::recall(int idx)
   recall();
 }
 
+struct priority_sort
+{
+   bool operator()(ossia::net::parameter_base* n1, ossia::net::parameter_base* n2) const noexcept {
+     return ossia::net::get_priority(n1->get_node()) > ossia::net::get_priority(n2->get_node());
+   }
+};
+
 void cues::recall()
 {
   auto& root = dev->get_root_node();
+  boost::container::small_flat_map<ossia::net::parameter_base*, ossia::value*, 512, priority_sort> params;
+  params.reserve(cues[m_current].preset.size());
   for(auto& [addr, val] : cues[m_current].preset)
   {
     // No pattern in saved cue
     if(auto n = ossia::net::find_node(root, addr))
       if(auto p = n->get_parameter())
         if(!ossia::net::get_recall_safe(*n))
-          p->push_value(val);
-    // if(ossia::traversal::is_pattern(name))
-    // {
-    //   ossia::traversal::make_path(name);
-    // }
+          params.emplace(p, &val);
+  }
+
+  for(auto [p, v] : params)
+  {
+    p->push_value(*v);
   }
 }
 
@@ -423,4 +434,97 @@ void cues::move(int from, int to)
     return;
   change_item_position(cues, from, to);
 }
+
+static bool filter_all_pass(const ossia::net::node_base& n, const selection_filters &pat)
+{
+    auto nn = n.get_parameter();
+    if(!nn)
+        return true;
+
+    for(auto v : pat.access)
+    {
+      if(nn->get_access() != v)
+        return false;
+    }
+    for(auto v : pat.bounding)
+    {
+      if(nn->get_bounding() != v)
+        return false;
+    }
+    for(auto v : pat.type)
+    {
+      if(nn->get_value_type() != v)
+        return false;
+    }
+    for(auto v : pat.tags)
+    {
+      const auto& tags = ossia::net::get_tags(n);
+      if(!tags || !ossia::contains(*tags, v))
+        return false;
+    }
+    return true;
+}
+static bool filter_any_pass(const ossia::net::node_base& n, const selection_filters &pat)
+{
+    auto nn = n.get_parameter();
+    if(!nn)
+        return true;
+
+    for(auto v : pat.access)
+    {
+      if(nn->get_access() == v)
+        return true;
+    }
+    for(auto v : pat.bounding)
+    {
+      if(nn->get_bounding() == v)
+        return true;
+    }
+    for(auto v : pat.type)
+    {
+      if(nn->get_value_type() == v)
+        return true;
+    }
+    for(auto v : pat.tags)
+    {
+      const auto& tags = ossia::net::get_tags(n);
+      if(tags && ossia::contains(*tags, v))
+        return true;
+    }
+    return false;
+}
+
+void cues::namespace_filter_all(const selection_filters &pat)
+{
+    for(auto it = this->m_selection.begin(); it != this->m_selection.end(); )
+    {
+        if(filter_all_pass(**it, pat))
+        {
+            ++it;
+        }
+        else
+        {
+            it = m_selection.erase(it);
+        }
+    }
+}
+
+
+
+void cues::namespace_filter_any(const selection_filters &pat)
+{
+    for(auto it = this->m_selection.begin(); it != this->m_selection.end(); )
+    {
+        if(filter_any_pass(**it, pat))
+        {
+            ++it;
+        }
+        else
+        {
+            it = m_selection.erase(it);
+        }
+    }
+
+}
+
 }

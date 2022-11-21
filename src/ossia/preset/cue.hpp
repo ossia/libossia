@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/detail/config.hpp>
 
 #include <ossia/preset/preset.hpp>
@@ -17,6 +18,18 @@ struct cue
 {
   std::string name{};
   ossia::presets::preset preset;
+};
+
+struct selection_filters
+{
+  std::vector<std::string> selection;
+  std::vector<ossia::val_type> type;
+  std::vector<ossia::access_mode> access;
+  std::vector<ossia::bounding_mode> bounding;
+  std::vector<std::string> tags;
+
+  enum visibility_t { visible, invisible };
+  std::optional<visibility_t> visibility;
 };
 
 class OSSIA_EXPORT cues : Nano::Observer
@@ -59,6 +72,8 @@ public:
 
   void namespace_select(std::string_view pat);
   void namespace_deselect(std::string_view pat);
+  void namespace_filter_all(const selection_filters& pat);
+  void namespace_filter_any(const selection_filters& pat);
   void namespace_grab(std::string_view pat);
 
   void on_node_created(const ossia::net::node_base& n);

@@ -5,7 +5,80 @@
 #include <ossia-max/src/utils.hpp>
 
 #include <rapidjson/prettywriter.h>
+#include <boost/algorithm/string.hpp>
 
+namespace
+{
+ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
+{
+    ossia::selection_filters filt;
+
+    enum { unknown, processing_names, processing_val_type, processing_access,
+           processing_bounding, processing_tags, processing_visibility } state = processing_names;
+
+    for(int i = 0; i < argc; i++)
+    {
+        if(argv[i].a_type == A_SYM)
+        {
+            std::string symb = boost::algorithm::to_lower_copy(std::string(argv[i].a_w.w_sym->s_name));
+            if(symb.starts_with("@"))
+            {
+                if(symb == "@type") { state = processing_val_type; continue; }
+                if(symb == "@access") { state = processing_access; continue; }
+                if(symb == "@bounding") { state = processing_bounding; continue; }
+                if(symb == "@tags") { state = processing_tags; continue; }
+                if(symb == "@visibility") { state = processing_visibility; continue; }
+            }
+
+            switch(state)
+            {
+            case processing_names:
+                filt.selection.push_back(std::string(symb));
+                break;
+            case processing_val_type:
+            {
+                if(auto param = ossia::default_parameter_for_type(symb))
+                {
+                    filt.type.push_back(ossia::underlying_type(param->type));
+                }
+                break;
+            }
+            case processing_access:
+            {
+                if(symb == "get") filt.access.push_back(ossia::access_mode::GET);
+                if(symb == "set") filt.access.push_back(ossia::access_mode::SET);
+                if(symb == "bi") filt.access.push_back(ossia::access_mode::BI);
+                break;
+            }
+            case processing_bounding:
+            {
+                if(symb == "free") filt.bounding.push_back(ossia::bounding_mode::FREE);
+                if(symb == "clip") filt.bounding.push_back(ossia::bounding_mode::CLIP);
+                if(symb == "low") filt.bounding.push_back(ossia::bounding_mode::LOW);
+                if(symb == "high") filt.bounding.push_back(ossia::bounding_mode::HIGH);
+                if(symb == "wrap") filt.bounding.push_back(ossia::bounding_mode::WRAP);
+                if(symb == "fold") filt.bounding.push_back(ossia::bounding_mode::FOLD);
+                break;
+            }
+            case processing_tags:
+            {
+                filt.tags.push_back(std::string(symb));
+                break;
+            }
+            case processing_visibility:
+                filt.visibility = symb == "visible" || symb == "true" || symb == "yes" || symb == "ok"
+                        ? ossia::selection_filters::visible
+                        : ossia::selection_filters::invisible;
+                break;
+            case unknown:
+                break;
+            }
+        }
+
+    }
+
+    return filt;
+}
 using writer_t = rapidjson::PrettyWriter<rapidjson::StringBuffer>;
 struct write_json_preset_value
 {
@@ -117,200 +190,6 @@ static rapidjson::StringBuffer cues_to_string(const ossia::cues& c)
   return buffer;
 }
 
-using namespace ossia::max_binding;
-void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv);
-extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
-{
-  auto& ossia_library = ossia_max::instance();
-
-  // instantiate the ossia.cue class
-  ossia_library.ossia_cue_class = class_new(
-      "ossia.cue", (method)ossia_cue_create, (method)ocue::free, (long)sizeof(ocue), 0L,
-      A_GIMME, 0);
-#define ADDMETHOD_GIMME(name)                                                      \
-  class_addmethod(                                                                 \
-      c,                                                                           \
-      (method) +                                                                   \
-          [](ocue* x, t_symbol*, int argc, t_atom* argv) { x->name(argc, argv); }, \
-      #name, A_GIMME, 0);
-#define ADDMETHOD_GIMME_(var, name)                                               \
-  class_addmethod(                                                                \
-      c,                                                                          \
-      (method) +                                                                  \
-          [](ocue* x, t_symbol*, int argc, t_atom* argv) { x->var(argc, argv); }, \
-      name, A_GIMME, 0);
-  auto& c = ossia_library.ossia_cue_class;
-  class_addmethod(
-      c, (method) + [](ocue* x, t_symbol*) { x->clear(); }, "clear", A_NOTHING, 0);
-  class_addmethod(
-      c, (method) + [](ocue* x, t_symbol*) { x->dump_all_cues(); }, "dump_all_cues",
-      A_NOTHING, 0);
-
-  ADDMETHOD_GIMME(create);
-  ADDMETHOD_GIMME(update);
-  ADDMETHOD_GIMME(recall);
-  ADDMETHOD_GIMME(remove);
-  ADDMETHOD_GIMME(move);
-  ADDMETHOD_GIMME(output);
-  ADDMETHOD_GIMME(read);
-  ADDMETHOD_GIMME(write);
-  ADDMETHOD_GIMME_(namespace_select, "namespace/select");
-  ADDMETHOD_GIMME_(namespace_deselect, "namespace/deselect");
-  ADDMETHOD_GIMME_(namespace_grab, "namespace/grab");
-
-  /*
-  class_addmethod(c, (method)ocue::in_long, "int", A_LONG, 0);
-  class_addmethod(c, (method)ocue::reset, "reset", A_NOTHING, 0);
-  class_addmethod(c, (method)ocue::assist, "assist", A_CANT, 0);
-  class_addmethod(c, (method)ocue::notify, "notify", A_CANT, 0);
-  class_addmethod(c, (method)ocue::closebang, "closebang", A_CANT, 0);
-*/
-  CLASS_ATTR_SYM(c, "device", 0, ocue, m_device_name);
-  CLASS_ATTR_LABEL(c, "device", 0, "Device to bind to");
-  {
-    t_object* theattr = (t_object*)class_attr_get(c, gensym("device"));
-    object_method(
-        theattr, gensym("setmethod"), USESYM(get),
-        (method) + [](ocue* x, void* attr, long* ac, t_atom** av) {
-          return x->get_device_name(ac, av);
-        });
-    object_method(
-        theattr, gensym("setmethod"), USESYM(set),
-        (method) + [](ocue* x, void* attr, long ac, t_atom* av) {
-          return x->set_device_name(ac, av);
-        });
-  }
-
-  class_register(CLASS_BOX, ossia_library.ossia_cue_class);
-}
-
-void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv)
-{
-  auto x = make_ossia<ocue>();
-  x->m_device_name = gensym("");
-  x->m_otype = object_class::cue;
-
-  if(x)
-  {
-    critical_enter(0);
-    ossia_max::get_patcher_descriptor(x->m_patcher).cues.push_back(x);
-    // The cue has to register to a device
-    x->m_cues = std::make_shared<ossia::cues>();
-    x->m_mainout = outlet_new(x, nullptr);
-    x->m_dumpout = outlet_new(x, nullptr);
-
-    // default attributes
-    x->m_name = _sym_nothing;
-
-    critical_exit(0);
-  }
-
-  return x;
-}
-
-static void invoke_mem_fun(int argc, t_atom* argv, auto f)
-{
-#define if_possible(F)          \
-  if constexpr(requires { F; }) \
-  {                             \
-    F;                          \
-  }
-  if(argc == 0)
-  {
-    if_possible(f());
-  }
-  else if(argc == 1 && argv[0].a_type == A_SYM)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name));
-  }
-  else if(argc == 1 && argv[0].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_long));
-  }
-  else if(argc == 1 && argv[0].a_type == A_FLOAT)
-  {
-    if_possible(f((int)argv[0].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_long, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f(argv[0].a_w.w_long, (int)argv[1].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_LONG)
-  {
-    if_possible(f((int)argv[0].a_w.w_float, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f((int)argv[0].a_w.w_float, (int)argv[1].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name, (int)argv[1].a_w.w_float));
-  }
-#undef if_possible
-}
-
-void ocue::create(int argc, t_atom* argv)
-{
-  invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->create(args...); })
-    {
-      this->m_cues->create(args...);
-      this->m_cues->update();
-    }
-  });
-}
-
-void ocue::update(int argc, t_atom* argv)
-{
-  invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->update(args...); })
-      this->m_cues->update(args...);
-  });
-}
-
-void ocue::recall(int argc, t_atom* argv)
-{
-  invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->recall(args...); })
-      this->m_cues->recall(args...);
-  });
-}
-
-void ocue::remove(int argc, t_atom* argv)
-{
-  invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->remove(args...); })
-      this->m_cues->remove(args...);
-  });
-}
-
-void ocue::dump_all_cues()
-{
-  rapidjson::StringBuffer buffer = cues_to_string(*m_cues);
-  post("DUMP CUES:\n%s", buffer.GetString());
-}
-
-void ocue::clear()
-{
-  m_cues->clear();
-}
-
-void ocue::move(int argc, t_atom* argv)
-{
-  invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->move(args...); })
-      this->m_cues->move(args...);
-  });
-}
 
 // Format of a cue:
 // {
@@ -471,6 +350,225 @@ static void read_cues_from_json(
     cues.push_back(std::move(c));
   }
 }
+bool is_absolute_path(std::string_view v)
+{
+  if(v.starts_with('/'))
+    return true;
+  if(v.find(':') != std::string_view::npos)
+    return true;
+  return false;
+}
+
+}
+
+using namespace ossia::max_binding;
+void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv);
+extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
+{
+  auto& ossia_library = ossia_max::instance();
+
+  // instantiate the ossia.cue class
+  ossia_library.ossia_cue_class = class_new(
+      "ossia.cue", (method)ossia_cue_create, (method)ocue::free, (long)sizeof(ocue), 0L,
+      A_GIMME, 0);
+#define ADDMETHOD_GIMME(name)                                                      \
+  class_addmethod(                                                                 \
+      c,                                                                           \
+      (method) +                                                                   \
+          [](ocue* x, t_symbol*, int argc, t_atom* argv) { x->name(argc, argv); }, \
+      #name, A_GIMME, 0);
+#define ADDMETHOD_GIMME_(var, name)                                               \
+  class_addmethod(                                                                \
+      c,                                                                          \
+      (method) +                                                                  \
+          [](ocue* x, t_symbol*, int argc, t_atom* argv) { x->var(argc, argv); }, \
+      name, A_GIMME, 0);
+  auto& c = ossia_library.ossia_cue_class;
+  class_addmethod(
+      c, (method) + [](ocue* x, t_symbol*) { x->clear(); }, "clear", A_NOTHING, 0);
+  class_addmethod(
+      c, (method) + [](ocue* x, t_symbol*) { x->dump_all_cues(); }, "dump_all_cues",
+      A_NOTHING, 0);
+  class_addmethod(
+      c, (method) + [](ocue* x, t_symbol*) { x->dump_selection(); }, "dump_selection",
+      A_NOTHING, 0);
+
+  ADDMETHOD_GIMME(create);
+  ADDMETHOD_GIMME(update);
+  ADDMETHOD_GIMME(recall);
+  ADDMETHOD_GIMME(remove);
+  ADDMETHOD_GIMME(move);
+  ADDMETHOD_GIMME(output);
+  ADDMETHOD_GIMME(read);
+  ADDMETHOD_GIMME(write);
+  ADDMETHOD_GIMME_(namespace_select, "namespace/select");
+  ADDMETHOD_GIMME_(namespace_deselect, "namespace/deselect");
+  ADDMETHOD_GIMME_(namespace_filter_all, "namespace/filter_all");
+  ADDMETHOD_GIMME_(namespace_filter_any, "namespace/filter_any");
+  ADDMETHOD_GIMME_(namespace_grab, "namespace/grab");
+
+
+  /*
+  class_addmethod(c, (method)ocue::in_long, "int", A_LONG, 0);
+  class_addmethod(c, (method)ocue::reset, "reset", A_NOTHING, 0);
+  class_addmethod(c, (method)ocue::assist, "assist", A_CANT, 0);
+  class_addmethod(c, (method)ocue::notify, "notify", A_CANT, 0);
+  class_addmethod(c, (method)ocue::closebang, "closebang", A_CANT, 0);
+*/
+  CLASS_ATTR_SYM(c, "device", 0, ocue, m_device_name);
+  CLASS_ATTR_LABEL(c, "device", 0, "Device to bind to");
+  {
+    t_object* theattr = (t_object*)class_attr_get(c, gensym("device"));
+    object_method(
+        theattr, gensym("setmethod"), USESYM(get),
+        (method) + [](ocue* x, void* attr, long* ac, t_atom** av) {
+          return x->get_device_name(ac, av);
+        });
+    object_method(
+        theattr, gensym("setmethod"), USESYM(set),
+        (method) + [](ocue* x, void* attr, long ac, t_atom* av) {
+          return x->set_device_name(ac, av);
+        });
+  }
+
+  class_register(CLASS_BOX, ossia_library.ossia_cue_class);
+}
+
+void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv)
+{
+  auto x = make_ossia<ocue>();
+  x->m_device_name = gensym("");
+  x->m_otype = object_class::cue;
+
+  if(x)
+  {
+    critical_enter(0);
+    ossia_max::get_patcher_descriptor(x->m_patcher).cues.push_back(x);
+    // The cue has to register to a device
+    x->m_cues = std::make_shared<ossia::cues>();
+    x->m_mainout = outlet_new(x, nullptr);
+    x->m_dumpout = outlet_new(x, nullptr);
+
+    // default attributes
+    x->m_name = _sym_nothing;
+
+    critical_exit(0);
+  }
+
+  return x;
+}
+
+static void invoke_mem_fun(int argc, t_atom* argv, auto f)
+{
+#define if_possible(F)          \
+  if constexpr(requires { F; }) \
+  {                             \
+    F;                          \
+  }
+  if(argc == 0)
+  {
+    if_possible(f());
+  }
+  else if(argc == 1 && argv[0].a_type == A_SYM)
+  {
+    if_possible(f(argv[0].a_w.w_sym->s_name));
+  }
+  else if(argc == 1 && argv[0].a_type == A_LONG)
+  {
+    if_possible(f(argv[0].a_w.w_long));
+  }
+  else if(argc == 1 && argv[0].a_type == A_FLOAT)
+  {
+    if_possible(f((int)argv[0].a_w.w_float));
+  }
+  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
+  {
+    if_possible(f(argv[0].a_w.w_long, argv[1].a_w.w_long));
+  }
+  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_FLOAT)
+  {
+    if_possible(f(argv[0].a_w.w_long, (int)argv[1].a_w.w_float));
+  }
+  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_LONG)
+  {
+    if_possible(f((int)argv[0].a_w.w_float, argv[1].a_w.w_long));
+  }
+  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_FLOAT)
+  {
+    if_possible(f((int)argv[0].a_w.w_float, (int)argv[1].a_w.w_float));
+  }
+  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG)
+  {
+    if_possible(f(argv[0].a_w.w_sym->s_name, argv[1].a_w.w_long));
+  }
+  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_FLOAT)
+  {
+    if_possible(f(argv[0].a_w.w_sym->s_name, (int)argv[1].a_w.w_float));
+  }
+#undef if_possible
+}
+
+void ocue::create(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_cues->create(args...); })
+    {
+      this->m_cues->create(args...);
+      this->m_cues->update();
+    }
+  });
+}
+
+void ocue::update(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_cues->update(args...); })
+      this->m_cues->update(args...);
+  });
+}
+
+void ocue::recall(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_cues->recall(args...); })
+      this->m_cues->recall(args...);
+  });
+}
+
+void ocue::remove(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_cues->remove(args...); })
+      this->m_cues->remove(args...);
+  });
+}
+
+void ocue::dump_all_cues()
+{
+  rapidjson::StringBuffer buffer = cues_to_string(*m_cues);
+  post("DUMP CUES:\n%s", buffer.GetString());
+}
+
+void ocue::dump_selection()
+{
+  for(auto n : m_cues->m_selection)
+    if(n->get_parameter())
+      post("selected: %s", n->osc_address().c_str());
+}
+
+void ocue::clear()
+{
+  m_cues->clear();
+}
+
+void ocue::move(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_cues->move(args...); })
+      this->m_cues->move(args...);
+  });
+}
+
 void ocue::read(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](std::string_view url) {
@@ -499,14 +597,6 @@ void ocue::read(int argc, t_atom* argv)
   });
 }
 
-bool is_absolute_path(std::string_view v)
-{
-  if(v.starts_with('/'))
-    return true;
-  if(v.find(':') != std::string_view::npos)
-    return true;
-  return false;
-}
 void ocue::write(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](std::string_view url) {
@@ -586,8 +676,18 @@ void ocue::namespace_select(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->namespace_select(args...); })
-      this->m_cues->namespace_select(args...);
+    this->m_cues->namespace_select(args...);
   });
+}
+
+void ocue::namespace_filter_all(int argc, t_atom *argv)
+{
+  this->m_cues->namespace_filter_all(parse_selection_filter(argc, argv));
+}
+
+void ocue::namespace_filter_any(int argc, t_atom *argv)
+{
+  this->m_cues->namespace_filter_any(parse_selection_filter(argc, argv));
 }
 
 void ocue::namespace_deselect(int argc, t_atom* argv)

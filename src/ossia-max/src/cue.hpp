@@ -28,9 +28,13 @@ struct ocue : object_base
   void read(int argc, t_atom* argv);
   void write(int argc, t_atom* argv);
   void edit(int argc, t_atom* argv);
+  void sort(int argc, t_atom* argv);
   void dump_all_cues();
+  void dump_selection();
 
   void namespace_select(int argc, t_atom* argv);
+  void namespace_filter_all(int argc, t_atom* argv);
+  void namespace_filter_any(int argc, t_atom* argv);
   void namespace_deselect(int argc, t_atom* argv);
   void namespace_grab(int argc, t_atom* argv);
 
