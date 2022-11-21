@@ -135,15 +135,11 @@ struct global_pull_visitor
   void operator()() const { }
 };
 
-
 struct global_pull_node_visitor
 {
   ossia::execution_state& state;
   const net::node_base& out;
-  void operator()(value_port& val) const
-  {
-    val.write_value(ossia::net::to_map(out), 0);
-  }
+  void operator()(value_port& val) const { val.write_value(ossia::net::to_map(out), 0); }
 
   void operator()(audio_port& val) const
   {

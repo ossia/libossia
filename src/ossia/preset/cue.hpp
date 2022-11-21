@@ -1,13 +1,13 @@
 #pragma once
-#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/detail/config.hpp>
 
+#include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/preset/preset.hpp>
 
 #include <nano_observer.hpp>
 
-#include <unordered_set>
 #include <optional>
+#include <unordered_set>
 
 namespace ossia
 {
@@ -30,7 +30,11 @@ struct selection_filters
   std::vector<ossia::bounding_mode> bounding;
   std::vector<std::string> tags;
 
-  enum visibility_t { visible, invisible };
+  enum visibility_t
+  {
+    visible,
+    invisible
+  };
   std::optional<visibility_t> visibility;
 };
 
@@ -49,7 +53,6 @@ public:
   }
   std::optional<int> find_cue(std::string_view name);
   int get_cue(std::string_view name);
-
 
   void create(std::string_view name);
 

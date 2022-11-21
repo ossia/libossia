@@ -4,80 +4,116 @@
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 
-#include <rapidjson/prettywriter.h>
 #include <boost/algorithm/string.hpp>
+
+#include <rapidjson/prettywriter.h>
 
 namespace
 {
 ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
 {
-    ossia::selection_filters filt;
+  ossia::selection_filters filt;
 
-    enum { unknown, processing_names, processing_val_type, processing_access,
-           processing_bounding, processing_tags, processing_visibility } state = processing_names;
+  enum
+  {
+    unknown,
+    processing_names,
+    processing_val_type,
+    processing_access,
+    processing_bounding,
+    processing_tags,
+    processing_visibility
+  } state
+      = processing_names;
 
-    for(int i = 0; i < argc; i++)
+  for(int i = 0; i < argc; i++)
+  {
+    if(argv[i].a_type == A_SYM)
     {
-        if(argv[i].a_type == A_SYM)
+      std::string symb
+          = boost::algorithm::to_lower_copy(std::string(argv[i].a_w.w_sym->s_name));
+      if(symb.starts_with("@"))
+      {
+        if(symb == "@type")
         {
-            std::string symb = boost::algorithm::to_lower_copy(std::string(argv[i].a_w.w_sym->s_name));
-            if(symb.starts_with("@"))
-            {
-                if(symb == "@type") { state = processing_val_type; continue; }
-                if(symb == "@access") { state = processing_access; continue; }
-                if(symb == "@bounding") { state = processing_bounding; continue; }
-                if(symb == "@tags") { state = processing_tags; continue; }
-                if(symb == "@visibility") { state = processing_visibility; continue; }
-            }
-
-            switch(state)
-            {
-            case processing_names:
-                filt.selection.push_back(std::string(symb));
-                break;
-            case processing_val_type:
-            {
-                if(auto param = ossia::default_parameter_for_type(symb))
-                {
-                    filt.type.push_back(ossia::underlying_type(param->type));
-                }
-                break;
-            }
-            case processing_access:
-            {
-                if(symb == "get") filt.access.push_back(ossia::access_mode::GET);
-                if(symb == "set") filt.access.push_back(ossia::access_mode::SET);
-                if(symb == "bi") filt.access.push_back(ossia::access_mode::BI);
-                break;
-            }
-            case processing_bounding:
-            {
-                if(symb == "free") filt.bounding.push_back(ossia::bounding_mode::FREE);
-                if(symb == "clip") filt.bounding.push_back(ossia::bounding_mode::CLIP);
-                if(symb == "low") filt.bounding.push_back(ossia::bounding_mode::LOW);
-                if(symb == "high") filt.bounding.push_back(ossia::bounding_mode::HIGH);
-                if(symb == "wrap") filt.bounding.push_back(ossia::bounding_mode::WRAP);
-                if(symb == "fold") filt.bounding.push_back(ossia::bounding_mode::FOLD);
-                break;
-            }
-            case processing_tags:
-            {
-                filt.tags.push_back(std::string(symb));
-                break;
-            }
-            case processing_visibility:
-                filt.visibility = symb == "visible" || symb == "true" || symb == "yes" || symb == "ok"
-                        ? ossia::selection_filters::visible
-                        : ossia::selection_filters::invisible;
-                break;
-            case unknown:
-                break;
-            }
+          state = processing_val_type;
+          continue;
         }
+        if(symb == "@access")
+        {
+          state = processing_access;
+          continue;
+        }
+        if(symb == "@bounding")
+        {
+          state = processing_bounding;
+          continue;
+        }
+        if(symb == "@tags")
+        {
+          state = processing_tags;
+          continue;
+        }
+        if(symb == "@visibility")
+        {
+          state = processing_visibility;
+          continue;
+        }
+      }
 
+      switch(state)
+      {
+        case processing_names:
+          filt.selection.push_back(std::string(symb));
+          break;
+        case processing_val_type: {
+          if(auto param = ossia::default_parameter_for_type(symb))
+          {
+            filt.type.push_back(ossia::underlying_type(param->type));
+          }
+          break;
+        }
+        case processing_access: {
+          if(symb == "get")
+            filt.access.push_back(ossia::access_mode::GET);
+          if(symb == "set")
+            filt.access.push_back(ossia::access_mode::SET);
+          if(symb == "bi")
+            filt.access.push_back(ossia::access_mode::BI);
+          break;
+        }
+        case processing_bounding: {
+          if(symb == "free")
+            filt.bounding.push_back(ossia::bounding_mode::FREE);
+          if(symb == "clip")
+            filt.bounding.push_back(ossia::bounding_mode::CLIP);
+          if(symb == "low")
+            filt.bounding.push_back(ossia::bounding_mode::LOW);
+          if(symb == "high")
+            filt.bounding.push_back(ossia::bounding_mode::HIGH);
+          if(symb == "wrap")
+            filt.bounding.push_back(ossia::bounding_mode::WRAP);
+          if(symb == "fold")
+            filt.bounding.push_back(ossia::bounding_mode::FOLD);
+          break;
+        }
+        case processing_tags: {
+          filt.tags.push_back(std::string(symb));
+          break;
+        }
+        case processing_visibility:
+          filt.visibility
+              = symb == "visible" || symb == "true" || symb == "yes" || symb == "ok"
+                    ? ossia::selection_filters::visible
+                    : ossia::selection_filters::invisible;
+          break;
+        case unknown:
+          break;
+      }
     }
+  }
 
-    return filt;
+  return filt;
 }
 using writer_t = rapidjson::PrettyWriter<rapidjson::StringBuffer>;
 struct write_json_preset_value
@@ -189,7 +225,6 @@ static rapidjson::StringBuffer cues_to_string(const ossia::cues& c)
 
   return buffer;
 }
-
 
 // Format of a cue:
 // {
@@ -406,7 +441,6 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
   ADDMETHOD_GIMME_(namespace_filter_all, "namespace/filter_all");
   ADDMETHOD_GIMME_(namespace_filter_any, "namespace/filter_any");
   ADDMETHOD_GIMME_(namespace_grab, "namespace/grab");
-
 
   /*
   class_addmethod(c, (method)ocue::in_long, "int", A_LONG, 0);
@@ -676,16 +710,16 @@ void ocue::namespace_select(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->namespace_select(args...); })
-    this->m_cues->namespace_select(args...);
+      this->m_cues->namespace_select(args...);
   });
 }
 
-void ocue::namespace_filter_all(int argc, t_atom *argv)
+void ocue::namespace_filter_all(int argc, t_atom* argv)
 {
   this->m_cues->namespace_filter_all(parse_selection_filter(argc, argv));
 }
 
-void ocue::namespace_filter_any(int argc, t_atom *argv)
+void ocue::namespace_filter_any(int argc, t_atom* argv)
 {
   this->m_cues->namespace_filter_any(parse_selection_filter(argc, argv));
 }

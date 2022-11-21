@@ -51,13 +51,9 @@ struct push_data_to_node
     }
   }
 
-  void operator()(const midi_port& p) const
-  {
-  }
+  void operator()(const midi_port& p) const { }
 
-  void operator()(const audio_port& p) const
-  {
-  }
+  void operator()(const audio_port& p) const { }
 
   [[noreturn]] void operator()(const geometry_port& p) const { assert(false); }
   void operator()() const noexcept { }
@@ -206,9 +202,7 @@ void outlet::write(execution_state& e)
       }
     }
       },
-  [&](ossia::net::node_base* node, bool) {
-    visit(push_data_to_node{*node});
-  });
+      [&](ossia::net::node_base* node, bool) { visit(push_data_to_node{*node}); });
 }
 
 value_inlet::~value_inlet() = default;
