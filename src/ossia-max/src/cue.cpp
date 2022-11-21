@@ -180,7 +180,7 @@ static rapidjson::StringBuffer cues_to_string(const ossia::cues& c)
   doc.StartObject();
   doc.Key("cues");
   doc.StartArray();
-  for(auto& cue : c.cues)
+  for(auto& cue : c.m_cues)
   {
     cue_to_json(doc, cue);
   }
@@ -593,7 +593,7 @@ void ocue::read(int argc, t_atom* argv)
       return;
     }
     m_cues->clear();
-    read_cues_from_json(cues->value.GetArray(), m_cues->cues);
+    read_cues_from_json(cues->value.GetArray(), m_cues->m_cues);
   });
 }
 

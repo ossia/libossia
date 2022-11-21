@@ -7,6 +7,8 @@
 #include <nano_observer.hpp>
 
 #include <unordered_set>
+#include <optional>
+
 namespace ossia
 {
 namespace net
@@ -35,15 +37,15 @@ struct selection_filters
 class OSSIA_EXPORT cues : Nano::Observer
 {
 public:
-  std::vector<cue> cues{{.name{"Init"}}};
+  std::vector<cue> m_cues{{.name{"Init"}}};
 
   void set_device(ossia::net::device_base* dev);
 
-  int size() const noexcept { return cues.size(); }
-  cue& current_cue() noexcept { return cues[m_current]; }
+  int size() const noexcept { return this->m_cues.size(); }
+  cue& current_cue() noexcept { return this->m_cues[m_current]; }
   cue* get_cue(int idx) noexcept
   {
-    return (idx >= 0 && idx < std::ssize(cues)) ? &cues[idx] : nullptr;
+    return (idx >= 0 && idx < std::ssize(this->m_cues)) ? &this->m_cues[idx] : nullptr;
   }
   std::optional<int> find_cue(std::string_view name);
   int get_cue(std::string_view name);

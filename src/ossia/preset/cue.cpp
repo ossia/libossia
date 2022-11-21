@@ -4,10 +4,11 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/path.hpp>
+#include <boost/container/small_vector.hpp>
 #include <boost/container/flat_map.hpp>
+#include <boost/container/map.hpp>
 
 #include <cassert>
-#include <iostream>
 
 namespace ossia
 {
@@ -114,7 +115,7 @@ void cues::recall(int idx)
 {
   if(idx < 0)
     return;
-  if(idx >= std::ssize(cues))
+  if(idx >= std::ssize(m_cues))
     return;
   m_current = idx;
   recall();
@@ -130,9 +131,10 @@ struct priority_sort
 void cues::recall()
 {
   auto& root = dev->get_root_node();
-  boost::container::small_flat_map<ossia::net::parameter_base*, ossia::value*, 512, priority_sort> params;
-  params.reserve(cues[m_current].preset.size());
-  for(auto& [addr, val] : cues[m_current].preset)
+
+  boost::container::small_flat_multimap<ossia::net::parameter_base*, ossia::value*, 512, priority_sort> params;
+  params.reserve(m_cues[m_current].preset.size());
+  for(auto& [addr, val] : this->m_cues[m_current].preset)
   {
     // No pattern in saved cue
     if(auto n = ossia::net::find_node(root, addr))
@@ -141,10 +143,8 @@ void cues::recall()
           params.emplace(p, &val);
   }
 
-  for(auto [p, v] : params)
-  {
-    p->push_value(*v);
-  }
+  for(auto elt : params)
+    elt.first->push_value(*elt.second);
 }
 
 void cues::remove()
@@ -189,7 +189,6 @@ void cues::namespace_deselect(std::string_view pattern)
   */
 
   auto nodes = ossia::net::find_nodes(dev->get_root_node(), pattern);
-  // std::cout << "namespace_deselect: " << pattern << " : " << nodes.size() << std::endl;
 
   // v1
   // Actually this does not change the preset at all. Only the selection
@@ -238,28 +237,28 @@ void cues::on_node_removed(const net::node_base& n)
 int cues::get_cue(std::string_view name)
 {
   auto it = std::find_if(
-      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
-  if(BOOST_UNLIKELY(it == cues.end()))
+      m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
+  if(BOOST_UNLIKELY(it == m_cues.end()))
   {
-    cues.push_back(cue{.name = std::string(name)});
-    return cues.size() - 1;
+    m_cues.push_back(cue{.name = std::string(name)});
+    return m_cues.size() - 1;
   }
   else
   {
-    return std::distance(cues.begin(), it);
+    return std::distance(m_cues.begin(), it);
   }
 }
 std::optional<int> cues::find_cue(std::string_view name)
 {
   auto it = std::find_if(
-      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
-  if(BOOST_UNLIKELY(it == cues.end()))
+      m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
+  if(BOOST_UNLIKELY(it == m_cues.end()))
   {
     return std::nullopt;
   }
   else
   {
-    return std::distance(cues.begin(), it);
+    return std::distance(m_cues.begin(), it);
   }
 }
 
@@ -274,10 +273,10 @@ void cues::remove(int idx)
 {
   if(idx < 0)
     return;
-  if(idx >= std::ssize(cues))
+  if(idx >= std::ssize(m_cues))
     return;
 
-  cues.erase(cues.begin() + idx);
+  m_cues.erase(m_cues.begin() + idx);
 
   if(m_current < idx)
   {
@@ -286,7 +285,7 @@ void cues::remove(int idx)
   else if(m_current == idx)
   {
     // We keep the same index selected
-    if(m_current >= std::ssize(cues))
+    if(m_current >= std::ssize(m_cues))
     {
       m_current -= 1;
     }
@@ -298,9 +297,9 @@ void cues::remove(int idx)
     m_current -= 1;
   }
 
-  if(cues.empty())
+  if(m_cues.empty())
   {
-    cues.push_back({.name{"Init"}});
+    m_cues.push_back({.name{"Init"}});
     m_current = 0;
   }
 }
@@ -308,11 +307,11 @@ void cues::remove(int idx)
 void cues::remove(std::string_view name)
 {
   auto it = std::find_if(
-      cues.begin(), cues.end(), [=](const cue& c) { return c.name == name; });
+      this->m_cues.begin(), this->m_cues.end(), [=](const cue& c) { return c.name == name; });
 
-  if(it != cues.end())
+  if(it != this->m_cues.end())
   {
-    int idx = std::distance(cues.begin(), it);
+    int idx = std::distance(this->m_cues.begin(), it);
     remove(idx);
   }
 }
@@ -330,8 +329,8 @@ void cues::update(int idx)
   if(!dev)
     return;
   assert(idx >= 0);
-  assert(idx < std::ssize(cues));
-  auto& cue = cues[idx];
+  assert(idx < std::ssize(this->m_cues));
+  auto& cue = this->m_cues[idx];
 
   // v1
   /*
@@ -363,7 +362,7 @@ void cues::update(int idx)
   }
 
   // And we also add the new ones
-  for(auto node : m_selection)
+  for(auto node : this->m_selection)
   {
     if(auto p = node->get_parameter())
     {
@@ -419,7 +418,7 @@ void cues::output(std::string_view name, std::string_view pattern)
 
 void cues::clear()
 {
-  cues.clear();
+  m_cues.clear();
 }
 
 void cues::move(std::string_view name, int to)
@@ -432,7 +431,7 @@ void cues::move(int from, int to)
 {
   if(from < 0 || to < 0 || from == to)
     return;
-  change_item_position(cues, from, to);
+  change_item_position(m_cues, from, to);
 }
 
 static bool filter_all_pass(const ossia::net::node_base& n, const selection_filters &pat)
@@ -456,7 +455,7 @@ static bool filter_all_pass(const ossia::net::node_base& n, const selection_filt
       if(nn->get_value_type() != v)
         return false;
     }
-    for(auto v : pat.tags)
+    for(const auto& v : pat.tags)
     {
       const auto& tags = ossia::net::get_tags(n);
       if(!tags || !ossia::contains(*tags, v))
@@ -485,7 +484,7 @@ static bool filter_any_pass(const ossia::net::node_base& n, const selection_filt
       if(nn->get_value_type() == v)
         return true;
     }
-    for(auto v : pat.tags)
+    for(const auto& v : pat.tags)
     {
       const auto& tags = ossia::net::get_tags(n);
       if(tags && ossia::contains(*tags, v))

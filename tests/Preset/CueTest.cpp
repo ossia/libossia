@@ -101,8 +101,16 @@ TEST_CASE("test_cue", "test_cue")
 
   WHEN("recalling the cue")
   {
+    // Check that the device is in the right state
+    REQUIRE(device.a1.value() == 13579);
+    REQUIRE(device.a2.value() == 3.1415);
+    REQUIRE(device.a3.value() == "foo");
+    REQUIRE(device.a4.value() == "bar");
+
     c.create("Cue 1");
     c.update();
+    REQUIRE(c.m_cues[1].name == "Cue 1");
+    REQUIRE(c.m_cues[1].preset.size() == 4);
 
     device.a1.set_value(10);
     device.a2.set_value(1.2);
@@ -158,7 +166,7 @@ TEST_CASE("test_cue_ns", "test_cue_ns")
     REQUIRE(c.m_selection.empty());
 
     c.namespace_select("/bim");
-    REQUIRE(c.m_selection.size() == 3);
+    REQUIRE(c.m_selection.size() == 4);
 
     c.update();
 
