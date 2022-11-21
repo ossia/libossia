@@ -4,9 +4,11 @@
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/common/path.hpp>
-#include <boost/container/small_vector.hpp>
+
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/container/flat_map.hpp>
 #include <boost/container/map.hpp>
+#include <boost/container/small_vector.hpp>
 
 #include <cassert>
 
@@ -15,7 +17,7 @@ namespace ossia
 static constexpr bool
 pattern_is_child_of_path(std::string_view path, std::string_view pattern)
 {
-  if(path.starts_with(pattern))
+  if(boost::starts_with(path, pattern))
   {
     if(path == pattern || path[pattern.size()] == '/')
     {
@@ -123,16 +125,21 @@ void cues::recall(int idx)
 
 struct priority_sort
 {
-   bool operator()(ossia::net::parameter_base* n1, ossia::net::parameter_base* n2) const noexcept {
-     return ossia::net::get_priority(n1->get_node()) > ossia::net::get_priority(n2->get_node());
-   }
+  bool operator()(
+      ossia::net::parameter_base* n1, ossia::net::parameter_base* n2) const noexcept
+  {
+    return ossia::net::get_priority(n1->get_node())
+           > ossia::net::get_priority(n2->get_node());
+  }
 };
 
 void cues::recall()
 {
   auto& root = dev->get_root_node();
 
-  boost::container::small_flat_multimap<ossia::net::parameter_base*, ossia::value*, 512, priority_sort> params;
+  boost::container::small_flat_multimap<
+      ossia::net::parameter_base*, ossia::value*, 512, priority_sort>
+      params;
   params.reserve(m_cues[m_current].preset.size());
   for(auto& [addr, val] : this->m_cues[m_current].preset)
   {
@@ -213,7 +220,7 @@ void cues::namespace_grab(std::string_view name)
 
 void cues::on_node_created(const net::node_base& n)
 {
-  if(m_selection.contains(&dev->get_root_node()))
+  if(m_selection.find(&dev->get_root_node()) != m_selection.end())
   {
     m_selection.insert(const_cast<net::node_base*>(&n));
   }
@@ -221,7 +228,7 @@ void cues::on_node_created(const net::node_base& n)
   {
     while(auto parent = n.get_parent())
     {
-      if(m_selection.contains(parent))
+      if(m_selection.find(parent) != m_selection.end())
       {
         m_selection.insert(const_cast<net::node_base*>(&n));
       }
@@ -306,8 +313,9 @@ void cues::remove(int idx)
 
 void cues::remove(std::string_view name)
 {
-  auto it = std::find_if(
-      this->m_cues.begin(), this->m_cues.end(), [=](const cue& c) { return c.name == name; });
+  auto it = std::find_if(this->m_cues.begin(), this->m_cues.end(), [=](const cue& c) {
+    return c.name == name;
+  });
 
   if(it != this->m_cues.end())
   {
@@ -434,96 +442,93 @@ void cues::move(int from, int to)
   change_item_position(m_cues, from, to);
 }
 
-static bool filter_all_pass(const ossia::net::node_base& n, const selection_filters &pat)
+static bool filter_all_pass(const ossia::net::node_base& n, const selection_filters& pat)
 {
-    auto nn = n.get_parameter();
-    if(!nn)
-        return true;
-
-    for(auto v : pat.access)
-    {
-      if(nn->get_access() != v)
-        return false;
-    }
-    for(auto v : pat.bounding)
-    {
-      if(nn->get_bounding() != v)
-        return false;
-    }
-    for(auto v : pat.type)
-    {
-      if(nn->get_value_type() != v)
-        return false;
-    }
-    for(const auto& v : pat.tags)
-    {
-      const auto& tags = ossia::net::get_tags(n);
-      if(!tags || !ossia::contains(*tags, v))
-        return false;
-    }
+  auto nn = n.get_parameter();
+  if(!nn)
     return true;
+
+  for(auto v : pat.access)
+  {
+    if(nn->get_access() != v)
+      return false;
+  }
+  for(auto v : pat.bounding)
+  {
+    if(nn->get_bounding() != v)
+      return false;
+  }
+  for(auto v : pat.type)
+  {
+    if(nn->get_value_type() != v)
+      return false;
+  }
+  for(const auto& v : pat.tags)
+  {
+    const auto& tags = ossia::net::get_tags(n);
+    if(!tags || !ossia::contains(*tags, v))
+      return false;
+  }
+  return true;
 }
-static bool filter_any_pass(const ossia::net::node_base& n, const selection_filters &pat)
+static bool filter_any_pass(const ossia::net::node_base& n, const selection_filters& pat)
 {
-    auto nn = n.get_parameter();
-    if(!nn)
-        return true;
+  auto nn = n.get_parameter();
+  if(!nn)
+    return true;
 
-    for(auto v : pat.access)
-    {
-      if(nn->get_access() == v)
-        return true;
-    }
-    for(auto v : pat.bounding)
-    {
-      if(nn->get_bounding() == v)
-        return true;
-    }
-    for(auto v : pat.type)
-    {
-      if(nn->get_value_type() == v)
-        return true;
-    }
-    for(const auto& v : pat.tags)
-    {
-      const auto& tags = ossia::net::get_tags(n);
-      if(tags && ossia::contains(*tags, v))
-        return true;
-    }
-    return false;
+  for(auto v : pat.access)
+  {
+    if(nn->get_access() == v)
+      return true;
+  }
+  for(auto v : pat.bounding)
+  {
+    if(nn->get_bounding() == v)
+      return true;
+  }
+  for(auto v : pat.type)
+  {
+    if(nn->get_value_type() == v)
+      return true;
+  }
+  for(const auto& v : pat.tags)
+  {
+    const auto& tags = ossia::net::get_tags(n);
+    if(tags && ossia::contains(*tags, v))
+      return true;
+  }
+  return false;
 }
 
-void cues::namespace_filter_all(const selection_filters &pat)
+void cues::namespace_filter_all(const selection_filters& pat)
 {
-    for(auto it = this->m_selection.begin(); it != this->m_selection.end(); )
+  for(auto it = this->m_selection.begin(); it != this->m_selection.end();)
+  {
+    if(filter_all_pass(**it, pat))
     {
-        if(filter_all_pass(**it, pat))
-        {
-            ++it;
-        }
-        else
-        {
-            it = m_selection.erase(it);
-        }
+      ++it;
     }
+    else
+    {
+      it = m_selection.erase(it);
+    }
+  }
 }
 
-
-
-void cues::namespace_filter_any(const selection_filters &pat)
+void cues::namespace_filter_any(const selection_filters& pat)
 {
-    for(auto it = this->m_selection.begin(); it != this->m_selection.end(); )
+  for(auto it = this->m_selection.begin(); it != this->m_selection.end();)
+  {
+    if(filter_any_pass(**it, pat))
     {
-        if(filter_any_pass(**it, pat))
-        {
-            ++it;
-        }
-        else
-        {
-            it = m_selection.erase(it);
-        }
+      ++it;
     }
-
+    else
+    {
+      it = m_selection.erase(it);
+    }
+  }
 }
 
 }
