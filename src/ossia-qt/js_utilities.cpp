@@ -263,6 +263,9 @@ net::parameter_data make_parameter_data(const QJSValue& js)
     set_max(domain, value_from_js(base_v, js.property("max")));
 
     dat.value = value_from_js(base_v, js.property("value"));
+    if(!dat.value.valid())
+      dat.value = base_v;
+
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));

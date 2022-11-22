@@ -39,10 +39,10 @@ generic_parameter::generic_parameter(
     const parameter_data& data, ossia::net::node_base& node)
     : ossia::net::parameter_base{node}
     , m_protocol{node.get_device().get_protocol()}
-    , m_valueType(ossia::val_type::IMPULSE)
+    , m_valueType(ossia::underlying_type(data.type))
     , m_accessMode(get_value_or(data.access, ossia::access_mode::BI))
     , m_boundingMode(get_value_or(data.bounding, ossia::bounding_mode::FREE))
-    , m_value(init_value(m_valueType))
+    , m_value(data.value)
     , m_domain(get_value_or(data.domain, ossia::domain{}))
 {
   m_repetitionFilter = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
@@ -231,6 +231,9 @@ ossia::val_type generic_parameter::get_value_type() const
 
 ossia::net::generic_parameter& generic_parameter::set_value_type(ossia::val_type type)
 {
+  if(m_valueType == type)
+    return *this;
+
   {
     value_lock_t lock(m_valueMutex);
     // std::cerr << address_string_from_node(*this) << " TYPE CHANGE : " <<
