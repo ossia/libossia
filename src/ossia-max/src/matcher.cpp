@@ -118,7 +118,13 @@ matcher::~matcher()
   }
   node = nullptr;
 }
-
+struct set_local_mute {
+    bool& m;
+    set_local_mute(bool& mute): m{mute} {
+        m = true;
+    }
+    ~set_local_mute() { m = false; }
+};
 void matcher::output_value(ossia::value v)
 {
   if(owner->m_otype == object_class::param || owner->m_otype == object_class::remote)
@@ -130,7 +136,7 @@ void matcher::output_value(ossia::value v)
 
   if(!owner->m_local_mute)
   {
-    owner->m_local_mute = true;
+    set_local_mute lm{owner->m_local_mute};
 
     auto param = node->get_parameter();
     auto filtered
@@ -162,7 +168,6 @@ void matcher::output_value(ossia::value v)
       value_visitor<object_base> vm;
       vm.x = (object_base*)owner;
       val.apply(vm);
-      owner->m_local_mute = false;
     }
   }
 }

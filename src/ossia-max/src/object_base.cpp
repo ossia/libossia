@@ -920,21 +920,25 @@ void object_base::push_parameter_value(
     ossia::net::parameter_base* param, const ossia::value& val)
 {
   std::unique_lock<std::mutex> lock{param_locks_mutex};
-  auto it = ossia::find_if(param_locks, [param](auto& p) { return p.second == param; });
+  auto it = ossia::find_if(param_locks, [param](const auto& p) { return p.second == param; });
+
   if(it == param_locks.end())
   {
     int64_t r = param_locks_counter++;
     param_locks.emplace_back(r, param);
-    param_locks_mutex.unlock();
+    lock.unlock();
 
     if(!m_local_mute)
     {
       param->push_value(val);
     }
 
-    param_locks_mutex.lock();
-    auto rm_it = ossia::find_if(param_locks, [r](auto& p) { return p.first == r; });
-    param_locks.erase(rm_it);
+    lock.lock();
+    assert(!param_locks.empty());
+    if(param_locks.back().first == r)
+        param_locks.pop_back();
+    else if(auto rm_it = ossia::find_if(param_locks, [r](const auto& p) { return p.first == r; }); rm_it != param_locks.end())
+       param_locks.erase(rm_it);
   }
 }
 
