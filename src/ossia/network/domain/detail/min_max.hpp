@@ -344,6 +344,20 @@ struct domain_set_min_visitor
   }
 
   template <std::size_t N>
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, float incoming)
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.min[i] = incoming;
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, int incoming)
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.min[i] = incoming;
+  }
+
+  template <std::size_t N>
   OSSIA_INLINE void
   operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
   {
@@ -412,6 +426,20 @@ struct domain_set_max_visitor
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
   {
     domain.max = incoming;
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, float incoming)
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.max[i] = incoming;
+  }
+
+  template <std::size_t N>
+  OSSIA_INLINE void operator()(vecf_domain<N>& domain, int incoming)
+  {
+    for(std::size_t i = 0; i < N; i++)
+      domain.max[i] = incoming;
   }
 
   template <std::size_t N>

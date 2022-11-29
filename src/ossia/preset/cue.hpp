@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/common/parameter_properties.hpp>
+#include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 
 #include <nano_observer.hpp>

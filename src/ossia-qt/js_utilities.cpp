@@ -234,8 +234,17 @@ ossia::complex_type get_type(const QJSValue& val)
   // TODO handle other cases ? string, extended, etc...
   auto opt_t = get_enum<ossia::val_type>(val);
   if(opt_t)
+  {
     return *opt_t;
-  return complex_type{};
+  }
+  else if(val.isString())
+  {
+    return ossia::extended_type(val.toString().toStdString());
+  }
+  else
+  {
+    return complex_type{};
+  }
 }
 
 net::parameter_data make_parameter_data(const QJSValue& js)
@@ -253,14 +262,33 @@ net::parameter_data make_parameter_data(const QJSValue& js)
     return dat;
   }
 
-  dat.type = get_type(js.property("type"));
+  if(js.hasProperty("type"))
+  {
+    dat.type = get_type(js.property("type"));
+  }
+  else if(js.hasProperty("unit"))
+  {
+    dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
+    dat.type = dat.unit;
+  }
+
   if(dat.type)
   {
     ossia::val_type base = ossia::underlying_type(dat.type);
     auto base_v = init_value(base);
     auto domain = init_domain(base);
-    set_min(domain, value_from_js(base_v, js.property("min")));
-    set_max(domain, value_from_js(base_v, js.property("max")));
+    if(js.hasProperty("values"))
+    {
+      auto val = value_from_js(js.property("values"));
+      if(auto vec = val.target<std::vector<ossia::value>>())
+        set_values(domain, *vec);
+    }
+
+    if(js.hasProperty("min") || js.hasProperty("max"))
+    {
+      set_min(domain, value_from_js(js.property("min")));
+      set_max(domain, value_from_js(js.property("max")));
+    }
 
     dat.value = value_from_js(base_v, js.property("value"));
     if(!dat.value.valid())
@@ -269,11 +297,15 @@ net::parameter_data make_parameter_data(const QJSValue& js)
     dat.domain = domain;
     dat.access = get_enum<ossia::access_mode>(js.property("access"));
     dat.bounding = get_enum<ossia::bounding_mode>(js.property("bounding"));
-    dat.muted = js.property("muted").toBool();
     dat.disabled = js.property("disabled").toBool();
+    dat.muted = js.property("muted").toBool();
+    dat.critical = js.property("critical").toBool();
     dat.rep_filter
         = get_enum<ossia::repetition_filter>(js.property("repetition_filter"));
-    dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
+
+    if(!dat.unit)
+      dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
+
     ossia::net::set_description(
         dat.extended, js.property("description").toString().toStdString());
     QJSValue tags = js.property("tags");

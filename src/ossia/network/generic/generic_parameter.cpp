@@ -45,6 +45,7 @@ generic_parameter::generic_parameter(
     , m_value(data.value)
     , m_domain(get_value_or(data.domain, ossia::domain{}))
 {
+  m_unit = data.unit;
   m_repetitionFilter = get_value_or(data.rep_filter, ossia::repetition_filter::OFF);
   update_parameter_type(data.type, *this);
 }
