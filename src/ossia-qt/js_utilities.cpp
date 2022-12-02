@@ -80,8 +80,6 @@ value js_value_inbound_visitor::operator()(const value_map_type& v) const
   }
   else
   {
-    qDebug() << "js_value_inbound_visitor: map: got " << val.toString()
-             << val.toVariant();
     t = v;
   }
   return t;
@@ -98,6 +96,7 @@ value js_value_inbound_visitor::operator()(vec2f v) const
     {
       it.next();
       v[i] = it.value().toNumber();
+      i++;
     }
   }
   return v;
@@ -114,6 +113,7 @@ value js_value_inbound_visitor::operator()(vec3f v) const
     {
       it.next();
       v[i] = it.value().toNumber();
+      i++;
     }
   }
   return v;
@@ -130,6 +130,7 @@ value js_value_inbound_visitor::operator()(vec4f v) const
     {
       it.next();
       v[i] = it.value().toNumber();
+      i++;
     }
   }
   return v;
