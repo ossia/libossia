@@ -31,7 +31,6 @@ template class std::experimental::optional<ossia::value>;
 */
 namespace ossia
 {
-OSSIA_EXPORT
 ossia::value& value_map_type::operator[](std::string_view str) noexcept
 {
   auto it = ossia::find_if(*this, [str](const auto& e) { return e.first == str; });

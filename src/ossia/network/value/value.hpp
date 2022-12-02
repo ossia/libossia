@@ -42,7 +42,7 @@ OSSIA_EXPORT std::string value_to_pretty_string(const ossia::value& val);
 OSSIA_EXPORT ossia::value parse_pretty_value(ossia::string_view str);
 
 using value_map_element = std::pair<std::string, ossia::value>;
-struct value_map_type : std::vector<value_map_element>
+struct OSSIA_EXPORT value_map_type : std::vector<value_map_element>
 {
   using vector::vector;
 
