@@ -43,13 +43,14 @@ TEST_CASE("test_oscquery_osc_out", "test_oscquery_osc_out")
 
   device.set_echo(true);
 
+  const auto udp_conf = ossia::net::
+          udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}};
   ossia::net::generic_device remote{
       ossia::net::make_osc_protocol(
           ctx,
           {.mode = conf::MIRROR,
            .version = conf::OSC1_1,
-           .transport = ossia::net::
-               udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}}}),
+           .transport = udp_conf}),
       "test_osc"};
 
   std::string address;
@@ -147,13 +148,14 @@ TEST_CASE("test_multiplex_remove", "test_multiplex_remove")
 
   device.set_echo(true);
 
+  const auto udp_conf = ossia::net::
+          udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}};
   ossia::net::generic_device remote{
       ossia::net::make_osc_protocol(
           ctx,
           {.mode = conf::MIRROR,
            .version = conf::OSC1_1,
-           .transport = ossia::net::
-               udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}}}),
+           .transport = udp_conf}),
       "test_osc"};
 
   auto& bi = find_or_create_node(device, "/foo/bi");

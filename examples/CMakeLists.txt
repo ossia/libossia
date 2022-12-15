@@ -47,6 +47,8 @@ if(OSSIA_PROTOCOL_OSC)
   if(NOT WIN32)
     ossia_add_example(network_osc_unix_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_echo.cpp")
     ossia_add_example(network_osc_unix_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/unix/OSC_send.cpp")
+
+    ossia_add_example(network_osc_playback "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSC_playback.cpp")
   endif()
 
   ossia_add_example(network_osc_ws_echo "${CMAKE_CURRENT_SOURCE_DIR}/Network/websockets/OSC_echo.cpp")
@@ -54,8 +56,6 @@ if(OSSIA_PROTOCOL_OSC)
 
   ossia_add_example(network_osc_serial_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/serial/OSC_send.cpp")
   ossia_add_example(network_osc_udp_send_receive "${CMAKE_CURRENT_SOURCE_DIR}/Network/udp/OSC_send_receive.cpp")
-
-  ossia_add_example(network_osc_playback "${CMAKE_CURRENT_SOURCE_DIR}/Network/asio/OSC_playback.cpp")
 endif()
 
 add_subdirectory("Qt/DeviceBuilder")
