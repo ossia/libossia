@@ -583,9 +583,10 @@ public:
 
 struct custom_dsp_poly_factory : public dsp_factory
 {
-
   dsp_factory* fProcessFactory;
   dsp_factory* fEffectFactory;
+
+  std::vector<std::string> getWarningMessages() { return {}; }
 
   std::string getEffectCode(const std::string& dsp_content)
   {
