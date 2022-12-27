@@ -7,6 +7,7 @@
 #include <ossia/editor/curve/curve_segment/easing.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/dataspace/color.hpp>
+#include <ossia/network/dataspace/dataspace_visitors.hpp>
 
 namespace ossia::nodes
 {
@@ -33,6 +34,20 @@ public:
 
   void set_gradient(grad_type t) { m_data = std::move(t); }
 
+  const ossia::unit_t& get_unit() const noexcept
+  {
+    auto outlet = m_outlets.back();
+    auto unit = outlet->target<ossia::value_port>()->type.target<ossia::unit_t>();
+    assert(unit);
+    return *unit;
+  }
+
+  ossia::value get_color(ossia::argb c)
+  {
+    ossia::value res = clamp_color(c).dataspace_value;
+    return ossia::convert(res, ossia::argb_u{}, get_unit());
+  }
+
   void handle_before_first(const ossia::token_request& tk, int64_t tick_start)
   {
     const auto position = tk.position();
@@ -41,11 +56,11 @@ public:
 
     if(beg->first >= position)
     {
-      out.write_value(clamp_color(ossia::argb{beg->second}).dataspace_value, tick_start);
+      out.write_value(get_color(ossia::argb{beg->second}), tick_start);
     }
     else if(!mustTween)
     {
-      out.write_value(clamp_color(ossia::argb{beg->second}).dataspace_value, tick_start);
+      out.write_value(get_color(ossia::argb{beg->second}), tick_start);
     }
     else
     {
@@ -64,8 +79,7 @@ public:
         }
       }
       out.write_value(
-          ease_color(0., *tween, beg->first, beg->second, position).dataspace_value,
-          tick_start);
+          ease_color(0., *tween, beg->first, beg->second, position), tick_start);
     }
   }
 
@@ -78,7 +92,7 @@ public:
     switch(m_data.size())
     {
       case 0:
-        out.write_value(ossia::vec4f{0., 0., 0., 0.}, tick_start);
+        out.write_value(get_color(ossia::argb{0., 0., 0., 0.}), tick_start);
         return;
       case 1:
         handle_before_first(t, tick_start);
@@ -93,9 +107,7 @@ public:
         // past end
         else if(it_next == m_data.end())
         {
-          out.write_value(
-              clamp_color(ossia::argb{m_data.rbegin()->second}).dataspace_value,
-              tick_start);
+          out.write_value(get_color(ossia::argb{m_data.rbegin()->second}), tick_start);
         }
         else
         {
@@ -105,15 +117,14 @@ public:
           out.write_value(
               ease_color(
                   it_prev->first, it_prev->second, it_next->first, it_next->second,
-                  t.position())
-                  .dataspace_value,
+                  t.position()),
               tick_start);
         }
       }
     }
   }
 
-  ossia::argb ease_color(
+  ossia::value ease_color(
       double prev_pos, ossia::hunter_lab prev, double next_pos, ossia::hunter_lab next,
       double pos)
   {
@@ -127,7 +138,7 @@ public:
         e(prev.dataspace_value[1], next.dataspace_value[1], coeff),
         e(prev.dataspace_value[2], next.dataspace_value[2], coeff));
 
-    return clamp_color(ossia::argb{res});
+    return get_color(ossia::argb{res});
   }
 
 public:
