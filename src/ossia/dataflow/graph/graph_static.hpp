@@ -22,11 +22,12 @@ struct graph_static final
     , public graph_base
 {
 public:
-  UpdateImpl update_fun{*this};
+  UpdateImpl update_fun;
   TickImpl tick_fun{*this};
   std::vector<boost::default_color_type> m_color_map_cache;
   std::vector<boost::detail::DFSVertexInfo<graph_t>> m_stack_cache;
-  graph_static()
+  explicit graph_static(const ossia::graph_setup_options& opt = {})
+      : update_fun{*this, opt}
   {
     m_all_nodes.reserve(1024);
     m_enabled_cache.container.reserve(1024);
@@ -154,7 +155,7 @@ struct simple_update
 {
   ossia::graph_t& m_sub_graph;
   template <typename Graph_T>
-  simple_update(Graph_T& g)
+  simple_update(Graph_T& g, const ossia::graph_setup_options& opt)
       : m_sub_graph{g.m_graph}
   {
   }
@@ -170,7 +171,7 @@ struct bfs_update
 {
 public:
   template <typename Graph_T>
-  bfs_update(Graph_T& g)
+  bfs_update(Graph_T& g, const ossia::graph_setup_options& opt)
       : m_color{boost::make_two_bit_color_map_fast(
           0, boost::get(boost::vertex_index, g.m_graph))}
   {
@@ -288,7 +289,7 @@ struct tc_update
 
 public:
   template <typename Graph_T>
-  tc_update(Graph_T& g)
+  tc_update(Graph_T& g, const ossia::graph_setup_options& opt)
   {
   }
   template <typename Graph_T, typename DevicesT>

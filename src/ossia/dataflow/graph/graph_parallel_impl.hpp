@@ -114,9 +114,10 @@ private:
 class executor
 {
 public:
-  executor()
+  explicit executor(int nthreads)
   {
     m_running = true;
+    m_threads.resize(nthreads);
     for(auto& t : m_threads)
     {
       t = std::thread{[this] {
@@ -316,7 +317,7 @@ private:
 
   std::atomic_bool m_running{};
 
-  std::array<std::thread, 8> m_threads;
+  ossia::small_vector<std::thread, 8> m_threads;
   taskflow* m_tf{};
   std::atomic_size_t m_doneTasks = 0;
   std::size_t m_toDoTasks = 0;
@@ -342,8 +343,9 @@ public:
   std::shared_ptr<bench_map> perf_map;
 
   template <typename Graph_T>
-  custom_parallel_update(Graph_T& g)
-      : impl{g}
+  custom_parallel_update(Graph_T& g, const ossia::graph_setup_options& opt)
+      : impl{g, opt}
+      , executor{opt.parallel_threads}
   {
   }
 

@@ -85,6 +85,7 @@ struct graph_setup_options
   } merge{};
 
   bool parallel{};
+  int parallel_threads = 8;
   std::shared_ptr<ossia::logger_type> log{};
   std::shared_ptr<bench_map> bench{};
 };

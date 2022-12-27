@@ -102,7 +102,7 @@ make_graph_impl(const ossia::graph_setup_options& opt)
     {
       using graph_type = graph_static<bfs_update, exec_t>;
 
-      auto g = std::make_shared<graph_type>();
+      auto g = std::make_shared<graph_type>(opt);
       g->tick_fun.set_logger(opt.log);
       g->tick_fun.set_bench(opt.bench);
       return g;
@@ -111,7 +111,7 @@ make_graph_impl(const ossia::graph_setup_options& opt)
     {
       using graph_type = graph_static<simple_update, exec_t>;
 
-      auto g = std::make_shared<graph_type>();
+      auto g = std::make_shared<graph_type>(opt);
       g->tick_fun.set_logger(opt.log);
       g->tick_fun.set_bench(opt.bench);
       return g;
@@ -120,7 +120,7 @@ make_graph_impl(const ossia::graph_setup_options& opt)
     {
       using graph_type = graph_static<tc_update<fast_tc>, exec_t>;
 
-      auto g = std::make_shared<graph_type>();
+      auto g = std::make_shared<graph_type>(opt);
       g->tick_fun.set_logger(opt.log);
       g->tick_fun.set_bench(opt.bench);
       return g;
@@ -157,7 +157,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     using graph_type
         = graph_static<custom_parallel_update<bfs_update>, custom_parallel_exec>;
 
-    auto g = std::make_shared<graph_type>();
+    auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
     g->update_fun.perf_map = opt.bench;
@@ -169,7 +169,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     using graph_type
         = graph_static<custom_parallel_update<tc_update<fast_tc>>, custom_parallel_exec>;
 
-    auto g = std::make_shared<graph_type>();
+    auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
     g->update_fun.perf_map = opt.bench;
@@ -181,7 +181,7 @@ make_graph_par_impl(const ossia::graph_setup_options& opt)
     using graph_type
         = graph_static<custom_parallel_update<simple_update>, custom_parallel_exec>;
 
-    auto g = std::make_shared<graph_type>();
+    auto g = std::make_shared<graph_type>(opt);
 
     g->update_fun.logger = opt.log;
     g->update_fun.perf_map = opt.bench;
