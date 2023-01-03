@@ -14,7 +14,6 @@
 
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/connected_components.hpp>
-#include <boost/graph/graphviz.hpp>
 #include <boost/graph/labeled_graph.hpp>
 #include <boost/graph/topological_sort.hpp>
 

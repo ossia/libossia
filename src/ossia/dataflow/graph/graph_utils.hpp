@@ -17,7 +17,8 @@
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/graphviz.hpp>
+// broken due to dynamic_property_map requiring rtti... 
+// #include <boost/graph/graphviz.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 #include <ankerl/unordered_dense.h>
@@ -328,6 +329,7 @@ auto apply_con(const T& visitor, const ossia::connection& con)
 template <typename Graph_T, typename IO>
 void print_graph(Graph_T& g, IO& stream)
 {
+  #if 0
   std::stringstream s;
   boost::write_graphviz(
       s, g,
@@ -340,6 +342,7 @@ void print_graph(Graph_T& g, IO& stream)
       [](auto&&...) {});
 
   stream << s.str() << "\n";
+  #endif
 }
 
 struct OSSIA_EXPORT graph_util
