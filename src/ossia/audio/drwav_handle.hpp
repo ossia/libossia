@@ -134,6 +134,11 @@ public:
     return drwav_read_pcm_frames(impl, framesToRead, buffer);
   }
 
+  auto read_pcm_frames_s16(drwav_uint64 framesToRead, int16_t* buffer) noexcept
+  {
+    return drwav_read_pcm_frames_s16(impl, framesToRead, buffer);
+  }
+
   auto read_pcm_frames_f32(drwav_uint64 framesToRead, float* buffer) noexcept
   {
     return drwav_read_pcm_frames_f32(impl, framesToRead, buffer);
