@@ -191,7 +191,11 @@ struct libav_handle
   }
   int channels() const noexcept
   {
+#if LIBAVUTIL_VERSION_MAJOR >= 57
     return stream->codecpar->ch_layout.nb_channels;
+#else
+    return stream->codecpar->channels;
+#endif
   }
 
   int64_t totalPCMFrameCount() const noexcept
