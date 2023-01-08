@@ -15,8 +15,9 @@
 extern "C" {
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libswresample/swresample.h>
 #include <libavutil/channel_layout.h>
+#include <libavutil/version.h>
+#include <libswresample/swresample.h>
 }
 
 namespace ossia
@@ -160,22 +161,38 @@ struct libav_handle
       return;
     }
 
-    AVChannelLayout out_layout{stream->codecpar->ch_layout};
-    AVChannelLayout in_layout{stream->codecpar->ch_layout};
-
     AVSampleFormat out_sample_fmt{AV_SAMPLE_FMT_FLT};
     AVSampleFormat in_sample_fmt{(AVSampleFormat)stream->codecpar->format};
     int in_sample_rate = stream->codecpar->sample_rate;
     int out_sample_rate = target_rate == 0 ? in_sample_rate : target_rate;
 
+#if LIBAVUTIL_VERSION_MAJOR >= 57
+    AVChannelLayout out_layout{stream->codecpar->ch_layout};
+    AVChannelLayout in_layout{stream->codecpar->ch_layout};
+
     swr_alloc_set_opts2(
         &resample, &out_layout, out_sample_fmt, out_sample_rate, &in_layout,
         in_sample_fmt, in_sample_rate, 0, nullptr);
-    swr_init(resample);
+#else
+    int64_t out_layout = stream->codecpar->channel_layout;
+    int64_t in_layout = stream->codecpar->channel_layout;
+
+    resample = swr_alloc_set_opts(
+        resample, out_layout, out_sample_fmt, out_sample_rate, in_layout, in_sample_fmt,
+        in_sample_rate, 0, nullptr);
+#endif
+    if(resample)
+      swr_init(resample);
   }
 
-  int rate() const noexcept { return stream->codecpar->sample_rate; }
-  int channels() const noexcept { return stream->codecpar->ch_layout.nb_channels; }
+  int rate() const noexcept
+  {
+    return stream->codecpar->sample_rate;
+  }
+  int channels() const noexcept
+  {
+    return stream->codecpar->ch_layout.nb_channels;
+  }
 
   int64_t totalPCMFrameCount() const noexcept
   {
@@ -201,7 +218,10 @@ struct libav_handle
     }
   }
 
-  operator bool() const noexcept { return bool(format); }
+  operator bool() const noexcept
+  {
+    return bool(format);
+  }
 
   void fetch(int64_t frame, int samples_to_write, auto func)
   {
