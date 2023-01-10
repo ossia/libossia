@@ -16,12 +16,11 @@ namespace max_binding
 struct ocue : object_base
 {
   t_symbol* m_device_name = _sym_nothing;
-  void* m_mainout{};
 
   void create(int argc, t_atom* argv);
   void update(int argc, t_atom* argv);
-  void recall(int argc, t_atom* argv);
   void remove(int argc, t_atom* argv);
+  void rename(int argc, t_atom* argv);
   void clear();
   void move(int argc, t_atom* argv);
   void output(int argc, t_atom* argv);
@@ -29,9 +28,13 @@ struct ocue : object_base
   void write(int argc, t_atom* argv);
   void edit(int argc, t_atom* argv);
   void sort(int argc, t_atom* argv);
-  void dump_all_cues();
-  void dump_selection();
+  void json();
 
+  void recall(int argc, t_atom* argv);
+  void recall_next(int argc, t_atom* argv);
+  void recall_previous(int argc, t_atom* argv);
+
+  void namespace_dump();
   void namespace_select(int argc, t_atom* argv);
   void namespace_filter_all(int argc, t_atom* argv);
   void namespace_filter_any(int argc, t_atom* argv);
@@ -53,7 +56,12 @@ struct ocue : object_base
 
   static void assist(ocue* x, void* b, long m, long a, char* s);
 
+  template<typename... T>
+  void dump_message(std::string_view str, T&&...);
+  void dump_message(std::string_view msg, const std::vector<std::string_view>& t);
+
   std::shared_ptr<ossia::cues> m_cues;
+  std::string m_last_filename;
 };
 
 } // namespace max

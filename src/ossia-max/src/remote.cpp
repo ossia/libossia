@@ -171,9 +171,9 @@ t_max_err remote::notify(remote* x, t_symbol* s, t_symbol* msg, void* sender, vo
   {
     attrname = (t_symbol*)object_method((t_object*)data, gensym("getname"));
 
-    if(attrname == gensym("unit"))
+    if(attrname == _sym_unit)
       x->set_unit();
-    else if(attrname == gensym("mute"))
+    else if(attrname == _sym_mute)
     {
       if(x->m_mute)
       {
@@ -219,7 +219,7 @@ void remote::set_unit()
                 m->get_owner()->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
             t_atom a;
             A_SETSYM(&a, m_unit);
-            outlet_anything(m->get_owner()->m_dumpout, gensym("unit"), 1, &a);
+            outlet_anything(m->get_owner()->m_dumpout, _sym_unit, 1, &a);
             if(m_registered)
               m->output_value(m->get_node()->get_parameter()->value());
           }
@@ -253,17 +253,17 @@ void remote::get_unit(remote* x)
   if(x->m_unit)
   {
     A_SETSYM(&a, x->m_unit);
-    outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+    outlet_anything(x->m_dumpout, _sym_unit, 1, &a);
   }
   else
-    outlet_anything(x->m_dumpout, gensym("unit"), 0, NULL);
+    outlet_anything(x->m_dumpout, _sym_unit, 0, NULL);
 }
 
 void remote::get_mute(remote* x)
 {
   t_atom a;
   A_SETFLOAT(&a, x->m_mute);
-  outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+  outlet_anything(x->m_dumpout, _sym_mute, 1, &a);
 }
 
 void remote::on_device_removing(device_base* obj)
@@ -379,9 +379,9 @@ void remote::update_attribute(
 
 void remote::get_mess_cb(remote* x, t_symbol* s)
 {
-  if(s == gensym("unit"))
+  if(s == _sym_unit)
     remote::get_unit(x);
-  else if(s == gensym("mute"))
+  else if(s == _sym_mute)
     remote::get_mute(x);
   else
     parameter_base::get_mess_cb(x, s);

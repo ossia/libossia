@@ -91,7 +91,7 @@ t_max_err parameter_base::notify(
   {
     attrname = (t_symbol*)object_method((t_object*)data, gensym("getname"));
 
-    if(attrname == gensym("unit"))
+    if(attrname == _sym_unit)
       x->set_unit();
     else if(attrname == gensym("mode"))
       x->set_access_mode();
@@ -109,7 +109,7 @@ t_max_err parameter_base::notify(
       x->set_range();
     else if(attrname == gensym("clip"))
       x->set_bounding_mode();
-    else if(attrname == gensym("min") || attrname == gensym("max"))
+    else if(attrname == _sym_min || attrname == _sym_max)
       x->set_minmax();
     else if(attrname == gensym("default"))
       x->set_default();
@@ -529,7 +529,7 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_enable(x, x->m_node_selection);
   else if(s == gensym("default"))
     parameter_base::get_default(x, x->m_node_selection);
-  else if(s == gensym("range") || s == gensym("min") || s == gensym("max"))
+  else if(s == gensym("range") || s == _sym_min || s == _sym_max)
     parameter_base::get_domain(x, x->m_node_selection);
   else if(s == gensym("clip"))
     parameter_base::get_bounding_mode(x, x->m_node_selection);
@@ -541,9 +541,9 @@ void parameter_base::get_mess_cb(parameter_base* x, t_symbol* s)
     parameter_base::get_repetition_filter(x, x->m_node_selection);
   else if(s == gensym("critical"))
     parameter_base::get_critical(x, x->m_node_selection);
-  else if(s == gensym("mute"))
+  else if(s == _sym_mute)
     parameter_base::get_mute(x, x->m_node_selection);
-  else if(s == gensym("unit"))
+  else if(s == _sym_unit)
     parameter_base::get_unit(x, x->m_node_selection);
   else if(s == gensym("rate"))
     parameter_base::get_rate(x, x->m_node_selection);
@@ -574,12 +574,12 @@ void parameter_base::get_domain(parameter_base* x, std::vector<matcher*> nodes)
 
     outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
     outlet_anything(x->m_dumpout, gensym("range"), x->m_range_size, x->m_range);
-    outlet_anything(x->m_dumpout, gensym("min"), x->m_min_size, x->m_min);
-    outlet_anything(x->m_dumpout, gensym("max"), x->m_max_size, x->m_max);
+    outlet_anything(x->m_dumpout, _sym_min, x->m_min_size, x->m_min);
+    outlet_anything(x->m_dumpout, _sym_max, x->m_max_size, x->m_max);
   }
   lock_and_touch(x, gensym("range"));
-  lock_and_touch(x, gensym("min"));
-  lock_and_touch(x, gensym("max"));
+  lock_and_touch(x, _sym_min);
+  lock_and_touch(x, _sym_max);
 }
 
 void parameter_base::get_bounding_mode(parameter_base* x, std::vector<matcher*> nodes)
@@ -771,10 +771,10 @@ void parameter_base::get_unit(parameter_base* x, std::vector<matcher*> nodes)
       A_SETSYM(&a, x->m_unit);
 
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      outlet_anything(x->m_dumpout, gensym("unit"), 1, &a);
+      outlet_anything(x->m_dumpout, _sym_unit, 1, &a);
     }
   }
-  lock_and_touch(x, gensym("unit"));
+  lock_and_touch(x, _sym_unit);
 }
 
 void parameter_base::get_mute(parameter_base* x, std::vector<matcher*> nodes)
@@ -793,10 +793,10 @@ void parameter_base::get_mute(parameter_base* x, std::vector<matcher*> nodes)
       A_SETLONG(&a, x->m_mute);
 
       outlet_anything(x->m_dumpout, gensym("address"), 1, m->get_atom_addr_ptr());
-      outlet_anything(x->m_dumpout, gensym("mute"), 1, &a);
+      outlet_anything(x->m_dumpout, _sym_mute, 1, &a);
     }
   }
-  lock_and_touch(x, gensym("mute"));
+  lock_and_touch(x, _sym_mute);
 }
 
 void parameter_base::get_rate(parameter_base* x, std::vector<matcher*> nodes)
@@ -891,7 +891,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   if(x->m_mute)
     return;
 
-  if(s && s == gensym("set"))
+  if(s && s == _sym_set)
     x->m_set_flag = true;
 
   // TODO use atom2value here
@@ -902,7 +902,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   }
   else if(
       argc == 1 && s
-      && (s == gensym("float") || s == gensym("list") || (s == gensym("int"))))
+      && (s == _sym_float || s == _sym_list || (s == _sym_int)))
   {
     // convert one element array to single element
     switch(argv->a_type)
@@ -925,7 +925,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
     std::vector<ossia::value> list;
     list.reserve(argc + 1);
 
-    if(s && s != gensym("list") && s != gensym("set"))
+    if(s && s != _sym_list && s != _sym_set)
     {
       list.push_back(std::string(s->s_name));
     }

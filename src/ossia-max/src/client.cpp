@@ -94,7 +94,7 @@ void* client::create(t_symbol* name, long argc, t_atom* argv)
     long attrstart = attr_args_offset(argc, argv);
 
     // check name argument
-    x->m_name = gensym("Max");
+    x->m_name = _sym_max;
     if(attrstart && argv)
     {
       if(atom_gettype(argv) == A_SYM)

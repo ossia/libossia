@@ -227,10 +227,10 @@ t_symbol* val_type2symbol(ossia::val_type type)
   switch(type)
   {
     case ossia::val_type::FLOAT:
-      return gensym("float");
+      return _sym_float;
       break;
     case ossia::val_type::INT:
-      return gensym("int");
+      return _sym_int;
       break;
     case ossia::val_type::VEC2F:
       return gensym("vec2f");
@@ -248,17 +248,17 @@ t_symbol* val_type2symbol(ossia::val_type type)
       return gensym("bool");
       break;
     case ossia::val_type::STRING:
-      return gensym("string");
+      return _sym_string;
       break;
     case ossia::val_type::LIST:
-      return gensym("list");
+      return _sym_list;
       break;
     case ossia::val_type::MAP:
       return gensym("map");
       break;
     case ossia::val_type::NONE:
     default:
-      return gensym("none");
+      return _sym_none;
   }
 }
 
@@ -310,7 +310,7 @@ ossia::access_mode symbol2access_mode(t_symbol* access_mode)
     return ossia::access_mode::BI;
   else if(access_mode == gensym("get") || access_mode == gensym("r"))
     return ossia::access_mode::GET;
-  else if(access_mode == gensym("set") || access_mode == gensym("w"))
+  else if(access_mode == _sym_set || access_mode == gensym("w"))
     return ossia::access_mode::SET;
   else
   {
@@ -324,7 +324,7 @@ t_symbol* access_mode2symbol(ossia::access_mode mode)
   switch(mode)
   {
     case ossia::access_mode::SET:
-      return gensym("set");
+      return _sym_set;
     case ossia::access_mode::GET:
       return gensym("get");
     default:
@@ -388,7 +388,7 @@ ossia::value atom2value(t_symbol* s, int argc, t_atom* argv)
   {
     std::vector<ossia::value> list;
     list.reserve(argc + 1);
-    if(s && s != gensym("list"))
+    if(s && s != _sym_list)
       list.push_back(std::string(s->s_name));
 
     for(; argc > 0; argc--, argv++)

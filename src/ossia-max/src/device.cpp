@@ -128,7 +128,7 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
     long attrstart = attr_args_offset(argc, argv);
 
     // check name argument
-    x->m_name = gensym("Max");
+    x->m_name = _sym_max;
     x->m_otype = object_class::device;
 
     if(argc && argv)

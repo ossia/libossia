@@ -114,10 +114,8 @@ void cues::set_device(ossia::net::device_base* dev)
 
 void cues::recall(int idx)
 {
-  if(idx < 0)
-    return;
-  if(idx >= std::ssize(m_cues))
-    return;
+    if(!has_cue(idx))
+        return;
   m_current = idx;
   recall();
 }
@@ -134,6 +132,9 @@ struct priority_sort
 
 void cues::recall()
 {
+  if(!has_cue(m_current))
+      return;
+
   auto& root = dev->get_root_node();
 
   boost::container::small_flat_multimap<
@@ -277,10 +278,8 @@ void cues::create(std::string_view name)
 
 void cues::remove(int idx)
 {
-  if(idx < 0)
-    return;
-  if(idx >= std::ssize(m_cues))
-    return;
+    if(!has_cue(idx))
+        return;
 
   m_cues.erase(m_cues.begin() + idx);
 
@@ -323,6 +322,32 @@ void cues::remove(std::string_view name)
   }
 }
 
+void cues::rename(int idx, std::string_view newname)
+{
+    if(!has_cue(idx))
+        return;
+
+    m_cues[idx].name.assign(newname.begin(), newname.end());
+}
+
+void cues::rename(std::string_view name, std::string_view newname)
+{
+  auto it = std::find_if(this->m_cues.begin(), this->m_cues.end(), [=](const cue& c) {
+    return c.name == name;
+  });
+
+  if(it != this->m_cues.end())
+  {
+    int idx = std::distance(this->m_cues.begin(), it);
+    rename(idx, newname);
+  }
+}
+
+void cues::rename(std::string_view newname)
+{
+    rename(m_current, newname);
+}
+
 void cues::recall(std::string_view name)
 {
   if(!dev)
@@ -335,8 +360,9 @@ void cues::update(int idx)
 {
   if(!dev)
     return;
-  assert(idx >= 0);
-  assert(idx < std::ssize(this->m_cues));
+  if(!has_cue(idx))
+      return;
+
   auto& cue = this->m_cues[idx];
 
   // v1
@@ -409,20 +435,6 @@ void cues::update(std::string_view name)
   update(get_cue(name));
 }
 
-void cues::output(std::string_view name)
-{
-  if(!dev)
-    return;
-  int idx = get_cue(name);
-}
-
-void cues::output(std::string_view name, std::string_view pattern)
-{
-  if(!dev)
-    return;
-  int idx = get_cue(name);
-}
-
 void cues::clear()
 {
   m_cues.clear();
@@ -436,7 +448,7 @@ void cues::move(std::string_view name, int to)
 
 void cues::move(int from, int to)
 {
-  if(from < 0 || to < 0 || from == to)
+  if(from < 0 || to < 0 || from == to || from >= std::ssize(m_cues) || to >= std::ssize(m_cues))
     return;
   change_item_position(m_cues, from, to);
 }
@@ -528,6 +540,11 @@ void cues::namespace_filter_any(const selection_filters& pat)
       it = m_selection.erase(it);
     }
   }
+}
+
+bool cues::has_cue(int cue) const noexcept
+{
+  return cue >= 0 && cue < std::ssize(m_cues);
 }
 
 }

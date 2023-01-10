@@ -39,8 +39,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 set(PROJECT_SRCS
     src/assert.hpp
     src/assert.cpp
-    src/cue.hpp
-    src/cue.cpp
+    src/ocue.hpp
+    src/ocue.cpp
     src/ossia-max.cpp
     src/ossia-max.hpp
     src/object_base.cpp
