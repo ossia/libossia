@@ -47,7 +47,14 @@ public:
   void set_device(ossia::net::device_base* dev);
 
   int size() const noexcept { return this->m_cues.size(); }
-  cue& current_cue() noexcept { return this->m_cues[m_current]; }
+
+  int current_index() const noexcept { return m_current; }
+  cue* current_cue() noexcept {
+    if(has_cue(m_current))
+      return &this->m_cues[m_current];
+    else
+      return nullptr;
+  }
   cue* get_cue(int idx) noexcept
   {
     return (idx >= 0 && idx < std::ssize(this->m_cues)) ? &this->m_cues[idx] : nullptr;
@@ -70,6 +77,10 @@ public:
   void remove();
   void clear();
 
+  void rename(std::string_view oldname, std::string_view newname);
+  void rename(int idx, std::string_view newname);
+  void rename(std::string_view newname);
+
   void move(std::string_view name, int index);
   void move(int from, int to);
 
@@ -85,6 +96,7 @@ public:
   void on_node_created(const ossia::net::node_base& n);
   void on_node_removed(const ossia::net::node_base& n);
 
+  bool has_cue(int cue) const noexcept;
   //private:
   ossia::net::device_base* dev{};
   int m_current{0};
