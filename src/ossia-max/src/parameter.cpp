@@ -73,7 +73,7 @@ void* parameter::create(t_symbol* s, long argc, t_atom* argv)
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
 
-    if(x->m_type != gensym("string") && x->m_min_size == 0 && x->m_max_size == 0
+    if(x->m_type != _sym_string && x->m_min_size == 0 && x->m_max_size == 0
        && x->m_range_size == 0)
     {
       // set range if not set by attribute min/max or range

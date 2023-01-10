@@ -49,7 +49,7 @@ extern "C" void* ossia_logger_new(t_symbol* s, long argc, t_atom* argv)
 
     // default attributes
     x->m_host = gensym("ws://127.0.0.1:1337");
-    x->m_appname = gensym("max");
+    x->m_appname = _sym_max;
     x->m_ival = 5;
 
     // parse arguments

@@ -206,7 +206,7 @@ struct value2atom
   void operator()(impulse) const
   {
     t_atom a;
-    atom_setsym(&a, gensym("bang"));
+    atom_setsym(&a, _sym_bang);
     data.push_back(a);
   }
 
@@ -285,11 +285,11 @@ struct value_visitor
       if(x->m_defer_set)
       {
         defer_low(
-            (t_object*)x, (method)object_base::defer_set_output, gensym("set"), 1, &a);
+            (t_object*)x, (method)object_base::defer_set_output, _sym_set, 1, &a);
       }
       else
       {
-        outlet_anything(x->m_set_out, gensym("set"), 1, &a);
+        outlet_anything(x->m_set_out, _sym_set, 1, &a);
       }
     }
   }
@@ -301,11 +301,11 @@ struct value_visitor
       if(x->m_defer_set)
       {
         defer_low(
-            (t_object*)x, (method)object_base::defer_set_output, gensym("set"), N, a);
+            (t_object*)x, (method)object_base::defer_set_output, _sym_set, N, a);
       }
       else
       {
-        outlet_anything(x->m_set_out, gensym("set"), N, a);
+        outlet_anything(x->m_set_out, _sym_set, N, a);
       }
     }
   }
@@ -359,7 +359,7 @@ struct value_visitor
 
     for(int i = 0; i < N; i++)
       atom_setfloat(a + i, vec[i]);
-    outlet_list(x->m_data_out, gensym("list"), N, a);
+    outlet_list(x->m_data_out, _sym_list, N, a);
 
     set_out(N, a);
   }
@@ -377,7 +377,7 @@ struct value_visitor
 
     t_atom* list_ptr = !va.empty() ? va.data() : nullptr;
     if(x->m_data_out)
-      outlet_list(x->m_data_out, gensym("list"), va.size(), list_ptr);
+      outlet_list(x->m_data_out, _sym_list, va.size(), list_ptr);
 
     set_out(va.size(), list_ptr);
   }
