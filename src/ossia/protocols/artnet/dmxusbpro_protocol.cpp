@@ -46,7 +46,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
   if(m_autocreate)
   {
     auto& root = dev.get_root_node();
-    for(unsigned int i = 0; i < 254; ++i)
+    for(unsigned int i = 0; i < 512; ++i)
       device_parameter::create_device_parameter<dmx_parameter>(
           root, fmt::format("{}", i + 1), 0, m_buffer, i);
   }
@@ -85,14 +85,29 @@ void dmxusbpro_protocol::update_function()
   {
     if(true || m_buffer.dirty)
     {
-      // 126 6 (channel nb+1) 0 0 (channel1 channel2 channel3 …) 231
-      constexpr unsigned char channels = 254;
-      constexpr int bufsize = 5 + channels + 1;
-      unsigned char buf[bufsize]{126, 6, channels + 1, 0, 0};
+      // https://cdn.enttec.com/pdf/assets/70304/70304_DMX_USB_PRO_API.pdf
+      // 1: 0x7E
+      // 1: message code (0x6 for DMX send)
+      // 1: size LSB
+      // 1: size MSB
+      // N: message data: [
+      //   1: start code (0x0 for DMX)
+      //   N-1: DMX channels
+      // ]
+      // 1: 0xE7
 
-      for(int i = 0; i < channels; i++)
+      constexpr uint32_t channels = 512;
+      constexpr uint32_t data_size = channels + 1;
+      constexpr uint32_t buffer_size = 4 + data_size + 1;
+
+      constexpr uint8_t data_size_lsb = data_size & 0x00FF;
+      constexpr uint8_t data_size_msb = (data_size & 0xFF00) >> 16;
+
+      unsigned char buf[buffer_size]{0x7E, 6, data_size_lsb, data_size_msb, 0};
+
+      for(uint32_t i = 0; i < channels; i++)
         buf[5 + i] = m_buffer.data[i];
-      buf[bufsize - 1] = 231;
+      buf[buffer_size - 1] = 0xE7;
 
       boost::asio::write(m_port, boost::asio::buffer(buf));
 
