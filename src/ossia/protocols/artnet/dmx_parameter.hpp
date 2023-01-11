@@ -9,21 +9,26 @@
 
 namespace ossia::net
 {
+
+template <std::size_t I>
+struct artnet_visitor;
 struct dmx_buffer;
 class OSSIA_EXPORT dmx_parameter : public device_parameter
 {
 public:
   dmx_parameter(
       net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min = 0,
-      int max = 255);
+      int max = 255, int8_t bytes = 1);
   ~dmx_parameter();
+  int8_t m_bytes{};
 
 private:
   void device_update_value() override;
 
   dmx_buffer& m_buffer;
-  const unsigned int m_channel{};
+  const uint32_t m_channel{};
 
+  template <std::size_t I>
   friend struct artnet_visitor;
 };
 

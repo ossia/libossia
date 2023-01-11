@@ -8,37 +8,69 @@
 
 namespace ossia::net
 {
+template <std::size_t I>
 struct artnet_visitor
 {
-  dmx_buffer& buf;
-  const unsigned int channel;
-  void operator()(int v) const noexcept
+  static_assert(I >= 1);
+  static_assert(I <= 4);
+  dmx_parameter& self;
+  void apply(uint32_t bytes) const noexcept
   {
-    buf.data[channel] = v;
-    buf.dirty = true;
+    if constexpr(I == 1)
+    {
+      self.m_buffer.data[self.m_channel] = bytes;
+    }
+    else if constexpr(I == 2)
+    {
+      self.m_buffer.data[self.m_channel + 1] = bytes & 0x000000FF;
+      self.m_buffer.data[self.m_channel + 0] = (bytes & 0x0000FF00) >> 8;
+    }
+    else if constexpr(I == 3)
+    {
+      self.m_buffer.data[self.m_channel + 2] = bytes & 0x000000FF;
+      self.m_buffer.data[self.m_channel + 1] = (bytes & 0x0000FF00) >> 8;
+      self.m_buffer.data[self.m_channel + 0] = (bytes & 0x00FF0000) >> 16;
+    }
+    else if constexpr(I == 4)
+    {
+      self.m_buffer.data[self.m_channel + 3] = bytes & 0x000000FF;
+      self.m_buffer.data[self.m_channel + 2] = (bytes & 0x0000FF00) >> 8;
+      self.m_buffer.data[self.m_channel + 1] = (bytes & 0x00FF0000) >> 16;
+      self.m_buffer.data[self.m_channel + 0] = (bytes & 0xFF000000) >> 24;
+    }
   }
-  void operator()(float v) const noexcept
-  {
-    buf.data[channel] = v;
-    buf.dirty = true;
-  }
-  void operator()(char v) const noexcept
-  {
-    buf.data[channel] = v;
-    buf.dirty = true;
-  }
+  void operator()(int v) const noexcept { return apply(v); }
+  void operator()(float v) const noexcept { return apply(v); }
   template <typename... Args>
   void operator()(Args&&...) const noexcept
   {
   }
 };
 
+template <>
+struct artnet_visitor<1>
+{
+  dmx_parameter& self;
+  void operator()(int v) const noexcept
+  {
+    self.m_buffer.data[self.m_channel] = std::clamp(v, 0, 255);
+  }
+  void operator()(float v) const noexcept
+  {
+    self.m_buffer.data[self.m_channel] = std::clamp(v, 0.f, 255.f);
+  }
+  template <typename... Args>
+  void operator()(Args&&...) const noexcept
+  {
+  }
+};
 dmx_parameter::dmx_parameter(
     net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min,
-    int max)
+    int max, int8_t bytes)
     : device_parameter(
         node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
         make_domain(min, max))
+    , m_bytes{bytes}
     , m_buffer{buffer}
     , m_channel{channel}
 {
@@ -48,7 +80,23 @@ dmx_parameter::~dmx_parameter() = default;
 
 void dmx_parameter::device_update_value()
 {
-  value().apply(artnet_visitor{m_buffer, m_channel});
+  switch(m_bytes)
+  {
+    case 1:
+      m_current_value.apply(artnet_visitor<1>{*this});
+      break;
+    case 2:
+      m_current_value.apply(artnet_visitor<2>{*this});
+      break;
+    case 3:
+      m_current_value.apply(artnet_visitor<3>{*this});
+      break;
+    case 4:
+      m_current_value.apply(artnet_visitor<4>{*this});
+      break;
+  }
+
+  m_buffer.dirty = true;
 }
 
 /*

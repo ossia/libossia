@@ -21,7 +21,9 @@ struct dmx_buffer
   dmx_buffer();
   ~dmx_buffer();
 
-  uint8_t data[DMX_CHANNEL_COUNT];
+  // Some data is reserved for the case where the last parameter
+  // has a bit depth of 255.. and some padding for safety
+  uint8_t data[DMX_CHANNEL_COUNT + 256 + 16];
   bool dirty{};
 };
 
