@@ -22,11 +22,16 @@ struct router
   long m_truncate{1};
 
   router(long argc, t_atom* argv);
-  void change_pattern(int index, std::string pattern);
+  void change_pattern(int index, std::string&& pattern);
 
   static void free(ossia::max_binding::router* x);
   static void
   in_anything(ossia::max_binding::router* x, t_symbol* s, long argc, t_atom* argv);
+
+  static void in_float(ossia::max_binding::router* x, double f);
+  static void in_int(ossia::max_binding::router* x, long int f);
+  static void in_symbol(ossia::max_binding::router* x, t_symbol* f);
+  static void in_list(ossia::max_binding::router* x, t_symbol*, int argc, t_atom* argv);
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
