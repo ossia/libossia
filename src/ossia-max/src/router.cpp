@@ -11,8 +11,18 @@
 
 using namespace ossia::max_binding;
 
-#pragma mark -
-#pragma mark ossia_router class methods
+static void print_atom_list(std::string name, long argc, t_atom* argv)
+{
+    name += ": ";
+    t_atom t;
+    t.a_type = A_SYM;
+    t.a_w.w_sym = gensym(name.data());
+    postatom(&t);
+    for(int i = 0; i < argc; i++) {
+        postatom(argv+i);
+    }
+    post("\n");
+}
 
 extern "C" void ossia_router_setup()
 {
@@ -25,6 +35,12 @@ extern "C" void ossia_router_setup()
 
   auto& c = ossia_library.ossia_router_class;
   class_addmethod(c, (method)router::in_anything, "anything", A_GIMME, 0);
+
+  class_addmethod(c, (method)router::in_int, "int", A_LONG, A_GIMME, 0);
+  class_addmethod(c, (method)router::in_float, "float", A_FLOAT, 0);
+  class_addmethod(c, (method)router::in_symbol, "symbol", A_SYM, 0);
+  class_addmethod(c, (method)router::in_list, "list", A_GIMME, 0);
+
   class_addmethod(c, (method)router::assist, "assist", A_CANT, 0);
 
   CLASS_ATTR_LONG(c, "truncate", 0, router, m_truncate);
@@ -62,8 +78,21 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
     {
       if(argv[argc].a_type == A_SYM)
       {
-        std::string pattern(argv[argc].a_w.w_sym->s_name);
-        x->change_pattern(inlet_id++, pattern);
+        x->change_pattern(inlet_id++, std::string(argv[argc].a_w.w_sym->s_name));
+        x->m_inlets.push_back(proxy_new(x, argc + 1, 0L));
+
+        x->m_outlets.push_back(outlet_new(x, nullptr));
+      }
+      else if(argv[argc].a_type == A_LONG)
+      {
+        x->change_pattern(inlet_id++,  std::to_string(argv[argc].a_w.w_long));
+        x->m_inlets.push_back(proxy_new(x, argc + 1, 0L));
+
+        x->m_outlets.push_back(outlet_new(x, nullptr));
+      }
+      else if(argv[argc].a_type == A_FLOAT)
+      {
+        x->change_pattern(inlet_id++, std::to_string(argv[argc].a_w.w_float));
         x->m_inlets.push_back(proxy_new(x, argc + 1, 0L));
 
         x->m_outlets.push_back(outlet_new(x, nullptr));
@@ -78,7 +107,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
   return x;
 }
 
-void router::change_pattern(int index, std::string pattern)
+void router::change_pattern(int index, std::string&& pattern)
 {
   if(!pattern.empty() && pattern[0] == '/')
   {
@@ -99,42 +128,82 @@ void router::change_pattern(int index, std::string pattern)
 
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 {
-  std::string address(s->s_name);
-
   long inlet = proxy_getinlet((t_object*)x);
 
   if(inlet > 0)
   {
-    x->change_pattern(x->m_inlets.size() - inlet, address);
+    x->change_pattern(x->m_inlets.size() - inlet, std::string (s->s_name));
   }
   else
   {
+    std::string_view address = s->s_name;
+
     bool match = false;
     for(int i = 0; i < x->m_patterns.size(); i++)
     {
       const auto& pattern_regex = x->m_patterns[i];
 
-      std::smatch smatch;
-      if(std::regex_search(address, smatch, pattern_regex))
+      std::cmatch smatch;
+      if(std::regex_search(address.data(), address.data() + address.size(), smatch, pattern_regex))
       {
         match = true;
-        std::string newaddress = address;
+        auto outlet = x->m_outlets[i + 1];
+        auto process = [argc, argv, outlet] (std::string_view str) {
+          if(str.size() > 0)
+          {
+            t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc+1));
+            atom_setsym(&l[0], gensym(str.data()));
+            for(int i = 1; i < argc + 1; i++) {
+                l[i] = argv[i-1];
+            }
+
+            outlet_list(outlet, _sym_list, argc+1, l);
+          }
+          else
+          {
+            outlet_list(outlet, _sym_list, argc, argv);
+          }
+        };
         if(x->m_truncate)
-          newaddress = smatch.suffix();
-        if(newaddress.size() > 0)
-        {
-          outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
-        }
+          process(std::string_view(smatch.suffix().first, smatch.suffix().second - smatch.suffix().first));
         else
-        {
-          outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
-        }
+          process(address);
+
       }
     }
 
     if(!match)
-      outlet_anything(x->m_outlets[0], s, argc, argv);
+    {
+      t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc+1));
+      atom_setsym(&l[0], s);
+      for(int i = 1; i < argc + 1; i++) {
+          l[i] = argv[i-1];
+      }
+      outlet_list(x->m_outlets[0], _sym_list, argc+1, l);
+    }
   }
+}
+
+void router::in_float(router *x, double f)
+{
+}
+
+void router::in_int(router *x, long f)
+{
+}
+
+void router::in_symbol(router *x, t_symbol *f)
+{
+}
+
+void router::in_list(router *x, t_symbol * f, int argc, t_atom *argv)
+{
+    if(argc == 0)
+        return;
+    if(argv[0].a_type != A_SYM)
+        return;
+
+    return in_anything(x, argv[0].a_w.w_sym, argc - 1, argv + 1);
 }
 
 void router::free(router* x)
