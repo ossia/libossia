@@ -285,4 +285,14 @@ void change_item_position(T& v, size_t oldIndex, size_t newIndex)
     std::rotate(
         v.begin() + oldIndex, v.begin() + oldIndex + 1, v.begin() + newIndex + 1);
 }
+
+template <typename Container, typename Item>
+int index_in_container(Container& vec, Item i) noexcept
+{
+  auto it = std::find(vec.begin(), vec.end(), i);
+  if(it != vec.end())
+    return std::distance(vec.begin(), it);
+  else
+    return -1;
+}
 }
