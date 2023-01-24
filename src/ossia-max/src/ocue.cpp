@@ -1,3 +1,6 @@
+#include "ocue.utils.cpp"
+#include "symbols.hpp"
+
 #include <ossia/detail/json.hpp>
 
 #include <ossia-max/src/ocue.hpp>
@@ -8,15 +11,11 @@
 
 #include <rapidjson/prettywriter.h>
 
-#include "symbols.hpp"
-#include "ocue.utils.cpp"
-
 // Notes:
 // - When we switch preset, the nodes in the preset becomes this ocue::'s running selection
 // - Need "update" to add/remove nodes from the cue: just changing the local selection does nothing
 // - namespace/X family of functions vs
 // - select/all select deselect
-
 
 using namespace ossia::max_binding;
 
@@ -32,18 +31,12 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
       "ossia.cue", (method)ossia_cue_create, (method)ocue::free, (long)sizeof(ocue), 0L,
       A_GIMME, 0);
 
-#define ADDMETHOD_NOTHING(name)                                                    \
-  class_addmethod(                                                                 \
-      c,                                                                           \
-      (method) +                                                                   \
-          [](ocue* x, t_symbol*) { x->name(); },                                   \
-      #name, A_NOTHING, 0);
-#define ADDMETHOD_NOTHING_(var, name)                                              \
-  class_addmethod(                                                                 \
-      c,                                                                           \
-      (method) +                                                                   \
-          [](ocue* x, t_symbol*) { x->var(); },                                    \
-      name, A_NOTHING, 0);
+#define ADDMETHOD_NOTHING(name) \
+  class_addmethod(              \
+      c, (method) + [](ocue* x, t_symbol*) { x->name(); }, #name, A_NOTHING, 0);
+#define ADDMETHOD_NOTHING_(var, name) \
+  class_addmethod(                    \
+      c, (method) + [](ocue* x, t_symbol*) { x->var(); }, name, A_NOTHING, 0);
 
 #define ADDMETHOD_GIMME(name)                                                      \
   class_addmethod(                                                                 \
@@ -132,29 +125,31 @@ void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv)
   return x;
 }
 
-
-template<typename... T>
+template <typename... T>
 void ocue::dump_message(std::string_view msg, T&&... t)
 {
-    constexpr int N = sizeof...(T);
-    t_atom args[N];
+  constexpr int N = sizeof...(T);
+  t_atom args[N];
+  {
+    [&]<std::size_t... I>(std::index_sequence<I...>)
     {
-        [&] <std::size_t... I> (std::index_sequence<I...>) {
-          (pack_to_atom(args[I], t), ...);
-        }(std::make_index_sequence<N>{});
+      (pack_to_atom(args[I], t), ...);
     }
-    outlet_anything(m_dumpout, gensym(msg.data()), N, args);
+    (std::make_index_sequence<N>{});
+  }
+  outlet_anything(m_dumpout, gensym(msg.data()), N, args);
 }
 
 void ocue::dump_message(std::string_view msg, const std::vector<std::string_view>& t)
 {
-    const int N = t.size();
-    t_atom* args = (t_atom*)alloca(sizeof(t_atom) * t.size());
-    for(int i = 0; i < std::ssize(t); i++) {
-        atom_setsym(args + i, gensym(t[i].data()));
-    }
+  const int N = t.size();
+  t_atom* args = (t_atom*)alloca(sizeof(t_atom) * t.size());
+  for(int i = 0; i < std::ssize(t); i++)
+  {
+    atom_setsym(args + i, gensym(t[i].data()));
+  }
 
-    outlet_anything(m_dumpout, gensym(msg.data()), N, args);
+  outlet_anything(m_dumpout, gensym(msg.data()), N, args);
 }
 
 void ocue::create(int argc, t_atom* argv)
@@ -168,10 +163,10 @@ void ocue::create(int argc, t_atom* argv)
 
       dump_message("new", name);
       {
-          std::vector<std::string_view> names;
-          for(auto& cue : this->m_cues->m_cues)
-              names.push_back(cue.name);
-          dump_message("names", std::as_const(names));
+        std::vector<std::string_view> names;
+        for(auto& cue : this->m_cues->m_cues)
+          names.push_back(cue.name);
+        dump_message("names", std::as_const(names));
       }
       dump_message("current", name);
     }
@@ -210,7 +205,8 @@ void ocue::recall_next(int argc, t_atom* argv)
   if(this->m_cues->m_cues.empty())
     return;
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(sizeof...(args) == 0) {
+    if constexpr(sizeof...(args) == 0)
+    {
       int idx = this->m_cues->current_index();
       int next_index = std::clamp(idx + 1, 0, this->m_cues->size() - 1);
 
@@ -226,27 +222,29 @@ void ocue::recall_next(int argc, t_atom* argv)
 
 void ocue::recall_previous(int argc, t_atom* argv)
 {
-    if(this->m_cues->m_cues.empty())
-      return;
-    invoke_mem_fun(argc, argv, [this](auto&&... args) {
-      if constexpr(sizeof...(args) == 0) {
-        int idx = this->m_cues->current_index();
-        int next_index = std::clamp(idx - 1, 0, this->m_cues->size() - 1);
+  if(this->m_cues->m_cues.empty())
+    return;
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(sizeof...(args) == 0)
+    {
+      int idx = this->m_cues->current_index();
+      int next_index = std::clamp(idx - 1, 0, this->m_cues->size() - 1);
 
-        if(m_ns.dev)
-        {
-          this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
-          explore(0, nullptr);
-        }
-        dump_message("recall/previous");
+      if(m_ns.dev)
+      {
+        this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
+        explore(0, nullptr);
       }
-    });
+      dump_message("recall/previous");
+    }
+  });
 }
 
 void ocue::remove(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->remove(args...); }) {
+    if constexpr(requires { this->m_cues->remove(args...); })
+    {
       dump_message("remove", name_from_args(*m_cues, args...));
       this->m_cues->remove(args...);
 
@@ -258,15 +256,18 @@ void ocue::remove(int argc, t_atom* argv)
 void ocue::rename(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->rename(args...); }) {
-      if constexpr(sizeof...(args) == 2) {
+    if constexpr(requires { this->m_cues->rename(args...); })
+    {
+      if constexpr(sizeof...(args) == 2)
+      {
         auto [source, rename] = std::make_tuple(args...);
         std::string_view current = name_from_args(*m_cues, source);
         std::string_view next(rename);
 
         dump_message("rename", current, next);
       }
-      else if constexpr(sizeof...(args) == 1) {
+      else if constexpr(sizeof...(args) == 1)
+      {
         std::string_view current = name_from_args(*m_cues);
         std::string_view next(args...);
 
@@ -283,7 +284,6 @@ void ocue::json()
   rapidjson::StringBuffer buffer = cues_to_string(*m_cues);
   dump_message("json", buffer.GetString());
 }
-
 
 void ocue::selection_dump()
 {
@@ -315,107 +315,109 @@ void ocue::move(int argc, t_atom* argv)
 
 void ocue::read(int argc, t_atom* argv)
 {
-    const struct {
-        ocue& self;
-        void operator()() const noexcept
-        {
-            if(auto name = prompt_filename("Open cue...", "cues.cue.json"); !name.empty())
-            {
-                do_read(name);
-            }
-            self.dump_message("read");
-        }
-        void operator()(std::string_view url) const noexcept
-        {
-            do_read(url);
-            self.dump_message("read", url);
-        }
-        void do_read(std::string_view url) const noexcept
-        {
-            self.m_last_filename = std::string(url);
+  const struct
+  {
+    ocue& self;
+    void operator()() const noexcept
+    {
+      if(auto name = prompt_filename("Open cue...", "cues.cue.json"); !name.empty())
+      {
+        do_read(name);
+      }
+      self.dump_message("read");
+    }
+    void operator()(std::string_view url) const noexcept
+    {
+      do_read(url);
+      self.dump_message("read", url);
+    }
+    void do_read(std::string_view url) const noexcept
+    {
+      self.m_last_filename = std::string(url);
 
-            rapidjson::Document doc;
-            auto str = ossia::presets::read_file(self.m_last_filename);
+      rapidjson::Document doc;
+      auto str = ossia::presets::read_file(self.m_last_filename);
 
-            doc.ParseInsitu(str.data());
-            if(doc.HasParseError())
-            {
-              post("ossia.cue: invalid json in file '%s'", url.data());
-              return;
-            }
-            if(!doc.IsObject())
-            {
-              post("ossia.cue: invalid json in file '%s'", url.data());
-              return;
-            }
-            auto cues = doc.FindMember("cues");
-            if(cues == doc.MemberEnd() || !cues->value.IsArray())
-            {
-              post("ossia.cue: invalid json in file '%s'", url.data());
-              return;
-            }
-            self.m_cues->clear();
-            read_cues_from_json(cues->value.GetArray(), self.m_cues->m_cues);
-        }
-    } handler{*this};
+      doc.ParseInsitu(str.data());
+      if(doc.HasParseError())
+      {
+        post("ossia.cue: invalid json in file '%s'", url.data());
+        return;
+      }
+      if(!doc.IsObject())
+      {
+        post("ossia.cue: invalid json in file '%s'", url.data());
+        return;
+      }
+      auto cues = doc.FindMember("cues");
+      if(cues == doc.MemberEnd() || !cues->value.IsArray())
+      {
+        post("ossia.cue: invalid json in file '%s'", url.data());
+        return;
+      }
+      self.m_cues->clear();
+      read_cues_from_json(cues->value.GetArray(), self.m_cues->m_cues);
+    }
+  } handler{*this};
 
-    invoke_mem_fun(argc, argv, handler);
+  invoke_mem_fun(argc, argv, handler);
 }
 
 void ocue::write(int argc, t_atom* argv)
 {
-    const struct {
-        ocue& self;
-        void operator()() const noexcept
-        {
-            if(auto name = prompt_filename("Save cue...", "cues.cue.json"); !name.empty())
-            {
-                do_write(name);
-            }
-            self.dump_message("write");
-        }
+  const struct
+  {
+    ocue& self;
+    void operator()() const noexcept
+    {
+      if(auto name = prompt_filename("Save cue...", "cues.cue.json"); !name.empty())
+      {
+        do_write(name);
+      }
+      self.dump_message("write");
+    }
 
-        void operator()(std::string_view url) const noexcept
-        {
-            do_write(url);
-            self.dump_message("write", url);
-        }
-        void do_write(std::string_view url) const noexcept
-        {
-            rapidjson::StringBuffer buffer = cues_to_string(*self.m_cues);
+    void operator()(std::string_view url) const noexcept
+    {
+      do_write(url);
+      self.dump_message("write", url);
+    }
+    void do_write(std::string_view url) const noexcept
+    {
+      rapidjson::StringBuffer buffer = cues_to_string(*self.m_cues);
 
-            std::string full_path;
-            if(is_absolute_path(url))
-            {
-              full_path = url;
-            }
-            else
-            {
-              std::string_view patcher_path = jpatcher_get_filepath(self.m_patcher)->s_name;
-              std::string_view patcher_name = jpatcher_get_filename(self.m_patcher)->s_name;
-              auto end_it = patcher_path.rfind(patcher_name);
-              if(end_it <= 0 || end_it > std::string_view::npos)
-                return;
+      std::string full_path;
+      if(is_absolute_path(url))
+      {
+        full_path = url;
+      }
+      else
+      {
+        std::string_view patcher_path = jpatcher_get_filepath(self.m_patcher)->s_name;
+        std::string_view patcher_name = jpatcher_get_filename(self.m_patcher)->s_name;
+        auto end_it = patcher_path.rfind(patcher_name);
+        if(end_it <= 0 || end_it > std::string_view::npos)
+          return;
 
-              int start = 0;
-              if(patcher_path.starts_with("Macintosh HD:"))
-                start = strlen("Macintosh HD:");
-              full_path = patcher_path.substr(start, end_it - start);
-              full_path += url;
-            }
+        int start = 0;
+        if(patcher_path.starts_with("Macintosh HD:"))
+          start = strlen("Macintosh HD:");
+        full_path = patcher_path.substr(start, end_it - start);
+        full_path += url;
+      }
 
-            self.m_last_filename = full_path;
+      self.m_last_filename = full_path;
 
-            try
-            {
-              ossia::presets::write_file({buffer.GetString(), buffer.GetLength()}, full_path);
-            }
-            catch(const std::exception& e)
-            {
-              post("ossia.cue: write error: %s", e.what());
-            }
-          }
-    } handler{*this};
+      try
+      {
+        ossia::presets::write_file({buffer.GetString(), buffer.GetLength()}, full_path);
+      }
+      catch(const std::exception& e)
+      {
+        post("ossia.cue: write error: %s", e.what());
+      }
+    }
+  } handler{*this};
 
   invoke_mem_fun(argc, argv, handler);
 }
@@ -443,11 +445,11 @@ void ocue::output(int argc, t_atom* argv)
 
     void operator()(const ossia::cue& c, std::string_view pattern) const
     {
-       std::vector<t_atom> vec;
+      std::vector<t_atom> vec;
       for(auto& [k, v] : c.preset)
       {
         if(!k.starts_with(pattern))
-            continue;
+          continue;
         vec.clear();
         vec.reserve(6);
         vec.resize(1);
@@ -458,12 +460,13 @@ void ocue::output(int argc, t_atom* argv)
       }
     }
 
-    void operator()() const {
-        if(auto cue = cues.current_cue())
-        {
-          (*this)(*cue);
-          self.dump_message("output");
-        }
+    void operator()() const
+    {
+      if(auto cue = cues.current_cue())
+      {
+        (*this)(*cue);
+        self.dump_message("output");
+      }
     }
     void operator()(int index) const
     {
@@ -507,202 +510,191 @@ void ocue::output(int argc, t_atom* argv)
   });
 }
 
-
 std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
-        object_base& self,
-        ossia::net::device_base* device,
-        t_symbol* m_name
-        )
+    object_base& self, ossia::net::device_base* device, t_symbol* m_name)
 {
-    if(!device)
-        return {};
+  if(!device)
+    return {};
 
-    if(!m_name || m_name == _sym_nothing)
+  if(!m_name || m_name == _sym_nothing)
+  {
+    if(auto obj = self.find_parent_object())
     {
-        if(auto obj = self.find_parent_object())
-        {
-          // Explore at the current hierarchy level of ossia.explorer
-          return obj->m_matchers;
-        }
-        else
-        {
-          // ossia.explorer is not in a hierarchy: explore from / of the device instead
-          return {std::make_shared<matcher>(
-              &device->get_root_node(), nullptr)};
-        }
+      // Explore at the current hierarchy level of ossia.explorer
+      return obj->m_matchers;
     }
     else
     {
-        // Exploring from a specified address, e.g. explore /foo.*
-        // FIXME this->m_name has to beset before this
-        if(auto matchers = self.find_or_create_matchers(); matchers.empty())
-        {
-          return {std::make_shared<matcher>(
-              &device->get_root_node(), nullptr)};
-        }
-        else
-        {
-            return matchers;
-        }
+      // ossia.explorer is not in a hierarchy: explore from / of the device instead
+      return {std::make_shared<matcher>(&device->get_root_node(), nullptr)};
     }
+  }
+  else
+  {
+    // Exploring from a specified address, e.g. explore /foo.*
+    // FIXME this->m_name has to beset before this
+    if(auto matchers = self.find_or_create_matchers(); matchers.empty())
+    {
+      return {std::make_shared<matcher>(&device->get_root_node(), nullptr)};
+    }
+    else
+    {
+      return matchers;
+    }
+  }
 
-    return {};
+  return {};
 }
 
 void ocue::do_explore(t_symbol* name)
-    {
-        search_sort_filter filter_models;
-        filter_models.m_sort = gensym("priority");
-        filter_models.m_depth = 0;
-        filter_models.m_format = gensym("jit.cellblock");
-        filter_models.m_filter_type[0] = gensym("model");
-        filter_models.m_filter_type_size = 1;
-
-        // get namespace of given nodes
-        auto matchers = get_matchers_for_address(*this, get_device(), name);
-        auto model_nodes = filter_models.sort_and_filter(matchers);
-
-        // Pretty print it
-
-        {
-            auto& nodes = model_nodes;
-            auto outlet = this->m_data_out;
-            auto prefix = gensym("models");
-
-            {
-              t_atom a;
-              A_SETLONG(&a, model_nodes.size());
-              outlet_anything(outlet, s_size, 1, &a);
-            }
-            std::vector<t_atom> va;
-            va.reserve(6);
-
-            int k = 0;
-            // First clear
-            write_message(va, outlet, prefix, s_clear, "all");
-            write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
-
-            for(const auto& nn : nodes)
-            {
-              auto& n = *nn;
-
-              const auto& osc_param = ossia::net::osc_parameter_string(n);
-
-              // Format:
-              // set x y <name>
-              write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str() );
-
-              // cell x y brgb r g b
-              if(this->m_ns.m_selection.contains(nn))
-                write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
-              else
-                write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
-              k++;
-            }
-        }
-
-
-        if(!model_nodes.empty())
-        {
-            do_display_model(model_nodes.front()->osc_address());
-        }
-    }
-
-void ocue::explore(int argc, t_atom *argv)
 {
-    // List all the models in the "models" command
-    auto name = _sym_nothing;
-    if(argc > 0 && argv->a_type == A_SYM)
-    {
-      name = argv->a_w.w_sym;
-    }
-    do_explore(name);
+  search_sort_filter filter_models;
+  filter_models.m_sort = gensym("priority");
+  filter_models.m_depth = 0;
+  filter_models.m_format = gensym("jit.cellblock");
+  filter_models.m_filter_type[0] = gensym("model");
+  filter_models.m_filter_type_size = 1;
 
+  // get namespace of given nodes
+  auto matchers = get_matchers_for_address(*this, get_device(), name);
+  auto model_nodes = filter_models.sort_and_filter(matchers);
+
+  // Pretty print it
+
+  {
+    auto& nodes = model_nodes;
+    auto outlet = this->m_data_out;
+    auto prefix = gensym("models");
+
+    {
+      t_atom a;
+      A_SETLONG(&a, model_nodes.size());
+      outlet_anything(outlet, s_size, 1, &a);
+    }
+    std::vector<t_atom> va;
+    va.reserve(6);
+
+    int k = 0;
+    // First clear
+    write_message(va, outlet, prefix, s_clear, "all");
+    write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
+
+    for(const auto& nn : nodes)
+    {
+      auto& n = *nn;
+
+      const auto& osc_param = ossia::net::osc_parameter_string(n);
+
+      // Format:
+      // set x y <name>
+      write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str());
+
+      // cell x y brgb r g b
+      if(this->m_ns.m_selection.contains(nn))
+        write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
+      else
+        write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
+      k++;
+    }
+  }
+
+  if(!model_nodes.empty())
+  {
+    do_display_model(model_nodes.front()->osc_address());
+  }
+}
+
+void ocue::explore(int argc, t_atom* argv)
+{
+  // List all the models in the "models" command
+  auto name = _sym_nothing;
+  if(argc > 0 && argv->a_type == A_SYM)
+  {
+    name = argv->a_w.w_sym;
+  }
+  do_explore(name);
 }
 
 void ocue::select(int argc, t_atom* argv)
 {
-    invoke_mem_fun(argc, argv, [this](std::string_view name) {
+  invoke_mem_fun(argc, argv, [this](std::string_view name) {
 
-
-    });
+  });
 }
 
-void ocue::select_model(int argc, t_atom *argv)
+void ocue::select_model(int argc, t_atom* argv)
 {
-    display_model(argc, argv);
-    // Adds it / removes it from / to the selection
-    invoke_mem_fun(argc, argv, [this](std::string_view name) {
+  display_model(argc, argv);
+  // Adds it / removes it from / to the selection
+  invoke_mem_fun(argc, argv, [this](std::string_view name) {
 
-
-
-    });
+  });
 }
 
 void ocue::do_display_model(std::string_view name)
 {
-    search_sort_filter filter_child_params;
-    filter_child_params.m_sort = gensym("priority");
-    filter_child_params.m_depth = 0;
-    filter_child_params.m_format = gensym("jit.cellblock");
-    filter_child_params.m_filter_type[0] = gensym("parameters");
-    filter_child_params.m_filter_type_size = 1;
+  search_sort_filter filter_child_params;
+  filter_child_params.m_sort = gensym("priority");
+  filter_child_params.m_depth = 0;
+  filter_child_params.m_format = gensym("jit.cellblock");
+  filter_child_params.m_filter_type[0] = gensym("parameters");
+  filter_child_params.m_filter_type_size = 1;
 
-    // get namespace of given nodes for the selected model
+  // get namespace of given nodes for the selected model
 
-    // FIXME why get_matchers_for_address does not work *ç*
-    m_name = gensym(name.data());
-    auto matchers = get_matchers_for_address(*this, get_device(), m_name);
-    auto nodes = filter_child_params.sort_and_filter(matchers);
-    std::string name_plus_slash(name);
-    name_plus_slash += "/";
+  // FIXME why get_matchers_for_address does not work *ç*
+  m_name = gensym(name.data());
+  auto matchers = get_matchers_for_address(*this, get_device(), m_name);
+  auto nodes = filter_child_params.sort_and_filter(matchers);
+  std::string name_plus_slash(name);
+  name_plus_slash += "/";
 
-    std::erase_if(nodes, [=] (ossia::net::node_base* n){ return !n->osc_address().starts_with(name_plus_slash); } );
+  std::erase_if(nodes, [=](ossia::net::node_base* n) {
+    return !n->osc_address().starts_with(name_plus_slash);
+  });
 
-    // Pretty print it
+  // Pretty print it
+  {
+    auto outlet = this->m_data_out;
+    auto prefix = gensym("parameters");
+
     {
-        auto outlet = this->m_data_out;
-        auto prefix = gensym("parameters");
-
-        {
-          t_atom a;
-          A_SETLONG(&a, nodes.size());
-          outlet_anything(outlet, s_size, 1, &a);
-        }
-        std::vector<t_atom> va;
-        va.reserve(6);
-
-        int k = 0;
-        // First clear
-        write_message(va, outlet, prefix, s_clear, "all");
-        write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
-
-        for(const auto& nn : nodes)
-        {
-          auto& n = *nn;
-
-          const auto& osc_param = ossia::net::osc_parameter_string(n);
-          if(!osc_param.starts_with(name))
-              continue;
-
-          // Format:
-          // set x y <name>
-          write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str() + name.length());
-
-          // cell x y brgb r g b
-          if(this->m_ns.m_selection.contains(nn))
-            write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
-          else
-            write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
-          k++;
-        }
+      t_atom a;
+      A_SETLONG(&a, nodes.size());
+      outlet_anything(outlet, s_size, 1, &a);
     }
+    std::vector<t_atom> va;
+    va.reserve(6);
+
+    int k = 0;
+    // First clear
+    write_message(va, outlet, prefix, s_clear, "all");
+    write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
+
+    for(const auto& nn : nodes)
+    {
+      auto& n = *nn;
+
+      const auto& osc_param = ossia::net::osc_parameter_string(n);
+      if(!osc_param.starts_with(name))
+        continue;
+
+      // Format:
+      // set x y <name>
+      write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str() + name.length());
+
+      // cell x y brgb r g b
+      if(this->m_ns.m_selection.contains(nn))
+        write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
+      else
+        write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
+      k++;
+    }
+  }
 }
-void ocue::display_model(int argc, t_atom *argv)
+void ocue::display_model(int argc, t_atom* argv)
 {
-    invoke_mem_fun(argc, argv, [this](std::string_view name) {
-        do_display_model(name);
-    });
+  invoke_mem_fun(argc, argv, [this](std::string_view name) { do_display_model(name); });
 }
 
 void ocue::selection_add(int argc, t_atom* argv)
@@ -835,13 +827,10 @@ void ocue::do_registration()
 
 void ocue::unregister()
 {
-    m_ns.set_device(nullptr);
+  m_ns.set_device(nullptr);
 }
 
-void ocue::update_selection()
-{
-
-}
+void ocue::update_selection() { }
 
 void ocue::free(ocue* x)
 {

@@ -180,6 +180,7 @@ public:
   std::vector<std::string> m_paths{};
 
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
+
 protected:
   void remove_matchers(const ossia::net::node_base& m);
   void remove_matcher(const std::shared_ptr<matcher>& m);
@@ -278,8 +279,8 @@ struct value2atom
 
   void operator()(const ossia::value_map_type& t) const { }
 
-  template<typename... T>
-  requires (sizeof...(T) > 1)
+  template <typename... T>
+    requires(sizeof...(T) > 1)
   OSSIA_INLINE void operator()(T&&... t)
   {
     ((*this)(t), ...);
@@ -288,7 +289,8 @@ struct value2atom
   void operator()() const { }
 };
 
-inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* sym, auto&&... args)
+inline void
+write_message(std::vector<t_atom>& va, void* out, t_symbol* sym, auto&&... args)
 {
   va.clear();
   value2atom vm{va};
@@ -296,7 +298,8 @@ inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* sym, aut
   outlet_anything(out, sym, va.size(), va.data());
 }
 
-inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* prefix, t_symbol* sym, auto&&... args)
+inline void write_message(
+    std::vector<t_atom>& va, void* out, t_symbol* prefix, t_symbol* sym, auto&&... args)
 {
   if(!prefix)
   {
@@ -324,8 +327,7 @@ struct value_visitor
     {
       if(x->m_defer_set)
       {
-        defer_low(
-            (t_object*)x, (method)object_base::defer_set_output, _sym_set, 1, &a);
+        defer_low((t_object*)x, (method)object_base::defer_set_output, _sym_set, 1, &a);
       }
       else
       {
@@ -340,8 +342,7 @@ struct value_visitor
     {
       if(x->m_defer_set)
       {
-        defer_low(
-            (t_object*)x, (method)object_base::defer_set_output, _sym_set, N, a);
+        defer_low((t_object*)x, (method)object_base::defer_set_output, _sym_set, N, a);
       }
       else
       {

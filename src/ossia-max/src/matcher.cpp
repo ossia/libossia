@@ -118,12 +118,15 @@ matcher::~matcher()
   }
   node = nullptr;
 }
-struct set_local_mute {
-    bool& m;
-    set_local_mute(bool& mute): m{mute} {
-        m = true;
-    }
-    ~set_local_mute() { m = false; }
+struct set_local_mute
+{
+  bool& m;
+  set_local_mute(bool& mute)
+      : m{mute}
+  {
+    m = true;
+  }
+  ~set_local_mute() { m = false; }
 };
 void matcher::output_value(ossia::value v)
 {
