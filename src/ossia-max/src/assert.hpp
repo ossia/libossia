@@ -12,7 +12,7 @@ namespace max_binding
 struct oassert
 {
   t_object m_object;
-  t_symbol* m_name;
+  t_symbol* m_name{};
 
   t_jrgba m_color;
 

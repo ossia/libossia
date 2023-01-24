@@ -69,7 +69,8 @@ void attribute::on_device_created(device_base* obj)
 
 void wrapper(void* x)
 {
-  static_cast<attribute*>(x)->do_registration();
+  if(ossia_max::instance().config.autoregister)
+    static_cast<attribute*>(x)->do_registration();
 }
 
 void attribute::on_node_renamed_callback(ossia::net::node_base& node, const std::string&)
