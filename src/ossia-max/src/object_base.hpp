@@ -239,9 +239,19 @@ struct value2atom
     data.push_back(a);
   }
 
-  void operator()(const std::string& str) const
+  void operator()(auto*) const noexcept = delete;
+
+  void operator()(const char* str) const
   {
-    t_symbol* s = gensym(str.c_str());
+    t_symbol* s = gensym(str);
+    t_atom a;
+    atom_setsym(&a, s);
+    data.push_back(a);
+  }
+
+  void operator()(std::string_view str) const
+  {
+    t_symbol* s = gensym(str.data());
     t_atom a;
     atom_setsym(&a, s);
     data.push_back(a);
@@ -268,8 +278,23 @@ struct value2atom
 
   void operator()(const ossia::value_map_type& t) const { }
 
+  template<typename... T>
+  requires (sizeof...(T) > 1)
+  OSSIA_INLINE void operator()(T&&... t)
+  {
+    ((*this)(t), ...);
+  }
+
   void operator()() const { }
 };
+
+inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* sym, auto&&... args)
+{
+  va.clear();
+  value2atom vm{va};
+  vm(args...);
+  outlet_anything(out, sym, va.size(), va.data());
+}
 
 // Template typed function switcher to convert t_atom or standard type into
 // ossia::value

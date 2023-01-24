@@ -16,16 +16,12 @@ namespace max_binding
 
 struct explorer
     : object_base
-    , search_filter
+    , search_sort_filter
 {
   using is_explorer = std::true_type;
 
   // argument variables
   long m_highlight{};
-  long m_depth{0}; // 0 means no depth filtering
-
-  t_symbol* m_sort{};
-  t_symbol* m_format{};
   t_symbol* m_method{};
 
   std::set<ossia::net::device_base*> m_devices;
@@ -43,10 +39,6 @@ struct explorer
   static t_max_err
   notify(explorer* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
   static void assist(explorer* x, void* b, long m, long a, char* s);
-
-  static t_symbol* s_explore;
-  static t_symbol* s_size;
-  static t_symbol* s_namespace;
 };
 } // max namespace
 } // ossia namespace

@@ -15,6 +15,7 @@ namespace max_binding
 
 struct ocue : object_base
 {
+  static t_class* max_class;
   t_symbol* m_device_name = _sym_nothing;
 
   void create(int argc, t_atom* argv);
@@ -35,10 +36,10 @@ struct ocue : object_base
   void recall_previous(int argc, t_atom* argv);
 
   void namespace_dump();
-  void namespace_select(int argc, t_atom* argv);
+  void namespace_add(int argc, t_atom* argv);
   void namespace_filter_all(int argc, t_atom* argv);
   void namespace_filter_any(int argc, t_atom* argv);
-  void namespace_deselect(int argc, t_atom* argv);
+  void namespace_remove(int argc, t_atom* argv);
   void namespace_grab(int argc, t_atom* argv);
 
   void do_registration();
@@ -61,6 +62,7 @@ struct ocue : object_base
   void dump_message(std::string_view msg, const std::vector<std::string_view>& t);
 
   std::shared_ptr<ossia::cues> m_cues;
+  namespace_selection m_selection;
   std::string m_last_filename;
 };
 
