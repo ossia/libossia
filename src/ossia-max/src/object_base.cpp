@@ -10,6 +10,7 @@
 
 #include <ossia-max/src/object_base.hpp>
 #include <ossia-max/src/ossia-max.hpp>
+#include <ossia-max/src/ocue.hpp>
 #include <ossia-max/src/utils.hpp>
 
 #include <re2/re2.h>

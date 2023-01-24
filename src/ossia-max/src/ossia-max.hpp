@@ -13,7 +13,7 @@
 #include "assert.hpp"
 #include "attribute.hpp"
 #include "client.hpp"
-#include "ocue.hpp"
+// #include "ocue.hpp"
 #include "device.hpp"
 #include "explorer.hpp"
 #include "fuzzysearch.hpp"
@@ -59,7 +59,7 @@ namespace ossia
 {
 namespace max_binding
 {
-
+struct ocue;
 #pragma mark -
 #pragma mark Library
 
@@ -132,6 +132,9 @@ struct configuration
   bool autoregister = true;
 };
 
+template<typename T>
+t_class* ossia_cue_class{};
+
 class ossia_max
 {
 public:
@@ -147,38 +150,38 @@ public:
   template <typename T>
   t_class* get_class()
   {
-    if(std::is_same<T, parameter>::value)
+    if constexpr(std::is_same<T, parameter>::value)
       return ossia_parameter_class;
-    if(std::is_same<T, remote>::value)
+    else if constexpr(std::is_same<T, remote>::value)
       return ossia_remote_class;
-    if(std::is_same<T, model>::value)
+    else if constexpr(std::is_same<T, model>::value)
       return ossia_model_class;
-    if(std::is_same<T, view>::value)
+    else if constexpr(std::is_same<T, view>::value)
       return ossia_view_class;
-    if(std::is_same<T, device>::value)
+    else if constexpr(std::is_same<T, device>::value)
       return ossia_device_class;
-    if(std::is_same<T, client>::value)
+    else if constexpr(std::is_same<T, client>::value)
       return ossia_client_class;
-    if(std::is_same<T, attribute>::value)
+    else if constexpr(std::is_same<T, attribute>::value)
       return ossia_attribute_class;
-    if(std::is_same<T, ossia_object>::value)
+    else if constexpr(std::is_same<T, ossia_object>::value)
       return ossia_ossia_class;
-    if(std::is_same<T, ossia::max_binding::logger>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::logger>::value)
       return ossia_logger_class;
-    if(std::is_same<T, ossia::max_binding::explorer>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::explorer>::value)
       return ossia_explorer_class;
-    if(std::is_same<T, ossia::max_binding::monitor>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::monitor>::value)
       return ossia_monitor_class;
-    if(std::is_same<T, ossia::max_binding::search>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::search>::value)
       return ossia_search_class;
-    if(std::is_same<T, ossia::max_binding::router>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::router>::value)
       return ossia_router_class;
-    if(std::is_same<T, ossia::max_binding::fuzzysearch>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::fuzzysearch>::value)
       return ossia_fuzzysearch_class;
-    if(std::is_same<T, ossia::max_binding::oassert>::value)
+    else if constexpr(std::is_same<T, ossia::max_binding::oassert>::value)
       return ossia_assert_class;
-    if(std::is_same<T, ossia::max_binding::ocue>::value)
-      return ossia_cue_class;
+    else if constexpr(requires { T::max_class; })
+      return T::max_class;
     return nullptr;
   }
 
@@ -212,7 +215,6 @@ public:
   t_class* ossia_view_class{};
   t_class* ossia_ossia_class{};
   t_class* ossia_assert_class{};
-  t_class* ossia_cue_class{};
   t_class* ossia_equals_class{};
   static t_class* ossia_patcher_listener_class;
 

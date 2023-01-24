@@ -13,11 +13,6 @@ using namespace ossia::max_binding;
 #pragma mark -
 #pragma mark ossia_explorer class methods
 
-// TODO put all symlbol into an ossia::sym class
-t_symbol* explorer::s_explore = gensym("explore");
-t_symbol* explorer::s_size = gensym("size");
-t_symbol* explorer::s_namespace = gensym("namespace");
-
 extern "C" void ossia_explorer_setup()
 {
   auto& ossia_library = ossia_max::instance();
@@ -32,11 +27,7 @@ extern "C" void ossia_explorer_setup()
   class_addmethod(c, (method)explorer::assist, "assist", A_CANT, 0);
   class_addmethod(c, (method)explorer::notify, "notify", A_CANT, 0);
 
-  search_filter::setup_attribute<explorer>(c);
-
-  CLASS_ATTR_LONG(c, "depth", 0, explorer, m_depth);
-  CLASS_ATTR_LABEL(c, "depth", 0, "Limit exploration depth");
-  CLASS_ATTR_FILTER_MIN(c, "depth", 0);
+  search_sort_filter::setup_attribute<explorer>(c);
 
   class_register(CLASS_BOX, ossia_library.ossia_explorer_class);
 }
@@ -48,7 +39,7 @@ extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
   x->m_dumpout = outlet_new(x, NULL);
 
   object_attach_byptr_register(x, x, CLASS_BOX);
-
+  attr_args_process(x, (short)argc, argv);
   return x;
 }
 
@@ -101,12 +92,14 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
     auto obj = x->find_parent_object();
     if(obj)
     {
+      // Explore at the current hierarchy level of ossia.explorer
       matchers = obj->m_matchers;
       x->m_addr_scope = obj->m_addr_scope;
       x->m_name = obj->m_name;
     }
     else
     {
+      // ossia.explorer is not in a hierarchy: explore from / of the device instead
       matchers = {std::make_shared<matcher>(
           &ossia_max::instance().get_default_device()->get_root_node(), nullptr)};
       x->m_name = gensym("/");
@@ -115,6 +108,7 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
   }
   else
   {
+    // Exploring from a specified address, e.g. explore /foo.*
     matchers = x->find_or_create_matchers();
     if(matchers.empty())
     {
@@ -124,36 +118,10 @@ void explorer::explore_mess_cb(explorer* x, t_symbol* s, long argc, t_atom* argv
   }
 
   // get namespace of given nodes
-  std::vector<ossia::net::node_base*> nodes;
-  for(const auto& m : matchers)
-  {
-    auto vec = ossia::net::list_all_children(m->get_node(), x->m_depth);
-    nodes.insert(nodes.end(), vec.begin(), vec.end());
-  }
+  auto nodes = x->sort_and_filter(matchers);
 
-  ossia::remove_erase_if(
-      nodes, [&](const ossia::net::node_base* m) { return x->filter(*m); });
-
-  t_atom a;
-  A_SETLONG(&a, nodes.size());
-  outlet_anything(x->m_dumpout, s_size, 1, &a);
-  for(const auto& n : nodes)
-  {
-    ossia::value name = ossia::net::osc_parameter_string(*n);
-
-    std::vector<t_atom> va;
-    value2atom vm{va};
-    name.apply(vm);
-
-    auto param = n->get_parameter();
-    if(param)
-    {
-      ossia::value val = n->get_parameter()->value();
-      val.apply(vm);
-    }
-
-    outlet_anything(x->m_dumpout, s_namespace, va.size(), va.data());
-  }
+  // Pretty print it
+  dump_node_list(x->m_dumpout, nodes, x->m_format);
 }
 
 bool explorer::unregister()

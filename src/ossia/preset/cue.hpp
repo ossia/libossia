@@ -39,12 +39,29 @@ struct selection_filters
   std::optional<visibility_t> visibility;
 };
 
-class OSSIA_EXPORT cues : Nano::Observer
+class OSSIA_EXPORT namespace_selection : Nano::Observer
+{
+  public:
+    void set_device(ossia::net::device_base* dev);
+
+    void namespace_select(std::string_view pat);
+    void namespace_deselect(std::string_view pat);
+    void namespace_filter_all(const selection_filters& pat);
+    void namespace_filter_any(const selection_filters& pat);
+    void namespace_grab(std::string_view pat);
+   
+    void on_node_created(const ossia::net::node_base& n);
+    void on_node_removed(const ossia::net::node_base& n);
+   
+
+    ossia::net::device_base* dev{};
+    std::unordered_set<ossia::net::node_base*> m_selection;
+};
+
+class OSSIA_EXPORT cues// : public namespace_selection
 {
 public:
   std::vector<cue> m_cues{{.name{"Init"}}};
-
-  void set_device(ossia::net::device_base* dev);
 
   int size() const noexcept { return this->m_cues.size(); }
 
@@ -64,13 +81,13 @@ public:
 
   void create(std::string_view name);
 
-  void update(std::string_view name);
-  void update(int idx); // update cue by index
-  void update();        // update current cue
+  void update(ossia::net::node_base& root, const namespace_selection& sel, std::string_view name);
+  void update(ossia::net::node_base& root, const namespace_selection& sel, int idx); // update cue by index
+  void update(ossia::net::node_base& root, const namespace_selection& sel);        // update current cue
 
-  void recall(std::string_view name);
-  void recall(int idx);
-  void recall();
+  void recall(ossia::net::node_base& root, std::string_view name);
+  void recall(ossia::net::node_base& root, int idx);
+  void recall(ossia::net::node_base& root);
 
   void remove(std::string_view name);
   void remove(int idx);
@@ -87,20 +104,8 @@ public:
   void output(std::string_view name);
   void output(std::string_view name, std::string_view pattern);
 
-  void namespace_select(std::string_view pat);
-  void namespace_deselect(std::string_view pat);
-  void namespace_filter_all(const selection_filters& pat);
-  void namespace_filter_any(const selection_filters& pat);
-  void namespace_grab(std::string_view pat);
-
-  void on_node_created(const ossia::net::node_base& n);
-  void on_node_removed(const ossia::net::node_base& n);
-
   bool has_cue(int cue) const noexcept;
   //private:
-  ossia::net::device_base* dev{};
   int m_current{0};
-
-  ossia::hash_set<ossia::net::node_base*> m_selection;
 };
 }
