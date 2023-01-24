@@ -31,19 +31,39 @@ struct ocue : object_base
   void sort(int argc, t_atom* argv);
   void json();
 
+  void explore(int argc, t_atom* argv);
+  void do_explore(t_symbol* name);
+
   void recall(int argc, t_atom* argv);
   void recall_next(int argc, t_atom* argv);
   void recall_previous(int argc, t_atom* argv);
 
-  void namespace_dump();
-  void namespace_add(int argc, t_atom* argv);
-  void namespace_filter_all(int argc, t_atom* argv);
-  void namespace_filter_any(int argc, t_atom* argv);
-  void namespace_remove(int argc, t_atom* argv);
-  void namespace_grab(int argc, t_atom* argv);
+  void display_model(int argc, t_atom* argv);
+  void do_display_model(std::string_view);
+  void select_model(int argc, t_atom* argv);
+  void select(int argc, t_atom* argv);
+
+  // Selection: what is actually going to be on the cue when we create / update
+  void selection_dump();
+  void selection_add(int argc, t_atom* argv);
+  void selection_switch(int argc, t_atom* argv);
+  void selection_filter_all(int argc, t_atom* argv);
+  void selection_filter_any(int argc, t_atom* argv);
+  void selection_remove(int argc, t_atom* argv);
+  void selection_grab(int argc, t_atom* argv);
+
+  // Filter: what we display as the output of ossia.explore
+  void filter_dump();
+  void filter_add(int argc, t_atom* argv);
+  void filter_filter_all(int argc, t_atom* argv);
+  void filter_filter_any(int argc, t_atom* argv);
+  void filter_remove(int argc, t_atom* argv);
+  void filter_grab(int argc, t_atom* argv);
 
   void do_registration();
   void unregister();
+
+  void update_selection();
 
   ossia::net::device_base* get_device() const noexcept;
   t_max_err get_device_name(long* ac, t_atom** av);
@@ -62,8 +82,10 @@ struct ocue : object_base
   void dump_message(std::string_view msg, const std::vector<std::string_view>& t);
 
   std::shared_ptr<ossia::cues> m_cues;
-  namespace_selection m_selection;
+  namespace_selection m_ns;
+  namespace_selection m_filter;
   std::string m_last_filename;
+  t_symbol* m_last_explore{_sym_nothing};
 };
 
 } // namespace max

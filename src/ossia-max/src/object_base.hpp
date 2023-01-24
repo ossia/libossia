@@ -179,8 +179,8 @@ public:
 
   std::vector<std::string> m_paths{};
 
-protected:
   std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
+protected:
   void remove_matchers(const ossia::net::node_base& m);
   void remove_matcher(const std::shared_ptr<matcher>& m);
 
@@ -296,6 +296,21 @@ inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* sym, aut
   outlet_anything(out, sym, va.size(), va.data());
 }
 
+inline void write_message(std::vector<t_atom>& va, void* out, t_symbol* prefix, t_symbol* sym, auto&&... args)
+{
+  if(!prefix)
+  {
+    write_message(va, out, sym, args...);
+  }
+  else
+  {
+    va.clear();
+    value2atom vm{va};
+    vm(std::string_view(sym->s_name));
+    vm(args...);
+    outlet_anything(out, prefix, va.size(), va.data());
+  }
+}
 // Template typed function switcher to convert t_atom or standard type into
 // ossia::value
 template <typename T>

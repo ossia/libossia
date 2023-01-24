@@ -46,13 +46,14 @@ class OSSIA_EXPORT namespace_selection : Nano::Observer
 
     void namespace_select(std::string_view pat);
     void namespace_deselect(std::string_view pat);
+    void namespace_switch(std::string_view pat);
     void namespace_filter_all(const selection_filters& pat);
     void namespace_filter_any(const selection_filters& pat);
     void namespace_grab(std::string_view pat);
-   
+
     void on_node_created(const ossia::net::node_base& n);
     void on_node_removed(const ossia::net::node_base& n);
-   
+
 
     ossia::net::device_base* dev{};
     std::unordered_set<ossia::net::node_base*> m_selection;

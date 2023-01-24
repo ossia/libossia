@@ -201,9 +201,32 @@ void namespace_selection::namespace_deselect(std::string_view pattern)
   // }
 
   // v2
-  for(auto node : nodes)
+  for(auto n : nodes)
   {
-    remove_node_from_selection_recursively(m_selection, *node);
+    remove_node_from_selection_recursively(m_selection, *n);
+  }
+}
+
+
+void namespace_selection::namespace_switch(std::string_view name)
+{
+  if(!dev)
+    return;
+
+  auto nodes = ossia::net::find_nodes(dev->get_root_node(), name);
+  for(auto n : nodes)
+  {
+      if(!this->m_selection.contains(n))
+      {
+        // Select
+        this->m_selection.insert(n);
+        list_all_children_unsorted(n, this->m_selection);
+      }
+      else
+      {
+        // Deselect
+        remove_node_from_selection_recursively(m_selection, *n);
+      }
   }
 }
 

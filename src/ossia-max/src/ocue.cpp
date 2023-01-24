@@ -8,6 +8,8 @@
 
 #include <rapidjson/prettywriter.h>
 
+#include "symbols.hpp"
+#include "ocue.utils.cpp"
 
 // Notes:
 // - When we switch preset, the nodes in the preset becomes this ocue::'s running selection
@@ -15,523 +17,9 @@
 // - namespace/X family of functions vs
 // - select/all select deselect
 
-namespace
-{
-static
-std::string prompt_filename(std::string_view dialogtitle, std::string_view default_filename)
-{
-    char buffer[MAX_PATH_CHARS] = {};
-    strncpy(buffer, default_filename.data(), default_filename.size());
-
-    saveas_promptset(dialogtitle.data());
-
-    short path{};
-    t_fourcc outtype{};
-    t_fourcc filetype = 'TEXT';
-    if (saveasdialog_extended(buffer, &path, &outtype, &filetype, 1) == 0)
-    {
-        t_filehandle hdl{};
-        path_createsysfile(buffer, path, filetype, &hdl);
-
-        char full_path[MAX_PATH_CHARS] = {};
-        path_topathname(path, buffer, full_path);
-
-        char native_path[MAX_PATH_CHARS];
-        path_nameconform(full_path, native_path, PATH_STYLE_NATIVE, PATH_TYPE_BOOT);
-
-        sysfile_close(hdl);
-        return native_path;
-    }
-    return {};
-}
-
-ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
-{
-  ossia::selection_filters filt;
-
-  enum
-  {
-    unknown,
-    processing_names,
-    processing_val_type,
-    processing_access,
-    processing_bounding,
-    processing_tags,
-    processing_visibility
-  } state
-      = processing_names;
-
-  for(int i = 0; i < argc; i++)
-  {
-    if(argv[i].a_type == A_SYM)
-    {
-      std::string symb
-          = boost::algorithm::to_lower_copy(std::string(argv[i].a_w.w_sym->s_name));
-      if(symb.starts_with("@"))
-      {
-        if(symb == "@valuetype")
-        {
-          state = processing_val_type;
-          continue;
-        }
-        if(symb == "@access")
-        {
-          state = processing_access;
-          continue;
-        }
-        if(symb == "@bounding")
-        {
-          state = processing_bounding;
-          continue;
-        }
-        if(symb == "@tags")
-        {
-          state = processing_tags;
-          continue;
-        }
-        if(symb == "@visibility")
-        {
-          state = processing_visibility;
-          continue;
-        }
-      }
-
-      switch(state)
-      {
-        case processing_names:
-          filt.selection.push_back(std::string(symb));
-          break;
-        case processing_val_type: {
-          if(auto param = ossia::default_parameter_for_type(symb))
-          {
-            filt.type.push_back(ossia::underlying_type(param->type));
-          }
-          break;
-        }
-        case processing_access: {
-          if(symb == "get")
-            filt.access.push_back(ossia::access_mode::GET);
-          if(symb == "set")
-            filt.access.push_back(ossia::access_mode::SET);
-          if(symb == "bi")
-            filt.access.push_back(ossia::access_mode::BI);
-          break;
-        }
-        case processing_bounding: {
-          if(symb == "free")
-            filt.bounding.push_back(ossia::bounding_mode::FREE);
-          if(symb == "clip")
-            filt.bounding.push_back(ossia::bounding_mode::CLIP);
-          if(symb == "low")
-            filt.bounding.push_back(ossia::bounding_mode::LOW);
-          if(symb == "high")
-            filt.bounding.push_back(ossia::bounding_mode::HIGH);
-          if(symb == "wrap")
-            filt.bounding.push_back(ossia::bounding_mode::WRAP);
-          if(symb == "fold")
-            filt.bounding.push_back(ossia::bounding_mode::FOLD);
-          break;
-        }
-        case processing_tags: {
-          filt.tags.push_back(std::string(symb));
-          break;
-        }
-        case processing_visibility:
-          filt.visibility
-              = symb == "visible" || symb == "true" || symb == "yes" || symb == "ok"
-                    ? ossia::selection_filters::visible
-                    : ossia::selection_filters::invisible;
-          break;
-        case unknown:
-          break;
-      }
-    }
-  }
-
-  return filt;
-}
-using writer_t = rapidjson::PrettyWriter<rapidjson::StringBuffer>;
-struct write_json_preset_value
-{
-  writer_t& writer;
-  void operator()(ossia::impulse) const
-  {
-    writer.Key("type");
-    writer.String("impulse");
-  }
-  void operator()(int v) const
-  {
-    writer.Key("type");
-    writer.String("int");
-    writer.Key("value");
-    writer.Int(v);
-  }
-  void operator()(float v) const
-  {
-    writer.Key("type");
-    writer.Key("float");
-    writer.Key("value");
-    writer.Double(v);
-  }
-  void operator()(bool v) const
-  {
-    writer.Key("type");
-    writer.String("bool");
-    writer.Key("value");
-    writer.Bool(v);
-  }
-
-  void operator()(const std::string& v) const
-  {
-    writer.Key("type");
-    writer.String("string");
-    writer.Key("value");
-    writer.String(v);
-  }
-
-  template <std::size_t N>
-  void operator()(const std::array<float, N>& vec) const
-  {
-    writer.Key("type");
-    writer.String("vec" + std::to_string(N) + "f");
-    writer.Key("value");
-    writer.StartArray();
-    for(std::size_t i = 0; i < N; i++)
-    {
-      writer.Double(vec[i]);
-    }
-    writer.EndArray();
-  }
-
-  void operator()(const std::vector<ossia::value>& vec) const
-  {
-    writer.Key("type");
-    writer.String("list");
-    writer.Key("value");
-    writer.StartArray();
-    for(auto& val : vec)
-    {
-      writer.StartObject();
-      val.apply(*this);
-      writer.EndObject();
-    }
-    writer.EndArray();
-  }
-  void operator()(const ossia::value_map_type& vec) const { }
-  void operator()() const { throw std::runtime_error("value_to_json_value: no type"); }
-};
-
-static void cue_to_json(writer_t& doc, const ossia::cue& cu)
-{
-  doc.StartObject();
-  doc.Key("name");
-  doc.String(cu.name);
-
-  doc.Key("preset");
-  doc.StartArray();
-  for(auto& [k, v] : cu.preset)
-  {
-    doc.StartObject();
-    doc.Key("address");
-    doc.String(k);
-
-    v.apply(write_json_preset_value{doc});
-    doc.EndObject();
-  }
-  doc.EndArray();
-  doc.EndObject();
-}
-
-static rapidjson::StringBuffer cues_to_string(const ossia::cues& c)
-{
-
-  rapidjson::StringBuffer buffer;
-  writer_t doc{buffer};
-
-  doc.StartObject();
-  doc.Key("cues");
-  doc.StartArray();
-  for(auto& cue : c.m_cues)
-  {
-    cue_to_json(doc, cue);
-  }
-  doc.EndArray();
-  doc.EndObject();
-
-  return buffer;
-}
-
-// Format of a cue:
-// {
-//   "name": "foo",
-//   "preset": [
-//     { "address": "/foo/bar", "value": 123, type: "int" },
-//     { "address": "/baz", "value": 123, type: "int" },
-//   ]
-// }
-
-// Format of a cuelist:
-// { "cues": [ ... cue ... ] }
-
-static ossia::value
-read_typed_ossia_value_from_json(const rapidjson::Document::ConstObject& value);
-static ossia::value read_typed_ossia_value_from_json(
-    const rapidjson::Document::ConstObject& value, std::string_view type)
-{
-  if(type == "impulse")
-  {
-    return ossia::impulse{};
-  }
-  auto it = value.FindMember("value");
-  if(it == value.MemberEnd())
-    return {};
-
-  if(type == "int")
-  {
-    if(it->value.IsInt())
-    {
-      return it->value.GetInt();
-    }
-  }
-  else if(type == "float")
-  {
-    if(it->value.IsFloat())
-    {
-      return it->value.GetFloat();
-    }
-  }
-  else if(type == "string")
-  {
-    if(it->value.IsString())
-    {
-      return std::string(it->value.GetString(), it->value.GetStringLength());
-    }
-  }
-  else if(type == "bool")
-  {
-    if(it->value.IsBool())
-    {
-      return it->value.GetBool();
-    }
-  }
-  else if(type == "vec4f")
-  {
-    if(it->value.IsArray())
-    {
-      auto arr = it->value.GetArray();
-      if(arr.Size() == 4 && arr[0].IsDouble() && arr[1].IsDouble() && arr[2].IsDouble()
-         && arr[3].IsDouble())
-        return ossia::make_vec(
-            arr[0].GetDouble(), arr[1].GetDouble(), arr[2].GetDouble(),
-            arr[3].GetDouble());
-    }
-  }
-  else if(type == "vec3f")
-  {
-    if(it->value.IsArray())
-    {
-      auto arr = it->value.GetArray();
-      if(arr.Size() == 3 && arr[0].IsDouble() && arr[1].IsDouble() && arr[2].IsDouble())
-        return ossia::make_vec(
-            arr[0].GetDouble(), arr[1].GetDouble(), arr[2].GetDouble());
-    }
-  }
-  else if(type == "vec2f")
-  {
-    if(it->value.IsArray())
-    {
-      auto arr = it->value.GetArray();
-      if(arr.Size() == 2 && arr[0].IsDouble() && arr[1].IsDouble())
-        return ossia::make_vec(arr[0].GetDouble(), arr[1].GetDouble());
-    }
-  }
-  else if(type == "list")
-  {
-    if(it->value.IsArray())
-    {
-      std::vector<ossia::value> vec;
-      auto arr = it->value.GetArray();
-      vec.reserve(arr.Size());
-      for(const rapidjson::Value& sub_val : arr)
-      {
-        if(sub_val.IsObject())
-          vec.push_back(read_typed_ossia_value_from_json(sub_val.GetObject()));
-      }
-      return vec;
-    }
-  }
-  return {};
-}
-
-static ossia::value
-read_typed_ossia_value_from_json(const rapidjson::Document::ConstObject& value)
-{
-  if(auto it = value.FindMember("type"); it != value.MemberEnd() && it->value.IsString())
-  {
-    std::string_view type{it->value.GetString(), it->value.GetStringLength()};
-    return read_typed_ossia_value_from_json(value, type);
-  }
-  return {};
-}
-
-static void read_cue_preset_from_json(
-    const rapidjson::Document::ConstArray& json, ossia::presets::preset& p)
-{
-  for(const rapidjson::Value& value : json)
-  {
-    if(!value.IsObject())
-      continue;
-    std::string addr;
-
-    if(auto it = value.FindMember("address");
-       it != value.MemberEnd() && it->value.IsString())
-    {
-      addr = std::string{it->value.GetString(), it->value.GetStringLength()};
-
-      if(addr.empty())
-        continue;
-    }
-
-    ossia::value v = read_typed_ossia_value_from_json(value.GetObject());
-    if(v.valid())
-      p.emplace_back(std::move(addr), std::move(v));
-  }
-}
-
-static void read_cues_from_json(
-    const rapidjson::Document::Array& json, std::vector<ossia::cue>& cues)
-{
-  for(const rapidjson::Value& value : json)
-  {
-    if(!value.IsObject())
-      continue;
-    ossia::cue c;
-    if(auto it = value.FindMember("name");
-       it != value.MemberEnd() && it->value.IsString())
-    {
-      c.name = std::string{it->value.GetString(), it->value.GetStringLength()};
-    }
-
-    if(auto it = value.FindMember("preset");
-       it != value.MemberEnd() && it->value.IsArray())
-    {
-      read_cue_preset_from_json(it->value.GetArray(), c.preset);
-    }
-    cues.push_back(std::move(c));
-  }
-}
-bool is_absolute_path(std::string_view v)
-{
-  if(v.starts_with('/'))
-    return true;
-  if(v.find(':') != std::string_view::npos)
-    return true;
-  return false;
-}
-
-static void invoke_mem_fun(int argc, t_atom* argv, auto f)
-{
-#define if_possible(F)          \
-  if constexpr(requires { F; }) \
-  {                             \
-    F;                          \
-  }
-  if(argc == 0)
-  {
-    if_possible(f());
-  }
-  else if(argc == 1 && argv[0].a_type == A_SYM)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name));
-  }
-  else if(argc == 1 && argv[0].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_long));
-  }
-  else if(argc == 1 && argv[0].a_type == A_FLOAT)
-  {
-    if_possible(f((int)argv[0].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_long, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f(argv[0].a_w.w_long, (int)argv[1].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_LONG)
-  {
-    if_possible(f((int)argv[0].a_w.w_float, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_FLOAT && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f((int)argv[0].a_w.w_float, (int)argv[1].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_SYM)
-  {
-    if_possible(f(argv[0].a_w.w_long, argv[1].a_w.w_sym->s_name));
-  }
-  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_LONG)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name, argv[1].a_w.w_long));
-  }
-  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_FLOAT)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name, (int)argv[1].a_w.w_float));
-  }
-  else if(argc == 2 && argv[0].a_type == A_SYM && argv[1].a_type == A_SYM)
-  {
-    if_possible(f(argv[0].a_w.w_sym->s_name, argv[1].a_w.w_sym->s_name));
-  }
-#undef if_possible
-}
-
-static void pack_to_atom(t_atom& t, long long& i) {
-  atom_setlong(&t, i);
-}
-static void pack_to_atom(t_atom& t, long& i) {
-  atom_setlong(&t, i);
-}
-static void pack_to_atom(t_atom& t, int& i) {
-  atom_setlong(&t, i);
-}
-static void pack_to_atom(t_atom& t, float& i) {
-  atom_setfloat(&t, i);
-}
-static void pack_to_atom(t_atom& t, char*& i) {
-  atom_setsym(&t, gensym(i));
-}
-static void pack_to_atom(t_atom& t, std::string_view i) {
-  if(!i.empty())
-    atom_setsym(&t, gensym(i.data()));
-  else
-    atom_setsym(&t, gensym("<invalid>"));
-}
-
-static
-std::string_view name_from_args(const ossia::cues& cue, std::string_view args) noexcept {
-    return args;
-}
-
-static
-std::string_view name_from_args(const ossia::cues& cue, int idx) noexcept {
-    if(idx >= 0 && idx < cue.m_cues.size())
-      return cue.m_cues[idx].name;
-    else
-      return {};
-}
-
-static
-std::string_view name_from_args(const ossia::cues& cue) noexcept {
-    return name_from_args(cue, cue.current_index());
-}
-
-
-}
 
 using namespace ossia::max_binding;
- 
+
 t_class* ocue::max_class = {};
 
 void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv);
@@ -587,12 +75,18 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
   ADDMETHOD_NOTHING(clear);
   ADDMETHOD_NOTHING(json);
 
-  ADDMETHOD_NOTHING_(namespace_dump, "namespace/dump");
-  ADDMETHOD_GIMME_(namespace_add, "namespace/add");
-  ADDMETHOD_GIMME_(namespace_remove, "namespace/remove");
-  ADDMETHOD_GIMME_(namespace_filter_all, "namespace/filter_all");
-  ADDMETHOD_GIMME_(namespace_filter_any, "namespace/filter_any");
-  ADDMETHOD_GIMME_(namespace_grab, "namespace/grab");
+  ADDMETHOD_GIMME(explore);
+  ADDMETHOD_GIMME(select);
+  ADDMETHOD_GIMME(select_model);
+  ADDMETHOD_GIMME(display_model);
+
+  ADDMETHOD_NOTHING_(selection_dump, "selection/dump");
+  ADDMETHOD_GIMME_(selection_add, "selection/add");
+  ADDMETHOD_GIMME_(selection_remove, "selection/remove");
+  ADDMETHOD_GIMME_(selection_switch, "selection/switch");
+  ADDMETHOD_GIMME_(selection_filter_all, "selection/filter_all");
+  ADDMETHOD_GIMME_(selection_filter_any, "selection/filter_any");
+  ADDMETHOD_GIMME_(selection_grab, "selection/grab");
 
   CLASS_ATTR_SYM(c, "device", 0, ocue, m_device_name);
   CLASS_ATTR_LABEL(c, "device", 0, "Device to bind to");
@@ -669,8 +163,8 @@ void ocue::create(int argc, t_atom* argv)
     if constexpr(requires { this->m_cues->create(name); })
     {
       this->m_cues->create(name);
-      if(m_selection.dev)
-        this->m_cues->update(m_selection.dev->get_root_node(), m_selection);
+      if(m_ns.dev)
+        this->m_cues->update(m_ns.dev->get_root_node(), m_ns);
 
       dump_message("new", name);
       {
@@ -689,8 +183,8 @@ void ocue::update(int argc, t_atom* argv)
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->update(args...); })
     {
-      if(m_selection.dev)
-        this->m_cues->update(m_selection.dev->get_root_node(), m_selection, args...);
+      if(m_ns.dev)
+        this->m_cues->update(m_ns.dev->get_root_node(), m_ns, args...);
       dump_message("update", name_from_args(*m_cues, args...));
     }
   });
@@ -701,8 +195,11 @@ void ocue::recall(int argc, t_atom* argv)
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->recall(args...); })
     {
-      if(m_selection.dev)
-        this->m_cues->recall(m_selection.dev->get_root_node(), args...);
+      if(m_ns.dev)
+      {
+        this->m_cues->recall(m_ns.dev->get_root_node(), args...);
+        explore(0, nullptr);
+      }
       dump_message("recall", name_from_args(*m_cues, args...));
     }
   });
@@ -716,9 +213,12 @@ void ocue::recall_next(int argc, t_atom* argv)
     if constexpr(sizeof...(args) == 0) {
       int idx = this->m_cues->current_index();
       int next_index = std::clamp(idx + 1, 0, this->m_cues->size() - 1);
-      
-      if(m_selection.dev)
-        this->m_cues->recall(m_selection.dev->get_root_node(), next_index);
+
+      if(m_ns.dev)
+      {
+        this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
+        explore(0, nullptr);
+      }
       dump_message("recall/next");
     }
   });
@@ -733,8 +233,11 @@ void ocue::recall_previous(int argc, t_atom* argv)
         int idx = this->m_cues->current_index();
         int next_index = std::clamp(idx - 1, 0, this->m_cues->size() - 1);
 
-        if(m_selection.dev)
-          this->m_cues->recall(m_selection.dev->get_root_node(), next_index);
+        if(m_ns.dev)
+        {
+          this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
+          explore(0, nullptr);
+        }
         dump_message("recall/previous");
       }
     });
@@ -746,6 +249,8 @@ void ocue::remove(int argc, t_atom* argv)
     if constexpr(requires { this->m_cues->remove(args...); }) {
       dump_message("remove", name_from_args(*m_cues, args...));
       this->m_cues->remove(args...);
+
+      explore(0, nullptr);
     }
   });
 }
@@ -779,9 +284,10 @@ void ocue::json()
   dump_message("json", buffer.GetString());
 }
 
-void ocue::namespace_dump()
+
+void ocue::selection_dump()
 {
-  for(auto n : m_selection.m_selection)
+  for(auto n : m_ns.m_selection)
   {
     if(n->get_parameter())
     {
@@ -1001,44 +507,253 @@ void ocue::output(int argc, t_atom* argv)
   });
 }
 
-void ocue::namespace_add(int argc, t_atom* argv)
+
+std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
+        object_base& self,
+        ossia::net::device_base* device,
+        t_symbol* m_name
+        )
+{
+    if(!device)
+        return {};
+
+    if(!m_name || m_name == _sym_nothing)
+    {
+        if(auto obj = self.find_parent_object())
+        {
+          // Explore at the current hierarchy level of ossia.explorer
+          return obj->m_matchers;
+        }
+        else
+        {
+          // ossia.explorer is not in a hierarchy: explore from / of the device instead
+          return {std::make_shared<matcher>(
+              &device->get_root_node(), nullptr)};
+        }
+    }
+    else
+    {
+        // Exploring from a specified address, e.g. explore /foo.*
+        // FIXME this->m_name has to beset before this
+        if(auto matchers = self.find_or_create_matchers(); matchers.empty())
+        {
+          return {std::make_shared<matcher>(
+              &device->get_root_node(), nullptr)};
+        }
+        else
+        {
+            return matchers;
+        }
+    }
+
+    return {};
+}
+
+void ocue::do_explore(t_symbol* name)
+    {
+        search_sort_filter filter_models;
+        filter_models.m_sort = gensym("priority");
+        filter_models.m_depth = 0;
+        filter_models.m_format = gensym("jit.cellblock");
+        filter_models.m_filter_type[0] = gensym("model");
+        filter_models.m_filter_type_size = 1;
+
+        // get namespace of given nodes
+        auto matchers = get_matchers_for_address(*this, get_device(), name);
+        auto model_nodes = filter_models.sort_and_filter(matchers);
+
+        // Pretty print it
+
+        {
+            auto& nodes = model_nodes;
+            auto outlet = this->m_data_out;
+            auto prefix = gensym("models");
+
+            {
+              t_atom a;
+              A_SETLONG(&a, model_nodes.size());
+              outlet_anything(outlet, s_size, 1, &a);
+            }
+            std::vector<t_atom> va;
+            va.reserve(6);
+
+            int k = 0;
+            // First clear
+            write_message(va, outlet, prefix, s_clear, "all");
+            write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
+
+            for(const auto& nn : nodes)
+            {
+              auto& n = *nn;
+
+              const auto& osc_param = ossia::net::osc_parameter_string(n);
+
+              // Format:
+              // set x y <name>
+              write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str() );
+
+              // cell x y brgb r g b
+              if(this->m_ns.m_selection.contains(nn))
+                write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
+              else
+                write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
+              k++;
+            }
+        }
+
+
+        if(!model_nodes.empty())
+        {
+            do_display_model(model_nodes.front()->osc_address());
+        }
+    }
+
+void ocue::explore(int argc, t_atom *argv)
+{
+    // List all the models in the "models" command
+    auto name = _sym_nothing;
+    if(argc > 0 && argv->a_type == A_SYM)
+    {
+      name = argv->a_w.w_sym;
+    }
+    do_explore(name);
+
+}
+
+void ocue::select(int argc, t_atom* argv)
+{
+    invoke_mem_fun(argc, argv, [this](std::string_view name) {
+
+
+    });
+}
+
+void ocue::select_model(int argc, t_atom *argv)
+{
+    display_model(argc, argv);
+    // Adds it / removes it from / to the selection
+    invoke_mem_fun(argc, argv, [this](std::string_view name) {
+
+
+
+    });
+}
+
+void ocue::do_display_model(std::string_view name)
+{
+    search_sort_filter filter_child_params;
+    filter_child_params.m_sort = gensym("priority");
+    filter_child_params.m_depth = 0;
+    filter_child_params.m_format = gensym("jit.cellblock");
+    filter_child_params.m_filter_type[0] = gensym("parameters");
+    filter_child_params.m_filter_type_size = 1;
+
+    // get namespace of given nodes for the selected model
+
+    // FIXME why get_matchers_for_address does not work *ç*
+    m_name = gensym(name.data());
+    auto matchers = get_matchers_for_address(*this, get_device(), m_name);
+    auto nodes = filter_child_params.sort_and_filter(matchers);
+    std::string name_plus_slash(name);
+    name_plus_slash += "/";
+
+    std::erase_if(nodes, [=] (ossia::net::node_base* n){ return !n->osc_address().starts_with(name_plus_slash); } );
+
+    // Pretty print it
+    {
+        auto outlet = this->m_data_out;
+        auto prefix = gensym("parameters");
+
+        {
+          t_atom a;
+          A_SETLONG(&a, nodes.size());
+          outlet_anything(outlet, s_size, 1, &a);
+        }
+        std::vector<t_atom> va;
+        va.reserve(6);
+
+        int k = 0;
+        // First clear
+        write_message(va, outlet, prefix, s_clear, "all");
+        write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
+
+        for(const auto& nn : nodes)
+        {
+          auto& n = *nn;
+
+          const auto& osc_param = ossia::net::osc_parameter_string(n);
+          if(!osc_param.starts_with(name))
+              continue;
+
+          // Format:
+          // set x y <name>
+          write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str() + name.length());
+
+          // cell x y brgb r g b
+          if(this->m_ns.m_selection.contains(nn))
+            write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 24, 88, 132);
+          else
+            write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
+          k++;
+        }
+    }
+}
+void ocue::display_model(int argc, t_atom *argv)
+{
+    invoke_mem_fun(argc, argv, [this](std::string_view name) {
+        do_display_model(name);
+    });
+}
+
+void ocue::selection_add(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_selection.namespace_select(args...); })
+    if constexpr(requires { this->m_ns.namespace_select(args...); })
     {
-      this->m_selection.namespace_select(args...);
+      this->m_ns.namespace_select(args...);
       dump_message("namespace/select", args...);
     }
   });
 }
 
-void ocue::namespace_filter_all(int argc, t_atom* argv)
-{
-  this->m_selection.namespace_filter_all(parse_selection_filter(argc, argv));
-}
-
-void ocue::namespace_filter_any(int argc, t_atom* argv)
-{
-  this->m_selection.namespace_filter_any(parse_selection_filter(argc, argv));
-}
-
-void ocue::namespace_remove(int argc, t_atom* argv)
+void ocue::selection_switch(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_selection.namespace_deselect(args...); })
+    if constexpr(requires { this->m_ns.namespace_switch(args...); })
     {
-      this->m_selection.namespace_deselect(args...);
+      this->m_ns.namespace_switch(args...);
+      dump_message("namespace/switch", args...);
+    }
+  });
+}
+
+void ocue::selection_filter_all(int argc, t_atom* argv)
+{
+  this->m_ns.namespace_filter_all(parse_selection_filter(argc, argv));
+}
+
+void ocue::selection_filter_any(int argc, t_atom* argv)
+{
+  this->m_ns.namespace_filter_any(parse_selection_filter(argc, argv));
+}
+
+void ocue::selection_remove(int argc, t_atom* argv)
+{
+  invoke_mem_fun(argc, argv, [this](auto&&... args) {
+    if constexpr(requires { this->m_ns.namespace_deselect(args...); })
+    {
+      this->m_ns.namespace_deselect(args...);
       dump_message("namespace/deselect", args...);
     }
   });
 }
 
-void ocue::namespace_grab(int argc, t_atom* argv)
+void ocue::selection_grab(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_selection.namespace_grab(args...); })
+    if constexpr(requires { this->m_ns.namespace_grab(args...); })
     {
-      this->m_selection.namespace_grab(args...);
+      this->m_ns.namespace_grab(args...);
       dump_message("namespace/grab", args...);
     }
   });
@@ -1115,12 +830,17 @@ t_max_err ocue::set_device_name(long ac, t_atom* av)
 }
 void ocue::do_registration()
 {
-  m_selection.set_device(get_device());
+  m_ns.set_device(get_device());
 }
 
 void ocue::unregister()
 {
-  m_selection.set_device(nullptr);
+    m_ns.set_device(nullptr);
+}
+
+void ocue::update_selection()
+{
+
 }
 
 void ocue::free(ocue* x)
