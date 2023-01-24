@@ -10,32 +10,32 @@
 
 namespace
 {
-static
-std::string prompt_filename(std::string_view dialogtitle, std::string_view default_filename)
+static std::string
+prompt_filename(std::string_view dialogtitle, std::string_view default_filename)
 {
-    char buffer[MAX_PATH_CHARS] = {};
-    strncpy(buffer, default_filename.data(), default_filename.size());
+  char buffer[MAX_PATH_CHARS] = {};
+  strncpy(buffer, default_filename.data(), default_filename.size());
 
-    saveas_promptset(dialogtitle.data());
+  saveas_promptset(dialogtitle.data());
 
-    short path{};
-    t_fourcc outtype{};
-    t_fourcc filetype = 'TEXT';
-    if (saveasdialog_extended(buffer, &path, &outtype, &filetype, 1) == 0)
-    {
-        t_filehandle hdl{};
-        path_createsysfile(buffer, path, filetype, &hdl);
+  short path{};
+  t_fourcc outtype{};
+  t_fourcc filetype = 'TEXT';
+  if(saveasdialog_extended(buffer, &path, &outtype, &filetype, 1) == 0)
+  {
+    t_filehandle hdl{};
+    path_createsysfile(buffer, path, filetype, &hdl);
 
-        char full_path[MAX_PATH_CHARS] = {};
-        path_topathname(path, buffer, full_path);
+    char full_path[MAX_PATH_CHARS] = {};
+    path_topathname(path, buffer, full_path);
 
-        char native_path[MAX_PATH_CHARS];
-        path_nameconform(full_path, native_path, PATH_STYLE_NATIVE, PATH_TYPE_BOOT);
+    char native_path[MAX_PATH_CHARS];
+    path_nameconform(full_path, native_path, PATH_STYLE_NATIVE, PATH_TYPE_BOOT);
 
-        sysfile_close(hdl);
-        return native_path;
-    }
-    return {};
+    sysfile_close(hdl);
+    return native_path;
+  }
+  return {};
 }
 
 ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
@@ -480,45 +480,51 @@ static void invoke_mem_fun(int argc, t_atom* argv, auto f)
 #undef if_possible
 }
 
-static void pack_to_atom(t_atom& t, long long& i) {
+static void pack_to_atom(t_atom& t, long long& i)
+{
   atom_setlong(&t, i);
 }
-static void pack_to_atom(t_atom& t, long& i) {
+static void pack_to_atom(t_atom& t, long& i)
+{
   atom_setlong(&t, i);
 }
-static void pack_to_atom(t_atom& t, int& i) {
+static void pack_to_atom(t_atom& t, int& i)
+{
   atom_setlong(&t, i);
 }
-static void pack_to_atom(t_atom& t, float& i) {
+static void pack_to_atom(t_atom& t, float& i)
+{
   atom_setfloat(&t, i);
 }
-static void pack_to_atom(t_atom& t, char*& i) {
+static void pack_to_atom(t_atom& t, char*& i)
+{
   atom_setsym(&t, gensym(i));
 }
-static void pack_to_atom(t_atom& t, std::string_view i) {
+static void pack_to_atom(t_atom& t, std::string_view i)
+{
   if(!i.empty())
     atom_setsym(&t, gensym(i.data()));
   else
     atom_setsym(&t, gensym("<invalid>"));
 }
 
-static
-std::string_view name_from_args(const ossia::cues& cue, std::string_view args) noexcept {
-    return args;
+static std::string_view
+name_from_args(const ossia::cues& cue, std::string_view args) noexcept
+{
+  return args;
 }
 
-static
-std::string_view name_from_args(const ossia::cues& cue, int idx) noexcept {
-    if(idx >= 0 && idx < cue.m_cues.size())
-      return cue.m_cues[idx].name;
-    else
-      return {};
+static std::string_view name_from_args(const ossia::cues& cue, int idx) noexcept
+{
+  if(idx >= 0 && idx < cue.m_cues.size())
+    return cue.m_cues[idx].name;
+  else
+    return {};
 }
 
-static
-std::string_view name_from_args(const ossia::cues& cue) noexcept {
-    return name_from_args(cue, cue.current_index());
+static std::string_view name_from_args(const ossia::cues& cue) noexcept
+{
+  return name_from_args(cue, cue.current_index());
 }
-
 
 }

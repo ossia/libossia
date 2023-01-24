@@ -77,7 +77,7 @@ struct ocue : object_base
 
   static void assist(ocue* x, void* b, long m, long a, char* s);
 
-  template<typename... T>
+  template <typename... T>
   void dump_message(std::string_view str, T&&...);
   void dump_message(std::string_view msg, const std::vector<std::string_view>& t);
 

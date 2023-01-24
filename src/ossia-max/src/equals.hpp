@@ -16,12 +16,12 @@ namespace max_binding
  */
 struct equals
 {
-  t_object x_ob;    ///< header
+  t_object x_ob;      ///< header
   void* x_outlet{};   ///< float/list for sampled values
   void* x_inlet{};    ///< for setting the operand
   double x_operand{}; ///< the number against which to test input
   long x_tolerance{}; ///< number of floating-point representations around the specified
-                    ///< operand to consider as "equal"
+                      ///< operand to consider as "equal"
   long x_single_precision{}; ///< operate on 32-bit floats rather than 64-bit doubles
 
   // prototypes

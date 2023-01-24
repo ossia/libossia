@@ -13,15 +13,16 @@ using namespace ossia::max_binding;
 
 static void print_atom_list(std::string name, long argc, t_atom* argv)
 {
-    name += ": ";
-    t_atom t;
-    t.a_type = A_SYM;
-    t.a_w.w_sym = gensym(name.data());
-    postatom(&t);
-    for(int i = 0; i < argc; i++) {
-        postatom(argv+i);
-    }
-    post("\n");
+  name += ": ";
+  t_atom t;
+  t.a_type = A_SYM;
+  t.a_w.w_sym = gensym(name.data());
+  postatom(&t);
+  for(int i = 0; i < argc; i++)
+  {
+    postatom(argv + i);
+  }
+  post("\n");
 }
 
 extern "C" void ossia_router_setup()
@@ -89,7 +90,7 @@ extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
       }
       else if(argv[argc].a_type == A_LONG)
       {
-        x->change_pattern(inlet_id++,  std::to_string(argv[argc].a_w.w_long));
+        x->change_pattern(inlet_id++, std::to_string(argv[argc].a_w.w_long));
         x->m_inlets.push_back(proxy_new(x, argc + 1, 0L));
 
         x->m_outlets.push_back(outlet_new(x, nullptr));
@@ -136,7 +137,7 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
 
   if(inlet > 0)
   {
-    x->change_pattern(x->m_inlets.size() - inlet, std::string (s->s_name));
+    x->change_pattern(x->m_inlets.size() - inlet, std::string(s->s_name));
   }
   else
   {
@@ -148,15 +149,16 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
       const auto& pattern_regex = x->m_patterns[i];
 
       std::cmatch smatch;
-      if(std::regex_search(address.data(), address.data() + address.size(), smatch, pattern_regex))
+      if(std::regex_search(
+             address.data(), address.data() + address.size(), smatch, pattern_regex))
       {
         match = true;
         auto outlet = x->m_outlets[i + 1];
-        auto process = [x, argc, argv, outlet] (std::string_view str) {
+        auto process = [x, argc, argv, outlet](std::string_view str) {
           if(str.size() > 0)
           {
             // Normal routing case
-            t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc+1));
+            t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc + 1));
             if(x->m_leadslash && str[0] != '/')
             {
               static thread_local std::string r;
@@ -170,11 +172,12 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
             {
               atom_setsym(&l[0], gensym(str.data()));
             }
-            for(int i = 1; i < argc + 1; i++) {
-                l[i] = argv[i-1];
+            for(int i = 1; i < argc + 1; i++)
+            {
+              l[i] = argv[i - 1];
             }
-            
-            outlet_list(outlet, _sym_list, argc+1, l);
+
+            outlet_list(outlet, _sym_list, argc + 1, l);
           }
           else
           {
@@ -184,48 +187,43 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
           }
         };
         if(x->m_truncate)
-          process(std::string_view(smatch.suffix().first, smatch.suffix().second - smatch.suffix().first));
+          process(std::string_view(
+              smatch.suffix().first, smatch.suffix().second - smatch.suffix().first));
         else
           process(address);
-
       }
     }
 
     if(!match)
     {
-      t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc+1));
+      t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc + 1));
       atom_setsym(&l[0], s);
-      for(int i = 1; i < argc + 1; i++) {
-          l[i] = argv[i-1];
+      for(int i = 1; i < argc + 1; i++)
+      {
+        l[i] = argv[i - 1];
       }
-      
+
       // Here the input message does not match any pattern
       // registered for the router
-      outlet_list(x->m_outlets[0], _sym_list, argc+1, l);
+      outlet_list(x->m_outlets[0], _sym_list, argc + 1, l);
     }
   }
 }
 
-void router::in_float(router *x, double f)
-{
-}
+void router::in_float(router* x, double f) { }
 
-void router::in_int(router *x, long f)
-{
-}
+void router::in_int(router* x, long f) { }
 
-void router::in_symbol(router *x, t_symbol *f)
-{
-}
+void router::in_symbol(router* x, t_symbol* f) { }
 
-void router::in_list(router *x, t_symbol * f, int argc, t_atom *argv)
+void router::in_list(router* x, t_symbol* f, int argc, t_atom* argv)
 {
-    if(argc == 0)
-        return;
-    if(argv[0].a_type != A_SYM)
-        return;
+  if(argc == 0)
+    return;
+  if(argv[0].a_type != A_SYM)
+    return;
 
-    return in_anything(x, argv[0].a_w.w_sym, argc - 1, argv + 1);
+  return in_anything(x, argv[0].a_w.w_sym, argc - 1, argv + 1);
 }
 
 void router::free(router* x)

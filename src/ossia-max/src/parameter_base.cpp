@@ -900,9 +900,7 @@ void parameter_base::push(parameter_base* x, t_symbol* s, int argc, t_atom* argv
   {
     just_push(x, std::string(s->s_name));
   }
-  else if(
-      argc == 1 && s
-      && (s == _sym_float || s == _sym_list || (s == _sym_int)))
+  else if(argc == 1 && s && (s == _sym_float || s == _sym_list || (s == _sym_int)))
   {
     // convert one element array to single element
     switch(argv->a_type)

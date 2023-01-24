@@ -1,7 +1,7 @@
 #include "utils.hpp"
 
-#include "ossia-max.hpp"
 #include "ocue.hpp"
+#include "ossia-max.hpp"
 
 #include <ossia/network/common/path.hpp>
 
