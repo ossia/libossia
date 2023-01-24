@@ -47,6 +47,10 @@ extern "C" void ossia_router_setup()
   CLASS_ATTR_STYLE(c, "truncate", 0, "onoff");
   CLASS_ATTR_LABEL(c, "truncate", 0, "Truncate matching part of address (default on)");
 
+  CLASS_ATTR_LONG(c, "leading-slash", 0, router, m_leadslash);
+  CLASS_ATTR_STYLE(c, "leading-slash", 0, "onoff");
+  CLASS_ATTR_LABEL(c, "leading-slash", 0, "Add / to the outputs (default off)");
+
   class_register(CLASS_BOX, ossia_library.ossia_router_class);
 }
 
@@ -148,19 +152,34 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
       {
         match = true;
         auto outlet = x->m_outlets[i + 1];
-        auto process = [argc, argv, outlet] (std::string_view str) {
+        auto process = [x, argc, argv, outlet] (std::string_view str) {
           if(str.size() > 0)
           {
+            // Normal routing case
             t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc+1));
-            atom_setsym(&l[0], gensym(str.data()));
+            if(x->m_leadslash && str[0] != '/')
+            {
+              static thread_local std::string r;
+              r.clear();
+              r.reserve(str.size() + 1);
+              r.push_back('/');
+              r.append(str);
+              atom_setsym(&l[0], gensym(r.c_str()));
+            }
+            else
+            {
+              atom_setsym(&l[0], gensym(str.data()));
+            }
             for(int i = 1; i < argc + 1; i++) {
                 l[i] = argv[i-1];
             }
-
+            
             outlet_list(outlet, _sym_list, argc+1, l);
           }
           else
           {
+            // Here we are at the end of the string, the only thing remaining to route
+            // are the arguments, e.g. from "/foo 123" we only get "123"
             outlet_list(outlet, _sym_list, argc, argv);
           }
         };
@@ -179,6 +198,9 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
       for(int i = 1; i < argc + 1; i++) {
           l[i] = argv[i-1];
       }
+      
+      // Here the input message does not match any pattern
+      // registered for the router
       outlet_list(x->m_outlets[0], _sym_list, argc+1, l);
     }
   }

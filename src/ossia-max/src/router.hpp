@@ -20,6 +20,7 @@ struct router
 {
   t_object m_object;
   long m_truncate{1};
+  long m_leadslash{0};
 
   router(long argc, t_atom* argv);
   void change_pattern(int index, std::string&& pattern);
