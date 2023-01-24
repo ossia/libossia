@@ -2,6 +2,7 @@
 
 #include "ext_obex_util.h"
 #include "utils.hpp"
+#include "symbols.hpp"
 
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/base/node_attributes.hpp>
@@ -10,15 +11,6 @@ namespace ossia
 {
 namespace max_binding
 {
-
-static auto s_set = gensym("set");
-static auto s_cell = gensym("cell");
-static auto s_clear = gensym("clear");
-static auto s_rows = gensym("rows");
-static auto s_namespace = gensym("namespace");
-static auto s_explore = gensym("explore");
-static auto s_size = gensym("size");
-
 std::vector<ossia::net::node_base*>  search_sort_filter::sort_and_filter(std::vector<std::shared_ptr<matcher>>& matchers)
 {
   std::vector<ossia::net::node_base*> nodes;
@@ -166,7 +158,7 @@ bool search_filter::filter(const ossia::net::node_base& node)
 }
 
 
-void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format) 
+void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format, t_symbol* prefix)
 {
   // Output
   {
@@ -175,7 +167,7 @@ void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nod
     outlet_anything(outlet, s_size, 1, &a);
   }
   auto format_param_default
-      = [outlet](const std::vector<ossia::net::node_base*>& nodes, std::vector<t_atom>& va) {
+      = [outlet, prefix](const std::vector<ossia::net::node_base*>& nodes, std::vector<t_atom>& va) {
     for(const auto& nn : nodes)
     {
       auto& n = *nn;
@@ -183,6 +175,8 @@ void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nod
       // Print the name
       va.clear();
       value2atom vm{va};
+      if(prefix)
+          vm(std::string_view(s_namespace->s_name));
       vm(ossia::net::osc_parameter_string(n));
 
       // Print the param
@@ -192,28 +186,28 @@ void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nod
         val.apply(vm);
       }
 
-      outlet_anything(outlet, s_namespace, va.size(), va.data());
+      outlet_anything(outlet, prefix?prefix:s_namespace, va.size(), va.data());
     }
   };
 
   auto format_param_cellblock
-      = [outlet](const std::vector<ossia::net::node_base*>& nodes, std::vector<t_atom>& va) {
+      = [outlet,prefix](const std::vector<ossia::net::node_base*>& nodes, std::vector<t_atom>& va) {
     int k = 0;
     // First clear
-    write_message(va, outlet, s_clear, "all");
-    write_message(va, outlet, s_rows, int(std::ssize(nodes)));
+    write_message(va, outlet, prefix, s_clear, "all");
+    write_message(va, outlet, prefix, s_rows, int(std::ssize(nodes)));
 
     for(const auto& nn : nodes)
     {
       auto& n = *nn;
-      // Format:
 
-      // set x y <name>
       const auto& osc_param = ossia::net::osc_parameter_string(n);
-      write_message(va, outlet, s_set, 0, k, osc_param.c_str());
+      // Format:
+      // set x y <name>
+      write_message(va, outlet, prefix, s_set, 0, k, osc_param.c_str());
 
       // cell x y brgb r g b
-      write_message(va, outlet, s_cell, 0, k, "brgb", 0, 0, 0);
+      write_message(va, outlet, prefix, s_cell, 0, k, "brgb", 0, 0, 0);
       k++;
     }
   };

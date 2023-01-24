@@ -53,11 +53,11 @@ struct search_filter
 struct search_sort_filter : search_filter
 {
   long m_depth{0}; // 0 means no depth filtering
-  
+
   t_symbol* m_sort{};
   t_symbol* m_format{};
 
-  std::vector<ossia::net::node_base*> sort_and_filter(std::vector<std::shared_ptr<matcher>>& matchers);  
+  std::vector<ossia::net::node_base*> sort_and_filter(std::vector<std::shared_ptr<matcher>>& matchers);
 
   template <typename T>
   static void setup_attribute(t_class* c)
@@ -67,17 +67,17 @@ struct search_sort_filter : search_filter
     CLASS_ATTR_LONG(c, "depth", 0, T, m_depth);
     CLASS_ATTR_LABEL(c, "depth", 0, "Limit exploration depth");
     CLASS_ATTR_FILTER_MIN(c, "depth", 0);
-  
+
     CLASS_ATTR_SYM(c, "format", 0, T, m_format);
     CLASS_ATTR_LABEL(c, "format", 0, "Format to output the namespace in");
     CLASS_ATTR_ENUM(c, "format", 0, "list jit.cellblock");
-  
+
     CLASS_ATTR_SYM(c, "sort", 0, T, m_sort);
     CLASS_ATTR_LABEL(c, "sort", 0, "Sorting");
     CLASS_ATTR_ENUM(c, "sort", 0, "none alphabetic priority");
   }
 };
 
-void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format);
+void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format, t_symbol* prefix = nullptr);
 } // namespace max
 } // namespace ossia
