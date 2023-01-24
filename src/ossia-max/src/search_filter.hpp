@@ -24,7 +24,6 @@ struct search_filter
 
   bool filter(const ossia::net::node_base& node);
 
-
   template <typename T>
   static void setup_attribute(t_class* c)
   {
@@ -57,7 +56,8 @@ struct search_sort_filter : search_filter
   t_symbol* m_sort{};
   t_symbol* m_format{};
 
-  std::vector<ossia::net::node_base*> sort_and_filter(std::vector<std::shared_ptr<matcher>>& matchers);
+  std::vector<ossia::net::node_base*>
+  sort_and_filter(std::vector<std::shared_ptr<matcher>>& matchers);
 
   template <typename T>
   static void setup_attribute(t_class* c)
@@ -78,6 +78,8 @@ struct search_sort_filter : search_filter
   }
 };
 
-void dump_node_list(void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format, t_symbol* prefix = nullptr);
+void dump_node_list(
+    void* outlet, const std::vector<ossia::net::node_base*>& nodes, t_symbol* format,
+    t_symbol* prefix = nullptr);
 } // namespace max
 } // namespace ossia

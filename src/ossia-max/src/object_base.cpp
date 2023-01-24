@@ -9,8 +9,8 @@
 #include <ossia/preset/preset.hpp>
 
 #include <ossia-max/src/object_base.hpp>
-#include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/ocue.hpp>
+#include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/utils.hpp>
 
 #include <re2/re2.h>
@@ -921,7 +921,8 @@ void object_base::push_parameter_value(
     ossia::net::parameter_base* param, const ossia::value& val)
 {
   std::unique_lock<std::mutex> lock{param_locks_mutex};
-  auto it = ossia::find_if(param_locks, [param](const auto& p) { return p.second == param; });
+  auto it = ossia::find_if(
+      param_locks, [param](const auto& p) { return p.second == param; });
 
   if(it == param_locks.end())
   {
@@ -937,9 +938,11 @@ void object_base::push_parameter_value(
     lock.lock();
     assert(!param_locks.empty());
     if(param_locks.back().first == r)
-        param_locks.pop_back();
-    else if(auto rm_it = ossia::find_if(param_locks, [r](const auto& p) { return p.first == r; }); rm_it != param_locks.end())
-       param_locks.erase(rm_it);
+      param_locks.pop_back();
+    else if(auto rm_it
+            = ossia::find_if(param_locks, [r](const auto& p) { return p.first == r; });
+            rm_it != param_locks.end())
+      param_locks.erase(rm_it);
   }
 }
 

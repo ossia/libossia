@@ -132,7 +132,7 @@ struct configuration
   bool autoregister = true;
 };
 
-template<typename T>
+template <typename T>
 t_class* ossia_cue_class{};
 
 class ossia_max

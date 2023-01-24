@@ -116,7 +116,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 
       // If it's an intermediary node it does not match any proper ossia object
       if(candidates_it == omax.s_node_matchers_map.end())
-          continue;
+        continue;
 
       auto& all = candidates_it->second.reference();
       for(const auto& c : all)
@@ -157,7 +157,7 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
 
       // If it's an intermediary node it does not match any proper ossia object
       if(candidates_it == omax.s_node_matchers_map.end())
-          continue;
+        continue;
 
       auto& candidates = candidates_it->second.reference();
 
