@@ -49,8 +49,14 @@ void device_base::on_attribute_modified_callback(
 {
   auto& omax = ossia_max::instance();
   std::lock_guard _{omax.s_node_matchers_mut};
-  auto& matchers = omax.s_node_matchers_map[&node];
 
+  auto candidates_it = omax.s_node_matchers_map.find(&node);
+
+  // If it's an intermediary node it does not match any proper ossia object
+  if(candidates_it == omax.s_node_matchers_map.end())
+      return;
+
+  auto& matchers = candidates_it->second;
   for(const auto& m : matchers)
   {
     auto obj = m->get_owner();

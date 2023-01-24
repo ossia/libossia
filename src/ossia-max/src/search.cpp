@@ -112,8 +112,13 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
       auto& omax = ossia_max::instance();
       std::lock_guard _{omax.s_node_matchers_mut};
 
-      auto& all = omax.s_node_matchers_map[node].reference();
+      auto candidates_it = omax.s_node_matchers_map.find(node);
 
+      // If it's an intermediary node it does not match any proper ossia object
+      if(candidates_it == omax.s_node_matchers_map.end())
+          continue;
+
+      auto& all = candidates_it->second.reference();
       for(const auto& c : all)
       {
         if(c->get_owner() != x)
@@ -147,7 +152,15 @@ void search::execute_method(search* x, t_symbol* s, long argc, t_atom* argv)
       auto node = m->get_node();
       auto& omax = ossia_max::instance();
       std::lock_guard _{omax.s_node_matchers_mut};
-      auto& candidates = omax.s_node_matchers_map[node].reference();
+
+      auto candidates_it = omax.s_node_matchers_map.find(node);
+
+      // If it's an intermediary node it does not match any proper ossia object
+      if(candidates_it == omax.s_node_matchers_map.end())
+          continue;
+
+      auto& candidates = candidates_it->second.reference();
+
       for(const auto& m : candidates)
       {
         object_base* obj = m->get_owner();
