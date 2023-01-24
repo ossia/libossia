@@ -138,7 +138,15 @@ std::pair<std::vector<std::string>, bool> expand_address(std::string address);
  */
 OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
-list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
+list_all_children(ossia::net::node_base* node, unsigned int depth = 0, bool sort = true);
+
+OSSIA_EXPORT
+void
+list_all_children(
+        ossia::net::node_base* node,
+        std::vector<ossia::net::node_base*>&out,
+        unsigned int depth,
+        bool sort);
 
 /**
  * @brief Iterates all the child parameters given a base node

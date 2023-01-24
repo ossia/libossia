@@ -833,13 +833,15 @@ static bool node_sort(ossia::net::node_base* n1, ossia::net::node_base* n2)
     return false;
 }
 
+template<bool sort>
 static void list_all_children_rec(
     ossia::net::node_base* node, unsigned int depth,
     std::vector<ossia::net::node_base*>& list)
 {
   std::vector<ossia::net::node_base*> children = node->children_copy();
 
-  ossia::sort(children, node_sort);
+  if constexpr(sort)
+    ossia::sort(children, node_sort);
 
   int next_depth = -1;
   if(depth > 0)
@@ -850,38 +852,55 @@ static void list_all_children_rec(
     list.push_back(child);
     if(next_depth != 0)
     {
-      list_all_children_rec(child, next_depth, list);
+      list_all_children_rec<sort>(child, next_depth, list);
     }
   }
 }
 
+template<bool sort>
 static void list_all_children_rec(
     ossia::net::node_base* node, std::vector<ossia::net::node_base*>& list)
 {
   std::vector<ossia::net::node_base*> children = node->children_copy();
 
-  ossia::sort(children, node_sort);
+  if constexpr(sort)
+    ossia::sort(children, node_sort);
 
   for(auto* child : children)
   {
     list.push_back(child);
-    list_all_children_rec(child, list);
+    list_all_children_rec<sort>(child, list);
+  }
+}
+
+
+void list_all_children(
+        ossia::net::node_base* node,
+        std::vector<ossia::net::node_base*>& list,
+        unsigned int depth, bool sort)
+{
+  if(depth == 0) // No limit
+  {
+    if(sort)
+      list_all_children_rec<true>(node, list);
+    else
+      list_all_children_rec<false>(node, list);
+  }
+  else
+  {
+    if(sort)
+      list_all_children_rec<true>(node, depth, list);
+    else
+      list_all_children_rec<false>(node, depth, list);
   }
 }
 
 std::vector<ossia::net::node_base*>
-list_all_children(ossia::net::node_base* node, unsigned int depth)
+list_all_children(ossia::net::node_base* node, unsigned int depth, bool sort)
 {
   std::vector<ossia::net::node_base*> list;
   list.reserve(250);
-  if(depth == 0) // No limit
-  {
-    list_all_children_rec(node, list);
-  }
-  else
-  {
-    list_all_children_rec(node, depth, list);
-  }
+  list_all_children(node, list, depth, sort);
   return list;
 }
 
