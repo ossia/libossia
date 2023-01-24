@@ -14,7 +14,7 @@ public:
   static t_max_err
   notify(ossia_object* x, t_symbol* s, t_symbol* msg, void* sender, void* data);
 
-  t_symbol* m_log_level;
+  t_symbol* m_log_level{};
 };
 
 } // max namespace

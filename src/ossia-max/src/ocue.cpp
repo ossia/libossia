@@ -8,6 +8,13 @@
 
 #include <rapidjson/prettywriter.h>
 
+
+// Notes:
+// - When we switch preset, the nodes in the preset becomes this ocue::'s running selection
+// - Need "update" to add/remove nodes from the cue: just changing the local selection does nothing
+// - namespace/X family of functions vs
+// - select/all select deselect
+
 namespace
 {
 static
@@ -62,7 +69,7 @@ ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
           = boost::algorithm::to_lower_copy(std::string(argv[i].a_w.w_sym->s_name));
       if(symb.starts_with("@"))
       {
-        if(symb == "@type")
+        if(symb == "@valuetype")
         {
           state = processing_val_type;
           continue;
@@ -524,13 +531,16 @@ std::string_view name_from_args(const ossia::cues& cue) noexcept {
 }
 
 using namespace ossia::max_binding;
+ 
+t_class* ocue::max_class = {};
+
 void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv);
 extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
 {
   auto& ossia_library = ossia_max::instance();
 
   // instantiate the ossia.cue class
-  ossia_library.ossia_cue_class = class_new(
+  ocue::max_class = class_new(
       "ossia.cue", (method)ossia_cue_create, (method)ocue::free, (long)sizeof(ocue), 0L,
       A_GIMME, 0);
 
@@ -561,7 +571,7 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
           [](ocue* x, t_symbol*, int argc, t_atom* argv) { x->var(argc, argv); }, \
       name, A_GIMME, 0);
 
-  auto& c = ossia_library.ossia_cue_class;
+  auto& c = ocue::max_class;
 
   ADDMETHOD_GIMME_(create, "new");
   ADDMETHOD_GIMME(update);
@@ -578,8 +588,8 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
   ADDMETHOD_NOTHING(json);
 
   ADDMETHOD_NOTHING_(namespace_dump, "namespace/dump");
-  ADDMETHOD_GIMME_(namespace_select, "namespace/select");
-  ADDMETHOD_GIMME_(namespace_deselect, "namespace/deselect");
+  ADDMETHOD_GIMME_(namespace_add, "namespace/add");
+  ADDMETHOD_GIMME_(namespace_remove, "namespace/remove");
   ADDMETHOD_GIMME_(namespace_filter_all, "namespace/filter_all");
   ADDMETHOD_GIMME_(namespace_filter_any, "namespace/filter_any");
   ADDMETHOD_GIMME_(namespace_grab, "namespace/grab");
@@ -600,7 +610,7 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
         });
   }
 
-  class_register(CLASS_BOX, ossia_library.ossia_cue_class);
+  class_register(CLASS_BOX, ocue::max_class);
 }
 
 void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv)
@@ -659,7 +669,8 @@ void ocue::create(int argc, t_atom* argv)
     if constexpr(requires { this->m_cues->create(name); })
     {
       this->m_cues->create(name);
-      this->m_cues->update();
+      if(m_selection.dev)
+        this->m_cues->update(m_selection.dev->get_root_node(), m_selection);
 
       dump_message("new", name);
       {
@@ -678,7 +689,8 @@ void ocue::update(int argc, t_atom* argv)
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->update(args...); })
     {
-      this->m_cues->update(args...);
+      if(m_selection.dev)
+        this->m_cues->update(m_selection.dev->get_root_node(), m_selection, args...);
       dump_message("update", name_from_args(*m_cues, args...));
     }
   });
@@ -689,7 +701,8 @@ void ocue::recall(int argc, t_atom* argv)
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
     if constexpr(requires { this->m_cues->recall(args...); })
     {
-      this->m_cues->recall(args...);
+      if(m_selection.dev)
+        this->m_cues->recall(m_selection.dev->get_root_node(), args...);
       dump_message("recall", name_from_args(*m_cues, args...));
     }
   });
@@ -703,7 +716,9 @@ void ocue::recall_next(int argc, t_atom* argv)
     if constexpr(sizeof...(args) == 0) {
       int idx = this->m_cues->current_index();
       int next_index = std::clamp(idx + 1, 0, this->m_cues->size() - 1);
-      this->m_cues->recall(next_index);
+      
+      if(m_selection.dev)
+        this->m_cues->recall(m_selection.dev->get_root_node(), next_index);
       dump_message("recall/next");
     }
   });
@@ -717,7 +732,9 @@ void ocue::recall_previous(int argc, t_atom* argv)
       if constexpr(sizeof...(args) == 0) {
         int idx = this->m_cues->current_index();
         int next_index = std::clamp(idx - 1, 0, this->m_cues->size() - 1);
-        this->m_cues->recall(next_index);
+
+        if(m_selection.dev)
+          this->m_cues->recall(m_selection.dev->get_root_node(), next_index);
         dump_message("recall/previous");
       }
     });
@@ -764,7 +781,7 @@ void ocue::json()
 
 void ocue::namespace_dump()
 {
-  for(auto n : m_cues->m_selection)
+  for(auto n : m_selection.m_selection)
   {
     if(n->get_parameter())
     {
@@ -984,12 +1001,12 @@ void ocue::output(int argc, t_atom* argv)
   });
 }
 
-void ocue::namespace_select(int argc, t_atom* argv)
+void ocue::namespace_add(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->namespace_select(args...); })
+    if constexpr(requires { this->m_selection.namespace_select(args...); })
     {
-      this->m_cues->namespace_select(args...);
+      this->m_selection.namespace_select(args...);
       dump_message("namespace/select", args...);
     }
   });
@@ -997,20 +1014,20 @@ void ocue::namespace_select(int argc, t_atom* argv)
 
 void ocue::namespace_filter_all(int argc, t_atom* argv)
 {
-  this->m_cues->namespace_filter_all(parse_selection_filter(argc, argv));
+  this->m_selection.namespace_filter_all(parse_selection_filter(argc, argv));
 }
 
 void ocue::namespace_filter_any(int argc, t_atom* argv)
 {
-  this->m_cues->namespace_filter_any(parse_selection_filter(argc, argv));
+  this->m_selection.namespace_filter_any(parse_selection_filter(argc, argv));
 }
 
-void ocue::namespace_deselect(int argc, t_atom* argv)
+void ocue::namespace_remove(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->namespace_deselect(args...); })
+    if constexpr(requires { this->m_selection.namespace_deselect(args...); })
     {
-      this->m_cues->namespace_deselect(args...);
+      this->m_selection.namespace_deselect(args...);
       dump_message("namespace/deselect", args...);
     }
   });
@@ -1019,9 +1036,9 @@ void ocue::namespace_deselect(int argc, t_atom* argv)
 void ocue::namespace_grab(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->namespace_grab(args...); })
+    if constexpr(requires { this->m_selection.namespace_grab(args...); })
     {
-      this->m_cues->namespace_grab(args...);
+      this->m_selection.namespace_grab(args...);
       dump_message("namespace/grab", args...);
     }
   });
@@ -1098,12 +1115,12 @@ t_max_err ocue::set_device_name(long ac, t_atom* av)
 }
 void ocue::do_registration()
 {
-  m_cues->set_device(get_device());
+  m_selection.set_device(get_device());
 }
 
 void ocue::unregister()
 {
-  m_cues->set_device(nullptr);
+  m_selection.set_device(nullptr);
 }
 
 void ocue::free(ocue* x)
@@ -1111,6 +1128,9 @@ void ocue::free(ocue* x)
   if(x)
   {
     critical_enter(0);
+
+    ossia_max::get_patcher_descriptor(x->m_patcher).cues.remove_all(x);
+
     outlet_delete(x->m_data_out);
     outlet_delete(x->m_dumpout);
     x->~ocue();

@@ -16,9 +16,9 @@ namespace max_binding
 struct logger
 {
   t_object m_object;
-  t_symbol* m_host;
-  t_symbol* m_appname;
-  t_symbol* m_exec;
+  t_symbol* m_host{};
+  t_symbol* m_appname{};
+  t_symbol* m_exec{};
   long m_ival{};
 
   enum Status
