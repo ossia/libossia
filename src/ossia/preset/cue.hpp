@@ -86,9 +86,9 @@ public:
   void update(ossia::net::node_base& root, const namespace_selection& sel, int idx); // update cue by index
   void update(ossia::net::node_base& root, const namespace_selection& sel);        // update current cue
 
-  void recall(ossia::net::node_base& root, std::string_view name);
-  void recall(ossia::net::node_base& root, int idx);
-  void recall(ossia::net::node_base& root);
+  void recall(ossia::net::node_base& root, namespace_selection& sel, std::string_view name);
+  void recall(ossia::net::node_base& root, namespace_selection& sel, int idx);
+  void recall(ossia::net::node_base& root, namespace_selection& sel);
 
   void remove(std::string_view name);
   void remove(int idx);
