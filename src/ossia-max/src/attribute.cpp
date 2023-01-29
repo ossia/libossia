@@ -88,6 +88,7 @@ void attribute::on_parameter_created_callback(const ossia::net::parameter_base& 
 
 void attribute::do_registration()
 {
+  return;
   if(m_name && std::string_view(m_name->s_name) != "")
   {
     clear_and_init_registration();
