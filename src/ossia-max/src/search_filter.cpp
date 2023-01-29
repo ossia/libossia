@@ -20,6 +20,7 @@ search_sort_filter::sort_and_filter(std::vector<std::shared_ptr<matcher>>& match
   const bool default_sort = !(alpha_sort || prio_sort);
   for(const auto& m : matchers)
   {
+    nodes.push_back(m->get_node());
     ossia::net::list_all_children(m->get_node(), nodes, m_depth, default_sort);
   }
 

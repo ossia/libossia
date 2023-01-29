@@ -979,15 +979,15 @@ object_base::find_parent_object_recursively(t_object* patcher, bool look_for_mod
   while(patcher)
   {
     auto& pat_desc = omax.patchers[patcher];
-    std::vector<object_base*> vec{};
+    ossia::small_vector<object_base*, 4> vec{};
     if(m_addr_scope == ossia::net::address_scope::relative && look_for_model_view)
     {
-      vec = std::vector<object_base*>{
-          pat_desc.model, pat_desc.view, pat_desc.device, pat_desc.client};
+      vec.assign({
+          pat_desc.model, pat_desc.view, pat_desc.device, pat_desc.client});
     }
     else
     {
-      vec = std::vector<object_base*>{pat_desc.device, pat_desc.client};
+      vec.assign({pat_desc.device, pat_desc.client});
     }
 
     for(auto ptr : vec)
