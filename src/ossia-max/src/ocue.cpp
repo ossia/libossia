@@ -155,7 +155,6 @@ void ocue::dump_message(std::string_view msg, const std::vector<std::string_view
 void ocue::create(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](std::string_view name) {
-    if constexpr(requires { this->m_cues->create(name); })
     {
       this->m_cues->create(name);
       if(m_ns.dev)
@@ -176,7 +175,7 @@ void ocue::create(int argc, t_atom* argv)
 void ocue::update(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->update(args...); })
+    if constexpr(requires { this->m_cues->update(m_ns.dev->get_root_node(), m_ns, args...); })
     {
       if(m_ns.dev)
         this->m_cues->update(m_ns.dev->get_root_node(), m_ns, args...);
@@ -188,12 +187,12 @@ void ocue::update(int argc, t_atom* argv)
 void ocue::recall(int argc, t_atom* argv)
 {
   invoke_mem_fun(argc, argv, [this](auto&&... args) {
-    if constexpr(requires { this->m_cues->recall(args...); })
+    if constexpr(requires { this->m_cues->recall(m_ns.dev->get_root_node(), m_ns, args...); })
     {
       if(m_ns.dev)
       {
-        this->m_cues->recall(m_ns.dev->get_root_node(), args...);
-        explore(0, nullptr);
+        this->m_cues->recall(m_ns.dev->get_root_node(), m_ns, args...);
+        do_explore(gensym("/"));
       }
       dump_message("recall", name_from_args(*m_cues, args...));
     }
@@ -212,8 +211,8 @@ void ocue::recall_next(int argc, t_atom* argv)
 
       if(m_ns.dev)
       {
-        this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
-        explore(0, nullptr);
+        this->m_cues->recall(m_ns.dev->get_root_node(), m_ns, next_index);
+        do_explore(gensym("/"));
       }
       dump_message("recall/next");
     }
@@ -232,8 +231,8 @@ void ocue::recall_previous(int argc, t_atom* argv)
 
       if(m_ns.dev)
       {
-        this->m_cues->recall(m_ns.dev->get_root_node(), next_index);
-        explore(0, nullptr);
+        this->m_cues->recall(m_ns.dev->get_root_node(), m_ns, next_index);
+        do_explore(gensym("/"));
       }
       dump_message("recall/previous");
     }
@@ -247,8 +246,7 @@ void ocue::remove(int argc, t_atom* argv)
     {
       dump_message("remove", name_from_args(*m_cues, args...));
       this->m_cues->remove(args...);
-
-      explore(0, nullptr);
+      do_explore(gensym("/"));
     }
   });
 }
@@ -332,10 +330,12 @@ void ocue::read(int argc, t_atom* argv)
       self.dump_message("read", url);
     }
     void do_read(std::string_view url) const noexcept
+            try
     {
       self.m_last_filename = std::string(url);
 
       rapidjson::Document doc;
+
       auto str = ossia::presets::read_file(self.m_last_filename);
 
       doc.ParseInsitu(str.data());
@@ -357,7 +357,14 @@ void ocue::read(int argc, t_atom* argv)
       }
       self.m_cues->clear();
       read_cues_from_json(cues->value.GetArray(), self.m_cues->m_cues);
-    }
+
+      std::vector<t_atom> va;
+      value2atom vm{va};
+      for(auto& cue : self.m_cues->m_cues)
+        vm(cue.name);
+
+      outlet_anything(self.m_dumpout, gensym("names"), va.size(), va.data());
+    } catch(...) { }
   } handler{*this};
 
   invoke_mem_fun(argc, argv, handler);
@@ -518,6 +525,7 @@ std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
 
   if(!m_name || m_name == _sym_nothing)
   {
+    self.m_addr_scope = ossia::net::address_scope::relative;
     if(auto obj = self.find_parent_object())
     {
       // Explore at the current hierarchy level of ossia.explorer
@@ -548,6 +556,8 @@ std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
 
 void ocue::do_explore(t_symbol* name)
 {
+  if(!m_ns.dev)
+      return;
   search_sort_filter filter_models;
   filter_models.m_sort = gensym("priority");
   filter_models.m_depth = 0;
@@ -556,7 +566,7 @@ void ocue::do_explore(t_symbol* name)
   filter_models.m_filter_type_size = 1;
 
   // get namespace of given nodes
-  auto matchers = get_matchers_for_address(*this, get_device(), name);
+  auto matchers = get_matchers_for_address(*this, m_ns.dev, name);
   auto model_nodes = filter_models.sort_and_filter(matchers);
 
   // Pretty print it
@@ -751,6 +761,32 @@ void ocue::selection_grab(int argc, t_atom* argv)
   });
 }
 
+ossia::net::device_base* find_parent_device(const patcher_descriptor& desc)
+{
+    if(desc.device)
+    {
+      return desc.device->m_device.get();
+    }
+    else if(desc.client)
+    {
+      return desc.client->m_device.get();
+    }
+    else
+    {
+        if(auto parent = desc.parent_patcher)
+        {
+            auto& d = ossia_max::get_patcher_descriptor(parent);
+            return find_parent_device(d);
+        }
+        else
+        {
+            // Bind to default device?
+            const auto& default_dev = ossia_max::instance().get_default_device();
+            return default_dev.get();
+
+        }
+    }
+}
 ossia::net::device_base* ocue::get_device() const noexcept
 {
   // If we set an explicit device name try to use it
@@ -768,20 +804,7 @@ ossia::net::device_base* ocue::get_device() const noexcept
 
   // Fall back on the default case
   auto& desc = ossia_max::get_patcher_descriptor(m_patcher);
-  if(desc.device)
-  {
-    return desc.device->m_device.get();
-  }
-  else if(desc.client)
-  {
-    return desc.client->m_device.get();
-  }
-  else
-  {
-    // Bind to default device?
-    const auto& default_dev = ossia_max::instance().get_default_device();
-    return default_dev.get();
-  }
+  return find_parent_device(desc);
 }
 
 t_max_err ocue::get_device_name(long* ac, t_atom** av)
