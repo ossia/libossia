@@ -30,6 +30,7 @@ struct ocue : object_base
   void edit(int argc, t_atom* argv);
   void sort(int argc, t_atom* argv);
   void json();
+  void names();
 
   void explore(int argc, t_atom* argv);
   void do_explore(t_symbol* name);

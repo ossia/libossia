@@ -67,6 +67,7 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
   ADDMETHOD_GIMME(rename);
   ADDMETHOD_NOTHING(clear);
   ADDMETHOD_NOTHING(json);
+  ADDMETHOD_NOTHING(names);
 
   ADDMETHOD_GIMME(explore);
   ADDMETHOD_GIMME(select);
@@ -129,15 +130,23 @@ template <typename... T>
 void ocue::dump_message(std::string_view msg, T&&... t)
 {
   constexpr int N = sizeof...(T);
-  t_atom args[N];
+
+  if constexpr(N > 0)
   {
-    [&]<std::size_t... I>(std::index_sequence<I...>)
+    t_atom args[N];
     {
-      (pack_to_atom(args[I], t), ...);
+      [&]<std::size_t... I>(std::index_sequence<I...>)
+      {
+        (pack_to_atom(args[I], t), ...);
+      }
+      (std::make_index_sequence<N>{});
     }
-    (std::make_index_sequence<N>{});
+    outlet_anything(m_dumpout, gensym(msg.data()), N, args);
   }
-  outlet_anything(m_dumpout, gensym(msg.data()), N, args);
+  else
+  {
+      outlet_anything(m_dumpout, gensym(msg.data()), 0, nullptr);
+  }
 }
 
 void ocue::dump_message(std::string_view msg, const std::vector<std::string_view>& t)
@@ -161,15 +170,18 @@ void ocue::create(int argc, t_atom* argv)
         this->m_cues->update(m_ns.dev->get_root_node(), m_ns);
 
       dump_message("new", name);
-      {
-        std::vector<std::string_view> names;
-        for(auto& cue : this->m_cues->m_cues)
-          names.push_back(cue.name);
-        dump_message("names", std::as_const(names));
-      }
+      names();
       dump_message("current", name);
     }
   });
+}
+
+void ocue::names()
+{
+  std::vector<std::string_view> names;
+  for (auto& cue : this->m_cues->m_cues)
+      names.push_back(cue.name);
+  dump_message("names", std::as_const(names));
 }
 
 void ocue::update(int argc, t_atom* argv)
