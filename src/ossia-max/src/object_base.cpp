@@ -199,16 +199,20 @@ static void move_vector_into_another(std::vector<T>&& src, std::vector<T>& dst)
   src.clear();
 }
 
-std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
+std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers(ossia::net::generic_device* device_to_use)
 {
   assert(m_matchers.empty());
-  std::vector<std::shared_ptr<matcher>> matchers;
+  std::vector<std::shared_ptr<matcher>> matchers; 
 
-  update_path(); // TODO this might not always be necessary here
+  std::vector<ossia::net::generic_device*> devices;
+  if (device_to_use) devices.push_back(device_to_use);
+  else devices = get_all_devices();
+
+  update_path(device_to_use); // TODO this might not always be necessary here
   for(const std::string_view addr : m_paths)
   {
     size_t pos = addr.find(":/");
-    if(pos == std::string::npos)
+    if(pos == std::string_view::npos)
       return {};
 
     const std::string_view prefix = addr.substr(0, pos);
@@ -217,8 +221,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
 
     bool is_prefix_pattern = ossia::traversal::is_pattern(prefix);
     bool is_osc_name_pattern = ossia::traversal::is_pattern(osc_name);
-
-    for(auto dev : get_all_devices())
+    for(auto dev : devices)
     {
       const std::string& name = dev->get_name();
 
@@ -282,6 +285,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers()
           case object_class::view:
           case object_class::explorer:
           case object_class::monitor:
+          case object_class::cue:
           case object_class::search: {
             matchers.reserve(nodes.size());
             for(auto n : nodes)
@@ -1176,7 +1180,7 @@ void object_base::make_global_paths(const std::string& name)
 }
 
 static constexpr auto numbers_regex = ctll::fixed_string{"\\.[0-9]+$"};
-void object_base::update_path()
+void object_base::update_path(ossia::net::generic_device* explicit_device)
 {
   m_paths.clear();
   m_paths.reserve(32);
@@ -1205,6 +1209,12 @@ void object_base::update_path()
   {
     case ossia::net::address_scope::absolute: {
       std::string base_name{};
+      if(explicit_device)
+      {
+          base_name = explicit_device->get_name();
+      }
+      else
+      {
       auto parent = static_cast<device_base*>(find_parent_object());
       if(parent)
       {
@@ -1216,6 +1226,7 @@ void object_base::update_path()
       else
       {
         base_name = ossia_max::instance().get_default_device()->get_name();
+      }
       }
       m_paths.push_back(base_name + ":" + name);
       break;
