@@ -347,7 +347,9 @@ void ocue::read(int argc, t_atom* argv)
     void do_read(std::string_view url) const noexcept
             try
     {
-      self.m_last_filename = std::string(url);
+      self.m_last_filename = to_absolute_path(self.m_patcher, url);
+      if (self.m_last_filename.empty())
+          return; 
 
       rapidjson::Document doc;
 
@@ -406,33 +408,15 @@ void ocue::write(int argc, t_atom* argv)
     }
     void do_write(std::string_view url) const noexcept
     {
+        self.m_last_filename = to_absolute_path(self.m_patcher, url);
+        if (self.m_last_filename.empty())
+            return;
+
       rapidjson::StringBuffer buffer = cues_to_string(*self.m_cues);
-
-      std::string full_path;
-      if(is_absolute_path(url))
-      {
-        full_path = url;
-      }
-      else
-      {
-        std::string_view patcher_path = jpatcher_get_filepath(self.m_patcher)->s_name;
-        std::string_view patcher_name = jpatcher_get_filename(self.m_patcher)->s_name;
-        auto end_it = patcher_path.rfind(patcher_name);
-        if(end_it <= 0 || end_it > std::string_view::npos)
-          return;
-
-        int start = 0;
-        if(patcher_path.starts_with("Macintosh HD:"))
-          start = strlen("Macintosh HD:");
-        full_path = patcher_path.substr(start, end_it - start);
-        full_path += url;
-      }
-
-      self.m_last_filename = full_path;
 
       try
       {
-        ossia::presets::write_file({buffer.GetString(), buffer.GetLength()}, full_path);
+        ossia::presets::write_file({buffer.GetString(), buffer.GetLength()}, self.m_last_filename);
       }
       catch(const std::exception& e)
       {
