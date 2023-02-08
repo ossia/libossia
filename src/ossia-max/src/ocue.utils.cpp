@@ -10,6 +10,49 @@
 
 namespace
 {
+    bool is_absolute_path(std::string_view v)
+    {
+        if (v.starts_with('/') || v.starts_with('~'))
+            return true;
+        if (v.find(':') != std::string_view::npos)
+            return true;
+        return false;
+    }
+    static std::string fix_url(std::string_view u)
+    {
+        if(u.starts_with("~"))
+        {
+            const char* home = getenv("HOME");
+            if (!home) home = "";
+            std::string res = home;
+            res += u.substr(1);
+            return res;
+        }
+        return std::string(u);
+    }
+    static std::string to_absolute_path(t_patcher* patcher, std::string_view url)
+    {
+        std::string full_path;
+        if (is_absolute_path(url))
+        {
+            full_path = fix_url(url);
+        }
+        else
+        {
+            std::string_view patcher_path = jpatcher_get_filepath(patcher)->s_name;
+            std::string_view patcher_name = jpatcher_get_filename(patcher)->s_name;
+            auto end_it = patcher_path.rfind(patcher_name);
+            if (end_it <= 0 || end_it > std::string_view::npos)
+                return {};
+
+            int start = 0;
+            if (patcher_path.starts_with("Macintosh HD:"))
+                start = strlen("Macintosh HD:");
+            full_path = patcher_path.substr(start, end_it - start);
+            full_path += url;
+        }
+        return full_path;
+    }
     static std::string
         prompt_open_filename(std::string_view dialogtitle, std::string_view default_filename)
     {
@@ -439,14 +482,6 @@ static void read_cues_from_json(
     }
     cues.push_back(std::move(c));
   }
-}
-bool is_absolute_path(std::string_view v)
-{
-  if(v.starts_with('/'))
-    return true;
-  if(v.find(':') != std::string_view::npos)
-    return true;
-  return false;
 }
 
 static void invoke_mem_fun(int argc, t_atom* argv, auto f)
