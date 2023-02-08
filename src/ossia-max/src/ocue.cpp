@@ -98,6 +98,7 @@ extern "C" OSSIA_MAX_EXPORT void ossia_cue_setup()
         });
   }
 
+  search_sort_filter::setup_attribute<ocue>(c);
   class_register(CLASS_BOX, ocue::max_class);
 }
 
@@ -106,6 +107,8 @@ void* ossia_cue_create(t_symbol* s, long argc, t_atom* argv)
   auto x = make_ossia<ocue>();
   x->m_device_name = gensym("");
   x->m_otype = object_class::cue;
+
+  attr_args_process(x, (short)argc, argv);
 
   if(x)
   {
@@ -330,7 +333,7 @@ void ocue::read(int argc, t_atom* argv)
     ocue& self;
     void operator()() const noexcept
     {
-      if(auto name = prompt_filename("Open cue...", "cues.cue.json"); !name.empty())
+      if(auto name = prompt_open_filename("Open cue...", "cues.cue.json"); !name.empty())
       {
         do_read(name);
       }
@@ -389,7 +392,7 @@ void ocue::write(int argc, t_atom* argv)
     ocue& self;
     void operator()() const noexcept
     {
-      if(auto name = prompt_filename("Save cue...", "cues.cue.json"); !name.empty())
+      if(auto name = prompt_save_filename("Save cue...", "cues.cue.json"); !name.empty())
       {
         do_write(name);
       }
@@ -535,6 +538,9 @@ std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
   if(!device)
     return {};
 
+  self.m_paths.clear();
+  self.m_matchers.clear();
+
   if(!m_name || m_name == _sym_nothing)
   {
     self.m_addr_scope = ossia::net::address_scope::relative;
@@ -551,9 +557,26 @@ std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
   }
   else
   {
-    // Exploring from a specified address, e.g. explore /foo.*
+    const std::string_view name = m_name->s_name;
+
+    if(name.find(":/") != std::string_view::npos)
+    {
+      self.m_addr_scope = ossia::net::address_scope::global;
+    }
+    else if (name.starts_with("/"))
+    {
+      self.m_addr_scope = ossia::net::address_scope::absolute;
+      if(name == "/")
+        return { std::make_shared<matcher>(&device->get_root_node(), nullptr) };
+    }
+    else
+    {
+      self.m_addr_scope = ossia::net::address_scope::relative;
+    }
+
+    // Exploring from a specified address, e.g. explore /foo.
     // FIXME this->m_name has to beset before this
-    if(auto matchers = self.find_or_create_matchers(); matchers.empty())
+    if(auto matchers = self.find_or_create_matchers((ossia::net::generic_device*)device); matchers.empty())
     {
       return {std::make_shared<matcher>(&device->get_root_node(), nullptr)};
     }
@@ -570,14 +593,15 @@ void ocue::do_explore(t_symbol* name)
 {
   if(!m_ns.dev)
       return;
-  search_sort_filter filter_models;
-  filter_models.m_sort = gensym("priority");
-  filter_models.m_depth = 0;
+  search_sort_filter filter_models = *this;
+  //filter_models.m_sort = gensym("priority");
+  //filter_models.m_depth = 0;
   filter_models.m_format = gensym("jit.cellblock");
   filter_models.m_filter_type[0] = gensym("model");
   filter_models.m_filter_type_size = 1;
 
   // get namespace of given nodes
+  m_name = name;
   auto matchers = get_matchers_for_address(*this, m_ns.dev, name);
   auto model_nodes = filter_models.sort_and_filter(matchers);
 
@@ -655,11 +679,12 @@ void ocue::select_model(int argc, t_atom* argv)
 
 void ocue::do_display_model(std::string_view name)
 {
-  search_sort_filter filter_child_params;
-  filter_child_params.m_sort = gensym("priority");
-  filter_child_params.m_depth = 0;
+  search_sort_filter filter_child_params = *this;
+  //filter_child_params.m_sort = gensym("priority");
+  filter_child_params.m_depth = 1;
+  filter_child_params.m_filter_terminal = 0;
   filter_child_params.m_format = gensym("jit.cellblock");
-  filter_child_params.m_filter_type[0] = gensym("parameters");
+  filter_child_params.m_filter_type[0] = gensym("parameter");
   filter_child_params.m_filter_type_size = 1;
 
   // get namespace of given nodes for the selected model
@@ -668,7 +693,9 @@ void ocue::do_display_model(std::string_view name)
   m_name = gensym(name.data());
   auto matchers = get_matchers_for_address(*this, get_device(), m_name);
   auto nodes = filter_child_params.sort_and_filter(matchers);
-  std::string name_plus_slash(name);
+  std::string name_plus_slash;
+  name_plus_slash.reserve(name.size() + 2); 
+  name_plus_slash.append(name);
   name_plus_slash += "/";
 
   std::erase_if(nodes, [=](ossia::net::node_base* n) {

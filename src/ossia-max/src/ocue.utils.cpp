@@ -10,8 +10,35 @@
 
 namespace
 {
+    static std::string
+        prompt_open_filename(std::string_view dialogtitle, std::string_view default_filename)
+    {
+        char buffer[MAX_PATH_CHARS] = {};
+        strncpy(buffer, default_filename.data(), default_filename.size());
+
+        open_promptset(dialogtitle.data());
+
+        short path{};
+        t_fourcc outtype{};
+        t_fourcc filetype = 'TEXT';
+        if(open_dialog(buffer, &path, &outtype, &filetype, 1) == 0)
+        {
+            t_filehandle hdl{};
+            path_opensysfile(buffer, path, &hdl, e_max_openfile_permissions::PATH_READ_PERM);
+
+            char full_path[MAX_PATH_CHARS] = {};
+            path_topathname(path, buffer, full_path);
+
+            char native_path[MAX_PATH_CHARS];
+            path_nameconform(full_path, native_path, PATH_STYLE_NATIVE, PATH_TYPE_BOOT);
+
+            sysfile_close(hdl);
+            return native_path;
+        }
+        return {};
+    }
 static std::string
-prompt_filename(std::string_view dialogtitle, std::string_view default_filename)
+prompt_save_filename(std::string_view dialogtitle, std::string_view default_filename)
 {
   char buffer[MAX_PATH_CHARS] = {};
   strncpy(buffer, default_filename.data(), default_filename.size());

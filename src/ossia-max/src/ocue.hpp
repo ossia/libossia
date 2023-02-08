@@ -6,6 +6,7 @@
 
 #include <ossia-max/src/object_base.hpp>
 
+#include <ossia-max/src/search_filter.hpp>
 #include <rapidjson/stringbuffer.h>
 
 namespace ossia
@@ -13,7 +14,9 @@ namespace ossia
 namespace max_binding
 {
 
-struct ocue : object_base
+struct ocue 
+  : object_base
+  , search_sort_filter
 {
   static t_class* max_class;
   t_symbol* m_device_name = _sym_nothing;
