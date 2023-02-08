@@ -96,7 +96,7 @@ public:
   static void class_setup(t_class* c);
 
   void fill_selection();
-  void update_path();
+  void update_path(ossia::net::generic_device* explicit_device = nullptr);
   void get_hierarchy();
 
   void set_description();
@@ -179,7 +179,7 @@ public:
 
   std::vector<std::string> m_paths{};
 
-  std::vector<std::shared_ptr<matcher>> find_or_create_matchers();
+  std::vector<std::shared_ptr<matcher>> find_or_create_matchers(ossia::net::generic_device* device_to_use = nullptr);
 
 protected:
   void remove_matchers(const ossia::net::node_base& m);

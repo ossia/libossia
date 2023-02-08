@@ -13,11 +13,11 @@ namespace max_binding
 class matcher;
 struct search_filter
 {
-  t_symbol* m_filter_type[MAX_NUM_ITEMS];
+  t_symbol* m_filter_type[MAX_NUM_ITEMS] = { nullptr };
   long m_filter_type_size{};
-  t_symbol* m_filter_tags[MAX_NUM_ITEMS];
+  t_symbol* m_filter_tags[MAX_NUM_ITEMS] = { nullptr };
   long m_filter_tags_size{};
-  t_symbol* m_filter_modes[3];
+  t_symbol* m_filter_modes[3] = {nullptr};
   long m_filter_modes_size{};
   long m_filter_visible{0};
   long m_filter_terminal{0};

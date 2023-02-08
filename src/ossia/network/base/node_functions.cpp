@@ -845,7 +845,10 @@ static void list_all_children_rec(
 
   int next_depth = -1;
   if(depth > 0)
-    next_depth = depth - 1;
+  {
+    next_depth = depth;
+    next_depth--;
+  }
 
   for(auto* child : children)
   {
