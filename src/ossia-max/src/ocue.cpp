@@ -665,7 +665,7 @@ void ocue::do_display_model(std::string_view name)
 {
   search_sort_filter filter_child_params = *this;
   //filter_child_params.m_sort = gensym("priority");
-  filter_child_params.m_depth = 1;
+  filter_child_params.m_depth = 0;
   filter_child_params.m_filter_terminal = 0;
   filter_child_params.m_format = gensym("jit.cellblock");
   filter_child_params.m_filter_type[0] = gensym("parameter");
