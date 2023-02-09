@@ -260,15 +260,15 @@ private:
   t_object* m_patcher_listener;
 };
 
-template <typename T, typename... Args>
-T* make_ossia(Args&&... args)
+template <typename T>
+T* make_ossia()
 {
   auto obj = object_alloc(ossia_max::instance().get_class<T>());
   if(obj)
   {
     t_object tmp;
     memcpy(&tmp, obj, sizeof(t_object));
-    auto x = new(obj) T{std::forward<Args>(args)...};
+    auto x = new(obj) T{};
     memcpy(x, &tmp, sizeof(t_object));
 
     return x;

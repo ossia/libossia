@@ -41,7 +41,9 @@ extern "C" void ossia_fuzzysearch_setup()
 
 extern "C" void* ossia_fuzzysearch_new(t_symbol* s, long argc, t_atom* argv)
 {
-  auto x = make_ossia<fuzzysearch>(argc, argv);
+  auto x = make_ossia<fuzzysearch>();
+
+  object_attach_byptr_register(x, x, CLASS_BOX);
   x->m_scope = s_sym_global;
   x->m_outlet = outlet_new(x, nullptr);
   return x;
@@ -158,7 +160,5 @@ void fuzzysearch::assist(fuzzysearch* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_fuzzysearch structure functions
 
-fuzzysearch::fuzzysearch(long argc, t_atom* argv)
-{
-  object_attach_byptr_register(this, this, CLASS_BOX);
-}
+fuzzysearch::fuzzysearch() = default;
+fuzzysearch::~fuzzysearch() = default;

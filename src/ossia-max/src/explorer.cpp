@@ -34,7 +34,7 @@ extern "C" void ossia_explorer_setup()
 
 extern "C" void* ossia_explorer_new(t_symbol*, long argc, t_atom* argv)
 {
-  auto x = make_ossia<explorer>(argc, argv);
+  auto x = make_ossia<explorer>();
   x->m_otype = object_class::explorer;
   x->m_dumpout = outlet_new(x, NULL);
 
@@ -68,7 +68,7 @@ void explorer::assist(explorer* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_explorer structure functions
 
-explorer::explorer(long argc, t_atom* argv) { }
+explorer::explorer() = default;
 
 explorer::~explorer()
 {

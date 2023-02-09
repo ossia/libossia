@@ -46,7 +46,7 @@ extern "C" void ossia_monitor_setup()
 
 extern "C" void* ossia_monitor_new(t_symbol*, long argc, t_atom* argv)
 {
-  auto x = make_ossia<monitor>(argc, argv);
+  auto x = make_ossia<monitor>();
   x->m_dumpout = outlet_new(x, NULL);
   x->m_otype = object_class::monitor;
 
@@ -87,7 +87,7 @@ void monitor::assist(monitor* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_monitor structure functions
 
-monitor::monitor(long argc, t_atom* argv) { }
+monitor::monitor() = default;
 
 monitor::~monitor()
 {

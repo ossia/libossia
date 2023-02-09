@@ -41,7 +41,7 @@ extern "C" void ossia_search_setup()
 
 extern "C" void* ossia_search_new(t_symbol*, long argc, t_atom* argv)
 {
-  auto x = make_ossia<search>(argc, argv);
+  auto x = make_ossia<search>();
   x->m_dumpout = outlet_new(x, NULL);
   x->m_otype = object_class::search;
 
@@ -74,7 +74,7 @@ void search::assist(search* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_search structure functions
 
-search::search(long argc, t_atom* argv) { }
+search::search() = default;
 
 search::~search()
 {

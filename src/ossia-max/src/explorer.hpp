@@ -27,7 +27,7 @@ struct explorer
   std::set<ossia::net::device_base*> m_devices;
 
   // ctor / dtor
-  explorer(long argc, t_atom* argv);
+  explorer();
   ~explorer();
 
   bool register_node(std::vector<std::shared_ptr<matcher>>& node);

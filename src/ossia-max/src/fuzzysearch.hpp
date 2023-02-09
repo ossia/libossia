@@ -31,7 +31,8 @@ struct fuzzysearch : search_filter
   std::vector<std::string> patterns;
   std::vector<ossia::net::fuzzysearch_result> matches;
 
-  fuzzysearch(long argc, t_atom* argv);
+  fuzzysearch();
+  ~fuzzysearch();
 
   static void
   search(ossia::max_binding::fuzzysearch* x, t_symbol* s, long argc, t_atom* argv);
