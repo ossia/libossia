@@ -32,7 +32,7 @@ struct monitor
   std::set<ossia::net::device_base*> m_devices;
 
   // ctor / dtor
-  monitor(long argc, t_atom* argv);
+  monitor();
   ~monitor();
 
   void stop_monitoring();

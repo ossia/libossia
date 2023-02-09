@@ -28,7 +28,7 @@ struct search
   std::set<ossia::net::device_base*> m_devices;
 
   // ctor / dtor
-  search(long argc, t_atom* argv);
+  search();
   ~search();
 
   bool unregister();
