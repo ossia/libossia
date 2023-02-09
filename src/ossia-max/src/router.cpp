@@ -57,7 +57,7 @@ extern "C" void ossia_router_setup()
 
 extern "C" void* ossia_router_new(t_symbol* s, long argc, t_atom* argv)
 {
-  auto x = make_ossia<router>(argc, argv);
+  auto x = make_ossia<router>();
 
   x->m_patterns.reserve(argc);
   x->m_outlets.reserve(argc + 1);
@@ -253,4 +253,5 @@ void router::assist(router* x, void* b, long m, long a, char* s)
 #pragma mark -
 #pragma mark t_router structure functions
 
-router::router(long argc, t_atom* argv) { }
+router::router() = default;
+router::~router() = default;
