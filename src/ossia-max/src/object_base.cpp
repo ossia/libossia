@@ -290,7 +290,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers(ossia
             matchers.reserve(nodes.size());
             for(auto n : nodes)
             {
-              matchers.push_back(std::make_shared<matcher>(n, this));
+              matchers.push_back(std::make_shared<matcher>(n, nullptr));
             }
             break;
           }

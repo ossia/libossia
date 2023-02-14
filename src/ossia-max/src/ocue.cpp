@@ -348,8 +348,9 @@ void ocue::read(int argc, t_atom* argv)
             try
     {
       self.m_last_filename = to_absolute_path(self.m_patcher, url);
+      post("Trying to read: \n - relative: %s\n - absolute: %s", url.data(), self.m_last_filename.data());
       if (self.m_last_filename.empty())
-          return; 
+          return;
 
       rapidjson::Document doc;
 
