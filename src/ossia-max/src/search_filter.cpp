@@ -75,29 +75,37 @@ bool search_filter::filter(const ossia::net::node_base& node)
     auto& candidates = candidates_it->second.reference();
     if(m_filter_type[0] == gensym("model"))
     {
+      bool has_model = false;
       for(const auto& m : candidates)
       {
         if(object_base* obj = m->get_owner())
         {
-          if(obj->m_otype != object_class::model)
+          if(obj->m_otype == object_class::model)
           {
-            return true;
+            has_model = true;
+            break;
           }
         }
       }
+      if(!has_model)
+          return true;
     }
     else if(m_filter_type[0] == gensym("parameter"))
     {
+      bool has_param{false};
       for(const auto& m : candidates)
       {
         if(object_base* obj = m->get_owner())
         {
-          if(obj->m_otype != object_class::param)
+          if(obj->m_otype == object_class::param)
           {
-            return true;
+            has_param = true;
+            break;
           }
         }
       }
+      if(!has_param)
+          return true;
     }
   }
 
