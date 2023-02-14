@@ -202,7 +202,7 @@ static void move_vector_into_another(std::vector<T>&& src, std::vector<T>& dst)
 std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers(ossia::net::generic_device* device_to_use)
 {
   assert(m_matchers.empty());
-  std::vector<std::shared_ptr<matcher>> matchers; 
+  std::vector<std::shared_ptr<matcher>> matchers;
 
   std::vector<ossia::net::generic_device*> devices;
   if (device_to_use) devices.push_back(device_to_use);
@@ -290,7 +290,7 @@ std::vector<std::shared_ptr<matcher>> object_base::find_or_create_matchers(ossia
             matchers.reserve(nodes.size());
             for(auto n : nodes)
             {
-              matchers.push_back(std::make_shared<matcher>(n, nullptr));
+              matchers.push_back(std::make_shared<matcher>(n, this));
             }
             break;
           }
