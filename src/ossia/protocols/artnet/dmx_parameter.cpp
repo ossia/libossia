@@ -1,6 +1,5 @@
 #include <ossia/detail/config.hpp>
-//#if defined(OSSIA_PROTOCOL_ARTNET)
-#if 1
+#if defined(OSSIA_PROTOCOL_ARTNET)
 #include "dmx_parameter.hpp"
 
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
