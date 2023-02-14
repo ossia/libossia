@@ -1,5 +1,6 @@
 #include <ossia/detail/config.hpp>
-#if defined(OSSIA_PROTOCOL_ARTNET)
+//#if defined(OSSIA_PROTOCOL_ARTNET)
+#if 1
 #include "dmx_parameter.hpp"
 
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
@@ -72,7 +73,7 @@ dmx_parameter::dmx_parameter(
         make_domain(min, max))
     , m_bytes{bytes}
     , m_buffer{buffer}
-    , m_channel{channel}
+    , m_channel{channel-1}
 {
 }
 
