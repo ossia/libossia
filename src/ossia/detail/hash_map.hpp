@@ -18,6 +18,7 @@
 
 #if !defined(OSSIA_NO_FAST_CONTAINERS)
 #include <ankerl/unordered_dense.h>
+#include <unordered_map>
 namespace ossia
 {
 template <

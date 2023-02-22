@@ -69,8 +69,8 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
-set(BOOST_MINOR_MINIMAL 67)
-set(BOOST_MINOR_LATEST 80)
+set(BOOST_MINOR_MINIMAL 81)
+set(BOOST_MINOR_LATEST 81)
 
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET)
 
