@@ -14,7 +14,6 @@
 #include <ossia/network/value/value.hpp>
 
 #include <functional>
-#include <map>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -37,22 +36,28 @@ template <typename T>
 static const constexpr std::nullptr_t curve_segment_type_map = nullptr;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<int> = ossia::curve_segment_type::INT;
+    curve_segment_type_map<int>
+    = ossia::curve_segment_type::INT;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<int64_t> = ossia::curve_segment_type::INT64;
+    curve_segment_type_map<int64_t>
+    = ossia::curve_segment_type::INT64;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<float> = ossia::curve_segment_type::FLOAT;
+    curve_segment_type_map<float>
+    = ossia::curve_segment_type::FLOAT;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<double> = ossia::curve_segment_type::DOUBLE;
+    curve_segment_type_map<double>
+    = ossia::curve_segment_type::DOUBLE;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<bool> = ossia::curve_segment_type::BOOL;
+    curve_segment_type_map<bool>
+    = ossia::curve_segment_type::BOOL;
 template <>
 CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<ossia::value> = ossia::curve_segment_type::ANY;
+    curve_segment_type_map<ossia::value>
+    = ossia::curve_segment_type::ANY;
 
 template <typename K, typename V>
 using curve_map = ossia::flat_map<K, V>;

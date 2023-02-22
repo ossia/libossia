@@ -13,7 +13,7 @@
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <thread>

@@ -52,7 +52,7 @@ public:
   }
 
   template <typename... Args>
-  void send(ossia::string_view address, Args&&... args)
+  void send(std::string_view address, Args&&... args)
   {
     send_base(address, std::forward<Args>(args)...);
   }

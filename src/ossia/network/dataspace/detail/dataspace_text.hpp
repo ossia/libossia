@@ -9,91 +9,91 @@ namespace ossia::detail
 
 struct unit_text_visitor
 {
-  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const angle_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const color_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const color_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const distance_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const gain_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const position_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const position_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const orientation_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const orientation_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const speed_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const timing_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
 
   template <typename Unit>
-  OSSIA_INLINE ossia::string_view operator()(Unit)
+  OSSIA_INLINE std::string_view operator()(Unit)
   {
     constexpr_return(ossia::unit_traits<Unit>::text()[0]);
   }
 
-  OSSIA_INLINE ossia::string_view operator()(const ossia::value&) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const ossia::value&) { return {}; }
 
-  OSSIA_INLINE ossia::string_view operator()() { return {}; }
+  OSSIA_INLINE std::string_view operator()() { return {}; }
 };
 
 struct unit_accessor_visitor
 {
-  OSSIA_INLINE ossia::string_view operator()(const angle_u& dataspace) { return {}; }
-  OSSIA_INLINE ossia::string_view operator()(const color_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const angle_u& dataspace) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const color_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const distance_u& dataspace) { return {}; }
-  OSSIA_INLINE ossia::string_view operator()(const gain_u& dataspace) { return {}; }
-  OSSIA_INLINE ossia::string_view operator()(const position_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const distance_u& dataspace) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const gain_u& dataspace) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const position_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const orientation_u& dataspace)
+  OSSIA_INLINE std::string_view operator()(const orientation_u& dataspace)
   {
     return ossia::apply(*this, dataspace);
   }
-  OSSIA_INLINE ossia::string_view operator()(const speed_u& dataspace) { return {}; }
-  OSSIA_INLINE ossia::string_view operator()(const timing_u& dataspace) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const speed_u& dataspace) { return {}; }
+  OSSIA_INLINE std::string_view operator()(const timing_u& dataspace) { return {}; }
 
   template <typename Unit>
-  OSSIA_INLINE ossia::string_view operator()(Unit)
+  OSSIA_INLINE std::string_view operator()(Unit)
   {
     return Unit::array_parameters();
   }
 
-  OSSIA_INLINE ossia::string_view operator()() { return {}; }
+  OSSIA_INLINE std::string_view operator()() { return {}; }
 };
 
 struct dataspace_text_visitor
 {
   template <typename Dataspace>
-  OSSIA_INLINE ossia::string_view operator()(const Dataspace& dataspace)
+  OSSIA_INLINE std::string_view operator()(const Dataspace& dataspace)
   {
     constexpr_return(ossia::dataspace_traits<Dataspace>::text()[0]);
   }
 
-  OSSIA_INLINE ossia::string_view operator()() { return {}; }
+  OSSIA_INLINE std::string_view operator()() { return {}; }
 };
 
-using unit_pretty_text_map = ossia::fast_hash_map<ossia::unit_t, std::string>;
+using unit_pretty_text_map = ossia::hash_map<ossia::unit_t, std::string>;
 template <typename Dataspace, typename Unit>
 std::string make_pretty_unit_text()
 {

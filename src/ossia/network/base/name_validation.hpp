@@ -40,7 +40,7 @@ bool is_valid_character_for_name(Char_T c)
 /**
  * @brief Characters valid in an OSSIA device part.
  */
-constexpr ossia::string_view device_characters() noexcept
+constexpr std::string_view device_characters() noexcept
 {
   constexpr_return(ossia::make_string_view("a-zA-Z0-9_~() .-"));
 }
@@ -48,7 +48,7 @@ constexpr ossia::string_view device_characters() noexcept
 /**
  * @brief Characters valid in an OSSIA address part.
  */
-constexpr ossia::string_view name_characters() noexcept
+constexpr std::string_view name_characters() noexcept
 {
   constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): .-"));
 }
@@ -56,12 +56,12 @@ constexpr ossia::string_view name_characters() noexcept
 /**
  * @brief Characters valid in an OSSIA address path.
  */
-constexpr ossia::string_view path_characters() noexcept
+constexpr std::string_view path_characters() noexcept
 {
   constexpr_return(ossia::make_string_view("/a-zA-Z0-9_~(): .-"));
 }
 
-constexpr ossia::string_view name_characters_no_instance() noexcept
+constexpr std::string_view name_characters_no_instance() noexcept
 {
   constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): -"));
 }
@@ -72,7 +72,7 @@ constexpr ossia::string_view name_characters_no_instance() noexcept
  *
  * @see \ref ossia::traversal
  */
-constexpr ossia::string_view pattern_match_characters() noexcept
+constexpr std::string_view pattern_match_characters() noexcept
 {
   constexpr_return(ossia::make_string_view("a-zA-Z0-9_~(): .*?,{}\\[\\]-"));
 }
@@ -85,7 +85,7 @@ constexpr ossia::string_view pattern_match_characters() noexcept
  * \see ossia::net::create_nodes
  */
 OSSIA_EXPORT
-bool is_brace_expansion(ossia::string_view);
+bool is_brace_expansion(std::string_view);
 
 /**
  * @brief address_parts Split an address
@@ -94,6 +94,6 @@ bool is_brace_expansion(ossia::string_view);
  * Given /bar/baz, returns {"bar, baz"}.
  * Given bar/baz, returns {"bar, baz"}.
  */
-OSSIA_EXPORT std::vector<std::string> address_parts(ossia::string_view src);
+OSSIA_EXPORT std::vector<std::string> address_parts(std::string_view src);
 }
 }

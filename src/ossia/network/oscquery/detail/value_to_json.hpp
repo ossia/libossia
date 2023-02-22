@@ -113,7 +113,7 @@ static inline auto from_hex(char c)
 struct json_to_value
 {
   const rapidjson::Value& val;
-  ossia::string_view& typetags;
+  std::string_view& typetags;
   int& typetag_cursor;
   const ossia::unit_t& unit;
   bool operator()(impulse) const
@@ -356,7 +356,7 @@ struct json_to_value
     }
   }
 
-  bool can_read(ossia::string_view sv) const noexcept
+  bool can_read(std::string_view sv) const noexcept
   {
     const auto res = typetags.find(sv);
     if(res == std::string_view::npos)

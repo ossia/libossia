@@ -30,14 +30,14 @@ bool check_units_convertible(const ossia::unit_t&, const ossia::unit_t&);
  * @return Text corresponding to the dataspace. For instance "color" or "gain".
  */
 OSSIA_EXPORT
-ossia::string_view get_dataspace_text(const ossia::unit_t&);
+std::string_view get_dataspace_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_text
  * @return Text corresponding to the unit. For instance "rgb" or "cartesian3D".
  */
 OSSIA_EXPORT
-ossia::string_view get_unit_text(const ossia::unit_t&);
+std::string_view get_unit_text(const ossia::unit_t&);
 
 /**
  * @brief get_unit_accessors
@@ -45,7 +45,7 @@ ossia::string_view get_unit_text(const ossia::unit_t&);
  *         this returns a string of array attributes. Else an empty string.
  */
 OSSIA_EXPORT
-ossia::string_view get_unit_accessors(const ossia::unit_t&);
+std::string_view get_unit_accessors(const ossia::unit_t&);
 
 OSSIA_EXPORT
 ossia::domain get_unit_default_domain(const ossia::unit_t&);
@@ -74,7 +74,7 @@ char get_unit_accessor(const ossia::unit_t&, uint8_t n);
  * @return A value corresponding to the dataspace, without any specific unit.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_dataspace(ossia::string_view text);
+ossia::unit_t parse_dataspace(std::string_view text);
 
 /**
  * @brief parse_unit Takes a text and a dataspace and gives a corresponding
@@ -85,14 +85,14 @@ ossia::unit_t parse_dataspace(ossia::string_view text);
  * @return Corresponding unit, or the same unit as input if it was not found.
  */
 OSSIA_EXPORT
-ossia::unit_t parse_unit(ossia::string_view text, const ossia::unit_t& dataspace);
+ossia::unit_t parse_unit(std::string_view text, const ossia::unit_t& dataspace);
 
 /**
  * @brief parse_pretty_unit Create a unit from a valid unit in the format
  * of get_pretty_unit_text
  */
 OSSIA_EXPORT
-ossia::unit_t parse_pretty_unit(ossia::string_view text);
+ossia::unit_t parse_pretty_unit(std::string_view text);
 
 /**
  * @brief parse_unit Alternative if we already have a dataspace type at hand.
@@ -100,7 +100,7 @@ ossia::unit_t parse_pretty_unit(ossia::string_view text);
  * @todo In 2020 enforce this with concepts...
  */
 template <typename T>
-OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view text, T dataspace);
+OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view text, T dataspace);
 
 /**
  * @brief make_value Create a value_with_unit

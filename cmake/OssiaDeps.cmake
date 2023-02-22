@@ -4,11 +4,8 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       brigand
       concurrentqueue
       compile-time-regular-expressions
-      flat
-      flat_hash_map
       Flicks
       fmt
-      hopscotch-map
       mdspan
       nano-signal-slot
       rapidfuzz-cpp

@@ -192,7 +192,7 @@ public:
     m_children.erase(std::make_pair(&e.address.get(), e.get_unit()));
   }
 
-  using map_t = ossia::fast_hash_map<
+  using map_t = ossia::hash_map<
       std::pair<ossia::net::parameter_base*, ossia::unit_t>, state_element>;
   using iterator = map_t::iterator;
   using const_iterator = map_t::const_iterator;

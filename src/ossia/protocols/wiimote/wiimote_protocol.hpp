@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/timer.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/complex_type.hpp>
@@ -10,7 +11,6 @@
 #include <array>
 #include <cinttypes>
 #include <cstdint>
-#include <map>
 #include <thread>
 
 #define MAX_WIIMOTES_COUNT 4
@@ -23,7 +23,7 @@ class OSSIA_EXPORT wiimote_protocol final : public ossia::net::protocol_base
 {
   struct wiimote_parameters
   {
-    std::map<uint16_t, device_parameter*> button_parameters;
+    ossia::hash_map<uint16_t, device_parameter*> button_parameters;
 
     device_parameter* wiimote_axis{};
     device_parameter* wiimote_gravity{};

@@ -841,7 +841,7 @@ std::string ossia::presets::to_string(const preset& pr)
   return str;
 }
 
-ossia::presets::preset ossia::presets::from_string(const ossia::string_view& str)
+ossia::presets::preset ossia::presets::from_string(const std::string_view& str)
 {
   preset ps;
 
@@ -1047,7 +1047,7 @@ std::string ossia::presets::write_json(const ossia::net::device_base& deviceBase
   return output;
 }
 
-void ossia::presets::write_file(ossia::string_view content, ossia::string_view filename)
+void ossia::presets::write_file(std::string_view content, std::string_view filename)
 {
   std::ofstream out;
   out.exceptions(std::ofstream::failbit | std::ofstream::badbit);

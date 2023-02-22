@@ -3,12 +3,11 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
-
-#include <map>
 
 #if defined(SCORE_BENCHMARK)
 #if __has_include(<valgrind/callgrind.h>)
@@ -329,7 +328,7 @@ public:
 
 private:
   ossia::flat_set<int64_t> cuts;
-  std::map<
+  ossia::hash_map<
       const ossia::graph_node*,
       std::pair<ossia::token_request_vec, ossia::token_request_vec::iterator>>
       requests;

@@ -11,11 +11,11 @@ namespace ossia
 namespace qt
 {
 
-static tsl::hopscotch_map<int, QMetaMethod>& methods()
+static ossia::hash_map<int, QMetaMethod>& methods()
 {
   static const auto method_offset
       = qt_property_node::staticMetaObject.indexOfMethod("qtBoolValueChanged(bool)");
-  static tsl::hopscotch_map<int, QMetaMethod> m{
+  static ossia::hash_map<int, QMetaMethod> m{
       {QVariant::Bool, qt_property_node::staticMetaObject.method(method_offset + 0)},
       {QVariant::Time, qt_property_node::staticMetaObject.method(method_offset + 1)},
       {QVariant::Int, qt_property_node::staticMetaObject.method(method_offset + 2)},

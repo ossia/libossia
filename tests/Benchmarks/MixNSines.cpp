@@ -55,7 +55,7 @@ void benchmark_main()
       {
         auto node = std::make_shared<ossia::nodes::sine>();
         g.add_node(node);
-        g.connect(make_edge(
+        g.connect(g.allocate_edge(
             immediate_strict_connection{}, node->root_outputs()[0],
             gain->root_inputs()[0], node, gain));
         nodes.push_back(node);

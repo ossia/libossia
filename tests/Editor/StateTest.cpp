@@ -8,7 +8,7 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 using namespace ossia;

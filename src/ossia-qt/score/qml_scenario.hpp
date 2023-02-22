@@ -4,7 +4,7 @@
 #include <ossia-qt/score/qml_autom.hpp>
 #include <ossia-qt/score/qml_sync.hpp>
 
-#include <tsl/hopscotch_set.h>
+#include <ossia/detail/hash_map.hpp>
 
 #include <verdigris>
 
@@ -46,8 +46,8 @@ private:
   qml_sync* m_startSync{};
   std::shared_ptr<ossia::scenario> m_impl;
 
-  tsl::hopscotch_set<qml_sync*> m_syncs;
-  tsl::hopscotch_set<qml_interval*> m_intervals;
+  ossia::hash_set<qml_sync*> m_syncs;
+  ossia::hash_set<qml_interval*> m_intervals;
 
   W_PROPERTY(
       qml_sync*, startSync READ startSync WRITE setStartSync NOTIFY startSyncChanged)

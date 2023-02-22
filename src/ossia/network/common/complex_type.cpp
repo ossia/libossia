@@ -241,7 +241,7 @@ const ossia::net::parameter_data* default_parameter_for_type(std::string_view ty
 {
   auto& map = parameter_creation_map();
   auto it = map.find(type);
-  return it != map.end() ? &(it.value()) : nullptr;
+  return it != map.end() ? &(it->second) : nullptr;
 }
 
 net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)

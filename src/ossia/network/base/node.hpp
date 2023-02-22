@@ -96,19 +96,19 @@ public:
    * }
    * \endcode
    */
-  ossia::any get_attribute(ossia::string_view str) const;
+  ossia::any get_attribute(std::string_view str) const;
 
   template <typename T>
-  void set(ossia::string_view str, const T& val);
+  void set(std::string_view str, const T& val);
   template <typename T>
-  void set(ossia::string_view str, T&& val);
+  void set(std::string_view str, T&& val);
 
   template <typename T>
-  void set(ossia::string_view str, const std::optional<T>& val);
+  void set(std::string_view str, const std::optional<T>& val);
   template <typename T>
-  void set(ossia::string_view str, std::optional<T>&& val);
+  void set(std::string_view str, std::optional<T>&& val);
 
-  void set(ossia::string_view str, bool value);
+  void set(std::string_view str, bool value);
 
   template <typename Attribute, typename T>
   void set(Attribute a, const T& value);
@@ -147,7 +147,7 @@ public:
    * If you need to find a child recursively, see ossia::net::find_node.
    *
    */
-  node_base* find_child(ossia::string_view name);
+  node_base* find_child(std::string_view name);
 #if defined(OSSIA_QT)
   node_base* find_child(const QString& name);
 #endif

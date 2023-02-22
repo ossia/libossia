@@ -55,7 +55,7 @@ public:
     }
     else
     {
-      reg_it.value().first++;
+      reg_it->second.first++;
     }
   }
 
@@ -64,8 +64,8 @@ public:
     auto it = m_reg.find(&p);
     if(it != m_reg.end())
     {
-      it.value().first--;
-      if(it.value().first <= 0)
+      it->second.first--;
+      if(it->second.first <= 0)
       {
         p.remove_callback(it->second.second);
         m_reg.erase(it);
@@ -116,7 +116,7 @@ public:
   ossia::mpmc_queue<ossia::received_value> noncritical;
   ossia::mpmc_queue<ossia::received_value> critical;
 
-  ankerl::unordered_dense::map<ossia::net::parameter_base*, ossia::value> coalesce;
+  ossia::hash_map<ossia::net::parameter_base*, ossia::value> coalesce;
 
   void process_messages()
   {

@@ -5,7 +5,7 @@
 
 #include <ossia/editor/expression/expression.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

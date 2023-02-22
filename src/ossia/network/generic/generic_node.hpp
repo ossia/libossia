@@ -4,7 +4,6 @@
 #include <ossia/network/common/parameter_properties.hpp>
 
 #include <functional>
-#include <map>
 namespace ossia::net
 {
 class protocol_base;

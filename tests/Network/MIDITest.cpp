@@ -6,7 +6,7 @@
 
 #include <ossia/detail/config.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/protocols/midi/midi.hpp>

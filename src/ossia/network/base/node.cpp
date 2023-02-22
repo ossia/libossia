@@ -37,11 +37,11 @@ void node_base::set_extended_attributes(const extended_attributes& e)
   m_extended = e;
 }
 
-ossia::any node_base::get_attribute(ossia::string_view str) const
+ossia::any node_base::get_attribute(std::string_view str) const
 {
   auto it = m_extended.find(str);
   if(it != m_extended.end())
-    return it.value();
+    return it->second;
   return {};
 }
 
@@ -157,7 +157,7 @@ node_base* node_base::add_child(std::unique_ptr<node_base> n)
   return nullptr;
 }
 
-node_base* node_base::find_child(ossia::string_view name)
+node_base* node_base::find_child(std::string_view name)
 {
   {
     SPDLOG_TRACE((&ossia::logger()), "locking(findChild)");

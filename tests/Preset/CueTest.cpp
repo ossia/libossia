@@ -12,7 +12,7 @@
 #include <ossia/preset/cue.hpp>
 #include <ossia/preset/preset.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 struct default_cue_device
 {

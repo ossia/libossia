@@ -3,6 +3,7 @@
 #include "qml_logger.hpp"
 
 #include <ossia/detail/variant.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
 
 #include <QCoreApplication>
@@ -267,7 +268,7 @@ void qml_logger::setLogLevel(qml_logger::log_level l)
 
 void qml_logger::startHeartbeat(QVariantMap data)
 {
-  std::map<std::string, ossia::variant<std::string, int>> m;
+  ossia::hash_map<std::string, ossia::variant<std::string, int>> m;
   if(data.find("pid") == data.end())
   {
     m.insert({"pid", (int)QCoreApplication::applicationPid()});

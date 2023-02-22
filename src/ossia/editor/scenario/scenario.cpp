@@ -26,15 +26,15 @@ scenario::scenario()
   m_nodes.reserve(1024);
   m_pendingEvents.reserve(m_nodes.capacity() * 2);
   m_maxReachedEvents.reserve(m_nodes.capacity() * 2);
-  m_overticks.container.reserve(m_nodes.capacity());
-  m_itv_end_map.container.reserve(m_intervals.capacity());
-  m_endNodes.container.reserve(m_nodes.capacity());
-  m_retry_syncs.container.reserve(8);
+  m_overticks.reserve(m_nodes.capacity());
+  m_itv_end_map.reserve(m_intervals.capacity());
+  m_endNodes.reserve(m_nodes.capacity());
+  m_retry_syncs.reserve(8);
   // m_rootNodes.reserve(1024);
 
-  m_runningIntervals.container.reserve(1024);
-  m_waitingNodes.container.reserve(1024);
-  m_component_visit_cache.container.reserve(1024);
+  m_runningIntervals.reserve(1024);
+  m_waitingNodes.reserve(1024);
+  m_component_visit_cache.reserve(1024);
   m_component_visit_stack.reserve(1024);
 }
 
@@ -48,16 +48,16 @@ scenario::~scenario()
 
 void scenario::start()
 {
-  m_runningIntervals.container.reserve(m_intervals.size());
-  m_waitingNodes.container.reserve(m_nodes.size());
+  m_runningIntervals.reserve(m_intervals.size());
+  m_waitingNodes.reserve(m_nodes.size());
   m_pendingEvents.reserve(m_nodes.size() * 2);
   m_maxReachedEvents.reserve(m_nodes.size() * 2);
-  m_overticks.container.reserve(m_nodes.size());
-  m_itv_end_map.container.reserve(m_intervals.size());
-  m_endNodes.container.reserve(m_nodes.size());
-  m_component_visit_cache.container.reserve(m_nodes.size());
+  m_overticks.reserve(m_nodes.size());
+  m_itv_end_map.reserve(m_intervals.size());
+  m_endNodes.reserve(m_nodes.size());
+  m_component_visit_cache.reserve(m_nodes.size());
   m_component_visit_stack.reserve(m_nodes.size());
-  m_retry_syncs.container.reserve(8);
+  m_retry_syncs.reserve(8);
   m_rootNodes = get_roots();
 
   for(auto node : m_rootNodes)

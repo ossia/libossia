@@ -6,7 +6,7 @@
 #include <ossia/editor/expression/expression.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

@@ -12,7 +12,7 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

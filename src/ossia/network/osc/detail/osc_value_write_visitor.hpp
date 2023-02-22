@@ -21,7 +21,7 @@ requires std::is_invocable_v<Writer, const char*, std::size_t>
 struct osc_value_send_visitor
 {
   const Parameter& parameter;
-  ossia::string_view address_pattern;
+  std::string_view address_pattern;
   Writer writer;
 
   using static_policy = typename OscPolicy::static_policy;
@@ -138,7 +138,7 @@ template <typename Parameter, typename OscPolicy>
 struct osc_value_write_visitor
 {
   const Parameter& parameter;
-  ossia::string_view address_pattern;
+  std::string_view address_pattern;
   ossia::buffer_pool::buffer& result;
 
   using static_policy = typename OscPolicy::static_policy;

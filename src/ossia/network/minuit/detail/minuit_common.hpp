@@ -68,15 +68,15 @@ enum class minuit_attribute
 };
 
 OSSIA_EXPORT
-ossia::string_view to_minuit_attribute_text(minuit_attribute str);
+std::string_view to_minuit_attribute_text(minuit_attribute str);
 
 OSSIA_EXPORT
-minuit_attribute get_attribute(ossia::string_view str);
+minuit_attribute get_attribute(std::string_view str);
 
 OSSIA_EXPORT
-ossia::string_view to_minuit_type_text(const ossia::value& val);
+std::string_view to_minuit_type_text(const ossia::value& val);
 
-inline ossia::string_view to_minuit_type_text(ossia::val_type val)
+inline std::string_view to_minuit_type_text(ossia::val_type val)
 {
   // integer, decimal, string, generic, boolean, none, array.
   switch(val)
@@ -104,7 +104,7 @@ inline ossia::string_view to_minuit_type_text(ossia::val_type val)
   return {};
 }
 
-inline ossia::value value_from_minuit_type_text(ossia::string_view str)
+inline ossia::value value_from_minuit_type_text(std::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -129,7 +129,7 @@ inline ossia::value value_from_minuit_type_text(ossia::string_view str)
   }
 }
 
-inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
+inline ossia::val_type type_from_minuit_type_text(std::string_view str)
 {
   // integer, decimal, string, generic, boolean, none, array.
   // we can differentiate them by the first character
@@ -154,7 +154,7 @@ inline ossia::val_type type_from_minuit_type_text(ossia::string_view str)
   }
 }
 
-inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
+inline std::string_view to_minuit_service_text(ossia::access_mode acc)
 {
   switch(acc)
   {
@@ -170,7 +170,7 @@ inline ossia::string_view to_minuit_service_text(ossia::access_mode acc)
   return {};
 }
 
-inline ossia::access_mode from_minuit_service_text(ossia::string_view str)
+inline ossia::access_mode from_minuit_service_text(std::string_view str)
 {
   switch(str[0])
   {
@@ -186,7 +186,7 @@ inline ossia::access_mode from_minuit_service_text(ossia::string_view str)
   return {};
 }
 
-inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
+inline std::string_view to_minuit_bounding_text(ossia::bounding_mode b)
 {
   switch(b)
   {
@@ -208,7 +208,7 @@ inline ossia::string_view to_minuit_bounding_text(ossia::bounding_mode b)
   return {};
 }
 
-inline ossia::bounding_mode from_minuit_bounding_text(ossia::string_view str)
+inline ossia::bounding_mode from_minuit_bounding_text(std::string_view str)
 {
   switch(str[0])
   {
@@ -276,7 +276,7 @@ inline minuit_operation get_operation(char str)
   return {};
 }
 
-inline minuit_operation get_operation(ossia::string_view str)
+inline minuit_operation get_operation(std::string_view str)
 {
   return get_operation(str[0]);
 }

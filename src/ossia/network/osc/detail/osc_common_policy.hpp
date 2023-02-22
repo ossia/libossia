@@ -23,7 +23,7 @@ struct osc_common_outbound_dynamic_policy
 
   void operator()(float f) const { p << f; }
 
-  void operator()(const std::string& str) const { p << (ossia::string_view)str; }
+  void operator()(const std::string& str) const { p << (std::string_view)str; }
 
   void operator()(oscpack::Blob str) const { p << str; }
 

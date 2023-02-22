@@ -5,7 +5,7 @@
 
 #include <valgrind/callgrind.h>
 
-#include <flat_hash_map.hpp>
+#include <ossia/detail/hash_map.hpp>
 
 #include <random>
 

@@ -82,8 +82,7 @@ static void remove_node_recursively(
   }
 }
 static void remove_node_from_selection_recursively(
-    std::unordered_set<ossia::net::node_base*>& preset,
-    const ossia::net::node_base& node)
+    ossia::hash_set<ossia::net::node_base*>& preset, const ossia::net::node_base& node)
 {
   preset.erase(const_cast<ossia::net::node_base*>(&node));
 

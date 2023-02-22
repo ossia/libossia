@@ -5,7 +5,7 @@
 
 #include <valgrind/callgrind.h>
 
-#include <flat_hash_map.hpp>
+#include <ossia/detail/hash_map.hpp>
 
 #include <random>
 
@@ -104,7 +104,7 @@ int main()
           const auto& autom = automs[i];
           const auto& mapping = mappings[i];
 
-          g.connect(ossia::make_edge(
+          g.connect(g.allocate_edge(
               ossia::immediate_strict_connection{}, autom->root_outputs()[0],
               mapping->root_inputs()[0], autom, mapping));
           num_cables++;
@@ -118,7 +118,7 @@ int main()
             const auto& target = mappings[j];
             if(bdist{D}(mt))
             {
-              g.connect(ossia::make_edge(
+              g.connect(g.allocate_edge(
                   ossia::immediate_strict_connection{}, source->root_outputs()[0],
                   target->root_inputs()[0], source, target));
 

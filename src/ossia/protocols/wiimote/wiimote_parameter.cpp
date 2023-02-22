@@ -23,7 +23,7 @@ void rumble_parameter::device_update_value()
 
 //-------
 
-std::map<wiimote_t*, uint8_t> led_parameter::m_led_mask;
+ossia::hash_map<wiimote_t*, uint8_t> led_parameter::m_led_mask;
 
 led_parameter::led_parameter(
     net::node_base& node, struct wiimote_t* wiimote, const uint8_t led)

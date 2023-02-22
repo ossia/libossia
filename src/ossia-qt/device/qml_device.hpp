@@ -7,7 +7,7 @@
 #include <QPointer>
 #include <QVariantMap>
 
-#include <tsl/hopscotch_map.h>
+#include <ossia/detail/hash_map.hpp>
 
 #include <verdigris>
 namespace ossia
@@ -28,7 +28,7 @@ namespace qt
 {
 
 template <typename T>
-using qpointer_set = tsl::hopscotch_map<T*, QPointer<T>>;
+using qpointer_set = ossia::hash_map<T*, QPointer<T>>;
 
 class qml_node;
 class qml_parameter;

@@ -25,9 +25,6 @@
 [submodule "3rdparty/readerwriterqueue"]
     path = 3rdparty/readerwriterqueue
     url = https://github.com/cameron314/readerwriterqueue
-[submodule "3rdparty/hopscotch-map"]
-    path = 3rdparty/hopscotch-map
-    url = https://github.com/tessil/hopscotch-map.git
 [submodule "3rdparty/pybind11"]
     path = 3rdparty/pybind11
     url = https://github.com/pybind/pybind11
@@ -49,9 +46,6 @@
 [submodule "3rdparty/SmallFunction"]
     path = 3rdparty/SmallFunction
     url = https://github.com/jcelerier/SmallFunction
-[submodule "3rdparty/flat_hash_map"]
-    path = 3rdparty/flat_hash_map
-    url = https://github.com/jcelerier/flat_hash_map
 [submodule "3rdparty/max-sdk"]
     path = 3rdparty/max-sdk
     url = https://github.com/ossia/max-sdk.git
@@ -67,9 +61,6 @@
 [submodule "3rdparty/libremidi"]
 	path = 3rdparty/libremidi
 	url = https://github.com/jcelerier/libremidi
-[submodule "3rdparty/flat"]
-	path = 3rdparty/flat
-	url = https://github.com/jcelerier/flat
 [submodule "3rdparty/wiiuse"]
 	path = 3rdparty/wiiuse
 	url = https://github.com/OSSIA/wiiuse.git

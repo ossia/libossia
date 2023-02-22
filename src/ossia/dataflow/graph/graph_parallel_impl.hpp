@@ -415,7 +415,7 @@ private:
 
   ossia::taskflow flow_graph;
   ossia::executor executor;
-  ossia::fast_hash_map<graph_node*, ossia::task*> flow_nodes;
+  ossia::hash_map<graph_node*, ossia::task*> flow_nodes;
 };
 
 struct custom_parallel_exec

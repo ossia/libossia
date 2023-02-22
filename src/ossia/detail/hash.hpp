@@ -1,25 +1,54 @@
 #pragma once
+#include <ossia/detail/config.hpp>
 #include <ossia/detail/math.hpp>
+
+#include <ankerl/unordered_dense.h>
 
 #include <cinttypes>
 #include <cstdint>
 #include <memory>
+#include <string>
+#include <string_view>
 
 namespace ossia
 {
 
-// hash_combine_impl taken from boost
-
-// https://stackoverflow.com/q/20953390/1495627
-template <typename T>
-struct EgurHash
+struct string_hash
 {
   using is_transparent = std::true_type;
+  using is_avalanching = std::true_type;
+  std::size_t operator()(const std::string& s) const noexcept
+  {
+    return ankerl::unordered_dense::hash<std::string>{}(s);
+  }
+
+  std::size_t operator()(std::string_view s) const noexcept
+  {
+    return ankerl::unordered_dense::hash<std::string_view>{}(s);
+  }
+
+  template <std::size_t N>
+  std::size_t operator()(const char (&s)[N]) const noexcept
+  {
+    return ankerl::unordered_dense::hash<std::string_view>{}(std::string_view{s, N - 1});
+  }
+};
+
+// https://stackoverflow.com/q/20953390/1495627
+struct egur_hash
+{
+  using is_transparent = std::true_type;
+
+  template <typename T>
+  OSSIA_INLINE
   std::size_t operator()(const T* val) const noexcept
   {
     static const constexpr std::size_t shift = constexpr_log2(1 + sizeof(T));
     return (size_t)(val) >> shift;
   }
+
+  template <typename T>
+  OSSIA_INLINE
   std::size_t operator()(const std::shared_ptr<T>& val) const noexcept
   {
     static const constexpr std::size_t shift = constexpr_log2(1 + sizeof(T));
@@ -27,6 +56,127 @@ struct EgurHash
   }
 };
 
+template<typename T> struct is_shared_ptr : std::false_type {};
+template<typename T> struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
+
+
+template <typename T>
+struct hash : ankerl::unordered_dense::hash<T> { };
+
+template <typename T>
+requires std::is_pointer_v<T>
+struct hash<T> : egur_hash { };
+
+template <typename T>
+requires is_shared_ptr<T>::value
+struct hash<T> : egur_hash { };
+
+template <>
+struct hash<std::string> : string_hash { };
+template <>
+struct hash<std::string_view> : string_hash { };
+
+// Invalid overloads
+template <>
+struct hash<const char*>;
+template <>
+struct hash<char*>;
+
+
+
+struct string_equal
+{
+  using is_transparent = std::true_type;
+  bool operator()(const std::string& s, const std::string& s2) const noexcept
+  {
+    return s == s2;
+  }
+  bool operator()(std::string_view s, const std::string& s2) const noexcept
+  {
+    return s == s2;
+  }
+  bool operator()(const std::string& s, std::string_view s2) const noexcept
+  {
+    return s == s2;
+  }
+  bool operator()(std::string_view s, std::string_view s2) const noexcept
+  {
+    return s == s2;
+  }
+
+  template <std::size_t N>
+  bool operator()(const std::string& s, const char (&s2)[N]) const noexcept
+  {
+    return operator()(s, std::string_view{s2, N-1});
+  }
+
+  template <std::size_t N>
+  bool operator()(std::string_view s, const char (&s2)[N]) const noexcept
+  {
+    return operator()(s, std::string_view{s2, N-1});
+  }
+
+  template <std::size_t N>
+  bool operator()(const char (&s)[N], const std::string& s2) const noexcept
+  {
+    return operator()(std::string_view{s, N-1}, s2);
+  }
+
+  template <std::size_t N>
+  bool operator()(const char (&s)[N], std::string_view s2) const noexcept
+  {
+    return operator()(std::string_view{s, N-1}, s2);
+  }
+};
+
+
+struct pointer_equal
+{
+  using is_transparent = std::true_type;
+  template<typename U, typename V>
+  OSSIA_INLINE
+  bool operator()(const U* lhs, const V* rhs) const noexcept { return lhs == rhs; }
+
+  template<typename U, typename V>
+  OSSIA_INLINE
+  bool operator()(const std::shared_ptr<U>& lhs, const V* rhs) const noexcept
+  {
+    return lhs.get() == rhs;
+  }
+
+  template<typename U, typename V>
+  OSSIA_INLINE
+  bool operator()(const U* lhs, const std::shared_ptr<V>& rhs) const noexcept
+  {
+    return lhs == rhs.get();
+  }
+
+  template<typename U, typename V>
+  OSSIA_INLINE
+  bool
+  operator()(const std::shared_ptr<U>& lhs, const std::shared_ptr<V>& rhs) const noexcept
+  {
+    return lhs == rhs;
+  }
+};
+
+template <typename T>
+struct equal_to : std::equal_to<T> { };
+
+template <>
+struct equal_to<std::string> : string_equal { };
+template <>
+struct equal_to<std::string_view> : string_equal { };
+
+template <typename T>
+requires std::is_pointer_v<T>
+struct equal_to<T> : pointer_equal { };
+
+template <typename T>
+requires is_shared_ptr<T>::value
+struct equal_to<T> : pointer_equal { };
+
+// hash_combine_impl taken from boost
 template <typename T>
 constexpr inline void hash_combine(std::size_t& seed, const T& k) noexcept
 {
@@ -38,7 +188,7 @@ template <typename T>
 constexpr inline void hash_combine(std::size_t& seed, const T* k) noexcept
 {
   using namespace std;
-  seed ^= EgurHash<T>{}(k) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  seed ^= egur_hash{}(k) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 constexpr inline void hash_combine(uint64_t& seed, uint8_t k) noexcept

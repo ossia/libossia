@@ -19,7 +19,7 @@
 #include <ossia/network/sockets/writers.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <tsl/hopscotch_map.h>
+#include <ossia/detail/hash_map.hpp>
 
 #include <atomic>
 #include <string>

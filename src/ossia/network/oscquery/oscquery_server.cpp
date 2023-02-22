@@ -491,7 +491,7 @@ static auto& querySetterMap()
 }
 
 void oscquery_server_protocol::add_node(
-    ossia::string_view parent_path, const string_map<std::string>& parameters)
+    std::string_view parent_path, const string_map<std::string>& parameters)
 {
   // /foo/bar/baz?ADD_NODE=tutu&VALUE="[hi]"
   net::parameter_data address;
@@ -500,7 +500,7 @@ void oscquery_server_protocol::add_node(
   const auto& name_it = parameters.find(detail::add_node());
   if(name_it != parameters.end())
   {
-    address.name = name_it.value();
+    address.name = name_it->second;
   }
 
   for(const auto& e : parameters)
@@ -508,7 +508,7 @@ void oscquery_server_protocol::add_node(
     auto it = map.find(e.first);
     if(it != map.end())
     {
-      it.value()(e, address);
+      it->second(e, address);
     }
     else
     {
@@ -523,7 +523,7 @@ void oscquery_server_protocol::add_node(
 }
 
 void oscquery_server_protocol::remove_node(
-    ossia::string_view path, const std::string& node)
+    std::string_view path, const std::string& node)
 {
   m_functionQueue.enqueue([this, path_str = std::string(path), node_cp = node] {
     m_device->on_remove_node_requested(path_str, node_cp);
@@ -531,7 +531,7 @@ void oscquery_server_protocol::remove_node(
 }
 
 void oscquery_server_protocol::rename_node(
-    ossia::string_view path, const std::string& new_name)
+    std::string_view path, const std::string& new_name)
 {
   m_functionQueue.enqueue([this, path_str = std::string(path), name = new_name] {
     m_device->on_rename_node_requested(path_str, name);
@@ -648,7 +648,7 @@ void oscquery_server_protocol::on_parameterChanged(const ossia::net::parameter_b
 }
 
 void oscquery_server_protocol::on_attributeChanged(
-    const net::node_base& n, ossia::string_view attr)
+    const net::node_base& n, std::string_view attr)
 try
 {
   const auto mess = json_writer::attributes_changed(n, attr);

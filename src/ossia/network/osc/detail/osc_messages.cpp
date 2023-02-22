@@ -21,7 +21,7 @@ node_base* osc_learn(node_base* n, const oscpack::ReceivedMessage& m)
   // TODO this does not support rgba yet
   // TODO put them in a hash map instead.
   // Find-or-add algorithm
-  ossia::string_view addr = m.AddressPattern();
+  std::string_view addr = m.AddressPattern();
   // TODO string -> string_view
   std::vector<std::string> v = address_parts(addr);
 

@@ -13,7 +13,7 @@
 #include <QVector>
 #include <QtGui/QVector3D>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <wobjectimpl.h>
 
 #include <iostream>

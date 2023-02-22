@@ -574,7 +574,7 @@ std::string value_to_pretty_string(const ossia::value& val)
   return fmt::format("{}", val);
 }
 
-ossia::value parse_pretty_value(ossia::string_view str)
+ossia::value parse_pretty_value(std::string_view str)
 {
   ossia::value val;
 

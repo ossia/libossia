@@ -127,10 +127,7 @@ struct global_pull_visitor
     }
   }
 
-  [[noreturn]] void operator()(geometry_port& val) const
-  {
-    assert(false);
-  }
+  [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
 
   void operator()() const { }
 };
@@ -189,10 +186,7 @@ struct global_pull_node_visitor
     }
   }
 
-  [[noreturn]] void operator()(geometry_port& val) const
-  {
-    assert(false);
-  }
+  [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
 
   void operator()() const { }
 };
@@ -266,7 +260,7 @@ void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
   }
   else
   {
-    it.value().first++;
+    it->second.first++;
   }
 }
 
@@ -275,8 +269,8 @@ void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
   auto it = m_receivedMidi.find(&p);
   if(it != m_receivedMidi.end())
   {
-    it.value().first--;
-    if(it.value().first <= 0)
+    it->second.first--;
+    if(it->second.first <= 0)
     {
       m_receivedMidi.erase(it);
       // TODO p.disable_registration();
@@ -287,7 +281,7 @@ void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
 void execution_state::get_new_values()
 {
   for(auto it = m_receivedValues.begin(), end = m_receivedValues.end(); it != end; ++it)
-    it.value().clear();
+    it->second.clear();
 
   for(auto& mq : m_valueQueues)
   {
@@ -298,8 +292,8 @@ void execution_state::get_new_values()
 
   for(auto it = m_receivedMidi.begin(), end = m_receivedMidi.end(); it != end; ++it)
   {
-    it.value().second.clear();
-    it->first->clone_value(it.value().second);
+    it->second.second.clear();
+    it->first->clone_value(it->second.second);
   }
 }
 
@@ -684,7 +678,7 @@ void execution_state::commit_priorized()
     vec.clear();
   }
 
-  for(auto& vec : m_priorizedMessagesCache.container)
+  for(auto& vec : m_priorizedMessagesCache)
   {
     for(auto& mess : vec.second)
       ossia::launch(mess);
@@ -721,7 +715,7 @@ void execution_state::commit_ordered()
     vec.clear();
   }
 
-  for(auto& vec : m_flatMessagesCache.container)
+  for(auto& vec : m_flatMessagesCache)
   {
     for(auto& mess : vec.second)
       ossia::launch(mess);
@@ -990,7 +984,7 @@ void execution_state::insert(const ossia::state& v)
 
 static bool is_in(
     net::parameter_base& other,
-    const ossia::fast_hash_map<
+    const ossia::hash_map<
         ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>>&
         container)
 {
@@ -1001,7 +995,7 @@ static bool is_in(
 }
 static bool is_in(
     net::parameter_base& other,
-    const ossia::fast_hash_map<
+    const ossia::hash_map<
         ossia::net::parameter_base*, value_vector<libremidi::message>>& container)
 {
   auto it = container.find(&other);
@@ -1011,7 +1005,7 @@ static bool is_in(
 }
 static bool is_in(
     net::parameter_base& other,
-    const ossia::fast_hash_map<ossia::audio_parameter*, audio_port>& container)
+    const ossia::hash_map<ossia::audio_parameter*, audio_port>& container)
 {
   // TODO dangerous
   auto it = container.find(static_cast<ossia::audio_parameter*>(&other));

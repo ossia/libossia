@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/common/device_parameter.hpp>
 
 #include <cstdint>
@@ -36,6 +37,6 @@ protected:
 private:
   struct wiimote_t* m_wiimote;
   const uint8_t m_led;
-  static std::map<wiimote_t*, uint8_t> m_led_mask;
+  static ossia::hash_map<wiimote_t*, uint8_t> m_led_mask;
 };
 }

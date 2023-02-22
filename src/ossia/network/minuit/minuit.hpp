@@ -9,7 +9,6 @@
 
 #include <atomic>
 #include <future>
-#include <set>
 #include <string>
 
 namespace oscpack
@@ -69,12 +68,12 @@ public:
   bool observe(ossia::net::parameter_base& parameter_base, bool enable) override;
   bool observe_quietly(ossia::net::parameter_base& parameter_base, bool enable) override;
 
-  void namespace_refresh(ossia::string_view req, const std::string& addr);
-  void namespace_refreshed(ossia::string_view addr);
+  void namespace_refresh(std::string_view req, const std::string& addr);
+  void namespace_refreshed(std::string_view addr);
 
   void
-  get_refresh(ossia::string_view req, const std::string& addr, std::promise<void>&& p);
-  void get_refreshed(ossia::string_view req);
+  get_refresh(std::string_view req, const std::string& addr, std::promise<void>&& p);
+  void get_refreshed(std::string_view req);
 
   osc::sender<osc_1_0_outbound_stream_visitor>& sender() const;
   ossia::minuit::name_table name_table;
@@ -97,7 +96,7 @@ private:
   ossia::net::device_base* m_device{};
 
   mutex_t m_nsRequestMutex;
-  std::set<std::string, std::less<>> m_nsRequests;
+  ossia::hash_set<std::string> m_nsRequests;
 
   mutex_t m_getRequestMutex;
   ossia::string_map<std::promise<void>> m_getRequests;

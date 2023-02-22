@@ -24,7 +24,7 @@ public:
     auto it = m_map.find(path);
     if(it != m_map.end())
     {
-      return it.value();
+      return it->second;
     }
     else
     {

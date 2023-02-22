@@ -8,11 +8,6 @@
 /**
  * \file any_map.hpp
  */
-#if !defined(_MSC_VER)
-extern template class OSSIA_EXTERN_EXPORT_HPP(OSSIA_EXPORT) tsl::hopscotch_map<
-    std::string, ossia::any, ossia::string_hash, ossia::string_equal,
-    std::allocator<std::pair<std::string, ossia::any>>, 4>;
-#endif
 namespace ossia
 {
 //! A container to store any kind of data indexed by a string
@@ -31,12 +26,12 @@ using extended_attributes = any_map;
  * 0...)
  */
 template <typename T>
-auto get_attribute(const any_map& e, ossia::string_view name)
+auto get_attribute(const any_map& e, std::string_view name)
 {
   auto it = e.find(name);
   if(it != e.cend())
   {
-    auto val = ossia::any_cast<T>(&it.value());
+    auto val = ossia::any_cast<T>(&it->second);
     if(val)
       return *val;
   }
@@ -57,12 +52,12 @@ auto get_attribute(const any_map& e, ossia::string_view name)
  * The value will be an empty \ref std::optional if it is not found.
  */
 template <typename T>
-std::optional<T> get_optional_attribute(const any_map& e, ossia::string_view name)
+std::optional<T> get_optional_attribute(const any_map& e, std::string_view name)
 {
   auto it = e.find(name);
   if(it != e.cend())
   {
-    auto val = ossia::any_cast<T>(&it.value());
+    auto val = ossia::any_cast<T>(&it->second);
     if(val)
       return *val;
   }
@@ -78,7 +73,7 @@ struct is_empty_value
     return false;
   }
   bool operator()(const std::string& v) noexcept { return v.empty(); }
-  bool operator()(const ossia::string_view& v) noexcept { return v.empty(); }
+  bool operator()(const std::string_view& v) noexcept { return v.empty(); }
   template <typename T>
   bool operator()(const std::vector<T>& v) noexcept
   {
@@ -88,18 +83,18 @@ struct is_empty_value
 
 //! Remove an attribute
 OSSIA_EXPORT
-void unset_attribute(any_map& e, ossia::string_view str);
+void unset_attribute(any_map& e, std::string_view str);
 
 //! Sets an attribute in an any_map
 template <typename T>
-void set_attribute(any_map& e, ossia::string_view str, const T& val)
+void set_attribute(any_map& e, std::string_view str, const T& val)
 {
   if(!is_empty_value{}(val))
   {
     // TODO insert_or_assign
     auto it = e.find(str);
     if(it != e.end())
-      it.value() = val;
+      it->second = val;
     else
       e.insert(std::make_pair(std::string(str), ossia::any{val}));
   }
@@ -111,22 +106,22 @@ void set_attribute(any_map& e, ossia::string_view str, const T& val)
 
 //! Checks if an attribute is present.
 OSSIA_EXPORT
-bool has_attribute(const any_map& e, ossia::string_view str) noexcept;
+bool has_attribute(const any_map& e, std::string_view str) noexcept;
 
 //! Sets a bool-like attribute. It should be checked for with has_attribute.
 OSSIA_EXPORT
-void set_attribute(any_map& e, ossia::string_view str);
+void set_attribute(any_map& e, std::string_view str);
 
 //! Sets an attribute in an any_map
 template <typename T>
-void set_attribute(any_map& e, ossia::string_view str, T&& val)
+void set_attribute(any_map& e, std::string_view str, T&& val)
 {
   if(!is_empty_value{}(val))
   {
     // TODO insert_or_assign
     auto it = e.find(str);
     if(it != e.end())
-      it.value() = std::move(val);
+      it->second = std::move(val);
     else
       e.insert(std::make_pair(std::string(str), ossia::any{std::move(val)}));
   }
@@ -138,12 +133,12 @@ void set_attribute(any_map& e, ossia::string_view str, T&& val)
 
 //! Removes an attribute in an any_map
 OSSIA_EXPORT
-void set_attribute(any_map& e, ossia::string_view str, std::nullopt_t);
+void set_attribute(any_map& e, std::string_view str, std::nullopt_t);
 
 //! Sets an attribute if opt has a value, else remove the attribute
 template <typename T>
 void set_optional_attribute(
-    any_map& e, ossia::string_view str, const std::optional<T>& opt)
+    any_map& e, std::string_view str, const std::optional<T>& opt)
 {
   if(opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *opt);
@@ -152,7 +147,7 @@ void set_optional_attribute(
 }
 
 template <typename T>
-void set_optional_attribute(any_map& e, ossia::string_view str, std::optional<T>&& opt)
+void set_optional_attribute(any_map& e, std::string_view str, std::optional<T>&& opt)
 {
   if(opt && !is_empty_value{}(*opt))
     set_attribute(e, str, *std::move(opt));

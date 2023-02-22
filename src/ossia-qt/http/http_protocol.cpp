@@ -12,6 +12,7 @@
 #include <QQmlEngine>
 
 #include <wobjectimpl.h>
+
 W_OBJECT_IMPL(ossia::net::http_protocol)
 namespace ossia::net
 {
@@ -27,7 +28,7 @@ http_protocol::http_protocol(QByteArray code)
       [this](auto reply) {
     QNetworkReply& rep = *reply;
     auto it = m_replies.find(&rep);
-    const http_parameter& addr = *it.value();
+    const http_parameter& addr = *it->second;
 
     auto ans = addr.data().answer;
     if(ans.isCallable())

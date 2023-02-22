@@ -143,11 +143,11 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   // work
   // using value_state_impl = ossia::flat_multimap<int64_t,
   // std::pair<ossia::value, int>>;
-  ossia::fast_hash_map<
+  ossia::hash_map<
       ossia::net::parameter_base*, value_vector<std::pair<typed_value, int>>>
       m_valueState;
-  ossia::fast_hash_map<ossia::audio_parameter*, audio_port> m_audioState;
-  ossia::fast_hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>
+  ossia::hash_map<ossia::audio_parameter*, audio_port> m_audioState;
+  ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>
       m_midiState;
 
   mutable ossia::audio_spin_mutex mutex;

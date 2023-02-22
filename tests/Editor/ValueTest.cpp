@@ -9,7 +9,7 @@
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 using namespace ossia;

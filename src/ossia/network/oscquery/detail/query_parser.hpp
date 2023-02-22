@@ -24,14 +24,14 @@ public:
   static auto parse_http_request(const std::string& request, Mapper&& mapper)
   {
     // Split on "?"
-    ossia::string_view path;
-    ossia::string_view queries;
+    std::string_view path;
+    std::string_view queries;
 
     auto idx = request.find_first_of('?');
     if(idx != std::string::npos)
     {
-      path = ossia::string_view(request.data(), idx);
-      queries = ossia::string_view(request.data() + idx + 1, request.size() - idx);
+      path = std::string_view(request.data(), idx);
+      queries = std::string_view(request.data() + idx + 1, request.size() - idx);
     }
     else
     {
@@ -43,7 +43,7 @@ public:
     return mapper(clean_path, parse_http_methods(queries));
   }
 
-  static string_map<std::string> parse_http_methods(ossia::string_view str);
+  static string_map<std::string> parse_http_methods(std::string_view str);
 
   static bool parse_bool(const std::string& data);
 

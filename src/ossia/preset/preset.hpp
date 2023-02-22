@@ -7,7 +7,6 @@
 
 #include <fstream>
 #include <functional>
-#include <map>
 #include <memory>
 #include <regex>
 #include <string>
@@ -36,7 +35,7 @@ OSSIA_EXPORT preset read_json(const std::string&, bool skip_first_level = true);
 OSSIA_EXPORT std::string write_json(const std::string& devicename, const preset&);
 
 OSSIA_EXPORT std::string to_string(const preset&);
-OSSIA_EXPORT preset from_string(const ossia::string_view& str);
+OSSIA_EXPORT preset from_string(const std::string_view& str);
 
 enum keep_arch_type
 {
@@ -63,7 +62,7 @@ OSSIA_EXPORT std::string write_json(const ossia::net::device_base& deviceBase);
  * @param string The string to write
  * @param filename The file name
  */
-OSSIA_EXPORT void write_file(ossia::string_view string, ossia::string_view filename);
+OSSIA_EXPORT void write_file(std::string_view string, std::string_view filename);
 
 OSSIA_EXPORT const std::string read_file(const std::string& filename);
 

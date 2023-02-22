@@ -44,23 +44,23 @@ const key_map_type& oscquery_to_ossia_key()
   return attr_map;
 }
 
-OSSIA_EXPORT std::optional<ossia::string_view>
-ossia_to_oscquery_key(ossia::string_view s)
+OSSIA_EXPORT std::optional<std::string_view>
+ossia_to_oscquery_key(std::string_view s)
 {
   auto& m = ossia_to_oscquery_key();
   auto it = m.find(s);
   if(it != m.end())
-    return it.value();
+    return it->second;
   return std::nullopt;
 }
 
-OSSIA_EXPORT std::optional<ossia::string_view>
-oscquery_to_ossia_key(ossia::string_view s)
+OSSIA_EXPORT std::optional<std::string_view>
+oscquery_to_ossia_key(std::string_view s)
 {
   auto& m = oscquery_to_ossia_key();
   auto it = m.find(s);
   if(it != m.end())
-    return it.value();
+    return it->second;
   return std::nullopt;
 }
 }

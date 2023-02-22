@@ -32,7 +32,7 @@ struct rate_limiter
         }
 
         // Copy newest messages in local map
-        for(auto& msg : self.m_buffer.container)
+        for(auto& msg : self.m_buffer)
         {
           if(msg.second.first.valid())
           {
@@ -42,7 +42,7 @@ struct rate_limiter
         }
 
         // Push the actual messages
-        for(auto& v : self.m_threadMessages.container)
+        for(auto& v : self.m_threadMessages)
         {
           auto val = v.second.first;
           if(val.valid())
@@ -53,7 +53,7 @@ struct rate_limiter
 
         // Clear both containers (while keeping memory allocated for sent
         // messages so that it stays fast)
-        for(auto& v : self.m_buffer.container)
+        for(auto& v : self.m_buffer)
         {
           if(v.second.first.valid())
           {
@@ -61,7 +61,7 @@ struct rate_limiter
           }
         }
 
-        for(auto& v : self.m_threadMessages.container)
+        for(auto& v : self.m_threadMessages)
         {
           if(v.second.first.valid())
           {
@@ -97,9 +97,9 @@ rate_limiting_protocol::rate_limiting_protocol(
     , m_protocol{std::move(arg)}
 
 {
-  m_userMessages.container.reserve(4096);
-  m_buffer.container.reserve(4096);
-  m_threadMessages.container.reserve(4096);
+  m_userMessages.reserve(4096);
+  m_buffer.reserve(4096);
+  m_threadMessages.reserve(4096);
   m_lastTime = clock::now();
   m_thread = std::thread{rate_limiter{*this}};
 }

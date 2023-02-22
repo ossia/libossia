@@ -56,8 +56,8 @@ public:
   }
 
   // Listen messages
-  static string_t listen(ossia::string_view address);
-  static string_t ignore(ossia::string_view address);
+  static string_t listen(std::string_view address);
+  static string_t ignore(std::string_view address);
 
   // Extensions
   static string_t start_osc_streaming(int local_server_port, int local_sender_port);
@@ -76,10 +76,10 @@ public:
   static string_t path_renamed(const std::string& old_path, const std::string& new_path);
 
   static string_t
-  attributes_changed(const ossia::net::node_base& n, ossia::string_view attribute);
+  attributes_changed(const ossia::net::node_base& n, std::string_view attribute);
 
   static string_t attributes_changed(
-      const ossia::net::node_base& n, const std::vector<ossia::string_view>& attributes);
+      const ossia::net::node_base& n, const std::vector<std::string_view>& attributes);
 
   static string_t paths_added(const std::vector<const ossia::net::node_base*>& vec);
 
@@ -89,7 +89,7 @@ public:
 
   static string_t attributes_changed_array(
       const std::vector<
-          std::pair<const ossia::net::node_base*, std::vector<ossia::string_view>>>&
+          std::pair<const ossia::net::node_base*, std::vector<std::string_view>>>&
           vec);
 
 private:
@@ -102,10 +102,10 @@ private:
       json_writer::writer_t& wr, const std::string& path, const std::string& old);
   static void attribute_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n,
-      ossia::string_view attribute);
+      std::string_view attribute);
   static void attributes_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n,
-      const std::vector<ossia::string_view>& attributes);
+      const std::vector<std::string_view>& attributes);
 };
 
 }

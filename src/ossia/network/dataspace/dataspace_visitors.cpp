@@ -14,7 +14,7 @@
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
 
-#include <tsl/hopscotch_map.h>
+#include <ossia/detail/hash_map.hpp>
 
 namespace ossia
 {
@@ -26,22 +26,22 @@ bool check_units_convertible(const ossia::unit_t& lhs, const ossia::unit_t& rhs)
 }
 
 /// Parse ///
-ossia::string_view get_dataspace_text(const unit_t& u)
+std::string_view get_dataspace_text(const unit_t& u)
 {
   return ossia::apply(detail::dataspace_text_visitor{}, u.v);
 }
 
-ossia::string_view get_unit_text(const unit_t& u)
+std::string_view get_unit_text(const unit_t& u)
 {
   return ossia::apply(detail::unit_text_visitor{}, u.v);
 }
 
-ossia::string_view get_unit_accessors(const unit_t& u)
+std::string_view get_unit_accessors(const unit_t& u)
 {
   return ossia::apply(detail::unit_accessor_visitor{}, u.v);
 }
 
-ossia::string_view get_pretty_unit_text(const unit_t& u)
+std::string_view get_pretty_unit_text(const unit_t& u)
 {
   using namespace std::literals;
   if(u)
@@ -55,7 +55,7 @@ ossia::string_view get_pretty_unit_text(const unit_t& u)
   }
 }
 
-unit_t parse_unit(ossia::string_view text, const unit_t& dataspace)
+unit_t parse_unit(std::string_view text, const unit_t& dataspace)
 {
   if(!text.empty())
     return ossia::apply(detail::unit_factory_visitor{text}, dataspace.v);
@@ -63,12 +63,12 @@ unit_t parse_unit(ossia::string_view text, const unit_t& dataspace)
 }
 
 template <typename T>
-ossia::unit_t parse_unit(ossia::string_view text, T dataspace)
+ossia::unit_t parse_unit(std::string_view text, T dataspace)
 {
   return detail::unit_factory_visitor{text}(dataspace);
 }
 
-unit_t parse_pretty_unit(ossia::string_view text)
+unit_t parse_pretty_unit(std::string_view text)
 {
   static const auto map = [] {
     ossia::string_map<ossia::unit_t> t;
@@ -87,7 +87,7 @@ unit_t parse_pretty_unit(ossia::string_view text)
     return {};
 }
 
-unit_t parse_dataspace(ossia::string_view text)
+unit_t parse_dataspace(std::string_view text)
 {
   static const detail::unit_map dataspaces{
       {make_string_view("color"), color_u{}},
@@ -356,12 +356,12 @@ ossia::value convert(
       ossia::convert(ossia::make_value(value, source_unit), destination_unit));
 }
 
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::color_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::distance_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::position_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::speed_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::orientation_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::angle_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::gain_u);
-template OSSIA_EXPORT ossia::unit_t parse_unit(ossia::string_view, ossia::timing_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::color_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::distance_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::position_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::speed_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::orientation_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::angle_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::gain_u);
+template OSSIA_EXPORT ossia::unit_t parse_unit(std::string_view, ossia::timing_u);
 }

@@ -13,7 +13,7 @@
 #include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

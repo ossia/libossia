@@ -450,7 +450,7 @@ static auto& namespaceSetterMap()
   return map;
 }
 
-static ossia::val_type read_vec_typetag(ossia::string_view typetag)
+static ossia::val_type read_vec_typetag(std::string_view typetag)
 {
   if(typetag == "ff" || typetag == "[ff]")
     return ossia::val_type::VEC2F;
@@ -491,7 +491,7 @@ static ossia::val_type read_vec_typetag(const rapidjson::Value& val)
 }
 
 static ossia::val_type
-underlying_type(const extended_type& e_type, ossia::string_view typetag)
+underlying_type(const extended_type& e_type, std::string_view typetag)
 {
   ossia::val_type actual_type = ossia::val_type::LIST; // Generic worse
                                                        // case; also
@@ -516,7 +516,7 @@ underlying_type(const extended_type& e_type, ossia::string_view typetag)
 }
 
 static ossia::val_type underlying_type(
-    const extended_type& e_type, const rapidjson::Value& obj, ossia::string_view typetag,
+    const extended_type& e_type, const rapidjson::Value& obj, std::string_view typetag,
     rapidjson::Value::ConstMemberIterator value_it,
     rapidjson::Value::ConstMemberIterator default_value_it)
 {
@@ -560,7 +560,7 @@ static void create_or_update_parameter_type(
 {
   using impl = ossia::oscquery::detail::json_parser_impl;
   // First initialize the address if it's not an empty node
-  ossia::string_view typetag;
+  std::string_view typetag;
 
   // Try to read all the attributes that could give us the concrete type.
   complex_type val_type;                                       // Implementation type
@@ -684,7 +684,7 @@ void json_parser_impl::readParameter(net::node_base& node, const rapidjson::Valu
 {
   // Read all the attributes
   // First initialize the address if it's not an empty node
-  ossia::string_view typetag;
+  std::string_view typetag;
 
   // Try to read all the attributes that could give us the concrete type.
   complex_type val_type;                                       // Implementation type
@@ -819,7 +819,7 @@ void json_parser_impl::readParameter(net::node_base& node, const rapidjson::Valu
     auto action = map.find(get_string_view(it->name));
     if(action != map.end())
     {
-      action.value()(it->value, node);
+      action->second(it->value, node);
     }
   }
 }
@@ -916,7 +916,7 @@ ossia::oscquery::message_type json_parser::message_type(const rapidjson::Value& 
   {
     auto mt_it = map.find(get_string(it->value)); // TODO string_view
     if(mt_it != map.end())
-      return mt_it.value();
+      return mt_it->second;
   }
 
   if(obj.FindMember(detail::attribute_full_path()) != obj.MemberEnd())
@@ -1062,7 +1062,7 @@ void json_parser::parse_parameter_value(
 
 // Given a string "/foo/bar/baz", return {"/foo/bar", "baz"}
 static std::optional<std::pair<std::string, std::string>>
-splitParentChild(ossia::string_view s)
+splitParentChild(std::string_view s)
 {
   auto last_slash_pos = s.rfind('/');
   if(last_slash_pos != std::string::npos)
@@ -1204,7 +1204,7 @@ void json_parser::parse_attributes_changed(
           auto action = map.find(get_string_view(it->name));
           if(action != map.end())
           {
-            action.value()(it->value, *node);
+            action->second(it->value, *node);
           }
         }
       }

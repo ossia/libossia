@@ -27,7 +27,7 @@ public:
   template <typename OscqueryProtocol>
   static json_writer::string_t handle_listen(
       OscqueryProtocol& proto, const oscquery_server_protocol::connection_handler& hdl,
-      ossia::net::node_base& node, ossia::string_view path,
+      ossia::net::node_base& node, std::string_view path,
       const std::string& listen_text)
   {
     // First we find for a corresponding client
@@ -64,7 +64,7 @@ public:
       OscqueryProtocol& proto, const oscquery_server_protocol::connection_handler& hdl)
   {
     return [&proto, &hdl](
-               ossia::string_view path,
+               std::string_view path,
                string_map<std::string>&& parameters) -> ossia::net::server_reply {
       // Here we handle the url elements relative to oscquery
       if(parameters.size() == 0)
@@ -120,7 +120,7 @@ public:
           if(rm_instance_it != parameters.end())
           {
             // Value is the child to remove
-            proto.remove_node(path, rm_instance_it.value());
+            proto.remove_node(path, rm_instance_it->second);
             return {};
           }
 
@@ -129,7 +129,7 @@ public:
           if(rn_instance_it != parameters.end())
           {
             // Value is the child to remove
-            proto.rename_node(path, rn_instance_it.value());
+            proto.rename_node(path, rn_instance_it->second);
             return {};
           }
 

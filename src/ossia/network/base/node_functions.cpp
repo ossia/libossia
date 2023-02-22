@@ -185,7 +185,7 @@ namespace
 {
 static node_base* find_node_rec(
     node_base& node,
-    ossia::string_view address) // Format a/b/c -> b/c -> c
+    std::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
@@ -211,7 +211,7 @@ static node_base* find_node_rec(
 
 static node_base& find_or_create_node_rec(
     node_base& node,
-    ossia::string_view address) // Format a/b/c -> b/c -> c
+    std::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
@@ -251,7 +251,7 @@ static node_base& find_or_create_node_rec(
 
 static node_base& create_node_rec(
     node_base& node,
-    ossia::string_view address) // Format a/b/c -> b/c -> c
+    std::string_view address) // Format a/b/c -> b/c -> c
 {
   auto first_slash_index = address.find_first_of('/');
 
@@ -287,7 +287,7 @@ static node_base& create_node_rec(
 
 //! Note : here we modify the string_view only.
 //! The original address remains unchanged.
-static ossia::string_view sanitize_address(ossia::string_view address)
+static std::string_view sanitize_address(std::string_view address)
 {
   while(boost::algorithm::starts_with(address, "/"))
     address.remove_prefix(1);
@@ -297,7 +297,7 @@ static ossia::string_view sanitize_address(ossia::string_view address)
 }
 }
 
-node_base* find_node(node_base& dev, ossia::string_view address)
+node_base* find_node(node_base& dev, std::string_view address)
 {
   // TODO validate
   address = sanitize_address(address);
@@ -308,7 +308,7 @@ node_base* find_node(node_base& dev, ossia::string_view address)
   return find_node_rec(dev, address);
 }
 
-node_base& find_or_create_node(node_base& node, ossia::string_view address)
+node_base& find_or_create_node(node_base& node, std::string_view address)
 {
   // TODO validate
   address = sanitize_address(address);
@@ -319,7 +319,7 @@ node_base& find_or_create_node(node_base& node, ossia::string_view address)
   return find_or_create_node_rec(node, address);
 }
 
-node_base& create_node(node_base& node, ossia::string_view address)
+node_base& create_node(node_base& node, std::string_view address)
 {
   // TODO validate
   address = sanitize_address(address);
@@ -797,7 +797,7 @@ std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
   return v;
 }
 
-ossia::net::address_scope get_address_scope(ossia::string_view addr)
+ossia::net::address_scope get_address_scope(std::string_view addr)
 {
   address_scope type = address_scope::relative;
   if(boost::starts_with(addr, "//"))

@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/preset/preset.hpp>
@@ -8,7 +9,6 @@
 #include <nano_observer.hpp>
 
 #include <optional>
-#include <unordered_set>
 
 namespace ossia
 {
@@ -89,6 +89,6 @@ public:
   ossia::net::device_base* dev{};
   int m_current{0};
 
-  std::unordered_set<ossia::net::node_base*> m_selection;
+  ossia::hash_set<ossia::net::node_base*> m_selection;
 };
 }

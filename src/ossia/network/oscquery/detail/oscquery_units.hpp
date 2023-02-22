@@ -281,7 +281,7 @@ struct unit_writer
 
 struct unit_parser
 {
-  ossia::fast_hash_map<ossia::small_vector<std::string, 4>, ossia::unit_t> map{
+  ossia::hash_map<ossia::small_vector<std::string, 4>, ossia::unit_t> map{
       unit_matcher(degree_u{}),
       unit_matcher(radian_u{}),
 

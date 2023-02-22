@@ -34,11 +34,6 @@ boost::asio::detail::winsock_init<>::manual manual_winsock_init;
 #include <boost/asio/detail/winsock_init.hpp>
 #endif
 
-#if !defined(_MSC_VER)
-template class OSSIA_EXTERN_EXPORT_CPP(OSSIA_EXPORT) tsl::hopscotch_map<
-    std::string, ossia::any, ossia::string_hash, ossia::string_equal,
-    std::allocator<std::pair<std::string, ossia::any>>, 4>;
-#endif
 namespace ossia
 {
 invalid_callback_error::~invalid_callback_error() = default;

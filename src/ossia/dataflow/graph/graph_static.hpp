@@ -30,7 +30,7 @@ public:
       : update_fun{*this, opt}
   {
     m_all_nodes.reserve(1024);
-    m_enabled_cache.container.reserve(1024);
+    m_enabled_cache.reserve(1024);
     m_topo_order_cache.reserve(1024);
     m_color_map_cache.reserve(1024);
     m_stack_cache.reserve(1024);
@@ -93,7 +93,7 @@ public:
       }
 
       // Filter disabled nodes (through strict relationships).
-      m_enabled_cache.container.reserve(m_nodes.size());
+      m_enabled_cache.reserve(m_nodes.size());
 
       for(auto node : m_all_nodes)
       {
@@ -127,21 +127,12 @@ public:
     }
   }
 
-  [[nodiscard]] const graph_t& impl() const
-  {
-    return m_graph;
-  }
-  graph_t& impl()
-  {
-    return m_graph;
-  }
+  [[nodiscard]] const graph_t& impl() const { return m_graph; }
+  graph_t& impl() { return m_graph; }
   std::vector<graph_node*> m_all_nodes;
 
 protected:
-  void print(std::ostream& stream) override
-  {
-    print_graph(m_graph, stream);
-  }
+  void print(std::ostream& stream) override { print_graph(m_graph, stream); }
 
 private:
   node_flat_set m_enabled_cache;

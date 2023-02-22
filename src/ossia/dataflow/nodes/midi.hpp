@@ -40,10 +40,10 @@ public:
   {
     m_outlets.push_back(&midi_out);
     int64_t to_reserve = std::max(notes * 1.1, 128.);
-    m_notes.container.reserve(to_reserve);
-    m_orig_notes.container.reserve(to_reserve);
-    m_playing_notes.container.reserve(to_reserve);
-    m_to_stop.container.reserve(64);
+    m_notes.reserve(to_reserve);
+    m_orig_notes.reserve(to_reserve);
+    m_playing_notes.reserve(to_reserve);
+    m_to_stop.reserve(64);
   }
 
   ~midi() override = default;
@@ -81,11 +81,10 @@ public:
     swap(m_orig_notes, notes);
     m_notes.clear();
 
-    std::vector<note_data>::iterator start_it
-        = m_orig_notes.lower_bound(m_prev_date.impl).underlying;
-    if(start_it != m_orig_notes.container.end())
+    auto start_it = m_orig_notes.lower_bound(m_prev_date.impl);
+    if(start_it != m_orig_notes.end())
     {
-      m_notes.container.assign(start_it, m_orig_notes.container.end());
+      m_notes.tree().get_sequence_ref().assign(start_it, m_orig_notes.end());
     }
   }
 

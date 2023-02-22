@@ -37,7 +37,7 @@ void setup_random_edges(const std::vector<std::shared_ptr<node_empty_mock>>& nod
     {
       if(std::uniform_real_distribution<double>{0., 1.}(mt))
       {
-        auto edge = ossia::make_edge(
+        auto edge = g.allocate_edge(
             ossia::immediate_strict_connection{}, nodes[i]->root_outputs()[0],
             nodes[j]->root_inputs()[0], nodes[i], nodes[j]);
         g.connect(edge);
@@ -91,7 +91,7 @@ struct setup_dawlike
         chain.push_back(nodes.back());
         if(prev_node)
         {
-          auto edge = ossia::make_edge(
+          auto edge = g.allocate_edge(
               ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
               new_node->root_inputs()[0], prev_node, new_node);
           g.connect(edge);
@@ -113,7 +113,7 @@ struct setup_dawlike
       for(int end = j + 4; j < end; j++)
       {
         auto& prev_node = chains[j].back();
-        auto edge = ossia::make_edge(
+        auto edge = g.allocate_edge(
             ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
             new_node->root_inputs()[0], prev_node, new_node);
         g.connect(edge);
@@ -128,7 +128,7 @@ struct setup_dawlike
 
       for(auto& prev_node : groups_1)
       {
-        auto edge = ossia::make_edge(
+        auto edge = g.allocate_edge(
             ossia::immediate_strict_connection{}, prev_node->root_outputs()[0],
             new_node->root_inputs()[0], prev_node, new_node);
         g.connect(edge);

@@ -17,7 +17,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
-// broken due to dynamic_property_map requiring rtti... 
+// broken due to dynamic_property_map requiring rtti...
 // #include <boost/graph/graphviz.hpp>
 #include <boost/graph/topological_sort.hpp>
 
@@ -258,10 +258,16 @@ void custom_topological_sort(
 using graph_vertex_t = graph_t::vertex_descriptor;
 using graph_edge_t = graph_t::edge_descriptor;
 
+#if !defined(OSSIA_NO_FAST_CONTAINERS)
 template <typename T, typename V>
 using dense_shared_ptr_map = ankerl::unordered_dense::map<
-    std::shared_ptr<T>, V, EgurHash<T>, PointerPredicate<T>,
+    std::shared_ptr<T>, V, egur_hash, pointer_equal,
     ossia::small_vector<std::pair<std::shared_ptr<T>, V>, 1024>>;
+#else
+template <typename T, typename V>
+using dense_shared_ptr_map
+    = ossia::hash_map<std::shared_ptr<T>, V, egur_hash, pointer_equal>;
+#endif
 using node_map = ossia::dense_shared_ptr_map<ossia::graph_node, graph_vertex_t>;
 using edge_map = ossia::dense_shared_ptr_map<ossia::graph_edge, graph_edge_t>;
 
@@ -329,7 +335,7 @@ auto apply_con(const T& visitor, const ossia::connection& con)
 template <typename Graph_T, typename IO>
 void print_graph(Graph_T& g, IO& stream)
 {
-  #if 0
+#if 0
   std::stringstream s;
   boost::write_graphviz(
       s, g,
@@ -342,7 +348,7 @@ void print_graph(Graph_T& g, IO& stream)
       [](auto&&...) {});
 
   stream << s.str() << "\n";
-  #endif
+#endif
 }
 
 struct OSSIA_EXPORT graph_util
@@ -442,7 +448,7 @@ struct OSSIA_EXPORT graph_util
     {
       // while(Find a non-marked disabled node)
       // Do a BFS from it
-      std::map<graph_vertex_t, boost::two_bit_color_type> mark;
+      ossia::flat_map<graph_vertex_t, boost::two_bit_color_type> mark;
       struct disable_visitor : public boost::default_bfs_visitor
       {
           void discover_vertex(graph_vertex_t vtx, graph_t& g) const
@@ -828,15 +834,9 @@ struct OSSIA_EXPORT graph_base : graph_interface
     m_graph.clear();
   }
 
-  void mark_dirty() final override
-  {
-    m_dirty = true;
-  }
+  void mark_dirty() final override { m_dirty = true; }
 
-  ~graph_base() override
-  {
-    clear();
-  }
+  ~graph_base() override { clear(); }
 
   node_map m_nodes;
   edge_map m_edges;

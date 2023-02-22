@@ -6,7 +6,7 @@
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/network/osc/detail/osc.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 using namespace ossia;
 

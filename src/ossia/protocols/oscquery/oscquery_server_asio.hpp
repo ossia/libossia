@@ -8,7 +8,7 @@
 #include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 
-#include <tsl/hopscotch_map.h>
+#include <ossia/detail/hash_map.hpp>
 
 #include <nano_signal_slot.hpp>
 
@@ -84,9 +84,9 @@ private:
   // List of connected clients
   oscquery_client* find_client(const connection_handler& hdl);
 
-  void add_node(ossia::string_view path, const string_map<std::string>& parameters);
-  void remove_node(ossia::string_view path, const std::string& node);
-  void rename_node(ossia::string_view node, const std::string& new_name);
+  void add_node(std::string_view path, const string_map<std::string>& parameters);
+  void remove_node(std::string_view path, const std::string& node);
+  void rename_node(std::string_view node, const std::string& new_name);
 
   // OSC callback
   void on_osc_message(const oscpack::ReceivedMessage& m);
@@ -100,7 +100,7 @@ private:
   void on_nodeCreated(const ossia::net::node_base&);
   void on_nodeRemoved(const ossia::net::node_base&);
   void on_parameterChanged(const ossia::net::parameter_base&);
-  void on_attributeChanged(const ossia::net::node_base&, ossia::string_view attr);
+  void on_attributeChanged(const ossia::net::node_base&, std::string_view attr);
   void on_nodeRenamed(const ossia::net::node_base& n, std::string oldname);
 
   template <typename T>

@@ -5,7 +5,7 @@
 
 #include <ossia/editor/curve/curve_segment/empty.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

@@ -1,7 +1,5 @@
 #pragma once
-#include <ossia/detail/pod_vector.hpp>
-
-#include <flat_map.hpp>
+#include <boost/container/flat_map.hpp>
 namespace ossia
 {
 /* Too hard to make work
@@ -33,5 +31,5 @@ fc::flat_map<std::vector<pod_pair_type<K,V>, Alloc>, Compare>;
 template <
     typename K, typename V, typename Compare = std::less<void>,
     typename Alloc = std::allocator<std::pair<K, V>>>
-using flat_map = fc::flat_map<std::vector<std::pair<K, V>, Alloc>, Compare>;
+using flat_map = boost::container::flat_map<K, V, Compare, Alloc>;
 }

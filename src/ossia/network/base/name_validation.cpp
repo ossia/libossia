@@ -242,7 +242,7 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
   }
 }
 
-std::vector<std::string> address_parts(ossia::string_view src)
+std::vector<std::string> address_parts(std::string_view src)
 {
   std::vector<std::string> sub;
 

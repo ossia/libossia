@@ -8,7 +8,7 @@
 #include <ossia/network/common/websocket_log_sink.hpp>
 #include <ossia/network/sockets/websocket_server.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 using namespace ossia;
 
 TEST_CASE("test_websockets_log_no_connection", "test_websockets_log_no_connection")

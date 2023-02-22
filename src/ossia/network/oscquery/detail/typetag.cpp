@@ -99,7 +99,7 @@ std::optional<std::string> get_osc_typetag(const net::node_base& n)
   }
 }
 
-complex_type get_type_from_osc_typetag(ossia::string_view str)
+complex_type get_type_from_osc_typetag(std::string_view str)
 {
   switch(str.size())
   {
@@ -162,7 +162,7 @@ complex_type get_type_from_osc_typetag(ossia::string_view str)
 }
 
 //! TODO update create_or_update_parameter_type
-net::parameter_base* setup_parameter(ossia::string_view t, net::node_base& node)
+net::parameter_base* setup_parameter(std::string_view t, net::node_base& node)
 {
   return nullptr;
   /*
@@ -184,7 +184,7 @@ net::parameter_base* setup_parameter(ossia::string_view t, net::node_base& node)
   }*/
 }
 
-void set_osc_typetag(net::node_base& n, ossia::string_view tag)
+void set_osc_typetag(net::node_base& n, std::string_view tag)
 {
   setup_parameter(get_type_from_osc_typetag(tag), n);
 }

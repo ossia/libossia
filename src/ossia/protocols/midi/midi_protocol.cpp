@@ -446,7 +446,7 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
 
 template <typename T, typename... Args>
 midi_node* find_or_create(
-    ossia::string_view name, midi_device& dev, midi_node& parent, Args&&... args)
+    std::string_view name, midi_device& dev, midi_node& parent, Args&&... args)
 {
   auto n = parent.find_child(name);
   if(!n)

@@ -14,7 +14,7 @@
 #include <boost/container/static_vector.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <tsl/hopscotch_map.h>
+#include <ossia/detail/hash_map.hpp>
 
 #include <string>
 #include <vector>
@@ -22,7 +22,7 @@
 namespace ossia::oscquery
 {
 
-string_map<std::string> query_parser::parse_http_methods(ossia::string_view str)
+string_map<std::string> query_parser::parse_http_methods(std::string_view str)
 {
   string_map<std::string> res;
   auto methods = ossia::net::parse_http_methods_encoded(str);

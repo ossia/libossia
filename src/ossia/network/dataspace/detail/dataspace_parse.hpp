@@ -18,7 +18,7 @@ struct unit_map_factory
 {
   void operator()(unit_map& m)
   {
-    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
+    for(std::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v, ossia::unit_t{Arg{}});
     unit_map_factory<Args...>{}(m);
   }
@@ -29,7 +29,7 @@ struct unit_map_factory<Arg>
 {
   void operator()(unit_map& m)
   {
-    for(ossia::string_view v : ossia::unit_traits<Arg>::text())
+    for(std::string_view v : ossia::unit_traits<Arg>::text())
       m.emplace(v, ossia::unit_t{Arg{}});
   }
 };
@@ -47,7 +47,7 @@ struct make_unit_map
 
 struct unit_factory_visitor
 {
-  ossia::string_view text;
+  std::string_view text;
 
   template <typename Dataspace_T>
   ossia::unit_t operator()(Dataspace_T arg)

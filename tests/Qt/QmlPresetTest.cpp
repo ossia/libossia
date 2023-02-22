@@ -15,7 +15,7 @@
 
 #include <fmt/format.h>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <regex>
 #define private public

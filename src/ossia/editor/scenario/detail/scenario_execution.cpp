@@ -4,6 +4,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/flat_set.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/scenario/detail/continuity.hpp>
@@ -16,13 +17,6 @@
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/labeled_graph.hpp>
 #include <boost/graph/topological_sort.hpp>
-
-#include <tsl/hopscotch_map.h>
-
-#include <cassert>
-#include <iostream>
-#include <map>
-#include <set>
 
 namespace ossia
 {
@@ -242,9 +236,9 @@ void scenario::state_impl(const ossia::token_request& tk)
     m_endNodes.clear();
     m_retry_syncs.clear();
 
-    m_retry_syncs.container.reserve(8);
-    m_endNodes.container.reserve(m_nodes.size());
-    m_overticks.container.reserve(m_nodes.size());
+    m_retry_syncs.reserve(8);
+    m_endNodes.reserve(m_nodes.size());
+    m_overticks.reserve(m_nodes.size());
 
     for(auto it = m_runningIntervals.begin(); it != m_runningIntervals.end();)
     {
@@ -459,8 +453,9 @@ void scenario::state_impl(const ossia::token_request& tk)
         }
       }
 
-      m_endNodes.container.assign(
-          m_retry_syncs.container.begin(), m_retry_syncs.container.end());
+      m_endNodes.tree().get_sequence_ref().assign(
+          m_retry_syncs.tree().get_sequence_cref().begin(),
+          m_retry_syncs.tree().get_sequence_cref().end());
       m_retry_syncs.clear();
 
     } while(!m_maxReachedEvents.empty() || !m_endNodes.empty());

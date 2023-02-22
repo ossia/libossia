@@ -8,7 +8,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <regex>
@@ -389,8 +389,8 @@ TEST_CASE("test_attributes", "test_attributes")
   auto t = n.get_extended_attributes().find("tags");
   auto tg = t != n.get_extended_attributes().end();
   REQUIRE(tg);
-  std::cerr << ((ossia::any)t.value()).type().name();
-  const tags* tgs = ossia::any_cast<tags>(&t.value());
+  std::cerr << ((ossia::any)t->second).type().name();
+  const tags* tgs = ossia::any_cast<tags>(&t->second);
   REQUIRE(tgs);
   REQUIRE(!tgs->empty());
   REQUIRE((*tgs == the_tags));

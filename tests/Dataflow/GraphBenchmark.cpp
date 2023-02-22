@@ -200,7 +200,7 @@ struct setup_serial_connected
       auto n = std::make_shared<value_mock>();
       if(prev)
       {
-        g.connect(ossia::make_edge(
+        g.connect(g.allocate_edge(
             ossia::immediate_strict_connection{}, prev->root_outputs()[0],
             n->root_inputs()[0], prev, n));
       }
@@ -297,8 +297,8 @@ struct setup_parallel_1node_connected
       auto inlet = new ossia::value_inlet;
       n2->root_inputs().push_back(inlet);
 
-      auto edge = ossia::make_edge(
-          ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);
+      auto edge
+          = g.allocate_edge(ossia::immediate_strict_connection{}, outlet, inlet, n1, n2);
       g.connect(edge);
     }
     return nodes;
@@ -347,7 +347,7 @@ struct setup_parallel_connected
       nodes.push_back(n1);
       nodes.push_back(n2);
 
-      auto edge = ossia::make_edge(
+      auto edge = g.allocate_edge(
           ossia::immediate_strict_connection{}, n1->root_outputs()[0],
           n2->root_inputs()[0], n1, n2);
       g.add_node(std::move(n1));
@@ -369,7 +369,7 @@ void setup_random_edges(
     {
       if(std::uniform_real_distribution<double>{0., 1.}(mt) < edge_chance)
       {
-        auto edge = ossia::make_edge(
+        auto edge = g.allocate_edge(
             ossia::immediate_strict_connection{}, nodes[i]->root_outputs()[0],
             nodes[j]->root_inputs()[0], nodes[i], nodes[j]);
         g.connect(edge);

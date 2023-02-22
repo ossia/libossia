@@ -12,7 +12,7 @@
 namespace oscpack
 {
 inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p, const std::vector<ossia::string_view>& values)
+    oscpack::OutboundPacketStream& p, const std::vector<std::string_view>& values)
 {
   for(auto val : values)
   {
@@ -35,7 +35,7 @@ operator<<(oscpack::OutboundPacketStream& p, const std::vector<std::string>& val
 {
   for(const auto& val : values)
   {
-    p << ossia::string_view(val);
+    p << std::string_view(val);
   }
 
   return p;
@@ -50,7 +50,7 @@ public:
   {
   }
 
-  const oscpack::OutboundPacketStream& operator()(ossia::string_view name, const char* v)
+  const oscpack::OutboundPacketStream& operator()(std::string_view name, const char* v)
       = delete;
 
   void write(const char* arg) { p << std::string_view(arg); }
@@ -68,7 +68,7 @@ public:
 
   template <typename... Args>
   const oscpack::OutboundPacketStream&
-  operator()(ossia::string_view name, const Args&... args)
+  operator()(std::string_view name, const Args&... args)
   {
     p << oscpack::BeginMessageN(name);
     (write(args), ...);

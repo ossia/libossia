@@ -94,7 +94,7 @@ void json_writer_impl::writeValue(const net::tags& tags) const
   writer.EndArray();
 }
 
-void json_writer_impl::writeKey(ossia::string_view k) const
+void json_writer_impl::writeKey(std::string_view k) const
 {
   ::write_json_key(writer, k);
 }
@@ -204,7 +204,7 @@ static const auto& attributesMap()
 }
 
 void json_writer_impl::writeAttribute(
-    const net::node_base& n, ossia::string_view method) const
+    const net::node_base& n, std::string_view method) const
 {
   // We put all our attributes in a map.
   // Look into the map and call writeValue(theAttribute), c.f. make_fun_pair.
@@ -213,7 +213,7 @@ void json_writer_impl::writeAttribute(
   auto it = attr_map.find(method);
   if(it != attr_map.end())
   {
-    it.value()(*this, n);
+    it->second(*this, n);
   }
   else
   {
@@ -409,7 +409,7 @@ void json_writer::path_renamed_impl(
 }
 
 void json_writer::attribute_changed_impl(
-    detail::json_writer_impl& p, const net::node_base& n, ossia::string_view attr)
+    detail::json_writer_impl& p, const net::node_base& n, std::string_view attr)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -428,10 +428,10 @@ void json_writer::attribute_changed_impl(
     auto it = map.find(attr);
     if(it != map.end())
     {
-      write_json_key(wr, it.value());
-      p.writeAttribute(n, it.value());
+      write_json_key(wr, it->second);
+      p.writeAttribute(n, it->second);
 
-      if(it.value() == detail::attribute_typetag())
+      if(it->second == detail::attribute_typetag())
       {
         const auto key = detail::attribute_extended_type();
         write_json_key(wr, key);
@@ -447,7 +447,7 @@ void json_writer::attribute_changed_impl(
 
 void json_writer::attributes_changed_impl(
     detail::json_writer_impl& p, const net::node_base& n,
-    const std::vector<ossia::string_view>& attributes)
+    const std::vector<std::string_view>& attributes)
 {
   auto& wr = p.writer;
   wr.StartObject();
@@ -468,8 +468,8 @@ void json_writer::attributes_changed_impl(
       auto it = map.find(attr);
       if(it != map.end())
       {
-        write_json_key(wr, it.value());
-        p.writeAttribute(n, it.value());
+        write_json_key(wr, it->second);
+        p.writeAttribute(n, it->second);
       }
     }
     wr.EndObject();
@@ -675,7 +675,7 @@ json_writer::path_renamed(const std::string& old_path, const std::string& new_pa
 }
 
 json_writer::string_t
-json_writer::attributes_changed(const net::node_base& n, ossia::string_view attribute)
+json_writer::attributes_changed(const net::node_base& n, std::string_view attribute)
 {
   string_t buf;
   writer_t wr(buf);
@@ -688,7 +688,7 @@ json_writer::attributes_changed(const net::node_base& n, ossia::string_view attr
 }
 
 json_writer::string_t json_writer::attributes_changed(
-    const net::node_base& n, const std::vector<ossia::string_view>& attributes)
+    const net::node_base& n, const std::vector<std::string_view>& attributes)
 {
   string_t buf;
   writer_t wr(buf);
@@ -746,7 +746,7 @@ json_writer::string_t json_writer::paths_removed(const std::vector<std::string>&
 }
 
 json_writer::string_t json_writer::attributes_changed_array(
-    const std::vector<std::pair<const net::node_base*, std::vector<ossia::string_view>>>&
+    const std::vector<std::pair<const net::node_base*, std::vector<std::string_view>>>&
         vec)
 {
   string_t buf;

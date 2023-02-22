@@ -21,7 +21,7 @@ namespace net
  * @return null if the node was not found.
  */
 OSSIA_EXPORT ossia::net::node_base*
-find_node(node_base& dev, ossia::string_view parameter_base);
+find_node(node_base& dev, std::string_view parameter_base);
 
 /**
  * @brief Find all nodes matching a pattern in a device
@@ -32,7 +32,7 @@ find_node(node_base& dev, ossia::string_view parameter_base);
  * prefer storing a traversal::path and using the functions in path.hpp.
  */
 OSSIA_EXPORT std::vector<ossia::net::node_base*>
-find_nodes(node_base& dev, ossia::string_view pattern);
+find_nodes(node_base& dev, std::string_view pattern);
 
 /**
  * @brief Create a node in a device.
@@ -41,7 +41,7 @@ find_nodes(node_base& dev, ossia::string_view pattern);
  * Hence there is no guarantee that the created node name is the same
  * than the one requested; the output should be checked.
  */
-OSSIA_EXPORT node_base& create_node(node_base& dev, ossia::string_view parameter_base);
+OSSIA_EXPORT node_base& create_node(node_base& dev, std::string_view parameter_base);
 
 /**
  * @brief Create nodes according to a brace-expansion-like mechanism
@@ -52,7 +52,7 @@ OSSIA_EXPORT node_base& create_node(node_base& dev, ossia::string_view parameter
  * \see ossia::net::is_brace_expansion
  */
 OSSIA_EXPORT std::vector<ossia::net::node_base*>
-create_nodes(node_base& dev, ossia::string_view pattern);
+create_nodes(node_base& dev, std::string_view pattern);
 
 /**
  * @brief Find a node and create it if it does not exist.
@@ -60,7 +60,7 @@ create_nodes(node_base& dev, ossia::string_view pattern);
  * If the node exists, it will be returned, else a new node will be created.
  */
 OSSIA_EXPORT node_base&
-find_or_create_node(node_base& dev, ossia::string_view parameter_base);
+find_or_create_node(node_base& dev, std::string_view parameter_base);
 
 /**
  * @brief Find a parameter and create it if it does not exist.
@@ -79,7 +79,7 @@ OSSIA_EXPORT std::vector<parameter_base*> find_or_create_parameter(
  * @brief Calls find_node or create_node according to the value `create`
  */
 OSSIA_EXPORT node_base*
-find_or_create_node(node_base& dev, ossia::string_view parameter_base, bool create);
+find_or_create_node(node_base& dev, std::string_view parameter_base, bool create);
 
 //! Get a valid name for a given node
 void sanitize_name(std::string& name, const node_base::children_t& brethren);
@@ -105,7 +105,7 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
 }
 
 template <typename Address>
-auto find_or_create_parameter(ossia::net::node_base& root, ossia::string_view name)
+auto find_or_create_parameter(ossia::net::node_base& root, std::string_view name)
 {
   auto& node = ossia::net::find_or_create_node(root, std::move(name));
   if(auto p = dynamic_cast<Address*>(node.get_parameter()))

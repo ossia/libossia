@@ -3,7 +3,7 @@
 
 #include <ossia-cpp/ossia-cpp98.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 static void test_callback(void* n, const opp::value& v)

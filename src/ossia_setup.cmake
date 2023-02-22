@@ -152,11 +152,8 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/hopscotch-map/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat_hash_map>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/flat>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>

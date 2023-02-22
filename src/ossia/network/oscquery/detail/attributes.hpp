@@ -413,7 +413,7 @@ enum class message_type
   Ignore
 };
 
-using key_map_type = string_view_map<ossia::string_view>;
+using key_map_type = string_view_map<std::string_view>;
 
 //! Mapping between ossia attributes and oscquery attributes
 OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
@@ -422,8 +422,8 @@ OSSIA_EXPORT const key_map_type& ossia_to_oscquery_key();
 OSSIA_EXPORT const key_map_type& oscquery_to_ossia_key();
 
 //! Convert the text of an ossia attribute to the key of an oscquery attribute
-OSSIA_EXPORT std::optional<ossia::string_view> ossia_to_oscquery_key(ossia::string_view);
+OSSIA_EXPORT std::optional<std::string_view> ossia_to_oscquery_key(std::string_view);
 
 //! Convert the text of an oscquery attribute to the key of an ossia attribute.
-OSSIA_EXPORT std::optional<ossia::string_view> oscquery_to_ossia_key(ossia::string_view);
+OSSIA_EXPORT std::optional<std::string_view> oscquery_to_ossia_key(std::string_view);
 }

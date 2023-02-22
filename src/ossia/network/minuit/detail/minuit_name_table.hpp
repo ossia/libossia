@@ -24,7 +24,7 @@ public:
     m_actions[(int)minuit_action::ListenError] = name + "!listen";
   }
 
-  ossia::string_view get_action(minuit_action c) const
+  std::string_view get_action(minuit_action c) const
   {
     return m_actions[static_cast<int>(c)];
   }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 #include <ossia/network/value/format_value.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>

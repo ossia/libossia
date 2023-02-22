@@ -44,7 +44,7 @@ private:
   QQmlScriptString m_expr;
   std::shared_ptr<ossia::time_sync> m_impl;
   qml_cond m_default;
-  tsl::hopscotch_set<qml_cond*> m_conds;
+  ossia::hash_set<qml_cond*> m_conds;
 
   W_PROPERTY(QQmlScriptString, expr READ expr WRITE setExpr NOTIFY exprChanged)
 };

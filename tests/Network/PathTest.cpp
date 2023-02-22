@@ -11,7 +11,7 @@
 
 #include <boost/algorithm/string/replace.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 #include <regex>

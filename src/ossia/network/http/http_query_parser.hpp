@@ -4,7 +4,6 @@
 #include <boost/fusion/adapted/std_pair.hpp>
 #include <boost/spirit/home/x3.hpp>
 
-#include <map>
 /**
  * \file http_query_parser.hpp
  *
@@ -31,7 +30,7 @@ auto& query()
   return s_query;
 }
 
-inline string_map<std::string> parse_http_methods_encoded(ossia::string_view str)
+inline string_map<std::string> parse_http_methods_encoded(std::string_view str)
 {
   // TODO a vector would be more efficient.
   string_map<std::string> methods;

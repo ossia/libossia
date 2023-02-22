@@ -3,6 +3,7 @@
 #include <ossia/dataflow/nodes/state.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/flat_multimap.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/editor/exceptions.hpp>
 #include <ossia/editor/scenario/scenario.hpp>
@@ -11,13 +12,6 @@
 #include <ossia/editor/scenario/time_sync.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
-
-#include <tsl/hopscotch_map.h>
-
-#include <cassert>
-#include <iostream>
-#include <map>
-#include <set>
 
 namespace ossia
 {
@@ -140,9 +134,9 @@ void scenario::transport_impl(ossia::time_value offset)
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
-  pastEvents.container.reserve(this->m_intervals.size() * 1.5);
+  pastEvents.reserve(this->m_intervals.size() * 1.5);
   ossia::flat_set<ossia::time_event*> seen_events;
-  seen_events.container.reserve(pastEvents.container.size());
+  seen_events.reserve(pastEvents.size());
 
   m_runningIntervals.clear();
 
@@ -238,9 +232,9 @@ void scenario::offset_impl(ossia::time_value offset)
   // a temporary list to order all past events to build the
   // offset state
   past_events_map pastEvents;
-  pastEvents.container.reserve(this->m_intervals.size() * 1.5);
+  pastEvents.reserve(this->m_intervals.size() * 1.5);
   ossia::flat_set<ossia::time_event*> seen_events;
-  seen_events.container.reserve(pastEvents.container.size());
+  seen_events.reserve(pastEvents.size());
 
   m_runningIntervals.clear();
 

@@ -14,6 +14,7 @@
 #include <boost/graph/adjacency_list.hpp>
 
 #include <ankerl/unordered_dense.h>
+
 namespace ossia
 {
 class time_event;

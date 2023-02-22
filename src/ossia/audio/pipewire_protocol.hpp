@@ -5,6 +5,7 @@
 #define OSSIA_AUDIO_PIPEWIRE 1
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/dylib_loader.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
 
 #include <pipewire/core.h>
@@ -190,10 +191,10 @@ struct pipewire_context
 
   struct graph
   {
-    std::unordered_map<uint32_t, node> physical_audio;
-    std::unordered_map<uint32_t, node> physical_midi;
-    std::unordered_map<uint32_t, node> software_audio;
-    std::unordered_map<uint32_t, node> software_midi;
+    ossia::hash_map<uint32_t, node> physical_audio;
+    ossia::hash_map<uint32_t, node> physical_midi;
+    ossia::hash_map<uint32_t, node> software_audio;
+    ossia::hash_map<uint32_t, node> software_midi;
 
     void for_each_port(auto func)
     {

@@ -9,7 +9,7 @@ struct json_writer_impl
   using writer_t = ossia::json_writer;
   writer_t& writer;
 
-  void writeKey(ossia::string_view k) const;
+  void writeKey(std::string_view k) const;
 
   void writeValue(const ossia::value& val, const ossia::unit_t& unit) const;
   void writeValue(ossia::bounding_mode b) const;
@@ -39,7 +39,7 @@ struct json_writer_impl
   }
 
   //! Writes a single attribute
-  void writeAttribute(const ossia::net::node_base& n, ossia::string_view method) const;
+  void writeAttribute(const ossia::net::node_base& n, std::string_view method) const;
 
   //! Writes only the attributes
   void writeNodeAttributes(const ossia::net::node_base& n) const;

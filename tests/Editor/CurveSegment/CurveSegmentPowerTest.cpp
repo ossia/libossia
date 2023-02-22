@@ -7,7 +7,7 @@
 #include <ossia/editor/curve/curve_segment/linear.hpp>
 #include <ossia/editor/curve/curve_segment/power.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 #include <iostream>
 

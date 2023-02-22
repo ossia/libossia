@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/nullable_variant.hpp>
 #include <ossia/network/sockets/websocket_client.hpp>
@@ -229,7 +230,8 @@ public:
       thread.join();
   }
 
-  void send_init(const std::map<std::string, ossia::variant<std::string, int>>& map)
+  void
+  send_init(const ossia::hash_map<std::string, ossia::variant<std::string, int>>& map)
   {
     rapidjson::StringBuffer buffer;
     ossia::json_writer writer{buffer};

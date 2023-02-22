@@ -119,7 +119,7 @@ private:
 
   QByteArray m_code;
   ossia::net::device_base* m_device{};
-  tsl::hopscotch_map<QNetworkReply*, const http_parameter*> m_replies;
+  ossia::hash_map<QNetworkReply*, const http_parameter*> m_replies;
 };
 using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
 class OSSIA_EXPORT HTTP : public QObject

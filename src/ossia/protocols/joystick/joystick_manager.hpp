@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/timer.hpp>
 #include <ossia/network/context.hpp>
@@ -105,7 +106,7 @@ public:
     return ret;
   }
 
-  std::map<SDL_JoystickID, joystick_protocol*> m_joystick_protocols;
+  ossia::hash_map<SDL_JoystickID, joystick_protocol*> m_joystick_protocols;
   std::mutex m_joystick_protocols_mutex;
 };
 

@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/network/base/address_scope.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/base/node.hpp>
@@ -13,7 +14,6 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <re2/re2.h>
-#include <tsl/hopscotch_set.h>
 
 #include <iostream>
 #include <regex>
@@ -39,7 +39,7 @@ void get_parent(std::vector<ossia::net::node_base*>& vec)
   std::vector<ossia::net::node_base*> old = std::move(vec);
   vec.clear();
 
-  tsl::hopscotch_set<ossia::net::node_base*> inserted;
+  ossia::hash_set<ossia::net::node_base*> inserted;
   for(auto ptr : old)
   {
     if(auto par = ptr->get_parent())
@@ -56,7 +56,7 @@ void get_parent(std::vector<ossia::net::node_base*>& vec)
 
 void get_all_children_rec(
     std::vector<ossia::net::node_base*>& vec,
-    tsl::hopscotch_set<ossia::net::node_base*>& inserted)
+    ossia::hash_set<ossia::net::node_base*>& inserted)
 {
   auto source = vec;
   std::vector<ossia::net::node_base*> sub;
@@ -85,7 +85,7 @@ void get_all_children_rec(
 }
 void get_all_children(std::vector<ossia::net::node_base*>& vec)
 {
-  tsl::hopscotch_set<ossia::net::node_base*> inserted;
+  ossia::hash_set<ossia::net::node_base*> inserted;
   get_all_children_rec(vec, inserted);
 }
 
@@ -281,7 +281,7 @@ void add_relative_path(std::string& part, path& p)
   }
 }
 
-bool is_pattern(ossia::string_view address)
+bool is_pattern(std::string_view address)
 {
   if(boost::starts_with(address, "//"))
     return true;

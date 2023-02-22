@@ -140,7 +140,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
     lock_type lock(m_nsRequestMutex);
     for(const auto& addr : m_nsRequests)
     {
-      m_sender->send(req, ossia::string_view(addr));
+      m_sender->send(req, std::string_view(addr));
     }
     m_lastSentMessage = get_time();
   }
@@ -185,7 +185,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
         {
           m_sender->send(
               name_table.get_action(ossia::minuit::minuit_action::NamespaceRequest),
-              ossia::string_view(req));
+              std::string_view(req));
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
 
@@ -199,7 +199,7 @@ bool minuit_protocol::update(ossia::net::node_base& node)
         {
           m_sender->send(
               name_table.get_action(ossia::minuit::minuit_action::GetRequest),
-              ossia::string_view(req));
+              std::string_view(req));
           std::this_thread::sleep_for(std::chrono::milliseconds(1));
         }
       }
@@ -231,7 +231,7 @@ void minuit_protocol::request(ossia::net::parameter_base& address)
   auto act = name_table.get_action(ossia::minuit::minuit_action::GetRequest);
   auto addr = address.get_node().osc_address();
   addr += ":value";
-  this->m_sender->send(act, ossia::string_view(addr));
+  this->m_sender->send(act, std::string_view(addr));
   m_lastSentMessage = get_time();
 }
 
@@ -317,19 +317,19 @@ bool minuit_protocol::observe_quietly(ossia::net::parameter_base& address, bool 
   return true;
 }
 
-void minuit_protocol::namespace_refresh(ossia::string_view req, const std::string& addr)
+void minuit_protocol::namespace_refresh(std::string_view req, const std::string& addr)
 {
   lock_type lock(m_nsRequestMutex);
   auto it = m_nsRequests.find(addr);
   if(it == m_nsRequests.end())
   {
     m_nsRequests.insert(addr);
-    m_sender->send(req, ossia::string_view(addr));
+    m_sender->send(req, std::string_view(addr));
     m_lastSentMessage = get_time();
   }
 }
 
-void minuit_protocol::namespace_refreshed(ossia::string_view addr)
+void minuit_protocol::namespace_refreshed(std::string_view addr)
 {
   lock_type lock(m_nsRequestMutex);
   auto it = m_nsRequests.find(addr);
@@ -345,26 +345,26 @@ void minuit_protocol::namespace_refreshed(ossia::string_view addr)
 }
 
 void minuit_protocol::get_refresh(
-    ossia::string_view req, const std::string& addr, std::promise<void>&& p)
+    std::string_view req, const std::string& addr, std::promise<void>&& p)
 {
   lock_type lock(m_getRequestMutex);
   auto it = m_getRequests.find(addr);
   if(it == m_getRequests.end())
   {
     m_getRequests[addr] = std::move(p);
-    m_sender->send(req, ossia::string_view(addr));
+    m_sender->send(req, std::string_view(addr));
 
     m_lastSentMessage = get_time();
   }
 }
 
-void minuit_protocol::get_refreshed(ossia::string_view addr)
+void minuit_protocol::get_refreshed(std::string_view addr)
 {
   lock_type lock(m_getRequestMutex);
   auto it = m_getRequests.find(addr);
   if(it != m_getRequests.end())
   {
-    it.value().set_value();
+    it->second.set_value();
     m_getRequests.erase(it);
   }
 }
@@ -377,7 +377,7 @@ osc::sender<osc_1_0_outbound_stream_visitor>& minuit_protocol::sender() const
 void minuit_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
-  ossia::string_view address{m.AddressPattern()};
+  std::string_view address{m.AddressPattern()};
 
   if(!address.empty() && address[0] == '/')
   {

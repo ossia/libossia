@@ -6,7 +6,7 @@
 #include <ossia/network/domain/domain_base.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 using namespace ossia;
 

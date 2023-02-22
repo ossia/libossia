@@ -14,7 +14,7 @@
 #include <QQmlComponent>
 #include <QQmlEngine>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
 
 TEST_CASE("test_client", "test_client")
 {

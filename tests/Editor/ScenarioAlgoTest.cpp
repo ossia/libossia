@@ -10,7 +10,9 @@
 #include <ossia/dataflow/nodes/messages.hpp>
 #include <ossia/dataflow/nodes/percentage.hpp>
 
-#include <catch.hpp>
+#include <catch2/catch.hpp>
+
+#include <iostream>
 
 auto create_event(ossia::scenario& s)
 {

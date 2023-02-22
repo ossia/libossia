@@ -240,7 +240,7 @@ public:
 
     vec.clear();
     const auto& vp = static_cast<ossia::value_inlet*>(inl[idx])->data.get_data();
-    vec.container.reserve(vp.size() + 1);
+    vec.reserve(vp.size() + 1);
 
     // in all cases, set the current value at t=0
     vec.insert(std::make_pair(int64_t{0}, get<N>(this->controls)));
@@ -377,7 +377,7 @@ public:
         if(!current_ctrls.empty())
         {
           ok = true;
-          control_out = std::move(current_ctrls.container.back().second);
+          control_out = std::move(current_ctrls.tree().get_sequence_cref().back().second);
           current_ctrls.clear();
         }
 
@@ -417,7 +417,7 @@ template <typename T>
 using controls_feedback_type_t = typename controls_feedback_type<T>::type;
 
 template <typename Node_T>
-requires std::is_same_v<typename Node_T::control_policy, ossia::safe_nodes::last_tick>
+  requires std::is_same_v<typename Node_T::control_policy, ossia::safe_nodes::last_tick>
 class safe_node<Node_T> final
     : public ossia::nonowning_graph_node
     , public get_state<Node_T>::type
@@ -700,7 +700,8 @@ public:
   [[nodiscard]] std::string label() const noexcept override { return "Control"; }
 };
 template <typename Node_T>
-requires std::is_same_v<typename Node_T::control_policy, ossia::safe_nodes::default_tick>
+  requires std::is_same_v<
+               typename Node_T::control_policy, ossia::safe_nodes::default_tick>
 class safe_node<Node_T> final
     : public ossia::nonowning_graph_node
     , public get_state<Node_T>::type
