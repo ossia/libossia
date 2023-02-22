@@ -28,12 +28,16 @@ struct lower_bound_helper
 struct map_key_helper
 {
   template <typename T>
+    requires requires(T it) { it->first; }
   auto operator()(const T& it) const noexcept
   {
-    if constexpr(requires { it->first; })
-      return it->first;
-    else
-      return *it;
+    return it->first;
+  }
+
+  template <typename T>
+  auto operator()(const T& it) const noexcept
+  {
+    return *it;
   }
 };
 }

@@ -29,6 +29,11 @@ template <
     typename K, typename V, typename H = ossia::hash<K>, typename E = ossia::equal_to<K>,
     typename A = std::allocator<std::pair<K, V>>>
 using hash_map = ankerl::unordered_dense::map<K, V, H, E, A>;
+
+template <
+    typename K, typename V, typename H = ossia::hash<K>, typename E = ossia::equal_to<K>,
+    typename A = void>
+using hash_multimap = std::unordered_multimap<K, V, H, E>;
 }
 #else
 #include <unordered_map>
@@ -44,5 +49,10 @@ template <
     typename K, typename V, typename H = ossia::hash<K>, typename E = ossia::equal_to<K>,
     typename A = void>
 using hash_map = std::unordered_map<K, V, H, E>;
+
+template <
+    typename K, typename V, typename H = ossia::hash<K>, typename E = ossia::equal_to<K>,
+    typename A = void>
+using hash_multimap = std::unordered_multimap<K, V, H, E>;
 }
 #endif
