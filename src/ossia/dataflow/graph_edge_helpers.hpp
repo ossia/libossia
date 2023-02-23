@@ -51,7 +51,9 @@ struct recabler
 
   void clear_cables(ossia::inlet& port)
   {
-    for(ossia::graph_edge* cable : port.cables())
+    // FIXME this allocates
+    auto cbl = port.cables();
+    for(ossia::graph_edge* cable : cbl)
     {
       graph->disconnect(cable);
       cable->clear();
@@ -60,7 +62,8 @@ struct recabler
   }
   void clear_cables(ossia::outlet& port)
   {
-    for(ossia::graph_edge* cable : port.cables())
+    auto cbl = port.cables();
+    for(ossia::graph_edge* cable : cbl)
     {
       graph->disconnect(cable);
       cable->clear();

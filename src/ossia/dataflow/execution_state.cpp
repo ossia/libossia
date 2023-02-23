@@ -995,8 +995,8 @@ static bool is_in(
 }
 static bool is_in(
     net::parameter_base& other,
-    const ossia::hash_map<
-        ossia::net::parameter_base*, value_vector<libremidi::message>>& container)
+    const ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>&
+        container)
 {
   auto it = container.find(&other);
   if(it == container.end())
@@ -1064,19 +1064,39 @@ ossia::net::node_base* exec_state_facade::find_node(std::string_view name) const
 auto exec_state_facade::timings(const token_request& t) const noexcept -> sample_timings
 {
   sample_timings tm;
-  tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
+  if(t.speed > 0.)
+  {
+    [[likely]];
+    tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
 
-  const auto tick_dur = t.physical_write_duration(impl->modelToSamplesRatio);
-  auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
-  if(max_dur < 0)
-    max_dur = 0;
+    const auto tick_dur = t.physical_write_duration(impl->modelToSamplesRatio);
+    auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
+    if(max_dur < 0)
+      max_dur = 0;
 
-  tm.length = std::min(tick_dur, max_dur);
+    tm.length = std::min(tick_dur, max_dur);
+  }
+  else if(t.speed == 0.)
+  {
+    tm.start_sample = 0;
+    tm.length = 0;
+    return tm;
+  }
+  else
+  {
+    tm.start_sample = -t.physical_start(impl->modelToSamplesRatio);
+
+    const auto tick_dur = -t.physical_write_duration(impl->modelToSamplesRatio);
+    auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
+    if(max_dur < 0)
+      max_dur = 0;
+
+    tm.length = std::min(tick_dur, max_dur);
+  }
   assert(tm.start_sample >= 0);
   assert(tm.start_sample < impl->bufferSize);
   assert(tm.length >= 0);
   assert(tm.start_sample + tm.length <= impl->bufferSize);
-
   return tm;
 }
 
