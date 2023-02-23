@@ -11,7 +11,7 @@ dmxusbpro_protocol::dmxusbpro_protocol(
     , m_context{ctx}
     , m_timer{ctx->context}
     , m_port{ctx->context}
-    , m_autocreate{conf.autocreate}
+    , m_conf{conf}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
@@ -43,7 +43,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  if(m_autocreate)
+  if(m_conf.autocreate)
   {
     auto& root = dev.get_root_node();
     for(unsigned int i = 0; i < 512; ++i)

@@ -48,7 +48,7 @@ private:
   ossia::net::device_base* m_device{};
 
   boost::asio::serial_port m_port;
-  bool m_autocreate{};
+  dmx_config m_conf{};
 };
 }
 #endif

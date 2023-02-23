@@ -28,7 +28,7 @@ artnet_protocol::artnet_protocol(
     : protocol_base{flags{}}
     , m_context{ctx}
     , m_timer{ctx->context}
-    , m_autocreate{conf.autocreate}
+    , m_conf{conf}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
@@ -45,10 +45,9 @@ artnet_protocol::artnet_protocol(
 
   if(m_node == NULL)
     throw std::runtime_error("Artnet new failed");
-  m_universe = conf.universe;
 
   artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX);
-  artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, m_universe);
+  artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, m_conf.universe);
 
   artnet_set_short_name(m_node, ARTNET_NODE_SHORT_NAME);
   artnet_set_long_name(m_node, ARTNET_NODE_LONG_NAME);
@@ -69,12 +68,18 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  if(m_autocreate)
+  if(m_conf.autocreate != m_conf.no_auto)
   {
     auto& root = dev.get_root_node();
     for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
+    {
+      auto name = m_conf.autocreate == m_conf.channel_index
+                      ? fmt::format("Channel-{}", i + 1)
+                      : std::to_string(i + 1);
+
       device_parameter::create_device_parameter<dmx_parameter>(
-          root, fmt::format("Channel-{}", i + 1), 0, m_buffer, i);
+          root, name, 0, m_buffer, i);
+    }
   }
 
   m_timer.start([this] { this->update_function(); });
@@ -109,7 +114,7 @@ void artnet_protocol::update_function()
 {
   if(m_buffer.dirty)
   {
-    artnet_raw_send_dmx(m_node, m_universe, DMX_CHANNEL_COUNT, m_buffer.data);
+    artnet_raw_send_dmx(m_node, m_conf.universe, DMX_CHANNEL_COUNT, m_buffer.data);
     m_buffer.dirty = false;
   }
 }

@@ -51,8 +51,7 @@ private:
   ossia::net::device_base* m_device{};
 
   ossia::net::udp_send_socket m_socket;
-  uint16_t m_universe{};
-  bool m_autocreate{};
+  dmx_config m_conf{};
 };
 
 }

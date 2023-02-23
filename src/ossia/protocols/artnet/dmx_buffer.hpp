@@ -12,7 +12,12 @@ struct dmx_config
 {
   uint32_t frequency{};
   uint16_t universe{};
-  bool autocreate{true};
+  enum
+  {
+    no_auto,
+    channel_index, // "Channel-123"
+    just_index     // "123"
+  } autocreate{no_auto};
   bool multicast{true};
 };
 
