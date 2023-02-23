@@ -19,7 +19,7 @@ protected:
   void device_update_value() override;
 
 private:
-  struct wiimote_t* m_wiimote;
+  struct wiimote_t* m_wiimote{};
 };
 
 class led_parameter : public device_parameter
@@ -35,8 +35,8 @@ protected:
   void device_update_value() override;
 
 private:
-  struct wiimote_t* m_wiimote;
-  const uint8_t m_led;
+  struct wiimote_t* m_wiimote{};
+  const uint8_t m_led{};
   static ossia::hash_map<wiimote_t*, uint8_t> m_led_mask;
 };
 }

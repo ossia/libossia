@@ -99,6 +99,59 @@ void dmx_parameter::device_update_value()
   m_buffer.dirty = true;
 }
 
+static ossia::domain_base<std::string> keys_to_domain(const auto& values)
+{
+  ossia::domain_base<std::string> ret;
+  for(auto& [k, v] : values)
+  {
+    ret.values.push_back(k);
+  }
+  return ret;
+}
+
+struct artnet_enum_visitor
+{
+  dmx_enum_parameter& self;
+  void apply(uint32_t bytes) const noexcept
+  {
+    self.m_buffer.data[self.m_channel] = bytes;
+  }
+  void operator()(int v) const noexcept { return apply(v); }
+  void operator()(float v) const noexcept { return apply(v); }
+  void operator()(const std::string& v) const noexcept
+  {
+    if(auto it = self.m_map.find(v); it != self.m_map.end())
+    {
+      apply(it->second);
+    }
+  }
+  template <typename... Args>
+  void operator()(Args&&...) const noexcept
+  {
+  }
+};
+
+dmx_enum_parameter::dmx_enum_parameter(
+    net::node_base& node, dmx_buffer& buffer, unsigned int channel,
+    std::vector<std::pair<std::string, uint8_t>> values)
+    : device_parameter(
+        node, val_type::STRING, bounding_mode::CLIP, access_mode::SET,
+        keys_to_domain(values))
+    , m_buffer{buffer}
+    , m_channel{channel}
+{
+  for(auto& [k, v] : values)
+    m_map[k] = v;
+}
+
+dmx_enum_parameter::~dmx_enum_parameter() = default;
+
+void dmx_enum_parameter::device_update_value()
+{
+  m_current_value.apply(artnet_enum_visitor{*this});
+  m_buffer.dirty = true;
+}
+
 /*
 ossia::domain make_domain_from_range(const artnet_range& r)
 {

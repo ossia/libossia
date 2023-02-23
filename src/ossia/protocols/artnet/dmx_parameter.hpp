@@ -32,6 +32,25 @@ private:
   friend struct artnet_visitor;
 };
 
+class OSSIA_EXPORT dmx_enum_parameter : public device_parameter
+{
+public:
+  dmx_enum_parameter(
+      net::node_base& node, dmx_buffer& buffer, unsigned int channel,
+      std::vector<std::pair<std::string, uint8_t>> values);
+  ~dmx_enum_parameter();
+
+private:
+  void device_update_value() override;
+
+  dmx_buffer& m_buffer;
+  const uint32_t m_channel{};
+
+  ossia::flat_map<std::string, uint8_t> m_map;
+
+  friend struct artnet_enum_visitor;
+};
+
 /*
 struct artnet_range_element {
   std::string name;

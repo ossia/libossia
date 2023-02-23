@@ -6,13 +6,13 @@ namespace ossia::net
 
 device_parameter::device_parameter(
     net::node_base& node, const val_type type, const bounding_mode bounding,
-    const access_mode access, const domain domain)
+    const access_mode access, domain domain)
     : net::parameter_base{node}
     , m_current_value{}
     , m_type{type}
     , m_bounding{bounding}
     , m_access{access}
-    , m_domain{domain}
+    , m_domain{std::move(domain)}
 {
   set_repetition_filter(repetition_filter::ON);
 }

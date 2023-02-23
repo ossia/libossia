@@ -18,7 +18,7 @@ public:
   device_parameter(
       ossia::net::node_base& node, const ossia::val_type type,
       const ossia::bounding_mode bounding, const ossia::access_mode access,
-      const ossia::domain domain);
+      ossia::domain domain);
 
   virtual ~device_parameter();
 
