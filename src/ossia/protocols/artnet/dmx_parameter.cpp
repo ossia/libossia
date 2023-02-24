@@ -60,7 +60,7 @@ struct artnet_visitor<1>
     self.m_buffer.data[self.m_channel] = std::clamp(v, 0.f, 255.f);
   }
   template <typename... Args>
-  void operator()(Args&&...) const noexcept
+  void operator()(const Args&...) const noexcept
   {
   }
 };
@@ -112,10 +112,7 @@ static ossia::domain_base<std::string> keys_to_domain(const auto& values)
 struct artnet_enum_visitor
 {
   dmx_enum_parameter& self;
-  void apply(uint32_t bytes) const noexcept
-  {
-    self.m_buffer.data[self.m_channel] = bytes;
-  }
+  void apply(uint32_t bytes) const noexcept { self.m_param.push_value((int)bytes); }
   void operator()(int v) const noexcept { return apply(v); }
   void operator()(float v) const noexcept { return apply(v); }
   void operator()(const std::string& v) const noexcept
@@ -126,22 +123,23 @@ struct artnet_enum_visitor
     }
   }
   template <typename... Args>
-  void operator()(Args&&...) const noexcept
+  void operator()(const Args&...) const noexcept
   {
   }
 };
 
 dmx_enum_parameter::dmx_enum_parameter(
-    net::node_base& node, dmx_buffer& buffer, unsigned int channel,
+    net::node_base& node, dmx_parameter& p,
     std::vector<std::pair<std::string, uint8_t>> values)
     : device_parameter(
         node, val_type::STRING, bounding_mode::CLIP, access_mode::SET,
         keys_to_domain(values))
-    , m_buffer{buffer}
-    , m_channel{channel}
+    , m_param{p}
 {
   for(auto& [k, v] : values)
+  {
     m_map[k] = v;
+  }
 }
 
 dmx_enum_parameter::~dmx_enum_parameter() = default;
@@ -149,7 +147,6 @@ dmx_enum_parameter::~dmx_enum_parameter() = default;
 void dmx_enum_parameter::device_update_value()
 {
   m_current_value.apply(artnet_enum_visitor{*this});
-  m_buffer.dirty = true;
 }
 
 /*

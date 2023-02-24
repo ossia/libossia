@@ -36,15 +36,14 @@ class OSSIA_EXPORT dmx_enum_parameter : public device_parameter
 {
 public:
   dmx_enum_parameter(
-      net::node_base& node, dmx_buffer& buffer, unsigned int channel,
+      net::node_base& node, dmx_parameter& p,
       std::vector<std::pair<std::string, uint8_t>> values);
   ~dmx_enum_parameter();
 
 private:
   void device_update_value() override;
 
-  dmx_buffer& m_buffer;
-  const uint32_t m_channel{};
+  dmx_parameter& m_param;
 
   ossia::flat_map<std::string, uint8_t> m_map;
 
