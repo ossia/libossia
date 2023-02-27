@@ -561,8 +561,10 @@ std::vector<std::shared_ptr<matcher>> get_matchers_for_address(
 
     // Exploring from a specified address, e.g. explore /foo.
     // FIXME this->m_name has to beset before this
-    if(auto matchers = self.find_or_create_matchers((ossia::net::generic_device*)device); matchers.empty())
+    auto matchers = self.find_or_create_matchers((ossia::net::generic_device*)device);
+    if(matchers.empty())
     {
+      self.m_addr_scope = ossia::net::address_scope::absolute;
       return {std::make_shared<matcher>(&device->get_root_node(), nullptr)};
     }
     else
@@ -664,10 +666,13 @@ void ocue::select_model(int argc, t_atom* argv)
 
 void ocue::do_display_model(std::string_view name)
 {
+  if (!m_ns.dev)
+      return;
+
   search_sort_filter filter_child_params = *this;
   //filter_child_params.m_sort = gensym("priority");
   filter_child_params.m_depth = 0;
-  filter_child_params.m_filter_terminal = 0;
+  filter_child_params.m_filter_terminal = 1;
   filter_child_params.m_format = gensym("jit.cellblock");
   filter_child_params.m_filter_type[0] = gensym("parameter");
   filter_child_params.m_filter_type_size = 1;
