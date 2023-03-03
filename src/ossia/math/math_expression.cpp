@@ -206,8 +206,10 @@ static std::vector<ossia::value> result_to_vec(auto& r)
       case type_t::e_vector: {
         std::vector<ossia::value> vec;
         vec.reserve(t.size);
-        for(std::size_t i = 0; i < t.size; i++)
-          vec.emplace_back(t.vec_data[t.size]);
+        for(std::size_t j = 0; j < t.size; j++)
+        {
+          vec.emplace_back(t.vec_data[j]);
+        }
         ret.emplace_back(ossia::value{std::move(vec)});
         break;
       }
