@@ -28,14 +28,24 @@ struct midi_channel
   // No need to store PC since they are only impulses
 
   // Callbacks
-  midi_parameter* callback_note_on{};
-  midi_parameter* callback_note_off{};
-  midi_parameter* callback_cc{};
-  midi_parameter* callback_pc{};
-  midi_parameter* callback_pb{};
-  std::array<midi_parameter*, 128> callback_note_on_N = {{}};
-  std::array<midi_parameter*, 128> callback_note_off_N = {{}};
-  std::array<midi_parameter*, 128> callback_cc_N = {{}};
-  std::array<midi_parameter*, 128> callback_pc_N = {{}};
+  midi_parameter* param_note_on{};
+  midi_parameter* param_note_off{};
+  midi_parameter* param_cc{};
+  midi_parameter* param_pc{};
+  midi_parameter* param_pb{};
+  std::array<midi_parameter*, 128> param_note_on_N = {{}};
+  std::array<midi_parameter*, 128> param_note_off_N = {{}};
+  std::array<midi_parameter*, 128> param_cc_N = {{}};
+  std::array<midi_parameter*, 128> param_pc_N = {{}};
+
+  bool callback_note_on{};
+  bool callback_note_off{};
+  bool callback_cc{};
+  bool callback_pc{};
+  bool callback_pb{};
+  std::array<bool, 128> callback_note_on_N = {{}};
+  std::array<bool, 128> callback_note_off_N = {{}};
+  std::array<bool, 128> callback_cc_N = {{}};
+  std::array<bool, 128> callback_pc_N = {{}};
 };
 }

@@ -49,7 +49,9 @@ struct OSSIA_EXPORT midi_info
   bool is_virtual{};
 };
 
-class OSSIA_EXPORT midi_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT midi_protocol final
+    : public ossia::net::protocol_base
+    , public Nano::Observer
 {
 public:
   explicit midi_protocol(
@@ -107,7 +109,14 @@ private:
   bool update(ossia::net::node_base& node_base) override;
   void set_device(ossia::net::device_base& dev) override;
 
-  void value_callback(ossia::net::parameter_base& param, const ossia::value& val);
+  void register_parameter(midi_parameter& adrs);
+  void unregister_parameter(midi_parameter& adrs);
+  void register_parameter_base(const ossia::net::parameter_base& adrs);
+  void unregister_parameter_base(const ossia::net::parameter_base& adrs);
+  void register_node_base(const ossia::net::node_base& adrs);
+  void unregister_node_base(const ossia::net::node_base& adrs);
+  void value_callback(
+      bool observed, ossia::net::parameter_base& param, const ossia::value& val);
 
   void midi_callback(const libremidi::message&);
   void on_learn(const libremidi::message& m);

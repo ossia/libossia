@@ -289,41 +289,56 @@ bool midi_protocol::push_raw(const full_parameter_data& parameter_base)
 
 bool midi_protocol::observe(parameter_base& address, bool enable)
 {
-  enable = true;
   midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
   if(m_info.type != midi_info::Type::Input)
     return false;
 
-  auto adrs_ptr = &adrs;
   auto& adrinfo = adrs.info();
   switch(adrinfo.type)
   {
+    case address_info::Type::NoteOn: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.callback_note_on = enable;
+      return true;
+    }
+    case address_info::Type::NoteOff: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.callback_note_off = enable;
+      return true;
+    }
+    case address_info::Type::CC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.callback_cc = enable;
+      return true;
+    }
+    case address_info::Type::PC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.callback_pc = enable;
+      return true;
+    }
     case address_info::Type::NoteOn_N: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_note_on_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_note_on_N[adrinfo.note] = enable;
       return true;
     }
-
     case address_info::Type::NoteOff_N: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_note_off_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_note_off_N[adrinfo.note] = enable;
       return true;
     }
-
     case address_info::Type::CC_N: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_cc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_cc_N[adrinfo.note] = enable;
       return true;
     }
-
     case address_info::Type::PC_N: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_pc_N[adrinfo.note] = enable ? adrs_ptr : nullptr;
+      chan.callback_pc_N[adrinfo.note] = enable;
       return true;
     }
     case address_info::Type::PB: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_pb = enable ? adrs_ptr : nullptr;
+      chan.callback_pb = enable;
       return true;
     }
 
@@ -340,14 +355,169 @@ bool midi_protocol::update(node_base& node)
   return false;
 }
 
-void midi_protocol::set_device(device_base& dev)
+void midi_protocol::register_node_base(const ossia::net::node_base& n)
 {
-  m_dev = static_cast<midi_device*>(&dev);
+  ossia::net::iterate_all_children(
+      (ossia::net::node_base*)&n, [this](ossia::net::parameter_base& adrs) {
+        if(auto p = dynamic_cast<midi_parameter*>(&adrs))
+          register_parameter(*p);
+      });
+}
+void midi_protocol::unregister_node_base(const ossia::net::node_base& n)
+{
+  ossia::net::iterate_all_children(
+      (ossia::net::node_base*)&n, [this](ossia::net::parameter_base& adrs) {
+        if(auto p = dynamic_cast<midi_parameter*>(&adrs))
+          unregister_parameter(*p);
+      });
 }
 
-void midi_protocol::value_callback(parameter_base& param, const value& val)
+void midi_protocol::register_parameter_base(const ossia::net::parameter_base& adrs)
 {
-  param.set_value(val);
+  if(auto p = dynamic_cast<const midi_parameter*>(&adrs))
+    register_parameter(const_cast<midi_parameter&>(*p));
+}
+void midi_protocol::unregister_parameter_base(const ossia::net::parameter_base& adrs)
+{
+  if(auto p = dynamic_cast<const midi_parameter*>(&adrs))
+    unregister_parameter(const_cast<midi_parameter&>(*p));
+}
+
+void midi_protocol::register_parameter(midi_parameter& adrs)
+{
+  auto adrs_ptr = &adrs;
+  auto& adrinfo = adrs.info();
+  switch(adrinfo.type)
+  {
+    case address_info::Type::NoteOn: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_on = adrs_ptr;
+      break;
+    }
+    case address_info::Type::NoteOff: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_off = adrs_ptr;
+      break;
+    }
+    case address_info::Type::CC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_cc = adrs_ptr;
+      break;
+    }
+    case address_info::Type::PC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pc = adrs_ptr;
+      break;
+    }
+    case address_info::Type::NoteOn_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_on_N[adrinfo.note] = adrs_ptr;
+      break;
+    }
+    case address_info::Type::NoteOff_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_off_N[adrinfo.note] = adrs_ptr;
+      break;
+    }
+    case address_info::Type::CC_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_cc_N[adrinfo.note] = adrs_ptr;
+      break;
+    }
+    case address_info::Type::PC_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pc_N[adrinfo.note] = adrs_ptr;
+      break;
+    }
+    case address_info::Type::PB: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pb = adrs_ptr;
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void midi_protocol::unregister_parameter(midi_parameter& adrs)
+{
+  auto& adrinfo = adrs.info();
+  switch(adrinfo.type)
+  {
+    case address_info::Type::NoteOn: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_on = nullptr;
+      break;
+    }
+    case address_info::Type::NoteOff: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_off = nullptr;
+      break;
+    }
+    case address_info::Type::CC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_cc = nullptr;
+      break;
+    }
+    case address_info::Type::PC: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pc = nullptr;
+      break;
+    }
+    case address_info::Type::NoteOn_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_on_N[adrinfo.note] = nullptr;
+      break;
+    }
+    case address_info::Type::NoteOff_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_note_off_N[adrinfo.note] = nullptr;
+      break;
+    }
+    case address_info::Type::CC_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_cc_N[adrinfo.note] = nullptr;
+      break;
+    }
+    case address_info::Type::PC_N: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pc_N[adrinfo.note] = nullptr;
+      break;
+    }
+    case address_info::Type::PB: {
+      midi_channel& chan = m_channels[adrinfo.channel - 1];
+      chan.param_pb = nullptr;
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+void midi_protocol::set_device(device_base& dev)
+{
+  // FIXME handle reassignment of device
+  assert(!m_dev);
+  m_dev = static_cast<midi_device*>(&dev);
+  m_dev->on_node_created.connect<&midi_protocol::register_node_base>(this);
+  m_dev->on_node_removing.connect<&midi_protocol::unregister_node_base>(this);
+  m_dev->on_parameter_created.connect<&midi_protocol::register_parameter_base>(this);
+  m_dev->on_parameter_removing.connect<&midi_protocol::unregister_parameter_base>(this);
+
+  if(m_info.type == midi_info::Type::Input)
+  {
+    // Setup callbacks
+    ossia::net::iterate_all_children(m_dev, [this](ossia::net::parameter_base& p) {
+      register_parameter(dynamic_cast<midi_parameter&>(p));
+    });
+  }
+}
+
+void midi_protocol::value_callback(
+    bool observed, parameter_base& param, const value& val)
+{
+  observed ? param.set_value(val) : param.set_value_quiet(val);
+
   m_dev->on_message(param);
 }
 
@@ -379,64 +549,69 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       c.note_on.first = mess.bytes[1];
       c.note_on.second = mess.bytes[2];
       c.note_on_N[c.note_on.first] = c.note_on.second;
-      if(auto ptr = c.callback_note_on)
+      if(c.param_note_on)
       {
         std::vector<ossia::value> t{int32_t{c.note_on.first}, int32_t{c.note_on.second}};
-        value_callback(*ptr, ossia::value{std::move(t)});
+        value_callback(c.callback_note_on, *c.param_note_on, ossia::value{std::move(t)});
       }
-      if(auto ptr = c.callback_note_on_N[c.note_on.first])
+      if(c.param_note_on_N[c.note_on.first])
       {
         int32_t val{c.note_on_N[c.note_on.first]};
-        value_callback(*ptr, val);
+        value_callback(
+            c.callback_note_on_N[c.note_on.first], *c.param_note_on_N[c.note_on.first],
+            val);
       }
       break;
     case libremidi::message_type::NOTE_OFF:
       c.note_off.first = mess.bytes[1];
       c.note_off.second = mess.bytes[2];
       c.note_off_N[c.note_off.first] = c.note_off.second;
-      if(auto ptr = c.callback_note_off)
+      if(c.param_note_off)
       {
         std::vector<ossia::value> t{
             int32_t{c.note_off.first}, int32_t{c.note_off.second}};
-        value_callback(*ptr, ossia::value{std::move(t)});
+        value_callback(
+            c.callback_note_off, *c.param_note_off, ossia::value{std::move(t)});
       }
-      if(auto ptr = c.callback_note_off_N[c.note_off.first])
+      if(c.param_note_off_N[c.note_off.first])
       {
         int32_t val{c.note_off_N[c.note_off.first]};
-        value_callback(*ptr, val);
+        value_callback(
+            c.callback_note_off_N[c.note_off.first],
+            *c.param_note_off_N[c.note_off.first], val);
       }
       break;
     case libremidi::message_type::CONTROL_CHANGE:
       c.cc.first = mess.bytes[1];
       c.cc.second = mess.bytes[2];
       c.cc_N[c.cc.first] = c.cc.second;
-      if(auto ptr = c.callback_cc)
+      if(c.param_cc)
       {
         std::vector<ossia::value> t{int32_t{c.cc.first}, int32_t{c.cc.second}};
-        value_callback(*ptr, ossia::value{std::move(t)});
+        value_callback(c.callback_cc, *c.param_cc, ossia::value{std::move(t)});
       }
-      if(auto ptr = c.callback_cc_N[c.cc.first])
+      if(c.param_cc_N[c.cc.first])
       {
         int32_t val{c.cc_N[c.cc.first]};
-        value_callback(*ptr, val);
+        value_callback(c.callback_cc_N[c.cc.first], *c.param_cc_N[c.cc.first], val);
       }
       break;
     case libremidi::message_type::PROGRAM_CHANGE:
       c.pc = mess.bytes[1];
-      if(auto ptr = c.callback_pc)
+      if(c.param_pc)
       {
-        value_callback(*ptr, int32_t{c.pc});
+        value_callback(c.callback_pc, *c.param_pc, int32_t{c.pc});
       }
-      if(auto ptr = c.callback_pc_N[c.pc])
+      if(c.param_pc_N[c.pc])
       {
-        value_callback(*ptr, ossia::impulse{});
+        value_callback(c.callback_pc_N[c.pc], *c.param_pc_N[c.pc], ossia::impulse{});
       }
       break;
     case libremidi::message_type::PITCH_BEND:
       c.pb = mess.bytes[2] * 128 + mess.bytes[1];
-      if(auto ptr = c.callback_pb)
+      if(c.param_pb)
       {
-        value_callback(*ptr, int32_t{c.pb});
+        value_callback(c.callback_pb, *c.param_pb, int32_t{c.pb});
       }
       break;
     default:
@@ -471,11 +646,13 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto node = find_or_create<generic_node>(
           "on", *m_dev, *channel_node,
           address_info{chan, address_info::Type::NoteOn, 0});
+      register_parameter(static_cast<midi_parameter&>(*node->get_parameter()));
 
       auto n = mess.bytes[1];
-      find_or_create<generic_node>(
+      auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::NoteOn_N, n});
+      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
       break;
     }
 
@@ -483,11 +660,13 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto node = find_or_create<generic_node>(
           "off", *m_dev, *channel_node,
           address_info{chan, address_info::Type::NoteOff, 0});
+      register_parameter(static_cast<midi_parameter&>(*node->get_parameter()));
 
       auto n = mess.bytes[1];
-      find_or_create<generic_node>(
+      auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::NoteOff_N, n});
+      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
       break;
     }
 
@@ -495,11 +674,13 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto node = find_or_create<generic_node>(
           "control", *m_dev, *channel_node,
           address_info{chan, address_info::Type::CC, 0});
+      register_parameter(static_cast<midi_parameter&>(*node->get_parameter()));
 
       auto n = mess.bytes[1];
-      find_or_create<generic_node>(
+      auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::CC_N, n});
+      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
       break;
     }
 
@@ -507,18 +688,21 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto node = find_or_create<generic_node>(
           "program", *m_dev, *channel_node,
           address_info{chan, address_info::Type::PC, 0});
+      register_parameter(static_cast<midi_parameter&>(*node->get_parameter()));
 
       auto n = mess.bytes[1];
-      find_or_create<generic_node>(
+      auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::PC_N, n});
+      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
       break;
     }
 
     case libremidi::message_type::PITCH_BEND: {
-      find_or_create<generic_node>(
+      auto node = find_or_create<generic_node>(
           "pitchbend", *m_dev, *channel_node,
           address_info{chan, address_info::Type::PB, 0});
+      register_parameter(static_cast<midi_parameter&>(*node->get_parameter()));
       break;
     }
     default:

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/editor/state/message.hpp>
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/value/value.hpp>
 #include <ossia/protocols/midi/detail/channel.hpp>
@@ -60,6 +61,7 @@ public:
         break;
     }
 
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -127,6 +129,7 @@ public:
       , midi_parameter{address_info{channel, address_info::Type::NoteOn_N, note}, *this}
   {
     m_name = midi_node_name(note);
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -155,6 +158,7 @@ public:
       , midi_parameter{address_info{channel, address_info::Type::NoteOff_N, note}, *this}
   {
     m_name = midi_node_name(note);
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -183,6 +187,7 @@ public:
       , midi_parameter{address_info{channel, address_info::Type::CC_N, param}, *this}
   {
     m_name = midi_node_name(param);
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -211,6 +216,7 @@ public:
       , midi_parameter{address_info{channel, address_info::Type::PC_N, param}, *this}
   {
     m_name = midi_node_name(param);
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -238,6 +244,7 @@ public:
   {
     using namespace std::literals;
     m_name = "program"s;
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
     m_children.reserve(128);
     for(int i = 0; i < 128; i++)
@@ -271,6 +278,7 @@ public:
   {
     using namespace std::literals;
     m_name = "on"s;
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
     m_children.reserve(128);
     for(int i = 0; i < 128; i++)
@@ -305,6 +313,7 @@ public:
   {
     using namespace std::literals;
     m_name = "off"s;
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
 
     m_children.reserve(128);
@@ -339,6 +348,7 @@ public:
   {
     using namespace std::literals;
     m_name = "control"s;
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
 
     m_children.reserve(128);
@@ -374,6 +384,7 @@ public:
   {
     using namespace std::literals;
     m_name = "pitchbend"s;
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_parameter.reset(this);
   }
 
@@ -402,6 +413,7 @@ public:
       , channel{channel}
   {
     m_name = midi_node_name(channel);
+    m_oscAddressCache = ossia::net::osc_parameter_string((ossia::net::node_base&)*this);
     m_children.reserve(5);
 
     if(init)

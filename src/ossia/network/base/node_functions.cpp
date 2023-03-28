@@ -883,6 +883,16 @@ list_all_children(ossia::net::node_base* node, unsigned int depth)
   return list;
 }
 
+void iterate_all_children(
+    ossia::net::node_base* node,
+    const std::function<void(ossia::net::parameter_base&)>& f)
+{
+  if(auto p = node->get_parameter())
+    f(*p);
+  for(auto& cld : node->unsafe_children())
+    iterate_all_children(cld.get(), f);
+}
+
 /**
  * @brief fuzzysearch: search for nodes that match the pattern string
  * @param nodes: vector of nodes from where to start

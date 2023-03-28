@@ -3,6 +3,8 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/value/destination.hpp>
 
+#include <functional>
+
 /**
  * \file node_functions.hpp
  *
@@ -135,6 +137,14 @@ std::pair<std::vector<std::string>, bool> expand_address(const std::string& addr
 OSSIA_EXPORT
 std::vector<ossia::net::node_base*>
 list_all_children(ossia::net::node_base* node, unsigned int depth = 0);
+
+/**
+ * @brief Iterates all the child parameters given a base node
+ */
+OSSIA_EXPORT
+void iterate_all_children(
+    ossia::net::node_base* node,
+    const std::function<void(ossia::net::parameter_base&)>&);
 
 struct OSSIA_EXPORT fuzzysearch_result
 {

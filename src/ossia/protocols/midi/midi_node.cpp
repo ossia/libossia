@@ -5,6 +5,7 @@
 #include <ossia/protocols/midi/midi_parameter.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
 
+#include <charconv>
 namespace ossia::net::midi
 {
 struct midi_name_table
@@ -12,7 +13,11 @@ struct midi_name_table
   midi_name_table()
   {
     for(int i = 0; i < 128; i++)
-      names[i] = boost::lexical_cast<std::string>(i);
+    {
+      char str[16] = {0};
+      std::to_chars(str, str + 16, i);
+      names[i] = str;
+    }
   }
 
   std::array<std::string, 128> names;
