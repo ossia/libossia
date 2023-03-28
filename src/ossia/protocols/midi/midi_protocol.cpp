@@ -525,8 +525,13 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
 {
   if(m_logger.inbound_logger)
   {
-    m_logger.inbound_logger->info(
-        "MIDI in: {0} {1} {2}", mess.bytes[0], mess.bytes[1], mess.bytes[2]);
+    if(mess.bytes.size() >= 3)
+      m_logger.inbound_logger->info(
+          "MIDI in: {0} {1} {2}", mess.bytes[0], mess.bytes[1], mess.bytes[2]);
+    else if(mess.bytes.size() == 2)
+      m_logger.inbound_logger->info("MIDI in: {0} {1}", mess.bytes[0], mess.bytes[1]);
+    else if(mess.bytes.size() == 1)
+      m_logger.inbound_logger->info("MIDI in: {0}", mess.bytes[0]);
   }
 
   if(m_learning)
