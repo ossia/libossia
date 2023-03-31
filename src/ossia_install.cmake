@@ -260,6 +260,7 @@ install(
       FILES
         "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/concurrentqueue.h"
         "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/blockingconcurrentqueue.h"
+        "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/lightweightsemaphore.h"
       DESTINATION include/
       COMPONENT Devel
 )
