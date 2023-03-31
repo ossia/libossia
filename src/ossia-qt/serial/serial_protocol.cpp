@@ -396,7 +396,7 @@ void serial_protocol::do_write(
     if(!r1.isError())
     {
       auto var = r1.toVariant();
-      if(var.type() == (QVariant::Type)QMetaType::QByteArray)
+      if(var.typeId() == QMetaType::QByteArray)
       {
         auto ba = var.toByteArray();
         port.on_write(ba);

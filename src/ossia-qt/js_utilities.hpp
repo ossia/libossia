@@ -21,6 +21,7 @@
 #include <QString>
 #include <QStringBuilder>
 #include <QTime>
+#include <QVariant>
 #include <QVariantList>
 #include <QtGui/QColor>
 #include <QtGui/QQuaternion>
@@ -226,7 +227,7 @@ struct OSSIA_EXPORT qt_to_ossia
 
 struct ossia_to_qvariant
 {
-  QVariant operator()(QVariant::Type type, const ossia::value& ossia_val);
+  QVariant operator()(QMetaType::Type type, const ossia::value& ossia_val);
 
   QVariant operator()(impulse) const { return {}; }
 
@@ -425,7 +426,7 @@ std::optional<T> get_enum(const QJSValue& val)
 OSSIA_EXPORT
 ossia::net::parameter_data make_parameter_data(const QJSValue& js);
 
-void set_parameter_type(QVariant::Type type, ossia::net::parameter_base& addr);
+void set_parameter_type(QMetaType::Type type, ossia::net::parameter_base& addr);
 
 /**
  * @defgroup JSTreeCreation
@@ -574,12 +575,12 @@ QMetaObject::Connection connectSignalToMatchingMethod(
   switch(sig.parameterCount())
   {
     case 0: {
-      return QObject::connect(source, sig, target, meth[QVariant::Invalid]);
+      return QObject::connect(source, sig, target, meth[QMetaType::UnknownType]);
     }
     case 1: {
       auto t = sig.parameterType(0);
 
-      auto method_it = meth.find((QVariant::Type)t);
+      auto method_it = meth.find((QMetaType::Type)t);
       if(method_it != meth.end())
       {
         return QObject::connect(source, sig, target, method_it->second);
@@ -605,7 +606,7 @@ QMetaObject::Connection connectSignalToMatchingMethod(
     case 1: {
       auto t = meth.parameterType(0);
 
-      auto method_it = methods.find((QVariant::Type)t);
+      auto method_it = methods.find((QMetaType::Type)t);
       if(method_it != methods.end())
       {
         return QObject::connect(source, prop.method(), target, method_it->second);

@@ -583,139 +583,139 @@ value value_from_js(const QJSValue& v)
 }
 #endif
 
-void set_parameter_type(QVariant::Type type, net::parameter_base& addr)
+void set_parameter_type(QMetaType::Type type, net::parameter_base& addr)
 {
   switch(type)
   {
-    case QVariant::Bool:
+    case QMetaType::Bool:
       addr.set_value_type(ossia::val_type::BOOL);
       break;
-    case QVariant::Time:
-    case QVariant::Int:
-    case QVariant::UInt:
-    case QVariant::ULongLong:
-    case QVariant::Char:
+    case QMetaType::QTime:
+    case QMetaType::Int:
+    case QMetaType::UInt:
+    case QMetaType::ULongLong:
+    case QMetaType::Char:
       addr.set_value_type(ossia::val_type::INT);
       break;
-    case QVariant::String:
-    case QVariant::ByteArray:
+    case QMetaType::QString:
+    case QMetaType::QByteArray:
       addr.set_value_type(ossia::val_type::STRING);
       break;
-    case QVariant::Double:
+    case QMetaType::Double:
       addr.set_value_type(ossia::val_type::FLOAT);
       break;
-    case QVariant::Color:
+    case QMetaType::QColor:
       addr.set_unit(ossia::argb_u{});
       break;
-    case QVariant::Point:
-    case QVariant::PointF:
-    case QVariant::Vector2D:
-    case QVariant::Size:
-    case QVariant::SizeF:
+    case QMetaType::QPoint:
+    case QMetaType::QPointF:
+    case QMetaType::QVector2D:
+    case QMetaType::QSize:
+    case QMetaType::QSizeF:
       addr.set_unit(ossia::cartesian_2d_u{});
       break;
-    case QVariant::Vector3D:
+    case QMetaType::QVector3D:
       addr.set_unit(ossia::cartesian_3d_u{});
       break;
-    case QVariant::Vector4D:
+    case QMetaType::QVector4D:
       addr.set_unit(ossia::axis_u{});
       break;
-    case QVariant::Quaternion:
+    case QMetaType::QQuaternion:
       addr.set_unit(ossia::quaternion_u{});
       break;
-    case QVariant::Line:
-    case QVariant::LineF:
-    case QVariant::Rect:
-    case QVariant::RectF:
+    case QMetaType::QLine:
+    case QMetaType::QLineF:
+    case QMetaType::QRect:
+    case QMetaType::QRectF:
       addr.set_value_type(ossia::val_type::VEC4F);
       break;
-    case QVariant::List:
-    case QVariant::StringList:
-    case QVariant::Date:
+    case QMetaType::QVariantList:
+    case QMetaType::QStringList:
+    case QMetaType::QDate:
     default:
       addr.set_value_type(ossia::val_type::LIST);
       break;
   }
 }
 
-QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_val)
+QVariant ossia_to_qvariant::operator()(QMetaType::Type type, const value& ossia_val)
 {
   switch(type)
   {
-    case QVariant::Bool:
+    case QMetaType::Bool:
       return QVariant::fromValue(convert<bool>(ossia_val));
-    case QVariant::Time:
+    case QMetaType::QTime:
       return QVariant::fromValue(QTime().addMSecs(convert<int>(ossia_val)));
-    case QVariant::Int:
+    case QMetaType::Int:
       return QVariant::fromValue(convert<int>(ossia_val));
-    case QVariant::UInt:
+    case QMetaType::UInt:
       return QVariant::fromValue((quint32)convert<int>(ossia_val));
-    case QVariant::ULongLong:
+    case QMetaType::ULongLong:
       return QVariant::fromValue((qlonglong)convert<int>(ossia_val));
-    case QVariant::Char:
+    case QMetaType::Char:
       return QVariant::fromValue(QChar::fromLatin1(convert<char>(ossia_val)));
-    case QVariant::String:
+    case QMetaType::QString:
       return QVariant::fromValue(
           QString::fromStdString(convert<std::string>(ossia_val)));
-    case QVariant::ByteArray:
+    case QMetaType::QByteArray:
       return QVariant::fromValue(
           QByteArray::fromStdString(convert<std::string>(ossia_val)));
-    case QVariant::Double:
+    case QMetaType::Double:
       return QVariant::fromValue(convert<double>(ossia_val));
-    case QVariant::Color: {
+    case QMetaType::QColor: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QColor::fromRgbF(val[1], val[2], val[3], val[0]));
     }
-    case QVariant::Point: {
+    case QMetaType::QPoint: {
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPoint(val[0], val[1]));
     }
-    case QVariant::PointF: {
+    case QMetaType::QPointF: {
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QPointF(val[0], val[1]));
     }
-    case QVariant::Vector2D: {
+    case QMetaType::QVector2D: {
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QVector2D(val[0], val[1]));
     }
     break;
-    case QVariant::Vector3D: {
+    case QMetaType::QVector3D: {
       auto val = convert<vec3f>(ossia_val);
       return QVariant::fromValue(QVector3D(val[0], val[1], val[2]));
     }
-    case QVariant::Vector4D: {
+    case QMetaType::QVector4D: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QVector4D(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::Quaternion: {
+    case QMetaType::QQuaternion: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QQuaternion(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::Line: {
+    case QMetaType::QLine: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLine(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::LineF: {
+    case QMetaType::QLineF: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QLineF(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::Rect: {
+    case QMetaType::QRect: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRect(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::RectF: {
+    case QMetaType::QRectF: {
       auto val = convert<vec4f>(ossia_val);
       return QVariant::fromValue(QRectF(val[0], val[1], val[2], val[3]));
     }
-    case QVariant::Size: {
+    case QMetaType::QSize: {
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSize(val[0], val[1]));
     }
-    case QVariant::SizeF: {
+    case QMetaType::QSizeF: {
       auto val = convert<vec2f>(ossia_val);
       return QVariant::fromValue(QSizeF(val[0], val[1]));
     }
-    case QVariant::List: {
+    case QMetaType::QVariantList: {
       auto val = convert<std::vector<ossia::value>>(ossia_val);
       QVariantList vars;
       vars.reserve(val.size());
@@ -725,7 +725,7 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
       }
       return vars;
     }
-    case QVariant::StringList: {
+    case QMetaType::QStringList: {
       auto val = convert<std::vector<ossia::value>>(ossia_val);
       QStringList vars;
       vars.reserve(val.size());
@@ -735,7 +735,7 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
       }
       return vars;
     }
-    case QVariant::Date:
+    case QMetaType::QDate:
     // TODO double ?
     default: {
       // Use the ossia type instead
@@ -747,59 +747,59 @@ QVariant ossia_to_qvariant::operator()(QVariant::Type type, const value& ossia_v
 
 value qt_to_ossia::operator()(const QVariant& v)
 {
-  switch(v.type())
+  switch(v.typeId())
   {
-    case QVariant::Bool:
+    case QMetaType::Bool:
       return operator()(v.toBool());
-    case QVariant::Time:
+    case QMetaType::QTime:
       return operator()(v.toTime());
-    case QVariant::Int:
+    case QMetaType::Int:
       return operator()(v.toInt());
-    case QVariant::UInt:
+    case QMetaType::UInt:
       return operator()(v.toUInt());
-    case QVariant::ULongLong:
+    case QMetaType::ULongLong:
       return operator()(v.toLongLong());
-    case QVariant::Char:
+    case QMetaType::Char:
       return operator()(v.toChar());
-    case QVariant::String:
+    case QMetaType::QString:
       return operator()(v.toString());
-    case QVariant::ByteArray:
+    case QMetaType::QByteArray:
       return operator()(v.toByteArray());
-    case QVariant::Double:
+    case QMetaType::Double:
       return operator()(v.toDouble());
-    case QVariant::Color:
+    case QMetaType::QColor:
       return operator()(v.value<QColor>());
-    case QVariant::Point:
+    case QMetaType::QPoint:
       return operator()(v.toPoint());
-    case QVariant::PointF:
+    case QMetaType::QPointF:
       return operator()(v.toPointF());
-    case QVariant::Vector2D:
+    case QMetaType::QVector2D:
       return operator()(v.value<QVector2D>());
-    case QVariant::Size:
+    case QMetaType::QSize:
       return operator()(v.toSize());
-    case QVariant::SizeF:
+    case QMetaType::QSizeF:
       return operator()(v.toSizeF());
-    case QVariant::Vector3D:
+    case QMetaType::QVector3D:
       return operator()(v.value<QVector3D>());
-    case QVariant::Vector4D:
+    case QMetaType::QVector4D:
       return operator()(v.value<QVector4D>());
-    case QVariant::Quaternion:
+    case QMetaType::QQuaternion:
       return operator()(v.value<QQuaternion>());
-    case QVariant::Line:
+    case QMetaType::QLine:
       return operator()(v.toLine());
-    case QVariant::LineF:
+    case QMetaType::QLineF:
       return operator()(v.toLineF());
-    case QVariant::Rect:
+    case QMetaType::QRect:
       return operator()(v.toRect());
-    case QVariant::RectF:
+    case QMetaType::QRectF:
       return operator()(v.toRectF());
-    case QVariant::List:
+    case QMetaType::QVariantList:
       return operator()(v.toList());
-    case QVariant::Map:
+    case QMetaType::QVariantMap:
       return operator()(v.toMap());
-    case QVariant::StringList:
+    case QMetaType::QStringList:
       return operator()(v.toStringList());
-    case QVariant::Date:
+    case QMetaType::QDate:
       return operator()(v.toDate());
 
 #if __has_include(<QJSValue>)
