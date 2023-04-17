@@ -45,6 +45,16 @@ extended_type list_type()
   return "list";
 }
 
+extended_type nil_type()
+{
+  return "nil";
+}
+
+extended_type empty_type()
+{
+  return "empty";
+}
+
 std::vector<ossia::val_type> underlying_type(const extended_type& e)
 {
   if(e == generic_buffer_type() || e == filesystem_path_type() || e == url_type())
@@ -58,6 +68,10 @@ std::vector<ossia::val_type> underlying_type(const extended_type& e)
   if(e == list_type() || e == float_list_type() || e == integer_list_type()
      || e == string_list_type())
     return {ossia::val_type::LIST};
+
+  if(e == nil_type() || e == empty_type())
+    return {ossia::val_type::IMPULSE};
+
   return {};
 }
 }

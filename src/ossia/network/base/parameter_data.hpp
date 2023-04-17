@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/any_map.hpp>
+#include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/dataspace/dataspace.hpp>

@@ -199,6 +199,8 @@ static const ossia::string_map<net::parameter_data>& parameter_creation_map()
     add_ext(integer_list_type());
     add_ext(string_list_type());
     add_ext(list_type());
+    add_ext(nil_type());
+    add_ext(empty_type());
 
     auto add_ext_2 = [&](auto e, auto ext) {
       net::parameter_data p;

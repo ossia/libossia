@@ -18,9 +18,9 @@ namespace ossia::net
   }                                                                \
   void set_##Name(ossia::net::node_base& n, std::optional<Type> i) \
   {                                                                \
-    n.set(std::string_view(String), std::move(i));               \
+    n.set(std::string_view(String), std::move(i));                 \
   }                                                                \
-  std::string_view text_##Name()                                 \
+  std::string_view text_##Name()                                   \
   {                                                                \
     constexpr_return(ossia::make_string_view(String));             \
   }
@@ -44,17 +44,17 @@ namespace ossia::net
   }                                                              \
   void set_##Name(ossia::net::node_base& n, Type&& i)            \
   {                                                              \
-    n.set(std::string_view(String), std::move(i));             \
+    n.set(std::string_view(String), std::move(i));               \
   }                                                              \
   void set_##Name(ossia::net::node_base& n, const Type& i)       \
   {                                                              \
-    n.set(std::string_view(String), i);                        \
+    n.set(std::string_view(String), i);                          \
   }                                                              \
   void set_##Name(ossia::net::node_base& n, std::nullopt_t i)    \
   {                                                              \
-    n.set(std::string_view(String), std::optional<Type>{});    \
+    n.set(std::string_view(String), std::optional<Type>{});      \
   }                                                              \
-  std::string_view text_##Name()                               \
+  std::string_view text_##Name()                                 \
   {                                                              \
     constexpr_return(ossia::make_string_view(String));           \
   }
@@ -74,9 +74,9 @@ namespace ossia::net
   }                                                                 \
   void set_##Name(ossia::net::node_base& n, Type i)                 \
   {                                                                 \
-    n.set(std::string_view(String), i);                           \
+    n.set(std::string_view(String), i);                             \
   }                                                                 \
-  std::string_view text_##Name()                                  \
+  std::string_view text_##Name()                                    \
   {                                                                 \
     constexpr_return(ossia::make_string_view(String));              \
   }
@@ -121,6 +121,16 @@ std::optional<extended_type> get_extended_type(const ossia::net::node_base& n)
     }
   }
   return opt;
+}
+
+std::optional<extended_type> get_extended_type(const ossia::net::parameter_base& n)
+{
+  return get_extended_type(n.get_node());
+}
+
+std::optional<extended_type> get_extended_type(const ossia::extended_attributes& n)
+{
+  return get_optional_attribute<extended_type>(n, text_extended_type());
 }
 
 void set_extended_type(extended_attributes& n, std::optional<extended_type> i)

@@ -109,8 +109,7 @@ complex_type get_type_from_osc_typetag(std::string_view str)
       switch(str[0])
       {
         case oscpack::TypeTagValues::NIL_TYPE_TAG:
-          return {};
-
+          return ossia::extended_type{"nil"};
         case oscpack::TypeTagValues::INFINITUM_TYPE_TAG:
           return ossia::val_type::IMPULSE;
 

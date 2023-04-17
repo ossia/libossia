@@ -16,7 +16,7 @@ namespace ossia::net
 {
 template <typename Parameter, typename OscPolicy, typename Writer>
 #if __cpp_lib_concepts >= 201907L
-requires std::is_invocable_v<Writer, const char*, std::size_t>
+  requires std::is_invocable_v<Writer, const char*, std::size_t>
 #endif
 struct osc_value_send_visitor
 {
@@ -37,6 +37,30 @@ struct osc_value_send_visitor
     std::size_t i = write_string(address_pattern, buffer);
 
     i += static_policy{parameter.get_unit()}(buffer + i, v);
+
+    writer(buffer, i);
+  }
+  catch(const std::exception& e)
+  {
+    ossia::logger().error("osc_value_send_visitor: {}", e.what());
+  }
+  catch(...)
+  {
+    ossia::logger().error("osc_value_send_visitor: unknown error");
+  }
+
+  void operator()(ossia::impulse v) const noexcept
+  try
+  {
+    const std::size_t sz
+        = pattern_size(address_pattern.size()) + 8 + oscpack::RoundUp4(sizeof(v));
+    char* buffer = (char*)alloca(sz);
+    std::size_t i = write_string(address_pattern, buffer);
+
+    if(auto ep = ossia::net::get_extended_type(parameter))
+      i += static_policy{parameter.get_unit()}(buffer + i, v, *ep);
+    else
+      i += static_policy{parameter.get_unit()}(buffer + i, v);
 
     writer(buffer, i);
   }

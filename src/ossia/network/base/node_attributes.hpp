@@ -2,14 +2,13 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/detail/any_map.hpp>
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/extended_types.hpp>
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/value/value.hpp>
-
-#include <ossia/detail/hash_map.hpp>
 
 #include <string>
 #include <vector>
@@ -172,6 +171,10 @@ OSSIA_EXPORT void set_recall_safe(ossia::net::node_base& n, recall_safe v);
 OSSIA_EXPORT std::string_view text_extended_type();
 OSSIA_EXPORT std::optional<extended_type>
 get_extended_type(const ossia::net::node_base& n);
+OSSIA_EXPORT std::optional<extended_type>
+get_extended_type(const ossia::net::parameter_base& n);
+OSSIA_EXPORT std::optional<extended_type>
+get_extended_type(const extended_attributes& n);
 OSSIA_EXPORT void
 set_extended_type(extended_attributes& n, std::optional<extended_type> v);
 OSSIA_EXPORT void
@@ -286,7 +289,10 @@ struct is_parameter_attribute : public std::false_type
   struct OSSIA_EXPORT Name##_attribute                            \
   {                                                               \
     using type = Type;                                            \
-    static auto text() { return ossia::net::text_##Name(); }      \
+    static auto text()                                            \
+    {                                                             \
+      return ossia::net::text_##Name();                           \
+    }                                                             \
     template <typename... Args>                                   \
     static auto getter(Args&&... args)                            \
     {                                                             \
@@ -310,7 +316,10 @@ struct is_parameter_attribute : public std::false_type
   struct OSSIA_EXPORT Name##_attribute                \
   {                                                   \
     using type = Type;                                \
-    static auto text() { return Text(); }             \
+    static auto text()                                \
+    {                                                 \
+      return Text();                                  \
+    }                                                 \
     template <typename... Args>                       \
     static auto getter(Args&&... args)                \
     {                                                 \

@@ -46,14 +46,14 @@ struct osc_1_0_outbound_stream_visitor : osc_1_0_outbound_dynamic_policy
     // We separate this case because an ossia::impulse type on its own
     // should not have anything but a vector{ossia::impulse, ossia::impulse}
     // should be [00] in osc 1.0
-    static_cast<const osc_1_0_outbound_dynamic_policy&> (*this)(t);
+    static_cast<const osc_1_0_outbound_dynamic_policy&>(*this)(t);
   }
 };
 
 struct osc_1_0_outbound_static_policy : osc_common_outbound_static_policy
 {
   using osc_common_outbound_static_policy::operator();
-  std::size_t operator()(char* buffer, ossia::impulse v) const noexcept
+  std::size_t operator()(char* buffer, ossia::impulse v, const auto&...) const noexcept
   {
     buffer[0] = ',';
     buffer[1] = '\0';

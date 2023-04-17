@@ -36,10 +36,28 @@ struct osc_1_1_outbound_array_policy : osc_common_outbound_dynamic_policy
 struct osc_1_1_outbound_value_policy : osc_common_outbound_static_policy
 {
   using osc_common_outbound_static_policy::operator();
+  std::size_t operator()(
+      char* buffer, ossia::impulse v, const ossia::extended_type& t) const noexcept
+  {
+    // NOTE: this is a change wrt the old ossia::oscquery::osc_outbound_visitor
+    buffer[0] = ',';
+    if(t.empty())
+      buffer[1] = oscpack::INFINITUM_TYPE_TAG;
+    else if(t == "nil")
+      buffer[1] = oscpack::NIL_TYPE_TAG;
+    else if(t == "empty")
+      buffer[1] = '\0';
+    buffer[2] = '\0';
+    buffer[3] = '\0';
+
+    return 4;
+  }
+
   std::size_t operator()(char* buffer, ossia::impulse v) const noexcept
   {
+    // NOTE: this is a change wrt the old ossia::oscquery::osc_outbound_visitor
     buffer[0] = ',';
-    buffer[1] = oscpack::INFINITUM_TYPE_TAG;
+    buffer[1] = '\0';
     buffer[2] = '\0';
     buffer[3] = '\0';
 

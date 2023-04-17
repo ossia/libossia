@@ -43,6 +43,12 @@ OSSIA_EXPORT extended_type string_list_type();
 //! Means that the array is a dynamic array (e.g. ossia::val_type::LIST)
 OSSIA_EXPORT extended_type list_type();
 
+//! Means that the value is an impulse with OSC type-tag NIL
+OSSIA_EXPORT extended_type nil_type();
+
+//! Means that the value is an impulse with no OSC type-tag (,\0\0\0)
+OSSIA_EXPORT extended_type empty_type();
+
 //! Returns the possible implementation types for this high-level type.
 OSSIA_EXPORT std::vector<ossia::val_type> underlying_type(const extended_type&);
 }
