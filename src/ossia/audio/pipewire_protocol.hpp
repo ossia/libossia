@@ -793,7 +793,7 @@ public:
 
     // Actual execution
     ossia::audio_tick_state ts{float_input,  float_output, (int)inputs,
-                               (int)outputs, nframes,      0};
+                               (int)outputs, nframes,      position->clock.nsec / 1e9};
     self.audio_tick(ts);
     self.tick_end();
   }
