@@ -16,12 +16,20 @@
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
+#include <boost/predef.h>
 #include <boost/graph/adjacency_list.hpp>
 // broken due to dynamic_property_map requiring rtti...
 // #include <boost/graph/graphviz.hpp>
 #include <boost/graph/topological_sort.hpp>
 
 #include <ankerl/unordered_dense.h>
+
+#if defined(BOOST_COMP_GNUC)
+#if BOOST_COMP_GNUC >= BOOST_VERSION_NUMBER(13, 0, 0)
+#define OSSIA_SMALL_VECTOR_ALLOCATOR_REBIND_FAILS 1
+#endif
+#endif
+
 class DataflowTest;
 namespace ossia
 {
@@ -262,7 +270,12 @@ using graph_edge_t = graph_t::edge_descriptor;
 template <typename T, typename V>
 using dense_shared_ptr_map = ankerl::unordered_dense::map<
     std::shared_ptr<T>, V, egur_hash, pointer_equal,
-    ossia::small_vector<std::pair<std::shared_ptr<T>, V>, 1024>>;
+#if defined(OSSIA_SMALL_VECTOR_ALLOCATOR_REBIND_FAILS)
+    std::vector<std::pair<std::shared_ptr<T>, V>>
+#else
+    ossia::small_vector<std::pair<std::shared_ptr<T>, V>, 1024>
+#endif
+    >;
 #else
 template <typename T, typename V>
 using dense_shared_ptr_map
