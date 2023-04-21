@@ -24,7 +24,9 @@ public:
   //! Sends the port at which a server opens its OSC port
   static string_t device_info(int port);
 
-  static string_t query_host_info(const std::string& name, const int osc_port);
+  static string_t query_host_info(
+      const std::string& name, const int osc_port, const std::string& local_ip,
+      int ws_port);
 
   // Format interface
   // Queries
@@ -89,8 +91,7 @@ public:
 
   static string_t attributes_changed_array(
       const std::vector<
-          std::pair<const ossia::net::node_base*, std::vector<std::string_view>>>&
-          vec);
+          std::pair<const ossia::net::node_base*, std::vector<std::string_view>>>& vec);
 
 private:
   static void

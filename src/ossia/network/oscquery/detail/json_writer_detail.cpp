@@ -491,8 +491,9 @@ json_writer::string_t json_writer::device_info(int port)
   return buf;
 }
 
-json_writer::string_t
-json_writer::query_host_info(const std::string& name, const int osc_port)
+json_writer::string_t json_writer::query_host_info(
+    const std::string& name, const int osc_port, const std::string& local_ip,
+    int ws_port)
 {
 
   string_t buf;
@@ -501,6 +502,10 @@ json_writer::query_host_info(const std::string& name, const int osc_port)
   wr.StartObject();
   wr.Key("NAME");
   wr.String(name);
+  wr.Key("WS_IP");
+  wr.String(local_ip);
+  wr.Key("WS_PORT");
+  wr.Int(ws_port);
   wr.Key("OSC_PORT");
   wr.Int(osc_port);
   wr.Key("OSC_TRANSPORT");

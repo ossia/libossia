@@ -7,6 +7,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+
 namespace ossia
 {
 namespace net
@@ -27,8 +28,7 @@ public:
   template <typename OscqueryProtocol>
   static json_writer::string_t handle_listen(
       OscqueryProtocol& proto, const oscquery_server_protocol::connection_handler& hdl,
-      ossia::net::node_base& node, std::string_view path,
-      const std::string& listen_text)
+      ossia::net::node_base& node, std::string_view path, const std::string& listen_text)
   {
     // First we find for a corresponding client
     auto clt = proto.find_client(hdl);
@@ -150,8 +150,14 @@ public:
         }
         else
         {
+          websocketpp::connection<websocketpp::config::asio>& sockets
+              = *proto.m_websocketServer->impl().get_con_from_hdl(hdl);
+          auto& socket = sockets.get_socket();
+
+          std::string local_client_ip = socket.local_endpoint().address().to_string();
           return oscquery::json_writer::query_host_info(
-              proto.get_device().get_name(), proto.get_osc_port());
+              proto.get_device().get_name(), proto.get_osc_port(), local_client_ip,
+              proto.get_ws_port());
         }
       }
       return {};
