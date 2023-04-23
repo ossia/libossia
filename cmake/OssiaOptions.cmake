@@ -331,9 +331,9 @@ endif()
 function(ossia_set_visibility TheTarget)
   if(OSSIA_STATIC_EXPORT)
     set_target_properties(${TheTarget} PROPERTIES
-      C_VISIBILITY_PRESET default
-      CXX_VISIBILITY_PRESET default
-      VISIBILITY_INLINES_HIDDEN 0
+      C_VISIBILITY_PRESET hidden
+      CXX_VISIBILITY_PRESET hidden
+      VISIBILITY_INLINES_HIDDEN 1
     )
   else()
     set_target_properties(${TheTarget} PROPERTIES
