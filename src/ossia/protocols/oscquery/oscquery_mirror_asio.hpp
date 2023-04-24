@@ -119,6 +119,7 @@ public:
   bool connected() const noexcept override { return m_hasWS; }
   void connect() override;
 
+  void set_feedback(bool fb) override;
 private:
   friend struct http_async_answer;
   friend struct http_async_value_answer;
@@ -178,7 +179,7 @@ private:
   ossia::oscquery::host_info m_host_info;
 
   ossia::net::message_origin_identifier m_id;
-
+  std::atomic<bool> m_feedback{true};
   bool m_zombie_on_remove{true};
   enum
   {
