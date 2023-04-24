@@ -72,4 +72,6 @@ std::future<void> protocol_base::pull_async(parameter_base&)
 {
   return {};
 }
+void protocol_base::set_feedback(bool feedback) {
+}
 }

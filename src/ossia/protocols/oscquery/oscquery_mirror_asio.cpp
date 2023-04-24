@@ -232,6 +232,9 @@ using proto = ossia::oscquery::oscquery_protocol_client<ossia::net::osc_extended
 bool oscquery_mirror_asio_protocol::push(
     const net::parameter_base& addr, const ossia::value& v)
 {
+  if(!m_feedback)
+    return false;
+
   if(addr.get_access() == ossia::access_mode::GET)
     return false;
 
@@ -242,6 +245,9 @@ bool oscquery_mirror_asio_protocol::echo_incoming_message(
     const ossia::net::message_origin_identifier& id,
     const ossia::net::parameter_base& addr, const value& val)
 {
+  if(!m_feedback)
+    return false;
+
   if(&id.protocol == this && id.identifier == (uintptr_t)this->m_websocketClient.get())
     return true;
 
@@ -250,6 +256,9 @@ bool oscquery_mirror_asio_protocol::echo_incoming_message(
 
 bool oscquery_mirror_asio_protocol::push_raw(const net::full_parameter_data& addr)
 {
+  if(!m_feedback)
+    return false;
+
   if(addr.get_access() == ossia::access_mode::GET)
     return false;
 
@@ -259,12 +268,18 @@ bool oscquery_mirror_asio_protocol::push_raw(const net::full_parameter_data& add
 bool oscquery_mirror_asio_protocol::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& addresses)
 {
+  if(!m_feedback)
+    return false;
+
   return proto::push_bundle(*this, addresses);
 }
 
 bool oscquery_mirror_asio_protocol::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
+  if(!m_feedback)
+    return false;
+
   return proto::push_bundle(*this, addresses);
 }
 
@@ -460,6 +475,12 @@ void oscquery_mirror_asio_protocol::start_osc()
   m_osc_port = m_oscServer->m_socket.local_endpoint().port();
   m_oscServer->receive(
       [this](const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
+}
+
+void oscquery_mirror_asio_protocol::set_feedback(bool b)
+{
+
+  m_feedback = b;
 }
 
 void oscquery_mirror_asio_protocol::init()
