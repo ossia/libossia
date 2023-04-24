@@ -181,6 +181,11 @@ public:
   virtual void stop_execution() { }
   virtual void stop() { }
 
+  // By default feedback is enabled. Disabling it means that the protocol
+  // won't send any data, just apply the incoming messages - useful for preventing feedback loops while
+  // loading things
+  virtual void set_feedback(bool feedback);
+
   flags get_flags() const noexcept { return m_flags; }
   bool test_flag(flags f) const noexcept { return m_flags & f; }
 

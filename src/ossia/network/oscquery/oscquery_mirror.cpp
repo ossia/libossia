@@ -252,9 +252,17 @@ void oscquery_mirror_protocol::request(net::parameter_base& address)
   http_send_message(text);
 }
 
+void oscquery_mirror_protocol::set_feedback(bool b)
+{
+  m_feedback = b;
+}
+
 bool oscquery_mirror_protocol::push(
     const net::parameter_base& addr, const ossia::value& v)
 {
+  if(!m_feedback)
+    return false;
+
   if(addr.get_access() == ossia::access_mode::GET)
     return false;
 
@@ -292,6 +300,9 @@ bool oscquery_mirror_protocol::echo_incoming_message(
     const ossia::net::message_origin_identifier& id,
     const ossia::net::parameter_base& addr, const value& val)
 {
+  if(!m_feedback)
+    return false;
+
   if(&id.protocol == this && id.identifier == (uintptr_t)this->m_websocketClient.get())
     return true;
 
@@ -319,6 +330,9 @@ bool oscquery_mirror_protocol::echo_incoming_message(
 
 bool oscquery_mirror_protocol::push_raw(const net::full_parameter_data& addr)
 {
+  if(!m_feedback)
+    return false;
+
   if(addr.get_access() == ossia::access_mode::GET)
     return false;
 

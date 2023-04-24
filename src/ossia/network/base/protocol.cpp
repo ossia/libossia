@@ -99,4 +99,8 @@ bool protocol_base::unpublish(const parameter_base&)
 {
   return false;
 }
+
+void protocol_base::set_feedback(bool feedback) 
+{
+}
 }
