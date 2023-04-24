@@ -55,6 +55,10 @@ public:
   bool is_zeroconf() const { return m_zeroconf; }
   std::string get_name() const { return m_name ? std::string(m_name->s_name) : ""; }
 
+  void set_feedback(bool b);
+
+  static t_max_err do_notify(client *x, t_symbol *, t_symbol *msg, void *, void *data);
+
   static void connect(client*);
   static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);
   static void disconnect(client*);
@@ -73,6 +77,7 @@ public:
 
   int m_argc{};
   t_atom* m_argv{};
+  long m_feedback{1};
 };
 
 } // max namespace

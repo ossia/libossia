@@ -203,6 +203,8 @@ private:
 
   ossia::net::message_origin_identifier m_id;
 
+  void set_feedback(bool fb) override;
+  std::atomic<bool> m_feedback{true};
   bool m_zombie_on_remove{true};
 };
 
