@@ -70,6 +70,55 @@ graph_edge::graph_edge(
   assert(in_node);
 }
 
+template <typename T>
+struct alloc_observer
+{
+  std::allocator<T> alloc;
+  std::size_t& request;
+  template <typename U>
+  using rebind = alloc_observer<U>;
+  using value_type = T;
+
+  alloc_observer(std::size_t& request) noexcept
+      : request(request)
+  {
+    // Tricky note: std::make/allocate_shared store the allocator. Thus the allocated size depend on alloc_observer / edge_pool_alloc size.
+    // To get the correct size, we have to make sure that sizeof(alloc_observer) == sizeof(edge_pool_alloc) (which is just a shared_ptr)
+
+    static_assert(sizeof(alloc_observer<T>) == sizeof(std::shared_ptr<int>));
+  }
+
+  template <typename U>
+  alloc_observer(alloc_observer<U> const& other) noexcept
+      : request(other.request)
+  {
+    static_assert(sizeof(alloc_observer<T>) == sizeof(std::shared_ptr<int>));
+    static_assert(sizeof(alloc_observer<U>) == sizeof(std::shared_ptr<int>));
+  }
+
+  T* allocate(const std::size_t n) noexcept
+  {
+    request = sizeof(T);
+    return alloc.allocate(n);
+  }
+  void deallocate(T* ptr, const size_t n) noexcept { return alloc.deallocate(ptr, n); }
+};
+
+std::size_t graph_edge::size_of_allocated_memory_by_make_shared() noexcept
+{
+  struct private_bypass : graph_edge
+  {
+  public:
+    private_bypass() = default;
+  };
+  std::size_t request{};
+  alloc_observer<private_bypass> alloc{request};
+
+  std::allocate_shared<private_bypass, alloc_observer<private_bypass>>(alloc);
+
+  return request;
+}
+
 void graph_edge::init() noexcept
 {
   if(in && out)

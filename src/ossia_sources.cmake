@@ -250,6 +250,7 @@ set(OSSIA_EDITOR_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/behavior.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/easing.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/easing_helpers.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/empty.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve_segment/linear.hpp"

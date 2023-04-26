@@ -167,7 +167,7 @@ public:
 
     std::atomic_thread_fence(std::memory_order_seq_cst);
 #if defined(DISABLE_DONE_TASKS)
-    ossia::small_pod_vector<ossia::task*, 8> toCleanup;
+    thread_local ossia::small_pod_vector<ossia::task*, 8> toCleanup;
 #endif
     for(auto& task : tf.m_tasks)
     {
@@ -205,6 +205,7 @@ public:
     {
       process_done(*task);
     }
+    toCleanup.clear();
 #endif
 
     while(m_doneTasks.load(std::memory_order_relaxed) != m_toDoTasks)

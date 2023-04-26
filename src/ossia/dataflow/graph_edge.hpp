@@ -30,16 +30,19 @@ struct OSSIA_EXPORT graph_edge
   template <typename... Args>
   friend std::shared_ptr<ossia::graph_edge> make_edge(Args&&...);
 */
+private:
+  graph_edge() = default;
+
 public:
   graph_edge(
       connection c, outlet_ptr pout, inlet_ptr pin, node_ptr pout_node,
       node_ptr pin_node) noexcept;
-
-  void init() noexcept;
-
   ~graph_edge();
 
+  void init() noexcept;
   void clear() noexcept;
+
+  static std::size_t size_of_allocated_memory_by_make_shared() noexcept;
 
   connection con{};
   outlet_ptr out{};

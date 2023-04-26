@@ -11,10 +11,19 @@
 #include <ossia/dataflow/graph/tick_setup.hpp>
 #include <ossia/network/value/format_value.hpp>
 
-#include <spdlog/spdlog.h>
+#include <boost/pool/pool.hpp>
 
+#include <spdlog/spdlog.h>
 namespace ossia
 {
+using boost_pool = boost::pool<boost::default_user_allocator_malloc_free>;
+
+struct edge_pool
+{
+  boost_pool pool{graph_edge::size_of_allocated_memory_by_make_shared()};
+  ossia::audio_spin_mutex execution_storage_mut;
+};
+
 template <typename T>
 struct edge_pool_alloc
 {
@@ -68,6 +77,9 @@ struct edge_pool_alloc
 graph_interface::graph_interface()
     : pool{std::make_shared<edge_pool>()}
 {
+  // Reserve some space
+  auto arr = pool->pool.ordered_malloc(1000);
+  pool->pool.ordered_free(arr);
 }
 
 edge_ptr graph_interface::allocate_edge(

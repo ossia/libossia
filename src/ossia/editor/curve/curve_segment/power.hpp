@@ -1,16 +1,16 @@
 #pragma once
-#include <cmath>
+#include <ossia/editor/curve/curve_segment/easing.hpp>
 
+#include <cmath>
 namespace ossia
 {
-template <typename Y>
-struct curve_segment_power
+template <typename Y, typename Power>
+struct curve_segment_power : easing::power<Power>
 {
-  auto operator()(double power) const
+  Y operator()(double ratio, Y start, Y end) const noexcept
   {
-    return [=](double ratio, Y start, Y end) -> Y {
-      return start + std::pow(ratio, power) * (end - start);
-    };
+    return ossia::easing::ease{}(
+        start, end, ((const easing::power<Power>&)(*this))(ratio));
   }
 };
 }

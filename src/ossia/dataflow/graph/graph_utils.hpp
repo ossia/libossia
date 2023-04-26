@@ -16,8 +16,8 @@
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
-#include <boost/predef.h>
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/predef.h>
 // broken due to dynamic_property_map requiring rtti...
 // #include <boost/graph/graphviz.hpp>
 #include <boost/graph/topological_sort.hpp>
@@ -682,6 +682,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
   graph_base() noexcept
   {
     m_nodes.reserve(1024);
+    m_node_list.reserve(1024);
     m_edges.reserve(1024);
   }
   [[nodiscard]] tcb::span<ossia::graph_node* const>

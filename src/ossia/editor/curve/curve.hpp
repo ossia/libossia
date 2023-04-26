@@ -185,6 +185,8 @@ public:
   static Y convert_to_template_type_value(
       const ossia::value& value, ossia::destination_index::const_iterator idx);
 
+  void reserve(std::size_t count) { m_points.reserve(count); }
+
 private:
   mutable X m_x0;
   mutable Y m_y0;

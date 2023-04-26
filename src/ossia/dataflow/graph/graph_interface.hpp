@@ -1,10 +1,9 @@
 #pragma once
 #include <ossia/dataflow/dataflow_fwd.hpp>
+#include <ossia/dataflow/graph_edge.hpp>
 #include <ossia/dataflow/transport.hpp>
 #include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/logger_fwd.hpp>
-
-#include <boost/pool/pool.hpp>
 
 #include <tcb/span.hpp>
 
@@ -16,15 +15,7 @@ class logger;
 }
 namespace ossia
 {
-
-using boost_pool = boost::pool<boost::default_user_allocator_malloc_free>;
-
-struct edge_pool
-{
-  boost_pool pool{1024 * 1024};
-  ossia::audio_spin_mutex execution_storage_mut;
-};
-
+struct edge_pool;
 struct bench_map;
 struct connection;
 class time_interval;
@@ -51,8 +42,8 @@ public:
 
   virtual void print(std::ostream&) = 0;
 
-  [[nodiscard]] virtual tcb::span<ossia::graph_node* const>
-  get_nodes() const noexcept = 0;
+  [[nodiscard]] virtual tcb::span<ossia::graph_node* const> get_nodes() const noexcept
+      = 0;
 
   std::shared_ptr<edge_pool> pool;
 
