@@ -5,6 +5,8 @@
 #include <ossia-max/src/ossia-max.hpp>
 #include <ossia-max/src/router.hpp>
 
+#include <ossia/network/common/path.hpp>
+
 #include <boost/algorithm/string/predicate.hpp>
 
 #include <regex>
@@ -118,17 +120,68 @@ void router::change_pattern(int index, std::string&& pattern)
   {
     pattern = pattern.substr(1);
   }
-  ossia::net::expand_ranges(pattern);
+
+  const bool simple = ossia::traversal::is_pattern(pattern);
+  ossia::net::expand_ranges(pattern); // FIXME check if this shouldn't be "canonicalize_str" ??
   pattern = ossia::traversal::substitute_characters(pattern);
 
   try
   {
-    m_patterns[index] = std::regex("^/?" + pattern + "($|/)");
+    m_patterns[index].pattern = pattern;
+    m_patterns[index].simple = simple;
+    if(!simple)
+      m_patterns[index].regex = std::regex("^/?" + pattern + "($|/)");
   }
   catch(std::exception& e)
   {
     error("'%s' bad regex: %s", pattern.data(), e.what());
   }
+}
+
+static bool process_simple(router* x, const std::string& address, int i, long argc, t_atom* argv)
+{
+  const auto& pattern_regex = x->m_patterns[i].regex;
+
+  std::smatch smatch;
+  if(std::regex_search(address, smatch, pattern_regex))
+  {
+    const std::string& newaddress = (x->m_truncate) ? smatch.suffix() : address;
+    if(newaddress.size() > 0)
+    {
+      outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
+    }
+    else
+    {
+      outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
+    }
+
+    return true;
+  }
+
+  return false;
+}
+
+static bool process_regex(router* x, const std::string& address, int i, long argc, t_atom* argv)
+{
+  const auto& pattern_regex = x->m_patterns[i].regex;
+
+  std::smatch smatch;
+  if(std::regex_search(address, smatch, pattern_regex))
+  {
+    const std::string& newaddress = (x->m_truncate) ? smatch.suffix() : address;
+    if(newaddress.size() > 0)
+    {
+      outlet_anything(x->m_outlets[i + 1], gensym(newaddress.c_str()), argc, argv);
+    }
+    else
+    {
+      outlet_list(x->m_outlets[i + 1], nullptr, argc, argv);
+    }
+
+    return true;
+  }
+
+  return false;
 }
 
 void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
@@ -143,54 +196,95 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
   {
     std::string_view address = s->s_name;
 
-    bool match = false;
-    for(int i = 0; i < x->m_patterns.size(); i++)
-    {
-      const auto& pattern_regex = x->m_patterns[i];
-
-      std::cmatch smatch;
-      if(std::regex_search(
-             address.data(), address.data() + address.size(), smatch, pattern_regex))
+    auto process = [x, argc, argv](std::string_view str, void* outlet) {
+      if(str.size() > 0)
       {
-        match = true;
-        auto outlet = x->m_outlets[i + 1];
-        auto process = [x, argc, argv, outlet](std::string_view str) {
-          if(str.size() > 0)
-          {
-            // Normal routing case
-            t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc + 1));
-            if(x->m_leadslash && str[0] != '/')
-            {
-              static thread_local std::string r;
-              r.clear();
-              r.reserve(str.size() + 1);
-              r.push_back('/');
-              r.append(str);
-              atom_setsym(&l[0], gensym(r.c_str()));
-            }
-            else
-            {
-              atom_setsym(&l[0], gensym(str.data()));
-            }
-            for(int i = 1; i < argc + 1; i++)
-            {
-              l[i] = argv[i - 1];
-            }
-
-            outlet_list(outlet, _sym_list, argc + 1, l);
-          }
-          else
-          {
-            // Here we are at the end of the string, the only thing remaining to route
-            // are the arguments, e.g. from "/foo 123" we only get "123"
-            outlet_list(outlet, _sym_list, argc, argv);
-          }
-        };
-        if(x->m_truncate)
-          process(std::string_view(
-              smatch.suffix().first, smatch.suffix().second - smatch.suffix().first));
+        // Normal routing case
+        t_atom* l = (t_atom*)alloca(sizeof(t_atom) * (argc + 1));
+        if(x->m_leadslash && str[0] != '/')
+        {
+          static thread_local std::string r;
+          r.clear();
+          r.reserve(str.size() + 1);
+          r.push_back('/');
+          r.append(str);
+          atom_setsym(&l[0], gensym(r.c_str()));
+        }
         else
-          process(address);
+        {
+          atom_setsym(&l[0], gensym(str.data()));
+        }
+        for(int i = 1; i < argc + 1; i++)
+        {
+          l[i] = argv[i - 1];
+        }
+
+        outlet_list(outlet, _sym_list, argc + 1, l);
+      }
+      else
+      {
+        // Here we are at the end of the string, the only thing remaining to route
+        // are the arguments, e.g. from "/foo 123" we only get "123"
+        outlet_list(outlet, _sym_list, argc, argv);
+      }
+    };
+
+    bool match = false;
+    for(std::size_t i = 0; i < x->m_patterns.size(); i++)
+    {
+      auto& pat = x->m_patterns[i];
+      auto outlet = x->m_outlets[i + 1];
+
+      if(pat.simple)
+      {
+        if(address.starts_with('/'))
+        {
+          auto aa = address.substr(1);
+          if(aa.starts_with(pat.pattern))
+          {
+            auto aaa = aa.substr(pat.pattern.size());
+            if(aaa.empty() || aaa[0] == '/') {
+              match = true;
+              if(x->m_truncate)
+                process(aaa, outlet);
+              else
+                process(address, outlet);
+              break;
+            }
+          }
+        }
+        else
+        {
+          if(address.starts_with(pat.pattern))
+          {
+            auto aaa = address.substr(pat.pattern.size());
+            if(aaa.empty() || aaa[0] == '/') {
+              match = true;
+              if(x->m_truncate)
+                process(aaa, outlet);
+              else
+                process(address, outlet);
+              break;
+            }
+          }
+        }
+      }
+      else
+      {
+        const auto& pattern_regex = x->m_patterns[i].regex;
+
+        std::cmatch smatch;
+        if(std::regex_search(
+               address.data(), address.data() + address.size(), smatch, pattern_regex))
+        {
+          match = true;
+          if(x->m_truncate)
+            process(std::string_view(
+                        smatch.suffix().first, smatch.suffix().second - smatch.suffix().first), outlet);
+          else
+            process(address, outlet);
+          break;
+        }
       }
     }
 
@@ -208,6 +302,7 @@ void router::in_anything(router* x, t_symbol* s, long argc, t_atom* argv)
       outlet_list(x->m_outlets[0], _sym_list, argc + 1, l);
     }
   }
+
 }
 
 void router::in_float(router* x, double f) { }

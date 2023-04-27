@@ -38,7 +38,13 @@ struct router
 
   static void assist(router* x, void* b, long m, long a, char* s);
 
-  std::vector<std::regex> m_patterns{};
+  struct pattern {
+      std::string pattern;
+      std::regex regex;
+      bool simple{};
+  };
+
+  std::vector<pattern> m_patterns{};
   std::vector<void*> m_outlets{};
   std::vector<void*> m_inlets{};
 };
