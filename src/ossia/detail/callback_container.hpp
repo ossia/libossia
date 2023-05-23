@@ -18,18 +18,11 @@ namespace ossia
  *
  * Means that an invalid callback was passed
  */
-struct OSSIA_EXPORT invalid_callback_error final : public std::logic_error
+struct OSSIA_EXPORT invalid_callback_error final : public std::exception
 {
-  invalid_callback_error(const char* e)
-      : std::logic_error(e)
-  {
-  }
-
   ~invalid_callback_error() override;
-  invalid_callback_error()
-      : std::logic_error("Bad callback")
-  {
-  }
+  invalid_callback_error();
+  const char* what() const noexcept override;
 };
 
 template <typename T>
@@ -231,4 +224,5 @@ public:
   impl m_callbacks TS_GUARDED_BY(m_mutx);
   mutable mutex m_mutx;
 };
+
 }

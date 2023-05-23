@@ -24,10 +24,9 @@
 
 #include <ankerl/unordered_dense.h>
 
-#if defined(BOOST_COMP_GNUC)
-#if BOOST_COMP_GNUC >= BOOST_VERSION_NUMBER(13, 0, 0)
+#if BOOST_LIB_STD_GNU >= BOOST_VERSION_NUMBER(13, 0, 0) \
+    && BOOST_VERSION_NUMBER <= BOOST_VERSION_NUMBER(1, 83, 0)
 #define OSSIA_SMALL_VECTOR_ALLOCATOR_REBIND_FAILS 1
-#endif
 #endif
 
 class DataflowTest;

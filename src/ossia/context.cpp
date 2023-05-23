@@ -36,7 +36,12 @@ boost::asio::detail::winsock_init<>::manual manual_winsock_init;
 
 namespace ossia
 {
+invalid_callback_error::invalid_callback_error() = default;
 invalid_callback_error::~invalid_callback_error() = default;
+const char* invalid_callback_error::what() const noexcept
+{
+  return "Bad callback";
+}
 
 static void ossia_global_init()
 {
