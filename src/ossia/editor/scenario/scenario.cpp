@@ -308,6 +308,16 @@ void scenario::reset_subgraph(
   }
 }
 
+void scenario::set_exclusive(bool excl) noexcept
+{
+  m_exclusive = excl;
+}
+
+bool scenario::exclusive(bool excl) const noexcept
+{
+  return m_exclusive;
+}
+
 void scenario::mute_impl(bool m)
 {
   for(auto& itv : get_time_intervals())
@@ -320,13 +330,103 @@ void scenario::mute_impl(bool m)
   }
 }
 
-void scenario::start_interval(time_interval& itv, double ratio)
+void scenario::request_start_interval(time_interval& itv, double ratio)
 {
   m_itv_to_start.emplace_back(quantized_interval{&itv, ratio});
 }
-void scenario::stop_interval(time_interval& itv, double ratio)
+void scenario::request_stop_interval(time_interval& itv, double ratio)
 {
   m_itv_to_stop.emplace_back(quantized_interval{&itv, ratio});
+}
+
+void scenario::reset_all_components_except(ossia::time_sync& n)
+{
+  // For all nodes not in the component of n:
+  // If:
+  // - It is executing
+  // - It has a previous interval executing
+  // - It has a next interval executing
+  // Then:
+  // reset_component(n)
+
+  sync_set nodes_to_process;
+  // 1. Compute the set of nodes to process
+  {
+    auto& stack = m_component_visit_stack;
+    auto& cache = m_component_visit_cache;
+
+    stack.clear();
+    cache.clear();
+
+    cache.insert(&n);
+    stack.push_back(&n);
+
+    while(!stack.empty())
+    {
+      auto n = stack.back();
+      stack.pop_back();
+
+      for(auto& ev : n->get_time_events())
+      {
+        for(auto& cst : ev->previous_time_intervals())
+        {
+          auto& pn = cst->get_start_event().get_time_sync();
+          if(cache.find(&pn) == cache.end())
+          {
+            cache.insert(&pn);
+            stack.push_back(&pn);
+          }
+        }
+
+        for(auto& cst : ev->next_time_intervals())
+        {
+          auto& pn = cst->get_end_event().get_time_sync();
+          if(cache.find(&pn) == cache.end())
+          {
+            cache.insert(&pn);
+            stack.push_back(&pn);
+          }
+        }
+      }
+    }
+
+    // At this point, "cache" contains the entire component of n
+    for(auto& node : m_nodes)
+      if(!cache.contains(node.get()))
+        nodes_to_process.insert(node.get());
+
+    // Now nodes_to_process contains all the nodes that are not in the component of n
+  }
+
+  // 2. Apply the algorithm mentioned above:
+  for(auto& n : nodes_to_process)
+  {
+    if(n->is_being_triggered())
+      goto disable_component;
+
+    for(auto& ev : n->get_time_events())
+    {
+      for(auto& cst : ev->previous_time_intervals())
+      {
+        if(cst->running())
+        {
+          goto disable_component;
+        }
+      }
+      for(auto& cst : ev->next_time_intervals())
+      {
+        if(cst->running())
+        {
+          goto disable_component;
+        }
+      }
+    }
+
+    continue;
+
+  disable_component:
+    reset_component(*n);
+  }
 }
 
 void scenario::reset_component(ossia::time_sync& n)
@@ -340,12 +440,6 @@ void scenario::reset_component(ossia::time_sync& n)
   cache.insert(&n);
   stack.push_back(&n);
 
-  auto disable_itv = [&](ossia::time_interval& itv) {
-    itv.stop();
-    m_runningIntervals.erase(&itv);
-    m_itv_end_map.erase(&itv);
-  };
-
   while(!stack.empty())
   {
     auto n = stack.back();
@@ -357,7 +451,7 @@ void scenario::reset_component(ossia::time_sync& n)
     {
       for(auto& cst : ev->previous_time_intervals())
       {
-        disable_itv(*cst);
+        stop_interval(*cst);
 
         auto& pn = cst->get_start_event().get_time_sync();
         if(cache.find(&pn) == cache.end())
@@ -369,7 +463,7 @@ void scenario::reset_component(ossia::time_sync& n)
 
       for(auto& cst : ev->next_time_intervals())
       {
-        disable_itv(*cst);
+        stop_interval(*cst);
 
         auto& pn = cst->get_end_event().get_time_sync();
         if(cache.find(&pn) == cache.end())

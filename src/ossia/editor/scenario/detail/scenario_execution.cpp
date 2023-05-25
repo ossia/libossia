@@ -219,6 +219,14 @@ void scenario::run_interval(
   }
 }
 
+void scenario::stop_interval(time_interval& itv)
+{
+  itv.stop();
+
+  m_runningIntervals.erase(&itv);
+  m_itv_end_map.erase(&itv);
+}
+
 void scenario::state_impl(const ossia::token_request& tk)
 {
   node->request(tk);
@@ -272,6 +280,7 @@ void scenario::state_impl(const ossia::token_request& tk)
         });
       }
 
+      // Manual request (user clicked on the trigger)
       if(n->trigger_request)
       {
         if(m_waitingNodes.find(n) != m_waitingNodes.end())
@@ -316,7 +325,8 @@ void scenario::state_impl(const ossia::token_request& tk)
 
     m_pendingEvents.clear();
 
-    // Check intervals that have been quantized
+    // Check intervals that have been quantized through manual interaction
+    // (the little play / stop buttons)
     for(auto it = m_itv_to_start.begin(); it != m_itv_to_start.end();)
     {
       auto [itv, ratio] = *it;
@@ -327,6 +337,7 @@ void scenario::state_impl(const ossia::token_request& tk)
           mark_end_discontinuous{}(*itv);
           itv->stop();
         }
+        itv->set_parent_speed(tk.speed);
         itv->start();
         // itv->tick_current(*date, tk);
         // mark_start_discontinuous{}(*itv);
@@ -337,7 +348,20 @@ void scenario::state_impl(const ossia::token_request& tk)
         auto& end_ev = itv->get_end_event();
         end_ev.set_status(ossia::time_event::status::NONE);
 
-        it = m_itv_to_start.erase(it);
+        if(m_exclusive)
+        {
+          for(auto& running : m_runningIntervals)
+          {
+            running->stop();
+          }
+          m_runningIntervals.clear();
+          m_itv_to_start.clear();
+          break;
+        }
+        else
+        {
+          it = m_itv_to_start.erase(it);
+        }
       }
       else
       {

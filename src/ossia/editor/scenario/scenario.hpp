@@ -136,13 +136,13 @@ public:
    *  e.g. this is used when pressing the "play" button on a random interval in
    * score.
    */
-  void start_interval(ossia::time_interval&, double ratio = 0.0);
+  void request_start_interval(ossia::time_interval&, double ratio = 0.0);
   /*! Used to stop an interval,
    *  disregarding all the rules of the scenario.
    *  e.g. this is used when pressing the "stop" button on a random interval in
    * score.
    */
-  void stop_interval(ossia::time_interval&, double ratio = 0.0);
+  void request_stop_interval(ossia::time_interval&, double ratio = 0.0);
 
   small_sync_vec get_roots() const noexcept;
 
@@ -152,7 +152,11 @@ public:
 
   ossia::time_value last_date() const noexcept { return m_last_date; }
 
+  void set_exclusive(bool excl) noexcept;
+  bool exclusive(bool excl) const noexcept;
+
 private:
+  void stop_all_intervals();
   ossia::time_value m_last_date{ossia::Infinite};
 
   ptr_container<time_interval> m_intervals;
@@ -172,6 +176,9 @@ private:
 
   sync_set m_component_visit_cache;
   std::vector<ossia::time_sync*> m_component_visit_stack;
+
+  bool m_exclusive{};
+
   // Used to start intervals off-time
   struct quantized_interval
   {
@@ -217,6 +224,8 @@ private:
       ossia::time_interval& interval, const ossia::token_request& tk,
       const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset);
 
+  void stop_interval(ossia::time_interval& itv);
   void reset_component(ossia::time_sync& n);
+  void reset_all_components_except(ossia::time_sync& n);
 };
 }

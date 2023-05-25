@@ -167,6 +167,9 @@ sync_status scenario::trigger_sync(
   else
     sync.m_status = time_sync::status::DONE_TRIGGERED;
 
+  if(m_exclusive)
+    reset_all_components_except(sync);
+
   return sync_status::DONE;
 }
 
