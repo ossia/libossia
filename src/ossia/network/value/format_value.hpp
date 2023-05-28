@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_HAS_FMT)
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/optional.hpp>
@@ -140,3 +142,4 @@ inline fmt_ctx::iterator value_prettyprint_visitor::operator()() const
 }
 
 }
+#endif

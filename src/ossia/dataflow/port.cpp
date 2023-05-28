@@ -70,20 +70,24 @@ struct push_data
 
   void operator()(const midi_port& p) const
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     auto& proto = dest.get_node().get_device().get_protocol();
     if(auto midi = dynamic_cast<ossia::net::midi::midi_protocol*>(&proto))
     {
       for(auto& val : p.messages)
         midi->push_value(val);
     }
+#endif
   }
 
   void operator()(const audio_port& p) const
   {
+#if defined(OSSIA_PROTOCOL_AUDIO)
     if(auto audio = dynamic_cast<ossia::audio_parameter*>(&dest))
     {
       audio->push_value(p);
     }
+#endif
   }
 
   [[noreturn]] void operator()(const geometry_port& p) const { assert(false); }
@@ -126,6 +130,7 @@ struct outlet_inserter
   ossia::net::parameter_base* addr;
   void operator()(const ossia::audio_port& data) const noexcept
   {
+#if defined(OSSIA_PROTOCOL_AUDIO)
     if(data.empty())
       return;
 
@@ -137,6 +142,7 @@ struct outlet_inserter
 #endif
 
     e.insert(*audio_addr, data);
+#endif
   }
 
   void operator()(const ossia::value_port& data) const noexcept
@@ -151,10 +157,12 @@ struct outlet_inserter
 
   void operator()(const ossia::midi_port& data) const noexcept
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     if(data.messages.empty())
       return;
 
     e.insert(*addr, data);
+#endif
   }
 
   [[noreturn]] void operator()(const ossia::geometry_port& data) const noexcept

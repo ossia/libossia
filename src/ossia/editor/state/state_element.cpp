@@ -22,7 +22,9 @@ void launch(state_element& e)
 
 std::ostream& print(std::ostream& out, const state_element& e)
 {
+#if defined(OSSIA_HAS_FMT)
   ossia::apply(state_print_visitor{out, {}}, e);
+#endif
   return out;
 }
 }

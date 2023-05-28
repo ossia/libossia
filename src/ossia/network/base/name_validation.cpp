@@ -10,7 +10,9 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/lexical_cast.hpp>
 
+#if defined(OSSIA_HAS_FMT)
 #include <fmt/printf.h>
+#endif
 
 #include <algorithm>
 #if __has_include(<charconv>)
@@ -237,7 +239,12 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
       {
         name = root_name;
       }
+#if defined(OSSIA_HAS_FMT)
       fmt::format_to(std::back_inserter(name), ".{}", instance_num.back() + 1);
+#else
+      name += '.';
+      name += std::to_string(instance_num.back() + 1);
+#endif
     }
   }
 }

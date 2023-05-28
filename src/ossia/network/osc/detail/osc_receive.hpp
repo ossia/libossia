@@ -10,6 +10,8 @@
 
 #include <oscpack/osc/OscPrintReceivedElements.h>
 #include <oscpack/osc/OscReceivedElements.h>
+
+#if defined(OSSIA_HAS_FMT)
 namespace fmt
 {
 template <>
@@ -45,8 +47,9 @@ struct formatter<oscpack::ReceivedMessage>
     return ctx.out();
   }
 };
-
 }
+#endif
+
 namespace ossia::net
 {
 

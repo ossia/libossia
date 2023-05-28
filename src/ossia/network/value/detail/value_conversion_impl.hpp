@@ -143,6 +143,7 @@ struct value_converter<char> : public numeric_value_converter<char>
 {
 };
 
+#if defined(OSSIA_HAS_FMT)
 struct fmt_writer
 {
   fmt::memory_buffer& wr;
@@ -255,6 +256,48 @@ struct value_converter<std::string>
     return {wr.data(), wr.size()};
   }
 };
+#else
+
+template <>
+struct value_converter<std::string>
+{
+  const std::string& cur;
+  using T = std::string;
+  T operator()(impulse) const { return "impulse"; }
+  T operator()(int32_t v) const { return std::to_string(v); }
+  T operator()(float v) const { return std::to_string(v); }
+  T operator()(bool v) const
+  {
+    using namespace std::literals;
+    return v ? "true"s : "false"s;
+  }
+  T operator()(char v) const { return std::string(1, v); }
+  T operator()(const std::string& v) const { return v; }
+
+  T operator()() const { return {}; }
+
+  template <std::size_t N>
+  T operator()(std::array<float, N> v) const
+  {
+    std::string wr;
+    wr.reserve(N * 10);
+    wr += "[";
+    wr += std::to_string(v[0]);
+
+    for(std::size_t i = 1; i < N; i++)
+    {
+      wr += ", ";
+      wr += std::to_string(v[i]);
+    }
+    wr += "]";
+    return wr;
+  }
+
+  T operator()(const std::vector<ossia::value>& v) const { return "(TODO)"; }
+
+  T operator()(const value_map_type& v) const { return "(TODO)"; }
+};
+#endif
 
 template <>
 struct value_converter<std::vector<ossia::value>>

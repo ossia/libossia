@@ -14,7 +14,11 @@
 
 #include <boost/algorithm/string/predicate.hpp>
 
+#if defined(OSSIA_HAS_FMT)
 #include <spdlog/spdlog.h>
+#else
+#define SPDLOG_TRACE(...)
+#endif
 
 #include <iostream>
 #if defined(OSSIA_QT)

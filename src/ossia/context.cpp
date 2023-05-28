@@ -4,9 +4,12 @@
 
 #include <ossia/detail/logger.hpp>
 
+#if defined(OSSIA_HAS_FMT)
 #include <spdlog/sinks/null_sink.h>
 #include <spdlog/sinks/stdout_sinks.h>
 #include <spdlog/spdlog.h>
+#endif
+
 #if defined(QT_QML_LIB)
 #include <ossia-qt/qml_plugin.hpp>
 #endif

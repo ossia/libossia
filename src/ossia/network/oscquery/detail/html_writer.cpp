@@ -14,6 +14,7 @@ html_builder::~html_builder() = default;
 
 static_html_builder::~static_html_builder() = default;
 
+#if defined(OSSIA_HAS_FMT)
 struct static_html_builder_impl
 {
   fmt::memory_buffer& w;
@@ -72,4 +73,5 @@ std::string static_html_builder::build_tree(ossia::net::node_base& node)
 
   return {w.data(), w.size()};
 }
+#endif
 }

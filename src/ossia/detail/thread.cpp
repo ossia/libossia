@@ -2,6 +2,8 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
 
+#include <boost/predef.h>
+
 #include <string>
 
 #if defined(_MSC_VER)
@@ -31,7 +33,9 @@ namespace ossia
 {
 void set_thread_realtime(std::thread& t)
 {
-#if !defined(__EMSCRIPTEN__) && !defined(_WIN32)
+#if !defined(__EMSCRIPTEN__) && !defined(_WIN32)                          \
+    && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
+        || BOOST_LIB_C_GNU)
   sched_param sch_params;
   sch_params.sched_priority = 99;
   pthread_setschedparam(t.native_handle(), SCHED_FIFO, &sch_params);
@@ -46,7 +50,10 @@ int get_pid()
 
 #endif
 
-#if defined(__EMSCRIPTEN__)
+#if defined(__EMSCRIPTEN__)                                                  \
+    || !(                                                                    \
+        BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS || BOOST_OS_WINDOWS \
+        || BOOST_OS_CYGWIN)
 namespace ossia
 {
 std::string get_exe_path()

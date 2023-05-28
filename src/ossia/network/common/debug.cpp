@@ -11,10 +11,12 @@ namespace ossia::net
 {
 void debug_recursively(std::string& str, const node_base& n)
 {
+#if defined(OSSIA_HAS_FMT)
   str += fmt::format("{}\n", n);
 
   for(auto& cld : n.children())
     debug_recursively(str, *cld);
+#endif
 }
 
 }

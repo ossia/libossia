@@ -35,6 +35,7 @@ value domain::apply(bounding_mode b, ossia::value&& val) const
   return apply_domain(*this, b, std::move(val));
 }
 
+#if defined(OSSIA_HAS_FMT)
 struct domain_prettyprint_visitor
 {
   template <typename Domain>
@@ -88,15 +89,18 @@ struct domain_prettyprint_visitor
         "list: min: {} ; max: {} ; values : {}", dom.min, dom.max, dom.values);
   }
 };
+#endif
 
 std::string domain::to_pretty_string() const
 {
+#if defined(OSSIA_HAS_FMT)
   if(bool(*this))
   {
     return ossia::apply_nonnull(
         domain_prettyprint_visitor{}, (const domain_base_variant&)*this);
   }
   else
+#endif
   {
     return "none";
   }

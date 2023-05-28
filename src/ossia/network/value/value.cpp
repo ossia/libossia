@@ -569,6 +569,7 @@ bool operator<=(const value& lhs, const value& rhs)
   }
 }
 
+#if defined(OSSIA_HAS_FMT)
 std::string value_to_pretty_string(const ossia::value& val)
 {
   return fmt::format("{}", val);
@@ -586,6 +587,7 @@ ossia::value parse_pretty_value(std::string_view str)
     ossia::logger().error("ossia::parse_pretty_value error: {}", str);
   return val;
 }
+#endif
 
 ossia::value
 get_value_at_index(const ossia::value& val, const ossia::destination_index& idx)

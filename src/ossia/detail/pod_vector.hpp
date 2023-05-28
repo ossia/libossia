@@ -1,5 +1,6 @@
 #pragma once
 #include <boost/container/vector.hpp>
+#include <boost/predef.h>
 
 #include <cinttypes>
 #include <cstddef>
@@ -98,6 +99,22 @@ struct aligned_pod_allocator
   aligned_pod_allocator& operator=(const aligned_pod_allocator&) noexcept = default;
   aligned_pod_allocator& operator=(aligned_pod_allocator&&) noexcept = default;
 
+#if defined(__linux__) || defined(__unix__) || defined(__unix) || defined(__APPLE__) \
+    || defined(__EMSCRIPTEN__)
+#define OSSIA_HAS_POSIX_MEMALIGN 1
+#endif
+
+  template <typename U>
+  static constexpr bool has_posix_memalign() noexcept
+  {
+#if defined(__linux__) || defined(__unix__) || defined(__unix) || defined(__APPLE__) \
+    || defined(__EMSCRIPTEN__)
+    return true;
+#else
+    return false;
+#endif
+  }
+
   static inline T* allocate(std::size_t num) noexcept
   {
     static_assert(
@@ -113,7 +130,29 @@ struct aligned_pod_allocator
       return static_cast<T*>(::_aligned_malloc(sizeof(T) * num, Align));
 #else
       void* p;
-      posix_memalign(&p, Align, sizeof(T) * num);
+#if OSSIA_HAS_POSIX_MEMALIGN
+      {
+        posix_memalign(&p, Align, sizeof(T) * num);
+      }
+#else
+      {
+        static_assert(Align < 128);
+        p = std::malloc(sizeof(T) * num + Align + 1);
+        const auto pb = uintptr_t(p);
+        auto pptr = uintptr_t(p);
+
+        while((pptr % Align) != 0)
+        {
+          pptr++;
+        }
+        if(pb == pptr)
+        {
+          pptr += Align;
+        }
+        *(unsigned char*)(pptr - 1) = (pptr - pb);
+        p = (void*)pptr;
+      }
+#endif
       return static_cast<T*>(p);
 #endif
     }
@@ -135,7 +174,17 @@ struct aligned_pod_allocator
       std::free(p);
     }
 #else
-    std::free(p);
+#if OSSIA_HAS_POSIX_MEMALIGN
+    {
+      std::free(p);
+    }
+#else
+    {
+      auto count = *(((unsigned char*)p) - 1);
+      auto root = ((unsigned char*)p - count);
+      std::free(root);
+    }
+#endif
 #endif
   }
 

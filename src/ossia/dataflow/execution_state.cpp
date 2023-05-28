@@ -40,6 +40,7 @@ struct local_pull_visitor
 
   bool operator()(audio_port& val) const
   {
+#if defined(OSSIA_PROTOCOL_AUDIO)
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_audioState.find(static_cast<ossia::audio_parameter*>(addr));
     if(it != st.m_audioState.end() && !it->second.empty())
@@ -47,11 +48,13 @@ struct local_pull_visitor
       copy_data{}(it->second, val);
       return true;
     }
+#endif
     return false;
   }
 
   bool operator()(midi_port& val) const
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     OSSIA_EXEC_STATE_LOCK_READ(st);
     auto it = st.m_midiState.find(addr);
     if(it != st.m_midiState.end() && !it->second.empty())
@@ -59,6 +62,7 @@ struct local_pull_visitor
       copy_data{}(it->second, val);
       return true;
     }
+#endif
     return false;
   }
 
@@ -93,6 +97,7 @@ struct global_pull_visitor
 
   void operator()(audio_port& val) const
   {
+#if defined(OSSIA_PROTOCOL_AUDIO)
 #if !defined(NDEBUG)
     auto aa = dynamic_cast<const audio_parameter*>(&out);
     assert(aa);
@@ -100,10 +105,12 @@ struct global_pull_visitor
     auto aa = static_cast<const audio_parameter*>(&out);
 #endif
     aa->clone_value(val.get());
+#endif
   }
 
   void operator()(midi_port& val) const
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     auto& node = out.get_node();
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
@@ -125,6 +132,7 @@ struct global_pull_visitor
         val.messages.push_back(v);
       }
     }
+#endif
   }
 
   [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
@@ -145,6 +153,7 @@ struct global_pull_node_visitor
 
   void operator()(midi_port& val) const
   {
+#if defined(OSSIA_PROTOCOL_MIDI)
     auto& node = out;
     auto& dev = node.get_device();
     auto& proto = dev.get_protocol();
@@ -184,6 +193,7 @@ struct global_pull_node_visitor
         }
       }
     }
+#endif
   }
 
   [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
@@ -202,8 +212,13 @@ void execution_state::clear_devices()
 execution_state::execution_state()
 {
   m_valueState.reserve(100);
+#if defined(OSSIA_PROTOCOL_AUDIO)
   m_audioState.reserve(8);
+#endif
+
+#if defined(OSSIA_PROTOCOL_MIDI)
   m_midiState.reserve(4);
+#endif
 }
 
 void execution_state::register_device(net::device_base* d)
@@ -252,6 +267,7 @@ void execution_state::unregister_parameter(net::parameter_base& p)
 
 void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
 {
+#if defined(OSSIA_PROTOCOL_MIDI)
   p.enable_registration();
   auto it = m_receivedMidi.find(&p);
   if(it == m_receivedMidi.end())
@@ -262,10 +278,12 @@ void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
   {
     it->second.first++;
   }
+#endif
 }
 
 void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
 {
+#if defined(OSSIA_PROTOCOL_MIDI)
   auto it = m_receivedMidi.find(&p);
   if(it != m_receivedMidi.end())
   {
@@ -276,6 +294,7 @@ void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
       // TODO p.disable_registration();
     }
   }
+#endif
 }
 
 void execution_state::get_new_values()
@@ -321,6 +340,7 @@ void execution_state::register_port(const inlet& port)
       }
     }
   }
+#if defined(OSSIA_PROTOCOL_MIDI)
   else if(port.target<ossia::midi_port>())
   {
     if(auto addr = port.address.target<ossia::net::node_base*>())
@@ -340,6 +360,7 @@ void execution_state::register_port(const inlet& port)
       }
     }
   }
+#endif
 }
 
 void execution_state::register_port(const outlet& port)
@@ -371,6 +392,7 @@ void execution_state::unregister_port(const inlet& port)
       }
     }
   }
+#if defined(OSSIA_PROTOCOL_MIDI)
   else if(port.target<ossia::midi_port>())
   {
     if(auto addr = port.address.target<ossia::net::node_base*>())
@@ -390,6 +412,7 @@ void execution_state::unregister_port(const inlet& port)
       }
     }
   }
+#endif
 }
 
 void execution_state::unregister_port(const outlet& port)
@@ -522,6 +545,7 @@ to_state_element(ossia::net::parameter_base& p, const ossia::typed_value& v)
 
 void execution_state::commit_common()
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   for(auto& elt : m_audioState)
   {
     assert(elt.first);
@@ -532,7 +556,9 @@ void execution_state::commit_common()
       vec.clear();
     }
   }
+#endif
 
+#if defined(OSSIA_PROTOCOL_MIDI)
   for(auto& elt : m_midiState)
   {
     if(!elt.second.empty())
@@ -549,10 +575,12 @@ void execution_state::commit_common()
       elt.second.clear();
     }
   }
+#endif
 }
 
 void execution_state::advance_tick(std::size_t t)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   /*
         for (auto& elt : st.m_audioState)
         {
@@ -569,6 +597,7 @@ void execution_state::advance_tick(std::size_t t)
           }
         }
         */
+
   for(auto& dev : m_devices_exec)
   {
     auto& proto = dev->get_protocol();
@@ -577,6 +606,7 @@ void execution_state::advance_tick(std::size_t t)
       ap->advance_tick(t);
     }
   }
+#endif
 }
 
 void execution_state::commit_merged()
@@ -932,18 +962,22 @@ void execution_state::insert(ossia::net::parameter_base& param, typed_value&& v)
 
 void execution_state::insert(ossia::audio_parameter& param, const audio_port& v)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   OSSIA_EXEC_STATE_LOCK_WRITE(*this);
   mix(v.get(), m_audioState[&param].get());
+#endif
 }
 
 void execution_state::insert(ossia::net::parameter_base& param, const midi_port& v)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   if(!v.messages.empty())
   {
     OSSIA_EXEC_STATE_LOCK_WRITE(*this);
     auto& vec = m_midiState[&param];
     vec.insert(vec.end(), v.messages.begin(), v.messages.end());
   }
+#endif
 }
 
 struct state_exec_visitor
@@ -998,20 +1032,28 @@ static bool is_in(
     const ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>&
         container)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   auto it = container.find(&other);
   if(it == container.end())
     return false;
   return !it->second.empty();
+#else
+  return false;
+#endif
 }
 static bool is_in(
     net::parameter_base& other,
     const ossia::hash_map<ossia::audio_parameter*, audio_port>& container)
 {
+#if defined(OSSIA_PROTOCOL_AUDIO)
   // TODO dangerous
   auto it = container.find(static_cast<ossia::audio_parameter*>(&other));
   if(it == container.end())
     return false;
   return !it->second.empty();
+#else
+  return false;
+#endif
 }
 bool execution_state::in_local_scope(net::parameter_base& other) const
 {

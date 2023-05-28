@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/dataspace/dataspace_variant_visitors.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
@@ -13,8 +14,6 @@
 #include <ossia/network/dataspace/value_with_unit.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
 #include <ossia/network/value/value_conversion.hpp>
-
-#include <ossia/detail/hash_map.hpp>
 
 namespace ossia
 {
@@ -242,8 +241,12 @@ unit_t to_unit(const value_with_unit& v)
 
 std::string to_pretty_string(const value_with_unit& v)
 {
+#if defined(OSSIA_HAS_FMT)
   return fmt::format(
       "{} {}", value_to_pretty_string(to_value(v)), get_pretty_unit_text(to_unit(v)));
+#else
+  return "";
+#endif
 }
 
 /// Merge ///

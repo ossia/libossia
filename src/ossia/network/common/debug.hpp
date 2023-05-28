@@ -1,6 +1,6 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-
+#if defined(OSSIA_HAS_FMT)
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/network/base/node.hpp>
@@ -138,6 +138,8 @@ struct formatter<ossia::net::node_base>
   }
 };
 }
+
+#endif
 
 namespace ossia
 {

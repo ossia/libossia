@@ -10,8 +10,9 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/algorithm/string/predicate.hpp>
 
+#if defined(OSSIA_HAS_RAPIDFUZZ)
 #include <rapidfuzz/fuzz.hpp>
-#include <re2/re2.h>
+#endif
 
 #include <ctre.hpp>
 
@@ -903,6 +904,7 @@ void fuzzysearch(
     const std::vector<std::string>& patterns, std::vector<fuzzysearch_result>& results,
     fuzzysearch_options opt)
 {
+#if defined(OSSIA_HAS_RAPIDFUZZ)
   results.clear();
 
   for(const auto& node : nodes)
@@ -950,6 +952,7 @@ void fuzzysearch(
           return left.score > right.score;
         });
   }
+#endif
 }
 
 std::pair<std::vector<std::string>, bool> expand_address(const std::string& address)
