@@ -59,7 +59,7 @@ public:
   {
     float m_value0;
 
-    int m_value1;
+    int32_t m_value1;
 
     ossia::vec2f m_value2;
 
@@ -124,7 +124,7 @@ public:
   value_variant_type();
   ~value_variant_type();
   value_variant_type(float v);
-  value_variant_type(int v);
+  value_variant_type(int32_t v);
   value_variant_type(ossia::vec2f v);
   value_variant_type(ossia::vec3f v);
   value_variant_type(ossia::vec4f v);
@@ -183,159 +183,159 @@ public:
   {
   }
 
-  value(impulse val) noexcept
+  OSSIA_INLINE value(impulse val) noexcept
       : v{val}
   {
   }
 
-  value(bool val) noexcept
+  OSSIA_INLINE value(bool val) noexcept
       : v{val}
   {
   }
-  value(int val) noexcept
+  OSSIA_INLINE value(int val) noexcept
+      : v{(int32_t)val}
+  {
+  }
+  OSSIA_INLINE value(long val) noexcept
+      : v{(int32_t)val}
+  {
+  }
+  OSSIA_INLINE value(float val) noexcept
       : v{val}
   {
   }
-  value(long val) noexcept
-      : v{(int)val}
-  {
-  }
-  value(float val) noexcept
-      : v{val}
-  {
-  }
-  value(double val) noexcept
+  OSSIA_INLINE value(double val) noexcept
       : v{(float)val}
   {
   }
-  value(const std::string& val) noexcept
+  OSSIA_INLINE value(const std::string& val) noexcept
       : v{val}
   {
   }
 
-  value(const std::vector<ossia::value>& val) noexcept
+  OSSIA_INLINE value(const std::vector<ossia::value>& val) noexcept
       : v(val)
   {
   }
 
-  value(const value_map_type& val) noexcept
+  OSSIA_INLINE value(const value_map_type& val) noexcept
       : v(val)
   {
   }
-  value(std::array<float, 2> val) noexcept
+  OSSIA_INLINE value(std::array<float, 2> val) noexcept
       : v(val)
   {
   }
-  value(std::array<float, 3> val) noexcept
+  OSSIA_INLINE value(std::array<float, 3> val) noexcept
       : v(val)
   {
   }
-  value(std::array<float, 4> val) noexcept
+  OSSIA_INLINE value(std::array<float, 4> val) noexcept
       : v(val)
   {
   }
 
-  value(std::string&& val) noexcept
+  OSSIA_INLINE value(std::string&& val) noexcept
       : v(std::move(val))
   {
   }
-  value(std::vector<ossia::value>&& val) noexcept
+  OSSIA_INLINE value(std::vector<ossia::value>&& val) noexcept
       : v(std::move(val))
   {
   }
 
-  value(value_map_type&& val) noexcept
+  OSSIA_INLINE value(value_map_type&& val) noexcept
       : v(std::move(val))
   {
   }
 
   template <typename T, typename... Args>
-  value(detail::dummy<T> t, Args&&... args) noexcept
+  OSSIA_INLINE value(detail::dummy<T> t, Args&&... args) noexcept
       : v(T(std::forward<Args>(args)...))
   {
   }
 
   // To initialize a value directly with correct arguments
   template <typename T, typename... Args>
-  static ossia::value make(Args&&... args) noexcept
+  OSSIA_INLINE static ossia::value make(Args&&... args) noexcept
   {
     return ossia::value{detail::dummy<T>{}, std::forward<Args>(args)...};
   }
 
   // Assignment
-  value& operator=(ossia::impulse val) noexcept
+  OSSIA_INLINE value& operator=(ossia::impulse val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(const char* c) noexcept
+  OSSIA_INLINE value& operator=(const char* c) noexcept
   {
     v = std::string(c);
     return *this;
   }
-  value& operator=(bool val) noexcept
+  OSSIA_INLINE value& operator=(bool val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(int val) noexcept
+  OSSIA_INLINE value& operator=(int32_t val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(float val) noexcept
+  OSSIA_INLINE value& operator=(float val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(const std::string& val) noexcept
+  OSSIA_INLINE value& operator=(const std::string& val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(const std::vector<ossia::value>& val) noexcept
+  OSSIA_INLINE value& operator=(const std::vector<ossia::value>& val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(const value_map_type& val) noexcept
+  OSSIA_INLINE value& operator=(const value_map_type& val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(std::array<float, 2> val) noexcept
+  OSSIA_INLINE value& operator=(std::array<float, 2> val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(std::array<float, 3> val) noexcept
+  OSSIA_INLINE value& operator=(std::array<float, 3> val) noexcept
   {
     v = val;
     return *this;
   }
-  value& operator=(std::array<float, 4> val) noexcept
+  OSSIA_INLINE value& operator=(std::array<float, 4> val) noexcept
   {
     v = val;
     return *this;
   }
 
-  value& operator=(std::string&& val) noexcept
+  OSSIA_INLINE value& operator=(std::string&& val) noexcept
   {
     v = std::move(val);
     return *this;
   }
-  value& operator=(std::vector<ossia::value>&& val) noexcept
+  OSSIA_INLINE value& operator=(std::vector<ossia::value>&& val) noexcept
   {
     v = std::move(val);
     return *this;
   }
-  value& operator=(value_map_type&& val) noexcept
+  OSSIA_INLINE value& operator=(value_map_type&& val) noexcept
   {
     v = std::move(val);
     return *this;
   }
 
-  value() noexcept { }
+  OSSIA_INLINE value() noexcept { }
   ~value() noexcept;
   value(const value& other) noexcept
       : v(other.v)
@@ -361,19 +361,19 @@ public:
 
   // Operations
   template <typename T>
-  const T& get() const
+  OSSIA_INLINE const T& get() const
   {
     return v.get<T>();
   }
 
   template <typename T>
-  T& get()
+  OSSIA_INLINE T& get()
   {
     return v.get<typename std::remove_const<T>::type>();
   }
 
   template <typename T>
-  const T* target() const noexcept
+  OSSIA_INLINE const T* target() const noexcept
   {
     using type = typename std::remove_const<T>::type;
     static_assert(!std::is_same<type, ossia::value>::value, "");
@@ -381,14 +381,14 @@ public:
   }
 
   template <typename T>
-  T* target() noexcept
+  OSSIA_INLINE T* target() noexcept
   {
     using type = typename std::remove_const<T>::type;
     static_assert(!std::is_same<type, ossia::value>::value, "");
     return v.target<type>();
   }
 
-  ossia::val_type get_type() const
+  OSSIA_INLINE ossia::val_type get_type() const noexcept
   {
     auto t = v.which();
     if(t == v.npos)
@@ -486,20 +486,19 @@ get_value_at_index(const ossia::value& val, const ossia::destination_index& idx)
 
 #if defined(OSSIA_HAS_CONCEPTS)
 template <typename T>
-concept ossia_visitor = requires(T t)
-{
-  t();
-  t(std::declval<float&>());
-  t(std::declval<int&>());
-  t(std::declval<ossia::vec2f&>());
-  t(std::declval<ossia::vec3f&>());
-  t(std::declval<ossia::vec4f&>());
-  t(std::declval<ossia::impulse&>());
-  t(std::declval<bool&>());
-  t(std::declval<std::string&>());
-  t(std::declval<std::vector<ossia::value>&>());
-  t(std::declval<value_map_type&>());
-};
+concept ossia_visitor = requires(T t) {
+                          t();
+                          t(std::declval<float&>());
+                          t(std::declval<int32_t&>());
+                          t(std::declval<ossia::vec2f&>());
+                          t(std::declval<ossia::vec3f&>());
+                          t(std::declval<ossia::vec4f&>());
+                          t(std::declval<ossia::impulse&>());
+                          t(std::declval<bool&>());
+                          t(std::declval<std::string&>());
+                          t(std::declval<std::vector<ossia::value>&>());
+                          t(std::declval<value_map_type&>());
+                        };
 #endif
 
 template <typename Visitor>

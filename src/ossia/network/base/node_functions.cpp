@@ -19,7 +19,6 @@
 #include <charconv>
 #include <iostream>
 #include <iterator>
-#include <regex>
 #include <string>
 #include <utility>
 #include <vector>

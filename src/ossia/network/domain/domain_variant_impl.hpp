@@ -10,7 +10,7 @@ public:
 
     ossia::domain_base<bool> m_value1;
 
-    ossia::domain_base<int> m_value2;
+    ossia::domain_base<int32_t> m_value2;
 
     ossia::domain_base<float> m_value3;
 
@@ -132,15 +132,15 @@ public:
   {
     new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(v)};
   }
-  domain_base_variant(const ossia::domain_base<int>& v)
+  domain_base_variant(const ossia::domain_base<int32_t>& v)
       : m_type{Type2}
   {
-    new(&m_impl.m_value2) ossia::domain_base<int>{v};
+    new(&m_impl.m_value2) ossia::domain_base<int32_t>{v};
   }
-  domain_base_variant(ossia::domain_base<int>&& v)
+  domain_base_variant(ossia::domain_base<int32_t>&& v)
       : m_type{Type2}
   {
-    new(&m_impl.m_value2) ossia::domain_base<int>{std::move(v)};
+    new(&m_impl.m_value2) ossia::domain_base<int32_t>{std::move(v)};
   }
   domain_base_variant(const ossia::domain_base<float>& v)
       : m_type{Type3}
@@ -224,7 +224,7 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int>{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::domain_base<int32_t>{other.m_impl.m_value2};
         break;
       case Type::Type3:
         new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
@@ -264,7 +264,7 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int>{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
         new(&m_impl.m_value3)
@@ -307,7 +307,7 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{other.m_impl.m_value1};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int>{other.m_impl.m_value2};
+        new(&m_impl.m_value2) ossia::domain_base<int32_t>{other.m_impl.m_value2};
         break;
       case Type::Type3:
         new(&m_impl.m_value3) ossia::domain_base<float>{other.m_impl.m_value3};
@@ -349,7 +349,7 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int>{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2) ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
         new(&m_impl.m_value3)
@@ -396,7 +396,7 @@ inline const ossia::domain_base<bool>* domain_base_variant::target() const
   return nullptr;
 }
 template <>
-inline const ossia::domain_base<int>* domain_base_variant::target() const
+inline const ossia::domain_base<int32_t>* domain_base_variant::target() const
 {
   if(m_type == Type2)
     return &m_impl.m_value2;
@@ -466,7 +466,7 @@ inline ossia::domain_base<bool>* domain_base_variant::target()
   return nullptr;
 }
 template <>
-inline ossia::domain_base<int>* domain_base_variant::target()
+inline ossia::domain_base<int32_t>* domain_base_variant::target()
 {
   if(m_type == Type2)
     return &m_impl.m_value2;
@@ -536,7 +536,7 @@ inline const ossia::domain_base<bool>& domain_base_variant::get() const
   throw std::runtime_error("domain_variant_impl: bad type");
 }
 template <>
-inline const ossia::domain_base<int>& domain_base_variant::get() const
+inline const ossia::domain_base<int32_t>& domain_base_variant::get() const
 {
   if(m_type == Type2)
     return m_impl.m_value2;
@@ -606,7 +606,7 @@ inline ossia::domain_base<bool>& domain_base_variant::get()
   throw std::runtime_error("domain_variant_impl: bad type");
 }
 template <>
-inline ossia::domain_base<int>& domain_base_variant::get()
+inline ossia::domain_base<int32_t>& domain_base_variant::get()
 {
   if(m_type == Type2)
     return m_impl.m_value2;
@@ -947,25 +947,25 @@ operator!=(const ossia::domain_base<bool>& lhs, const domain_base_variant& rhs)
          || (rhs.m_impl.m_value1 != lhs);
 }
 inline bool
-operator==(const domain_base_variant& lhs, const ossia::domain_base<int>& rhs)
+operator==(const domain_base_variant& lhs, const ossia::domain_base<int32_t>& rhs)
 {
   return (lhs.m_type == domain_base_variant::Type::Type2)
          && (lhs.m_impl.m_value2 == rhs);
 }
 inline bool
-operator==(const ossia::domain_base<int>& lhs, const domain_base_variant& rhs)
+operator==(const ossia::domain_base<int32_t>& lhs, const domain_base_variant& rhs)
 {
   return (rhs.m_type == domain_base_variant::Type::Type2)
          && (rhs.m_impl.m_value2 == lhs);
 }
 inline bool
-operator!=(const domain_base_variant& lhs, const ossia::domain_base<int>& rhs)
+operator!=(const domain_base_variant& lhs, const ossia::domain_base<int32_t>& rhs)
 {
   return (lhs.m_type != domain_base_variant::Type::Type2)
          || (lhs.m_impl.m_value2 != rhs);
 }
 inline bool
-operator!=(const ossia::domain_base<int>& lhs, const domain_base_variant& rhs)
+operator!=(const ossia::domain_base<int32_t>& lhs, const domain_base_variant& rhs)
 {
   return (rhs.m_type != domain_base_variant::Type::Type2)
          || (rhs.m_impl.m_value2 != lhs);

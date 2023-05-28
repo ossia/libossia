@@ -122,7 +122,7 @@ struct json_to_value
     return val.IsNull();
   }
 
-  bool operator()(int& res) const
+  bool operator()(int32_t& res) const
   {
     typetag_cursor++;
 
@@ -397,7 +397,7 @@ struct json_to_single_value
 
   bool operator()(impulse) const { return val.IsNull(); }
 
-  bool operator()(int& res) const
+  bool operator()(int32_t& res) const
   {
     bool b = val.IsInt();
     if(b)
@@ -534,7 +534,7 @@ struct json_to_value_unchecked
   const rapidjson::Value& val;
   void operator()(impulse) const { }
 
-  void operator()(int& res) const
+  void operator()(int32_t& res) const
   {
     if(val.IsInt())
       res = val.GetInt();

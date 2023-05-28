@@ -121,10 +121,10 @@ template<> struct var_member<ossia::domain_base<ossia::impulse>>
   static const constexpr bool is_trivial = false;
 };
 
-template<> struct var_member<ossia::domain_base<int>>
+template<> struct var_member<ossia::domain_base<int32_t>>
 {
-  using type = ossia::domain_base<int>;
-  const std::string type_str = "ossia::domain_base<int>";
+  using type = ossia::domain_base<int32_t>;
+  const std::string type_str = "ossia::domain_base<int32_t>";
   const std::string ctor_str = "domain_base";
   static const constexpr bool is_trivial = false;
 };

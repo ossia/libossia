@@ -46,7 +46,7 @@ ossia::value& value_map_type::operator[](std::string_view str) noexcept
 }
 
 template OSSIA_EXPORT impulse convert<ossia::impulse>(const ossia::value& val);
-template OSSIA_EXPORT int convert<int>(const ossia::value& val);
+template OSSIA_EXPORT int32_t convert<int32_t>(const ossia::value& val);
 template OSSIA_EXPORT float convert<float>(const ossia::value& val);
 template OSSIA_EXPORT double convert<double>(const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
@@ -64,7 +64,7 @@ convert<std::array<float, 4>>(const ossia::value& val);
 
 template OSSIA_EXPORT impulse
 convert<ossia::impulse>(const ossia::impulse&, const ossia::value& val);
-template OSSIA_EXPORT int convert<int>(const int&, const ossia::value& val);
+template OSSIA_EXPORT int32_t convert<int32_t>(const int32_t&, const ossia::value& val);
 template OSSIA_EXPORT float convert<float>(const float&, const ossia::value& val);
 template OSSIA_EXPORT double convert<double>(const double&, const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const bool&, const ossia::value& val);
@@ -283,9 +283,9 @@ struct value_comparison_visitor2
   }
 
   template <typename T, typename U>
-  requires(
-      std::is_same_v<
-          T, ossia::value_map_type> || std::is_same_v<U, ossia::value_map_type>) bool
+    requires(
+        std::is_same_v<T, ossia::value_map_type>
+        || std::is_same_v<U, ossia::value_map_type>) bool
   operator()(const T& lhs, const U& rhs) const
   {
     return false;
@@ -629,14 +629,13 @@ bool is_array(const ossia::value& val)
     return ossia::apply_nonnull(detail::is_array_helper{}, val.v);
   return false;
 }
-
 struct lift_convert
 {
   const ossia::value& newval;
   template <typename T>
   ossia::value operator()(const T& cur)
   {
-    return ossia::value{convert(cur, newval)};
+    return convert(cur, newval);
   }
 
   [[noreturn]] ossia::value operator()()
@@ -665,7 +664,7 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
   {
     return lift(newtype, [&](auto t) -> ossia::value {
       using ossia_type = typename decltype(t)::ossia_type;
-      return ossia::value{convert<ossia_type>(val)};
+      return convert<ossia_type>(val);
     });
   }
   return ossia::value{};

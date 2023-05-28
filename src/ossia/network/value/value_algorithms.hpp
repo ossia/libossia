@@ -227,7 +227,7 @@ struct value_merger
       switch(val.get_type())
       {
         case ossia::val_type::INT:
-          f = (float)val.template get<int>();
+          f = (float)val.template get<int32_t>();
           break;
         case ossia::val_type::FLOAT:
           f = (float)val.template get<float>();

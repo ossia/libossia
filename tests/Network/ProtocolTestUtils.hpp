@@ -22,7 +22,7 @@ struct matching_domain<ossia::val_type::BOOL>
 { using type = ossia::domain_base<bool>; };
 template<>
 struct matching_domain<ossia::val_type::INT>
-{ using type = ossia::domain_base<int>; };
+{ using type = ossia::domain_base<int32_t>; };
 template<>
 struct matching_domain<ossia::val_type::FLOAT>
 { using type = ossia::domain_base<float>; };

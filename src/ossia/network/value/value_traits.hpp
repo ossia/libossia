@@ -24,7 +24,7 @@ template <>
 struct value_trait<int32_t>
 {
   using ossia_type = int32_t;
-  using value_type = int;
+  using value_type = int32_t;
   static const constexpr auto ossia_enum = val_type::INT;
   static const constexpr bool is_numeric = true;
   static const constexpr bool is_array = false;

@@ -8,8 +8,6 @@
 #include <ossia/network/common/value_mapping.hpp>
 #include <ossia/network/value/format_value.hpp>
 
-#include <iostream>
-
 namespace ossia
 {
 namespace
@@ -24,11 +22,7 @@ struct process_float_control_visitor
 
   void operator()(ossia::impulse) const noexcept { }
 
-  void operator()(int& v) const noexcept
-  {
-    std::cerr << "mapped value: " << v << (dst_min + ratio * (v - src_min)) << std::endl;
-    v = dst_min + ratio * (v - src_min);
-  }
+  void operator()(int32_t& v) const noexcept { v = dst_min + ratio * (v - src_min); }
   void operator()(float& v) const noexcept { v = dst_min + ratio * (v - src_min); }
   void operator()(bool& v) const noexcept { v = dst_min + ratio * (v - src_min); }
 

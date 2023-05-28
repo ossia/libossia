@@ -101,8 +101,8 @@ struct domain_map
 
   template <typename Value_T>
   void operator()(
-      Value_T& v, ossia::domain_base<int>& source_domain,
-      ossia::domain_base<int>& tgt_domain) const noexcept
+      Value_T& v, ossia::domain_base<int32_t>& source_domain,
+      ossia::domain_base<int32_t>& tgt_domain) const noexcept
   {
     if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
@@ -133,7 +133,7 @@ struct domain_map
 
   template <typename Value_T>
   void operator()(
-      Value_T& v, ossia::domain_base<int>& source_domain,
+      Value_T& v, ossia::domain_base<int32_t>& source_domain,
       ossia::domain_base<float>& tgt_domain) const noexcept
   {
     if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
@@ -150,7 +150,7 @@ struct domain_map
   template <typename Value_T>
   void operator()(
       Value_T& v, ossia::domain_base<float>& source_domain,
-      ossia::domain_base<int>& tgt_domain) const noexcept
+      ossia::domain_base<int32_t>& tgt_domain) const noexcept
   {
     if(source_domain.min && source_domain.max && tgt_domain.min && tgt_domain.max)
     {
@@ -165,7 +165,7 @@ struct domain_map
 
   template <typename Value_T>
   void operator()(
-      Value_T& v, ossia::domain_base<int>& source_domain,
+      Value_T& v, ossia::domain_base<int32_t>& source_domain,
       ossia::domain_base<bool>& tgt_domain) const noexcept
   {
     if(source_domain.min && source_domain.max)
@@ -188,7 +188,7 @@ struct domain_map
   template <typename Value_T>
   void operator()(
       Value_T& v, ossia::domain_base<bool>& source_domain,
-      ossia::domain_base<int>& tgt_domain) const noexcept
+      ossia::domain_base<int32_t>& tgt_domain) const noexcept
   {
     if(tgt_domain.min && tgt_domain.max)
     {

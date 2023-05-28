@@ -112,7 +112,7 @@ struct domain_conversion<vecf_domain<N>>
 
   OSSIA_INLINE domain operator()(const vector_domain& t) { return list_func(t); }
 
-  OSSIA_INLINE domain operator()(const domain_base<int>& d)
+  OSSIA_INLINE domain operator()(const domain_base<int32_t>& d)
   {
     domain_base<float> res;
     if(d.min)

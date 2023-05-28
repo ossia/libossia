@@ -81,7 +81,7 @@ ossia_domain_t ossia_domain_make_string_set(const char** strings, size_t n)
 ossia_domain_t ossia_domain_make_int_set(const int* v, size_t n)
 {
   return safe_function(__func__, [=]() -> ossia_domain_t {
-    ossia::domain_base<int> dom;
+    ossia::domain_base<int32_t> dom;
     dom.values.resize(n);
     for(std::size_t i = 0; i < n; i++)
       dom.values[i] = v[i];

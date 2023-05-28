@@ -1,4 +1,6 @@
 #pragma once
+// clang-format off
+
 // ABI-breaking language features
 #cmakedefine OSSIA_SHARED_MUTEX_AVAILABLE
 
@@ -41,6 +43,11 @@
 
 #cmakedefine OSSIA_FFT_KFR
 
+
+#cmakedefine OSSIA_HAS_FMT
+#cmakedefine OSSIA_HAS_RE2
+#cmakedefine OSSIA_HAS_RAPIDFUZZ
+
 // Code configuration
 #cmakedefine OSSIA_CALLBACK_CONTAINER_MUTEX @OSSIA_CALLBACK_CONTAINER_MUTEX@
 
@@ -52,3 +59,4 @@
 #define OSSIA_CALLBACK_CONTAINER_MUTEX std::recursive_mutex
 #endif
 
+// clang-format on

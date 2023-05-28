@@ -78,7 +78,6 @@ context::context(const std::vector<spdlog::sink_ptr>& sinks)
 context::~context() = default;
 
 #if defined(OSSIA_BRUH_LOGGER)
-
 bruh_logger& logger() noexcept
 {
   static bruh_logger b;

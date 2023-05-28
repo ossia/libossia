@@ -8,7 +8,7 @@ inline const float* value_variant_type::target() const
   return nullptr;
 }
 template <>
-inline const int* value_variant_type::target() const
+inline const int32_t* value_variant_type::target() const
 {
   if(m_type == Type1)
     return &m_impl.m_value1;
@@ -78,7 +78,7 @@ inline float* value_variant_type::target()
   return nullptr;
 }
 template <>
-inline int* value_variant_type::target()
+inline int32_t* value_variant_type::target()
 {
   if(m_type == Type1)
     return &m_impl.m_value1;
@@ -148,7 +148,7 @@ inline const float& value_variant_type::get() const
   throw std::runtime_error("value_variant: bad type");
 }
 template <>
-inline const int& value_variant_type::get() const
+inline const int32_t& value_variant_type::get() const
 {
   if(m_type == Type1)
     return m_impl.m_value1;
@@ -218,7 +218,7 @@ inline float& value_variant_type::get()
   throw std::runtime_error("value_variant: bad type");
 }
 template <>
-inline int& value_variant_type::get()
+inline int32_t& value_variant_type::get()
 {
   if(m_type == Type1)
     return m_impl.m_value1;
@@ -13057,10 +13057,10 @@ inline value_variant_type::value_variant_type(float v)
   new(&m_impl.m_value0) float{v};
 }
 
-inline value_variant_type::value_variant_type(int v)
+inline value_variant_type::value_variant_type(int32_t v)
     : m_type{Type1}
 {
-  new(&m_impl.m_value1) int{v};
+  new(&m_impl.m_value1) int32_t{v};
 }
 
 inline value_variant_type::value_variant_type(ossia::vec2f v)
@@ -13138,7 +13138,7 @@ inline value_variant_type::value_variant_type(const value_variant_type& other)
       new(&m_impl.m_value0) float{other.m_impl.m_value0};
       break;
     case Type::Type1:
-      new(&m_impl.m_value1) int{other.m_impl.m_value1};
+      new(&m_impl.m_value1) int32_t{other.m_impl.m_value1};
       break;
     case Type::Type2:
       new(&m_impl.m_value2) ossia::vec2f{other.m_impl.m_value2};
@@ -13178,7 +13178,7 @@ inline value_variant_type::value_variant_type(value_variant_type&& other) noexce
       new(&m_impl.m_value0) float{std::move(other.m_impl.m_value0)};
       break;
     case Type::Type1:
-      new(&m_impl.m_value1) int{std::move(other.m_impl.m_value1)};
+      new(&m_impl.m_value1) int32_t{std::move(other.m_impl.m_value1)};
       break;
     case Type::Type2:
       new(&m_impl.m_value2) ossia::vec2f{std::move(other.m_impl.m_value2)};
@@ -13221,7 +13221,7 @@ inline value_variant_type& value_variant_type::operator=(const value_variant_typ
         new(&m_impl.m_value0) float{other.m_impl.m_value0};
         break;
       case Type::Type1:
-        new(&m_impl.m_value1) int{other.m_impl.m_value1};
+        new(&m_impl.m_value1) int32_t{other.m_impl.m_value1};
         break;
       case Type::Type2:
         new(&m_impl.m_value2) ossia::vec2f{other.m_impl.m_value2};
@@ -13305,7 +13305,7 @@ value_variant_type::operator=(value_variant_type&& other) noexcept
         new(&m_impl.m_value0) float{std::move(other.m_impl.m_value0)};
         break;
       case Type::Type1:
-        new(&m_impl.m_value1) int{std::move(other.m_impl.m_value1)};
+        new(&m_impl.m_value1) int32_t{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
         new(&m_impl.m_value2) ossia::vec2f{std::move(other.m_impl.m_value2)};

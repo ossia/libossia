@@ -78,21 +78,21 @@ struct numeric_value_converter
 };
 
 template <>
-struct value_converter<int> : public numeric_value_converter<int>
+struct value_converter<int32_t> : public numeric_value_converter<int32_t>
 {
-  using numeric_value_converter<int>::operator();
-  int operator()(const std::string& v) const
+  using numeric_value_converter<int32_t>::operator();
+  int32_t operator()(const std::string& v) const
   {
     try
     {
       using boost::spirit::x3::int_;
-      int x{};
+      int32_t x{};
       boost::spirit::x3::parse(v.begin(), v.end(), int_, x);
       return x;
     }
     catch(...)
     {
-      return int{};
+      return int32_t{};
     }
   }
 };
@@ -111,7 +111,7 @@ struct value_converter<float> : public numeric_value_converter<float>
     }
     catch(...)
     {
-      return int{};
+      return float{};
     }
   }
 };
@@ -130,7 +130,7 @@ struct value_converter<double> : public numeric_value_converter<double>
     }
     catch(...)
     {
-      return int{};
+      return double{};
     }
   }
 };
@@ -461,7 +461,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
 
 extern template double ossia::convert<double>(const ossia::value&);
 extern template float ossia::convert<float>(const ossia::value&);
-extern template int ossia::convert<int>(const ossia::value&);
+extern template int32_t ossia::convert<int32_t>(const ossia::value&);
 extern template char ossia::convert<char>(const ossia::value&);
 extern template bool ossia::convert<bool>(const ossia::value&);
 extern template std::string ossia::convert<std::string>(const ossia::value&);

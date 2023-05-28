@@ -281,7 +281,7 @@ TEST_CASE("test_visit", "test_visit")
   struct my_vis
   {
     void operator()(ossia::domain_base<char>) { }
-    void operator()(ossia::domain_base<int>& d)
+    void operator()(ossia::domain_base<int32_t>& d)
     {
       if(d.min)
       {
@@ -403,7 +403,7 @@ TEST_CASE("test_visit", "test_visit")
 TEST_CASE("test_basic", "test_basic")
 {
   using namespace ossia;
-  domain_base<int> dom(1, 24);
+  domain_base<int32_t> dom(1, 24);
 
   REQUIRE(*dom.min == 1);
   REQUIRE(*dom.max == 24);
@@ -417,14 +417,14 @@ TEST_CASE("test_basic", "test_basic")
   domain d1 = dom, d2 = copy;
   REQUIRE(d1 == d2);
 
-  d2 = domain_base<int>{0, 25};
+  d2 = domain_base<int32_t>{0, 25};
   REQUIRE(d1 != d2);
 
   d2 = domain_base<float>{1., 24.};
   REQUIRE(d1 != d2);
 
   domain d3 = make_domain(1, 24);
-  REQUIRE(d3 == domain_base<int>(1, 24));
+  REQUIRE(d3 == domain_base<int32_t>(1, 24));
   REQUIRE(d3 != dom);
 }
 
@@ -645,7 +645,7 @@ TEST_CASE("test_get_min_max", "test_get_min_max")
 }
 
 { // Numeric domain
-  domain d = domain_base<int>();
+  domain d = domain_base<int32_t>();
   REQUIRE(get_min(d) == value{});
   REQUIRE(get_max(d) == value{});
 
