@@ -8,6 +8,7 @@
 #include <ossia/network/value/value.hpp>
 
 #include <string>
+#include <ostream>
 
 namespace ossia
 {
