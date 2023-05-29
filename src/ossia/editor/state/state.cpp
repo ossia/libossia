@@ -7,8 +7,6 @@
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter.hpp>
 
-#include <iostream>
-
 namespace ossia
 {
 std::size_t state::size() const

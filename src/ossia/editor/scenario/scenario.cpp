@@ -8,8 +8,6 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
-#include <iostream>
-
 namespace ossia
 {
 
@@ -128,8 +126,9 @@ void scenario::start()
     // error
     else
     {
-      std::cerr << "scenario_impl::start:  start: " << (int)startStatus
-                << " ; end: " << (int)endStatus << std::endl;
+      ossia::logger().error(
+          "scenario_impl::start:  start: {} ; end: {}", (int)startStatus,
+          (int)endStatus);
       throw execution_error(
           "scenario_impl::start: "
           "TimeEvent's status configuration of the "

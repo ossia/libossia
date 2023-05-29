@@ -11,7 +11,7 @@
 
 #include <algorithm>
 #include <csignal>
-#include <iostream>
+
 namespace ossia
 {
 std::optional<ossia::time_signature> get_time_signature(const std::string_view& v)

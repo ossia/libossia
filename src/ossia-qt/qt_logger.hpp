@@ -6,7 +6,6 @@
 
 #include <spdlog/sinks/sink.h>
 
-#include <iostream>
 #include <verdigris>
 
 Q_DECLARE_METATYPE(spdlog::level::level_enum)
@@ -29,8 +28,6 @@ public:
   void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
   void log(const spdlog::details::log_msg& msg) override
   {
-    std::cerr.write(msg.payload.data(), msg.payload.size());
-    std::cerr << std::endl;
     l(msg.level, QString::fromUtf8(msg.payload.data(), msg.payload.size()));
   }
 

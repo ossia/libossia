@@ -10,7 +10,7 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <cassert>
-#include <iostream>
+
 namespace ossia::net
 {
 generic_node_base::generic_node_base(

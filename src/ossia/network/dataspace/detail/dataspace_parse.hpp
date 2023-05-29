@@ -7,8 +7,6 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/dataspace/detail/dataspace_list.hpp>
 
-#include <brigand/algorithms/wrap.hpp>
-#include <brigand/sequences/list.hpp>
 namespace ossia::detail
 {
 using unit_map = string_view_map<ossia::unit_t>;
@@ -52,7 +50,7 @@ struct unit_factory_visitor
   template <typename Dataspace_T>
   ossia::unit_t operator()(Dataspace_T arg)
   {
-    static const auto units = brigand::wrap<
+    static const auto units = boost::mp11::mp_rename<
         typename matching_unit_u_list<Dataspace_T>::type, make_unit_map>{}();
     auto it = units.find(text);
     return it != units.end() ? it->second : ossia::unit_t{};

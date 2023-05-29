@@ -5,8 +5,6 @@
 
 #include <faust/gui/UI.h>
 
-#include <iostream>
-
 #include <faust/dsp/poly-llvm-dsp.h>
 
 namespace ossia::nodes

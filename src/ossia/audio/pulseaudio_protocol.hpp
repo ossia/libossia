@@ -5,8 +5,6 @@
 
 #include <pulse/pulseaudio.h>
 
-#include <iostream>
-
 #define OSSIA_AUDIO_PULSEAUDIO 1
 namespace ossia
 {

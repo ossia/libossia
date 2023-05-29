@@ -7,7 +7,6 @@
 
 #include <mapper/mapper_cpp.h>
 
-#include <iostream>
 #include <thread>
 namespace ossia::net
 {

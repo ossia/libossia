@@ -1,6 +1,7 @@
 #pragma once
+#include <ossia/detail/logger.hpp>
 #include <ossia/dataflow/graph/graph_utils.hpp>
-#include <iostream>
+
 namespace ossia
 {
 struct node_exec
@@ -18,7 +19,7 @@ struct node_exec
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 struct node_exec_bench
@@ -49,7 +50,7 @@ struct node_exec_bench
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -72,7 +73,7 @@ struct node_exec_logger
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -115,7 +116,7 @@ struct node_exec_logger_bench
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -152,7 +153,7 @@ struct static_exec
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -214,7 +215,7 @@ struct static_exec_bench
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -256,7 +257,7 @@ struct static_exec_logger
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 
@@ -326,7 +327,7 @@ struct static_exec_logger_bench
   }
   catch(...)
   {
-    std::cerr << "Error while executing a node\n";
+    ossia::logger().error("Error while executing a node");
   }
 };
 }

@@ -19,7 +19,6 @@
 #include <cassert>
 #include <cerrno>
 #include <cstdio>
-#include <iostream>
 #include <stdexcept>
 
 #include <spa/param/latency-utils.h>

@@ -14,13 +14,14 @@
 #include <rapidfuzz/fuzz.hpp>
 #endif
 
+#if defined(OSSIA_HAS_CTRE)
 #include <ctre.hpp>
-
+#endif
 #include <bitset>
 #include <charconv>
-#include <iostream>
 #include <iterator>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -179,6 +180,7 @@ static constexpr int strnatcmp(nat_char const* a, nat_char const* b)
 }
 }
 
+#if defined(OSSIA_HAS_CTRE)
 namespace ossia::net
 {
 namespace
@@ -1043,3 +1045,4 @@ value_map_type to_map(const node_base& n) noexcept
 }
 
 }
+#endif

@@ -7,7 +7,6 @@
 #include <brigand/algorithms/transform.hpp>
 #include <brigand/sequences/make_sequence.hpp>
 
-#include <iostream>
 #include <list>
 #include <tuple>
 #include <utility>

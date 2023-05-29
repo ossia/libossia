@@ -2,7 +2,7 @@
 #include <ossia/detail/string_view.hpp>
 #include <ossia/network/dataspace/dataspace_base_defs_fwd.hpp>
 
-#include <brigand/sequences/list.hpp>
+#include <boost/mp11/list.hpp>
 
 namespace ossia
 {
@@ -10,35 +10,35 @@ namespace ossia
 template <typename T>
 struct matching_unit_u_list;
 
-using angle_u_list = brigand::list<degree_u, radian_u>;
+using angle_u_list = boost::mp11::mp_list<degree_u, radian_u>;
 
-using color_u_list = brigand::list<
+using color_u_list =  boost::mp11::mp_list<
     argb_u, rgba_u, rgb_u, bgr_u, argb8_u, rgba8_u, hsv_u, cmy8_u, xyz_u
     /*, hsl_u, cmyk8_u, yxy_u, hunter_lab_u, cie_lab_u, cie_luv_u*/>;
 
-using distance_u_list = brigand::list<
+using distance_u_list =  boost::mp11::mp_list<
     meter_u, kilometer_u, decimeter_u, centimeter_u, millimeter_u, micrometer_u,
     nanometer_u, picometer_u, inch_u, foot_u, mile_u>;
 
-using gain_u_list = brigand::list<linear_u, midigain_u, decibel_u, decibel_raw_u>;
+using gain_u_list =  boost::mp11::mp_list<linear_u, midigain_u, decibel_u, decibel_raw_u>;
 
-using orientation_u_list = brigand::list<quaternion_u, euler_u, axis_u>;
+using orientation_u_list =  boost::mp11::mp_list<quaternion_u, euler_u, axis_u>;
 
-using position_u_list = brigand::list<
+using position_u_list =  boost::mp11::mp_list<
     cartesian_3d_u, cartesian_2d_u, spherical_u, polar_u, aed_u, ad_u, opengl_u,
     cylindrical_u, azd_u>;
 
-using speed_u_list = brigand::list<
+using speed_u_list =  boost::mp11::mp_list<
     meter_per_second_u, miles_per_hour_u, kilometer_per_hour_u, knot_u,
     foot_per_second_u, foot_per_hour_u>;
 
-using timing_u_list = brigand::list<
+using timing_u_list =  boost::mp11::mp_list<
     second_u, bark_u, bpm_u, cent_u, frequency_u, mel_u, midi_pitch_u, millisecond_u,
     playback_speed_u>;
 
-using dataspace_variant_u_list = brigand::list<
+using dataspace_variant_u_list =  boost::mp11::mp_list<
     distance_u, position_u, speed_u, orientation_u, angle_u, color_u, gain_u, timing_u>;
-using dataspace_u_list = brigand::list<
+using dataspace_u_list =  boost::mp11::mp_list<
     distance_u_list, position_u_list, speed_u_list, orientation_u_list, angle_u_list,
     color_u_list, gain_u_list, timing_u_list>;
 
@@ -127,35 +127,35 @@ struct matching_unit_u_list<timing_u_list>
 template <typename T>
 struct matching_unit_list;
 
-using angle_list = brigand::list<degree, radian>;
+using angle_list =  boost::mp11::mp_list<degree, radian>;
 
-using color_list = brigand::list<
+using color_list =  boost::mp11::mp_list<
     argb, rgba, rgb, bgr, argb8, rgba8, hsv, cmy8, xyz
     /*, hsl, cmyk8, yxy, hunter_lab, cie_lab, cie_luv_u*/>;
 
-using distance_list = brigand::list<
+using distance_list =  boost::mp11::mp_list<
     meter, kilometer, decimeter, centimeter, millimeter, micrometer, nanometer,
     picometer, inch, foot, mile>;
 
-using gain_list = brigand::list<linear, midigain, decibel, decibel_raw>;
+using gain_list =  boost::mp11::mp_list<linear, midigain, decibel, decibel_raw>;
 
-using orientation_list = brigand::list<quaternion, euler, axis>;
+using orientation_list =  boost::mp11::mp_list<quaternion, euler, axis>;
 
-using position_list = brigand::list<
+using position_list =  boost::mp11::mp_list<
     cartesian_3d, cartesian_2d, spherical, polar, aed, ad, opengl, cylindrical, azd>;
 
-using speed_list = brigand::list<
+using speed_list =  boost::mp11::mp_list<
     meter_per_second, miles_per_hour, kilometer_per_hour, knot, foot_per_second,
     foot_per_hour>;
 
-using time_list = brigand::list<
+using time_list =  boost::mp11::mp_list<
     second, bark, bpm, cent, frequency, mel, midi_pitch, millisecond, playback_speed>;
 
-using dataspace_list = brigand::list<
+using dataspace_list =  boost::mp11::mp_list<
     distance_list, position_list, speed_list, orientation_list, angle_list, color_list,
     gain_list, time_list>;
 
-using strong_value_variant_list = brigand::list<
+using strong_value_variant_list =  boost::mp11::mp_list<
     ossia::value, distance, position, speed, orientation, angle, color, gain,
     ossia::timing>;
 

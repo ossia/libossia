@@ -9,8 +9,6 @@
 #include <ossia/protocols/midi/midi_parameter.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
 
-#include <iostream>
-
 namespace ossia::net::midi
 {
 const std::string& midi_node_name(midi_size_t i);

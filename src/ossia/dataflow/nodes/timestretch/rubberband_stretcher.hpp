@@ -8,7 +8,6 @@
 
 #include <RubberBandStretcher.h>
 
-#include <iostream>
 namespace ossia
 {
 #if __has_include(<RubberBandStretcher.h>)

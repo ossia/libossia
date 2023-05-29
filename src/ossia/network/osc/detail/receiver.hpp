@@ -6,7 +6,6 @@
 #include <oscpack/osc/OscPacketListener.h>
 
 #include <functional>
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <thread>

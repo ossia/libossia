@@ -3,7 +3,6 @@
 #include <ossia/detail/apply_type.hpp>
 #include <ossia/detail/flat_map.hpp>
 
-#include <brigand/types/args.hpp>
 #include <tuplet/tuple.hpp>
 
 #include <array>

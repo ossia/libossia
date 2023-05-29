@@ -25,7 +25,6 @@
 #include <rapidjson/writer.h>
 
 #include <cstdio>
-#include <iostream>
 #include <memory>
 #include <regex>
 #include <sstream>

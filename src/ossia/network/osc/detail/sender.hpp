@@ -12,7 +12,6 @@
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscPrintReceivedElements.h>
 
-#include <iostream>
 #include <memory>
 #include <string>
 namespace osc

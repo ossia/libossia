@@ -7,7 +7,6 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <iostream>
 #include <string>
 
 namespace ossia

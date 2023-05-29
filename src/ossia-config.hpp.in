@@ -46,6 +46,7 @@
 
 #cmakedefine OSSIA_HAS_FMT
 #cmakedefine OSSIA_HAS_RE2
+#cmakedefine OSSIA_HAS_CTRE
 #cmakedefine OSSIA_HAS_RAPIDFUZZ
 
 // Code configuration

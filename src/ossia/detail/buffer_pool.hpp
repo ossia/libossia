@@ -1,15 +1,12 @@
 #pragma once
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/detail/lockfree_queue.hpp>
 
-#include <concurrentqueue.h>
 namespace ossia
 {
 template <typename Obj_T>
 struct object_pool
 {
-  template <typename T, size_t MAX_BLOCK_SIZE = 64>
-  using mpmc_queue = moodycamel::ConcurrentQueue<T>;
-
   mpmc_queue<Obj_T> buffers;
 
   Obj_T acquire()
@@ -35,8 +32,6 @@ template <typename Obj_T, typename Alloc, std::size_t... sz>
 struct sized_object_pool
 {
   using SizeSpec = std::integer_sequence<std::size_t, sz...>;
-  template <typename T, size_t MAX_BLOCK_SIZE = 64>
-  using mpmc_queue = moodycamel::ConcurrentQueue<T>;
 
   static const constexpr auto buckets = SizeSpec::size() + 1;
   std::array<mpmc_queue<Obj_T>, buckets> queues;
@@ -99,8 +94,6 @@ struct container_memory_manager
 
 struct buffer_pool
 {
-  template <typename T, size_t MAX_BLOCK_SIZE = 64>
-  using mpmc_queue = moodycamel::ConcurrentQueue<T>;
   using buffer = ossia::pod_vector<char>;
 
   mpmc_queue<buffer> buffers;

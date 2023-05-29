@@ -10,7 +10,6 @@
 #include <ossia/editor/state/state.hpp>
 
 #include <cassert>
-#include <iostream>
 
 namespace ossia
 {

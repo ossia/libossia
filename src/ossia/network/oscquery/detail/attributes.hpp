@@ -6,7 +6,7 @@
 #include <ossia/network/common/parameter_properties.hpp>
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
-#include <brigand/sequences/list.hpp>
+#include <boost/mp11/list.hpp>
 
 /**
  * \file ossia/network/oscquery/detail/attributes.hpp
@@ -360,24 +360,24 @@ struct metadata<net::app_name_attribute>
   static constexpr auto key() { return detail::attribute_app_name(); }
 };
 
-using base_attributes = brigand::list<
+using base_attributes = boost::mp11::mp_list<
     typetag_attribute, net::value_attribute, net::domain_attribute,
     net::access_mode_attribute, net::bounding_mode_attribute,
     net::repetition_filter_attribute, net::unit_attribute, net::default_value_attribute>;
 
-using base_attributes_without_type = brigand::list<
+using base_attributes_without_type = boost::mp11::mp_list<
     net::value_attribute, net::domain_attribute, net::access_mode_attribute,
     net::bounding_mode_attribute, net::repetition_filter_attribute, net::unit_attribute,
     net::default_value_attribute>;
 
-using extended_attributes = brigand::list<
+using extended_attributes = boost::mp11::mp_list<
     net::tags_attribute, net::refresh_rate_attribute, net::priority_attribute,
     net::value_step_size_attribute, net::instance_bounds_attribute,
     net::critical_attribute, net::hidden_attribute, net::disabled_attribute,
     net::extended_type_attribute, net::description_attribute, net::app_name_attribute,
     net::app_creator_attribute, net::app_version_attribute>;
 
-using attributes_when_reading = brigand::list<
+using attributes_when_reading = boost::mp11::mp_list<
     net::domain_attribute, net::access_mode_attribute, net::bounding_mode_attribute,
     net::repetition_filter_attribute, net::tags_attribute, net::refresh_rate_attribute,
     net::priority_attribute, net::value_step_size_attribute,
@@ -385,7 +385,7 @@ using attributes_when_reading = brigand::list<
     net::disabled_attribute, net::description_attribute, net::app_name_attribute,
     net::app_creator_attribute, net::app_version_attribute>;
 
-using all_attributes = brigand::list<
+using all_attributes = boost::mp11::mp_list<
     typetag_attribute, net::unit_attribute, net::extended_type_attribute,
 
     net::value_attribute, net::default_value_attribute,

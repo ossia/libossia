@@ -75,9 +75,11 @@ public:
     }
     catch(...)
     {
+#if 0
       std::cout << "Error: graph isn't a DAG: ";
       print_graph(gr, std::cout);
       std::cout << std::endl;
+#endif
     }
   }
 

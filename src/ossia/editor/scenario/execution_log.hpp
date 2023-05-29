@@ -10,9 +10,8 @@
 
 #include <rapidjson/prettywriter.h>
 
-#include <fstream>
 #include <functional>
-#include <iostream>
+
 namespace ossia
 {
 struct on_destruct {

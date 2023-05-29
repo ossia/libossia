@@ -18,7 +18,6 @@
 
 #include <smallfun.hpp>
 
-#include <iostream>
 #include <memory>
 
 #if defined(_MSC_VER)

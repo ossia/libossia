@@ -5,7 +5,6 @@
 #include <boost/lexical_cast.hpp>
 
 #include <chrono>
-#include <iostream>
 #include <thread>
 
 #if defined(OSSIA_DNSSD)

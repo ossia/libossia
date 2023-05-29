@@ -7,12 +7,11 @@
 #include <oscpack/osc/OscOutboundPacketStream.h>
 
 #include <array>
-#include <iostream>
 #include <vector>
 namespace oscpack
 {
-inline oscpack::OutboundPacketStream& operator<<(
-    oscpack::OutboundPacketStream& p, const std::vector<std::string_view>& values)
+inline oscpack::OutboundPacketStream&
+operator<<(oscpack::OutboundPacketStream& p, const std::vector<std::string_view>& values)
 {
   for(auto val : values)
   {

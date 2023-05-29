@@ -7,7 +7,6 @@
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <iostream>
 #include <map>
 
 global_devices& static_devices()

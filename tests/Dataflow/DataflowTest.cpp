@@ -105,7 +105,6 @@ struct debug_mock
   {
     if(auto n = node.lock())
     {
-      std::cerr << factor << tk.date;
       messages.emplace_back(factor, tk.date.impl);
     }
   }
@@ -128,7 +127,6 @@ struct execution_mock
       auto& in_port = *n->root_inputs()[0]->target<value_port>();
       auto& out_port = *n->root_outputs()[0]->target<value_port>();
 
-      std::cerr << in_port.get_data().size();
       ossia::timed_value elt = in_port.get_data().front();
       if(auto val = elt.value.target<std::vector<ossia::value>>())
       {

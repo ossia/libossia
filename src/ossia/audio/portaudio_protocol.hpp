@@ -3,7 +3,6 @@
 #include <ossia/audio/audio_engine.hpp>
 
 #include <portaudio.h>
-
 #include <iostream>
 
 #define OSSIA_AUDIO_PORTAUDIO 1

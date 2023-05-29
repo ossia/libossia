@@ -1,10 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
-#include <iostream>
+#include <csignal>
+
 namespace ossia
 {
 
@@ -153,7 +155,7 @@ void time_sync::observe_expression(
     {
       if(m_callback)
       {
-        std::cerr << "Warning: time_sync can only have one callback\n";
+        ossia::logger().error("Warning: time_sync can only have one callback\n");
         expressions::remove_callback(*m_expression, *m_callback);
       }
       m_callback = expressions::add_callback(*m_expression, cb);

@@ -1,7 +1,6 @@
 #pragma once
 #include <ossia/network/domain/domain.hpp>
 
-#include <iostream>
 namespace ossia
 {
 template <typename U>

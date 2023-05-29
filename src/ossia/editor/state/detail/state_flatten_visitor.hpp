@@ -7,7 +7,6 @@
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_traits.hpp>
 
-#include <iostream>
 namespace ossia
 {
 

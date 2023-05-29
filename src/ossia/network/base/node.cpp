@@ -20,7 +20,6 @@
 #define SPDLOG_TRACE(...)
 #endif
 
-#include <iostream>
 #if defined(OSSIA_QT)
 #include <ossia-qt/name_utils.hpp>
 #endif

@@ -15,8 +15,6 @@
 #if defined(OSSIA_HAS_RE2)
 #include <re2/re2.h>
 #endif
-#include <iostream>
-#include <regex>
 
 #if !defined(OSSIA_HAS_RE2)
 namespace re2
