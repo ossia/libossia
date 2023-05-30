@@ -224,7 +224,7 @@ public:
   ossia::safe_vector<client*> clients;
   ossia::safe_vector<logger*> loggers;
 
-  static ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
+  static ossia::hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
       s_node_matchers_map;
   static std::recursive_mutex s_node_matchers_mut;
 

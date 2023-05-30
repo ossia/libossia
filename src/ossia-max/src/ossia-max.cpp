@@ -35,7 +35,7 @@ using namespace ossia::max_binding;
 void* ossia_max::s_browse_clock;
 ZeroconfOscqueryListener ossia_max::s_zeroconf_oscq_listener;
 ZeroconfMinuitListener ossia_max::s_zeroconf_minuit_listener;
-ossia::fast_hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
+ossia::hash_map<ossia::net::node_base*, ossia::safe_set<matcher*>>
     ossia_max::s_node_matchers_map{};
 std::recursive_mutex ossia_max::s_node_matchers_mut;
 t_class* ossia_max::ossia_patcher_listener_class;

@@ -69,8 +69,8 @@ private:
 
   mpr_device m_mapper_dev{};
 
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
+  ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
+  ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
 
   std::thread m_thread;
   std::atomic_bool m_running{};
@@ -128,7 +128,7 @@ private:
   mpr_graph m_db{};
   mpr_device m_mapper_dev{};
 
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
-  ossia::fast_hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
+  ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_inputMap;
+  ossia::hash_map<const ossia::net::parameter_base*, mpr_signal> m_outputMap;
 };
 }

@@ -21,7 +21,7 @@ class OSSIA_EXPORT phidget_protocol : public ossia::net::protocol_base
   std::function<void()> m_commandCb;
   moodycamel::ReaderWriterQueue<std::function<void()>> m_functionQueue;
 
-  ossia::fast_hash_map<PhidgetHandle, ossia::phidget_node*> m_phidgetMap;
+  ossia::hash_map<PhidgetHandle, ossia::phidget_node*> m_phidgetMap;
 
 public:
   phidget_protocol();

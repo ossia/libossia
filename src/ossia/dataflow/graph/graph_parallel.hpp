@@ -117,7 +117,7 @@ private:
 start_node; std::vector<graph_node*> nodes_with_incoming_edges;
 
   tbb::flow::graph flow_graph;
-  ossia::fast_hash_map<graph_node*, std::unique_ptr<cont_node>> flow_nodes;
+  ossia::hash_map<graph_node*, std::unique_ptr<cont_node>> flow_nodes;
   std::vector<graph_node*> start_nodes;
 };
 
@@ -234,7 +234,7 @@ private:
 
   tf::Taskflow flow_graph;
   tf::Executor executor;
-  ossia::fast_hash_map<graph_node*, tf::Task> flow_nodes;
+  ossia::hash_map<graph_node*, tf::Task> flow_nodes;
 };
 
 struct cpptf_exec
