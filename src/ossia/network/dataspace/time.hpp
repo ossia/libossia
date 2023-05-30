@@ -207,7 +207,9 @@ struct sample_u : public timing_unit<sample_u>
 };
 
 template <typename T>
-static const T exp_69_12 = ossia::exp2(69. / 12.);
+// segfaults on MSVC... ossia::exp2(69. / 12.);
+static constexpr T exp_69_12 = 53.817370576237730753992030478925753282562192;
+
 struct playback_speed_u : public timing_unit<playback_speed_u>
 {
   static constexpr auto text() { constexpr_return(ossia::make_string_array("speed")); }
