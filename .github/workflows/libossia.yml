@@ -98,7 +98,7 @@ jobs:
         cd %GITHUB_WORKSPACE%
         mkdir build
         cd build
-        cmake -GNinja .. -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
+        cmake -GNinja .. -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
         cmake --build .
         cmake --build . --target test
         cmake --build . --target install

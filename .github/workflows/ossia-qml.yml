@@ -12,11 +12,11 @@ jobs:
     - name: Install Build Dependencies
       run: |
         sudo apt-get update -qq
-        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
+        sudo apt-get install -yqq build-essential gcc g++ ninja-build libavahi-client-dev
     - name: Build
       env: 
-        CC: gcc-11
-        CXX: g++-11
+        CC: gcc
+        CXX: g++
       run: |
         cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
           -DOSSIA_CI=1 \
@@ -82,7 +82,7 @@ jobs:
         popd
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_CI=1 -DOSSIA_QML_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_PCH=0 -DOSSIA_CI=1 -DOSSIA_QML_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install
     - name: Archive Package
