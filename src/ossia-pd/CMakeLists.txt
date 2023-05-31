@@ -142,7 +142,7 @@ endif()
 add_linker_warnings_external(${PROJECT_NAME})
 
 if(NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++14)
+    target_compile_options(${PROJECT_NAME} PRIVATE -std=c++20)
 endif()
 
 # Win32 uses DLL as a suffix for pd externals
@@ -169,7 +169,7 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*64.*")
 elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES ".*86.*")
   set(ARCH_SUFFIX "i386")
 else()
-  message(FATAL "Could not determine target architecture")  
+  message(FATAL "Could not determine target architecture")
 endif()
 
 set_target_properties(${PROJECT_NAME} PROPERTIES SUFFIX ".${PLATFORM_SUFFIX}_${ARCH_SUFFIX}")

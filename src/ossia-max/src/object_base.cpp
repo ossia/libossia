@@ -183,7 +183,7 @@ bool regex_match_with_cache(std::string_view regex, std::string_view str)
       it = res.first;
       assert(res.second);
     }
-    r = it.value();
+    r = it->second;
   }
 
   return re2::RE2::FullMatch(str, *r);
