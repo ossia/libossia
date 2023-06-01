@@ -38,7 +38,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install Dependencies
       run: |
-        brew install ninja qt5
+        brew install ninja qt
     - name: Build
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
