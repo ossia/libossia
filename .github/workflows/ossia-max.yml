@@ -92,7 +92,7 @@ jobs:
         cd %GITHUB_WORKSPACE%
         mkdir build
         cd build
-        cmake -GNinja %GITHUB_WORKSPACE% -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -GNinja %GITHUB_WORKSPACE% -DCMAKE_GENERATOR_TOOLSET="v143,version=14.35" -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build .
         cmake --build . --target install
     - name: Archive Max Package

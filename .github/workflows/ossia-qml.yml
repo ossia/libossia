@@ -82,7 +82,7 @@ jobs:
         popd
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_PCH=0 -DOSSIA_CI=1 -DOSSIA_QML_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_GENERATOR_TOOLSET="v143,version=14.35" -DOSSIA_PCH=0 -DOSSIA_CI=1 -DOSSIA_QML_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install
     - name: Archive Package
