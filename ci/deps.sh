@@ -123,7 +123,7 @@ case "$TRAVIS_OS_NAME" in
     ARCHIVE=homebrew-cache.txz
     wget -nv "https://github.com/ossia/score-sdk/releases/download/sdk9/$ARCHIVE" -O "$ARCHIVE"
     gtar xhzf "$ARCHIVE" --directory /usr/local/Cellar
-    brew link --force boost cmake qt5 #ninja
+    brew link --force boost cmake qt #ninja
     brew install portaudio
 
     if [[ "x$BUILD_TYPE" == "xpython" || $BUILD_TYPE == *Pd* ]]; then

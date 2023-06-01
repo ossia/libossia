@@ -22,8 +22,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 find_package(Threads)
 
 if(NOT QT_VERSION)
-  set(QT_VERSION Qt5 5.15.2)
-  set(QT_PREFIX Qt5)
+  set(QT_VERSION Qt6 6.4)
+  set(QT_PREFIX Qt6)
 endif()
 find_package(${QT_VERSION} COMPONENTS Core)
 

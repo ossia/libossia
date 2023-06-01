@@ -33,7 +33,8 @@ http_protocol::http_protocol(QByteArray code)
     auto ans = addr.data().answer;
     if(ans.isCallable())
     {
-      apply_reply(ans.call({QString(rep.readAll())}));
+      apply_reply(ans.call(
+          {QString(rep.readAll()), qt::value_to_js_value(addr.value(), *m_engine)}));
     }
 
     m_replies.erase(it);

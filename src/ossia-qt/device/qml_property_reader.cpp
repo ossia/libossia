@@ -204,7 +204,7 @@ void qml_property_writer::clearNode()
 void qml_property_writer::setValue_slot(const value& v)
 {
   auto cur = m_targetProperty.read();
-  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
+  auto next = ossia_to_qvariant{}((QMetaType::Type)m_targetProperty.propertyType(), v);
   if(cur != next)
     m_targetProperty.write(next);
 }

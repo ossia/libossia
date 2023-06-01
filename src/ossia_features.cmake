@@ -260,8 +260,6 @@ if(OSSIA_QT)
   if(OSSIA_QML)
     if(TARGET Qt::Core)
       qt_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
-    elseif(TARGET Qt5::Core)
-      qt5_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
     endif()
     target_sources(ossia PRIVATE ${cur_moc})
 

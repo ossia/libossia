@@ -67,7 +67,7 @@ qt_property_node::qt_property_node(
     connectSignalToMatchingMethod(p.notifySignal(), methods(), &obj, this);
   }
 
-  set_parameter_type(p.type(), *this);
+  set_parameter_type((QMetaType::Type)p.typeId(), *this);
   ossia::net::generic_parameter::set_value_quiet(qt_to_ossia{}(p.read(&obj)));
   ;
 
@@ -79,7 +79,7 @@ qt_property_node::qt_property_node(
 void qt_property_node::setValue_slot(const ossia::value& ossia_val)
 {
   auto cur = m_prop.read(&m_obj);
-  auto next = ossia_to_qvariant{}(m_prop.type(), ossia_val);
+  auto next = ossia_to_qvariant{}((QMetaType::Type)m_prop.typeId(), ossia_val);
   if(cur != next)
     m_prop.write(&m_obj, next);
 }

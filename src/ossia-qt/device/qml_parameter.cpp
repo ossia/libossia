@@ -184,7 +184,7 @@ QString qml_parameter::unit() const
 
 void qml_parameter::setValue_slot(const ossia::value& v)
 {
-  auto next = ossia_to_qvariant{}(m_value.type(), v);
+  auto next = ossia_to_qvariant{}((QMetaType::Type)m_value.typeId(), v);
   if(m_value != next)
   {
     m_value = std::move(next);
@@ -321,7 +321,7 @@ void qml_parameter::setupAddress(bool reading)
     if(m_param)
     {
       if(!m_valueType)
-        set_parameter_type(m_value.type(), *m_param);
+        set_parameter_type((QMetaType::Type)m_value.typeId(), *m_param);
 
       if(m_value.isValid())
         m_param->push_value(qt_to_ossia{}(m_value));

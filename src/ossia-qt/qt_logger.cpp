@@ -82,11 +82,8 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
 
   const auto root_len = root_name.size();
   // QStringView::toInt comes in 5.15.2
-#if QT_VERSION < QT_VERSION_CHECK(5, 15, 2)
-  for(const QString& n_name : brethren)
-#else
+
   for(QStringView n_name : brethren)
-#endif
   {
     if(n_name == name)
     {

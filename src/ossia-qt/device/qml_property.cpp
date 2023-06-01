@@ -204,7 +204,7 @@ QString qml_property::unit() const
 void qml_property::setValue_slot(const value& v)
 {
   auto cur = m_targetProperty.read();
-  auto next = ossia_to_qvariant{}((QVariant::Type)m_targetProperty.propertyType(), v);
+  auto next = ossia_to_qvariant{}((QMetaType::Type)m_targetProperty.propertyType(), v);
   if(cur != next)
   {
     m_updatingFromSetValue = true;
@@ -332,7 +332,7 @@ void qml_property::setupAddress(bool reading)
     if(m_param)
     {
       if(!m_valueType)
-        set_parameter_type((QVariant::Type)m_targetProperty.propertyType(), *m_param);
+        set_parameter_type((QMetaType::Type)m_targetProperty.propertyType(), *m_param);
 
       if(m_targetProperty.hasNotifySignal())
       {
