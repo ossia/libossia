@@ -174,12 +174,10 @@ jobs:
     - name: Build
       shell: cmd
       run: |
-        pushd "C:\Program Files (x86)\Microsoft Visual Studio\Installer\"
-        for /f "delims=" %%x in ('.\vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
-        popd
+        for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
         call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_CXX_COMPILER="cl.exe" -DCMAKE_C_COMPILER="cl.exe" -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install
     - name: Archive Package
