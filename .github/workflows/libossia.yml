@@ -91,17 +91,13 @@ jobs:
         STATIC: ${{ matrix.static }}
         BUILD_TYPE: ${{ matrix.build_type }}
       run: |
-        for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
-        call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+        call ci\msvc.bat
 
-        echo Workspace: %GITHUB_WORKSPACE%
-        cd %GITHUB_WORKSPACE%
-        mkdir build
-        cd build
-        cmake -GNinja .. -DCMAKE_GENERATOR_TOOLSET="v143,version=14.35" -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
-        cmake --build .
-        cmake --build . --target test
-        cmake --build . --target install
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
+        cmake --build build
+        cmake --build build --target test
+        cmake --install build
+
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:

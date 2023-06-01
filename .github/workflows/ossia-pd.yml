@@ -73,16 +73,12 @@ jobs:
     - name : Build
       shell: cmd
       run: |
-        for /f "delims=" %%x in ('vswhere.exe -latest -property InstallationPath') do set VSPATH=%%x
-        call "%VSPATH%\VC\Auxiliary\Build\vcvarsall.bat" x64
+        call ci\msvc.bat
 
-        echo Workspace: %GITHUB_WORKSPACE%
-        cd %GITHUB_WORKSPACE%
-        mkdir build
-        cd build
-        cmake -GNinja .. -DCMAKE_GENERATOR_TOOLSET="v143,version=14.35" -DOSSIA_PD_ONLY=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build .
-        cmake --build . --target install
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PD_ONLY=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+        cmake --build build
+        cmake --install build
+
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
