@@ -7,51 +7,9 @@
 
 namespace ossia
 {
-
-// http://stackoverflow.com/a/26902803/1495627
-#if __cplusplus < 202002L
-
-template <typename... T>
-struct dummy_get_adl;
-
-template <std::size_t N, typename... Args>
-auto get(dummy_get_adl<Args...>);
-
-#endif
-
-template <template <typename...> class Tuple, class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(const Tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(get<Is>(tuple)), ...);
-}
-template <template <typename...> class Tuple, class F, class... Ts, std::size_t... Is>
-void for_each_in_tuple(Tuple<Ts...>& tuple, F&& func, std::index_sequence<Is...>)
-{
-  (std::forward<F>(func)(get<Is>(tuple)), ...);
-}
-
-template <template <typename...> class Tuple, class F, class... Ts>
-void for_each_in_tuple(const Tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <template <typename...> class Tuple, class F>
-void for_each_in_tuple(const Tuple<>& tuple, const F& func)
-{
-}
-
-template <template <typename...> class Tuple, class F, class... Ts>
-void for_each_in_tuple(Tuple<Ts...>& tuple, F&& func)
-{
-  for_each_in_tuple(
-      tuple, std::forward<F>(func), std::make_index_sequence<sizeof...(Ts)>());
-}
-
-template <template <typename...> class Tuple, class F>
-void for_each_in_tuple(Tuple<>& tuple, const F& func)
-{
+template <class Tuple, class F>
+void for_each_in_tuple(Tuple&& tuple, F&& func) {
+  apply([&](auto&&... args) { (func(args), ...); }, static_cast<Tuple&&>(tuple));
 }
 
 template <class F, class T1, std::size_t... I1s, class T2>
