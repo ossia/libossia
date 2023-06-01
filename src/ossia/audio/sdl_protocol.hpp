@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 #if __has_include(<SDL2/SDL_audio.h>)
+#include <SDL2/SDL_config.h>
+#if !defined(SDL_AUDIO_DISABLED)
 #include <ossia/audio/audio_engine.hpp>
 
 #include <SDL2/SDL.h>
@@ -109,4 +111,5 @@ private:
 };
 }
 
+#endif
 #endif
