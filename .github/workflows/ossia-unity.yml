@@ -176,8 +176,7 @@ jobs:
       run: |
         call ci\msvc.bat
 
-        cmake -B build -S %GITHUB_WORKSPACE% -DCMAKE_EXPORT_COMPILE_COMMANDS=1  -GNinja -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        type build\compile_commands.json
+        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --install build
 
