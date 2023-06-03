@@ -40,11 +40,11 @@ setup_parameter(const complex_type& t, ossia::net::node_base& node);
 //! Creates a parameter in a node according to heuristics
 OSSIA_EXPORT
 ossia::net::parameter_base*
-try_setup_parameter(std::string t, ossia::net::node_base& node);
+try_setup_parameter(std::string_view t, ossia::net::node_base& node);
 
 OSSIA_EXPORT
-ossia::net::parameter_base*
-create_parameter(ossia::net::node_base& parent, std::string name, std::string type);
+ossia::net::parameter_base* create_parameter(
+    ossia::net::node_base& parent, std::string_view name, std::string_view type);
 
 //! Change the type of a parameter according to a complex type.
 OSSIA_EXPORT

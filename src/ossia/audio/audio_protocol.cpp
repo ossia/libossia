@@ -24,17 +24,17 @@ void audio_protocol::setup_tree(int inputs, int outputs)
   audio_outs.clear();
 
   main_audio_in
-      = ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/in/main");
+      = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/in/main");
   main_audio_out
-      = ossia::net::find_or_create_parameter<ossia::audio_parameter>(root, "/out/main");
+      = ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(root, "/out/main");
   for(int i = 0; i < inputs; i++)
   {
-    audio_ins.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(
+    audio_ins.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/in/" + std::to_string(i + 1)));
   }
   for(int i = 0; i < outputs; i++)
   {
-    audio_outs.push_back(ossia::net::find_or_create_parameter<ossia::audio_parameter>(
+    audio_outs.push_back(ossia::net::find_parameter_or_create_node<ossia::audio_parameter>(
         root, "/out/" + std::to_string(i + 1)));
   }
 

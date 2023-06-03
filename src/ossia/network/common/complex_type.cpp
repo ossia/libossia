@@ -1,6 +1,7 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/apply.hpp>
+#include <ossia/detail/case_insensitive.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_attributes.hpp>
 #include <ossia/network/base/parameter.hpp>
@@ -105,10 +106,11 @@ net::parameter_base* setup_parameter(const complex_type& t, net::node_base& node
   return ossia::apply(setup_parameter_visitor{node}, t);
 }
 
-static const ossia::string_map<net::parameter_data>& parameter_creation_map()
+static const ossia::case_insensitive_string_map<net::parameter_data>&
+parameter_creation_map()
 {
   static const auto map = [] {
-    ossia::string_map<net::parameter_data> t;
+    ossia::case_insensitive_string_map<net::parameter_data> t;
     ossia::detail::list_units([&](std::string e, ossia::unit_t u) {
       net::parameter_data p;
       p.type = u;
@@ -246,10 +248,9 @@ const ossia::net::parameter_data* default_parameter_for_type(std::string_view ty
   return it != map.end() ? &(it->second) : nullptr;
 }
 
-net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)
+net::parameter_base* try_setup_parameter(std::string_view str, net::node_base& node)
 {
   auto& map = parameter_creation_map();
-  boost::algorithm::to_lower(str);
   auto it = map.find(str);
   if(it != map.end())
   {
@@ -259,15 +260,13 @@ net::parameter_base* try_setup_parameter(std::string str, net::node_base& node)
 }
 
 net::parameter_base*
-create_parameter(net::node_base& parent, std::string node, std::string str)
+create_parameter(net::node_base& parent, std::string_view node, std::string_view str)
 {
   auto& map = parameter_creation_map();
-  boost::algorithm::to_lower(str);
   auto it = map.find(str);
   if(it != map.end())
   {
-    return setup_parameter(
-        it->second.type, ossia::net::create_node(parent, std::move(node)));
+    return setup_parameter(it->second.type, ossia::net::create_node(parent, node));
   }
   return nullptr;
 }

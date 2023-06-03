@@ -70,6 +70,7 @@ public:
 private:
   std::unique_ptr<node_base> make_child(const std::string& name) final override
   {
+    return std::make_unique<generic_node>(name, m_device, *this);
     return nullptr;
   }
 
@@ -119,6 +120,7 @@ public:
       : device_base(std::move(protocol_base))
       , Node_T{typename Node_T::data_type{name}, *this}
   {
+    m_capabilities.change_tree = true;
     m_protocol->set_device(*this);
   }
 

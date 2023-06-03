@@ -10,6 +10,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/audio_spin_mutex.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/buffer_pool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/callback_container.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/case_insensitive.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/concepts.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/closest_element.hpp"
@@ -558,11 +559,13 @@ set(OSSIA_QT_SRCS
   )
 set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
     )
 
 set(OSSIA_QTQML_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
     )
 set(OSSIA_QML_SRCS

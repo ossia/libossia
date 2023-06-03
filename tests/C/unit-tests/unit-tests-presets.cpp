@@ -486,13 +486,6 @@ TEST_CASE("Types conversion")
     REQUIRE(d["false"].GetType() == rapidjson::kFalseType);
   }
 
-  SECTION("Char")
-  {
-    REQUIRE(d.HasMember("char"));
-    REQUIRE(d["char"].IsString());
-    REQUIRE(std::strcmp(d["char"].GetString(), "2") == 0);
-  }
-
   SECTION("String")
   {
     REQUIRE(d.HasMember("string"));

@@ -482,7 +482,6 @@ TEST_CASE(
     serv.create_child("my_vec4f")->create_parameter(ossia::val_type::VEC4F);
 
     add_nodes.push_back("/my_bool");
-    add_nodes.push_back("/my_char");
     add_nodes.push_back("/my_float");
     add_nodes.push_back("/my_impulse");
     add_nodes.push_back("/m_int");
@@ -494,7 +493,6 @@ TEST_CASE(
     add_nodes.push_back("/my_vec4f");
 
     add_params.push_back("/my_bool");
-    add_params.push_back("/my_char");
     add_params.push_back("/my_float");
     add_params.push_back("/my_impulse");
     add_params.push_back("/m_int");

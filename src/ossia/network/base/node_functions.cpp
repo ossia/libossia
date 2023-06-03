@@ -957,7 +957,7 @@ void fuzzysearch(
 #endif
 }
 
-std::pair<std::vector<std::string>, bool> expand_address(const std::string& address)
+std::pair<std::vector<std::string>, bool> expand_address(std::string address)
 {
   std::vector<std::string> names;
   bool pattern_matching = is_brace_expansion(address);
@@ -965,27 +965,41 @@ std::pair<std::vector<std::string>, bool> expand_address(const std::string& addr
   if(pattern_matching)
   {
     // 1. Replace all [ ] with { } form
-    auto str = canonicalize_str(address);
+    auto str = canonicalize_str(std::move(address));
 
     // 2. Expand
     names = expand(str);
   }
   else
   {
-    names.push_back(address);
+    names.push_back(std::move(address));
   }
 
-  return {names, pattern_matching};
+  return {std::move(names), pattern_matching};
 }
 
-std::vector<parameter_base*> find_or_create_parameter(
-    node_base& node, const std::string& address, const std::string& type)
+parameter_base* find_or_create_parameter(
+    node_base& node, std::string_view address, std::string_view type)
+{
+  auto& n = ossia::net::find_or_create_node(node, address);
+  {
+    if(auto param = n.get_parameter())
+      return param;
+    else if(auto param = ossia::try_setup_parameter(type, n))
+      return param;
+    else
+      return nullptr;
+  }
+}
+
+std::vector<parameter_base*> find_parameter_or_create_node(
+    node_base& node, std::string_view address, std::string_view type)
 {
   // search for child that matches name but without parameter
   // and create parameter on that node if it exists
   // or create a new node with that name and a parameter
 
-  auto [names, pattern_matching] = expand_address(address);
+  auto [names, pattern_matching] = expand_address(std::string(address));
 
   std::vector<node_base*> nodes{};
   nodes.reserve(names.size());

@@ -99,21 +99,23 @@ TEST_CASE("test_edition", "test_edition")
     auto node = device.create_child("child");
 
     REQUIRE(node->get_name() == "child");
+    REQUIRE(device.children().size() == 1);
   }
 
   {
     auto params
-        = ossia::net::find_or_create_parameter(device.get_root_node(), "child", "float");
+        = ossia::net::find_parameter_or_create_node(device.get_root_node(), "child", "float");
     REQUIRE(params.size() == 1);
+    REQUIRE(device.children().size() == 1);
   }
 
   {
-    auto complex_param = ossia::net::find_or_create_parameter(
+    auto complex_param = ossia::net::find_parameter_or_create_node(
         device.get_root_node(), "myspat.1/source.1/gain.L", "gain.linear");
 
     REQUIRE(complex_param.size() == 1);
 
-    auto params = ossia::net::find_or_create_parameter(
+    auto params = ossia::net::find_parameter_or_create_node(
         device.get_root_node(), "myspat.1/source.1/gain.L", "gain.linear");
 
     REQUIRE(params.size() == 1);

@@ -3,6 +3,7 @@
 #include "http_protocol.hpp"
 
 #include <ossia-qt/js_utilities.hpp>
+#include <ossia-qt/qml_engine_functions.hpp>
 
 #include <QJSValueIterator>
 #include <QNetworkAccessManager>
@@ -23,6 +24,9 @@ http_protocol::http_protocol(QByteArray code)
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
+  auto obj = new qml_engine_functions{m_engine};
+  m_engine->rootContext()->setContextProperty("Device", obj);
+
   QObject::connect(
       m_access, &QNetworkAccessManager::finished, this,
       [this](auto reply) {
@@ -95,15 +99,15 @@ bool http_protocol::push(
     const ossia::net::parameter_base& parameter_base, const ossia::value& v)
 {
   // TODO dynamic_cast or whatever
-  assert(dynamic_cast<const http_parameter*>(&parameter_base));
-  auto& addr = static_cast<const http_parameter&>(parameter_base);
-
-  if(!addr.data().request.isEmpty())
+  // TODO put the http_parameters in a hash map instead?
+  if(auto addr = dynamic_cast<const http_parameter*>(&parameter_base))
   {
-    sig_push(&addr, v);
-    return true;
+    if(!addr->data().request.isEmpty())
+    {
+      sig_push(addr, v);
+      return true;
+    }
   }
-
   return false;
 }
 
@@ -120,6 +124,8 @@ bool http_protocol::observe(parameter_base&, bool enable)
 void http_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
+  m_device->get_capabilities();
+  m_engine->findChild<qml_engine_functions*>()->m_dev = &dev;
   m_component->setData(m_code, QUrl{});
 }
 

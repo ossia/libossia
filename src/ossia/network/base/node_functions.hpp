@@ -64,6 +64,8 @@ create_nodes(node_base& dev, std::string_view pattern);
 OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, std::string_view parameter_base);
 
+parameter_base* find_or_create_parameter(
+    node_base& node, std::string_view address, std::string_view type);
 /**
  * @brief Find a parameter and create it if it does not exist.
  * @details Find a node matching the address, if it already has a parameter
@@ -74,8 +76,8 @@ find_or_create_node(node_base& dev, std::string_view parameter_base);
  * @param type of the parameter
  * @return vector of created parameters
  */
-OSSIA_EXPORT std::vector<parameter_base*> find_or_create_parameter(
-    node_base& node, const std::string& address, const std::string& type);
+OSSIA_EXPORT std::vector<parameter_base*> find_parameter_or_create_node(
+    node_base& node, std::string_view address, std::string_view type);
 
 /**
  * @brief Calls find_node or create_node according to the value `create`
@@ -107,7 +109,7 @@ auto create_parameter(ossia::net::node_base& root, std::string name)
 }
 
 template <typename Address>
-auto find_or_create_parameter(ossia::net::node_base& root, std::string_view name)
+auto find_parameter_or_create_node(ossia::net::node_base& root, std::string_view name)
 {
   auto& node = ossia::net::find_or_create_node(root, std::move(name));
   if(auto p = dynamic_cast<Address*>(node.get_parameter()))
@@ -127,7 +129,7 @@ OSSIA_EXPORT
 void expand_ranges(std::string& str);
 
 OSSIA_EXPORT
-std::pair<std::vector<std::string>, bool> expand_address(const std::string& address);
+std::pair<std::vector<std::string>, bool> expand_address(std::string address);
 
 /**
  * @brief list_all_children : list all child nodes recursively

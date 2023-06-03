@@ -107,7 +107,7 @@ bool parameter::do_registration(const std::vector<t_matcher>& matchers)
       name = name.substr(common_part.size());
     }
 
-    auto params = ossia::net::find_or_create_parameter(*node, name, m_type->s_name);
+    auto params = ossia::net::find_parameter_or_create_node(*node, name, m_type->s_name);
 
     for(auto p : params)
     {
