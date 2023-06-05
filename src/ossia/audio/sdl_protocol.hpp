@@ -29,7 +29,7 @@ public:
     m_desired.userdata = this;
 
     m_deviceId = SDL_OpenAudioDevice(nullptr, 0, &m_desired, &m_obtained, 0);
-    std::cerr << "SDL: " << m_deviceId << " :" << SDL_GetError() << std::endl;
+
     if(m_deviceId < 2)
     {
       using namespace std::literals;
@@ -41,10 +41,6 @@ public:
     this->effective_inputs = 0;
     this->effective_outputs = m_obtained.channels;
 
-    std::cerr << "SDL: " << m_obtained.freq << " ; " << m_obtained.samples << " ; "
-              << m_obtained.size << " ; " << SDL_AUDIO_ISFLOAT(m_obtained.format)
-              << " ; " << SDL_AUDIO_BITSIZE(m_obtained.format) << " ; "
-              << (int)m_obtained.channels << std::endl;
     SDL_PauseAudioDevice(m_deviceId, 0);
   }
 
