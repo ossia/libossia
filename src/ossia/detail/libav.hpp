@@ -30,7 +30,7 @@ inline bool seek_to_flick(
   constexpr auto flicks_tb = AVRational{1, ossia::flicks_per_second<int64_t>};
   constexpr auto av_tb = AVRational{1, AV_TIME_BASE};
 
-  auto dts = av_rescale_q_rnd(flicks, flicks_tb, av_tb, AVRounding::AV_ROUND_DOWN);
+  const auto dts = av_rescale_q_rnd(flicks, flicks_tb, av_tb, AVRounding::AV_ROUND_DOWN);
 
   avio_flush(format->pb);
   avformat_flush(format);
@@ -165,7 +165,7 @@ struct libav_handle
     int in_sample_rate = stream->codecpar->sample_rate;
     int out_sample_rate = target_rate == 0 ? in_sample_rate : target_rate;
 
-#if LIBAVUTIL_VERSION_MAJOR >= 57
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
     AVChannelLayout out_layout{stream->codecpar->ch_layout};
     AVChannelLayout in_layout{stream->codecpar->ch_layout};
 
@@ -184,13 +184,10 @@ struct libav_handle
       swr_init(resample);
   }
 
-  int rate() const noexcept
-  {
-    return stream->codecpar->sample_rate;
-  }
+  int rate() const noexcept { return stream->codecpar->sample_rate; }
   int channels() const noexcept
   {
-#if LIBAVUTIL_VERSION_MAJOR >= 57
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
     return stream->codecpar->ch_layout.nb_channels;
 #else
     return stream->codecpar->channels;
@@ -221,10 +218,7 @@ struct libav_handle
     }
   }
 
-  operator bool() const noexcept
-  {
-    return bool(format);
-  }
+  operator bool() const noexcept { return bool(format); }
 
   void fetch(int64_t frame, int samples_to_write, auto func)
   {
