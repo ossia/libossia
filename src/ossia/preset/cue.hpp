@@ -56,7 +56,7 @@ class OSSIA_EXPORT namespace_selection : Nano::Observer
 
 
     ossia::net::device_base* dev{};
-    std::unordered_set<ossia::net::node_base*> m_selection;
+    ossia::hash_set<ossia::net::node_base*> m_selection;
 };
 
 class OSSIA_EXPORT cues// : public namespace_selection

@@ -141,7 +141,7 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
 {
   if(m == ASSIST_INLET)
   {
-    sprintf(s, "Remote input", a);
+    sprintf(s, "Remote input");
   }
   else
   {
@@ -149,13 +149,13 @@ void remote::assist(remote* x, void* b, long m, long a, char* s)
     {
       case 0:
         sprintf(
-            s, "Remote parameter deferred value (with set prefix for UI connection)", a);
+            s, "Remote parameter deferred value (with set prefix for UI connection)");
         break;
       case 1:
-        sprintf(s, "Remote parameter value", a);
+        sprintf(s, "Remote parameter value");
         break;
       case 2:
-        sprintf(s, "Dumpout", a);
+        sprintf(s, "Dumpout");
         break;
       default:
         break;
