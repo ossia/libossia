@@ -103,10 +103,17 @@ struct minuit_behavior<minuit_command::Request, minuit_operation::Get>
               to_minuit_type_text(addr->get_value_type()));
           break;
         case minuit_attribute::RangeBounds:
-          proto.sender().send(
-              proto.name_table.get_action(minuit_action::GetReply), full_address,
-              addr->get_domain());
+        {
+          if(auto dom = addr->get_domain())
+          {
+            auto v0 = dom.convert_min<float>();
+            auto v1 = dom.convert_max<float>();
+            proto.sender().send(
+                proto.name_table.get_action(minuit_action::GetReply), full_address,
+                v0, v1);
+          }
           break;
+        }
         case minuit_attribute::RangeClipMode:
           proto.sender().send(
               proto.name_table.get_action(minuit_action::GetReply), full_address,

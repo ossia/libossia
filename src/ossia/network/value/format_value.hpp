@@ -9,10 +9,17 @@
 #include <boost/algorithm/string/replace.hpp>
 
 #include <fmt/ranges.h>
+FMT_BEGIN_NAMESPACE
+namespace detail {
+template <typename T> class is_container_adaptor_like<boost::container::flat_set<T>>
+    : public std::false_type {
 
+};
+}
+FMT_END_NAMESPACE
 namespace ossia
 {
-using fmt_ctx = fmt::v8::basic_format_context<fmt::v8::appender, char>;
+using fmt_ctx = fmt::basic_format_context<fmt::appender, char>;
 
 struct value_prettyprint_visitor
 {

@@ -1,4 +1,5 @@
 add_library(re2 STATIC
+  ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitmap256.cc
   ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitstate.cc
   ${OSSIA_3RDPARTY_FOLDER}/re2/re2/compile.cc
   ${OSSIA_3RDPARTY_FOLDER}/re2/re2/dfa.cc
