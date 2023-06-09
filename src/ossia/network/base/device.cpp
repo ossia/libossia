@@ -10,6 +10,7 @@ device_base::~device_base() = default;
 device_base::device_base(std::unique_ptr<protocol_base> proto)
     : m_protocol{std::move(proto)}
 {
+  m_capabilities.change_tree = true;
 }
 
 protocol_base& device_base::get_protocol() const

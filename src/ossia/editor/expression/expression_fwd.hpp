@@ -37,7 +37,8 @@ public:
   expression_callback_container& operator=(const expression_callback_container& other)
       = delete;
   expression_callback_container&
-  operator=(expression_callback_container&& other) noexcept = delete;
+  operator=(expression_callback_container&& other) noexcept
+      = delete;
 
   virtual ~expression_callback_container() = default;
 
@@ -66,7 +67,11 @@ public:
     }
     else
     {
+#if defined(__cpp_exceptions)
       throw invalid_callback_error{};
+#else
+      return {};
+#endif
     }
   }
 

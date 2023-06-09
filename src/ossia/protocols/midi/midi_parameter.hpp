@@ -3,7 +3,6 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/protocols/midi/detail/channel.hpp>
 
-#include <boost/lexical_cast.hpp>
 namespace ossia::net
 {
 class protocol_base;
@@ -48,32 +47,44 @@ struct address_info
     return {};
   }
 
+  static const std::string* num_table_init() noexcept
+  {
+    static std::string num_table[257];
+    for(int i = 0; i < 257; i++)
+    {
+      num_table[i] = std::to_string(i);
+    }
+    return num_table;
+  }
+  static const std::string* num_table() noexcept
+  {
+    static auto ptr = num_table_init();
+    return ptr;
+  }
+
   std::string address()
   {
+    auto nums = num_table();
     switch(type)
     {
       case Type::NoteOn:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/note/on";
+        return "/" + nums[channel] + "/note/on";
       case Type::NoteOff:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/note/off";
+        return "/" + nums[channel] + "/note/off";
       case Type::CC:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/CC";
+        return "/" + nums[channel] + "/CC";
       case Type::NoteOn_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/note/on/"
-               + boost::lexical_cast<std::string>(note);
+        return "/" + nums[channel] + "/note/on/" + nums[note];
       case Type::NoteOff_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/note/off/"
-               + boost::lexical_cast<std::string>(note);
+        return "/" + nums[channel] + "/note/off/" + nums[note];
       case Type::CC_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/CC/"
-               + boost::lexical_cast<std::string>(note);
+        return "/" + nums[channel] + "/CC/" + nums[note];
       case Type::PC:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/PC";
+        return "/" + nums[channel] + "/PC";
       case Type::PC_N:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/PC/"
-               + boost::lexical_cast<std::string>(note);
+        return "/" + nums[channel] + "/PC/" + nums[note];
       case Type::PB:
-        return "/" + boost::lexical_cast<std::string>(channel) + "/PB";
+        return "/" + nums[channel] + "/PB";
       case Type::Any:
         return "/";
     }

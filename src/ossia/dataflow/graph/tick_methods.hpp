@@ -175,10 +175,12 @@ struct buffer_tick
       (st.*Commit)();
     }
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     // Clear the scenario token
     {
       scenar.node->requested_tokens.clear();
     }
+#endif
   }
 };
 

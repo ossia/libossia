@@ -15,11 +15,13 @@ scenario::scenario()
 // : m_sg{*this}
 {
   // create the start TimeSync
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   node = std::make_shared<ossia::nodes::scenario>();
+  ((ossia::nodes::forward_node*)this->node.get())->audio_in.sources.reserve(1024);
+#endif
   add_time_sync(std::make_shared<time_sync>());
   this->m_nodes.front()->set_start(true);
 
-  ((ossia::nodes::forward_node*)this->node.get())->audio_in.sources.reserve(1024);
   m_intervals.reserve(1024);
   m_nodes.reserve(1024);
   m_pendingEvents.reserve(m_nodes.capacity() * 2);
@@ -196,8 +198,10 @@ void scenario::add_time_interval(std::shared_ptr<time_interval> itv)
         end_root = &t;
     }
     // m_sg.add_edge(itv.get());
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     if(node->muted())
       itv->mute(true);
+#endif
     m_intervals.push_back(std::move(itv));
 
     if(end_root)
@@ -244,8 +248,10 @@ void scenario::add_time_sync(std::shared_ptr<time_sync> timeSync)
   {
     auto& t = *timeSync;
     // m_sg.add_vertice(&t);
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     if(node->muted())
       t.mute(true);
+#endif
     m_nodes.push_back(std::move(timeSync));
 
     if(m_last_date != ossia::Infinite)

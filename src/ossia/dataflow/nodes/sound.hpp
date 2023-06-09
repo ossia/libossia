@@ -205,10 +205,7 @@ struct resampler
         m_stretch);
   }
 
-  [[nodiscard]] bool stretch() const noexcept
-  {
-    return m_stretch.index() != 0;
-  }
+  [[nodiscard]] bool stretch() const noexcept { return m_stretch.index() != 0; }
 
 private:
   ossia::variant<
@@ -307,6 +304,7 @@ public:
   }
 };
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 class sound_process final : public ossia::node_process
 {
 public:
@@ -336,5 +334,6 @@ protected:
     static_cast<sound_node&>(*this->node).transport(date);
   }
 };
+#endif
 
 }

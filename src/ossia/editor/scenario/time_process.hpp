@@ -23,7 +23,9 @@ class time_interval;
 class OSSIA_EXPORT time_process
 {
 public:
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   std::shared_ptr<ossia::graph_node> node;
+#endif
   /*! destructor */
   virtual ~time_process();
 

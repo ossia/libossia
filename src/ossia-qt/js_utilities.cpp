@@ -653,7 +653,7 @@ QVariant ossia_to_qvariant::operator()(QMetaType::Type type, const value& ossia_
     case QMetaType::ULongLong:
       return QVariant::fromValue((qlonglong)convert<int>(ossia_val));
     case QMetaType::Char:
-      return QVariant::fromValue(QChar::fromLatin1(convert<char>(ossia_val)));
+      return QVariant::fromValue(QChar::fromLatin1(convert<int>(ossia_val)));
     case QMetaType::QString:
       return QVariant::fromValue(
           QString::fromStdString(convert<std::string>(ossia_val)));

@@ -708,7 +708,7 @@ bool oscquery_mirror_protocol::on_WSMessage(
             if(!m_host_info.osc_ip)
               m_host_info.osc_ip = m_queryHost;
             if(!m_host_info.osc_port)
-              m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+              m_host_info.osc_port = std::stoi(m_queryPort);
           }
           if(m_host_info.osc_transport == host_info::UDP)
           {

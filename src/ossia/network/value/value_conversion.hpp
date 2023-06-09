@@ -22,6 +22,10 @@ OSSIA_EXPORT T convert(const ossia::value& val);
 
 template <typename T>
 OSSIA_EXPORT T convert(const T& cur, const ossia::value& val);
+template <>
+OSSIA_EXPORT char convert<char>(const ossia::value& val) = delete;
+template <>
+OSSIA_EXPORT char convert<char>(const char& cur, const ossia::value& val) = delete;
 
 /**
  * @brief convert Convert lists to array<float, 2/3/4>

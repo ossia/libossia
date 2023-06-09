@@ -30,8 +30,10 @@ void time_process::resume() { }
 void time_process::mute(bool m)
 {
   m_unmuted = !m;
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   if(node)
     node->set_mute(m);
+#endif
   mute_impl(m);
 }
 

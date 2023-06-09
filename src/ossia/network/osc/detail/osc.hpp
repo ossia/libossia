@@ -1,5 +1,7 @@
 #pragma once
+#include <ossia/detail/parse_strict.hpp>
 #include <ossia/detail/string_view.hpp>
+#include <ossia/detail/to_string.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/domain/domain.hpp>
@@ -9,11 +11,6 @@
 
 #include <oscpack/osc/OscOutboundPacketStream.h>
 #include <oscpack/osc/OscReceivedElements.h>
-
-// TODO better way would be to use Boost.Spirit :
-// see
-// http://stackoverflow.com/questions/23437778/comparing-3-modern-c-ways-to-convert-integral-values-to-strings
-#include <boost/lexical_cast.hpp>
 namespace ossia::net
 {
 
@@ -21,109 +18,97 @@ struct osc_utilities
 {
   static float get_float(oscpack::ReceivedMessageArgumentIterator it, float f)
   {
-    try
+    switch(it->TypeTag())
     {
-      switch(it->TypeTag())
-      {
-        case oscpack::INT32_TYPE_TAG:
-          return it->AsInt32Unchecked();
-        case oscpack::INT64_TYPE_TAG:
-          return it->AsInt64Unchecked();
-        case oscpack::FLOAT_TYPE_TAG:
-          return it->AsFloatUnchecked();
-        case oscpack::DOUBLE_TYPE_TAG:
-          return it->AsDoubleUnchecked();
-        case oscpack::TIME_TAG_TYPE_TAG:
-          return it->AsTimeTagUnchecked();
-        case oscpack::CHAR_TYPE_TAG:
-          return it->AsCharUnchecked();
-        case oscpack::TRUE_TYPE_TAG:
-          return 1.f;
-        case oscpack::FALSE_TYPE_TAG:
-          return 0.f;
-        case oscpack::STRING_TYPE_TAG:
-          return boost::lexical_cast<float>(it->AsStringUnchecked());
-        case oscpack::SYMBOL_TYPE_TAG:
-          return boost::lexical_cast<float>(it->AsSymbolUnchecked());
-        default:
-          return f;
-      }
-    }
-    catch(const boost::bad_lexical_cast&)
-    {
-      return f;
+      case oscpack::INT32_TYPE_TAG:
+        return it->AsInt32Unchecked();
+      case oscpack::INT64_TYPE_TAG:
+        return it->AsInt64Unchecked();
+      case oscpack::FLOAT_TYPE_TAG:
+        return it->AsFloatUnchecked();
+      case oscpack::DOUBLE_TYPE_TAG:
+        return it->AsDoubleUnchecked();
+      case oscpack::TIME_TAG_TYPE_TAG:
+        return it->AsTimeTagUnchecked();
+      case oscpack::CHAR_TYPE_TAG:
+        return it->AsCharUnchecked();
+      case oscpack::TRUE_TYPE_TAG:
+        return 1.f;
+      case oscpack::FALSE_TYPE_TAG:
+        return 0.f;
+      case oscpack::STRING_TYPE_TAG:
+        if(auto res = parse_strict<float>(it->AsStringUnchecked()))
+          return *res;
+        return f;
+      case oscpack::SYMBOL_TYPE_TAG:
+        if(auto res = parse_strict<float>(it->AsSymbolUnchecked()))
+          return *res;
+        return f;
+      default:
+        return f;
     }
   }
 
   static int get_int(oscpack::ReceivedMessageArgumentIterator it, int i)
   {
-    try
+    switch(it->TypeTag())
     {
-      switch(it->TypeTag())
-      {
-        case oscpack::INT32_TYPE_TAG:
-          return it->AsInt32Unchecked();
-        case oscpack::INT64_TYPE_TAG:
-          return int32_t(it->AsInt64Unchecked());
-        case oscpack::FLOAT_TYPE_TAG:
-          return int32_t(it->AsFloatUnchecked());
-        case oscpack::DOUBLE_TYPE_TAG:
-          return int32_t(it->AsDoubleUnchecked());
-        case oscpack::TIME_TAG_TYPE_TAG:
-          return int32_t(it->AsTimeTagUnchecked());
-        case oscpack::CHAR_TYPE_TAG:
-          return int32_t(it->AsCharUnchecked());
-        case oscpack::TRUE_TYPE_TAG:
-          return 1;
-        case oscpack::FALSE_TYPE_TAG:
-          return 0;
-        case oscpack::STRING_TYPE_TAG:
-          return boost::lexical_cast<int>(it->AsStringUnchecked());
-        case oscpack::SYMBOL_TYPE_TAG:
-          return boost::lexical_cast<int>(it->AsSymbolUnchecked());
-        default:
-          return i;
-      }
-    }
-    catch(const boost::bad_lexical_cast&)
-    {
-      return i;
+      case oscpack::INT32_TYPE_TAG:
+        return it->AsInt32Unchecked();
+      case oscpack::INT64_TYPE_TAG:
+        return int32_t(it->AsInt64Unchecked());
+      case oscpack::FLOAT_TYPE_TAG:
+        return int32_t(it->AsFloatUnchecked());
+      case oscpack::DOUBLE_TYPE_TAG:
+        return int32_t(it->AsDoubleUnchecked());
+      case oscpack::TIME_TAG_TYPE_TAG:
+        return int32_t(it->AsTimeTagUnchecked());
+      case oscpack::CHAR_TYPE_TAG:
+        return int32_t(it->AsCharUnchecked());
+      case oscpack::TRUE_TYPE_TAG:
+        return 1;
+      case oscpack::FALSE_TYPE_TAG:
+        return 0;
+      case oscpack::STRING_TYPE_TAG:
+        if(auto res = parse_strict<int>(it->AsStringUnchecked()))
+          return *res;
+        return i;
+      case oscpack::SYMBOL_TYPE_TAG:
+        if(auto res = parse_strict<int>(it->AsSymbolUnchecked()))
+          return *res;
+        return i;
+      default:
+        return i;
     }
   }
 
   static bool get_bool(oscpack::ReceivedMessageArgumentIterator it, bool b)
   {
-    try
+    using namespace std::literals;
+    switch(it->TypeTag())
     {
-      switch(it->TypeTag())
-      {
-        case oscpack::INT32_TYPE_TAG:
-          return it->AsInt32Unchecked();
-        case oscpack::INT64_TYPE_TAG:
-          return it->AsInt64Unchecked();
-        case oscpack::FLOAT_TYPE_TAG:
-          return it->AsFloatUnchecked();
-        case oscpack::DOUBLE_TYPE_TAG:
-          return it->AsDoubleUnchecked();
-        case oscpack::TIME_TAG_TYPE_TAG:
-          return it->AsTimeTagUnchecked();
-        case oscpack::CHAR_TYPE_TAG:
-          return it->AsCharUnchecked();
-        case oscpack::TRUE_TYPE_TAG:
-          return true;
-        case oscpack::FALSE_TYPE_TAG:
-          return false;
-        case oscpack::STRING_TYPE_TAG:
-          return boost::lexical_cast<bool>(it->AsStringUnchecked());
-        case oscpack::SYMBOL_TYPE_TAG:
-          return boost::lexical_cast<bool>(it->AsSymbolUnchecked());
-        default:
-          return b;
-      }
-    }
-    catch(const boost::bad_lexical_cast&)
-    {
-      return b;
+      case oscpack::INT32_TYPE_TAG:
+        return it->AsInt32Unchecked();
+      case oscpack::INT64_TYPE_TAG:
+        return it->AsInt64Unchecked();
+      case oscpack::FLOAT_TYPE_TAG:
+        return it->AsFloatUnchecked();
+      case oscpack::DOUBLE_TYPE_TAG:
+        return it->AsDoubleUnchecked();
+      case oscpack::TIME_TAG_TYPE_TAG:
+        return it->AsTimeTagUnchecked();
+      case oscpack::CHAR_TYPE_TAG:
+        return it->AsCharUnchecked();
+      case oscpack::TRUE_TYPE_TAG:
+        return true;
+      case oscpack::FALSE_TYPE_TAG:
+        return false;
+      case oscpack::STRING_TYPE_TAG:
+        return (std::string_view(it->AsStringUnchecked()) == "1"sv);
+      case oscpack::SYMBOL_TYPE_TAG:
+        return (std::string_view(it->AsSymbolUnchecked()) == "1"sv);
+      default:
+        return b;
     }
   }
 
@@ -326,14 +311,13 @@ struct osc_inbound_visitor
     switch(cur_it->TypeTag())
     {
       case oscpack::INT32_TYPE_TAG:
-        return std::string{boost::lexical_cast<std::string>(cur_it->AsInt32Unchecked())};
+        return ossia::to_string(cur_it->AsInt32Unchecked());
       case oscpack::INT64_TYPE_TAG:
-        return std::string{boost::lexical_cast<std::string>(cur_it->AsInt64Unchecked())};
+        return ossia::to_string(cur_it->AsInt64Unchecked());
       case oscpack::FLOAT_TYPE_TAG:
-        return std::string{boost::lexical_cast<std::string>(cur_it->AsFloatUnchecked())};
+        return ossia::to_string(cur_it->AsFloatUnchecked());
       case oscpack::DOUBLE_TYPE_TAG:
-        return std::string{
-            boost::lexical_cast<std::string>(cur_it->AsDoubleUnchecked())};
+        return ossia::to_string(cur_it->AsDoubleUnchecked());
       case oscpack::CHAR_TYPE_TAG:
         return std::string(1, cur_it->AsCharUnchecked());
       case oscpack::TRUE_TYPE_TAG:

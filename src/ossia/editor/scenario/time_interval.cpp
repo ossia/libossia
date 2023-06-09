@@ -183,6 +183,7 @@ void time_interval::tick_offset(
     time_value date, ossia::time_value offset,
     const ossia::token_request& parent_request)
 {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   auto itv_node = static_cast<ossia::nodes::interval*>(node.get());
   int64_t seek_request = itv_node->seek;
   if(BOOST_UNLIKELY(seek_request >= 0))
@@ -190,6 +191,7 @@ void time_interval::tick_offset(
     itv_node->seek = std::numeric_limits<int64_t>::min();
     transport(time_value{seek_request});
   }
+#endif
 
   if(BOOST_UNLIKELY(m_hasTempo && parent_request.speed != 0))
   {
@@ -236,10 +238,14 @@ time_signature time_interval::signature(
 
 double time_interval::tempo(time_value date) const noexcept
 {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   float t = static_cast<ossia::nodes::interval*>(node.get())->tempo;
   if(t != ossia::nodes::interval::no_tempo)
     return t;
   return m_tempoCurve.value_at(date.impl);
+#else
+  return 120.;
+#endif
 }
 
 double time_interval::tempo(
@@ -269,8 +275,12 @@ std::shared_ptr<time_interval> time_interval::create(
 time_interval::time_interval(
     time_interval::exec_callback callback, time_event& startEvent, time_event& endEvent,
     ossia::time_value nominal, ossia::time_value min, ossia::time_value max)
-    : node{std::make_shared<ossia::nodes::interval>()}
-    , m_callback(std::move(callback))
+    :
+#if defined(OSSIA_SCENARIO_DATAFLOW)
+    node{std::make_shared<ossia::nodes::interval>()}
+    ,
+#endif
+    m_callback(std::move(callback))
     , m_start(startEvent)
     , m_end(endEvent)
     , m_nominal(nominal)
@@ -385,7 +395,10 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
     tok.musical_end_last_bar = this->m_musical_end_last_bar;
     tok.musical_end_position = this->m_musical_end_position;
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     node->request(tok);
+#endif
+
     // get the state of each TimeProcess at current clock position and date
     for(const std::shared_ptr<ossia::time_process>& timeProcess : processes)
     {
@@ -527,8 +540,10 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
     }
   }
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   if(bool b = node->muted())
     timeProcess->mute(b);
+#endif
 
   // store a TimeProcess if it is not already stored
   if(find(m_processes, timeProcess) == m_processes.end())
@@ -559,13 +574,16 @@ void time_interval::cleanup()
 
 void time_interval::mute(bool m)
 {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   node->set_mute(m);
+#endif
   for(auto& p : get_time_processes())
   {
     p->mute(m);
   }
 }
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
 {
   m_hasTempo = bool(curve);
@@ -589,6 +607,7 @@ void time_interval::set_tempo_curve(std::optional<tempo_curve> curve)
     m_tempoCurve.reset();
   }
 }
+#endif
 
 void time_interval::set_time_signature_map(std::optional<time_signature_map> map)
 {

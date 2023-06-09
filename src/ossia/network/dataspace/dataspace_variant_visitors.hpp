@@ -36,7 +36,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type1: {
@@ -67,7 +67,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type2: {
@@ -98,7 +98,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type3: {
@@ -129,7 +129,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type4: {
@@ -160,7 +160,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type5: {
@@ -191,7 +191,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type6: {
@@ -222,7 +222,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type7: {
@@ -253,7 +253,7 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case strong_value_variant::Type::Type8: {
@@ -284,11 +284,11 @@ auto apply(Functor&& functor, const strong_value_variant& arg0, const unit_varia
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value7);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -306,7 +306,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -319,7 +319,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -332,7 +332,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -345,7 +345,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -358,7 +358,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -371,7 +371,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -384,7 +384,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -397,7 +397,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -410,7 +410,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -423,11 +423,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const angle_u& arg
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -466,7 +466,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -500,7 +500,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -534,7 +534,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -568,7 +568,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -602,7 +602,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -636,7 +636,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -670,7 +670,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -704,7 +704,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -738,7 +738,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -772,11 +772,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const color_u& arg
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -821,7 +821,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -861,7 +861,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -901,7 +901,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -941,7 +941,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -981,7 +981,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -1021,7 +1021,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -1061,7 +1061,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -1101,7 +1101,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -1141,7 +1141,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -1181,11 +1181,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const distance_u& 
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -1209,7 +1209,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -1228,7 +1228,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -1247,7 +1247,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -1266,7 +1266,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -1285,7 +1285,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -1304,7 +1304,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -1323,7 +1323,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -1342,7 +1342,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -1361,7 +1361,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -1380,11 +1380,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const gain_u& arg1
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -1405,7 +1405,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -1421,7 +1421,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -1437,7 +1437,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -1453,7 +1453,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -1469,7 +1469,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -1485,7 +1485,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -1501,7 +1501,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -1517,7 +1517,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -1533,7 +1533,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -1549,11 +1549,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const orientation_
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -1592,7 +1592,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -1626,7 +1626,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -1660,7 +1660,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -1694,7 +1694,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -1728,7 +1728,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -1762,7 +1762,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -1796,7 +1796,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -1830,7 +1830,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -1864,11 +1864,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const position_u& 
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -1898,7 +1898,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -1923,7 +1923,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -1948,7 +1948,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -1973,7 +1973,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -1998,7 +1998,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -2023,7 +2023,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -2048,7 +2048,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -2073,7 +2073,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -2098,7 +2098,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -2123,11 +2123,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const speed_u& arg
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -2166,7 +2166,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -2200,7 +2200,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -2234,7 +2234,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -2268,7 +2268,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -2302,7 +2302,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -2336,7 +2336,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -2370,7 +2370,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -2404,7 +2404,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -2438,7 +2438,7 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -2472,11 +2472,11 @@ auto apply(Functor&& functor, const value_variant_type& arg0, const timing_u& ar
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -2494,7 +2494,7 @@ auto apply(Functor&& functor, const angle& arg0, const angle_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case angle::Type::Type1: {
@@ -2507,11 +2507,11 @@ auto apply(Functor&& functor, const angle& arg0, const angle_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value1);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -2550,7 +2550,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type1: {
@@ -2584,7 +2584,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type2: {
@@ -2618,7 +2618,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type3: {
@@ -2652,7 +2652,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type4: {
@@ -2686,7 +2686,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type5: {
@@ -2720,7 +2720,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type6: {
@@ -2754,7 +2754,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type7: {
@@ -2788,7 +2788,7 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type8: {
@@ -2822,11 +2822,11 @@ auto apply(Functor&& functor, const color& arg0, const color_u& arg1)
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -2871,7 +2871,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type1: {
@@ -2911,7 +2911,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type2: {
@@ -2951,7 +2951,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type3: {
@@ -2991,7 +2991,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type4: {
@@ -3031,7 +3031,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type5: {
@@ -3071,7 +3071,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type6: {
@@ -3111,7 +3111,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type7: {
@@ -3151,7 +3151,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type8: {
@@ -3191,7 +3191,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type9: {
@@ -3231,7 +3231,7 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type10: {
@@ -3271,11 +3271,11 @@ auto apply(Functor&& functor, const distance& arg0, const distance_u& arg1)
           return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -3299,7 +3299,7 @@ auto apply(Functor&& functor, const gain& arg0, const gain_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type1: {
@@ -3318,7 +3318,7 @@ auto apply(Functor&& functor, const gain& arg0, const gain_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type2: {
@@ -3337,7 +3337,7 @@ auto apply(Functor&& functor, const gain& arg0, const gain_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type3: {
@@ -3356,11 +3356,11 @@ auto apply(Functor&& functor, const gain& arg0, const gain_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value3);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -3381,7 +3381,7 @@ auto apply(Functor&& functor, const orientation& arg0, const orientation_u& arg1
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case orientation::Type::Type1: {
@@ -3397,7 +3397,7 @@ auto apply(Functor&& functor, const orientation& arg0, const orientation_u& arg1
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case orientation::Type::Type2: {
@@ -3413,11 +3413,11 @@ auto apply(Functor&& functor, const orientation& arg0, const orientation_u& arg1
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value2);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -3456,7 +3456,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type1: {
@@ -3490,7 +3490,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type2: {
@@ -3524,7 +3524,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type3: {
@@ -3558,7 +3558,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type4: {
@@ -3592,7 +3592,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type5: {
@@ -3626,7 +3626,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type6: {
@@ -3660,7 +3660,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type7: {
@@ -3694,7 +3694,7 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type8: {
@@ -3728,11 +3728,11 @@ auto apply(Functor&& functor, const position& arg0, const position_u& arg1)
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -3762,7 +3762,7 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type1: {
@@ -3787,7 +3787,7 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type2: {
@@ -3812,7 +3812,7 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type3: {
@@ -3837,7 +3837,7 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type4: {
@@ -3862,7 +3862,7 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type5: {
@@ -3887,11 +3887,11 @@ auto apply(Functor&& functor, const speed& arg0, const speed_u& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value5);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -3930,7 +3930,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type1: {
@@ -3964,7 +3964,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type2: {
@@ -3998,7 +3998,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type3: {
@@ -4032,7 +4032,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type4: {
@@ -4066,7 +4066,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type5: {
@@ -4100,7 +4100,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type6: {
@@ -4134,7 +4134,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type7: {
@@ -4168,7 +4168,7 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type8: {
@@ -4202,11 +4202,11 @@ auto apply(Functor&& functor, const timing& arg0, const timing_u& arg1)
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -4248,7 +4248,7 @@ auto apply(Functor&& functor, const angle& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case angle::Type::Type1: {
@@ -4285,11 +4285,11 @@ auto apply(Functor&& functor, const angle& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -4331,7 +4331,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type1: {
@@ -4368,7 +4368,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type2: {
@@ -4405,7 +4405,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type3: {
@@ -4442,7 +4442,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type4: {
@@ -4479,7 +4479,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type5: {
@@ -4516,7 +4516,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type6: {
@@ -4553,7 +4553,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type7: {
@@ -4590,7 +4590,7 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case color::Type::Type8: {
@@ -4627,11 +4627,11 @@ auto apply(Functor&& functor, const color& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -4673,7 +4673,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type1: {
@@ -4710,7 +4710,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type2: {
@@ -4747,7 +4747,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type3: {
@@ -4784,7 +4784,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type4: {
@@ -4821,7 +4821,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type5: {
@@ -4858,7 +4858,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type6: {
@@ -4895,7 +4895,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type7: {
@@ -4932,7 +4932,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type8: {
@@ -4969,7 +4969,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type9: {
@@ -5006,7 +5006,7 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case distance::Type::Type10: {
@@ -5043,11 +5043,11 @@ auto apply(Functor&& functor, const distance& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -5089,7 +5089,7 @@ auto apply(Functor&& functor, const gain& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type1: {
@@ -5126,7 +5126,7 @@ auto apply(Functor&& functor, const gain& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type2: {
@@ -5163,7 +5163,7 @@ auto apply(Functor&& functor, const gain& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case gain::Type::Type3: {
@@ -5200,11 +5200,11 @@ auto apply(Functor&& functor, const gain& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -5246,7 +5246,7 @@ auto apply(Functor&& functor, const orientation& arg0, const value_variant_type&
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case orientation::Type::Type1: {
@@ -5283,7 +5283,7 @@ auto apply(Functor&& functor, const orientation& arg0, const value_variant_type&
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case orientation::Type::Type2: {
@@ -5320,11 +5320,11 @@ auto apply(Functor&& functor, const orientation& arg0, const value_variant_type&
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -5363,7 +5363,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type1: {
@@ -5397,7 +5397,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type2: {
@@ -5431,7 +5431,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type3: {
@@ -5465,7 +5465,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type4: {
@@ -5499,7 +5499,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type5: {
@@ -5533,7 +5533,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type6: {
@@ -5567,7 +5567,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type7: {
@@ -5601,7 +5601,7 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case position::Type::Type8: {
@@ -5635,11 +5635,11 @@ auto apply(Functor&& functor, const position& arg0, const value_variant_type& ar
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value8);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -5681,7 +5681,7 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type1: {
@@ -5718,7 +5718,7 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type2: {
@@ -5755,7 +5755,7 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type3: {
@@ -5792,7 +5792,7 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type4: {
@@ -5829,7 +5829,7 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case speed::Type::Type5: {
@@ -5866,11 +5866,11 @@ auto apply(Functor&& functor, const speed& arg0, const value_variant_type& arg1)
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 template <typename Functor>
@@ -5912,7 +5912,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type1: {
@@ -5949,7 +5949,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type2: {
@@ -5986,7 +5986,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type3: {
@@ -6023,7 +6023,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type4: {
@@ -6060,7 +6060,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type5: {
@@ -6097,7 +6097,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type6: {
@@ -6134,7 +6134,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type7: {
@@ -6171,7 +6171,7 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     case timing::Type::Type8: {
@@ -6208,11 +6208,11 @@ auto apply(Functor&& functor, const timing& arg0, const value_variant_type& arg1
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error(": bad type");
+          ossia_do_throw(std::runtime_error, ": bad type");
       }
     }
     default:
-      throw std::runtime_error(": bad type");
+      ossia_do_throw(std::runtime_error, ": bad type");
   }
 }
 }

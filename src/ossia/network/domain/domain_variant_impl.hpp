@@ -264,7 +264,8 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2)
+            ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
         new(&m_impl.m_value3)
@@ -349,7 +350,8 @@ public:
         new(&m_impl.m_value1) ossia::domain_base<bool>{std::move(other.m_impl.m_value1)};
         break;
       case Type::Type2:
-        new(&m_impl.m_value2) ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
+        new(&m_impl.m_value2)
+            ossia::domain_base<int32_t>{std::move(other.m_impl.m_value2)};
         break;
       case Type::Type3:
         new(&m_impl.m_value3)
@@ -526,140 +528,140 @@ inline const ossia::domain_base<ossia::impulse>& domain_base_variant::get() cons
 {
   if(m_type == Type0)
     return m_impl.m_value0;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::domain_base<bool>& domain_base_variant::get() const
 {
   if(m_type == Type1)
     return m_impl.m_value1;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::domain_base<int32_t>& domain_base_variant::get() const
 {
   if(m_type == Type2)
     return m_impl.m_value2;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::domain_base<float>& domain_base_variant::get() const
 {
   if(m_type == Type3)
     return m_impl.m_value3;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::domain_base<std::string>& domain_base_variant::get() const
 {
   if(m_type == Type5)
     return m_impl.m_value5;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::vector_domain& domain_base_variant::get() const
 {
   if(m_type == Type6)
     return m_impl.m_value6;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::vecf_domain<2>& domain_base_variant::get() const
 {
   if(m_type == Type7)
     return m_impl.m_value7;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::vecf_domain<3>& domain_base_variant::get() const
 {
   if(m_type == Type8)
     return m_impl.m_value8;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::vecf_domain<4>& domain_base_variant::get() const
 {
   if(m_type == Type9)
     return m_impl.m_value9;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline const ossia::domain_base<ossia::value>& domain_base_variant::get() const
 {
   if(m_type == Type10)
     return m_impl.m_value10;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<ossia::impulse>& domain_base_variant::get()
 {
   if(m_type == Type0)
     return m_impl.m_value0;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<bool>& domain_base_variant::get()
 {
   if(m_type == Type1)
     return m_impl.m_value1;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<int32_t>& domain_base_variant::get()
 {
   if(m_type == Type2)
     return m_impl.m_value2;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<float>& domain_base_variant::get()
 {
   if(m_type == Type3)
     return m_impl.m_value3;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<std::string>& domain_base_variant::get()
 {
   if(m_type == Type5)
     return m_impl.m_value5;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::vector_domain& domain_base_variant::get()
 {
   if(m_type == Type6)
     return m_impl.m_value6;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::vecf_domain<2>& domain_base_variant::get()
 {
   if(m_type == Type7)
     return m_impl.m_value7;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::vecf_domain<3>& domain_base_variant::get()
 {
   if(m_type == Type8)
     return m_impl.m_value8;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::vecf_domain<4>& domain_base_variant::get()
 {
   if(m_type == Type9)
     return m_impl.m_value9;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <>
 inline ossia::domain_base<ossia::value>& domain_base_variant::get()
 {
   if(m_type == Type10)
     return m_impl.m_value10;
-  throw std::runtime_error("domain_variant_impl: bad type");
+  ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
 }
 template <typename Visitor>
 auto apply_nonnull(Visitor&& functor, const domain_base_variant& var)
@@ -687,7 +689,7 @@ auto apply_nonnull(Visitor&& functor, const domain_base_variant& var)
     case domain_base_variant::Type::Type10:
       return functor(var.m_impl.m_value10);
     default:
-      throw std::runtime_error("domain_variant_impl: bad type");
+      ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
   }
 }
 template <typename Visitor>
@@ -716,7 +718,7 @@ auto apply_nonnull(Visitor&& functor, domain_base_variant& var)
     case domain_base_variant::Type::Type10:
       return functor(var.m_impl.m_value10);
     default:
-      throw std::runtime_error("domain_variant_impl: bad type");
+      ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
   }
 }
 template <typename Visitor>
@@ -745,7 +747,7 @@ auto apply_nonnull(Visitor&& functor, domain_base_variant&& var)
     case domain_base_variant::Type::Type10:
       return functor(std::move(var.m_impl.m_value10));
     default:
-      throw std::runtime_error("domain_variant_impl: bad type");
+      ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
   }
 }
 template <typename Visitor>
@@ -1161,7 +1163,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type1: {
@@ -1198,7 +1200,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type2: {
@@ -1235,7 +1237,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type3: {
@@ -1272,7 +1274,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type5: {
@@ -1309,7 +1311,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type6: {
@@ -1346,7 +1348,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type7: {
@@ -1383,7 +1385,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type8: {
@@ -1420,7 +1422,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type9: {
@@ -1457,7 +1459,7 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case domain_base_variant::Type::Type10: {
@@ -1494,11 +1496,11 @@ auto apply(Functor&& functor, domain_base_variant& arg0, const value_variant_typ
           return functor(arg0.m_impl.m_value10, arg1.m_impl.m_value9);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     default:
-      throw std::runtime_error("domain_variant_impl: bad type");
+      ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
   }
 }
 template <typename Functor>
@@ -1541,7 +1543,7 @@ auto apply(
           return functor(arg0.m_impl.m_value0, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type1: {
@@ -1578,7 +1580,7 @@ auto apply(
           return functor(arg0.m_impl.m_value1, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type2: {
@@ -1615,7 +1617,7 @@ auto apply(
           return functor(arg0.m_impl.m_value2, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type3: {
@@ -1652,7 +1654,7 @@ auto apply(
           return functor(arg0.m_impl.m_value3, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type4: {
@@ -1689,7 +1691,7 @@ auto apply(
           return functor(arg0.m_impl.m_value4, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type5: {
@@ -1726,7 +1728,7 @@ auto apply(
           return functor(arg0.m_impl.m_value5, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type6: {
@@ -1763,7 +1765,7 @@ auto apply(
           return functor(arg0.m_impl.m_value6, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type7: {
@@ -1800,7 +1802,7 @@ auto apply(
           return functor(arg0.m_impl.m_value7, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type8: {
@@ -1837,7 +1839,7 @@ auto apply(
           return functor(arg0.m_impl.m_value8, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     case value_variant_type::Type::Type9: {
@@ -1874,10 +1876,10 @@ auto apply(
           return functor(arg0.m_impl.m_value9, arg1.m_impl.m_value10);
         }
         default:
-          throw std::runtime_error("domain_variant_impl: bad type");
+          ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
       }
     }
     default:
-      throw std::runtime_error("domain_variant_impl: bad type");
+      ossia_do_throw(std::runtime_error, "domain_variant_impl: bad type");
   }
 }

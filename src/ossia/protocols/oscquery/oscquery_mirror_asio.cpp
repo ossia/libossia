@@ -553,7 +553,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
           if(!m_host_info.osc_ip)
             m_host_info.osc_ip = m_queryHost;
           if(!m_host_info.osc_port)
-            m_host_info.osc_port = boost::lexical_cast<int>(m_queryPort);
+            m_host_info.osc_port = std::stoi(m_queryPort);
           if(m_host_info.osc_transport == host_info::UDP)
           {
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);

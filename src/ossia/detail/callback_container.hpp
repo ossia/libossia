@@ -3,7 +3,9 @@
 
 #include <ossia/detail/mutex.hpp>
 
+#if defined(__cpp_exceptions)
 #include <exception>
+#endif
 #include <list>
 #include <mutex>
 
@@ -13,6 +15,8 @@
 
 namespace ossia
 {
+
+#if defined(__cpp_exceptions)
 /**
  * @brief The invalid_callback_error class
  *
@@ -24,6 +28,7 @@ struct OSSIA_EXPORT invalid_callback_error final : public std::exception
   invalid_callback_error();
   const char* what() const noexcept override;
 };
+#endif
 
 template <typename T>
 /**
@@ -94,7 +99,11 @@ public:
     }
     else
     {
+#if defined(__cpp_exceptions)
       throw invalid_callback_error{};
+#else
+      return {};
+#endif
     }
   }
 

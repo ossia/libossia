@@ -460,7 +460,7 @@ inline ossia::value init_value(ossia::val_type type)
       break;
   }
 
-  throw invalid_value_type_error("init_value: Invalid type");
+  ossia_do_throw(invalid_value_type_error, "init_value: Invalid type");
   return {};
 }
 

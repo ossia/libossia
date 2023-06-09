@@ -40,6 +40,13 @@
     return constexpr_return_x_;             \
   } while(0)
 
+/// Exceptions ///
+#if defined(__cpp_exceptions)
+#define ossia_do_throw(E, X) throw E(X);
+#else
+#define ossia_do_throw(E, X) std::terminate();
+#endif
+
 /// Inline support ///
 #if defined(__GNUC__)
 #define OSSIA_INLINE inline __attribute__((always_inline))

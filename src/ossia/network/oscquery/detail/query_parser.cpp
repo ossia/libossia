@@ -2,6 +2,8 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "query_parser.hpp"
 
+#include <ossia/detail/hash_map.hpp>
+#include <ossia/detail/parse_strict.hpp>
 #include <ossia/detail/small_vector.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/parameter_data.hpp>
@@ -12,9 +14,6 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/container/static_vector.hpp>
-#include <boost/lexical_cast.hpp>
-
-#include <ossia/detail/hash_map.hpp>
 
 #include <string>
 #include <vector>
@@ -44,27 +43,12 @@ string_map<std::string> query_parser::parse_http_methods(std::string_view str)
 void query_parser::parse(
     net::access_mode_attribute, const std::string& data, net::parameter_data& res)
 {
-  try
-  {
-    auto i = boost::lexical_cast<int>(data);
-    switch(i)
-    {
-      case 1:
-        res.access = ossia::access_mode::GET;
-        break;
-      case 2:
-        res.access = ossia::access_mode::SET;
-        break;
-      case 3:
-        res.access = ossia::access_mode::BI;
-        break;
-      default:
-        break;
-    }
-  }
-  catch(...)
-  {
-  }
+  if(data == "1")
+    res.access = ossia::access_mode::GET;
+  else if(data == "2")
+    res.access = ossia::access_mode::SET;
+  else if(data == "3")
+    res.access = ossia::access_mode::BI;
 }
 
 void query_parser::parse(
@@ -135,44 +119,26 @@ void query_parser::parse(
 void query_parser::parse(
     net::refresh_rate_attribute attr, const std::string& data, net::parameter_data& res)
 {
-  try
-  {
-    using type = decltype(attr)::type;
-    auto i = boost::lexical_cast<type>(data);
-    attr.setter(res, i);
-  }
-  catch(...)
-  {
-  }
+  using type = decltype(attr)::type;
+  if(auto i = parse_strict<type>(data))
+    attr.setter(res, *i);
 }
 
 void query_parser::parse(
     net::priority_attribute attr, const std::string& data, net::parameter_data& res)
 {
-  try
-  {
-    using type = decltype(attr)::type;
-    auto i = boost::lexical_cast<type>(data);
-    attr.setter(res, i);
-  }
-  catch(...)
-  {
-  }
+  using type = decltype(attr)::type;
+  if(auto i = parse_strict<type>(data))
+    attr.setter(res, *i);
 }
 
 void query_parser::parse(
     net::value_step_size_attribute attr, const std::string& data,
     net::parameter_data& res)
 {
-  try
-  {
-    using type = decltype(attr)::type;
-    auto i = boost::lexical_cast<type>(data);
-    attr.setter(res, i);
-  }
-  catch(...)
-  {
-  }
+  using type = decltype(attr)::type;
+  if(auto i = parse_strict<type>(data))
+    attr.setter(res, *i);
 }
 
 void query_parser::parse(

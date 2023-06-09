@@ -50,7 +50,7 @@ template OSSIA_EXPORT int32_t convert<int32_t>(const ossia::value& val);
 template OSSIA_EXPORT float convert<float>(const ossia::value& val);
 template OSSIA_EXPORT double convert<double>(const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const ossia::value& val);
-template OSSIA_EXPORT char convert<char>(const ossia::value& val);
+//template OSSIA_EXPORT char convert<char>(const ossia::value& val);
 template OSSIA_EXPORT value_map_type convert<value_map_type>(const ossia::value& val);
 template OSSIA_EXPORT std::string convert<std::string>(const ossia::value& val);
 template OSSIA_EXPORT std::vector<ossia::value>
@@ -68,7 +68,7 @@ template OSSIA_EXPORT int32_t convert<int32_t>(const int32_t&, const ossia::valu
 template OSSIA_EXPORT float convert<float>(const float&, const ossia::value& val);
 template OSSIA_EXPORT double convert<double>(const double&, const ossia::value& val);
 template OSSIA_EXPORT bool convert<bool>(const bool&, const ossia::value& val);
-template OSSIA_EXPORT char convert<char>(const char&, const ossia::value& val);
+// template OSSIA_EXPORT char convert<char>(const char&, const ossia::value& val);
 template OSSIA_EXPORT value_map_type
 convert<value_map_type>(const value_map_type&, const ossia::value& val);
 template OSSIA_EXPORT std::string
@@ -212,11 +212,11 @@ std::string to_pretty_string(const destination_index& index)
   if(n > 0)
   {
     str += "[";
-    str += boost::lexical_cast<std::string>(index[0]);
+    str += std::to_string(index[0]);
 
     for(int i = 1; i < n; i++)
     {
-      str += ", " + boost::lexical_cast<std::string>(index[i]);
+      str += ", " + std::to_string(index[i]);
     }
     str += "]";
   }

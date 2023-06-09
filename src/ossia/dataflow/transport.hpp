@@ -1,10 +1,10 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <smallfun.hpp>
-
-#include <ossia-config.hpp>
 namespace ossia
 {
 // Used to notify an external transport system of the current state of the

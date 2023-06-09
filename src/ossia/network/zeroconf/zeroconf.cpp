@@ -2,8 +2,6 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "zeroconf.hpp"
 
-#include <boost/lexical_cast.hpp>
-
 #include <chrono>
 #include <thread>
 
@@ -43,7 +41,7 @@ std::vector<minuit_connection_data> list_minuit_devices()
     minuit_connection_data dat;
     dat.name = instance;
     dat.host = browser->get(instance, "servus_host");
-    dat.local_port = boost::lexical_cast<int>(browser->get(instance, "servus_port"));
+    dat.local_port = std::stoi(browser->get(instance, "servus_port"));
     cons.push_back(std::move(dat));
   }
 #endif
@@ -69,7 +67,7 @@ std::vector<oscquery_connection_data> list_oscquery_devices()
     oscquery_connection_data dat;
     dat.name = instance;
     dat.host = browser->get(instance, "servus_host");
-    dat.port = boost::lexical_cast<int>(browser->get(instance, "servus_port"));
+    dat.port = std::stoi(browser->get(instance, "servus_port"));
     cons.push_back(std::move(dat));
   }
 #endif

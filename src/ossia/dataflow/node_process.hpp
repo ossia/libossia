@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/editor/scenario/time_process.hpp>
 
@@ -13,7 +16,12 @@ public:
   void offset_impl(ossia::time_value) override;
   void transport_impl(ossia::time_value date) override;
 
-  void state_impl(const ossia::token_request& req) { node->request(req); }
+  void state_impl(const ossia::token_request& req)
+  {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
+    node->request(req);
+#endif
+  }
 
   void start() override;
   void stop() override;
@@ -23,3 +31,4 @@ public:
 };
 
 }
+#endif

@@ -93,6 +93,8 @@ private:
   ossia::curve<double, float> m_drive;
   ossia::minmax_float_outlet value_out;
 };
+
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 class automation_process final : public ossia::node_process
 {
 public:
@@ -102,4 +104,5 @@ public:
     static_cast<ossia::nodes::automation*>(node.get())->reset_drive();
   }
 };
+#endif
 }

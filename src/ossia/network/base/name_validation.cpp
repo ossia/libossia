@@ -8,16 +8,14 @@
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
-#include <boost/lexical_cast.hpp>
 
 #if defined(OSSIA_HAS_FMT)
 #include <fmt/printf.h>
 #endif
 
+#include <ossia/detail/parse_strict.hpp>
+
 #include <algorithm>
-#if __has_include(<charconv>)
-#include <charconv>
-#endif
 
 namespace ossia::net
 {
@@ -84,14 +82,8 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
     auto pos = name.find_last_of('.');
     if(pos != std::string::npos)
     {
-      try
-      {
-        name_instance = boost::lexical_cast<int>(name.substr(pos + 1)); // OPTIMIZEME
+      if((name_instance = parse_strict<int>(std::string_view{name}.substr(pos + 1))))
         root_name = name.substr(0, pos);
-      }
-      catch(...)
-      {
-      }
     }
   }
 
@@ -110,15 +102,10 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
     if(same_root && (n_name[root_len] == '.'))
     {
       // Instance
-      try
-      {
-        int n = boost::lexical_cast<int>(n_name.substr(root_len + 1)); // OPTIMIZEME
-        instance_num.push_back(n);
-      }
-      catch(...)
-      {
+      if(auto n = parse_strict<int>(n_name.substr(root_len + 1)))
+        instance_num.push_back(*n);
+      else
         continue;
-      }
     }
     // case where we have the "default" instance without .0
     else if(same_root && root_len == n_name.length())
@@ -140,24 +127,13 @@ std::string sanitize_name(std::string name, const std::vector<std::string>& bret
     }
     else
     {
-      std::sort(instance_num.begin(), instance_num.end());
-      return root_name + "." + boost::lexical_cast<std::string>(instance_num.back() + 1);
+      auto it = std::max_element(instance_num.begin(), instance_num.end());
+      root_name.reserve(root_name.size() + 5);
+      root_name += '.';
+      root_name += std::to_string(*it + 1);
+      return root_name;
     }
   }
-}
-
-static std::optional<int> parse_instance(std::string_view instance)
-{
-  int n{};
-#if defined(__cpp_lib_to_chars)
-  const auto res
-      = std::from_chars(instance.data(), instance.data() + instance.size(), n);
-  return (res.ec == std::errc{}) ? std::optional<int>{n} : std::nullopt;
-#else
-  if(boost::conversion::detail::try_lexical_convert(instance, n))
-    return n;
-  return std::nullopt;
-#endif
 }
 
 static thread_local ossia::small_vector<int, 16> instance_num;
@@ -177,7 +153,7 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
     auto pos = name.find_last_of('.');
     if(pos != std::string::npos)
     {
-      name_instance = parse_instance(root_name.substr(pos + 1));
+      name_instance = parse_strict<int>(root_name.substr(pos + 1));
       if(name_instance)
       {
         // !!! horror story that happened here:
@@ -204,7 +180,7 @@ void sanitize_name(std::string& name, const ossia::net::node_base::children_t& b
     bool same_root = (n_name.compare(0, root_len, root_name) == 0);
     if(same_root && (n_name[root_len] == '.'))
     {
-      if(std::optional<int> n = parse_instance(n_name.substr(root_len + 1)))
+      if(auto n = parse_strict<int>(n_name.substr(root_len + 1)))
       {
         instance_num.push_back(*n);
       }

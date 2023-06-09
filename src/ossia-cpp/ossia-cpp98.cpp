@@ -12,6 +12,8 @@
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/value/value_conversion.hpp>
+
 #include <ossia/preset/preset.hpp>
 
 #include <ossia-cpp/ossia-cpp98.hpp>
@@ -135,7 +137,7 @@ bool value::is_string() const
 }
 char value::to_char() const
 {
-  return ossia::convert<char>(*m_val);
+  return ossia::convert<int>(*m_val);
 }
 int value::to_int() const
 {

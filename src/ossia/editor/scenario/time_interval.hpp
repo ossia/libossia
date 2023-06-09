@@ -6,7 +6,9 @@
 #include <ossia/detail/flicks.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 #include <ossia/editor/curve/curve.hpp>
+#endif
 #include <ossia/editor/scenario/execution_log.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -26,7 +28,11 @@ class time_process;
 class graph_node;
 
 using time_signature_map = ossia::flat_map<ossia::time_value, time_signature>;
+
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 using tempo_curve = ossia::curve<int64_t, double>;
+#endif
+
 /**
  * @brief The time_interval class
  *
@@ -42,7 +48,9 @@ using tempo_curve = ossia::curve<int64_t, double>;
 class OSSIA_EXPORT time_interval
 {
 public:
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   const std::shared_ptr<ossia::graph_node> node;
+#endif
 
   auto get_date() const noexcept { return m_date; }
   auto get_offset() const noexcept { return m_offset; }
@@ -191,7 +199,9 @@ public:
   void cleanup();
   void mute(bool);
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   void set_tempo_curve(std::optional<tempo_curve> curve);
+#endif
   void set_time_signature_map(std::optional<time_signature_map> map);
   void set_quarter_duration(double tu);
 
@@ -242,7 +252,9 @@ private:
   double m_current_tempo{};
 
   time_signature_map m_timeSignature{};
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   tempo_curve m_tempoCurve{};
+#endif
 
   ossia::quarter_note m_musical_start_last_signature{};
 

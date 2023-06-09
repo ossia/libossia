@@ -229,7 +229,9 @@ void scenario::stop_interval(time_interval& itv)
 
 void scenario::state_impl(const ossia::token_request& tk)
 {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
   node->request(tk);
+#endif
   // ossia::logger().info("scenario::state starts");
   // if (date != m_lastDate)
   {

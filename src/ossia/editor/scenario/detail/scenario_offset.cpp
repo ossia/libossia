@@ -293,6 +293,7 @@ void scenario::offset_impl(ossia::time_value offset)
   // build offset state from all ordered past events
   if(unmuted())
   {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     ossia::state state;
 
     for(const auto& e : pastEvents)
@@ -309,6 +310,7 @@ void scenario::offset_impl(ossia::time_value offset)
       // e.second->tick(0_tv, 0., 0_tv);
     }
     state.launch();
+#endif
   }
 
   // offset all TimeIntervals

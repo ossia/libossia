@@ -20,6 +20,7 @@ audio_buffer_pool& audio_buffer_pool::instance() noexcept
   return p;
 }
 
+#if defined(OSSIA_SCENARIO_DATAFLOW)
 node_process::node_process(node_ptr n)
 {
   assert(n);
@@ -48,6 +49,7 @@ void node_process::resume() { }
 void node_process::mute_impl(bool) { }
 
 node_process::~node_process() = default;
+#endif
 /*
 graph_edge::graph_edge(
     connection c, std::size_t pout, std::size_t pin, node_ptr pout_node,

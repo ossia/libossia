@@ -289,7 +289,7 @@ float ossia_value_convert_float(ossia_value_t val)
 }
 char ossia_value_convert_char(ossia_value_t val)
 {
-  return convert_value<char>(val);
+  return convert_value<int32_t>(val);
 }
 int ossia_value_convert_bool(ossia_value_t val)
 {

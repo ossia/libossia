@@ -11,6 +11,7 @@ struct mark_discontinuous
 {
   void operator()(scenario& s) const
   {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     (s.node.get()->*fun_T)(true);
     for(auto& itv : s.get_time_intervals())
     {
@@ -19,9 +20,11 @@ struct mark_discontinuous
         (*this)(*itv);
       }
     }
+#endif
   }
   void operator()(time_interval& itv) const
   {
+#if defined(OSSIA_SCENARIO_DATAFLOW)
     (itv.node.get()->*fun_T)(true);
     for(auto& proc : itv.get_time_processes())
     {
@@ -33,6 +36,7 @@ struct mark_discontinuous
           (*this)(*scenar);
       }
     }
+#endif
   }
 };
 using mark_start_discontinuous
