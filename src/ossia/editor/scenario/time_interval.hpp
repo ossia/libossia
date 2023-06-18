@@ -135,10 +135,6 @@ public:
   void set_callback(exec_callback);
   void set_callback(smallfun::function<void(bool, ossia::time_value), 32>);
 
-  //! This callback won't compute the state.
-  void set_stateless_callback(exec_callback);
-  void set_stateless_callback(smallfun::function<void(bool, ossia::time_value), 32>);
-
   /*! get the #time_interval nominal duration
    \return const #TimeValue& nominal duration */
   const time_value& get_nominal_duration() const;

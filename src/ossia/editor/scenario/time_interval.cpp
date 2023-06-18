@@ -450,20 +450,6 @@ void time_interval::set_callback(smallfun::function<void(bool, time_value), 32> 
   m_callback = std::move(cb);
 }
 
-void time_interval::set_stateless_callback(time_interval::exec_callback cb)
-{
-  if(cb)
-    m_callback = std::move(*cb);
-  else
-    m_callback = {};
-}
-
-void time_interval::set_stateless_callback(
-    smallfun::function<void(bool, time_value), 32> cb)
-{
-  m_callback = std::move(cb);
-}
-
 const time_value& time_interval::get_nominal_duration() const
 {
   return m_nominal;
