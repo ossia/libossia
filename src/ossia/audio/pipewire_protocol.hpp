@@ -375,6 +375,7 @@ struct pipewire_context
     if(!proxy)
     {
       ossia::logger().error("PipeWire: could not allocate link");
+      pw.properties_free(props);
       return nullptr;
     }
 
