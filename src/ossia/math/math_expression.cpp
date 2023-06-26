@@ -32,7 +32,9 @@
 #include <vector>
 #pragma GCC visibility pop
 #pragma clang visibility pop
-
+#define exprtk_disable_rtl_io 1
+#define exprtk_disable_rtl_io_file 1
+#define exprtk_disable_caseinsensitivity 1
 #define exprtk_disable_string_capabilities 1
 #pragma GCC visibility push(internal)
 #pragma clang visibility push(internal)
