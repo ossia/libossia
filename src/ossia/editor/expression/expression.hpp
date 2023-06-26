@@ -132,6 +132,12 @@ inline expression_ptr make_expression_true()
   return std::make_unique<expression_base>(ossia::in_place_type<expression_bool>, true);
 }
 
+inline bool is_expression_true(ossia::expression& e) noexcept
+{
+  const auto p = e.target<expression_bool>();
+  return p && p->evaluate();
+}
+
 /**
  * @brief make_expression_false
  * @return A "false" expression_bool.

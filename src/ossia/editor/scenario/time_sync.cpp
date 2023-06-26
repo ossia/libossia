@@ -142,8 +142,7 @@ void time_sync::observe_expression(bool observe)
 void time_sync::observe_expression(
     bool observe, ossia::expressions::expression_result_callback cb)
 {
-  if(!m_expression || *m_expression == expressions::expression_true()
-     || *m_expression == expressions::expression_false())
+  if(!m_expression || m_expression->target<ossia::expressions::expression_bool>())
     return;
 
   if(observe != m_observe)
