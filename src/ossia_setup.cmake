@@ -112,11 +112,19 @@ else()
 endif()
 
 if(OSSIA_HIDE_ALL_SYMBOLS)
-set_target_properties(ossia PROPERTIES
-    C_VISIBILITY_PRESET hidden
-    CXX_VISIBILITY_PRESET hidden
-    VISIBILITY_INLINES_HIDDEN 1
-    )
+  if("${OSSIA_HIDE_ALL_SYMBOLS}" MATCHES "(hidden|internal)")
+    set_target_properties(ossia PROPERTIES
+        C_VISIBILITY_PRESET "${OSSIA_HIDE_ALL_SYMBOLS}"
+        CXX_VISIBILITY_PRESET "${OSSIA_HIDE_ALL_SYMBOLS}"
+        VISIBILITY_INLINES_HIDDEN 1
+        )
+  else()
+    set_target_properties(ossia PROPERTIES
+        C_VISIBILITY_PRESET hidden
+        CXX_VISIBILITY_PRESET hidden
+        VISIBILITY_INLINES_HIDDEN 1
+        )
+  endif()
 endif()
 
 include(GenerateStaticExport)
