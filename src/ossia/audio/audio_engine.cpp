@@ -123,12 +123,32 @@ ossia::audio_engine* make_audio_engine(
   if(0)
   {
   }
-#if __has_include(<pulse/pulseaudio.h>)
+#if OSSIA_AUDIO_PIPEWIRE
+  else if(proto == "PipeWire")
+  {
+    ossia::audio_setup setup;
+    setup.name = name;
+    setup.card_in = "";
+    setup.card_out = "";
+    setup.rate = rate;
+    setup.buffer_size = bs;
+    for(int i = 0; i < inputs; i++)
+      setup.inputs.push_back("in_" + std::to_string(i));
+    for(int i = 0; i < outputs; i++)
+      setup.outputs.push_back("out_" + std::to_string(i));
+
+    auto client = std::make_shared<ossia::pipewire_context>();
+    p = new ossia::pipewire_audio_protocol{client, setup};
+  }
+#endif
+
+#if OSSIA_AUDIO_PULSEAUDIO
   else if(proto == "PulseAudio")
   {
     p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
   }
 #endif
+
 #if OSSIA_AUDIO_PORTAUDIO
   else if(proto == "PortAudio")
   {
@@ -137,7 +157,7 @@ ossia::audio_engine* make_audio_engine(
   }
 #endif
 
-#if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
+#if OSSIA_AUDIO_JACK
   else if(proto == "JACK")
   {
     p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
@@ -160,7 +180,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-#if __has_include(<pulse/pulseaudio.h>)
+#if OSSIA_AUDIO_PULSEAUDIO
     p = new ossia::pulseaudio_engine{name, req_in, req_out, inputs, outputs, rate, bs};
 #endif
   }
@@ -175,7 +195,7 @@ ossia::audio_engine* make_audio_engine(
 
   if(!p)
   {
-#if __has_include(<jack/jack.h>) && defined(USE_WEAK_JACK)
+#if OSSIA_AUDIO_JACK
     p = new ossia::jack_engine{std::make_shared<jack_client>(name), inputs, outputs};
 #endif
   }

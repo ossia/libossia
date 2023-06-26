@@ -13,7 +13,7 @@ expression_composition::expression_composition(
     , m_operator(op)
 {
   if(!m_first || !m_second)
-    throw std::runtime_error("An argument to expression_composition is null");
+    ossia_do_throw(std::runtime_error, "An argument to expression_composition is null");
 }
 
 expression_composition::~expression_composition()

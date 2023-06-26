@@ -217,7 +217,8 @@ void generic_parameter::set_value_quiet(const destination& destination)
   }
   else
   {
-    throw invalid_node_error(
+    ossia_do_throw(
+        invalid_node_error,
         "generic_parameter::setValue: "
         "setting a parameter value using a destination "
         "with a bad type address");

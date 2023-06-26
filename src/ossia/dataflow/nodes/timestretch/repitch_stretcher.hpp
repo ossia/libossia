@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_ENABLE_LIBSAMPLERATE)
 #if __has_include(<samplerate.h>)
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/graph_node.hpp>
@@ -140,6 +143,16 @@ struct repitch_stretcher
   }
 };
 }
+
+#else
+
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+
+namespace ossia
+{
+using repitch_stretcher = raw_stretcher;
+}
+#endif
 
 #else
 

@@ -28,7 +28,8 @@ struct node_sorter
       else
         continue;
     }
-    throw std::runtime_error("lhs and rhs have to be found");
+    ossia_do_throw(
+        std::runtime_error, "lhs and rhs have to be found");
   }
 
   bool operator()(const graph_node* lhs, const graph_node* rhs) const

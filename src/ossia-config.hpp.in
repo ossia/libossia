@@ -31,6 +31,12 @@
 #cmakedefine OSSIA_EDITOR
 #cmakedefine OSSIA_PARALLEL
 #cmakedefine OSSIA_TESTING
+#cmakedefine OSSIA_ENABLE_JACK
+#cmakedefine OSSIA_ENABLE_PORTAUDIO
+#cmakedefine OSSIA_ENABLE_PIPEWIRE
+#cmakedefine OSSIA_ENABLE_RUBBERBAND
+#cmakedefine OSSIA_ENABLE_LIBSAMPLERATE
+#cmakedefine OSSIA_ENABLE_SDL
 #cmakedefine OSSIA_SCENARIO_DATAFLOW
 
 // FFT support

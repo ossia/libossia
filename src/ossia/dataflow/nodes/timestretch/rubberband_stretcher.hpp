@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_ENABLE_RUBBERBAND)
 #if __has_include(<RubberBandStretcher.h>)
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
@@ -125,6 +128,14 @@ struct rubberband_stretcher
 };
 }
 
+#else
+#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
+
+namespace ossia
+{
+using rubberband_stretcher = raw_stretcher;
+}
+#endif
 #else
 #include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
 

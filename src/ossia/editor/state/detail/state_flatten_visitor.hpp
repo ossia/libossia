@@ -43,7 +43,7 @@ struct vec_merger
   {
     // Invalid cases.
     // TODO Do nothing, or throw ?
-    // throw std::runtime_error("vec_merger: invalid case");
+    // ossia_do_throw(std::runtime_error, "vec_merger: invalid case");
     return {};
   }
   template <typename T, typename U>
@@ -51,7 +51,7 @@ struct vec_merger
   {
     // Invalid cases.
     // TODO Do nothing, or throw ?
-    // throw std::runtime_error("vec_merger: invalid case");
+    // ossia_do_throw(std::runtime_error, "vec_merger: invalid case");
     return {};
   }
 
@@ -526,7 +526,8 @@ struct state_flatten_visitor_merger
   template <typename T>
   void operator()(ossia::state&, const T&)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (state <- *");
   }
@@ -534,7 +535,8 @@ struct state_flatten_visitor_merger
   template <std::size_t M>
   void operator()(message& existing, const piecewise_vec_message<M>& incoming)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (message <- const piecewise_vec_message&");
   }
@@ -542,7 +544,8 @@ struct state_flatten_visitor_merger
   template <std::size_t M>
   void operator()(piecewise_message& existing, const piecewise_vec_message<M>& incoming)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (piecewise_message <- const piecewise_vec_message&");
   }
@@ -550,14 +553,16 @@ struct state_flatten_visitor_merger
   template <std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, const piecewise_message& incoming)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (piecewise_vec_message <- const piecewise_message&");
   }
   template <std::size_t N>
   void operator()(piecewise_vec_message<N>& existing, piecewise_message&& incoming)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (piecewise_vec_message <- piecewise_message&&");
   }
@@ -566,7 +571,8 @@ struct state_flatten_visitor_merger
   void operator()(
       piecewise_vec_message<N>& existing, const piecewise_vec_message<M>& incoming)
   {
-    throw std::runtime_error(
+    ossia_do_throw(
+        std::runtime_error,
         "state_flatten_visitor_merger: "
         "impossible case (piecewise_vec_message<N> <- "
         "piecewise_vec_message<M>");

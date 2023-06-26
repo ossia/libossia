@@ -1,4 +1,8 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_ENABLE_PULSEAUDIO)
+
 #if __has_include(<pulse/pulseaudio.h>)
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/dylib_loader.hpp>
@@ -519,4 +523,5 @@ private:
 };
 }
 
+#endif
 #endif

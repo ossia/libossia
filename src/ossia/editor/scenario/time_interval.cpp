@@ -20,8 +20,9 @@ std::optional<ossia::time_signature> get_time_signature(const std::string_view& 
     return denom == 1 || denom == 2 || denom == 4 || denom == 8 || denom == 16
            || denom == 32 || denom == 64;
   };
-
+#if defined(__cpp_exceptions)
   try
+#endif
   {
     if(v.size() >= 3)
     {
@@ -38,9 +39,11 @@ std::optional<ossia::time_signature> get_time_signature(const std::string_view& 
       }
     }
   }
+#if defined(__cpp_exceptions)
   catch(...)
   {
   }
+#endif
   return {};
 }
 double time_interval::get_speed(time_value date) const noexcept

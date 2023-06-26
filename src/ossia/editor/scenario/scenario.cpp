@@ -131,7 +131,9 @@ void scenario::start()
       ossia::logger().error(
           "scenario_impl::start:  start: {} ; end: {}", (int)startStatus,
           (int)endStatus);
-      throw execution_error(
+
+      ossia_do_throw(
+          execution_error,
           "scenario_impl::start: "
           "TimeEvent's status configuration of the "
           "TimeInterval is not handled");

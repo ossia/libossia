@@ -2,6 +2,7 @@
 
 #include <ossia/detail/config.hpp>
 
+#if defined(__cpp_exceptions)
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -404,3 +405,5 @@ private:
   const ossia::value mValue;
 };
 }
+
+#endif

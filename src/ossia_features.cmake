@@ -69,6 +69,11 @@ function(ossia_link_jack)
 endfunction()
 
 function(ossia_find_sdl)
+  if(NOT OSSIA_ENABLE_SDL)
+    unset(SDL_LIB PARENT_SCOPE)
+    return()
+  endif()
+
   if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
     target_compile_options(ossia PRIVATE -s USE_SDL=2)
     add_link_options("SHELL:-s USE_SDL=2")
@@ -298,10 +303,12 @@ if(OSSIA_DATAFLOW)
   target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
 
   # JACK support
-  ossia_link_jack()
+  if(OSSIA_ENABLE_JACK)
+    ossia_link_jack()
+  endif()
 
   # PortAudio support
-  if(NOT OSSIA_DISABLE_PORTAUDIO)
+  if(OSSIA_ENABLE_PORTAUDIO)
     if(TARGET PortAudio::PortAudio)
       target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
     elseif(TARGET portaudio)
@@ -317,7 +324,7 @@ if(OSSIA_DATAFLOW)
   endif()
 
   # PipeWire
-  if(NOT OSSIA_DISABLE_PIPEWIRE)
+  if(OSSIA_ENABLE_PIPEWIRE)
     find_path(PIPEWIRE_INCLUDEDIR pipewire-0.3/pipewire/filter.h)
     find_path(SPA_INCLUDEDIR spa-0.2/spa/param/latency-utils.h)
 
@@ -333,15 +340,20 @@ if(OSSIA_DATAFLOW)
 
   #SDL support
   set(SDL_BUILDING_LIBRARY TRUE)
-  if(NOT OSSIA_DISABLE_SDL)
+  if(OSSIA_ENABLE_SDL)
     ossia_find_sdl()
     if(SDL_LIB)
       target_link_libraries(ossia PUBLIC "${SDL_LIB}")
     endif()
   endif()
 
-  target_link_libraries(ossia PRIVATE samplerate)
-  target_link_libraries(ossia PRIVATE rubberband)
+  if(OSSIA_ENABLE_LIBSAMPLERATE)
+    target_link_libraries(ossia PRIVATE samplerate)
+  endif()
+
+  if(OSSIA_ENABLE_RUBBERBAND)
+    target_link_libraries(ossia PRIVATE rubberband)
+  endif()
 
   # FFT support
   if(OSSIA_ENABLE_KFR)
@@ -416,6 +428,9 @@ if(OSSIA_DATAFLOW)
 
     target_sources(ossia PRIVATE ${OSSIA_EXECLOG_HEADERS} ${OSSIA_EXECLOG_SRCS})
   endif()
+elseif(NOT OSSIA_SCENARIO_DATAFLOW)
+  # minimal build
+  target_sources(ossia PRIVATE ${OSSIA_EDITOR_HEADERS} ${OSSIA_EDITOR_SRCS})
 endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")

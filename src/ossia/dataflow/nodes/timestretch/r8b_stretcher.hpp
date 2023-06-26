@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 #include <ossia/dataflow/token_request.hpp>

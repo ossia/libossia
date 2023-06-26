@@ -120,12 +120,7 @@ apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>& variant) -> decltyp
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T = decltype(ossia_variant_alias::visit(visitor, variant));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 template <typename F, typename... Args>
@@ -139,12 +134,7 @@ apply_nonnull(F&& visitor, const ossia::nullable_variant<Args...>& variant)
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T = decltype(ossia_variant_alias::visit(visitor, variant));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 template <typename F, typename... Args>
@@ -157,12 +147,7 @@ apply_nonnull(F&& visitor, ossia::nullable_variant<Args...>&& variant) -> declty
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T = decltype(ossia_variant_alias::visit(visitor, std::move(variant)));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 template <typename F, typename... Args>
@@ -176,12 +161,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T = decltype(ossia_variant_alias::visit(visitor, v1, v2));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 template <typename F, typename... Args>
@@ -195,12 +175,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T = decltype(ossia_variant_alias::visit(visitor, v1, v2));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 template <typename F, typename... Args>
@@ -214,13 +189,7 @@ OSSIA_MAXIMUM_INLINE auto apply_nonnull(
   }
   else
   {
-#if defined(__cpp_exceptions)
-    throw std::runtime_error("apply_nonnull called on invalid variant");
-#else
-    using T
-        = decltype(ossia_variant_alias::visit(visitor, std::move(v1), std::move(v2)));
-    return std::decay_t<T>{};
-#endif
+    ossia_do_throw(std::runtime_error, "apply_nonnull called on invalid variant");
   }
 }
 

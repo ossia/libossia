@@ -1,4 +1,7 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_ENABLE_JACK)
 #if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 
 #include <ossia/audio/audio_engine.hpp>
@@ -333,4 +336,5 @@ private:
 };
 }
 
+#endif
 #endif

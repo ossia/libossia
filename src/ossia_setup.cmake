@@ -137,7 +137,6 @@ else()
   generate_export_header(ossia BASE_NAME OSSIA)
 endif()
 
-set(OSSIA_SCENARIO_DATAFLOW 1)
 configure_file(ossia-config.hpp.in ossia-config.hpp)
 
 target_include_directories(ossia

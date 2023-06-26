@@ -9,7 +9,7 @@ expression_not::expression_not(expression_ptr p)
     : m_expression{std::move(p)}
 {
   if(!m_expression)
-    throw std::runtime_error("An argument to expression_not is null");
+    ossia_do_throw(std::runtime_error, "An argument to expression_not is null");
 }
 
 expression_not::~expression_not()

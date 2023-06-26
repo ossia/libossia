@@ -244,6 +244,7 @@ void clock::do_set_duration(ossia::time_value duration)
 
 void clock::thread_callback()
 {
+#if defined(__cpp_exceptions)
   try
   {
     // launch the tick if the duration is valid and while it have to run
@@ -270,5 +271,6 @@ void clock::thread_callback()
   {
     logger().error("An error occurred in clock::threadCallback()");
   }
+#endif
 }
 }

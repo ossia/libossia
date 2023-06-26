@@ -7,8 +7,11 @@
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/detail/value_conversion_impl.hpp>
+
+#if defined(OSSIA_HAS_FMT)
 #include <ossia/network/value/detail/value_parse_impl.hpp>
 #include <ossia/network/value/format_value.hpp>
+#endif
 #include <ossia/network/value/value.hpp>
 #include <ossia/network/value/value_algorithms.hpp>
 #include <ossia/network/value/value_comparison.hpp>
@@ -642,7 +645,7 @@ struct lift_convert
 
   [[noreturn]] ossia::value operator()()
   {
-    throw invalid_value_type_error("lift: Invalid type");
+    ossia_do_throw(invalid_value_type_error, "lift: Invalid type");
   }
 };
 ossia::value convert(const ossia::value& val, const ossia::value& cur)

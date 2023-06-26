@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#if defined(OSSIA_HAS_FMT)
 #include <ossia/editor/state/state_element.hpp>
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
@@ -7,8 +9,8 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <string>
 #include <ostream>
+#include <string>
 
 namespace ossia
 {
@@ -53,3 +55,4 @@ struct state_print_visitor
   void operator()(const ossia::monostate&) { out << "no state\n"; }
 };
 }
+#endif

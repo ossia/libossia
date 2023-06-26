@@ -28,6 +28,7 @@ public:
 
   ~message_queue()
   {
+#if defined(__cpp_exceptions)
     try
     {
       for(auto reg : m_reg)
@@ -38,6 +39,12 @@ public:
     catch(...)
     {
     }
+#else
+    for(auto reg : m_reg)
+    {
+      reg.first->remove_callback(reg.second.second);
+    }
+#endif
   }
 
   bool try_dequeue(ossia::received_value& v) { return m_queue.try_dequeue(v); }

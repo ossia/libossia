@@ -4,6 +4,7 @@
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/rate_limiting_protocol.hpp>
 
+#if defined(__cpp_exceptions)
 namespace ossia::net
 {
 struct rate_limiter
@@ -165,3 +166,4 @@ void rate_limiting_protocol::set_device(device_base& dev)
 }
 
 }
+#endif

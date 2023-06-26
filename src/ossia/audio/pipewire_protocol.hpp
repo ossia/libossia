@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#if defined(OSSIA_ENABLE_PIPEWIRE)
 #if __has_include(<pipewire/pipewire.h>) && __has_include(<spa/param/latency-utils.h>)
 #define OSSIA_AUDIO_PIPEWIRE 1
 #include <ossia/audio/audio_engine.hpp>
@@ -804,4 +805,5 @@ public:
 };
 
 }
+#endif
 #endif

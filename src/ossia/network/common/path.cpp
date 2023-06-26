@@ -311,7 +311,9 @@ bool is_pattern(std::string_view address)
 }
 
 std::optional<path> make_path(std::string_view address)
+#if defined(__cpp_exceptions)
 try
+#endif
 {
   const auto scope = ossia::net::get_address_scope(address);
   path p{std::string(address), scope, {}};
@@ -364,10 +366,12 @@ try
 
   return p;
 }
+#if defined(__cpp_exceptions)
 catch(...)
 {
   return std::nullopt;
 }
+#endif
 
 bool match(const path& p, const ossia::net::node_base& node)
 {

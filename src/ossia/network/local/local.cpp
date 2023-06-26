@@ -112,8 +112,10 @@ void multiplex_protocol::expose_to(std::unique_ptr<protocol_base> p)
     if(!p->test_flag(SupportsMultiplex))
     {
       auto& proto = *p;
+#if defined(__cpp_rtti)
       ossia::logger().error(
           "Cannot multiplex a protocol of type: {}", typeid(proto).name());
+#endif
       return;
     }
 

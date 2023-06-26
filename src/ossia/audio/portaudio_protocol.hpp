@@ -1,8 +1,12 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
+#if defined(OSSIA_ENABLE_PORTAUDIO)
 #if __has_include(<portaudio.h>)
 #include <ossia/audio/audio_engine.hpp>
 
 #include <portaudio.h>
+
 #include <iostream>
 
 #define OSSIA_AUDIO_PORTAUDIO 1
@@ -215,4 +219,5 @@ private:
 };
 }
 
+#endif
 #endif

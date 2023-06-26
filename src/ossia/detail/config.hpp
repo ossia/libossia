@@ -45,6 +45,10 @@
 #define ossia_do_throw(E, X) throw E(X);
 #else
 #define ossia_do_throw(E, X) std::terminate();
+#undef OSSIA_HAS_FMT
+#undef OSSIA_HAS_RE2
+#undef OSSIA_HAS_CTRE
+#undef OSSIA_HAS_RAPIDFUZZ
 #endif
 
 /// Inline support ///

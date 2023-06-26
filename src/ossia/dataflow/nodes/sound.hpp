@@ -151,7 +151,7 @@ struct resampler
         break;
       }
 
-#if __has_include(<RubberBandStretcher.h>)
+#if defined(OSSIA_ENABLE_RUBBERBAND)
       case ossia::audio_stretch_mode::RubberBandStandard:
       case ossia::audio_stretch_mode::RubberBandPercussive:
       case ossia::audio_stretch_mode::RubberBandStandardHQ:
@@ -171,7 +171,7 @@ struct resampler
       }
 #endif
 
-#if __has_include(<samplerate.h>)
+#if defined(OSSIA_ENABLE_LIBSAMPLERATE)
       case ossia::audio_stretch_mode::Repitch: {
         if(auto s = ossia::get_if<RepitchStretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
@@ -210,11 +210,11 @@ struct resampler
 private:
   ossia::variant<
       raw_stretcher
-#if __has_include(<RubberBandStretcher.h>)
+#if defined(OSSIA_ENABLE_RUBBERBAND)
       ,
       rubberband_stretcher
 #endif
-#if __has_include(<samplerate.h>)
+#if defined(OSSIA_ENABLE_LIBSAMPLERATE)
       ,
       repitch_stretcher
 #endif

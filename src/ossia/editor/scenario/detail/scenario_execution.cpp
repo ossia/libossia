@@ -75,7 +75,8 @@ void scenario::make_dispose(time_event& event, interval_set& stopped)
 {
   if(event.m_status == time_event::status::HAPPENED)
   {
-    throw execution_error(
+    ossia_do_throw(
+        execution_error,
         "time_event::dispose: "
         "HAPPENED event cannot be disposed");
     return;

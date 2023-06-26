@@ -12,7 +12,7 @@ expression_atom::expression_atom(const value& lhs, comparator op, const value& r
     , m_operator(op)
 {
   if(!lhs.valid() || !rhs.valid())
-    throw std::runtime_error("expression_atom created with invalid values");
+    ossia_do_throw(std::runtime_error, "expression_atom created with invalid values");
 }
 
 expression_atom::expression_atom(const destination& lhs, comparator op, const value& rhs)
@@ -21,7 +21,7 @@ expression_atom::expression_atom(const destination& lhs, comparator op, const va
     , m_operator(op)
 {
   if(!rhs.valid())
-    throw std::runtime_error("expression_atom created with invalid values");
+    ossia_do_throw(std::runtime_error, "expression_atom created with invalid values");
 }
 
 expression_atom::expression_atom(const value& lhs, comparator op, const destination& rhs)
@@ -30,7 +30,7 @@ expression_atom::expression_atom(const value& lhs, comparator op, const destinat
     , m_operator(op)
 {
   if(!lhs.valid())
-    throw std::runtime_error("expression_atom created with invalid values");
+    ossia_do_throw(std::runtime_error, "expression_atom created with invalid values");
 }
 
 expression_atom::expression_atom(

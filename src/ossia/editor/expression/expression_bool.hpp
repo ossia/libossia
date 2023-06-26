@@ -26,8 +26,8 @@ public:
 
   ~expression_bool();
 
-  bool evaluate() const { return m_result; }
-  void update() const { }
-  void reset() const { }
+  bool evaluate() const noexcept { return m_result; }
+  void update() const noexcept { }
+  void reset() const noexcept { }
 };
 }

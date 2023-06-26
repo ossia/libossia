@@ -18,6 +18,7 @@ struct network_context
         = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
 
     work_guard wg{context.get_executor()};
+#if defined(__cpp_exceptions)
     try
     {
       context.run();
@@ -30,6 +31,9 @@ struct network_context
     {
       ossia::logger().error("Error while processing network events.");
     }
+#else
+    context.run();
+#endif
   }
 };
 using network_context_ptr = std::shared_ptr<network_context>;

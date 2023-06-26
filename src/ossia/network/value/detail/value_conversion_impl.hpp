@@ -467,7 +467,7 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
       break;
   }
 
-  throw invalid_value_type_error("lift: Invalid type");
+  ossia_do_throw(invalid_value_type_error, "lift: Invalid type");
   return decltype(f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
 }
 }
