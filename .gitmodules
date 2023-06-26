@@ -1,9 +1,6 @@
 [submodule "CMake/cmake-modules"]
 	path = cmake/cmake-modules
     url = https://github.com/OSSIA/cmake-modules
-[submodule "3rdparty/mparkvariant"]
-	path = 3rdparty/mparkvariant
-	url = https://github.com/mpark/variant
 [submodule "3rdparty/oscpack"]
     path = 3rdparty/oscpack
     url = https://github.com/jcelerier/oscpack

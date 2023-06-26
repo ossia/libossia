@@ -139,13 +139,6 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/libremidi"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/mparkvariant/include/"
-        DESTINATION include
-        COMPONENT Devel
-        MESSAGE_NEVER
-        ${3RDPARTY_INSTALL_PATTERN}
-)
-
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/"
         DESTINATION include
         COMPONENT Devel

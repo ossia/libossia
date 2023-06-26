@@ -18,7 +18,6 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       span
       spdlog
       unordered_dense
-      mparkvariant
       verdigris
       weakjack
       websocketpp
