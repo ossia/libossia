@@ -227,7 +227,7 @@ struct pipewire_context
 
   int sync{};
 
-  static const inline libpipewire& pw = libpipewire::instance();
+  const libpipewire& pw = libpipewire::instance();
   explicit pipewire_context()
   {
     /// Initialize the PipeWire main loop, context, etc.
@@ -311,7 +311,7 @@ struct pipewire_context
           self.port_listener, [&](const listened_port& l) { return l.id == id; });
       if(it != self.port_listener.end())
       {
-        pw.proxy_destroy((pw_proxy*)it->port);
+        libpipewire::instance().proxy_destroy((pw_proxy*)it->port);
         self.port_listener.erase(it);
       }
         },
@@ -344,7 +344,7 @@ struct pipewire_context
               if(id == PW_ID_CORE && seq == self.pending)
               {
                 self.done = 1;
-                pw.main_loop_quit(self.main_loop);
+                libpipewire::instance().main_loop_quit(self.main_loop);
               }
             },
     };
