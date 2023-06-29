@@ -67,6 +67,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
+include(deps/boost)
 include(deps/ctre)
 include(deps/exprtk)
 include(deps/fmt)
