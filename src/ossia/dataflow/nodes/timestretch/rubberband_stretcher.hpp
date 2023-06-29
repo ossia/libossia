@@ -2,18 +2,20 @@
 #include <ossia/detail/config.hpp>
 
 #if defined(OSSIA_ENABLE_RUBBERBAND)
-#if __has_include(<RubberBandStretcher.h>)
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 #include <ossia/dataflow/token_request.hpp>
 
+#if __has_include(<RubberBandStretcher.h>)
 #include <RubberBandStretcher.h>
+#elif __has_include(<rubberband/RubberBandStretcher.h>)
+#include <rubberband/RubberBandStretcher.h>
+#endif
 
 namespace ossia
 {
-#if __has_include(<RubberBandStretcher.h>)
 static constexpr auto get_rubberband_preset(ossia::audio_stretch_mode mode)
 {
   using opt_t = RubberBand::RubberBandStretcher::Option;
@@ -45,7 +47,6 @@ static constexpr auto get_rubberband_preset(ossia::audio_stretch_mode mode)
 
   return preset;
 }
-#endif
 
 struct rubberband_stretcher
 {
@@ -127,15 +128,6 @@ struct rubberband_stretcher
   }
 };
 }
-
-#else
-#include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
-
-namespace ossia
-{
-using rubberband_stretcher = raw_stretcher;
-}
-#endif
 #else
 #include <ossia/dataflow/nodes/timestretch/raw_stretcher.hpp>
 

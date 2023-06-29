@@ -153,13 +153,44 @@ target_include_directories(ossia
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
+if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
+  target_include_directories(ossia SYSTEM
+    PUBLIC
+    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
+    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
+    $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
+  )
+else()
+  if(TARGET spdlog)
+    target_link_libraries(ossia PUBLIC spdlog)
+  else()
+    target_include_directories(ossia SYSTEM
+      PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
+    )
+  endif()
+  if(TARGET fmt)
+    target_link_libraries(ossia PUBLIC fmt)
+  else()
+    target_include_directories(ossia SYSTEM
+      PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
+    )
+  endif()
+  if(TARGET rapidjson)
+    target_link_libraries(ossia PUBLIC rapidjson)
+  else()
+    target_include_directories(ossia SYSTEM
+      PUBLIC
+      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
+    )
+  endif()
+endif()
+
 target_include_directories(ossia SYSTEM
   PUBLIC
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/brigand/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
@@ -172,7 +203,6 @@ target_include_directories(ossia SYSTEM
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/PerlinNoise>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
 

@@ -21,6 +21,12 @@ option(OSSIA_ENABLE_PIPEWIRE "Use PortAudio if available" ON)
 option(OSSIA_ENABLE_RUBBERBAND "Use RubberBand" ON)
 option(OSSIA_ENABLE_LIBSAMPLERATE "Use libsamplerate" ON)
 option(OSSIA_ENABLE_SDL "Use SDL if available" ON)
+option(OSSIA_USE_SYSTEM_LIBRARIES "Use system versions of the third-party libraries if possible")
+option(OSSIA_ENABLE_FFT "Enable FFT support" OFF)
+option(OSSIA_ENABLE_FFTW "Enable FFT through FFTW" OFF)
+option(OSSIA_ENABLE_KFR "Enable KFR library" OFF)
+option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
+option(OSSIA_DNSSD "Enable DNSSD support" ON)
 
 # Bindings :
 option(OSSIA_JAVA "Build JNI bindings" OFF)
@@ -71,10 +77,6 @@ else()
   set(OSSIA_COMPILER_IS_NOT_CLANG 1)
 endif()
 
-option(OSSIA_ENABLE_FFT "Enable FFT support" OFF)
-option(OSSIA_ENABLE_FFTW "Enable FFT through FFTW" OFF)
-option(OSSIA_ENABLE_KFR "Enable KFR library" OFF)
-
 # List of all the available protocols
 set(OSSIA_AVAILABLE_PROTOCOLS
   AUDIO MIDI
@@ -88,8 +90,6 @@ set(OSSIA_AVAILABLE_PROTOCOLS
   LIBMAPPER
 )
 
-option(OSSIA_DISABLE_QT_PLUGIN "Disable building of a Qt plugin" OFF)
-option(OSSIA_DNSSD "Enable DNSSD support" ON)
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/cmake/cmake-modules;")
 set(OSSIA_SUBMODULE_AUTOUPDATE ON CACHE BOOL "Auto update submodule")
 
