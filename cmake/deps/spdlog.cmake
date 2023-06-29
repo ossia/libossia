@@ -1,0 +1,11 @@
+if(OSSIA_USE_SYSTEM_LIBRARIES)
+  if(NOT OSSIA_FMT_INTERNAL)
+    find_package(spdlog CONFIG REQUIRED GLOBAL)
+  endif()
+endif()
+
+if(NOT TARGET spdlog::spdlog)
+  add_library(spdlog INTERFACE IMPORTED)
+  add_library(spdlog::spdlog ALIAS spdlog)
+  target_include_directories(spdlog INTERFACE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>")
+endif()

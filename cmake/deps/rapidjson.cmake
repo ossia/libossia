@@ -1,0 +1,3 @@
+if(OSSIA_USE_SYSTEM_LIBRARIES)
+  find_package(RapidJSON 1.2 CONFIG GLOBAL)
+endif()

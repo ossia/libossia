@@ -1,7 +1,7 @@
 if(TARGET Boost::boost)
-  target_link_libraries(ossia PUBLIC Boost::boost)
+  target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:Boost::boost>)
 elseif(TARGET boost)
-  target_link_libraries(ossia PUBLIC boost)
+  target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:boost>)
 endif()
 
 ### Core language features ###
@@ -14,11 +14,6 @@ int main(){ std::shared_mutex t; }
 ]=]
     OSSIA_SHARED_MUTEX_AVAILABLE
 )
-
-set(OSSIA_HAS_CTRE 1 CACHE INTERNAL "")
-set(OSSIA_HAS_FMT 1 CACHE INTERNAL "")
-set(OSSIA_HAS_RE2 1 CACHE INTERNAL "")
-set(OSSIA_HAS_RAPIDFUZZ 1 CACHE INTERNAL "")
 
 ### Protocol setup ###
 if(IOS OR CMAKE_SYSTEM_NAME MATCHES Emscripten)
@@ -52,65 +47,21 @@ if(NOT OSSIA_DATAFLOW)
   set(OSSIA_EDITOR OFF)
 endif()
 
-function(ossia_link_jack)
-  find_path(Jack_INCLUDE_DIR
-    NAMES jack/jack.h
-    HINTS
-      ${CMAKE_CURRENT_SOURCE_DIR}
-      /opt/cross-pi-gcc/usr/include/
-      "${OSSIA_SDK}/jack/include"
-      )
-  if(Jack_INCLUDE_DIR)
-    target_include_directories(ossia SYSTEM PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/weakjack>)
-    target_include_directories(ossia SYSTEM PUBLIC $<BUILD_INTERFACE:${Jack_INCLUDE_DIR}>)
-    target_link_libraries(ossia PUBLIC ${CMAKE_DL_LIBS})
-  endif()
-endfunction()
-
-function(ossia_find_sdl)
-  if(NOT OSSIA_ENABLE_SDL)
-    unset(SDL_LIB PARENT_SCOPE)
-    return()
-  endif()
-
-  if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
-    target_compile_options(ossia PRIVATE -s USE_SDL=2)
-    add_link_options("SHELL:-s USE_SDL=2")
-    return()
-  endif()
-
-  if(SDL_LIB)
-    return()
-  endif()
-
-  find_package(SDL2 CONFIG)
-  if(TARGET SDL2::SDL2)
-    set(SDL_LIB SDL2::SDL2 PARENT_SCOPE)
-  elseif(TARGET SDL2::SDL2-static)
-    set(SDL_LIB SDL2::SDL2-static PARENT_SCOPE)
-  elseif(SDL2_LIBRARIES AND SDL2_INCLUDE_DIRS)
-    set(SDL_LIB "${SDL2_LIBRARIES}" PARENT_SCOPE)
-    target_include_directories(ossia PUBLIC "${SDL2_INCLUDE_DIRS}")
-  endif()
-endfunction()
-
 # This one is put first because it is *long* to build
 # so we want to parallelize it with the rest
 if(OSSIA_MATH_EXPRESSION)
   target_sources(ossia PRIVATE ${OSSIA_EXPR_HEADERS} ${OSSIA_EXPR_SRCS})
-
-  if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
-  target_include_directories(ossia PRIVATE "$<BUILD_INTERFACE:${EXPRTK_INCLUDE_DIR}>")
-  endif()
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:exprtk::exprtk>)
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
-  target_link_libraries(ossia PRIVATE libremidi)
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:libremidi>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 
-  ossia_link_jack()
+  if(OSSIA_ENABLE_JACK)
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:jack::jack>)
+  endif()
 endif()
 
 if(OSSIA_PROTOCOL_OSC)
@@ -165,78 +116,47 @@ if(OSSIA_PROTOCOL_SERIAL)
 endif()
 
 if(OSSIA_PROTOCOL_PHIDGETS)
-  find_package(Phidgets)
-
-  if(NOT "${LIBPHIDGETS_FOUND}")
-    set(OSSIA_PROTOCOL_PHIDGETS FALSE CACHE INTERNAL "")
-  endif()
-
+  target_sources(ossia PRIVATE ${OSSIA_PHIDGETS_HEADERS} ${OSSIA_PHIDGETS_SRCS})
+  target_include_directories(ossia PUBLIC ${LIBPHIDGETS_INCLUDE_DIR})
+  target_link_libraries(ossia PUBLIC ${LIBPHIDGETS_LIBRARIES} ${CMAKE_DL_LIBS})
   if(UNIX AND NOT APPLE)
-    find_package(USB)
-    if(NOT "${LIBUSB_FOUND}")
-      set(OSSIA_PROTOCOL_PHIDGETS FALSE CACHE INTERNAL "")
-    endif()
+      target_link_libraries(ossia PUBLIC ${LIBUSB_LIBRARIES})
+  elseif(APPLE)
+      target_link_libraries(ossia PUBLIC "-framework Phidget22")
   endif()
-
-  if(OSSIA_PROTOCOL_PHIDGETS)
-    target_sources(ossia PRIVATE ${OSSIA_PHIDGETS_HEADERS} ${OSSIA_PHIDGETS_SRCS})
-    target_include_directories(ossia PUBLIC ${LIBPHIDGETS_INCLUDE_DIR})
-    target_link_libraries(ossia PUBLIC ${LIBPHIDGETS_LIBRARIES} ${CMAKE_DL_LIBS})
-    if(UNIX AND NOT APPLE)
-        target_link_libraries(ossia PUBLIC ${LIBUSB_LIBRARIES})
-    elseif(APPLE)
-        target_link_libraries(ossia PUBLIC "-framework Phidget22")
-    endif()
-    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Phidgets)
-  endif()
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Phidgets)
 endif()
 
 if(OSSIA_PROTOCOL_LEAPMOTION)
-  find_package(LeapMotion)
-  if(LeapMotion_FOUND)
-    target_sources(ossia PRIVATE ${OSSIA_LEAPMOTION_HEADERS} ${OSSIA_LEAPMOTION_SRCS})
-    target_link_libraries(ossia PUBLIC LeapMotion)
-    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} LeapMotion)
-  else()
-    set(OSSIA_PROTOCOL_LEAPMOTION FALSE CACHE INTERNAL "")
-  endif()
+  target_sources(ossia PRIVATE ${OSSIA_LEAPMOTION_HEADERS} ${OSSIA_LEAPMOTION_SRCS})
+  target_link_libraries(ossia PUBLIC LeapMotion)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} LeapMotion)
 endif()
 
 if(OSSIA_PROTOCOL_JOYSTICK)
-  ossia_find_sdl()
-
-  if(SDL_LIB)
-    target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
-    target_link_libraries(ossia PRIVATE $<LINK_ONLY:${SDL_LIB}>)
-    set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
-  else()
-    set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL FORCE)
-  endif()
+  target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
+  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Joystick)
 endif()
 
 if(OSSIA_PROTOCOL_WIIMOTE)
   target_sources(ossia PRIVATE ${OSSIA_WIIMOTE_SRCS} ${OSSIA_WIIMOTE_HEADERS})
-  if(OSSIA_USE_SYSTEM_LIBRARIES)
-    target_link_libraries(ossia PRIVATE wiiuse)
-  else()
+  if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
     target_include_directories(ossia PRIVATE "${WIIUSE_DIR}/src")
-    target_link_libraries(ossia PRIVATE $<LINK_ONLY:wiiuse>)
   endif()
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:wiiuse>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Wiimote)
 endif()
 
 if (OSSIA_PROTOCOL_ARTNET)
-  set(LIBARTNET_INSTALL "${OSSIA_INSTALL_STATIC_DEPENDENCIES}" CACHE INTERNAL "" FORCE)
-  set(LIBARTNET_DIR "${OSSIA_3RDPARTY_FOLDER}/libartnet")
-  add_subdirectory("${LIBARTNET_DIR}" libartnet)
   target_sources(ossia PRIVATE ${OSSIA_ARTNET_SRCS} ${OSSIA_ARTNET_HEADERS})
-  target_link_libraries(ossia PRIVATE $<LINK_ONLY:artnet>)
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:artnet>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} artnet)
 endif()
 
 if (OSSIA_PROTOCOL_LIBMAPPER)
     target_sources(ossia PRIVATE ${OSSIA_LIBMAPPER_SRCS} ${OSSIA_LIBMAPPER_HEADERS})
-    target_link_libraries(ossia PRIVATE $<LINK_ONLY:mapper>)
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:mapper>)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} libmapper)
 endif()
 
@@ -295,7 +215,7 @@ if(OSSIA_QT)
 endif()
 
 if(OSSIA_DNSSD)
-  target_link_libraries(ossia PUBLIC Servus_iface)
+  target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:Servus_iface>)
 endif()
 
 if(OSSIA_DATAFLOW)
@@ -311,100 +231,44 @@ if(OSSIA_DATAFLOW)
 
   # JACK support
   if(OSSIA_ENABLE_JACK)
-    ossia_link_jack()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:jack::jack>)
   endif()
 
   # PortAudio support
   if(OSSIA_ENABLE_PORTAUDIO)
-    if(TARGET PortAudio::PortAudio)
-      target_link_libraries(ossia PUBLIC PortAudio::PortAudio)
-    elseif(TARGET portaudio)
-      target_link_libraries(ossia PUBLIC portaudio)
-    elseif(TARGET portaudio_static)
-      target_link_libraries(ossia PUBLIC portaudio_static)
-    else()
-      find_library(PORTAUDIO_LIBRARY NAMES libportaudio.so portaudio)
-      if(PORTAUDIO_LIBRARY)
-        target_link_libraries(ossia PUBLIC "${PORTAUDIO_LIBRARY}")
-      endif()
-    endif()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:PortAudio::PortAudio>)
   endif()
 
   # PipeWire
   if(OSSIA_ENABLE_PIPEWIRE)
-    find_path(PIPEWIRE_INCLUDEDIR pipewire-0.3/pipewire/filter.h)
-    find_path(SPA_INCLUDEDIR spa-0.2/spa/param/latency-utils.h)
-
-    if(PIPEWIRE_INCLUDEDIR AND SPA_INCLUDEDIR)
-      set(PIPEWIRE_INCLUDEDIR "${PIPEWIRE_INCLUDEDIR}/pipewire-0.3")
-      set(SPA_INCLUDEDIR "${SPA_INCLUDEDIR}/spa-0.2")
-      target_include_directories(ossia SYSTEM PUBLIC
-        "$<BUILD_INTERFACE:${PIPEWIRE_INCLUDEDIR}>"
-        "$<BUILD_INTERFACE:${SPA_INCLUDEDIR}>"
-      )
-    endif()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:pipewire::pipewire>)
   endif()
 
   #SDL support
-  set(SDL_BUILDING_LIBRARY TRUE)
   if(OSSIA_ENABLE_SDL)
-    ossia_find_sdl()
-    if(SDL_LIB)
-      target_link_libraries(ossia PUBLIC "${SDL_LIB}")
-    endif()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
   endif()
 
   if(OSSIA_ENABLE_LIBSAMPLERATE)
-    if(TARGET SampleRate::samplerate)
-      target_link_libraries(ossia PRIVATE SampleRate::samplerate)
-    elseif(TARGET samplerate)
-      target_link_libraries(ossia PRIVATE samplerate)
-    endif()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:SampleRate::samplerate>)
   endif()
 
   if(OSSIA_ENABLE_RUBBERBAND)
-    if(TARGET rubberband)
-      target_link_libraries(ossia PRIVATE rubberband)
-    endif()
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:rubberband>)
   endif()
 
   # FFT support
   if(OSSIA_ENABLE_FFT)
     if(OSSIA_ENABLE_FFTW)
-      find_path(FFTW3_INCLUDEDIR fftw3.h)
-      if(FFTW3_INCLUDEDIR)
-        find_library(FFTW3_LIBRARY fftw3)
-        find_library(FFTW3F_LIBRARY fftw3f)
-        if(FFTW3_LIBRARY)
-          set(OSSIA_FFT FFTW_DOUBLE CACHE INTERNAL "")
-          set(OSSIA_FFT_FFTW 1 CACHE INTERNAL "")
-          set(OSSIA_FFTW_DOUBLE_ONLY 1 CACHE INTERNAL "")
-
-          target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
-          target_link_libraries(ossia PRIVATE ${FFTW3_LIBRARY})
-        elseif(FFTW3F_LIBRARY)
-          set(OSSIA_FFT FFTW_SINGLE CACHE INTERNAL "")
-          set(OSSIA_FFT_FFTW 1 CACHE INTERNAL "")
-          set(OSSIA_FFTW_SINGLE_ONLY 1 CACHE INTERNAL "")
-
-          target_include_directories(ossia PUBLIC ${FFTW3_INCLUDEDIR})
-          target_link_libraries(ossia PRIVATE ${FFTW3F_LIBRARY})
-        endif()
-      endif()
-    elseif(OSSIA_ENABLE_KFR AND ENABLE_DFT) # defined in kfr/CMakeLists.txt
-      set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
-      set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
       target_link_libraries(ossia PRIVATE
-        "$<BUILD_INTERFACE:kfr>"
-        "$<BUILD_INTERFACE:kfr_dft>"
-        )
+        $<BUILD_INTERFACE:fftw::fftw3>
+      )
+    elseif(OSSIA_ENABLE_KFR AND ENABLE_DFT) # defined in kfr/CMakeLists.txt
+      target_link_libraries(ossia PRIVATE
+        $<BUILD_INTERFACE:kfr>
+        $<BUILD_INTERFACE:kfr_dft>
+      )
     endif()
-
-    if(NOT OSSIA_FFT_FFTW AND NOT OSSIA_FFT_KFR)
-      set(OSSIA_FFT NAIVE CACHE INTERNAL "")
-      set(OSSIA_FFT_NAIVE 1 CACHE INTERNAL "")
-    endif()
-
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
   endif()
 

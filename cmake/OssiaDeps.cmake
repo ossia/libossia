@@ -67,161 +67,83 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
-set(BOOST_MINOR_MINIMAL 81)
-set(BOOST_MINOR_LATEST 82)
-
-find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET GLOBAL)
-
-if (NOT Boost_FOUND)
-  set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
-  set(BOOST_VERSION "boost_1_${BOOST_MINOR_LATEST}_0" CACHE INTERNAL "")
-
-  if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
-    message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk28/${BOOST_VERSION}.tar.gz)
-    set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
-
-    file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
-
-    execute_process(
-      COMMAND "${CMAKE_COMMAND}" -E tar xzf "${BOOST_ARCHIVE}"
-      WORKING_DIRECTORY "${OSSIA_3RDPARTY_FOLDER}"
-    )
-  endif()
-  set(BOOST_ROOT "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}" CACHE INTERNAL "")
-  set(Boost_INCLUDE_DIR "${BOOST_ROOT}")
-  find_package(Boost 1.${BOOST_MINOR_LATEST} REQUIRED GLOBAL)
-endif()
-
-add_library(boost INTERFACE IMPORTED)
-set_property(TARGET boost PROPERTY
-             INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
-
-if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(ctre 3.7 CONFIG GLOBAL)
-  find_package(rapidfuzz CONFIG REQUIRED GLOBAL)
-  find_package(RapidJSON 1.2 CONFIG GLOBAL)
-
-  find_package(fmt 10 CONFIG GLOBAL)
-  if(TARGET fmt::fmt)
-    find_package(spdlog CONFIG REQUIRED GLOBAL)
-  endif()
-
-  # Re2
-  find_library(RE2_LIBRARY NAMES re2)
-  find_path(RE2_INCLUDE_DIR re2/re2.h)
-
-  if(NOT RE2_LIBRARY OR NOT RE2_INCLUDE_DIR)
-    message(FATAL_ERROR "re2 is required")
-  endif()
-  add_library(re2 INTERFACE IMPORTED)
-  target_include_directories(re2 INTERFACE ${RE2_INCLUDE_DIR})
-  target_link_libraries(re2 INTERFACE ${RE2_LIBRARY})
-
-  # KFR
-  if(OSSIA_ENABLE_KFR)
-    find_library(KFR_LIBRARY NAMES kfr_dft)
-    find_path(KFR_INCLUDE_DIR kfr/version.hpp)
-
-    if(KFR_LIBRARY AND KFR_INCLUDE_DIR)
-      add_library(kfr INTERFACE IMPORTED)
-      add_library(kfr_dft ALIAS kfr)
-      target_include_directories(kfr INTERFACE ${KFR_INCLUDE_DIR})
-      target_link_libraries(kfr INTERFACE ${KFR_LIBRARY})
-    endif()
-  endif()
-
-  # ExprTK
-  find_path(EXPRTK_INCLUDE_DIR exprtk.hpp)
-else()
-  include(re2)
-endif()
-
-if(OSSIA_ENABLE_KFR)
-  if(NOT TARGET kfr)
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
-  endif()
-endif()
-
-if(NOT TARGET ctre::ctre)
-  add_library(ctre INTERFACE IMPORTED)
-  add_library(ctre::ctre ALIAS ctre)
-  target_include_directories(ctre INTERFACE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>")
-endif()
-
-if(NOT TARGET fmt::fmt)
-  if(NOT TARGET fmt)
-    add_definitions(-DFMT_HEADER_ONLY=1)
-  endif()
-endif()
-
-if(NOT TARGET rapidfuzz::rapidfuzz)
-  add_library(rapidfuzz INTERFACE IMPORTED)
-  add_library(rapidfuzz::rapidfuzz ALIAS rapidfuzz)
-  target_include_directories(rapidfuzz INTERFACE "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
-endif()
-
-if(NOT EXPRTK_INCLUDE_DIR)
-  set(EXPRTK_INCLUDE_DIR "${OSSIA_3RDPARTY_FOLDER}/exprtk")
-endif()
-
-if(OSSIA_PROTOCOL_MIDI)
-  set(LIBREMIDI_EXAMPLES OFF CACHE "" INTERNAL)
-  set(LIBREMIDI_TESTS OFF CACHE "" INTERNAL)
-  if(EMSCRIPTEN)
-    set(LIBREMIDI_HEADER_ONLY ON CACHE "" INTERNAL)
-  else()
-    set(LIBREMIDI_HEADER_ONLY OFF CACHE "" INTERNAL)
-  endif()
-  set(WEAKJACK_FOLDER "${OSSIA_3RDPARTY_FOLDER}")
-  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libremidi" EXCLUDE_FROM_ALL)
-endif()
+include(deps/ctre)
+include(deps/exprtk)
+include(deps/fmt)
+include(deps/libremidi)
+include(deps/portaudio)
+include(deps/rapidfuzz)
+include(deps/rapidjson)
+include(deps/re2)
+include(deps/spdlog)
 
 if(OSSIA_DATAFLOW)
-  if(OSSIA_USE_SYSTEM_LIBRARIES)
-    find_package(SampleRate CONFIG REQUIRED GLOBAL)
-
-    # RubberBand
-    find_library(RUBBERBAND_LIBRARY NAMES rubberband)
-    find_path(RUBBERBAND_INCLUDE_DIR rubberband/RubberBandStretcher.h)
-
-    if(RUBBERBAND_LIBRARY AND RUBBERBAND_INCLUDE_DIR)
-      add_library(rubberband INTERFACE)
-      target_include_directories(rubberband INTERFACE ${RUBBERBAND_INCLUDE_DIR})
-      target_link_libraries(rubberband INTERFACE ${RUBBERBAND_LIBRARY})
+  if(OSSIA_ENABLE_LIBSAMPLERATE)
+    include(deps/samplerate) # comes before as rubberband depends on it
+    if(NOT TARGET SampleRate::samplerate)
+      set(OSSIA_ENABLE_SAMPLERATE FALSE CACHE INTERNAL "" FORCE)
     endif()
-  else()
-    set(_oldmode ${BUILD_SHARED_LIBS})
-    set(BUILD_SHARED_LIBS 0)
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libsamplerate" EXCLUDE_FROM_ALL)
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/rubberband" EXCLUDE_FROM_ALL)
-    set(BUILD_SHARED_LIBS ${_oldmode})
+  endif()
+
+  if(OSSIA_ENABLE_RUBBERBAND)
+    include(deps/rubberband)
+    if(NOT TARGET rubberband)
+      set(OSSIA_ENABLE_RUBBERBAND FALSE CACHE INTERNAL "" FORCE)
+    endif()
+  endif()
+endif()
+
+if(OSSIA_PROTOCOL_ARTNET)
+  include(deps/libartnet)
+
+  if(NOT TARGET artnet)
+    set(OSSIA_PROTOCOL_ARTNET FALSE CACHE INTERNAL "" FORCE)
   endif()
 endif()
 
 if(OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
-  add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
+  include(deps/oscpack)
 endif()
 
 if(OSSIA_DNSSD)
-  add_subdirectory(3rdparty/Servus EXCLUDE_FROM_ALL)
+  include(deps/servus)
+endif()
+
+if(OSSIA_ENABLE_JACK)
+  include(deps/jack)
+
+  if(NOT TARGET jack::jack)
+    set(OSSIA_ENABLE_JACK FALSE CACHE INTERNAL "" FORCE)
+  endif()
+endif()
+
+if(OSSIA_ENABLE_PORTAUDIO)
+  include(deps/portaudio)
+
+  if(NOT TARGET PortAudio::PortAudio)
+    set(OSSIA_ENABLE_PORTAUDIO FALSE CACHE INTERNAL "" FORCE)
+  endif()
+endif()
+
+if(OSSIA_ENABLE_PIPEWIRE)
+  include(deps/pipewire)
+
+  if(NOT TARGET pipewire::pipewire)
+    set(OSSIA_ENABLE_PIPEWIRE FALSE CACHE INTERNAL "" FORCE)
+  endif()
+endif()
+
+if(OSSIA_ENABLE_SDL)
+  include(deps/sdl)
+
+  if(NOT TARGET ossia::sdl2)
+    set(OSSIA_ENABLE_SDL FALSE CACHE "" INTERNAL FORCE)
+    set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL FORCE)
+  endif()
 endif()
 
 if(OSSIA_PROTOCOL_WIIMOTE)
-  if(OSSIA_USE_SYSTEM_LIBRARIES)
-    find_library(WIIUSE_LIBRARY NAMES wiiuse)
-    find_path(WIIUSE_INCLUDE_DIR wiiuse.h)
-
-    if(WIIUSE_LIBRARY AND WIIUSE_INCLUDE_DIR)
-      add_library(wiiuse INTERFACE)
-      target_include_directories(wiiuse INTERFACE ${WIIUSE_INCLUDE_DIR})
-      target_link_libraries(wiiuse INTERFACE ${WIIUSE_LIBRARY})
-    endif()
-  else()
-    set(WIIUSE_INSTALL_RULES "${OSSIA_INSTALL_STATIC_DEPENDENCIES}" CACHE INTERNAL "" FORCE)
-    set(WIIUSE_DIR "${OSSIA_3RDPARTY_FOLDER}/wiiuse")
-    add_subdirectory("${WIIUSE_DIR}" wiiuse)
-  endif()
+  include(deps/wiiuse)
 
   if(NOT TARGET wiiuse)
     set(OSSIA_PROTOCOL_WIIMOTE FALSE CACHE INTERNAL "" FORCE)
@@ -230,19 +152,34 @@ endif()
 
 if(OSSIA_PROTOCOL_LIBMAPPER)
   find_package(Libmapper REQUIRED)
-endif()
 
-if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
-  find_package(PortAudio QUIET)
-  if(NOT PortAudio_FOUND)
-    find_package(portaudio QUIET)
+  if(NOT TARGET Libmapper)
+    set(OSSIA_PROTOCOL_LIBMAPPER FALSE CACHE INTERNAL "" FORCE)
   endif()
 endif()
 
-
-if(MSVC)
-  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
-  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+if(OSSIA_PROTOCOL_LEAPMOTION)
+  include(deps/leapmotion)
 endif()
 
+if(OSSIA_ENABLE_FFT)
+  if(OSSIA_ENABLE_FFTW)
+    include(deps/fftw)
 
+    if(NOT TARGET fftw::fftw3)
+      set(OSSIA_ENABLE_FFTW FALSE CACHE INTERNAL "" FORCE)
+    endif()
+
+  elseif(OSSIA_ENABLE_KFR)
+    include(deps/kfr)
+
+    if(NOT TARGET kfr)
+      set(OSSIA_ENABLE_KFR FALSE CACHE INTERNAL "" FORCE)
+    endif()
+  endif()
+
+  if(NOT OSSIA_ENABLE_FFTW AND NOT TARGET kfr_dft)
+    set(OSSIA_FFT NAIVE CACHE INTERNAL "")
+    set(OSSIA_FFT_NAIVE 1 CACHE INTERNAL "")
+  endif()
+endif()

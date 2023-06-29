@@ -1,0 +1,1 @@
+add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)

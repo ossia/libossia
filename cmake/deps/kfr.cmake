@@ -1,0 +1,27 @@
+if(OSSIA_USE_SYSTEM_LIBRARIES)
+  # KFR
+  if(OSSIA_ENABLE_KFR)
+    find_library(KFR_LIBRARY NAMES kfr_dft)
+    find_path(KFR_INCLUDE_DIR kfr/version.hpp)
+
+    if(KFR_LIBRARY AND KFR_INCLUDE_DIR)
+      add_library(kfr INTERFACE IMPORTED GLOBAL)
+      target_include_directories(kfr INTERFACE ${KFR_INCLUDE_DIR})
+      target_link_libraries(kfr INTERFACE ${KFR_LIBRARY})
+      set(ENABLE_DFT 0 CACHE INTERNAL "")
+    endif()
+  endif()
+endif()
+
+if(OSSIA_ENABLE_KFR)
+  if(NOT TARGET kfr)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
+  endif()
+endif()
+
+if(ENABLE_DFT)
+  set(OSSIA_FFT KFR_DOUBLE CACHE INTERNAL "")
+  set(OSSIA_FFT_KFR 1 CACHE INTERNAL "")
+else()
+  set(OSSIA_FFT_KFR 0 CACHE INTERNAL "")
+endif()

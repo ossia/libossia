@@ -1,0 +1,11 @@
+if(OSSIA_USE_SYSTEM_LIBRARIES)
+  find_package(SampleRate CONFIG REQUIRED GLOBAL)
+endif()
+
+if(NOT TARGET SampleRate::samplerate)
+  set(_oldmode ${BUILD_SHARED_LIBS})
+  set(BUILD_SHARED_LIBS 0)
+  add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libsamplerate" EXCLUDE_FROM_ALL)
+  add_library(SampleRate::samplerate ALIAS samplerate)
+  set(BUILD_SHARED_LIBS ${_oldmode})
+endif()

@@ -17,6 +17,13 @@ target_compile_definitions(ossia
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
 
+if(Boost_VERSION VERSION_LESS 1.81)
+  target_compile_definitions(ossia
+    PUBLIC
+      BOOST_ASIO_DISABLE_CONCEPTS=1
+  )
+endif()
+
 # Workaround for boost being broken with clang 13 (at least until 1.77)
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 13.0)
@@ -83,7 +90,6 @@ endif()
 set(THREADS_PREFER_PTHREAD_FLAG)
 find_package(Threads REQUIRED)
 target_link_libraries(ossia PUBLIC Threads::Threads)
-target_link_libraries(ossia PRIVATE $<LINK_ONLY:re2>)
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})
@@ -162,38 +168,9 @@ if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
       $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
   )
 else()
-  if(TARGET ctre::ctre)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:ctre::ctre>)
-  elseif(TARGET ctre)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:ctre>)
-  else()
-    target_include_directories(ossia SYSTEM
-      PUBLIC
-        $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
-    )
-  endif()
-
-  if(TARGET spdlog::spdlog)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:spdlog::spdlog>)
-  elseif(TARGET spdlog)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:spdlog>)
-  else()
-    target_include_directories(ossia SYSTEM
-      PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
-    )
-  endif()
-
-  if(TARGET fmt::fmt)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:fmt::fmt>)
-  elseif(TARGET fmt)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:fmt>)
-  else()
-    target_include_directories(ossia SYSTEM
-      PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
-    )
-  endif()
+  target_link_libraries(ossia PUBLIC fmt::fmt)
+  target_link_libraries(ossia PUBLIC ctre::ctre)
+  target_link_libraries(ossia PUBLIC spdlog::spdlog)
 
   if(TARGET rapidjson)
     target_link_libraries(ossia PUBLIC $<LINK_ONLY:rapidjson>)
@@ -210,7 +187,8 @@ else()
   endif()
 endif()
 
-target_link_libraries(ossia PRIVATE $<LINK_ONLY:rapidfuzz::rapidfuzz>)
+target_link_libraries(ossia PRIVATE $<LINK_ONLY:re2::re2>)
+target_link_libraries(ossia PRIVATE rapidfuzz::rapidfuzz)
 
 target_include_directories(ossia SYSTEM
   PUBLIC
