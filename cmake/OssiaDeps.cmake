@@ -98,10 +98,9 @@ set_property(TARGET boost PROPERTY
              INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
 
 if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(ctre CONFIG REQUIRED GLOBAL)
+  find_package(ctre 3.7 CONFIG GLOBAL)
   find_package(rapidfuzz CONFIG REQUIRED GLOBAL)
-  find_package(RapidJSON CONFIG REQUIRED GLOBAL)
-  find_package(kfr CONFIG GLOBAL)
+  find_package(RapidJSON 1.2 CONFIG GLOBAL)
 
   find_package(fmt 10 CONFIG GLOBAL)
   if(TARGET fmt::fmt)
@@ -115,9 +114,22 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
   if(NOT RE2_LIBRARY OR NOT RE2_INCLUDE_DIR)
     message(FATAL_ERROR "re2 is required")
   endif()
-  add_library(re2 INTERFACE)
+  add_library(re2 INTERFACE IMPORTED)
   target_include_directories(re2 INTERFACE ${RE2_INCLUDE_DIR})
   target_link_libraries(re2 INTERFACE ${RE2_LIBRARY})
+
+  # KFR
+  if(OSSIA_ENABLE_KFR)
+    find_library(KFR_LIBRARY NAMES kfr_dft)
+    find_path(KFR_INCLUDE_DIR kfr/version.hpp)
+
+    if(KFR_LIBRARY AND KFR_INCLUDE_DIR)
+      add_library(kfr INTERFACE IMPORTED)
+      add_library(kfr_dft ALIAS kfr)
+      target_include_directories(kfr INTERFACE ${KFR_INCLUDE_DIR})
+      target_link_libraries(kfr INTERFACE ${KFR_LIBRARY})
+    endif()
+  endif()
 
   # ExprTK
   find_path(EXPRTK_INCLUDE_DIR exprtk.hpp)
@@ -131,6 +143,12 @@ if(OSSIA_ENABLE_KFR)
   endif()
 endif()
 
+if(NOT TARGET ctre::ctre)
+  add_library(ctre INTERFACE IMPORTED)
+  add_library(ctre::ctre ALIAS ctre)
+  target_include_directories(ctre INTERFACE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>")
+endif()
+
 if(NOT TARGET fmt::fmt)
   if(NOT TARGET fmt)
     add_definitions(-DFMT_HEADER_ONLY=1)
@@ -138,8 +156,9 @@ if(NOT TARGET fmt::fmt)
 endif()
 
 if(NOT TARGET rapidfuzz::rapidfuzz)
-  add_library(rapidfuzz::rapidfuzz INTERFACE)
-  target_include_directories(rapidfuzz::rapidfuzz INTERFACE "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
+  add_library(rapidfuzz INTERFACE IMPORTED)
+  add_library(rapidfuzz::rapidfuzz ALIAS rapidfuzz)
+  target_include_directories(rapidfuzz INTERFACE "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
 endif()
 
 if(NOT EXPRTK_INCLUDE_DIR)

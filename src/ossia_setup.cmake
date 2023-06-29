@@ -163,9 +163,9 @@ if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
   )
 else()
   if(TARGET ctre::ctre)
-    target_link_libraries(ossia PUBLIC ctre::ctre)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:ctre::ctre>)
   elseif(TARGET ctre)
-    target_link_libraries(ossia PUBLIC ctre)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:ctre>)
   else()
     target_include_directories(ossia SYSTEM
       PUBLIC
@@ -174,9 +174,9 @@ else()
   endif()
 
   if(TARGET spdlog::spdlog)
-    target_link_libraries(ossia PUBLIC spdlog::spdlog)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:spdlog::spdlog>)
   elseif(TARGET spdlog)
-    target_link_libraries(ossia PUBLIC spdlog)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:spdlog>)
   else()
     target_include_directories(ossia SYSTEM
       PUBLIC
@@ -185,9 +185,9 @@ else()
   endif()
 
   if(TARGET fmt::fmt)
-    target_link_libraries(ossia PUBLIC fmt::fmt)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:fmt::fmt>)
   elseif(TARGET fmt)
-    target_link_libraries(ossia PUBLIC fmt)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:fmt>)
   else()
     target_include_directories(ossia SYSTEM
       PUBLIC
@@ -196,7 +196,7 @@ else()
   endif()
 
   if(TARGET rapidjson)
-    target_link_libraries(ossia PUBLIC rapidjson)
+    target_link_libraries(ossia PUBLIC $<LINK_ONLY:rapidjson>)
   elseif(RAPIDJSON_INCLUDE_DIRS)
     target_include_directories(ossia SYSTEM
       PUBLIC
@@ -210,7 +210,7 @@ else()
   endif()
 endif()
 
-target_link_libraries(ossia PRIVATE rapidfuzz::rapidfuzz)
+target_link_libraries(ossia PRIVATE $<LINK_ONLY:rapidfuzz::rapidfuzz>)
 
 target_include_directories(ossia SYSTEM
   PUBLIC
