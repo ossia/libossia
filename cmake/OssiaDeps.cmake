@@ -1,7 +1,6 @@
 if(OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general libossia dependencies :")
   set(OSSIA_SUBMODULES
-      brigand
       concurrentqueue
       compile-time-regular-expressions
       Flicks
@@ -99,9 +98,15 @@ set_property(TARGET boost PROPERTY
              INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
 
 if(OSSIA_USE_SYSTEM_LIBRARIES)
+  find_package(ctre CONFIG REQUIRED GLOBAL)
+  find_package(rapidfuzz CONFIG REQUIRED GLOBAL)
   find_package(RapidJSON CONFIG REQUIRED GLOBAL)
-  find_package(fmt CONFIG REQUIRED GLOBAL)
-  find_package(spdlog CONFIG REQUIRED GLOBAL)
+  find_package(kfr CONFIG GLOBAL)
+
+  find_package(fmt 10 CONFIG GLOBAL)
+  if(TARGET fmt::fmt)
+    find_package(spdlog CONFIG REQUIRED GLOBAL)
+  endif()
 
   # Re2
   find_library(RE2_LIBRARY NAMES re2)
@@ -110,11 +115,35 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
   if(NOT RE2_LIBRARY OR NOT RE2_INCLUDE_DIR)
     message(FATAL_ERROR "re2 is required")
   endif()
-  add_library(re2  INTERFACE)
+  add_library(re2 INTERFACE)
   target_include_directories(re2 INTERFACE ${RE2_INCLUDE_DIR})
   target_link_libraries(re2 INTERFACE ${RE2_LIBRARY})
+
+  # ExprTK
+  find_path(EXPRTK_INCLUDE_DIR exprtk.hpp)
 else()
   include(re2)
+endif()
+
+if(OSSIA_ENABLE_KFR)
+  if(NOT TARGET kfr)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
+  endif()
+endif()
+
+if(NOT TARGET fmt::fmt)
+  if(NOT TARGET fmt)
+    add_definitions(-DFMT_HEADER_ONLY=1)
+  endif()
+endif()
+
+if(NOT TARGET rapidfuzz::rapidfuzz)
+  add_library(rapidfuzz::rapidfuzz INTERFACE)
+  target_include_directories(rapidfuzz::rapidfuzz INTERFACE "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
+endif()
+
+if(NOT EXPRTK_INCLUDE_DIR)
+  set(EXPRTK_INCLUDE_DIR "${OSSIA_3RDPARTY_FOLDER}/exprtk")
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)
@@ -151,7 +180,7 @@ if(OSSIA_DATAFLOW)
   endif()
 endif()
 
-if (OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
+if(OSSIA_PROTOCOL_OSC OR OSSIA_PROTOCOL_MINUIT OR OSSIA_PROTOCOL_OSCQUERY)
   add_subdirectory(3rdparty/oscpack EXCLUDE_FROM_ALL)
 endif()
 
@@ -181,7 +210,7 @@ if(OSSIA_PROTOCOL_WIIMOTE)
 endif()
 
 if(OSSIA_PROTOCOL_LIBMAPPER)
-    find_package(Libmapper REQUIRED)
+  find_package(Libmapper REQUIRED)
 endif()
 
 if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
@@ -191,18 +220,10 @@ if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
   endif()
 endif()
 
-if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(fmt 10 CONFIG GLOBAL)
-endif()
-
-if(NOT TARGET fmt)
-  add_definitions(-DFMT_HEADER_ONLY=1)
-endif()
 
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
 endif()
 
-set(RAPIDFUZZ_INCLUDE_DIR "${OSSIA_3RDPARTY_FOLDER}/rapidfuzz-cpp")
 

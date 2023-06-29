@@ -99,7 +99,10 @@ endfunction()
 # so we want to parallelize it with the rest
 if(OSSIA_MATH_EXPRESSION)
   target_sources(ossia PRIVATE ${OSSIA_EXPR_HEADERS} ${OSSIA_EXPR_SRCS})
-  target_include_directories(ossia PRIVATE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/exprtk>")
+
+  if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
+  target_include_directories(ossia PRIVATE "$<BUILD_INTERFACE:${EXPRTK_INCLUDE_DIR}>")
+  endif()
 endif()
 
 if(OSSIA_PROTOCOL_MIDI)
@@ -352,18 +355,20 @@ if(OSSIA_DATAFLOW)
   endif()
 
   if(OSSIA_ENABLE_LIBSAMPLERATE)
-    target_link_libraries(ossia PRIVATE samplerate)
+    if(TARGET SampleRate::samplerate)
+      target_link_libraries(ossia PRIVATE SampleRate::samplerate)
+    elseif(TARGET samplerate)
+      target_link_libraries(ossia PRIVATE samplerate)
+    endif()
   endif()
 
   if(OSSIA_ENABLE_RUBBERBAND)
-    target_link_libraries(ossia PRIVATE rubberband)
+    if(TARGET rubberband)
+      target_link_libraries(ossia PRIVATE rubberband)
+    endif()
   endif()
 
   # FFT support
-  if(OSSIA_ENABLE_KFR)
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build")
-  endif()
-
   if(OSSIA_ENABLE_FFT)
     if(OSSIA_ENABLE_FFTW)
       find_path(FFTW3_INCLUDEDIR fftw3.h)
@@ -439,4 +444,3 @@ endif()
 
 set_target_properties(ossia PROPERTIES OSSIA_PROTOCOLS "${OSSIA_PROTOCOLS}")
 
-target_include_directories(ossia PRIVATE "${RAPIDFUZZ_INCLUDE_DIR}")
