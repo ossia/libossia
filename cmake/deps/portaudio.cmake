@@ -1,7 +1,7 @@
 if(NOT (OSSIA_CI AND (UNIX AND NOT APPLE)))
-  find_package(PortAudio QUIET)
+  find_package(PortAudio QUIET GLOBAL)
   if(NOT PortAudio_FOUND)
-    find_package(portaudio QUIET)
+    find_package(portaudio QUIET GLOBAL)
   endif()
 endif()
 
