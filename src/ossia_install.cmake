@@ -297,7 +297,7 @@ else()
             ${3RDPARTY_INSTALL_PATTERN}
     )
   endif(OSSIA_MUST_INSTALL_BOOST)
-endif(BOOST_BCP)
+endif()
 endif(NOT OSSIA_CPP_ONLY AND NOT OSSIA_C_ONLY)
 
 include(CMakePackageConfigHelpers)
@@ -311,10 +311,6 @@ configure_package_config_file(../cmake/ossiaConfig.cmake.in
   "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake"
     INSTALL_DESTINATION lib/cmake/ossia
 )
-export(EXPORT ossia-targets
-  FILE "${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaTargets.cmake"
-  NAMESPACE ossia::
-)
 
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/ossia/ossiaConfig.cmake
@@ -322,7 +318,6 @@ install(FILES
     DESTINATION lib/cmake/ossia
     COMPONENT Devel
 )
-
 
 set(ConfigPackageLocation lib/cmake/ossia)
 install(EXPORT ossia-targets
