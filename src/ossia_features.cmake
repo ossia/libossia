@@ -236,8 +236,11 @@ if(OSSIA_DATAFLOW)
     $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
   )
 
-  target_link_libraries(ossia PRIVATE
-    websocketpp::websocketpp
+  target_link_libraries(ossia
+    PUBLIC
+      $<BUILD_INTERFACE:libremidi::libremidi>
+    PRIVATE
+      $<BUILD_INTERFACE:websocketpp::websocketpp>
   )
 
   # JACK support

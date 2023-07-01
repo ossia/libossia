@@ -158,39 +158,13 @@ target_include_directories(ossia
         $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
 )
 
-if(NOT OSSIA_USE_SYSTEM_LIBRARIES)
-  target_include_directories(ossia SYSTEM
-    PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/fmt/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
-  )
-else()
-  target_link_libraries(ossia PUBLIC fmt::fmt)
-  target_link_libraries(ossia PUBLIC ctre::ctre)
-  target_link_libraries(ossia PUBLIC spdlog::spdlog)
-
-  if(TARGET rapidjson)
-    target_link_libraries(ossia PUBLIC $<LINK_ONLY:rapidjson>)
-  elseif(RAPIDJSON_INCLUDE_DIRS)
-    target_include_directories(ossia SYSTEM
-      PUBLIC
-      $<BUILD_INTERFACE:${RAPIDJSON_INCLUDE_DIRS}>
-    )
-  else()
-    target_include_directories(ossia SYSTEM
-      PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidjson/include>
-    )
-  endif()
-endif()
-
 target_link_libraries(ossia
   PRIVATE
     $<BUILD_INTERFACE:rapidfuzz::rapidfuzz>
     $<BUILD_INTERFACE:re2::re2>
   PUBLIC
+    $<BUILD_INTERFACE:ctre::ctre>
+    $<BUILD_INTERFACE:fmt::fmt>
     $<BUILD_INTERFACE:nanosignal::nanosignal>
     $<BUILD_INTERFACE:mdspan::mdspan>
     $<BUILD_INTERFACE:tuplet::tuplet>
@@ -198,12 +172,14 @@ target_link_libraries(ossia
     $<BUILD_INTERFACE:concurrentqueue::concurrentqueue>
     $<BUILD_INTERFACE:websocketpp::websocketpp>
     $<BUILD_INTERFACE:dr_libs::dr_libs>
+    $<BUILD_INTERFACE:perlinnoise::perlinnoise>
+    $<BUILD_INTERFACE:rapidjson::rapidjson>
     $<BUILD_INTERFACE:rnd::rnd>
     $<BUILD_INTERFACE:smallfun::smallfun>
     $<BUILD_INTERFACE:span::span>
+    $<BUILD_INTERFACE:spdlog::spdlog>
     $<BUILD_INTERFACE:tuplet::tuplet>
     $<BUILD_INTERFACE:unordered_dense::unordered_dense>
-    $<BUILD_INTERFACE:perlinnoise::perlinnoise>
 )
 
 target_include_directories(ossia SYSTEM
