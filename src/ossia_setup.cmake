@@ -12,7 +12,6 @@ target_compile_definitions(ossia
     TINYSPLINE_DOUBLE_PRECISION
     BOOST_NO_RTTI=1
     BOOST_MATH_DISABLE_FLOAT128=1
-    BOOST_ASIO_DISABLE_CONCEPTS=1       # TODO boostorg/asio#312
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>
   )
@@ -187,26 +186,27 @@ else()
   endif()
 endif()
 
-target_link_libraries(ossia PRIVATE $<LINK_ONLY:re2::re2>)
-target_link_libraries(ossia PRIVATE rapidfuzz::rapidfuzz)
+target_link_libraries(ossia
+  PRIVATE
+    $<BUILD_INTERFACE:rapidfuzz::rapidfuzz>
+    $<BUILD_INTERFACE:re2::re2>
+  PUBLIC
+    $<BUILD_INTERFACE:nanosignal::nanosignal>
+    $<BUILD_INTERFACE:mdspan::mdspan>
+    $<BUILD_INTERFACE:tuplet::tuplet>
+    $<BUILD_INTERFACE:readerwriterqueue::readerwriterqueue>
+    $<BUILD_INTERFACE:concurrentqueue::concurrentqueue>
+    $<BUILD_INTERFACE:websocketpp::websocketpp>
+    $<BUILD_INTERFACE:dr_libs::dr_libs>
+    $<BUILD_INTERFACE:rnd::rnd>
+    $<BUILD_INTERFACE:smallfun::smallfun>
+    $<BUILD_INTERFACE:span::span>
+    $<BUILD_INTERFACE:tuplet::tuplet>
+    $<BUILD_INTERFACE:unordered_dense::unordered_dense>
+    $<BUILD_INTERFACE:perlinnoise::perlinnoise>
+)
 
 target_include_directories(ossia SYSTEM
   PUBLIC
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/mdspan/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/websocketpp>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/dr_libs>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rnd/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/PerlinNoise>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
-      $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/oscpack>
-
-      $<INSTALL_INTERFACE:include>
-  )
+    $<INSTALL_INTERFACE:include>
+)

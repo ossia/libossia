@@ -66,22 +66,26 @@ endif()
 
 if(OSSIA_PROTOCOL_OSC)
   target_sources(ossia PRIVATE ${OSSIA_OSC_SRCS} ${OSSIA_OSC_HEADERS})
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:oscpack::oscpack>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSC)
 endif()
 
 if(OSSIA_PROTOCOL_MINUIT)
   target_sources(ossia PRIVATE ${OSSIA_MINUIT_SRCS} ${OSSIA_MINUIT_HEADERS})
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:oscpack::oscpack>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Minuit)
 endif()
 
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:oscpack::oscpack>)
+  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:websocketpp::websocketpp>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
 endif()
 
 if(OSSIA_PROTOCOL_HTTP)
   find_package(${QT_VERSION} QUIET COMPONENTS Core Qml)
-  if(TARGET ${QT_PREFIX}::Qml)
+  if(TARGET "${QT_PREFIX}::Qml")
     target_sources(ossia PRIVATE ${OSSIA_HTTP_HEADERS} ${OSSIA_HTTP_SRCS})
     target_link_libraries(ossia PUBLIC ${QT_PREFIX}::Qml)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} HTTP)
@@ -93,7 +97,7 @@ endif()
 
 if(OSSIA_PROTOCOL_WEBSOCKETS)
   find_package(${QT_VERSION} QUIET COMPONENTS Core Qml WebSockets)
-  if(TARGET ${QT_PREFIX}::WebSockets)
+  if(TARGET "${QT_PREFIX}::WebSockets")
     target_sources(ossia PRIVATE ${OSSIA_WS_CLIENT_HEADERS} ${OSSIA_WS_CLIENT_SRCS})
     target_link_libraries(ossia PUBLIC ${QT_PREFIX}::Qml ${QT_PREFIX}::WebSockets)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} WebSockets)
@@ -105,7 +109,7 @@ endif()
 
 if(OSSIA_PROTOCOL_SERIAL)
   find_package(${QT_VERSION} QUIET COMPONENTS Core SerialPort)
-  if(TARGET ${QT_PREFIX}::SerialPort)
+  if(TARGET "${QT_PREFIX}::SerialPort")
     target_sources(ossia PRIVATE ${OSSIA_SERIAL_HEADERS} ${OSSIA_SERIAL_SRCS})
     target_link_libraries(ossia PUBLIC ${QT_PREFIX}::SerialPort)
     set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Serial)
@@ -223,11 +227,18 @@ if(OSSIA_DATAFLOW)
     set(OSSIA_PARALLEL 1)
   endif()
 
+  target_sources(ossia PRIVATE
+    ${OSSIA_DATAFLOW_HEADERS}
+    ${OSSIA_DATAFLOW_SRCS}
+  )
+
   target_include_directories(ossia PUBLIC
     $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/Flicks>
   )
 
-  target_sources(ossia PRIVATE ${OSSIA_DATAFLOW_HEADERS} ${OSSIA_DATAFLOW_SRCS})
+  target_link_libraries(ossia PRIVATE
+    websocketpp::websocketpp
+  )
 
   # JACK support
   if(OSSIA_ENABLE_JACK)

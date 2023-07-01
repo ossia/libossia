@@ -2,7 +2,6 @@ find_path(Jack_INCLUDE_DIR
   NAMES jack/jack.h
   HINTS
     ${CMAKE_CURRENT_SOURCE_DIR}
-    /opt/cross-pi-gcc/usr/include/
     "${OSSIA_SDK}/jack/include"
 )
 

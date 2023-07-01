@@ -98,7 +98,11 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
-target_link_libraries(${PROJECT_NAME} PRIVATE ossia ${MAXSDK_API_LIBRARY} $<LINK_ONLY:re2>)
+target_link_libraries(${PROJECT_NAME} PRIVATE ossia
+  ${MAXSDK_API_LIBRARY}
+  $<LINK_ONLY:re2::re2>
+  $<LINK_ONLY:websocketpp::websocketpp>
+)
 
 generate_export_header(${PROJECT_NAME})
 
@@ -173,13 +177,13 @@ endforeach()
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/package-info.json.in" "${CMAKE_CURRENT_BINARY_DIR}/package-info.json" @ONLY)
 
 # We only export the Max required symbols.
-# This is of utmost importance for support in Max4Live : ossia and Ableton Live both use 
+# This is of utmost importance for support in Max4Live : ossia and Ableton Live both use
 # boost.asio, which leads to conflicts at runtime
 if(APPLE AND CMAKE_BUILD_TYPE MATCHES Release)
   file(WRITE "${CMAKE_CURRENT_BINARY_DIR}/symbols.txt" "${OSSIA_MAX_SYMBOLS}\n")
   get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
   set_property(TARGET ossia-max APPEND PROPERTY
-    LINK_FLAGS 
+    LINK_FLAGS
       "-s -exported_symbols_list '${CMAKE_CURRENT_BINARY_DIR}/symbols.txt'")
   get_property(FLODSF TARGET ossia-max PROPERTY LINK_FLAGS)
 endif()
