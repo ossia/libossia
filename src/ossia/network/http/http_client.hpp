@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/fmt.hpp>
 #include <ossia/detail/logger.hpp>
 
 #include <boost/asio.hpp>

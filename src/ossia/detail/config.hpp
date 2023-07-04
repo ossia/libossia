@@ -64,30 +64,6 @@
 
 #define _WEBSOCKETPP_CPP11_STRICT_ 1
 
-#define SPDLOG_NO_DATETIME
-#define SPDLOG_NO_THREAD_ID
-#define SPDLOG_NO_NAME
-
-#define SPDLOG_DEBUG_ON
-#define SPDLOG_TRACE_ON
-
-#define FMT_USE_LONG_DOUBLE 0
-#define FMT_USE_INT128 0
-#define FMT_USE_FLOAT128 0
-#define FMT_STATIC_THOUSANDS_SEPARATOR 1
-
-#if !defined(SPDLOG_FMT_EXTERNAL)
-#define SPDLOG_FMT_EXTERNAL 1
-#endif
-
-#if !defined(FMT_HEADER_ONLY)
-#define FMT_HEADER_ONLY 1
-#endif
-
-#if !defined(RAPIDJSON_HAS_STDSTRING)
-#define RAPIDJSON_HAS_STDSTRING 1
-#endif
-
 #if defined(__SANITIZE_ADDRESS__)
 #define OSSIA_ASAN 1
 #elif defined(__has_feature)
@@ -96,6 +72,7 @@
 #endif
 #endif
 
+///  RapidJSON
 #if !defined(OSSIA_ASAN)
 #if defined(__AVX__)
 #define RAPIDJSON_SSE42 1
@@ -106,6 +83,10 @@
 #if defined(__ARM_NEON)
 #define RAPIDJSON_NEON 1
 #endif
+#endif
+
+#if !defined(RAPIDJSON_HAS_STDSTRING)
+#define RAPIDJSON_HAS_STDSTRING 1
 #endif
 
 // https://github.com/Tencent/rapidjson/issues/1015
@@ -122,8 +103,8 @@
 #define BOOST_MATH_DISABLE_FLOAT128
 #endif
 
+/// Boost
 #define BOOST_CONFIG_SUPPRESS_OUTDATED_MESSAGE 1
-
 #define BOOST_ERROR_CODE_HEADER_ONLY 1
 #define BOOST_SYSTEM_NO_DEPRECATED 1
 #define BOOST_LEXICAL_CAST_ASSUME_C_LOCALE 1
