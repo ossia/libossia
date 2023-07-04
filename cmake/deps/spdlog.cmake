@@ -15,9 +15,8 @@ if(NOT TARGET spdlog::spdlog)
        ${OSSIA_3RDPARTY_FOLDER}/spdlog/src/cfg.cpp
     )
     target_compile_definitions(spdlog
-      PRIVATE
-        SPDLOG_COMPILED_LIB=1
       PUBLIC
+        SPDLOG_COMPILED_LIB=1
         SPDLOG_SHARED_LIB=1
         SPDLOG_FMT_EXTERNAL=1
 
