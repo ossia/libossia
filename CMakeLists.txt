@@ -7,10 +7,7 @@ if(OSSIA_SDK)
   list(APPEND CMAKE_PREFIX_PATH "${OSSIA_SDK}/portaudio/lib/cmake/portaudio")
 endif()
 
-cmake_minimum_required(VERSION 3.13 FATAL_ERROR)
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.18)
-  cmake_policy(VERSION 3.18)
-endif()
+cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(ossia C CXX)
 
