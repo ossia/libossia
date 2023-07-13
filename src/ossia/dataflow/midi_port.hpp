@@ -61,7 +61,7 @@ struct midi_port
 private:
   static uint8_t make_command(const message_type type, const int channel) noexcept
   {
-    return (uint8_t)((uint8_t)type | libremidi::clamp(channel, 0, channel - 1));
+    return (uint8_t)((uint8_t)type | std::clamp(channel, 0, channel - 1));
   }
 
   message& create(uint8_t b0, uint8_t b1) noexcept

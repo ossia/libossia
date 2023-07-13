@@ -47,7 +47,7 @@ http_protocol::http_protocol(QByteArray code)
 
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
-      [=](QQmlComponent::Status status) {
+      [this](QQmlComponent::Status status) {
     if(!m_device)
       return;
 

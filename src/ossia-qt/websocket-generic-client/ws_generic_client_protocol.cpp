@@ -27,7 +27,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
 {
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
-      [=](QQmlComponent::Status status) {
+      [this, addr](QQmlComponent::Status status) {
     if(!m_device)
       return;
 
@@ -158,14 +158,12 @@ void ws_generic_client_protocol::on_ready(const QString& host)
   // Websocket management
   m_websocket->open(host);
 
-  QObject::connect(m_websocket, &QWebSocket::connected, this, [=] {
-    return;
+  QObject::connect(m_websocket, &QWebSocket::connected, this, [this] {
     QVariant ret;
     QMetaObject::invokeMethod(m_object, "onConnected", Q_RETURN_ARG(QVariant, ret));
     apply_reply(ret.value<QJSValue>());
   });
-  QObject::connect(m_websocket, &QWebSocket::disconnected, this, [=] {
-    return;
+  QObject::connect(m_websocket, &QWebSocket::disconnected, this, [this] {
     QVariant ret;
     QMetaObject::invokeMethod(m_object, "onDisonnected", Q_RETURN_ARG(QVariant, ret));
     apply_reply(ret.value<QJSValue>());
@@ -173,24 +171,25 @@ void ws_generic_client_protocol::on_ready(const QString& host)
 
   // Messages from the server
   QObject::connect(
-      m_websocket, &QWebSocket::binaryMessageReceived, this, [=](const QByteArray& arr) {
-        if(m_object->processFromJson())
-        {
-          auto str = arr.toStdString();
-          ossia::presets::apply_json(str, this->m_device->get_root_node());
-        }
-        else
-        {
-          QVariant ret;
-          QMetaObject::invokeMethod(
-              m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
-              Q_ARG(QVariant, QString(arr)));
-          apply_reply(ret.value<QJSValue>());
-        }
+      m_websocket, &QWebSocket::binaryMessageReceived, this,
+      [this](const QByteArray& arr) {
+    if(m_object->processFromJson())
+    {
+      auto str = arr.toStdString();
+      ossia::presets::apply_json(str, this->m_device->get_root_node());
+    }
+    else
+    {
+      QVariant ret;
+      QMetaObject::invokeMethod(
+          m_object, "onMessage", Q_RETURN_ARG(QVariant, ret),
+          Q_ARG(QVariant, QString(arr)));
+      apply_reply(ret.value<QJSValue>());
+    }
       });
 
   QObject::connect(
-      m_websocket, &QWebSocket::textMessageReceived, this, [=](const QString& mess) {
+      m_websocket, &QWebSocket::textMessageReceived, this, [this](const QString& mess) {
         if(m_object->processFromJson())
         {
           auto str = mess.toStdString();
