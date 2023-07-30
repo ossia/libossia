@@ -1,21 +1,44 @@
 #pragma once
+// clang-format off
+#include <ossia/detail/config.hpp>
+#define TINYSPLINE_API OSSIA_EXPORT
 
 #include "tinyspline.h"
+// clang-format on
 
 #include <array>
 #include <cstdint>
+
+extern "C" {
+TINYSPLINE_API
+void ts_int_deboornet_init(tsDeBoorNet* _deBoorNet_);
+
+TINYSPLINE_API
+tsError
+ts_int_deboornet_new(const tsBSpline* spline, tsDeBoorNet* net, tsStatus* status);
+
+TINYSPLINE_API
+void ts_int_bspline_init(tsBSpline* spline);
+
+TINYSPLINE_API
+tsError ts_int_bspline_eval_woa(
+    const tsBSpline* spline, tsReal u, tsDeBoorNet* net, tsStatus* status);
+
+TINYSPLINE_API
+tsReal* ts_int_deboornet_access_result(const tsDeBoorNet* net);
+}
 
 namespace ts
 {
 template <std::size_t N>
 struct spline
 {
-  mutable tsBSpline m_spline;
+  tsBSpline m_spline;
   mutable tsDeBoorNet m_net;
 
   spline()
-      : m_spline{ts_bspline_init()}
   {
+    ts_int_bspline_init(&m_spline);
     ts_int_deboornet_init(&m_net);
   }
 
@@ -38,7 +61,7 @@ struct spline
     if(m_spline.pImpl)
       ts_bspline_free(&m_spline);
 
-    m_spline = ts_bspline_init();
+    ts_int_bspline_init(&m_spline);
     ts_bspline_new(numPoints, N, 3, TS_CLAMPED, &m_spline, &status);
 
     ts_bspline_set_control_points(&m_spline, points, &status);
