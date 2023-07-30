@@ -28,7 +28,8 @@ struct receive_fd_configuration : fd_configuration
 struct socket_configuration
 {
   std::string host;
-  uint16_t port;
+  uint16_t port{};
+  bool broadcast{};
 };
 
 struct send_socket_configuration : socket_configuration
