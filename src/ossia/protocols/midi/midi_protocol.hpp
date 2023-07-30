@@ -11,6 +11,7 @@
 
 #include <libremidi/api.hpp>
 #include <libremidi/message.hpp>
+#include <libremidi/observer_configuration.hpp>
 
 #include <array>
 #include <atomic>
@@ -33,19 +34,28 @@ struct OSSIA_EXPORT midi_info
   };
 
   midi_info() = default;
-  midi_info(Type t, std::string d, std::string n, int p, bool v)
+  midi_info(const libremidi::input_port& p, bool v)
+      : type{Type::Input}
+      , handle{p}
+      , is_virtual{v}
+  {
+  }
+  midi_info(const libremidi::output_port& p, bool v)
+      : type{Type::Output}
+      , handle{p}
+      , is_virtual{v}
+  {
+  }
+
+  midi_info(Type t, const libremidi::port_information& p, bool v)
       : type{t}
-      , device{std::move(d)}
-      , name{std::move(n)}
-      , port{p}
+      , handle{p}
       , is_virtual{v}
   {
   }
 
   Type type{};
-  std::string device{};
-  std::string name{};
-  int port{};
+  libremidi::port_information handle{};
   bool is_virtual{};
 };
 

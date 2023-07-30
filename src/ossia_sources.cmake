@@ -303,7 +303,7 @@ set(OSSIA_EDITOR_HEADERS
   )
 
 set(OSSIA_EDITOR_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/automation/tinyspline_util.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/curve/curve.cpp"
 
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/editor/expression/expression_atom.cpp"

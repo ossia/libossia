@@ -5,26 +5,37 @@
 #include <ossia/protocols/midi/midi_device.hpp>
 #include <ossia/protocols/midi/midi_protocol.hpp>
 
+#include <libremidi/backends/alsa_seq/config.hpp>
 #include <libremidi/libremidi.hpp>
 #include <libremidi/message.hpp>
 namespace ossia::net::midi
 {
 static constexpr auto midi_api(libremidi::API api)
 {
-  return (api == libremidi::API::UNSPECIFIED) ? libremidi::default_platform_api() : api;
+  return (api == libremidi::API::UNSPECIFIED) ? libremidi::midi1::default_api() : api;
 }
 midi_protocol::midi_protocol(
     ossia::net::network_context_ptr ctx, std::string device_name, libremidi::API api)
     : protocol_base{flags{}}
     , m_context{ctx}
-    , m_input{std::make_unique<libremidi::midi_in>(midi_api(api), device_name)}
-    , m_output{std::make_unique<libremidi::midi_out>(midi_api(api), device_name)}
+// , m_input{std::make_unique<libremidi::midi_in>(midi_api(api), device_name)}
+// , m_output{std::make_unique<libremidi::midi_out>(midi_api(api), device_name)}
 {
+  api = midi_api(api);
+
+  libremidi::input_configuration input_conf;
+  input_conf.on_message = [this](const libremidi::message& m) { midi_callback(m); };
+  m_input = std::make_unique<libremidi::midi_in>(
+      input_conf, libremidi::midi_in_configuration_for(api));
+
+  libremidi::output_configuration output_conf;
+  m_output = std::make_unique<libremidi::midi_out>(
+      output_conf, libremidi::midi_out_configuration_for(api));
 }
 
 midi_protocol::midi_protocol(
     ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
-    : midi_protocol{std::move(ctx), m.name, api}
+    : midi_protocol{std::move(ctx), m.handle.display_name, api}
 {
   set_info(m);
 }
@@ -48,6 +59,7 @@ midi_protocol::~midi_protocol()
     logger().error("midi_protocol::~midi_protocol() error");
   }
 }
+
 std::string
 midi_protocol::get_midi_port_name(ossia::net::device_base* dev, const midi_info& info)
 {
@@ -65,6 +77,7 @@ midi_protocol::get_midi_port_name(ossia::net::device_base* dev, const midi_info&
   }
   return name;
 }
+
 bool midi_protocol::set_info(midi_info m)
 {
   try
@@ -85,16 +98,18 @@ bool midi_protocol::set_info(midi_info m)
       if(m_info.is_virtual)
         m_input->open_virtual_port(get_midi_port_name(m_dev, m_info));
       else
-        m_input->open_port(m_info.port, get_midi_port_name(m_dev, m_info));
-
-      m_input->set_callback([&](const auto& m) { midi_callback(m); });
+        m_input->open_port(
+            static_cast<libremidi::input_port&>(m_info.handle),
+            get_midi_port_name(m_dev, m_info));
     }
     else if(m_info.type == midi_info::Type::Output)
     {
       if(m_info.is_virtual)
         m_output->open_virtual_port(get_midi_port_name(m_dev, m_info));
       else
-        m_output->open_port(m_info.port, get_midi_port_name(m_dev, m_info));
+        m_output->open_port(
+            static_cast<libremidi::output_port&>(m_info.handle),
+            get_midi_port_name(m_dev, m_info));
     }
 
     return true;
@@ -195,59 +210,59 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
     switch(adrinfo.type)
     {
       case address_info::Type::NoteOn_N: {
-        m_output->send_message(
-            libremidi::message::note_on(adrinfo.channel, adrinfo.note, to_int(v)));
+        m_output->send_message(libremidi::channel_events::note_on(
+            adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
       case address_info::Type::NoteOn: {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(libremidi::message::note_on(
+        m_output->send_message(libremidi::channel_events::note_on(
             adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::NoteOff_N: {
-        m_output->send_message(
-            libremidi::message::note_off(adrinfo.channel, adrinfo.note, to_int(v)));
+        m_output->send_message(libremidi::channel_events::note_off(
+            adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
       case address_info::Type::NoteOff: {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(libremidi::message::note_off(
+        m_output->send_message(libremidi::channel_events::note_off(
             adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::CC_N: {
-        m_output->send_message(libremidi::message::control_change(
+        m_output->send_message(libremidi::channel_events::control_change(
             adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
       case address_info::Type::CC: {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(libremidi::message::control_change(
+        m_output->send_message(libremidi::channel_events::control_change(
             adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
       case address_info::Type::PC: {
         m_output->send_message(
-            libremidi::message::program_change(adrinfo.channel, to_int(v)));
+            libremidi::channel_events::program_change(adrinfo.channel, to_int(v)));
         return true;
       }
 
       case address_info::Type::PC_N: {
         m_output->send_message(
-            libremidi::message::program_change(adrinfo.channel, adrinfo.note));
+            libremidi::channel_events::program_change(adrinfo.channel, adrinfo.note));
         return true;
       }
 
       case address_info::Type::PB: {
         m_output->send_message(
-            libremidi::message::pitch_bend(adrinfo.channel, to_int(v)));
+            libremidi::channel_events::pitch_bend(adrinfo.channel, to_int(v)));
         return true;
       }
 
@@ -721,25 +736,13 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
 
   std::vector<midi_info> vec;
 
-  {
-    libremidi::midi_in in{api, ""};
-    auto portcount = in.get_port_count();
-    for(auto i = 0u; i < portcount; i++)
-    {
-      const std::string& name = in.get_port_name(i);
-      vec.emplace_back(midi_info::Type::Input, name, name, i, false);
-    }
-  }
+  libremidi::observer in{{}, libremidi::observer_configuration_for(api)};
 
-  {
-    libremidi::midi_out out{api, ""};
-    auto portcount = out.get_port_count();
-    for(auto i = 0u; i < portcount; i++)
-    {
-      const std::string& name = out.get_port_name(i);
-      vec.emplace_back(midi_info::Type::Output, name, name, i, false);
-    }
-  }
+  for(auto& port : in.get_input_ports())
+    vec.emplace_back(port, false);
+  for(auto& port : in.get_output_ports())
+    vec.emplace_back(port, false);
+
   return vec;
 }
 
