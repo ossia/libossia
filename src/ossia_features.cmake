@@ -277,7 +277,7 @@ if(OSSIA_DATAFLOW)
       target_link_libraries(ossia PRIVATE
         $<BUILD_INTERFACE:fftw::fftw3>
       )
-    elseif(OSSIA_ENABLE_KFR AND ENABLE_DFT) # defined in kfr/CMakeLists.txt
+    elseif(OSSIA_ENABLE_KFR AND KFR_ENABLE_DFT) # defined in kfr/CMakeLists.txt
       target_link_libraries(ossia PRIVATE
         $<BUILD_INTERFACE:kfr>
         $<BUILD_INTERFACE:kfr_dft>
