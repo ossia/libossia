@@ -1,5 +1,6 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/detail/thread.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/rate_limiting_protocol.hpp>
@@ -12,6 +13,7 @@ struct rate_limiter
   rate_limiting_protocol& self;
   void operator()() const noexcept
   {
+    ossia::set_thread_name("ossia ratelim");
     using namespace std::literals;
     using clock = rate_limiting_protocol::clock;
     const auto duration = self.m_duration.load();

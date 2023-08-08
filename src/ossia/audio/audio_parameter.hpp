@@ -30,13 +30,13 @@ public:
   ossia::value value() const override;
   ossia::value set_value(const ossia::value&) override;
   ossia::value set_value(ossia::value&&) override;
-  val_type get_value_type() const override;
+  val_type get_value_type() const noexcept override;
   net::parameter_base& set_value_type(val_type) override;
-  access_mode get_access() const override;
+  access_mode get_access() const noexcept override;
   net::parameter_base& set_access(access_mode) override;
-  const domain& get_domain() const override;
+  const domain& get_domain() const noexcept override;
   net::parameter_base& set_domain(const domain&) override;
-  bounding_mode get_bounding() const override;
+  bounding_mode get_bounding() const noexcept override;
   net::parameter_base& set_bounding(bounding_mode) override;
 };
 

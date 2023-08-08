@@ -23,6 +23,33 @@ struct typed_value
       , index{d}
   {
   }
+  typed_value(ossia::timed_value&& v, const destination_index& d)
+      : value{std::move(v.value)}
+      , timestamp{v.timestamp}
+      , index{d}
+  {
+  }
+  typed_value(const ossia::timed_value& v, const destination_index& d)
+      : value{v.value}
+      , timestamp{v.timestamp}
+      , index{d}
+  {
+  }
+  typed_value(ossia::value&& v, const ossia::complex_type& u)
+      : value{std::move(v)}
+      , type{u}
+  {
+  }
+  typed_value(const ossia::timed_value& v, const ossia::complex_type& u)
+      : value{v.value}
+      , type{u}
+  {
+  }
+  typed_value(ossia::timed_value&& v, const ossia::complex_type& u)
+      : value{std::move(v.value)}
+      , type{u}
+  {
+  }
   typed_value(ossia::value&& v, const destination_index& d, const ossia::complex_type& u)
       : value{std::move(v)}
       , index{d}

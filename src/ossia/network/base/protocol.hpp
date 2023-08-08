@@ -4,6 +4,8 @@
 #include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
 
+#include <tcb/span.hpp>
+
 #include <nano_signal_slot.hpp>
 
 #include <future>
@@ -13,6 +15,7 @@
 namespace ossia
 {
 class value;
+struct bundle_element;
 namespace net
 {
 class parameter_base;
@@ -93,6 +96,8 @@ public:
    * @brief Send many values in one go if the protocol supports it
    */
   virtual bool push_bundle(const std::vector<const ossia::net::parameter_base*>&);
+  virtual bool push_bundle(tcb::span<ossia::bundle_element>);
+  virtual bool push_bundle_bounded(tcb::span<ossia::bundle_element>);
 
   /**
    * @brief Send a value to the network.

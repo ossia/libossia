@@ -21,6 +21,11 @@ std::future<void> parameter_base::pull_value_async()
   return {};
 }
 
+ossia::net::protocol_base& parameter_base::get_protocol() const noexcept
+{
+  return m_node.get_device().get_protocol();
+}
+
 void parameter_base::request_value() { }
 
 value parameter_base::value(destination_index idx) const
@@ -43,7 +48,7 @@ parameter_base::value(const std::vector<destination_index>& indices) const
   return t;
 }
 
-std::optional<ossia::value> parameter_base::get_default_value() const
+std::optional<ossia::value> parameter_base::get_default_value() const noexcept
 {
   return ossia::net::get_default_value(get_node());
 }
@@ -59,7 +64,7 @@ value parameter_base::fetch_value()
   return value();
 }
 
-ossia::repetition_filter parameter_base::get_repetition_filter() const
+ossia::repetition_filter parameter_base::get_repetition_filter() const noexcept
 {
   return m_repetitionFilter;
 }
@@ -86,7 +91,7 @@ parameter_base& parameter_base::set_unit(const unit_t& u)
   return *this;
 }
 
-bool parameter_base::get_disabled() const
+bool parameter_base::get_disabled() const noexcept
 {
   return m_disabled;
 }
@@ -101,7 +106,7 @@ parameter_base& parameter_base::set_disabled(bool v)
   return *this;
 }
 
-bool parameter_base::get_muted() const
+bool parameter_base::get_muted() const noexcept
 {
   return m_muted;
 }
@@ -116,7 +121,7 @@ parameter_base& parameter_base::set_muted(bool v)
   return *this;
 }
 
-bool parameter_base::get_critical() const
+bool parameter_base::get_critical() const noexcept
 {
   return m_critical;
 }

@@ -226,7 +226,7 @@ void generic_parameter::set_value_quiet(const destination& destination)
   }
 }
 
-ossia::val_type generic_parameter::get_value_type() const
+ossia::val_type generic_parameter::get_value_type() const noexcept
 {
   return m_valueType;
 }
@@ -252,7 +252,7 @@ ossia::net::generic_parameter& generic_parameter::set_value_type(ossia::val_type
   return *this;
 }
 
-ossia::access_mode generic_parameter::get_access() const
+ossia::access_mode generic_parameter::get_access() const noexcept
 {
   return m_accessMode;
 }
@@ -268,7 +268,7 @@ generic_parameter::set_access(ossia::access_mode accessMode)
   return *this;
 }
 
-const ossia::domain& generic_parameter::get_domain() const
+const ossia::domain& generic_parameter::get_domain() const noexcept
 {
   return m_domain;
 }
@@ -285,7 +285,7 @@ ossia::net::generic_parameter& generic_parameter::set_domain(const ossia::domain
   return *this;
 }
 
-ossia::bounding_mode generic_parameter::get_bounding() const
+ossia::bounding_mode generic_parameter::get_bounding() const noexcept
 {
   return m_boundingMode;
 }
@@ -301,7 +301,7 @@ generic_parameter::set_bounding(ossia::bounding_mode boundingMode)
   return *this;
 }
 
-bool generic_parameter::filter_value(const ossia::value& val) const
+bool generic_parameter::filter_value(const ossia::value& val) const noexcept
 {
   return m_disabled || m_muted
          || (get_repetition_filter() == ossia::repetition_filter::ON

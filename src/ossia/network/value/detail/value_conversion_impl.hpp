@@ -414,6 +414,12 @@ T convert(const ossia::value& val)
 }
 
 template <typename T>
+void convert_inplace(ossia::value& val)
+{
+  val = val.apply(detail::value_converter<T>{{T{}}});
+}
+
+template <typename T>
 T convert(const T& cur, const ossia::value& val)
 {
   return val.apply(detail::value_converter<T>{{cur}});
@@ -469,6 +475,45 @@ auto lift(ossia::val_type type, Fun f, Args&&... args)
 
   ossia_do_throw(invalid_value_type_error, "lift: Invalid type");
   return decltype(f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...)){};
+}
+template <typename Fun, typename... Args>
+auto lift_inplace(ossia::val_type type, Fun f, Args&&... args)
+{
+  switch(type)
+  {
+    case val_type::IMPULSE:
+      f(ossia::value_trait<impulse>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::BOOL:
+      f(ossia::value_trait<bool>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::INT:
+      f(ossia::value_trait<int32_t>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::FLOAT:
+      f(ossia::value_trait<float>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::MAP:
+      f(ossia::value_trait<value_map_type>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::STRING:
+      f(ossia::value_trait<std::string>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::LIST:
+      f(ossia::value_trait<std::vector<ossia::value>>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::VEC2F:
+      f(ossia::value_trait<vec2f>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::VEC3F:
+      f(ossia::value_trait<vec3f>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::VEC4F:
+      f(ossia::value_trait<vec4f>{}, std::forward<Args>(args)...);
+      break;
+    case val_type::NONE:
+      break;
+  }
 }
 }
 

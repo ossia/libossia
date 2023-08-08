@@ -4,6 +4,7 @@
 #if defined(OSSIA_ENABLE_PORTAUDIO)
 #if __has_include(<portaudio.h>)
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <portaudio.h>
 
@@ -186,6 +187,11 @@ private:
       const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags,
       void* userData)
   {
+    static const thread_local auto _ = [] {
+      ossia::set_thread_name("ossia audio 0");
+      return 0;
+    }();
+
     // auto t0 = std::chrono::steady_clock::now();
     auto& self = *static_cast<portaudio_engine*>(userData);
     self.tick_start();

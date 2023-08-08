@@ -6,6 +6,7 @@
 #include <SDL2/SDL_config.h>
 #if !defined(SDL_AUDIO_DISABLED)
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_audio.h>
@@ -61,6 +62,11 @@ public:
 private:
   static void SDLCallback(void* userData, Uint8* data, int bytes)
   {
+    static const thread_local auto _ = [] {
+      ossia::set_thread_name("ossia audio 0");
+      return 0;
+    }();
+
     auto& self = *static_cast<sdl_protocol*>(userData);
     self.tick_start();
 

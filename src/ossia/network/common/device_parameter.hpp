@@ -37,16 +37,16 @@ public:
   ossia::value set_value(const ossia::value& val) override;
   ossia::value set_value(ossia::value&& v) override;
 
-  ossia::val_type get_value_type() const override;
+  ossia::val_type get_value_type() const noexcept override;
   ossia::net::parameter_base& set_value_type(ossia::val_type) override { return *this; }
 
-  ossia::access_mode get_access() const override;
+  ossia::access_mode get_access() const noexcept override;
   ossia::net::parameter_base& set_access(ossia::access_mode) override { return *this; }
 
-  const ossia::domain& get_domain() const override;
+  const ossia::domain& get_domain() const noexcept override;
   ossia::net::parameter_base& set_domain(const ossia::domain&) override { return *this; }
 
-  ossia::bounding_mode get_bounding() const override;
+  ossia::bounding_mode get_bounding() const noexcept override;
   ossia::net::parameter_base& set_bounding(ossia::bounding_mode) override
   {
     return *this;
@@ -76,8 +76,6 @@ protected:
     //  Here should be the code that actually make the hardware update to
     //  current value
   }
-
-  auto& get_protocol() { return get_node().get_device().get_protocol(); }
 
   ossia::value m_current_value{};
 

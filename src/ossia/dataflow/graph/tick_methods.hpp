@@ -105,7 +105,6 @@ struct tick_all_nodes
 };
 
 // 1 tick per buffer
-template <void (ossia::execution_state::*Commit)()>
 struct buffer_tick
 {
   ossia::execution_state& st;
@@ -172,7 +171,7 @@ struct buffer_tick
       auto log = g_exec_log.start_commit();
 #endif
 
-      (st.*Commit)();
+      st.commit();
     }
 
 #if defined(OSSIA_SCENARIO_DATAFLOW)
@@ -185,7 +184,6 @@ struct buffer_tick
 };
 
 // 1 tick per sample
-template <void (ossia::execution_state::*Commit)()>
 struct precise_score_tick
 {
   ossia::execution_state& st;
@@ -208,7 +206,7 @@ struct precise_score_tick
       itv.tick_offset(ossia::time_value{1}, 0_tv, tok);
       g.state(st);
       std::atomic_thread_fence(std::memory_order_seq_cst);
-      (st.*Commit)();
+      st.commit();
 
       st.advance_tick(1);
       std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -217,7 +215,6 @@ struct precise_score_tick
 };
 
 /*
-template <void (ossia::execution_state::*Commit)()>
 struct split_score_tick
 {
 public:

@@ -77,7 +77,7 @@ ossia::value midi_parameter::set_value(ossia::value&& v)
   return m_value;
 }
 
-val_type midi_parameter::get_value_type() const
+val_type midi_parameter::get_value_type() const noexcept
 {
   return m_type;
 }
@@ -87,7 +87,7 @@ parameter_base& midi_parameter::set_value_type(val_type)
   return *this;
 }
 
-access_mode midi_parameter::get_access() const
+access_mode midi_parameter::get_access() const noexcept
 {
   return ossia::access_mode::BI;
 }
@@ -97,7 +97,7 @@ parameter_base& midi_parameter::set_access(access_mode)
   return *this;
 }
 
-const ossia::domain& midi_parameter::get_domain() const
+const ossia::domain& midi_parameter::get_domain() const noexcept
 {
   return m_domain;
 }
@@ -107,7 +107,7 @@ parameter_base& midi_parameter::set_domain(const ossia::domain&)
   return *this;
 }
 
-bounding_mode midi_parameter::get_bounding() const
+bounding_mode midi_parameter::get_bounding() const noexcept
 {
   return ossia::bounding_mode::CLIP;
 }

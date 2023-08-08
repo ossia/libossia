@@ -5,9 +5,9 @@
 #if __has_include(<jack/jack.h>) && !defined(__EMSCRIPTEN__)
 
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <weak_libjack.h>
-
 #if defined(_WIN32)
 #include <TlHelp32.h>
 #endif
@@ -264,6 +264,11 @@ private:
 
   static int process(jack_nframes_t nframes, void* arg)
   {
+    static const thread_local auto _ = [] {
+      ossia::set_thread_name("ossia audio 0");
+      return 0;
+    }();
+
     auto& self = *static_cast<jack_engine*>(arg);
     self.tick_start();
 

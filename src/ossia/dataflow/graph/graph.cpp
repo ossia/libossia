@@ -228,58 +228,17 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
 {
   auto& g = static_cast<ossia::graph_base&>(gb);
   auto tick = settings.tick;
-  auto commit = settings.commit;
 
-  if(commit == tick_setup_options::Default)
-  {
-    static constexpr const auto commit_policy = &ossia::execution_state::commit;
-    if(tick == tick_setup_options::Buffer)
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-    else if(tick == tick_setup_options::Precise)
-      return ossia::precise_score_tick<commit_policy>{st, g, itv, transport};
-    // else if (tick == tick_setup_options::ScoreAccurate)
-    //   return ossia::split_score_tick<commit_policy>{st, g, itv, transport};
-    else
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-  }
-  else if(commit == tick_setup_options::Ordered)
-  {
-    static constexpr const auto commit_policy = &ossia::execution_state::commit_ordered;
-    if(tick == tick_setup_options::Buffer)
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-    else if(tick == tick_setup_options::Precise)
-      return ossia::precise_score_tick<commit_policy>{st, g, itv, transport};
-    // else if (tick == tick_setup_options::ScoreAccurate)
-    //   return ossia::split_score_tick<commit_policy>{st, g, itv, transport};
-    else
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-  }
-  else if(commit == tick_setup_options::Priorized)
-  {
-    static constexpr const auto commit_policy
-        = &ossia::execution_state::commit_priorized;
-    if(tick == tick_setup_options::Buffer)
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-    else if(tick == tick_setup_options::Precise)
-      return ossia::precise_score_tick<commit_policy>{st, g, itv, transport};
-    // else if (tick == tick_setup_options::ScoreAccurate)
-    //   return ossia::split_score_tick<commit_policy>{st, g, itv, transport};
-    else
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-  }
-  else if(commit == tick_setup_options::Merged)
-  {
-    static constexpr const auto commit_policy = &ossia::execution_state::commit_merged;
-    if(tick == tick_setup_options::Buffer)
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-    else if(tick == tick_setup_options::Precise)
-      return ossia::precise_score_tick<commit_policy>{st, g, itv, transport};
-    // else if (tick == tick_setup_options::ScoreAccurate)
-    //   return ossia::split_score_tick<commit_policy>{st, g, itv, transport};
-    else
-      return ossia::buffer_tick<commit_policy>{st, g, root, transport};
-  }
-  return ossia::buffer_tick<&ossia::execution_state::commit>{st, g, root, transport};
+  st.set_policy(settings);
+
+  if(tick == tick_setup_options::Buffer)
+    return ossia::buffer_tick{st, g, root, transport};
+  else if(tick == tick_setup_options::Precise)
+    return ossia::precise_score_tick{st, g, itv, transport};
+  // else if (tick == tick_setup_options::ScoreAccurate)
+  //   return ossia::split_score_tick{st, g, itv, transport};
+  else
+    return ossia::buffer_tick{st, g, root, transport};
 }
 
 void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)

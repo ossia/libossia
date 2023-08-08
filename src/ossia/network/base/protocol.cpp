@@ -1,9 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
+#include <ossia/network/base/bundle.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/common/network_logger.hpp>
+
 namespace ossia::net
 {
 protocol_base::~protocol_base() = default;
@@ -37,6 +39,21 @@ bool protocol_base::push_bundle(const std::vector<const ossia::net::parameter_ba
     b &= push(*addr);
   }
   return b;
+}
+
+bool protocol_base::push_bundle(tcb::span<ossia::bundle_element> v)
+{
+  bool b = !v.empty();
+  for(auto& [addr, val] : v)
+  {
+    addr->push_value(val);
+  }
+  return b;
+}
+
+bool protocol_base::push_bundle_bounded(tcb::span<ossia::bundle_element> v)
+{
+  return push_bundle(v);
 }
 
 bool protocol_base::push_raw_bundle(

@@ -2,6 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include "oscquery_mirror.hpp"
 
+#include <ossia/detail/thread.hpp>
 #include <ossia/network/base/device.hpp>
 #include <ossia/network/common/node_visitor.hpp>
 #include <ossia/network/exceptions.hpp>
@@ -583,6 +584,7 @@ void oscquery_mirror_protocol::init()
   m_hasWS = true;
   std::atomic_bool started{false};
   m_wsThread = std::thread([this, &started] {
+    ossia::set_thread_name("ossia oscq ws");
     try
     {
       started = true;
@@ -622,7 +624,10 @@ void oscquery_mirror_protocol::init()
 void oscquery_mirror_protocol::start_http()
 {
   m_http->worker = std::make_shared<boost::asio::io_service::work>(m_http->context);
-  m_http->thread = std::thread([this] { m_http->context.run(); });
+  m_http->thread = std::thread([this] {
+    ossia::set_thread_name("ossia oscq http");
+    m_http->context.run();
+  });
 }
 
 void oscquery_mirror_protocol::request_add_node(

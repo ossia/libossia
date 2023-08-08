@@ -161,6 +161,21 @@ void match_simple(std::vector<ossia::net::node_base*>& vec, const std::string& r
   }
 }
 
+void match_all(std::vector<ossia::net::node_base*>& vec, const std::string& r)
+{
+  ossia::small_vector<ossia::net::node_base*, 16> old(vec.begin(), vec.end());
+  vec.clear();
+  vec.reserve(old.size() * 16);
+
+  for(ossia::net::node_base* node : old)
+  {
+    for(auto& cld : node->children())
+    {
+      vec.push_back(cld.get());
+    }
+  }
+}
+
 struct regex_cache
 {
   static regex_cache& instance()
@@ -268,6 +283,11 @@ void add_relative_path(std::string& part, path& p)
     {
       p.child_functions.emplace_back(
           [p = std::move(part)](auto& v) { match_simple(v, p); });
+    }
+    else if(part == "*")
+    {
+      p.child_functions.emplace_back(
+          [p = std::move(part)](auto& v) { match_all(v, p); });
     }
     else
     {

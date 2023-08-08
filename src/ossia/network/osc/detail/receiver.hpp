@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <oscpack/ip/UdpSocket.h>
 #include <oscpack/osc/OscDebug.h>
@@ -171,7 +172,10 @@ public:
     if(m_runThread.joinable())
       stop();
 
-    m_runThread = std::thread([this] { run_impl(); });
+    m_runThread = std::thread([this] {
+      ossia::set_thread_name("ossia osc");
+      run_impl();
+    });
     while(!m_running)
       std::this_thread::sleep_for(std::chrono::microseconds(1));
   }

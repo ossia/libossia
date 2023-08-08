@@ -103,7 +103,7 @@ struct buffer_pool
     buffer b;
 
     buffers.try_dequeue(b);
-    b.resize(req_size);
+    b.resize(req_size, boost::container::default_init);
     return b;
   }
 

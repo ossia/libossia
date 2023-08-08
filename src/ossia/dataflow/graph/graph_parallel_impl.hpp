@@ -118,9 +118,17 @@ public:
   {
     m_running = true;
     m_threads.resize(nthreads);
+    int k = 0;
     for(auto& t : m_threads)
     {
-      t = std::thread{[this] {
+      t = std::thread{[this, k = k++] {
+        while(!m_startFlag.test())
+          std::this_thread::yield();
+
+        ossia::set_thread_name(m_threads[k], "ossia exec " + std::to_string(k));
+        ossia::set_thread_realtime(m_threads[k], 95);
+        ossia::set_thread_pinned(ossia::thread_type::AudioTask, k);
+
         while(m_running)
         {
           task* t{};
@@ -131,6 +139,8 @@ public:
         }
       }};
     }
+
+    m_startFlag.test_and_set();
   }
 
   ~executor()
@@ -319,6 +329,8 @@ private:
   std::atomic_bool m_running{};
 
   ossia::small_vector<std::thread, 8> m_threads;
+  std::atomic_flag m_startFlag = ATOMIC_FLAG_INIT;
+
   taskflow* m_tf{};
   std::atomic_size_t m_doneTasks = 0;
   std::size_t m_toDoTasks = 0;

@@ -675,6 +675,18 @@ ossia::value convert(const ossia::value& val, ossia::val_type newtype)
   return ossia::value{};
 }
 
+void convert_inplace(ossia::value& val, ossia::val_type newtype)
+{
+  if(newtype != ossia::val_type::NONE)
+  {
+    lift_inplace(newtype, [&](auto t) -> void {
+      using ossia_type = typename decltype(t)::ossia_type;
+      convert_inplace<ossia_type>(val);
+    });
+  }
+}
+
+void convert_inplace(ossia::value& val, const ossia::value& cur);
 value::~value() noexcept = default;
 }
 

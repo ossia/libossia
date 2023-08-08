@@ -146,7 +146,10 @@ class midi_parameter : public ossia::net::parameter_base
 {
 public:
   midi_parameter(address_info info, ossia::net::node_base& parent);
-  ossia::net::protocol_base& get_protocol() const { return m_protocol; }
+  ossia::net::protocol_base& get_protocol() const noexcept override
+  {
+    return m_protocol;
+  }
 
   const address_info& info() const;
 
@@ -160,16 +163,16 @@ public:
   ossia::value set_value(const ossia::value& v) final override;
   ossia::value set_value(ossia::value&& v) final override;
 
-  ossia::val_type get_value_type() const final override;
+  ossia::val_type get_value_type() const noexcept final override;
   parameter_base& set_value_type(ossia::val_type) final override;
 
-  ossia::access_mode get_access() const final override;
+  ossia::access_mode get_access() const noexcept final override;
   parameter_base& set_access(ossia::access_mode) final override;
 
-  const ossia::domain& get_domain() const final override;
+  const ossia::domain& get_domain() const noexcept final override;
   parameter_base& set_domain(const ossia::domain&) final override;
 
-  ossia::bounding_mode get_bounding() const final override;
+  ossia::bounding_mode get_bounding() const noexcept final override;
   parameter_base& set_bounding(ossia::bounding_mode) final override;
 
   void on_first_callback_added() final override;

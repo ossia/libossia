@@ -38,7 +38,7 @@ ossia::value texture_parameter::set_value(ossia::value&&)
   return {};
 }
 
-val_type texture_parameter::get_value_type() const
+val_type texture_parameter::get_value_type() const noexcept
 {
   return {};
 }
@@ -48,7 +48,7 @@ net::parameter_base& texture_parameter::set_value_type(val_type)
   return *this;
 }
 
-access_mode texture_parameter::get_access() const
+access_mode texture_parameter::get_access() const noexcept
 {
   return {};
 }
@@ -58,7 +58,7 @@ net::parameter_base& texture_parameter::set_access(access_mode)
   return *this;
 }
 
-const domain& texture_parameter::get_domain() const
+const domain& texture_parameter::get_domain() const noexcept
 {
   throw;
 }
@@ -68,7 +68,7 @@ net::parameter_base& texture_parameter::set_domain(const domain&)
   return *this;
 }
 
-bounding_mode texture_parameter::get_bounding() const
+bounding_mode texture_parameter::get_bounding() const noexcept
 {
   return {};
 }

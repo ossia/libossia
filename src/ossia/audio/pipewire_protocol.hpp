@@ -8,6 +8,7 @@
 #include <ossia/detail/dylib_loader.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <pipewire/core.h>
 #include <pipewire/filter.h>
@@ -756,6 +757,11 @@ public:
 
   static void on_process(void* userdata, struct spa_io_position* position)
   {
+    static const thread_local auto _ = [] {
+      ossia::set_thread_name("ossia audio 0");
+      return 0;
+    }();
+
     if(!userdata)
       return;
 

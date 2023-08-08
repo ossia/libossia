@@ -134,6 +134,16 @@ struct osc_protocol_client : osc_protocol_common<OscVersion>
     }
     return false;
   }
+
+  template <typename T, typename Writer, typename Addresses>
+  static bool push_bundle_bounded(T& self, Writer writer, const Addresses& addresses)
+  {
+    return make_bundle_bounded(
+        bundle_bounded_client_policy<OscVersion>{}, addresses,
+        [writer](const ossia::net::bundle& bundle) {
+      writer(bundle.data.data(), bundle.data.size());
+        });
+  }
 };
 
 // Servers can push to GET addresses
@@ -168,6 +178,30 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
       return true;
     }
     return false;
+  }
+
+  template <typename T, typename Writer>
+  static bool
+  push_bundle(T& self, Writer writer, std::span<ossia::bundle_element> addresses)
+  {
+    if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addresses))
+    {
+      writer(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
+      return true;
+    }
+    return false;
+  }
+
+  template <typename T, typename Writer>
+  static bool
+  push_bundle_bounded(T& self, Writer writer, std::span<ossia::bundle_element> addresses)
+  {
+    return make_bundle_bounded(
+        bundle_bounded_server_policy<OscVersion>{}, addresses,
+        [writer](const ossia::net::bundle& bundle) {
+      writer(bundle.data.data(), bundle.data.size());
+        });
   }
 };
 

@@ -6,6 +6,7 @@
 #include <ossia/detail/dylib_loader.hpp>
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/pod_vector.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <alsa/asoundlib.h>
 
@@ -421,23 +422,31 @@ public:
         switch(format)
         {
           case SND_PCM_FORMAT_S16_LE:
-            m_thread = std::thread(
-                [this] { run_thread_deinterleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_deinterleaved<SND_PCM_FORMAT_S16_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S24_LE:
-            m_thread = std::thread(
-                [this] { run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S32_LE:
-            m_thread = std::thread(
-                [this] { run_thread_deinterleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_deinterleaved<SND_PCM_FORMAT_S32_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_FLOAT_LE:
-            m_thread = std::thread(
-                [this] { run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_deinterleaved<SND_PCM_FORMAT_FLOAT_LE>();
+            });
             m_activated = true;
             break;
           default:
@@ -450,23 +459,31 @@ public:
         switch(format)
         {
           case SND_PCM_FORMAT_S16_LE:
-            m_thread = std::thread(
-                [this] { run_thread_interleaved<SND_PCM_FORMAT_S16_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_interleaved<SND_PCM_FORMAT_S16_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S24_LE:
-            m_thread = std::thread(
-                [this] { run_thread_interleaved<SND_PCM_FORMAT_S24_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_interleaved<SND_PCM_FORMAT_S24_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S32_LE:
-            m_thread = std::thread(
-                [this] { run_thread_interleaved<SND_PCM_FORMAT_S32_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_interleaved<SND_PCM_FORMAT_S32_LE>();
+            });
             m_activated = true;
             break;
           case SND_PCM_FORMAT_FLOAT_LE:
-            m_thread = std::thread(
-                [this] { run_thread_interleaved<SND_PCM_FORMAT_FLOAT_LE>(); });
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_interleaved<SND_PCM_FORMAT_FLOAT_LE>();
+            });
             m_activated = true;
             break;
           default:
@@ -500,6 +517,7 @@ public:
   }
 
 private:
+  void init_thread() { ossia::set_thread_name("ossia audio 0"); }
   void clear_buffers()
   {
     ossia::fill(this->m_temp_buffer, 0.f);

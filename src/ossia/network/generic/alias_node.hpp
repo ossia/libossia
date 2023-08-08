@@ -72,13 +72,13 @@ private:
   ossia::value set_value(ossia::value&&) override;
   ossia::value set_value_quiet(const ossia::value& v) override;
   ossia::value set_value_quiet(ossia::value&& v) override;
-  val_type get_value_type() const override;
+  val_type get_value_type() const noexcept override;
   parameter_base& set_value_type(val_type) override;
-  access_mode get_access() const override;
+  access_mode get_access() const noexcept override;
   parameter_base& set_access(access_mode) override;
-  const domain& get_domain() const override;
+  const domain& get_domain() const noexcept override;
   parameter_base& set_domain(const domain&) override;
-  bounding_mode get_bounding() const override;
+  bounding_mode get_bounding() const noexcept override;
   parameter_base& set_bounding(bounding_mode) override;
 
   template <typename Fun>

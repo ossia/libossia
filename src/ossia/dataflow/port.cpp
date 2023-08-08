@@ -6,6 +6,8 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/network/value/destination.hpp>
+#include <ossia/protocols/midi/midi_parameter.hpp>
+#include <ossia/protocols/midi/midi_protocol.hpp>
 
 namespace ossia
 {
@@ -150,9 +152,9 @@ struct outlet_inserter
     if(data.get_data().empty())
       return;
 
-    auto vp = data;
+    //auto vp = data;
     // TODO process_port_values(vp, *addr);
-    e.insert(*addr, std::move(vp));
+    e.insert(*addr, data);
   }
 
   void operator()(const ossia::midi_port& data) const noexcept
@@ -161,7 +163,8 @@ struct outlet_inserter
     if(data.messages.empty())
       return;
 
-    e.insert(*addr, data);
+    if(auto p = dynamic_cast<ossia::net::midi::midi_parameter*>(addr))
+      e.insert(*p, data);
 #endif
   }
 
@@ -170,13 +173,7 @@ struct outlet_inserter
     assert(false);
   }
 
-  void operator()(ossia::value_port&& data) const noexcept
-  {
-    if(data.get_data().empty())
-      return;
-
-    e.insert(*addr, std::move(data));
-  }
+  void operator()(ossia::value_port&& data) const noexcept = delete;
 };
 
 void outlet::write(execution_state& e)

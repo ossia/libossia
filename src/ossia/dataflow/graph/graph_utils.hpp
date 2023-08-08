@@ -645,9 +645,6 @@ struct OSSIA_EXPORT graph_util
       ossia::graph_node& n = *node.first;
       n.set_executed(false);
       n.disable();
-
-      // TODO why is this necessary - outputs are cleared anyways ?!
-      for_each_outlet(n, [](auto& out) { out.visit(clear_data{}); });
     }
   }
 

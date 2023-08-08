@@ -5,6 +5,7 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/mutex.hpp>
 #include <ossia/detail/string_map.hpp>
+#include <ossia/detail/thread.hpp>
 #include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/common/network_logger.hpp>
 #include <ossia/network/common/node_visitor.hpp>
@@ -390,6 +391,7 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
 
   m_websocketServer->listen(m_wsPort);
   m_serverThread = std::thread{[&] {
+    ossia::set_thread_name("ossia oscq srv");
     try
     {
       m_websocketServer->run();

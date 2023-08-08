@@ -73,22 +73,22 @@ ossia::value device_parameter::set_value(ossia::value&& val)
   return set_value(val);
 }
 
-val_type device_parameter::get_value_type() const
+val_type device_parameter::get_value_type() const noexcept
 {
   return m_type;
 }
 
-access_mode device_parameter::get_access() const
+access_mode device_parameter::get_access() const noexcept
 {
   return m_access;
 }
 
-const domain& device_parameter::get_domain() const
+const domain& device_parameter::get_domain() const noexcept
 {
   return m_domain;
 }
 
-bounding_mode device_parameter::get_bounding() const
+bounding_mode device_parameter::get_bounding() const noexcept
 {
   return m_bounding;
 }

@@ -188,7 +188,7 @@ ossia::value alias_path::set_value_quiet(ossia::value&& v)
   return set_value_quiet(v);
 }
 
-val_type alias_path::get_value_type() const
+val_type alias_path::get_value_type() const noexcept
 {
   return {};
 }
@@ -198,7 +198,7 @@ parameter_base& alias_path::set_value_type(val_type)
   return *this;
 }
 
-access_mode alias_path::get_access() const
+access_mode alias_path::get_access() const noexcept
 {
   return {};
 }
@@ -208,7 +208,7 @@ parameter_base& alias_path::set_access(access_mode)
   return *this;
 }
 
-const domain& alias_path::get_domain() const
+const domain& alias_path::get_domain() const noexcept
 {
   static ossia::domain d;
   return d;
@@ -219,7 +219,7 @@ parameter_base& alias_path::set_domain(const domain&)
   return *this;
 }
 
-bounding_mode alias_path::get_bounding() const
+bounding_mode alias_path::get_bounding() const noexcept
 {
   return {};
 }

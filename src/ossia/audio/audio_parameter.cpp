@@ -91,7 +91,7 @@ ossia::value audio_parameter::set_value(ossia::value&& v)
   return set_value(v);
 }
 
-val_type audio_parameter::get_value_type() const
+val_type audio_parameter::get_value_type() const noexcept
 {
   return ossia::val_type::FLOAT;
 }
@@ -101,7 +101,7 @@ net::parameter_base& audio_parameter::set_value_type(val_type)
   return *this;
 }
 
-access_mode audio_parameter::get_access() const
+access_mode audio_parameter::get_access() const noexcept
 {
   return {};
 }
@@ -111,7 +111,7 @@ net::parameter_base& audio_parameter::set_access(access_mode)
   return *this;
 }
 
-const domain& audio_parameter::get_domain() const
+const domain& audio_parameter::get_domain() const noexcept
 {
   static ossia::domain d;
   return d;
@@ -122,7 +122,7 @@ net::parameter_base& audio_parameter::set_domain(const domain&)
   return *this;
 }
 
-bounding_mode audio_parameter::get_bounding() const
+bounding_mode audio_parameter::get_bounding() const noexcept
 {
   return {};
 }

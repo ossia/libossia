@@ -32,6 +32,7 @@ class value;
 namespace net
 {
 class node_base;
+class protocol_base;
 struct full_parameter_data;
 
 /**
@@ -58,7 +59,8 @@ public:
   using callback_index = callback_container<value_callback>::iterator;
   virtual ~parameter_base();
 
-  ossia::net::node_base& get_node() const { return m_node; }
+  ossia::net::node_base& get_node() const noexcept { return m_node; }
+  virtual ossia::net::protocol_base& get_protocol() const noexcept;
 
   /// Value getters ///
   /**
@@ -135,40 +137,40 @@ public:
     return set_value(std::move(v));
   }
 
-  std::optional<ossia::value> get_default_value() const;
+  std::optional<ossia::value> get_default_value() const noexcept;
   void set_default_value(const ossia::value& v);
 
-  virtual val_type get_value_type() const = 0;
+  virtual val_type get_value_type() const noexcept = 0;
   virtual parameter_base& set_value_type(val_type) = 0;
 
-  virtual access_mode get_access() const = 0;
+  virtual access_mode get_access() const noexcept = 0;
   virtual parameter_base& set_access(access_mode) = 0;
 
-  virtual const domain& get_domain() const = 0;
+  virtual const domain& get_domain() const noexcept = 0;
   virtual parameter_base& set_domain(const domain&) = 0;
 
-  virtual bounding_mode get_bounding() const = 0;
+  virtual bounding_mode get_bounding() const noexcept = 0;
   virtual parameter_base& set_bounding(bounding_mode) = 0;
 
-  repetition_filter get_repetition_filter() const;
+  repetition_filter get_repetition_filter() const noexcept;
   parameter_base& set_repetition_filter(repetition_filter = repetition_filter::ON);
-  virtual bool filter_value(const ossia::value& val) const
+  virtual bool filter_value(const ossia::value& val) const noexcept
   {
     return m_disabled || m_muted;
   } //! by default there is no filter
 
-  const ossia::unit_t& get_unit() const { return m_unit; }
+  const ossia::unit_t& get_unit() const noexcept { return m_unit; }
   virtual parameter_base& set_unit(const ossia::unit_t& v);
 
   // Shared across the network
-  bool get_disabled() const;
+  bool get_disabled() const noexcept;
   parameter_base& set_disabled(bool);
 
   // Local only
-  bool get_muted() const;
+  bool get_muted() const noexcept;
   parameter_base& set_muted(bool);
 
-  bool get_critical() const;
+  bool get_critical() const noexcept;
   parameter_base& set_critical(bool v);
 
 protected:

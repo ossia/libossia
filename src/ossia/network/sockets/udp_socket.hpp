@@ -125,7 +125,8 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    m_socket.send_to(boost::asio::buffer(data, sz), m_endpoint);
+    boost::system::error_code ec;
+    m_socket.send_to(boost::asio::const_buffer(data, sz), m_endpoint, 0, ec);
   }
 
   Nano::Signal<void()> on_close;

@@ -15,6 +15,7 @@
 #endif
 #include <ossia/detail/any_map.hpp>
 #include <ossia/detail/callback_container.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <smallfun.hpp>
 
@@ -64,6 +65,8 @@ static void ossia_global_init()
 #if defined(QT_QML_LIB)
     qt::qml_plugin::reg("Ossia");
 #endif
+
+    ossia::set_thread_pinned(thread_type::Ui, 0);
   }
 }
 

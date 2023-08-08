@@ -6,6 +6,7 @@
 #if __has_include(<pulse/pulseaudio.h>)
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/dylib_loader.hpp>
+#include <ossia/detail/thread.hpp>
 
 #include <pulse/pulseaudio.h>
 
@@ -412,6 +413,11 @@ private:
   static void success_cb(pa_stream*, int, void*) { }
   static void output_callback(pa_stream* stream, size_t requested_bytes, void* userdata)
   {
+    static const thread_local auto _ = [] {
+      ossia::set_thread_name("ossia audio 0");
+      return 0;
+    }();
+
     auto& self = *static_cast<pulseaudio_engine*>(userdata);
     self.tick_start();
 
