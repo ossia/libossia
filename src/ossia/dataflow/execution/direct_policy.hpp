@@ -2,9 +2,7 @@
 #include <ossia/dataflow/execution/execution_policy.hpp>
 #include <ossia/network/base/bundle.hpp>
 
-#include <concurrentqueue/blockingconcurrentqueue.h>
-
-#include <readerwritercircularbuffer.h>
+#include <blockingconcurrentqueue.h>
 
 #include <thread>
 

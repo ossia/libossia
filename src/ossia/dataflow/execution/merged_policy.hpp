@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/dataflow/execution/execution_policy.hpp>
 
-#include <concurrentqueue/blockingconcurrentqueue.h>
+#include <blockingconcurrentqueue.h>
 namespace ossia
 {
 struct merged_execution_state_policy : local_state_execution_policy
