@@ -182,7 +182,7 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
 
   template <typename T, typename Writer>
   static bool
-  push_bundle(T& self, Writer writer, std::span<ossia::bundle_element> addresses)
+  push_bundle(T& self, Writer writer, tcb::span<ossia::bundle_element> addresses)
   {
     if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addresses))
     {
@@ -195,7 +195,7 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
 
   template <typename T, typename Writer>
   static bool
-  push_bundle_bounded(T& self, Writer writer, std::span<ossia::bundle_element> addresses)
+  push_bundle_bounded(T& self, Writer writer, tcb::span<ossia::bundle_element> addresses)
   {
     return make_bundle_bounded(
         bundle_bounded_server_policy<OscVersion>{}, addresses,
