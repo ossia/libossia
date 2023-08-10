@@ -18,7 +18,7 @@ namespace ossia
 {
 void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 {
-  auto hdl = t.native_handle();
+  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
 
   SetPriorityClass(hdl, REALTIME_PRIORITY_CLASS);
   SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
