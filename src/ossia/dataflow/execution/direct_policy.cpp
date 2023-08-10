@@ -28,7 +28,7 @@ direct_execution_state_policy::direct_execution_state_policy()
       while(!m_startFlag.test())
         std::this_thread::yield();
 
-      ossia::set_thread_realtime(m_threads[i].thread, 80, SCHED_RR);
+      ossia::set_thread_realtime(m_threads[i].thread, 80, 0);
       ossia::set_thread_name(m_threads[i].thread, "ossia net " + std::to_string(i));
       ossia::set_thread_pinned(ossia::thread_type::Net, i);
 
@@ -38,9 +38,9 @@ direct_execution_state_policy::direct_execution_state_policy()
 
   m_midiThread = std::thread{[this] {
     while(!m_startFlag.test())
-      std::this_thread::sleep_for(std::chrono::microseconds(1));
+      std::this_thread::yield();
 
-    ossia::set_thread_realtime(m_midiThread, 90, SCHED_RR);
+    ossia::set_thread_realtime(m_midiThread, 90, 0);
     ossia::set_thread_name(m_midiThread, "ossia midi");
     ossia::set_thread_pinned(ossia::thread_type::Midi, 0);
 
