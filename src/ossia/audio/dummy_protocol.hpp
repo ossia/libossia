@@ -93,9 +93,6 @@ public:
         tick_end();
       }
     }};
-#if defined(__linux__)
-    pthread_setname_np(m_runThread.native_handle(), "ossia execution");
-#endif
   }
 
   ~dummy_engine() override

@@ -552,20 +552,29 @@ void apply_deferred_device_rec(
   }
 }
 
+void device_creation_notify_recursively(ossia::net::device_base& device, auto& root_node)
+{
+  for(auto& node : root_node.children())
+  {
+    device.on_node_created(*node);
+    if(auto p = node->get_parameter())
+      device.on_parameter_created(*p);
+
+    device_creation_notify_recursively(device, *node);
+  }
+}
+
 template <typename Device_T, typename Node_T, typename Data>
 /** @ingroup JSTreeCreation **/
 void apply_deferred_device(Device_T& device, deferred_js_node<Data>& root)
 {
+  auto& nroot = static_cast<Node_T&>(device.get_root_node());
   for(auto& cld : root.children)
   {
-    apply_deferred_device_rec<Device_T, Node_T, Data>(
-        device, static_cast<Node_T&>(device.get_root_node()), cld);
+    apply_deferred_device_rec<Device_T, Node_T, Data>(device, nroot, cld);
   }
 
-  for(auto& node : device.get_root_node().children())
-  {
-    device.on_node_created(*node);
-  }
+  device_creation_notify_recursively(device, nroot);
 }
 
 template <typename Methods>

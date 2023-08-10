@@ -286,7 +286,6 @@ serial_protocol::serial_protocol(
                   = [this](ossia::net::parameter_base& p, const ossia::value& v) {
                 do_write(p, v);
               };
-              qDebug() << "start timer in ms: " << (int)m_coalesce.value();
 
               ossia::qt::run_async(m_threadWorker, [this] {
                 m_threadWorker->startTimer(m_coalesce.value(), Qt::PreciseTimer);

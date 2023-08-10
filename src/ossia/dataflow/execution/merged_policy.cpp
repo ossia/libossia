@@ -51,14 +51,12 @@ threaded_merged_execution_state_policy::threaded_merged_execution_state_policy()
           ossia::launch(mm);
       }
     }
-    m_execWait.release();
   }};
 }
 
 threaded_merged_execution_state_policy::~threaded_merged_execution_state_policy()
 {
   m_stopFlag.test_and_set(std::memory_order_release);
-  m_execWait.acquire();
   m_valuesOutputThread.join();
 }
 
@@ -78,8 +76,8 @@ inline void to_state_element(
 void threaded_merged_execution_state_policy::commit()
 {
   // int i = 0;
-  m_calice.clear();
-  m_calice.reserve(10000);
+  m_states.clear();
+  m_states.reserve(10000);
   for(auto it = m_valueState.begin(), end = m_valueState.end(); it != end; ++it)
   {
     auto& [param, vec] = *it;
@@ -88,7 +86,7 @@ void threaded_merged_execution_state_policy::commit()
       case 0:
         continue;
       case 1: {
-        to_state_element(*param, vec[0].first, m_calice);
+        to_state_element(*param, vec[0].first, m_states);
         //to_state_element(*param, vec[0].first).launch();
         break;
       }
@@ -101,14 +99,14 @@ void threaded_merged_execution_state_policy::commit()
           vis(to_state_element(*param, std::move(val.first)));
         }
 
-        m_calice.push_back(std::move(m_monoState.e));
+        m_states.push_back(std::move(m_monoState.e));
         //ossia::launch(m_monoState.e);
         break;
       }
     }
     vec.clear();
   }
-  this->m_messagesToApply.enqueue(std::move(m_calice));
+  this->m_messagesToApply.enqueue(std::move(m_states));
   // std::cout << "NUM MESSAGES: " << i << std::endl;
 
   commit_common();

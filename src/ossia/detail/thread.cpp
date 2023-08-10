@@ -58,7 +58,8 @@ void set_thread_name(std::thread& t, std::string_view name)
 {
 #if BOOST_OS_MACOS
   pthread_setname_np(name.data());
-#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
+#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
+    && !defined(__EMSCRIPTEN__)
   pthread_setname_np(t.native_handle(), name.data());
 #endif
 }
@@ -67,7 +68,8 @@ void set_thread_name(std::string_view name)
 {
 #if BOOST_OS_MACOS
   pthread_setname_np(name.data());
-#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
+#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
+    && !defined(__EMSCRIPTEN__)
   pthread_setname_np(pthread_self(), name.data());
 #endif
 }

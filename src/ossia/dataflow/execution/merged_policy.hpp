@@ -30,9 +30,8 @@ struct threaded_merged_execution_state_policy : local_state_execution_policy
       m_messagesToApply;
 
   std::atomic_flag m_stopFlag = ATOMIC_FLAG_INIT;
-  std::binary_semaphore m_execWait{0};
 
-  std::vector<ossia::state_element> m_calice;
+  std::vector<ossia::state_element> m_states;
 
   int current_commit{};
 };
