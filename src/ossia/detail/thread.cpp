@@ -27,6 +27,7 @@ void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 void set_thread_name(std::thread& t, std::string_view name) { }
 void set_thread_name(std::string_view name) { }
 void set_thread_pinned(std::thread& t, int cpu) { }
+void set_thread_pinned(int cpu) { }
 
 int get_pid()
 {

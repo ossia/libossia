@@ -42,7 +42,11 @@ using ossia_audio_lock_t = std::unique_lock<ossia::audio_spin_mutex>;
     (state).mutex                          \
   }
 #else
-using ossia_audio_lock_t = int;
+struct ossia_audio_lock_t
+{
+  void lock() { }
+  void unlock() { }
+};
 #define OSSIA_EXEC_STATE_LOCK_READ(state) \
   ossia_audio_lock_t ossia_read_lock;     \
   (void)ossia_read_lock;
