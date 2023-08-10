@@ -2,6 +2,9 @@
 #include <ossia/dataflow/execution/execution_policy.hpp>
 
 #include <blockingconcurrentqueue.h>
+
+#include <semaphore>
+
 namespace ossia
 {
 struct merged_execution_state_policy : local_state_execution_policy
