@@ -73,7 +73,8 @@ void set_thread_name(std::string_view name)
 
 void set_thread_pinned(int cpu)
 {
-#if(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
+#if !defined(__EMSCRIPTEN__) && (!BOOST_OS_APPLE) \
+    && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
 
 #if(BOOST_LIB_C_GNU)
   cpu_set_t cpus{};
