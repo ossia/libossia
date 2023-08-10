@@ -336,6 +336,14 @@ struct domain_set_min_visitor
   {
     domain.min = incoming;
   }
+  OSSIA_INLINE void operator()(domain_base<int32_t>& domain, float incoming)
+  {
+    domain.min = incoming;
+  }
+  OSSIA_INLINE void operator()(domain_base<float>& domain, int32_t incoming)
+  {
+    domain.min = incoming;
+  }
   OSSIA_INLINE void operator()(domain_base<bool>& domain, bool incoming) { }
   OSSIA_INLINE void
   operator()(vector_domain& domain, const std::vector<ossia::value>& incoming)
@@ -435,6 +443,14 @@ struct domain_set_max_visitor
     domain.max = incoming;
   }
   OSSIA_INLINE void operator()(domain_base<float>& domain, float incoming)
+  {
+    domain.max = incoming;
+  }
+  OSSIA_INLINE void operator()(domain_base<int32_t>& domain, float incoming)
+  {
+    domain.max = incoming;
+  }
+  OSSIA_INLINE void operator()(domain_base<float>& domain, int32_t incoming)
   {
     domain.max = incoming;
   }

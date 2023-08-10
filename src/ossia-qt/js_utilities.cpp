@@ -287,8 +287,8 @@ net::parameter_data make_parameter_data(const QJSValue& js)
 
     if(js.hasProperty("min") || js.hasProperty("max"))
     {
-      set_min(domain, value_from_js(js.property("min")));
-      set_max(domain, value_from_js(js.property("max")));
+      set_min(domain, value_from_js(base_v, js.property("min")));
+      set_max(domain, value_from_js(base_v, js.property("max")));
     }
 
     dat.value = value_from_js(base_v, js.property("value"));
