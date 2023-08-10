@@ -73,11 +73,19 @@ void set_thread_name(std::string_view name)
 
 void set_thread_pinned(int cpu)
 {
-  cpu_set_t cpus;
+#if(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
+
+#if(BOOST_LIB_C_GNU)
+  cpu_set_t cpus{};
+#else // FreeBSD, NetBSD
+  cpuset_t cpus{};
+#endif
+
   CPU_ZERO(&cpus);
   CPU_SET(cpu, &cpus);
 
-  pthread_setaffinity_np(pthread_self(), sizeof(cpu_set_t), &cpus);
+  pthread_setaffinity_np(pthread_self(), sizeof(cpus), &cpus);
+#endif
 }
 
 int get_pid()
