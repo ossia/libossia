@@ -24,7 +24,27 @@ execution_state::~execution_state() { }
 
 void execution_state::set_policy(const tick_setup_options& opt)
 {
-  m_policy = std::make_unique<merged_execution_state_policy>();
+  switch(opt.commit)
+  {
+    case tick_setup_options::Default:
+      m_policy = std::make_unique<default_execution_state_policy>();
+      return;
+    case tick_setup_options::Ordered:
+      m_policy = std::make_unique<ordered_execution_state_policy>();
+      return;
+    case tick_setup_options::Priorized:
+      m_policy = std::make_unique<priorized_execution_state_policy>();
+      return;
+    case tick_setup_options::Merged:
+      m_policy = std::make_unique<merged_execution_state_policy>();
+      return;
+    case tick_setup_options::MergedThreaded:
+      m_policy = std::make_unique<threaded_merged_execution_state_policy>();
+      return;
+    case tick_setup_options::DirectThreaded:
+      m_policy = std::make_unique<direct_execution_state_policy>();
+      return;
+  }
 }
 
 void execution_state::clear_devices()

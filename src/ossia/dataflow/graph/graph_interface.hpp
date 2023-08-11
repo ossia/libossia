@@ -88,7 +88,9 @@ struct tick_setup_options
     Default,
     Ordered,
     Priorized,
-    Merged
+    Merged,
+    MergedThreaded,
+    DirectThreaded
   } commit{};
   enum
   {
