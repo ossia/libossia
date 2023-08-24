@@ -37,9 +37,15 @@ public:
   const ossia::unit_t& get_unit() const noexcept
   {
     auto outlet = m_outlets.back();
-    auto unit = outlet->target<ossia::value_port>()->type.target<ossia::unit_t>();
-    assert(unit);
-    return *unit;
+    if(auto unit = outlet->target<ossia::value_port>()->type.target<ossia::unit_t>())
+    {
+      return *unit;
+    }
+    else
+    {
+      static const ossia::unit_t default_unit = ossia::rgb_u{};
+      return default_unit;
+    }
   }
 
   ossia::value get_color(ossia::argb c)
