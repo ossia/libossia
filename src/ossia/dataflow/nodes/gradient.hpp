@@ -54,9 +54,8 @@ public:
     return ossia::convert(res, ossia::argb_u{}, get_unit());
   }
 
-  void handle_before_first(const ossia::token_request& tk, int64_t tick_start)
+  void handle_before_first(const ossia::token_request& tk, int64_t tick_start, double position)
   {
-    const auto position = tk.position();
     auto& out = *m_outlets[0]->target<ossia::value_port>();
     auto beg = m_data.begin();
 
@@ -89,11 +88,16 @@ public:
     }
   }
 
+  ossia::time_value process_dur;
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
+    if(this->process_dur.impl <= 0)
+      return;
+
     auto& out = *m_outlets[0]->target<ossia::value_port>();
 
     const auto [tick_start, d] = e.timings(t);
+    const double pos = t.position() * double(t.parent_duration.impl) / double(this->process_dur.impl);
 
     switch(m_data.size())
     {
@@ -101,14 +105,14 @@ public:
         out.write_value(get_color(ossia::argb{0., 0., 0., 0.}), tick_start);
         return;
       case 1:
-        handle_before_first(t, tick_start);
+        handle_before_first(t, tick_start, pos);
         return;
       default: {
-        auto it_next = m_data.lower_bound(t.position());
+        auto it_next = m_data.lower_bound(pos);
         // Before start
         if(it_next == m_data.begin())
         {
-          handle_before_first(t, tick_start);
+          handle_before_first(t, tick_start, pos);
         }
         // past end
         else if(it_next == m_data.end())
@@ -123,7 +127,7 @@ public:
           out.write_value(
               ease_color(
                   it_prev->first, it_prev->second, it_next->first, it_next->second,
-                  t.position()),
+                  pos),
               tick_start);
         }
       }
@@ -161,6 +165,8 @@ class gradient_process final : public ossia::node_process
 {
 public:
   using ossia::node_process::node_process;
-  void start() override { static_cast<gradient*>(node.get())->tween = std::nullopt; }
+  void start() override {
+    static_cast<gradient*>(node.get())->tween = std::nullopt;
+  }
 };
 }
