@@ -145,7 +145,7 @@ struct faust_exec_ui_clone final : UI
   void addHorizontalBargraph(
       const char* label, FAUSTFLOAT* zone, FAUSTFLOAT min, FAUSTFLOAT max) override
   {
-    self.controls[o++].second = zone;
+    self.displays[o++].second = zone;
   }
 
   void addVerticalBargraph(
