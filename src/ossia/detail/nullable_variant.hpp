@@ -75,12 +75,9 @@ struct nullable_variant
   }
 
   // FIXME is this safe
-  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept { return this; }
+  OSSIA_MAXIMUM_INLINE constexpr void* target() noexcept { return this; }
 
-  [[deprecated]] OSSIA_MAXIMUM_INLINE constexpr const void* target() const noexcept
-  {
-    return this;
-  }
+  OSSIA_MAXIMUM_INLINE constexpr const void* target() const noexcept { return this; }
 };
 
 /*
