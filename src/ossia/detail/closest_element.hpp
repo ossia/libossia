@@ -19,8 +19,9 @@ struct lower_bound_helper
   {
     return std::lower_bound(vec.begin(), vec.end(), val);
   }
-  template <typename K, typename V, typename U>
-  auto operator()(const ossia::hash_map<K, V>& vec, const U& val) const noexcept
+  template <typename T, typename U>
+    requires requires(T vec, U val) { vec.lower_bound(val); }
+  auto operator()(const T& vec, const U& val) const noexcept
   {
     return vec.lower_bound(val);
   }
@@ -70,6 +71,35 @@ const auto& closest_element(const T& vec, const U& val) noexcept
     return *vec.crbegin();
   }
 }
+template <typename T, typename U>
+auto closest_element_it(const T& vec, const U& val) noexcept
+{
+  using namespace std;
+  using namespace ossia::detail;
+  if(vec.empty())
+    return vec.cend();
+
+  auto it = lower_bound_helper{}(vec, val);
+  if(it != vec.cend())
+  {
+    if(it != vec.cbegin())
+    {
+      auto prev = it - 1;
+      if(std::abs(map_key_helper{}(prev)-val) < std::abs(map_key_helper{}(it)-val))
+        return prev;
+      else
+        return it;
+    }
+    else
+    {
+      return it;
+    }
+  }
+  else
+  {
+    return vec.end() - 1;
+  }
+}
 
 template <typename T, typename U>
 auto closest_next_element(T it, T end, const U& val) noexcept
@@ -79,7 +109,7 @@ auto closest_next_element(T it, T end, const U& val) noexcept
   auto next_it = it + 1;
   while(next_it != end)
   {
-    if(abs(map_key_helper{}(it)-val) < abs(map_key_helper{}(next_it)-val))
+    if(std::abs(map_key_helper{}(it)-val) < std::abs(map_key_helper{}(next_it)-val))
       return it;
     it = next_it;
     ++next_it;
