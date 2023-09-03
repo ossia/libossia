@@ -7,8 +7,9 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
   endif()
   add_library(re2 INTERFACE IMPORTED GLOBAL)
   add_library(re2::re2 ALIAS re2)
-  target_include_directories(re2 INTERFACE SYSTEM ${RE2_INCLUDE_DIR})
-  target_link_libraries(re2 INTERFACE ${RE2_LIBRARY})
+
+  target_include_directories(re2 SYSTEM INTERFACE "${RE2_INCLUDE_DIR}")
+  target_link_libraries(re2 INTERFACE "${RE2_LIBRARY}")
 else()
   add_library(re2 STATIC
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitmap256.cc
@@ -49,7 +50,7 @@ else()
     target_compile_options(re2 PRIVATE -w)
   endif()
 
-  target_include_directories(re2 PUBLIC SYSTEM $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/re2>)
+  target_include_directories(re2 SYSTEM PUBLIC $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/re2>)
 
   if(UNIX)
     target_link_libraries(re2 PUBLIC Threads::Threads)
