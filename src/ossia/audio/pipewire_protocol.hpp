@@ -543,16 +543,27 @@ public:
     this->loop = loop;
 
     auto lp = loop->lp;
+    // clang-format off
     // Create the filter (the main pipewire object which will represent the
     // software)
-    auto filter_props = pw.properties_new(
-        PW_KEY_MEDIA_TYPE, "Audio", PW_KEY_MEDIA_CATEGORY, "Duplex", PW_KEY_MEDIA_ROLE,
-        "DSP", PW_KEY_MEDIA_NAME, "ossia", PW_KEY_NODE_LATENCY,
-        fmt::format("{}/{}", setup.buffer_size, setup.rate).c_str(),
-        PW_KEY_NODE_ALWAYS_PROCESS, "true", PW_KEY_NODE_FORCE_RATE, "true",
-        PW_KEY_NODE_PAUSE_ON_IDLE, "false", PW_KEY_NODE_SUSPEND_ON_IDLE, "false",
-        nullptr);
+    auto filter_props{
+        pw.properties_new(
+            PW_KEY_MEDIA_TYPE, "Audio",
+            PW_KEY_MEDIA_CATEGORY, "Duplex",
+            PW_KEY_MEDIA_ROLE, "DSP",
+            PW_KEY_MEDIA_NAME, "ossia",
+            PW_KEY_NODE_LATENCY, fmt::format("{}/{}", setup.buffer_size, setup.rate).c_str(),
+            PW_KEY_NODE_FORCE_QUANTUM, fmt::format("{}", setup.buffer_size).c_str(),
+            PW_KEY_NODE_LOCK_QUANTUM, "true",
+            PW_KEY_NODE_RATE, fmt::format("{}/{}", 1, setup.rate).c_str(),
+            PW_KEY_NODE_FORCE_RATE, fmt::format("{}", setup.rate).c_str(),
+            PW_KEY_NODE_LOCK_RATE, "true",
+            PW_KEY_NODE_ALWAYS_PROCESS, "true",
+            PW_KEY_NODE_PAUSE_ON_IDLE, "false",
+            PW_KEY_NODE_SUSPEND_ON_IDLE, "false",
+            nullptr)};
 
+    // clang-format on
     this->filter = pw.filter_new_simple(
         lp, setup.name.c_str(), filter_props, &filter_events, this);
     if(!this->filter)
