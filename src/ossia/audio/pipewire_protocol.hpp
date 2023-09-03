@@ -266,7 +266,7 @@ struct pipewire_context
     }
 
     this->registry = pw_core_get_registry(this->core, PW_VERSION_REGISTRY, 0);
-    if(!this->core)
+    if(!this->registry)
     {
       ossia::logger().error("PipeWire: core_get_registry failed!");
       return;
@@ -555,6 +555,10 @@ public:
 
     this->filter = pw.filter_new_simple(
         lp, setup.name.c_str(), filter_props, &filter_events, this);
+    if(!this->filter)
+    {
+      throw std::runtime_error("PipeWire: could not create filter instance");
+    }
 
     // Create the request ports
     for(std::size_t i = 0; i < setup.inputs.size(); i++)
