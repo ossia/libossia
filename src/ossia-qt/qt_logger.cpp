@@ -4,6 +4,7 @@
 
 #include <ossia-qt/qt_logger.hpp>
 
+#include <QDebug>
 #include <QString>
 #include <QStringBuilder>
 #include <qobjectdefs.h>
@@ -138,5 +139,39 @@ QString sanitize_name(QString name, const std::vector<QString>& brethren)
 }
 }
 
+namespace ossia::qt
+{
+void log_sink::log(const spdlog::details::log_msg& msg)
+{
+  auto logger
+      = QMessageLogger(msg.source.filename, msg.source.line, msg.source.funcname);
+
+  switch(msg.level)
+  {
+    case spdlog::level::level_enum::off:
+      break;
+    case spdlog::level::level_enum::trace:
+      logger.info("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    case spdlog::level::level_enum::info:
+      logger.info("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    case spdlog::level::level_enum::debug:
+      logger.debug("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    case spdlog::level::level_enum::warn:
+      logger.warning("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    case spdlog::level::level_enum::err:
+      logger.critical("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    case spdlog::level::level_enum::critical:
+      logger.critical("[ossia] %.*s", (int)msg.payload.size(), msg.payload.data());
+      break;
+    default:
+      break;
+  }
+}
+}
 W_OBJECT_IMPL(ossia::qt::log_sink)
 ossia::qt::log_sink::~log_sink() = default;

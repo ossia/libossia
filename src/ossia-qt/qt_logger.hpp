@@ -26,14 +26,8 @@ public:
 
   void set_pattern(const std::string& pattern) override { }
   void set_formatter(std::unique_ptr<spdlog::formatter> sink_formatter) override { }
-  void log(const spdlog::details::log_msg& msg) override
-  {
-    l(msg.level, QString::fromUtf8(msg.payload.data(), msg.payload.size()));
-  }
+  void log(const spdlog::details::log_msg& msg) override;
 
   void flush() override { }
-
-  void l(spdlog::level::level_enum arg_1, const QString& arg_2)
-      E_SIGNAL(OSSIA_EXPORT, l, arg_1, arg_2)
 };
 }
