@@ -517,7 +517,12 @@ public:
   }
 
 private:
-  void init_thread() { ossia::set_thread_name("ossia audio 0"); }
+  void init_thread()
+  {
+    ossia::set_thread_name("ossia audio 0");
+    ossia::set_thread_pinned(thread_type::Audio, 0);
+  }
+
   void clear_buffers()
   {
     ossia::fill(this->m_temp_buffer, 0.f);
