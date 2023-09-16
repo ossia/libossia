@@ -40,7 +40,7 @@ else()
 
   set_target_properties(re2 PROPERTIES UNITY_BUILD 0)
   if(MSVC)
-    target_compile_definitions(re2 PRIVATE /utf-8)
+    target_compile_options(re2 PRIVATE /utf-8)
   endif()
 
   if(WIN32)
