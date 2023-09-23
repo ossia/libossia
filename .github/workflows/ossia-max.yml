@@ -81,7 +81,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: install deps
-      run: cinst -y ninja
+      run: choco install -y ninja
     - name : build
       shell: cmd
       run: |
