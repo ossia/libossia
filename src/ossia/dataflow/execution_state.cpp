@@ -18,7 +18,9 @@
 
 namespace ossia
 {
-execution_state::execution_state() { }
+execution_state::execution_state() {
+  m_policy = std::make_unique<merged_execution_state_policy>();
+}
 
 execution_state::~execution_state() { }
 

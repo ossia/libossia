@@ -2,6 +2,7 @@
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/network/oscquery/detail/typetag.hpp>
 
+#include <oscpack/osc/OscTypes.h>
 namespace ossia::oscquery
 {
 

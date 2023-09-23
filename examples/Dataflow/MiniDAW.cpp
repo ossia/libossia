@@ -72,7 +72,7 @@ struct tick
       auto log = g_exec_log.start_commit();
 #endif
 
-      st.commit_merged();
+      st.commit();
     }
   }
 };

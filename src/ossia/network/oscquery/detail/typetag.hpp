@@ -7,7 +7,6 @@
 #include <ossia/network/dataspace/dataspace_visitors.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <oscpack/osc/OscTypes.h>
 namespace ossia::oscquery
 {
 //! Returns the OSC Typetag associated to an ossia node, if there is a value
