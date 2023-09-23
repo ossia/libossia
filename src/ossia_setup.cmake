@@ -171,16 +171,22 @@ target_link_libraries(ossia
     $<BUILD_INTERFACE:readerwriterqueue::readerwriterqueue>
     $<BUILD_INTERFACE:concurrentqueue::concurrentqueue>
     $<BUILD_INTERFACE:websocketpp::websocketpp>
-    $<BUILD_INTERFACE:dr_libs::dr_libs>
-    $<BUILD_INTERFACE:perlinnoise::perlinnoise>
     $<BUILD_INTERFACE:rapidjson::rapidjson>
-    $<BUILD_INTERFACE:rnd::rnd>
     $<BUILD_INTERFACE:smallfun::smallfun>
     $<BUILD_INTERFACE:span::span>
     $<BUILD_INTERFACE:spdlog::spdlog>
     $<BUILD_INTERFACE:tuplet::tuplet>
     $<BUILD_INTERFACE:unordered_dense::unordered_dense>
 )
+
+if(OSSIA_DATAFLOW)
+  target_link_libraries(ossia
+    PUBLIC
+      $<BUILD_INTERFACE:dr_libs::dr_libs>
+      $<BUILD_INTERFACE:perlinnoise::perlinnoise>
+      $<BUILD_INTERFACE:rnd::rnd>
+  )
+endif()
 
 target_include_directories(ossia SYSTEM
   PUBLIC
