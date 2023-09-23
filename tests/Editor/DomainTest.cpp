@@ -663,12 +663,12 @@ TEST_CASE("test_get_min_max", "test_get_min_max")
   set_max(d, int{25});
   REQUIRE(get_max(d) == int{25});
 
-  // No value
+  // Converted
   set_min(d, float{7});
-  REQUIRE(get_min(d) == value{});
+  REQUIRE(get_min(d) == int{7});
 
-  set_max(d, float{42});
-  REQUIRE(get_max(d) == value{});
+  set_max(d, float{42.2f});
+  REQUIRE(get_max(d) == int{42});
 }
 
 { // Generic domain

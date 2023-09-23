@@ -86,10 +86,10 @@ std::string string_from_path(const std::vector<std::string>& vs)
   auto rit = vs.rbegin();
   for(; rit != vs.rend(); ++rit)
   {
-    fmt::format_to(b, "/{}", *rit);
+    fmt::format_to(fmt::appender(b), "/{}", *rit);
   }
   if(vs.empty())
-    fmt::format_to(b, "/");
+    fmt::format_to(fmt::appender(b), "/");
 
   return {b.data(), b.size()};
 }

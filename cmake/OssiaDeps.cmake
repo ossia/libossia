@@ -16,6 +16,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       SmallFunction
       span
       spdlog
+      tuplet
       unordered_dense
       verdigris
       weakjack
