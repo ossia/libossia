@@ -56,7 +56,7 @@ endif()
 
 if(OSSIA_PROTOCOL_MIDI)
   target_sources(ossia PRIVATE ${OSSIA_MIDI_SRCS} ${OSSIA_MIDI_HEADERS})
-  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:libremidi>)
+  target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:libremidi>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} MIDI)
 
   if(OSSIA_ENABLE_JACK)
