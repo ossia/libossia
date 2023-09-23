@@ -7,7 +7,11 @@
 
 namespace ossia
 {
-struct merged_execution_state_policy : local_state_execution_policy
+struct
+#if defined(OSSIA_TESTING)
+    OSSIA_EXPORT
+#endif
+        merged_execution_state_policy : local_state_execution_policy
 {
   void commit() override;
   ossia::mono_state m_monoState;

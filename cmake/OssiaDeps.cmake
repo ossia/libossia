@@ -19,15 +19,22 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
       tuplet
       unordered_dense
       verdigris
-      weakjack
       websocketpp
       whereami
       ../cmake/cmake-modules
       ios-cmake
   )
 
+  if(OSSIA_ENABLE_JACK)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} weakjack)
+  endif()
+
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} exprtk dr_libs rubberband libsamplerate kfr)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dno dr_libs exprtk libsamplerate perlinnoise rubberband)
+  endif()
+
+  if(OSSIA_ENABLE_FFT)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} kfr)
   endif()
 
   if(OSSIA_DNSSD)
@@ -71,15 +78,10 @@ endif()
 include(deps/boost)
 include(deps/concurrentqueue)
 include(deps/ctre)
-include(deps/dno)
-include(deps/dr_libs)
-include(deps/exprtk)
 include(deps/flicks)
 include(deps/fmt)
-include(deps/libremidi)
 include(deps/mdspan)
 include(deps/nano-signal-slot)
-include(deps/perlinnoise)
 include(deps/rapidfuzz)
 include(deps/rapidjson)
 include(deps/re2)
@@ -93,7 +95,15 @@ include(deps/unordered_dense)
 include(deps/verdigris)
 include(deps/websocketpp)
 
+if(OSSIA_PROTOCOL_MIDI)
+  include(deps/libremidi)
+endif()
+
 if(OSSIA_DATAFLOW)
+  include(deps/dno)
+  include(deps/dr_libs)
+  include(deps/exprtk)
+  include(deps/perlinnoise)
   if(OSSIA_ENABLE_LIBSAMPLERATE)
     include(deps/samplerate) # comes before as rubberband depends on it
     if(NOT TARGET SampleRate::samplerate)
