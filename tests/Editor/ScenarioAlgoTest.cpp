@@ -49,12 +49,19 @@ bool operator==(const std::vector<ossia::simple_token_request>& lhs, const std::
 }
 */
 
-auto start_event(ossia::scenario& s)
+static auto start_event(ossia::scenario& s)
 {
   auto sn = s.get_start_time_sync();
   return *sn->get_time_events().begin();
 }
-ossia::token_request
+
+static auto start_and_tick(const std::shared_ptr<ossia::time_interval>& itv)
+{
+  itv->start();
+  itv->tick_current(ossia::time_value{}, {});
+}
+
+static ossia::token_request
 default_request(ossia::time_value from = {}, ossia::time_value to = {})
 {
   ossia::token_request req;
@@ -83,8 +90,8 @@ TEST_CASE("test_exec_simple", "test_exec_simple")
       = time_interval::create({}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
   s.scenario->add_time_interval(c);
 
-  s.interval->start_and_tick();
-  REQUIRE(se->get_status() == time_event::status::FINISHED);
+  start_and_tick(s.interval);
+  REQUIRE(se->get_status() & time_event::status::FINISHED);
   REQUIRE(c->get_date() == 0_tv);
 
   s.interval->tick(1000_tv, default_request());
@@ -96,13 +103,13 @@ TEST_CASE("test_exec_simple", "test_exec_simple")
   s.interval->tick(1_tv, default_request()); // The interval is stopped
 
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::FINISHED);
+  REQUIRE(c->get_end_event().get_status() & time_event::status::FINISHED);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::FINISHED);
+  REQUIRE(c->get_end_event().get_status() & time_event::status::FINISHED);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c->get_date() == 0_tv);
-  REQUIRE(c->get_end_event().get_status() == time_event::status::FINISHED);
+  REQUIRE(c->get_end_event().get_status() & time_event::status::FINISHED);
 }
 TEST_CASE("test_exec_0", "test_exec_0")
 {
@@ -117,8 +124,8 @@ TEST_CASE("test_exec_0", "test_exec_0")
       = time_interval::create({}, *se, *ee, 0_tv, 0_tv, 0_tv);
   s.scenario->add_time_interval(c);
 
-  s.interval->start_and_tick();
-  REQUIRE(se->get_status() == time_event::status::FINISHED);
+  start_and_tick(s.interval);
+  REQUIRE(se->get_status() & time_event::status::FINISHED);
   REQUIRE(c->get_date() == 0_tv);
 
   s.interval->tick(1000_tv, default_request());
@@ -143,7 +150,7 @@ TEST_CASE("test_exec_chain_long", "test_exec_chain_long")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(500_tv, default_request());
   REQUIRE(c0->get_date() == 500_tv);
   REQUIRE(c1->get_date() == 0_tv);
@@ -176,7 +183,7 @@ TEST_CASE("test_exec_chain_tokens", "test_exec_chain_tokens")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
 
   s.interval->tick(50_tv, default_request());
   REQUIRE(c1->get_date() == 40_tv);
@@ -235,7 +242,7 @@ TEST_CASE("test_exec_chain_multi", "test_exec_chain_multi")
   s.scenario->add_time_interval(c2);
   s.scenario->add_time_interval(c3);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(5_tv, default_request());
   std::cerr << e0->get_status() << " " << e1->get_status() << " " << e2->get_status()
             << " " << e3->get_status() << std::endl;
@@ -277,7 +284,7 @@ TEST_CASE("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
   s.scenario->add_time_interval(c2);
   s.scenario->add_time_interval(c3);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     s.interval->tick(5_tv, default_request());
     std::cerr << e1->get_status() << " " << e2->get_status() << " " << e3->get_status()
@@ -306,7 +313,7 @@ TEST_CASE("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
               << " " << e4->get_status();
 
     REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 0_tv);
     REQUIRE(e2->get_status() == time_event::status::NONE);
@@ -324,7 +331,7 @@ TEST_CASE("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
               << " " << e4->get_status();
 
     REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 5_tv);
     REQUIRE(e2->get_status() == time_event::status::PENDING);
@@ -372,7 +379,7 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
   s.scenario->add_time_interval(c2);
   s.scenario->add_time_interval(c3);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     s.interval->tick(5_tv, default_request());
     std::cerr << e1->get_status() << " " << e2->get_status() << " " << e3->get_status();
@@ -418,10 +425,10 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
     // FIXME there is some indeterminism here. Hypothesis is that this is due because of a pointer set.
     //REQUIRE(c0->get_date() == 0_tv);
     REQUIRE(c0->get_date() == 25_tv);
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 0_tv);
-    //REQUIRE(e2->get_status() == time_event::status::FINISHED);
+    //REQUIRE(e2->get_status() & time_event::status::FINISHED);
     REQUIRE(e2->get_status() == time_event::status::NONE);
 
     REQUIRE(c2->get_date() == 0_tv);
@@ -436,10 +443,10 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
     std::cerr << e1->get_status() << " " << e2->get_status() << " " << e3->get_status();
 
     REQUIRE(c0->get_date() == 0_tv);
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c1->get_date() == 0_tv);
-    REQUIRE(e2->get_status() == time_event::status::FINISHED);
+    REQUIRE(e2->get_status() & time_event::status::FINISHED);
 
     REQUIRE(c2->get_date() == 0_tv);
     REQUIRE(e3->get_status() == time_event::status::NONE);
@@ -468,7 +475,7 @@ TEST_CASE("test_min", "test_min")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c0->get_date() == 1000_tv);
   REQUIRE(c1->get_date() == 0_tv);
@@ -504,7 +511,7 @@ TEST_CASE("test_max", "test_max")
   scenario.add_time_interval(c0);
   scenario.add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(3000_tv, default_request());
   REQUIRE(c0->get_date() == 3000_tv);
   REQUIRE(c1->get_date() == 0_tv);
@@ -537,7 +544,7 @@ TEST_CASE("test_inter_tick", "test_inter_tick")
   scenario.add_time_interval(c1);
   scenario.add_time_interval(c2);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(1000_tv, default_request());
   REQUIRE(c0->get_date() == 1000_tv);
   REQUIRE(c1->get_date() == 0_tv);
@@ -566,7 +573,7 @@ TEST_CASE("test_unconnected", "test_unconnected")
   REQUIRE(e0->get_status() == time_event::status::NONE);
   REQUIRE(e1->get_status() == time_event::status::NONE);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
 
   REQUIRE(c0->get_date() == 0_tv);
   REQUIRE(e0->get_status() == time_event::status::NONE);
@@ -658,7 +665,7 @@ TEST_CASE("test_trigger", "test_trigger")
   scenario.add_time_interval(c0);
   scenario.add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(15_tv, default_request());
   REQUIRE(c0->get_date() == 15_tv);
   REQUIRE(c1->get_date() == 0_tv);
@@ -695,7 +702,7 @@ TEST_CASE("test_trigger_at_start", "test_trigger_at_start")
   REQUIRE(!scenario.get_start_time_sync()->is_evaluating());
   REQUIRE(c0->get_date() == 0_tv);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   s.interval->tick(15_tv, default_request());
   REQUIRE(c0->get_date() == 0_tv);
   REQUIRE(scenario.get_start_time_sync()->is_evaluating());
@@ -840,7 +847,7 @@ TEST_CASE("test_tokens_min", "test_tokens_min")
     REQUIRE(c1->node->requested_tokens.size() == 0);
   }
 
-  REQUIRE(e1->get_status() == time_event::status::FINISHED);
+  REQUIRE(e1->get_status() & time_event::status::FINISHED);
 }
 
 TEST_CASE("test_autom", "test_autom")
@@ -870,7 +877,7 @@ TEST_CASE("test_autom", "test_autom")
   //      proc->set_behavior(crv);
   //      c0->add_time_process(proc);
 
-  //      s.interval->start_and_tick();
+  //      start_and_tick(s.interval);
   //      s.interval->tick(1000_tv);
   //      s.interval->tick(999_tv);
   //      s.interval->tick(1_tv);
@@ -905,7 +912,7 @@ TEST_CASE("test_autom_and_state", "test_autom_and_state")
   //      proc->set_behavior(crv);
   //      c0->add_time_process(proc);
 
-  //      s.interval->start_and_tick();
+  //      start_and_tick(s.interval);
   //      s.interval->tick(1000_tv);
   //      s.interval->tick(999_tv);
   //      s.interval->tick(1_tv);
@@ -940,7 +947,7 @@ TEST_CASE("test_percentage", "test_percentage")
   c0->add_time_process(proc);
   g.add_node(node);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     ossia::execution_state s;
     g.state(s);
@@ -994,7 +1001,7 @@ TEST_CASE("test_percentage_long", "test_percentage_long")
   c0->add_time_process(proc);
   g.add_node(node);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     ossia::execution_state s;
     g.state(s);
@@ -1132,7 +1139,7 @@ TEST_CASE("test_musical_bar", "test_musical_bar")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     s.interval->tick(5_tv, default_request());
 
@@ -1192,7 +1199,7 @@ TEST_CASE("test_musical_bar", "test_musical_bar")
     std::cerr << std::flush;
     std::cout << std::flush;
 
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
     ossia::simple_token_request_vec expected0{
         {.prev_date = 22050_tv, .date = 88199_tv, .offset = 0_tv}};
 
@@ -1257,7 +1264,7 @@ TEST_CASE("test_musical_bar_offset", "test_musical_bar_offset")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     // we go past cx, 1/4 in c0
     s.interval->tick(88200_tv * 2, default_request());
@@ -1307,7 +1314,7 @@ TEST_CASE("test_musical_bar_offset", "test_musical_bar_offset")
     std::cerr << std::flush;
     std::cout << std::flush;
 
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
     ossia::simple_token_request_vec expected0{
         {.prev_date = 44600_tv, .date = 44600_tv + 87700_tv - 1_tv, .offset = 0_tv}};
 
@@ -1358,7 +1365,7 @@ TEST_CASE("test_musical_quarter", "test_musical_quarter")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     s.interval->tick(50_tv, default_request());
 
@@ -1408,7 +1415,7 @@ TEST_CASE("test_musical_quarter", "test_musical_quarter")
     std::cerr << std::flush;
     std::cout << std::flush;
 
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
     ossia::simple_token_request_vec expected0{
         {.prev_date = 20050_tv, .date = 22049_tv, .offset = 0_tv}};
 
@@ -1465,7 +1472,7 @@ TEST_CASE("test_musical_eighth", "test_musical_eighth")
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
 
-  s.interval->start_and_tick();
+  start_and_tick(s.interval);
   {
     s.interval->tick(50_tv, default_request());
 
@@ -1515,7 +1522,7 @@ TEST_CASE("test_musical_eighth", "test_musical_eighth")
     std::cerr << std::flush;
     std::cout << std::flush;
 
-    REQUIRE(e1->get_status() == time_event::status::FINISHED);
+    REQUIRE(e1->get_status() & time_event::status::FINISHED);
     ossia::simple_token_request_vec expected0{
         {.prev_date = 60_tv, .date = 11024_tv, .offset = 0_tv}};
 

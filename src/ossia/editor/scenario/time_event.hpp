@@ -151,4 +151,11 @@ private:
   small_ptr_container<time_interval, 1> m_previous_time_intervals;
   small_ptr_container<time_interval, 1> m_next_time_intervals;
 };
+
+inline constexpr auto
+operator&(ossia::time_event::status lhs, ossia::time_event::status rhs) noexcept
+{
+  using t = std::underlying_type_t<ossia::time_event::status>;
+  return static_cast<t>(lhs) & static_cast<t>(rhs);
+}
 }
