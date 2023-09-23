@@ -4,7 +4,6 @@
 
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/domain/domain_base.hpp>
-#include <ossia/network/osc/detail/osc.hpp>
 
 #include <catch2/catch.hpp>
 

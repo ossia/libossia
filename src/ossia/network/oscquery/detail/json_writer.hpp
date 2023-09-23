@@ -3,7 +3,6 @@
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
 
-#include <oscpack/ip/UdpSocket.h>
 namespace ossia
 {
 namespace net
