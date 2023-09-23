@@ -8,6 +8,7 @@
 #include <ossia/dataflow/execution/merged_policy.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/node_process.hpp>
+#include <ossia/dataflow/nodes/dummy.hpp>
 #include <ossia/dataflow/nodes/messages.hpp>
 #include <ossia/dataflow/nodes/percentage.hpp>
 
@@ -15,7 +16,7 @@
 
 #include <iostream>
 
-auto create_event(ossia::scenario& s)
+static auto create_event(ossia::scenario& s)
 {
   auto en = std::make_shared<ossia::time_sync>();
   en->set_expression(ossia::expressions::make_expression_true());
@@ -25,6 +26,21 @@ auto create_event(ossia::scenario& s)
   en->insert(en->get_time_events().end(), ee);
   s.add_time_sync(std::move(en));
   return ee;
+}
+
+static std::shared_ptr<ossia::time_interval> create_interval(
+    ossia::time_interval::exec_callback callback, ossia::time_event& startEvent,
+    ossia::time_event& endEvent, ossia::time_value nominal, ossia::time_value min,
+    ossia::time_value max)
+{
+  auto ptr
+      = ossia::time_interval::create(callback, startEvent, endEvent, nominal, min, max);
+  // Added because as an optimization nodes aren't added to intervals when they don't have a children
+  // which woudl make tests much harder to read / write / understand and does not change anything in practice
+
+  ptr->add_time_process(std::make_shared<ossia::node_process>(
+      std::make_shared<ossia::nodes::dummy_node>()));
+  return ptr;
 }
 /*
 namespace ossia
@@ -87,7 +103,7 @@ TEST_CASE("test_exec_simple", "test_exec_simple")
   std::shared_ptr<time_event> ee = create_event(scenario);
 
   std::shared_ptr<time_interval> c
-      = time_interval::create({}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
+      = create_interval({}, *se, *ee, 3000_tv, 3000_tv, 3000_tv);
   s.scenario->add_time_interval(c);
 
   start_and_tick(s.interval);
@@ -120,8 +136,7 @@ TEST_CASE("test_exec_0", "test_exec_0")
   std::shared_ptr<time_event> se = start_event(scenario);
   std::shared_ptr<time_event> ee = create_event(scenario);
 
-  std::shared_ptr<time_interval> c
-      = time_interval::create({}, *se, *ee, 0_tv, 0_tv, 0_tv);
+  std::shared_ptr<time_interval> c = create_interval({}, *se, *ee, 0_tv, 0_tv, 0_tv);
   s.scenario->add_time_interval(c);
 
   start_and_tick(s.interval);
@@ -143,9 +158,9 @@ TEST_CASE("test_exec_chain_long", "test_exec_chain_long")
   std::shared_ptr<time_event> e2 = create_event(scenario);
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      = create_interval({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+      = create_interval({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
 
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
@@ -170,10 +185,9 @@ TEST_CASE("test_exec_chain_tokens", "test_exec_chain_tokens")
   std::shared_ptr<time_event> e1 = create_event(scenario);
   std::shared_ptr<time_event> e2 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 100_tv, 100_tv, 100_tv);
+      = create_interval({}, *e1, *e2, 100_tv, 100_tv, 100_tv);
 
   // {
   auto n = std::make_shared<ossia::nodes::messages>();
@@ -192,12 +206,9 @@ TEST_CASE("test_exec_chain_tokens", "test_exec_chain_tokens")
     std::cerr << tok;
   }
 
-  REQUIRE((int)n->requested_tokens.size() == (int)2);
+  REQUIRE((int)n->requested_tokens.size() == (int)1);
   REQUIRE(
       n->requested_tokens[0]
-      == (simple_token_request{.prev_date = 0_tv, .date = 0_tv, .offset = 10_tv}));
-  REQUIRE(
-      n->requested_tokens[1]
       == (simple_token_request{.prev_date = 0_tv, .date = 40_tv, .offset = 10_tv}));
   n->requested_tokens.clear();
 
@@ -228,14 +239,10 @@ TEST_CASE("test_exec_chain_multi", "test_exec_chain_multi")
   std::shared_ptr<time_event> e3 = create_event(scenario);
   std::shared_ptr<time_event> e4 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 1_tv, 1_tv, 1_tv);
-  std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 1_tv, 1_tv, 1_tv);
-  std::shared_ptr<time_interval> c2
-      = time_interval::create({}, *e2, *e3, 1_tv, 1_tv, 1_tv);
-  std::shared_ptr<time_interval> c3
-      = time_interval::create({}, *e3, *e4, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 1_tv, 1_tv, 1_tv);
+  std::shared_ptr<time_interval> c1 = create_interval({}, *e1, *e2, 1_tv, 1_tv, 1_tv);
+  std::shared_ptr<time_interval> c2 = create_interval({}, *e2, *e3, 1_tv, 1_tv, 1_tv);
+  std::shared_ptr<time_interval> c3 = create_interval({}, *e3, *e4, 10_tv, 10_tv, 10_tv);
 
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
@@ -271,13 +278,13 @@ TEST_CASE("test_exec_chain_multi_infinite", "test_exec_chain_multi_infinite")
   e4->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 1_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e0, *e1, 1_tv, 0_tv, ossia::Infinite);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 1_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 1_tv, 0_tv, ossia::Infinite);
   std::shared_ptr<time_interval> c2
-      = time_interval::create({}, *e2, *e3, 1_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e2, *e3, 1_tv, 0_tv, ossia::Infinite);
   std::shared_ptr<time_interval> c3
-      = time_interval::create({}, *e3, *e4, 1_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e3, *e4, 1_tv, 0_tv, ossia::Infinite);
 
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
@@ -365,14 +372,13 @@ TEST_CASE("test_exec_two_branch_infinite", "test_exec_two_branch_infinite")
        * | - - - - e1 - - - - - | ------------ e3
        */
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e2, 20_tv, 0_tv, 25_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e2, 20_tv, 0_tv, 25_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e0, *e1, 15_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e0, *e1, 15_tv, 0_tv, ossia::Infinite);
   std::shared_ptr<time_interval> c2
-      = time_interval::create({}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 5_tv, 0_tv, ossia::Infinite);
   std::shared_ptr<time_interval> c3
-      = time_interval::create({}, *e2, *e3, 100_tv, 100_tv, 100_tv);
+      = create_interval({}, *e2, *e3, 100_tv, 100_tv, 100_tv);
 
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
@@ -468,9 +474,9 @@ TEST_CASE("test_min", "test_min")
   std::shared_ptr<time_event> e2 = create_event(scenario);
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      = create_interval({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      = create_interval({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
   s.scenario->add_time_interval(c0);
   s.scenario->add_time_interval(c1);
@@ -504,9 +510,9 @@ TEST_CASE("test_max", "test_max")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
+      = create_interval({}, *e0, *e1, 3000_tv, 2000_tv, 4000_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      = create_interval({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
   scenario.add_time_interval(c0);
   scenario.add_time_interval(c1);
@@ -534,11 +540,11 @@ TEST_CASE("test_inter_tick", "test_inter_tick")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
+      = create_interval({}, *e0, *e1, 3000_tv, 3000_tv, 3000_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+      = create_interval({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
   std::shared_ptr<time_interval> c2
-      = time_interval::create({}, *e2, *e3, 3000_tv, 3000_tv, 3000_tv);
+      = create_interval({}, *e2, *e3, 3000_tv, 3000_tv, 3000_tv);
 
   scenario.add_time_interval(c0);
   scenario.add_time_interval(c1);
@@ -565,8 +571,7 @@ TEST_CASE("test_unconnected", "test_unconnected")
   std::shared_ptr<time_event> e0 = create_event(scenario);
   std::shared_ptr<time_event> e1 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
   s.scenario->add_time_interval(c0);
 
   REQUIRE(c0->get_date() == 0_tv);
@@ -605,14 +610,11 @@ TEST_CASE("test_simulated_state", "test_simulated_state")
   std::shared_ptr<time_event> e2 = create_event(scenario);
   std::shared_ptr<time_event> e3 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
   s.scenario->add_time_interval(c0);
-  std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, 0_tv);
+  std::shared_ptr<time_interval> c1 = create_interval({}, *e1, *e2, 0_tv, 0_tv, 0_tv);
   s.scenario->add_time_interval(c1);
-  std::shared_ptr<time_interval> c2
-      = time_interval::create({}, *e2, *e3, 20_tv, 20_tv, 20_tv);
+  std::shared_ptr<time_interval> c2 = create_interval({}, *e2, *e3, 20_tv, 20_tv, 20_tv);
   s.scenario->add_time_interval(c2);
 
   auto msg_node = std::make_shared<ossia::nodes::messages>();
@@ -657,10 +659,9 @@ TEST_CASE("test_trigger", "test_trigger")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_atom(
       1, ossia::expressions::comparator::EQUAL, 1));
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 30_tv, 20_tv, 40_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 30_tv, 20_tv, 40_tv);
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
+      = create_interval({}, *e1, *e2, 100000_tv, 100000_tv, 100000_tv);
 
   scenario.add_time_interval(c0);
   scenario.add_time_interval(c1);
@@ -694,8 +695,7 @@ TEST_CASE("test_trigger_at_start", "test_trigger_at_start")
   scenario.get_start_time_sync()->set_expression(
       ossia::expressions::make_expression_false());
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
 
   scenario.add_time_interval(c0);
 
@@ -724,10 +724,10 @@ TEST_CASE("test_tokens", "test_tokens")
 
   // Dummy processes are added, else token requests aren't registered as an optimization
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      = create_interval({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
   c0->add_time_process(dummy_process());
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
+      = create_interval({}, *e1, *e2, 500_tv, 500_tv, 500_tv);
   c1->add_time_process(dummy_process());
 
   scenario.add_time_interval(c0);
@@ -765,10 +765,10 @@ TEST_CASE("test_tokens_max", "test_tokens_max")
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
+      = create_interval({}, *e0, *e1, 300_tv, 300_tv, 300_tv);
   c0->add_time_process(dummy_process());
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e0, *e1, 500_tv, 100_tv, 1000_tv);
+      = create_interval({}, *e0, *e1, 500_tv, 100_tv, 1000_tv);
   c1->add_time_process(dummy_process());
 
   scenario.add_time_interval(c0);
@@ -802,11 +802,9 @@ TEST_CASE("test_tokens_min", "test_tokens_min")
   std::shared_ptr<time_event> e1 = create_event(scenario);
   e1->get_time_sync().set_expression(ossia::expressions::make_expression_false());
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 30_tv, 30_tv, 30_tv);
   c0->add_time_process(dummy_process());
-  std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c1 = create_interval({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
   c1->add_time_process(dummy_process());
 
   scenario.add_time_interval(c0);
@@ -861,7 +859,7 @@ TEST_CASE("test_autom", "test_autom")
   //      std::shared_ptr<time_event> e0 = start_event(scenario);
   //      std::shared_ptr<time_event> e1 = create_event(scenario);
 
-  //      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+  //      std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
   //      s.scenario->add_time_interval(c0);
 
   //      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
@@ -896,7 +894,7 @@ TEST_CASE("test_autom_and_state", "test_autom_and_state")
   //      e0->add_state(ossia::message{*utils.float_addr, ossia::value{36.}});
   //      e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
 
-  //      std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+  //      std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
   //      s.scenario->add_time_interval(c0);
 
   //      std::shared_ptr<ossia::automation> proc = std::make_shared<ossia::automation>();
@@ -938,8 +936,7 @@ TEST_CASE("test_percentage", "test_percentage")
   std::shared_ptr<time_event> e0 = start_event(scenario);
   std::shared_ptr<time_event> e1 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 2_tv, 2_tv, 2_tv);
   s.scenario->add_time_interval(c0);
 
   auto node = std::make_shared<ossia::nodes::percentage>(*utils.float_addr);
@@ -992,8 +989,7 @@ TEST_CASE("test_percentage_long", "test_percentage_long")
   std::shared_ptr<time_event> e0 = start_event(scenario);
   std::shared_ptr<time_event> e1 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
   s.scenario->add_time_interval(c0);
 
   auto node = std::make_shared<ossia::nodes::percentage>(*utils.float_addr);
@@ -1050,11 +1046,11 @@ TEST_CASE("test_offset", "test_offset")
   //        e1->add_state(ossia::message{*utils.float_addr, ossia::value{24.}});
   //        e2->add_state(ossia::message{*utils.float_addr, ossia::value{31.}});
 
-  //        std::shared_ptr<time_interval> c0 = time_interval::create({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
+  //        std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 5_tv, 5_tv, 5_tv);
   //        s.scenario->add_time_interval(c0);
-  //        std::shared_ptr<time_interval> c1 = time_interval::create({}, *e1, *e2, 5_tv, 5_tv, 5_tv);
+  //        std::shared_ptr<time_interval> c1 = create_interval({}, *e1, *e2, 5_tv, 5_tv, 5_tv);
   //        s.scenario->add_time_interval(c1);
-  //        std::shared_ptr<time_interval> c2 = time_interval::create({}, *e2, *e3, 5_tv, 5_tv, 5_tv);
+  //        std::shared_ptr<time_interval> c2 = create_interval({}, *e2, *e3, 5_tv, 5_tv, 5_tv);
   //        s.scenario->add_time_interval(c1);
 
   //        {
@@ -1129,11 +1125,11 @@ TEST_CASE("test_musical_bar", "test_musical_bar")
    */
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
   c0->add_time_process(dummy_process());
 
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
   c1->add_time_process(dummy_process());
 
   s.scenario->add_time_interval(c0);
@@ -1248,16 +1244,16 @@ TEST_CASE("test_musical_bar_offset", "test_musical_bar_offset")
     * ex -- e0 - - - - - - - - - - e1 - - - - - - - - - - e2
    */
 
-  std::shared_ptr<time_interval> cx = time_interval::create(
-      {}, *e0, *ex, 88200_tv * 1.5, 88200_tv * 1.5, 88200_tv * 1.5);
+  std::shared_ptr<time_interval> cx
+      = create_interval({}, *e0, *ex, 88200_tv * 1.5, 88200_tv * 1.5, 88200_tv * 1.5);
   cx->add_time_process(dummy_process());
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *ex, *e1, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *ex, *e1, 0_tv, 0_tv, ossia::Infinite);
   c0->add_time_process(dummy_process());
 
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
   c1->add_time_process(dummy_process());
 
   s.scenario->add_time_interval(cx);
@@ -1355,11 +1351,11 @@ TEST_CASE("test_musical_quarter", "test_musical_quarter")
    */
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
   c0->add_time_process(dummy_process());
 
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
   c1->add_time_process(dummy_process());
 
   s.scenario->add_time_interval(c0);
@@ -1462,11 +1458,11 @@ TEST_CASE("test_musical_eighth", "test_musical_eighth")
    */
 
   std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e0, *e1, 0_tv, 0_tv, ossia::Infinite);
   c0->add_time_process(dummy_process());
 
   std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
+      = create_interval({}, *e1, *e2, 0_tv, 0_tv, ossia::Infinite);
   c1->add_time_process(dummy_process());
 
   s.scenario->add_time_interval(c0);
@@ -1551,10 +1547,8 @@ TEST_CASE("test_exec_chain_loop", "test_exec_chain_loop")
   std::shared_ptr<time_event> e0 = start_event(scenario);
   std::shared_ptr<time_event> e1 = create_event(scenario);
 
-  std::shared_ptr<time_interval> c0
-      = time_interval::create({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
-  std::shared_ptr<time_interval> c1
-      = time_interval::create({}, *e1, *e0, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c0 = create_interval({}, *e0, *e1, 10_tv, 10_tv, 10_tv);
+  std::shared_ptr<time_interval> c1 = create_interval({}, *e1, *e0, 10_tv, 10_tv, 10_tv);
   c1->graphal = true;
 
   s.scenario->add_time_interval(c0);
