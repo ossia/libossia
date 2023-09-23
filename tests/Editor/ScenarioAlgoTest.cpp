@@ -5,6 +5,7 @@
 
 #include <ossia/detail/config.hpp>
 
+#include <ossia/dataflow/execution/merged_policy.hpp>
 #include <ossia/dataflow/graph/graph.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/nodes/messages.hpp>
@@ -910,6 +911,12 @@ TEST_CASE("test_autom_and_state", "test_autom_and_state")
   //      s.interval->tick(1_tv);
 }
 
+static auto& get_value_state(ossia::execution_state& s)
+{
+  return static_cast<ossia::merged_execution_state_policy*>(s.m_policy.get())
+      ->m_valueState;
+};
+
 TEST_CASE("test_percentage", "test_percentage")
 {
 
@@ -937,31 +944,31 @@ TEST_CASE("test_percentage", "test_percentage")
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(0.f));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(get_value_state(s).begin()->second.back().first.value == ossia::value(0.f));
   }
 
   s.interval->tick(1_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(0.5f));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(get_value_state(s).begin()->second.back().first.value == ossia::value(0.5f));
   }
 
   s.interval->tick(1_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(1.f));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(get_value_state(s).begin()->second.back().first.value == ossia::value(1.f));
   }
 
   s.interval->tick(1_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.empty());
+    REQUIRE(get_value_state(s).empty());
   }
 }
 
@@ -991,31 +998,32 @@ TEST_CASE("test_percentage_long", "test_percentage_long")
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(0.f));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(get_value_state(s).begin()->second.back().first.value == ossia::value(0.f));
   }
 
   s.interval->tick(3_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(3. / 5.));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(
+        get_value_state(s).begin()->second.back().first.value == ossia::value(3. / 5.));
   }
 
   s.interval->tick(7_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.size() == 1);
-    REQUIRE(s.m_valueState.begin()->second.back().first.value == ossia::value(1.f));
+    REQUIRE(get_value_state(s).size() == 1);
+    REQUIRE(get_value_state(s).begin()->second.back().first.value == ossia::value(1.f));
   }
 
   s.interval->tick(1_tv, default_request());
   {
     ossia::execution_state s;
     g.state(s);
-    REQUIRE(s.m_valueState.empty());
+    REQUIRE(get_value_state(s).empty());
   }
 }
 

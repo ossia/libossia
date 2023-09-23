@@ -105,7 +105,9 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
   double start_date{}; // in ns, for vst
   double cur_date{};
 
+#if !defined(OSSIA_TESTING)
 private:
+#endif
   void get_new_values();
 
   void register_parameter(ossia::net::parameter_base& p);

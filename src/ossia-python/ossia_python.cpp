@@ -585,8 +585,8 @@ PYBIND11_MODULE(ossia_python, m)
   py::class_<ossia::net::midi::midi_info>(m, "MidiInfo")
       .def(py::init())
       .def_readonly("type", &ossia::net::midi::midi_info::type)
-      .def_readonly("device", &ossia::net::midi::midi_info::device)
-      .def_readonly("port", &ossia::net::midi::midi_info::port);
+      .def_readonly("handle", &ossia::net::midi::midi_info::handle)
+      .def_readonly("virtual", &ossia::net::midi::midi_info::is_virtual);
 
   py::enum_<ossia::net::midi::midi_info::Type>(m, "MidiDeviceType", py::arithmetic())
       .value("Output", ossia::net::midi::midi_info::Type::Output)
