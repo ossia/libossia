@@ -89,9 +89,16 @@ TEST_CASE("test_bundle_raw", "test_bundle_raw")
 
   b_proto.push_raw_bundle(vec);
 
+  int k = 0;
   while(recv < 4)
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    k++;
+    if(k > 100)
+      break;
+  }
 
+  REQUIRE(recv == 4);
   REQUIRE(a1->value() == ossia::value{0.});
   REQUIRE(a2->value() == ossia::value{1.});
   REQUIRE(a3->value() == ossia::value{2.});
@@ -125,9 +132,17 @@ TEST_CASE("test_pattern_match", "test_pattern_match")
   dat.set_value(2.3f);
   b_proto.push_raw(dat);
 
+  int k = 0;
   while(recv < 4)
+  {
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    k++;
+    REQUIRE(k < 100);
+    if(k > 100)
+      break;
+  }
 
+  REQUIRE(recv == 4);
   REQUIRE(a1->value() == ossia::value{2.3});
   REQUIRE(a2->value() == ossia::value{2.3});
   REQUIRE(a3->value() == ossia::value{2.3});
