@@ -5,7 +5,7 @@
 
 #include <ossia/network/oscquery/detail/http_client.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 using namespace ossia;
 std::atomic_bool running{};
 struct http_answer

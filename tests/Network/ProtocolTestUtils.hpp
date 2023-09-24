@@ -6,7 +6,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 
 #include <thread>
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 #include "TestUtils.hpp"
 
 using namespace ossia;

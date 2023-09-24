@@ -8,7 +8,7 @@ jobs:
     name: CPP (Linux)
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install Build Dependencies
       run: |
         sudo apt-get update -qq
@@ -34,9 +34,10 @@ jobs:
 
   cpp-mac:
     name: CPP (macOS)
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/latest-mac-toolchain
     - name: Install Dependencies
       run: |
         brew install ninja
@@ -67,7 +68,7 @@ jobs:
     runs-on: 'windows-latest'
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install Dependencies
       run: choco install -y ninja
     - name: Build

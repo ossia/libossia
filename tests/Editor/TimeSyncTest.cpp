@@ -6,7 +6,7 @@
 #include <ossia/editor/scenario/time_event.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

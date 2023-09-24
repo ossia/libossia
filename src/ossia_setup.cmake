@@ -161,7 +161,6 @@ target_include_directories(ossia
 target_link_libraries(ossia
   PRIVATE
     $<BUILD_INTERFACE:rapidfuzz::rapidfuzz>
-    $<BUILD_INTERFACE:re2::re2>
   PUBLIC
     $<BUILD_INTERFACE:ctre::ctre>
     $<BUILD_INTERFACE:fmt::fmt>
@@ -172,6 +171,7 @@ target_link_libraries(ossia
     $<BUILD_INTERFACE:concurrentqueue::concurrentqueue>
     $<BUILD_INTERFACE:websocketpp::websocketpp>
     $<BUILD_INTERFACE:rapidjson::rapidjson>
+    $<BUILD_INTERFACE:re2::re2>
     $<BUILD_INTERFACE:smallfun::smallfun>
     $<BUILD_INTERFACE:span::span>
     $<BUILD_INTERFACE:spdlog::spdlog>

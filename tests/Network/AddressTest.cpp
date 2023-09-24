@@ -12,7 +12,7 @@
 #include <ossia/network/domain/domain.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

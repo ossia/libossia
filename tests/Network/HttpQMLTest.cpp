@@ -8,7 +8,7 @@
 
 #include <ossia/context.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #if defined(OSSIA_QT)
 #include <QCoreApplication>

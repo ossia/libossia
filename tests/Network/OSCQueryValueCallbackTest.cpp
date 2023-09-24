@@ -9,7 +9,7 @@
 
 #include <ossia-cpp/ossia-cpp98.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

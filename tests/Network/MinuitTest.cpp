@@ -8,7 +8,7 @@
 
 #include <ossia/network/local/local.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 #if defined(OSSIA_PROTOCOL_MINUIT)
 #include <ossia/network/minuit/minuit.hpp>
 #endif

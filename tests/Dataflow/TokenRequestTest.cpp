@@ -4,7 +4,7 @@
 
 #include <ossia/dataflow/token_request.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iterator>
 TEST_CASE("test_loops_integer", "test_loops_integer")

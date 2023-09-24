@@ -62,12 +62,14 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   endif()
 
   execute_process(COMMAND git submodule sync --recursive
-                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+                  WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+                  COMMAND_ERROR_IS_FATAL ANY)
 
   foreach(submodule ${OSSIA_SUBMODULES})
       message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
       execute_process(COMMAND git submodule update --init --recursive -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
-                      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR})
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
+                      COMMAND_ERROR_IS_FATAL ANY)
   endforeach()
 
   message(STATUS "...done")

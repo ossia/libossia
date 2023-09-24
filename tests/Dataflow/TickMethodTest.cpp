@@ -2,7 +2,7 @@
 
 #include <ossia/dataflow/graph/tick_methods.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 TEST_CASE("test_cuts", "test_cuts")
 {

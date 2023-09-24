@@ -7,6 +7,9 @@
 
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+
+#include <catch2/catch_approx.hpp>
+
 using namespace Catch::literals;
 using namespace ossia;
 TEMPLATE_TEST_CASE(
@@ -238,6 +241,7 @@ TEMPLATE_TEST_CASE(
 
   GIVEN("A value port with an index and a domain")
   {
+    using Approx = Catch::Approx;
     ossia::value_port p;
     p.domain = ossia::make_domain(-1., 1.);
     p.index = {1};

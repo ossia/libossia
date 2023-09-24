@@ -9,7 +9,7 @@
 #include <ossia-c/preset/preset.h>
 #include <ossia-c/preset/result.h>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

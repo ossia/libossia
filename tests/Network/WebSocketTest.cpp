@@ -10,7 +10,7 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 using namespace ossia;

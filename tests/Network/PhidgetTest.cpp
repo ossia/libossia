@@ -8,7 +8,7 @@
 #include <ossia/network/oscquery/oscquery_server.hpp>
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <chrono>
 #include <iostream>

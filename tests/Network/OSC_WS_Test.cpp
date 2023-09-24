@@ -3,7 +3,7 @@
 
 #include <ossia/network/context.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

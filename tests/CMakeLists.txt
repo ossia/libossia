@@ -6,6 +6,8 @@ if(OSSIA_CI)
   endif()
 endif()
 
+include_directories("${CMAKE_CURRENT_LIST_DIR}/catch")
+
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 get_target_property(OSSIA_PROTOCOLS ossia OSSIA_PROTOCOLS)
 

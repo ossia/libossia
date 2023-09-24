@@ -10,7 +10,7 @@
 #include <ossia/dataflow/graph/graph_static.hpp>
 #include <ossia/network/base/parameter.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 namespace ossia
 {

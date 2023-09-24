@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13
     environment: 'Apple Certificate'
     strategy:
       matrix:
@@ -12,7 +12,8 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/latest-mac-toolchain
     - name: Install Dependencies
       run: brew install ninja
     - name: Build
@@ -30,6 +31,7 @@ jobs:
         cmake --build build
         cmake --build build --target test
         cmake --build build --target install
+
     - name: Code Signing
       shell: bash
       env:
@@ -82,7 +84,7 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: install deps
       run: choco install -y ninja
     - name : Build
@@ -112,7 +114,7 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install Dependencies
       run: | 
         sudo apt-get update -yqq 
@@ -149,7 +151,7 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-rpi-toolchain
     - name: Build
       env: 

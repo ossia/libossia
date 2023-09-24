@@ -1,0 +1,8 @@
+name: 'Install Mac toolchain'
+description: 'Install Mac toolchain'
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Xcode
+      shell: bash
+      run: sudo xcode-select -s /Applications/Xcode_15.0.app

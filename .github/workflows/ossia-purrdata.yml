@@ -4,10 +4,11 @@ on: push
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13
     environment: 'Apple Certificate'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/latest-mac-toolchain
     - name: Install Dependencies
       run: brew install ninja
     - name: Build
@@ -70,7 +71,7 @@ jobs:
   build-windows:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: install deps
       run: choco install -y ninja
     - name : Build
@@ -91,7 +92,7 @@ jobs:
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Install Dependencies
       run: | 
         sudo apt-get update -yqq 
@@ -114,7 +115,7 @@ jobs:
   build-rpi:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-rpi-toolchain
     - name: Build
       run: |

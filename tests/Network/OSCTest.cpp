@@ -6,7 +6,7 @@
 
 #include <ossia/detail/config.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #if defined(OSSIA_PROTOCOL_OSC)
 #include <ossia/network/osc/osc.hpp>

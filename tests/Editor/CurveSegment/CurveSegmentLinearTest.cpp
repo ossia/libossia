@@ -6,7 +6,7 @@
 #include <ossia/editor/curve/curve.hpp>
 #include <ossia/editor/curve/curve_segment/linear.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

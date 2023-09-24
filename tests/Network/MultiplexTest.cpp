@@ -13,7 +13,7 @@
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 #include <thread>
@@ -38,8 +38,10 @@ TEST_CASE("test_oscquery_osc_out", "test_oscquery_osc_out")
             .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
-  generic_device device{
-      std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery), "my_device"};
+  auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
+  multiplex->expose_to(std::move(osc));
+  multiplex->expose_to(std::move(oscquery));
+  generic_device device{std::move(multiplex), "my_device"};
 
   device.set_echo(true);
 
@@ -110,8 +112,10 @@ TEST_CASE("test_oscquery_osc_large", "test_oscquery_osc_large")
             .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
-  generic_device device{
-      std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery), "my_device"};
+  auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
+  multiplex->expose_to(std::move(osc));
+  multiplex->expose_to(std::move(oscquery));
+  generic_device device{std::move(multiplex), "my_device"};
 
   device.set_echo(true);
 
@@ -140,11 +144,13 @@ TEST_CASE("test_multiplex_remove", "test_multiplex_remove")
             .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
-  auto protou = std::make_unique<ossia::net::multiplex_protocol>(osc, oscquery);
+  auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
+  multiplex->expose_to(std::move(osc));
+  multiplex->expose_to(std::move(oscquery));
   //get the pointer so we can use the protocol after using it with the device
   //is there a better way??
-  auto proto = protou.get();
-  generic_device device{std::move(protou), "my_device"};
+  auto proto = multiplex.get();
+  generic_device device{std::move(multiplex), "my_device"};
 
   device.set_echo(true);
 

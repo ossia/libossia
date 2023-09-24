@@ -43,8 +43,8 @@ struct direct_execution_state_policy : execution_state_policy
 
   std::thread m_midiThread;
 
-  std::atomic_flag m_startFlag = ATOMIC_FLAG_INIT;
-  std::atomic_flag m_stopFlag = ATOMIC_FLAG_INIT;
+  std::atomic_bool m_startFlag{};
+  std::atomic_bool m_stopFlag{};
 
   struct audio_msg
   {

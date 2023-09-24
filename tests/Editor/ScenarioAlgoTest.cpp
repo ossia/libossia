@@ -12,7 +12,7 @@
 #include <ossia/dataflow/nodes/messages.hpp>
 #include <ossia/dataflow/nodes/percentage.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

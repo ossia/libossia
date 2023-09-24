@@ -8,7 +8,7 @@
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <atomic>
 #include <iostream>

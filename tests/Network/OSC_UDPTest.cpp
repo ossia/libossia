@@ -4,7 +4,7 @@
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

@@ -41,7 +41,7 @@ void merged_execution_state_policy::commit()
 threaded_merged_execution_state_policy::threaded_merged_execution_state_policy()
 {
   m_valuesOutputThread = std::thread{[this] {
-    while(!m_stopFlag.test(std::memory_order_acquire))
+    while(!m_stopFlag)
     {
       std::vector<ossia::state_element> m;
       while(m_messagesToApply.wait_dequeue_timed(m, 20'000))
@@ -56,7 +56,7 @@ threaded_merged_execution_state_policy::threaded_merged_execution_state_policy()
 
 threaded_merged_execution_state_policy::~threaded_merged_execution_state_policy()
 {
-  m_stopFlag.test_and_set(std::memory_order_release);
+  m_stopFlag = true;
   m_valuesOutputThread.join();
 }
 

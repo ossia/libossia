@@ -5,7 +5,7 @@
 #include <ossia/network/common/value_bounding.hpp>
 #include <ossia/network/domain/domain_base.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 using namespace ossia;
 

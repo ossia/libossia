@@ -25,7 +25,7 @@ direct_execution_state_policy::direct_execution_state_policy()
   for(int i = 0, N = threads.at(thread_type::Net).num_threads; i < N; i++)
   {
     m_threads[i].thread = std::thread{[this, i] {
-      while(!m_startFlag.test())
+      while(!m_startFlag)
         std::this_thread::yield();
 
       ossia::set_thread_realtime(m_threads[i].thread, 80, 0);
@@ -37,7 +37,7 @@ direct_execution_state_policy::direct_execution_state_policy()
   }
 
   m_midiThread = std::thread{[this] {
-    while(!m_startFlag.test())
+    while(!m_startFlag)
       std::this_thread::yield();
 
     ossia::set_thread_realtime(m_midiThread, 90, 0);
@@ -47,7 +47,7 @@ direct_execution_state_policy::direct_execution_state_policy()
     process_midi();
   }};
 
-  m_startFlag.test_and_set();
+  m_startFlag = true;
 }
 
 void direct_execution_state_policy::process_messages()
@@ -58,7 +58,7 @@ void direct_execution_state_policy::process_messages()
   static constexpr const int message_pack_size = 250;
 
   ossia::bundle_element m[message_pack_size];
-  while(!m_stopFlag.test(std::memory_order_acquire))
+  while(!m_stopFlag)
   {
     int n = 0;
     ossia::net::protocol_base* current_protocol{};
@@ -95,7 +95,7 @@ void direct_execution_state_policy::process_midi()
 {
   static constexpr const int message_pack_size = 250;
   ossia::bundle_element m[message_pack_size];
-  while(!m_stopFlag.test(std::memory_order_acquire))
+  while(!m_stopFlag)
   {
     int n = 0;
     ossia::net::protocol_base* current_protocol{};
@@ -129,7 +129,7 @@ void direct_execution_state_policy::process_midi()
 }
 direct_execution_state_policy::~direct_execution_state_policy()
 {
-  m_stopFlag.test_and_set(std::memory_order_release);
+  m_stopFlag = true;
 
   const ossia::thread_specs& threads = ossia::get_thread_specs();
   for(int i = 0, N = threads.at(thread_type::Net).num_threads; i < N; i++)

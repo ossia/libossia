@@ -24,7 +24,7 @@
 
 #include <fmt/format.h>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 static int n = 0;
 void dumpTree(QQuickItem* root);

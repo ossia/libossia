@@ -4,7 +4,7 @@
 #include <ossia/dataflow/nodes/sound_mmap.hpp>
 #include <ossia/dataflow/nodes/sound_ref.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 TEST_CASE("test_sound_ref", "test_sound_ref")
 {

@@ -10,7 +10,7 @@
 #include <ossia/network/dataspace/dataspace_parse.hpp>
 #include <ossia/network/dataspace/detail/dataspace_merge.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

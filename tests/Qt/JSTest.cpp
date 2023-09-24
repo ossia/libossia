@@ -22,7 +22,7 @@
 
 #include <fmt/format.h>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 std::vector<ossia::value> testOssiaValues()
 {

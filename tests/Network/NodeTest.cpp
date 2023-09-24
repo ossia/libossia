@@ -8,7 +8,7 @@
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 #include <regex>

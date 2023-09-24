@@ -9,7 +9,7 @@
 
 #include <ossia-c/preset/preset.h>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 #include <rapidjson/document.h>
 
 #include <iostream>
@@ -504,7 +504,7 @@ TEST_CASE("Types conversion")
   {
     REQUIRE(d.HasMember("float"));
     REQUIRE(d["float"].IsDouble());
-    REQUIRE(d["float"].GetDouble() == Catch::Detail::Approx(3.566f).epsilon(0.001));
+    REQUIRE(d["float"].GetDouble() == Catch::Approx(3.566f).epsilon(0.001));
   }
 }
 

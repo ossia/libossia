@@ -8,7 +8,8 @@
 #include <ossia/editor/curve/curve_segment/power.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
+#include <catch2/catch_approx.hpp>
 
 #include <iostream>
 
@@ -66,7 +67,7 @@ TEST_CASE("test_double_float", "test_double_float")
 
 TEST_CASE("test_float_float", "test_float_float")
 {
-  using Approx = Catch::Detail::Approx;
+  using Approx = Catch::Approx;
   auto c = std::make_shared<curve<float, float>>();
   REQUIRE(c != nullptr);
 

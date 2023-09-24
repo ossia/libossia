@@ -4,10 +4,11 @@ on: push
 
 jobs:
   build-macos:
-    runs-on: macos-latest
+    runs-on: macos-13
     environment: 'Apple Certificate'
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
+    - uses: ./.github/actions/latest-mac-toolchain
     - name: build
       run: ./tools/build-ossia-max.sh clean silent release
     - name: Code Signing
@@ -79,7 +80,7 @@ jobs:
       APPVEYOR_BUILD_TYPE: max
       configuration: Release
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: install deps
       run: choco install -y ninja
     - name : build
@@ -129,7 +130,7 @@ jobs:
     needs: [ build-macos ]
     if: github.repository == 'ossia/libossia'
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Remove Downloaded Package
         run:  rm -rf "~/Documents/Max 8/Packages/ossia"
@@ -187,7 +188,7 @@ jobs:
     if: github.repository == 'ossia/libossia'
     needs: [ build-windows ]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       
       - name: Remove Downloaded Package
         run:  |

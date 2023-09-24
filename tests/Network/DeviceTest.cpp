@@ -6,7 +6,7 @@
 #include <ossia/context.hpp>
 #include <ossia/network/local/local.hpp>
 
-#include <catch2/catch.hpp>
+#include "include_catch.hpp"
 
 #include <iostream>
 

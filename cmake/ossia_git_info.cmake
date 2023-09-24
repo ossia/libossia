@@ -1,8 +1,16 @@
+if(NOT GIT_FOUND)
+  find_package(Git QUIET)
+endif()
+
+find_program(GIT_EXECUTABLE NAMES git git.exe)
+if(NOT GIT_FOUND)
+  find_program(GIT_EXECUTABLE NAMES git git.exe)
+  if(GIT_EXECUTABLE)
+    set(GIT_FOUND 1 CACHE INTERNAL "")
+  endif()
+endif()
 
 function(get_tag _var)
-  if(NOT GIT_FOUND)
-    find_package(Git QUIET)
-  endif()
   if(NOT GIT_FOUND)
     set(${_var} "GIT-NOTFOUND" PARENT_SCOPE)
     return()
@@ -28,9 +36,6 @@ endfunction()
 
 function(get_commit_date _var)
   if(NOT GIT_FOUND)
-    find_package(Git QUIET)
-  endif()
-  if(NOT GIT_FOUND)
     set(${_var} "GIT-NOTFOUND" PARENT_SCOPE)
     return()
   endif()
@@ -55,13 +60,9 @@ endfunction()
 
 function(get_commit_SHA _var)
   if(NOT GIT_FOUND)
-    find_package(Git QUIET)
-  endif()
-  if(NOT GIT_FOUND)
     set(${_var} "GIT-NOTFOUND" PARENT_SCOPE)
     return()
   endif()
-
   # TODO sanitize
   #if((${ARGN}" MATCHES "&&") OR
   # (ARGN MATCHES "||") OR

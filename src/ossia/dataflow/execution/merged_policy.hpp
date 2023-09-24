@@ -33,7 +33,7 @@ struct threaded_merged_execution_state_policy : local_state_execution_policy
   moodycamel::BlockingConcurrentQueue<std::vector<ossia::state_element>>
       m_messagesToApply;
 
-  std::atomic_flag m_stopFlag = ATOMIC_FLAG_INIT;
+  std::atomic_bool m_stopFlag{};
 
   std::vector<ossia::state_element> m_states;
 
