@@ -30,7 +30,7 @@ if(OSSIA_SUBMODULE_AUTOUPDATE)
   endif()
 
   if(OSSIA_DATAFLOW)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dno dr_libs exprtk libsamplerate perlinnoise rubberband)
+    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dno dr_libs exprtk libsamplerate PerlinNoise rubberband)
   endif()
 
   if(OSSIA_ENABLE_FFT)
