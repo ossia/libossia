@@ -116,12 +116,7 @@ try
     {
       auto& param = access_parameter(a);
       ret.critical |= param.get_critical();
-
-      if constexpr(requires { param.value(); })
-        val = param.value();
-      else
-        val = param.value;
-
+      val = param.value();
       add_element_to_bundle(str, val, param);
     }
     str << oscpack::EndBundle();
