@@ -244,6 +244,7 @@ install(
 install(
     FILES
       "${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue/readerwriterqueue.h"
+      "${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue/readerwritercircularbuffer.h"
       "${OSSIA_3RDPARTY_FOLDER}/readerwriterqueue/atomicops.h"
     DESTINATION include/
     COMPONENT Devel
