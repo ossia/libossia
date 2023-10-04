@@ -214,6 +214,14 @@ ossia::audio_engine* make_audio_engine(
     p = new ossia::dummy_engine{rate, bs};
   }
 
+  if(p)
+  {
+    inputs = p->effective_inputs;
+    outputs = p->effective_outputs;
+    rate = p->effective_sample_rate;
+    bs = p->effective_buffer_size;
+  }
+
   return p;
 }
 
