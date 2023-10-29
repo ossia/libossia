@@ -14,10 +14,7 @@ struct network_context
 
   void run()
   {
-    using work_guard
-        = boost::asio::executor_work_guard<boost::asio::io_context::executor_type>;
-
-    work_guard wg{context.get_executor()};
+    auto wg = boost::asio::make_work_guard(context);
 #if defined(__cpp_exceptions)
     try
     {
@@ -34,6 +31,7 @@ struct network_context
 #else
     context.run();
 #endif
+    context.restart();
   }
 };
 using network_context_ptr = std::shared_ptr<network_context>;
