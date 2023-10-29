@@ -286,15 +286,19 @@ object_base::object_base(t_eclass* c)
 {
   char buffer[MAXPDSTRING];
 
+  memset(&m_obj, 0, sizeof(m_obj));
+
   if(c)
   {
-    m_obj.o_obj.te_g.g_pd = (t_pd)c;
+    auto obj = pd_new(&c->c_class);
+    memcpy(&m_obj.o_obj, obj, sizeof(t_object));
+    // m_obj.o_obj.te_g.g_pd = (t_pd)c;
 
-    if(c->c_class.c_patchable)
-    {
-      m_obj.o_obj.te_inlet = 0;
-      m_obj.o_obj.te_outlet = 0;
-    }
+    // if(c->c_class.c_patchable)
+    // {
+    //   m_obj.o_obj.te_inlet = 0;
+    //   m_obj.o_obj.te_outlet = 0;
+    // }
 
     m_obj.o_nproxy = 0;
     m_obj.o_proxy = NULL;
