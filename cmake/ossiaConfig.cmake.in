@@ -3,15 +3,31 @@ include(CMakeFindDependencyMacro)
 get_filename_component(OSSIA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
 list(APPEND CMAKE_MODULE_PATH ${OSSIA_CMAKE_DIR})
-find_dependency(Boost 1.67 REQUIRED)
-find_dependency(SDL2)
+find_dependency(Boost 1.83 REQUIRED)
 
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
-
 
 if(NOT TARGET ossia::ossia)
   include("${OSSIA_CMAKE_DIR}/ossia-targets.cmake")
 endif()
 
 set(ossia_LIBRARIES ossia::ossia)
-target_compile_features(ossia::ossia INTERFACE cxx_std_17)
+target_compile_features(ossia::ossia INTERFACE cxx_std_20)
+
+if(@OSSIA_USE_SYSTEM_LIBRARIES@)
+else()
+target_compile_definitions(ossia::ossia INTERFACE
+  FMT_HEADER_ONLY=1
+  FMT_USE_LONG_DOUBLE=0
+  FMT_USE_INT128=0
+  FMT_USE_FLOAT128=0
+  FMT_STATIC_THOUSANDS_SEPARATOR=1
+
+  SPDLOG_FMT_EXTERNAL=1
+  SPDLOG_NO_DATETIME=1
+  SPDLOG_NO_THREAD_ID=1
+  SPDLOG_NO_NAME=1
+  SPDLOG_DEBUG_ON=1
+  SPDLOG_TRACE_ON=1
+)
+endif()

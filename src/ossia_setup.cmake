@@ -88,7 +88,7 @@ endif()
 
 set(THREADS_PREFER_PTHREAD_FLAG)
 find_package(Threads REQUIRED)
-target_link_libraries(ossia PUBLIC Threads::Threads)
+target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:Threads::Threads>)
 
 target_compile_options(ossia PRIVATE ${OSSIA_COMPILE_OPTIONS})
 target_link_libraries(ossia PRIVATE ${OSSIA_LINK_OPTIONS})

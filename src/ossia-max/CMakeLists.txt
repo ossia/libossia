@@ -14,11 +14,13 @@ elseif(WIN32)
     set(CMAKE_INSTALL_RPATH  "\$ORIGIN/../support;\$ORIGIN")
 endif()
 
+if(Git_FOUND)
 if(${MAXSDK_PATH} STREQUAL "${OSSIA_3RDPARTY_FOLDER}/max-sdk")
   execute_process(
-      COMMAND git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
+      COMMAND Git::Git submodule update --init -- ${OSSIA_3RDPARTY_FOLDER}/max-sdk
       WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
       COMMAND_ERROR_IS_FATAL ANY)
+endif()
 endif()
 
 set(MAXSDK_MAX_INCLUDE_DIR "${MAXSDK_PATH}/source/c74support/max-includes")
