@@ -101,9 +101,9 @@ void dmxusbpro_protocol::update_function()
       constexpr uint32_t buffer_size = 4 + data_size + 1;
 
       constexpr uint8_t data_size_lsb = data_size & 0x00FF;
-      constexpr uint8_t data_size_msb = (data_size & 0xFF00) >> 16;
+      constexpr uint8_t data_size_msb = (data_size & 0xFF00) >> 8;
 
-      unsigned char buf[buffer_size]{0x7E, 6, data_size_lsb, data_size_msb, 0};
+      unsigned char buf[buffer_size]{0x7E, 0x6, data_size_lsb, data_size_msb, 0};
 
       for(uint32_t i = 0; i < channels; i++)
         buf[5 + i] = m_buffer.data[i];
