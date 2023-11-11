@@ -28,6 +28,18 @@ enum class val_type : int8_t
 };
 
 /**
+ * @brief Possible types of parameters / ports
+ */
+enum class parameter_type : int8_t
+{
+  MESSAGE,
+  AUDIO,
+  MIDI,
+  TEXTURE,
+  GEOMETRY
+};
+
+/**
  * @brief Address behaviors at crossing domain boundaries time
  */
 enum class access_mode : int8_t

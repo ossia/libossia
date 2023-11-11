@@ -136,6 +136,11 @@ parameter_base& parameter_base::set_critical(bool v)
   return *this;
 }
 
+parameter_type parameter_base::get_type() const noexcept
+{
+  return m_type;
+}
+
 value_with_unit get_value(const ossia::destination& d)
 {
   ossia::net::parameter_base& addr = d.value.get();

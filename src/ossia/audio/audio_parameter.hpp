@@ -16,7 +16,7 @@ public:
   ossia::small_vector<tcb::span<float>, 8> audio;
   double m_gain{1.};
 
-  audio_parameter(ossia::net::node_base& n);
+  explicit audio_parameter(ossia::net::node_base& n);
 
   virtual ~audio_parameter();
 

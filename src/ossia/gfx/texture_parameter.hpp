@@ -7,7 +7,12 @@ namespace ossia::gfx
 class OSSIA_EXPORT texture_parameter : public ossia::net::parameter_base
 {
 public:
-  using parameter_base::parameter_base;
+  explicit texture_parameter(ossia::net::node_base& n)
+      : parameter_base{n}
+  {
+    m_type = parameter_type::TEXTURE;
+  }
+
   virtual ~texture_parameter();
 
   void pull_value() override;

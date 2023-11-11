@@ -12,6 +12,7 @@ namespace ossia
 audio_parameter::audio_parameter(net::node_base& n)
     : ossia::net::parameter_base{n}
 {
+  m_type = parameter_type::AUDIO;
 }
 
 void audio_parameter::clone_value(audio_vector& res_vec) const

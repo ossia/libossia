@@ -173,6 +173,8 @@ public:
   bool get_critical() const noexcept;
   parameter_base& set_critical(bool v);
 
+  parameter_type get_type() const noexcept;
+
 protected:
   ossia::net::node_base& m_node;
   unit_t m_unit;
@@ -180,6 +182,7 @@ protected:
   bool m_disabled{};
   bool m_muted{};
   ossia::repetition_filter m_repetitionFilter{ossia::repetition_filter::OFF};
+  parameter_type m_type{};
 };
 
 inline bool operator==(const parameter_base& lhs, const parameter_base& rhs)

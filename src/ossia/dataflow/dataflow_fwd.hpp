@@ -57,8 +57,8 @@ struct midi_delay_line;
 struct value_delay_line;
 struct geometry_delay_line;
 
-using data_type
-    = ossia::nullable_variant<audio_port, midi_port, value_port, geometry_port>;
+// using data_type
+//     = ossia::nullable_variant<audio_port, midi_port, value_port, geometry_port>;
 using delay_line_type = ossia::nullable_variant<
     audio_delay_line, midi_delay_line, value_delay_line, geometry_delay_line>;
 }
