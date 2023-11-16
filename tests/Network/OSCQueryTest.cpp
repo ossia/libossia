@@ -1117,3 +1117,74 @@ TEST_CASE("test_oscquery_value", "test_oscquery_value")
         v == std::vector<value>{"yes", true, std::vector<value>{2, 3}, 4.4f, 2, 'a'});
   }
 }
+
+#if defined(OSSIA_PROTOCOL_OSC)
+
+#include <ossia/network/context.hpp>
+#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/protocols/osc/osc_factory.hpp>
+#include <ossia/protocols/osc/osc_generic_protocol.hpp>
+
+TEST_CASE("test_oscquery_osc_to_ws", "test_oscquery_osc_to_ws")
+{
+
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  uint16_t shared = 1234;
+
+  auto serv_proto = new ossia::oscquery::oscquery_server_protocol(shared, 5678);
+  generic_device serv{std::unique_ptr<ossia::net::protocol_base>(serv_proto), "A"};
+  serv.set_echo(true);
+
+  TestDeviceRef dev{serv};
+
+  (void)dev;
+  ossia::net::parameter_base* server_param{};
+  {
+    auto& n = find_or_create_node(serv, "/main");
+    server_param = n.create_parameter(ossia::val_type::FLOAT);
+    server_param->push_value(6);
+  }
+
+  // WS client
+  auto ws_proto
+      = new ossia::oscquery::oscquery_mirror_protocol("ws://127.0.0.1:5678", 10020);
+  std::unique_ptr<generic_device> ws_clt{
+      new generic_device{std::unique_ptr<ossia::net::protocol_base>(ws_proto), "B"}};
+
+  ws_proto->update(ws_clt->get_root_node());
+
+  auto ws_node = find_node(ws_clt->get_root_node(), "/main");
+  REQUIRE(ws_node);
+  auto ws_param = ws_node->get_parameter();
+  REQUIRE(ws_param);
+  REQUIRE(ws_param->value().get<float>() == 6.f);
+
+  using conf = ossia::net::osc_protocol_configuration;
+
+  auto osc = ossia::net::make_osc_protocol(
+      ctx,
+      {.mode = conf::HOST,
+       .version = conf::OSC1_1,
+       .transport = ossia::net::udp_configuration{
+           {.local = std::nullopt,
+            .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
+
+
+  //server change goes to mirror
+  server_param->push_value(2.0f);
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  REQUIRE(ws_param->value().get<float>() == 2.0f);
+
+  //osc change should go to server and mirror
+  osc->push_raw({"/main", ossia::value{4.5f}});
+  ctx->context.run_one();
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
+  REQUIRE(server_param->value().get<float>() == 4.5f);
+  REQUIRE(ws_param->value().get<float>() == 4.5f);
+}
+
+// TODO test oscquery_server_asio & oscquery_mirror_asio
+// #include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+// #include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
+
+#endif
