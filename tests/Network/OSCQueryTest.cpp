@@ -1141,6 +1141,7 @@ TEST_CASE("test_oscquery_osc_to_ws", "test_oscquery_osc_to_ws")
   ossia::net::parameter_base* server_param{};
   {
     auto& n = find_or_create_node(serv, "/main");
+    n.set(critical_attribute{}, true);
     server_param = n.create_parameter(ossia::val_type::FLOAT);
     server_param->push_value(6);
   }
