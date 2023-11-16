@@ -40,9 +40,6 @@ struct oscquery_server_protocol::osc_receiver_impl : ossia::net::udp_receive_soc
 static uintptr_t
 client_identifier(const clients& clts, const oscpack::IpEndpointName& ip)
 {
-  if(clts.size() == 1)
-    return (uintptr_t)clts[0]->connection.lock().get();
-
   for(const auto& client_p : clts)
   {
     auto& c = *client_p;
