@@ -63,13 +63,14 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} Catch2)
   endif()
 
-  execute_process(COMMAND Git::Git submodule sync --recursive
+  find_package(Git REQUIRED)
+  execute_process(COMMAND ${GIT_EXECUTABLE} submodule sync --recursive
                   WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
                   COMMAND_ERROR_IS_FATAL ANY)
 
   foreach(submodule ${OSSIA_SUBMODULES})
       message(" -> ${OSSIA_3RDPARTY_FOLDER}/${submodule}")
-      execute_process(COMMAND git submodule update --init --recursive -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
+      execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive -- ${OSSIA_3RDPARTY_FOLDER}/${submodule}
                       WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
                       COMMAND_ERROR_IS_FATAL ANY)
   endforeach()
