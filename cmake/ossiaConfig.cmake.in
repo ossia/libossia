@@ -2,8 +2,14 @@ include(CMakeFindDependencyMacro)
 
 get_filename_component(OSSIA_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
 
-list(APPEND CMAKE_MODULE_PATH ${OSSIA_CMAKE_DIR})
+list(APPEND CMAKE_MODULE_PATH "${OSSIA_CMAKE_DIR}")
 find_dependency(Boost 1.83 REQUIRED)
+
+if(@OSSIA_STATIC@)
+  if(EXISTS "${OSSIA_CMAKE_DIR}/../re2/re2-exports.cmake")
+    include("${OSSIA_CMAKE_DIR}/../re2/re2-exports.cmake")
+  endif()
+endif()
 
 list(REMOVE_AT CMAKE_MODULE_PATH -1)
 
@@ -30,4 +36,10 @@ target_compile_definitions(ossia::ossia INTERFACE
   SPDLOG_DEBUG_ON=1
   SPDLOG_TRACE_ON=1
 )
+
+if(@OSSIA_STATIC@)
+  if(TARGET re2)
+    target_link_libraries(ossia::ossia INTERFACE re2)
+  endif()
+endif()
 endif()

@@ -184,12 +184,12 @@ else()
 
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-      -fvar-tracking-assignments
+      $<BUILD_INTERFACE:-fvar-tracking-assignments>
     )
 
     # Note: this may fail with -gsplit-dwarf
     set(OSSIA_LINK_OPTIONS ${OSSIA_LINK_OPTIONS}
-      -Wl,-Bsymbolic-functions
+      $<BUILD_INTERFACE:-Wl,-Bsymbolic-functions>
     )
   endif()
 
