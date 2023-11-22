@@ -102,5 +102,3 @@ private:
   std::atomic<bool> locked{false};
 };
 }
-
-#undef ossia_rwlock_pause
