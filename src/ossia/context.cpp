@@ -31,7 +31,7 @@
 #pragma warning(push)
 #pragma warning(disable : 4073)
 #pragma init_seg(lib)
-boost::asio::detail::winsock_init<>::manual manual_winsock_init;
+boost::asio::detail::winsock_init<2, 2>::manual manual_winsock_init;
 #pragma warning(pop)
 #elif defined(_WIN32)
 #include <boost/asio/detail/winsock_init.hpp>
