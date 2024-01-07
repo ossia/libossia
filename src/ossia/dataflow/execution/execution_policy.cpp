@@ -36,6 +36,8 @@ local_state_execution_policy::~local_state_execution_policy() { }
 void local_state_execution_policy::commit_common()
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
+  // FIXME this does not look necessary?
+  // Why not just push to the audio address
   for(auto& elt : m_audioState)
   {
     assert(elt.first);

@@ -21,7 +21,7 @@ public:
   virtual ~audio_parameter();
 
   void clone_value(audio_vector& res) const;
-  void push_value(const audio_port& port);
+  virtual void push_value(const audio_port& port);
 
   void pull_value() override;
   net::parameter_base& push_value(const ossia::value&) override;
