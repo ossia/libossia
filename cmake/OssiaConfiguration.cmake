@@ -2,7 +2,6 @@ include(Sanitize)
 include(DebugMode)
 include(UseGold)
 include(LinkerWarnings)
-include(StaticQt)
 
 if(MSVC)
   if(NOT "${CMAKE_CXX_FLAGS}" MATCHES "EHsc")
