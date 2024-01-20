@@ -21,6 +21,21 @@ public:
     }
   }
 
+  explicit dylib_loader(std::vector<std::string_view> sos)
+  {
+    if(sos.empty())
+      throw std::runtime_error("No shared object specified");
+
+    for(const auto so : sos)
+    {
+      impl = dlopen(so.data(), RTLD_LAZY | RTLD_LOCAL | RTLD_NODELETE);
+      if(impl)
+        return;
+    }
+
+    throw std::runtime_error(fmt::format("{}: not found. ", sos[0]));
+  }
+
   dylib_loader(const dylib_loader&) noexcept = delete;
   dylib_loader& operator=(const dylib_loader&) noexcept = delete;
   dylib_loader(dylib_loader&& other) noexcept
