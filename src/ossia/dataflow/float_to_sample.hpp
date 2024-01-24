@@ -65,12 +65,24 @@ constexpr int32_t float_to_sample<int32_t, 24>(ossia::audio_sample sample) noexc
   return int32_t(sample * int24_max);
 }
 
+/*
 template <>
-constexpr int32_t float_to_sample<int32_t, 32>(ossia::audio_sample sample) noexcept
+constexpr int32_t float_to_sample<int32_t, 24>(audio_sample x) noexcept
 {
-  const constexpr ossia::audio_sample int32_max
-      = ossia::audio_sample(std::numeric_limits<int32_t>::max());
-  return sample * int32_max;
+  // TODO division -> multiplication
+  if constexpr(std::is_same_v<ossia::audio_sample, float>)
+  {
+    return (x * (0x7FFFFF + 0.5f)) - 0.5f;
+  }
+  else
+    return (x * (0x7FFFFF + 0.5)) - 0.5;
+}
+*/
+
+template <>
+constexpr int32_t float_to_sample<int32_t, 32>(audio_sample x) noexcept
+{
+  return x * (audio_sample)std::numeric_limits<int32_t>::max();
 }
 
 template <>

@@ -9,8 +9,6 @@ namespace ossia
 {
 template <typename SampleFormat, int N>
 constexpr audio_sample sample_to_float(SampleFormat i);
-template <typename SampleFormat, int N>
-constexpr SampleFormat float_to_sample(audio_sample f);
 
 template <>
 constexpr audio_sample sample_to_float<uint8_t, 8>(uint8_t i)
@@ -59,36 +57,6 @@ template <>
 constexpr audio_sample sample_to_float<double, 64>(double i)
 {
   return i;
-}
-
-template <>
-constexpr int16_t float_to_sample<int16_t, 16>(audio_sample x)
-{
-  // TODO division -> multiplication
-  if constexpr(std::is_same_v<ossia::audio_sample, float>)
-  {
-    return (x * (0x7FFF + 0.5f)) - 0.5f;
-  }
-  else
-    return (x * (0x7FFF + 0.5)) - 0.5;
-}
-
-template <>
-constexpr int32_t float_to_sample<int32_t, 24>(audio_sample x)
-{
-  // TODO division -> multiplication
-  if constexpr(std::is_same_v<ossia::audio_sample, float>)
-  {
-    return (x * (0x7FFFFF + 0.5f)) - 0.5f;
-  }
-  else
-    return (x * (0x7FFFFF + 0.5)) - 0.5;
-}
-
-template <>
-constexpr int32_t float_to_sample<int32_t, 32>(audio_sample x)
-{
-  return x * (audio_sample)std::numeric_limits<int32_t>::max();
 }
 
 inline void read_u8(ossia::mutable_audio_span<float>& ap, void* data, int64_t samples)
