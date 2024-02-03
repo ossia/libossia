@@ -108,6 +108,7 @@ struct OSSIA_EXPORT execution_state : public Nano::Observer
 #if !defined(OSSIA_TESTING)
 private:
 #endif
+  void init_midi_timings();
   void get_new_values();
 
   void register_parameter(ossia::net::parameter_base& p);
@@ -131,9 +132,16 @@ private:
 
   ossia::ptr_map<ossia::net::parameter_base*, value_vector<ossia::value>>
       m_receivedValues;
-  ossia::ptr_map<
-      ossia::net::midi::midi_protocol*, std::pair<int, value_vector<libremidi::message>>>
-      m_receivedMidi;
+
+  struct received_midi_state
+  {
+    value_vector<libremidi::message> messages;
+    int64_t last_buffer_start{};
+    int64_t current_buffer_start{};
+    int count{};
+  };
+
+  ossia::ptr_map<ossia::net::midi::midi_protocol*, received_midi_state> m_receivedMidi;
 
   friend struct local_pull_visitor;
   friend struct global_pull_visitor;

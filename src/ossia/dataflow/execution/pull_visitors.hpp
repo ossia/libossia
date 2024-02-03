@@ -113,7 +113,7 @@ struct global_pull_visitor
     auto it = state.m_receivedMidi.find(midi);
     if(it != state.m_receivedMidi.end())
     {
-      for(const libremidi::message& v : it->second.second)
+      for(const libremidi::message& v : it->second.messages)
       {
         val.messages.push_back(v);
       }
@@ -165,14 +165,14 @@ struct global_pull_node_visitor
     {
       if(channel == -1)
       {
-        for(const libremidi::message& v : it->second.second)
+        for(const libremidi::message& v : it->second.messages)
         {
           val.messages.push_back(v);
         }
       }
       else
       {
-        for(const libremidi::message& v : it->second.second)
+        for(const libremidi::message& v : it->second.messages)
         {
           if(v.get_channel() == channel)
             val.messages.push_back(v);

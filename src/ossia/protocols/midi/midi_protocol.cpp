@@ -15,48 +15,58 @@ static constexpr auto midi_api(libremidi::API api)
   return (api == libremidi::API::UNSPECIFIED) ? libremidi::midi1::default_api() : api;
 }
 midi_protocol::midi_protocol(
-    ossia::net::network_context_ptr ctx, std::string device_name, libremidi::API api)
+    ossia::net::network_context_ptr ctx, std::string device_name,
+    libremidi::input_configuration& conf, std::any api)
     : protocol_base{flags{}}
     , m_context{ctx}
-// , m_input{std::make_unique<libremidi::midi_in>(midi_api(api), device_name)}
-// , m_output{std::make_unique<libremidi::midi_out>(midi_api(api), device_name)}
 {
-  api = midi_api(api);
+  conf.on_message = [this](const libremidi::message& m) { midi_callback(m); };
 
-  libremidi::input_configuration input_conf;
-  input_conf.on_message = [this](const libremidi::message& m) { midi_callback(m); };
-  m_input = std::make_unique<libremidi::midi_in>(
-      input_conf, libremidi::midi_in_configuration_for(api));
-
-  libremidi::output_configuration output_conf;
-  m_output = std::make_unique<libremidi::midi_out>(
-      output_conf, libremidi::midi_out_configuration_for(api));
+  m_input = std::make_unique<libremidi::midi_in>(conf, api);
 }
 
+midi_protocol::midi_protocol(
+    ossia::net::network_context_ptr ctx, std::string device_name,
+    libremidi::output_configuration& conf, std::any api)
+    : protocol_base{flags{}}
+    , m_context{ctx}
+{
+  m_output = std::make_unique<libremidi::midi_out>(conf, api);
+}
+
+/*
 midi_protocol::midi_protocol(
     ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
     : midi_protocol{std::move(ctx), m.handle.display_name, api}
 {
   set_info(m);
 }
+*/
 
 midi_protocol::~midi_protocol()
 {
-  try
+  if(m_input)
   {
-    m_input->close_port();
+    try
+    {
+      m_input->close_port();
+    }
+    catch(...)
+    {
+      logger().error("midi_protocol::~midi_protocol() error");
+    }
   }
-  catch(...)
+
+  if(m_output)
   {
-    logger().error("midi_protocol::~midi_protocol() error");
-  }
-  try
-  {
-    m_output->close_port();
-  }
-  catch(...)
-  {
-    logger().error("midi_protocol::~midi_protocol() error");
+    try
+    {
+      m_output->close_port();
+    }
+    catch(...)
+    {
+      logger().error("midi_protocol::~midi_protocol() error");
+    }
   }
 }
 
@@ -124,6 +134,13 @@ bool midi_protocol::set_info(midi_info m)
 midi_info midi_protocol::get_info() const
 {
   return m_info;
+}
+
+int64_t midi_protocol::get_timestamp() const noexcept
+{
+  if(m_info.type != midi_info::Type::Input || !m_input)
+    return 0;
+  return m_input->absolute_timestamp();
 }
 
 bool midi_protocol::pull(parameter_base& address)
@@ -304,10 +321,10 @@ bool midi_protocol::push_raw(const full_parameter_data& parameter_base)
 
 bool midi_protocol::observe(parameter_base& address, bool enable)
 {
-  midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
   if(m_info.type != midi_info::Type::Input)
     return false;
 
+  midi_parameter& adrs = dynamic_cast<midi_parameter&>(address);
   auto& adrinfo = adrs.info();
   switch(adrinfo.type)
   {

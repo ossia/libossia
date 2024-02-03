@@ -16,6 +16,7 @@
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/network/base/message_queue.hpp>
 
+#include <libremidi/libremidi.hpp>
 namespace ossia
 {
 execution_state::execution_state() {
@@ -106,11 +107,11 @@ void execution_state::register_midi_parameter(net::midi::midi_protocol& p)
   auto it = m_receivedMidi.find(&p);
   if(it == m_receivedMidi.end())
   {
-    m_receivedMidi.insert({&p, {0, {}}});
+    m_receivedMidi.insert({&p, received_midi_state{.messages = {}, .count = 1}});
   }
   else
   {
-    it->second.first++;
+    it->second.count++;
   }
 #endif
 }
@@ -121,8 +122,8 @@ void execution_state::unregister_midi_parameter(net::midi::midi_protocol& p)
   auto it = m_receivedMidi.find(&p);
   if(it != m_receivedMidi.end())
   {
-    it->second.first--;
-    if(it->second.first <= 0)
+    it->second.count--;
+    if(it->second.count <= 0)
     {
       m_receivedMidi.erase(it);
       // TODO p.disable_registration();
@@ -145,8 +146,40 @@ void execution_state::get_new_values()
 
   for(auto it = m_receivedMidi.begin(), end = m_receivedMidi.end(); it != end; ++it)
   {
-    it->second.second.clear();
-    it->first->clone_value(it->second.second);
+    auto& [proto, state] = *it;
+
+    auto midi = proto->midi_in();
+    auto& input_messages = proto->messages;
+    auto& port = state.messages;
+    libremidi::message msg;
+    port.clear();
+    port.reserve(input_messages.size_approx());
+    if(midi->get_current_api() == libremidi::API::JACK_MIDI)
+    {
+      // sample-accurate, see MIDIDevice.cpp in score
+      while(input_messages.try_dequeue(msg))
+      {
+        port.push_back(msg);
+      }
+    }
+    else
+    {
+      // Adapt the Absolute timestamps
+      const auto cur_t = state.current_buffer_start;
+      const auto prev_t = state.last_buffer_start;
+      const double timestamp_mult = cur_t > prev_t ? 1. / (cur_t - prev_t) : 0.;
+
+      while(input_messages.try_dequeue(msg))
+      {
+        msg.timestamp = this->bufferSize * ((msg.timestamp - prev_t) * timestamp_mult);
+        if(msg.timestamp >= bufferSize)
+          msg.timestamp = this->bufferSize - 1;
+        if(msg.timestamp < 0)
+          msg.timestamp = 0;
+
+        port.push_back(msg);
+      }
+    }
   }
 }
 
@@ -328,8 +361,22 @@ void execution_state::apply_device_changes()
     }
   }
 }
+
+void execution_state::init_midi_timings()
+{
+  for(auto& [proto, state] : m_receivedMidi)
+  {
+    if(auto m = proto->midi_in())
+    {
+      state.last_buffer_start = state.current_buffer_start;
+      state.current_buffer_start = m->absolute_timestamp();
+    }
+  }
+}
+
 void execution_state::begin_tick()
 {
+  init_midi_timings();
   m_policy->clear_local_state();
   get_new_values();
   apply_device_changes();

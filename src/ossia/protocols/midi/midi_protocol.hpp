@@ -13,6 +13,7 @@
 #include <libremidi/message.hpp>
 #include <libremidi/observer_configuration.hpp>
 
+#include <any>
 #include <array>
 #include <atomic>
 #include <cassert>
@@ -20,6 +21,8 @@ namespace libremidi
 {
 class midi_in;
 class midi_out;
+struct input_configuration;
+struct output_configuration;
 struct message;
 }
 namespace ossia::net::midi
@@ -66,7 +69,10 @@ class OSSIA_EXPORT midi_protocol final
 public:
   explicit midi_protocol(
       ossia::net::network_context_ptr, std::string device_name,
-      libremidi::API api = libremidi::API::UNSPECIFIED);
+      libremidi::input_configuration&, std::any midi_api);
+  explicit midi_protocol(
+      ossia::net::network_context_ptr, std::string device_name,
+      libremidi::output_configuration&, std::any midi_api);
   explicit midi_protocol(
       ossia::net::network_context_ptr, midi_info,
       libremidi::API api = libremidi::API::UNSPECIFIED);
@@ -75,6 +81,8 @@ public:
   bool set_info(midi_info);
   midi_info get_info() const;
 
+  int64_t get_timestamp() const noexcept;
+
   static std::string
   get_midi_port_name(ossia::net::device_base* dev, const midi_info& info);
 
@@ -82,23 +90,16 @@ public:
 
   void push_value(const libremidi::message&);
 
-  template <typename T>
-  void clone_value(T& port)
-  {
-    typename T::value_type mess;
-    while(messages.try_dequeue(mess))
-    {
-      port.push_back(mess);
-    }
-  }
-
   void enable_registration();
 
   bool learning() const;
   void set_learning(bool);
 
-private:
+  libremidi::midi_in* midi_in() const noexcept { return m_input.get(); }
+
   ossia::spsc_queue<libremidi::message> messages;
+
+private:
   ossia::net::network_context_ptr m_context;
   std::unique_ptr<libremidi::midi_in> m_input;
   std::unique_ptr<libremidi::midi_out> m_output;
