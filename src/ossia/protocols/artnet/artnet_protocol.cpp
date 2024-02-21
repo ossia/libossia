@@ -25,10 +25,7 @@ dmx_buffer::~dmx_buffer() = default;
 static constexpr int artnet_port_id = 0;
 artnet_protocol::artnet_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf)
-    : protocol_base{flags{}}
-    , m_context{ctx}
-    , m_timer{ctx->context}
-    , m_conf{conf}
+    : dmx_protocol_base{ctx, conf}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
@@ -60,54 +57,15 @@ artnet_protocol::artnet_protocol(
 
 artnet_protocol::~artnet_protocol()
 {
-  m_timer.stop();
+  stop_processing();
   artnet_destroy(m_node);
 }
 
 void artnet_protocol::set_device(ossia::net::device_base& dev)
 {
-  m_device = &dev;
-
-  if(m_conf.autocreate != m_conf.no_auto)
-  {
-    auto& root = dev.get_root_node();
-    for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-    {
-      auto name = m_conf.autocreate == m_conf.channel_index
-                      ? fmt::format("Channel-{}", i + 1)
-                      : std::to_string(i + 1);
-
-      device_parameter::create_device_parameter<dmx_parameter>(
-          root, name, 0, m_buffer, i);
-    }
-  }
+  dmx_protocol_base::set_device(dev);
 
   m_timer.start([this] { this->update_function(); });
-}
-
-bool artnet_protocol::pull(net::parameter_base& param)
-{
-  return true;
-}
-
-bool artnet_protocol::push(const net::parameter_base& param, const ossia::value& v)
-{
-  return true;
-}
-
-bool artnet_protocol::observe(net::parameter_base& param, bool enable)
-{
-  return false;
-}
-
-bool artnet_protocol::push_raw(const ossia::net::full_parameter_data& data)
-{
-  return false;
-}
-
-bool artnet_protocol::update(ossia::net::node_base&)
-{
-  return true;
 }
 
 void artnet_protocol::update_function()

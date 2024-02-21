@@ -56,7 +56,6 @@ node_base& midi_node::set_name(std::string)
 {
   return *this;
 }
-
 parameter_base* midi_node::get_parameter() const
 {
   return m_parameter.get();

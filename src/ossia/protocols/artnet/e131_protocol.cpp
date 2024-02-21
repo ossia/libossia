@@ -83,11 +83,8 @@ e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket
 e131_protocol::e131_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
     const ossia::net::socket_configuration& socket)
-    : protocol_base{flags{}}
-    , m_context{ctx}
-    , m_timer{ctx->context}
+    : dmx_protocol_base{ctx, conf}
     , m_socket{e131_host(conf, socket), socket.port, ctx->context}
-    , m_conf{conf}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
@@ -106,47 +103,13 @@ e131_protocol::e131_protocol(
 
 e131_protocol::~e131_protocol()
 {
-  m_timer.stop();
+  stop_processing();
 }
 
 void e131_protocol::set_device(ossia::net::device_base& dev)
 {
-  m_device = &dev;
-
-  if(m_conf.autocreate)
-  {
-    auto& root = dev.get_root_node();
-    for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-      device_parameter::create_device_parameter<dmx_parameter>(
-          root, fmt::format("{}", i + 1), 0, m_buffer, i);
-  }
-
+  dmx_protocol_base::set_device(dev);
   m_timer.start([this] { this->update_function(); });
-}
-
-bool e131_protocol::pull(net::parameter_base& param)
-{
-  return true;
-}
-
-bool e131_protocol::push(const net::parameter_base& param, const ossia::value& v)
-{
-  return true;
-}
-
-bool e131_protocol::observe(net::parameter_base& param, bool enable)
-{
-  return false;
-}
-
-bool e131_protocol::push_raw(const ossia::net::full_parameter_data& data)
-{
-  return false;
-}
-
-bool e131_protocol::update(ossia::net::node_base&)
-{
-  return true;
 }
 
 /* Initialize an E1.31 packet using a universe and a number of slots */
@@ -216,20 +179,16 @@ void e131_protocol::update_function()
   static std::atomic_int seq = 0;
   try
   {
-    if(true || m_buffer.dirty)
-    {
-      e131_packet pkt;
-      e131_pkt_init(&pkt, this->m_conf.universe, 512);
+    e131_packet pkt;
+    e131_pkt_init(&pkt, this->m_conf.universe, 512);
 
-      for(size_t pos = 0; pos < 512; pos++)
-        pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
-      pkt.frame.seq_number = seq;
+    for(size_t pos = 0; pos < 512; pos++)
+      pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
+    pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
 
-      m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
 
-      seq++;
-      m_buffer.dirty = false;
-    }
+    m_buffer.dirty = false;
   }
   catch(std::exception& e)
   {
