@@ -367,9 +367,6 @@ struct pipewire_context
         PW_KEY_LINK_OUTPUT_PORT, std::to_string(out_port).c_str(),
         PW_KEY_LINK_INPUT_PORT, std::to_string(in_port).c_str(), nullptr);
 
-    spa_hook listener{};
-    spa_zero(listener);
-
     auto proxy = (pw_proxy*)pw_core_create_object(
         this->core, "link-factory", PW_TYPE_INTERFACE_Link, PW_VERSION_LINK,
         &props->dict, 0);
@@ -618,10 +615,10 @@ public:
       // Leave some time to resolve the ports
       k = 0;
       const auto num_local_ins = this->input_ports.size();
-      const auto num_local_outs = this->input_ports.size();
+      const auto num_local_outs = this->output_ports.size();
       auto& this_node = this->loop->current_graph.software_audio[node_id];
       while(this_node.inputs.size() < num_local_ins
-            && this_node.outputs.size() < num_local_outs)
+            || this_node.outputs.size() < num_local_outs)
       {
         this->loop->synchronize();
         if(k++; k > 100)
