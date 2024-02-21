@@ -19,6 +19,11 @@ struct dmx_config
     just_index     // "123"
   } autocreate{no_auto};
   bool multicast{true};
+  enum
+  {
+    source, // ossia sends DX
+    sink    // ossia receives DMX
+  } mode{source};
 };
 
 struct dmx_buffer
