@@ -9,7 +9,7 @@
 
 namespace ossia::net
 {
-class OSSIA_EXPORT dmxusbpro_protocol final : public dmx_protocol_base
+class OSSIA_EXPORT dmxusbpro_protocol final : public dmx_output_protocol_base
 {
 public:
   dmxusbpro_protocol(

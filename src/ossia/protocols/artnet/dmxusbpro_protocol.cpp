@@ -7,7 +7,7 @@ namespace ossia::net
 dmxusbpro_protocol::dmxusbpro_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
     const ossia::net::serial_configuration& socket, int version)
-    : dmx_protocol_base{ctx, conf}
+    : dmx_output_protocol_base{ctx, conf}
     , m_port{ctx->context}
     , m_version{version}
 {

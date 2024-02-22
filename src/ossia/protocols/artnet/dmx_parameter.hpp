@@ -22,6 +22,10 @@ public:
   ~dmx_parameter();
   int8_t m_bytes{};
 
+  uint32_t channel() const noexcept { return m_channel; }
+
+  void set_dmx_value(const uint8_t* start, const uint8_t* buffer_end);
+
 private:
   void device_update_value() override;
 
@@ -29,7 +33,9 @@ private:
   const uint32_t m_channel{};
 
   template <std::size_t I>
-  friend struct artnet_visitor;
+  friend struct artnet_in_visitor;
+  template <std::size_t I>
+  friend struct artnet_out_visitor;
 };
 
 class OSSIA_EXPORT dmx_enum_parameter : public device_parameter

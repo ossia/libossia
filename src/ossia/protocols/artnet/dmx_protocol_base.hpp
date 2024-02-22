@@ -14,6 +14,7 @@
 namespace ossia::net
 {
 struct dmx_config;
+class dmx_parameter;
 class OSSIA_EXPORT dmx_protocol_base : public ossia::net::protocol_base
 {
 public:
@@ -30,16 +31,36 @@ public:
   bool update(ossia::net::node_base&) override;
 
   dmx_buffer& buffer() noexcept { return m_buffer; }
-  void stop_processing();
 
 protected:
   ossia::net::network_context_ptr m_context;
 
-  ossia::timer m_timer;
   dmx_buffer m_buffer;
 
   ossia::net::device_base* m_device{};
   dmx_config m_conf{};
 };
 
+class OSSIA_EXPORT dmx_output_protocol_base : public dmx_protocol_base
+{
+public:
+  dmx_output_protocol_base(ossia::net::network_context_ptr, const dmx_config& conf);
+  void stop_processing();
+
+protected:
+  ossia::timer m_timer;
+};
+
+class OSSIA_EXPORT dmx_input_protocol_base : public dmx_protocol_base
+{
+public:
+  using dmx_protocol_base::dmx_protocol_base;
+  // Caches the DMX address -> ossia parameter mapping for
+  // fast operation during input
+  void create_channel_map();
+  void on_dmx(const uint8_t* dmx, int count);
+
+protected:
+  std::array<dmx_parameter*, 512> m_cache;
+};
 }

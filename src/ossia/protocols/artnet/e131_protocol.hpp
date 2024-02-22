@@ -9,7 +9,7 @@ namespace ossia::net
 {
 // Implementation mostly based on https://github.com/hhromic/libe131
 
-class OSSIA_EXPORT e131_protocol final : public ossia::net::dmx_protocol_base
+class OSSIA_EXPORT e131_protocol final : public ossia::net::dmx_output_protocol_base
 {
 public:
   static constexpr uint16_t default_port = 5568;
@@ -28,7 +28,7 @@ private:
   ossia::net::udp_send_socket m_socket;
 };
 
-class OSSIA_EXPORT e131_input_protocol final : public ossia::net::dmx_protocol_base
+class OSSIA_EXPORT e131_input_protocol final : public ossia::net::dmx_input_protocol_base
 {
 public:
   static constexpr uint16_t default_port = 5568;
@@ -43,7 +43,7 @@ public:
   void set_device(ossia::net::device_base& dev) override;
 
 private:
-  void update_function();
+  void on_packet(const char* bytes, int sz);
 
   ossia::net::udp_receive_socket m_socket;
 };

@@ -149,7 +149,7 @@ e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket
 e131_protocol::e131_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
     const ossia::net::socket_configuration& socket)
-    : dmx_protocol_base{ctx, conf}
+    : dmx_output_protocol_base{ctx, conf}
     , m_socket{e131_host(conf, socket), socket.port, ctx->context}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
@@ -207,7 +207,7 @@ void e131_protocol::update_function()
 e131_input_protocol::e131_input_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
     const ossia::net::socket_configuration& socket)
-    : dmx_protocol_base{ctx, conf}
+    : dmx_input_protocol_base{ctx, conf}
     , m_socket{socket, ctx->context}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
@@ -216,42 +216,27 @@ e131_input_protocol::e131_input_protocol(
   m_socket.open();
 }
 
-e131_input_protocol::~e131_input_protocol()
-{
-  stop_processing();
-}
+e131_input_protocol::~e131_input_protocol() { }
 
 void e131_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
-  m_socket.receive(
-      [](const char* bytes, int sz) { std::cerr << (int)bytes[0] << "\n"; });
+  // FIXME we must make sure that this is actually called after the fixtures have been assigned
+  m_socket.receive([this](const char* bytes, int sz) { on_packet(bytes, sz); });
 }
 
-void e131_input_protocol::update_function()
+void e131_input_protocol::on_packet(const char* bytes, int sz)
 {
-  static std::atomic_int seq = 0;
-  try
-  {
-    e131_packet pkt;
-    e131_pkt_init(&pkt, this->m_conf.universe, 512);
+  if(sz != sizeof(e131_packet))
+    return;
 
-    for(size_t pos = 0; pos < 512; pos++)
-      pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
-    pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
+  auto& pkt = *reinterpret_cast<const e131_packet*>(bytes);
 
-    //    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+  int universe = ntohs(pkt.frame.universe);
+  if(universe != this->m_conf.universe)
+    return;
 
-    m_buffer.dirty = false;
-  }
-  catch(std::exception& e)
-  {
-    ossia::logger().error("write failure: {}", e.what());
-  }
-  catch(...)
-  {
-    ossia::logger().error("write failure");
-  }
+  on_dmx(pkt.dmp.prop_val + 1, std::min(pkt.dmp.prop_val_cnt - 1, 512));
 }
 }
 

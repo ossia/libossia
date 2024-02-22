@@ -9,7 +9,77 @@
 namespace ossia::net
 {
 template <std::size_t I>
-struct artnet_visitor
+struct artnet_in_visitor
+{
+  static_assert(I >= 1);
+  static_assert(I <= 4);
+
+  const uint8_t* start{};
+  void apply(uint32_t& res) const noexcept
+  {
+    if constexpr(I == 1)
+    {
+      res += *start;
+    }
+    else if constexpr(I == 2)
+    {
+      res += *(start + 1);
+      res += *(start + 0) << 8;
+    }
+    else if constexpr(I == 3)
+    {
+      res += *(start + 2);
+      res += *(start + 1) << 8;
+      res += *(start + 0) << 16;
+    }
+    else if constexpr(I == 4)
+    {
+      res += *(start + 3);
+      res += *(start + 2) << 8;
+      res += *(start + 1) << 16;
+      res += *(start + 0) << 24;
+    }
+  }
+
+  void operator()(int& v) const noexcept
+  {
+    uint32_t vv = 0;
+    apply(vv);
+    v = vv;
+  }
+  void operator()(float& v) const noexcept
+  {
+    uint32_t vv = 0;
+    apply(vv);
+    v = vv;
+  }
+  void operator()(bool& v) const noexcept
+  {
+    uint32_t vv = 0;
+    apply(vv);
+    v = vv;
+  }
+  template <typename... Args>
+  void operator()(Args&&...) const noexcept
+  {
+  }
+};
+
+template <>
+struct artnet_in_visitor<1>
+{
+  const uint8_t* value{};
+  void operator()(int& v) const noexcept { v = *value; }
+  void operator()(float& v) const noexcept { v = *value; }
+  void operator()(bool& v) const noexcept { v = *value > 0; }
+  template <typename... Args>
+  void operator()(const Args&...) const noexcept
+  {
+  }
+};
+
+template <std::size_t I>
+struct artnet_out_visitor
 {
   static_assert(I >= 1);
   static_assert(I <= 4);
@@ -41,6 +111,7 @@ struct artnet_visitor
   }
   void operator()(int v) const noexcept { return apply(v); }
   void operator()(float v) const noexcept { return apply(v); }
+  void operator()(bool v) const noexcept { return apply(v ? 0xFFFFFFFF : 0x0); }
   template <typename... Args>
   void operator()(Args&&...) const noexcept
   {
@@ -48,7 +119,7 @@ struct artnet_visitor
 };
 
 template <>
-struct artnet_visitor<1>
+struct artnet_out_visitor<1>
 {
   dmx_parameter& self;
   void operator()(int v) const noexcept
@@ -59,11 +130,16 @@ struct artnet_visitor<1>
   {
     self.m_buffer.data[self.m_channel] = std::clamp(v, 0.f, 255.f);
   }
+  void operator()(bool v) const noexcept
+  {
+    self.m_buffer.data[self.m_channel] = v ? 255 : 0;
+  }
   template <typename... Args>
   void operator()(const Args&...) const noexcept
   {
   }
 };
+
 dmx_parameter::dmx_parameter(
     net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min,
     int max, int8_t bytes)
@@ -78,21 +154,46 @@ dmx_parameter::dmx_parameter(
 
 dmx_parameter::~dmx_parameter() = default;
 
-void dmx_parameter::device_update_value()
+void dmx_parameter::set_dmx_value(const uint8_t* start, const uint8_t* buffer_end)
 {
+  // dmx in -> ossia
+  if(buffer_end - start < m_bytes)
+    return;
+
   switch(m_bytes)
   {
     case 1:
-      m_current_value.apply(artnet_visitor<1>{*this});
+      m_current_value.apply(artnet_in_visitor<1>{start});
       break;
     case 2:
-      m_current_value.apply(artnet_visitor<2>{*this});
+      m_current_value.apply(artnet_in_visitor<2>{start});
       break;
     case 3:
-      m_current_value.apply(artnet_visitor<3>{*this});
+      m_current_value.apply(artnet_in_visitor<3>{start});
       break;
     case 4:
-      m_current_value.apply(artnet_visitor<4>{*this});
+      m_current_value.apply(artnet_in_visitor<4>{start});
+      break;
+  }
+  push_value(m_current_value);
+}
+
+void dmx_parameter::device_update_value()
+{
+  // ossia -> dmx out
+  switch(m_bytes)
+  {
+    case 1:
+      m_current_value.apply(artnet_out_visitor<1>{*this});
+      break;
+    case 2:
+      m_current_value.apply(artnet_out_visitor<2>{*this});
+      break;
+    case 3:
+      m_current_value.apply(artnet_out_visitor<3>{*this});
+      break;
+    case 4:
+      m_current_value.apply(artnet_out_visitor<4>{*this});
       break;
   }
 

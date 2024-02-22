@@ -18,6 +18,12 @@ class udp_receive_socket
   using proto = boost::asio::ip::udp;
 
 public:
+  udp_receive_socket(boost::asio::io_context& ctx)
+      : m_context{ctx}
+      , m_socket{ctx}
+  {
+  }
+
   udp_receive_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
@@ -27,6 +33,7 @@ public:
 
   ~udp_receive_socket() = default;
 
+  void assign(int sock) { m_socket.assign(boost::asio::ip::udp::v4(), sock); }
   void open()
   {
     m_socket.open(boost::asio::ip::udp::v4());
