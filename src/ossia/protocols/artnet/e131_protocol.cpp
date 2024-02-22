@@ -11,7 +11,10 @@
 #include <artnet/artnet.h>
 
 #include <chrono>
+#include <iostream>
 
+namespace
+{
 #pragma pack(push, 1)
 struct e131_acn_root_layer
 {                          /* ACN Root Layer: 38 bytes */
@@ -61,56 +64,6 @@ enum class e131_option_t
   E131_OPT_TERMINATED = 6,
   E131_OPT_PREVIEW = 7,
 };
-
-#pragma pack(pop)
-static_assert(sizeof(e131_packet) == 638);
-
-namespace ossia::net
-{
-static boost::asio::ip::address_v4
-e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket)
-{
-  if(conf.multicast)
-  {
-    return boost::asio::ip::address_v4(0xefff0000 | conf.universe);
-  }
-  else
-  {
-    return boost::asio::ip::address_v4::from_string(socket.host);
-  }
-}
-
-e131_protocol::e131_protocol(
-    ossia::net::network_context_ptr ctx, const dmx_config& conf,
-    const ossia::net::socket_configuration& socket)
-    : dmx_protocol_base{ctx, conf}
-    , m_socket{e131_host(conf, socket), socket.port, ctx->context}
-{
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
-
-  m_socket.connect();
-
-  if(conf.multicast && !socket.host.empty())
-  {
-    m_socket.m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
-        boost::asio::ip::address_v4::from_string(socket.host)));
-  }
-
-  m_timer.set_delay(std::chrono::milliseconds{
-      static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
-}
-
-e131_protocol::~e131_protocol()
-{
-  stop_processing();
-}
-
-void e131_protocol::set_device(ossia::net::device_base& dev)
-{
-  dmx_protocol_base::set_device(dev);
-  m_timer.start([this] { this->update_function(); });
-}
 
 /* Initialize an E1.31 packet using a universe and a number of slots */
 static int
@@ -174,6 +127,57 @@ e131_pkt_init(e131_packet* packet, const uint16_t universe, const uint16_t num_s
   return 0;
 }
 
+#pragma pack(pop)
+static_assert(sizeof(e131_packet) == 638);
+}
+
+namespace ossia::net
+{
+static boost::asio::ip::address_v4
+e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket)
+{
+  if(conf.multicast)
+  {
+    return boost::asio::ip::address_v4(0xefff0000 | conf.universe);
+  }
+  else
+  {
+    return boost::asio::ip::address_v4::from_string(socket.host);
+  }
+}
+
+e131_protocol::e131_protocol(
+    ossia::net::network_context_ptr ctx, const dmx_config& conf,
+    const ossia::net::socket_configuration& socket)
+    : dmx_protocol_base{ctx, conf}
+    , m_socket{e131_host(conf, socket), socket.port, ctx->context}
+{
+  if(conf.frequency < 1 || conf.frequency > 44)
+    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
+
+  m_socket.connect();
+
+  if(conf.multicast && !socket.host.empty())
+  {
+    m_socket.m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
+        boost::asio::ip::address_v4::from_string(socket.host)));
+  }
+
+  m_timer.set_delay(std::chrono::milliseconds{
+      static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
+}
+
+e131_protocol::~e131_protocol()
+{
+  stop_processing();
+}
+
+void e131_protocol::set_device(ossia::net::device_base& dev)
+{
+  dmx_protocol_base::set_device(dev);
+  m_timer.start([this] { this->update_function(); });
+}
+
 void e131_protocol::update_function()
 {
   static std::atomic_int seq = 0;
@@ -200,6 +204,55 @@ void e131_protocol::update_function()
   }
 }
 
+e131_input_protocol::e131_input_protocol(
+    ossia::net::network_context_ptr ctx, const dmx_config& conf,
+    const ossia::net::socket_configuration& socket)
+    : dmx_protocol_base{ctx, conf}
+    , m_socket{socket, ctx->context}
+{
+  if(conf.frequency < 1 || conf.frequency > 44)
+    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
+
+  m_socket.open();
+}
+
+e131_input_protocol::~e131_input_protocol()
+{
+  stop_processing();
+}
+
+void e131_input_protocol::set_device(ossia::net::device_base& dev)
+{
+  dmx_protocol_base::set_device(dev);
+  m_socket.receive(
+      [](const char* bytes, int sz) { std::cerr << (int)bytes[0] << "\n"; });
+}
+
+void e131_input_protocol::update_function()
+{
+  static std::atomic_int seq = 0;
+  try
+  {
+    e131_packet pkt;
+    e131_pkt_init(&pkt, this->m_conf.universe, 512);
+
+    for(size_t pos = 0; pos < 512; pos++)
+      pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
+    pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
+
+    //    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+
+    m_buffer.dirty = false;
+  }
+  catch(std::exception& e)
+  {
+    ossia::logger().error("write failure: {}", e.what());
+  }
+  catch(...)
+  {
+    ossia::logger().error("write failure");
+  }
+}
 }
 
 #endif

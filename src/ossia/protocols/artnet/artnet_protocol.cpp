@@ -9,9 +9,6 @@
 
 #include <chrono>
 
-#define ARTNET_NODE_SHORT_NAME "libossia"
-#define ARTNET_NODE_LONG_NAME "Libossia Artnet Protocol"
-
 namespace ossia::net
 {
 dmx_buffer::dmx_buffer()
@@ -22,9 +19,8 @@ dmx_buffer::dmx_buffer()
 
 dmx_buffer::~dmx_buffer() = default;
 
-static constexpr int artnet_port_id = 0;
 artnet_protocol::artnet_protocol(
-    ossia::net::network_context_ptr ctx, const dmx_config& conf)
+    ossia::net::network_context_ptr ctx, const dmx_config& conf, std::string_view host)
     : dmx_protocol_base{ctx, conf}
 {
   if(conf.frequency < 1 || conf.frequency > 44)
@@ -38,19 +34,27 @@ artnet_protocol::artnet_protocol(
   //   update at higher frequencies => Work TODO
 
   //  Do not specify ip address for now, artnet will choose one
-  m_node = artnet_new(nullptr, 1);
+#if defined(_NDEBUG)
+  bool verbose = 0;
+#else
+  bool verbose = 1;
+#endif
+  m_node = artnet_new(host.data(), verbose);
 
   if(m_node == NULL)
     throw std::runtime_error("Artnet new failed");
 
+  static constexpr int artnet_port_id = 0;
   artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX);
   artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, m_conf.universe);
 
-  artnet_set_short_name(m_node, ARTNET_NODE_SHORT_NAME);
-  artnet_set_long_name(m_node, ARTNET_NODE_LONG_NAME);
+  artnet_set_short_name(m_node, "libossia");
+  artnet_set_long_name(m_node, "libossia artnet protocol");
   artnet_set_node_type(m_node, ARTNET_RAW);
 
   artnet_dump_config(m_node);
+  std::fflush(stdout);
+  std::fflush(stderr);
   if(artnet_start(m_node) != ARTNET_EOK)
     throw std::runtime_error("Artnet Start failed");
 }
