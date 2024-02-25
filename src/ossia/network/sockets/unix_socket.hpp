@@ -7,6 +7,7 @@
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/local/stream_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
@@ -22,7 +23,7 @@ public:
   unix_datagram_socket(const fd_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{conf.fd}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 
@@ -126,7 +127,7 @@ public:
   unix_stream_server(const fd_configuration& conf, boost::asio::io_context& ctx)
       : m_ensure_reuse{conf.fd}
       , m_context{ctx}
-      , m_acceptor{ctx, conf.fd}
+      , m_acceptor{boost::asio::make_strand(ctx), conf.fd}
   {
   }
 
@@ -143,7 +144,7 @@ public:
   unix_stream_client(const fd_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{conf.fd}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 

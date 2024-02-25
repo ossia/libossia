@@ -1,7 +1,9 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 
-#include <boost/asio/high_resolution_timer.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/asio/strand.hpp>
+#include <boost/asio/use_future.hpp>
 
 namespace ossia
 {
@@ -11,7 +13,7 @@ class timer
 public:
   explicit timer(boost::asio::io_context& ctx)
       : m_ctx{&ctx}
-      , m_timer{ctx}
+      , m_timer{boost::asio::make_strand(ctx)}
   {
   }
 
@@ -42,13 +44,16 @@ public:
 
   void stop()
   {
-    m_ctx->post([tm = std::make_shared<boost::asio::high_resolution_timer>(
+    std::future<void> wait
+        = boost::asio::post(m_timer.get_executor(), boost::asio::use_future);
+    m_ctx->post([tm = std::make_shared<boost::asio::steady_timer>(
                      std::move(m_timer))]() mutable { tm->cancel(); });
+    wait.get();
   }
 
 private:
   boost::asio::io_context* m_ctx{};
-  boost::asio::high_resolution_timer m_timer;
+  boost::asio::steady_timer m_timer;
   std::chrono::milliseconds m_delay{};
 };
 

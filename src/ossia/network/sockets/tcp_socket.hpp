@@ -6,6 +6,7 @@
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
@@ -49,7 +50,8 @@ public:
   tcp_server(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_acceptor{
-            ctx, proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
+            boost::asio::make_strand(ctx),
+            proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
   {
   }
 
@@ -66,7 +68,7 @@ public:
   tcp_client(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 

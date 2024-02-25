@@ -128,14 +128,7 @@ artnet_input_protocol::artnet_input_protocol(
     throw std::runtime_error("Artnet Start failed");
 }
 
-artnet_input_protocol::~artnet_input_protocol()
-{
-  m_socket->close();
-  std::future<void> wait
-      = boost::asio::post(m_context->context, boost::asio::use_future);
-  wait.get();
-  artnet_destroy(m_node);
-}
+artnet_input_protocol::~artnet_input_protocol() { }
 
 void artnet_input_protocol::set_device(ossia::net::device_base& dev)
 {
@@ -156,7 +149,7 @@ void artnet_input_protocol::do_read()
       boost::asio::ip::udp::socket::wait_read, [this](boost::system::error_code ec) {
         if(ec == boost::asio::error::operation_aborted)
           return;
-        artnet_read(m_node, 1);
+        artnet_read_one(m_node);
         do_read();
       });
 }
@@ -165,7 +158,21 @@ void artnet_input_protocol::on_packet(artnet_node n, int port)
 {
   int length = 0;
   auto data = artnet_read_dmx(n, port, &length);
-  on_dmx(data + 1, std::min(length - 1, 512));
+  on_dmx(data, std::min(length, 512));
+}
+
+void artnet_input_protocol::stop()
+{
+  if(m_socket)
+  {
+    m_socket->close();
+  }
+
+  if(m_node)
+  {
+    artnet_destroy(m_node);
+    m_node = {};
+  }
 }
 }
 

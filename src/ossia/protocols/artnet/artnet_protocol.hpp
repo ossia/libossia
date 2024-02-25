@@ -36,6 +36,7 @@ public:
 private:
   void on_packet(artnet_node n, int port);
   void do_read();
+  void stop() override;
 
   artnet_node m_node;
   std::unique_ptr<ossia::net::udp_receive_socket> m_socket;

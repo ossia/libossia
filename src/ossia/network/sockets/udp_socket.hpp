@@ -6,6 +6,7 @@
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/strand.hpp>
 #include <boost/asio/write.hpp>
 
 #include <nano_signal_slot.hpp>
@@ -20,14 +21,14 @@ class udp_receive_socket
 public:
   udp_receive_socket(boost::asio::io_context& ctx)
       : m_context{ctx}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 
   udp_receive_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 
@@ -96,7 +97,7 @@ public:
   udp_send_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{conf.broadcast ? boost::asio::ip::address_v4::broadcast() : boost::asio::ip::make_address(conf.host), conf.port}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 
@@ -105,7 +106,7 @@ public:
       boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{host, port}
-      , m_socket{ctx}
+      , m_socket{boost::asio::make_strand(ctx)}
   {
   }
 
