@@ -254,6 +254,11 @@ bool osc_protocol::echo_incoming_message(
 void osc_protocol::on_received_message(
     const oscpack::ReceivedMessage& m, const oscpack::IpEndpointName& ip)
 {
+  [[unlikely]] if(!m_device)
+  {
+    return;
+  }
+
   [[unlikely]] if(m_learning)
   {
     auto already_learned = ossia::net::osc_learn(&m_device->get_root_node(), m);
