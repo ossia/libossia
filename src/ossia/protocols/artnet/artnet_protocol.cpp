@@ -51,7 +51,7 @@ artnet_protocol::artnet_protocol(
   static constexpr int artnet_subnet_id = 0;
   artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_INPUT, ARTNET_PORT_DMX);
   artnet_set_port_addr(m_node, artnet_port_id, ARTNET_INPUT_PORT, m_conf.universe);
-  artnet_set_subnet_addr(m_node, artnet_subnet_id);
+  //artnet_set_subnet_addr(m_node, artnet_subnet_id);
 
   artnet_set_short_name(m_node, "libossia");
   artnet_set_long_name(m_node, "libossia artnet protocol");
@@ -98,7 +98,7 @@ artnet_input_protocol::artnet_input_protocol(
 #else
   bool verbose = 1;
 #endif
-  m_node = artnet_new("192.168.0.55", verbose);
+  m_node = artnet_new(host.data(), verbose);
 
   if(m_node == NULL)
     throw std::runtime_error("Artnet new failed");
@@ -106,8 +106,8 @@ artnet_input_protocol::artnet_input_protocol(
   static constexpr int artnet_port_id = 0;
   static constexpr int artnet_subnet_id = 0;
   artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_OUTPUT, ARTNET_PORT_DMX);
-  artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, 0);
-  artnet_set_subnet_addr(m_node, artnet_subnet_id);
+  artnet_set_port_addr(m_node, artnet_port_id, ARTNET_OUTPUT_PORT, m_conf.universe);
+  // artnet_set_subnet_addr(m_node, artnet_subnet_id);
 
   artnet_set_short_name(m_node, "libossia");
   artnet_set_long_name(m_node, "libossia artnet protocol");
