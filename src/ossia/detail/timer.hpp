@@ -31,23 +31,28 @@ public:
   {
     m_timer.expires_from_now(m_delay);
     m_timer.async_wait([this, ff = std::move(f)](auto ec) {
-      if(ec)
+      if(ec == boost::asio::error::operation_aborted)
+        return;
+      else if(ec)
       {
         ossia::logger().error("timer error: {}", ec.message());
         return;
       }
-
-      ff();
-      this->start(std::move(ff));
+      else
+      {
+        ff();
+        this->start(std::move(ff));
+      }
     });
   }
 
   void stop()
   {
+    boost::asio::dispatch(
+        m_timer.get_executor(), [tm = std::make_shared<boost::asio::steady_timer>(
+                                     std::move(m_timer))]() mutable { tm->cancel(); });
     std::future<void> wait
-        = boost::asio::post(m_timer.get_executor(), boost::asio::use_future);
-    m_ctx->post([tm = std::make_shared<boost::asio::steady_timer>(
-                     std::move(m_timer))]() mutable { tm->cancel(); });
+        = boost::asio::dispatch(m_timer.get_executor(), boost::asio::use_future);
     wait.get();
   }
 
