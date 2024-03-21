@@ -97,7 +97,8 @@
 #if defined(RAPIDJSON_PARSE_DEFAULT_FLAGS)
 #error Include <ossia/detail/json.hpp> to use JSON
 #endif
-#define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseNanAndInfFlag
+#define RAPIDJSON_PARSE_DEFAULT_FLAGS \
+  kParseCommentsFlag | kParseTrailingCommasFlag | kParseNanAndInfFlag
 
 #if !defined(BOOST_MATH_DISABLE_FLOAT128)
 #define BOOST_MATH_DISABLE_FLOAT128

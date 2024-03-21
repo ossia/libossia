@@ -37,8 +37,16 @@ auto find_if(Vector&& v, Fun fun)
 template <typename Vector, typename Value>
 auto* ptr_find(Vector&& v, const Value& val) noexcept
 {
-  auto it = std::find(std::begin(v), std::end(v), val);
-  return it != std::end(v) ? &*it : nullptr;
+  if constexpr(requires { v.find(val) != v.end(); })
+  {
+    auto it = v.find(val);
+    return it != v.end() ? &it->second : nullptr;
+  }
+  else
+  {
+    auto it = std::find(std::begin(v), std::end(v), val);
+    return it != std::end(v) ? &*it : nullptr;
+  }
 }
 
 template <typename Vector, typename Fun>
