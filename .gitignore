@@ -50,3 +50,4 @@ OSSIA/ossia-node/node_modules
 3rdparty/CicmWrapper/
 3rdparty/pure-data/
 build
+.vscode
