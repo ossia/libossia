@@ -23,7 +23,9 @@ class receiver;
 namespace ossia::net
 {
 struct osc_1_0_outbound_stream_visitor;
-class OSSIA_EXPORT osc_protocol final : public ossia::net::protocol_base
+
+class [[deprecated("Use make_osc_protocol")]] OSSIA_EXPORT osc_protocol final
+    : public ossia::net::protocol_base
 {
 public:
   osc_protocol(
