@@ -115,6 +115,10 @@ if(OSSIA_PROTOCOL_SERIAL)
   ossia_add_example(network_arduino "${CMAKE_CURRENT_SOURCE_DIR}/Network/Arduino.cpp")
 endif()
 
+if(OSSIA_PROTOCOL_MQTT5)
+  ossia_add_example(mqtt_publish "${CMAKE_CURRENT_SOURCE_DIR}/Network/Mqtt_publication.cpp")
+endif()
+
 ossia_add_example(export_namespace_to_json "${CMAKE_CURRENT_SOURCE_DIR}/Preset/Export_namespace_to_json.cpp")
 ossia_add_example(logger "${CMAKE_CURRENT_SOURCE_DIR}/Common/Logger.cpp")
 ossia_add_example(fuzzysearch "${CMAKE_CURRENT_SOURCE_DIR}/Common/FuzzySearch.cpp")

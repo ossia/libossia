@@ -99,6 +99,13 @@ include(deps/unordered_dense)
 include(deps/verdigris)
 include(deps/websocketpp)
 
+if(OSSIA_PROTOCOL_MQTT5)
+  include(deps/mqtt)
+  if(NOT TARGET Async::MQTT5)
+    set(OSSIA_PROTOCOL_MQTT5 FALSE CACHE INTERNAL "" FORCE)
+  endif()
+endif()
+
 if(OSSIA_PROTOCOL_MIDI)
   include(deps/libremidi)
 endif()

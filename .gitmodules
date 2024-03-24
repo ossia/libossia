@@ -112,3 +112,6 @@
 [submodule "3rdparty/unordered_dense"]
 	path = 3rdparty/unordered_dense
 	url = https://github.com/martinus/unordered_dense
+[submodule "3rdparty/async-mqtt5"]
+	path = 3rdparty/async-mqtt5
+	url = https://github.com/mireo/async-mqtt5

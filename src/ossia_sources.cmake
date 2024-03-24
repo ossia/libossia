@@ -536,6 +536,12 @@ set(OSSIA_ARTNET_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.cpp"
 )
 
+set(OSSIA_MQTT5_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/mqtt/mqtt_protocol.hpp")
+
+set(OSSIA_MQTT5_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/mqtt/mqtt_protocol.cpp")
+
 
 set(OSSIA_WS_CLIENT_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/websocket-generic-client/ws_generic_client_protocol.hpp")

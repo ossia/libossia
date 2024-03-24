@@ -89,4 +89,14 @@ std::future<void> protocol_base::pull_async(parameter_base&)
 {
   return {};
 }
+
+bool protocol_base::publish(const parameter_base&)
+{
+  return false;
+}
+
+bool protocol_base::unpublish(const parameter_base&)
+{
+  return false;
+}
 }
