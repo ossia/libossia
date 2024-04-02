@@ -19,17 +19,10 @@
 #define OSSIA_EXTERN_EXPORT_HPP(EXPORT) EXPORT
 #define OSSIA_EXTERN_EXPORT_CPP(EXPORT)
 
-#if defined(__cplusplus) \
-    && ((__cplusplus >= 201103L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
-#define OSSIA_CXX11 1
-#endif
-#if defined(__cplusplus) \
-    && ((__cplusplus >= 201403L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
-#define OSSIA_CXX14 1
-#endif
-#if defined(__cplusplus) \
-    && ((__cplusplus >= 201703L) || (defined(_MSC_VER) && _MSC_VER >= 1900))
-#define OSSIA_CXX17 1
+#if defined(__clang__) || defined(_MSC_VER) || (defined(__GNUC__) && (__GNUC__ >= 13))
+#define OSSIA_DEPRECATED(REASON) [[deprecated(REASON)]]
+#else
+#define OSSIA_DEPRECATED(REASON)
 #endif
 
 /// Constexpr support ///

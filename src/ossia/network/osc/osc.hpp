@@ -24,7 +24,7 @@ namespace ossia::net
 {
 struct osc_1_0_outbound_stream_visitor;
 
-class [[deprecated("Use make_osc_protocol")]] OSSIA_EXPORT osc_protocol final
+class OSSIA_EXPORT OSSIA_DEPRECATED("Use make_osc_protocol") osc_protocol final
     : public ossia::net::protocol_base
 {
 public:
