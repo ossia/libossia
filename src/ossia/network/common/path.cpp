@@ -417,11 +417,10 @@ bool match(std::string_view address, const regex_path::path_element& e)
 
 }
 
-namespace ossia
+namespace ossia::regex_path
 {
 
-std::ostream&
-regex_path::operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
+std::ostream& operator<<(std::ostream& s, const ossia::regex_path::path_element& p)
 {
   return s << p.address;
 }

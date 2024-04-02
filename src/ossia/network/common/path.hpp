@@ -49,11 +49,11 @@ struct OSSIA_EXPORT path_element
   {
   }
 
-  OSSIA_EXPORT
-  friend std::ostream& operator<<(std::ostream& s, const path_element& p);
-
   operator std::string() const { return address; }
 };
+
+OSSIA_EXPORT
+std::ostream& operator<<(std::ostream& s, const path_element& p);
 
 //! Represents a device in a path, e.g. "foo:"
 struct OSSIA_EXPORT device : public path_element

@@ -183,7 +183,8 @@ void mqtt5_protocol::on_subscribe(const ossia::net::parameter_base& p)
   m_subscriptions.visit(&p, [this, &p](auto& res) {
     subscribe_state& sub = res.second;
 
-    if(std::exchange(sub.state, sub.operating) == sub.operating)
+    if(std::exchange(sub.state, subscribe_state::operating)
+       == subscribe_state::operating)
       return;
 
     co_spawn(
@@ -198,7 +199,8 @@ void mqtt5_protocol::on_unsubscribe(const ossia::net::parameter_base& p)
 {
   m_subscriptions.visit(&p, [this, &p](auto& res) {
     subscribe_state& sub = res.second;
-    if(std::exchange(sub.state, sub.cancelled) == sub.operating)
+    if(std::exchange(sub.state, subscribe_state::cancelled)
+       == subscribe_state::operating)
       sub.cancellation.emit(boost::asio::cancellation_type::all);
   });
 }
