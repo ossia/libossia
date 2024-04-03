@@ -1,0 +1,55 @@
+name: 'Notarize and codesign'
+description: 'Notarize and codesign'
+
+inputs:
+  path-to-sign:
+    description: 'Path containing files to sign'
+    required: true
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - name: Code Signing
+      shell: bash
+
+      env:
+        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      run: |
+        # Setup codesigning
+        # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
+        (
+          set +x
+          KEY_CHAIN=build.keychain
+          echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
+
+          security create-keychain -p azure $KEY_CHAIN
+          security default-keychain -s $KEY_CHAIN
+          security unlock-keychain -p azure $KEY_CHAIN
+          security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
+          security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
+
+          rm -rf *.p12
+        )
+
+        security unlock-keychain -p azure build.keychain
+
+        (
+          cd install
+          find ${{ inputs.path-to-sign }} \
+            \( -name "*.dylib" -o -name "*.a" -o -name "*.so" -o -name "*.mxo" \) \
+            -exec echo Signing {} + \
+            -exec codesign --force --timestamp --sign "ossia.io" {} +
+
+          ditto -c -k --sequesterRsrc --keepParent ${{ inputs.path-to-sign }} codesign.zip
+
+          xcrun notarytool submit "codesign.zip" \
+          --team-id "GRW9MHZ724" \
+          --apple-id "jeanmichael.celerier@gmail.com" \
+          --password "@env:MAC_ALTOOL_PASSWORD" \
+          --progress \
+          --wait
+
+          rm codesign.zip
+        )
