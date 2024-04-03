@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/base/osc_address.hpp>
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 
@@ -20,6 +21,7 @@ public:
       , m_parent{&aParent}
   {
     m_name = data.name;
+    m_oscAddressCache = ossia::net::osc_parameter_string(*this);
     if(data.valid())
       m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
@@ -28,6 +30,7 @@ public:
       : m_device{aDevice}
   {
     m_name = data.name;
+    m_oscAddressCache = ossia::net::osc_parameter_string(*this);
     if(data.valid())
       m_parameter.reset(new Parameter_T(std::move(data), *this));
   }
