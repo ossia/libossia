@@ -6,6 +6,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <cstdint>
+#include <functional>
 #include <memory>
 
 /**

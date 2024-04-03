@@ -34,15 +34,6 @@ midi_protocol::midi_protocol(
   m_output = std::make_unique<libremidi::midi_out>(conf, api);
 }
 
-/*
-midi_protocol::midi_protocol(
-    ossia::net::network_context_ptr ctx, midi_info m, libremidi::API api)
-    : midi_protocol{std::move(ctx), m.handle.display_name, api}
-{
-  set_info(m);
-}
-*/
-
 midi_protocol::~midi_protocol()
 {
   if(m_input)
