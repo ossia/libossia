@@ -1,6 +1,7 @@
 #pragma once
 #include <version>
 
+#if __has_include(<stop_token>)
 #if __cpp_lib_jthread >= 201911L
 #define OSSIA_HAS_STD_JTHREAD 1
 
@@ -9,6 +10,7 @@
 #error Rebuild with -fexperimental-library, clang 18 ships headers which are incompatible with this file but hides half of them behind that flag
 #else
 #define OSSIA_HAS_STD_JTHREAD 1
+#endif
 #endif
 #endif
 
