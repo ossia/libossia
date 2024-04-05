@@ -50,7 +50,7 @@ runs:
         (
           cd install
           find ${{ inputs.path-to-sign }} \
-            \( -name "*.dylib" -o -name "*.a" -o -name "*.so" -o -name "*.mxo" \) \
+            \( -name "*.dylib" -o -name "*.a" -o -name "*.so" -o -name "*.mxo" -o -name "ossia.d_*" \) \
             -exec echo Signing {} + \
             -exec codesign --force --timestamp --sign "ossia.io" {} +
 

@@ -50,15 +50,15 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES="x86_64"
         cmake --build build
         cmake --build build --target install 
-    - name: Code Signing
-      shell: bash
-      env:
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      run: |
-        source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
-        release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
+    # - name: Code Signing
+    #   shell: bash
+    #   env:
+    #     MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+    #     MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+    #     MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+    #   run: |
+    #     source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
+    #     release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     - name: Archive Package
       uses: actions/upload-artifact@v2

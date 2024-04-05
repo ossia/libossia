@@ -16,36 +16,14 @@ jobs:
           -DOSSIA_CI=1 \
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
-    - name: Code Signing
-      shell: bash
-      env:
+        
+    - uses: ./.github/actions/mac-codesign
+      with:
+        path-to-sign: "build"
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      run: |
-        # Setup codesigning
-        # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
-        (
-          set +x
-          KEY_CHAIN=build.keychain
-          echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
-
-          security create-keychain -p azure $KEY_CHAIN
-          security default-keychain -s $KEY_CHAIN
-          security unlock-keychain -p azure $KEY_CHAIN
-          security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
-          security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
-
-          rm -rf *.p12
-        )
-
-        security unlock-keychain -p azure build.keychain
-
-        for lib in `find build -name "ossia_python.cpython*.so" -print`
-        do
-          echo Signing ${lib}
-          codesign --force --timestamp --sign "ossia.io" ${lib}
-        done
+        
     - name: Build Wheel
       shell: bash
       run: |
