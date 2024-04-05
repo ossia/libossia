@@ -59,7 +59,7 @@ runs:
           xcrun notarytool submit "codesign.zip" \
           --team-id "GRW9MHZ724" \
           --apple-id "jeanmichael.celerier@gmail.com" \
-          --password "@env:MAC_ALTOOL_PASSWORD" \
+          --password "$MAC_ALTOOL_PASSWORD" \
           --progress \
           --wait
 
