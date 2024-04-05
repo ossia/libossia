@@ -1,0 +1,14 @@
+name: 'Install MSVC toolchain'
+description: 'Install MSVC toolchain'
+runs:
+  using: "composite"
+  steps:
+    - name: Set up Visual Studio shell
+      uses: egor-tensin/vs-shell@v2
+      with:
+        arch: x64
+        
+    - name: Install Dependencies
+      shell: cmd
+      run: choco install -y ninja
+

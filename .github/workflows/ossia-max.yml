@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build-macos:
-    runs-on: macos-13
+    runs-on: macos-14
     environment: 'Apple Certificate'
     steps:
     - uses: actions/checkout@v4
@@ -81,13 +81,10 @@ jobs:
       configuration: Release
     steps:
     - uses: actions/checkout@v4
-    - name: install deps
-      run: choco install -y ninja
+    - uses: ./.github/actions/latest-msvc-toolchain
     - name : build
       shell: cmd
       run: |
-        call ci\msvc.bat
-
         cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_MAX_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --install build

@@ -33,13 +33,13 @@ jobs:
 
   qml-mac:
     name: QML (macOS)
-    runs-on: macos-13
+    runs-on: macos-14
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-mac-toolchain
     - name: Install Dependencies
       run: |
-        brew install ninja qt
+        brew install qt
     - name: Build
       run: |
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
@@ -73,12 +73,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: choco install -y ninja
+    - uses: ./.github/actions/latest-msvc-toolchain
     - name: Build
       shell: cmd
       run: |
-        call ci\msvc.bat
 
         cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PCH=0 -DOSSIA_CI=1 -DOSSIA_QML_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build

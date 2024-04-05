@@ -6,6 +6,18 @@ inputs:
     description: 'Path containing files to sign'
     required: true
     default: ''
+  MAC_CERT_B64:
+    description: 'Certificate encoded as base64'
+    required: true
+    default: ''
+  MAC_CERT_PASSWORD:
+    description: 'Certificate password'
+    required: true
+    default: ''
+  MAC_ALTOOL_PASSWORD:
+    description: 'macOS notarization password'
+    required: true
+    default: ''
 runs:
   using: "composite"
   steps:
@@ -13,9 +25,9 @@ runs:
       shell: bash
 
       env:
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+        MAC_CERT_B64: ${{ inputs.MAC_CERT_B64 }}
+        MAC_CERT_PASSWORD: ${{ inputs.MAC_CERT_PASSWORD }}
+        MAC_ALTOOL_PASSWORD: ${{ inputs.MAC_ALTOOL_PASSWORD }}
       run: |
         # Setup codesigning
         # Thanks https://www.update.rocks/blog/osx-signing-with-travis/

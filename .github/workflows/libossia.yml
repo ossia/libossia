@@ -4,7 +4,7 @@ on: push
 
 jobs:
   build-macos:
-    runs-on: macos-13
+    runs-on: macos-14
     environment: 'Apple Certificate'
     strategy:
       matrix:
@@ -14,8 +14,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-mac-toolchain
-    - name: Install Dependencies
-      run: brew install ninja
     - name: Build
       env: 
         STATIC: ${{ matrix.static }}
@@ -33,6 +31,12 @@ jobs:
         cmake --build build --target install
 
     - uses: ./.github/actions/mac-codesign
+      with:
+        path-to-sign: lib
+        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
@@ -48,13 +52,8 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v4
-    - name: install deps
-      run: choco install -y ninja
 
-    - name: Set up Visual Studio shell
-      uses: egor-tensin/vs-shell@v2
-      with:
-        arch: x64
+    - uses: ./.github/actions/latest-msvc-toolchain
 
     - name : Build
       shell: cmd
