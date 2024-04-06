@@ -39,13 +39,18 @@ notarize_osx() {
 }
 
 release_macos_folder() {
+  echo "Signing: $folder"
+  ls
+  echo "Output: ${ARTIFACTS_DIR}/$zipfile"
+
   local folder="${1}"
   local zipfile="${2}"
+  local folder_name=$(basename "$folder")
 
   codesign_osx "$folder"
   (
     cd "$folder"/.. || return
-    ditto -c -k --sequesterRsrc --keepParent $(basename "$folder") "${ARTIFACTS_DIR}/$zipfile"
+    ditto -c -k --sequesterRsrc --keepParent "${folder_name}" "${ARTIFACTS_DIR}/$zipfile"
     notarize_osx "${ARTIFACTS_DIR}/$zipfile"
   )
 }

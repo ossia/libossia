@@ -37,44 +37,14 @@ jobs:
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
         cmake --build build
         cmake --build build --target install 
-    - name: Code Signing
-      shell: bash
-      env:
+
+    - uses: ./.github/actions/mac-codesign
+      with:
+        path-to-sign: install
+        output-name: "ossia-unity-macos.zip"
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      run: |
-        # Setup codesigning
-        # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
-        (
-          set +x
-          KEY_CHAIN=build.keychain
-          echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
-
-          security create-keychain -p azure $KEY_CHAIN
-          security default-keychain -s $KEY_CHAIN
-          security unlock-keychain -p azure $KEY_CHAIN
-          security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
-          security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
-
-          rm -rf *.p12
-        )
-
-        security unlock-keychain -p azure build.keychain
-
-        (
-          cd install
-          codesign --force --timestamp --sign "ossia.io" ossia/Plugins/macos/ossia.dylib
-
-          zip ossia-unity.zip ossia/Plugins/macos/ossia.dylib
-          xcrun altool \
-                --notarize-app \
-                -t osx \
-                -f "ossia-unity.zip" \
-                --primary-bundle-id "io.ossia.ossia-unity" \
-                -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
-          rm ossia-unity.zip
-        )
 
     - name: Archive Package
       uses: actions/upload-artifact@v2
@@ -109,44 +79,15 @@ jobs:
           -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
         cmake --build build
         cmake --build build --target install
-    - name: Code Signing
-      shell: bash
-      env:
+
+    - uses: ./.github/actions/mac-codesign
+      with:
+        path-to-sign: install
+        output-name: "ossia-unity-ios.zip"
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      run: |
-        # Setup codesigning
-        # Thanks https://www.update.rocks/blog/osx-signing-with-travis/
-        (
-          set +x
-          KEY_CHAIN=build.keychain
-          echo "$MAC_CERT_B64" | base64 --decode > ossia-cert.p12
 
-          security create-keychain -p azure $KEY_CHAIN
-          security default-keychain -s $KEY_CHAIN
-          security unlock-keychain -p azure $KEY_CHAIN
-          security import ossia-cert.p12 -k $KEY_CHAIN -P "$MAC_CERT_PASSWORD" -T /usr/bin/codesign;
-          security set-key-partition-list -S apple-tool:,apple: -s -k azure $KEY_CHAIN
-
-          rm -rf *.p12
-        )
-
-        security unlock-keychain -p azure build.keychain
-
-        (
-          cd install
-          codesign --force --timestamp --sign "ossia.io" ossia/Plugins/ios/ossia.a
-
-          zip ossia-unity.zip ossia/Plugins/ios/ossia.a
-          xcrun altool \
-                --notarize-app \
-                -t ios \
-                -f "ossia-unity.zip" \
-                --primary-bundle-id "io.ossia.ossia-unity" \
-                -u jeanmichael.celerier@gmail.com -p "@env:MAC_ALTOOL_PASSWORD"
-          rm ossia-unity.zip
-        )
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:

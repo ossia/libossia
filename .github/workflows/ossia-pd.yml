@@ -25,6 +25,7 @@ jobs:
     - uses: ./.github/actions/mac-codesign
       with:
         path-to-sign: "install/ossia-pd-package"
+        output-name: ossia-pd.zip
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
