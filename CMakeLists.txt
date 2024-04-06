@@ -11,6 +11,7 @@ cmake_minimum_required(VERSION 3.24 FATAL_ERROR)
 
 project(ossia C CXX)
 
+set(OSSIA_IS_TOP_LEVEL "${PROJECT_IS_TOP_LEVEL}")
 set(CMAKE_POSITION_INDEPENDENT_CODE 1)
 find_package(Threads)
 

@@ -5,7 +5,7 @@
 #if __cpp_lib_jthread >= 201911L
 #define OSSIA_HAS_STD_JTHREAD 1
 
-#elif _LIBCPP_VERSION >= 18100
+#elif (_LIBCPP_VERSION >= 18100) && (_LIBCPP_VERSION < 99999)
 #if defined(_LIBCPP_HAS_NO_EXPERIMENTAL_STOP_TOKEN)
 #error Rebuild with -fexperimental-library, clang 18 ships headers which are incompatible with this file but hides half of them behind that flag
 #else

@@ -10,10 +10,9 @@ set(WINDOWS_EXPORT_ALL_SYMBOLS FALSE)
 cmake_policy(SET CMP0020 NEW)
 cmake_policy(SET CMP0042 NEW)
 cmake_policy(SET CMP0063 NEW)
-
 if(APPLE)
   set(CMAKE_INSTALL_NAME_DIR @rpath)
-  set(CMAKE_BUILD_WITH_INSTALL_RPATH ON)
+  set(CMAKE_BUILD_WITH_INSTALL_RPATH "${OSSIA_IS_TOP_LEVEL}")
   set(CMAKE_INSTALL_RPATH "@loader_path/../Frameworks;@executable_path;")
 endif()
 
