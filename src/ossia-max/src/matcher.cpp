@@ -15,7 +15,48 @@ namespace ossia
 {
 namespace max_binding
 {
+namespace {
+  struct logger_file
+  {
+    FILE* f{};
 
+    logger_file()
+    {
+      buf.reserve(1024);
+      using namespace std;
+      time_t rawtime{};
+      struct tm * timeinfo{};
+
+      time(&rawtime);
+      timeinfo = localtime (&rawtime);
+      std::string time_str(64, '\0');
+      strftime(time_str.data(), 64, "%X", timeinfo);
+      time_str.resize(strlen(time_str.data()));
+
+      f = fopen(("/tmp/"s + time_str + ".txt"s).data(), "w");
+    }
+
+    ~logger_file()
+    {
+      fclose(f);
+    }
+
+    void log(ossia::net::parameter_base* p, const ossia::value& v)
+    {
+      std::lock_guard l{mut};
+      buf.clear();
+      buf += p->get_node().osc_address();
+      buf += ossia::value_to_pretty_string(v);
+      buf += '\n';
+      fwrite(buf.data(), 1, buf.size(), f);
+    }
+
+    std::mutex mut;
+    std::string buf;
+
+  };
+  static logger_file logfile;
+}
 matcher::matcher(ossia::net::node_base* n, object_base* p)
     : node{n}
     , owner{p}
@@ -31,7 +72,10 @@ matcher::matcher(ossia::net::node_base* n, object_base* p)
         if(orig_param)
         {
           callbackit = orig_param->add_callback(
-              [=](const ossia::value& v) { output_value(v); });
+              [=](const ossia::value& v) { 
+                //logfile.log(orig_param, v);
+                output_value(v); 
+          });
 
           auto& dev = n->get_device();
           dev.on_parameter_removing.connect<&object_base::on_parameter_removing>(owner);

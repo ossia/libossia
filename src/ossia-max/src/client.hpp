@@ -59,6 +59,7 @@ public:
 
   static t_max_err do_notify(client *x, t_symbol *, t_symbol *msg, void *, void *data);
 
+  static void refresh(client*);
   static void connect(client*);
   static void connect_mess_cb(client* x, t_symbol*, int argc, t_atom* argv);
   static void disconnect(client*);
