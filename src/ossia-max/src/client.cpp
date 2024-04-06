@@ -398,6 +398,7 @@ void client::connect(client* x)
   }
 }
 
+
 void client::get_devices(client* x)
 {
   auto minuit_devices = ZeroconfMinuitListener::get_devices();
@@ -445,9 +446,11 @@ void client::unregister_children()
 
 void client::update(client* x)
 {
+
   if(x->m_device)
   {
     x->m_device->get_protocol().update(*x->m_device);
+    output_all_values(x->m_patcher, true);
   }
 }
 

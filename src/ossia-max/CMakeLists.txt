@@ -103,7 +103,7 @@ use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia
-  ${MAXSDK_API_LIBRARY}
+#  ${MAXSDK_API_LIBRARY}
   $<LINK_ONLY:re2::re2>
   $<LINK_ONLY:websocketpp::websocketpp>
 )
