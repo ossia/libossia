@@ -26,6 +26,7 @@ jobs:
           -DOSSIA_TESTING=1 \
           -DOSSIA_CI=1 \
           -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+
         cmake --build build
         cmake --build build --target test
         cmake --build build --target install
@@ -52,7 +53,6 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v4
-
     - uses: ./.github/actions/latest-msvc-toolchain
 
     - name : Build
@@ -81,17 +81,11 @@ jobs:
       fail-fast: false
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: | 
-        sudo apt-get update -yqq 
-        sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential g++-11 gcc-11 ninja-build libavahi-client-dev
+    - uses: ./.github/actions/latest-ubuntu-toolchain
     - name: Build
       env: 
         STATIC: ${{ matrix.static }}
         BUILD_TYPE: ${{ matrix.build_type }}
-        CC: gcc-11
-        CXX: g++-11
 
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \

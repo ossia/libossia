@@ -57,11 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: | 
-        sudo apt-get update -yqq 
-        sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential ninja-build libavahi-client-dev
+    - uses: ./.github/actions/latest-ubuntu-toolchain
     - name: Build
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CI=1 -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install

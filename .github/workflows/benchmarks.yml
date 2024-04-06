@@ -12,16 +12,13 @@ jobs:
     - name: Install Dependencies
       run: |
         sudo apt update -qq
-        sudo apt install -qq -y build-essential gcc-11 g++-11 ninja-build wget
+        sudo apt install -qq -y build-essential ninja-build wget
         wget https://github.com/jcelerier/cninja/releases/download/v3.7.6/cninja-v3.7.6-Linux.tar.gz
         tar xaf cninja-*-Linux.tar.gz
         sudo mv cninja "/usr/bin/"
         rm *.tar.gz
 
     - name: Build
-      env: 
-        CC: gcc-11
-        CXX: g++-11
       run: |
         echo $(variables.gitTag)
 

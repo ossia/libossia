@@ -8,7 +8,7 @@ runs:
       run: |
         sudo apt-get update -yqq 
         sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential g++ ninja-build libavahi-client-dev wget
+        sudo apt-get install -yqq build-essential ninja-build libavahi-client-dev wget
 
         wget -nv https://github.com/tttapa/docker-arm-cross-toolchain/releases/download/0.1.2/x-tools-aarch64-rpi3-linux-gnu.tar.xz
         tar xaf x-tools-aarch64-rpi3-linux-gnu.tar.xz

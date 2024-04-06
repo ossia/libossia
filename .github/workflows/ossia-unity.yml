@@ -9,14 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Build Dependencies
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
+    - uses: ./.github/actions/latest-ubuntu-toolchain
     - name: Build
-      env: 
-        CC: gcc-11
-        CXX: g++-11
       run: |
         cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
@@ -30,6 +24,7 @@ jobs:
   Unity3DMac:
     name: Unity3D (macOS)
     runs-on: macos-14
+    environment: 'Apple Certificate'
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-mac-toolchain
@@ -86,11 +81,11 @@ jobs:
       with:
         name: ossia-unity
         path: install
-    environment: 'Apple Certificate'
 
   Unity3DIOs:
     name: Unity3D (iOS)
     runs-on: macos-14
+    environment: 'Apple Certificate'
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-mac-toolchain
@@ -157,7 +152,6 @@ jobs:
       with:
         name: ossia-unity-ios
         path: install
-    environment: 'Apple Certificate'
       
   Unity3DWin32:
     name: Unity3D (Win32)

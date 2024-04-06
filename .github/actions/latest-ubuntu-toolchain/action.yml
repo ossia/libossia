@@ -13,14 +13,14 @@ runs:
         sudo apt-get install -yqq kitware-archive-keyring
         sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
 
-        echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-15 main' | sudo tee /etc/apt/sources.list.d/llvm.list
+        echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main' | sudo tee /etc/apt/sources.list.d/llvm.list
         sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421 42D5A192B819C5DA
         sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
         sudo apt-get update -qq
         sudo apt purge --auto-remove cmake
         sudo apt-get install -yqq \
             build-essential g++ binutils ninja-build cmake \
-            clang-15 lld-15 \
+            clang-18 lld-18 \
             qt6-base-dev qt6-base-dev-tools qt6-base-private-dev \
             qt6-declarative-dev qt6-declarative-dev-tools qt6-declarative-private-dev \
             libqt6websockets6-dev libqt6websockets6-dev \

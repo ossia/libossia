@@ -9,14 +9,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install Build Dependencies
-      run: |
-        sudo apt-get update -qq
-        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
+    - uses: ./.github/actions/latest-ubuntu-toolchain
     - name: Build
-      env: 
-        CC: gcc-11
-        CXX: g++-11
       run: |
         cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
           -DOSSIA_CPP_ONLY=1 \
@@ -35,6 +29,7 @@ jobs:
   cpp-mac:
     name: CPP (macOS)
     runs-on: macos-14
+    environment: 'Apple Certificate'
     steps:
     - uses: actions/checkout@v4
     - uses: ./.github/actions/latest-mac-toolchain
@@ -43,22 +38,19 @@ jobs:
         cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CPP_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
         cmake --build build
         cmake --build build --target install 
-    - name: Code Signing
-      shell: bash
-      env:
+
+    - uses: ./.github/actions/mac-codesign
+      with:
+        path-to-sign: install
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-      run: |
-        source ${GITHUB_WORKSPACE}/ci/codesign_functions.sh
-        release_macos_folder "${GITHUB_WORKSPACE}/install" "$PWD/ossia-cpp-osx.zip" "io.ossia.ossia-cpp"
 
     - name: Archive Package
       uses: actions/upload-artifact@v2
       with:
         name: ossia-cpp
         path: install
-    environment: 'Apple Certificate'
       
   cpp-windows:
     name: CPP (Windows)

@@ -29,24 +29,23 @@ codesign_osx() {
 notarize_osx() { 
   set +x 
   local zipfile=${1}
-  local bundle_id=${2}
-  xcrun altool --notarize-app \
-      -t osx \
-      -f "$zipfile" \
-      --primary-bundle-id "$bundle_id" \
-      -u jeanmichael.celerier@gmail.com \
-      -p "@env:MAC_ALTOOL_PASSWORD"
+  xcrun notarytool \
+    submit "$zipfile" \
+    --team-id "GRW9MHZ724" \
+    --apple-id "jeanmichael.celerier@gmail.com" \
+    --password "$MAC_ALTOOL_PASSWORD" \
+    --progress \
+    --wait
 }
 
 release_macos_folder() {
   local folder="${1}"
   local zipfile="${2}"
-  local bundle_id="${3}"
 
   codesign_osx "$folder"
   (
     cd "$folder"/.. || return
     ditto -c -k --sequesterRsrc --keepParent $(basename "$folder") "${ARTIFACTS_DIR}/$zipfile"
-    notarize_osx "${ARTIFACTS_DIR}/$zipfile" "$bundle_id"
+    notarize_osx "${ARTIFACTS_DIR}/$zipfile"
   )
 }

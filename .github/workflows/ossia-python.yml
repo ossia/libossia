@@ -34,14 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: | 
-        sudo apt-get update -yqq 
-        sudo apt-get upgrade -yqq
-        sudo apt-get install -yqq build-essential gcc-11 g++-11 ninja-build libavahi-client-dev
-      env: 
-        CC: gcc-11
-        CXX: g++-11
+    - uses: ./.github/actions/latest-ubuntu-toolchain
     - name: Build ossia-python
       run: | 
         cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1 -DOSSIA_CI=1
