@@ -33,7 +33,7 @@ jobs:
 
     - uses: ./.github/actions/mac-codesign
       with:
-        path-to-sign: lib
+        path-to-sign: "install/lib"
         output-name: libossia.zip
         MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}

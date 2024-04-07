@@ -10,10 +10,7 @@
 #include <libremidi/libremidi.hpp>
 #if defined(OSSIA_PROTOCOL_MIDI)
 #include <ossia/protocols/midi/midi.hpp>
-#endif
 
-#if 1
-//#ifdef OSSIA_PROTOCOL_MIDI
 TEST_CASE("test_midi", "test_midi")
 {
   using namespace ossia::net::midi;
