@@ -1,7 +1,9 @@
 #pragma once
-#include <ossia-config.hpp>
-#define DR_WAV_NO_STDIO
+#include <ossia/dataflow/float_to_sample.hpp>
+
 #include <dr_wav.h>
+
+#include <ossia-config.hpp>
 
 namespace ossia
 {

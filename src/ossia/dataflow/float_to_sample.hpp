@@ -97,22 +97,44 @@ constexpr float float_to_sample<float, 32>(float sample) noexcept
 #define OSSIA_RESTRICT __restrict__
 #endif
 
-template <typename SampleFormat, int N>
+template <typename SampleFormat, int N, int ByteIncrement, typename InputFormat>
+  requires(sizeof(SampleFormat) == ByteIncrement)
 inline void interleave(
-    const float* const* OSSIA_RESTRICT in, SampleFormat* OSSIA_RESTRICT out,
+    const InputFormat* const* OSSIA_RESTRICT in, SampleFormat* OSSIA_RESTRICT out,
     int channels, int bs)
 {
   for(int c = 0; c < channels; c++)
   {
     auto* in_channel = in[c];
     for(int k = 0; k < bs; k++)
+    {
       out[k * channels + c] = float_to_sample<SampleFormat, N>(in_channel[k]);
+    }
   }
 }
 
-template <typename SampleFormat, int N>
+template <typename SampleFormat, int N, int ByteIncrement, typename InputFormat>
+  requires(sizeof(SampleFormat) != ByteIncrement)
+inline void interleave(
+    const InputFormat* const* OSSIA_RESTRICT in, SampleFormat* out, int channels, int bs)
+{
+  for(int c = 0; c < channels; c++)
+  {
+    auto* in_channel = in[c];
+    for(int k = 0; k < bs; k++)
+    {
+      // Case packed 24-bit: we have to go through raw char*
+      char* out_raw = reinterpret_cast<char*>(out);
+      auto mem
+          = reinterpret_cast<SampleFormat*>(out_raw[(k * channels + c) * ByteIncrement]);
+      *mem = float_to_sample<SampleFormat, N>(in_channel[k]);
+    }
+  }
+}
+
+template <typename SampleFormat, int N, typename InputFormat>
 inline void convert(
-    const float* const* OSSIA_RESTRICT in, SampleFormat* OSSIA_RESTRICT out,
+    const InputFormat* const* OSSIA_RESTRICT in, SampleFormat* OSSIA_RESTRICT out,
     int channels, int bs)
 {
   for(int c = 0; c < channels; c++)

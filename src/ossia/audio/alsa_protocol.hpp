@@ -32,6 +32,7 @@ public:
   decltype(&::snd_pcm_hw_params_any) pcm_hw_params_any{};
   decltype(&::snd_pcm_hw_params_sizeof) pcm_hw_params_sizeof{};
   decltype(&::snd_pcm_hw_params_set_access) pcm_hw_params_set_access{};
+  decltype(&::snd_pcm_hw_params_get_format) pcm_hw_params_get_format{};
   decltype(&::snd_pcm_hw_params_set_format) pcm_hw_params_set_format{};
   decltype(&::snd_pcm_hw_params_set_channels) pcm_hw_params_set_channels{};
   decltype(&::snd_pcm_hw_params_set_period_size) pcm_hw_params_set_period_size{};
@@ -96,6 +97,8 @@ private:
         "snd_pcm_hw_params_sizeof");
     pcm_hw_params_set_access = library.symbol<decltype(&::snd_pcm_hw_params_set_access)>(
         "snd_pcm_hw_params_set_access");
+    pcm_hw_params_get_format = library.symbol<decltype(&::snd_pcm_hw_params_get_format)>(
+        "snd_pcm_hw_params_set_format");
     pcm_hw_params_set_format = library.symbol<decltype(&::snd_pcm_hw_params_set_format)>(
         "snd_pcm_hw_params_set_format");
     pcm_hw_params_set_channels
@@ -192,6 +195,7 @@ private:
     assert(pcm_hw_params_any);
     assert(pcm_hw_params_sizeof);
     assert(pcm_hw_params_set_access);
+    assert(pcm_hw_params_get_format);
     assert(pcm_hw_params_set_format);
     assert(pcm_hw_params_set_channels);
     assert(pcm_hw_params_set_period_size);
@@ -251,16 +255,19 @@ snd_interleave(const float* const* in, char* out, int channels, int bs)
   switch(Format)
   {
     case SND_PCM_FORMAT_S16_LE:
-      return ossia::interleave<int16_t, 16>(
+      return ossia::interleave<int16_t, 16, 2>(
           in, reinterpret_cast<int16_t*>(out), channels, bs);
     case SND_PCM_FORMAT_S24_LE:
-      return ossia::interleave<int32_t, 24>(
+      return ossia::interleave<int32_t, 24, 4>(
+          in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S24_3LE:
+      return ossia::interleave<int32_t, 24, 3>(
           in, reinterpret_cast<int32_t*>(out), channels, bs);
     case SND_PCM_FORMAT_S32_LE:
-      return ossia::interleave<int32_t, 32>(
+      return ossia::interleave<int32_t, 32, 4>(
           in, reinterpret_cast<int32_t*>(out), channels, bs);
     case SND_PCM_FORMAT_FLOAT_LE:
-      return ossia::interleave<float, 32>(
+      return ossia::interleave<float, 32, 4>(
           in, reinterpret_cast<float*>(out), channels, bs);
     default:
       return;
@@ -277,6 +284,9 @@ snd_convert(const float* const* in, char* out, int channels, int bs)
       return ossia::convert<int16_t, 16>(
           in, reinterpret_cast<int16_t*>(out), channels, bs);
     case SND_PCM_FORMAT_S24_LE:
+      return ossia::convert<int32_t, 24>(
+          in, reinterpret_cast<int32_t*>(out), channels, bs);
+    case SND_PCM_FORMAT_S24_3LE:
       return ossia::convert<int32_t, 24>(
           in, reinterpret_cast<int32_t*>(out), channels, bs);
     case SND_PCM_FORMAT_S32_LE:
@@ -296,6 +306,8 @@ static constexpr int snd_bytes_per_sample()
   {
     case SND_PCM_FORMAT_S16_LE:
       return 2;
+    case SND_PCM_FORMAT_S24_3LE:
+      return 3;
     case SND_PCM_FORMAT_S24_LE:
       return 4;
     case SND_PCM_FORMAT_S32_LE:
@@ -352,8 +364,11 @@ public:
             if(int ret = snd.pcm_hw_params_set_format(m_client, hwparams, format);
                ret < 0)
             {
+              snd.pcm_hw_params_get_format(hwparams, &format);
+
               ossia::logger().error(
-                  "alsa_engine: can't set format: {}", snd.strerror(ret));
+                  "alsa_engine: can't set format: {} => got {}", snd.strerror(ret),
+                  (int)format);
             }
           }
         }
@@ -410,9 +425,9 @@ public:
         unsigned int tmp_periods{};
         snd.pcm_hw_params_get_periods(hwparams, &tmp_periods, 0);
 
-        fmt::print("Device: {}\n", card_out);
-        fmt::print("Expected: {} : {} : {}\n", outputs, rate, bs);
-        fmt::print(
+        ossia::logger().error("Device: {}\n", card_out);
+        ossia::logger().error("Expected: {} : {} : {}\n", outputs, rate, bs);
+        ossia::logger().error(
             "Got: {} : {} : {} => {} ; {}\n", effective_outputs, effective_sample_rate,
             effective_buffer_size, tmp_bufsize, tmp_periods);
       }
@@ -570,7 +585,10 @@ private:
       {
         data += ret * channels * sample_size_in_bytes;
         samples -= ret;
-        snd.pcm_start(m_client);
+        ret = snd.pcm_start(m_client);
+
+        if(ret < 0)
+          ossia::logger().error("alsa_engine: snd_pcm_start: {}", snd.strerror(ret));
       }
     }
     return true;
