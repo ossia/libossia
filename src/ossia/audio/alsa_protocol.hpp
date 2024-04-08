@@ -98,7 +98,7 @@ private:
     pcm_hw_params_set_access = library.symbol<decltype(&::snd_pcm_hw_params_set_access)>(
         "snd_pcm_hw_params_set_access");
     pcm_hw_params_get_format = library.symbol<decltype(&::snd_pcm_hw_params_get_format)>(
-        "snd_pcm_hw_params_set_format");
+        "snd_pcm_hw_params_get_format");
     pcm_hw_params_set_format = library.symbol<decltype(&::snd_pcm_hw_params_set_format)>(
         "snd_pcm_hw_params_set_format");
     pcm_hw_params_set_channels
@@ -450,6 +450,13 @@ public:
             });
             m_activated = true;
             break;
+          case SND_PCM_FORMAT_S24_3LE:
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_deinterleaved<SND_PCM_FORMAT_S24_LE>();
+            });
+            m_activated = true;
+            break;
           case SND_PCM_FORMAT_S32_LE:
             m_thread = std::thread([this] {
               init_thread();
@@ -481,6 +488,13 @@ public:
             m_activated = true;
             break;
           case SND_PCM_FORMAT_S24_LE:
+            m_thread = std::thread([this] {
+              init_thread();
+              run_thread_interleaved<SND_PCM_FORMAT_S24_LE>();
+            });
+            m_activated = true;
+            break;
+          case SND_PCM_FORMAT_S24_3LE:
             m_thread = std::thread([this] {
               init_thread();
               run_thread_interleaved<SND_PCM_FORMAT_S24_LE>();
