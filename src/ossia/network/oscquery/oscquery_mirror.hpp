@@ -185,7 +185,6 @@ private:
     std::promise<void> promise;
     std::string address{};
   };
-  using promises_map = locked_map<string_map<get_osc_promise>>;
 
   ossia::spsc_queue<get_ws_promise> m_getWSPromises;
   ossia::spsc_queue<std::function<void()>> m_functionQueue;
