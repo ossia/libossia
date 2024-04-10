@@ -59,6 +59,15 @@ inline bool seek_to_flick(
   return true;
 }
 
+static inline int avstream_get_audio_channels(AVStream& stream) noexcept
+{
+#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
+  return stream.codecpar->ch_layout.nb_channels;
+#else
+  return stream.codecpar->channels;
+#endif
+}
+
 struct libav_handle
 {
   AVFormatContext* format{};
@@ -185,14 +194,7 @@ struct libav_handle
   }
 
   int rate() const noexcept { return stream->codecpar->sample_rate; }
-  int channels() const noexcept
-  {
-#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(57, 24, 100)
-    return stream->codecpar->ch_layout.nb_channels;
-#else
-    return stream->codecpar->channels;
-#endif
-  }
+  int channels() const noexcept { return avstream_get_audio_channels(*stream); }
 
   int64_t totalPCMFrameCount() const noexcept
   {
