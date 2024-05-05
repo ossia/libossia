@@ -58,7 +58,8 @@ is_same(const oscquery_client& clt, const ossia::net::message_origin_identifier&
 }
 
 oscquery_server_protocol::oscquery_server_protocol(
-    ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port)
+    ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port,
+    bool forceWS)
     : protocol_base{flags{SupportsMultiplex}}
     , m_context{std::move(ctx)}
     , m_oscServer{std::make_unique<osc_receiver_impl>(
@@ -67,6 +68,7 @@ oscquery_server_protocol::oscquery_server_protocol(
           m_context->context)}
     , m_oscPort{osc_port}
     , m_wsPort{ws_port}
+    , m_forceWS{forceWS}
 {
   m_clients.reserve(2);
   m_websocketServer->set_open_handler(
@@ -187,7 +189,7 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
   if(val.valid())
   {
     // Push to all clients
-    auto critical = addr.get_critical();
+    auto critical = m_forceWS || addr.get_critical();
     if(!critical)
     {
       lock_t lock(m_clientsMutex);

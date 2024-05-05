@@ -12,11 +12,14 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/osc/osc.hpp>
 #include <ossia/network/oscquery/oscquery_client.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/protocols/oscquery/oscquery_mirror_asio.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
 
 #include <boost/algorithm/string/case_conv.hpp>
 
@@ -101,6 +104,13 @@ void device::class_setup(t_class* c)
       c, "savebi", 0, "onoff", "Save bi parameters when snapshotting presets");
 }
 
+void device::asio_timer(device* x)
+{
+  x->network_context->context.poll();
+  x->network_context->context.reset();
+  clock_delay(x->network_poll_clock, 10);
+}
+
 void* device::create(t_symbol*, long argc, t_atom* argv)
 {
   auto x = make_ossia<device>();
@@ -141,6 +151,10 @@ void* device::create(t_symbol*, long argc, t_atom* argv)
 
     // process attr args, if any
     attr_args_process(x, argc - attrstart, argv + attrstart);
+
+    x->network_context = std::make_shared<ossia::net::network_context>();
+    x->network_poll_clock = clock_new(x, (method)asio_timer);
+    clock_delay(x->network_poll_clock, 10);
 
     auto local_proto_ptr = std::make_unique<ossia::net::local_protocol>();
 
@@ -192,6 +206,10 @@ void device::destroy(device* x)
     }
 #endif
   }
+
+  clock_free((t_object*)x->network_poll_clock);
+  x->network_poll_clock = nullptr;
+  x->network_context.reset();
 
   x->disconnect_slots();
   on_device_removing(x);
@@ -331,6 +349,49 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         x->m_device->set_echo(true);
 
         A_SETSYM(a + 1, gensym("oscquery"));
+        A_SETLONG(a + 2, oscq_proto->get_osc_port());
+        A_SETLONG(a + 3, oscq_proto->get_ws_port());
+
+        multiplex.expose_to(std::move(oscq_proto));
+      }
+      catch(const std::exception& e)
+      {
+        connected = false;
+        object_error((t_object*)x, "can't connect, port might be already in use");
+        object_error((t_object*)x, "libossia error: '%s'", e.what());
+      }
+
+      A_SETLONG(a, connected ? 1 : 0);
+      outlet_anything(x->m_dumpout, gensym("expose"), 4, a);
+    }
+    else if(protocol == "oscquery_tcp")
+    {
+      protocol_settings::oscquery settings{};
+
+      argc--;
+      argv++;
+
+      if(argc == 2 && argv[0].a_type == A_LONG && argv[1].a_type == A_LONG)
+      {
+        settings.oscport = atom_getlong(argv++);
+        settings.wsport = atom_getlong(argv++);
+      }
+
+      bool connected = true;
+
+      t_atom a[4];
+      A_SETSYM(a + 1, gensym("oscquery_tcp"));
+      A_SETLONG(a + 2, settings.oscport);
+      A_SETLONG(a + 3, settings.wsport);
+
+      try
+      {
+        auto oscq_proto
+            = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(
+                x->network_context, settings.oscport, settings.wsport, true);
+        x->m_device->set_echo(true);
+
+        A_SETSYM(a + 1, gensym("oscquery_tcp"));
         A_SETLONG(a + 2, oscq_proto->get_osc_port());
         A_SETLONG(a + 3, oscq_proto->get_ws_port());
 

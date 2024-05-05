@@ -4,6 +4,11 @@
 
 #include <ossia-max/src/device_base.hpp>
 
+namespace ossia::net
+{
+struct network_context;
+using network_context_ptr = std::shared_ptr<network_context>;
+}
 namespace ossia
 {
 namespace max_binding
@@ -12,6 +17,8 @@ namespace max_binding
 class device : public device_base
 {
 public:
+  ossia::net::network_context_ptr network_context;
+  void* network_poll_clock{};
   using is_device = std::true_type;
 
   static void register_children(device*);
@@ -32,6 +39,8 @@ public:
   static void* create(t_symbol*, long, t_atom*);
   static void destroy(ossia::max_binding::device*);
   static void class_setup(t_class* c);
+
+  static void asio_timer(device* x);
 };
 
 namespace protocol_settings
