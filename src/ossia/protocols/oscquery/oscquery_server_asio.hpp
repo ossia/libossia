@@ -52,7 +52,7 @@ public:
   using connection_handler = std::weak_ptr<void>;
   oscquery_server_protocol(
       ossia::net::network_context_ptr ctx, uint16_t osc_port = 1234,
-      uint16_t ws_port = 5678);
+      uint16_t ws_port = 5678, bool forceWS = false);
   ~oscquery_server_protocol() override;
 
   bool pull(net::parameter_base&) override;
@@ -140,6 +140,9 @@ private:
   // The local ports
   uint16_t m_oscPort{};
   uint16_t m_wsPort{};
+
+  // Will only send changes through WS
+  bool m_forceWS{};
 };
 }
 }
