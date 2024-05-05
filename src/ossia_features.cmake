@@ -284,8 +284,8 @@ if(OSSIA_DATAFLOW)
       )
     elseif(OSSIA_ENABLE_KFR AND KFR_ENABLE_DFT) # defined in kfr/CMakeLists.txt
       target_link_libraries(ossia PRIVATE
-        $<BUILD_INTERFACE:kfr>
-        $<BUILD_INTERFACE:kfr_dft>
+        "$<BUILD_INTERFACE:kfr>"
+        "$<BUILD_INTERFACE:$<LINK_LIBRARY:WHOLE_ARCHIVE,kfr_dft>>"
       )
     endif()
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
