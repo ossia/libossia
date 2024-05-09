@@ -429,8 +429,8 @@ struct faust_node_utils
         auto& dat = ctrl.first->get_data();
         if(!dat.empty())
         {
-          float v = ossia::convert<float>(dat.back().value);
-          self.set_control(k, v);
+          if(dat.back().value.valid())
+            ossia::apply_nonnull([k,&self] (const auto& vv){ self.set_control(k, vv); }, dat.back().value.v);
         }
       }
     }

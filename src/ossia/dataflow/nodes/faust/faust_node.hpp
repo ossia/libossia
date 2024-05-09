@@ -39,6 +39,37 @@ public:
     faust_port_array displays;
   };
 
+  void set_control(int i, int v) noexcept
+  { set_control(i, (float) v); }
+  void set_control(int i, bool v) noexcept
+  { set_control(i, v ? 1.f : 0.f); }
+  void set_control(int i, const std::string& v) noexcept
+  { }
+  void set_control(int i, ossia::impulse v) noexcept
+  { }
+  template<std::size_t N>
+  void set_control(int i, const std::array<float, N>& v) noexcept
+  {
+    *controls[i].second = v[0];
+    for(std::size_t c = 1, n = std::min(clones.size(), N); c < n; c++)
+    {
+      *clones[c].controls[i].second = v[i];
+    }
+  }
+  void set_control(int i, const std::vector<ossia::value>& v) noexcept
+  {
+    if(v.empty()) return;
+    *controls[i].second = ossia::convert<float>(v[0]);
+    for(std::size_t c = 1, n = std::min(clones.size(), v.size()); c < n; c++)
+    {
+      *clones[c].controls[i].second = ossia::convert<float>(v[i]);
+    }
+  }
+  void set_control(int i, const ossia::value_map_type& v) noexcept
+  {
+
+  }
+
   void set_control(int i, float v) noexcept
   {
     *controls[i].second = v;
