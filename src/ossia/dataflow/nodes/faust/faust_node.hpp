@@ -51,18 +51,18 @@ public:
   void set_control(int i, const std::array<float, N>& v) noexcept
   {
     *controls[i].second = v[0];
-    for(std::size_t c = 1, n = std::min(clones.size(), N); c < n; c++)
+    for(std::size_t c = 0, n = std::min(clones.size(), N); c < n; c++)
     {
-      *clones[c].controls[i].second = v[i];
+      *clones[c].controls[i].second = v[c];
     }
   }
   void set_control(int i, const std::vector<ossia::value>& v) noexcept
   {
     if(v.empty()) return;
     *controls[i].second = ossia::convert<float>(v[0]);
-    for(std::size_t c = 1, n = std::min(clones.size(), v.size()); c < n; c++)
+    for(std::size_t c = 0, n = std::min(clones.size(), v.size()); c < n; c++)
     {
-      *clones[c].controls[i].second = ossia::convert<float>(v[i]);
+      *clones[c].controls[i].second = ossia::convert<float>(v[c]);
     }
   }
   void set_control(int i, const ossia::value_map_type& v) noexcept
