@@ -132,12 +132,6 @@ if(OSSIA_PROTOCOL_PHIDGETS)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} Phidgets)
 endif()
 
-if(OSSIA_PROTOCOL_LEAPMOTION)
-  target_sources(ossia PRIVATE ${OSSIA_LEAPMOTION_HEADERS} ${OSSIA_LEAPMOTION_SRCS})
-  target_link_libraries(ossia PUBLIC LeapMotion)
-  set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} LeapMotion)
-endif()
-
 if(OSSIA_PROTOCOL_JOYSTICK)
   target_sources(ossia PRIVATE ${OSSIA_JOYSTICK_SRCS} ${OSSIA_JOYSTICK_HEADERS})
   target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)

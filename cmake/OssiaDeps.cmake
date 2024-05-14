@@ -199,14 +199,6 @@ if(OSSIA_PROTOCOL_LIBMAPPER)
   endif()
 endif()
 
-if(OSSIA_PROTOCOL_LEAPMOTION)
-  include(deps/leapmotion)
-
-  if(NOT LeapMotion_FOUND)
-    set(OSSIA_PROTOCOL_LEAPMOTION FALSE CACHE INTERNAL "")
-  endif()
-endif()
-
 if(OSSIA_ENABLE_FFT)
   if(OSSIA_ENABLE_FFTW)
     include(deps/fftw)

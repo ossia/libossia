@@ -13,12 +13,9 @@
 #cmakedefine OSSIA_PROTOCOL_HTTP
 #cmakedefine OSSIA_PROTOCOL_WEBSOCKETS
 #cmakedefine OSSIA_PROTOCOL_SERIAL
-#cmakedefine OSSIA_PROTOCOL_PHIDGETS
-#cmakedefine OSSIA_PROTOCOL_LEAPMOTION
 #cmakedefine OSSIA_PROTOCOL_JOYSTICK
 #cmakedefine OSSIA_PROTOCOL_WIIMOTE
 #cmakedefine OSSIA_PROTOCOL_ARTNET
-#cmakedefine OSSIA_PROTOCOL_LIBMAPPER
 
 // Additional features
 #cmakedefine OSSIA_DNSSD

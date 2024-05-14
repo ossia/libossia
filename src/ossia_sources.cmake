@@ -491,12 +491,6 @@ set(OSSIA_PHIDGETS_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.cpp")
 
-set(OSSIA_LEAPMOTION_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.hpp")
-
-set(OSSIA_LEAPMOTION_SRCS
-  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/leapmotion/leapmotion_device.cpp")
-
 set(OSSIA_JOYSTICK_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_manager.hpp"

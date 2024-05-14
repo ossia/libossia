@@ -26,9 +26,6 @@
 #if defined(OSSIA_PROTOCOL_PHIDGETS)
 #include <ossia/network/phidgets/phidgets_protocol.hpp>
 #endif
-#if defined(OSSIA_PROTOCOL_LEAPMOTION)
-#include <ossia/network/leapmotion/leapmotion_device.hpp>
-#endif
 
 using namespace ossia::max_binding;
 
@@ -474,13 +471,6 @@ void device::expose(device* x, t_symbol*, long argc, t_atom* argv)
         error("Only a single Phidget device can be active at a given time");
         return;
       }
-    }
-#endif
-
-#if defined(OSSIA_PROTOCOL_LEAPMOTION)
-    else if(protocol == "leapmotion")
-    {
-      multiplex.expose_to(std::make_unique<ossia::leapmotion_protocol>());
     }
 #endif
 
