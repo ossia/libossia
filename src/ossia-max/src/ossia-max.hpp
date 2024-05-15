@@ -13,7 +13,7 @@
 #include "assert.hpp"
 #include "attribute.hpp"
 #include "client.hpp"
-// #include "ocue.hpp"
+#include "ocue.hpp"
 #include "device.hpp"
 #include "explorer.hpp"
 #include "fuzzysearch.hpp"
