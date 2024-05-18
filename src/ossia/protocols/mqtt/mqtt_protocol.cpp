@@ -69,7 +69,6 @@ struct mqtt5_client : mqtt5_client_base
 
   boost::asio::awaitable<bool> publish(ossia::net::parameter_base& param) override
   {
-    co_return false;
     auto&& [ec, rc, props]
         = co_await client.template async_publish<async_mqtt5::qos_e::at_least_once>(
             param.get_node().osc_address(), ossia::convert<std::string>(param.value()),
