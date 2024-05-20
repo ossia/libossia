@@ -7,6 +7,8 @@
 #include <dlfcn.h>
 #endif
 #include <stdexcept>
+#include <string>
+#include <string_view>
 #include <vector>
 
 namespace ossia
