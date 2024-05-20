@@ -1,6 +1,5 @@
 #pragma once
 #include <ossia/detail/config.hpp>
-#include <ossia/detail/fmt.hpp>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -8,6 +7,7 @@
 #include <dlfcn.h>
 #endif
 #include <stdexcept>
+#include <vector>
 
 namespace ossia
 {
@@ -23,7 +23,7 @@ public:
 #endif
     if(!impl)
     {
-      throw std::runtime_error(fmt::format("{}: not found. ", so));
+      throw std::runtime_error(std::string(so) + ": not found. ");
     }
   }
 
@@ -43,7 +43,7 @@ public:
         return;
     }
 
-    throw std::runtime_error(fmt::format("{}: not found. ", sos[0]));
+    throw std::runtime_error(std::string(sos[0]) + ": not found. ");
   }
 
   dylib_loader(const dylib_loader&) noexcept = delete;

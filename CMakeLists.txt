@@ -28,6 +28,7 @@ find_package(${QT_VERSION} COMPONENTS Core)
 ## the variable looks like : `/tmp/DpvCam/3rdparty/libossia/3rdparty;CACHE;STRING;;INTERNAL`
 ## which is a list instead of a single PATH value
 ## at least with CMake 15.2
+set(OSSIA_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "")
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE INTERNAL "")
 include(OssiaOptions)
 
