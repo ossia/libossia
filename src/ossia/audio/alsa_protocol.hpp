@@ -1,5 +1,6 @@
 #pragma once
-#if __has_include(<alsa/asoundlib.h>) &&__has_include(<zita-alsa-pcmi.h>) && !defined(__EMSCRIPTEN__)
+#if __has_include( \
+    <alsa/asoundlib.h>) && __has_include(<zita-alsa-pcmi-ardour.h>) && !defined(__EMSCRIPTEN__)
 
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/dataflow/float_to_sample.hpp>
