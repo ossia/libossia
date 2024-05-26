@@ -461,7 +461,7 @@ void coap_client_protocol::set_device(device_base& dev)
   m_device = &dev;
 
   m_timer.set_delay(5ms);
-  m_timer.start([this](this auto&& self) -> void { m_client->poll(); });
+  m_timer.start([this] { m_client->poll(); });
 }
 
 void coap_client_protocol::stop()
