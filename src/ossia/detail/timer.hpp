@@ -11,9 +11,14 @@ namespace ossia
 class timer
 {
 public:
+  template <typename Executor>
+  explicit timer(boost::asio::strand<Executor>& ctx)
+      : m_timer{ctx}
+  {
+  }
+
   explicit timer(boost::asio::io_context& ctx)
-      : m_ctx{&ctx}
-      , m_timer{boost::asio::make_strand(ctx)}
+      : m_timer{boost::asio::make_strand(ctx)}
   {
   }
 
@@ -57,7 +62,6 @@ public:
   }
 
 private:
-  boost::asio::io_context* m_ctx{};
   boost::asio::steady_timer m_timer;
   std::chrono::milliseconds m_delay{};
 };
