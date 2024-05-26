@@ -16,7 +16,23 @@ if(NOT TARGET libcoap::coap-3)
       GIT_PROGRESS true
     )
 
+    set(_oldmode ${BUILD_SHARED_LIBS})
+    set(BUILD_SHARED_LIBS OFF)
+
     set(ENABLE_DTLS OFF)
+    set(ENABLE_DTLS OFF CACHE INTERNAL "")
+    set(ENABLE_EXAMPLES OFF)
+    set(ENABLE_EXAMPLES OFF CACHE INTERNAL "")
+    set(ENABLE_DOCS OFF)
+    set(ENABLE_DOCS OFF CACHE INTERNAL "")
+    set(ENABLE_OSCORE OFF)
+    set(ENABLE_OSCORE OFF CACHE INTERNAL "")
+    set(ENABLE_SERVER_MODE OFF)
+    set(ENABLE_SERVER_MODE OFF CACHE INTERNAL "")
+    set(MAX_LOGGING_LEVEL "0")
+    set(MAX_LOGGING_LEVEL "0" CACHE INTERNAL "")
     FetchContent_MakeAvailable(libcoap)
+
+    set(BUILD_SHARED_LIBS ${_oldmode})
 endif()
 
