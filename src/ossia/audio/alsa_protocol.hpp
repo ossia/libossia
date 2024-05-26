@@ -94,7 +94,7 @@ public:
     client.pcm_start();
 
     int k = 0;
-    while(!m_stop_token.load(std::memory_order_relaxed))
+    while(m_stop_token.load(std::memory_order_relaxed))
     {
       k = client.pcm_wait();
 
@@ -175,7 +175,7 @@ private:
   using clk = std::chrono::steady_clock;
   clk::time_point m_start_time{};
   clk::time_point m_last_time{};
-  std::atomic_bool m_stop_token{};
+  std::atomic_bool m_stop_token{true};
   std::atomic_bool m_activated{};
 };
 }
