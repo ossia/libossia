@@ -11,8 +11,6 @@
 #include <boost/asio/use_future.hpp>
 #include <boost/unordered/concurrent_flat_map.hpp>
 
-#include <QDebug>
-
 #include <coap3/coap.h>
 namespace ossia::net
 {
@@ -133,17 +131,14 @@ struct coap_session
 
     if(dest.uri.scheme == COAP_URI_SCHEME_COAP)
     {
-      qDebug("UDP?");
       session = coap_new_client_session(client.ctx, NULL, &dest.dst, COAP_PROTO_UDP);
     }
     else if(dest.uri.scheme == COAP_URI_SCHEME_COAP_TCP)
     {
-      qDebug("TCP?");
       session = coap_new_client_session(client.ctx, NULL, &dest.dst, COAP_PROTO_TCP);
     }
     else if(dest.uri.scheme == COAP_URI_SCHEME_COAP_WS)
     {
-      qDebug("WS?");
       session = coap_new_client_session(client.ctx, NULL, &dest.dst, COAP_PROTO_WS);
       coap_ws_set_host_request(session, coap_make_str_const("localhost"));
     }
@@ -269,7 +264,6 @@ coap_client::coap_client()
 std::shared_ptr<coap_session>
 coap_client::get(std::string_view req, coap_reply_callback rep)
 {
-  qDebug() << "GET:" << req;
   auto dest = coap_destination::parse(req.data());
   if(!dest)
     return {};
@@ -282,7 +276,6 @@ coap_client::get(std::string_view req, coap_reply_callback rep)
 std::shared_ptr<coap_session>
 coap_client::subscribe(std::string_view req, coap_reply_callback rep)
 {
-  qDebug() << "S:" << req;
   auto dest = coap_destination::parse(req.data());
   if(!dest)
     return {};
@@ -300,7 +293,6 @@ void coap_client::unsubscribe(const coap_session& dest)
 std::shared_ptr<coap_session>
 coap_client::post(std::string_view req, std::string_view fmt, std::string_view bytes)
 {
-  qDebug() << "P:" << req;
   auto dest = coap_destination::parse(req.data());
   if(!dest)
     return {};
@@ -333,7 +325,6 @@ coap_client_protocol::coap_client_protocol(
         self.m_host += ':';
         self.m_host += std::to_string(conf.remote->port);
       }
-      qDebug() << self.m_host;
     }
 
     void operator()(const ossia::net::tcp_configuration& conf)
