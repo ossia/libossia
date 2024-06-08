@@ -1,5 +1,16 @@
 if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(SampleRate CONFIG REQUIRED GLOBAL)
+  find_package(SampleRate CONFIG GLOBAL)
+
+  if(NOT TARGET SampleRate::samplerate)
+    find_library(SAMPLREATE_LIBRARY NAMES samplerate)
+    find_path(SAMPLERATE_INCLUDE_DIR samplerate.h)
+    if(SAMPLREATE_LIBRARY AND SAMPLERATE_INCLUDE_DIR)
+      add_library(samplerate IMPORTED INTERFACE GLOBAL)
+      add_library(SampleRate::samplerate ALIAS samplerate)
+      target_include_directories(samplerate INTERFACE ${SAMPLERATE_INCLUDE_DIR})
+      target_link_libraries(samplerate INTERFACE ${SAMPLREATE_LIBRARY})
+    endif()
+  endif()
 endif()
 
 if(NOT TARGET SampleRate::samplerate)
