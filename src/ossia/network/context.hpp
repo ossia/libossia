@@ -3,11 +3,14 @@
 
 #include <boost/asio/executor_work_guard.hpp>
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/strand.hpp>
 
 #include <memory>
 
 namespace ossia::net
 {
+using strand_type
+    = decltype(boost::asio::make_strand(std::declval<boost::asio::io_context&>()));
 struct network_context
 {
   boost::asio::io_context context;

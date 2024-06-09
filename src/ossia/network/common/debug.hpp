@@ -29,7 +29,7 @@ struct formatter<ossia::access_mode>
   }
 
   template <typename FormatContext>
-  auto format(ossia::access_mode e, FormatContext& ctx)
+  auto format(ossia::access_mode e, FormatContext& ctx) const
   {
     string_view name = "unknown";
     switch(e)
@@ -58,7 +58,7 @@ struct formatter<ossia::bounding_mode> final : formatter<string_view>
   }
 
   template <typename FormatContext>
-  auto format(ossia::bounding_mode e, FormatContext& ctx)
+  auto format(ossia::bounding_mode e, FormatContext& ctx) const
   {
     string_view name = "unknown";
     switch(e)
@@ -96,7 +96,7 @@ struct formatter<ossia::domain> final : formatter<string_view>
   }
 
   template <typename FormatContext>
-  auto format(const ossia::domain& e, FormatContext& ctx)
+  auto format(const ossia::domain& e, FormatContext& ctx) const
   {
     return formatter<string_view>::format(e.to_pretty_string(), ctx);
   }
@@ -112,7 +112,7 @@ struct formatter<ossia::net::node_base>
   }
 
   template <typename FormatContext>
-  auto format(const ossia::net::node_base& n, FormatContext& ctx)
+  auto format(const ossia::net::node_base& n, FormatContext& ctx) const
   {
     int num_indent = 0;
     auto parent = n.get_parent();

@@ -24,7 +24,7 @@ struct formatter<oscpack::ReceivedMessage>
   }
 
   template <typename FormatContext>
-  auto format(const oscpack::ReceivedMessage& m, FormatContext& ctx)
+  auto format(const oscpack::ReceivedMessage& m, FormatContext& ctx) const
   {
     auto out = ctx.out();
     out = fmt::format_to(out, "{}", m.AddressPattern());

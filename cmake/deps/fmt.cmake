@@ -40,6 +40,7 @@ if(NOT TARGET fmt::fmt)
   endif()
 
   add_library(fmt::fmt ALIAS fmt)
+  add_library(fmt::fmt-header-only ALIAS fmt)
 endif()
 
 set(OSSIA_HAS_FMT 1 CACHE INTERNAL "")
