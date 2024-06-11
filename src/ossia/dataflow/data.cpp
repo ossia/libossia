@@ -157,7 +157,8 @@ void mix(const audio_vector& src_vec, audio_vector& sink_vec)
     audio_buffer_pool::set_channels(sink_vec, channels);
     for(std::size_t c = 0; c < channels; c++)
     {
-      sink_vec[c] = src_vec[c];
+      const auto& src = src_vec[c];
+      sink_vec[c].assign(src.begin(), src.end());
     }
     return;
   }
@@ -215,6 +216,7 @@ void audio_buffer_pool::set_channels(audio_vector& samples, std::size_t channels
   {
     auto chan = std::move(samples.back());
     chan.clear();
+
     pool.release(std::move(chan));
     samples.pop_back();
   }

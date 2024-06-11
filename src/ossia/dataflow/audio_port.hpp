@@ -45,7 +45,8 @@ struct audio_port
     audio_buffer_pool::set_channels(m_samples, other.channels());
     for(std::size_t c = 0; c < other.channels(); c++)
     {
-      channel(c) = other.channel(c);
+      const auto& src = other.channel(c);
+      channel(c).assign(src.begin(), src.end());
     }
     return *this;
   }

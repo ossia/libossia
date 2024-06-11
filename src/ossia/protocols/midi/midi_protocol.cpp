@@ -86,11 +86,13 @@ bool midi_protocol::set_info(midi_info m)
     // Close current ports
     if(m_info.type == midi_info::Type::Input)
     {
-      m_input->close_port();
+      if(m_input)
+        m_input->close_port();
     }
     else if(m_info.type == midi_info::Type::Output)
     {
-      m_output->close_port();
+      if(m_output)
+        m_output->close_port();
     }
 
     m_info = m;
