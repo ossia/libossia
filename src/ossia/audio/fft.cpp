@@ -213,7 +213,7 @@ static const constexpr auto run_plan_c2r
   return ((fftw_plan_s*)plan)
       ->execute((kfr::f64*)real, (kfr::c64*)cplx, temp.data(), kfr::cinvert_t{});
 };
-static const constexpr auto destroy_plan = [](auto&& p) {};
+static const constexpr auto destroy_plan = [](auto&& p) { delete(fftw_plan_s*)p; };
 static const constexpr auto cleanup = [] {};
 static const constexpr auto alignment_of = [] {};
 static const constexpr auto FFTW_DESTROY_INPUT = 0;
