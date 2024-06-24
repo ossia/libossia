@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/execution/execution_policy.hpp>
+#include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/network/base/bundle.hpp>
 
 #include <blockingconcurrentqueue.h>

@@ -1,5 +1,6 @@
 #include "merged_policy.hpp"
 
+#include <ossia/dataflow/execution/to_state_element.hpp>
 #include <ossia/editor/state/detail/state_flatten_visitor.hpp>
 
 namespace ossia

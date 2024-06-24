@@ -97,7 +97,7 @@ inline fmt_ctx::iterator value_prettyprint_visitor::operator()(int32_t i) const
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()(float f) const
 {
-  return fmt::format_to(ctx.out(), "float: {}", f);
+  return fmt::format_to(ctx.out(), "float: {:.2f}", f);
 }
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()(bool b) const
@@ -118,17 +118,20 @@ inline fmt_ctx::iterator value_prettyprint_visitor::operator()(std::string str) 
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec2f vec) const
 {
-  return fmt::format_to(ctx.out(), "vec2f: {}", vec);
+  return fmt::format_to(ctx.out(), "vec2f: [{:.2f}, {:.2f}]", vec[0], vec[1]);
 }
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec3f vec) const
 {
-  return fmt::format_to(ctx.out(), "vec3f: {}", vec);
+  return fmt::format_to(
+      ctx.out(), "vec3f: [{:.2f}, {:.2f}, {:.2f}]", vec[0], vec[1], vec[2]);
 }
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec4f vec) const
 {
-  return fmt::format_to(ctx.out(), "vec4f: {}", vec);
+  return fmt::format_to(
+      ctx.out(), "vec4f: [{:.2f}, {:.2f}, {:.2f}, {:.2f}]", vec[0], vec[1], vec[2],
+      vec[3]);
 }
 
 inline fmt_ctx::iterator

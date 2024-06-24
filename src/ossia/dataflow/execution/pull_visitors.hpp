@@ -1,10 +1,11 @@
 #pragma once
+#include <ossia/audio/audio_parameter.hpp>
+#include <ossia/dataflow/audio_lock.hpp>
 #include <ossia/dataflow/data_copy.hpp>
-#include <ossia/dataflow/execution/execution_policy.hpp>
+#include <ossia/dataflow/execution/local_state_execution_policy.hpp>
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/protocols/midi/midi_node.hpp>
-
 namespace ossia
 {
 

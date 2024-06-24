@@ -127,3 +127,9 @@
 #if !defined(QT_NO_KEYWORDS)
 #define QT_NO_KEYWORDS 1
 #endif
+
+#if defined(OSSIA_TESTING)
+#define OSSIA_TEST_EXPORT OSSIA_EXPORT
+#else
+#define OSSIA_TEST_EXPORT
+#endif

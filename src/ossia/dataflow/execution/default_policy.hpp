@@ -1,5 +1,6 @@
 #pragma once
-#include <ossia/dataflow/execution/execution_policy.hpp>
+#include <ossia/dataflow/execution/local_state_execution_policy.hpp>
+#include <ossia/editor/state/flat_vec_state.hpp>
 
 namespace ossia
 {

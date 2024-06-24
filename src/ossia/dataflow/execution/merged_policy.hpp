@@ -1,17 +1,12 @@
 #pragma once
-#include <ossia/dataflow/execution/execution_policy.hpp>
+#include <ossia/dataflow/execution/local_state_execution_policy.hpp>
+#include <ossia/editor/state/flat_vec_state.hpp>
 
 #include <blockingconcurrentqueue.h>
 
-#include <semaphore>
-
 namespace ossia
 {
-struct
-#if defined(OSSIA_TESTING)
-    OSSIA_EXPORT
-#endif
-        merged_execution_state_policy : local_state_execution_policy
+struct OSSIA_TEST_EXPORT merged_execution_state_policy : local_state_execution_policy
 {
   void commit() override;
   ossia::mono_state m_monoState;
