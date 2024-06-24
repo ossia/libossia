@@ -280,7 +280,7 @@ int cues::get_cue(std::string_view name)
       m_cues.begin(), m_cues.end(), [=](const cue& c) { return c.name == name; });
   if(BOOST_UNLIKELY(it == m_cues.end()))
   {
-    m_cues.push_back(cue{.name = std::string(name)});
+    m_cues.push_back(cue{.name = std::string(name), .preset = {}});
     return m_cues.size() - 1;
   }
   else
@@ -336,7 +336,7 @@ void cues::remove(int idx)
 
   if(m_cues.empty())
   {
-    m_cues.push_back({.name{"Init"}});
+    m_cues.push_back({.name{"Init"}, .preset = {}});
     m_current = 0;
   }
 }

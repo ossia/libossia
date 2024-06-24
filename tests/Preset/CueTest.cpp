@@ -55,14 +55,15 @@ TEST_CASE("test_cue", "test_cue")
 
   default_cue_device device;
   ossia::cues c;
-  c.set_device(&device.dev);
+  ossia::namespace_selection sel;
+  sel.set_device(&device.dev);
 
   WHEN("initial state")
   {
     THEN("one cue")
     {
       REQUIRE(c.size() == 1);
-      REQUIRE(c.current_cue().name == "Init");
+      REQUIRE(c.current_cue()->name == "Init");
     }
   }
 
@@ -72,9 +73,9 @@ TEST_CASE("test_cue", "test_cue")
     THEN("two cue")
     {
       REQUIRE(c.size() == 2);
-      REQUIRE(c.current_cue().name == "Cue");
-      // REQUIRE(c.current_cue().selection == std::vector<std::string>{"/"});
-      REQUIRE(c.current_cue().preset.empty());
+      REQUIRE(c.current_cue()->name == "Cue");
+      // REQUIRE(c.current_cue()->selection == std::vector<std::string>{"/"});
+      REQUIRE(c.current_cue()->preset.empty());
     }
   }
 
@@ -82,13 +83,15 @@ TEST_CASE("test_cue", "test_cue")
   {
     c.create("Cue");
     REQUIRE(c.size() == 2);
-    REQUIRE(c.current_cue().name == "Cue");
-    c.update("Cue");
+    REQUIRE(c.current_cue()->name == "Cue");
+    c.update(device.dev.get_root_node(), sel, "Cue");
     THEN("entire tree is copied")
     {
-      REQUIRE(c.current_cue().name == "Cue");
+      REQUIRE(c.current_cue()->name == "Cue");
 
-      auto& cue = c.current_cue();
+      auto cue_ptr = c.current_cue();
+      REQUIRE(cue_ptr);
+      auto& cue = *cue_ptr;
 
       REQUIRE(cue.preset.size() == 4);
 
@@ -108,7 +111,7 @@ TEST_CASE("test_cue", "test_cue")
     REQUIRE(device.a4.value() == "bar");
 
     c.create("Cue 1");
-    c.update();
+    c.update(device.dev.get_root_node(), sel, "Cue 1");
     REQUIRE(c.m_cues[1].name == "Cue 1");
     REQUIRE(c.m_cues[1].preset.size() == 4);
 
@@ -118,17 +121,17 @@ TEST_CASE("test_cue", "test_cue")
     device.a4.set_value("a4");
 
     c.create("Cue 2");
-    c.update();
+    c.update(device.dev.get_root_node(), sel, "Cue 2");
 
     THEN("recalling sets the correct values")
     {
-      c.recall("Cue 1");
+      c.recall(device.dev.get_root_node(), sel, "Cue 1");
       REQUIRE(device.a1.value() == 13579);
       REQUIRE(device.a2.value() == 3.1415);
       REQUIRE(device.a3.value() == "foo");
       REQUIRE(device.a4.value() == "bar");
 
-      c.recall("Cue 2");
+      c.recall(device.dev.get_root_node(), sel, "Cue 2");
       REQUIRE(device.a1.value() == 10);
       REQUIRE(device.a2.value() == 1.2);
       REQUIRE(device.a3.value() == "a3");
@@ -145,14 +148,15 @@ TEST_CASE("test_cue_ns", "test_cue_ns")
     default_cue_device device;
 
     ossia::cues c;
-    c.set_device(&device.dev);
-    c.namespace_deselect("/");
+    ossia::namespace_selection sel;
+    sel.set_device(&device.dev);
+    sel.namespace_deselect("/");
 
     THEN("updating does nothing")
     {
-      REQUIRE(c.current_cue().preset.empty());
-      c.update();
-      REQUIRE(c.current_cue().preset.empty());
+      REQUIRE(c.current_cue()->preset.empty());
+      c.update(device.dev.get_root_node(), sel);
+      REQUIRE(c.current_cue()->preset.empty());
     }
   }
 
@@ -161,19 +165,20 @@ TEST_CASE("test_cue_ns", "test_cue_ns")
     default_cue_device device;
 
     ossia::cues c;
-    c.set_device(&device.dev);
-    c.namespace_deselect("/");
-    REQUIRE(c.m_selection.empty());
+    ossia::namespace_selection sel;
+    sel.set_device(&device.dev);
+    sel.namespace_deselect("/");
+    REQUIRE(sel.m_selection.empty());
 
-    c.namespace_select("/bim");
-    REQUIRE(c.m_selection.size() == 4);
+    sel.namespace_select("/bim");
+    REQUIRE(sel.m_selection.size() == 4);
 
-    c.update();
+    c.update(device.dev.get_root_node(), sel);
 
     THEN("node now contains cues from /bim/bam and /bim/boum*")
     {
-      //REQUIRE(c.se)
-      auto& cue = c.current_cue();
+      auto* cue_ptr = c.current_cue();
+      auto& cue = *cue_ptr;
       REQUIRE(cue.preset.size() == 3);
       REQUIRE(at(cue.preset, "/bim/bam") == 3.1415);
       REQUIRE(at(cue.preset, "/bim/boum") == "foo"s);
@@ -182,17 +187,17 @@ TEST_CASE("test_cue_ns", "test_cue_ns")
 
     WHEN("deselecting a sub node")
     {
-      c.namespace_deselect("/bim/boum");
+      sel.namespace_deselect("/bim/boum");
 
       c.clear();
       c.create("Cue");
 
-      c.update();
+      c.update(device.dev.get_root_node(), sel);
 
       THEN("node now contains cues from /bim/bam and /bim/boum.1 only")
       {
-        auto& cue = c.current_cue();
-        //INFO(cue.selection);
+        auto* cue_ptr = c.current_cue();
+        auto& cue = *cue_ptr;
         REQUIRE(cue.preset.size() == 2);
         REQUIRE(at(cue.preset, "/bim/bam") == 3.1415);
         REQUIRE(at(cue.preset, "/bim/boum.1") == "bar"s);

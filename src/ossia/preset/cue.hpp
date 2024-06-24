@@ -59,10 +59,10 @@ class OSSIA_EXPORT namespace_selection : Nano::Observer
     ossia::hash_set<ossia::net::node_base*> m_selection;
 };
 
-class OSSIA_EXPORT cues// : public namespace_selection
+class OSSIA_EXPORT cues
 {
 public:
-  std::vector<cue> m_cues{{.name{"Init"}}};
+  std::vector<cue> m_cues{{.name{"Init"}, .preset = {}}};
 
   int size() const noexcept { return this->m_cues.size(); }
 
