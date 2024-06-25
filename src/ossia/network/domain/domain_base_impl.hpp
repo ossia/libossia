@@ -36,7 +36,8 @@ struct OSSIA_EXPORT domain_base
   std::vector<value_type> values;
 
   domain_base() noexcept { }
-  domain_base(const domain_base& other) noexcept
+
+  domain_base(const domain_base& other)
       : min{other.min}
       , max{other.max}
       , values{other.values}
@@ -66,29 +67,29 @@ struct OSSIA_EXPORT domain_base
     return *this;
   }
 
-  friend bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs)
+  friend bool operator==(const domain_base<T>& lhs, const domain_base<T>& rhs) noexcept
   {
     return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
   }
-  friend bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs)
+  friend bool operator!=(const domain_base<T>& lhs, const domain_base<T>& rhs) noexcept
   {
     return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
   }
 
-  domain_base(value_type v1, value_type v2)
-      : min{v1}
-      , max{v2}
+  domain_base(value_type v1, value_type v2) noexcept
+      : min{std::move(v1)}
+      , max{std::move(v2)}
   {
   }
   domain_base(value_type v1, value_type v2, const ossia::flat_set<value_type>& vals)
-      : min{v1}
-      , max{v2}
+      : min{std::move(v1)}
+      , max{std::move(v2)}
       , values{vals}
   {
   }
-  domain_base(value_type v1, value_type v2, ossia::flat_set<value_type>&& vals)
-      : min{v1}
-      , max{v2}
+  domain_base(value_type v1, value_type v2, ossia::flat_set<value_type>&& vals) noexcept
+      : min{std::move(v1)}
+      , max{std::move(v2)}
       , values{std::move(vals)}
   {
   }
@@ -313,14 +314,14 @@ struct OSSIA_EXPORT domain_base<ossia::value>
   std::vector<value_type> values;
 
   domain_base() noexcept { }
-  domain_base(const domain_base<value_type>& other) noexcept
-      : min{std::move(other.min)}
-      , max{std::move(other.max)}
-      , values{std::move(other.values)}
+  domain_base(const domain_base& other) noexcept
+      : min{other.min}
+      , max{other.max}
+      , values{other.values}
   {
   }
 
-  domain_base(domain_base<value_type>&& other) noexcept
+  domain_base(domain_base&& other) noexcept
       : min{std::move(other.min)}
       , max{std::move(other.max)}
       , values{std::move(other.values)}

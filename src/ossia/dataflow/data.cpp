@@ -12,6 +12,15 @@ namespace ossia
 {
 namespace
 {
+
+static inline ossia::complex_type
+get_complex_type(const ossia::net::parameter_base& other) noexcept
+{
+  if(const auto u = other.get_unit())
+    return u;
+  return other.get_value_type();
+}
+
 // TODO we should take a visitor that takes (value, source_domain, sink_domain)
 // for each argument and does the right thing
 struct process_float_control_visitor
@@ -291,11 +300,18 @@ static void filter_value(
     const ossia::destination_index& res_index, const ossia::complex_type& source_type,
     const ossia::complex_type& res_type)
 {
-  if(source_type && res_type && source_type != res_type)
-    source = ossia::convert(source, source_type, res_type);
+  // 1. Convert from source unit to destination unit
+  auto src_unit = source_type.target<ossia::unit_t>();
+  auto tgt_unit = source_type.target<ossia::unit_t>();
+  if(src_unit && tgt_unit && *src_unit != *tgt_unit)
+  {
+    source = ossia::convert(source, *src_unit, *tgt_unit);
+  }
 
   if(source.valid() && !res_index.empty())
+  {
     source = get_value_at_index(source, res_index);
+  }
 }
 
 void value_port::add_local_value(const ossia::typed_value& other)
@@ -317,15 +333,16 @@ void value_port::add_local_value(const ossia::typed_value& other)
 void value_port::add_global_values(
     const net::parameter_base& other, const value_vector<ossia::value>& vec)
 {
-  const ossia::complex_type source_type = other.get_unit();
+  const ossia::complex_type source_type = get_complex_type(other);
 
   if(index.empty() && (source_type == type || !source_type))
   {
-    if(other.get_domain() && this->domain)
+    const auto& other_domain = other.get_domain();
+    if(other_domain && this->domain)
     {
       for(ossia::value v : vec)
       {
-        map_value(v, index, other.get_domain(), this->domain);
+        map_value(v, index, other_domain, this->domain);
         write_value(std::move(v), 0); // TODO put correct timestamps here
       }
     }
@@ -339,12 +356,13 @@ void value_port::add_global_values(
   }
   else
   {
-    if(other.get_domain() && this->domain)
+    const auto& other_domain = other.get_domain();
+    if(other_domain && this->domain)
     {
       for(ossia::value v : vec)
       {
         filter_value(v, {}, index, source_type, type);
-        map_value(v, index, other.get_domain(), this->domain);
+        map_value(v, index, other_domain, this->domain);
         write_value(std::move(v), 0);
       }
     }
@@ -357,13 +375,6 @@ void value_port::add_global_values(
       }
     }
   }
-}
-
-ossia::complex_type get_complex_type(const ossia::net::parameter_base& other)
-{
-  if(other.get_unit())
-    return other.get_unit();
-  return other.get_value_type();
 }
 
 void value_port::add_global_value(
