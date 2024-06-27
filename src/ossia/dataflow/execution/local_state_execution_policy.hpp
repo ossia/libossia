@@ -5,9 +5,7 @@
 #include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/hash_map.hpp>
 
-#if defined(OSSIA_SMALL_VECTOR)
 #include <libremidi/message.hpp>
-#endif
 
 namespace ossia
 {

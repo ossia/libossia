@@ -57,6 +57,7 @@ option(OSSIA_PROTOCOL_OSC "Enable OSC protocol" ON)
 option(OSSIA_PROTOCOL_MINUIT "Enable Minuit protocol" ON)
 option(OSSIA_PROTOCOL_OSCQUERY "Enable OSCQuery protocol" ON)
 option(OSSIA_PROTOCOL_MQTT5 "Enable MQTT 5 protocol" ON)
+option(OSSIA_PROTOCOL_COAP "Enable CoAP protocol" ON)
 option(OSSIA_PROTOCOL_HTTP "Enable HTTP protocol" ON) # Requires Qt
 option(OSSIA_PROTOCOL_WEBSOCKETS "Enable WebSockets protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
@@ -70,7 +71,7 @@ option(OSSIA_PROTOCOL_LIBMAPPER "Enable libmapper protocol" OFF) #use external l
 if("${CMAKE_CXX_COMPILER_ID}" MATCHES ".*Clang")
   set(OSSIA_COMPILER_IS_CLANG 1)
   set(OSSIA_COMPILER_IS_NOT_CLANG 0)
-elseif("${CMAKE_CXX_COMPILER_ID}" MATCHES "Emscripten")
+elseif(EMSCRIPTEN)
   set(OSSIA_COMPILER_IS_CLANG 1)
   set(OSSIA_COMPILER_IS_NOT_CLANG 0)
 else()
@@ -89,6 +90,7 @@ set(OSSIA_AVAILABLE_PROTOCOLS
   ARTNET
   LIBMAPPER
   MQTT5
+  COAP
 )
 
 set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};${PROJECT_SOURCE_DIR}/CMake;${PROJECT_SOURCE_DIR}/cmake/cmake-modules;")
