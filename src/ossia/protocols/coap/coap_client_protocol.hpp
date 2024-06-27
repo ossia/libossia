@@ -39,6 +39,7 @@ public:
   void stop() override;
 
 private:
+  void request_namespace(ossia::net::node_base& root, std::string_view req);
   void parse_namespace(ossia::net::node_base& dev, std::string_view data);
 
   ossia::net::network_context_ptr m_context;

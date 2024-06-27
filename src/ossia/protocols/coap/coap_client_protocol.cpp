@@ -1,6 +1,8 @@
 #include "coap_client_protocol.hpp"
 
+
 #include <ossia/network/base/node.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/protocols/coap/link_format_parser.hpp>
@@ -424,20 +426,38 @@ bool coap_client_protocol::observe(ossia::net::parameter_base& param, bool obs)
 }
 
 void coap_client_protocol::parse_namespace(
-    ossia::net::node_base& dev, std::string_view data)
+    ossia::net::node_base& parent, std::string_view data)
 {
   if(auto res = ossia::coap::parse_link_format(data))
   {
     for(const auto& [name, opts] : res->resources)
     {
-      ossia::create_parameter(dev, name, "string");
+      // If answer is in link format, make a new request
+      if(auto it = opts.find("ct"); it != opts.end())
+      {
+        if(auto val = get_if<int64_t>(&it->second); val && *val == 40)
+        {
+          // Note : CoAP always gives absolute paths, e.g. given:
+          // GET coap://coap.me/location1
+          // =>
+          // </location1/location2>;...
+
+          ossia::net::create_node(parent, name);
+          request_namespace(parent, m_host + name);
+          continue;
+        }
+      }
+
+      ossia::create_parameter(parent, name, "string");
     }
   }
 }
-bool coap_client_protocol::update(ossia::net::node_base& node_base)
+
+void coap_client_protocol::request_namespace(
+    ossia::net::node_base& node_base, std::string_view r)
 {
   auto req = m_client->get(
-      m_host + "/.well-known/core",
+      r,
       [this,
        &node_base](const coap_pdu_t* received, coap_mid_t mid) -> coap_reply_action {
     size_t len;
@@ -452,6 +472,11 @@ bool coap_client_protocol::update(ossia::net::node_base& node_base)
 
     return coap_reply_action::DeleteSession;
   });
+}
+
+bool coap_client_protocol::update(ossia::net::node_base& node_base)
+{
+  request_namespace(node_base, m_host + "/.well-known/core");
   return true;
 }
 
