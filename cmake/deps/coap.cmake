@@ -28,6 +28,8 @@ if(NOT TARGET libcoap::coap-3)
     set(_oldmode ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS OFF)
 
+    set(ENABLE_WS ON)
+    set(ENABLE_WS ON CACHE INTERNAL "")
     set(ENABLE_DTLS OFF)
     set(ENABLE_DTLS OFF CACHE INTERNAL "")
     set(ENABLE_EXAMPLES OFF)

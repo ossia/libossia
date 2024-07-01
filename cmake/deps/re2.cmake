@@ -1,15 +1,19 @@
 if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_library(RE2_LIBRARY NAMES re2)
-  find_path(RE2_INCLUDE_DIR re2/re2.h)
+  find_package(re2 QUIET CONFIG)
+  if(NOT TARGET re2::re2)
+      message(FATAL_ERROR yo)
+    find_library(RE2_LIBRARY NAMES re2)
+    find_path(RE2_INCLUDE_DIR re2/re2.h)
 
-  if(NOT RE2_LIBRARY OR NOT RE2_INCLUDE_DIR)
-    message(FATAL_ERROR "re2 is required")
+    if(NOT RE2_LIBRARY OR NOT RE2_INCLUDE_DIR)
+      message(FATAL_ERROR "re2 is required")
+    endif()
+    add_library(re2 INTERFACE IMPORTED GLOBAL)
+    add_library(re2::re2 ALIAS re2)
+
+    target_include_directories(re2 SYSTEM INTERFACE "${RE2_INCLUDE_DIR}")
+    target_link_libraries(re2 INTERFACE "${RE2_LIBRARY}")
   endif()
-  add_library(re2 INTERFACE IMPORTED GLOBAL)
-  add_library(re2::re2 ALIAS re2)
-
-  target_include_directories(re2 SYSTEM INTERFACE "${RE2_INCLUDE_DIR}")
-  target_link_libraries(re2 INTERFACE "${RE2_LIBRARY}")
 else()
   add_library(re2 STATIC
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitmap256.cc
