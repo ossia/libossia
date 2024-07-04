@@ -1,7 +1,6 @@
 if(OSSIA_USE_SYSTEM_LIBRARIES)
   find_package(re2 QUIET CONFIG)
   if(NOT TARGET re2::re2)
-      message(FATAL_ERROR yo)
     find_library(RE2_LIBRARY NAMES re2)
     find_path(RE2_INCLUDE_DIR re2/re2.h)
 
