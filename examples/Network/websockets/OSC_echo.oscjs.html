@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<title>WebSocket Test</title>
+<script src="https://cdn.jsdelivr.net/npm/osc@2.4.4/dist/osc-browser.min.js"></script>
+
+
+<script language="javascript" type="text/javascript">
+  function init() {
+    var oscPort = new osc.WebSocketPort({
+      url: "ws://localhost:1234",
+      metadata: true
+    });
+
+    oscPort.on("ready", function () {
+      writeToScreen("sent message /carrier/frequency f: 440");
+      oscPort.send({
+        address: "/carrier/frequency",
+        args: [
+          {
+            type: "f",
+            value: 440
+          }
+        ]
+      });
+    });
+
+    oscPort.on("close", (evt) => {
+      writeToScreen("DISCONNECTED");
+    });
+
+    oscPort.on("message", (oscMsg) => {
+      writeToScreen('<span style="color: blue;">RESPONSE: ' + JSON.stringify(oscMsg) + "</span>");
+      websocket.close();
+    });
+    
+    oscPort.open();
+  }
+
+  function writeToScreen(message) {
+    var pre = document.createElement("p");
+    pre.style.wordWrap = "break-word";
+    pre.innerHTML = message;
+    output.appendChild(pre);
+  }
+
+  window.addEventListener("load", init, false);
+</script>
+
+<h2>WebSocket client test</h2>
+
+<div id="output"></div>
