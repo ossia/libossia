@@ -101,6 +101,7 @@ target_compile_features(${PROJECT_NAME} PRIVATE cxx_std_20)
 
 use_gold(${PROJECT_NAME})
 add_linker_warnings_external(${PROJECT_NAME})
+ossia_set_visibility(${PROJECT_NAME})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE ossia
   $<LINK_ONLY:$<$<BOOL:${WIN32}>:${MAXSDK_API_LIBRARY}>>

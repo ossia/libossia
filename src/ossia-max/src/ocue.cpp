@@ -650,7 +650,7 @@ void ocue::explore(int argc, t_atom* argv)
 
 void ocue::select(int argc, t_atom* argv)
 {
-  invoke_mem_fun(argc, argv, [this](std::string_view name) {
+  invoke_mem_fun(argc, argv, [](std::string_view name) {
 
   });
 }
@@ -659,7 +659,7 @@ void ocue::select_model(int argc, t_atom* argv)
 {
   display_model(argc, argv);
   // Adds it / removes it from / to the selection
-  invoke_mem_fun(argc, argv, [this](std::string_view name) {
+  invoke_mem_fun(argc, argv, [](std::string_view name) {
 
   });
 }
