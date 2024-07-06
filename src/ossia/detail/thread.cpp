@@ -37,6 +37,12 @@ int get_pid()
 #else
 
 #include <pthread.h>
+
+// BSD
+#if __has_include(<pthread_np.h>)
+#include <pthread_np.h>
+#endif
+
 #include <unistd.h>
 namespace ossia
 {
