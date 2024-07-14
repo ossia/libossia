@@ -154,6 +154,20 @@ public:
 
   void set_task_executor(task_function f) { m_func = std::move(f); }
 
+  void enqueue_task(task& task)
+  {
+    if(task.m_node->not_threadable())
+    {
+      [[unlikely]];
+      m_not_threadsafe_tasks.enqueue(&task);
+    }
+    else
+    {
+      [[likely]];
+      m_tasks.enqueue(&task);
+    }
+  }
+
   void run(taskflow& tf)
   {
     m_tf = &tf;
@@ -199,7 +213,7 @@ public:
           assert(task.m_dependencies == 0);
 #endif
           std::atomic_thread_fence(std::memory_order_release);
-          m_tasks.enqueue(&task);
+          enqueue_task(task);
         }
 #if defined(DISABLE_DONE_TASKS)
         else
@@ -221,6 +235,11 @@ public:
     while(m_doneTasks.load(std::memory_order_relaxed) != m_toDoTasks)
     {
       task* t{};
+      if(m_not_threadsafe_tasks.wait_dequeue_timed(t, 1))
+      {
+        execute(*t);
+      }
+
       if(m_tasks.wait_dequeue_timed(t, 1))
       {
         execute(*t);
@@ -266,7 +285,7 @@ private:
           }
 #endif
           std::atomic_thread_fence(std::memory_order_release);
-          m_tasks.enqueue(&nextTask);
+          enqueue_task(nextTask);
         }
 #if defined(DISABLE_DONE_TASKS)
         else
@@ -336,6 +355,7 @@ private:
   std::size_t m_toDoTasks = 0;
 
   moodycamel::BlockingConcurrentQueue<task*> m_tasks;
+  moodycamel::BlockingConcurrentQueue<task*> m_not_threadsafe_tasks;
 
 #if defined(CHECK_EXEC_COUNTS)
   std::array<std::atomic_int, 5000> m_checkVec;

@@ -154,6 +154,16 @@ public:
   void set_mute(bool b) noexcept { m_muted = b; }
   [[nodiscard]] bool muted() const noexcept { return m_muted; }
 
+  /**
+   * Indicates that the node implementation must always be scheduled on the same thread.
+   * Main use case: QJSEngine which is not thread-safe.
+   */
+  [[nodiscard]]
+  bool not_threadable() const noexcept
+  {
+    return m_not_threadable;
+  }
+
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
 
@@ -162,6 +172,7 @@ protected:
   outlets m_outlets;
 
   bool m_executed{};
+  bool m_not_threadable{};
 
 private:
   bool m_start_discontinuous{};
