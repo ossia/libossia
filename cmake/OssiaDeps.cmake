@@ -35,7 +35,7 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} dno dr_libs exprtk libsamplerate PerlinNoise rubberband)
   endif()
 
-  if(OSSIA_ENABLE_FFT)
+  if(OSSIA_ENABLE_FFT OR OSSIA_PROTOCOL_AUDIO OR OSSIA_DATAFLOW)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} kfr)
   endif()
 
