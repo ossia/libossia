@@ -10,8 +10,6 @@
 #include <boost/asio/use_future.hpp>
 #include <boost/beast.hpp>
 
-#include <QDebug>
-
 #include <async_mqtt5.hpp>
 
 #include <coroutine>

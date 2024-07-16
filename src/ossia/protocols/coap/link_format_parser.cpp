@@ -2,8 +2,6 @@
 
 #include <boost/spirit/home/x3.hpp>
 
-#include <QDebug>
-
 namespace ossia::coap
 {
 
