@@ -717,7 +717,7 @@ ts_int_deboornet_new(const tsBSpline *spline,
 	const size_t sof_real = sizeof(tsReal);
 	const size_t sof_impl = sizeof(tsDeBoorNetImpl);
 	const size_t sof_points_vec = fixed_num_points * dim * sof_real;
-	const size_t sof_net = sof_impl * sof_points_vec;
+	const size_t sof_net = sof_impl + sof_points_vec;
 
 	net->pImpl = (tsDeBoorNetImpl *) malloc(sof_net);
 	if (!net->pImpl) TS_RETURN_0(status, TS_MALLOC, "out of memory")
