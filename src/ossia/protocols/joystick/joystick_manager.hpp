@@ -3,6 +3,7 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/detail/timer.hpp>
 #include <ossia/network/context.hpp>
+#include <ossia/protocols/joystick/game_controller_protocol.hpp>
 #include <ossia/protocols/joystick/joystick_protocol.hpp>
 
 #if __has_include(<SDL2/SDL.h>)
@@ -12,8 +13,6 @@
 #endif
 
 #include <ossia/detail/fmt.hpp>
-
-#include <thread>
 
 namespace ossia::net
 {
@@ -26,10 +25,14 @@ struct sdl_joystick_context
     //  Prevent SDL from setting SIGINT handler on Posix Systems
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
-    if(int ret = SDL_Init(SDL_INIT_JOYSTICK); ret < 0)
+    if(int ret = SDL_Init(
+           SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_SENSOR
+           | SDL_INIT_GAMECONTROLLER);
+       ret < 0)
       throw std::runtime_error(fmt::format("SDL Init failure: {}", SDL_GetError()));
 
     SDL_JoystickEventState(SDL_ENABLE);
+    SDL_GameControllerEventState(SDL_ENABLE);
   }
 
   static sdl_joystick_context& instance()
@@ -67,7 +70,7 @@ public:
     return m_joystick_protocols.find(joystick_id) != m_joystick_protocols.end();
   }
 
-  void register_protocol(joystick_protocol& protocol)
+  void register_protocol(auto& protocol)
   {
     const SDL_JoystickID joystick_id = protocol.m_joystick_id;
 
@@ -80,7 +83,7 @@ public:
     }
   }
 
-  void unregister_protocol(joystick_protocol& protocol)
+  void unregister_protocol(auto& protocol)
   {
     const SDL_JoystickID joystick_id = protocol.m_joystick_id;
 
@@ -94,19 +97,22 @@ public:
     }
   }
 
-  joystick_protocol* get_protocol_by_id(const SDL_JoystickID id)
+  template <typename T>
+  T* get_protocol_by_id(const SDL_JoystickID id)
   {
-    joystick_protocol* ret = nullptr;
-
     std::lock_guard<std::mutex> _{m_joystick_protocols_mutex};
     auto it = m_joystick_protocols.find(id);
     if(it != m_joystick_protocols.end())
-      ret = it->second;
-
-    return ret;
+    {
+      proto& p = it->second;
+      if(auto res = ossia::get_if<T*>(&p); res && *res)
+        return *res;
+    }
+    return nullptr;
   }
 
-  ossia::hash_map<SDL_JoystickID, joystick_protocol*> m_joystick_protocols;
+  using proto = ossia::variant<joystick_protocol*, game_controller_protocol*>;
+  ossia::hash_map<SDL_JoystickID, proto> m_joystick_protocols;
   std::mutex m_joystick_protocols_mutex;
 };
 
@@ -214,15 +220,24 @@ struct joystick_event_processor
       tm.timer.stop();
   }
 
-  void
-  push(joystick_protocol* proto, ossia::net::parameter_base* param, ossia::value val)
+  void push(auto* proto, ossia::net::parameter_base* param, ossia::value val)
   {
-    proto->m_device->apply_incoming_message({*proto, 0}, *param, std::move(val));
+    if(proto && param)
+      proto->m_device->apply_incoming_message({*proto, 0}, *param, std::move(val));
   }
 
   void push_axis(const SDL_JoyAxisEvent& ev)
   {
-    if(auto p = m_manager.get_protocol_by_id(ev.which))
+    if(auto p = m_manager.get_protocol_by_id<joystick_protocol>(ev.which))
+    {
+      const float res = (ev.value + .5f) / (0x7FFF + .5f);
+      push(p, p->m_axis_parameters[ev.axis], res);
+    }
+  }
+
+  void push_axis(const SDL_ControllerAxisEvent& ev)
+  {
+    if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
     {
       const float res = (ev.value + .5f) / (0x7FFF + .5f);
       push(p, p->m_axis_parameters[ev.axis], res);
@@ -231,15 +246,52 @@ struct joystick_event_processor
 
   void push_button(const SDL_JoyButtonEvent& ev)
   {
-    if(auto p = m_manager.get_protocol_by_id(ev.which))
+    if(auto p = m_manager.get_protocol_by_id<joystick_protocol>(ev.which))
     {
       push(p, p->m_button_parameters[ev.button], bool(ev.state == SDL_PRESSED));
     }
   }
 
+  void push_button(const SDL_ControllerButtonEvent& ev)
+  {
+    if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
+    {
+      push(p, p->m_button_parameters[ev.button], bool(ev.state == SDL_PRESSED));
+    }
+  }
+
+  void push_sensor(const SDL_ControllerSensorEvent& ev)
+  {
+    if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
+    {
+      push(
+          p, p->m_sensor_parameters[ev.sensor],
+          ossia::vec3f{ev.data[0], ev.data[1], ev.data[2]});
+    }
+  }
+
+  void push_touchpad(const SDL_ControllerTouchpadEvent& ev)
+  {
+    if(auto p = m_manager.get_protocol_by_id<game_controller_protocol>(ev.which))
+    {
+      auto it = p->m_touchpads.find(ev.touchpad);
+      if(it == p->m_touchpads.end())
+        return;
+
+      auto& touchpad = it->second;
+      if(ev.finger >= 0 && ev.finger < touchpad.fingers.size())
+      {
+        auto& finger = touchpad.fingers[ev.finger];
+        push(p, finger.x, ev.x);
+        push(p, finger.y, ev.y);
+        push(p, finger.pressure, ev.pressure);
+      }
+    }
+  }
+
   void push_hat(const SDL_JoyHatEvent& ev)
   {
-    if(auto p = m_manager.get_protocol_by_id(ev.which))
+    if(auto p = m_manager.get_protocol_by_id<joystick_protocol>(ev.which))
     {
       const uint8_t v = ev.value;
       float x = 0.0f, y = 0.0f;
@@ -274,6 +326,24 @@ struct joystick_event_processor
       case SDL_JOYHATMOTION:
         push_hat(ev.jhat);
         break;
+
+      case SDL_CONTROLLERAXISMOTION:
+        push_axis(ev.caxis);
+        break;
+      case SDL_CONTROLLERBUTTONDOWN:
+      case SDL_CONTROLLERBUTTONUP:
+        push_button(ev.cbutton);
+        break;
+      case SDL_CONTROLLERTOUCHPADDOWN:
+      case SDL_CONTROLLERTOUCHPADMOTION:
+      case SDL_CONTROLLERTOUCHPADUP:
+        push_touchpad(ev.ctouchpad);
+        break;
+      case SDL_CONTROLLERSENSORUPDATE:
+        push_sensor(ev.csensor);
+        break;
+        // case SDL_CONTROLLERUPDATECOMPLETE_RESERVED_FOR_SDL3:
+        // case SDL_CONTROLLERSTEAMHANDLEUPDATED:
 
       default:
         break;

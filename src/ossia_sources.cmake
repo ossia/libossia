@@ -493,11 +493,13 @@ set(OSSIA_PHIDGETS_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_node.cpp")
 
 set(OSSIA_JOYSTICK_HEADERS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/game_controller_protocol.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_manager.hpp"
   )
 
 set(OSSIA_JOYSTICK_SRCS
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/game_controller_protocol.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/joystick/joystick_protocol.cpp")
 
 set(OSSIA_LIBMAPPER_HEADERS
