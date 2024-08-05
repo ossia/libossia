@@ -19,6 +19,7 @@ struct OSSIA_EXPORT joystick_info
 {
   static unsigned int get_joystick_count();
   static const char* get_joystick_name(const int index);
+  static bool get_joystick_is_gamepad(const int index);
   static int32_t get_joystick_id(const int index);
   static void write_joystick_uuid(const int index, uint8_t* dst);
 

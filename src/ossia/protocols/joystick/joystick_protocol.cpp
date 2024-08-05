@@ -130,6 +130,12 @@ const char* joystick_info::get_joystick_name(const int index)
   return SDL_JoystickNameForIndex(index);
 }
 
+bool joystick_info::get_joystick_is_gamepad(const int index)
+{
+  sdl_joystick_context::instance();
+  return SDL_IsGameController(index);
+}
+
 int32_t joystick_info::get_joystick_id(const int index)
 {
   sdl_joystick_context::instance();
