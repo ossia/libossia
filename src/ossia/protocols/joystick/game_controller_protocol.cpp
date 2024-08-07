@@ -124,7 +124,15 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
     }
   }
 
-  for(int i = SDL_SENSOR_UNKNOWN; i <= SDL_SENSOR_GYRO_R; i++)
+  const int max_sensor =
+#if SDL_VERSION_ATLEAST(2, 26, 0)
+      SDL_SENSOR_GYRO_R
+#else
+      SDL_SENSOR_GYRO
+#endif
+      ;
+
+  for(int i = SDL_SENSOR_UNKNOWN; i <= max_sensor; i++)
   {
     if(SDL_GameControllerHasSensor(m_joystick, static_cast<SDL_SensorType>(i))
        == SDL_TRUE)
