@@ -21,7 +21,7 @@ if(NOT TARGET libcoap::coap-3)
     FetchContent_Declare(
       libcoap
       GIT_REPOSITORY "https://github.com/obgm/libcoap"
-      GIT_TAG develop
+      GIT_TAG main
       GIT_PROGRESS true
     )
 
