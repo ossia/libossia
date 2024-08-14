@@ -109,6 +109,10 @@ math_expression::~math_expression()
   delete impl;
 }
 
+void math_expression::seed_random(uint64_t seed1, uint64_t seed2)
+{
+  impl->random.engine.seed(seed1, seed2);
+}
 void math_expression::add_variable(const std::string& var, double& value)
 {
   impl->syms.add_variable(var, value);

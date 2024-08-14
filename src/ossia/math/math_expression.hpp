@@ -14,6 +14,7 @@ public:
   math_expression();
   ~math_expression();
 
+  void seed_random(uint64_t seed1, uint64_t seed2);
   void add_variable(const std::string& var, double& value);
   void add_constant(const std::string& var, double& value);
   void add_vector(const std::string& var, std::vector<double>& value);
