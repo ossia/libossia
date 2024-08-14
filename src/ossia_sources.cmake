@@ -137,6 +137,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/path.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/complex_type.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter_t.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_node.hpp"

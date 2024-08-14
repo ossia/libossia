@@ -16,7 +16,7 @@ class triple_buffer
   std::atomic_flag stale;
 
 public:
-  triple_buffer(T init)
+  explicit triple_buffer(T init)
   {
     // Store the initial data in the "ready" buffer:
     data[1] = std::move(init);
@@ -53,6 +53,8 @@ public:
     res = std::move(*p);
     return true;
   }
+
+  auto& get_data() noexcept { return this->data; }
 };
 
 }

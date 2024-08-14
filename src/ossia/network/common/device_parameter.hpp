@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <ossia/network/base/node.hpp>
@@ -13,7 +12,6 @@ namespace ossia::net
 
 class OSSIA_EXPORT device_parameter : public ossia::net::parameter_base
 {
-
 public:
   device_parameter(
       ossia::net::node_base& node, const ossia::val_type type,
