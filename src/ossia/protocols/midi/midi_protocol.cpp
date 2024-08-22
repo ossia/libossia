@@ -746,7 +746,11 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
 
   std::vector<midi_info> vec;
 
-  libremidi::observer in{{}, libremidi::observer_configuration_for(api)};
+  libremidi::observer_configuration conf{};
+  conf.track_hardware = true;
+  conf.track_virtual = true;
+
+  libremidi::observer in{conf, libremidi::observer_configuration_for(api)};
 
   for(auto& port : in.get_input_ports())
     vec.emplace_back(port, false);
