@@ -10,7 +10,7 @@ class OSSIA_EXPORT midi_device final
     , public midi_node
 {
 public:
-  midi_device(std::unique_ptr<ossia::net::protocol_base> prot);
+  midi_device(std::string name, std::unique_ptr<ossia::net::protocol_base> prot);
   ~midi_device();
 
   //! Create a default MIDI tree with all the nodes available

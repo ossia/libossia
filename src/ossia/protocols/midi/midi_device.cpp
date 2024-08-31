@@ -8,10 +8,11 @@
 
 namespace ossia::net::midi
 {
-midi_device::midi_device(std::unique_ptr<protocol_base> prot)
+midi_device::midi_device(std::string name, std::unique_ptr<protocol_base> prot)
     : ossia::net::device_base{std::move(prot)}
     , midi_node{*this}
 {
+  m_name = name;
   m_capabilities.change_tree = true;
   m_protocol->set_device(*this);
   m_parameter = std::make_unique<midi_parameter>(

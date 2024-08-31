@@ -65,16 +65,15 @@ std::string
 midi_protocol::get_midi_port_name(ossia::net::device_base* dev, const midi_info& info)
 {
   std::string name{};
+  const bool input = info.type == midi_info::Type::Input;
   if(dev)
-    name = dev->get_name();
+    name = (input ? "i " : "o ") + dev->get_name();
   else
   {
     if(info.is_virtual)
-      name = info.type == midi_info::Type::Input ? "libossia MIDI virtual input"
-                                                 : "libossia MIDI virtual output";
+      name = input ? "i libossia virtual" : "o libossia virtual";
     else
-      name = info.type == midi_info::Type::Input ? "libossia MIDI input"
-                                                 : "libossia MIDI output";
+      name = input ? "i libossia" : "o libossia";
   }
   return name;
 }
