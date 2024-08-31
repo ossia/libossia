@@ -10,6 +10,11 @@
 #include <boost/container/map.hpp>
 #include <boost/container/small_vector.hpp>
 
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+#include <ossia/network/local/local.hpp>
+#include <ossia/protocols/oscquery/oscquery_server_asio.hpp>
+#endif
+
 #include <cassert>
 
 namespace ossia
@@ -112,7 +117,7 @@ void namespace_selection::set_device(ossia::net::device_base* dev)
 void cues::recall(ossia::net::node_base& root, namespace_selection& sel, int idx)
 {
   if(!has_cue(idx))
-      return;
+    return;
   m_current = idx;
   recall(root, sel);
 }
@@ -127,10 +132,54 @@ struct priority_sort
   }
 };
 
+struct protocol_safe_mode_enabler
+{
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+  std::vector<std::pair<ossia::oscquery_asio::oscquery_server_protocol*, bool>>
+      protocols{};
+#endif
+
+  explicit protocol_safe_mode_enabler(ossia::net::node_base& root)
+  {
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+    auto& proto = root.get_device().get_protocol();
+    if(auto oscq = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(&proto))
+    {
+      protocols.emplace_back(oscq, oscq->force_ws());
+      oscq->set_force_ws(true);
+    }
+    else if(auto mplex = dynamic_cast<ossia::net::multiplex_protocol*>(&proto))
+    {
+      for(auto& proto : mplex->get_protocols())
+      {
+        if(auto oscq
+           = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(proto.get()))
+        {
+          protocols.emplace_back(oscq, oscq->force_ws());
+          oscq->set_force_ws(true);
+        }
+      }
+    }
+#endif
+  }
+
+  ~protocol_safe_mode_enabler()
+  {
+#if defined(OSSIA_PROTOCOL_OSCQUERY)
+    for(auto [oscq, prev_val] : protocols)
+    {
+      oscq->set_force_ws(prev_val);
+    }
+#endif
+  }
+};
+
 void cues::recall(ossia::net::node_base& root, namespace_selection& sel)
 {
   if(!has_cue(m_current))
-      return;
+    return;
+
+  auto oscq_safe_mode = protocol_safe_mode_enabler{root};
 
   sel.m_selection.clear();
   boost::container::small_flat_multimap<
@@ -222,7 +271,6 @@ void namespace_selection::namespace_deselect(std::string_view pattern)
   }
 }
 
-
 void namespace_selection::namespace_switch(std::string_view name)
 {
   if(!dev)
@@ -231,17 +279,17 @@ void namespace_selection::namespace_switch(std::string_view name)
   auto nodes = ossia::net::find_nodes(dev->get_root_node(), name);
   for(auto n : nodes)
   {
-      if(!this->m_selection.contains(n))
-      {
-        // Select
-        this->m_selection.insert(n);
-        list_all_children_unsorted(n, this->m_selection);
-      }
-      else
-      {
-        // Deselect
-        remove_node_from_selection_recursively(m_selection, *n);
-      }
+    if(!this->m_selection.contains(n))
+    {
+      // Select
+      this->m_selection.insert(n);
+      list_all_children_unsorted(n, this->m_selection);
+    }
+    else
+    {
+      // Deselect
+      remove_node_from_selection_recursively(m_selection, *n);
+    }
   }
 }
 
@@ -310,8 +358,8 @@ void cues::create(std::string_view name)
 
 void cues::remove(int idx)
 {
-    if(!has_cue(idx))
-        return;
+  if(!has_cue(idx))
+    return;
 
   m_cues.erase(m_cues.begin() + idx);
 
@@ -356,10 +404,10 @@ void cues::remove(std::string_view name)
 
 void cues::rename(int idx, std::string_view newname)
 {
-    if(!has_cue(idx))
-        return;
+  if(!has_cue(idx))
+    return;
 
-    m_cues[idx].name.assign(newname.begin(), newname.end());
+  m_cues[idx].name.assign(newname.begin(), newname.end());
 }
 
 void cues::rename(std::string_view name, std::string_view newname)
@@ -377,19 +425,21 @@ void cues::rename(std::string_view name, std::string_view newname)
 
 void cues::rename(std::string_view newname)
 {
-    rename(m_current, newname);
+  rename(m_current, newname);
 }
 
-void cues::recall(ossia::net::node_base& root, namespace_selection& sel, std::string_view name)
+void cues::recall(
+    ossia::net::node_base& root, namespace_selection& sel, std::string_view name)
 {
   m_current = get_cue(name);
   recall(root, sel);
 }
 
-void cues::update(ossia::net::node_base& root, const namespace_selection& selection, int idx)
+void cues::update(
+    ossia::net::node_base& root, const namespace_selection& selection, int idx)
 {
   if(!has_cue(idx))
-      return;
+    return;
 
   auto& cue = this->m_cues[idx];
 
@@ -448,7 +498,9 @@ void cues::update(ossia::net::node_base& root, const namespace_selection& select
   update(root, selection, m_current);
 }
 
-void cues::update(ossia::net::node_base& root, const namespace_selection& selection, std::string_view name)
+void cues::update(
+    ossia::net::node_base& root, const namespace_selection& selection,
+    std::string_view name)
 {
   // Question:
   // If we add the pattern: /foo.* to a cue
@@ -476,7 +528,8 @@ void cues::move(std::string_view name, int to)
 
 void cues::move(int from, int to)
 {
-  if(from < 0 || to < 0 || from == to || from >= std::ssize(m_cues) || to >= std::ssize(m_cues))
+  if(from < 0 || to < 0 || from == to || from >= std::ssize(m_cues)
+     || to >= std::ssize(m_cues))
     return;
   change_item_position(m_cues, from, to);
 }

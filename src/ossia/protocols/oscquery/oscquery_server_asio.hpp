@@ -71,11 +71,14 @@ public:
 
   void set_device(net::device_base& dev) override;
   void stop() override;
-  ossia::net::device_base& get_device() const { return *m_device; }
+  ossia::net::device_base& get_device() const noexcept { return *m_device; }
 
-  int get_osc_port() const { return m_oscPort; }
+  int get_osc_port() const noexcept { return m_oscPort; }
 
-  int get_ws_port() const { return m_wsPort; }
+  int get_ws_port() const noexcept { return m_wsPort; }
+
+  bool force_ws() const noexcept { return m_forceWS.load(std::memory_order_relaxed); }
+  void set_force_ws(bool forceWS) noexcept;
 
   Nano::Signal<void(const std::string&)> onClientConnected;
   Nano::Signal<void(const std::string&)> onClientDisconnected;
@@ -142,7 +145,7 @@ private:
   uint16_t m_wsPort{};
 
   // Will only send changes through WS
-  bool m_forceWS{};
+  std::atomic_bool m_forceWS{};
 };
 }
 }

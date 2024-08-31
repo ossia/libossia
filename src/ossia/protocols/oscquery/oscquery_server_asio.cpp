@@ -463,6 +463,11 @@ void oscquery_server_protocol::stop()
   }
 }
 
+void oscquery_server_protocol::set_force_ws(bool forceWS) noexcept
+{
+  m_forceWS.store(forceWS, std::memory_order_relaxed);
+}
+
 oscquery_client* oscquery_server_protocol::find_client(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
