@@ -1,5 +1,5 @@
-set(BOOST_MINOR_MINIMAL 85)
-set(BOOST_MINOR_LATEST 85)
+set(BOOST_MINOR_MINIMAL 86)
+set(BOOST_MINOR_LATEST 86)
 
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} QUIET GLOBAL)
 
@@ -9,7 +9,7 @@ if (NOT Boost_FOUND AND NOT OSSIA_USE_SYSTEM_LIBRARIES)
 
   if(NOT EXISTS "${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}/")
     message(STATUS "Downloading boost to ${OSSIA_3RDPARTY_FOLDER}/${BOOST_VERSION}.tar.gz")
-    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk28/${BOOST_VERSION}.tar.gz)
+    set(BOOST_URL https://github.com/ossia/sdk/releases/download/sdk31/${BOOST_VERSION}.tar.gz)
     set(BOOST_ARCHIVE ${BOOST_VERSION}.tar.gz)
 
     file(DOWNLOAD "${BOOST_URL}" "${OSSIA_3RDPARTY_FOLDER}/${BOOST_ARCHIVE}")
