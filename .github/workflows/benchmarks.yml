@@ -51,7 +51,7 @@ jobs:
     # - name: 'Tune System Performance' 
     #   run: curl http://$(StabilizerServer):7373/acquire # On stabilise la machine
     - name: Download all workflow run artifacts
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4.1.7
     - name: 'Run Benchmarks'
       run: |
         sudo apt-get update -qq
