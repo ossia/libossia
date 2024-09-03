@@ -65,7 +65,7 @@ jobs:
     needs: [ build-macos, build-windows ]
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ossia-max
           path: ossia
@@ -91,7 +91,7 @@ jobs:
       - name: Remove Downloaded Package
         run:  rm -rf "~/Documents/Max 8/Packages/ossia"
           
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ossia-max
           path: "~/Documents/Max 8/Packages/ossia-new"
@@ -153,7 +153,7 @@ jobs:
             Remove-Item -Recurse $package
           }
 
-      - uses: actions/download-artifact@v2
+      - uses: actions/download-artifact@v4.1.7
         with:
           name: ossia-max
           path: "~/Documents/Max 8/Packages/ossia"
