@@ -7,6 +7,7 @@
 #include <boost/asio.hpp>
 #include <boost/asio/placeholders.hpp>
 
+#include <charconv>
 #include <utility>
 
 namespace ossia::net
