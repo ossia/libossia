@@ -24,6 +24,7 @@ $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
 $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
 $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
 $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
+$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
 )
 
 target_sources(ossia PRIVATE

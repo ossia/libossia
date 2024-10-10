@@ -6,11 +6,11 @@
 #else
 #include <dlfcn.h>
 #endif
+#include <iostream>
 #include <stdexcept>
 #include <string>
 #include <string_view>
 #include <vector>
-
 namespace ossia
 {
 class dylib_loader

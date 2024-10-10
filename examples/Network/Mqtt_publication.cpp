@@ -22,7 +22,8 @@ int main(int argc, char** argv)
 {
   auto ctx = std::make_shared<ossia::net::network_context>();
 
-  ossia::net::mqtt5_configuration conf{.host = "127.0.0.1", .port = 1883};
+  ossia::net::mqtt5_configuration conf{
+      ossia::net::tcp_configuration{{.host = "127.0.0.1", .port = 1883}}};
   auto proto = std::make_unique<ossia::net::mqtt5_protocol>(ctx, conf);
   ossia::net::generic_device device{std::move(proto), "P"};
 
