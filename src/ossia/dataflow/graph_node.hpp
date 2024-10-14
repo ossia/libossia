@@ -123,7 +123,7 @@ public:
   virtual void prepare(const execution_state& st) noexcept;
   [[nodiscard]] virtual bool consumes(const execution_state&) const noexcept;
   virtual void run(const token_request&, exec_state_facade) noexcept;
-  [[nodiscard]] virtual std::string label() const noexcept;
+  [[nodiscard]] virtual std::string label() const noexcept = 0;
 
   [[nodiscard]] bool has_port_inputs() const noexcept;
   [[nodiscard]] bool has_global_inputs() const noexcept;
