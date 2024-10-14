@@ -289,6 +289,13 @@ void graph_node::request(const token_request& req) noexcept
   requested_tokens.push_back(std::move(req));
 }
 
+void graph_node::process_time(
+    const ossia::token_request& req, execution_state& st) noexcept
+{
+  auto [s, d] = exec_state_facade{&st}.timings(req);
+  this->m_processed_frames += d;
+}
+
 void graph_node::all_notes_off() noexcept { }
 
 nonowning_graph_node::~nonowning_graph_node()

@@ -145,6 +145,7 @@ public:
   void set_executed(bool b) noexcept { m_executed = b; }
 
   void request(const ossia::token_request& req) noexcept;
+  void process_time(const ossia::token_request& req, execution_state& st) noexcept;
 
   void disable() noexcept { requested_tokens.clear(); }
 
@@ -164,12 +165,23 @@ public:
     return m_not_threadable;
   }
 
+  /**
+   * Number of frames (physical time) processed through this node since the start 
+   * of the current execution.
+   */
+  [[nodiscard]]
+  int64_t processed_frames() const noexcept
+  {
+    return m_processed_frames;
+  }
+
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
 
 protected:
   inlets m_inlets;
   outlets m_outlets;
+  int64_t m_processed_frames{};
 
   bool m_executed{};
   bool m_not_threadable{};

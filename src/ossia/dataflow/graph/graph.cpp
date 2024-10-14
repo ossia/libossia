@@ -9,6 +9,7 @@
 #include <ossia/dataflow/graph/node_executors.hpp>
 #include <ossia/dataflow/graph/tick_methods.hpp>
 #include <ossia/dataflow/graph/tick_setup.hpp>
+#include <ossia/dataflow/token_request_format.hpp>
 #include <ossia/network/value/format_value.hpp>
 
 #include <boost/pool/pool.hpp>
@@ -241,6 +242,168 @@ smallfun::function<void(unsigned long, double), 128> make_tick(
     return ossia::buffer_tick{st, g, root, transport};
 }
 
+void graph_util::check_inputs(const graph_node& n, ossia::execution_state& e)
+{
+  int i = 0;
+  struct
+  {
+    const graph_node& n;
+    int64_t bs;
+    int& i;
+    void operator()(const ossia::value_port& p) const noexcept
+    {
+      for(const ossia::timed_value& val : p.get_data())
+      {
+        if(val.timestamp < 0 || val.timestamp >= bs)
+        {
+          ossia::logger().error(
+              "{}: input {} (value)[{}]: {}", n.label(), i, val.timestamp, val.value);
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::audio_port& p) const noexcept
+    {
+      for(const auto& channel : p)
+      {
+        if(channel.size() != bs)
+          ossia::logger().error(
+              "{}: input {} (audio): {} != {}", n.label(), i, channel.size(), bs);
+        int k = 0;
+        for(auto v : channel)
+        {
+          if(std::isnan(v))
+            ossia::logger().error("{}: input {} (audio)[{}]: NaN", n.label(), i, k);
+          else if(std::isinf(v))
+            ossia::logger().error("{}: input {} (audio)[{}]: Inf", n.label(), i, k);
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::midi_port& p) const noexcept
+    {
+      for(const libremidi::message& val : p.messages)
+      {
+        if(val.timestamp < 0 || val.timestamp >= bs)
+        {
+          switch(val.bytes.size())
+          {
+            case 1:
+              ossia::logger().error(
+                  "{}: input {} (midi)[{}]: {}", n.label(), i, val.timestamp,
+                  val.bytes[0]);
+              break;
+            case 2:
+              ossia::logger().error(
+                  "{}: input {} (midi)[{}]: {} {}", n.label(), i, val.timestamp,
+                  val.bytes[0], val.bytes[1]);
+              break;
+            case 3:
+              ossia::logger().error(
+                  "{}: input {} (midi)[{}]: {} {} {}", n.label(), i, val.timestamp,
+                  val.bytes[0], val.bytes[1], val.bytes[2]);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::geometry_port& p) const noexcept
+    {
+      // logger.log(spdlog::level::debug, "input {} (geometry)");
+      i++;
+    }
+
+    void operator()() const noexcept { }
+  } vis{n, e.bufferSize, i};
+
+  for_each_inlet(n, [&](auto& in) { in.visit(vis); });
+}
+
+void graph_util::check_outputs(
+    const graph_node& n, ossia::execution_state& e, const ossia::token_request& req)
+{
+  int i = 0;
+  struct
+  {
+    const graph_node& n;
+    const ossia::token_request& req;
+    int64_t bs;
+    int& i;
+    void operator()(const ossia::value_port& p) const noexcept
+    {
+      for(const ossia::timed_value& val : p.get_data())
+      {
+        if(val.timestamp < 0 || val.timestamp >= bs)
+        {
+          ossia::logger().error(
+              "{}: output {} (value)[{}]: {} ; {}", n.label(), i, val.timestamp,
+              val.value, req);
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::audio_port& p) const noexcept
+    {
+      for(const auto& channel : p)
+      {
+        if(channel.size() != bs)
+          ossia::logger().error(
+              "{}: output {} (audio): {} != {} ; {}", n.label(), i, channel.size(), bs,
+              req);
+        int k = 0;
+        for(auto v : channel)
+        {
+          if(std::isnan(v))
+            ossia::logger().error("{}: output {} (audio)[{}]: NaN", n.label(), i, k);
+          else if(std::isinf(v))
+            ossia::logger().error("{}: output {} (audio)[{}]: Inf", n.label(), i, k);
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::midi_port& p) const noexcept
+    {
+      for(const libremidi::message& val : p.messages)
+      {
+        if(val.timestamp < 0 || val.timestamp >= bs)
+        {
+          switch(val.bytes.size())
+          {
+            case 1:
+              ossia::logger().error(
+                  "{}: output {} (midi)[{}]: {} ; {}", n.label(), i, val.timestamp,
+                  val.bytes[0], req);
+              break;
+            case 2:
+              ossia::logger().error(
+                  "{}: output {} (midi)[{}]: {} {} ; {}", n.label(), i, val.timestamp,
+                  val.bytes[0], val.bytes[1], req);
+              break;
+            case 3:
+              ossia::logger().error(
+                  "{}: output {} (midi)[{}]: {} {} {} ; {}", n.label(), i, val.timestamp,
+                  val.bytes[0], val.bytes[1], val.bytes[2], req);
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      i++;
+    }
+    void operator()(const ossia::geometry_port& p) const noexcept
+    {
+      // logger.log(spdlog::level::debug, "output {} (geometry)");
+      i++;
+    }
+    void operator()() const noexcept { }
+  } vis{n, req, e.bufferSize, i};
+
+  for_each_outlet(n, [&](auto& out) { out.visit(vis); });
+}
 void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
 {
   int i = 0;
@@ -248,10 +411,13 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
   {
     ossia::logger_type& logger;
     int& i;
+    int64_t frames;
     void operator()(const ossia::value_port& p) const noexcept
     {
       for(const ossia::timed_value& val : p.get_data())
-        logger.log(spdlog::level::debug, "input {} (value): {}", i, val.value);
+        logger.log(
+            spdlog::level::debug, "{}: input {} (value)[{}]: {}", frames, i,
+            val.timestamp, val.value);
       i++;
     }
     void operator()(const ossia::audio_port& p) const noexcept
@@ -266,17 +432,19 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
         switch(val.bytes.size())
         {
           case 1:
-            logger.log(spdlog::level::debug, "input {} (midi): {}", i, val.bytes[0]);
+            logger.log(
+                spdlog::level::debug, "{}: input {} (midi)[{}]: {}", frames, i,
+                val.timestamp, val.bytes[0]);
             break;
           case 2:
             logger.log(
-                spdlog::level::debug, "input {} (midi): {} {}", i, val.bytes[0],
-                val.bytes[1]);
+                spdlog::level::debug, "{}: input {} (midi)[{}]: {} {}", frames, i,
+                val.timestamp, val.bytes[0], val.bytes[1]);
             break;
           case 3:
             logger.log(
-                spdlog::level::debug, "input {} (midi): {} {} {}", i, val.bytes[0],
-                val.bytes[1], val.bytes[2]);
+                spdlog::level::debug, "{}: input {} (midi)[{}]: {} {} {}", frames, i,
+                val.timestamp, val.bytes[0], val.bytes[1], val.bytes[2]);
             break;
           default:
             break;
@@ -291,7 +459,7 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
     }
 
     void operator()() const noexcept { }
-  } vis{logger, i};
+  } vis{logger, i, n.processed_frames()};
 
   for_each_inlet(n, [&](auto& in) { in.visit(vis); });
 }
@@ -303,10 +471,13 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
   {
     ossia::logger_type& logger;
     int& i;
+    int64_t frames;
     void operator()(const ossia::value_port& p) const noexcept
     {
       for(const ossia::timed_value& val : p.get_data())
-        logger.log(spdlog::level::debug, "output {} (value): {}", i, val.value);
+        logger.log(
+            spdlog::level::debug, "{}: output {} (value)[{}]: {}", frames, i,
+            val.timestamp, val.value);
       i++;
     }
     void operator()(const ossia::audio_port& p) const noexcept
@@ -321,17 +492,19 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
         switch(val.bytes.size())
         {
           case 1:
-            logger.log(spdlog::level::debug, "output {} (midi): {}", i, val.bytes[0]);
+            logger.log(
+                spdlog::level::debug, "{}: output {} (midi)[{}]: {}", frames, i,
+                val.timestamp, val.bytes[0]);
             break;
           case 2:
             logger.log(
-                spdlog::level::debug, "output {} (midi): {} {}", i, val.bytes[0],
-                val.bytes[1]);
+                spdlog::level::debug, "{}: output {} (midi)[{}]: {} {}", frames, i,
+                val.timestamp, val.bytes[0], val.bytes[1]);
             break;
           case 3:
             logger.log(
-                spdlog::level::debug, "output {} (midi): {} {} {}", i, val.bytes[0],
-                val.bytes[1], val.bytes[2]);
+                spdlog::level::debug, "{}: output {} (midi)[{}]: {} {} {}", frames, i,
+                val.timestamp, val.bytes[0], val.bytes[1], val.bytes[2]);
             break;
           default:
             break;
@@ -345,7 +518,7 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
       i++;
     }
     void operator()() const noexcept { }
-  } vis{logger, i};
+  } vis{logger, i, n.processed_frames()};
 
   for_each_outlet(n, [&](auto& out) { out.visit(vis); });
 }

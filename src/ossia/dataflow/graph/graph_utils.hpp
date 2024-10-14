@@ -563,11 +563,22 @@ struct OSSIA_EXPORT graph_util
   static void log_inputs(const graph_node&, ossia::logger_type& logger);
   static void log_outputs(const graph_node&, ossia::logger_type& logger);
 
+  static void check_inputs(const graph_node&, execution_state& e);
+  static void
+  check_outputs(const graph_node&, execution_state& e, const ossia::token_request& req);
   static void run_scaled(graph_node& first_node, execution_state& e);
 
+#if !defined(NDEBUG)
+#define OSSIA_DEBUG_MISBEHAVING_NODES 1
+#endif
   static void exec_node(graph_node& first_node, execution_state& e)
   {
     init_node(first_node, e);
+
+#if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
+    check_inputs(first_node, e);
+#endif
+
     if(!first_node.requested_tokens.empty())
     {
       if(first_node.start_discontinuous())
@@ -585,6 +596,10 @@ struct OSSIA_EXPORT graph_util
     for(const auto& request : first_node.requested_tokens)
     {
       first_node.run(request, {&e});
+      first_node.process_time(request, e);
+#if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
+      check_outputs(first_node, e, request);
+#endif
     }
 
     first_node.set_executed(true);
@@ -595,21 +610,33 @@ struct OSSIA_EXPORT graph_util
   exec_node(graph_node& first_node, execution_state& e, ossia::logger_type& logger)
   {
     init_node(first_node, e);
-    if(first_node.start_discontinuous())
+
+#if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
+    check_inputs(first_node, e);
+#endif
+
+    if(!first_node.requested_tokens.empty())
     {
-      first_node.requested_tokens.front().start_discontinuous = true;
-      first_node.set_start_discontinuous(false);
-    }
-    if(first_node.end_discontinuous())
-    {
-      first_node.requested_tokens.front().end_discontinuous = true;
-      first_node.set_end_discontinuous(false);
+      if(first_node.start_discontinuous())
+      {
+        first_node.requested_tokens.front().start_discontinuous = true;
+        first_node.set_start_discontinuous(false);
+      }
+      if(first_node.end_discontinuous())
+      {
+        first_node.requested_tokens.front().end_discontinuous = true;
+        first_node.set_end_discontinuous(false);
+      }
     }
 
     log_inputs(first_node, logger);
     for(const auto& request : first_node.requested_tokens)
     {
       first_node.run(request, {&e});
+      first_node.process_time(request, e);
+#if defined(OSSIA_DEBUG_MISBEHAVING_NODES)
+      check_outputs(first_node, e, request);
+#endif
     }
     log_outputs(first_node, logger);
 
