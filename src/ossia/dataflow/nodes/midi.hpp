@@ -48,6 +48,8 @@ public:
 
   ~midi() override = default;
 
+  std::string label() const noexcept override { return "midi"; }
+
   void set_channel(int c) { m_channel = c; }
 
   void add_note(note_data nd)

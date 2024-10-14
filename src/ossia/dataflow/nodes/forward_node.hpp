@@ -16,6 +16,7 @@ public:
     // m_outlets.push_back(&midi_out);
   }
 
+  [[nodiscard]] std::string label() const noexcept override { return "forward_node"; }
   void run(const token_request& t, exec_state_facade) noexcept override
   {
     // OPTIMIZEME : we copy the ins & outs of the token more

@@ -43,6 +43,8 @@ public:
     av_packet_free(&packet);
   }
 
+  std::string label() const noexcept override { return "sound_libav"; }
+
   void set_start(std::size_t v) { start = v; }
 
   void set_upmix(std::size_t v) { upmix = v; }

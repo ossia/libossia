@@ -297,6 +297,8 @@ public:
     m_outlets.push_back(&audio_out);
   }
 
+  std::string label() const noexcept override { return "dummy_sound_node"; }
+
   void transport(time_value date) override { }
 
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override

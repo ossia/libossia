@@ -32,6 +32,8 @@ public:
     m_outlets.push_back(std::move(vp));
   }
 
+  std::string label() const noexcept override { return "gradient"; }
+
   void set_gradient(grad_type t) { m_data = std::move(t); }
 
   const ossia::unit_t& get_unit() const noexcept

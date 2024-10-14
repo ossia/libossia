@@ -20,6 +20,8 @@ public:
 
   ~sound_mmap() = default;
 
+  std::string label() const noexcept override { return "sound_mmap"; }
+
   void set_start(std::size_t v) { start = v; }
 
   void set_upmix(std::size_t v) { upmix = v; }
