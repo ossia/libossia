@@ -759,9 +759,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_sampler.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/nodes/sound_utils.hpp"
 
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/node.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/port.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/executor.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/safe_nodes/tick_policies.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph/breadth_first_search.hpp"
