@@ -6,6 +6,7 @@
 #include <ossia/dataflow/midi_port.hpp>
 #include <ossia/dataflow/typed_value.hpp>
 #include <ossia/dataflow/value_port.hpp>
+#include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/apply.hpp>
 #include <ossia/network/common/debug.hpp>
 #include <ossia/network/value/value.hpp>
@@ -49,9 +50,6 @@ const ossia::destination_t& qml_engine_functions::find_address(const QString& st
   // Split in devices
   auto dev = ossia::find_if(
       devices, [devname = str.mid(0, d).toStdString()](const auto& dev) {
-    qDebug().noquote().nospace()
-        << "device name? '" << dev->get_name() << "' want: " << devname
-        << (dev->get_name() == devname);
     return dev->get_name() == devname;
   });
 
