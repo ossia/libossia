@@ -31,8 +31,15 @@ struct http_parameter_data_base
     auto r = val.property("request");
     if(r.isString())
     {
-      request = r.toString();
+      request = r;
+    }
+    else if(r.isCallable())
+    {
+      request = r;
+    }
 
+    if(requestIsValid())
+    {
       auto a = val.property("answer");
       if(a.isCallable())
       {
@@ -41,7 +48,11 @@ struct http_parameter_data_base
     }
   }
 
-  QString request;
+  bool requestIsValid() const noexcept
+  {
+    return !request.isUndefined() && !request.isNull();
+  }
+  QJSValue request;
   QJSValue answer;
 };
 
@@ -67,7 +78,7 @@ struct http_parameter_data
   {
   }
 
-  bool valid() const noexcept { return !request.isEmpty() || type; }
+  bool valid() const noexcept { return requestIsValid() || type; }
 };
 
 using http_parameter = wrapped_parameter<http_parameter_data>;
@@ -79,7 +90,7 @@ class OSSIA_EXPORT http_protocol final
   W_OBJECT(http_protocol)
 
 public:
-  http_protocol(QByteArray code);
+  explicit http_protocol(QByteArray code);
 
   http_protocol(const http_protocol&) = delete;
   http_protocol(http_protocol&&) = delete;
@@ -106,7 +117,8 @@ public:
   void sig_push(const http_parameter* arg_1, const ossia::value& v)
       E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v)
 
-          private : void slot_push(const http_parameter*, const ossia::value& v);
+private:
+  void slot_push(const http_parameter*, const ossia::value& v);
   W_SLOT(slot_push);
 
 private:

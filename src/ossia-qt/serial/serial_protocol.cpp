@@ -419,6 +419,7 @@ void serial_protocol::do_write(
     return;
   }
 
+  // FIXME harmonize with qt::value_to_js_string_unquoted in HTTP
   switch(ad.get_value_type())
   {
     case ossia::val_type::FLOAT:

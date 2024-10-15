@@ -24,7 +24,13 @@ http_protocol::http_protocol(QByteArray code)
     , m_access{new QNetworkAccessManager}
     , m_code{code}
 {
-  auto obj = new qml_engine_functions{m_engine};
+  auto obj = new ossia::qt::qml_device_engine_functions{
+      {}, [](ossia::net::parameter_base& param, const ossia::value_port& v) {
+    if(v.get_data().empty())
+      return;
+    auto& last = v.get_data().back().value;
+    param.push_value(last);
+  }, m_engine};
   m_engine->rootContext()->setContextProperty("Device", obj);
 
   QObject::connect(
@@ -102,7 +108,7 @@ bool http_protocol::push(
   // TODO put the http_parameters in a hash map instead?
   if(auto addr = dynamic_cast<const http_parameter*>(&parameter_base))
   {
-    if(!addr->data().request.isEmpty())
+    if(addr->data().requestIsValid())
     {
       sig_push(addr, v);
       return true;
@@ -125,18 +131,55 @@ void http_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
   m_device->get_capabilities();
-  m_engine->findChild<qml_engine_functions*>()->m_dev = &dev;
+  m_engine->findChild<ossia::qt::qml_device_engine_functions*>()->setDevice(&dev);
   m_component->setData(m_code, QUrl{});
 }
 
 void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& v)
 {
   auto& addr = *addr_p;
-  auto dat = addr.data().request;
-  auto rep = m_access->get(
-      QNetworkRequest(dat.replace("$val", qt::value_to_js_string_unquoted(v))));
+  auto req = addr.data().request;
+  QString str;
+  if(req.isString())
+  {
+    str = req.toString();
+  }
+  else if(req.isCallable())
+  {
+    auto& engine = *m_engine;
+    auto r1 = req.call({qt::value_to_js_value(v, engine)});
+    if(!r1.isError())
+    {
+      auto var = r1.toVariant();
+      if(var.typeId() == QMetaType::QByteArray)
+      {
+        auto ba = QString{var.toByteArray()};
+        auto rep = m_access->get(QNetworkRequest(ba));
+        m_replies[rep] = &addr;
+      }
+      else
+      {
+        auto ba = var.toString();
+        auto rep = m_access->get(QNetworkRequest(ba));
+        m_replies[rep] = &addr;
+      }
+      return;
+    }
 
-  m_replies[rep] = &addr;
+    auto res = req.call();
+    if(res.isError())
+      return;
+
+    str = res.toString();
+  }
+
+  if(req.isString())
+  {
+    auto rep = m_access->get(QNetworkRequest(
+        req.toString().replace("$val", qt::value_to_js_string_unquoted(v))));
+
+    m_replies[rep] = &addr;
+  }
 }
 
 void http_protocol::apply_reply(QJSValue arr)
