@@ -7,6 +7,7 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
       compile-time-regular-expressions
       Flicks
       fmt
+      magic_enum
       mdspan
       nano-signal-slot
       rapidfuzz-cpp
@@ -88,6 +89,7 @@ include(deps/concurrentqueue)
 include(deps/ctre)
 include(deps/flicks)
 include(deps/fmt)
+include(deps/magic_enum)
 include(deps/mdspan)
 include(deps/nano-signal-slot)
 include(deps/rapidfuzz)

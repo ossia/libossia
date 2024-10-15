@@ -115,3 +115,6 @@
 [submodule "3rdparty/async-mqtt5"]
 	path = 3rdparty/async-mqtt5
 	url = https://github.com/mireo/async-mqtt5
+[submodule "3rdparty/magic_enum"]
+	path = 3rdparty/magic_enum
+	url = https://github.com/Neargye/magic_enum
