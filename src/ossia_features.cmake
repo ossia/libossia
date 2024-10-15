@@ -1,3 +1,5 @@
+target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:magic_enum::magic_enum>)
+
 if(TARGET Boost::boost)
   target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:Boost::boost>)
 elseif(TARGET boost)
