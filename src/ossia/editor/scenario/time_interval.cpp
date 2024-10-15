@@ -133,7 +133,7 @@ void time_interval::tick_impl(
 
     if(new_date.impl - 1 > old_date.impl)
     {
-      auto d = ossia::time_value(new_date.impl - 1);
+      auto d = ossia::time_value{new_date.impl - 1};
       const double num_quarters = d.impl / m_quarter_duration;
 
       auto [time, sig] = *ossia::last_before(m_timeSignature, d);
