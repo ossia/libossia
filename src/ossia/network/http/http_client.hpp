@@ -3,11 +3,11 @@
 
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/parse_relax.hpp>
 
 #include <boost/asio.hpp>
 #include <boost/asio/placeholders.hpp>
 
-#include <charconv>
 #include <utility>
 
 namespace ossia::net
@@ -168,9 +168,11 @@ private:
         if(header.starts_with("Content-Length: "))
         {
           std::string_view sz(header.begin() + strlen("Content-Length: "), header.end());
-
-          if(auto res = std::from_chars<int>(sz.begin(), sz.end(), m_contentLength);
-             res.ec != std::errc{})
+          if(auto num = ossia::parse_relax<int>(sz))
+          {
+            m_contentLength = *num;
+          }
+          else
           {
             ossia::logger().error("Invalid HTTP Content-length: {}", sz);
             return;
