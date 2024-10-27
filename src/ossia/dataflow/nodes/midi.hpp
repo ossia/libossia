@@ -186,6 +186,24 @@ private:
     const auto samplesratio = e.modelToSamples();
     const auto tick_start = t.physical_start(samplesratio);
 
+    if(t.end_discontinuous)
+    {
+      auto& mess = mp.messages;
+      for(auto note : m_playing_notes)
+      {
+        mess.push_back(libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+        mess.back().timestamp = 0;
+      }
+      for(auto note : m_to_stop)
+      {
+        mess.push_back(libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+        mess.back().timestamp = 0;
+      }
+      m_playing_notes.clear();
+      m_to_stop.clear();
+      return;
+    }
+
     for(const note_data& note : m_to_stop)
     {
       mp.messages.push_back(
