@@ -30,6 +30,7 @@ public:
       , m_err{std::move(err)}
   {
     m_request.reserve(100 + server.size() + path.size());
+    m_response.prepare(Fun::reserve_expect);
     fmt::format_to(fmt::appender(m_request), "GET ");
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
@@ -229,6 +230,7 @@ private:
     str.reserve(sz + 16); // for RapidJSON simd parsing which reads past bounds
     str.assign(begin, end);
     m_fun(*this, str);
+    close();
   }
 
   tcp::resolver m_resolver;

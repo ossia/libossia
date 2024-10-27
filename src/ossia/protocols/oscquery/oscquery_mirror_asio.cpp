@@ -38,6 +38,7 @@ struct oscquery_mirror_asio_protocol::osc_receiver_impl : ossia::net::udp_receiv
 
 struct http_async_answer
 {
+  static constexpr auto reserve_expect = 65535 * 8;
   std::weak_ptr<oscquery_shared_async_state> state;
 
   template <typename T, typename S>
@@ -47,14 +48,14 @@ struct http_async_answer
     {
       if(ptr->active)
       {
-        if(ptr->self.on_text_ws_message({}, str))
-          req.close();
+        ptr->self.on_text_ws_message({}, str);
       }
     }
   }
 };
 struct http_async_value_answer
 {
+  static constexpr auto reserve_expect = 1500;
   std::weak_ptr<oscquery_shared_async_state> state;
   std::string source_address;
 
@@ -65,8 +66,7 @@ struct http_async_value_answer
     {
       if(ptr->active)
       {
-        if(ptr->self.on_value_http_message(source_address, str))
-          req.close();
+        ptr->self.on_value_http_message(source_address, str);
       }
     }
   }

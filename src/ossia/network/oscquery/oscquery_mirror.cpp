@@ -24,15 +24,13 @@ namespace ossia::oscquery
 {
 struct http_answer
 {
+  static constexpr auto reserve_expect = 65536 * 8;
   oscquery_mirror_protocol& self;
 
   template <typename T, typename S>
   void operator()(T& req, const S& str)
   {
-    if(self.on_WSMessage({}, str))
-    {
-      req.close();
-    }
+    self.on_WSMessage({}, str);
   }
 };
 
