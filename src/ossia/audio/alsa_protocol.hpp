@@ -124,7 +124,7 @@ public:
           client.play_chan(
               c, buf_playback.data() + c, effective_buffer_size, effective_outputs);
 
-        for(int i = effective_outputs; i < client.nplay(); i++)
+        for(std::size_t i = effective_outputs; i < client.nplay(); i++)
           client.clear_chan(i, effective_buffer_size);
 
         client.play_done(effective_buffer_size);

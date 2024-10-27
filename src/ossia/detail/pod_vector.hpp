@@ -129,7 +129,7 @@ struct aligned_pod_allocator
 #if defined(_WIN32)
       return static_cast<T*>(::_aligned_malloc(sizeof(T) * num, Align));
 #else
-      void* p;
+      void* p{};
 #if OSSIA_HAS_POSIX_MEMALIGN
       {
         posix_memalign(&p, Align, sizeof(T) * num);

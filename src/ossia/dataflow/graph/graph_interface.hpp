@@ -24,17 +24,12 @@ class OSSIA_EXPORT graph_interface
 public:
   graph_interface();
   virtual ~graph_interface();
-  [[deprecated]] virtual void add_node(ossia::node_ptr) = 0;
-
-  [[deprecated]] virtual void remove_node(const ossia::node_ptr&) = 0;
-
-  [[deprecated]] virtual void connect(ossia::edge_ptr) = 0;
-
-  [[deprecated]] virtual void disconnect(const ossia::edge_ptr&) = 0;
-
-  [[deprecated]] virtual void disconnect(ossia::graph_edge*) = 0;
-
-  [[deprecated]] virtual void mark_dirty() = 0;
+  /* [[deprecated]] */ virtual void add_node(ossia::node_ptr) = 0;
+  /* [[deprecated]] */ virtual void remove_node(const ossia::node_ptr&) = 0;
+  /* [[deprecated]] */ virtual void connect(ossia::edge_ptr) = 0;
+  /* [[deprecated]] */ virtual void disconnect(const ossia::edge_ptr&) = 0;
+  /* [[deprecated]] */ virtual void disconnect(ossia::graph_edge*) = 0;
+  /* [[deprecated]] */ virtual void mark_dirty() = 0;
 
   virtual void state(execution_state& e) = 0;
 

@@ -201,7 +201,7 @@ public:
         }
       }
 
-      for(std::size_t chan = 0; chan < channels; chan++)
+      for(int chan = 0; chan < channels; chan++)
       {
         ap.channel(chan).resize(e.bufferSize());
       }
@@ -213,7 +213,7 @@ public:
           *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
           samples_offset, ap);
 
-      for(std::size_t chan = 0; chan < channels; chan++)
+      for(int chan = 0; chan < channels; chan++)
       {
         // fade
         snd::do_fade(

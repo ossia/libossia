@@ -274,12 +274,13 @@ struct pipewire_context
 
     // Register a listener which will listen on when ports are added / removed
     spa_zero(registry_listener);
-    static constexpr const struct pw_port_events port_events = {
-        .version = PW_VERSION_PORT_EVENTS,
-        .info = [](void* object,
-                   const pw_port_info*
-                       info) { ((pipewire_context*)object)->register_port(info); },
-    };
+    static constexpr const struct pw_port_events port_events
+        = {.version = PW_VERSION_PORT_EVENTS,
+           .info =
+               [](void* object, const pw_port_info* info) {
+      ((pipewire_context*)object)->register_port(info);
+    },
+           .param = {}};
 
     static constexpr const struct pw_registry_events registry_events = {
         .version = PW_VERSION_REGISTRY_EVENTS,
@@ -339,15 +340,23 @@ struct pipewire_context
 
     static constexpr struct pw_core_events core_events = {
         .version = PW_VERSION_CORE_EVENTS,
+        .info = {},
         .done =
             [](void* object, uint32_t id, int seq) {
-              auto& self = *(pipewire_context*)object;
-              if(id == PW_ID_CORE && seq == self.pending)
-              {
-                self.done = 1;
-                libpipewire::instance().main_loop_quit(self.main_loop);
-              }
-            },
+      auto& self = *(pipewire_context*)object;
+      if(id == PW_ID_CORE && seq == self.pending)
+      {
+        self.done = 1;
+        libpipewire::instance().main_loop_quit(self.main_loop);
+      }
+    },
+        .ping = {},
+        .error = {},
+        .remove_id = {},
+        .bound_id = {},
+        .add_mem = {},
+        .remove_mem = {},
+        .bound_props = {},
     };
 
     spa_zero(core_listener);
@@ -532,10 +541,16 @@ public:
   {
     auto& pw = libpipewire::instance();
 
-    static constexpr const struct pw_filter_events filter_events = {
-        .version = PW_VERSION_FILTER_EVENTS,
-        .process = on_process,
-    };
+    static constexpr const struct pw_filter_events filter_events
+        = {.version = PW_VERSION_FILTER_EVENTS,
+           .destroy = {},
+           .state_changed = {},
+           .io_changed = {},
+           .param_changed = {},
+           .add_buffer = {},
+           .remove_buffer = {},
+           .process = on_process,
+           .drained = {}};
 
     this->loop = loop;
 
@@ -769,7 +784,9 @@ public:
 
   static void on_process(void* userdata, struct spa_io_position* position)
   {
-    static const thread_local auto _ = [] {
+    [[maybe_unused]]
+    static const thread_local auto _
+        = [] {
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
       return 0;

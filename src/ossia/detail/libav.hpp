@@ -136,7 +136,7 @@ struct libav_handle
       cleanup();
       return;
     }
-    if(stream_index < 0 || stream_index >= format->nb_streams)
+    if(stream_index < 0 || stream_index >= int(format->nb_streams))
     {
       cleanup();
       return;

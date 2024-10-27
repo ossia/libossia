@@ -62,7 +62,9 @@ public:
 private:
   static void SDLCallback(void* userData, Uint8* data, int bytes)
   {
-    static const thread_local auto _ = [] {
+    [[maybe_unused]]
+    static const thread_local auto _
+        = [] {
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
       return 0;

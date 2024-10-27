@@ -182,8 +182,8 @@ private:
 	const char*          _capt_ptr[MAXCHAN];
 	clear_function       _clear_func;
 	play_function        _play_func;
-	capt_function        _capt_func;
-	void*                _dummy[16];
+  capt_function _capt_func;
+  [[maybe_unused]] void* _dummy[16];
 };
 
 #endif

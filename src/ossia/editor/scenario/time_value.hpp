@@ -6,6 +6,8 @@
 #include <mach/time_value.h>
 #endif
 
+#include <ossia/math/safe_math.hpp>
+
 #include <cmath>
 
 #include <cassert>
@@ -102,7 +104,7 @@ struct OSSIA_EXPORT time_value
   // not constexpr because of isnan
   /* constexpr */ time_value operator+(double d) const noexcept
   {
-    assert(!std::isnan(d));
+    assert(!ossia::safe_isnan(d));
     assert(d < static_cast<double>(infinite_min));
     return *this + time_value{int64_t(d)};
   }
@@ -202,7 +204,7 @@ struct OSSIA_EXPORT time_value
   // not constexpr because of isnan
   /* constexpr */ time_value operator-(double d) const noexcept
   {
-    assert(!std::isnan(d));
+    assert(!ossia::safe_isnan(d));
     assert(d < static_cast<double>(infinite_min));
     return *this - time_value{int64_t(d)};
   }
