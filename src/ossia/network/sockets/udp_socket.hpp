@@ -96,8 +96,9 @@ class udp_send_socket
 public:
   udp_send_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
-      , m_endpoint{conf.broadcast ? boost::asio::ip::address_v4::broadcast() : boost::asio::ip::make_address(conf.host), conf.port}
+      , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}
+      , m_broadcast{conf.broadcast}
   {
   }
 
@@ -116,7 +117,7 @@ public:
 
     m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
 
-    if(m_endpoint.address() == boost::asio::ip::address_v4::broadcast())
+    if(m_broadcast)
       m_socket.set_option(boost::asio::socket_base::broadcast(true));
   }
 
@@ -142,6 +143,7 @@ public:
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
+  bool m_broadcast{};
 };
 
 }
