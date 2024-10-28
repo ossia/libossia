@@ -356,7 +356,9 @@ struct pipewire_context
         .bound_id = {},
         .add_mem = {},
         .remove_mem = {},
+#if defined(PW_CORE_EVENT_BOUND_PROPS)
         .bound_props = {},
+#endif
     };
 
     spa_zero(core_listener);
@@ -541,16 +543,20 @@ public:
   {
     auto& pw = libpipewire::instance();
 
-    static constexpr const struct pw_filter_events filter_events
-        = {.version = PW_VERSION_FILTER_EVENTS,
-           .destroy = {},
-           .state_changed = {},
-           .io_changed = {},
-           .param_changed = {},
-           .add_buffer = {},
-           .remove_buffer = {},
-           .process = on_process,
-           .drained = {}};
+    static constexpr const struct pw_filter_events filter_events = {
+        .version = PW_VERSION_FILTER_EVENTS,
+        .destroy = {},
+        .state_changed = {},
+        .io_changed = {},
+        .param_changed = {},
+        .add_buffer = {},
+        .remove_buffer = {},
+        .process = on_process,
+        .drained = {},
+#if PW_VERSION_CORE > 3
+        .command = {},
+#endif
+    };
 
     this->loop = loop;
 
