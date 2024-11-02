@@ -27,38 +27,24 @@ namespace ossia
 {
 class destination;
 
-// TODO still broken in clang-11...
-#if defined(__clang__)
-#define CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE static
-#else
-#define CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE
-#endif
 template <typename T>
-static const constexpr std::nullptr_t curve_segment_type_map = nullptr;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<int>
-    = ossia::curve_segment_type::INT;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<int64_t>
-    = ossia::curve_segment_type::INT64;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<float>
-    = ossia::curve_segment_type::FLOAT;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<double>
-    = ossia::curve_segment_type::DOUBLE;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<bool>
-    = ossia::curve_segment_type::BOOL;
-template <>
-CLANG_BUGGY_STATIC_VARIABLE_TEMPLATE const constexpr ossia::curve_segment_type
-    curve_segment_type_map<ossia::value>
-    = ossia::curve_segment_type::ANY;
+static constexpr auto curve_segment_type_map()
+{
+  if constexpr(std::is_same_v<T, int>)
+    return ossia::curve_segment_type::INT;
+  else if constexpr(std::is_same_v<T, int64_t>)
+    return ossia::curve_segment_type::INT64;
+  else if constexpr(std::is_same_v<T, float>)
+    return ossia::curve_segment_type::FLOAT;
+  else if constexpr(std::is_same_v<T, double>)
+    return ossia::curve_segment_type::DOUBLE;
+  else if constexpr(std::is_same_v<T, bool>)
+    return ossia::curve_segment_type::BOOL;
+  else if constexpr(std::is_same_v<T, ossia::value>)
+    return ossia::curve_segment_type::ANY;
+  else
+    return nullptr;
+}
 
 template <typename K, typename V>
 using curve_map = ossia::flat_map<K, V>;
@@ -253,7 +239,9 @@ inline Y curve<X, Y>::value_at(X abscissa) const
 template <typename X, typename Y>
 inline curve_type curve<X, Y>::get_type() const
 {
-  return std::make_pair(curve_segment_type_map<X>, curve_segment_type_map<Y>);
+  static constexpr auto type
+      = std::make_pair(curve_segment_type_map<X>(), curve_segment_type_map<Y>());
+  return type;
 }
 
 template <typename X, typename Y>
