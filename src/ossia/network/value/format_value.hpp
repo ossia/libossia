@@ -137,13 +137,25 @@ inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec4f vec) const
 inline fmt_ctx::iterator
 value_prettyprint_visitor::operator()(const std::vector<value>& t) const
 {
-  return fmt::format_to(ctx.out(), "list: {}", t);
+  fmt::format_to(ctx.out(), "list: [");
+  for(auto& v : t)
+  {
+    v.apply(*this);
+    fmt::format_to(ctx.out(), ", ");
+  }
+  return fmt::format_to(ctx.out(), "]");
 }
 
 inline fmt_ctx::iterator
 value_prettyprint_visitor::operator()(const value_map_type& t) const
 {
-  return fmt::format_to(ctx.out(), "map: {}", t);
+  fmt::format_to(ctx.out(), "map: {{");
+  for(auto& v : t)
+  {
+    fmt::format_to(ctx.out(), "\"{}\": ", v.first);
+    v.second.apply(*this);
+  }
+  return fmt::format_to(ctx.out(), "}}");
 }
 
 inline fmt_ctx::iterator value_prettyprint_visitor::operator()() const
