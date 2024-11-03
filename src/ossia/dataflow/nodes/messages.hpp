@@ -13,6 +13,7 @@ class messages final : public ossia::graph_node
 public:
   messages() { }
 
+  std::string label() const noexcept override { return "messages"; }
   void run(const ossia::token_request&, ossia::exec_state_facade e) noexcept override
   {
     for(auto& msg : data)

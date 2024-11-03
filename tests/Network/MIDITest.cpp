@@ -31,8 +31,7 @@ TEST_CASE("test_midi", "test_midi")
             = std::make_unique<midi_protocol>(ctx, port.display_name, conf, api_conf);
         proto->set_info(midi_info{midi_info::Type::Input, port, false});
 
-        midi_device dev(std::move(proto));
-        dev.set_name("test");
+        midi_device dev("test", std::move(proto));
         dev.create_full_tree();
       }
       for(auto port : obs.get_output_ports())
@@ -44,8 +43,7 @@ TEST_CASE("test_midi", "test_midi")
             = std::make_unique<midi_protocol>(ctx, port.display_name, conf, api_conf);
         proto->set_info(midi_info{midi_info::Type::Input, port, false});
 
-        midi_device dev(std::move(proto));
-        dev.set_name("test");
+        midi_device dev("test", std::move(proto));
         dev.create_full_tree();
       }
     }

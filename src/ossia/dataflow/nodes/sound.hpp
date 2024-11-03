@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include <ossia/audio/fade.hpp>
 #include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
@@ -91,12 +92,6 @@ inline void perform_start_offset(const std::size_t start, ossia::audio_port& ap)
     ap.get().insert(ap.get().begin(), start, ossia::audio_channel{});
   }
 }
-
-OSSIA_EXPORT
-void do_fade(
-    bool start_discontinuous, bool end_discontinuous, audio_channel& ap,
-    std::size_t start, std::size_t end);
-
 }
 
 template <typename T>

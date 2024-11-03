@@ -9,7 +9,6 @@
 
 #include <boost/config.hpp>
 
-#include <algorithm>
 #include <csignal>
 
 namespace ossia

@@ -15,6 +15,7 @@ public:
     m_outlets.push_back(&outlet);
   }
 
+  std::string label() const noexcept override { return "percentage"; }
   void run(const ossia::token_request& tk, ossia::exec_state_facade e) noexcept override
   {
     const auto [tick_start, d] = e.timings(tk);

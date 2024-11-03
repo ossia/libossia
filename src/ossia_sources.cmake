@@ -668,10 +668,12 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_tick.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/drwav_handle.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/drwav_write_handle.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fade.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/alsa_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/dummy_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/jack_protocol.hpp"
@@ -782,6 +784,8 @@ set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_protocol.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/fade.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/execution_policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/default_policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/direct_policy.cpp"
