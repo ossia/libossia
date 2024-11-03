@@ -156,6 +156,11 @@ std::ostream& operator<<(std::ostream& d, const ossia::time_value& t)
   d << t.impl;
   return d;
 }
+inline std::ostream&
+operator<<(std::ostream& d, const std::optional<ossia::time_value>& t)
+{
+  return t ? (d << t->impl) : (d << "nullopt");
+}
 inline
 std::ostream& operator<<(std::ostream& d, const ossia::token_request& t)
 {

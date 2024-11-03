@@ -240,6 +240,11 @@ struct token_request
 
       if(start_quant != end_quant)
       {
+        if(end_quant == end_quarter * musical_quant_dur)
+        {
+          // We want quantization on start, not on end
+          return std::nullopt;
+        }
         // Date to quantify is the next one :
         const double musical_tick_duration
             = musical_end_position - musical_start_position;
@@ -250,9 +255,9 @@ struct token_request
 
         quantification_date = prev_date + quantified_duration * ratio;
       }
-      else if(musical_start_position == 0. && musical_end_position > 0.)
+      else if(start_quant == start_quarter * musical_quant_dur)
       {
-        // Special first bar case
+        // We start on a signature change
         return prev_date;
       }
     }

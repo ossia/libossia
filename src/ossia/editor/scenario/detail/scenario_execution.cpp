@@ -160,7 +160,7 @@ void scenario::run_interval(
         {
           interval.tick_offset_speed_precomputed(max_tick, offset, tk);
         }
-        else if(max_tick == 0_tv)
+        else if(cst_max_dur == 0_tv)
         {
           interval.tick_offset_speed_precomputed(max_tick, offset, tk);
         }
