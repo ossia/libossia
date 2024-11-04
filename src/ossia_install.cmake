@@ -178,7 +178,7 @@ install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/ankerl"
         ${3RDPARTY_INSTALL_PATTERN}
 )
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/brigand/include/brigand"
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/magic_enum/include/magic_enum"
         DESTINATION include
         COMPONENT Devel
         MESSAGE_NEVER
