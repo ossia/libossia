@@ -10,32 +10,34 @@
 
 #include <fmt/ranges.h>
 FMT_BEGIN_NAMESPACE
+#if FMT_VERSION >= 100000
 namespace detail {
 template <typename T> class is_container_adaptor_like<boost::container::flat_set<T>>
     : public std::false_type {
 
 };
 }
+#endif
 FMT_END_NAMESPACE
 namespace ossia
 {
-using fmt_ctx = fmt::basic_format_context<fmt::appender, char>;
-
+template <typename FmtCtx>
 struct value_prettyprint_visitor
 {
-  fmt_ctx& ctx;
-  fmt_ctx::iterator operator()(impulse) const;
-  fmt_ctx::iterator operator()(int32_t i) const;
-  fmt_ctx::iterator operator()(float f) const;
-  fmt_ctx::iterator operator()(bool b) const;
-  fmt_ctx::iterator operator()(char c) const;
-  fmt_ctx::iterator operator()(std::string str) const;
-  fmt_ctx::iterator operator()(vec2f vec) const;
-  fmt_ctx::iterator operator()(vec3f vec) const;
-  fmt_ctx::iterator operator()(vec4f vec) const;
-  fmt_ctx::iterator operator()(const std::vector<ossia::value>& t) const;
-  fmt_ctx::iterator operator()(const value_map_type& t) const;
-  fmt_ctx::iterator operator()() const;
+  FmtCtx& ctx;
+  using iterator = typename FmtCtx::iterator;
+  iterator operator()(impulse) const;
+  iterator operator()(int32_t i) const;
+  iterator operator()(float f) const;
+  iterator operator()(bool b) const;
+  iterator operator()(char c) const;
+  iterator operator()(std::string str) const;
+  iterator operator()(vec2f vec) const;
+  iterator operator()(vec3f vec) const;
+  iterator operator()(vec4f vec) const;
+  iterator operator()(const std::vector<ossia::value>& t) const;
+  iterator operator()(const value_map_type& t) const;
+  iterator operator()() const;
 };
 }
 
@@ -76,7 +78,7 @@ struct formatter<ossia::value>
   template <typename FormatContext>
   auto format(const ossia::value& v, FormatContext& ctx) const
   {
-    return v.apply(ossia::value_prettyprint_visitor{ctx});
+    return v.apply(ossia::value_prettyprint_visitor<FormatContext>{ctx});
   }
 };
 
@@ -85,57 +87,75 @@ struct formatter<ossia::value>
 namespace ossia
 {
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(impulse) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(impulse) const
 {
   return fmt::format_to(ctx.out(), "impulse");
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(int32_t i) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(int32_t i) const
 {
   return fmt::format_to(ctx.out(), "int: {}", i);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(float f) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(float f) const
 {
   return fmt::format_to(ctx.out(), "float: {:.2f}", f);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(bool b) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(bool b) const
 {
   return fmt::format_to(ctx.out(), "bool: {}", b ? "true" : "false");
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(char c) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(char c) const
 {
   return fmt::format_to(ctx.out(), "char: '{}'", c);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(std::string str) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(std::string str) const
 {
   boost::algorithm::replace_all(str, "\"", "\\\"");
   return fmt::format_to(ctx.out(), "string: \"{}\"", str);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec2f vec) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(vec2f vec) const
 {
   return fmt::format_to(ctx.out(), "vec2f: [{:.2f}, {:.2f}]", vec[0], vec[1]);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec3f vec) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(vec3f vec) const
 {
   return fmt::format_to(
       ctx.out(), "vec3f: [{:.2f}, {:.2f}, {:.2f}]", vec[0], vec[1], vec[2]);
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()(vec4f vec) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(vec4f vec) const
 {
   return fmt::format_to(
       ctx.out(), "vec4f: [{:.2f}, {:.2f}, {:.2f}, {:.2f}]", vec[0], vec[1], vec[2],
       vec[3]);
 }
-
-inline fmt_ctx::iterator
-value_prettyprint_visitor::operator()(const std::vector<value>& t) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(const std::vector<value>& t) const
 {
   fmt::format_to(ctx.out(), "list: [");
   for(auto& v : t)
@@ -146,8 +166,9 @@ value_prettyprint_visitor::operator()(const std::vector<value>& t) const
   return fmt::format_to(ctx.out(), "]");
 }
 
-inline fmt_ctx::iterator
-value_prettyprint_visitor::operator()(const value_map_type& t) const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator
+value_prettyprint_visitor<FmtCtx>::operator()(const value_map_type& t) const
 {
   fmt::format_to(ctx.out(), "map: {{");
   for(auto& v : t)
@@ -158,7 +179,8 @@ value_prettyprint_visitor::operator()(const value_map_type& t) const
   return fmt::format_to(ctx.out(), "}}");
 }
 
-inline fmt_ctx::iterator value_prettyprint_visitor::operator()() const
+template <typename FmtCtx>
+inline typename FmtCtx::iterator value_prettyprint_visitor<FmtCtx>::operator()() const
 {
   return fmt::format_to(ctx.out(), "invalid");
 }

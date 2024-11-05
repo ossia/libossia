@@ -1,5 +1,5 @@
 if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(fmt 10 CONFIG GLOBAL)
+  find_package(fmt CONFIG GLOBAL)
 endif()
 
 if(NOT TARGET fmt::fmt)

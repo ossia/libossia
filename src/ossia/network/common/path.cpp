@@ -408,13 +408,12 @@ bool match(const path& p, const ossia::net::node_base& node, ossia::net::node_ba
 bool match(std::string_view address, const regex_path::path_element& e)
 {
 #if defined(OSSIA_HAS_RE2)
-  re2::RE2 rex{e.address};
+  re2::RE2 rex(re2::StringPiece(e.address.data(), e.address.size()));
   return re2::RE2::FullMatch(re2::StringPiece(address.data(), address.size()), rex);
 #else
   return false;
 #endif
 }
-
 }
 
 namespace ossia::regex_path

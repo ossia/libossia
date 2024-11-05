@@ -1,5 +1,12 @@
 if(OSSIA_USE_SYSTEM_LIBRARIES)
-  find_package(zita-alsa-pcmi CONFIG GLOBAL)
+  find_path(ZITA_ALSA_PCMI_INCLUDE_DIR zita-alsa-pcmi.h)
+  find_library(ZITA_ALSA_PCMI_LIBRARY zita-alsa-pcmi)
+
+  if(ZITA_ALSA_PCMI_INCLUDE_DIR AND ZITA_ALSA_PCMI_LIBRARY)
+    add_library(zita-alsa-pcmi INTERFACE)
+    target_include_directories(zita-alsa-pcmi INTERFACE ${ZITA_ALSA_PCMI_INCLUDE_DIR})
+    target_link_libraries(zita-alsa-pcmi INTERFACE ${ZITA_ALSA_PCMI_LIBRARY})
+  endif()
 endif()
 
 if(NOT TARGET zita-alsa-pcmi)
