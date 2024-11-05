@@ -68,12 +68,12 @@ struct domain_prettyprint_visitor
   std::string operator()(const vecf_domain<N>& dom)
   {
     return fmt::format(
-        "array: min: {} ; max: {} ; values : {}", dom.min, dom.max, dom.values);
+        "array: min: {} ; max: {} ; values: {}", dom.min, dom.max, dom.values);
   }
 
   std::string operator()(const domain_base<std::string>& dom)
   {
-    return fmt::format("stro,g: values : {}", dom.values);
+    return fmt::format("strong values: {}", dom.values);
   }
 
   std::string operator()(const domain_base<ossia::value>& dom)
@@ -86,7 +86,7 @@ struct domain_prettyprint_visitor
   std::string operator()(const vector_domain& dom)
   {
     return fmt::format(
-        "list: min: {} ; max: {} ; values : {}", dom.min, dom.max, dom.values);
+        "list: min: {} ; max: {} ; values: {}", dom.min, dom.max, dom.values);
   }
 };
 #endif
