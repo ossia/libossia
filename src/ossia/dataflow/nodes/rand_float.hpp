@@ -18,6 +18,7 @@ public:
     m_outlets.push_back(&value_out);
   }
 
+  std::string label() const noexcept override { return "rand_float"; }
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     thread_local std::mt19937 gen;

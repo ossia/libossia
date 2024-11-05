@@ -195,7 +195,7 @@ int main()
   local_proto.expose_to(std::move(oscq));
 
   while(true)
-    ;
+    std::this_thread::yield();
 }
 
 void printValueCallback(const value& v)

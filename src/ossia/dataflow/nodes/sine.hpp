@@ -23,6 +23,8 @@ public:
     m_inlets.push_back(&freq_in);
     m_outlets.push_back(&audio_out);
   }
+
+  std::string label() const noexcept override { return "sine"; }
   void run(const ossia::token_request& t, ossia::exec_state_facade st) noexcept override
   {
     auto& vals = freq_in.target<ossia::value_port>()->get_data();
