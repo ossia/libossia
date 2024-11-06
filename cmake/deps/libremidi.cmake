@@ -13,13 +13,13 @@ block()
   set(WEAKJACK_FOLDER "${OSSIA_3RDPARTY_FOLDER}")
   set(BUILD_SHARED_LIBS 0)
   add_definitions(
-    BOOST_NO_RTTI=1
-    BOOST_MATH_DISABLE_FLOAT128=1
+    -DBOOST_NO_RTTI=1
+    -DBOOST_MATH_DISABLE_FLOAT128=1
   )
 
   if(WIN32)
     if(MSVC)
-      add_definitions(BOOST_ASIO_SEPARATE_COMPILATION=1)
+      add_definitions(-DBOOST_ASIO_SEPARATE_COMPILATION=1)
     endif()
   endif()
   add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libremidi" EXCLUDE_FROM_ALL)
