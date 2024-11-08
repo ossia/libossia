@@ -43,7 +43,7 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             return {};
         }
 
-        auto operator()(ossia::net::tcp_configuration&& conf) const
+        auto operator()(ossia::net::tcp_client_configuration&& conf) const
             -> std::unique_ptr<osc_protocol_base>
         {
           if(config.framing == conf::SIZE_PREFIX)
@@ -54,6 +54,12 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             return std::make_unique<
                 osc_generic_client_protocol<client_type, tcp_slip_client>>(
                 std::move(ctx), conf);
+        }
+
+        auto operator()(ossia::net::tcp_server_configuration&& conf) const
+            -> std::unique_ptr<osc_protocol_base>
+        {
+          return {};
         }
 
         auto operator()(ossia::net::unix_dgram_configuration&& conf) const
@@ -148,7 +154,13 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             return {};
         }
 
-        auto operator()(ossia::net::tcp_configuration&& conf) const
+        auto operator()(ossia::net::tcp_client_configuration&& conf) const
+            -> std::unique_ptr<osc_protocol_base>
+        {
+          return {};
+        }
+
+        auto operator()(ossia::net::tcp_server_configuration&& conf) const
             -> std::unique_ptr<osc_protocol_base>
         {
           if(config.framing == conf::SIZE_PREFIX)

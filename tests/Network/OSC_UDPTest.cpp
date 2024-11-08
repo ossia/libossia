@@ -14,12 +14,12 @@ using namespace ossia;
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
 using conf = ossia::net::udp_configuration;
-using recv_sock = ossia::net::receive_socket_configuration;
-using send_sock = ossia::net::send_socket_configuration;
+using recv_sock = ossia::net::inbound_socket_configuration;
+using send_sock = ossia::net::outbound_socket_configuration;
 static const conf server_conf
-    = conf{{recv_sock{{"0.0.0.0", 4478}}, send_sock{{"127.0.0.1", 9875}}}};
+    = conf{{recv_sock{"0.0.0.0", 4478}, send_sock{"127.0.0.1", 9875}}};
 static const conf client_conf
-    = conf{{recv_sock{{"0.0.0.0", 9875}}, send_sock{{"127.0.0.1", 4478}}}};
+    = conf{{recv_sock{"0.0.0.0", 9875}, send_sock{"127.0.0.1", 4478}}};
 TEST_CASE("test_comm_osc_udp_simple", "test_comm_osc_udp_simple")
 {
   using namespace ossia::net;

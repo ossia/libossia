@@ -35,7 +35,7 @@ TEST_CASE("test_oscquery_osc_out", "test_oscquery_osc_out")
        .version = conf::OSC1_1,
        .transport = ossia::net::udp_configuration{
            {.local = std::nullopt,
-            .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
+            .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", shared}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
   auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
@@ -45,8 +45,9 @@ TEST_CASE("test_oscquery_osc_out", "test_oscquery_osc_out")
 
   device.set_echo(true);
 
-  const auto udp_conf = ossia::net::
-          udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}};
+  const auto udp_conf = ossia::net::udp_configuration{
+      {.local = ossia::net::inbound_socket_configuration{"0.0.0.0", shared},
+       .remote = std::nullopt}};
   ossia::net::generic_device remote{
       ossia::net::make_osc_protocol(
           ctx,
@@ -109,7 +110,7 @@ TEST_CASE("test_oscquery_osc_large", "test_oscquery_osc_large")
        .version = conf::OSC1_1,
        .transport = ossia::net::udp_configuration{
            {.local = std::nullopt,
-            .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
+            .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", shared}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
   auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
@@ -141,7 +142,7 @@ TEST_CASE("test_multiplex_remove", "test_multiplex_remove")
        .version = conf::OSC1_1,
        .transport = ossia::net::udp_configuration{
            {.local = std::nullopt,
-            .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
+            .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", shared}}}});
   auto oscquery = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol>(ctx);
 
   auto multiplex = std::make_unique<ossia::net::multiplex_protocol>();
@@ -154,8 +155,9 @@ TEST_CASE("test_multiplex_remove", "test_multiplex_remove")
 
   device.set_echo(true);
 
-  const auto udp_conf = ossia::net::
-          udp_configuration{{.local = ossia::net::receive_socket_configuration{{"0.0.0.0", shared}}, .remote = std::nullopt}};
+  const auto udp_conf = ossia::net::udp_configuration{
+      {.local = ossia::net::inbound_socket_configuration{"0.0.0.0", shared},
+       .remote = std::nullopt}};
   ossia::net::generic_device remote{
       ossia::net::make_osc_protocol(
           ctx,
@@ -195,13 +197,13 @@ TEST_CASE("test_multiplex_remove", "test_multiplex_remove")
     //create a new OSC connection
     using conf = ossia::net::osc_protocol_configuration;
     auto o = ossia::net::make_osc_protocol(
-        ctx,
-        {.mode = conf::HOST,
-         .version = conf::OSC1_1,
-         .framing = conf::SLIP,
-         .transport = ossia::net::udp_configuration{
-             {.local = std::nullopt,
-              .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
+        ctx, {.mode = conf::HOST,
+              .version = conf::OSC1_1,
+              .framing = conf::SLIP,
+              .transport = ossia::net::udp_configuration{
+                  {.local = std::nullopt,
+                   .remote = ossia::net::outbound_socket_configuration{
+                       {"127.0.0.1", shared}}}}});
     proto->expose_to(std::move(o));
   }
 

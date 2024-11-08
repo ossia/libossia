@@ -77,9 +77,9 @@ Example:
       ossia::net::make_osc_protocol(
           ctx, {conf::HOST, conf::OSC1_1, conf::SLIP,
                 ossia::net::udp_configuration{
-                    {ossia::net::receive_socket_configuration{
-                         {.host = "0.0.0.0", .port = listen_port}},
-                     ossia::net::send_socket_configuration{{"127.0.0.1", 9977}}}}}),
+                    {ossia::net::inbound_socket_configuration{
+                         .bind = "0.0.0.0", .port = listen_port},
+                     ossia::net::outbound_socket_configuration{"127.0.0.1", 9977}}}}),
       "P"};
 
   auto b = [](const std::string s, const ossia::value& val) {

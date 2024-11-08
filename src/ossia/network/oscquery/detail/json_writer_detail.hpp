@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/json.hpp>
 #include <ossia/network/base/node_attributes.hpp>
+
 namespace ossia::oscquery::detail
 {
 //! Implementation of the JSON serialisation mechanism for oscquery
@@ -21,7 +22,7 @@ struct json_writer_impl
   void writeValue(float i) const;
   void writeValue(double i) const;
   void writeValue(bool i) const;
-  void writeValue(const std::string& i) const;
+  void writeValue(std::string_view i) const;
   void writeValue(const ossia::repetition_filter& i) const;
   void writeValue(const ossia::net::instance_bounds& i) const;
 

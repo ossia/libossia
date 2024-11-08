@@ -510,7 +510,7 @@ void oscquery_mirror_asio_protocol::start_websockets()
 void oscquery_mirror_asio_protocol::start_osc()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>(
-      ossia::net::socket_configuration{"0.0.0.0", (uint16_t)m_osc_port},
+      ossia::net::inbound_socket_configuration{"0.0.0.0", (uint16_t)m_osc_port},
       this->m_ctx->context);
   m_oscServer->open();
   m_osc_port = m_oscServer->m_socket.local_endpoint().port();
@@ -621,7 +621,7 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
             uint16_t server_port = uint16_t(*m_host_info.osc_port);
             m_oscSender = std::make_unique<osc_sender_impl>(
-                ossia::net::socket_configuration{server_host, server_port},
+                ossia::net::outbound_socket_configuration{server_host, server_port},
                 this->m_ctx->context);
             m_oscSender->connect();
             uint16_t local_server_port = m_oscServer->m_socket.local_endpoint().port();

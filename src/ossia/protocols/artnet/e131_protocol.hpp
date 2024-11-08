@@ -17,7 +17,7 @@ public:
 
   e131_protocol(
       ossia::net::network_context_ptr, const dmx_config& conf,
-      const ossia::net::socket_configuration& socket);
+      const ossia::net::outbound_socket_configuration& socket);
 
   ~e131_protocol();
 
@@ -36,7 +36,7 @@ public:
 
   e131_input_protocol(
       ossia::net::network_context_ptr, const dmx_config& conf,
-      const ossia::net::socket_configuration& socket);
+      const ossia::net::inbound_socket_configuration& socket);
 
   ~e131_input_protocol();
 

@@ -25,18 +25,16 @@ struct receive_fd_configuration : fd_configuration
 {
 };
 
-struct socket_configuration
+struct outbound_socket_configuration
 {
   std::string host;
   uint16_t port{};
   bool broadcast{};
 };
-
-struct send_socket_configuration : socket_configuration
+struct inbound_socket_configuration
 {
-};
-struct receive_socket_configuration : socket_configuration
-{
+  std::string bind;
+  uint16_t port{};
 };
 
 struct double_fd_configuration
@@ -47,8 +45,8 @@ struct double_fd_configuration
 
 struct double_socket_configuration
 {
-  std::optional<receive_socket_configuration> local;
-  std::optional<send_socket_configuration> remote;
+  std::optional<inbound_socket_configuration> local;
+  std::optional<outbound_socket_configuration> remote;
 };
 
 struct serial_configuration
@@ -102,7 +100,20 @@ struct udp_configuration : double_socket_configuration
 {
 };
 
-struct tcp_configuration : socket_configuration
+struct tcp_client_configuration : outbound_socket_configuration
+{
+};
+
+struct udp_server_configuration : inbound_socket_configuration
+{
+};
+struct tcp_server_configuration : inbound_socket_configuration
+{
+};
+struct unix_dgram_server_configuration : receive_fd_configuration
+{
+};
+struct unix_stream_server_configuration : receive_fd_configuration
 {
 };
 }

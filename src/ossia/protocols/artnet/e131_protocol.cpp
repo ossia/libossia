@@ -134,7 +134,7 @@ static_assert(sizeof(e131_packet) == 638);
 namespace ossia::net
 {
 static boost::asio::ip::address_v4
-e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket)
+e131_host(const dmx_config& conf, const ossia::net::outbound_socket_configuration& socket)
 {
   if(conf.multicast)
   {
@@ -148,7 +148,7 @@ e131_host(const dmx_config& conf, const ossia::net::socket_configuration& socket
 
 e131_protocol::e131_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
-    const ossia::net::socket_configuration& socket)
+    const ossia::net::outbound_socket_configuration& socket)
     : dmx_output_protocol_base{ctx, conf}
     , m_socket{e131_host(conf, socket), socket.port, ctx->context}
 {
@@ -206,10 +206,11 @@ void e131_protocol::update_function()
 
 e131_input_protocol::e131_input_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
-    const ossia::net::socket_configuration& socket)
+    const ossia::net::inbound_socket_configuration& socket)
     : dmx_input_protocol_base{ctx, conf}
     , m_socket{socket, ctx->context}
 {
+  // FIXME we need to join the multicast group
   if(conf.frequency < 1 || conf.frequency > 44)
     throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
 

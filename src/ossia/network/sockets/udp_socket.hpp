@@ -25,9 +25,9 @@ public:
   {
   }
 
-  udp_receive_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
+  udp_receive_socket(const inbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
-      , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
+      , m_endpoint{boost::asio::ip::make_address(conf.bind), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}
   {
   }
@@ -94,7 +94,7 @@ class udp_send_socket
   using proto = boost::asio::ip::udp;
 
 public:
-  udp_send_socket(const socket_configuration& conf, boost::asio::io_context& ctx)
+  udp_send_socket(const outbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}

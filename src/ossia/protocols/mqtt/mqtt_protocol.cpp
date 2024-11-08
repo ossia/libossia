@@ -49,7 +49,7 @@ struct mqtt5_client : mqtt5_client_base
   {
     if constexpr(std::is_same_v<Socket, mqtt_tcp_socket>)
     {
-      auto& conf = ossia::get<tcp_configuration>(m_conf.transport);
+      auto& conf = ossia::get<tcp_client_configuration>(m_conf.transport);
       client.brokers(conf.host, conf.port).async_run(boost::asio::detached);
     }
     else if constexpr(std::is_same_v<Socket, mqtt_ws_socket>)
@@ -175,7 +175,7 @@ static auto make_mqtt_client(const mqtt5_configuration& conf, strand_type& stran
   struct
   {
     strand_type& strand;
-    std::unique_ptr<mqtt5_client_base> operator()(const tcp_configuration& tcp)
+    std::unique_ptr<mqtt5_client_base> operator()(const tcp_client_configuration& tcp)
     {
       return std::make_unique<mqtt5_client<mqtt_tcp_socket>>(strand);
     }

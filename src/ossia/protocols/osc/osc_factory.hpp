@@ -6,6 +6,15 @@
 
 namespace ossia::net
 {
+using osc_server_configuration = ossia::variant<
+    udp_server_configuration, tcp_server_configuration, unix_dgram_server_configuration,
+    unix_stream_server_configuration, serial_configuration, ws_server_configuration>;
+
+using osc_transport_configuration = ossia::variant<
+    udp_configuration, tcp_client_configuration, tcp_server_configuration,
+    unix_dgram_configuration, unix_stream_configuration, serial_configuration,
+    ws_client_configuration, ws_server_configuration>;
+
 struct osc_protocol_configuration
 {
   // libossia semantic level: host can change any parameter, mirror can only
@@ -31,11 +40,7 @@ struct osc_protocol_configuration
     SLIP
   } framing{SLIP};
 
-  ossia::variant<
-      udp_configuration, tcp_configuration, unix_dgram_configuration,
-      unix_stream_configuration, serial_configuration, ws_client_configuration,
-      ws_server_configuration>
-      transport;
+  osc_transport_configuration transport;
 };
 
 using osc_protocol_base = can_learn<protocol_base>;

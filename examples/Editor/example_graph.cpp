@@ -103,7 +103,7 @@ struct my_node final : ossia::graph_node
     m_outlets.push_back(new ossia::value_outlet);
   }
 
-  std::string label() const noexcept override { return "my_node"; }
+  std::string label() const noexcept override { return "my_node"; }
   void run(const ossia::token_request& t, ossia::exec_state_facade) noexcept override
   {
     if(auto a_float = pop_value<float>(this->root_inputs()[0]))

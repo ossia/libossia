@@ -155,8 +155,23 @@ public:
           auto& socket = sockets.get_socket();
 
           std::string local_client_ip = socket.local_endpoint().address().to_string();
+
+          auto transports = [&]() -> std::vector<ossia::net::osc_server_configuration> {
+            if constexpr(requires { proto.get_osc_port(); })
+            {
+              ossia::net::udp_server_configuration conf;
+              conf.bind = "";
+              conf.port = proto.get_osc_port();
+              return {conf};
+            }
+            else
+            {
+              return proto.get_transports();
+            }
+          };
+
           return oscquery::json_writer::query_host_info(
-              proto.get_device().get_name(), proto.get_osc_port(), local_client_ip,
+              proto.get_device().get_name(), transports(), local_client_ip,
               proto.get_ws_port());
         }
       }

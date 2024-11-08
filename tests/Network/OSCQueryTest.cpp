@@ -1168,8 +1168,7 @@ TEST_CASE("test_oscquery_osc_to_ws", "test_oscquery_osc_to_ws")
        .version = conf::OSC1_1,
        .transport = ossia::net::udp_configuration{
            {.local = std::nullopt,
-            .remote = ossia::net::send_socket_configuration{{"127.0.0.1", shared}}}}});
-
+            .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", shared}}}});
 
   //server change goes to mirror
   server_param->push_value(2.0f);

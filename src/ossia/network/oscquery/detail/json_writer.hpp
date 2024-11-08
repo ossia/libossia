@@ -2,7 +2,7 @@
 #include <ossia/detail/for_each.hpp>
 #include <ossia/network/oscquery/detail/attributes.hpp>
 #include <ossia/network/oscquery/detail/json_writer_detail.hpp>
-
+#include <ossia/protocols/osc/osc_factory.hpp>
 namespace ossia
 {
 namespace net
@@ -24,8 +24,9 @@ public:
   static string_t device_info(int port);
 
   static string_t query_host_info(
-      const std::string& name, const int osc_port, const std::string& local_ip,
-      int ws_port);
+      std::string_view name,
+      const std::vector<ossia::net::osc_server_configuration>& osc_port,
+      std::string_view local_ip, int ws_port);
 
   // Format interface
   // Queries
@@ -71,10 +72,10 @@ public:
   static string_t path_changed(const ossia::net::node_base& n);
 
   //! Sent when a node is being removed
-  static string_t path_removed(const std::string& path);
+  static string_t path_removed(std::string_view path);
 
   //! Sent when a node is renamed
-  static string_t path_renamed(const std::string& old_path, const std::string& new_path);
+  static string_t path_renamed(std::string_view old_path, std::string_view new_path);
 
   static string_t
   attributes_changed(const ossia::net::node_base& n, std::string_view attribute);
@@ -97,9 +98,9 @@ private:
   path_added_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
   static void
   path_changed_impl(detail::json_writer_impl& p, const ossia::net::node_base& n);
-  static void path_removed_impl(writer_t& wr, const std::string& path);
+  static void path_removed_impl(writer_t& wr, std::string_view path);
   static void path_renamed_impl(
-      json_writer::writer_t& wr, const std::string& path, const std::string& old);
+      json_writer::writer_t& wr, std::string_view path, std::string_view old);
   static void attribute_changed_impl(
       detail::json_writer_impl& p, const ossia::net::node_base& n,
       std::string_view attribute);

@@ -329,7 +329,7 @@ coap_client_protocol::coap_client_protocol(
       }
     }
 
-    void operator()(const ossia::net::tcp_configuration& conf)
+    void operator()(const ossia::net::tcp_client_configuration& conf)
     {
       self.m_host += "coap+tcp://";
       self.m_host += conf.host;

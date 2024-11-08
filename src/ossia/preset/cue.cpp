@@ -135,7 +135,7 @@ struct priority_sort
 struct protocol_safe_mode_enabler
 {
 #if defined(OSSIA_PROTOCOL_OSCQUERY)
-  std::vector<std::pair<ossia::oscquery_asio::oscquery_server_protocol*, bool>>
+  std::vector<std::pair<ossia::oscquery_asio::oscquery_server_protocol_base*, bool>>
       protocols{};
 #endif
 
@@ -143,7 +143,7 @@ struct protocol_safe_mode_enabler
   {
 #if defined(OSSIA_PROTOCOL_OSCQUERY)
     auto& proto = root.get_device().get_protocol();
-    if(auto oscq = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(&proto))
+    if(auto oscq = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol_base*>(&proto))
     {
       protocols.emplace_back(oscq, oscq->force_ws());
       oscq->set_force_ws(true);
@@ -153,7 +153,7 @@ struct protocol_safe_mode_enabler
       for(auto& proto : mplex->get_protocols())
       {
         if(auto oscq
-           = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol*>(proto.get()))
+           = dynamic_cast<ossia::oscquery_asio::oscquery_server_protocol_base*>(proto.get()))
         {
           protocols.emplace_back(oscq, oscq->force_ws());
           oscq->set_force_ws(true);

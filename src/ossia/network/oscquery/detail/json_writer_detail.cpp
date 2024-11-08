@@ -116,9 +116,9 @@ void json_writer_impl::writeValue(bool i) const
 {
   writer.Bool(i);
 }
-void json_writer_impl::writeValue(const std::string& i) const
+void json_writer_impl::writeValue(std::string_view i) const
 {
-  writer.String(i);
+  writer.String(i.data(), i.size());
 }
 void json_writer_impl::writeValue(const repetition_filter& i) const
 {
@@ -375,7 +375,7 @@ void json_writer::path_changed_impl(detail::json_writer_impl& p, const net::node
   wr.EndObject();
 }
 
-void json_writer::path_removed_impl(json_writer::writer_t& wr, const std::string& path)
+void json_writer::path_removed_impl(json_writer::writer_t& wr, std::string_view path)
 {
   wr.StartObject();
 
@@ -383,13 +383,13 @@ void json_writer::path_removed_impl(json_writer::writer_t& wr, const std::string
   write_json(wr, detail::path_removed());
 
   write_json_key(wr, detail::data());
-  wr.String(path);
+  write_json(wr, path);
 
   wr.EndObject();
 }
 
 void json_writer::path_renamed_impl(
-    json_writer::writer_t& wr, const std::string& old_path, const std::string& new_path)
+    json_writer::writer_t& wr, std::string_view old_path, std::string_view new_path)
 {
   wr.StartObject();
 
@@ -491,26 +491,75 @@ json_writer::string_t json_writer::device_info(int port)
   return buf;
 }
 
-json_writer::string_t json_writer::query_host_info(
-    const std::string& name, const int osc_port, const std::string& local_ip,
-    int ws_port)
+struct transport_visitor
 {
+  json_writer::writer_t& wr;
+  void operator()(const ossia::net::udp_server_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.Int(v.port);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("UDP");
+  }
 
+  void operator()(const ossia::net::tcp_server_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.Int(v.port);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("TCP");
+  }
+  void operator()(const ossia::net::unix_dgram_server_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.String(v.fd);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("UNIX_DATAGRAM");
+  }
+  void operator()(const ossia::net::unix_stream_server_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.String(v.fd);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("UNIX_STREAM");
+  }
+  void operator()(const ossia::net::serial_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.String(v.port);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("SERIAL");
+  }
+  void operator()(const ossia::net::ws_server_configuration& v) const noexcept
+  {
+    wr.Key("OSC_PORT");
+    wr.Int(v.port);
+    wr.Key("OSC_TRANSPORT");
+    wr.String("WEBSOCKET");
+  }
+};
+
+json_writer::string_t json_writer::query_host_info(
+    std::string_view name,
+    const std::vector<ossia::net::osc_server_configuration>& osc_port,
+    std::string_view local_ip, int ws_port)
+{
   string_t buf;
   writer_t wr(buf);
 
   wr.StartObject();
   wr.Key("NAME");
-  wr.String(name);
+  write_json(wr, name);
+
   wr.Key("WS_IP");
-  wr.String(local_ip);
+  write_json(wr, local_ip);
   wr.Key("WS_PORT");
   wr.Int(ws_port);
-  wr.Key("OSC_PORT");
-  wr.Int(osc_port);
-  wr.Key("OSC_TRANSPORT");
-  wr.String("UDP");
 
+  for(auto& v : osc_port)
+  {
+    ossia::visit(transport_visitor{wr}, v);
+  }
   wr.Key("EXTENSIONS");
   wr.StartObject();
 
@@ -658,7 +707,7 @@ json_writer::string_t json_writer::path_changed(const net::node_base& n)
   return buf;
 }
 
-json_writer::string_t json_writer::path_removed(const std::string& path)
+json_writer::string_t json_writer::path_removed(std::string_view path)
 {
   string_t buf;
   writer_t wr(buf);
@@ -669,7 +718,7 @@ json_writer::string_t json_writer::path_removed(const std::string& path)
 }
 
 json_writer::string_t
-json_writer::path_renamed(const std::string& old_path, const std::string& new_path)
+json_writer::path_renamed(std::string_view old_path, std::string_view new_path)
 {
   string_t buf;
   writer_t wr(buf);

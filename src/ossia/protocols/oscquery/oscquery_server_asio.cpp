@@ -57,16 +57,15 @@ is_same(const oscquery_client& clt, const ossia::net::message_origin_identifier&
   return (uintptr_t)clt.connection.lock().get() == id.identifier;
 }
 
-oscquery_server_protocol::oscquery_server_protocol(
-    ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port,
+oscquery_server_protocol_base::oscquery_server_protocol_base(
+    ossia::net::network_context_ptr ctx,
+    const std::vector<ossia::net::osc_server_configuration>& conf, uint16_t ws_port,
     bool forceWS)
     : protocol_base{flags{SupportsMultiplex}}
     , m_context{std::move(ctx)}
-    , m_oscServer{std::make_unique<osc_receiver_impl>(
-          ossia::net::socket_configuration{"0.0.0.0", osc_port}, m_context->context)}
     , m_websocketServer{std::make_unique<ossia::net::websocket_server>(
           m_context->context)}
-    , m_oscPort{osc_port}
+    , m_oscConf{conf}
     , m_wsPort{ws_port}
     , m_forceWS{forceWS}
 {
@@ -98,37 +97,38 @@ oscquery_server_protocol::oscquery_server_protocol(
   });
 }
 
-oscquery_server_protocol::~oscquery_server_protocol()
+oscquery_server_protocol_base::~oscquery_server_protocol_base()
 {
   if(m_device)
   {
     auto& dev = *m_device;
-    dev.on_node_created.disconnect<&oscquery_server_protocol::on_nodeCreated>(this);
-    dev.on_node_removing.disconnect<&oscquery_server_protocol::on_nodeRemoved>(this);
-    dev.on_parameter_created.disconnect<&oscquery_server_protocol::on_parameterChanged>(
+    dev.on_node_created.disconnect<&oscquery_server_protocol_base::on_nodeCreated>(this);
+    dev.on_node_removing.disconnect<&oscquery_server_protocol_base::on_nodeRemoved>(
         this);
-    dev.on_parameter_removing.disconnect<&oscquery_server_protocol::on_parameterChanged>(
-        this);
-    dev.on_attribute_modified.disconnect<&oscquery_server_protocol::on_attributeChanged>(
-        this);
-    dev.on_node_renamed.disconnect<&oscquery_server_protocol::on_nodeRenamed>(this);
+    dev.on_parameter_created
+        .disconnect<&oscquery_server_protocol_base::on_parameterChanged>(this);
+    dev.on_parameter_removing
+        .disconnect<&oscquery_server_protocol_base::on_parameterChanged>(this);
+    dev.on_attribute_modified
+        .disconnect<&oscquery_server_protocol_base::on_attributeChanged>(this);
+    dev.on_node_renamed.disconnect<&oscquery_server_protocol_base::on_nodeRenamed>(this);
   }
   stop();
 }
 
-bool oscquery_server_protocol::pull(net::parameter_base&)
+bool oscquery_server_protocol_base::pull(net::parameter_base&)
 {
   //! The server cannot pull because it can have multiple clients.
   return false;
 }
 
-std::future<void> oscquery_server_protocol::pull_async(net::parameter_base&)
+std::future<void> oscquery_server_protocol_base::pull_async(net::parameter_base&)
 {
   // Do nothing
   return {};
 }
 
-void oscquery_server_protocol::request(net::parameter_base&)
+void oscquery_server_protocol_base::request(net::parameter_base&)
 {
   // Do nothing
 }
@@ -144,7 +144,7 @@ struct ws_client_socket
   }
 };
 
-bool oscquery_server_protocol::write_impl(std::string_view data, bool critical)
+bool oscquery_server_protocol_base::write_impl(std::string_view data, bool critical)
 {
   // Push to all clients
   if(!critical)
@@ -177,7 +177,7 @@ bool oscquery_server_protocol::write_impl(std::string_view data, bool critical)
 }
 
 template <typename T>
-bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
+bool oscquery_server_protocol_base::push_impl(const T& addr, const ossia::value& v)
 {
   using namespace ossia::net;
   using namespace ossia::oscquery;
@@ -240,18 +240,18 @@ bool oscquery_server_protocol::push_impl(const T& addr, const ossia::value& v)
   return false;
 }
 
-bool oscquery_server_protocol::push(
+bool oscquery_server_protocol_base::push(
     const net::parameter_base& addr, const ossia::value& v)
 {
   return push_impl(addr, v);
 }
 
-bool oscquery_server_protocol::push_raw(const net::full_parameter_data& addr)
+bool oscquery_server_protocol_base::push_raw(const net::full_parameter_data& addr)
 {
   return push_impl(addr, addr.value());
 }
 
-bool oscquery_server_protocol::push_bundle(
+bool oscquery_server_protocol_base::push_bundle(
     const std::vector<const ossia::net::parameter_base*>& addresses)
 {
   using namespace ossia::net;
@@ -266,7 +266,7 @@ bool oscquery_server_protocol::push_bundle(
   return false;
 }
 
-bool oscquery_server_protocol::push_raw_bundle(
+bool oscquery_server_protocol_base::push_raw_bundle(
     const std::vector<ossia::net::full_parameter_data>& addresses)
 {
   using namespace ossia::net;
@@ -281,7 +281,7 @@ bool oscquery_server_protocol::push_raw_bundle(
   return false;
 }
 
-bool oscquery_server_protocol::echo_incoming_message(
+bool oscquery_server_protocol_base::echo_incoming_message(
     const net::message_origin_identifier& id, const net::parameter_base& addr,
     const ossia::value& val)
 {
@@ -351,7 +351,7 @@ bool oscquery_server_protocol::echo_incoming_message(
   return true;
 }
 
-bool oscquery_server_protocol::observe(net::parameter_base& address, bool enable)
+bool oscquery_server_protocol_base::observe(net::parameter_base& address, bool enable)
 {
   if(enable)
   {
@@ -365,30 +365,31 @@ bool oscquery_server_protocol::observe(net::parameter_base& address, bool enable
   return true;
 }
 
-bool oscquery_server_protocol::observe_quietly(net::parameter_base& addr, bool b)
+bool oscquery_server_protocol_base::observe_quietly(net::parameter_base& addr, bool b)
 {
   return observe(addr, b);
 }
 
-bool oscquery_server_protocol::update(net::node_base&)
+bool oscquery_server_protocol_base::update(net::node_base&)
 {
   return false;
 }
 
-void oscquery_server_protocol::set_device(net::device_base& dev)
+void oscquery_server_protocol_base::set_device(net::device_base& dev)
 {
   if(m_device)
   {
     auto& old = *m_device;
-    old.on_node_created.disconnect<&oscquery_server_protocol::on_nodeCreated>(this);
-    old.on_node_removing.disconnect<&oscquery_server_protocol::on_nodeRemoved>(this);
-    dev.on_parameter_created.disconnect<&oscquery_server_protocol::on_parameterChanged>(
+    old.on_node_created.disconnect<&oscquery_server_protocol_base::on_nodeCreated>(this);
+    old.on_node_removing.disconnect<&oscquery_server_protocol_base::on_nodeRemoved>(
         this);
-    dev.on_parameter_removing.disconnect<&oscquery_server_protocol::on_parameterChanged>(
-        this);
-    old.on_attribute_modified.disconnect<&oscquery_server_protocol::on_attributeChanged>(
-        this);
-    old.on_node_renamed.disconnect<&oscquery_server_protocol::on_nodeRenamed>(this);
+    dev.on_parameter_created
+        .disconnect<&oscquery_server_protocol_base::on_parameterChanged>(this);
+    dev.on_parameter_removing
+        .disconnect<&oscquery_server_protocol_base::on_parameterChanged>(this);
+    old.on_attribute_modified
+        .disconnect<&oscquery_server_protocol_base::on_attributeChanged>(this);
+    old.on_node_renamed.disconnect<&oscquery_server_protocol_base::on_nodeRenamed>(this);
 
     ossia::net::visit_parameters(
         old.get_root_node(),
@@ -399,14 +400,15 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
   }
   m_device = &dev;
 
-  dev.on_node_created.connect<&oscquery_server_protocol::on_nodeCreated>(this);
-  dev.on_node_removing.connect<&oscquery_server_protocol::on_nodeRemoved>(this);
-  dev.on_parameter_created.connect<&oscquery_server_protocol::on_parameterChanged>(this);
-  dev.on_parameter_removing.connect<&oscquery_server_protocol::on_parameterChanged>(
+  dev.on_node_created.connect<&oscquery_server_protocol_base::on_nodeCreated>(this);
+  dev.on_node_removing.connect<&oscquery_server_protocol_base::on_nodeRemoved>(this);
+  dev.on_parameter_created.connect<&oscquery_server_protocol_base::on_parameterChanged>(
       this);
-  dev.on_attribute_modified.connect<&oscquery_server_protocol::on_attributeChanged>(
+  dev.on_parameter_removing.connect<&oscquery_server_protocol_base::on_parameterChanged>(
       this);
-  dev.on_node_renamed.connect<&oscquery_server_protocol::on_nodeRenamed>(this);
+  dev.on_attribute_modified.connect<&oscquery_server_protocol_base::on_attributeChanged>(
+      this);
+  dev.on_node_renamed.connect<&oscquery_server_protocol_base::on_nodeRenamed>(this);
 
   update_zeroconf();
 
@@ -417,23 +419,10 @@ void oscquery_server_protocol::set_device(net::device_base& dev)
       });
 
   m_websocketServer->listen(m_wsPort);
-
-  m_oscServer->open();
-  m_oscServer->receive(
-      [this](const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
 }
 
-void oscquery_server_protocol::stop()
+void oscquery_server_protocol_base::stop()
 {
-  try
-  {
-    m_oscServer->close();
-  }
-  catch(...)
-  {
-    logger().error("Error when stopping osc server");
-  }
-
   try
   {
     lock_t lock(m_clientsMutex);
@@ -463,12 +452,13 @@ void oscquery_server_protocol::stop()
   }
 }
 
-void oscquery_server_protocol::set_force_ws(bool forceWS) noexcept
+void oscquery_server_protocol_base::set_force_ws(bool forceWS) noexcept
 {
   m_forceWS.store(forceWS, std::memory_order_relaxed);
 }
 
-oscquery_client* oscquery_server_protocol::find_client(const connection_handler& hdl)
+oscquery_client*
+oscquery_server_protocol_base::find_client(const connection_handler& hdl)
 {
   lock_t lock(m_clientsMutex);
 
@@ -511,7 +501,7 @@ static auto& querySetterMap()
   return map;
 }
 
-void oscquery_server_protocol::add_node(
+void oscquery_server_protocol_base::add_node(
     std::string_view parent_path, const string_map<std::string>& parameters)
 {
   // /foo/bar/baz?ADD_NODE=tutu&VALUE="[hi]"
@@ -540,25 +530,26 @@ void oscquery_server_protocol::add_node(
   m_device->on_add_node_requested(std::string(parent_path), address);
 }
 
-void oscquery_server_protocol::remove_node(
+void oscquery_server_protocol_base::remove_node(
     std::string_view path, const std::string& node)
 {
   m_device->on_remove_node_requested(std::string(path), node);
 }
 
-void oscquery_server_protocol::rename_node(
+void oscquery_server_protocol_base::rename_node(
     std::string_view path, const std::string& new_name)
 {
   m_device->on_rename_node_requested(std::string(path), new_name);
 }
 
-void oscquery_server_protocol::process_raw_osc_data(const char* data, std::size_t sz)
+void oscquery_server_protocol_base::process_raw_osc_data(
+    const char* data, std::size_t sz)
 {
   auto on_message = [this](auto&& msg) { this->on_osc_message(msg); };
   ossia::net::osc_packet_processor<decltype(on_message)>{on_message}(data, sz);
 }
 
-void oscquery_server_protocol::on_osc_message(const oscpack::ReceivedMessage& m)
+void oscquery_server_protocol_base::on_osc_message(const oscpack::ReceivedMessage& m)
 try
 {
   // TODO
@@ -577,7 +568,7 @@ catch(...)
   logger().error("oscquery_server_protocol::on_OSCMessage: error.");
 }
 
-void oscquery_server_protocol::on_connectionOpen(const connection_handler& hdl)
+void oscquery_server_protocol_base::on_connectionOpen(const connection_handler& hdl)
 try
 {
   auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
@@ -606,7 +597,7 @@ catch(...)
   logger().error("oscquery_server_protocol::on_connectionOpen: error.");
 }
 
-void oscquery_server_protocol::on_connectionClosed(const connection_handler& hdl)
+void oscquery_server_protocol_base::on_connectionClosed(const connection_handler& hdl)
 {
   {
     lock_t lock(m_clientsMutex);
@@ -622,7 +613,7 @@ void oscquery_server_protocol::on_connectionClosed(const connection_handler& hdl
   onClientDisconnected(con->get_remote_endpoint());
 }
 
-void oscquery_server_protocol::on_nodeCreated(const net::node_base& n)
+void oscquery_server_protocol_base::on_nodeCreated(const net::node_base& n)
 try
 {
   const auto mess = ossia::oscquery::json_writer::path_added(n);
@@ -642,7 +633,7 @@ catch(...)
   logger().error("oscquery_server_protocol::on_nodeCreated: error.");
 }
 
-void oscquery_server_protocol::on_nodeRemoved(const net::node_base& n)
+void oscquery_server_protocol_base::on_nodeRemoved(const net::node_base& n)
 try
 {
   const auto mess = ossia::oscquery::json_writer::path_removed(n.osc_address());
@@ -662,12 +653,13 @@ catch(...)
   logger().error("oscquery_server_protocol::on_nodeRemoved: error.");
 }
 
-void oscquery_server_protocol::on_parameterChanged(const ossia::net::parameter_base& p)
+void oscquery_server_protocol_base::on_parameterChanged(
+    const ossia::net::parameter_base& p)
 {
   on_attributeChanged(p.get_node(), ossia::net::text_value_type());
 }
 
-void oscquery_server_protocol::on_attributeChanged(
+void oscquery_server_protocol_base::on_attributeChanged(
     const net::node_base& n, std::string_view attr)
 try
 {
@@ -687,7 +679,7 @@ catch(...)
   logger().error("oscquery_server_protocol::on_attributeChanged: error.");
 }
 
-void oscquery_server_protocol::on_nodeRenamed(
+void oscquery_server_protocol_base::on_nodeRenamed(
     const net::node_base& n, std::string oldname)
 try
 {
@@ -733,7 +725,7 @@ catch(...)
   logger().error("oscquery_server_protocol::on_nodeRenamed: error.");
 }
 
-void oscquery_server_protocol::update_zeroconf()
+void oscquery_server_protocol_base::update_zeroconf()
 {
   try
   {
@@ -748,23 +740,9 @@ void oscquery_server_protocol::update_zeroconf()
   {
     logger().error("oscquery_server_protocol::update_zeroconf: error.");
   }
-
-  try
-  {
-    m_zeroconfServerOSC = net::make_zeroconf_server(
-        get_device().get_name(), "_osc._udp", "", m_oscPort, 0);
-  }
-  catch(const std::exception& e)
-  {
-    logger().error("oscquery_server_protocol::update_zeroconf: {}", e.what());
-  }
-  catch(...)
-  {
-    logger().error("oscquery_server_protocol::update_zeroconf: error.");
-  }
 }
 
-ossia::net::server_reply oscquery_server_protocol::on_text_ws_message(
+ossia::net::server_reply oscquery_server_protocol_base::on_text_ws_message(
     const connection_handler& hdl, const std::string& message)
 {
   if(m_logger.inbound_logger)
@@ -795,11 +773,80 @@ ossia::net::server_reply oscquery_server_protocol::on_text_ws_message(
   return {};
 }
 
-ossia::net::server_reply oscquery_server_protocol::on_binary_ws_message(
-    const oscquery_server_protocol::connection_handler& hdl, const std::string& message)
+ossia::net::server_reply oscquery_server_protocol_base::on_binary_ws_message(
+    const oscquery_server_protocol_base::connection_handler& hdl,
+    const std::string& message)
 {
   // TODO here we know where the message comes from, can be used for id
   process_raw_osc_data(message.data(), message.size());
   return {};
+}
+
+oscquery_server_protocol::oscquery_server_protocol(
+    ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port,
+    bool forceWS)
+    : oscquery_server_protocol_base{ctx, {ossia::net::udp_server_configuration{{{}, osc_port}}}, ws_port, forceWS}
+    , m_oscServer{std::make_unique<osc_receiver_impl>(
+          ossia::net::inbound_socket_configuration{"0.0.0.0", osc_port},
+          m_context->context)}
+{
+}
+
+void oscquery_server_protocol::set_device(ossia::net::device_base& dev)
+{
+  oscquery_server_protocol_base::set_device(dev);
+
+  m_oscServer->open();
+  m_oscServer->receive(
+      [this](const char* data, std::size_t sz) { process_raw_osc_data(data, sz); });
+}
+
+void oscquery_server_protocol::update_zeroconf()
+{
+  try
+  {
+    int port = ossia::get<ossia::net::udp_server_configuration>(m_oscConf[0]).port;
+    m_zeroconfServerOSC
+        = net::make_zeroconf_server(get_device().get_name(), "_osc._udp", "", port, 0);
+  }
+  catch(const std::exception& e)
+  {
+    logger().error("oscquery_server_protocol::update_zeroconf: {}", e.what());
+  }
+  catch(...)
+  {
+    logger().error("oscquery_server_protocol::update_zeroconf: error.");
+  }
+}
+
+void oscquery_server_protocol::stop()
+{
+  try
+  {
+    m_oscServer->close();
+  }
+  catch(...)
+  {
+    logger().error("Error when stopping osc server");
+  }
+  oscquery_server_protocol_base::stop();
+}
+
+oscquery_server_protocol::~oscquery_server_protocol()
+{
+  if(m_device)
+  {
+    auto& dev = *m_device;
+    dev.on_node_created.disconnect<&oscquery_server_protocol::on_nodeCreated>(this);
+    dev.on_node_removing.disconnect<&oscquery_server_protocol::on_nodeRemoved>(this);
+    dev.on_parameter_created.disconnect<&oscquery_server_protocol::on_parameterChanged>(
+        this);
+    dev.on_parameter_removing.disconnect<&oscquery_server_protocol::on_parameterChanged>(
+        this);
+    dev.on_attribute_modified.disconnect<&oscquery_server_protocol::on_attributeChanged>(
+        this);
+    dev.on_node_renamed.disconnect<&oscquery_server_protocol::on_nodeRenamed>(this);
+  }
+  stop();
 }
 }

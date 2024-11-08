@@ -15,7 +15,7 @@ using strand_type
 
 struct mqtt5_configuration
 {
-  ossia::variant<tcp_configuration, ws_client_configuration> transport;
+  ossia::variant<tcp_client_configuration, ws_client_configuration> transport;
 };
 
 struct mqtt5_client_base;

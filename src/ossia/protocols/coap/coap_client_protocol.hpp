@@ -17,7 +17,7 @@ using strand_type
     = decltype(boost::asio::make_strand(std::declval<boost::asio::io_context&>()));
 struct coap_client_configuration
 {
-  ossia::variant<udp_configuration, tcp_configuration, ws_client_configuration>
+  ossia::variant<udp_configuration, tcp_client_configuration, ws_client_configuration>
       transport;
 };
 struct coap_client;

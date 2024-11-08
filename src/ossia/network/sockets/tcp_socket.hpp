@@ -47,11 +47,11 @@ public:
   using socket = typename proto::socket;
   using listener = tcp_listener;
 
-  tcp_server(const socket_configuration& conf, boost::asio::io_context& ctx)
+  tcp_server(const inbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_acceptor{
             boost::asio::make_strand(ctx),
-            proto::endpoint{boost::asio::ip::make_address(conf.host), conf.port}}
+            proto::endpoint{boost::asio::ip::make_address(conf.bind), conf.port}}
   {
   }
 
@@ -65,7 +65,7 @@ public:
   using proto = boost::asio::ip::tcp;
   using socket = typename proto::socket;
 
-  tcp_client(const socket_configuration& conf, boost::asio::io_context& ctx)
+  tcp_client(const outbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}
