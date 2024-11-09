@@ -506,8 +506,6 @@ bool oscquery_mirror_asio_protocol_dense::on_text_ws_message(
           {
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
             uint16_t server_port = uint16_t(*m_host_info.osc_port);
-            std::cerr << " Sending udp to " << server_host << " : " << server_port
-                      << std::endl;
 
             to_client.emplace(
                 ossia::net::outbound_socket_configuration{
