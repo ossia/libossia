@@ -447,8 +447,11 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio_dense.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_client_asio.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
@@ -465,7 +468,10 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/typetag.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio_dense.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.cpp"
     )
 
 set(OSSIA_HTTP_HEADERS

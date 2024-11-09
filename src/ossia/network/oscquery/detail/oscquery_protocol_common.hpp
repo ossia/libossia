@@ -118,6 +118,16 @@ struct oscquery_protocol_client : oscquery_protocol_common<OscVersion>
   }
 
   template <typename Protocol, typename Addresses>
+    requires(!requires(Protocol p) { p.ws_connected(); })
+  static bool push_bundle(Protocol& proto, const Addresses& addresses)
+  {
+    // FIXME most likely we shouldn't do anything here but maybe
+    // the concept heuristic isn't the best
+    return false;
+  }
+
+  template <typename Protocol, typename Addresses>
+    requires requires(Protocol p) { p.ws_connected(); }
   static bool push_bundle(Protocol& proto, const Addresses& addresses)
   {
     if(auto bundle = ossia::net::make_bundle(

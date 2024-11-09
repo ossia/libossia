@@ -1,27 +1,30 @@
 #pragma once
 
+#include <ossia/network/sockets/udp_socket.hpp>
+#include <ossia/protocols/dense/dense_protocol.hpp>
 #include <ossia/protocols/oscquery/oscquery_fwd.hpp>
 
 namespace ossia::oscquery_asio
 {
-class oscquery_mirror_asio_protocol;
-struct oscquery_shared_async_state
+class oscquery_mirror_asio_protocol_dense;
+struct oscquery_dense_shared_async_state
 {
-  oscquery_mirror_asio_protocol& self;
+  oscquery_mirror_asio_protocol_dense& self;
   bool active = true;
 };
 
-class OSSIA_EXPORT oscquery_mirror_asio_protocol final : public ossia::net::protocol_base
+class OSSIA_EXPORT oscquery_mirror_asio_protocol_dense final
+    : public ossia::net::protocol_base
 {
   struct osc_sender_impl;
   struct osc_receiver_impl;
-  using async_state = oscquery_shared_async_state;
+  using async_state = oscquery_dense_shared_async_state;
 
 public:
-  oscquery_mirror_asio_protocol(
+  oscquery_mirror_asio_protocol_dense(
       ossia::net::network_context_ptr ctx, std::string host,
       uint16_t local_osc_port = 0);
-  ~oscquery_mirror_asio_protocol() override;
+  ~oscquery_mirror_asio_protocol_dense() override;
 
   bool pull(net::parameter_base&) override;
   std::future<void> pull_async(net::parameter_base&) override;
@@ -43,53 +46,16 @@ public:
   void set_device(net::device_base& dev) override;
   ossia::net::device_base& get_device() const { return *m_device; }
 
-  bool ws_connected() const noexcept { return m_hasWS; }
-  bool osc_connected() const noexcept { return bool(m_oscSender); }
-  osc_sender_impl& osc_sender() const noexcept { return *m_oscSender; }
-  ossia::net::websocket_client& ws_client() const noexcept { return *m_websocketClient; }
-
-  /**
-   * @brief Request a new node from the server
-   * @param Parent of the new node
-   * @param Data of the new node
-   */
-  void request_add_node(net::node_base&, const ossia::net::parameter_data&);
-
-  /**
-   * @brief Request a node removal from the server
-   * @param Node to be removed
-   */
-  void request_remove_node(net::node_base&);
-
-  /**
-   * @brief Request a node renaming from the server
-   * @param Node to be removed and new name
-   */
-  void request_rename_node(net::node_base& node, const std::string& new_name);
-
-  /**
-   * @brief Define behavior when a node is removed : mark it as zombie if true
-   * (default), remove it otherwise.
-   * @param zombie_on_removed
-   */
-  void set_zombie_on_remove(bool zombie_on_remove)
-  {
-    m_zombie_on_remove = zombie_on_remove;
-  }
-
-  /**
-   * @brief Get zombie on removed move
-   * @return
-   */
-  bool get_zombie_on_remove() const noexcept { return m_zombie_on_remove; }
-
   ossia::oscquery::host_info get_host_info() const noexcept;
 
-  bool connected() const noexcept override { return m_hasWS; }
   void connect() override;
 
   void set_feedback(bool fb) override;
 private:
+  void update_function();
+  void recompute_nodes();
+  int write_packet(std::span<unsigned char> data);
+
   friend struct http_async_answer<async_state>;
   friend struct http_async_value_answer<async_state>;
   using http_async_request = ossia::oscquery_asio::http_async_request<async_state>;
@@ -100,12 +66,9 @@ private:
       = ossia::oscquery_asio::http_async_value_answer<async_state>;
   using connection_handler = std::weak_ptr<void>;
 
-  void on_ws_disconnected() { m_hasWS = false; }
-
   void init();
 
   void start_http();
-  void start_websockets();
   void start_osc();
 
   void cleanup_connections();
@@ -121,9 +84,6 @@ private:
   void http_send_message(const std::string& str);
   void http_send_message(const rapidjson::StringBuffer& str);
 
-  void ws_send_message(const std::string& str);
-  void ws_send_message(const rapidjson::StringBuffer& str);
-
   // ZeroConf
   bool query_connected();
   void query_stop();
@@ -132,11 +92,9 @@ private:
 
   ossia::net::network_context_ptr m_ctx;
 
-  std::unique_ptr<osc_sender_impl> m_oscSender;
   std::unique_ptr<osc_receiver_impl> m_oscServer;
 
-  std::unique_ptr<ossia::net::websocket_client> m_websocketClient;
-  std::shared_ptr<async_state> m_async_state;
+  std::shared_ptr<oscquery_dense_shared_async_state> m_async_state;
   std::atomic_bool m_hasWS{};
 
   // Listening status of the local software
@@ -154,14 +112,14 @@ private:
   std::unique_ptr<http_async_client_context> m_http;
   ossia::oscquery::host_info m_host_info;
 
+  ossia::timer m_timer;
+
+  ossia::flat_set<ossia::net::parameter_base*, ossia::net::parameter_alphabetical_sort>
+      m_sorted_params;
+
+  std::optional<ossia::net::udp_send_socket> to_client;
   ossia::net::message_origin_identifier m_id;
   std::atomic<bool> m_feedback{true};
   bool m_zombie_on_remove{true};
-  enum
-  {
-    any_protocol,
-    http,
-    websockets
-  } m_protocol_to_use{any_protocol};
 };
 }

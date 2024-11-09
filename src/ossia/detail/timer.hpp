@@ -30,6 +30,10 @@ public:
   ~timer() { stop(); }
 
   void set_delay(std::chrono::milliseconds ms) noexcept { m_delay = ms; }
+  void set_delay(std::chrono::microseconds ms) noexcept
+  {
+    m_delay = std::chrono::duration_cast<std::chrono::milliseconds>(ms);
+  }
 
   template <typename F>
   void start(F f)

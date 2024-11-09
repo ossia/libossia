@@ -913,7 +913,7 @@ void iterate_all_children(
 {
   if(auto p = node->get_parameter())
     f(*p);
-  for(auto& cld : node->unsafe_children())
+  for(auto& cld : node->children())
     iterate_all_children(cld.get(), f);
 }
 

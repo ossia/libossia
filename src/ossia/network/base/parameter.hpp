@@ -185,6 +185,13 @@ protected:
   parameter_type m_type{};
 };
 
+struct OSSIA_EXPORT parameter_alphabetical_sort
+{
+  bool operator()(
+      const ossia::net::parameter_base* lhs,
+      const ossia::net::parameter_base* rhs) const noexcept;
+};
+
 inline bool operator==(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs == &rhs;
@@ -193,6 +200,5 @@ inline bool operator!=(const parameter_base& lhs, const parameter_base& rhs)
 {
   return &lhs != &rhs;
 }
-
 }
 }

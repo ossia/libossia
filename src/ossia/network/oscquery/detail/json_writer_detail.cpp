@@ -501,7 +501,6 @@ struct transport_visitor
     wr.Key("OSC_TRANSPORT");
     wr.String("UDP");
   }
-
   void operator()(const ossia::net::tcp_server_configuration& v) const noexcept
   {
     wr.Key("OSC_PORT");

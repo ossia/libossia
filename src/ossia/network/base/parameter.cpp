@@ -158,4 +158,10 @@ std::ostream& operator<<(std::ostream& s, const ossia::net::parameter_base& addr
 {
   return s << ossia::net::address_string_from_node(addr);
 }
+
+bool parameter_alphabetical_sort::operator()(
+    const parameter_base* lhs, const parameter_base* rhs) const noexcept
+{
+  return lhs->get_node().osc_address() < rhs->get_node().osc_address();
+}
 }
