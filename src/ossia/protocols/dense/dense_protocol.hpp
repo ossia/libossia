@@ -14,6 +14,8 @@
 
 #include <oscpack/osc/OscReceivedElements.h>
 
+#include <span>
+
 namespace ossia::net
 {
 struct dense_writer

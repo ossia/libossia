@@ -443,19 +443,6 @@ void oscquery_mirror_asio_protocol_dense::on_osc_message(
       std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
 #endif
 }
-static std::string asio_to_ip(std::string uri)
-{
-  uri = boost::algorithm::ierase_first_copy(uri, "http://");
-  uri = boost::algorithm::ierase_first_copy(uri, "https://");
-  uri = boost::algorithm::ierase_first_copy(uri, "ws://");
-  uri = boost::algorithm::ierase_first_copy(uri, "wss://");
-
-  auto pos = uri.find_last_of(':');
-  if(pos != std::string::npos)
-    uri.erase(pos, uri.size());
-
-  return uri;
-}
 
 bool oscquery_mirror_asio_protocol_dense::on_binary_ws_message(
     oscquery_mirror_asio_protocol_dense::connection_handler hdl,

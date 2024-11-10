@@ -2,6 +2,9 @@
 #include <ossia/network/context.hpp>
 #include <ossia/network/http/http_client.hpp>
 
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/erase.hpp>
+
 namespace ossia::oscquery_asio
 {
 
@@ -99,4 +102,17 @@ struct http_async_client_context
   std::shared_ptr<boost::asio::io_service::work> worker;
 };
 
+inline std::string asio_to_ip(std::string uri)
+{
+  uri = boost::algorithm::ierase_first_copy(uri, "http://");
+  uri = boost::algorithm::ierase_first_copy(uri, "https://");
+  uri = boost::algorithm::ierase_first_copy(uri, "ws://");
+  uri = boost::algorithm::ierase_first_copy(uri, "wss://");
+
+  auto pos = uri.find_last_of(':');
+  if(pos != std::string::npos)
+    uri.erase(pos, uri.size());
+
+  return uri;
+}
 }

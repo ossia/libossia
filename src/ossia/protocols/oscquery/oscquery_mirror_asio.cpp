@@ -23,8 +23,6 @@
 #include <ossia/network/sockets/websocket_client.hpp>
 #include <ossia/protocols/oscquery/http_requests.hpp>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/erase.hpp>
 namespace ossia::oscquery_asio
 {
 struct oscquery_mirror_asio_protocol::osc_sender_impl : ossia::net::udp_send_socket
@@ -477,19 +475,6 @@ void oscquery_mirror_asio_protocol::on_osc_message(const oscpack::ReceivedMessag
       "on_OSCMessage : Time taken: {}",
       std::chrono::duration_cast<std::chrono::microseconds>(t2 - t1).count());
 #endif
-}
-static std::string asio_to_ip(std::string uri)
-{
-  uri = boost::algorithm::ierase_first_copy(uri, "http://");
-  uri = boost::algorithm::ierase_first_copy(uri, "https://");
-  uri = boost::algorithm::ierase_first_copy(uri, "ws://");
-  uri = boost::algorithm::ierase_first_copy(uri, "wss://");
-
-  auto pos = uri.find_last_of(':');
-  if(pos != std::string::npos)
-    uri.erase(pos, uri.size());
-
-  return uri;
 }
 
 bool oscquery_mirror_asio_protocol::on_binary_ws_message(

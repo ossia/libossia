@@ -4,6 +4,8 @@
 #include <ossia/protocols/dense/dense_protocol.hpp>
 #include <ossia/protocols/oscquery/oscquery_fwd.hpp>
 
+#include <span>
+
 namespace ossia::oscquery_asio
 {
 class oscquery_mirror_asio_protocol_dense;
