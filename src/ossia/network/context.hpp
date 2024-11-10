@@ -1,4 +1,24 @@
 #pragma once
+
+#if defined(_WIN32)
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+#if !defined(NOMINMAX)
+#define NOMINMAX
+#endif
+#if !defined(UNICODE)
+#define UNICODE 1
+#endif
+#if !defined(_UNICODE)
+#define _UNICODE 1
+#endif
+// clang-format off
+#include <winsock2.h>
+#include <windows.h>
+// clang-format on
+#endif
+
 #include <ossia/detail/logger.hpp>
 
 #include <boost/asio/executor_work_guard.hpp>
