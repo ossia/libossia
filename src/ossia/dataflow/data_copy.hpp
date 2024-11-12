@@ -32,7 +32,10 @@ struct data_size
 
   std::size_t operator()(const audio_delay_line& p) const { return p.samples.size(); }
 
-  std::size_t operator()(const geometry_delay_line& p) const { return p.meshes.size(); }
+  std::size_t operator()(const geometry_delay_line& p) const
+  {
+    return p.geometries.size();
+  }
 
   std::size_t operator()(const ossia::monostate&) const { return 0; }
   std::size_t operator()() const { return 0; }
@@ -63,7 +66,7 @@ struct move_data
   {
     // OPTIMIZEME
     // if(out.flags & geometry_port::dirty_meshes)
-    in.meshes = out.meshes; //std::move(out.meshes);
+    in.geometry = out.geometry; //std::move(out.meshes);
     // if(out.flags & geometry_port::dirty_transform)
     in.transform = out.transform;
     in.flags = out.flags;
@@ -158,23 +161,23 @@ struct copy_data
   {
     // Called in init_node_visitor::copy, when copying from a node to another
     //if(out.flags & geometry_port::dirty_meshes)
-    in.meshes = out.meshes;
+    in.geometry = out.geometry;
     //if(out.flags & geometry_port::dirty_transform)
     in.transform = out.transform;
     in.flags = out.flags;
   }
 
-  void operator()(const mesh_list_ptr& out, geometry_port& in)
+  void operator()(const geometry_spec& out, geometry_port& in)
   {
     // Called in copy_data_pos below
-    in.meshes = out;
+    in.geometry = out;
   }
 
   void operator()(const geometry_port& out, geometry_delay_line& in)
   {
     // Called in env_writer, when copying from a node to a delay line
     // if(out.flags & geometry_port::dirty_meshes)
-    in.meshes.push_back(out.meshes);
+    in.geometries.push_back(out.geometry);
   }
 };
 
@@ -212,9 +215,9 @@ struct copy_data_pos
   }
   void operator()(const geometry_delay_line& out, geometry_port& in)
   {
-    if(pos < out.meshes.size())
+    if(pos < out.geometries.size())
     {
-      copy_data{}(out.meshes[pos], in);
+      copy_data{}(out.geometries[pos], in);
     }
   }
 };

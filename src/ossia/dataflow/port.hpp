@@ -531,7 +531,7 @@ inline T* inlet::target() noexcept
   {
     if(which() == 4)
     {
-      return static_cast<geometry_inlet*>(this)->data;
+      return &static_cast<geometry_inlet*>(this)->data;
     }
     else
     {
@@ -595,7 +595,7 @@ inline T* outlet::target() noexcept
   {
     if(which() == 4)
     {
-      return static_cast<geometry_outlet*>(this)->data;
+      return &static_cast<geometry_outlet*>(this)->data;
     }
     else
     {

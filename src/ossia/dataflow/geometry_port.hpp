@@ -105,6 +105,47 @@ struct transform3d
   };
 };
 
+struct geometry_filter
+{
+  int64_t node_id{}; // which node is responsible for initalizing the UBO
+  int64_t filter_id{}; // unique index for this filter instance
+  /**
+   * @brief shader
+   *
+   * ```
+   * layout(std140, binding = %next%) uniform filter_t {
+   *   float v;
+   * } filter;
+   * void process_vertex(inout vec3 position, inout vec3 normal, inout vec2 uv, inout vec3 tangent, inout vec4 color)
+   * {
+   *   position.xyz += v; 
+   * }
+   * ```
+   */
+  std::string shader;
+  int64_t dirty_index{};
+};
+
+struct geometry_filter_list
+{
+  std::vector<geometry_filter> filters;
+  int64_t dirty_index{};
+};
+using geometry_filter_list_ptr = std::shared_ptr<geometry_filter_list>;
+
+struct geometry_spec
+{
+  mesh_list_ptr meshes;
+  geometry_filter_list_ptr filters;
+
+  operator bool() const noexcept { return meshes && filters; }
+  bool operator==(const geometry_spec&) const noexcept = default;
+  bool operator<(const geometry_spec& rhs) const noexcept
+  {
+    return (meshes < rhs.meshes) || (meshes == rhs.meshes && filters < rhs.filters);
+  }
+};
+
 struct OSSIA_EXPORT geometry_port
 {
   static const constexpr int which = 4;
@@ -116,14 +157,14 @@ struct OSSIA_EXPORT geometry_port
 
   void clear();
 
-  mesh_list_ptr meshes;
+  geometry_spec geometry;
   transform3d transform;
   uint8_t flags{};
 };
 
 struct geometry_delay_line
 {
-  std::vector<mesh_list_ptr> meshes;
+  std::vector<geometry_spec> geometries;
 };
 
 }
