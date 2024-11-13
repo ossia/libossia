@@ -280,11 +280,12 @@ public:
   using writer_type = socket_writer<socket_type>;
 
   template <typename Configuration>
+    requires(requires(Configuration conf) { Socket{conf, network_context_ptr{}}; })
   osc_generic_server_protocol(network_context_ptr ctx, const Configuration& conf)
       : can_learn<ossia::net::protocol_base>{flags{SupportsMultiplex}}
       , m_ctx{std::move(ctx)}
       , m_id{*this}
-      , m_server{conf, m_ctx->context}
+      , m_server{conf, m_ctx}
   {
     init();
   }

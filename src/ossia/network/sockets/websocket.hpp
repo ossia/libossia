@@ -62,7 +62,7 @@ struct websocket_simple_client : websocket_client
 struct websocket_simple_server : ossia::net::websocket_server
 {
   websocket_simple_server(
-      const ws_server_configuration& conf, boost::asio::io_context& ctx)
+      const ws_server_configuration& conf, ossia::net::network_context_ptr ctx)
       : ossia::net::websocket_server{ctx}
       , m_port{conf.port}
   {
@@ -76,8 +76,9 @@ struct websocket_simple_server : ossia::net::websocket_server
   template <typename F>
   void listen(F onMessage)
   {
-    m_server.set_message_handler([handler = std::move(onMessage)](
-                                     connection_handler hdl, server_t::message_ptr msg) {
+    m_server->set_message_handler(
+        [handler
+         = std::move(onMessage)](connection_handler hdl, server_t::message_ptr msg) {
       const auto& data = msg->get_raw_payload();
       handler((const unsigned char*)data.data(), data.size());
     });
@@ -94,7 +95,7 @@ struct websocket_simple_server : ossia::net::websocket_server
 
   void close()
   {
-    m_server.get_io_service().post([this] { stop(); });
+    m_server->get_io_service().post([this] { stop(); });
   }
 
   std::vector<std::shared_ptr<void>> m_listeners;

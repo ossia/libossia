@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
 
 #include <boost/asio/io_context.hpp>
@@ -52,6 +53,12 @@ public:
       , m_acceptor{
             boost::asio::make_strand(ctx),
             proto::endpoint{boost::asio::ip::make_address(conf.bind), conf.port}}
+  {
+  }
+
+  tcp_server(
+      const inbound_socket_configuration& conf, ossia::net::network_context_ptr ctx)
+      : tcp_server{conf, ctx->context}
   {
   }
 

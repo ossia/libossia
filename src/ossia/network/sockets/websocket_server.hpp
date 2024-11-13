@@ -3,6 +3,7 @@
 
 #include <ossia/detail/json.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/exceptions.hpp>
 #include <ossia/network/sockets/websocket_reply.hpp>
 
@@ -19,23 +20,38 @@ namespace ossia::net
 class websocket_server
 {
 public:
+  using config = websocketpp::config::asio;
+  using transport_type = websocketpp::config::asio::transport_type;
   using server_t = websocketpp::server<websocketpp::config::asio>;
+  using type = server_t;
   using connection_handler = websocketpp::connection_hdl;
 
+  typedef typename config::concurrency_type concurrency_type;
+  typedef websocketpp::connection<config> connection_type;
+  typedef typename connection_type::ptr connection_ptr;
+  typedef typename transport_type::transport_con_type transport_con_type;
+  typedef typename transport_con_type::ptr transport_con_ptr;
+  typedef websocketpp::endpoint<connection_type, config> endpoint_type;
+
   websocket_server()
+      : m_owns_context{true}
+      , m_server{std::make_shared<server_t>()}
   {
-    m_server.init_asio();
-    m_server.set_reuse_addr(true);
-    m_server.clear_access_channels(websocketpp::log::alevel::all);
-    m_server.set_socket_init_handler(init_handler);
+    m_server->init_asio();
+    m_server->set_reuse_addr(true);
+    m_server->clear_access_channels(websocketpp::log::alevel::all);
+    m_server->set_socket_init_handler(init_handler);
   }
 
-  websocket_server(boost::asio::io_context& ctx)
+  websocket_server(ossia::net::network_context_ptr ctx)
+      : m_owns_context{true}
+      , m_server{std::make_shared<server_t>()}
+      , m_context{ctx}
   {
-    m_server.init_asio(&ctx);
-    m_server.set_reuse_addr(true);
-    m_server.clear_access_channels(websocketpp::log::alevel::all);
-    m_server.set_socket_init_handler(init_handler);
+    m_server->init_asio(&ctx->context);
+    m_server->set_reuse_addr(true);
+    m_server->clear_access_channels(websocketpp::log::alevel::all);
+    m_server->set_socket_init_handler(init_handler);
   }
 
   static void init_handler(websocketpp::connection_hdl, boost::asio::ip::tcp::socket& s)
@@ -54,19 +70,19 @@ public:
   template <typename Handler>
   void set_open_handler(Handler h)
   {
-    m_server.set_open_handler(h);
+    m_server->set_open_handler(h);
   }
 
   template <typename Handler>
   void set_close_handler(Handler h)
   {
-    m_server.set_close_handler(h);
+    m_server->set_close_handler(h);
   }
 
   template <typename Handler>
   void set_message_handler(Handler h)
   {
-    m_server.set_message_handler(
+    m_server->set_message_handler(
         [this, h](connection_handler hdl, server_t::message_ptr msg) {
 #if defined OSSIA_BENCHMARK
       auto t1 = std::chrono::high_resolution_clock::now();
@@ -81,24 +97,24 @@ public:
       }
       catch(const ossia::node_not_found_error& e)
       {
-        auto con = m_server.get_con_from_hdl(hdl);
+        auto con = m_server->get_con_from_hdl(hdl);
         ossia::logger().error(
             "Node not found: {} ==> {}", con->get_uri()->get_resource(), e.what());
       }
       catch(const ossia::bad_request_error& e)
       {
-        auto con = m_server.get_con_from_hdl(hdl);
+        auto con = m_server->get_con_from_hdl(hdl);
         ossia::logger().error(
             "Error in request: {} ==> {}", con->get_uri()->get_resource(), e.what());
       }
       catch(const std::exception& e)
       {
-        auto con = m_server.get_con_from_hdl(hdl);
+        auto con = m_server->get_con_from_hdl(hdl);
         ossia::logger().error("Error in request: {}", e.what());
       }
       catch(...)
       {
-        auto con = m_server.get_con_from_hdl(hdl);
+        auto con = m_server->get_con_from_hdl(hdl);
         ossia::logger().error("Error in request");
       }
 
@@ -110,8 +126,8 @@ public:
 #endif
     });
 
-    m_server.set_http_handler([this, h](connection_handler hdl) {
-      auto con = m_server.get_con_from_hdl(hdl);
+    m_server->set_http_handler([this, h](connection_handler hdl) {
+      auto con = m_server->get_con_from_hdl(hdl);
 
       // enable cross origin requests from anywhere
       con->append_header("Access-Control-Allow-Origin", "*");
@@ -138,6 +154,7 @@ public:
         con->replace_header("Connection", "close");
         con->set_body(std::move(str.data));
         con->set_status(websocketpp::http::status_code::ok);
+        return;
       }
       catch(const ossia::node_not_found_error& e)
       {
@@ -157,19 +174,52 @@ public:
       {
         ossia::logger().error("Error in request");
       }
+      con->set_status(websocketpp::http::status_code::internal_server_error);
     });
   }
 
   void listen(uint16_t port = 9002)
   {
-    m_server.listen(boost::asio::ip::tcp::v4(), port);
-    m_server.start_accept();
+    m_server->listen(boost::asio::ip::tcp::v4(), port);
+
+    boost::system::error_code ec;
+    start_accept(ec);
   }
 
-  void run()
+  void start_accept(boost::system::error_code& ec)
   {
-    m_server.run();
+    ec = boost::system::error_code();
+    auto con = m_server->get_connection(ec);
+
+    if(!con)
+    {
+      ///ec = boost::asio::error::make_error_code(boost::asio::error::con_creation_failed);
+      return;
+    }
+
+    namespace lib = websocketpp::lib;
+    m_server->transport_type::async_accept(
+        lib::static_pointer_cast<transport_con_type>(con),
+        [server = m_server, con](lib::error_code ec) {
+      if(server)
+      {
+        if(ec)
+          ec = websocketpp::error::http_connection_ended;
+        server->handle_accept_legacy(con, ec);
+        // lib::bind(
+        //     &type::handle_accept_legacy, m_server.get(), con, lib::placeholders::_1)
+      }
+    }, ec);
+
+    if(ec && con)
+    {
+      // If the connection was constructed but the accept failed,
+      // terminate the connection to prevent memory leaks
+      con->terminate(lib::error_code());
+    }
   }
+
+  void run() { m_server->run(); }
 
   void stop()
   {
@@ -178,27 +228,44 @@ public:
     // // (temporarily?) changed to stop_listening()
     // // "Straight up stop forcibly stops a bunch of things
     // // in a way that bypasses most, if not all, of the cleanup routines"
-    // if(m_server.is_listening())
-    //  m_server.stop_listening();
 
-    m_server.stop();
+    try
+    {
+      boost::system::error_code ec;
+      if(m_server->is_listening())
+        m_server->stop_listening(ec);
+    }
+    catch(...)
+    {
+    }
+
+    if(m_owns_context)
+    {
+      m_server->stop();
+    }
+    else
+    {
+      boost::asio::post(
+          m_context->context, [s = m_server]() mutable { new decltype(s){s}; });
+    }
+    //m_server->async_accept({});
   }
 
   void close(connection_handler hdl)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     con->close(websocketpp::close::status::going_away, "Server shutdown");
   }
 
   void send_message(connection_handler hdl, const std::string& message)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     con->send(message);
   }
 
   void send_message(connection_handler hdl, const ossia::net::server_reply& message)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     switch(message.type)
     {
       case server_reply::data_type::json:
@@ -213,28 +280,27 @@ public:
 
   void send_message(connection_handler hdl, const rapidjson::StringBuffer& message)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     con->send(message.GetString(), message.GetSize(), websocketpp::frame::opcode::text);
   }
 
   void send_binary_message(connection_handler hdl, const std::string& message)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     con->send(message.data(), message.size(), websocketpp::frame::opcode::binary);
   }
 
   void send_binary_message(connection_handler hdl, std::string_view message)
   {
-    auto con = m_server.get_con_from_hdl(hdl);
+    auto con = m_server->get_con_from_hdl(hdl);
     con->send(message.data(), message.size(), websocketpp::frame::opcode::binary);
   }
 
-  server_t& impl()
-  {
-    return m_server;
-  }
+  server_t& impl() { return *m_server; }
 
 protected:
-  server_t m_server;
+  std::shared_ptr<server_t> m_server;
+  ossia::net::network_context_ptr m_context;
+  bool m_owns_context{};
 };
 }

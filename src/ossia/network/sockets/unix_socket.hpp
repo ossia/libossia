@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
 
 #include <boost/asio/io_context.hpp>
@@ -128,6 +129,11 @@ public:
       : m_ensure_reuse{conf.fd}
       , m_context{ctx}
       , m_acceptor{boost::asio::make_strand(ctx), conf.fd}
+  {
+  }
+
+  unix_stream_server(const fd_configuration& conf, ossia::net::network_context_ptr ctx)
+      : unix_stream_server{conf, ctx->context}
   {
   }
 

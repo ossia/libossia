@@ -63,8 +63,7 @@ oscquery_server_protocol_base::oscquery_server_protocol_base(
     bool forceWS)
     : protocol_base{flags{SupportsMultiplex}}
     , m_context{std::move(ctx)}
-    , m_websocketServer{std::make_unique<ossia::net::websocket_server>(
-          m_context->context)}
+    , m_websocketServer{std::make_unique<ossia::net::websocket_server>(m_context)}
     , m_oscConf{conf}
     , m_wsPort{ws_port}
     , m_forceWS{forceWS}
@@ -423,32 +422,36 @@ void oscquery_server_protocol_base::set_device(net::device_base& dev)
 
 void oscquery_server_protocol_base::stop()
 {
-  try
+  if(m_websocketServer)
   {
-    lock_t lock(m_clientsMutex);
-    // close client-connections before stopping
-    auto it = m_clients.begin();
-    while(it != m_clients.end())
+    try
     {
-      auto con = m_websocketServer->impl().get_con_from_hdl((*it)->connection);
-      con->close(websocketpp::close::status::going_away, "Server shutdown");
-      it = m_clients.erase(it);
+      lock_t lock(m_clientsMutex);
+      // close client-connections before stopping
+      auto it = m_clients.begin();
+      while(it != m_clients.end())
+      {
+        auto con = m_websocketServer->impl().get_con_from_hdl((*it)->connection);
+        con->close(websocketpp::close::status::going_away, "Server shutdown");
+        it = m_clients.erase(it);
+      }
+      m_clientCount = 0;
     }
-    m_clientCount = 0;
-  }
-  catch(...)
-  {
-    logger().error("Error when freeing connections");
-  }
+    catch(...)
+    {
+      logger().error("Error when freeing connections");
+    }
 
-  try
-  {
-    m_websocketServer->stop();
-  }
+    try
+    {
+      m_websocketServer->stop();
+      m_websocketServer.reset();
+    }
 
-  catch(...)
-  {
-    logger().error("Error when stopping WS server");
+    catch(...)
+    {
+      logger().error("Error when stopping WS server");
+    }
   }
 }
 
