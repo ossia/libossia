@@ -1,3 +1,5 @@
+include(WholeArchive)
+
 target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:magic_enum::magic_enum>)
 
 if(TARGET Boost::boost)
@@ -288,8 +290,8 @@ if(OSSIA_DATAFLOW)
     elseif(OSSIA_ENABLE_KFR AND KFR_ENABLE_DFT) # defined in kfr/CMakeLists.txt
       target_link_libraries(ossia PRIVATE
         "$<BUILD_INTERFACE:kfr>"
-        "$<BUILD_INTERFACE:$<LINK_LIBRARY:WHOLE_ARCHIVE,kfr_dft>>"
       )
+      link_whole_archive(ossia PRIVATE kfr_dft)
     endif()
     target_sources(ossia PRIVATE ${OSSIA_FFT_HEADERS} ${OSSIA_FFT_SRCS})
   endif()
