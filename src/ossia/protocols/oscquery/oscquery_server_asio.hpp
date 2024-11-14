@@ -172,8 +172,10 @@ public:
   void update_zeroconf();
   void set_device(net::device_base& dev) override;
   void stop() override;
+  int get_osc_port() const noexcept { return m_oscPort; }
 
 private:
+  uint16_t m_oscPort{};
   std::unique_ptr<osc_receiver_impl> m_oscServer;
 
   net::zeroconf_server m_zeroconfServerOSC;

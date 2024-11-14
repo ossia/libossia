@@ -792,6 +792,7 @@ oscquery_server_protocol::oscquery_server_protocol(
     , m_oscServer{std::make_unique<osc_receiver_impl>(
           ossia::net::inbound_socket_configuration{"0.0.0.0", osc_port},
           m_context->context)}
+    , m_oscPort{osc_port}
 {
 }
 
