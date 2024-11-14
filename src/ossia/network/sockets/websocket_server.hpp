@@ -34,8 +34,8 @@ public:
   typedef websocketpp::endpoint<connection_type, config> endpoint_type;
 
   websocket_server()
-      : m_owns_context{true}
-      , m_server{std::make_shared<server_t>()}
+      : m_server{std::make_shared<server_t>()}
+      , m_owns_context{true}
   {
     m_server->init_asio();
     m_server->set_reuse_addr(true);
@@ -44,9 +44,9 @@ public:
   }
 
   websocket_server(ossia::net::network_context_ptr ctx)
-      : m_owns_context{true}
-      , m_server{std::make_shared<server_t>()}
+      : m_server{std::make_shared<server_t>()}
       , m_context{ctx}
+      , m_owns_context{false}
   {
     m_server->init_asio(&ctx->context);
     m_server->set_reuse_addr(true);
@@ -206,8 +206,6 @@ public:
         if(ec)
           ec = websocketpp::error::http_connection_ended;
         server->handle_accept_legacy(con, ec);
-        // lib::bind(
-        //     &type::handle_accept_legacy, m_server.get(), con, lib::placeholders::_1)
       }
     }, ec);
 
@@ -248,7 +246,6 @@ public:
       boost::asio::post(
           m_context->context, [s = m_server]() mutable { new decltype(s){s}; });
     }
-    //m_server->async_accept({});
   }
 
   void close(connection_handler hdl)
