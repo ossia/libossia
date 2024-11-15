@@ -48,6 +48,8 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
   if(m_conf.autocreate != m_conf.no_auto)
   {
     auto& root = dev.get_root_node();
+    root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
+        root, m_buffer, ossia::net::dmx_range{0, 512}, 0, 255));
     for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
     {
       auto name = m_conf.autocreate == m_conf.channel_index

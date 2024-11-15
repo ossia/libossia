@@ -11,8 +11,16 @@ namespace ossia::net
 {
 
 template <std::size_t I>
-struct artnet_visitor;
+struct artnet_in_visitor;
+template <std::size_t I>
+struct artnet_out_visitor;
+struct artnet_out_var_visitor;
 struct dmx_buffer;
+struct dmx_range
+{
+  int start{};
+  int num_bytes{};
+};
 class OSSIA_EXPORT dmx_parameter : public device_parameter
 {
 public:
@@ -36,6 +44,7 @@ private:
   friend struct artnet_in_visitor;
   template <std::size_t I>
   friend struct artnet_out_visitor;
+  friend struct artnet_out_var_visitor;
 };
 
 class OSSIA_EXPORT dmx_enum_parameter : public device_parameter
@@ -56,6 +65,31 @@ private:
   friend struct artnet_enum_visitor;
 };
 
+class OSSIA_EXPORT dmx_range_parameter : public device_parameter
+{
+public:
+  dmx_range_parameter(
+      net::node_base& node, dmx_buffer& buffer, dmx_range range, int min = 0,
+      int max = 255);
+  ~dmx_range_parameter();
+
+  uint32_t channel() const noexcept { return m_channel; }
+
+  void set_dmx_value(const uint8_t* start, const uint8_t* buffer_end);
+
+private:
+  void device_update_value() override;
+
+  dmx_buffer& m_buffer;
+  int16_t m_bytes{};
+  int16_t m_channel{};
+
+  template <std::size_t I>
+  friend struct artnet_in_visitor;
+  template <std::size_t I>
+  friend struct artnet_out_visitor;
+  friend struct artnet_out_var_visitor;
+};
 /*
 struct artnet_range_element {
   std::string name;

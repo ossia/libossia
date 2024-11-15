@@ -118,6 +118,38 @@ struct artnet_out_visitor
   }
 };
 
+struct artnet_out_var_visitor
+{
+  dmx_range_parameter& self;
+  void operator()(int v) const noexcept
+  {
+    auto& buf = self.m_buffer.data;
+    for(int i = self.m_channel;
+        i < self.m_channel + self.m_bytes && i < DMX_CHANNEL_COUNT; i++)
+    {
+      buf[i] = v;
+    }
+  }
+  void operator()(float v) const noexcept { (*this)(int(v)); }
+  void operator()(bool v) const noexcept { (*this)(v ? 255 : 0); }
+  void operator()(const std::vector<ossia::value>& v) const noexcept
+  {
+    int N = v.size();
+    auto& buf = self.m_buffer.data;
+    int k = 0;
+    for(int i = self.m_channel;
+        i < self.m_channel + self.m_bytes && i < DMX_CHANNEL_COUNT && k < N; i++, k++)
+    {
+      buf[i] = ossia::convert<int>(v[k]);
+    }
+  }
+
+  template <typename... Args>
+  void operator()(const Args&...) const noexcept
+  {
+  }
+};
+
 template <>
 struct artnet_out_visitor<1>
 {
@@ -144,8 +176,8 @@ dmx_parameter::dmx_parameter(
     net::node_base& node, dmx_buffer& buffer, const unsigned int channel, int min,
     int max, int8_t bytes)
     : device_parameter(
-        node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
-        make_domain(min, max))
+          node, val_type::INT, bounding_mode::CLIP, access_mode::SET,
+          make_domain(min, max))
     , m_bytes{bytes}
     , m_buffer{buffer}
     , m_channel{channel}
@@ -195,8 +227,27 @@ void dmx_parameter::device_update_value()
     case 4:
       m_current_value.apply(artnet_out_visitor<4>{*this});
       break;
+    default:
   }
 
+  m_buffer.dirty = true;
+}
+
+dmx_range_parameter::dmx_range_parameter(
+    net::node_base& node, dmx_buffer& buffer, dmx_range range, int min, int max)
+    : device_parameter(
+          node, val_type::LIST, bounding_mode::CLIP, access_mode::SET,
+          make_domain(min, max))
+    , m_bytes(range.num_bytes)
+    , m_buffer{buffer}
+    , m_channel(range.start)
+{
+}
+
+dmx_range_parameter::~dmx_range_parameter() = default;
+void dmx_range_parameter::device_update_value()
+{
+  m_current_value.apply(artnet_out_var_visitor{*this});
   m_buffer.dirty = true;
 }
 
