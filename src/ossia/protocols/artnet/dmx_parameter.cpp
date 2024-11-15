@@ -227,7 +227,6 @@ void dmx_parameter::device_update_value()
     case 4:
       m_current_value.apply(artnet_out_visitor<4>{*this});
       break;
-    default:
   }
 
   m_buffer.dirty = true;
