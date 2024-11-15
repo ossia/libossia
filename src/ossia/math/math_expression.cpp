@@ -85,9 +85,10 @@ struct perlin<T, 1> : public exprtk::ifunction<T>
   }
 };
 
+static thread_local exprtk::parser<double> g_exprtk_parser
+    = exprtk::parser<double>{exprtk::parser<double>::settings_store{}};
 struct math_expression::impl
 {
-  static inline thread_local exprtk::parser<double> g_exprtk_parser;
   rand_gen<double> random;
   perlin<double, 1> noise1d;
   exprtk::symbol_table<double> syms;
@@ -189,10 +190,10 @@ bool math_expression::recompile()
 {
   impl->variables = std::nullopt;
 
-  impl->valid = impl->g_exprtk_parser.compile(impl->cur_expr_txt, impl->expr);
+  impl->valid = g_exprtk_parser.compile(impl->cur_expr_txt, impl->expr);
   if(!impl->valid)
   {
-    ossia::logger().error("Error while parsing: {}", impl->g_exprtk_parser.error());
+    ossia::logger().error("Error while parsing: {}", g_exprtk_parser.error());
   }
 
   return impl->valid;
@@ -200,7 +201,7 @@ bool math_expression::recompile()
 
 std::string math_expression::error() const
 {
-  return impl->g_exprtk_parser.error();
+  return g_exprtk_parser.error();
 }
 
 double math_expression::value()
