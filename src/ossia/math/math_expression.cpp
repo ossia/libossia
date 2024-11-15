@@ -87,13 +87,14 @@ struct perlin<T, 1> : public exprtk::ifunction<T>
 
 struct math_expression::impl
 {
+  static inline thread_local exprtk::parser<double> g_exprtk_parser;
   rand_gen<double> random;
   perlin<double, 1> noise1d;
   exprtk::symbol_table<double> syms;
   exprtk::expression<double> expr;
-  exprtk::parser<double> parser;
   std::string cur_expr_txt;
-  std::vector<std::string> variables;
+  std::optional<std::vector<std::string>> variables;
+  std::vector<std::string> missing_variables;
   bool valid{};
 };
 
@@ -162,21 +163,36 @@ bool math_expression::set_expression(const std::string& expr)
 
 bool math_expression::has_variable(std::string_view var) const noexcept
 {
-  return std::binary_search(impl->variables.begin(), impl->variables.end(), var);
+  if(std::binary_search(
+         impl->missing_variables.begin(), impl->missing_variables.end(), var))
+    return false;
+
+  if(impl->cur_expr_txt.find(var) == std::string::npos)
+  {
+    impl->missing_variables.push_back(std::string(var));
+    return false;
+  }
+
+  auto b = impl->expr;
+  if(!impl->variables)
+  {
+    if(impl->valid)
+    {
+      impl->variables.emplace();
+      exprtk::collect_variables(impl->cur_expr_txt, *impl->variables);
+    }
+  }
+  return std::binary_search(impl->variables->begin(), impl->variables->end(), var);
 }
 
 bool math_expression::recompile()
 {
-  impl->variables.clear();
+  impl->variables = std::nullopt;
 
-  impl->valid = impl->parser.compile(impl->cur_expr_txt, impl->expr);
-  if(impl->valid)
+  impl->valid = impl->g_exprtk_parser.compile(impl->cur_expr_txt, impl->expr);
+  if(!impl->valid)
   {
-    exprtk::collect_variables(impl->cur_expr_txt, impl->variables);
-  }
-  else
-  {
-    ossia::logger().error("Error while parsing: {}", impl->parser.error());
+    ossia::logger().error("Error while parsing: {}", impl->g_exprtk_parser.error());
   }
 
   return impl->valid;
@@ -184,7 +200,7 @@ bool math_expression::recompile()
 
 std::string math_expression::error() const
 {
-  return impl->parser.error();
+  return impl->g_exprtk_parser.error();
 }
 
 double math_expression::value()
