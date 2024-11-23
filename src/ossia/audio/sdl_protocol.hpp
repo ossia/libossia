@@ -72,6 +72,8 @@ private:
 
     auto& self = *static_cast<sdl_protocol*>(userData);
     self.tick_start();
+    if(!self.m_start)
+      self.m_start = std::chrono::steady_clock::now();
 
     auto audio_out = reinterpret_cast<float*>(data);
     const int out_chan = self.m_obtained.channels;
@@ -100,9 +102,15 @@ private:
 
       // if one day there's input... samples[j++] / 32768.;
 
-      // TODO time in seconds !
-      ossia::audio_tick_state ts{nullptr,  float_output,     0,
-                                 out_chan, (uint64_t)frames, 0};
+      auto now = std::chrono::steady_clock::now();
+      auto nsecs
+          = std::chrono::duration_cast<std::chrono::nanoseconds>(now - *self.m_start)
+                .count()
+            / 1e9;
+
+      ossia::audio_tick_state ts{
+          nullptr, float_output,       0, out_chan, (uint64_t)frames,
+          nsecs,   self.m_total_frames};
       self.audio_tick(ts);
 
       for(int j = 0; j < frames; j++)
@@ -110,11 +118,14 @@ private:
           *audio_out++ = float_output[c][j];
 
       self.tick_end();
+      self.m_total_frames += frames;
     }
   }
 
   SDL_AudioDeviceID m_deviceId{};
   SDL_AudioSpec m_desired, m_obtained;
+  uint64_t m_total_frames{};
+  std::optional<std::chrono::steady_clock::time_point> m_start;
 };
 }
 
