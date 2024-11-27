@@ -422,7 +422,7 @@ void oscquery_mirror_asio_protocol_dense::init()
   start_http();
   start_osc();
 
-  http_send_message("/?HOST_INFO");
+  http_send_message("/?HOST_INFO=1");
 }
 
 void oscquery_mirror_asio_protocol_dense::on_osc_message(

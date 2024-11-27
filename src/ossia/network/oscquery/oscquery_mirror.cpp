@@ -629,7 +629,7 @@ void oscquery_mirror_protocol::init()
     }
   }
 
-  http_send_message("/?HOST_INFO");
+  http_send_message("/?HOST_INFO=1");
   m_oscServer->run();
 }
 

@@ -448,7 +448,7 @@ void oscquery_mirror_asio_protocol::init()
   start_websockets();
   start_osc();
 
-  http_send_message("/?HOST_INFO");
+  http_send_message("/?HOST_INFO=1");
 }
 
 void oscquery_mirror_asio_protocol::request_add_node(
