@@ -108,9 +108,8 @@ private:
                 .count()
             / 1e9;
 
-      ossia::audio_tick_state ts{
-          nullptr, float_output,       0, out_chan, (uint64_t)frames,
-          nsecs,   self.m_total_frames};
+      ossia::audio_tick_state ts{nullptr,  float_output,     0,
+                                 out_chan, (uint64_t)frames, nsecs};
       self.audio_tick(ts);
 
       for(int j = 0; j < frames; j++)
