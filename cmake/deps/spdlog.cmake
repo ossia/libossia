@@ -36,7 +36,7 @@ if(NOT TARGET spdlog::spdlog)
         "$<BUILD_INTERFACE:fmt::fmt>"
     )
   else()
-    add_library(spdlog INTERFACE IMPORTED)
+    add_library(spdlog INTERFACE IMPORTED GLOBAL)
     target_compile_definitions(spdlog
       INTERFACE
         SPDLOG_FMT_EXTERNAL=1
@@ -52,6 +52,7 @@ if(NOT TARGET spdlog::spdlog)
       INTERFACE
         "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/spdlog/include>"
     )
+    target_link_libraries(spdlog INTERFACE fmt::fmt)
   endif()
 
   add_library(spdlog::spdlog ALIAS spdlog)
