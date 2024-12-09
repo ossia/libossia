@@ -128,7 +128,12 @@ struct osc_value_send_visitor
         oscpack::OutboundPacketStream p{buf.data(), buf.size()};
 
         p << oscpack::BeginMessageN(address_pattern);
-        dynamic_policy{{p, parameter.get_unit()}}(v);
+
+        bool ok = false;
+        if(auto ep = ossia::net::get_extended_type(parameter))
+          ok = process_extended_array(*ep, p, v);
+        if(!ok)
+          dynamic_policy{{p, parameter.get_unit()}}(v);
         p << oscpack::EndMessage();
 
         writer(p.Data(), p.Size());
@@ -154,8 +159,26 @@ struct osc_value_send_visitor
   }
 
   void operator()(const value_map_type& v) const noexcept { }
-
   void operator()() { }
+
+  bool process_extended_array(
+      const ossia::extended_type& e, oscpack::OutboundPacketStream& out,
+      const std::vector<ossia::value>& v) const
+  {
+    if(e == u8_blob_type())
+    {
+      std::string data;
+      for(auto& val : v)
+      {
+        data += static_cast<unsigned char>(ossia::convert<int>(val));
+      }
+
+      oscpack::Blob b(data.data(), data.size());
+      out << b;
+      return true;
+    }
+    return false;
+  }
 };
 
 template <typename Parameter, typename OscPolicy>

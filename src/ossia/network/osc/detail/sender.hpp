@@ -81,8 +81,7 @@ private:
       try
       {
         oscpack::OutboundPacketStream p{buf.data(), buf.size()};
-        oscpack::osc_message_generator<ossia::net::osc_1_0_outbound_stream_visitor>
-            generate_message{p};
+        oscpack::osc_message_generator<ValueWriter> generate_message{p};
         generate_message(std::forward<Args>(args)...);
         send_impl(p);
         break;
