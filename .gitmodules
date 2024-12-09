@@ -33,7 +33,7 @@
     url = https://github.com/jcelerier/libartnet
 [submodule "3rdparty/whereami"]
     path = 3rdparty/whereami
-    url = https://github.com/gpakosz/whereami
+    url = https://github.com/jcelerier/whereami
 [submodule "3rdparty/exprtk"]
     path = 3rdparty/exprtk
     url = https://github.com/ArashPartow/exprtk
