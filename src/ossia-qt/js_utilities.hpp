@@ -630,6 +630,11 @@ QMetaObject::Connection connectSignalToMatchingMethod(
 
 OSSIA_EXPORT QDebug operator<<(QDebug s, const ossia::value& v);
 
+W_REGISTER_ARGTYPE(QJSValue)
+
+Q_DECLARE_METATYPE(QJSValueList)
+W_REGISTER_ARGTYPE(QJSValueList)
+
 #else
 #error This file requires Qt.
 #endif
