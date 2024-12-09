@@ -20,6 +20,7 @@
 #include <QSerialPort>
 #include <QThread>
 
+#include <span>
 #include <verdigris>
 
 class QQmlEngine;
