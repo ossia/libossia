@@ -130,7 +130,6 @@ bool http_protocol::observe(parameter_base&, bool enable)
 void http_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
-  m_device->get_capabilities();
   m_engine->findChild<ossia::qt::qml_device_engine_functions*>()->setDevice(&dev);
   m_component->setData(m_code, QUrl{});
 }
