@@ -10,7 +10,10 @@
 #include <boost/asio/use_future.hpp>
 #include <boost/beast.hpp>
 
+// clang-format off
 #include <async_mqtt5.hpp>
+#include <async_mqtt5/websocket.hpp>
+// clang-format on
 
 #include <coroutine>
 
