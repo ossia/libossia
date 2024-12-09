@@ -40,6 +40,11 @@ extended_type string_list_type()
   return "stringArray";
 }
 
+extended_type u8_blob_type()
+{
+  return "u8Blob";
+}
+
 extended_type list_type()
 {
   return "list";
@@ -66,7 +71,7 @@ std::vector<ossia::val_type> underlying_type(const extended_type& e)
         ossia::val_type::VEC4F};
 
   if(e == list_type() || e == float_list_type() || e == integer_list_type()
-     || e == string_list_type())
+     || e == string_list_type() || e == u8_blob_type())
     return {ossia::val_type::LIST};
 
   if(e == nil_type() || e == empty_type())
