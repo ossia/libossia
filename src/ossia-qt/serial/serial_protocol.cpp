@@ -1,14 +1,21 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "qml_engine_functions.hpp"
+
 #include <ossia/detail/config.hpp>
 #if defined(OSSIA_PROTOCOL_SERIAL)
 
 #include "serial_protocol.hpp"
 
 #include <ossia/detail/lockfree_queue.hpp>
+#include <ossia/network/osc/detail/message_generator.hpp>
+#include <ossia/network/osc/detail/osc_1_1_policy.hpp>
+#include <ossia/network/osc/detail/osc_value_write_visitor.hpp>
 
 #include <ossia-qt/invoke.hpp>
+
+#include <boost/endian.hpp>
 
 #include <QDebug>
 #include <QQmlComponent>
@@ -16,18 +23,15 @@
 #include <QQmlEngine>
 
 #include <wobjectimpl.h>
-
-#include <iomanip>
-#include <sstream>
 W_OBJECT_IMPL(ossia::net::serial_wrapper)
 namespace ossia
 {
 namespace net
 {
 
-static auto on_open = [] { fprintf(stderr, "connection open! \n"); };
-static auto on_close = [] { fprintf(stderr, "connection on_close! \n"); };
-static auto on_fail = [] { fprintf(stderr, "connection on_fail! \n"); };
+static auto on_open = [] { };
+static auto on_close = [] { };
+static auto on_fail = [] { };
 
 struct serial_wrapper_read
 {
@@ -75,6 +79,11 @@ serial_wrapper::serial_wrapper(
 }
 
 void serial_wrapper::on_write(const QByteArray& b) noexcept
+{
+  ossia::visit([&b](auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
+}
+
+void serial_wrapper::on_write(std::string_view b) noexcept
 {
   ossia::visit([&b](auto& sock) { sock.write(b.data(), b.size()); }, m_socket);
 }
@@ -129,6 +138,7 @@ struct serial_protocol_object
   std::shared_ptr<serial_wrapper> m_port;
 
   double m_coalesce{};
+  bool m_osc{};
 };
 
 serial_protocol_object serial_protocol::load_serial_object_from_qml(
@@ -167,6 +177,11 @@ serial_protocol_object serial_protocol::load_serial_object_from_qml(
   if(frm == "slip")
   {
     conf.framing = ossia::net::framing::slip;
+  }
+  else if(frm == "osc-slip")
+  {
+    conf.framing = ossia::net::framing::slip;
+    r.m_osc = true;
   }
   else if(frm == "size")
   {
@@ -251,6 +266,17 @@ serial_protocol::serial_protocol(
     // Serial thread
 
     m_engine = new QQmlEngine;
+
+    auto obj = new ossia::qt::qml_device_engine_functions{
+        {}, [](ossia::net::parameter_base& param, const ossia::value_port& v) {
+      if(v.get_data().empty())
+        return;
+      auto& last = v.get_data().back().value;
+      param.push_value(last);
+    }, m_engine};
+    obj->setDevice(m_device);
+    m_engine->rootContext()->setContextProperty("Device", obj);
+
     m_component = new QQmlComponent{m_engine};
     m_engine->moveToThread(&m_thread);
     m_component->moveToThread(&m_thread);
@@ -279,12 +305,26 @@ serial_protocol::serial_protocol(
             m_onBinaryMessage = res.m_onBinaryMessage;
             m_onRead = res.m_onRead;
             m_port = res.m_port;
+            m_osc = res.m_osc;
             if(res.m_coalesce > 0.)
             {
               m_coalesce = res.m_coalesce;
-              m_queue.callback
-                  = [this](ossia::net::parameter_base& p, const ossia::value& v) {
-                do_write(p, v);
+              m_queue.callback = [this](const coalescing_queue::coalesced& elts) {
+                thread_local std::vector<
+                    std::pair<const serial_parameter*, const ossia::value*>>
+                    osc_messages;
+                osc_messages.clear();
+
+                for(auto& [p, v] : elts)
+                {
+                  auto serial_param = static_cast<serial_parameter*>(p);
+                  if(serial_param->data().osc_address.isEmpty())
+                    do_write(*p, v);
+                  else
+                    osc_messages.emplace_back(serial_param, &v);
+                }
+
+                do_write_osc_bundle(osc_messages);
               };
 
               ossia::qt::run_async(m_threadWorker, [this] {
@@ -374,14 +414,130 @@ void serial_protocol::on_read(const QString& txt, const QByteArray& a)
   }
 }
 
+void perform_replacements(
+    const ossia::net::parameter_base& addr, const ossia::value& v, QString& str)
+{
+  auto& ad = const_cast<serial_parameter&>(static_cast<const serial_parameter&>(addr));
+  // FIXME harmonize with qt::value_to_js_string_unquoted in HTTP
+  if(str.contains("$val"))
+    switch(ad.get_value_type())
+    {
+      case ossia::val_type::FLOAT:
+        str.replace("$val", QString::number(v.get<float>(), 'g', 4));
+        break;
+      case ossia::val_type::INT:
+        str.replace("$val", QString::number(v.get<int32_t>()));
+        break;
+      case ossia::val_type::STRING:
+        str.replace("$val", QString::fromStdString(v.get<std::string>()));
+        break;
+      case ossia::val_type::BOOL:
+        str.replace("$val", v.get<bool>() ? "1" : "0");
+        break;
+      case ossia::val_type::VEC2F: {
+        auto& vec = v.get<ossia::vec2f>();
+        str.replace("$val", QString{"%1 %2"}.arg(vec[0]).arg(vec[1]));
+        break;
+      }
+      case ossia::val_type::VEC3F: {
+        auto& vec = v.get<ossia::vec3f>();
+        str.replace("$val", QString{"%1 %2 %3"}.arg(vec[0]).arg(vec[1]).arg(vec[2]));
+        break;
+      }
+      case ossia::val_type::VEC4F: {
+        auto& vec = v.get<ossia::vec4f>();
+        str.replace(
+            "$val",
+            QString{"%1 %2 %3 %4"}.arg(vec[0]).arg(vec[1]).arg(vec[2]).arg(vec[3]));
+        break;
+      }
+      case ossia::val_type::LIST:
+        str.replace("$val", "TODO");
+        break;
+      case ossia::val_type::MAP:
+        str.replace("$val", "TODO");
+        break;
+      case ossia::val_type::IMPULSE:
+        str.replace("$val", "TODO");
+        break;
+      default:
+        qDebug() << "serial_protocol::push: bad type";
+    }
+}
+
+void serial_protocol::do_write_osc_impl(
+    const serial_parameter& addr, const ossia::value& v, std::string& str)
+{
+  struct Writer
+  {
+    std::string& str;
+    void operator()(const char* v, std::size_t sz) const noexcept
+    {
+      str.insert(str.end(), v, v + sz);
+    }
+  } w{str};
+
+  using send_visitor = ossia::net::osc_value_send_visitor<
+      ossia::net::parameter_base, ossia::net::osc_1_1_policy, Writer>;
+
+  send_visitor vis{addr, addr.data().osc_address.toStdString(), w};
+  v.apply(vis);
+}
+
+void serial_protocol::do_write_osc(const serial_parameter& addr, const ossia::value& v)
+{
+  static thread_local std::string str;
+  str.clear();
+
+  do_write_osc_impl(addr, v, str);
+
+  m_port->on_write(str);
+}
+
+void serial_protocol::do_write_osc_bundle(
+    std::span<std::pair<const serial_parameter*, const value*>> vec)
+{
+  if(vec.empty())
+    return;
+
+  using namespace std::literals;
+  static thread_local std::string str;
+  str.clear();
+  str.reserve(65535);
+  str.append("#bundle\0"s);
+  auto time = std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::steady_clock::now().time_since_epoch())
+                  .count();
+  auto time_be = boost::endian::native_to_big((uint64_t)time);
+  str.append(reinterpret_cast<const char*>(&time_be), 8);
+
+  for(auto& [addr, val_p] : vec)
+  {
+    const std::size_t size_pos = str.size();
+    const std::size_t msg_pos = size_pos + 4;
+    str.append(4, 0);
+    do_write_osc_impl(*addr, *val_p, str);
+    const std::size_t msg_len = str.size() - msg_pos;
+    auto sz_be = boost::endian::native_to_big((uint32_t)msg_len);
+    std::copy_n(reinterpret_cast<const char*>(&sz_be), 4, str.begin() + size_pos);
+  }
+
+  m_port->on_write(str);
+}
+
 void serial_protocol::do_write(
     const ossia::net::parameter_base& addr, const ossia::value& v)
 {
+  auto& ad = const_cast<serial_parameter&>(static_cast<const serial_parameter&>(addr));
+  const auto& data = ad.data();
+
+  if(!data.osc_address.isEmpty())
+  {
+    return do_write_osc(ad, v);
+  }
+
   auto& engine = *m_engine;
   auto& port = *m_port;
-
-  auto& ad = const_cast<serial_parameter&>(static_cast<const serial_parameter&>(addr));
-
   QJSValue& req = ad.data().request;
 
   QString str;
@@ -419,51 +575,7 @@ void serial_protocol::do_write(
     return;
   }
 
-  // FIXME harmonize with qt::value_to_js_string_unquoted in HTTP
-  switch(ad.get_value_type())
-  {
-    case ossia::val_type::FLOAT:
-      str.replace("$val", QString::number(v.get<float>(), 'g', 4));
-      break;
-    case ossia::val_type::INT:
-      str.replace("$val", QString::number(v.get<int32_t>()));
-      break;
-    case ossia::val_type::STRING:
-      str.replace("$val", QString::fromStdString(v.get<std::string>()));
-      break;
-    case ossia::val_type::BOOL:
-      str.replace("$val", v.get<bool>() ? "1" : "0");
-      break;
-    case ossia::val_type::VEC2F: {
-      auto& vec = v.get<ossia::vec2f>();
-      str.replace("$val", QString{"%1 %2"}.arg(vec[0]).arg(vec[1]));
-      break;
-    }
-    case ossia::val_type::VEC3F: {
-      auto& vec = v.get<ossia::vec3f>();
-      str.replace("$val", QString{"%1 %2 %3"}.arg(vec[0]).arg(vec[1]).arg(vec[2]));
-      break;
-    }
-    case ossia::val_type::VEC4F: {
-      auto& vec = v.get<ossia::vec4f>();
-      str.replace(
-          "$val",
-          QString{"%1 %2 %3 %4"}.arg(vec[0]).arg(vec[1]).arg(vec[2]).arg(vec[3]));
-      break;
-    }
-    case ossia::val_type::LIST:
-      str.replace("$val", "TODO");
-      break;
-    case ossia::val_type::MAP:
-      str.replace("$val", "TODO");
-      break;
-    case ossia::val_type::IMPULSE:
-      str.replace("$val", "TODO");
-      break;
-    default:
-      qDebug() << "serial_protocol::push: bad type";
-  }
-
+  perform_replacements(ad, v, str);
   port.on_write(str.toUtf8());
   return;
 }

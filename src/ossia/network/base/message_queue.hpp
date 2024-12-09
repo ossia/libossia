@@ -118,12 +118,14 @@ private:
 struct coalescing_queue
 {
 public:
-  smallfun::function<void(ossia::net::parameter_base&, ossia::value)> callback;
+  using coalesced = ossia::hash_map<ossia::net::parameter_base*, ossia::value>;
+
+  smallfun::function<void(const coalesced&)> callback;
 
   ossia::mpmc_queue<ossia::received_value> noncritical;
   ossia::mpmc_queue<ossia::received_value> critical;
 
-  ossia::hash_map<ossia::net::parameter_base*, ossia::value> coalesce;
+  coalesced coalesce;
 
   void process_messages()
   {
@@ -131,19 +133,18 @@ public:
 
     while(critical.try_dequeue(v))
     {
-      callback(*v.address, v.value);
+      coalesce.emplace(v.address, std::move(v.value));
+      callback(coalesce);
+      coalesce.clear();
     }
 
     coalesce.clear();
     while(noncritical.try_dequeue(v))
     {
-      coalesce[v.address] = v.value;
+      coalesce[v.address] = std::move(v.value);
     }
 
-    for(auto& [p, v] : coalesce)
-    {
-      callback(*p, v);
-    }
+    callback(coalesce);
 
     coalesce.clear();
   }

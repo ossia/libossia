@@ -43,9 +43,13 @@ struct serial_parameter_data_base
     {
       request = val.property("name");
     }
+
+    if(val.hasProperty("osc_address"))
+      osc_address = val.property("osc_address").toString();
   }
 
   QJSValue request;
+  QString osc_address;
 };
 struct serial_parameter_data final
     : public parameter_data
@@ -117,7 +121,9 @@ public:
   void read(QString txt, QByteArray raw) E_SIGNAL(OSSIA_EXPORT, read, txt, raw);
 
   void on_write(const QByteArray& b) noexcept;
-  W_SLOT(on_write)
+  W_SLOT(on_write, (const QByteArray&))
+
+  void on_write(std::string_view b) noexcept;
 
   void on_read(const QByteArray& arr);
   W_SLOT(on_read)
@@ -168,6 +174,11 @@ private:
       const ossia::net::serial_configuration& cfg);
   void on_read(const QString& txt, const QByteArray&);
   void do_write(const ossia::net::parameter_base&, const ossia::value& v);
+  void do_write_osc(const serial_parameter&, const ossia::value& v);
+  void do_write_osc_bundle(
+      std::span<std::pair<const serial_parameter*, const ossia::value*>> vec);
+  void do_write_osc_impl(
+      const serial_parameter& addr, const ossia::value& v, std::string& str);
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
 
@@ -185,6 +196,7 @@ private:
 
   coalescing_queue m_queue;
   std::optional<double> m_coalesce{};
+  bool m_osc{};
 };
 using serial_device = ossia::net::wrapped_device<serial_node, serial_protocol>;
 
