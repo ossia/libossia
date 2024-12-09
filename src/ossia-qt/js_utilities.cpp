@@ -307,8 +307,14 @@ net::parameter_data make_parameter_data(const QJSValue& js)
     if(!dat.unit)
       dat.unit = ossia::parse_pretty_unit(js.property("unit").toString().toStdString());
 
-    ossia::net::set_description(
-        dat.extended, js.property("description").toString().toStdString());
+    if(js.hasProperty("description"))
+      ossia::net::set_description(
+          dat.extended, js.property("description").toString().toStdString());
+
+    if(js.hasProperty("extended_type"))
+      ossia::net::set_extended_type(
+          dat.extended, js.property("extended_type").toString().toStdString());
+
     QJSValue tags = js.property("tags");
     if(tags.isArray())
     {
