@@ -293,7 +293,7 @@ void scenario::offset_impl(ossia::time_value offset)
   // build offset state from all ordered past events
   if(unmuted())
   {
-#if defined(OSSIA_SCENARIO_DATAFLOW)
+#if defined(OSSIA_SCENARIO_DATAFLOW) && defined(__cpp_rtti)
     ossia::state state;
 
     for(const auto& e : pastEvents)

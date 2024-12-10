@@ -53,6 +53,7 @@ public:
   }
 
   void enqueue(T&& t) { impl.insert(impl.begin(), std::move(t)); }
+  int size_approx() const noexcept { return impl.size(); }
 
 private:
   std::vector<T> impl;

@@ -48,7 +48,7 @@ namespace ossia
 {
 void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 {
-#if !defined(__EMSCRIPTEN__)                                              \
+#if !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)              \
     && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS \
         || BOOST_LIB_C_GNU)
   sched_param sch_params;
@@ -64,8 +64,8 @@ void set_thread_name(std::thread& t, std::string_view name)
 {
 #if BOOST_OS_MACOS
   pthread_setname_np(name.data());
-#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
-    && !defined(__EMSCRIPTEN__)
+#elif (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
+    && !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)
   pthread_setname_np(t.native_handle(), name.data());
 #endif
 }
@@ -74,15 +74,15 @@ void set_thread_name(std::string_view name)
 {
 #if BOOST_OS_MACOS
   pthread_setname_np(name.data());
-#elif(BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
-    && !defined(__EMSCRIPTEN__)
+#elif (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU) \
+    && !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING)
   pthread_setname_np(pthread_self(), name.data());
 #endif
 }
 
 void set_thread_pinned(int cpu)
 {
-#if !defined(__EMSCRIPTEN__) && (!BOOST_OS_APPLE) \
+#if !defined(__EMSCRIPTEN__) && !defined(OSSIA_FREESTANDING) && (!BOOST_OS_APPLE) \
     && (BOOST_OS_UNIX || BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_LIB_C_GNU)
 
 #if(BOOST_LIB_C_GNU)
@@ -100,14 +100,18 @@ void set_thread_pinned(int cpu)
 
 int get_pid()
 {
+#if defined(OSSIA_FREESTANDING)
+  return 1; // hehe PID 1 is ossia now
+#else
   return getpid();
+#endif
 }
 
 }
 
 #endif
 
-#if defined(__EMSCRIPTEN__)                                                  \
+#if defined(__EMSCRIPTEN__) || defined(OSSIA_FREESTANDING)                   \
     || !(                                                                    \
         BOOST_OS_LINUX || BOOST_OS_BSD || BOOST_OS_MACOS || BOOST_OS_WINDOWS \
         || BOOST_OS_CYGWIN)

@@ -1,4 +1,6 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+#if !defined(OSSIA_FREESTANDING)
 #include <ossia/dataflow/execution/execution_policy.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/network/base/bundle.hpp>
@@ -62,3 +64,4 @@ struct direct_execution_state_policy : execution_state_policy
   ossia::mpmc_queue<midi_msg> m_midiQueue;
 };
 }
+#endif

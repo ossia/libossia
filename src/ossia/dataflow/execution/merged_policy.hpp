@@ -1,8 +1,12 @@
 #pragma once
+#include <ossia/detail/config.hpp>
+
 #include <ossia/dataflow/execution/local_state_execution_policy.hpp>
 #include <ossia/editor/state/flat_vec_state.hpp>
 
+#if !defined(OSSIA_FREESTANDING)
 #include <blockingconcurrentqueue.h>
+#endif
 
 namespace ossia
 {
@@ -12,6 +16,7 @@ struct OSSIA_TEST_EXPORT merged_execution_state_policy : local_state_execution_p
   ossia::mono_state m_monoState;
 };
 
+#if !defined(OSSIA_FREESTANDING)
 struct threaded_merged_execution_state_policy : local_state_execution_policy
 {
   threaded_merged_execution_state_policy();
@@ -34,4 +39,5 @@ struct threaded_merged_execution_state_policy : local_state_execution_policy
 
   int current_commit{};
 };
+#endif
 }

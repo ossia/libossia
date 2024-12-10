@@ -41,12 +41,14 @@ void execution_state::set_policy(const tick_setup_options& opt)
     case tick_setup_options::Merged:
       m_policy = std::make_unique<merged_execution_state_policy>();
       return;
+#if !defined(OSSIA_FREESTANDING)
     case tick_setup_options::MergedThreaded:
       m_policy = std::make_unique<threaded_merged_execution_state_policy>();
       return;
     case tick_setup_options::DirectThreaded:
       m_policy = std::make_unique<direct_execution_state_policy>();
       return;
+#endif
   }
 }
 

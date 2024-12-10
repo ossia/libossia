@@ -10,26 +10,25 @@ include(${OSSIA_ROOT}/src/ossia_sources.cmake)
 configure_file(${OSSIA_ROOT}/src/ossia-config.hpp.in ossia-config.hpp)
 
 add_library(ossia)
-target_compile_options(ossia PRIVATE -std=c++20)
-target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1 OSSIA_FREESTANDING=1)
+target_compile_options(ossia PRIVATE -std=c++23 -fno-exceptions -fno-rtti -fno-asynchronous-unwind-tables)
+target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1 OSSIA_FREESTANDING=1 OSSIA_EDITOR=1 OSSIA_SCENARIO_DATAFLOW=1)
 target_link_libraries(ossia PRIVATE -Wl,-z,defs -fuse-ld=mold)
-target_include_directories(ossia PRIVATE /home/jcelerier/ossia/score/3rdparty/libossia/3rdparty/boost_1_82_0)
+target_include_directories(ossia PRIVATE /home/jcelerier/ossia/score/3rdparty/libossia/3rdparty/boost_1_86_0)
 
-target_include_directories(ossia PRIVATE
-${OSSIA_ROOT}/src
-#$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
-$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
+target_include_directories(ossia SYSTEM PRIVATE
+  ${OSSIA_ROOT}/src
+  #$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/tuplet/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/span/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/libremidi/include>
+  $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/concurrentqueue>
 )
 
-target_sources(ossia PRIVATE
+set(SOURCE_FILES
 
-"${SRC}/detail/lockfree_queue.hpp"
 "${SRC}/context.cpp"
 "${SRC}/detail/thread.cpp"
 "${SRC}/detail/any_map.cpp"
@@ -88,5 +87,73 @@ target_sources(ossia PRIVATE
 "${SRC}/editor/scenario/detail/scenario_offset.cpp"
 "${SRC}/editor/scenario/detail/scenario_sync_execution.cpp"
 "${SRC}/editor/scenario/detail/scenario_execution.cpp"
-
 )
+
+
+target_sources(ossia PRIVATE ${SOURCE_FILES})
+
+install(DIRECTORY "${SRC}" DESTINATION include
+        FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "${SRC}" DESTINATION include
+        FILES_MATCHING PATTERN "*.hpp")
+install(DIRECTORY "${SRC}" DESTINATION src
+        FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY "${SRC}" DESTINATION src
+        FILES_MATCHING PATTERN "*.hpp")
+
+
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/span/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/" DESTINATION src)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/" DESTINATION src
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*/build*" EXCLUDE
+    PATTERN "*/tests*" EXCLUDE
+    PATTERN "*/benchmarks*" EXCLUDE
+)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/boost_1_86_0/boost" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/span/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/" DESTINATION include)
+install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/" DESTINATION include
+    FILES_MATCHING
+    PATTERN "*.h"
+    PATTERN "*/build*" EXCLUDE
+    PATTERN "*/tests*" EXCLUDE
+    PATTERN "*/benchmarks*" EXCLUDE
+)
+
+foreach(file  ${SOURCE_FILES})
+    get_filename_component(_fileName "${file}" NAME)
+    string(REPLACE "${SRC}/" "" _fileDir "${file}")
+    string(REPLACE "${_fileName}" "" _fileDir "${_fileDir}")
+    # get_filename_component(_fileDir "${file}" ABSOLUTE BASE_DIR "${SRC}")
+    message(" => '${_fileName}' :: '${_fileDir}'")
+    install(FILES "${file}" DESTINATION "src/ossia/${_fileDir}")
+endforeach()
+
+file(GENERATE OUTPUT library.json CONTENT [=[{
+  "name": "libossia",
+  "version": "1.0.0",
+  "keywords": "sound, media, show control",
+  "description": "libossia",
+  "authors": [ ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ossia/libossia.git"
+  },
+  "frameworks": "arduino",
+  "platforms": "*"
+}
+]=]
+)
+
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/ossia-config.hpp" DESTINATION "include/")
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/library.json" DESTINATION ".")

@@ -2,7 +2,6 @@
 
 #include <ossia/detail/config.hpp>
 
-#if defined(__cpp_exceptions)
 #include <ossia/detail/flat_map.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/ptr_container.hpp>
@@ -322,31 +321,39 @@ inline Y curve<X, Y>::convert_to_template_type_value(
     }
     Y operator()(const value_map_type& t) const
     {
+#if defined(__cpp_exceptions)
       throw invalid_value_type_error(
           "curve_impl::convertToTemplateTypeValue: "
           "Cannot convert Map to a numeric type");
+#endif
       return {};
     }
 
     Y operator()(impulse) const
     {
+#if defined(__cpp_exceptions)
       throw invalid_value_type_error(
           "curve_impl::convertToTemplateTypeValue: "
           "Cannot convert Impulse to a numeric type");
+#endif
       return {};
     }
     Y operator()(const std::string& str) const
     {
+#if defined(__cpp_exceptions)
       throw invalid_value_type_error(
           "curve_impl::convertToTemplateTypeValue: "
           "Cannot convert String to a numeric type");
+#endif
       return {};
     }
     Y operator()() const
     {
+#if defined(__cpp_exceptions)
       throw invalid_value_type_error(
           "curve_impl::convertToTemplateTypeValue: "
           "No type provided");
+#endif
       return {};
     }
   } vis{idx};
@@ -393,5 +400,3 @@ private:
   const ossia::value mValue;
 };
 }
-
-#endif

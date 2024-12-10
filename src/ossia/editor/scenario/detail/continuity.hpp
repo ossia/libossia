@@ -24,7 +24,7 @@ struct mark_discontinuous
   }
   void operator()(time_interval& itv) const
   {
-#if defined(OSSIA_SCENARIO_DATAFLOW)
+#if defined(OSSIA_SCENARIO_DATAFLOW) && defined(__cpp_rtti)
     (itv.node.get()->*fun_T)(true);
     for(auto& proc : itv.get_time_processes())
     {
