@@ -117,7 +117,7 @@ struct frequency_u : public timing_unit<frequency_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 24000.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct mel_u : public timing_unit<mel_u>
@@ -136,7 +136,7 @@ struct mel_u : public timing_unit<mel_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 4016.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct midi_pitch_u : public timing_unit<midi_pitch_u>
@@ -158,7 +158,7 @@ struct midi_pitch_u : public timing_unit<midi_pitch_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 127.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct millisecond_u : public timing_unit<millisecond_u>
@@ -203,7 +203,7 @@ struct sample_u : public timing_unit<sample_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 44100.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 template <typename T>
@@ -226,7 +226,7 @@ struct playback_speed_u : public timing_unit<playback_speed_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 2.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 // template<int N>

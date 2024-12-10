@@ -39,6 +39,7 @@ void merged_execution_state_policy::commit()
   commit_common();
 }
 
+#if !defined(OSSIA_FREESTANDING)
 threaded_merged_execution_state_policy::threaded_merged_execution_state_policy()
 {
   m_valuesOutputThread = std::thread{[this] {
@@ -112,4 +113,5 @@ void threaded_merged_execution_state_policy::commit()
 
   commit_common();
 }
+#endif
 }

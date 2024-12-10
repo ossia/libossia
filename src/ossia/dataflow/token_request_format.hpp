@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/dataflow/token_request.hpp>
 #include <ossia/detail/fmt.hpp>
-
+#if !defined(OSSIA_FREESTANDING)
 namespace fmt
 {
 template <>
@@ -23,3 +23,4 @@ struct formatter<ossia::token_request> final : formatter<string_view>
   }
 };
 }
+#endif

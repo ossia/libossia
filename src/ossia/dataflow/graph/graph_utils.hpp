@@ -704,9 +704,11 @@ struct OSSIA_EXPORT graph_base : graph_interface
 {
   graph_base() noexcept
   {
+#if !defined(OSSIA_FREESTANDING)
     m_nodes.reserve(1024);
     m_node_list.reserve(1024);
     m_edges.reserve(1024);
+#endif
   }
   [[nodiscard]] tcb::span<ossia::graph_node* const>
   get_nodes() const noexcept final override
@@ -877,7 +879,11 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
   node_map m_nodes;
   edge_map m_edges;
+#if defined(OSSIA_FREESTANDING)
+  ossia::small_vector<ossia::graph_node*, 16> m_node_list;
+#else
   ossia::small_vector<ossia::graph_node*, 1024> m_node_list;
+#endif
 
   graph_t m_graph;
 

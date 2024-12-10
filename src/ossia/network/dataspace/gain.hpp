@@ -106,7 +106,7 @@ struct OSSIA_EXPORT linear_u : public gain_unit<linear_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 1.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
@@ -128,7 +128,7 @@ struct OSSIA_EXPORT midigain_u : public gain_unit<midigain_u>
 
   static ossia::domain_base<float> domain() { return {0.f, 127.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
@@ -150,7 +150,7 @@ struct OSSIA_EXPORT decibel_u : public gain_unit<decibel_u>
 
   static ossia::domain_base<float> domain() { return {-96.f, 12.f}; }
 
-  static constexpr auto bounding() { return ossia::bounding_mode::LOW; }
+  static constexpr auto bounding() { return ossia::bounding_mode::CLAMP_LOW; }
 };
 
 struct OSSIA_EXPORT decibel_raw_u : public gain_unit<decibel_raw_u>

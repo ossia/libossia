@@ -35,7 +35,7 @@ struct container_gen<smallvecS, ValueType>
   // using Allocator =  typename Alloc::template rebind<ValueType>::other Allocator;
 
   // Needed because tests allocate graphs on the stack and that's too much
-#if defined(OSSIA_TESTNG)
+#if defined(OSSIA_TESTING) || defined(OSSIA_FREESTANDING)
   static constexpr std::size_t small_vec_size = 16;
 #else
   static constexpr std::size_t small_vec_size = 1024;

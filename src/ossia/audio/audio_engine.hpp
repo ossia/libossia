@@ -5,6 +5,8 @@
 
 #include <smallfun.hpp>
 
+#include <atomic>
+
 #include <ossia-config.hpp>
 
 namespace ossia

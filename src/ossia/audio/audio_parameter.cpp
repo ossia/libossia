@@ -14,6 +14,8 @@ audio_parameter::audio_parameter(net::node_base& n)
   m_type = parameter_type::AUDIO;
 }
 
+audio_parameter::~audio_parameter() = default;
+
 void audio_parameter::clone_value(audio_vector& res_vec) const
 {
   if(res_vec.size() < audio.size())

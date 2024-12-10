@@ -13,8 +13,9 @@
 #include <ossia/network/value/format_value.hpp>
 
 #include <boost/pool/pool.hpp>
-
+#if !defined(OSSIA_FREESTANDING)
 #include <spdlog/spdlog.h>
+#endif
 namespace ossia
 {
 using boost_pool = boost::pool<boost::default_user_allocator_malloc_free>;
@@ -79,8 +80,10 @@ graph_interface::graph_interface()
     : pool{std::make_shared<edge_pool>()}
 {
   // Reserve some space
+#if !defined(OSSIA_FREESTANDING)
   auto arr = pool->pool.ordered_malloc(1000);
   pool->pool.ordered_free(arr);
+#endif
 }
 
 edge_ptr graph_interface::allocate_edge(
@@ -406,6 +409,7 @@ void graph_util::check_outputs(
 }
 void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
 {
+#if !defined(OSSIA_FREESTANDING)
   int i = 0;
   struct
   {
@@ -462,10 +466,12 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
   } vis{logger, i, n.processed_frames()};
 
   for_each_inlet(n, [&](auto& in) { in.visit(vis); });
+#endif
 }
 
 void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
 {
+#if !defined(OSSIA_FREESTANDING)
   int i = 0;
   struct
   {
@@ -521,10 +527,9 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
   } vis{logger, i, n.processed_frames()};
 
   for_each_outlet(n, [&](auto& out) { out.visit(vis); });
+#endif
 }
 graph_interface::~graph_interface() = default;
-audio_parameter::~audio_parameter() = default;
-
 graph::~graph()
 {
   clear();

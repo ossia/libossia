@@ -29,6 +29,7 @@ void execution_state::set_policy(const tick_setup_options& opt)
 {
   switch(opt.commit)
   {
+#if !defined(OSSIA_FREESTANDING)
     case tick_setup_options::Default:
       m_policy = std::make_unique<default_execution_state_policy>();
       return;
@@ -38,6 +39,7 @@ void execution_state::set_policy(const tick_setup_options& opt)
     case tick_setup_options::Priorized:
       m_policy = std::make_unique<priorized_execution_state_policy>();
       return;
+#endif
     case tick_setup_options::Merged:
       m_policy = std::make_unique<merged_execution_state_policy>();
       return;

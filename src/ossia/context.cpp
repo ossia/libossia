@@ -37,6 +37,20 @@ boost::asio::detail::winsock_init<2, 2>::manual manual_winsock_init;
 #include <boost/asio/detail/winsock_init.hpp>
 #endif
 
+#if !defined(__cpp_exceptions)
+#include <boost/throw_exception.hpp>
+namespace boost
+{
+void throw_exception(std::exception const& e)
+{
+  std::terminate();
+}
+void throw_exception(std::exception const& e, boost::source_location const& loc)
+{
+  std::terminate();
+}
+}
+#endif
 namespace ossia
 {
 #if defined(__cpp_exceptions)

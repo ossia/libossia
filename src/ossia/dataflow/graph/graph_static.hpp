@@ -29,11 +29,13 @@ public:
   explicit graph_static(const ossia::graph_setup_options& opt = {})
       : update_fun{*this, opt}
   {
+#if !defined(OSSIA_FREESTANDING)
     m_all_nodes.reserve(1024);
     m_enabled_cache.reserve(1024);
     m_topo_order_cache.reserve(1024);
     m_color_map_cache.reserve(1024);
     m_stack_cache.reserve(1024);
+#endif
   }
   ~graph_static() override { clear(); }
 

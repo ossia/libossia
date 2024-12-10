@@ -10,12 +10,18 @@ include(${OSSIA_ROOT}/src/ossia_sources.cmake)
 configure_file(${OSSIA_ROOT}/src/ossia-config.hpp.in ossia-config.hpp)
 
 add_library(ossia)
-target_compile_options(ossia PRIVATE -std=c++23 -fno-exceptions -fno-rtti -fno-asynchronous-unwind-tables)
-target_compile_definitions(ossia PRIVATE OSSIA_EXPORTS=1 OSSIA_FREESTANDING=1 OSSIA_EDITOR=1 OSSIA_SCENARIO_DATAFLOW=1)
-target_link_libraries(ossia PRIVATE -Wl,-z,defs -fuse-ld=mold)
-target_include_directories(ossia PRIVATE /home/jcelerier/ossia/score/3rdparty/libossia/3rdparty/boost_1_86_0)
+target_compile_options(ossia PUBLIC -std=c++23 -fno-exceptions -fno-rtti -fno-asynchronous-unwind-tables)
+target_compile_definitions(ossia PUBLIC
+    OSSIA_EXPORTS=1
+    OSSIA_FREESTANDING=1
+    OSSIA_EDITOR=1
+    OSSIA_SCENARIO_DATAFLOW=1
+    LIBREMIDI_HEADER_ONLY=1
+)
+target_link_libraries(ossia PUBLIC -Wl,-z,defs -fuse-ld=mold)
+target_include_directories(ossia PUBLIC /home/jcelerier/ossia/score/3rdparty/libossia/3rdparty/boost_1_86_0)
 
-target_include_directories(ossia SYSTEM PRIVATE
+target_include_directories(ossia SYSTEM PUBLIC
   ${OSSIA_ROOT}/src
   #$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/compile-time-regular-expressions/include>
   $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include>
@@ -32,6 +38,10 @@ set(SOURCE_FILES
 "${SRC}/context.cpp"
 "${SRC}/detail/thread.cpp"
 "${SRC}/detail/any_map.cpp"
+
+"${SRC}/audio/audio_parameter.cpp"
+"${SRC}/audio/audio_device.cpp"
+"${SRC}/audio/audio_engine.cpp"
 
 "${SRC}/network/base/device.cpp"
 "${SRC}/network/base/protocol.cpp"
@@ -60,7 +70,12 @@ set(SOURCE_FILES
 "${SRC}/dataflow/data.cpp"
 "${SRC}/dataflow/port.cpp"
 "${SRC}/dataflow/graph_node.cpp"
+"${SRC}/dataflow/graph/graph.cpp"
 "${SRC}/dataflow/execution_state.cpp"
+"${SRC}/dataflow/execution/execution_policy.cpp"
+"${SRC}/dataflow/execution/default_policy.cpp"
+"${SRC}/dataflow/execution/merged_policy.cpp"
+"${SRC}/dataflow/execution/local_state_execution_policy.cpp"
 "${SRC}/dataflow/nodes/state.cpp"
 
 "${SRC}/editor/curve/curve.cpp"
@@ -89,6 +104,8 @@ set(SOURCE_FILES
 "${SRC}/editor/scenario/detail/scenario_execution.cpp"
 )
 
+add_executable(test_minimal test.cpp)
+target_link_libraries(test_minimal PRIVATE ossia)
 
 target_sources(ossia PRIVATE ${SOURCE_FILES})
 
@@ -102,19 +119,19 @@ install(DIRECTORY "${SRC}" DESTINATION src
         FILES_MATCHING PATTERN "*.hpp")
 
 
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/span/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/" DESTINATION src)
-install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/" DESTINATION src
-    FILES_MATCHING
-    PATTERN "*.h"
-    PATTERN "*/build*" EXCLUDE
-    PATTERN "*/tests*" EXCLUDE
-    PATTERN "*/benchmarks*" EXCLUDE
-)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/SmallFunction/smallfun/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/span/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/unordered_dense/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/libremidi/include/" DESTINATION src)
+# install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/concurrentqueue/" DESTINATION src
+#     FILES_MATCHING
+#     PATTERN "*.h"
+#     PATTERN "*/build*" EXCLUDE
+#     PATTERN "*/tests*" EXCLUDE
+#     PATTERN "*/benchmarks*" EXCLUDE
+# )
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/boost_1_86_0/boost" DESTINATION include)
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/nano-signal-slot/include/" DESTINATION include)
 install(DIRECTORY "${OSSIA_3RDPARTY_FOLDER}/tuplet/include/" DESTINATION include)
@@ -134,8 +151,6 @@ foreach(file  ${SOURCE_FILES})
     get_filename_component(_fileName "${file}" NAME)
     string(REPLACE "${SRC}/" "" _fileDir "${file}")
     string(REPLACE "${_fileName}" "" _fileDir "${_fileDir}")
-    # get_filename_component(_fileDir "${file}" ABSOLUTE BASE_DIR "${SRC}")
-    message(" => '${_fileName}' :: '${_fileDir}'")
     install(FILES "${file}" DESTINATION "src/ossia/${_fileDir}")
 endforeach()
 

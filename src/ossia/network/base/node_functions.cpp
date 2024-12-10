@@ -180,7 +180,6 @@ static constexpr int strnatcmp(nat_char const* a, nat_char const* b)
 }
 }
 
-#if defined(OSSIA_HAS_CTRE)
 namespace ossia::net
 {
 namespace
@@ -271,7 +270,13 @@ static node_base& create_node_rec(
       // Create a node
       auto child = node.create_child(std::string(cur));
       if(!child)
+      {
+#if defined(__cpp_exceptions)
         throw std::runtime_error{"create_node_rec: cannot create the node"};
+#else
+        std::terminate();
+#endif
+      }
 
       // Recurse on it
       return create_node_rec(*child, address.substr(first_slash_index + 1));
@@ -282,7 +287,13 @@ static node_base& create_node_rec(
     // Create and return the node
     auto child = node.create_child(std::string(address));
     if(!child)
+    {
+#if defined(__cpp_exceptions)
       throw std::runtime_error{"create_node_rec: cannot create the node"};
+#else
+      std::terminate();
+#endif
+    }
     return *child;
   }
 }
@@ -369,7 +380,11 @@ std::vector<node_base*> find_nodes(node_base& root, string_view pattern)
       return {};
   }
 }
+}
 
+#if defined(OSSIA_HAS_CTRE)
+namespace ossia::net
+{
 // The following code, up to and including `List expand(const Range & range)`
 // originates from Rosetta Code, under GNU FDL:
 // https://rosettacode.org/wiki/Brace_expansion#C.2B.2B
@@ -771,7 +786,27 @@ std::string canonicalize_str(std::string str)
   expand_ranges(str);
   return str;
 }
+}
+#else
+namespace ossia::net
+{
+// FIXME
+std::vector<std::string> expand(const std::string& range)
+{
+  return {range};
+}
 
+// FIXME
+std::string canonicalize_str(std::string str)
+{
+  return str;
+}
+void expand_ranges(std::string& str) { }
+}
+#endif
+
+namespace ossia::net
+{
 std::vector<node_base*> create_nodes(node_base& dev, string_view pattern)
 {
   std::vector<node_base*> v;
@@ -1079,6 +1114,4 @@ value_map_type to_map(const node_base& n) noexcept
   }
   return map;
 }
-
 }
-#endif
