@@ -17,11 +17,14 @@ scenario::scenario()
   // create the start TimeSync
 #if defined(OSSIA_SCENARIO_DATAFLOW)
   node = std::make_shared<ossia::nodes::scenario>();
+#if !defined(OSSIA_FREESTANDING)
   ((ossia::nodes::forward_node*)this->node.get())->audio_in.sources.reserve(1024);
+#endif
 #endif
   add_time_sync(std::make_shared<time_sync>());
   this->m_nodes.front()->set_start(true);
 
+#if !defined(OSSIA_FREESTANDING)
   m_intervals.reserve(1024);
   m_nodes.reserve(1024);
   m_pendingEvents.reserve(m_nodes.capacity() * 2);
@@ -36,6 +39,7 @@ scenario::scenario()
   m_waitingNodes.reserve(1024);
   m_component_visit_cache.reserve(1024);
   m_component_visit_stack.reserve(1024);
+#endif
 }
 
 scenario::~scenario()

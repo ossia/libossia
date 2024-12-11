@@ -80,6 +80,8 @@ struct domain_map
       T& v, ossia::vecf_domain<N>& source_domain,
       ossia::domain_base<T>& tgt_domain) const noexcept
   {
+#if !defined(OSSIA_FREESTANDING)
+    // FIXME
     if constexpr(std::is_same_v<int, T> || std::is_same_v<float, T>)
     {
       if(index.size() == 1 && index[0] < int(N))
@@ -97,6 +99,7 @@ struct domain_map
         constrain(v, tgt_domain.values);
       }
     }
+#endif
   }
 
   template <typename Value_T>

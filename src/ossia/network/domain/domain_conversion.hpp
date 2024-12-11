@@ -86,6 +86,7 @@ struct domain_conversion<vecf_domain<N>>
   vecf_domain<N> list_func(const vector_domain& t)
   {
     vecf_domain<N> dom;
+#if !defined(OSSIA_FREESTANDING)
     const std::size_t min_size = std::min(N, t.min.size());
     for(std::size_t i = 0; i < min_size; i++)
     {
@@ -105,7 +106,7 @@ struct domain_conversion<vecf_domain<N>>
       for(auto& val : t.values[i])
         dom.values[i].insert(ossia::convert<float>(val));
     }
-
+#endif
     return dom;
   }
 

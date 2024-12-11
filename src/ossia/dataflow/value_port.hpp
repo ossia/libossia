@@ -44,7 +44,7 @@ struct OSSIA_EXPORT value_port
   ossia::domain domain;
   ossia::complex_type type;
   ossia::destination_index index;
-  std::optional<ossia::time_value> tween_date;
+  // std::optional<ossia::time_value> tween_date;
 
   bool is_event{};
   data_mix_method mix_method{};

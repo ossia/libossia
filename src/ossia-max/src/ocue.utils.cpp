@@ -186,9 +186,9 @@ ossia::selection_filters parse_selection_filter(int argc, t_atom* argv)
           if(symb == "clip")
             filt.bounding.push_back(ossia::bounding_mode::CLIP);
           if(symb == "low")
-            filt.bounding.push_back(ossia::bounding_mode::LOW);
+            filt.bounding.push_back(ossia::bounding_mode::CLAMP_LOW);
           if(symb == "high")
-            filt.bounding.push_back(ossia::bounding_mode::HIGH);
+            filt.bounding.push_back(ossia::bounding_mode::CLAMP_HIGH);
           if(symb == "wrap")
             filt.bounding.push_back(ossia::bounding_mode::WRAP);
           if(symb == "fold")

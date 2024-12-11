@@ -79,6 +79,7 @@ struct domain_min_visitor_helper<vecf_domain<N>>
     // TODO for this case, it would maybe be better to
     // use the empty state of value instead of a boost::optional ?
     std::array<float, N> arr;
+#if !defined(OSSIA_FREESTANDING)
     for(auto& val : value.min)
       if(!val)
         return ossia::value{};
@@ -87,7 +88,7 @@ struct domain_min_visitor_helper<vecf_domain<N>>
     {
       arr[i] = *value.min[i];
     }
-
+#endif
     return arr;
   }
 };
@@ -161,6 +162,7 @@ struct domain_max_visitor_helper<vecf_domain<N>>
   OSSIA_INLINE ossia::value operator()(const vecf_domain<N>& value) const
   {
     std::array<float, N> arr;
+#if !defined(OSSIA_FREESTANDING)
     for(auto& val : value.max)
       if(!val)
         return ossia::value{};
@@ -169,7 +171,7 @@ struct domain_max_visitor_helper<vecf_domain<N>>
     {
       arr[i] = *value.max[i];
     }
-
+#endif
     return arr;
   }
 };
@@ -354,29 +356,36 @@ struct domain_set_min_visitor
   template <std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, float incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.min[i] = incoming;
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, int incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.min[i] = incoming;
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void
   operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.min[i] = incoming[i];
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void
   operator()(vecf_domain<N>& domain, const std::vector<ossia::value>& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     if(incoming.size() == N)
     {
       auto conv = ossia::convert<std::array<float, N>>(incoming);
@@ -388,12 +397,15 @@ struct domain_set_min_visitor
       for(std::size_t i = 0; i < N; i++)
         domain.min[i] = std::nullopt;
     }
+#endif
   }
 
   template <typename T>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, const T& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     domain.min = ossia::value{incoming};
+#endif
   }
 
   // Removal cases
@@ -421,8 +433,10 @@ struct domain_set_min_visitor
   template <std::size_t N, typename... U>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.min[i] = std::nullopt;
+#endif
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
@@ -464,29 +478,36 @@ struct domain_set_max_visitor
   template <std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, float incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.max[i] = incoming;
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, int incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.max[i] = incoming;
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void
   operator()(vecf_domain<N>& domain, const std::array<float, N>& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.max[i] = incoming[i];
+#endif
   }
 
   template <std::size_t N>
   OSSIA_INLINE void
   operator()(vecf_domain<N>& domain, const std::vector<ossia::value>& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     if(incoming.size() == N)
     {
       auto conv = ossia::convert<std::array<float, N>>(incoming);
@@ -498,12 +519,15 @@ struct domain_set_max_visitor
       for(std::size_t i = 0; i < N; i++)
         domain.max[i] = std::nullopt;
     }
+#endif
   }
 
   template <typename T>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, const T& incoming)
   {
+#if !defined(OSSIA_FREESTANDING)
     domain.max = ossia::value{incoming};
+#endif
   }
 
   // Removal cases
@@ -529,8 +553,10 @@ struct domain_set_max_visitor
   template <std::size_t N, typename... U>
   OSSIA_INLINE void operator()(vecf_domain<N>& domain, U&&...)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       domain.max[i] = std::nullopt;
+#endif
   }
   template <typename... U>
   OSSIA_INLINE void operator()(domain_base<ossia::value>& domain, U&&...)
@@ -607,10 +633,12 @@ struct domain_min_creation_visitor
   OSSIA_INLINE domain operator()(const std::array<float, N>& min)
   {
     vecf_domain<N> dom;
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
     {
       dom.min[i] = min[i];
     }
+#endif
     return dom;
   }
 
@@ -650,10 +678,12 @@ struct domain_max_creation_visitor
   OSSIA_INLINE domain operator()(const std::array<float, N>& max)
   {
     vecf_domain<N> dom;
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
     {
       dom.max[i] = max[i];
     }
+#endif
     return dom;
   }
 
@@ -721,6 +751,7 @@ struct domain_value_set_creation_visitor
   domain operator()(const std::array<float, N>&)
   {
     vecf_domain<N> res;
+#if !defined(OSSIA_FREESTANDING)
     ossia::flat_set<float> vals;
 
     for(const auto& value : values)
@@ -730,6 +761,7 @@ struct domain_value_set_creation_visitor
     for(std::size_t i = 0; i < N - 1; i++)
       res.values[i] = vals;
     res.values[N - 1] = std::move(vals);
+#endif
     return res;
   }
 

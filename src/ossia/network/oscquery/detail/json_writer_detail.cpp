@@ -35,10 +35,10 @@ void json_writer_impl::writeValue(bounding_mode b) const
     case ossia::bounding_mode::CLIP:
       writer.String("both");
       break;
-    case ossia::bounding_mode::LOW:
+    case ossia::bounding_mode::CLAMP_LOW:
       writer.String("low");
       break;
-    case ossia::bounding_mode::HIGH:
+    case ossia::bounding_mode::CLAMP_HIGH:
       writer.String("high");
       break;
     case ossia::bounding_mode::WRAP:

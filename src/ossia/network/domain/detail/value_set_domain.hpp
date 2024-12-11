@@ -60,10 +60,12 @@ struct value_set_get_visitor
   std::vector<ossia::value> operator()(const ossia::vecf_domain<N>& dom)
   {
     std::vector<ossia::value> v(N);
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
     {
       v[i] = std::vector<ossia::value>(dom.values[i].begin(), dom.values[i].end());
     }
+#endif
     return v;
   }
 };
@@ -97,16 +99,19 @@ struct value_set_update_visitor
 
   void operator()(ossia::domain_base<ossia::value>& dom)
   {
+#if !defined(OSSIA_FREESTANDING)
     dom.values.clear();
     for(auto& value : values)
     {
       dom.values.push_back(value);
     }
+#endif
   }
 
   template <std::size_t N>
   void operator()(ossia::vecf_domain<N>& dom)
   {
+#if !defined(OSSIA_FREESTANDING)
     for(std::size_t i = 0; i < N; i++)
       dom.values[i].clear();
 
@@ -120,6 +125,7 @@ struct value_set_update_visitor
         }
       }
     }
+#endif
   }
 
   void operator()(ossia::domain_base<impulse>&) { }

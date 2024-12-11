@@ -21,10 +21,14 @@ public:
   std::string label() const noexcept override { return "rand_float"; }
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
-    thread_local std::mt19937 gen;
     auto& out = *value_out.target<ossia::value_port>();
     auto tm = e.timings(t);
+#if defined(OSSIA_FREESTANDING)
+    out.write_value((rand() - dist.a()) / (dist.b() - dist.a()), tm.start_sample);
+#else
+    thread_local std::mt19937 gen;
     out.write_value(dist(gen), tm.start_sample);
+#endif
   }
 };
 }

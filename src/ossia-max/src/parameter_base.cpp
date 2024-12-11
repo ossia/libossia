@@ -431,9 +431,9 @@ void parameter_base::set_bounding_mode()
       else if(bounding_mode == "fold")
         param->set_bounding(ossia::bounding_mode::FOLD);
       else if(bounding_mode == "low")
-        param->set_bounding(ossia::bounding_mode::LOW);
+        param->set_bounding(ossia::bounding_mode::CLAMP_LOW);
       else if(bounding_mode == "high")
-        param->set_bounding(ossia::bounding_mode::HIGH);
+        param->set_bounding(ossia::bounding_mode::CLAMP_HIGH);
       else
       {
         object_error((t_object*)this, "unknown clip mode: %s", bounding_mode.c_str());

@@ -113,6 +113,7 @@ struct copy_data
 
   void operator()(const value_port& out, value_delay_line& in)
   {
+#if !defined(OSSIA_FREESTANDING)
     // Called in env_writer, when copying from a node to a delay line
     value_vector<ossia::typed_value> vec;
     vec.reserve(out.get_data().size());
@@ -121,6 +122,7 @@ struct copy_data
       vec.emplace_back(val, out.index, out.type);
     }
     in.data.push_back(std::move(vec));
+#endif
   }
 
   /// Audio ///

@@ -75,10 +75,10 @@ struct formatter<ossia::bounding_mode> final : formatter<string_view>
       case ossia::bounding_mode::FOLD:
         name = "FOLD";
         break;
-      case ossia::bounding_mode::LOW:
+      case ossia::bounding_mode::CLAMP_LOW:
         name = "LOW";
         break;
-      case ossia::bounding_mode::HIGH:
+      case ossia::bounding_mode::CLAMP_HIGH:
         name = "HIGH";
         break;
     }

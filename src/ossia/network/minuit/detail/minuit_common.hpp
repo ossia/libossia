@@ -198,9 +198,9 @@ inline std::string_view to_minuit_bounding_text(ossia::bounding_mode b)
       constexpr_return(ossia::make_string_view("wrap"));
     case ossia::bounding_mode::FOLD:
       constexpr_return(ossia::make_string_view("fold"));
-    case ossia::bounding_mode::LOW:
+    case ossia::bounding_mode::CLAMP_LOW:
       constexpr_return(ossia::make_string_view("low"));
-    case ossia::bounding_mode::HIGH:
+    case ossia::bounding_mode::CLAMP_HIGH:
       constexpr_return(ossia::make_string_view("high"));
     default:
       throw parse_error("to_minuit_bounding_text: Invalid bounding mode");
@@ -221,9 +221,9 @@ inline ossia::bounding_mode from_minuit_bounding_text(std::string_view str)
     case 'f': // fold
       return ossia::bounding_mode::FOLD;
     case 'l': // low
-      return ossia::bounding_mode::LOW;
+      return ossia::bounding_mode::CLAMP_LOW;
     case 'h': // high
-      return ossia::bounding_mode::HIGH;
+      return ossia::bounding_mode::CLAMP_HIGH;
     default:
       throw parse_error("from_minuit_bounding_text: Invalid bounding mode");
   }

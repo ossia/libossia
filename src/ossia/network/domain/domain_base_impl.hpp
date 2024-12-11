@@ -221,6 +221,7 @@ struct OSSIA_EXPORT vector_domain
   }
 };
 
+#if !defined(OSSIA_FREESTANDING)
 template <std::size_t N>
 struct OSSIA_EXPORT vecf_domain
 {
@@ -379,4 +380,47 @@ struct OSSIA_EXPORT domain_base<ossia::value>
     return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
   }
 };
+#else
+
+template <std::size_t N>
+struct OSSIA_EXPORT vecf_domain : ossia::domain_base<float>
+{
+  using ossia::domain_base<float>::domain_base;
+  vecf_domain(const std::array<float, N>& v1, const std::array<float, N>& v2)
+  {
+    min = v1[0];
+    max = v2[0];
+  }
+  vecf_domain(
+      const std::array<std::optional<float>, N>& v1,
+      const std::array<std::optional<float>, N>& v2)
+  {
+    min = v1[0];
+    max = v2[0];
+  }
+  friend bool operator==(const vecf_domain& lhs, const vecf_domain& rhs)
+  {
+    return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
+  friend bool operator!=(const vecf_domain& lhs, const vecf_domain& rhs)
+  {
+    return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
+  }
+};
+template <>
+struct OSSIA_EXPORT domain_base<ossia::value> : ossia::domain_base<float>
+{
+  using ossia::domain_base<float>::domain_base;
+  friend bool
+  operator==(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs)
+  {
+    return lhs.min == rhs.min && lhs.max == rhs.max && lhs.values == rhs.values;
+  }
+  friend bool
+  operator!=(const domain_base<ossia::value>& lhs, const domain_base<ossia::value>& rhs)
+  {
+    return lhs.min != rhs.min || lhs.max != rhs.max || lhs.values != rhs.values;
+  }
+};
+#endif
 }

@@ -14,6 +14,7 @@ target_compile_options(ossia PUBLIC -std=c++23 -fno-exceptions -fno-rtti -fno-as
 target_compile_definitions(ossia PUBLIC
     OSSIA_EXPORTS=1
     OSSIA_FREESTANDING=1
+    OSSIA_NO_SMALLVECTOR=1
     OSSIA_EDITOR=1
     OSSIA_SCENARIO_DATAFLOW=1
     LIBREMIDI_HEADER_ONLY=1

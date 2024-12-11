@@ -66,10 +66,10 @@ void query_parser::parse(
         res.bounding = ossia::bounding_mode::CLIP;
         break;
       case 'w':
-        res.bounding = ossia::bounding_mode::LOW;
+        res.bounding = ossia::bounding_mode::CLAMP_LOW;
         break;
       case 'g':
-        res.bounding = ossia::bounding_mode::HIGH;
+        res.bounding = ossia::bounding_mode::CLAMP_HIGH;
         break;
       case 'a':
         res.bounding = ossia::bounding_mode::WRAP;

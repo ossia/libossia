@@ -888,8 +888,8 @@ PYBIND11_MODULE(ossia_python, m)
       .value("Clip", ossia::bounding_mode::CLIP)
       .value("Wrap", ossia::bounding_mode::WRAP)
       .value("Fold", ossia::bounding_mode::FOLD)
-      .value("Low", ossia::bounding_mode::LOW)
-      .value("High", ossia::bounding_mode::HIGH)
+      .value("Low", ossia::bounding_mode::CLAMP_LOW)
+      .value("High", ossia::bounding_mode::CLAMP_HIGH)
       .export_values();
 
   py::enum_<ossia::repetition_filter>(m, "RepetitionFilter", py::arithmetic())

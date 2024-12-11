@@ -274,9 +274,9 @@ ossia::bounding_mode symbol2bounding_mode(t_symbol* bounding_mode)
   else if(bounding_mode == gensym("fold"))
     return ossia::bounding_mode::FOLD;
   else if(bounding_mode == gensym("low"))
-    return ossia::bounding_mode::LOW;
+    return ossia::bounding_mode::CLAMP_LOW;
   else if(bounding_mode == gensym("high"))
-    return ossia::bounding_mode::HIGH;
+    return ossia::bounding_mode::CLAMP_HIGH;
   else
   {
     error("unknown clip mode: %s", bounding_mode->s_name);
@@ -296,9 +296,9 @@ t_symbol* bounding_mode2symbol(ossia::bounding_mode bm)
       return gensym("wrap");
     case ossia::bounding_mode::FOLD:
       return gensym("fold");
-    case ossia::bounding_mode::LOW:
+    case ossia::bounding_mode::CLAMP_LOW:
       return gensym("low");
-    case ossia::bounding_mode::HIGH:
+    case ossia::bounding_mode::CLAMP_HIGH:
       return gensym("high");
     default:
       return nullptr;

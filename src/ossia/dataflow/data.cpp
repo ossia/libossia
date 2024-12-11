@@ -79,7 +79,8 @@ bool should_process_control(
     const value_port& source_port, const value_port& sink_port) noexcept
 {
   return (source_port.domain && sink_port.domain) || (source_port.type && sink_port.type)
-         || source_port.tween_date;
+      // FIXME   || source_port.tween_date
+      ;
 }
 
 void process_float_control(
@@ -103,10 +104,10 @@ void process_control_value(
     process_control_value(v, source_port.type, sink_port.type);
   else if(source_port.domain && sink_port.domain)
     process_control_value(v, source_port.domain, sink_port.domain);
-  if(source_port.tween_date)
-  {
-    // TODO
-  }
+  // FIXME  if(source_port.tween_date)
+  // FIXME  {
+  // FIXME    // TODO
+  // FIXME  }
 }
 }
 

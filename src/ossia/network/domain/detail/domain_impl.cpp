@@ -598,6 +598,9 @@ template <std::size_t N>
 value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
 {
   std::array<float, N> res{};
+#if defined(OSSIA_FREESTANDING)
+  res = val;
+#else
   if(b == bounding_mode::FREE)
   {
     res = val;
@@ -677,6 +680,7 @@ value vec_clamp<N>::operator()(bounding_mode b, std::array<float, N> val) const
       }
     }
   }
+#endif
   return res;
 }
 

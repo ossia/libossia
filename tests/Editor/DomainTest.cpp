@@ -516,35 +516,35 @@ TEST_CASE("test_clamp_float", "test_clamp_float")
 
   // Low
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::LOW, float{-100});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_LOW, float{-100});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == min);
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::LOW, float{0});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_LOW, float{0});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == min);
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::LOW, float{0.5});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_LOW, float{0.5});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{0.5});
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::LOW, float{1});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_LOW, float{1});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{1});
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::LOW, float{100});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_LOW, float{100});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{100});
@@ -552,21 +552,21 @@ TEST_CASE("test_clamp_float", "test_clamp_float")
 
   // High
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::HIGH, float{-100});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_HIGH, float{-100});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{-100});
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::HIGH, float{0});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_HIGH, float{0});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{0});
   }
 
   {
-    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::HIGH, float{0.5});
+    auto clamped = ossia::apply_domain(dom, ossia::bounding_mode::CLAMP_HIGH, float{0.5});
     auto res = clamped.target<float>();
     REQUIRE(res);
     REQUIRE(*res == float{0.5});

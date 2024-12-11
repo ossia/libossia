@@ -92,10 +92,10 @@ static bool read_bounding(const rapidjson::Value& val, bounding_mode& res)
         res = ossia::bounding_mode::CLIP;
         break;
       case 'w':
-        res = ossia::bounding_mode::LOW;
+        res = ossia::bounding_mode::CLAMP_LOW;
         break;
       case 'g':
-        res = ossia::bounding_mode::HIGH;
+        res = ossia::bounding_mode::CLAMP_HIGH;
         break;
       case 'a':
         res = ossia::bounding_mode::WRAP;
