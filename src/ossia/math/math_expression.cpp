@@ -92,6 +92,8 @@ struct math_expression::impl
 {
   rand_gen<double> random;
   perlin<double, 1> noise1d;
+  boost::container::flat_map<std::string, std::shared_ptr<exprtk::vector_view<double>>>
+      vector_views;
   exprtk::symbol_table<double> syms;
   exprtk::expression<double> expr;
   std::string cur_expr_txt;
@@ -128,13 +130,25 @@ void math_expression::add_constant(const std::string& var, double& value)
 
 void math_expression::add_vector(const std::string& var, std::vector<double>& value)
 {
-  impl->syms.add_vector(var, value);
+  impl->vector_views.reserve(12);
+  auto v = std::make_shared<exprtk::vector_view<double>>(
+      exprtk::make_vector_view(value, value.size()));
+  impl->vector_views[var] = v;
+  impl->syms.add_vector(var, *v);
 }
 
-void math_expression::remove_vector(const std::string& var)
+void math_expression::rebase_vector(const std::string& var, std::vector<double>& value)
 {
-  impl->syms.remove_vector(var);
+  auto it = impl->vector_views.find(var);
+  assert(it != impl->vector_views.end());
+  it->second->set_size(value.size());
+  it->second->rebase(value.data());
 }
+
+// void math_expression::remove_vector(const std::string& var)
+// {
+//   impl->syms.remove_vector(var);
+// }
 
 void math_expression::add_constants()
 {
@@ -144,12 +158,6 @@ void math_expression::add_constants()
 void math_expression::register_symbol_table()
 {
   impl->expr.register_symbol_table(impl->syms);
-}
-
-void math_expression::update_symbol_table()
-{
-  impl->expr.get_symbol_table(0) = impl->syms;
-  recompile();
 }
 
 bool math_expression::set_expression(const std::string& expr)

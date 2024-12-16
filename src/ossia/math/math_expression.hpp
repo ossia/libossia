@@ -18,10 +18,9 @@ public:
   void add_variable(const std::string& var, double& value);
   void add_constant(const std::string& var, double& value);
   void add_vector(const std::string& var, std::vector<double>& value);
-  void remove_vector(const std::string& var);
+  void rebase_vector(const std::string& var, std::vector<double>& value);
   void add_constants();
   void register_symbol_table();
-  void update_symbol_table();
 
   bool set_expression(const std::string& expr);
   bool recompile();
