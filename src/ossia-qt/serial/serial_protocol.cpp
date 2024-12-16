@@ -33,6 +33,31 @@ static auto on_open = [] { };
 static auto on_close = [] { };
 static auto on_fail = [] { };
 
+namespace
+{
+struct serial_osc_queue_callback
+{
+  serial_protocol& self;
+  void operator()(const coalescing_queue::coalesced& elts)
+  {
+    thread_local std::vector<std::pair<const serial_parameter*, const ossia::value*>>
+        osc_messages;
+    osc_messages.clear();
+
+    for(auto& [p, v] : elts)
+    {
+      auto serial_param = static_cast<serial_parameter*>(p);
+      if(serial_param->data().osc_address.isEmpty())
+        self.do_write(*p, v);
+      else
+        osc_messages.emplace_back(serial_param, &v);
+    }
+
+    self.do_write_osc_bundle(osc_messages);
+  }
+};
+}
+
 struct serial_wrapper_read
 {
   serial_wrapper& self;
@@ -309,23 +334,10 @@ serial_protocol::serial_protocol(
             if(res.m_coalesce > 0.)
             {
               m_coalesce = res.m_coalesce;
-              m_queue.callback = [this](const coalescing_queue::coalesced& elts) {
-                thread_local std::vector<
-                    std::pair<const serial_parameter*, const ossia::value*>>
-                    osc_messages;
-                osc_messages.clear();
 
-                for(auto& [p, v] : elts)
-                {
-                  auto serial_param = static_cast<serial_parameter*>(p);
-                  if(serial_param->data().osc_address.isEmpty())
-                    do_write(*p, v);
-                  else
-                    osc_messages.emplace_back(serial_param, &v);
-                }
-
-                do_write_osc_bundle(osc_messages);
-              };
+              // Separate type due to Windows error:
+              // error: 'osc_messages' cannot be thread local when declared 'dllexport'
+              m_queue.callback = serial_osc_queue_callback{*this};
 
               ossia::qt::run_async(m_threadWorker, [this] {
                 m_threadWorker->startTimer(m_coalesce.value(), Qt::PreciseTimer);

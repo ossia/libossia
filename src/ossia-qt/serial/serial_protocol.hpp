@@ -166,7 +166,6 @@ public:
 
   static serial_parameter_data read_data(const QJSValue& js) { return js; }
 
-private:
   static serial_protocol_object load_serial_object_from_qml(
       serial_protocol& proto, const ossia::net::network_context_ptr& ctx,
       const ossia::net::serial_configuration& cfg);
@@ -180,6 +179,8 @@ private:
       std::span<std::pair<const serial_parameter*, const ossia::value*>> vec);
   void do_write_osc_impl(
       const serial_parameter& addr, const ossia::value& v, std::string& str);
+
+private:
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
 
