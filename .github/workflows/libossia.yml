@@ -39,7 +39,7 @@ jobs:
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libossia-shared-release-macos
         path: install
@@ -67,7 +67,7 @@ jobs:
         cmake --install build
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libossia-shared-release-windows
         path: install
@@ -98,7 +98,7 @@ jobs:
         cmake --build build --target test
         cmake --build build --target install 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libossia-shared-release-linux
         path: install
@@ -131,7 +131,7 @@ jobs:
         cmake --build build
         cmake --build build --target install
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libossia-shared-release-rpi
         path: install

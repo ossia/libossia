@@ -44,7 +44,7 @@ jobs:
 #    - name: Build Wheel
 #      run: ./ci/build-wheels.sh
 #    - name: Archive Package
-#      uses: actions/upload-artifact@v2
+#      uses: actions/upload-artifact@v4
 #      with:
 #        name: ossia-pd
 #        path: install/ossia-pd-package/ossia

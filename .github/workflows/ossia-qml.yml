@@ -20,7 +20,7 @@ jobs:
         cmake --build build
         cmake --build build --target install 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-qml
         path: install
@@ -56,7 +56,7 @@ jobs:
     #     release_macos_folder "${GITHUB_WORKSPACE}/install/Ossia" "$PWD/ossia-qml-osx.zip" "io.ossia.ossia-qml"
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-qml
         path: install
@@ -76,7 +76,7 @@ jobs:
         cmake --build build
         cmake --install build
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-qml
         path: install

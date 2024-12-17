@@ -32,7 +32,7 @@ jobs:
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
           
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-pd
         path: install/ossia-pd-package
@@ -50,7 +50,7 @@ jobs:
         cmake --install build
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-pd
         path: install/ossia-pd-package/ossia
@@ -72,7 +72,7 @@ jobs:
         cmake --build build
         cmake --build build --target install 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-pd
         path: install/ossia-pd-package/ossia
@@ -102,7 +102,7 @@ jobs:
         cmake --build build
         cmake --build build --target install
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-pd
         path: install/ossia-pd-package/ossia

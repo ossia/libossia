@@ -20,14 +20,14 @@ jobs:
         MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
     - name: Archive Max Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-max
         path: artifacts/ossia
 
     - name: Upload logs
       if: ${{ always() }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: logs
         path: "*.log"
@@ -48,14 +48,14 @@ jobs:
         cmake --install build
 
     - name: Archive Max Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-max
         path: build/install/ossia-max-package/ossia
 
     - name: Upload logs
       if: ${{ always() }}
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: logs
         path: "*.log"
@@ -125,14 +125,14 @@ jobs:
       
       - name: Upload Test Results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-result
           path: "src/ossia-max/unit-test/*.csv"
 
       - name: Upload logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: logs
           path: |
@@ -191,14 +191,14 @@ jobs:
       
       - name: Upload Test Results
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: test-result
           path: "src/ossia-max/unit-test/*.csv"
 
       - name: Upload logs
         if: ${{ always() }}
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: logs
           path: |

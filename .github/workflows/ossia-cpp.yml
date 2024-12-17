@@ -21,7 +21,7 @@ jobs:
         cmake --build build
         cmake --build build --target install 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-cpp
         path: install
@@ -48,7 +48,7 @@ jobs:
         MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-cpp
         path: install
@@ -68,7 +68,7 @@ jobs:
         cmake --install build
 
     - name: Archive Package
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: ossia-cpp
         path: install

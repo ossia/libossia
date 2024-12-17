@@ -39,7 +39,7 @@ jobs:
         )
 
     - name: Archive Binary
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: libossia-device-bench
         path: build/tests/ossia_DeviceBenchmark
@@ -67,7 +67,7 @@ jobs:
         BENCHMARK_OUT: 'results/benchmarks-results.json'
 
     - name: Archive Results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: benchResults_selfhosted
         path: results
