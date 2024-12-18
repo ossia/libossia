@@ -31,7 +31,7 @@ class osc_generic_bidir_protocol final : public can_learn<ossia::net::protocol_b
 {
 public:
   using osc_configuration = typename OscMode::osc_configuration;
-  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
+  static constexpr bool bundled = requires { typename osc_configuration::bundled; };
   using writer_type = socket_writer<SendSocket>;
 
   osc_generic_bidir_protocol(
@@ -288,7 +288,7 @@ class osc_generic_server_protocol final : public can_learn<ossia::net::protocol_
 {
 public:
   using osc_configuration = typename OscMode::osc_configuration;
-  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
+  static constexpr bool bundled = requires { typename osc_configuration::bundled; };
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
@@ -403,7 +403,7 @@ class osc_generic_client_protocol : public can_learn<ossia::net::protocol_base>
 {
 public:
   using osc_configuration = typename OscMode::osc_configuration;
-  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
+  static constexpr bool bundled = requires { typename osc_configuration::bundled; };
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
