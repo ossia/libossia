@@ -181,13 +181,32 @@ private:
         }
       }
 
-      // Start reading remaining data until EOF.
-      boost::asio::async_read(
-          m_socket, m_response, boost::asio::transfer_at_least(1),
-          [self = shared_from_this()](
-              const boost::system::error_code& err, std::size_t size) {
-        self->handle_read_content(err, size);
+      if(m_contentLength > 0)
+      {
+        if(m_contentLength == m_response.size())
+        {
+          finish_read(boost::asio::error::eof, size);
+        }
+        else
+        {
+          boost::asio::async_read(
+              m_socket, m_response, boost::asio::transfer_exactly(m_contentLength - m_response.size()),
+              [self = shared_from_this()](
+                  const boost::system::error_code& err, std::size_t size) {
+            self->handle_read_content(err, size);
           });
+        }
+      }
+      else
+      {
+        // Start reading remaining data until EOF.
+        boost::asio::async_read(
+            m_socket, m_response, boost::asio::transfer_all(),
+            [self = shared_from_this()](
+                const boost::system::error_code& err, std::size_t size) {
+          self->handle_read_content(err, size);
+        });
+      }
     }
     else
     {
@@ -198,30 +217,17 @@ private:
 
   void handle_read_content(const boost::system::error_code& err, std::size_t size)
   {
-    if(!err)
-    {
-      // Continue reading remaining data until EOF.
-      if(m_contentLength < 0 || m_response.size() < m_contentLength)
-      {
-        boost::asio::async_read(
-            m_socket, m_response, boost::asio::transfer_at_least(1),
-            [self = shared_from_this()](
-                const boost::system::error_code& err, std::size_t size) {
-          self->handle_read_content(err, size);
-        });
-        return;
-      }
-      // else we fallthrough the processing case at the end
-    }
-    else if(err != boost::asio::error::eof)
+    if(!err || err == boost::asio::error::eof)
+      finish_read(err, size);
+    else
     {
       ossia::logger().error("HTTP Error: {}", err.message());
       m_err(*this);
-      return;
     }
+  }
 
-    // err == boost::asio::error::eof or we reached content-length
-    // Write all of the data that has been read so far.
+  void finish_read(const boost::system::error_code& err, std::size_t size)
+  {
     const auto& dat = m_response.data();
     auto begin = boost::asio::buffers_begin(dat);
     auto end = boost::asio::buffers_end(dat);
