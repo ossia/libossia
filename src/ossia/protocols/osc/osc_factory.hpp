@@ -40,6 +40,12 @@ struct osc_protocol_configuration
     SLIP
   } framing{SLIP};
 
+  enum
+  {
+    NEVER_BUNDLE,
+    ALWAYS_BUNDLE
+  } bundle_strategy{NEVER_BUNDLE};
+
   osc_transport_configuration transport;
 };
 

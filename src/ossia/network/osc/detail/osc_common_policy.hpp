@@ -9,6 +9,14 @@
 
 namespace ossia::net
 {
+
+template <typename T>
+struct osc_always_bundled_policy : T
+{
+  using bundled = std::true_type;
+};
+template <typename T>
+using osc_never_bundled_policy = T;
 // Handling for types compatible with all OSC version
 
 // This class is an implementation detail. It is used to send things that work

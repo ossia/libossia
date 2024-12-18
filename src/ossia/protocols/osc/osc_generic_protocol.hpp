@@ -27,10 +27,11 @@
 namespace ossia::net
 {
 template <typename OscMode, typename SendSocket, typename RecvSocket>
-class osc_generic_bidir_protocol : public can_learn<ossia::net::protocol_base>
+class osc_generic_bidir_protocol final : public can_learn<ossia::net::protocol_base>
 {
 public:
-  // using socket_type = Socket;
+  using osc_configuration = typename OscMode::osc_configuration;
+  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
   using writer_type = socket_writer<SendSocket>;
 
   osc_generic_bidir_protocol(
@@ -156,6 +157,7 @@ public:
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
+      // FIXME bundling ?
       return OscMode::echo_incoming_message(*this, id, addr, val);
     }
     else
@@ -168,7 +170,10 @@ public:
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
-      return OscMode::push(*this, addr, v);
+      if constexpr(bundled)
+        return OscMode::push_bundle(*this, writer(), addr, v);
+      else
+        return OscMode::push(*this, addr, v);
     }
     else
     {
@@ -180,7 +185,10 @@ public:
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
-      return OscMode::push(*this, addr, std::move(v));
+      if constexpr(bundled)
+        return OscMode::push_bundle(*this, writer(), addr, std::move(v));
+      else
+        return OscMode::push(*this, addr, std::move(v));
     }
     else
     {
@@ -192,7 +200,10 @@ public:
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
-      return OscMode::push_raw(*this, addr);
+      if constexpr(bundled)
+        return OscMode::push_bundle(*this, writer(), addr);
+      else
+        return OscMode::push_raw(*this, addr);
     }
     else
     {
@@ -273,9 +284,11 @@ public:
 };
 
 template <typename OscMode, typename Socket>
-class osc_generic_server_protocol : public can_learn<ossia::net::protocol_base>
+class osc_generic_server_protocol final : public can_learn<ossia::net::protocol_base>
 {
 public:
+  using osc_configuration = typename OscMode::osc_configuration;
+  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
@@ -323,17 +336,26 @@ public:
 
   bool push(const ossia::net::parameter_base& addr, const ossia::value& v) override
   {
-    return OscMode::push(*this, addr, v);
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr, v);
+    else
+      return OscMode::push(*this, addr, v);
   }
 
   bool push(const ossia::net::parameter_base& addr, ossia::value&& v) override
   {
-    return OscMode::push(*this, addr, std::move(v));
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr, std::move(v));
+    else
+      return OscMode::push(*this, addr, std::move(v));
   }
 
   bool push_raw(const ossia::net::full_parameter_data& addr) override
   {
-    return OscMode::push_raw(*this, addr);
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr);
+    else
+      return OscMode::push_raw(*this, addr);
   }
 
   bool push_bundle(const std::vector<const parameter_base*>& addresses) override
@@ -380,6 +402,8 @@ template <typename OscMode, typename Socket>
 class osc_generic_client_protocol : public can_learn<ossia::net::protocol_base>
 {
 public:
+  using osc_configuration = typename OscMode::osc_configuration;
+  static constexpr bool bundled = requires { typename osc_configuration::bundled{}; };
   using socket_type = Socket;
   using writer_type = socket_writer<socket_type>;
 
@@ -431,17 +455,26 @@ public:
 
   bool push(const ossia::net::parameter_base& addr, const ossia::value& v) override
   {
-    return OscMode::push(*this, addr, v);
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr, v);
+    else
+      return OscMode::push(*this, addr, v);
   }
 
   bool push(const ossia::net::parameter_base& addr, ossia::value&& v) override
   {
-    return OscMode::push(*this, addr, std::move(v));
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr, std::move(v));
+    else
+      return OscMode::push(*this, addr, std::move(v));
   }
 
   bool push_raw(const ossia::net::full_parameter_data& addr) override
   {
-    return OscMode::push_raw(*this, addr);
+    if constexpr(bundled)
+      return OscMode::push_bundle(*this, writer(), addr);
+    else
+      return OscMode::push_raw(*this, addr);
   }
 
   bool push_bundle(const std::vector<const parameter_base*>& addresses) override

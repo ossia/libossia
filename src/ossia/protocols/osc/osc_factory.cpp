@@ -250,20 +250,43 @@ make_osc_protocol(network_context_ptr ctx, osc_protocol_configuration config)
 {
   using conf = osc_protocol_configuration;
 
-  switch(config.version)
+  switch(config.bundle_strategy)
   {
-    case conf::OSC1_0:
-      return make_osc_protocol_impl<osc_1_0_policy>(std::move(ctx), std::move(config));
-    case conf::OSC1_1:
-      return make_osc_protocol_impl<osc_1_1_policy>(std::move(ctx), std::move(config));
-    case conf::EXTENDED:
-      return make_osc_protocol_impl<osc_extended_policy>(
-          std::move(ctx), std::move(config));
-    default:
+    case conf::NEVER_BUNDLE:
+      switch(config.version)
+      {
+        case conf::OSC1_0:
+          return make_osc_protocol_impl<osc_1_0_policy>(
+              std::move(ctx), std::move(config));
+        case conf::OSC1_1:
+          return make_osc_protocol_impl<osc_1_1_policy>(
+              std::move(ctx), std::move(config));
+        case conf::EXTENDED:
+          return make_osc_protocol_impl<osc_extended_policy>(
+              std::move(ctx), std::move(config));
+        default:
+          break;
+      }
       break;
+    case conf::ALWAYS_BUNDLE: {
+      switch(config.version)
+      {
+        case conf::OSC1_0:
+          return make_osc_protocol_impl<osc_always_bundled_policy<osc_1_0_policy>>(
+              std::move(ctx), std::move(config));
+        case conf::OSC1_1:
+          return make_osc_protocol_impl<osc_always_bundled_policy<osc_1_1_policy>>(
+              std::move(ctx), std::move(config));
+        case conf::EXTENDED:
+          return make_osc_protocol_impl<osc_always_bundled_policy<osc_extended_policy>>(
+              std::move(ctx), std::move(config));
+        default:
+          break;
+      }
+      break;
+    }
   }
 
   return {};
 }
-
 }
