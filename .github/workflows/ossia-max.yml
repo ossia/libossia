@@ -22,7 +22,7 @@ jobs:
     - name: Archive Max Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-max
+        name: ossia-max-macos
         path: artifacts/ossia
 
     - name: Upload logs
@@ -50,7 +50,7 @@ jobs:
     - name: Archive Max Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-max
+        name: ossia-max-windows
         path: ./install/ossia-max-package/ossia
 
     - name: Upload logs
@@ -65,10 +65,11 @@ jobs:
     needs: [ build-macos, build-windows ]
     if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
-          name: ossia-max
+          pattern: ossia-max-*
           path: ossia
+          merge-multiple: true
       - name: Rezip
         shell: bash
         run: |

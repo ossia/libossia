@@ -33,7 +33,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-pd-macos
         path: install/ossia-pd-package/ossia
 
   build-windows:
@@ -51,7 +51,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-pd-windows
         path: ./install/ossia-pd-package/ossia
 
   build-linux:
@@ -67,7 +67,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-pd-linux
         path: install/ossia-pd-package/ossia
 
   build-rpi:
@@ -101,10 +101,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: [ build-macos, build-windows, build-rpi, build-linux ]
     steps:
-      - uses: actions/download-artifact@v4.1.7
+      - uses: actions/download-artifact@v4
         with:
-          name: ossia-pd
+          pattern: ossia-pd-*
           path: ossia
+          merge-multiple: true
       - name: Rezip
         shell: bash
         run: |
