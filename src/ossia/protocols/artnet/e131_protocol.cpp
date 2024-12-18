@@ -133,8 +133,8 @@ static_assert(sizeof(e131_packet) == 638);
 
 namespace ossia::net
 {
-static boost::asio::ip::address_v4
-e131_host(const dmx_config& conf, const ossia::net::outbound_socket_configuration& socket)
+static boost::asio::ip::address e131_host(
+    const dmx_config& conf, const ossia::net::outbound_socket_configuration& socket)
 {
   if(conf.multicast)
   {
@@ -142,7 +142,7 @@ e131_host(const dmx_config& conf, const ossia::net::outbound_socket_configuratio
   }
   else
   {
-    return boost::asio::ip::address_v4::from_string(socket.host);
+    return boost::asio::ip::make_address(socket.host);
   }
 }
 
@@ -160,7 +160,7 @@ e131_protocol::e131_protocol(
   if(conf.multicast && !socket.host.empty())
   {
     m_socket.m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
-        boost::asio::ip::address_v4::from_string(socket.host)));
+        boost::asio::ip::make_address(socket.host).to_v4()));
   }
 
   m_timer.set_delay(std::chrono::milliseconds{

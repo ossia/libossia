@@ -4,6 +4,7 @@
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/placeholders.hpp>
+#include <boost/asio/post.hpp>
 #include <boost/asio/serial_port.hpp>
 #include <boost/asio/write.hpp>
 
@@ -118,7 +119,7 @@ public:
     m_port.set_option(
         proto::stop_bits(static_cast<proto::stop_bits::type>(m_conf.stop_bits)));
 
-    m_context.post([this] { on_open(); });
+    boost::asio::post(m_context, [this] { on_open(); });
   }
 
   template <typename F>
@@ -135,7 +136,7 @@ public:
     if(m_port.is_open())
     {
       m_port.cancel();
-      m_context.post([this] {
+      boost::asio::post(m_context, [this] {
         m_port.close();
         on_close();
       });

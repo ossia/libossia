@@ -89,7 +89,7 @@ public:
 
   void close()
   {
-    m_context.post([this] {
+    boost::asio::post(m_context, [this] {
       m_socket.close();
       on_close();
     });

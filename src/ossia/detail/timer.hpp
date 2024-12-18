@@ -38,7 +38,7 @@ public:
   template <typename F>
   void start(F f)
   {
-    m_timer.expires_from_now(m_delay);
+    m_timer.expires_after(m_delay);
     m_timer.async_wait([this, ff = std::move(f)](auto ec) {
       if(ec == boost::asio::error::operation_aborted)
         return;

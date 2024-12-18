@@ -45,7 +45,7 @@ public:
   {
     if(m_socket.is_open())
     {
-      m_context.post([this] {
+      boost::asio::post(m_context, [this] {
         m_socket.close();
         on_close();
       });

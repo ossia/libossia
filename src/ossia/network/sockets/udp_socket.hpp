@@ -45,7 +45,7 @@ public:
   {
     if(m_socket.is_open())
     {
-      m_context.post([this] {
+      boost::asio::post(m_context, [this] {
         m_socket.close();
         on_close();
       });
@@ -103,7 +103,7 @@ public:
   }
 
   udp_send_socket(
-      const boost::asio::ip::address_v4& host, const uint16_t port,
+      const boost::asio::ip::address& host, const uint16_t port,
       boost::asio::io_context& ctx)
       : m_context{ctx}
       , m_endpoint{host, port}
@@ -125,7 +125,7 @@ public:
   {
     if(m_socket.is_open())
     {
-      m_context.post([this] {
+      boost::asio::post(m_context, [this] {
         m_socket.close();
         on_close();
       });
