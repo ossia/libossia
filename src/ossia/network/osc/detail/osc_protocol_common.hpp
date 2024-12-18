@@ -14,6 +14,7 @@ namespace ossia::net
 template <typename OscVersion>
 struct osc_protocol_common
 {
+  using osc_configuration = OscVersion;
   template <typename T, typename Value_T>
   static bool push(T& self, const ossia::net::parameter_base& addr, Value_T&& v)
   {
@@ -123,6 +124,32 @@ struct osc_protocol_client : osc_protocol_common<OscVersion>
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
   }
 
+  template <typename T, typename Writer>
+  static bool push_bundle(
+      T& self, Writer writer, const ossia::net::parameter_base& addr, ossia::value v)
+  {
+    if(auto bundle = make_bundle(bundle_client_policy<OscVersion>{}, addr, v))
+    {
+      writer(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
+      return true;
+    }
+    return false;
+  }
+
+  template <typename T, typename Writer>
+  static bool
+  push_bundle(T& self, Writer writer, const ossia::net::full_parameter_data& addr)
+  {
+    if(auto bundle = make_bundle(bundle_client_policy<OscVersion>{}, addr))
+    {
+      writer(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
+      return true;
+    }
+    return false;
+  }
+
   template <typename T, typename Writer, typename Addresses>
   static bool push_bundle(T& self, Writer writer, const Addresses& addresses)
   {
@@ -166,6 +193,32 @@ struct osc_protocol_server : osc_protocol_common<OscVersion>
       return false;
 
     return osc_protocol_common<OscVersion>::push_raw(self, addr);
+  }
+
+  template <typename T, typename Writer>
+  static bool
+  push_bundle(T& self, Writer writer, const ossia::net::full_parameter_data& addr)
+  {
+    if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addr))
+    {
+      writer(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
+      return true;
+    }
+    return false;
+  }
+
+  template <typename T, typename Writer>
+  static bool push_bundle(
+      T& self, Writer writer, const ossia::net::parameter_base& addr, ossia::value v)
+  {
+    if(auto bundle = make_bundle(bundle_server_policy<OscVersion>{}, addr, v))
+    {
+      writer(bundle->data.data(), bundle->data.size());
+      ossia::buffer_pool::instance().release(std::move(bundle->data));
+      return true;
+    }
+    return false;
   }
 
   template <typename T, typename Writer, typename Addresses>
