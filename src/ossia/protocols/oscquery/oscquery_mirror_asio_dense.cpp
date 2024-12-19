@@ -345,7 +345,9 @@ void oscquery_mirror_asio_protocol_dense::process_raw_osc_data(
 
 void oscquery_mirror_asio_protocol_dense::start_http()
 {
-  m_http->worker = std::make_shared<boost::asio::io_service::work>(m_ctx->context);
+  m_http->worker = std::make_shared<
+      boost::asio::executor_work_guard<boost::asio::io_context::executor_type>>(
+      m_ctx->context.get_executor());
 }
 
 void oscquery_mirror_asio_protocol_dense::start_osc()

@@ -99,7 +99,10 @@ struct http_async_value_request
 
 struct http_async_client_context
 {
-  std::shared_ptr<boost::asio::io_service::work> worker;
+  using ctx = boost::asio::io_context;
+  using executor = ctx::executor_type;
+  using work = boost::asio::executor_work_guard<executor>;
+  std::shared_ptr<work> worker;
 };
 
 inline std::string asio_to_ip(std::string uri)
