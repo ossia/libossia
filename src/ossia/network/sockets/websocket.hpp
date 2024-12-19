@@ -52,7 +52,7 @@ struct websocket_simple_client : websocket_client
   {
     if(connected())
     {
-      m_client->get_io_service().post([this] { websocket_client::stop(); });
+      boost::asio::post(m_client->get_io_service(), [this] { websocket_client::stop(); });
     }
   }
 
@@ -95,7 +95,7 @@ struct websocket_simple_server : ossia::net::websocket_server
 
   void close()
   {
-    m_server->get_io_service().post([this] { stop(); });
+    boost::asio::post(m_server->get_io_service(), [this] { stop(); });
   }
 
   std::vector<std::shared_ptr<void>> m_listeners;
