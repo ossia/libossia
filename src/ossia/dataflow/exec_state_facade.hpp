@@ -1,6 +1,8 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
+#include <ossia/dataflow/dataflow_fwd.hpp>
+
 #include <cinttypes>
 #include <string_view>
 
@@ -48,6 +50,9 @@ struct OSSIA_EXPORT exec_state_facade
   void insert(ossia::net::parameter_base& dest, const value_port& v);
   void insert(ossia::audio_parameter& dest, const audio_port& v);
   void insert(ossia::net::midi::midi_parameter& dest, const midi_port& v);
+
+  std::vector<ossia::net::node_base*> list_destinations(const destination_t& address);
+  ossia::net::node_base* get_first_destination(const destination_t& address);
 };
 
 }
