@@ -563,4 +563,99 @@ void exec_state_facade::insert(net::midi::midi_parameter& dest, const midi_port&
 {
   impl->insert(dest, v);
 }
+
+std::vector<ossia::net::node_base*>
+exec_state_facade::list_destinations(const destination_t& address)
+{
+  return ossia::list_destinations(address, impl->exec_devices());
+}
+
+ossia::net::node_base*
+exec_state_facade::get_first_destination(const destination_t& address)
+{
+  return ossia::get_first_destination(address, impl->exec_devices());
+}
+
+std::vector<ossia::net::node_base*> list_destinations(
+    const destination_t& address,
+    const ossia::small_vector<ossia::net::device_base*, 4>& devices)
+{
+  std::vector<ossia::net::node_base*> ret;
+  switch(address.which().index())
+  {
+    // ossia::net::parameter_base*
+    case destination_t::index_of<ossia::net::parameter_base*>().index(): {
+      auto addr = *address.target<ossia::net::parameter_base*>();
+      if(addr)
+      {
+        ret.push_back(&addr->get_node());
+        break;
+      }
+      break;
+    }
+
+      // ossia::traversal::path
+    case destination_t::index_of<ossia::traversal::path>().index(): {
+      std::vector<ossia::net::node_base*> roots{};
+
+      for(auto n : devices)
+        roots.push_back(&n->get_root_node());
+
+      auto& p = *address.target<ossia::traversal::path>();
+      ossia::traversal::apply(p, roots);
+
+      for(auto n : roots)
+        ret.push_back(n);
+      break;
+    }
+
+      // ossia::net::node_base*
+    case destination_t::index_of<ossia::net::node_base*>().index(): {
+      ret.push_back(*address.target<ossia::net::node_base*>());
+      break;
+    }
+    default:
+      break;
+  }
+  return ret;
+}
+
+ossia::net::node_base* get_first_destination(
+    const destination_t& address,
+    const ossia::small_vector<ossia::net::device_base*, 4>& devices)
+{
+  switch(address.which().index())
+  {
+    // ossia::net::parameter_base*
+    case destination_t::index_of<ossia::net::parameter_base*>().index(): {
+      auto addr = *address.target<ossia::net::parameter_base*>();
+      if(addr)
+        return &addr->get_node();
+      break;
+    }
+
+      // ossia::traversal::path
+    case destination_t::index_of<ossia::traversal::path>().index(): {
+      std::vector<ossia::net::node_base*> roots{};
+
+      for(auto n : devices)
+        roots.push_back(&n->get_root_node());
+
+      auto& p = *address.target<ossia::traversal::path>();
+      ossia::traversal::apply(p, roots);
+
+      for(auto n : roots)
+        return n;
+      break;
+    }
+
+      // ossia::net::node_base*
+    case destination_t::index_of<ossia::net::node_base*>().index(): {
+      return *address.target<ossia::net::node_base*>();
+    }
+    default:
+      break;
+  }
+  return nullptr;
+}
 }

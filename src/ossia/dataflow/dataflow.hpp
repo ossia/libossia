@@ -7,6 +7,7 @@
 
 namespace ossia
 {
+struct exec_state_facade;
 struct do_nothing_for_nodes
 {
   void operator()(ossia::net::node_base* node, bool) const noexcept { }
@@ -53,4 +54,12 @@ bool apply_to_destination(
     }
   }
 }
+
+std::vector<ossia::net::node_base*> list_destinations(
+    const destination_t& address,
+    const ossia::small_vector<ossia::net::device_base*, 4>& devices);
+
+ossia::net::node_base* get_first_destination(
+    const destination_t& address,
+    const ossia::small_vector<ossia::net::device_base*, 4>& devices);
 }

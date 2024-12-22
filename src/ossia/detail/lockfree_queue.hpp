@@ -3,9 +3,12 @@
 // TSAN seems to have some trouble with ReaderWriterQueue...
 #if !defined(OSSIA_FREESTANDING)
 
+#include <blockingconcurrentqueue.h>
+#include <concurrentqueue.h>
+
+// SPSC
 #if defined(__has_feature)
 #if __has_feature(thread_sanitizer)
-#include <concurrentqueue.h>
 namespace ossia
 {
 template <typename T, size_t MAX_BLOCK_SIZE = 512>
@@ -28,12 +31,15 @@ using spsc_queue = moodycamel::ReaderWriterQueue<T, MAX_BLOCK_SIZE>;
 }
 #endif
 
-#include <concurrentqueue.h>
+// MPMC
 namespace ossia
 {
 template <typename T>
 using mpmc_queue = moodycamel::ConcurrentQueue<T>;
+template <typename T>
+using blocking_mpmc_queue = moodycamel::BlockingConcurrentQueue<T>;
 }
+
 #else
 // Will only be used on one thread anyways
 #include <vector>
@@ -62,5 +68,7 @@ template <typename T>
 using spsc_queue = ossia::minimal_queue<T>;
 template <typename T>
 using mpmc_queue = ossia::minimal_queue<T>;
+template <typename T>
+using blocking_mpmc_queue = ossia::minimal_queue<T>;
 }
 #endif
