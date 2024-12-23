@@ -29,7 +29,7 @@ TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
   bool opened = false;
   bool message = false;
   bool closed = false;
-  boost::asio::io_context ctx;
+  auto ctx = std::make_shared<ossia::net::network_context>();
   ossia::net::websocket_server srv{ctx};
   srv.set_open_handler([&](auto&&...) { opened = true; });
   srv.set_message_handler([&](auto&&...) {
@@ -46,11 +46,11 @@ TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
     auto con = std::make_shared<ossia::websocket_threaded_connection>(std::string(host));
     auto sink = std::make_shared<websocket_log_sink>(con, appname);
     auto log = std::make_shared<spdlog::logger>("max_logger", sink);
-    ctx.run_for(std::chrono::milliseconds(100));
+    ctx->context.run_for(std::chrono::milliseconds(100));
     log->info("helo");
-    ctx.run_for(std::chrono::milliseconds(100));
+    ctx->context.run_for(std::chrono::milliseconds(100));
   }
-  ctx.run_for(std::chrono::milliseconds(100));
+  ctx->context.run_for(std::chrono::milliseconds(100));
 
   REQUIRE(opened);
   REQUIRE(message);

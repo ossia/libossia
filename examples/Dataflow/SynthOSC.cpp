@@ -75,7 +75,7 @@ Example:
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
       ossia::net::make_osc_protocol(
-          ctx, {conf::HOST, conf::OSC1_1, conf::SLIP,
+          ctx, {conf::HOST, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
                 ossia::net::udp_configuration{
                     {ossia::net::inbound_socket_configuration{
                          .bind = "0.0.0.0", .port = listen_port},

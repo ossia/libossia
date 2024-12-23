@@ -17,7 +17,7 @@ int main(int argc, char** argv)
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
       ossia::net::make_osc_protocol(
-          ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP,
+          ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
                 ossia::net::ws_client_configuration{"ws://127.0.0.1:1234"}}),
       "P"};
 

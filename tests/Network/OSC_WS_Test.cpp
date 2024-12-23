@@ -16,7 +16,7 @@ auto make_client(ossia::net::network_context_ptr ctx)
 {
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
-      ctx, {conf::MIRROR, conf::OSC1_1, conf::SIZE_PREFIX,
+      ctx, {conf::MIRROR, conf::OSC1_1, conf::SIZE_PREFIX, conf::NEVER_BUNDLE,
             ossia::net::ws_client_configuration{"ws://127.0.0.1:8086"}});
 }
 
@@ -24,7 +24,7 @@ auto make_server(ossia::net::network_context_ptr ctx)
 {
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
-      ctx, {conf::HOST, conf::OSC1_1, conf::SIZE_PREFIX,
+      ctx, {conf::HOST, conf::OSC1_1, conf::SIZE_PREFIX, conf::NEVER_BUNDLE,
             ossia::net::ws_server_configuration{8086}});
 }
 
