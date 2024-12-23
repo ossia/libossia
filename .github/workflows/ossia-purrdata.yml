@@ -34,7 +34,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-purrdata-mac
         path: install/ossia-pd-package
 
   build-windows:
@@ -52,7 +52,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-purrdata-windows
         path: install/ossia-pd-package/ossia
 
   build-linux:
@@ -74,7 +74,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-purrdata-linux
         path: install/ossia-pd-package/ossia
 
   build-rpi:
@@ -104,7 +104,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-pd
+        name: ossia-purrdata-rpi
         path: install/ossia-pd-package/ossia
 
   upload_release:
@@ -113,7 +113,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:
-          name: ossia-pd
+          pattern: ossia-purrdata-*
           path: ossia
       - name: Rezip
         shell: bash

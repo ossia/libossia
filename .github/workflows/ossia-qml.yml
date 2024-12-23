@@ -22,7 +22,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-qml
+        name: ossia-qml-linux
         path: install
 
   qml-mac:
@@ -58,7 +58,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-qml
+        name: ossia-qml-mac
         path: install
       
   qml-windows:
@@ -78,7 +78,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-qml
+        name: ossia-qml-windows
         path: install
 
   upload_release:
@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:
-          name: ossia-qml
+          pattern: ossia-qml-*
           path: ossia
       - name: Rezip
         shell: bash
