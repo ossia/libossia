@@ -16,7 +16,7 @@ auto make_client(ossia::net::network_context_ptr ctx)
 {
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
-      ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP,
+      ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
             ossia::net::tcp_client_configuration{"127.0.0.1", 1234}});
 }
 
@@ -24,7 +24,7 @@ auto make_server(ossia::net::network_context_ptr ctx)
 {
   using conf = ossia::net::osc_protocol_configuration;
   return ossia::net::make_osc_protocol(
-      ctx, {conf::HOST, conf::OSC1_1, conf::SLIP,
+      ctx, {conf::HOST, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
             ossia::net::tcp_server_configuration{"0.0.0.0", 1234}});
 }
 

@@ -17,7 +17,7 @@ int main(int argc, char** argv)
   using conf = ossia::net::osc_protocol_configuration;
   ossia::net::generic_device device{
       ossia::net::make_osc_protocol(
-          ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP,
+          ctx, {conf::MIRROR, conf::OSC1_1, conf::SLIP, conf::NEVER_BUNDLE,
                 ossia::net::unix_dgram_configuration{
                     {ossia::net::receive_fd_configuration{{"/tmp/ossia_echo.a.socket"}},
                      ossia::net::send_fd_configuration{{"/tmp/ossia_echo.b.socket"}}}}}),
