@@ -17,6 +17,20 @@
 
 #include <iostream>
 
+namespace ossia
+{
+std::ostream& operator<<(std::ostream& o, const ossia::presets::preset& p)
+{
+  o << "preset: [ ";
+  for(auto& [k, v] : p)
+  {
+    o << k << " = " << ossia::value_to_pretty_string(v) << " ; ";
+  }
+  o << " ]";
+  return o;
+}
+}
+
 TEST_CASE("test_device", "test_device")
 {
   using namespace std::literals;
@@ -146,29 +160,106 @@ TEST_CASE("test_nodes_txt", "test_nodes_txt")
   REQUIRE(loadPreset == preset);
 }
 
-TEST_CASE("test_vecnf", "test_vecnf")
+TEST_CASE("test_vec2f", "test_vec2f")
 {
   ossia::net::generic_device dev{"mydevice"};
 
   auto& root = dev.get_root_node();
 
   auto p1 = ossia::try_setup_parameter("vec2", ossia::net::create_node(root, "/vec2"));
-  auto p2 = ossia::try_setup_parameter("vec3", ossia::net::create_node(root, "/vec3"));
-  auto p3 = ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/vec4"));
-  auto p4 = ossia::try_setup_parameter("list", ossia::net::create_node(root, "/list"));
-
   p1->push_value(ossia::make_vec(1., -1.));
-  p2->push_value(ossia::make_vec(2., -2.5, -123.));
-  p3->push_value(ossia::make_vec(1e2, -0., 999, 1.));
-  p4->push_value(std::vector<ossia::value>{
-      1, 12, 17, -4, 5, .2, 15, "toto", 'a',
-      std::vector<ossia::value>{"foo", "bar", 0.25}, std::vector<ossia::value>{}});
 
   const auto preset = ossia::presets::make_preset(dev);
   const auto presetStr = ossia::presets::to_string(preset);
 
   const auto loadPreset = ossia::presets::from_string(presetStr);
   auto presetStr2 = ossia::presets::to_string(loadPreset);
+  REQUIRE(loadPreset == preset);
+
+  const auto json = ossia::presets::write_json("whatever", loadPreset);
+  const auto read_json = ossia::presets::read_json(json, false);
+  ossia::presets::to_string(read_json);
+}
+
+TEST_CASE("test_vec3f", "test_vec3f")
+{
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  auto p2 = ossia::try_setup_parameter("vec3", ossia::net::create_node(root, "/vec3"));
+  p2->push_value(ossia::make_vec(2., -2.5, -123.));
+
+  const auto preset = ossia::presets::make_preset(dev);
+  const auto presetStr = ossia::presets::to_string(preset);
+
+  const auto loadPreset = ossia::presets::from_string(presetStr);
+  auto presetStr2 = ossia::presets::to_string(loadPreset);
+  REQUIRE(loadPreset == preset);
+
+  const auto json = ossia::presets::write_json("whatever", loadPreset);
+  const auto read_json = ossia::presets::read_json(json, false);
+  ossia::presets::to_string(read_json);
+}
+
+TEST_CASE("test_vec4f", "test_vec4f")
+{
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  auto p3 = ossia::try_setup_parameter("vec4", ossia::net::create_node(root, "/vec4"));
+  p3->push_value(ossia::make_vec(1e2, -0., 999, 1.));
+
+  const auto preset = ossia::presets::make_preset(dev);
+  const auto presetStr = ossia::presets::to_string(preset);
+
+  const auto loadPreset = ossia::presets::from_string(presetStr);
+  auto presetStr2 = ossia::presets::to_string(loadPreset);
+  REQUIRE(loadPreset == preset);
+
+  const auto json = ossia::presets::write_json("whatever", loadPreset);
+  const auto read_json = ossia::presets::read_json(json, false);
+  ossia::presets::to_string(read_json);
+}
+
+TEST_CASE("test_list", "test_list")
+{
+  static const ossia::value values[]
+      = {std::vector<ossia::value>{},
+         std::vector<ossia::value>{1, 12, 17},
+         std::vector<ossia::value>{-4., 0.2},
+         std::vector<ossia::value>{"toto", "foo"},
+         std::vector<ossia::value>{'a', 'b', 'c'},
+         std::vector<ossia::value>{
+             std::vector<ossia::value>{}, std::vector<ossia::value>{},
+             std::vector<ossia::value>{}},
+         std::vector<ossia::value>{ossia::vec2f{}, ossia::vec3f{}, ossia::vec4f{}},
+         std::vector<ossia::value>{
+             1, 12, 17, -4, 5, .2, 15, "toto", 'a',
+             std::vector<ossia::value>{"foo", "bar", 0.25}, std::vector<ossia::value>{}}
+
+      };
+  ossia::value val = GENERATE(
+      values[0], values[1], values[2], values[3], values[4], values[5], values[6],
+      values[7]);
+
+  ossia::net::generic_device dev{"mydevice"};
+
+  auto& root = dev.get_root_node();
+
+  auto p4 = ossia::try_setup_parameter("list", ossia::net::create_node(root, "/list"));
+  p4->push_value(val);
+
+  const auto preset = ossia::presets::make_preset(dev);
+  const auto presetStr = ossia::presets::to_string(preset);
+
+  const auto loadPreset = ossia::presets::from_string(presetStr);
+  auto presetStr2 = ossia::presets::to_string(loadPreset);
+  INFO("preset: => ");
+  INFO(preset);
+  INFO("presetStr: => ");
+  INFO(presetStr);
   REQUIRE(loadPreset == preset);
 
   const auto json = ossia::presets::write_json("whatever", loadPreset);

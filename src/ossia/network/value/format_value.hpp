@@ -158,10 +158,12 @@ inline typename FmtCtx::iterator
 value_prettyprint_visitor<FmtCtx>::operator()(const std::vector<value>& t) const
 {
   fmt::format_to(ctx.out(), "list: [");
+  int i = 0;
   for(auto& v : t)
   {
     v.apply(*this);
-    fmt::format_to(ctx.out(), ", ");
+    if(++i < t.size())
+      fmt::format_to(ctx.out(), ", ");
   }
   return fmt::format_to(ctx.out(), "]");
 }
@@ -171,10 +173,13 @@ inline typename FmtCtx::iterator
 value_prettyprint_visitor<FmtCtx>::operator()(const value_map_type& t) const
 {
   fmt::format_to(ctx.out(), "map: {{");
+  int i = 0;
   for(auto& v : t)
   {
     fmt::format_to(ctx.out(), "\"{}\": ", v.first);
     v.second.apply(*this);
+    if(++i < t.size())
+      fmt::format_to(ctx.out(), ", ");
   }
   return fmt::format_to(ctx.out(), "}}");
 }
