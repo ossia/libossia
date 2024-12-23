@@ -23,7 +23,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-cpp
+        name: ossia-cpp-linux
         path: install
 
   cpp-mac:
@@ -50,7 +50,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-cpp
+        name: ossia-cpp-mac
         path: install
       
   cpp-windows:
@@ -70,7 +70,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: ossia-cpp
+        name: ossia-cpp-windows
         path: install
 
   upload_release:
@@ -79,7 +79,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:
-          name: ossia-cpp
+          pattern: ossia-cpp-*
           path: ossia
       - name: Rezip
         shell: bash
