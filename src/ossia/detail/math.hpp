@@ -284,7 +284,7 @@ clamp(float d, const double min, const float max) noexcept
 template <class T>
 OSSIA_INLINE constexpr T wrap(const T val, const T low, const T high) noexcept
 {
-  if((val >= low) && (val < high))
+  if(((val >= low) && (val < high)) || low == high)
     return val;
   else if(val >= low)
     return low + std::fmod(val - low, std::fabs(low - high));
@@ -295,7 +295,7 @@ OSSIA_INLINE constexpr T wrap(const T val, const T low, const T high) noexcept
 template <class T>
 OSSIA_INLINE constexpr T fold(const T val, const T low, const T high) noexcept
 {
-  if((val >= low) && (val <= high))
+  if((val >= low) && (val <= high) || low == high)
     return val;
   else
   {
