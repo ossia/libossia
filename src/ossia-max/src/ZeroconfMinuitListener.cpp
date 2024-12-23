@@ -6,7 +6,7 @@
 
 #include <ossia/network/minuit/minuit.hpp>
 
-#include <boost/asio/io_service.hpp>
+#include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/basic_resolver.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/lexical_cast.hpp>
@@ -69,8 +69,8 @@ void ZeroconfMinuitListener::add_instance(const std::string& instance)
 
   try
   {
-    boost::asio::io_service io_service;
-    boost::asio::ip::tcp::resolver resolver(io_service);
+    boost::asio::io_context io_context;
+    boost::asio::ip::tcp::resolver resolver(io_context);
     boost::asio::ip::tcp::resolver::query query(ip, port);
     boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
     if(iter->endpoint().address().is_loopback())
