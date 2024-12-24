@@ -77,39 +77,9 @@ jobs:
         name: ossia-purrdata-linux
         path: install/ossia-pd-package/ossia
 
-  build-rpi:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-rpi-toolchain
-    - name: Build
-      run: |
-        export CTEST_OUTPUT_ON_FAILURE=1
-        export RPI_ROOT_PATH=/opt/cross-pi-gcc
-        export PKG_CONFIG_SYSROOT_DIR=$RPI_ROOT_PATH
-        export PKG_CONFIG_LIBDIR=${RPI_ROOT_PATH}/usr/lib/pkgconfig:${RPI_ROOT_PATH}/usr/share/pkgconfig:${RPI_ROOT_PATH}/usr/lib/arm-linux-gnueabihf/pkgconfig/
-        export PATH=/opt/cross-pi-gcc/bin:${PATH}
-        export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
-
-        cmake -B build -S ${GITHUB_WORKSPACE} -DCMAKE_TOOLCHAIN_FILE="${GITHUB_WORKSPACE}/cmake/toolchain/arm-linux-gnueabihf.cmake" \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX=install \
-            -DOSSIA_CI=1 \
-            -DOSSIA_PD_ONLY=1 \
-            -DOSSIA_PURR_DATA=1 \
-            ..
-
-        cmake --build build
-        cmake --build build --target install
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-purrdata-rpi
-        path: install/ossia-pd-package/ossia
-
   upload_release:
     runs-on: ubuntu-latest
-    needs: [ build-macos, build-windows, build-rpi, build-linux ]
+    needs: [ build-macos, build-windows, build-linux ]
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:
