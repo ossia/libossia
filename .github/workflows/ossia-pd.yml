@@ -70,36 +70,9 @@ jobs:
         name: ossia-pd-linux
         path: install/ossia-pd-package/ossia
 
-  build-rpi:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-rpi-toolchain
-    - name: Build
-      run: |
-        export CTEST_OUTPUT_ON_FAILURE=1
-        export PATH=/opt/cross-pi-gcc/bin:${PATH}
-        export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
-
-        cmake -B build -S ${GITHUB_WORKSPACE} \
-            -DCMAKE_TOOLCHAIN_FILE="/opt/cross-pi-gcc/aarch64-rpi3-linux-gnu.toolchain.cmake" \
-            -DCMAKE_BUILD_TYPE=Release \
-            -DCMAKE_INSTALL_PREFIX=install \
-            -DOSSIA_CI=1 \
-            -DOSSIA_PD_ONLY=1 \
-            ..
-
-        cmake --build build
-        cmake --build build --target install
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-pd-rpi
-        path: install/ossia-pd-package/ossia
-
   upload_release:
     runs-on: ubuntu-latest
-    needs: [ build-macos, build-windows, build-rpi, build-linux ]
+    needs: [ build-macos, build-windows,  build-linux ]
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -120,7 +93,7 @@ jobs:
 
   # upload_to_deken:
   #   runs-on: ubuntu-latest
-  #   needs: [ build-macos, build-windows, build-rpi, build-linux ]
+  #   needs: [ build-macos, build-windows, build-linux ]
   #   steps:
   #     - uses: actions/download-artifact@v4.1.7
   #       with:

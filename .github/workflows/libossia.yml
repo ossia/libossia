@@ -102,36 +102,3 @@ jobs:
       with:
         name: libossia-shared-release-linux
         path: install
-
-  build-linux_rpi:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        static: [0, 1]
-        build_type: [Release, Debug]
-      fail-fast: false
-    steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-rpi-toolchain
-    - name: Build
-      env: 
-        STATIC: ${{ matrix.static }}
-        BUILD_TYPE: ${{ matrix.build_type }}
-      run: |
-        export CTEST_OUTPUT_ON_FAILURE=1
-        export PATH=/opt/cross-pi-gcc/bin:${PATH}
-        export LD_LIBRARY_PATH=/opt/cross-pi-gcc/lib:${LD_LIBRARY_PATH}
-
-        cmake -B build -S ${GITHUB_WORKSPACE} \
-            -DCMAKE_TOOLCHAIN_FILE="/opt/cross-pi-gcc/aarch64-rpi3-linux-gnu.toolchain.cmake" \
-            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-            -DOSSIA_STATIC=$STATIC \
-            -DCMAKE_INSTALL_PREFIX=install \
-            -DOSSIA_CI=1
-        cmake --build build
-        cmake --build build --target install
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: libossia-shared-release-rpi
-        path: install
