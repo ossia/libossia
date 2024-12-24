@@ -104,7 +104,7 @@ void device::class_setup(t_class* c)
 void device::asio_timer(device* x)
 {
   x->network_context->context.poll();
-  x->network_context->context.reset();
+  x->network_context->context.restart();
   clock_delay(x->network_poll_clock, 10);
 }
 
