@@ -118,3 +118,6 @@
 [submodule "3rdparty/magic_enum"]
 	path = 3rdparty/magic_enum
 	url = https://github.com/Neargye/magic_enum
+[submodule "3rdparty/miniaudio"]
+	path = 3rdparty/miniaudio
+	url = https://github.com/mackron/miniaudio
