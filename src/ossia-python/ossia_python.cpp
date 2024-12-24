@@ -451,11 +451,10 @@ class ossia_midi_device
 public:
   ossia_midi_device(
       ossia_network_context ctx, std::string name, ossia::net::midi::midi_info d)
-      : m_device{std::make_unique<ossia::net::midi::midi_protocol>(ctx.context, d)}
+      : m_device{name, std::make_unique<ossia::net::midi::midi_protocol>(ctx.context, d)}
       , m_protocol{
             static_cast<ossia::net::midi::midi_protocol&>(m_device.get_protocol())}
   {
-    m_device.set_name(name);
     m_device.create_full_tree();
   }
 
