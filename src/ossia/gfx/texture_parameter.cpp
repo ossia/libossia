@@ -77,6 +77,7 @@ net::parameter_base& texture_parameter::set_bounding(bounding_mode)
   return *this;
 }
 
+geometry_parameter::~geometry_parameter() = default;
 void geometry_parameter::pull_geometry(ossia::gfx::port_index idx) { }
 void geometry_parameter::pull_value() { }
 
