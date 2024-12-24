@@ -3,10 +3,7 @@
 #include "ossia-max.hpp"
 
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
-
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/ip/basic_resolver.hpp>
-#include <boost/asio/ip/tcp.hpp>
+#include <ossia/network/resolve.hpp>
 
 namespace ossia
 {
@@ -107,25 +104,9 @@ void ZeroconfOscqueryListener::addInstance(const std::string& instance)
     ip = service.get(instance, "servus_host");
   }
 
-  try
-  {
-    boost::asio::io_context io_context;
-    boost::asio::ip::tcp::resolver resolver(io_context);
-    boost::asio::ip::tcp::resolver::query query(ip, port);
-    boost::asio::ip::tcp::resolver::iterator iter = resolver.resolve(query);
-    if(iter->endpoint().address().is_loopback())
-    {
-      ip = "localhost";
-    }
-  }
-  catch(...)
-  {
-  }
-
+  resolve_sync_v4(ip, port);
   if(ip.empty() || port.empty())
-  {
     return;
-  }
 
   try
   {
