@@ -52,30 +52,36 @@ TEST_CASE("test_oscq_send_dense", "test_oscq_send_dense")
   using namespace std::literals;
   auto ctx = std::make_shared<ossia::net::network_context>();
 
-  auto proto1 = std::make_unique<ossia::net::multiplex_protocol>();
-
-  ossia::net::inbound_socket_configuration in_udp{.bind = "", .port = 5478};
-  auto proto2 = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol_base>(
-      ctx, std::vector<ossia::net::osc_server_configuration>{}, 5678, false);
-  proto1->expose_to(std::move(proto2));
-
-  ossia::net::dense_configuration out_conf{.interval = std::chrono::milliseconds(100)};
-  ossia::net::outbound_socket_configuration out_udp{
-      .host = "127.0.0.1", .port = 5478, .broadcast = true};
-  auto proto3 = std::make_unique<ossia::net::dense_generic_bidir_protocol<
-      ossia::net::udp_send_socket, ossia::net::null_socket>>(ctx, out_conf, out_udp);
-  proto1->expose_to(std::move(proto3));
-
-  ossia::net::generic_device serv{std::move(proto1), "foo"};
-  test_device_dense x{serv.get_root_node()};
-
-  for(int i = 0; i < 100; i++)
   {
-    ossia::net::iterate_all_children(
-        &serv.get_root_node(),
-        [](ossia::net::parameter_base& p) { p.push_value(rand()); });
+    auto proto1 = std::make_unique<ossia::net::multiplex_protocol>();
 
-    ctx->context.run_one();
-    ctx->context.restart();
+    ossia::net::inbound_socket_configuration in_udp{.bind = "", .port = 5478};
+    auto proto2 = std::make_unique<ossia::oscquery_asio::oscquery_server_protocol_base>(
+        ctx, std::vector<ossia::net::osc_server_configuration>{}, 5678, false);
+    proto1->expose_to(std::move(proto2));
+
+    ossia::net::dense_configuration out_conf{.interval = std::chrono::milliseconds(100)};
+    ossia::net::outbound_socket_configuration out_udp{
+        .host = "127.0.0.1", .port = 5478, .broadcast = true};
+    auto proto3 = std::make_unique<ossia::net::dense_generic_bidir_protocol<
+        ossia::net::udp_send_socket, ossia::net::null_socket>>(ctx, out_conf, out_udp);
+    proto1->expose_to(std::move(proto3));
+
+    ossia::net::generic_device serv{std::move(proto1), "foo"};
+    test_device_dense x{serv.get_root_node()};
+
+    for(int i = 0; i < 100; i++)
+    {
+      auto t0 = std::chrono::steady_clock::now();
+      ossia::net::iterate_all_children(
+          &serv.get_root_node(),
+          [](ossia::net::parameter_base& p) { p.push_value(rand()); });
+
+      ctx->context.run_one();
+      if(i < 99)
+        ctx->context.restart();
+      else
+        ctx->context.stop();
+    }
   }
 }
