@@ -311,7 +311,7 @@ coap_client_protocol::coap_client_protocol(
     : m_context{ctx}
     , m_conf{conf}
     , m_strand{boost::asio::make_strand(m_context->context)}
-    , m_timer{m_strand}
+    , m_timer{m_strand, m_context->context}
 {
   m_client = std::make_unique<coap_client>();
   struct

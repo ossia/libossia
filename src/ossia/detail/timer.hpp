@@ -12,20 +12,33 @@ class timer
 {
 public:
   template <typename Executor>
-  explicit timer(boost::asio::strand<Executor>& ctx)
+  explicit timer(boost::asio::strand<Executor>& ctx, boost::asio::io_context& ioctx)
       : m_timer{ctx}
+      , m_context{ioctx}
   {
   }
 
   explicit timer(boost::asio::io_context& ctx)
       : m_timer{boost::asio::make_strand(ctx)}
+      , m_context{ctx}
   {
   }
 
   timer(const timer&) = delete;
-  timer(timer&&) = default;
+  timer(timer&& other) noexcept
+      : m_timer{std::move(other.m_timer)}
+      , m_context{other.m_context}
+      , m_delay{other.m_delay}
+  {
+  }
+
   timer& operator=(const timer&) = delete;
-  timer& operator=(timer&&) = default;
+  timer& operator=(timer&& other) noexcept
+  {
+    m_timer = std::move(other.m_timer);
+    m_delay = other.m_delay;
+    return *this;
+  }
 
   ~timer() { stop(); }
 
@@ -57,16 +70,21 @@ public:
 
   void stop()
   {
+    auto exec = m_timer.get_executor();
     boost::asio::dispatch(
-        m_timer.get_executor(), [tm = std::make_shared<boost::asio::steady_timer>(
-                                     std::move(m_timer))]() mutable { tm->cancel(); });
-    std::future<void> wait
-        = boost::asio::dispatch(m_timer.get_executor(), boost::asio::use_future);
-    wait.get();
+        exec, [tm = std::make_shared<boost::asio::steady_timer>(
+                   std::move(m_timer))]() mutable { tm->cancel(); });
+
+    if(!m_context.stopped())
+    {
+      std::future<void> wait = boost::asio::dispatch(exec, boost::asio::use_future);
+      wait.wait_for(std::chrono::seconds(2));
+    }
   }
 
 private:
   boost::asio::steady_timer m_timer;
+  boost::asio::io_context& m_context;
   std::chrono::milliseconds m_delay{};
 };
 
