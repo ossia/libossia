@@ -49,7 +49,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: libossia-shared-release-macos
+        name: libossia-shared-release-macos-${{ matrix.static }}-${{ matrix.build_type }}
         path: install
 
   build-windows:
@@ -77,7 +77,7 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: libossia-shared-release-windows
+        name: libossia-shared-release-windows-${{ matrix.static }}-${{ matrix.build_type }}
         path: install
 
   build-linux_x86:
@@ -108,5 +108,5 @@ jobs:
     - name: Archive Package
       uses: actions/upload-artifact@v4
       with:
-        name: libossia-shared-release-linux
+        name: libossia-shared-release-linux-${{ matrix.static }}-${{ matrix.build_type }}
         path: install
