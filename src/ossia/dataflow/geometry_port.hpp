@@ -4,6 +4,7 @@
 #include <ossia/detail/small_vector.hpp>
 
 #include <memory>
+#include <string>
 
 namespace ossia
 {
