@@ -18,8 +18,18 @@ audio_parameter::~audio_parameter() = default;
 
 void audio_parameter::clone_value(audio_vector& res_vec) const
 {
-  if(res_vec.size() < audio.size())
-    ossia::audio_buffer_pool::set_channels(res_vec, audio.size());
+  {
+    int orig_dst_size = res_vec.size();
+    if(orig_dst_size < audio.size())
+    {
+      ossia::audio_buffer_pool::set_channels(res_vec, audio.size());
+
+      for(std::size_t chan = orig_dst_size; chan < res_vec.size(); chan++)
+      {
+        res_vec[chan].clear();
+      }
+    }
+  }
 
   auto min_chan = std::min(res_vec.size(), audio.size());
   for(std::size_t chan = 0; chan < min_chan; chan++)
@@ -47,7 +57,8 @@ void audio_parameter::push_value(const audio_port& port)
     const auto N = std::min(src.size(), (std::size_t)dst.size());
     for(std::size_t i = 0; i < N; i++)
     {
-      dst[i] += float(src[i] * m_gain);
+      // Important: here we must not mix
+      dst[i] = float(src[i] * m_gain);
     }
   }
 }

@@ -295,7 +295,7 @@ OSSIA_INLINE constexpr T wrap(const T val, const T low, const T high) noexcept
 template <class T>
 OSSIA_INLINE constexpr T fold(const T val, const T low, const T high) noexcept
 {
-  if((val >= low) && (val <= high) || low == high)
+  if(((val >= low) && (val <= high)) || low == high)
     return val;
   else
   {

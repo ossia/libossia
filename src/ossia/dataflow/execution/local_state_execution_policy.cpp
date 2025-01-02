@@ -32,6 +32,15 @@ local_state_execution_policy::~local_state_execution_policy() { }
 void local_state_execution_policy::commit_common()
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)
+  // FIXME to solve the deeper issue with virtual audio cables,
+  // execution should be :
+  // 1. read the addresses from all ports that need that into respective processes
+  // 2. clear the local state
+  // 3. start execution the tick
+  // otherwise there's no way to have mixing of data in virtual ports as we cannot clear
+  // at the beginning of the tick (won't be able to read from previous tick) or at the
+  // end of the tick (the data that was just written will get deleted).
+
   // FIXME this does not look necessary?
   // Why not just push to the audio address
   for(auto& elt : m_audioState)
@@ -40,9 +49,8 @@ void local_state_execution_policy::commit_common()
     elt.first->push_value(elt.second);
 
     for(auto& vec : elt.second.get())
-    {
-      vec.clear();
-    }
+      ossia::audio_buffer_pool::instance().release(std::move(vec));
+    elt.second.get().clear();
   }
 #endif
 

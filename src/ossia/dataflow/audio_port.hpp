@@ -16,10 +16,19 @@ void ensure_vector_sizes(const audio_vector& src_vec, audio_vector& sink_vec);
 OSSIA_EXPORT
 void mix(const audio_vector& src_vec, audio_vector& sink_vec);
 
-struct OSSIA_EXPORT audio_buffer_pool : object_pool<audio_channel>
+struct OSSIA_EXPORT audio_buffer_pool : private object_pool<audio_channel>
 {
   audio_buffer_pool();
   ~audio_buffer_pool();
+
+  using object_pool::acquire;
+
+  void release(audio_channel&& b)
+  {
+    b.clear();
+    buffers.enqueue(std::move(b));
+  }
+
   static audio_buffer_pool& instance() noexcept;
 
   static void set_channels(audio_vector& samples, std::size_t channels);
