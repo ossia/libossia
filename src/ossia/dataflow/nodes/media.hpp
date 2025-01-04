@@ -49,3 +49,116 @@ struct media_data
   ossia::variant<audio_handle, mmap_audio_handle> media;
 };*/
 }
+
+#if __has_include(<QDebug>)
+#if defined(QT_CORE_LIB)
+#include <QDebug>
+
+#include <algorithm>
+inline QDebug operator<<(QDebug s, const ossia::audio_channel& v)
+{
+  auto& q = s.noquote().nospace();
+  q << v.size() << ": ";
+  std::size_t n = v.size();
+  if(n >= 64)
+  {
+    double min = *std::min_element(v.begin(), v.end());
+    double max = *std::max_element(v.begin(), v.end());
+    if(min == max)
+    {
+      q << "________________________________________________________________";
+    }
+    else
+    {
+      for(std::size_t i = 0; (i * n / 64) < v.size(); i++)
+      {
+        double val = (v[i * n / 64] - min) / (max - min);
+        const char* c = "_";
+        if(val <= 1. / 8.)
+          c = "▁";
+        else if(val <= 2. / 8.)
+          c = "▂";
+        else if(val <= 3. / 8.)
+          c = "▃";
+        else if(val <= 4. / 8.)
+          c = "▄";
+        else if(val <= 5. / 8.)
+          c = "▅";
+        else if(val <= 6. / 8.)
+          c = "▆";
+        else if(val <= 7. / 8.)
+          c = "▇";
+        else
+          c = "█";
+        q.noquote() << c;
+      }
+    }
+  }
+  return q;
+}
+inline QDebug operator<<(QDebug s, const ossia::audio_vector& v)
+{
+  auto& q = s.noquote().nospace();
+  q << v.size() << ": \n";
+  for(auto& chan : v)
+  {
+    q << "[ " << chan << " ], \n";
+  }
+  return q;
+}
+
+#include <tcb/span.hpp>
+inline QDebug operator<<(QDebug s, const tcb::span<float>& v)
+{
+  auto& q = s.noquote().nospace();
+  q << v.size() << ": ";
+  std::size_t n = v.size();
+  if(n >= 64)
+  {
+    double min = *std::min_element(v.begin(), v.end());
+    double max = *std::max_element(v.begin(), v.end());
+    if(min == max)
+    {
+      q << "________________________________________________________________";
+    }
+    else
+    {
+      for(std::size_t i = 0; (i * n / 64) < v.size(); i++)
+      {
+        double val = (v[i * n / 64] - min) / (max - min);
+        const char* c = "_";
+        if(val <= 1. / 8.)
+          c = "▁";
+        else if(val <= 2. / 8.)
+          c = "▂";
+        else if(val <= 3. / 8.)
+          c = "▃";
+        else if(val <= 4. / 8.)
+          c = "▄";
+        else if(val <= 5. / 8.)
+          c = "▅";
+        else if(val <= 6. / 8.)
+          c = "▆";
+        else if(val <= 7. / 8.)
+          c = "▇";
+        else
+          c = "█";
+        q.noquote() << c;
+      }
+    }
+  }
+  return q;
+}
+inline QDebug operator<<(QDebug s, const ossia::small_vector<tcb::span<float>, 8>& v)
+{
+  auto& q = s.noquote().nospace();
+  q << v.size() << ": \n";
+  for(auto& chan : v)
+  {
+    q << "[ " << chan << " ], \n";
+  }
+  return q;
+}
+
+#endif
+#endif
