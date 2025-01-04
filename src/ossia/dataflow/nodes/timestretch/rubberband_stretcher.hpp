@@ -133,6 +133,10 @@ struct rubberband_stretcher
 
 namespace ossia
 {
+static constexpr uint32_t get_rubberband_preset(ossia::audio_stretch_mode mode)
+{
+  return 0;
+}
 using rubberband_stretcher = raw_stretcher;
 }
 #endif

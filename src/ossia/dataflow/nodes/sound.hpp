@@ -167,16 +167,19 @@ struct resampler
 #endif
 
 #if defined(OSSIA_ENABLE_LIBSAMPLERATE)
-      case ossia::audio_stretch_mode::Repitch: {
+      case ossia::audio_stretch_mode::Repitch:
+      case ossia::audio_stretch_mode::RepitchMediumQ:
+      case ossia::audio_stretch_mode::RepitchFastestQ: {
+        const auto preset = get_samplerate_preset(mode);
         if(auto s = ossia::get_if<RepitchStretcher>(&m_stretch);
-           s && s->repitchers.size() == channels)
+           s && s->repitchers.size() == channels && s->preset == preset)
         {
           s->transport(date);
         }
         else
         {
           // FIXME why 1024 here ?!
-          m_stretch.emplace<repitch_stretcher>(channels, 1024, date);
+          m_stretch.emplace<repitch_stretcher>(preset, channels, 1024, date);
         }
         break;
       }

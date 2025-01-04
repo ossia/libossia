@@ -11,5 +11,7 @@ enum audio_stretch_mode : int8_t
   Repitch,
   RubberBandStandardHQ,
   RubberBandPercussiveHQ,
+  RepitchMediumQ,
+  RepitchFastestQ,
 };
 }

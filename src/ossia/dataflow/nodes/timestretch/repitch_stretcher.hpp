@@ -4,6 +4,7 @@
 #if defined(OSSIA_ENABLE_LIBSAMPLERATE)
 #if __has_include(<samplerate.h>)
 #include <ossia/dataflow/audio_port.hpp>
+#include <ossia/dataflow/audio_stretch_mode.hpp>
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/nodes/media.hpp>
 #include <ossia/dataflow/token_request.hpp>
@@ -15,12 +16,22 @@
 #include <cinttypes>
 namespace ossia
 {
+static constexpr auto get_samplerate_preset(ossia::audio_stretch_mode mode)
+{
+  int qmode = SRC_SINC_BEST_QUALITY;
+  if(mode == audio_stretch_mode::RepitchMediumQ)
+    qmode = SRC_SINC_FASTEST;
+  if(mode == audio_stretch_mode::RepitchFastestQ)
+    qmode = SRC_LINEAR;
+  return qmode;
+}
+
 struct repitch_stretcher
 {
   struct resample_channel
   {
-    resample_channel(int buffersize) noexcept
-        : resampler{src_new(SRC_SINC_BEST_QUALITY, 1, nullptr)}
+    explicit resample_channel(int preset, int buffersize) noexcept
+        : resampler{src_new(preset, 1, nullptr)}
         , data(10 * buffersize)
     {
     }
@@ -52,13 +63,14 @@ struct repitch_stretcher
     boost::circular_buffer<float> data;
   };
 
-  repitch_stretcher(int channels, int bufferSize, int64_t pos)
+  repitch_stretcher(int preset, int channels, int bufferSize, int64_t pos)
       : next_sample_to_read{pos}
+      , preset{preset}
   {
     repitchers.reserve(channels);
     while(int(repitchers.size()) < channels)
     {
-      repitchers.emplace_back(bufferSize);
+      repitchers.emplace_back(preset, bufferSize);
     }
   }
 
@@ -66,6 +78,7 @@ struct repitch_stretcher
   std::vector<float> output_buffer;
   std::vector<resample_channel> repitchers;
   int64_t next_sample_to_read{};
+  int preset{};
 
   void transport(int64_t date) { next_sample_to_read = date; }
 
@@ -150,6 +163,10 @@ struct repitch_stretcher
 
 namespace ossia
 {
+static constexpr int get_samplerate_preset(ossia::audio_stretch_mode mode)
+{
+  return 0;
+}
 using repitch_stretcher = raw_stretcher;
 }
 #endif
@@ -160,6 +177,10 @@ using repitch_stretcher = raw_stretcher;
 
 namespace ossia
 {
+static constexpr int get_samplerate_preset(ossia::audio_stretch_mode mode)
+{
+  return 0;
+}
 using repitch_stretcher = raw_stretcher;
 }
 #endif

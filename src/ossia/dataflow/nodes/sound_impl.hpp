@@ -27,7 +27,9 @@ struct resampler
         }
         break;
       }
-      case audio_stretch_mode::Repitch: {
+      case audio_stretch_mode::Repitch:
+      case audio_stretch_mode::RepitchMediumQ:
+      case audio_stretch_mode::RepitchFastestQ: {
         if(auto s = ossia::get_if<ossia::repitch_stretcher>(&m_stretch);
            s && s->repitchers.size() == channels)
         {
@@ -35,7 +37,8 @@ struct resampler
         }
         else
         {
-          m_stretch.emplace<repitch_stretcher>(channels, 1024, date.impl);
+          m_stretch.emplace<repitch_stretcher>(
+              get_samplerate_preset(mode), channels, 1024, date.impl);
         }
         break;
       }
