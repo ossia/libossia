@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,118 +18,118 @@ jobs:
     name: Unity3D (Linux)
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-ubuntu-toolchain
-    - name: Build
-      run: |
-        cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build build
-        cmake --build build --target install 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-unity-linux
-        path: install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-ubuntu-toolchain
+      - name: Build
+        run: |
+          cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_UNITY3D_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cmake --build build --target install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-unity-linux
+          path: install
 
   Unity3DMac:
     name: Unity3D (macOS)
     runs-on: macos-14
-    environment: 'Apple Certificate'
+    environment: "Apple Certificate"
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-mac-toolchain
-    - name: Build
-      run: |
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
-          -DOSSIA_UNITY3D_ONLY=1 \
-          -DCMAKE_INSTALL_PREFIX=install \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
-        cmake --build build
-        cmake --build build --target install 
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-mac-toolchain
+      - name: Build
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
+            -DOSSIA_UNITY3D_ONLY=1 \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+          cmake --build build
+          cmake --build build --target install
 
-    - uses: ./.github/actions/mac-codesign
-      with:
-        path-to-sign: install
-        output-name: "ossia-unity-macos.zip"
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      - uses: ./.github/actions/mac-codesign
+        with:
+          path-to-sign: install
+          output-name: "ossia-unity-macos.zip"
+          MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-unity-mac
-        path: install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-unity-mac
+          path: install
 
   Unity3DIOs:
     name: Unity3D (iOS)
     runs-on: macos-14
     if: false
-    environment: 'Apple Certificate'
+    environment: "Apple Certificate"
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-mac-toolchain
-    - name: Initialize iOS toolchain
-      run: |
-        cd ${GITHUB_WORKSPACE}
-        git submodule update --init 3rdparty/ios-cmake
-    - name: Build
-      run: |
-        export CMAKE_MAKE_PROGRAM=`command -v ninja`
-        echo 'CMAKE_MAKE_PROGRAM $CMAKE_MAKE_PROGRAM'
-        cmake -B build -S ${GITHUB_WORKSPACE} \
-          -GNinja \
-          -DOSSIA_UNITY3D_ONLY=1 \
-          -DOSSIA_CI=1 \
-          -DCMAKE_INSTALL_PREFIX=install \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake \
-          -DPLATFORM=OS64 \
-          -DENABLE_BITCODE=1 \
-          -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
-        cmake --build build
-        cmake --build build --target install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-mac-toolchain
+      - name: Initialize iOS toolchain
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          git submodule update --init 3rdparty/ios-cmake
+      - name: Build
+        run: |
+          export CMAKE_MAKE_PROGRAM=`command -v ninja`
+          echo 'CMAKE_MAKE_PROGRAM $CMAKE_MAKE_PROGRAM'
+          cmake -B build -S ${GITHUB_WORKSPACE} \
+            -GNinja \
+            -DOSSIA_UNITY3D_ONLY=1 \
+            -DOSSIA_CI=1 \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_TOOLCHAIN_FILE=${GITHUB_WORKSPACE}/3rdparty/ios-cmake/ios.toolchain.cmake \
+            -DPLATFORM=OS64 \
+            -DENABLE_BITCODE=1 \
+            -DCMAKE_MAKE_PROGRAM=${CMAKE_MAKE_PROGRAM}
+          cmake --build build
+          cmake --build build --target install
 
-    - uses: ./.github/actions/mac-codesign
-      with:
-        path-to-sign: install
-        output-name: "ossia-unity-ios.zip"
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      - uses: ./.github/actions/mac-codesign
+        with:
+          path-to-sign: install
+          output-name: "ossia-unity-ios.zip"
+          MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-unity-ios
-        path: install
-      
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-unity-ios
+          path: install
+
   Unity3DWin32:
     name: Unity3D (Win32)
-    runs-on: 'windows-latest'
+    runs-on: "windows-latest"
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-msvc-toolchain
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-msvc-toolchain
 
-    - name: Build
-      shell: cmd
-      run: |
+      - name: Build
+        shell: cmd
+        run: |
 
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build build
-        cmake --install build
+          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_UNITY3D_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cmake --install build
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-unity-windows
-        path: install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-unity-windows
+          path: install
 
   upload_release:
     runs-on: ubuntu-latest
-    needs: [ Unity3DLinux, Unity3DMac, Unity3DWin32 ]
+    needs: [Unity3DLinux, Unity3DMac, Unity3DWin32]
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:

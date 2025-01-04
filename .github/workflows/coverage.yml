@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,39 +16,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-ubuntu-toolchain
-    - name: Install Dependencies
-      run: |
-        sudo gem install coveralls-lcov
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-ubuntu-toolchain
+      - name: Install Dependencies
+        run: |
+          sudo gem install coveralls-lcov
 
-        sudo apt-get install -yqq python3 python3-pip lcov build-essential gcovr
-        sudo pip3 install --upgrade wheel setuptools
-        sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
+          sudo apt-get install -yqq python3 python3-pip lcov build-essential gcovr
+          sudo pip3 install --upgrade wheel setuptools
+          sudo pip3 install git+https://github.com/rpgillespie6/fastcov.git
 
-    - name: Build
-      run: |
-        QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
-        set +e
-        source $QT_ENV_SCRIPT
-        set -e
+      - name: Build
+        run: |
+          QT_ENV_SCRIPT=$(find /opt -name 'qt*-env.sh')
+          set +e
+          source $QT_ENV_SCRIPT
+          set -e
 
-        cmake -B build -S ${GITHUB_WORKSPACE} \
-          -DCMAKE_BUILD_TYPE=Debug \
-          -DOSSIA_TESTING=1 \
-          -DOSSIA_COVERAGE=1 \
-          -DPORTAUDIO_ONLY_DYNAMIC=1 \
-          -DOSSIA_PD=0 \
-          -DOSSIA_QT=1 \
-          -DOSSIA_C=1
-        cmake --build build -- -j2
-        cmake --build build --target ossia_coverage || true
-        rm -rf **/*.o
+          cmake -B build -S ${GITHUB_WORKSPACE} \
+            -DCMAKE_BUILD_TYPE=Debug \
+            -DOSSIA_TESTING=1 \
+            -DOSSIA_COVERAGE=1 \
+            -DPORTAUDIO_ONLY_DYNAMIC=1 \
+            -DOSSIA_PD=0 \
+            -DOSSIA_QT=1 \
+            -DOSSIA_C=1
+          cmake --build build -- -j2
+          cmake --build build --target ossia_coverage || true
+          rm -rf **/*.o
 
-        find . -name '*.info'
+          find . -name '*.info'
 
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        path-to-lcov: ${{ github.workspace }}/build/coverage.info
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ${{ github.workspace }}/build/coverage.info

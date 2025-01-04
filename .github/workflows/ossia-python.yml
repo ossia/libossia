@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -13,42 +15,43 @@ concurrency:
 jobs:
   build-macos:
     runs-on: macos-14
-    environment: 'Apple Certificate'
+    environment: "Apple Certificate"
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-mac-toolchain
-    - name: Build
-      run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja \
-          -DOSSIA_PYTHON_ONLY=1 \
-          -DOSSIA_CI=1 \
-          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
-        cmake --build build
-        
-    - uses: ./.github/actions/mac-codesign
-      with:
-        path-to-sign: "build"
-        output-name: "ossia-python.zip"
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
-        
-    - name: Build Wheel
-      shell: bash
-      run: |
-        cmake --build build --target install
-        python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl || true
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-mac-toolchain
+      - name: Build
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja \
+            -DOSSIA_PYTHON_ONLY=1 \
+            -DOSSIA_CI=1 \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+          cmake --build build
+
+      - uses: ./.github/actions/mac-codesign
+        with:
+          path-to-sign: "build"
+          output-name: "ossia-python.zip"
+          MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+
+      - name: Build Wheel
+        shell: bash
+        run: |
+          cmake --build build --target install
+          python3 -m twine upload -u ${PYPIUSER} -p ${PYPIWORD} build/src/ossia-python/dist/pyossia*.whl || true
 
   build-linux:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-ubuntu-toolchain
-    - name: Build ossia-python
-      run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1 -DOSSIA_CI=1
-        cmake --build build
-        cmake --build build --target install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-ubuntu-toolchain
+      - name: Build ossia-python
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -G Ninja -DOSSIA_PYTHON_ONLY=1 -DOSSIA_CI=1
+          cmake --build build
+          cmake --build build --target install
+
 #    - name: Build Wheel
 #      run: ./ci/build-wheels.sh
 #    - name: Archive Package

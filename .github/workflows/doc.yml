@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -14,21 +16,21 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name: Install Dependencies
-      run: |
-        sudo apt-get update -yqq
-        sudo apt-get install -yqq doxygen doxygen-doc doxygen-gui graphviz
-    - name: Build Documentation
-      run: |
-        cd docs/Doxygen
-        doxygen > doxygen.log
-        mkdir -p publish
-        mv html publish
-    - name: Deploy Documentation
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: docs/Doxygen/publish
-        commit_message: 'Deploy code docs to GitHub Pages, Github Action id: $GITHUB_ACTION \nCommit: $GITHUB_SHA'
-        force_orphan: true
+      - uses: actions/checkout@v4
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update -yqq
+          sudo apt-get install -yqq doxygen doxygen-doc doxygen-gui graphviz
+      - name: Build Documentation
+        run: |
+          cd docs/Doxygen
+          doxygen > doxygen.log
+          mkdir -p publish
+          mv html publish
+      - name: Deploy Documentation
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/Doxygen/publish
+          commit_message: 'Deploy code docs to GitHub Pages, Github Action id: $GITHUB_ACTION \nCommit: $GITHUB_SHA'
+          force_orphan: true

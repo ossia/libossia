@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -16,74 +18,74 @@ jobs:
     name: CPP (Linux)
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-ubuntu-toolchain
-    - name: Build
-      run: |
-        cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
-          -DOSSIA_CPP_ONLY=1 \
-          -DCMAKE_INSTALL_PREFIX=install \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DOSSIA_CI=1 \
-          -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
-        cmake --build build
-        cmake --build build --target install 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-cpp-linux
-        path: install
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-ubuntu-toolchain
+      - name: Build
+        run: |
+          cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
+            -DOSSIA_CPP_ONLY=1 \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DOSSIA_CI=1 \
+            -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+          cmake --build build
+          cmake --build build --target install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-cpp-linux
+          path: install
 
   cpp-mac:
     name: CPP (macOS)
     runs-on: macos-14
-    environment: 'Apple Certificate'
+    environment: "Apple Certificate"
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-mac-toolchain
-    - name: Build
-      run: |
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CPP_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build build
-        cmake --build build --target install 
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-mac-toolchain
+      - name: Build
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CPP_ONLY=1 -DOSSIA_CI=1 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cmake --build build --target install
 
-    - uses: ./.github/actions/mac-codesign
-      with:
-        path-to-sign: install
-        output-name: "ossia-cpp-macos.zip"
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      - uses: ./.github/actions/mac-codesign
+        with:
+          path-to-sign: install
+          output-name: "ossia-cpp-macos.zip"
+          MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-cpp-mac
-        path: install
-      
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-cpp-mac
+          path: install
+
   cpp-windows:
     name: CPP (Windows)
-    runs-on: 'windows-latest'
+    runs-on: "windows-latest"
 
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-msvc-toolchain
-    - name: Build
-      shell: cmd
-      run: |
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_CPP_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
-        cmake --build build
-        cmake --install build
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-msvc-toolchain
+      - name: Build
+        shell: cmd
+        run: |
+          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_CI=1 -DOSSIA_CPP_ONLY=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake --build build
+          cmake --install build
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: ossia-cpp-windows
-        path: install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: ossia-cpp-windows
+          path: install
 
   upload_release:
     runs-on: ubuntu-latest
-    needs: [ cpp-linux, cpp-mac, cpp-windows ]
+    needs: [cpp-linux, cpp-mac, cpp-windows]
     steps:
       - uses: actions/download-artifact@v4.1.7
         with:

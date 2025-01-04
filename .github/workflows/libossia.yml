@@ -5,6 +5,8 @@ on:
   push:
     branches:
       - master
+    tags:
+      - v*
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -13,44 +15,44 @@ concurrency:
 jobs:
   build-macos:
     runs-on: macos-14
-    environment: 'Apple Certificate'
+    environment: "Apple Certificate"
     strategy:
       matrix:
         static: [0, 1]
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-mac-toolchain
-    - name: Build
-      env: 
-        STATIC: ${{ matrix.static }}
-        BUILD_TYPE: ${{ matrix.build_type }}
-      run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-          -DOSSIA_STATIC=$STATIC \
-          -DCMAKE_INSTALL_PREFIX=install \
-          -DOSSIA_TESTING=1 \
-          -DOSSIA_CI=1
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-mac-toolchain
+      - name: Build
+        env:
+          STATIC: ${{ matrix.static }}
+          BUILD_TYPE: ${{ matrix.build_type }}
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DOSSIA_STATIC=$STATIC \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DOSSIA_TESTING=1 \
+            -DOSSIA_CI=1
 
-        cmake --build build
-        cmake --build build --target test
-        cmake --build build --target install
+          cmake --build build
+          cmake --build build --target test
+          cmake --build build --target install
 
-    - uses: ./.github/actions/mac-codesign
-      with:
-        path-to-sign: "install/lib"
-        output-name: libossia.zip
-        MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
-        MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
-        MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
+      - uses: ./.github/actions/mac-codesign
+        with:
+          path-to-sign: "install/lib"
+          output-name: libossia.zip
+          MAC_CERT_B64: ${{ secrets.MAC_CERT_B64 }}
+          MAC_CERT_PASSWORD: ${{ secrets.MAC_CERT_PASSWORD }}
+          MAC_ALTOOL_PASSWORD: ${{ secrets.MAC_ALTOOL_PASSWORD }}
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: libossia-shared-release-macos-${{ matrix.static }}-${{ matrix.build_type }}
-        path: install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: libossia-shared-release-macos-${{ matrix.static }}-${{ matrix.build_type }}
+          path: install
 
   build-windows:
     runs-on: windows-latest
@@ -60,25 +62,25 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-msvc-toolchain
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-msvc-toolchain
 
-    - name : Build
-      shell: cmd
-      env: 
-        STATIC: ${{ matrix.static }}
-        BUILD_TYPE: ${{ matrix.build_type }}
-      run: |
-        cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
-        cmake --build build
-        cmake --build build --target test
-        cmake --install build
+      - name: Build
+        shell: cmd
+        env:
+          STATIC: ${{ matrix.static }}
+          BUILD_TYPE: ${{ matrix.build_type }}
+        run: |
+          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
+          cmake --build build
+          cmake --build build --target test
+          cmake --install build
 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: libossia-shared-release-windows-${{ matrix.static }}-${{ matrix.build_type }}
-        path: install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: libossia-shared-release-windows-${{ matrix.static }}-${{ matrix.build_type }}
+          path: install
 
   build-linux_x86:
     runs-on: ubuntu-latest
@@ -88,25 +90,25 @@ jobs:
         build_type: [Release, Debug]
       fail-fast: false
     steps:
-    - uses: actions/checkout@v4
-    - uses: ./.github/actions/latest-ubuntu-toolchain
-    - name: Build
-      env: 
-        STATIC: ${{ matrix.static }}
-        BUILD_TYPE: ${{ matrix.build_type }}
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/latest-ubuntu-toolchain
+      - name: Build
+        env:
+          STATIC: ${{ matrix.static }}
+          BUILD_TYPE: ${{ matrix.build_type }}
 
-      run: | 
-        cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
-          -DCMAKE_INSTALL_PREFIX=install \
-          -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
-          -DOSSIA_STATIC=$STATIC \
-          -DOSSIA_CI=1 \
-          -DOSSIA_TESTING=1
-        cmake --build build
-        cmake --build build --target test
-        cmake --build build --target install 
-    - name: Archive Package
-      uses: actions/upload-artifact@v4
-      with:
-        name: libossia-shared-release-linux-${{ matrix.static }}-${{ matrix.build_type }}
-        path: install
+        run: |
+          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DOSSIA_STATIC=$STATIC \
+            -DOSSIA_CI=1 \
+            -DOSSIA_TESTING=1
+          cmake --build build
+          cmake --build build --target test
+          cmake --build build --target install
+      - name: Archive Package
+        uses: actions/upload-artifact@v4
+        with:
+          name: libossia-shared-release-linux-${{ matrix.static }}-${{ matrix.build_type }}
+          path: install
