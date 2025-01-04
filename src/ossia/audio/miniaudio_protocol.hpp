@@ -135,6 +135,8 @@ private:
 
     auto& self = *static_cast<miniaudio_engine*>(pDevice->pUserData);
     self.tick_start();
+    if(!self.m_start)
+      self.m_start = std::chrono::steady_clock::now();
 
     if(self.stop_processing)
     {
@@ -142,20 +144,26 @@ private:
       return;
     }
 
-    float ins_data[self.effective_inputs * nframes];
+    float ins_data[self.effective_inputs * nframes + 16];
     float* ins[self.effective_inputs + 2];
     for(int i = 0; i < self.effective_inputs; i++)
       ins[i] = ins_data + i * nframes;
     kfr::deinterleave(ins, (float*)input, self.effective_inputs, nframes);
 
-    float outs_data[self.effective_outputs * nframes];
+    float outs_data[self.effective_outputs * nframes + 16];
     std::memset(outs_data, 0, sizeof(float) * self.effective_outputs * nframes);
     float* outs[self.effective_outputs + 2];
     for(int i = 0; i < self.effective_outputs; i++)
       outs[i] = outs_data + i * nframes;
 
+    auto now = std::chrono::steady_clock::now();
+    auto nsecs
+        = std::chrono::duration_cast<std::chrono::nanoseconds>(now - *self.m_start)
+              .count()
+          / 1e9;
+
     ossia::audio_tick_state ts{(float* const*)ins,     outs,    self.effective_inputs,
-                               self.effective_outputs, nframes, 0}; //FIXME timing
+                               self.effective_outputs, nframes, nsecs};
     self.audio_tick(ts);
 
     self.tick_end();
@@ -166,6 +174,7 @@ private:
 
   std::shared_ptr<miniaudio_context> m_ctx;
   ma_device m_stream;
+  std::optional<std::chrono::steady_clock::time_point> m_start;
 };
 }
 
