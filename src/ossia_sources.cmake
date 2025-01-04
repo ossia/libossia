@@ -16,6 +16,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/config.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/constexpr_string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/destination_index.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/disable_fpe.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/dylib_loader.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/enum_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/flat_map.hpp"
@@ -204,6 +205,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/any_map.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/disable_fpe.cpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.cpp"
