@@ -12,6 +12,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/disable_fpe.hpp>
 #include <ossia/detail/flat_set.hpp>
 #include <ossia/detail/ptr_set.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
@@ -412,6 +413,8 @@ struct OSSIA_EXPORT graph_util
 
   static void init_node(graph_node& n, execution_state& e)
   {
+    disable_fpe();
+
     // Clear the outputs of the node
     for_each_outlet(n, [&](auto& port) { init_outlet(port, e); });
 
