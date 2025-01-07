@@ -316,4 +316,10 @@ std::vector<node_base*> node_base::children_copy() const
   SPDLOG_TRACE((&ossia::logger()), "unlocking(children_copy)");
   return copy;
 }
+
+int node_base::children_count() const
+{
+  read_lock_t lock{m_mutex};
+  return m_children.size();
+}
 }

@@ -188,6 +188,9 @@ public:
   //! A vector with all the names of the children.
   std::vector<std::string> children_names() const;
 
+  //! Return the count of children
+  int children_count() const;
+
   //! If childrens are /foo, /bar, bar.1, returns true only for bar.
   bool is_root_instance(const ossia::net::node_base& child) const;
 
