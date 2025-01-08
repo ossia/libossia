@@ -94,6 +94,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/writers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
 
@@ -472,6 +473,8 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio_dense.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.cpp"
     )
