@@ -16,7 +16,7 @@ static constexpr auto midi_api(libremidi::API api)
 }
 midi_protocol::midi_protocol(
     ossia::net::network_context_ptr ctx, std::string device_name,
-    libremidi::input_configuration& conf, std::any api)
+    libremidi::input_configuration& conf, libremidi::input_api_configuration api)
     : protocol_base{flags{}}
     , m_context{ctx}
 {
@@ -27,7 +27,7 @@ midi_protocol::midi_protocol(
 
 midi_protocol::midi_protocol(
     ossia::net::network_context_ptr ctx, std::string device_name,
-    libremidi::output_configuration& conf, std::any api)
+    libremidi::output_configuration& conf, libremidi::output_api_configuration api)
     : protocol_base{flags{}}
     , m_context{ctx}
 {

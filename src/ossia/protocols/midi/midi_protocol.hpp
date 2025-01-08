@@ -10,10 +10,10 @@
 #include <ossia/protocols/midi/detail/channel.hpp>
 
 #include <libremidi/api.hpp>
+#include <libremidi/configurations.hpp>
 #include <libremidi/message.hpp>
 #include <libremidi/observer_configuration.hpp>
 
-#include <any>
 #include <array>
 #include <atomic>
 #include <cassert>
@@ -69,10 +69,10 @@ class OSSIA_EXPORT midi_protocol final
 public:
   explicit midi_protocol(
       ossia::net::network_context_ptr, std::string device_name,
-      libremidi::input_configuration&, std::any midi_api);
+      libremidi::input_configuration&, libremidi::input_api_configuration midi_api);
   explicit midi_protocol(
       ossia::net::network_context_ptr, std::string device_name,
-      libremidi::output_configuration&, std::any midi_api);
+      libremidi::output_configuration&, libremidi::output_api_configuration midi_api);
   explicit midi_protocol(
       ossia::net::network_context_ptr, midi_info,
       libremidi::API api = libremidi::API::UNSPECIFIED);
