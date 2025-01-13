@@ -286,5 +286,6 @@ void qml_device_engine_functions::setDevice(net::device_base* d)
 {
   m_dev = d;
   this->devices.push_back(d);
+  ossia::remove_duplicates(this->devices);
 }
 }

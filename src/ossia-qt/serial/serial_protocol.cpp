@@ -278,6 +278,8 @@ serial_protocol::serial_protocol(
     const ossia::net::network_context_ptr& ctx, const QByteArray& code,
     const ossia::net::serial_configuration& cfg)
     : protocol_base{flags{}}
+    , m_context{ctx}
+    , m_cfg{cfg}
     , m_code{code}
 {
   m_thread.setObjectName("Serial Thread");
@@ -286,81 +288,83 @@ serial_protocol::serial_protocol(
   // Only needed for the sake of invoking a method on the QThread
   m_threadWorker = new serial_worker{m_queue};
   m_threadWorker->moveToThread(&m_thread);
+}
 
-  ossia::qt::run_async(m_threadWorker, [this, ctx, cfg] {
-    // Serial thread
+void serial_protocol::create_object(QQmlComponent::Status status)
+{
+  // Serial thread
+  qDebug() << "Serial error:" << m_component->errorString();
+  if(!m_device)
+    return;
 
-    m_engine = new QQmlEngine;
+  switch(status)
+  {
+    case QQmlComponent::Status::Ready: {
+      // Any call to the QQmlEngine needs to be done in its thread.
+      auto res = load_serial_object_from_qml(*this, m_context, m_cfg);
 
-    auto obj = new ossia::qt::qml_device_engine_functions{
-        {}, [](ossia::net::parameter_base& param, const ossia::value_port& v) {
-      if(v.get_data().empty())
-        return;
-      auto& last = v.get_data().back().value;
-      param.push_value(last);
-    }, m_engine};
-    obj->setDevice(m_device);
-    m_engine->rootContext()->setContextProperty("Device", obj);
+      // Move the objects back to the main thread in one go
+      ossia::qt::run_async(this, [this, res = std::move(res)]() mutable {
+        // Main thread - just copying is safe as it's just a classic Qt dptr
+        m_object = res.m_object;
+        m_jsObj = res.m_jsObj;
+        m_onTextMessage = res.m_onTextMessage;
+        m_onBinaryMessage = res.m_onBinaryMessage;
+        m_onRead = res.m_onRead;
+        m_port = res.m_port;
+        m_osc = res.m_osc;
+        if(res.m_coalesce > 0.)
+        {
+          m_coalesce = res.m_coalesce;
 
-    m_component = new QQmlComponent{m_engine};
-    m_engine->moveToThread(&m_thread);
-    m_component->moveToThread(&m_thread);
+          // Separate type due to Windows error:
+          // error: 'osc_messages' cannot be thread local when declared 'dllexport'
+          m_queue.callback = serial_osc_queue_callback{*this};
 
-    // Serial thread to main thread
-    QObject::connect(
-        m_component, &QQmlComponent::statusChanged, m_component,
-        [this, ctx, cfg](QQmlComponent::Status status) {
-      // Serial thread
-      qDebug() << "Serial error:" << m_component->errorString();
-      if(!m_device)
-        return;
-
-      switch(status)
-      {
-        case QQmlComponent::Status::Ready: {
-          // Any call to the QQmlEngine needs to be done in its thread.
-          auto res = load_serial_object_from_qml(*this, ctx, cfg);
-
-          // Move the objects back to the main thread in one go
-          ossia::qt::run_async(this, [this, res = std::move(res)]() mutable {
-            // Main thread - just copying is safe as it's just a classic Qt dptr
-            m_object = res.m_object;
-            m_jsObj = res.m_jsObj;
-            m_onTextMessage = res.m_onTextMessage;
-            m_onBinaryMessage = res.m_onBinaryMessage;
-            m_onRead = res.m_onRead;
-            m_port = res.m_port;
-            m_osc = res.m_osc;
-            if(res.m_coalesce > 0.)
-            {
-              m_coalesce = res.m_coalesce;
-
-              // Separate type due to Windows error:
-              // error: 'osc_messages' cannot be thread local when declared 'dllexport'
-              m_queue.callback = serial_osc_queue_callback{*this};
-
-              ossia::qt::run_async(m_threadWorker, [this] {
-                m_threadWorker->startTimer(m_coalesce.value(), Qt::PreciseTimer);
-              });
-            }
-
-            // Now we can finally create our tree :-)
-            ossia::qt::apply_deferred_device<
-                ossia::net::device_base, serial_node, serial_parameter_data>(
-                *this->m_device, res.nodes);
+          ossia::qt::run_async(m_threadWorker, [this] {
+            m_threadWorker->startTimer(m_coalesce.value(), Qt::PreciseTimer);
           });
-          return;
         }
-        case QQmlComponent::Status::Loading:
-          return;
-        case QQmlComponent::Status::Null:
-        case QQmlComponent::Status::Error:
-          qDebug() << m_component->errorString();
-          return;
-      }
-        },
-        Qt::DirectConnection);
-  });
+
+        // Now we can finally create our tree :-)
+        ossia::qt::apply_deferred_device<
+            ossia::net::device_base, serial_node, serial_parameter_data>(
+            *this->m_device, res.nodes);
+      });
+      return;
+    }
+    case QQmlComponent::Status::Loading:
+      return;
+    case QQmlComponent::Status::Null:
+    case QQmlComponent::Status::Error:
+      qDebug() << m_component->errorString();
+      return;
+  }
+}
+
+void serial_protocol::startup_engine()
+{
+  // Serial thread
+  m_engine = new QQmlEngine;
+
+  auto obj = new ossia::qt::qml_device_engine_functions{
+      {}, [](ossia::net::parameter_base& param, const ossia::value_port& v) {
+    if(v.get_data().empty())
+      return;
+    auto& last = v.get_data().back().value;
+    param.push_value(last);
+  }, m_engine};
+  obj->setDevice(m_device);
+  m_engine->rootContext()->setContextProperty("Device", obj);
+
+  m_component = new QQmlComponent{m_engine};
+  m_engine->moveToThread(&m_thread);
+  m_component->moveToThread(&m_thread);
+
+  // Serial thread to main thread
+  QObject::connect(
+      m_component, &QQmlComponent::statusChanged, this, &serial_protocol::create_object,
+      Qt::DirectConnection);
 }
 
 bool serial_protocol::pull(parameter_base&)
@@ -637,7 +641,11 @@ void serial_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
   // run in the engine thread
-  ossia::qt::run_async(m_threadWorker, [this] { m_component->setData(m_code, QUrl{}); });
+  ossia::qt::run_async(m_threadWorker, [this] {
+    startup_engine();
+    if(m_component)
+      m_component->setData(m_code, QUrl{});
+  });
 }
 
 void serial_protocol::stop()

@@ -17,6 +17,7 @@
 #include <boost/asio/streambuf.hpp>
 
 #include <QObject>
+#include <QQmlComponent>
 #include <QSerialPort>
 #include <QThread>
 
@@ -181,6 +182,12 @@ public:
       const serial_parameter& addr, const ossia::value& v, std::string& str);
 
 private:
+  void startup_engine();
+  void create_object(QQmlComponent::Status status);
+
+  ossia::net::network_context_ptr m_context;
+  ossia::net::serial_configuration m_cfg;
+
   QQmlEngine* m_engine{};
   QQmlComponent* m_component{};
 

@@ -3,6 +3,7 @@
 #include "ws_generic_client_protocol.hpp"
 
 #include <ossia-qt/js_utilities.hpp>
+#include <ossia-qt/qml_engine_functions.hpp>
 
 #include <QJSValueIterator>
 #include <QQmlComponent>
@@ -25,6 +26,15 @@ ws_generic_client_protocol::ws_generic_client_protocol(
     , m_websocket{new QWebSocket{"ossia-api"}}
     , m_code{std::move(code)}
 {
+  auto obj = new ossia::qt::qml_device_engine_functions{
+      {}, [](ossia::net::parameter_base& param, const ossia::value_port& v) {
+    if(v.get_data().empty())
+      return;
+    auto& last = v.get_data().back().value;
+    param.push_value(last);
+  }, m_engine};
+  m_engine->rootContext()->setContextProperty("Device", obj);
+
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
       [this, addr](QQmlComponent::Status status) {
@@ -110,6 +120,7 @@ bool ws_generic_client_protocol::observe(
 void ws_generic_client_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
+  m_engine->findChild<ossia::qt::qml_device_engine_functions*>()->setDevice(&dev);
   m_component->setData(m_code, QUrl{});
 }
 
