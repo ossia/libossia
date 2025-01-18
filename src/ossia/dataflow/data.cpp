@@ -308,6 +308,15 @@ static void filter_value(
   {
     source = ossia::convert(source, *src_unit, *tgt_unit);
   }
+  else
+  {
+    auto src_type = source_type.target<ossia::val_type>();
+    auto tgt_type = res_type.target<ossia::val_type>();
+    if(src_type && tgt_type && *src_type != *tgt_type && res_index.empty())
+    {
+      ossia::convert_inplace(source, *tgt_type);
+    }
+  }
 
   if(source.valid() && !res_index.empty())
   {
