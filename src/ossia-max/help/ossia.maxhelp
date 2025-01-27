@@ -2,42 +2,16 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 112.0, 98.0, 1051.0, 929.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
+		"rect" : [ 134.0, 154.0, 1051.0, 929.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-51",
@@ -236,42 +210,16 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 978.0, 101.0, 647.0, 502.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-9",
@@ -304,7 +252,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 374.0, 24.0, 24.0 ]
+									"patching_rect" : [ 336.0, 374.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -316,7 +265,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 336.0, 305.0, 24.0, 24.0 ]
+									"patching_rect" : [ 336.0, 305.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -477,8 +427,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 189.0, 30.0, 50.0, 50.0 ],
-									"text" : "recall",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "recall"
 								}
 
 							}
@@ -494,8 +443,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 51.0, 30.0, 46.0, 50.0 ],
-									"text" : "save",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "save"
 								}
 
 							}
@@ -750,6 +698,7 @@
 
 							}
  ],
+						"originid" : "pat-155",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -764,10 +713,7 @@
 ,
 					"patching_rect" : [ 266.0, 459.0, 60.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p presets"
@@ -785,8 +731,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 334.0, 452.0, 212.0, 35.0 ],
-					"text" : "Save or recall presets",
-					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+					"text" : "Save or recall presets"
 				}
 
 			}
@@ -801,8 +746,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 177.0, 624.5, 280.0, 35.0 ],
-					"text" : "Get a list of available protocols in Max console",
-					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+					"text" : "Get a list of available protocols in Max console"
 				}
 
 			}
@@ -817,15 +761,14 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 230.0, 409.0, 212.0, 35.0 ],
-					"text" : "Set or get the global device name",
-					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+					"text" : "Set or get the global device name"
 				}
 
 			}
 , 			{
 				"box" : 				{
 					"angle" : 270.0,
-					"bgcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ],
+					"bgcolor" : [ 0.101960784313725, 0.490196078431373, 0.945098039215686, 1.0 ],
 					"id" : "obj-39",
 					"maxclass" : "panel",
 					"mode" : 0,
@@ -833,6 +776,13 @@
 					"numoutlets" : 0,
 					"patching_rect" : [ 10.5, 249.0, 14.0, 14.0 ],
 					"proportion" : 0.39,
+					"saved_attribute_attributes" : 					{
+						"bgfillcolor" : 						{
+							"expression" : "themecolor.live_spectrum_alternative_color"
+						}
+
+					}
+,
 					"shape" : 3
 				}
 
@@ -855,8 +805,15 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 27.0, 245.0, 599.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"textcolor" : 						{
+							"expression" : "themecolor.live_spectrum_alternative_color"
+						}
+
+					}
+,
 					"text" : "See the OSSIA overview patcher from the extras menu for more information about various objects of the library",
-					"textcolor" : [ 0.098039, 0.517647, 0.796078, 1.0 ]
+					"textcolor" : [ 0.101960784313725, 0.490196078431373, 0.945098039215686, 1.0 ]
 				}
 
 			}
@@ -927,42 +884,17 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 1259.0, 100.0, 356.0, 200.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
 						"toolbarvisible" : 0,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-1",
@@ -1011,42 +943,17 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 1,
-											"revision" : 8,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 1260.0, 323.0, 358.0, 226.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
 										"toolbarvisible" : 0,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-1",
@@ -1099,15 +1006,13 @@
 
 											}
  ],
-										"lines" : [  ]
+										"lines" : [  ],
+										"originid" : "pat-159"
 									}
 ,
 									"patching_rect" : [ 109.0, 152.0, 58.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"style" : "default",
@@ -1128,15 +1033,13 @@
 
 							}
  ],
-						"lines" : [  ]
+						"lines" : [  ],
+						"originid" : "pat-157"
 					}
 ,
 					"patching_rect" : [ 62.0, 556.0, 90.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p some_nodes"
@@ -1226,7 +1129,7 @@
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+					"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-13",
@@ -1235,13 +1138,27 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 111.0, 771.0, 39.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"color" : 						{
+							"expression" : "themecolor.live_threshold_line_color"
+						}
+
+					}
+,
+					"saved_newobj_attribute_attributes" : 					{
+						"color" : 						{
+							"expression" : "themecolor.live_threshold_line_color"
+						}
+
+					}
+,
 					"text" : "ossia"
 				}
 
 			}
 , 			{
 				"box" : 				{
-					"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+					"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 					"fontname" : "Arial",
 					"fontsize" : 12.0,
 					"id" : "obj-14",
@@ -1250,6 +1167,20 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 62.0, 459.0, 58.0, 22.0 ],
+					"saved_attribute_attributes" : 					{
+						"color" : 						{
+							"expression" : "themecolor.live_threshold_line_color"
+						}
+
+					}
+,
+					"saved_newobj_attribute_attributes" : 					{
+						"color" : 						{
+							"expression" : "themecolor.live_threshold_line_color"
+						}
+
+					}
+,
 					"text" : "ossia"
 				}
 
@@ -1303,8 +1234,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 262.0, 660.0, 463.0, 21.0 ],
-					"text" : "Expose using oscquery protocol and default ports (OSC port 9999 and WS port 5678)",
-					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+					"text" : "Expose using oscquery protocol and default ports (OSC port 9999 and WS port 5678)"
 				}
 
 			}
@@ -1317,8 +1247,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 0,
 					"patching_rect" : [ 393.0, 691.0, 387.0, 21.0 ],
-					"text" : "Expose using oscquery protocol with OSC port 1234 and WS port 9876",
-					"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+					"text" : "Expose using oscquery protocol with OSC port 1234 and WS port 9876"
 				}
 
 			}
@@ -1388,9 +1317,8 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 142.0, 365.5, 369.0, 35.0 ],
-					"text" : "Get the namespace (all addresses registered to the global device)",
-					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+					"patching_rect" : [ 142.0, 365.5, 374.0, 35.0 ],
+					"text" : "Get the namespace (all addresses registered to the global device)"
 				}
 
 			}
@@ -1557,6 +1485,7 @@
 
 			}
  ],
+		"originid" : "pat-153",
 		"dependency_cache" : [ 			{
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
@@ -1564,15 +1493,15 @@
 				"implicit" : 1
 			}
 , 			{
+				"name" : "ossia.model.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "ossia.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
  ],
