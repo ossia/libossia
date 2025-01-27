@@ -2,44 +2,20 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
 		"rect" : [ 100.0, 100.0, 1030.0, 491.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
 		"gridsize" : [ 5.0, 5.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
 		"toolbarvisible" : 0,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
 		"enablehscroll" : 0,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"fontname" : "Arial",
@@ -51,53 +27,25 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 1030.0, 465.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 10.0, 10.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [  ],
-						"lines" : [  ]
+						"lines" : [  ],
+						"originid" : "pat-1302"
 					}
 ,
 					"patching_rect" : [ 730.0, 181.0, 24.0, 20.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p ?"
@@ -115,43 +63,20 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 1030.0, 465.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
 						"gridonopen" : 2,
 						"gridsize" : [ 15.0, 15.0 ],
 						"gridsnaponopen" : 2,
 						"objectsnaponopen" : 0,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Lato Regular",
@@ -178,8 +103,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 90.0, 165.0, 50.0 ],
-									"text" : "Route relative addresses",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route relative addresses"
 								}
 
 							}
@@ -240,8 +164,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 60.0, 317.0, 21.0 ],
-									"text" : "ossia.router can route both absolute and relative addresses",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "ossia.router can route both absolute and relative addresses"
 								}
 
 							}
@@ -258,30 +181,37 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 195.0, 90.0, 172.0, 50.0 ],
-									"text" : "Route absolute addresses",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route absolute addresses"
 								}
 
 							}
 , 							{
 								"box" : 								{
 									"bgcolor" : [ 0.317647, 0.709804, 0.321569, 1.0 ],
+									"bgcolor2" : [ 0.317647, 0.709804, 0.321569, 1.0 ],
 									"bgfillcolor_angle" : 270.0,
 									"bgfillcolor_autogradient" : 0.79,
-									"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
+									"bgfillcolor_color" : [ 0.0, 0.854901960784314, 0.282352941176471, 1.0 ],
 									"bgfillcolor_color1" : [ 0.317647, 0.709804, 0.321569, 1.0 ],
 									"bgfillcolor_color2" : [ 0.685, 0.685, 0.685, 1.0 ],
 									"bgfillcolor_proportion" : 0.39,
-									"bgfillcolor_type" : "gradient",
+									"bgfillcolor_type" : "color",
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
-									"gradient" : 0,
+									"gradient" : 1,
 									"id" : "obj-36",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 15.0, 135.0, 88.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"bgfillcolor" : 										{
+											"expression" : "themecolor.live_macro_assignment"
+										}
+
+									}
+,
 									"text" : "potato/vegan 6",
 									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 								}
@@ -290,22 +220,30 @@
 , 							{
 								"box" : 								{
 									"bgcolor" : [ 0.811765, 0.372549, 0.372549, 1.0 ],
+									"bgcolor2" : [ 0.811765, 0.372549, 0.372549, 1.0 ],
 									"bgfillcolor_angle" : 270.0,
 									"bgfillcolor_autogradient" : 0.79,
-									"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
+									"bgfillcolor_color" : [ 1.0, 0.349019607843137, 0.372549019607843, 1.0 ],
 									"bgfillcolor_color1" : [ 0.811765, 0.372549, 0.372549, 1.0 ],
 									"bgfillcolor_color2" : [ 0.685, 0.685, 0.685, 1.0 ],
 									"bgfillcolor_proportion" : 0.39,
-									"bgfillcolor_type" : "gradient",
+									"bgfillcolor_type" : "color",
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
-									"gradient" : 0,
+									"gradient" : 1,
 									"id" : "obj-33",
 									"maxclass" : "message",
 									"numinlets" : 2,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 195.0, 135.0, 91.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"bgfillcolor" : 										{
+											"expression" : "themecolor.live_record"
+										}
+
+									}
+,
 									"text" : "/potato/veggy 4",
 									"textcolor" : [ 0.0, 0.0, 0.0, 1.0 ]
 								}
@@ -313,7 +251,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
 									"id" : "obj-49",
@@ -322,6 +260,20 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 15.0, 180.0, 148.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router potato /potato"
 								}
 
@@ -380,18 +332,12 @@
 
 							}
  ],
-						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+						"originid" : "pat-1304"
 					}
 ,
 					"patching_rect" : [ 503.0, 118.0, 162.0, 20.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"globalpatchername" : "",
-						"locked_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p \"Absolute vs relative addresses\""
@@ -409,43 +355,21 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 100.0, 126.0, 1030.0, 465.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
 						"gridonopen" : 2,
 						"gridsize" : [ 15.0, 15.0 ],
 						"gridsnaponopen" : 2,
 						"objectsnaponopen" : 0,
-						"statusbarvisible" : 2,
 						"toolbarvisible" : 0,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-8",
@@ -494,8 +418,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 885.0, 165.0, 127.0, 49.0 ],
-									"text" : "Route no matter instance number",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route no matter instance number"
 								}
 
 							}
@@ -549,7 +472,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
@@ -559,6 +482,20 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 795.0, 270.0, 142.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /t?rack.{1..2}"
 								}
 
@@ -577,7 +514,7 @@
 							}
 , 							{
 								"box" : 								{
-									"bgcolor" : [ 0.098384, 0.51736, 0.794437, 1.0 ],
+									"bgcolor" : [ 0.269595890603871, 0.408853959740371, 0.595943257030903, 1.0 ],
 									"fontface" : 1,
 									"fontsize" : 12.0,
 									"id" : "obj-67",
@@ -585,8 +522,19 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 570.0, 120.0, 198.0, 20.0 ],
+									"saved_attribute_attributes" : 									{
+										"bgcolor" : 										{
+											"expression" : "themecolor.live_selection"
+										}
+,
+										"textcolor" : 										{
+											"expression" : "themecolor.live_control_text_selection"
+										}
+
+									}
+,
 									"text" : "Route using wildcards",
-									"textcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+									"textcolor" : [ 0.85, 0.85, 0.85, 1.0 ]
 								}
 
 							}
@@ -600,8 +548,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 75.0, 510.0, 38.0 ],
-									"text" : "ossia.router lets you route both relative and absolute OSC addresses. It also allows the use of wildcards to match addresses containing a variable node or instance number.",
-									"textcolor" : [ 0.501960784313725, 0.501960784313725, 0.501960784313725, 1.0 ]
+									"text" : "ossia.router lets you route both relative and absolute OSC addresses. It also allows the use of wildcards to match addresses containing a variable node or instance number."
 								}
 
 							}
@@ -654,8 +601,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 571.0, 147.5, 224.0, 35.0 ],
-									"text" : "You can route addresses using wildcards for nodes or instance numbers.",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "You can route addresses using wildcards for nodes or instance numbers."
 								}
 
 							}
@@ -671,8 +617,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 660.0, 195.0, 127.0, 49.0 ],
-									"text" : "Route no matter instance number",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route no matter instance number"
 								}
 
 							}
@@ -726,7 +671,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
@@ -736,6 +681,20 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 570.0, 270.0, 112.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /track.*"
 								}
 
@@ -751,8 +710,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 195.0, 180.0, 218.0, 35.0 ],
-									"text" : "Route multiple node levels at once",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route multiple node levels at once"
 								}
 
 							}
@@ -768,8 +726,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 285.0, 120.0, 154.0, 49.0 ],
-									"text" : "Route top node of an address",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Route top node of an address"
 								}
 
 							}
@@ -811,7 +768,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"fontface" : 0,
 									"fontname" : "Arial",
 									"fontsize" : 12.0,
@@ -821,6 +778,20 @@
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 15.0, 270.0, 193.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /fruit /vegetable/potato"
 								}
 
@@ -1121,6 +1092,7 @@
 
 							}
  ],
+						"originid" : "pat-1306",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -1138,42 +1110,35 @@
 , 							{
 								"name" : "jpink",
 								"default" : 								{
-									"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
-									"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
+									"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 									"bgfillcolor" : 									{
-										"type" : "color",
+										"angle" : 270.0,
+										"autogradient" : 0,
 										"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
 										"color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
-										"angle" : 270.0,
 										"proportion" : 0.39,
-										"autogradient" : 0
+										"type" : "color"
 									}
 ,
-									"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-									"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
+									"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
 									"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
+									"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
 								}
 ,
 								"parentstyle" : "",
 								"multi" : 0
 							}
- ],
-						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+ ]
 					}
 ,
 					"patching_rect" : [ 103.0, 135.0, 43.0, 20.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"globalpatchername" : "",
-						"locked_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p Basic"
@@ -1191,43 +1156,20 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 1,
-							"revision" : 8,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 1030.0, 465.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
 						"gridonopen" : 2,
 						"gridsize" : [ 15.0, 15.0 ],
 						"gridsnaponopen" : 2,
 						"objectsnaponopen" : 0,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 2,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-29",
@@ -1304,13 +1246,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-30",
 									"maxclass" : "newobj",
 									"numinlets" : 2,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 825.0, 225.0, 195.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /sampler @truncate 0"
 								}
 
@@ -1341,13 +1297,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-23",
 									"maxclass" : "newobj",
 									"numinlets" : 4,
 									"numoutlets" : 4,
 									"outlettype" : [ "", "", "", "" ],
 									"patching_rect" : [ 600.0, 225.0, 216.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router sampler /sampler sampler/"
 								}
 
@@ -1360,7 +1330,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 465.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 465.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1420,7 +1391,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 420.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 420.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1504,7 +1476,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 360.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 360.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1516,7 +1489,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 300.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 300.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1546,13 +1520,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-10",
 									"maxclass" : "newobj",
 									"numinlets" : 3,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 300.0, 225.0, 125.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /toto /tata"
 								}
 
@@ -1603,8 +1591,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 15.0, 60.0, 358.0, 35.0 ],
-									"text" : "A single instance of ossia.router can match an address in multiple ways.",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "A single instance of ossia.router can match an address in multiple ways."
 								}
 
 							}
@@ -1641,7 +1628,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 90.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 90.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1653,7 +1641,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 15.0, 105.0, 24.0, 24.0 ]
+									"patching_rect" : [ 15.0, 105.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -1683,13 +1672,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.125490196078431, 0.796078431372549, 0.894117647058824, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-12",
 									"maxclass" : "newobj",
 									"numinlets" : 3,
 									"numoutlets" : 3,
 									"outlettype" : [ "", "", "" ],
 									"patching_rect" : [ 15.0, 180.0, 235.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.router /sampler /sampler/loop/enable"
 								}
 
@@ -1956,6 +1959,7 @@
 
 							}
  ],
+						"originid" : "pat-1308",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -1973,42 +1977,35 @@
 , 							{
 								"name" : "jpink",
 								"default" : 								{
-									"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
-									"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
+									"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
 									"bgfillcolor" : 									{
-										"type" : "color",
+										"angle" : 270.0,
+										"autogradient" : 0,
 										"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
 										"color1" : [ 0.376471, 0.384314, 0.4, 1.0 ],
 										"color2" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
-										"angle" : 270.0,
 										"proportion" : 0.39,
-										"autogradient" : 0
+										"type" : "color"
 									}
 ,
-									"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-									"accentcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"clearcolor" : [ 0.113725, 0.607843, 0.607843, 1.0 ],
+									"color" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
+									"patchlinecolor" : [ 0.65, 0.65, 0.65, 1.0 ],
 									"selectioncolor" : [ 0.619608, 0.0, 0.360784, 1.0 ],
-									"elementcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
+									"textcolor" : [ 0.619608, 0.0, 0.360784, 1.0 ]
 								}
 ,
 								"parentstyle" : "",
 								"multi" : 0
 							}
- ],
-						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+ ]
 					}
 ,
 					"patching_rect" : [ 349.0, 297.0, 98.0, 29.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"globalpatchername" : "",
-						"locked_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p Routing"
@@ -2017,6 +2014,7 @@
 			}
  ],
 		"lines" : [  ],
+		"originid" : "pat-1300",
 		"dependency_cache" : [ 			{
 				"name" : "ossia.router.mxo",
 				"type" : "iLaX"

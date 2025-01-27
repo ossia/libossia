@@ -2,42 +2,16 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
 		"rect" : [ 1166.0, 472.0, 443.0, 473.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"format" : 6,
@@ -104,16 +78,14 @@
 				"box" : 				{
 					"bubble" : 1,
 					"bubbletextmargin" : 10,
-					"fontname" : "Lato Regular",
-					"fontsize" : 12.0,
 					"id" : "obj-12",
 					"linecount" : 3,
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 225.0, 32.0, 190.0, 64.0 ],
-					"text" : "Expose ossia.device through oscquery protocole using default ports",
-					"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+					"patching_rect" : [ 225.0, 32.0, 196.0, 61.0 ],
+					"style" : "default",
+					"text" : "Expose ossia.device through oscquery protocole using default ports"
 				}
 
 			}
@@ -267,16 +239,17 @@
 
 			}
  ],
+		"originid" : "pat-764",
 		"dependency_cache" : [ 			{
 				"name" : "ossia.device.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.parameter.mxo",
+				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.model.mxo",
+				"name" : "ossia.parameter.mxo",
 				"type" : "iLaX"
 			}
  ],

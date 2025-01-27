@@ -2,42 +2,19 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 1,
-			"revision" : 8,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
 		"rect" : [ 386.0, 236.0, 655.0, 585.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
 		"toolbarvisible" : 0,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "velvet",
+		"style" : "default",
 		"subpatcher_template" : "noTB_dark",
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-24",
@@ -68,7 +45,8 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "int" ],
 					"parameter_enable" : 0,
-					"patching_rect" : [ 60.5, 486.0, 24.0, 24.0 ]
+					"patching_rect" : [ 60.5, 486.0, 24.0, 24.0 ],
+					"svg" : ""
 				}
 
 			}
@@ -148,6 +126,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 368.5, 163.0, 22.0 ],
+					"style" : "default",
 					"text" : "debug My debugmessage"
 				}
 
@@ -160,6 +139,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 328.5, 163.0, 22.0 ],
+					"style" : "default",
 					"text" : "critical My critical message"
 				}
 
@@ -171,7 +151,8 @@
 					"numinlets" : 2,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
-					"patching_rect" : [ 406.5, 289.5, 163.0, 22.0 ],
+					"patching_rect" : [ 406.5, 289.5, 167.0, 22.0 ],
+					"style" : "default",
 					"text" : "warning My warning message"
 				}
 
@@ -184,6 +165,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 254.5, 139.0, 22.0 ],
+					"style" : "default",
 					"text" : "info My info message"
 				}
 
@@ -196,6 +178,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 222.5, 139.0, 22.0 ],
+					"style" : "default",
 					"text" : "trace My trace message"
 				}
 
@@ -208,6 +191,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 406.5, 186.5, 136.0, 22.0 ],
+					"style" : "default",
 					"text" : "error My error message"
 				}
 
@@ -261,6 +245,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
 					"patching_rect" : [ 83.5, 322.0, 150.0, 22.0 ]
 				}
 
@@ -273,6 +258,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
 					"patching_rect" : [ 108.5, 377.0, 150.0, 22.0 ]
 				}
 
@@ -285,6 +271,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
+					"parameter_enable" : 0,
 					"patching_rect" : [ 60.5, 266.0, 264.0, 22.0 ]
 				}
 
@@ -377,6 +364,7 @@
 
 			}
  ],
+		"originid" : "pat-941",
 		"dependency_cache" : [ 			{
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
@@ -398,17 +386,7 @@
 				"parentstyle" : "",
 				"multi" : 0
 			}
- ],
-		"bgcolor" : [ 0.878431, 0.878431, 0.858824, 1.0 ],
-		"editing_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-		"bgfillcolor_type" : "gradient",
-		"bgfillcolor_color1" : [ 0.238168, 0.193585, 0.215291, 1.0 ],
-		"bgfillcolor_color2" : [ 0.117536, 0.116592, 0.144338, 1.0 ],
-		"bgfillcolor_color" : [ 0.290196, 0.309804, 0.301961, 1.0 ],
-		"bgfillcolor_angle" : 270.0,
-		"bgfillcolor_proportion" : 0.39,
-		"bgfillcolor_pt1" : [ 0.504951, 0.278261 ],
-		"bgfillcolor_pt2" : [ 0.5, 0.95 ]
+ ]
 	}
 
 }

@@ -2,44 +2,18 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 2,
-			"revision" : 0,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 201.0, 120.0, 879.0, 831.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
+		"rect" : [ 47.0, 115.0, 879.0, 831.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"id" : "obj-5",
@@ -49,54 +23,26 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 879.0, 805.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-27",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 600.0, 581.0, 187.0, 21.0 ],
-									"text" : "also works with pattern-matching",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 600.0, 581.0, 185.0, 20.0 ],
+									"style" : "default",
+									"text" : "also works with pattern-matching"
 								}
 
 							}
@@ -108,7 +54,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 470.0, 399.0, 24.0, 24.0 ]
+									"patching_rect" : [ 470.0, 399.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -120,7 +67,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 470.0, 551.0, 24.0, 24.0 ]
+									"patching_rect" : [ 470.0, 551.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -138,15 +86,13 @@
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-21",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 470.0, 444.0, 375.0, 21.0 ],
-									"text" : "values of parameters can be fed to ossia.model, with the set message:",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 470.0, 444.0, 386.0, 20.0 ],
+									"style" : "default",
+									"text" : "values of parameters can be fed to ossia.model, with the set message:"
 								}
 
 							}
@@ -188,15 +134,13 @@
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-11",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 538.0, 189.0, 254.0, 21.0 ],
-									"text" : "models can save and load presets of values ",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 538.0, 189.0, 264.0, 20.0 ],
+									"style" : "default",
+									"text" : "models can save and load presets of values "
 								}
 
 							}
@@ -210,42 +154,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 1304.0, 101.0, 342.0, 509.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-8",
@@ -571,15 +489,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-167"
 									}
 ,
 									"patching_rect" : [ 473.5, 189.0, 60.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p presets"
@@ -598,8 +514,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 141.0, 172.5, 258.0, 49.0 ],
-									"text" : "Click 'namespace' message to get all the model's nodes addresses and values",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Click 'namespace' message to get all the model's nodes addresses and values"
 								}
 
 							}
@@ -613,42 +528,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 506.0, 93.0, 363.0, 605.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-9",
@@ -960,15 +849,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-169"
 									}
 ,
 									"patching_rect" : [ 60.0, 287.0, 286.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p get_namespace"
@@ -1015,42 +902,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 1238.0, 755.0, 408.0, 207.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"format" : 6,
@@ -1129,6 +990,7 @@
 
 											}
  ],
+										"originid" : "pat-171",
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -1143,10 +1005,7 @@
 ,
 									"patching_rect" : [ 470.0, 652.0, 93.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p a_sub_model"
@@ -1155,29 +1014,26 @@
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-10",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 470.0, 255.0, 317.0, 35.0 ],
-									"text" : "All parameters in the same patcher (or supatchers without an [ossia.model]) will subscribe under this node",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 470.0, 255.0, 322.0, 33.0 ],
+									"style" : "default",
+									"text" : "All parameters in the same patcher (or supatchers without an [ossia.model]) will subscribe under this node"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontface" : 1,
-									"fontname" : "Lato Regular",
 									"id" : "obj-8",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 67.5, 640.0, 257.0, 35.0 ],
+									"patching_rect" : [ 67.5, 640.0, 260.0, 33.0 ],
+									"style" : "default",
 									"text" : "Note that you can have only one [ossia.model] (or view) per patcher."
 								}
 
@@ -1208,7 +1064,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-2",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -1216,6 +1072,20 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 60.0, 236.0, 294.0, 35.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.model presets_demo @description \"A patchers declared as a model\" @tags maxhelp demo"
 								}
 
@@ -1306,6 +1176,7 @@
 
 							}
  ],
+						"originid" : "pat-165",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -1320,10 +1191,7 @@
 ,
 					"patching_rect" : [ 274.0, 244.0, 59.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p Presets"
@@ -1352,53 +1220,25 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 879.0, 805.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [  ],
-						"lines" : [  ]
+						"lines" : [  ],
+						"originid" : "pat-173"
 					}
 ,
 					"patching_rect" : [ 557.0, 241.0, 27.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p ?"
@@ -1415,54 +1255,26 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
 						"rect" : [ 0.0, 26.0, 879.0, 805.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-17",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 72.0, 559.0, 330.0, 21.0 ],
-									"text" : "i.e. does the same thing than that:",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 72.0, 559.0, 336.0, 20.0 ],
+									"style" : "default",
+									"text" : "i.e. does the same thing than that:"
 								}
 
 							}
@@ -1493,15 +1305,13 @@
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-14",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 72.0, 498.0, 330.0, 21.0 ],
-									"text" : "use '!' to address all instances (including the original instance)",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 72.0, 498.0, 340.0, 20.0 ],
+									"style" : "default",
+									"text" : "use '!' to address all instances (including the original instance)"
 								}
 
 							}
@@ -1590,42 +1400,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 59.0, 103.0, 363.0, 605.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-9",
@@ -1937,15 +1721,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-177"
 									}
 ,
 									"patching_rect" : [ 485.0, 284.0, 286.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p get_namespace"
@@ -1984,31 +1766,27 @@
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-3",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 92.0, 287.0, 207.0, 35.0 ],
-									"text" : "Another submodel named sub_model (see inside ossia.model argument)",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 92.0, 287.0, 211.0, 33.0 ],
+									"style" : "default",
+									"text" : "Another submodel named sub_model (see inside ossia.model argument)"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-4",
 									"linecount" : 4,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 4.5, 59.0, 440.0, 64.0 ],
-									"text" : "If 2 or more models have the same name at the same level (like in this example, with two submodels being named identically), they will be registered as the next available instances (instances are appended to the node name, after a dot separator)",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 4.5, 59.0, 448.0, 60.0 ],
+									"style" : "default",
+									"text" : "If 2 or more models have the same name at the same level (like in this example, with two submodels being named identically), they will be registered as the next available instances (instances are appended to the node name, after a dot separator)"
 								}
 
 							}
@@ -2016,16 +1794,14 @@
 								"box" : 								{
 									"bubble" : 1,
 									"bubbletextmargin" : 10,
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-39",
 									"linecount" : 2,
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 573.0, 198.0, 228.0, 49.0 ],
-									"text" : "Click 'namespace' message to get all this patcher's nodes addresse",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"patching_rect" : [ 573.0, 198.0, 221.0, 47.0 ],
+									"style" : "default",
+									"text" : "Click 'namespace' message to get all this patcher's nodes addresse"
 								}
 
 							}
@@ -2050,42 +1826,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
-										"rect" : [ 1189.0, 361.0, 310.0, 264.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
+										"rect" : [ 996.0, 340.0, 304.0, 264.0 ],
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
@@ -2126,13 +1876,27 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+													"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 36.0, 43.0, 137.0, 22.0 ],
+													"saved_attribute_attributes" : 													{
+														"color" : 														{
+															"expression" : "themecolor.live_threshold_line_color"
+														}
+
+													}
+,
+													"saved_newobj_attribute_attributes" : 													{
+														"color" : 														{
+															"expression" : "themecolor.live_threshold_line_color"
+														}
+
+													}
+,
 													"text" : "ossia.model sub_model"
 												}
 
@@ -2145,15 +1909,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-179"
 									}
 ,
 									"patching_rect" : [ 92.0, 256.0, 173.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p sub_model_second instance"
@@ -2169,42 +1931,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
-										"rect" : [ 1189.0, 716.0, 303.0, 245.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
+										"rect" : [ 995.0, 701.0, 303.0, 245.0 ],
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"visible" : 1,
 										"boxes" : [ 											{
 												"box" : 												{
@@ -2245,13 +1981,27 @@
 											}
 , 											{
 												"box" : 												{
-													"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+													"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 													"id" : "obj-1",
 													"maxclass" : "newobj",
 													"numinlets" : 1,
 													"numoutlets" : 1,
 													"outlettype" : [ "" ],
 													"patching_rect" : [ 36.0, 34.0, 137.0, 22.0 ],
+													"saved_attribute_attributes" : 													{
+														"color" : 														{
+															"expression" : "themecolor.live_threshold_line_color"
+														}
+
+													}
+,
+													"saved_newobj_attribute_attributes" : 													{
+														"color" : 														{
+															"expression" : "themecolor.live_threshold_line_color"
+														}
+
+													}
+,
 													"text" : "ossia.model sub_model"
 												}
 
@@ -2264,15 +2014,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-181"
 									}
 ,
 									"patching_rect" : [ 92.0, 220.0, 79.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p sub_model"
@@ -2385,6 +2133,7 @@
 
 							}
  ],
+						"originid" : "pat-175",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -2399,10 +2148,7 @@
 ,
 					"patching_rect" : [ 386.0, 242.0, 148.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p \"Naming and instances\""
@@ -2419,43 +2165,17 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 0,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 201.0, 146.0, 879.0, 805.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"rect" : [ 47.0, 141.0, 879.0, 805.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"fontname" : "Lato Regular",
@@ -2465,8 +2185,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 600.0, 315.0, 187.0, 21.0 ],
-									"text" : "also works with pattern-matching",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "also works with pattern-matching"
 								}
 
 							}
@@ -2478,7 +2197,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 470.0, 595.0, 24.0, 24.0 ]
+									"patching_rect" : [ 470.0, 595.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -2490,7 +2210,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 470.0, 280.0, 24.0, 24.0 ]
+									"patching_rect" : [ 470.0, 280.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -2515,8 +2236,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 470.0, 178.0, 375.0, 21.0 ],
-									"text" : "values of parameters can be fed to ossia.model, with the set message:",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "values of parameters can be fed to ossia.model, with the set message:"
 								}
 
 							}
@@ -2579,8 +2299,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 141.0, 172.5, 258.0, 49.0 ],
-									"text" : "Click 'namespace' message to get all the model's nodes addresses and values",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Click 'namespace' message to get all the model's nodes addresses and values"
 								}
 
 							}
@@ -2594,42 +2313,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 506.0, 93.0, 363.0, 605.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-9",
@@ -2941,15 +2634,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-185"
 									}
 ,
 									"patching_rect" : [ 60.0, 281.0, 286.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p get_namespace"
@@ -2997,8 +2688,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 470.0, 683.0, 286.0, 50.0 ],
-									"text" : "Subpatchers can contains models. Model contained in a_sub_model patchers gets registered under the my_model node",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "Subpatchers can contains models. Model contained in a_sub_model patchers gets registered under the my_model node"
 								}
 
 							}
@@ -3011,42 +2701,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 0,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 1238.0, 755.0, 408.0, 207.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"format" : 6,
@@ -3125,6 +2789,7 @@
 
 											}
  ],
+										"originid" : "pat-187",
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -3139,10 +2804,7 @@
 ,
 									"patching_rect" : [ 470.0, 652.0, 93.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p a_sub_model"
@@ -3159,8 +2821,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 470.0, 451.0, 317.0, 35.0 ],
-									"text" : "All parameters in the same patcher (or supatchers without an [ossia.model]) will subscribe under this node",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "All parameters in the same patcher (or supatchers without an [ossia.model]) will subscribe under this node"
 								}
 
 							}
@@ -3204,7 +2865,7 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-2",
 									"linecount" : 2,
 									"maxclass" : "newobj",
@@ -3212,6 +2873,20 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 60.0, 236.0, 272.0, 35.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.model my_model @description \"A patchers declared as a model\" @tags maxhelp demo"
 								}
 
@@ -3310,6 +2985,7 @@
 
 							}
  ],
+						"originid" : "pat-183",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -3324,10 +3000,7 @@
 ,
 					"patching_rect" : [ 165.0, 242.0, 50.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p Basic"
@@ -3336,6 +3009,7 @@
 			}
  ],
 		"lines" : [  ],
+		"originid" : "pat-163",
 		"dependency_cache" : [ 			{
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
@@ -3343,15 +3017,15 @@
 				"implicit" : 1
 			}
 , 			{
+				"name" : "ossia.device.mxo",
+				"type" : "iLaX"
+			}
+, 			{
 				"name" : "ossia.model.mxo",
 				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
-				"type" : "iLaX"
-			}
-, 			{
-				"name" : "ossia.device.mxo",
 				"type" : "iLaX"
 			}
 , 			{

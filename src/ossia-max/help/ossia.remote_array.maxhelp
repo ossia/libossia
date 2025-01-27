@@ -2,40 +2,16 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 7,
-			"minor" : 3,
+			"major" : 9,
+			"minor" : 0,
 			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
-		"rect" : [ 252.0, 333.0, 1421.0, 707.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
+		"classnamespace" : "box",
+		"rect" : [ 64.0, 138.0, 1198.0, 703.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
 		"boxes" : [ 			{
@@ -46,7 +22,6 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 364.0, 186.0, 100.0, 22.0 ],
-					"style" : "",
 					"text" : "ossia.device"
 				}
 
@@ -61,55 +36,27 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
+							"major" : 9,
+							"minor" : 0,
 							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 0.0, 26.0, 1421.0, 681.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"classnamespace" : "box",
+						"rect" : [ 0.0, 26.0, 1198.0, 677.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [  ],
-						"lines" : [  ]
+						"lines" : [  ],
+						"originid" : "pat-1209"
 					}
 ,
 					"patching_rect" : [ 780.0, 247.0, 27.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"style" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p ?"
 				}
 
@@ -124,40 +71,16 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 7,
-							"minor" : 3,
+							"major" : 9,
+							"minor" : 0,
 							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
-						"rect" : [ 252.0, 359.0, 1421.0, 681.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"classnamespace" : "box",
+						"rect" : [ 64.0, 164.0, 1198.0, 677.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
@@ -166,8 +89,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 64.0, 129.5, 565.0, 20.0 ],
-									"presentation_rect" : [ 613.0, 83.5, 0.0, 0.0 ],
-									"style" : "",
 									"text" : "This only works with the brace expansion syntax, i.e. {12..43} will match all instances between 12 and 43"
 								}
 
@@ -179,7 +100,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 598.0, 620.0, 571.0, 20.0 ],
-									"style" : "",
 									"text" : " NB: there's an ossia.device in the root patcher to make sure we don't have duplicates with other patchers"
 								}
 
@@ -191,7 +111,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 857.0, 433.0, 254.0, 20.0 ],
-									"style" : "",
 									"text" : "e.g. calar.{1..4}/truc.{1..18} won't work for now"
 								}
 
@@ -204,7 +123,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 857.0, 405.0, 242.0, 33.0 ],
-									"style" : "",
 									"text" : "notice that this will only work with one level of pattern-matching expression"
 								}
 
@@ -216,7 +134,6 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 16.0, 68.5, 265.0, 20.0 ],
-									"style" : "",
 									"text" : "An utility to access several parameters with lists"
 								}
 
@@ -233,8 +150,7 @@
 									"patching_rect" : [ 829.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 8,
-									"style" : ""
+									"size" : 8
 								}
 
 							}
@@ -250,21 +166,26 @@
 									"patching_rect" : [ 829.0, 232.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 8,
-									"style" : ""
+									"size" : 8
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-35",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 829.0, 378.5, 237.0, 22.0 ],
-									"style" : "",
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.remote_array calar.1/truc.{5..12}"
 								}
 
@@ -277,7 +198,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 891.5, 183.0, 225.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter calar.{1..4}/truc.{1..18}"
 								}
 
@@ -294,8 +214,7 @@
 									"patching_rect" : [ 404.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 16,
-									"style" : ""
+									"size" : 16
 								}
 
 							}
@@ -311,21 +230,26 @@
 									"patching_rect" : [ 404.0, 232.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 16,
-									"style" : ""
+									"size" : 16
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-30",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 404.0, 378.5, 187.0, 22.0 ],
-									"style" : "",
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.remote_array color.{17..32}"
 								}
 
@@ -342,8 +266,7 @@
 									"patching_rect" : [ 31.0, 459.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 16,
-									"style" : ""
+									"size" : 16
 								}
 
 							}
@@ -359,21 +282,26 @@
 									"patching_rect" : [ 31.0, 241.5, 350.0, 135.0 ],
 									"setminmax" : [ 0.0, 1.0 ],
 									"setstyle" : 1,
-									"size" : 16,
-									"style" : ""
+									"size" : 16
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-20",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 31.0, 382.5, 180.0, 22.0 ],
-									"style" : "",
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.remote_array color.{1..16}"
 								}
 
@@ -386,7 +314,6 @@
 									"numoutlets" : 2,
 									"outlettype" : [ "", "" ],
 									"patching_rect" : [ 319.0, 178.0, 163.0, 22.0 ],
-									"style" : "",
 									"text" : "ossia.parameter color.{1..32}"
 								}
 
@@ -481,6 +408,7 @@
 
 							}
  ],
+						"originid" : "pat-1211",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -495,20 +423,16 @@
 ,
 					"patching_rect" : [ 165.0, 242.0, 50.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"style" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
-					"style" : "",
 					"text" : "p Basic"
 				}
 
 			}
  ],
 		"lines" : [  ],
+		"originid" : "pat-1207",
 		"dependency_cache" : [ 			{
 				"name" : "helpdetails.js",
 				"bootpath" : "C74:/help/resources",
@@ -516,11 +440,8 @@
 				"implicit" : 1
 			}
 , 			{
-				"name" : "ossia.remote_array.maxpat",
-				"bootpath" : "~/dev/libossia/ossia/ossia-max/patchers",
-				"patcherrelativepath" : "../patchers",
-				"type" : "JSON",
-				"implicit" : 1
+				"name" : "ossia.device.mxo",
+				"type" : "iLaX"
 			}
 , 			{
 				"name" : "ossia.parameter.mxo",
@@ -531,8 +452,11 @@
 				"type" : "iLaX"
 			}
 , 			{
-				"name" : "ossia.device.mxo",
-				"type" : "iLaX"
+				"name" : "ossia.remote_array.maxpat",
+				"bootpath" : "~/Documents/Max 9/Packages/ossia 2.0.0-rc6/patchers",
+				"patcherrelativepath" : "../patchers",
+				"type" : "JSON",
+				"implicit" : 1
 			}
  ],
 		"autosave" : 0,

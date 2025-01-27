@@ -2,44 +2,18 @@
 	"patcher" : 	{
 		"fileversion" : 1,
 		"appversion" : 		{
-			"major" : 8,
-			"minor" : 2,
-			"revision" : 2,
+			"major" : 9,
+			"minor" : 0,
+			"revision" : 4,
 			"architecture" : "x64",
 			"modernui" : 1
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 127.0, 87.0, 1015.0, 783.0 ],
-		"bglocked" : 0,
-		"openinpresentation" : 0,
-		"default_fontsize" : 12.0,
-		"default_fontface" : 0,
-		"default_fontname" : "Arial",
-		"gridonopen" : 1,
+		"rect" : [ 134.0, 172.0, 1015.0, 783.0 ],
 		"gridsize" : [ 15.0, 15.0 ],
-		"gridsnaponopen" : 1,
-		"objectsnaponopen" : 1,
-		"statusbarvisible" : 2,
-		"toolbarvisible" : 1,
-		"lefttoolbarpinned" : 0,
-		"toptoolbarpinned" : 0,
-		"righttoolbarpinned" : 0,
-		"bottomtoolbarpinned" : 0,
-		"toolbars_unpinned_last_save" : 0,
-		"tallnewobj" : 0,
-		"boxanimatetime" : 200,
-		"enablehscroll" : 1,
-		"enablevscroll" : 1,
-		"devicewidth" : 0.0,
-		"description" : "",
-		"digest" : "",
-		"tags" : "",
-		"style" : "",
-		"subpatcher_template" : "",
 		"showrootpatcherontab" : 0,
 		"showontab" : 0,
-		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
 					"annotation" : "none",
@@ -50,43 +24,17 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 2,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 1015.0, 731.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"rect" : [ 134.0, 198.0, 1015.0, 757.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-7",
@@ -95,7 +43,8 @@
 									"numoutlets" : 1,
 									"outlettype" : [ "int" ],
 									"parameter_enable" : 0,
-									"patching_rect" : [ 76.0, 559.0, 24.0, 24.0 ]
+									"patching_rect" : [ 76.0, 559.0, 24.0, 24.0 ],
+									"svg" : ""
 								}
 
 							}
@@ -109,42 +58,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 2,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 792.0, 228.0, 398.0, 521.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-8",
@@ -471,6 +394,7 @@
 
 											}
  ],
+										"originid" : "pat-48",
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -485,10 +409,7 @@
 ,
 									"patching_rect" : [ 578.0, 299.0, 60.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p presets"
@@ -508,22 +429,19 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 608.5, 473.0, 266.0, 79.0 ],
-									"text" : "Parameters in a device can be remotely bound to using 'device_name:/model/parameter' absolute address syntax",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Parameters in a device can be remotely bound to using 'device_name:/model/parameter' absolute address syntax"
 								}
 
 							}
 , 							{
 								"box" : 								{
-									"fontname" : "Lato Regular",
-									"fontsize" : 12.0,
 									"id" : "obj-27",
 									"maxclass" : "comment",
 									"numinlets" : 1,
 									"numoutlets" : 0,
-									"patching_rect" : [ 298.0, 728.0, 204.0, 21.0 ],
-									"text" : "A submodel embedded as a bpatcher",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"patching_rect" : [ 291.0, 728.5, 210.0, 20.0 ],
+									"style" : "default",
+									"text" : "A submodel embedded as a bpatcher"
 								}
 
 							}
@@ -562,8 +480,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 621.0, 226.5, 269.5, 35.0 ],
-									"text" : "notice that changing the device's name while it is exposed won't have effects on the client side",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "notice that changing the device's name while it is exposed won't have effects on the client side"
 								}
 
 							}
@@ -576,8 +493,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 630.0, 195.5, 159.0, 21.0 ],
-									"text" : "or retrieve the current name",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "or retrieve the current name"
 								}
 
 							}
@@ -602,8 +518,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 689.0, 165.0, 145.0, 21.0 ],
-									"text" : "change the device's name",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "change the device's name"
 								}
 
 							}
@@ -628,8 +543,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 644.0, 299.0, 254.0, 21.0 ],
-									"text" : "devices can save and load presets of values ",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "devices can save and load presets of values "
 								}
 
 							}
@@ -645,8 +559,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 177.0, 168.0, 178.0, 64.0 ],
-									"text" : "Get all the device's model nodes addresses and values",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Get all the device's model nodes addresses and values"
 								}
 
 							}
@@ -660,42 +573,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 2,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 252.0, 240.0, 348.0, 406.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-3",
@@ -1035,15 +922,13 @@
 												}
 
 											}
- ]
+ ],
+										"originid" : "pat-50"
 									}
 ,
 									"patching_rect" : [ 102.0, 308.0, 286.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p get_namespace"
@@ -1083,6 +968,7 @@
 							}
 , 							{
 								"box" : 								{
+									"bgcolor" : [ 0.279471418544607, 0.279471350143365, 0.279471368104493, 1.0 ],
 									"bgmode" : 2,
 									"border" : 0,
 									"clickthrough" : 0,
@@ -1099,42 +985,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 2,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 1253.0, 56.0, 393.0, 318.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"format" : 6,
@@ -1214,6 +1074,7 @@
 
 											}
  ],
+										"originid" : "pat-53",
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -1227,6 +1088,13 @@
 									}
 ,
 									"patching_rect" : [ 102.0, 594.0, 399.0, 159.0 ],
+									"saved_attribute_attributes" : 									{
+										"bgcolor" : 										{
+											"expression" : "themecolor.live_surface_bg"
+										}
+
+									}
+,
 									"viewvisibility" : 1
 								}
 
@@ -1270,13 +1138,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-2",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 102.0, 263.0, 135.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.device basic-help"
 								}
 
@@ -1376,6 +1258,7 @@
 
 							}
  ],
+						"originid" : "pat-46",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -1385,17 +1268,12 @@
 								"parentstyle" : "",
 								"multi" : 0
 							}
- ],
-						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+ ]
 					}
 ,
 					"patching_rect" : [ 171.0, 242.0, 50.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"locked_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p Basic"
@@ -1412,53 +1290,25 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 2,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 0.0, 26.0, 1015.0, 731.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"rect" : [ 0.0, 26.0, 1015.0, 757.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [  ],
-						"lines" : [  ]
+						"lines" : [  ],
+						"originid" : "pat-55"
 					}
 ,
 					"patching_rect" : [ 424.0, 242.0, 27.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p ?"
@@ -1475,43 +1325,17 @@
 					"patcher" : 					{
 						"fileversion" : 1,
 						"appversion" : 						{
-							"major" : 8,
-							"minor" : 2,
-							"revision" : 2,
+							"major" : 9,
+							"minor" : 0,
+							"revision" : 4,
 							"architecture" : "x64",
 							"modernui" : 1
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 127.0, 139.0, 1015.0, 731.0 ],
-						"bglocked" : 0,
-						"openinpresentation" : 0,
-						"default_fontsize" : 12.0,
-						"default_fontface" : 0,
-						"default_fontname" : "Arial",
-						"gridonopen" : 1,
+						"rect" : [ 0.0, 26.0, 1015.0, 757.0 ],
 						"gridsize" : [ 15.0, 15.0 ],
-						"gridsnaponopen" : 1,
-						"objectsnaponopen" : 1,
-						"statusbarvisible" : 2,
-						"toolbarvisible" : 1,
-						"lefttoolbarpinned" : 0,
-						"toptoolbarpinned" : 0,
-						"righttoolbarpinned" : 0,
-						"bottomtoolbarpinned" : 0,
-						"toolbars_unpinned_last_save" : 0,
-						"tallnewobj" : 0,
-						"boxanimatetime" : 200,
-						"enablehscroll" : 1,
-						"enablevscroll" : 1,
-						"devicewidth" : 0.0,
-						"description" : "",
-						"digest" : "",
-						"tags" : "",
-						"style" : "",
-						"subpatcher_template" : "",
 						"showontab" : 1,
-						"assistshowspatchername" : 0,
 						"boxes" : [ 							{
 								"box" : 								{
 									"bubble" : 1,
@@ -1524,9 +1348,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 213.0, 314.5, 213.0, 49.0 ],
-									"presentation_linecount" : 2,
-									"text" : "retrieve all connected oscquery clients infos",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "retrieve all connected oscquery clients infos"
 								}
 
 							}
@@ -1553,8 +1375,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 194.0, 383.5, 213.0, 35.0 ],
-									"text" : "send all values to sync OSC client",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "send all values to sync OSC client"
 								}
 
 							}
@@ -1626,8 +1447,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 523.5, 731.5, 233.0, 21.0 ],
-									"text" : "NB: this looks better in FireFox",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "NB: this looks better in FireFox"
 								}
 
 							}
@@ -1643,8 +1463,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 645.5, 665.5, 156.0, 64.0 ],
-									"text" : "Watch OSCQuery-formatted namespace in browser",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Watch OSCQuery-formatted namespace in browser"
 								}
 
 							}
@@ -1672,8 +1491,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 194.0, 458.0, 170.0, 35.0 ],
-									"text" : "stop the first connection",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "stop the first connection"
 								}
 
 							}
@@ -1688,8 +1506,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 194.0, 421.5, 213.0, 35.0 ],
-									"text" : "print list of  all active connections",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "print list of  all active connections"
 								}
 
 							}
@@ -1706,8 +1523,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 530.0, 220.0, 247.0, 64.0 ],
-									"text" : "Once a device is exposed, it can be remotely monitored or controlled ",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Once a device is exposed, it can be remotely monitored or controlled "
 								}
 
 							}
@@ -1722,42 +1538,16 @@
 									"patcher" : 									{
 										"fileversion" : 1,
 										"appversion" : 										{
-											"major" : 8,
-											"minor" : 2,
-											"revision" : 2,
+											"major" : 9,
+											"minor" : 0,
+											"revision" : 4,
 											"architecture" : "x64",
 											"modernui" : 1
 										}
 ,
 										"classnamespace" : "box",
 										"rect" : [ 59.0, 103.0, 528.0, 319.0 ],
-										"bglocked" : 0,
-										"openinpresentation" : 0,
-										"default_fontsize" : 12.0,
-										"default_fontface" : 0,
-										"default_fontname" : "Arial",
-										"gridonopen" : 1,
 										"gridsize" : [ 15.0, 15.0 ],
-										"gridsnaponopen" : 1,
-										"objectsnaponopen" : 1,
-										"statusbarvisible" : 2,
-										"toolbarvisible" : 1,
-										"lefttoolbarpinned" : 0,
-										"toptoolbarpinned" : 0,
-										"righttoolbarpinned" : 0,
-										"bottomtoolbarpinned" : 0,
-										"toolbars_unpinned_last_save" : 0,
-										"tallnewobj" : 0,
-										"boxanimatetime" : 200,
-										"enablehscroll" : 1,
-										"enablevscroll" : 1,
-										"devicewidth" : 0.0,
-										"description" : "",
-										"digest" : "",
-										"tags" : "",
-										"style" : "",
-										"subpatcher_template" : "",
-										"assistshowspatchername" : 0,
 										"boxes" : [ 											{
 												"box" : 												{
 													"id" : "obj-32",
@@ -1901,6 +1691,7 @@
 
 											}
  ],
+										"originid" : "pat-59",
 										"styles" : [ 											{
 												"name" : "Jamoma_highlighted_orange",
 												"default" : 												{
@@ -1915,10 +1706,7 @@
 ,
 									"patching_rect" : [ 530.0, 549.0, 45.0, 22.0 ],
 									"saved_object_attributes" : 									{
-										"description" : "",
-										"digest" : "",
-										"globalpatchername" : "",
-										"tags" : ""
+										"globalpatchername" : ""
 									}
 ,
 									"text" : "p jweb"
@@ -1984,8 +1772,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 616.0, 549.0, 175.0, 50.0 ],
-									"text" : "the device has to be declared on port 5678 for this to work (i.e. default)",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "the device has to be declared on port 5678 for this to work (i.e. default)"
 								}
 
 							}
@@ -2001,8 +1788,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 631.0, 477.0, 145.0, 64.0 ],
-									"text" : "Open html example to remote control from  your browser",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Open html example to remote control from  your browser"
 								}
 
 							}
@@ -2021,6 +1807,8 @@
 											"parameter_enum" : [ "val1", "val2" ],
 											"parameter_longname" : "live.text",
 											"parameter_mmax" : 1,
+											"parameter_modmode" : 0,
+											"parameter_osc_name" : "<default>",
 											"parameter_shortname" : "live.text",
 											"parameter_type" : 2
 										}
@@ -2059,8 +1847,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 718.0, 284.0, 145.0, 64.0 ],
-									"text" : "Open client patcher to remote control this device's model",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Open client patcher to remote control this device's model"
 								}
 
 							}
@@ -2115,6 +1902,8 @@
 											"parameter_longname" : "live.gain~",
 											"parameter_mmax" : 6.0,
 											"parameter_mmin" : -70.0,
+											"parameter_modmode" : 0,
+											"parameter_osc_name" : "<default>",
 											"parameter_shortname" : "live.gain~",
 											"parameter_type" : 0,
 											"parameter_unitstyle" : 4
@@ -2148,8 +1937,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 99.0, 204.0, 175.0, 35.0 ],
-									"text" : "specific osc & ws ports can be defined (default 9999/5678)",
-									"textcolor" : [ 0.6, 0.6, 0.6, 1.0 ]
+									"text" : "specific osc & ws ports can be defined (default 9999/5678)"
 								}
 
 							}
@@ -2177,8 +1965,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 252.0, 143.0, 174.0, 49.0 ],
-									"text" : "expose device through oscquery protocol",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "expose device through oscquery protocol"
 								}
 
 							}
@@ -2206,8 +1993,7 @@
 									"numinlets" : 1,
 									"numoutlets" : 0,
 									"patching_rect" : [ 99.0, 83.0, 215.0, 49.0 ],
-									"text" : "Print list of available protocols in Max console",
-									"textcolor" : [ 0.3, 0.3, 0.3, 1.0 ]
+									"text" : "Print list of available protocols in Max console"
 								}
 
 							}
@@ -2225,13 +2011,27 @@
 							}
 , 							{
 								"box" : 								{
-									"color" : [ 0.12549, 0.796078, 0.894118, 1.0 ],
+									"color" : [ 0.0, 0.933333333333333, 1.0, 1.0 ],
 									"id" : "obj-2",
 									"maxclass" : "newobj",
 									"numinlets" : 1,
 									"numoutlets" : 1,
 									"outlettype" : [ "" ],
 									"patching_rect" : [ 48.0, 503.0, 149.0, 22.0 ],
+									"saved_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
+									"saved_newobj_attribute_attributes" : 									{
+										"color" : 										{
+											"expression" : "themecolor.live_threshold_line_color"
+										}
+
+									}
+,
 									"text" : "ossia.device network-help"
 								}
 
@@ -2399,6 +2199,7 @@
 
 							}
  ],
+						"originid" : "pat-57",
 						"styles" : [ 							{
 								"name" : "Jamoma_highlighted_orange",
 								"default" : 								{
@@ -2408,17 +2209,12 @@
 								"parentstyle" : "",
 								"multi" : 0
 							}
- ],
-						"bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ]
+ ]
 					}
 ,
 					"patching_rect" : [ 236.0, 242.0, 126.0, 22.0 ],
 					"saved_object_attributes" : 					{
-						"description" : "",
-						"digest" : "",
-						"globalpatchername" : "",
-						"locked_bgcolor" : [ 0.862745, 0.870588, 0.878431, 1.0 ],
-						"tags" : ""
+						"globalpatchername" : ""
 					}
 ,
 					"text" : "p \"Network exposure\""
@@ -2427,6 +2223,7 @@
 			}
  ],
 		"lines" : [  ],
+		"originid" : "pat-44",
 		"parameters" : 		{
 			"obj-1::obj-18" : [ "live.text", "live.text", 0 ],
 			"obj-1::obj-7" : [ "live.gain~", "live.gain~", 0 ],
@@ -2439,8 +2236,8 @@
 ,
 		"dependency_cache" : [ 			{
 				"name" : "fm_synth.maxpat",
-				"bootpath" : "~/Documents/Max 8/Packages/ossia/patchers",
-				"patcherrelativepath" : "../../../../../../Documents/Max 8/Packages/ossia/patchers",
+				"bootpath" : "~/Documents/Max 9/Packages/ossia 2.0.0-rc6/patchers",
+				"patcherrelativepath" : "../patchers",
 				"type" : "JSON",
 				"implicit" : 1
 			}
