@@ -3,6 +3,7 @@
 #include <ossia/dataflow/dataflow_fwd.hpp>
 #include <ossia/dataflow/geometry_port.hpp>
 #include <ossia/dataflow/midi_port.hpp>
+#include <ossia/dataflow/texture_port.hpp>
 #include <ossia/dataflow/value_port.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/common/path.hpp>
@@ -404,6 +405,8 @@ struct OSSIA_EXPORT texture_inlet : public ossia::inlet
   {
     return texture_port::which;
   }
+
+  render_target_spec data;
 };
 
 struct OSSIA_EXPORT texture_outlet : public ossia::outlet
