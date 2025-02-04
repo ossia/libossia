@@ -45,19 +45,38 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  if(m_conf.autocreate != m_conf.no_auto)
+  switch(m_conf.autocreate)
   {
-    auto& root = dev.get_root_node();
-    root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
-        root, m_buffer, ossia::net::dmx_range{0, 512}, 0, 255));
-    for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-    {
-      auto name = m_conf.autocreate == m_conf.channel_index
-                      ? fmt::format("Channel-{}", i + 1)
-                      : std::to_string(i + 1);
+    case ossia::net::dmx_config::no_auto:
+      break;
+    case ossia::net::dmx_config::just_universes: {
+      auto& root = dev.get_root_node();
+      m_buffer.resize(16);
+      for(int i = 0; i < 16; i++)
+      {
+        device_parameter::create_device_parameter<dmx_range_parameter>(
+            root, std::to_string(m_conf.universe + i), std::vector<ossia::value>{},
+            m_buffer[i], ossia::net::dmx_range{0, 512}, 0, 255);
+      }
+      break;
+    }
+    case ossia::net::dmx_config::channel_index:
+    case ossia::net::dmx_config::just_index: {
+      auto& root = dev.get_root_node();
+      m_buffer.resize(1);
+      auto& buffer = m_buffer[0];
+      root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
+          root, buffer, ossia::net::dmx_range{0, 512}, 0, 255));
+      root.get_parameter()->set_value(std::vector<ossia::value>{});
+      for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
+      {
+        auto name = m_conf.autocreate == m_conf.channel_index
+                        ? fmt::format("Channel-{}", i + 1)
+                        : std::to_string(i + 1);
 
-      device_parameter::create_device_parameter<dmx_parameter>(
-          root, name, 0, m_buffer, i);
+        device_parameter::create_device_parameter<dmx_parameter>(
+            root, name, 0, buffer, i);
+      }
     }
   }
 }

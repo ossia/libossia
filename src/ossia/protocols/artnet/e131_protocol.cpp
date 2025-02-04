@@ -181,26 +181,29 @@ void e131_protocol::set_device(ossia::net::device_base& dev)
 void e131_protocol::update_function()
 {
   static std::atomic_int seq = 0;
-  try
+  for(auto& buffer : this->m_buffer)
   {
-    e131_packet pkt;
-    e131_pkt_init(&pkt, this->m_conf.universe, 512);
+    try
+    {
+      e131_packet pkt;
+      e131_pkt_init(&pkt, this->m_conf.universe, 512);
 
-    for(size_t pos = 0; pos < 512; pos++)
-      pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
-    pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
+      for(size_t pos = 0; pos < 512; pos++)
+        pkt.dmp.prop_val[pos + 1] = buffer.data[pos];
+      pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
 
-    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+      m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
 
-    m_buffer.dirty = false;
-  }
-  catch(std::exception& e)
-  {
-    ossia::logger().error("write failure: {}", e.what());
-  }
-  catch(...)
-  {
-    ossia::logger().error("write failure");
+      buffer.dirty = false;
+    }
+    catch(std::exception& e)
+    {
+      ossia::logger().error("write failure: {}", e.what());
+    }
+    catch(...)
+    {
+      ossia::logger().error("write failure");
+    }
   }
 }
 
