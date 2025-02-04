@@ -51,7 +51,7 @@ artnet_protocol::artnet_protocol(
   static constexpr int artnet_subnet_id = 0;
   artnet_set_port_type(m_node, artnet_port_id, ARTNET_ENABLE_INPUT, ARTNET_PORT_DMX);
   artnet_set_port_addr(m_node, artnet_port_id, ARTNET_INPUT_PORT, m_conf.universe);
-  //artnet_set_subnet_addr(m_node, artnet_subnet_id);
+  artnet_set_subnet_addr(m_node, artnet_subnet_id);
 
   artnet_set_short_name(m_node, "libossia");
   artnet_set_long_name(m_node, "libossia artnet protocol");
@@ -79,10 +79,14 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
 
 void artnet_protocol::update_function()
 {
-  if(m_buffer.dirty)
+  for(int i = 0, n = m_buffer.size(); i < n; i++)
   {
-    artnet_raw_send_dmx(m_node, m_conf.universe, DMX_CHANNEL_COUNT, m_buffer.data);
-    m_buffer.dirty = false;
+    if(auto& buffer = m_buffer[i]; buffer.dirty)
+    {
+      artnet_raw_send_dmx(m_node, i + m_conf.universe, DMX_CHANNEL_COUNT, buffer.data);
+
+      buffer.dirty = false;
+    }
   }
 }
 
