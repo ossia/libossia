@@ -229,7 +229,7 @@ void dmx_parameter::device_update_value()
       break;
   }
 
-  m_buffer.dirty = true;
+  m_buffer.dirty[0] = true;
 }
 
 dmx_range_parameter::dmx_range_parameter(
@@ -247,7 +247,7 @@ dmx_range_parameter::~dmx_range_parameter() = default;
 void dmx_range_parameter::device_update_value()
 {
   m_current_value.apply(artnet_out_var_visitor{*this});
-  m_buffer.dirty = true;
+  m_buffer.dirty[0] = true;
 }
 
 static ossia::domain_base<std::string> keys_to_domain(const auto& values)
