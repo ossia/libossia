@@ -181,20 +181,24 @@ void e131_protocol::set_device(ossia::net::device_base& dev)
 void e131_protocol::update_function()
 {
   static std::atomic_int seq = 0;
-  for(auto& buffer : this->m_buffer)
+  for(int current_universe = 0; current_universe < m_buffer.universes();
+      current_universe++)
   {
+    if(!m_buffer.dirty[current_universe])
+      continue;
     try
     {
+      int universe = this->m_conf.universe + current_universe;
       e131_packet pkt;
-      e131_pkt_init(&pkt, this->m_conf.universe, 512);
+      e131_pkt_init(&pkt, universe, 512);
 
       for(size_t pos = 0; pos < 512; pos++)
-        pkt.dmp.prop_val[pos + 1] = buffer.data[pos];
+        pkt.dmp.prop_val[pos + 1]
+            = m_buffer.data[current_universe * DMX_CHANNEL_COUNT + pos];
       pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
 
       m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
-
-      buffer.dirty = false;
+      m_buffer.dirty[current_universe] = false;
     }
     catch(std::exception& e)
     {
