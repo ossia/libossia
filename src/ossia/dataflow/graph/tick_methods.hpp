@@ -3,6 +3,7 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/dataflow/graph/graph_interface.hpp>
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/disable_fpe.hpp>
 #include <ossia/detail/hash_map.hpp>
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/editor/scenario/execution_log.hpp>
@@ -87,6 +88,7 @@ struct tick_all_nodes
 
   void operator()(unsigned long samples, double) const
   {
+    ossia::disable_fpe();
     std::atomic_thread_fence(std::memory_order_seq_cst);
     e.begin_tick();
     const time_value old_date{e.samples_since_start};
@@ -121,6 +123,7 @@ struct buffer_tick
     auto log = g_exec_log.start_tick();
 #endif
 
+    ossia::disable_fpe();
     std::atomic_thread_fence(std::memory_order_seq_cst);
     st.begin_tick();
     st.samples_since_start += frameCount;
@@ -195,6 +198,7 @@ struct precise_score_tick
 
   void operator()(unsigned long frameCount, double seconds)
   {
+    ossia::disable_fpe();
     std::atomic_thread_fence(std::memory_order_seq_cst);
     st.bufferSize = 1;
     st.cur_date = seconds * 1e9;
@@ -315,6 +319,7 @@ public:
 
   void operator()(unsigned long frameCount, double seconds)
   {
+    ossia::disable_fpe();
     st.samples_since_start += frameCount;
     st.bufferSize = (int)frameCount;
     // we could run a syscall and call now() but that's a bit more costly.

@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/dataflow/graph_node.hpp>
+#include <ossia/detail/disable_fpe.hpp>
 #include <ossia/detail/fmt.hpp>
 #include <ossia/detail/lockfree_queue.hpp>
 #include <ossia/detail/thread.hpp>
@@ -129,6 +130,7 @@ public:
         ossia::set_thread_realtime(m_threads[k], 95);
         ossia::set_thread_pinned(ossia::thread_type::AudioTask, k);
 
+        ossia::disable_fpe();
         while(m_running)
         {
           task* t{};

@@ -111,6 +111,7 @@ public:
       delete clones[i].fx;
   }
 };
+
 class faust_fx final : public ossia::graph_node
 {
   std::shared_ptr<dsp> m_dsp{};

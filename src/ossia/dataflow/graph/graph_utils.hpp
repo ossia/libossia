@@ -413,7 +413,11 @@ struct OSSIA_EXPORT graph_util
 
   static void init_node(graph_node& n, execution_state& e)
   {
-    disable_fpe();
+    if(n.not_fp_safe())
+    {
+      [[unlikely]];
+      disable_fpe();
+    }
 
     // Clear the outputs of the node
     for_each_outlet(n, [&](auto& port) { init_outlet(port, e); });
@@ -450,6 +454,12 @@ struct OSSIA_EXPORT graph_util
 
   static void teardown_node(const graph_node& n, execution_state& e)
   {
+    if(n.not_fp_safe())
+    {
+      [[unlikely]];
+      disable_fpe();
+    }
+
     // Copy from output ports to environment
     // Clear the outputs of the node
     for_each_outlet(n, [&](auto& port) { teardown_outlet(port, e); });

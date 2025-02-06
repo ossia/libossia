@@ -156,6 +156,16 @@ public:
   [[nodiscard]] bool muted() const noexcept { return m_muted; }
 
   /**
+   * Indicates that the node implementation does manipulate the floating-point environment
+   */
+  [[nodiscard]]
+  bool not_fp_safe() const noexcept
+  {
+    return m_not_fp_safe;
+  }
+  void set_not_fp_safe() noexcept { m_not_fp_safe = true; }
+
+  /**
    * Indicates that the node implementation must always be scheduled on the same thread.
    * Main use case: QJSEngine which is not thread-safe.
    */
@@ -185,6 +195,7 @@ protected:
 
   bool m_executed{};
   bool m_not_threadable{};
+  bool m_not_fp_safe{};
 
 private:
   bool m_start_discontinuous{};
