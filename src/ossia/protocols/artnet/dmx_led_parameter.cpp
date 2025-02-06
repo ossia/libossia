@@ -22,6 +22,8 @@ dmx_led_parameter::dmx_led_parameter(
     , m_bpp{bytes_per_pixel}
     , m_num_pixels{num_pixels}
 {
+  this->m_current_value
+      = std::vector<ossia::value>(bytes_per_pixel * num_pixels, int(0));
 }
 
 dmx_led_parameter::~dmx_led_parameter() = default;
