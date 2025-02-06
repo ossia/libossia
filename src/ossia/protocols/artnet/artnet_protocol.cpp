@@ -15,9 +15,8 @@
 namespace ossia::net
 {
 dmx_buffer::dmx_buffer()
-    : dirty(false)
 {
-  std::memset(data, 0, DMX_CHANNEL_COUNT);
+  set_universe_count(1);
 }
 
 dmx_buffer::~dmx_buffer() = default;
@@ -79,14 +78,17 @@ void artnet_protocol::set_device(ossia::net::device_base& dev)
 
 void artnet_protocol::update_function()
 {
-  for(int i = 0, n = m_buffer.size(); i < n; i++)
+  for(int current_universe = 0; current_universe < m_buffer.universes();
+      current_universe++)
   {
-    if(auto& buffer = m_buffer[i]; buffer.dirty)
-    {
-      artnet_raw_send_dmx(m_node, i + m_conf.universe, DMX_CHANNEL_COUNT, buffer.data);
+    if(!m_buffer.dirty[current_universe])
+      continue;
 
-      buffer.dirty = false;
-    }
+    int universe = this->m_conf.universe + current_universe;
+    artnet_raw_send_dmx(
+        m_node, universe, DMX_CHANNEL_COUNT,
+        m_buffer.data.data() + current_universe * DMX_CHANNEL_COUNT);
+    m_buffer.dirty[current_universe] = false;
   }
 }
 

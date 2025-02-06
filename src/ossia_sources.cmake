@@ -528,6 +528,7 @@ set(OSSIA_WIIMOTE_SRCS
 set(OSSIA_ARTNET_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_protocol_base.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_parameter.hpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_led_parameter.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_buffer.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/e131_protocol.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmxusbpro_protocol.hpp"
@@ -537,6 +538,7 @@ set(OSSIA_ARTNET_HEADERS
 set(OSSIA_ARTNET_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_protocol_base.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_parameter.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmx_led_parameter.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/e131_protocol.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/dmxusbpro_protocol.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/artnet/artnet_protocol.cpp"

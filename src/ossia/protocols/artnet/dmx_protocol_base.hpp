@@ -30,12 +30,12 @@ public:
 
   bool update(ossia::net::node_base&) override;
 
-  ossia::small_vector<dmx_buffer, 1>& buffer() noexcept { return m_buffer; }
+  dmx_buffer& buffer() noexcept { return m_buffer; }
 
 protected:
   ossia::net::network_context_ptr m_context;
 
-  ossia::small_vector<dmx_buffer, 1> m_buffer;
+  dmx_buffer m_buffer;
 
   ossia::net::device_base* m_device{};
   dmx_config m_conf{};

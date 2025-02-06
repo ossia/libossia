@@ -88,6 +88,7 @@ private:
   friend struct artnet_out_visitor;
   friend struct artnet_out_var_visitor;
 };
+
 /*
 struct artnet_range_element {
   std::string name;
