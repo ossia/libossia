@@ -576,7 +576,7 @@ public:
             PW_KEY_NODE_RATE, fmt::format("{}/{}", 1, setup.rate).c_str(),
             PW_KEY_NODE_FORCE_RATE, fmt::format("{}/{}", 1, setup.rate).c_str(),
             PW_KEY_NODE_LOCK_RATE, "true",
-            PW_KEY_NODE_ALWAYS_PROCESS, "true",
+            //PW_KEY_NODE_ALWAYS_PROCESS, "true",
             PW_KEY_NODE_PAUSE_ON_IDLE, "false",
             PW_KEY_NODE_SUSPEND_ON_IDLE, "false",
             nullptr)};
@@ -771,6 +771,8 @@ public:
       pw.proxy_destroy(link);
 
     pw.filter_destroy(this->filter);
+
+    loop->synchronize();
   }
 
   static void
