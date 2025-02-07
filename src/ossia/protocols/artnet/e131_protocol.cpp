@@ -187,9 +187,9 @@ void e131_protocol::update_function()
     {
       int universe = this->m_conf.universe + current_universe;
       e131_packet pkt;
-      e131_pkt_init(&pkt, universe, 512);
+      e131_pkt_init(&pkt, universe, this->m_conf.channels_per_universe);
 
-      for(size_t pos = 0; pos < 512; pos++)
+      for(size_t pos = 0; pos < this->m_conf.channels_per_universe; pos++)
         pkt.dmp.prop_val[pos + 1]
             = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
       pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
