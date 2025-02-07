@@ -11,6 +11,7 @@ dmx_protocol_base::dmx_protocol_base(
     ossia::net::network_context_ptr ctx, const dmx_config& conf)
     : protocol_base{flags{}}
     , m_context{ctx}
+    , m_buffer{conf.channels_per_universe}
     , m_conf{conf}
 {
 }
@@ -48,6 +49,7 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
   switch(m_conf.autocreate)
   {
     case ossia::net::dmx_config::no_auto:
+      // Then we have to compute universe size
       break;
     case ossia::net::dmx_config::just_universes: {
       auto& root = dev.get_root_node();
@@ -56,7 +58,7 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
       {
         device_parameter::create_device_parameter<dmx_range_parameter>(
             root, std::to_string(m_conf.universe + i), std::vector<ossia::value>{},
-            m_buffer, ossia::net::dmx_range{0, 512}, 0, 255);
+            m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0, 255);
       }
       break;
     }
@@ -65,7 +67,8 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
       auto& root = dev.get_root_node();
       m_buffer.set_universe_count(1);
       root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
-          root, m_buffer, ossia::net::dmx_range{0, 512}, 0, 255));
+          root, m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0,
+          255));
       root.get_parameter()->set_value(std::vector<ossia::value>{});
       for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
       {

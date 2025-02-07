@@ -152,9 +152,6 @@ e131_protocol::e131_protocol(
     : dmx_output_protocol_base{ctx, conf}
     , m_socket{e131_host(conf, socket), socket.port, ctx->context}
 {
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
-
   m_socket.connect();
 
   if(conf.multicast && !socket.host.empty())
@@ -194,7 +191,7 @@ void e131_protocol::update_function()
 
       for(size_t pos = 0; pos < 512; pos++)
         pkt.dmp.prop_val[pos + 1]
-            = m_buffer.data[current_universe * DMX_CHANNEL_COUNT + pos];
+            = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
       pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
 
       m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
@@ -218,8 +215,6 @@ e131_input_protocol::e131_input_protocol(
     , m_socket{socket, ctx->context}
 {
   // FIXME we need to join the multicast group
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
 
   m_socket.open();
 }

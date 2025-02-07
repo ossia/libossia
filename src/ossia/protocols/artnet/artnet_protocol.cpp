@@ -10,11 +10,10 @@
 #include <artnet/artnet.h>
 
 #include <chrono>
-#include <iostream>
-
 namespace ossia::net
 {
-dmx_buffer::dmx_buffer()
+dmx_buffer::dmx_buffer(int universe_size)
+    : universe_size{universe_size}
 {
   set_universe_count(1);
 }
@@ -25,9 +24,6 @@ artnet_protocol::artnet_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf, std::string_view host)
     : dmx_output_protocol_base{ctx, conf}
 {
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
-
   m_timer.set_delay(std::chrono::milliseconds{
       static_cast<int>(1000.0f / static_cast<float>(conf.frequency))});
 
@@ -41,6 +37,7 @@ artnet_protocol::artnet_protocol(
 #else
   bool verbose = 1;
 #endif
+
   m_node = artnet_new(host.data(), verbose);
 
   if(m_node == NULL)
@@ -85,9 +82,8 @@ void artnet_protocol::update_function()
       continue;
 
     int universe = this->m_conf.universe + current_universe;
-    artnet_raw_send_dmx(
-        m_node, universe, DMX_CHANNEL_COUNT,
-        m_buffer.data.data() + current_universe * DMX_CHANNEL_COUNT);
+    auto data = m_buffer.read_universe(current_universe);
+    artnet_raw_send_dmx(m_node, universe - 1, m_conf.channels_per_universe, data.data());
     m_buffer.dirty[current_universe] = false;
   }
 }
@@ -96,9 +92,6 @@ artnet_input_protocol::artnet_input_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf, std::string_view host)
     : dmx_input_protocol_base{ctx, conf}
 {
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
-
 #if defined(_NDEBUG)
   bool verbose = 0;
 #else
