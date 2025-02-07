@@ -16,6 +16,7 @@ struct dmx_config
 {
   uint32_t frequency{};
   uint16_t universe{};
+  uint16_t channels_per_universe{512};
 
   enum
   {
@@ -37,10 +38,8 @@ struct dmx_config
 
 struct dmx_buffer
 {
-  dmx_buffer();
+  explicit dmx_buffer(int universe_size);
   ~dmx_buffer();
-
-  static constexpr auto universe_size = DMX_CHANNEL_COUNT;
 
   int universes() const noexcept { return dirty.size(); }
   void set_universe_count(int universes)
@@ -70,7 +69,7 @@ struct dmx_buffer
     if(data.size() < (u + 1) * universe_size)
       return {};
     dirty[u] = true;
-    return {data.data() + u * universe_size, universe_size};
+    return {data.data() + u * universe_size, (std::size_t)universe_size};
   }
 
   tcb::span<const uint8_t> read_universe(int u) const noexcept
@@ -78,11 +77,12 @@ struct dmx_buffer
     if(data.size() < (u + 1) * universe_size)
       return {};
     dirty[u] = false;
-    return {data.data() + u * universe_size, universe_size};
+    return {data.data() + u * universe_size, (std::size_t)universe_size};
   }
 
   ossia::pod_vector<uint8_t> data;
   mutable boost::dynamic_bitset<> dirty;
+  int universe_size{};
 };
 
 }
