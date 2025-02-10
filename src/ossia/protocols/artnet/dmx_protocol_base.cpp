@@ -57,7 +57,7 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
       for(int i = 0; i < 16; i++)
       {
         device_parameter::create_device_parameter<dmx_range_parameter>(
-            root, std::to_string(m_conf.universe + i), std::vector<ossia::value>{},
+            root, std::to_string(m_conf.start_universe + i), std::vector<ossia::value>{},
             m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0, 255);
       }
       break;

@@ -13,7 +13,8 @@ class OSSIA_EXPORT artnet_protocol final : public dmx_output_protocol_base
 {
 public:
   artnet_protocol(
-      ossia::net::network_context_ptr, const dmx_config& conf, std::string_view host);
+      ossia::net::network_context_ptr, const dmx_config& conf,
+      const ossia::net::outbound_socket_configuration& socket);
   ~artnet_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
@@ -21,25 +22,23 @@ public:
 private:
   void update_function();
 
-  artnet_node m_node;
+  ossia::net::udp_send_socket m_socket;
 };
 
 class OSSIA_EXPORT artnet_input_protocol final : public dmx_input_protocol_base
 {
 public:
   artnet_input_protocol(
-      ossia::net::network_context_ptr, const dmx_config& conf, std::string_view host);
+      ossia::net::network_context_ptr, const dmx_config& conf,
+      const ossia::net::inbound_socket_configuration& socket);
   ~artnet_input_protocol();
 
   void set_device(ossia::net::device_base& dev) override;
 
 private:
-  void on_packet(artnet_node n, int port);
-  void do_read();
   void stop() override;
 
-  artnet_node m_node;
-  std::unique_ptr<ossia::net::udp_receive_socket> m_socket;
+  ossia::net::udp_receive_socket m_socket;
 };
 }
 

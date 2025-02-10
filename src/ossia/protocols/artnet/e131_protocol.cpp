@@ -138,7 +138,7 @@ static boost::asio::ip::address e131_host(
 {
   if(conf.multicast)
   {
-    return boost::asio::ip::address_v4(0xefff0000 | conf.universe);
+    return boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
   }
   else
   {
@@ -156,8 +156,14 @@ e131_protocol::e131_protocol(
 
   if(conf.multicast && !socket.host.empty())
   {
-    m_socket.m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
-        boost::asio::ip::make_address(socket.host).to_v4()));
+    auto outbound_address = boost::asio::ip::make_address(socket.host).to_v4();
+    auto mcast_address = boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
+
+    m_socket.m_socket.set_option(boost::asio::ip::multicast::enable_loopback(false));
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::outbound_interface(outbound_address));
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::join_group(mcast_address, outbound_address));
   }
 
   m_timer.set_delay(std::chrono::milliseconds{
@@ -185,7 +191,7 @@ void e131_protocol::update_function()
       continue;
     try
     {
-      int universe = this->m_conf.universe + current_universe;
+      int universe = this->m_conf.start_universe + current_universe;
       e131_packet pkt;
       e131_pkt_init(&pkt, universe, this->m_conf.channels_per_universe);
 
@@ -236,7 +242,7 @@ void e131_input_protocol::on_packet(const char* bytes, int sz)
   auto& pkt = *reinterpret_cast<const e131_packet*>(bytes);
 
   int universe = ntohs(pkt.frame.universe);
-  if(universe != this->m_conf.universe)
+  if(universe != this->m_conf.start_universe)
     return;
 
   on_dmx(pkt.dmp.prop_val + 1, std::min(pkt.dmp.prop_val_cnt - 1, 512));

@@ -132,11 +132,13 @@ public:
     }
   }
 
-  void write(const char* data, std::size_t sz)
+  void write(const proto::endpoint& ep, const char* data, std::size_t sz)
   {
     boost::system::error_code ec;
-    m_socket.send_to(boost::asio::const_buffer(data, sz), m_endpoint, 0, ec);
+    m_socket.send_to(boost::asio::const_buffer(data, sz), ep, 0, ec);
   }
+
+  void write(const char* data, std::size_t sz) { write(m_endpoint, data, sz); }
 
   Nano::Signal<void()> on_close;
 
