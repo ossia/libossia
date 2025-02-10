@@ -66,7 +66,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
       m_timer.start([this] { this->update_function_dmxusbpro(0x06); });
       break;
     case dmx_usb_pro_mk2: {
-      int command = this->m_conf.universe >= 1 ? 0xCA : 0x06;
+      int command = this->m_conf.start_universe >= 1 ? 0xCA : 0x06;
       m_timer.start([this, command] { this->update_function_dmxusbpro(command); });
       break;
     }

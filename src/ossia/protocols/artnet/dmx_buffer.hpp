@@ -14,8 +14,9 @@ namespace ossia::net
 
 struct dmx_config
 {
-  uint32_t frequency{};
-  uint16_t universe{};
+  uint32_t frequency{44};
+  uint16_t start_universe{0};
+  uint16_t universe_count{1};
   uint16_t channels_per_universe{512};
 
   enum
@@ -33,7 +34,6 @@ struct dmx_config
   } mode{source};
 
   bool multicast{true};
-  bool start_universe_is_one{};
 };
 
 struct dmx_buffer
