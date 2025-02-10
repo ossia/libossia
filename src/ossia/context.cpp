@@ -23,6 +23,7 @@
 
 #if defined(_MSC_VER)
 #include <boost/asio/impl/src.hpp>
+#include <boost/asio/ssl/impl/src.hpp>
 #endif
 
 // https://svn.boost.org/trac10/ticket/3605
