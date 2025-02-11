@@ -1,7 +1,7 @@
 # Build settings :
 option(OSSIA_USE_SYSTEM_LIBRARIES "Use system versions of the third-party libraries if possible")
 option(OSSIA_STATIC "Make a static build" OFF)
-option(OSSIA_INSTALL_STATIC_DEPENDENCIES "Generate install rules for libartnet, wiiuse, etc" OFF)
+option(OSSIA_INSTALL_STATIC_DEPENDENCIES "Generate install rules for wiiuse, etc" OFF)
 option(OSSIA_FAST_DEVELOPER_BUILD "Create shared libraries for some third-party libraries" OFF)
 option(OSSIA_COVERAGE "Run code coverage" OFF)
 option(OSSIA_EXAMPLES "Build examples" OFF)
@@ -64,7 +64,7 @@ option(OSSIA_PROTOCOL_SERIAL "Enable Serial port protocol" OFF) # Requires Qt
 option(OSSIA_PROTOCOL_PHIDGETS "Enable Phidgets protocol" OFF) # Requires Phidgets library
 option(OSSIA_PROTOCOL_JOYSTICK "Enable Joystick protocol" ON)  # Requires SDL2 library
 option(OSSIA_PROTOCOL_WIIMOTE "Enable Wiimote Protocol" ON) #use wiiuse
-option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON) #use libartnet
+option(OSSIA_PROTOCOL_ARTNET "Enable artnet protocol" ON)
 option(OSSIA_PROTOCOL_LIBMAPPER "Enable libmapper protocol" OFF) #use external libmapper
 
 # FFT stuff

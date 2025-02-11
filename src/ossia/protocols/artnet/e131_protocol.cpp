@@ -8,10 +8,7 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/asio/ip/multicast.hpp>
 
-#include <artnet/artnet.h>
-
 #include <chrono>
-#include <iostream>
 
 namespace
 {
@@ -220,9 +217,25 @@ e131_input_protocol::e131_input_protocol(
     : dmx_input_protocol_base{ctx, conf}
     , m_socket{socket, ctx->context}
 {
-  // FIXME we need to join the multicast group
+  if(conf.multicast)
+  {
+    auto listen_address = boost::asio::ip::make_address_v4(socket.bind);
+    auto mcast_address = boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
 
-  m_socket.open();
+    m_socket.m_socket.open(boost::asio::ip::udp::v4());
+    m_socket.m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+    m_socket.m_socket.set_option(boost::asio::ip::multicast::enable_loopback(true));
+    boost::asio::ip::udp::endpoint listen_endpoint(mcast_address, socket.port);
+    m_socket.m_endpoint = listen_endpoint;
+    m_socket.m_socket.bind(listen_endpoint);
+
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::join_group(mcast_address, listen_address));
+  }
+  else
+  {
+    m_socket.open();
+  }
 }
 
 e131_input_protocol::~e131_input_protocol() { }
@@ -230,6 +243,7 @@ e131_input_protocol::~e131_input_protocol() { }
 void e131_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
+
   // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) { on_packet(bytes, sz); });
 }

@@ -28,9 +28,6 @@
 [submodule "3rdparty/Servus"]
     path = 3rdparty/Servus
     url = https://github.com/jcelerier/Servus
-[submodule "3rdparty/libartnet"]
-    path = 3rdparty/libartnet
-    url = https://github.com/jcelerier/libartnet
 [submodule "3rdparty/whereami"]
     path = 3rdparty/whereami
     url = https://github.com/jcelerier/whereami
