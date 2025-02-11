@@ -110,7 +110,7 @@ void dmx_input_protocol_base::create_channel_map()
 
 void dmx_input_protocol_base::on_dmx(const uint8_t* dmx, int count)
 {
-  for(int i = 0; i < count; i++)
+  for(int i = 0, N = std::min(count, (int)m_cache.size()); i < N; i++)
   {
     this->m_cache[i]->set_dmx_value(dmx + i, dmx + count);
   }

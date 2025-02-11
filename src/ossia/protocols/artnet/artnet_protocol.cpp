@@ -1,4 +1,6 @@
 #include <ossia/detail/config.hpp>
+
+#include <boost/endian/conversion.hpp>
 #if defined(OSSIA_PROTOCOL_ARTNET)
 #include "artnet_protocol.hpp"
 
@@ -6,8 +8,6 @@
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
 #include <boost/asio/use_future.hpp>
-
-#include <artnet/artnet.h>
 
 #include <chrono>
 namespace ossia::net
@@ -19,6 +19,7 @@ dmx_buffer::dmx_buffer(int universe_size)
 }
 
 dmx_buffer::~dmx_buffer() = default;
+
 struct art_dmx_packet_header
 {
   char id[8] = {'A', 'r', 't', '-', 'N', 'e', 't', '\0'};
@@ -30,6 +31,7 @@ struct art_dmx_packet_header
   uint8_t hi_uni = 0;
   uint16_t length = 2;
 };
+static_assert(sizeof(art_dmx_packet_header) == 18);
 
 struct art_dmx_packet : art_dmx_packet_header
 {
@@ -71,13 +73,12 @@ void artnet_protocol::update_function()
     auto data = m_buffer.read_universe(current_universe);
 
     art_dmx_packet pkt;
-    pkt.lo_uni = 0; //this->m_conf.start_universe + current_universe;
+    pkt.lo_uni = universe;
     pkt.length = boost::asio::detail::socket_ops::host_to_network_short(
         m_conf.channels_per_universe);
     std::copy_n(data.data(), data.size(), pkt.data);
 
     m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
-    m_buffer.dirty[current_universe] = false;
   }
 }
 
@@ -95,12 +96,23 @@ void artnet_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
 
-  m_socket.m_socket.non_blocking(true);
   m_socket.open();
 
   // FIXME we must make sure that this is actually called after the fixtures have been assigned
-  m_socket.receive(
-      [this](const char* bytes, int sz) { on_dmx((const uint8_t*)bytes, sz); });
+  m_socket.receive([this](const char* bytes, int sz) {
+    if(sz <= sizeof(art_dmx_packet_header) + 2)
+      return;
+
+    static constexpr auto default_dmx_header = art_dmx_packet_header{};
+
+    auto dmx = reinterpret_cast<const art_dmx_packet_header*>(bytes);
+    if(memcmp(dmx, &default_dmx_header, 12) != 0)
+      return;
+
+    auto len = boost::endian::big_to_native(dmx->length);
+
+    on_dmx((const uint8_t*)bytes + sizeof(art_dmx_packet_header), len);
+  });
 }
 
 void artnet_input_protocol::stop()
