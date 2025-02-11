@@ -155,7 +155,6 @@ endif()
 
 if (OSSIA_PROTOCOL_ARTNET)
   target_sources(ossia PRIVATE ${OSSIA_ARTNET_SRCS} ${OSSIA_ARTNET_HEADERS})
-  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:artnet>)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} artnet)
 endif()
 

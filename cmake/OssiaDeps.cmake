@@ -52,10 +52,6 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} oscpack)
   endif()
 
-  if(OSSIA_PROTOCOL_ARTNET)
-    set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} libartnet)
-  endif()
-
   if(OSSIA_PROTOCOL_MQTT5)
     set(OSSIA_SUBMODULES ${OSSIA_SUBMODULES} async-mqtt5)
   endif()
@@ -140,14 +136,6 @@ if(OSSIA_DATAFLOW)
     if(NOT TARGET rubberband)
       set(OSSIA_ENABLE_RUBBERBAND FALSE CACHE INTERNAL "" FORCE)
     endif()
-  endif()
-endif()
-
-if(OSSIA_PROTOCOL_ARTNET)
-  include(deps/libartnet)
-
-  if(NOT TARGET artnet)
-    set(OSSIA_PROTOCOL_ARTNET FALSE CACHE INTERNAL "" FORCE)
   endif()
 endif()
 
