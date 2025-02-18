@@ -11,6 +11,7 @@ dmx_protocol_base::dmx_protocol_base(
     ossia::net::network_context_ptr ctx, const dmx_config& conf)
     : protocol_base{flags{}}
     , m_context{ctx}
+    , m_buffer{conf.channels_per_universe}
     , m_conf{conf}
 {
 }
@@ -45,19 +46,39 @@ void dmx_protocol_base::set_device(ossia::net::device_base& dev)
 {
   m_device = &dev;
 
-  if(m_conf.autocreate != m_conf.no_auto)
+  switch(m_conf.autocreate)
   {
-    auto& root = dev.get_root_node();
-    root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
-        root, m_buffer, ossia::net::dmx_range{0, 512}, 0, 255));
-    for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
-    {
-      auto name = m_conf.autocreate == m_conf.channel_index
-                      ? fmt::format("Channel-{}", i + 1)
-                      : std::to_string(i + 1);
+    case ossia::net::dmx_config::no_auto:
+      // Then we have to compute universe size
+      break;
+    case ossia::net::dmx_config::just_universes: {
+      auto& root = dev.get_root_node();
+      m_buffer.set_universe_count(16);
+      for(int i = 0; i < 16; i++)
+      {
+        device_parameter::create_device_parameter<dmx_range_parameter>(
+            root, std::to_string(m_conf.start_universe + i), std::vector<ossia::value>{},
+            m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0, 255);
+      }
+      break;
+    }
+    case ossia::net::dmx_config::channel_index:
+    case ossia::net::dmx_config::just_index: {
+      auto& root = dev.get_root_node();
+      m_buffer.set_universe_count(1);
+      root.set_parameter(std::make_unique<ossia::net::dmx_range_parameter>(
+          root, m_buffer, ossia::net::dmx_range{0, m_conf.channels_per_universe}, 0,
+          255));
+      root.get_parameter()->set_value(std::vector<ossia::value>{});
+      for(unsigned int i = 0; i < DMX_CHANNEL_COUNT; ++i)
+      {
+        auto name = m_conf.autocreate == m_conf.channel_index
+                        ? fmt::format("Channel-{}", i + 1)
+                        : std::to_string(i + 1);
 
-      device_parameter::create_device_parameter<dmx_parameter>(
-          root, name, 0, m_buffer, i);
+        device_parameter::create_device_parameter<dmx_parameter>(
+            root, name, 0, m_buffer, i);
+      }
     }
   }
 }
@@ -89,7 +110,7 @@ void dmx_input_protocol_base::create_channel_map()
 
 void dmx_input_protocol_base::on_dmx(const uint8_t* dmx, int count)
 {
-  for(int i = 0; i < count; i++)
+  for(int i = 0, N = std::min(count, (int)m_cache.size()); i < N; i++)
   {
     this->m_cache[i]->set_dmx_value(dmx + i, dmx + count);
   }

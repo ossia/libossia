@@ -8,10 +8,7 @@
 #include <boost/asio/ip/host_name.hpp>
 #include <boost/asio/ip/multicast.hpp>
 
-#include <artnet/artnet.h>
-
 #include <chrono>
-#include <iostream>
 
 namespace
 {
@@ -138,7 +135,7 @@ static boost::asio::ip::address e131_host(
 {
   if(conf.multicast)
   {
-    return boost::asio::ip::address_v4(0xefff0000 | conf.universe);
+    return boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
   }
   else
   {
@@ -152,15 +149,18 @@ e131_protocol::e131_protocol(
     : dmx_output_protocol_base{ctx, conf}
     , m_socket{e131_host(conf, socket), socket.port, ctx->context}
 {
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
-
   m_socket.connect();
 
   if(conf.multicast && !socket.host.empty())
   {
-    m_socket.m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
-        boost::asio::ip::make_address(socket.host).to_v4()));
+    auto outbound_address = boost::asio::ip::make_address(socket.host).to_v4();
+    auto mcast_address = boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
+
+    m_socket.m_socket.set_option(boost::asio::ip::multicast::enable_loopback(false));
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::outbound_interface(outbound_address));
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::join_group(mcast_address, outbound_address));
   }
 
   m_timer.set_delay(std::chrono::milliseconds{
@@ -181,26 +181,33 @@ void e131_protocol::set_device(ossia::net::device_base& dev)
 void e131_protocol::update_function()
 {
   static std::atomic_int seq = 0;
-  try
+  for(int current_universe = 0; current_universe < m_buffer.universes();
+      current_universe++)
   {
-    e131_packet pkt;
-    e131_pkt_init(&pkt, this->m_conf.universe, 512);
+    if(!m_buffer.dirty[current_universe])
+      continue;
+    try
+    {
+      int universe = this->m_conf.start_universe + current_universe;
+      e131_packet pkt;
+      e131_pkt_init(&pkt, universe, this->m_conf.channels_per_universe);
 
-    for(size_t pos = 0; pos < 512; pos++)
-      pkt.dmp.prop_val[pos + 1] = m_buffer.data[pos];
-    pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
+      for(size_t pos = 0; pos < this->m_conf.channels_per_universe; pos++)
+        pkt.dmp.prop_val[pos + 1]
+            = m_buffer.data[current_universe * m_conf.channels_per_universe + pos];
+      pkt.frame.seq_number = seq.fetch_add(1, std::memory_order_relaxed);
 
-    m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
-
-    m_buffer.dirty = false;
-  }
-  catch(std::exception& e)
-  {
-    ossia::logger().error("write failure: {}", e.what());
-  }
-  catch(...)
-  {
-    ossia::logger().error("write failure");
+      m_socket.write(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+      m_buffer.dirty[current_universe] = false;
+    }
+    catch(std::exception& e)
+    {
+      ossia::logger().error("write failure: {}", e.what());
+    }
+    catch(...)
+    {
+      ossia::logger().error("write failure");
+    }
   }
 }
 
@@ -210,11 +217,25 @@ e131_input_protocol::e131_input_protocol(
     : dmx_input_protocol_base{ctx, conf}
     , m_socket{socket, ctx->context}
 {
-  // FIXME we need to join the multicast group
-  if(conf.frequency < 1 || conf.frequency > 44)
-    throw std::runtime_error("DMX 512 update frequency must be in the range [1, 44] Hz");
+  if(conf.multicast)
+  {
+    auto listen_address = boost::asio::ip::make_address_v4(socket.bind);
+    auto mcast_address = boost::asio::ip::address_v4(0xefff0000 | conf.start_universe);
 
-  m_socket.open();
+    m_socket.m_socket.open(boost::asio::ip::udp::v4());
+    m_socket.m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+    m_socket.m_socket.set_option(boost::asio::ip::multicast::enable_loopback(true));
+    boost::asio::ip::udp::endpoint listen_endpoint(mcast_address, socket.port);
+    m_socket.m_endpoint = listen_endpoint;
+    m_socket.m_socket.bind(listen_endpoint);
+
+    m_socket.m_socket.set_option(
+        boost::asio::ip::multicast::join_group(mcast_address, listen_address));
+  }
+  else
+  {
+    m_socket.open();
+  }
 }
 
 e131_input_protocol::~e131_input_protocol() { }
@@ -222,6 +243,7 @@ e131_input_protocol::~e131_input_protocol() { }
 void e131_input_protocol::set_device(ossia::net::device_base& dev)
 {
   dmx_protocol_base::set_device(dev);
+
   // FIXME we must make sure that this is actually called after the fixtures have been assigned
   m_socket.receive([this](const char* bytes, int sz) { on_packet(bytes, sz); });
 }
@@ -234,7 +256,7 @@ void e131_input_protocol::on_packet(const char* bytes, int sz)
   auto& pkt = *reinterpret_cast<const e131_packet*>(bytes);
 
   int universe = ntohs(pkt.frame.universe);
-  if(universe != this->m_conf.universe)
+  if(universe != this->m_conf.start_universe)
     return;
 
   on_dmx(pkt.dmp.prop_val + 1, std::min(pkt.dmp.prop_val_cnt - 1, 512));

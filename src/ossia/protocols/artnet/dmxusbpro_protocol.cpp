@@ -66,7 +66,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
       m_timer.start([this] { this->update_function_dmxusbpro(0x06); });
       break;
     case dmx_usb_pro_mk2: {
-      int command = this->m_conf.universe >= 1 ? 0xCA : 0x06;
+      int command = this->m_conf.start_universe >= 1 ? 0xCA : 0x06;
       m_timer.start([this, command] { this->update_function_dmxusbpro(command); });
       break;
     }
@@ -78,6 +78,7 @@ void dmxusbpro_protocol::set_device(ossia::net::device_base& dev)
 
 void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command)
 {
+  const auto& buffer = m_buffer.read_universe(0);
   boost::system::error_code ec;
   // https://cdn.enttec.com/pdf/assets/70304/70304_DMX_USB_PRO_API.pdf
   // 1: 0x7E
@@ -100,18 +101,17 @@ void dmxusbpro_protocol::update_function_dmxusbpro(uint8_t command)
   unsigned char buf[buffer_size]{0x7E, command, data_size_lsb, data_size_msb, 0};
 
   for(uint32_t i = 0; i < channels; i++)
-    buf[5 + i] = m_buffer.data[i];
+    buf[5 + i] = buffer[i];
   buf[buffer_size - 1] = 0xE7;
 
   boost::asio::write(m_port, boost::asio::buffer(buf));
   if(ec)
     ossia::logger().error("DMX write failure");
-
-  m_buffer.dirty = false;
 }
 
 void dmxusbpro_protocol::update_function_opendmx()
 {
+  const auto& buffer = m_buffer.read_universe(0);
   boost::system::error_code ec;
   // <serial break>
   // 0
@@ -124,12 +124,10 @@ void dmxusbpro_protocol::update_function_opendmx()
 
   unsigned char buf[buffer_size];
   buf[0] = 0;                               // DMX start code
-  std::copy_n(m_buffer.data, 512, buf + 1); // DMX channels
+  std::copy_n(buffer.data(), 512, buf + 1); // DMX channels
 
   boost::asio::write(m_port, boost::asio::buffer(buf), ec);
   if(ec)
     ossia::logger().error("DMX write failure");
-
-  m_buffer.dirty = false;
 }
 }

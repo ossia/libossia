@@ -75,8 +75,6 @@ public:
 
   uint32_t channel() const noexcept { return m_channel; }
 
-  void set_dmx_value(const uint8_t* start, const uint8_t* buffer_end);
-
 private:
   void device_update_value() override;
 
@@ -90,6 +88,7 @@ private:
   friend struct artnet_out_visitor;
   friend struct artnet_out_var_visitor;
 };
+
 /*
 struct artnet_range_element {
   std::string name;
