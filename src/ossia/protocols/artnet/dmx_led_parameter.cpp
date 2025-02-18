@@ -4,8 +4,6 @@
 
 #include <ossia/protocols/artnet/dmx_buffer.hpp>
 
-#include <QDebug>
-
 #include <cstdio>
 
 namespace ossia::net

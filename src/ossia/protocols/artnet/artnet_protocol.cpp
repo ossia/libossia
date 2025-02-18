@@ -37,6 +37,7 @@ struct art_dmx_packet : art_dmx_packet_header
 {
   uint8_t data[512];
 };
+static_assert(sizeof(art_dmx_packet) == 18 + 512);
 
 artnet_protocol::artnet_protocol(
     ossia::net::network_context_ptr ctx, const dmx_config& conf,
