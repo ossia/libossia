@@ -38,13 +38,18 @@ http_protocol::http_protocol(QByteArray code)
       [this](auto reply) {
     QNetworkReply& rep = *reply;
     auto it = m_replies.find(&rep);
-    const http_parameter& addr = *it->second;
+    http_parameter& addr = *it->second;
 
     auto ans = addr.data().answer;
     if(ans.isCallable())
     {
       apply_reply(ans.call(
           {QString(rep.readAll()), qt::value_to_js_value(addr.value(), *m_engine)}));
+    }
+    else
+    {
+      // If parameter is string we just apply it
+      addr.set_value(rep.readAll().toStdString());
     }
 
     m_replies.erase(it);
@@ -110,7 +115,7 @@ bool http_protocol::push(
   {
     if(addr->data().requestIsValid())
     {
-      sig_push(addr, v);
+      sig_push(const_cast<http_parameter*>(addr), v);
       return true;
     }
   }
@@ -134,14 +139,42 @@ void http_protocol::set_device(device_base& dev)
   m_component->setData(m_code, QUrl{});
 }
 
-void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& v)
+void http_protocol::slot_push(http_parameter* addr_p, const ossia::value& v)
 {
   auto& addr = *addr_p;
-  auto req = addr.data().request;
-  QString str;
+  auto& dat = addr.data();
+
+  qDebug() << this->requestUrl(addr_p, v) << this->requestData(addr_p, v);
+  if(auto url = this->requestUrl(addr_p, v); url.isValid())
+  {
+    auto request_data = this->requestData(addr_p, v);
+    if(dat.is_post)
+    {
+      auto rep = m_access->post(QNetworkRequest(url), request_data);
+      m_replies[rep] = addr_p;
+    }
+    else
+    {
+      if(!request_data.isEmpty())
+      {
+        auto rep = m_access->get(QNetworkRequest(url), request_data);
+        m_replies[rep] = addr_p;
+      }
+      else
+      {
+        auto rep = m_access->get(QNetworkRequest(url));
+        m_replies[rep] = addr_p;
+      }
+    }
+  }
+}
+
+QUrl http_protocol::requestUrl(const http_parameter* addr_p, const ossia::value& v)
+{
+  auto& req = addr_p->data().request;
   if(req.isString())
   {
-    str = req.toString();
+    return QUrl{req.toString().replace("$val", qt::value_to_js_string_unquoted(v))};
   }
   else if(req.isCallable())
   {
@@ -152,32 +185,60 @@ void http_protocol::slot_push(const http_parameter* addr_p, const ossia::value& 
       auto var = r1.toVariant();
       if(var.typeId() == QMetaType::QByteArray)
       {
-        auto ba = QString{var.toByteArray()};
-        auto rep = m_access->get(QNetworkRequest(ba));
-        m_replies[rep] = &addr;
+        return QUrl{QString{var.toByteArray()}};
       }
       else
       {
-        auto ba = var.toString();
-        auto rep = m_access->get(QNetworkRequest(ba));
-        m_replies[rep] = &addr;
+        return QUrl{QString{var.toString()}};
       }
-      return;
     }
 
     auto res = req.call();
     if(res.isError())
-      return;
+      return QUrl{};
 
-    str = res.toString();
+    return QUrl{res.toString().replace("$val", qt::value_to_js_string_unquoted(v))};
   }
+  else
+  {
+    return QUrl{};
+  }
+}
 
+QByteArray
+http_protocol::requestData(const http_parameter* addr_p, const ossia::value& v)
+{
+  auto& req = addr_p->data().requestData;
   if(req.isString())
   {
-    auto rep = m_access->get(QNetworkRequest(
-        req.toString().replace("$val", qt::value_to_js_string_unquoted(v))));
+    return req.toString().replace("$val", qt::value_to_js_string_unquoted(v)).toUtf8();
+  }
+  else if(req.isCallable())
+  {
+    auto& engine = *m_engine;
+    auto r1 = req.call({qt::value_to_js_value(v, engine)});
+    if(!r1.isError())
+    {
+      auto var = r1.toVariant();
+      if(var.typeId() == QMetaType::QByteArray)
+      {
+        return var.toByteArray();
+      }
+      else
+      {
+        return var.toString().toUtf8();
+      }
+    }
 
-    m_replies[rep] = &addr;
+    auto res = req.call();
+    if(res.isError())
+      return QByteArray{};
+
+    return res.toString().replace("$val", qt::value_to_js_string_unquoted(v)).toUtf8();
+  }
+  else
+  {
+    return QByteArray{};
   }
 }
 

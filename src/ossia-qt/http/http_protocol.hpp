@@ -28,12 +28,7 @@ struct http_parameter_data_base
   http_parameter_data_base& operator=(http_parameter_data_base&&) = default;
   http_parameter_data_base(const QJSValue& val)
   {
-    auto r = val.property("request");
-    if(r.isString())
-    {
-      request = r;
-    }
-    else if(r.isCallable())
+    if(auto r = val.property("request"); r.isString() || r.isCallable())
     {
       request = r;
     }
@@ -46,6 +41,15 @@ struct http_parameter_data_base
         answer = a;
       }
     }
+
+    if(auto data = val.property("requestData"); data.isString() || data.isCallable())
+    {
+      requestData = data;
+    }
+    if(auto post = val.property("method"); post.toString().toLower() == "post")
+    {
+      is_post = true;
+    }
   }
 
   bool requestIsValid() const noexcept
@@ -54,6 +58,8 @@ struct http_parameter_data_base
   }
   QJSValue request;
   QJSValue answer;
+  QJSValue requestData;
+  bool is_post{};
 };
 
 struct http_parameter_data
@@ -114,14 +120,16 @@ public:
   static http_parameter_data read_data(const QJSValue& js) { return js; }
 
 public:
-  void sig_push(const http_parameter* arg_1, const ossia::value& v)
+  void sig_push(http_parameter* arg_1, const ossia::value& v)
       E_SIGNAL(OSSIA_EXPORT, sig_push, arg_1, v)
 
 private:
-  void slot_push(const http_parameter*, const ossia::value& v);
+  void slot_push(http_parameter*, const ossia::value& v);
   W_SLOT(slot_push);
 
 private:
+  QUrl requestUrl(const http_parameter* addr_p, const ossia::value& v);
+  QByteArray requestData(const http_parameter* addr_p, const ossia::value& v);
   void apply_reply(QJSValue);
 
   QQmlEngine* m_engine{};
@@ -131,7 +139,7 @@ private:
 
   QByteArray m_code;
   ossia::net::device_base* m_device{};
-  ossia::hash_map<QNetworkReply*, const http_parameter*> m_replies;
+  ossia::hash_map<QNetworkReply*, http_parameter*> m_replies;
 };
 using http_device = ossia::net::wrapped_device<http_node, http_protocol>;
 class OSSIA_EXPORT HTTP : public QObject
