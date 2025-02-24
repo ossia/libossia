@@ -144,7 +144,6 @@ void http_protocol::slot_push(http_parameter* addr_p, const ossia::value& v)
   auto& addr = *addr_p;
   auto& dat = addr.data();
 
-  qDebug() << this->requestUrl(addr_p, v) << this->requestData(addr_p, v);
   if(auto url = this->requestUrl(addr_p, v); url.isValid())
   {
     auto request_data = this->requestData(addr_p, v);
@@ -155,12 +154,14 @@ void http_protocol::slot_push(http_parameter* addr_p, const ossia::value& v)
     }
     else
     {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
       if(!request_data.isEmpty())
       {
         auto rep = m_access->get(QNetworkRequest(url), request_data);
         m_replies[rep] = addr_p;
       }
       else
+#endif
       {
         auto rep = m_access->get(QNetworkRequest(url));
         m_replies[rep] = addr_p;
