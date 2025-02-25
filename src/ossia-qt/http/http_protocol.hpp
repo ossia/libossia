@@ -50,6 +50,14 @@ struct http_parameter_data_base
     {
       is_post = true;
     }
+    if(auto r = val.property("onRead"); r.isCallable())
+    {
+      onRead = r;
+    }
+    if(auto r = val.property("onReadString"); r.isCallable())
+    {
+      onReadString = r;
+    }
   }
 
   bool requestIsValid() const noexcept
@@ -59,6 +67,8 @@ struct http_parameter_data_base
   QJSValue request;
   QJSValue answer;
   QJSValue requestData;
+  QJSValue onRead;
+  QJSValue onReadString;
   bool is_post{};
 };
 

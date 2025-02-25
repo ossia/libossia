@@ -144,27 +144,40 @@ void http_protocol::slot_push(http_parameter* addr_p, const ossia::value& v)
   auto& addr = *addr_p;
   auto& dat = addr.data();
 
+  auto setupReply = [this, addr_p](QNetworkReply* rep) {
+    auto& dat = addr_p->data();
+    if(dat.onRead.isCallable() || dat.onReadString.isCallable())
+    {
+      QObject::connect(rep, &QNetworkReply::readyRead, this, [this, rep, addr_p] {
+        const auto ba = rep->readAll();
+        auto& dat = addr_p->data();
+        if(dat.onRead.isCallable())
+          dat.onRead.call({m_engine->toScriptValue(ba)});
+        if(dat.onReadString.isCallable())
+          dat.onReadString.call({m_engine->toScriptValue(QString::fromUtf8(ba))});
+      });
+    }
+    m_replies[rep] = addr_p;
+  };
+
   if(auto url = this->requestUrl(addr_p, v); url.isValid())
   {
     auto request_data = this->requestData(addr_p, v);
     if(dat.is_post)
     {
-      auto rep = m_access->post(QNetworkRequest(url), request_data);
-      m_replies[rep] = addr_p;
+      setupReply(m_access->post(QNetworkRequest(url), request_data));
     }
     else
     {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 7, 0)
       if(!request_data.isEmpty())
       {
-        auto rep = m_access->get(QNetworkRequest(url), request_data);
-        m_replies[rep] = addr_p;
+        setupReply(m_access->get(QNetworkRequest(url), request_data));
       }
       else
 #endif
       {
-        auto rep = m_access->get(QNetworkRequest(url));
-        m_replies[rep] = addr_p;
+        setupReply(m_access->get(QNetworkRequest(url)));
       }
     }
   }
