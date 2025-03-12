@@ -99,7 +99,7 @@ struct faust_exec_ui final : UI
 };
 
 template <typename Clone>
-struct faust_exec_ui_clone final : UI
+struct faust_exec_ui_clone final : ::UI
 {
   Clone& self;
   int i = 0;

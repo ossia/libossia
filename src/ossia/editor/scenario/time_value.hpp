@@ -288,12 +288,12 @@ struct OSSIA_EXPORT time_value
   int64_t impl;
 };
 
-constexpr inline time_value operator"" _tv(long double v) noexcept
+constexpr inline time_value operator""_tv(long double v) noexcept
 {
   return time_value{int64_t(v)};
 }
 
-constexpr inline time_value operator"" _tv(unsigned long long v) noexcept
+constexpr inline time_value operator""_tv(unsigned long long v) noexcept
 {
   return time_value{(int64_t)v};
 }
