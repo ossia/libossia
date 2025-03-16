@@ -68,7 +68,7 @@ if(WIN32)
     WIN32_LEAN_AND_MEAN
   )
 
-  target_link_libraries(ossia PRIVATE ws2_32 winmm)
+  target_link_libraries(ossia PRIVATE ws2_32 winmm bcrypt)
   if(MINGW)
       target_link_libraries(ossia PRIVATE mswsock)
   endif()

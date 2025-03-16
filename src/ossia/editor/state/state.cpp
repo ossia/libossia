@@ -9,6 +9,35 @@
 
 namespace ossia
 {
+state::children_type::iterator state::begin() noexcept
+{
+  return m_children.begin();
+}
+state::children_type::iterator state::end() noexcept
+{
+  return m_children.end();
+}
+state::children_type::const_iterator state::begin() const noexcept
+{
+  return m_children.begin();
+}
+state::children_type::const_iterator state::end() const noexcept
+{
+  return m_children.end();
+}
+state::children_type::const_iterator state::cbegin() const noexcept
+{
+  return m_children.cbegin();
+}
+state::children_type::const_iterator state::cend() const noexcept
+{
+  return m_children.cend();
+}
+
+const state::children_type& state::children() const noexcept
+{
+  return m_children;
+}
 std::size_t state::size() const
 {
   return m_children.size();

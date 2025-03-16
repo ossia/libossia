@@ -23,18 +23,20 @@ namespace ossia
  */
 class OSSIA_EXPORT state
 {
+  using children_type = std::vector<state_element>;
+
 public:
   OSSIA_EXPORT friend bool operator==(const state& lhs, const state& rhs);
   OSSIA_EXPORT friend bool operator!=(const state& lhs, const state& rhs);
 
-  auto begin() { return m_children.begin(); }
-  auto end() { return m_children.end(); }
-  auto begin() const { return m_children.begin(); }
-  auto end() const { return m_children.end(); }
-  auto cbegin() const { return m_children.cbegin(); }
-  auto cend() const { return m_children.cend(); }
+  children_type::iterator begin() noexcept;
+  children_type::iterator end() noexcept;
+  children_type::const_iterator begin() const noexcept;
+  children_type::const_iterator end() const noexcept;
+  children_type::const_iterator cbegin() const noexcept;
+  children_type::const_iterator cend() const noexcept;
 
-  auto& children() const { return m_children; }
+  const children_type& children() const noexcept;
 
   std::size_t size() const;
   bool empty() const;
@@ -53,8 +55,8 @@ public:
   }
 
   void remove(const state_element& e);
-  void remove(std::vector<state_element>::iterator e);
-  void remove(std::vector<state_element>::const_iterator e);
+  void remove(children_type::iterator e);
+  void remove(children_type::const_iterator e);
 
   void reserve(std::size_t);
   void clear();
