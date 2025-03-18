@@ -119,6 +119,29 @@ if(OSSIA_PROTOCOL_MIDI)
   include(deps/libremidi)
 endif()
 
+if(OSSIA_ENABLE_FFT)
+  if(OSSIA_ENABLE_FFTW)
+    include(deps/fftw)
+
+    if(NOT TARGET fftw::fftw3)
+      set(OSSIA_ENABLE_FFTW FALSE CACHE INTERNAL "" FORCE)
+    endif()
+
+  endif()
+endif()
+
+if(OSSIA_ENABLE_FFT OR OSSIA_PROTOCOL_AUDIO OR OSSIA_DATAFLOW)
+   include(deps/kfr)
+   if(NOT TARGET kfr)
+     set(OSSIA_ENABLE_KFR FALSE CACHE INTERNAL "" FORCE)
+   endif()
+endif()
+
+if(NOT OSSIA_ENABLE_FFTW AND NOT TARGET kfr_dft)
+  set(OSSIA_FFT NAIVE CACHE INTERNAL "")
+  set(OSSIA_FFT_NAIVE 1 CACHE INTERNAL "")
+endif()
+
 if(OSSIA_DATAFLOW)
   include(deps/dno)
   include(deps/dr_libs)
@@ -194,27 +217,4 @@ if(OSSIA_PROTOCOL_LIBMAPPER)
   if(NOT TARGET Libmapper)
     set(OSSIA_PROTOCOL_LIBMAPPER FALSE CACHE INTERNAL "" FORCE)
   endif()
-endif()
-
-if(OSSIA_ENABLE_FFT)
-  if(OSSIA_ENABLE_FFTW)
-    include(deps/fftw)
-
-    if(NOT TARGET fftw::fftw3)
-      set(OSSIA_ENABLE_FFTW FALSE CACHE INTERNAL "" FORCE)
-    endif()
-
-  endif()
-endif()
-
-if(OSSIA_ENABLE_FFT OR OSSIA_PROTOCOL_AUDIO OR OSSIA_DATAFLOW)
-   include(deps/kfr)
-   if(NOT TARGET kfr)
-     set(OSSIA_ENABLE_KFR FALSE CACHE INTERNAL "" FORCE)
-   endif()
-endif()
-
-if(NOT OSSIA_ENABLE_FFTW AND NOT TARGET kfr_dft)
-  set(OSSIA_FFT NAIVE CACHE INTERNAL "")
-  set(OSSIA_FFT_NAIVE 1 CACHE INTERNAL "")
 endif()
