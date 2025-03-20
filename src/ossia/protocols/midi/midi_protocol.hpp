@@ -11,8 +11,10 @@
 
 #include <libremidi/api.hpp>
 #include <libremidi/configurations.hpp>
+#include <libremidi/detail/conversion.hpp>
 #include <libremidi/message.hpp>
 #include <libremidi/observer_configuration.hpp>
+#include <libremidi/ump.hpp>
 
 #include <array>
 #include <atomic>
@@ -89,6 +91,7 @@ public:
   static std::vector<midi_info> scan(libremidi::API = libremidi::API::UNSPECIFIED);
 
   void push_value(const libremidi::message&);
+  void push_value(const libremidi::ump&);
 
   void enable_registration();
 
@@ -97,7 +100,7 @@ public:
 
   libremidi::midi_in* midi_in() const noexcept { return m_input.get(); }
 
-  ossia::spsc_queue<libremidi::message> messages;
+  ossia::spsc_queue<libremidi::ump> messages;
 
 private:
   ossia::net::network_context_ptr m_context;
@@ -131,5 +134,7 @@ private:
 
   void midi_callback(const libremidi::message&);
   void on_learn(const libremidi::message& m);
+
+  libremidi::midi1_to_midi2 to_midi2;
 };
 }

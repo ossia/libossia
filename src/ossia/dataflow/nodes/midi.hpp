@@ -4,6 +4,8 @@
 #include <ossia/dataflow/port.hpp>
 #include <ossia/detail/flat_multiset.hpp>
 
+#include <libremidi/ump_events.hpp>
+
 namespace ossia::nodes
 {
 
@@ -191,12 +193,12 @@ private:
       auto& mess = mp.messages;
       for(auto note : m_playing_notes)
       {
-        mess.push_back(libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+        mess.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
         mess.back().timestamp = 0;
       }
       for(auto note : m_to_stop)
       {
-        mess.push_back(libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+        mess.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
         mess.back().timestamp = 0;
       }
       m_playing_notes.clear();
@@ -206,8 +208,7 @@ private:
 
     for(const note_data& note : m_to_stop)
     {
-      mp.messages.push_back(
-          libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+      mp.messages.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
       mp.messages.back().timestamp = tick_start;
     }
     m_to_stop.clear();
@@ -216,8 +217,7 @@ private:
     {
       for(auto& note : m_playing_notes)
       {
-        mp.messages.push_back(
-            libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+        mp.messages.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
         mp.messages.back().timestamp = tick_start;
       }
 
@@ -238,7 +238,7 @@ private:
         {
           auto& note = *it;
           mp.messages.push_back(
-              libremidi::channel_events::note_on(m_channel, note.pitch, note.velocity));
+              libremidi::from_midi1::note_on(m_channel, note.pitch, note.velocity));
           mp.messages.back().timestamp = tick_start;
           m_playing_notes.insert(note);
           it = m_notes.erase(it);
@@ -258,7 +258,7 @@ private:
           if(t.in_range({end_time}))
           {
             mp.messages.push_back(
-                libremidi::channel_events::note_off(m_channel, note.pitch, 0));
+                libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(end_time, samplesratio);
 
@@ -279,8 +279,8 @@ private:
           if(start_time >= t.prev_date && start_time < t.date)
           {
             // Send note_on
-            mp.messages.push_back(libremidi::channel_events::note_on(
-                m_channel, note.pitch, note.velocity));
+            mp.messages.push_back(
+                libremidi::from_midi1::note_on(m_channel, note.pitch, note.velocity));
             mp.messages.back().timestamp
                 = t.to_physical_time_in_tick(start_time, samplesratio);
 

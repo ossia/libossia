@@ -569,7 +569,19 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
     return;
 
   if(m_registers)
-    messages.enqueue(mess);
+  {
+    this->to_midi2.convert(
+        mess.bytes.data(), mess.bytes.size(), mess.timestamp,
+        [&](const uint32_t* ump, int count, auto ts) {
+      libremidi::ump u;
+      std::copy_n(ump, std::min(count, 4), u.data);
+      u.timestamp = ts;
+
+      messages.enqueue(u);
+
+      return stdx::error{};
+    });
+  }
 
   midi_channel& c = m_channels[chan - 1];
   switch(mess.get_message_type())
@@ -762,6 +774,11 @@ std::vector<midi_info> midi_protocol::scan(libremidi::API api)
 void midi_protocol::push_value(const libremidi::message& m)
 {
   m_output->send_message(m);
+}
+
+void midi_protocol::push_value(const libremidi::ump& m)
+{
+  m_output->send_ump(m);
 }
 
 void midi_protocol::enable_registration()

@@ -155,11 +155,12 @@ void execution_state::get_new_values()
     auto midi = proto->midi_in();
     auto& input_messages = proto->messages;
     auto& port = state.messages;
-    libremidi::message msg;
+    libremidi::ump msg;
     port.clear();
     port.reserve(input_messages.size_approx());
     if(midi->get_current_api() == libremidi::API::JACK_MIDI)
     {
+      // FIXME make it sample-accurate for pipewire & jack_ump too
       // sample-accurate, see MIDIDevice.cpp in score
       while(input_messages.try_dequeue(msg))
       {
