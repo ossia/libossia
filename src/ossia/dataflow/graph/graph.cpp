@@ -285,26 +285,31 @@ void graph_util::check_inputs(const graph_node& n, ossia::execution_state& e)
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for(const libremidi::message& val : p.messages)
+      for(const libremidi::ump& val : p.messages)
       {
         if(val.timestamp < 0 || val.timestamp >= bs)
         {
-          switch(val.bytes.size())
+          switch(val.size())
           {
             case 1:
               ossia::logger().error(
                   "{}: input {} (midi)[{}]: {}", n.label(), i, val.timestamp,
-                  val.bytes[0]);
+                  val.data[0]);
               break;
             case 2:
               ossia::logger().error(
                   "{}: input {} (midi)[{}]: {} {}", n.label(), i, val.timestamp,
-                  val.bytes[0], val.bytes[1]);
+                  val.data[0], val.data[1]);
               break;
             case 3:
               ossia::logger().error(
                   "{}: input {} (midi)[{}]: {} {} {}", n.label(), i, val.timestamp,
-                  val.bytes[0], val.bytes[1], val.bytes[2]);
+                  val.data[0], val.data[1], val.data[2]);
+              break;
+            case 4:
+              ossia::logger().error(
+                  "{}: input {} (midi)[{}]: {} {} {} {}", n.label(), i, val.timestamp,
+                  val.data[0], val.data[1], val.data[2], val.data[3]);
               break;
             default:
               break;
@@ -369,26 +374,31 @@ void graph_util::check_outputs(
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for(const libremidi::message& val : p.messages)
+      for(const libremidi::ump& val : p.messages)
       {
         if(val.timestamp < 0 || val.timestamp >= bs)
         {
-          switch(val.bytes.size())
+          switch(val.size())
           {
             case 1:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} ; {}", n.label(), i, val.timestamp,
-                  val.bytes[0], req);
+                  "{}: output {} (midi)[{}]: {}", n.label(), i, val.timestamp,
+                  val.data[0]);
               break;
             case 2:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} {} ; {}", n.label(), i, val.timestamp,
-                  val.bytes[0], val.bytes[1], req);
+                  "{}: output {} (midi)[{}]: {} {}", n.label(), i, val.timestamp,
+                  val.data[0], val.data[1]);
               break;
             case 3:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} {} {} ; {}", n.label(), i, val.timestamp,
-                  val.bytes[0], val.bytes[1], val.bytes[2], req);
+                  "{}: output {} (midi)[{}]: {} {} {}", n.label(), i, val.timestamp,
+                  val.data[0], val.data[1], val.data[2]);
+              break;
+            case 4:
+              ossia::logger().error(
+                  "{}: output {} (midi)[{}]: {} {} {} {}", n.label(), i, val.timestamp,
+                  val.data[0], val.data[1], val.data[2], val.data[3]);
               break;
             default:
               break;
@@ -431,24 +441,29 @@ void graph_util::log_inputs(const graph_node& n, ossia::logger_type& logger)
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for(const libremidi::message& val : p.messages)
+      for(const libremidi::ump& val : p.messages)
       {
-        switch(val.bytes.size())
+        switch(val.size())
         {
           case 1:
             logger.log(
                 spdlog::level::debug, "{}: input {} (midi)[{}]: {}", frames, i,
-                val.timestamp, val.bytes[0]);
+                val.timestamp, val.data[0]);
             break;
           case 2:
             logger.log(
                 spdlog::level::debug, "{}: input {} (midi)[{}]: {} {}", frames, i,
-                val.timestamp, val.bytes[0], val.bytes[1]);
+                val.timestamp, val.data[0], val.data[1]);
             break;
           case 3:
             logger.log(
                 spdlog::level::debug, "{}: input {} (midi)[{}]: {} {} {}", frames, i,
-                val.timestamp, val.bytes[0], val.bytes[1], val.bytes[2]);
+                val.timestamp, val.data[0], val.data[1], val.data[2]);
+            break;
+          case 4:
+            logger.log(
+                spdlog::level::debug, "{}: input {} (midi)[{}]: {} {} {} {}", frames, i,
+                val.timestamp, val.data[0], val.data[1], val.data[2], val.data[3]);
             break;
           default:
             break;
@@ -493,24 +508,29 @@ void graph_util::log_outputs(const graph_node& n, ossia::logger_type& logger)
     }
     void operator()(const ossia::midi_port& p) const noexcept
     {
-      for(const libremidi::message& val : p.messages)
+      for(const libremidi::ump& val : p.messages)
       {
-        switch(val.bytes.size())
+        switch(val.size())
         {
           case 1:
             logger.log(
                 spdlog::level::debug, "{}: output {} (midi)[{}]: {}", frames, i,
-                val.timestamp, val.bytes[0]);
+                val.timestamp, val.data[0]);
             break;
           case 2:
             logger.log(
                 spdlog::level::debug, "{}: output {} (midi)[{}]: {} {}", frames, i,
-                val.timestamp, val.bytes[0], val.bytes[1]);
+                val.timestamp, val.data[0], val.data[1]);
             break;
           case 3:
             logger.log(
                 spdlog::level::debug, "{}: output {} (midi)[{}]: {} {} {}", frames, i,
-                val.timestamp, val.bytes[0], val.bytes[1], val.bytes[2]);
+                val.timestamp, val.data[0], val.data[1], val.data[2]);
+            break;
+          case 4:
+            logger.log(
+                spdlog::level::debug, "{}: output {} (midi)[{}]: {} {} {} {}", frames, i,
+                val.timestamp, val.data[0], val.data[1], val.data[2], val.data[3]);
             break;
           default:
             break;

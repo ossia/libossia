@@ -4,6 +4,8 @@
 #include <ossia/detail/logger.hpp>
 
 #include <faust/gui/UI.h>
+#include <libremidi/message.hpp>
+#include <libremidi/ump_events.hpp>
 
 #include <faust/dsp/poly-llvm-dsp.h>
 
@@ -286,26 +288,33 @@ struct faust_node_utils
   {
     // TODO offset !!!
 
-    for(const libremidi::message& mess : midi_in.messages)
+    for(const libremidi::ump& mess : midi_in.messages)
     {
-      switch(mess.get_message_type())
+      if(mess.get_type() != libremidi::midi2::message_type::MIDI_2_CHANNEL)
+        continue;
+
+      switch(libremidi::message_type(mess.get_status_code()))
       {
         case libremidi::message_type::NOTE_ON: {
-          self.in_flight[mess[1]]++;
-          dsp.keyOn(mess[0], mess[1], mess[2]);
+          auto [channel, note, value] = libremidi::as_midi1::note_on(mess);
+          self.in_flight[note]++;
+          dsp.keyOn(channel, note, value);
           break;
         }
         case libremidi::message_type::NOTE_OFF: {
-          self.in_flight[mess[1]]--;
-          dsp.keyOff(mess[0], mess[1], mess[2]);
+          auto [channel, note, value] = libremidi::as_midi1::note_off(mess);
+          self.in_flight[note]--;
+          dsp.keyOff(channel, note, value);
           break;
         }
         case libremidi::message_type::CONTROL_CHANGE: {
-          dsp.ctrlChange(mess[0], mess[1], mess[2]);
+          auto [channel, index, value] = libremidi::as_midi1::control_change(mess);
+          dsp.ctrlChange(channel, index, value);
           break;
         }
         case libremidi::message_type::PITCH_BEND: {
-          dsp.pitchWheel(mess[0], mess.bytes[2] * 128 + mess.bytes[1]);
+          auto [channel, value] = libremidi::as_midi1::pitch_bend(mess);
+          dsp.pitchWheel(channel, value);
           break;
         }
         default:

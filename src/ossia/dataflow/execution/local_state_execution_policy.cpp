@@ -302,7 +302,7 @@ static bool is_in(
 }
 static bool is_in(
     net::parameter_base& other,
-    const ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>&
+    const ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::ump>>&
         container)
 {
 #if defined(OSSIA_PROTOCOL_AUDIO)

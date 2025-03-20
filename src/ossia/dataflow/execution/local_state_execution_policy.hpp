@@ -5,7 +5,7 @@
 #include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/hash_map.hpp>
 
-#include <libremidi/message.hpp>
+#include <libremidi/ump.hpp>
 
 namespace ossia
 {
@@ -40,8 +40,7 @@ struct OSSIA_TEST_EXPORT local_state_execution_policy : execution_state_policy
   ossia::hash_map<ossia::audio_parameter*, audio_port> m_audioState;
 
   TS_GUARDED_BY(mutex)
-  ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::message>>
-      m_midiState;
+  ossia::hash_map<ossia::net::parameter_base*, value_vector<libremidi::ump>> m_midiState;
 
   TS_GUARDED_BY(mutex)
   int m_msgIndex{};

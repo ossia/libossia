@@ -136,7 +136,7 @@ private:
 
   struct received_midi_state
   {
-    value_vector<libremidi::message> messages;
+    value_vector<libremidi::ump> messages;
     int64_t last_buffer_start{};
     int64_t current_buffer_start{};
     int count{};
