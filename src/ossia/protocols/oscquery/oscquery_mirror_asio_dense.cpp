@@ -498,7 +498,7 @@ bool oscquery_mirror_asio_protocol_dense::on_text_ws_message(
 
             to_client.emplace(
                 ossia::net::outbound_socket_configuration{
-                    server_host, server_port, true},
+                    .host = server_host, .port = server_port, .broadcast = true},
                 m_ctx->context);
             to_client->connect();
             uint16_t local_server_port = m_oscServer->m_socket.local_endpoint().port();
