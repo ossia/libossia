@@ -528,7 +528,8 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
             uint16_t server_port = uint16_t(*m_host_info.osc_port);
             m_oscSender = std::make_unique<osc_sender_impl>(
-                ossia::net::outbound_socket_configuration{server_host, server_port},
+                ossia::net::outbound_socket_configuration{
+                    .host = server_host, .port = server_port},
                 this->m_ctx->context);
             m_oscSender->connect();
             uint16_t local_server_port = m_oscServer->m_socket.local_endpoint().port();

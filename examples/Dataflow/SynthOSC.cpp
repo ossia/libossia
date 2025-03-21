@@ -79,7 +79,8 @@ Example:
                 ossia::net::udp_configuration{
                     {ossia::net::inbound_socket_configuration{
                          .bind = "0.0.0.0", .port = listen_port},
-                     ossia::net::outbound_socket_configuration{"127.0.0.1", 9977}}}}),
+                     ossia::net::outbound_socket_configuration{
+                         .host = "127.0.0.1", .port = 9977}}}}),
       "P"};
 
   auto b = [](const std::string s, const ossia::value& val) {

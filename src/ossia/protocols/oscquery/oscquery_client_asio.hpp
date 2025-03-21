@@ -57,7 +57,7 @@ public:
   open_osc_sender(ossia::oscquery_asio::oscquery_server_protocol_base& proto, uint16_t port)
   {
     osc_socket = std::make_unique<ossia::net::udp_send_socket>(
-        ossia::net::outbound_socket_configuration{client_ip, port},
+        ossia::net::outbound_socket_configuration{.host = client_ip, .port = port},
         proto.m_context->context);
     osc_socket->connect();
   }

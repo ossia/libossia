@@ -15,7 +15,8 @@ void send_main()
       .version = conf::OSC1_1,
       .transport = ossia::net::udp_configuration{
           {.local = std::nullopt,
-           .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", 1234}}}};
+           .remote = ossia::net::outbound_socket_configuration{
+               .host = "127.0.0.1", .port = 1234}}}};
 
   ossia::net::generic_device device{
       ossia::net::make_osc_protocol(ctx, mirror_config), "P"};

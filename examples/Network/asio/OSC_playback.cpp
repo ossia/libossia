@@ -184,10 +184,10 @@ int main(int argc, char** argv)
   // Create the OSC device
   auto ctx = std::make_shared<ossia::net::network_context>();
   auto protocol = ossia::net::make_osc_protocol(
-      ctx,
-      {.transport = ossia::net::udp_configuration{
-           {.local = {},
-            .remote = ossia::net::outbound_socket_configuration{"127.0.0.1", 4456}}}});
+      ctx, {.transport = ossia::net::udp_configuration{
+                {.local = {},
+                 .remote = ossia::net::outbound_socket_configuration{
+                     .host = "127.0.0.1", .port = 4456}}}});
 
   ossia::net::generic_device device{std::move(protocol), "B"};
 
