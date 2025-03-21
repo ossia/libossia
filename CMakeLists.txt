@@ -52,6 +52,7 @@ if(OSSIA_EXAMPLES)
 endif()
 
 if(OSSIA_TESTING)
+  set(CMAKE_CTEST_ARGUMENTS --rerun-failed --output-on-failure)
   include(CTest)
   if(OSSIA_USE_SYSTEM_LIBRARIES)
     find_package(Catch2 CONFIG REQUIRED)
