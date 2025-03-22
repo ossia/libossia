@@ -52,7 +52,7 @@ public:
 
   std::string label() const noexcept override { return "midi"; }
 
-  void set_channel(int c) { m_channel = c; }
+  void set_channel(int c) { m_channel = c - 1; }
 
   void add_note(note_data nd)
   {
