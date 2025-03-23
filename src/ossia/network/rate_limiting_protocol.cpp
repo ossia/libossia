@@ -1,10 +1,11 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check
 // it. PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 #include <ossia/detail/thread.hpp>
+#include <ossia/network/base/bundle.hpp>
+#include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/generic/generic_parameter.hpp>
 #include <ossia/network/rate_limiting_protocol.hpp>
-
 #if defined(__cpp_exceptions)
 namespace ossia::net
 {
@@ -51,38 +52,60 @@ struct rate_limiter
 };
 
 template <bool Bundle, bool Repeat, bool SendAll>
-struct rate_limiter_impl;
-
-template <>
-struct rate_limiter_impl<false, false, false> : rate_limiter
+struct rate_limiter_concrete : rate_limiter
 {
-  void operator()()
+  void send()
   {
     // TODO find safe way to handle if a parameter is removed
     // TODO instead we should do the value filtering in the parameter ...
     // but still have to handle cases that can be optimized, such as midi
+    if constexpr(SendAll)
     {
-      std::lock_guard lock{self.m_msgMutex};
-      std::swap(self.m_buffer, self.m_userMessages);
+      ossia::net::iterate_all_children(
+          &this->self.m_device->get_root_node(), [&](ossia::net::parameter_base& ptr) {
+        self.m_threadMessages[&ptr].first = ptr.value();
+      });
     }
-
-    // Copy newest messages in local map
-    for(auto& msg : self.m_buffer)
+    else
     {
-      if(msg.second.first.valid())
       {
-        self.m_threadMessages[msg.first] = std::move(msg.second);
-        msg.second.first = ossia::value{};
+        std::lock_guard lock{self.m_msgMutex};
+        std::swap(self.m_buffer, self.m_userMessages);
+      }
+
+      for(auto& msg : self.m_buffer)
+      {
+        if(msg.second.first.valid())
+        {
+          self.m_threadMessages[msg.first] = std::move(msg.second);
+          msg.second.first = ossia::value{};
+        }
       }
     }
 
     // Push the actual messages
-    for(auto& v : self.m_threadMessages)
+    if constexpr(Bundle)
     {
-      auto val = v.second.first;
-      if(val.valid())
+      // FIXME add a push_bundle overload that takes a std::generator
+      thread_local std::vector<bundle_element> e;
+      e.clear();
+      for(auto& v : self.m_threadMessages)
       {
-        self.m_protocol->push(*v.first, v.second.first);
+        if(v.second.first.valid())
+          e.push_back(bundle_element{
+              const_cast<ossia::net::parameter_base*>(v.first), v.second.first});
+      }
+      if(!e.empty())
+        self.m_protocol->push_bundle(e);
+    }
+    else
+    {
+      for(auto& v : self.m_threadMessages)
+      {
+        if(v.second.first.valid())
+        {
+          self.m_protocol->push(*v.first, v.second.first);
+        }
       }
     }
 
@@ -92,67 +115,14 @@ struct rate_limiter_impl<false, false, false> : rate_limiter
       if(v.second.first.valid())
         v.second.first = ossia::value{};
 
-    for(auto& v : self.m_threadMessages)
-      if(v.second.first.valid())
-        v.second.first = ossia::value{};
+    if constexpr(!Repeat)
+    {
+      for(auto& v : self.m_threadMessages)
+        if(v.second.first.valid())
+          v.second.first = ossia::value{};
+    }
   }
-};
 
-template <>
-struct rate_limiter_impl<true, true, true> : rate_limiter
-{
-  void operator()()
-  {
-    std::vector<std::pair<ossia::net::parameter_base*, ossia::value>> vec;
-    ossia::iterate_all_children(this->self.m_device->get_root_node());
-
-    // bundle
-    // send all
-    // repeat
-
-    // TODO find safe way to handle if a parameter is removed
-    // TODO instead we should do the value filtering in the parameter ...
-    // but still have to handle cases that can be optimized, such as midi
-    {
-      std::lock_guard lock{self.m_msgMutex};
-      std::swap(self.m_buffer, self.m_userMessages);
-    }
-
-    // Copy newest messages in local map
-    for(auto& msg : self.m_buffer)
-    {
-      if(msg.second.first.valid())
-      {
-        self.m_threadMessages[msg.first] = std::move(msg.second);
-        msg.second.first = ossia::value{};
-      }
-    }
-
-    // Push the actual messages
-    for(auto& v : self.m_threadMessages)
-    {
-      auto val = v.second.first;
-      if(val.valid())
-      {
-        self.m_protocol->push(*v.first, v.second.first);
-      }
-    }
-
-    // Clear both containers (while keeping memory allocated for sent
-    // messages so that it stays fast)
-    for(auto& v : self.m_buffer)
-      if(v.second.first.valid())
-        v.second.first = ossia::value{};
-
-    for(auto& v : self.m_threadMessages)
-      if(v.second.first.valid())
-        v.second.first = ossia::value{};
-  }
-};
-
-template <bool Bundle, bool Repeat, bool SendAll>
-struct rate_limiter_concrete : rate_limiter_impl<Bundle, Repeat, SendAll>
-{
   void operator()()
   {
     ossia::set_thread_name("ossia ratelim");
@@ -162,8 +132,8 @@ struct rate_limiter_concrete : rate_limiter_impl<Bundle, Repeat, SendAll>
       try
       {
         const auto prev_time = this->sleep_before();
-        rate_limiter_impl<Bundle, Repeat, SendAll>::operator()();
-        sleep_after(prev_time);
+        this->send();
+        this->sleep_after(prev_time);
       }
       catch(...)
       {
@@ -206,6 +176,9 @@ bool rate_limiting_protocol::pull(ossia::net::parameter_base& address)
 bool rate_limiting_protocol::push(
     const ossia::net::parameter_base& address, const ossia::value& v)
 {
+  if(m_send_all)
+    return true;
+
   std::lock_guard lock{m_msgMutex};
   m_userMessages[&address] = {v, {}};
   return true;
@@ -213,6 +186,7 @@ bool rate_limiting_protocol::push(
 
 bool rate_limiting_protocol::push_raw(const full_parameter_data& address)
 {
+  // FIXME
   return m_protocol->push_raw(address);
 }
 
@@ -246,7 +220,37 @@ void rate_limiting_protocol::set_device(device_base& dev)
   m_device = &dev;
   m_protocol->set_device(dev);
   m_lastTime = clock::now();
-  m_thread = std::thread{rate_limiter_concrete<false, false, false>{*this, m_duration}};
+  uint8_t flags = 0;
+  flags |= m_send_all ? 0b001 : 0b000;
+  flags |= m_repeat ? 0b010 : 0b000;
+  flags |= m_bundle ? 0b100 : 0b000;
+  switch(flags)
+  {
+    case 0b000:
+      m_thread = std::thread{rate_limiter_concrete<0, 0, 0>{*this, m_duration}};
+      break;
+    case 0b001:
+      m_thread = std::thread{rate_limiter_concrete<0, 0, 1>{*this, m_duration}};
+      break;
+    case 0b010:
+      m_thread = std::thread{rate_limiter_concrete<0, 1, 0>{*this, m_duration}};
+      break;
+    case 0b011:
+      m_thread = std::thread{rate_limiter_concrete<0, 1, 1>{*this, m_duration}};
+      break;
+    case 0b100:
+      m_thread = std::thread{rate_limiter_concrete<1, 0, 0>{*this, m_duration}};
+      break;
+    case 0b101:
+      m_thread = std::thread{rate_limiter_concrete<1, 0, 1>{*this, m_duration}};
+      break;
+    case 0b110:
+      m_thread = std::thread{rate_limiter_concrete<1, 1, 0>{*this, m_duration}};
+      break;
+    case 0b111:
+      m_thread = std::thread{rate_limiter_concrete<1, 1, 1>{*this, m_duration}};
+      break;
+  }
 }
 }
 #endif
