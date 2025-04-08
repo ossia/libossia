@@ -14,7 +14,7 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
     target_link_libraries(re2 INTERFACE "${RE2_LIBRARY}")
   endif()
 else()
-  add_library(re2 STATIC
+  add_library(re2 ${OSSIA_PREFERRED_3RDPARTY_LIBRARY_FORMAT}
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitmap256.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/bitstate.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/compile.cc

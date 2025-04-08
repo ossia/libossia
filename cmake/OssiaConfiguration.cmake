@@ -14,6 +14,13 @@ if(MSVC)
   endif()
 endif()
 
+if("${CMAKE_CXX_FLAGS}" MATCHES "sanitize=")
+  # Necessary to not get ODR issues due to static libraries linked in multiple .so's
+  set(OSSIA_PREFERRED_3RDPARTY_LIBRARY_FORMAT SHARED)
+else()
+  set(OSSIA_PREFERRED_3RDPARTY_LIBRARY_FORMAT STATIC)
+endif()
+
 # System detection
 include(ProcessorCount)
 include(CheckCXXCompilerFlag)

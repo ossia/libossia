@@ -374,7 +374,7 @@ public:
   }
 
   template <typename T>
-  OSSIA_INLINE const T* target() const noexcept
+  OSSIA_INLINE const T* target() const& noexcept
   {
     using type = typename std::remove_const<T>::type;
     static_assert(!std::is_same<type, ossia::value>::value, "");
@@ -382,12 +382,15 @@ public:
   }
 
   template <typename T>
-  OSSIA_INLINE T* target() noexcept
+  OSSIA_INLINE T* target() & noexcept
   {
     using type = typename std::remove_const<T>::type;
     static_assert(!std::is_same<type, ossia::value>::value, "");
     return v.target<type>();
   }
+
+  template <typename T>
+  OSSIA_INLINE T* target() && noexcept = delete;
 
   OSSIA_INLINE ossia::val_type get_type() const noexcept
   {
