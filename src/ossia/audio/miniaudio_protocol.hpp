@@ -97,7 +97,13 @@ public:
     config.pUserData = this;
 
     if(ma_device_init(&m_ctx->context, &config, &m_stream) != MA_SUCCESS)
-      throw std::runtime_error("Cannot initialize miniaudio");
+    {
+      config.performanceProfile = ma_performance_profile_conservative;
+      if(ma_device_init(&m_ctx->context, &config, &m_stream) != MA_SUCCESS)
+      {
+        throw std::runtime_error("Cannot initialize miniaudio");
+      }
+    }
 
     if(ma_device_start(&m_stream) != MA_SUCCESS)
       throw std::runtime_error("Cannot start miniaudio");
