@@ -206,6 +206,15 @@ auto find_key(T&& vec, const K& key) noexcept
       vec.begin(), vec.end(), [&](const auto& elt) { return elt.first == key; });
 }
 
+template <typename T, typename K0, typename K1>
+auto find_key(T&& vec, const K0& k0, const K1& k1) noexcept
+{
+  return std::find_if(vec.begin(), vec.end(), [&](const auto& elt) {
+    using namespace std;
+    return get<0>(elt) == k0 && get<1>(elt) == k1;
+  });
+}
+
 template <std::size_t N>
 struct num
 {
