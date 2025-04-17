@@ -33,12 +33,13 @@ http_protocol::http_protocol(QByteArray code)
   }, m_engine};
   m_engine->rootContext()->setContextProperty("Device", obj);
 
-  QObject::connect(
-      m_access, &QNetworkAccessManager::finished, this,
-      [this](auto reply) {
+  QObject::connect(m_access, &QNetworkAccessManager::finished, this, [this](auto reply) {
     QNetworkReply& rep = *reply;
     auto it = m_replies.find(&rep);
     http_parameter& addr = *it->second;
+
+    if(rep.error() != QNetworkReply::NoError)
+      return;
 
     auto ans = addr.data().answer;
     if(ans.isCallable())
@@ -53,8 +54,7 @@ http_protocol::http_protocol(QByteArray code)
     }
 
     m_replies.erase(it);
-      },
-      Qt::QueuedConnection);
+  }, Qt::QueuedConnection);
 
   QObject::connect(
       m_component, &QQmlComponent::statusChanged, this,
