@@ -16,6 +16,7 @@
 #define MA_NO_RESOURCE_MANAGER 1
 #define MA_NO_NODE_GRAPH 1
 #define MA_NO_GENERATION 1
+#define MA_MAX_CHANNELS 1024
 #define MA_API
 
 #include <ossia/audio/audio_engine.hpp>
@@ -96,6 +97,16 @@ public:
 
     config.pUserData = this;
 
+    this->effective_buffer_size = bs;
+    this->effective_sample_rate = rate;
+    this->effective_inputs = inputs;
+    this->effective_outputs = outputs;
+
+    ins_data.resize(effective_inputs * bs + 16);
+    outs_data.resize(effective_outputs * bs + 16);
+    ins.resize(effective_inputs + 2);
+    outs.resize(effective_outputs + 2);
+
     if(ma_device_init(&m_ctx->context, &config, &m_stream) != MA_SUCCESS)
     {
       config.performanceProfile = ma_performance_profile_conservative;
@@ -107,11 +118,6 @@ public:
 
     if(ma_device_start(&m_stream) != MA_SUCCESS)
       throw std::runtime_error("Cannot start miniaudio");
-
-    this->effective_buffer_size = bs;
-    this->effective_sample_rate = rate;
-    this->effective_inputs = inputs;
-    this->effective_outputs = outputs;
   }
 
   bool running() const override
@@ -150,15 +156,15 @@ private:
       return;
     }
 
-    float ins_data[self.effective_inputs * nframes + 16];
-    float* ins[self.effective_inputs + 2];
+    auto ins = self.ins.data();
+    auto ins_data = self.ins_data.data();
     for(int i = 0; i < self.effective_inputs; i++)
       ins[i] = ins_data + i * nframes;
     kfr::deinterleave(ins, (float*)input, self.effective_inputs, nframes);
 
-    float outs_data[self.effective_outputs * nframes + 16];
+    auto outs = self.outs.data();
+    auto outs_data = self.outs_data.data();
     std::memset(outs_data, 0, sizeof(float) * self.effective_outputs * nframes);
-    float* outs[self.effective_outputs + 2];
     for(int i = 0; i < self.effective_outputs; i++)
       outs[i] = outs_data + i * nframes;
 
@@ -181,6 +187,11 @@ private:
   std::shared_ptr<miniaudio_context> m_ctx;
   ma_device m_stream;
   std::optional<std::chrono::steady_clock::time_point> m_start;
+
+  boost::container::vector<float> ins_data;
+  boost::container::vector<float*> ins;
+  boost::container::vector<float> outs_data;
+  boost::container::vector<float*> outs;
 };
 }
 
