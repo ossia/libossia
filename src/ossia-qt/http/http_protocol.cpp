@@ -47,11 +47,11 @@ http_protocol::http_protocol(QByteArray code)
       apply_reply(ans.call(
           {QString(rep.readAll()), qt::value_to_js_value(addr.value(), *m_engine)}));
     }
-    else
-    {
-      // If parameter is string we just apply it
-      addr.set_value(rep.readAll().toStdString());
-    }
+    // else
+    // {
+    //   // If parameter is string we just apply it
+    //   addr.set_value(rep.readAll().toStdString());
+    // }
 
     m_replies.erase(it);
   }, Qt::QueuedConnection);
