@@ -7,6 +7,9 @@
 #include <ossia/detail/thread.hpp>
 
 #include <portaudio.h>
+#if defined(__linux__) && __has_include(<pa_linux_alsa.h>)
+#include <pa_linux_alsa.h>
+#endif
 
 #include <iostream>
 
@@ -113,6 +116,11 @@ public:
     m_stream.store(stream);
     if(ec == PaErrorCode::paNoError)
     {
+#if defined(__linux__) && __has_include(<pa_linux_alsa.h>)
+      if(hostApi == paALSA)
+        PaAlsa_EnableRealtimeScheduling(stream, 1);
+#endif
+
       ec = Pa_StartStream(stream);
 
       if(ec != PaErrorCode::paNoError)
