@@ -17,14 +17,6 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
 endif()
 
 if(NOT TARGET libcoap::coap-3)
-    include(FetchContent)
-    FetchContent_Declare(
-      libcoap
-      GIT_REPOSITORY "https://github.com/obgm/libcoap"
-      GIT_TAG v4.3.5-rc2
-      GIT_PROGRESS true
-    )
-
     set(_oldmode ${BUILD_SHARED_LIBS})
     set(BUILD_SHARED_LIBS OFF)
 
@@ -44,7 +36,7 @@ if(NOT TARGET libcoap::coap-3)
     set(ENABLE_PROXY_CODE OFF  CACHE INTERNAL "")
     set(MAX_LOGGING_LEVEL "0")
     set(MAX_LOGGING_LEVEL "0" CACHE INTERNAL "")
-    FetchContent_MakeAvailable(libcoap)
+    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/libcoap" EXCLUDE_FROM_ALL)
 
     set(BUILD_SHARED_LIBS ${_oldmode})
 endif()
