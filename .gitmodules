@@ -1,5 +1,5 @@
 [submodule "CMake/cmake-modules"]
-	path = cmake/cmake-modules
+    path = cmake/cmake-modules
     url = https://github.com/OSSIA/cmake-modules
 [submodule "3rdparty/oscpack"]
     path = 3rdparty/oscpack
@@ -9,7 +9,7 @@
     url = https://github.com/jcelerier/nano-signal-slot
 [submodule "3rdparty/rapidjson"]
     path = 3rdparty/rapidjson
-    url = https://github.com/miloyip/rapidjson
+    url = https://github.com/jcelerier/rapidjson
 [submodule "3rdparty/spdlog"]
     path = 3rdparty/spdlog
     url = https://github.com/gabime/spdlog
