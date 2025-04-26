@@ -17,7 +17,7 @@
 #define ossia_rwlock_pause() _mm_pause()
 #elif defined(_M_ARM64)
 #include <intrin.h>
-#define ossia_rwlock_pause() __yield()
+#define ossia_rwlock_pause() YieldProcessor()
 #elif defined(__i386__)
 #define ossia_rwlock_pause() __asm__ __volatile__("rep; nop")
 #elif defined(__ia64__)
