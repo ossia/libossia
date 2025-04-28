@@ -693,7 +693,9 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::NoteOn_N, n});
-      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
+      auto& param = static_cast<midi_parameter&>(*cld->get_parameter());
+      register_parameter(param);
+      param.set_value(mess.bytes[2]);
       break;
     }
 
@@ -707,7 +709,9 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::NoteOff_N, n});
-      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
+      auto& param = static_cast<midi_parameter&>(*cld->get_parameter());
+      register_parameter(param);
+      param.set_value(mess.bytes[2]);
       break;
     }
 
@@ -721,7 +725,9 @@ void midi_protocol::on_learn(const libremidi::message& mess)
       auto cld = find_or_create<generic_node>(
           midi_node_name(n), *m_dev, *node,
           address_info{chan, address_info::Type::CC_N, n});
-      register_parameter(static_cast<midi_parameter&>(*cld->get_parameter()));
+      auto& param = static_cast<midi_parameter&>(*cld->get_parameter());
+      register_parameter(param);
+      param.set_value(mess.bytes[2]);
       break;
     }
 
