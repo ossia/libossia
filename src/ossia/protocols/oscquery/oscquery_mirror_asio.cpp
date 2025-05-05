@@ -450,6 +450,8 @@ void oscquery_mirror_asio_protocol::init()
   start_websockets();
   start_osc();
 
+  // We need both as some servers only accept one and some servers only accept the other
+  http_send_message("/?HOST_INFO");
   http_send_message("/?HOST_INFO=1");
 }
 
@@ -517,14 +519,20 @@ bool oscquery_mirror_asio_protocol::on_text_ws_message(
         case message_type::HostInfo: {
           // TODO oscquery_mirror should actually take a host_info
           // as argument - or we should provide a factory function.
-          // The ip of the OSC server on the server
+          // We're asking for host_info twice but we likely only need one
+          if(m_oscSender)
+            return true;
+
           m_host_info = json_parser::parse_host_info(*data);
-          if(!m_host_info.osc_ip)
-            m_host_info.osc_ip = m_queryHost;
-          if(!m_host_info.osc_port)
-            m_host_info.osc_port = std::stoi(m_queryPort);
-          if(m_host_info.osc_transport == host_info::UDP)
+          const bool has_osc = m_host_info.osc_ip || m_host_info.osc_port;
+          if(m_host_info.osc_transport == host_info::UDP
+             || (!m_host_info.osc_transport && has_osc))
           {
+            // The ip of the OSC server on the server
+            if(!m_host_info.osc_ip)
+              m_host_info.osc_ip = m_queryHost;
+            if(!m_host_info.osc_port)
+              m_host_info.osc_port = std::stoi(m_queryPort);
             const auto& server_host = asio_to_ip(*m_host_info.osc_ip);
             uint16_t server_port = uint16_t(*m_host_info.osc_port);
             m_oscSender = std::make_unique<osc_sender_impl>(
