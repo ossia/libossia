@@ -48,6 +48,9 @@ OSSIA_EXPORT
 std::string get_exe_path();
 
 OSSIA_EXPORT
+std::string get_exe_folder();
+
+OSSIA_EXPORT
 std::string get_module_path();
 
 OSSIA_EXPORT

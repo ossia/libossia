@@ -134,33 +134,58 @@ namespace ossia
 {
 std::string get_exe_path()
 {
-  std::string path;
-  int length{};
-  int dirname_length{};
+  static const std::string path = [] {
+    std::string path;
+    int length{};
+    int dirname_length{};
 
-  length = wai_getExecutablePath(NULL, 0, &dirname_length);
-  if(length > 0)
-  {
-    path.resize(length);
-    wai_getExecutablePath(&path[0], length, &dirname_length);
-  }
+    length = wai_getExecutablePath(NULL, 0, &dirname_length);
+    if(length > 0)
+    {
+      path.resize(length);
+      wai_getExecutablePath(&path[0], length, &dirname_length);
+    }
 
+    return path;
+  }();
+  return path;
+}
+
+std::string get_exe_folder()
+{
+  static const std::string path = []() -> std::string {
+    std::string path = get_exe_path();
+    auto last_slash =
+#if defined(_WIN32)
+        path.find_last_of('\\');
+#else
+        path.find_last_of('/');
+#endif
+    if(last_slash == std::string::npos)
+      return "";
+
+    path = path.substr(0, last_slash);
+    return path;
+  }();
   return path;
 }
 
 std::string get_module_path()
 {
-  std::string path;
-  int length{};
-  int dirname_length{};
+  static const std::string path = [] {
+    std::string path;
+    int length{};
+    int dirname_length{};
 
-  length = wai_getModulePath(NULL, 0, &dirname_length);
-  if(length > 0)
-  {
-    path.resize(length);
-    wai_getModulePath(&path[0], length, &dirname_length);
-  }
+    length = wai_getModulePath(NULL, 0, &dirname_length);
+    if(length > 0)
+    {
+      path.resize(length);
+      wai_getModulePath(&path[0], length, &dirname_length);
+    }
 
+    return path;
+  }();
   return path;
 }
 }
