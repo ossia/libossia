@@ -120,4 +120,4 @@
 	url = https://github.com/jcelerier/miniaudio
 [submodule "3rdparty/libcoap"]
 	path = 3rdparty/libcoap
-	url = https://github.com/obgm/libcoap
+	url = https://github.com/mrdeep1/libcoap
