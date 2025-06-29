@@ -119,6 +119,8 @@ set(API_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/context_functions.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/resolve.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/resolve_transport.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/address_scope.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/base/parameter_data.hpp"
@@ -238,6 +240,7 @@ set(SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/zeroconf/zeroconf.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/exceptions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/rate_limiting_protocol.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/resolve.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/cue.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/preset/preset.cpp"
