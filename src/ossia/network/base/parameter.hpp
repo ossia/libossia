@@ -13,10 +13,10 @@
 
 #include <nano_signal_slot.hpp>
 
-#include <ciso646>
 #include <functional>
 #include <memory>
 #include <vector>
+#include <version>
 OSSIA_STD_BEGIN_NAMESPACE
 template <typename T>
 class future;

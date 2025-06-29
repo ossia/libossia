@@ -20,6 +20,8 @@ public:
   {
     // Store the initial data in the "ready" buffer:
     data[1] = std::move(init);
+    data[0] = data[1];
+    data[2] = data[1];
     stale.clear();
   }
 
@@ -41,6 +43,8 @@ public:
 
   bool consume(T& res)
   {
+    using namespace std;
+
     // Check if new data is available
     if(stale.test_and_set())
       return false;
@@ -50,7 +54,7 @@ public:
     to_read.store(p);
 
     // Read back into our data
-    res = std::move(*p);
+    swap(res, *p);
     return true;
   }
 
