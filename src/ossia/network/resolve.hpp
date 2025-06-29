@@ -7,6 +7,7 @@
 #include <boost/asio/ip/tcp.hpp>
 
 #include <optional>
+#include <string>
 
 namespace ossia
 {
@@ -90,19 +91,35 @@ template <typename Proto = boost::asio::ip::tcp>
 inline std::optional<resolved_url>
 resolve_sync_v4(const std::string_view host, const std::string_view port)
 {
+  ossia::logger().info("Resolving {}@{}", host, port);
+  if(host.empty() || port.empty())
+    return std::nullopt;
+
   try
   {
-    ossia::logger().info("Resolving {}@{}", host, port);
-    boost::asio::io_context io_service;
-
-    typename Proto::resolver resolver(io_service);
-    auto results = resolver.resolve(
-        Proto::v4(), host, port, boost::asio::ip::resolver_base::numeric_service);
-
     resolved_url ret;
     ret.protocol = Proto::v4().protocol();
     ret.family = Proto::v4().family();
     ret.port = port;
+
+    // Maybe we were already fed an IP:
+    {
+      boost::system::error_code ec;
+      // this calls inet_pton which is the os-level ip validation
+      boost::asio::ip::make_address(host, ec);
+      if(!ec)
+      {
+        ret.host = host;
+        return ret;
+      }
+    }
+
+    // Fallback to proper resolving.
+    boost::asio::io_context io_service;
+    typename Proto::resolver resolver(io_service);
+    auto results = resolver.resolve(
+        Proto::v4(), host, port, boost::asio::ip::resolver_base::numeric_service);
+
     return process_resolve_results(ret, results);
   }
   catch(const std::exception& e)
@@ -125,6 +142,11 @@ inline auto url_to_host_and_port(std::string_view url)
   } ret;
 
   ret.host = url;
+  if(ret.host.starts_with("http://"))
+    ret.host = ret.host.substr(7);
+  else if(ret.host.starts_with("ws://"))
+    ret.host = ret.host.substr(5);
+
   auto port_idx = ret.host.find_last_of(':');
   if(port_idx != std::string::npos)
   {
@@ -136,10 +158,6 @@ inline auto url_to_host_and_port(std::string_view url)
     ret.port = "80";
   }
 
-  if(ret.host.starts_with("http://"))
-    ret.host = ret.host.substr(0, 7);
-  else if(ret.host.starts_with("ws://"))
-    ret.host = ret.host.substr(0, 5);
   return ret;
 }
 }
