@@ -32,7 +32,7 @@ inline void resolve_host_in_transport(auto& conf)
     {
       auto& p = conf;
       if(auto res
-         = resolve_sync_v4<boost::asio::ip::udp>(p.host, std::to_string(p.port)))
+         = resolve_sync_v4<boost::asio::ip::tcp>(p.host, std::to_string(p.port)))
         conf.host = res->host;
     }
     void operator()(ossia::net::ws_client_configuration& conf)
