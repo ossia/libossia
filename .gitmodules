@@ -96,7 +96,7 @@
 	url = https://github.com/jcelerier/kfr
 [submodule "3rdparty/PerlinNoise"]
 	path = 3rdparty/PerlinNoise
-	url = https://github.com/Reputeless/PerlinNoise
+	url = https://github.com/jcelerier/PerlinNoise
 [submodule "3rdparty/span"]
 	path = 3rdparty/span
 	url = https://github.com/tcbrindle/span
@@ -108,7 +108,7 @@
 	url = https://github.com/hanickadot/compile-time-regular-expressions
 [submodule "3rdparty/unordered_dense"]
 	path = 3rdparty/unordered_dense
-	url = https://github.com/martinus/unordered_dense
+	url = https://github.com/jcelerier/unordered_dense
 [submodule "3rdparty/async-mqtt5"]
 	path = 3rdparty/async-mqtt5
 	url = https://github.com/mireo/async-mqtt5
