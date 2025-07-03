@@ -40,16 +40,16 @@ struct egur_hash
   using is_transparent = std::true_type;
 
   template <typename T>
-  OSSIA_INLINE
-  std::size_t operator()(const T* val) const noexcept
+  OSSIA_INLINE OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK std::size_t
+  operator()(const T* val) const noexcept
   {
     static const constexpr std::size_t shift = constexpr_log2(1 + sizeof(T));
     return (size_t)(val) >> shift;
   }
 
   template <typename T>
-  OSSIA_INLINE
-  std::size_t operator()(const std::shared_ptr<T>& val) const noexcept
+  OSSIA_INLINE OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK std::size_t
+  operator()(const std::shared_ptr<T>& val) const noexcept
   {
     static const constexpr std::size_t shift = constexpr_log2(1 + sizeof(T));
     return (size_t)(val.get()) >> shift;
@@ -178,77 +178,106 @@ struct equal_to<T> : pointer_equal { };
 
 // hash_combine_impl taken from boost
 template <typename T>
-constexpr inline void hash_combine(std::size_t& seed, const T& k) noexcept
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK constexpr inline void
+hash_combine(std::size_t& seed, const T& k) noexcept
 {
   using namespace std;
   seed ^= hash<T>{}(k) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 template <typename T>
-constexpr inline void hash_combine(std::size_t& seed, const T* k) noexcept
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK constexpr inline void
+hash_combine(std::size_t& seed, const T* k) noexcept
 {
   using namespace std;
   seed ^= egur_hash{}(k) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, uint8_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, int8_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, uint16_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, int16_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, uint32_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, int32_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& seed, int64_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, uint8_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, int8_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, uint16_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, int16_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, int32_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, uint64_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
+
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& seed, int64_t k) noexcept
 {
   seed ^= k + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint32_t& h1, uint32_t k1) noexcept
 {
   constexpr auto rotl32
@@ -266,6 +295,7 @@ constexpr inline void hash_combine(uint32_t& h1, uint32_t k1) noexcept
   h1 = h1 * 5 + 0xe6546b64;
 }
 
+OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
 constexpr inline void hash_combine(uint64_t& h, uint64_t k) noexcept
 {
   constexpr auto m = UINT64_C(0xc6a4a7935bd1e995);

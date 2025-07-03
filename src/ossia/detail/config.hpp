@@ -133,3 +133,14 @@
 #else
 #define OSSIA_TEST_EXPORT
 #endif
+
+#if defined(__clang__) && defined(__has_attribute)
+#if __has_attribute(__no_sanitize__)
+#define OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK \
+  __attribute__((__no_sanitize__("integer")))
+#endif
+#endif
+
+#if !defined(OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK)
+#define OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK
+#endif

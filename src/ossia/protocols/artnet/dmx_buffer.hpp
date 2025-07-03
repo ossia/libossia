@@ -66,7 +66,7 @@ struct dmx_buffer
 
   tcb::span<uint8_t> write_universe(int u) noexcept
   {
-    if(data.size() < (u + 1) * universe_size)
+    if(std::ssize(data) < (u + 1) * universe_size)
       return {};
     dirty[u] = true;
     return {data.data() + u * universe_size, (std::size_t)universe_size};
@@ -74,7 +74,7 @@ struct dmx_buffer
 
   tcb::span<const uint8_t> read_universe(int u) const noexcept
   {
-    if(data.size() < (u + 1) * universe_size)
+    if(std::ssize(data) < (u + 1) * universe_size)
       return {};
     dirty[u] = false;
     return {data.data() + u * universe_size, (std::size_t)universe_size};

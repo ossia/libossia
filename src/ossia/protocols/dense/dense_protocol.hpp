@@ -309,7 +309,6 @@ public:
   {
     recompute_nodes();
 
-    static std::atomic_int seq = 0;
     try
     {
       dense_packet pkt;
@@ -341,9 +340,9 @@ public:
         &dev, [this](ossia::net::parameter_base& p) { m_params.insert(&p); });
 
     // FIXME hash: name + type
-    for(auto& p : m_params)
-    {
-    }
+    // for(auto& p : m_params)
+    // {
+    // }
   }
 
   int write_packet(std::span<unsigned char> data)

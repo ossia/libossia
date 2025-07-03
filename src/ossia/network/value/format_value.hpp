@@ -162,7 +162,7 @@ value_prettyprint_visitor<FmtCtx>::operator()(const std::vector<value>& t) const
   for(auto& v : t)
   {
     v.apply(*this);
-    if(++i < t.size())
+    if(++i < std::ssize(t))
       fmt::format_to(ctx.out(), ", ");
   }
   return fmt::format_to(ctx.out(), "]");
@@ -178,7 +178,7 @@ value_prettyprint_visitor<FmtCtx>::operator()(const value_map_type& t) const
   {
     fmt::format_to(ctx.out(), "\"{}\": ", v.first);
     v.second.apply(*this);
-    if(++i < t.size())
+    if(++i < std::ssize(t))
       fmt::format_to(ctx.out(), ", ");
   }
   return fmt::format_to(ctx.out(), "}}");
