@@ -117,7 +117,7 @@
 	url = https://github.com/Neargye/magic_enum
 [submodule "3rdparty/miniaudio"]
 	path = 3rdparty/miniaudio
-	url = https://github.com/jcelerier/miniaudio
+	url = https://github.com/mackron/miniaudio
 [submodule "3rdparty/libcoap"]
 	path = 3rdparty/libcoap
 	url = https://github.com/obgm/libcoap
