@@ -1,6 +1,5 @@
 #include "coap_client_protocol.hpp"
 
-
 #include <ossia/network/base/node.hpp>
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/base/parameter.hpp>
@@ -14,6 +13,8 @@
 #include <boost/unordered/concurrent_flat_map.hpp>
 
 #include <coap3/coap.h>
+#include <coap3/coap_session_internal.h>
+
 namespace ossia::net
 {
 struct coap_destination
@@ -101,7 +102,7 @@ struct coap_client
 
 private:
   boost::unordered::concurrent_flat_map<
-      coap_session_t*, std::shared_ptr<coap_session>, std::hash<coap_session_t*>>
+      coap_session_t*, std::shared_ptr<coap_session>, ossia::hash<coap_session_t*>>
       in_flight;
 };
 

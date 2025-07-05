@@ -269,7 +269,7 @@ struct hash<ossia::traversal::path>
 {
   std::size_t operator()(const ossia::traversal::path& p) const
   {
-    return std::hash<std::string>{}(p.pattern);
+    return ossia::hash<std::string>{}(p.pattern);
   }
 };
 }

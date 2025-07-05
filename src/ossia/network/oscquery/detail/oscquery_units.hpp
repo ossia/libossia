@@ -15,7 +15,7 @@ struct hash<ossia::small_vector<std::string, 4>>
   {
     std::size_t seed{};
     for(auto& str : v)
-      ossia::hash_combine(seed, std::hash<std::string>{}(str));
+      ossia::hash_combine(seed, ossia::hash<std::string>{}(str));
     return seed;
   }
 };

@@ -50,7 +50,7 @@ struct hash<ossia::value>
   }
 };
 
-inline std::size_t std::hash<std::vector<ossia::value>>::operator()(
+inline std::size_t ossia::hash<std::vector<ossia::value>>::operator()(
     const std::vector<ossia::value>& v) const
 {
   std::size_t seed = 0;
