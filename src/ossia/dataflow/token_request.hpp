@@ -180,13 +180,114 @@ struct token_request
   //! Does the tick go backward (e.g. speed < 0)
   [[nodiscard]] constexpr bool backward() const noexcept { return date < prev_date; }
 
+  [[nodiscard]] constexpr std::optional<time_value>
+  get_quantification_date_for_bars_or_longer(double rate) const noexcept
+  {
+    std::optional<time_value> quantification_date;
+    const double bars_per_quantization = 1.0 / rate;
+
+    // Convert positions to bar numbers from the last signature
+    const double start_bar_position
+        = (musical_start_position - musical_start_last_signature)
+          / (4.0 * signature.upper / signature.lower);
+    const double end_bar_position = (musical_end_position - musical_start_last_signature)
+                                    / (4.0 * signature.upper / signature.lower);
+
+    // Check if we're exactly on a quantization point at the start
+    const double start_remainder = std::fmod(start_bar_position, bars_per_quantization);
+    if(std::abs(start_remainder) < 0.0001 && musical_start_position >= 0)
+    {
+      quantification_date = prev_date;
+    }
+    else
+    {
+      // Find the next quantization bar after start
+      const double start_quant_bar
+          = std::floor(start_bar_position / bars_per_quantization);
+      const double next_quant_bar_number = (start_quant_bar + 1) * bars_per_quantization;
+
+      // Check if this quantization point falls within our tick (but NOT at the end)
+      if(next_quant_bar_number > start_bar_position
+         && next_quant_bar_number < end_bar_position)
+      {
+        // Calculate the musical position of this quantization point
+        const double quant_musical_position
+            = musical_start_last_signature
+              + next_quant_bar_number * (4.0 * signature.upper / signature.lower);
+
+        // Map this to a time value
+        const double musical_tick_duration
+            = musical_end_position - musical_start_position;
+        const double ratio
+            = (quant_musical_position - musical_start_position) / musical_tick_duration;
+        const time_value dt = date - prev_date;
+
+        time_value potential_date = prev_date + dt * ratio;
+
+        // Extra safety check: ensure we're not at the boundary
+        if(potential_date < date)
+        {
+          quantification_date = potential_date;
+        }
+        else
+        {
+          return std::nullopt;
+        }
+      }
+    }
+    return quantification_date;
+  }
+
+  [[nodiscard]] constexpr std::optional<time_value>
+  get_quantification_date_for_shorter_than_bars(double rate) const noexcept
+  {
+    // Quantize relative to quarter divisions
+    // TODO ! if there is a bar change,
+    // and no prior quantization date before that, we have to quantize to the
+    // bar change
+    const double start_quarter = (musical_start_position - musical_start_last_bar);
+    const double end_quarter = (musical_end_position - musical_start_last_bar);
+
+    // duration of what we quantify in terms of quarters
+    const double musical_quant_dur = rate / 4.;
+    const double start_quant = std::floor(start_quarter * musical_quant_dur);
+    const double end_quant = std::floor(end_quarter * musical_quant_dur);
+
+    if(start_quant != end_quant)
+    {
+      if(end_quant == end_quarter * musical_quant_dur)
+      {
+        // We want quantization on start, not on end
+        return std::nullopt;
+      }
+      // Date to quantify is the next one :
+      const double musical_tick_duration = musical_end_position - musical_start_position;
+      const double quantified_duration
+          = (musical_start_last_bar + (start_quant + 1) * 4. / rate)
+            - musical_start_position;
+      const double ratio = (date - prev_date).impl / musical_tick_duration;
+
+      return prev_date + quantified_duration * ratio;
+    }
+    else if(start_quant == start_quarter * musical_quant_dur)
+    {
+      // We start on a signature change
+      return prev_date;
+    }
+    else
+    {
+      return std::nullopt;
+    }
+  }
+
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
   //! return the next occurring quantification date, if such date is in the tick
   //! defined by this token_request.
   [[nodiscard]] constexpr std::optional<time_value>
   get_quantification_date(double rate) const noexcept
   {
-    std::optional<time_value> quantification_date;
+    if(prev_date == date)
+      return std::nullopt;
 
     if(rate <= 0.)
       return prev_date;
@@ -197,72 +298,12 @@ struct token_request
 
     if(rate <= 1.)
     {
-      // Quantize relative to bars
-      if(musical_end_last_bar != musical_start_last_bar)
-      {
-        // 4 if we're in 4/4 for instance
-        const double musical_bar_duration
-            = musical_end_last_bar - musical_start_last_bar;
-
-        // rate = 0.5 -> 2 bars at 3/4 -> 6 quarter notes
-        const double quantif_duration = musical_bar_duration / rate;
-
-        // we must be on quarter note 6, 12, 18, ... from the previous
-        // signature
-        const double rem = std::fmod(
-            musical_end_last_bar - musical_start_last_signature, quantif_duration);
-        if(rem < 0.0001)
-        {
-          // There is a bar change in this tick and it is when we are going to
-          // trigger
-          const double musical_bar_start = musical_end_last_bar - musical_start_position;
-
-          const double ratio = musical_bar_start / musical_tick_duration;
-          const time_value dt = date - prev_date; // TODO should be tick_offset
-
-          quantification_date = prev_date + dt * ratio;
-        }
-      }
+      return get_quantification_date_for_bars_or_longer(rate);
     }
     else
     {
-      // Quantize relative to quarter divisions
-      // TODO ! if there is a bar change,
-      // and no prior quantization date before that, we have to quantize to the
-      // bar change
-      const double start_quarter = (musical_start_position - musical_start_last_bar);
-      const double end_quarter = (musical_end_position - musical_start_last_bar);
-
-      // duration of what we quantify in terms of quarters
-      const double musical_quant_dur = rate / 4.;
-      const double start_quant = std::floor(start_quarter * musical_quant_dur);
-      const double end_quant = std::floor(end_quarter * musical_quant_dur);
-
-      if(start_quant != end_quant)
-      {
-        if(end_quant == end_quarter * musical_quant_dur)
-        {
-          // We want quantization on start, not on end
-          return std::nullopt;
-        }
-        // Date to quantify is the next one :
-        const double musical_tick_duration
-            = musical_end_position - musical_start_position;
-        const double quantified_duration
-            = (musical_start_last_bar + (start_quant + 1) * 4. / rate)
-              - musical_start_position;
-        const double ratio = (date - prev_date).impl / musical_tick_duration;
-
-        quantification_date = prev_date + quantified_duration * ratio;
-      }
-      else if(start_quant == start_quarter * musical_quant_dur)
-      {
-        // We start on a signature change
-        return prev_date;
-      }
+      return get_quantification_date_for_shorter_than_bars(rate);
     }
-
-    return quantification_date;
   }
 
   //! Like physical_quantification_date, but returns a date mapped to this tick

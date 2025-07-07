@@ -1,4 +1,5 @@
 #pragma once
+#include <ossia/detail/hash.hpp>
 #include <ossia/detail/optional.hpp>
 #include <ossia/detail/regex_fwd.hpp>
 #include <ossia/network/base/address_scope.hpp>
@@ -215,7 +216,7 @@ struct OSSIA_EXPORT path
    * Each function will be called on the next step.
    */
   using child_function = smallfun::function<
-      void(std::vector<ossia::net::node_base*>&), sizeof_regex + sizeof(void*)>;
+      void(std::vector<ossia::net::node_base*>&), 32 + sizeof(void*)>;
   std::vector<child_function> child_functions;
 
   friend bool operator==(const path& lhs, const path& rhs)

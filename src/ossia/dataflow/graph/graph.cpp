@@ -260,7 +260,8 @@ void graph_util::check_inputs(const graph_node& n, ossia::execution_state& e)
         if(val.timestamp < 0 || val.timestamp >= bs)
         {
           ossia::logger().error(
-              "{}: input {} (value)[{}]: {}", n.label(), i, val.timestamp, val.value);
+              "{}|{}: input {} (value)[{}]: {}", typeid(n).name(), n.label(), i,
+              val.timestamp, val.value);
         }
       }
       i++;
@@ -269,16 +270,25 @@ void graph_util::check_inputs(const graph_node& n, ossia::execution_state& e)
     {
       for(const auto& channel : p)
       {
-        if(channel.size() != bs)
+        if(channel.size() != bs && !channel.empty())
           ossia::logger().error(
-              "{}: input {} (audio): {} != {}", n.label(), i, channel.size(), bs);
+              "{}|{}: input {} (audio): {} != {}", typeid(n).name(), n.label(), i,
+              channel.size(), bs);
         int k = 0;
         for(auto v : channel)
         {
           if(std::isnan(v))
-            ossia::logger().error("{}: input {} (audio)[{}]: NaN", n.label(), i, k);
+          {
+            ossia::logger().error(
+                "{}|{}: input {} (audio)[{}]: NaN", typeid(n).name(), n.label(), i, k);
+            return;
+          }
           else if(std::isinf(v))
-            ossia::logger().error("{}: input {} (audio)[{}]: Inf", n.label(), i, k);
+          {
+            ossia::logger().error(
+                "{}|{}: input {} (audio)[{}]: Inf", typeid(n).name(), n.label(), i, k);
+            return;
+          }
         }
       }
       i++;
@@ -293,23 +303,23 @@ void graph_util::check_inputs(const graph_node& n, ossia::execution_state& e)
           {
             case 1:
               ossia::logger().error(
-                  "{}: input {} (midi)[{}]: {}", n.label(), i, val.timestamp,
-                  val.data[0]);
+                  "{}|{}: input {} (midi)[{}]: {}", typeid(n).name(), n.label(), i,
+                  val.timestamp, val.data[0]);
               break;
             case 2:
               ossia::logger().error(
-                  "{}: input {} (midi)[{}]: {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1]);
+                  "{}|{}: input {} (midi)[{}]: {} {}", typeid(n).name(), n.label(), i,
+                  val.timestamp, val.data[0], val.data[1]);
               break;
             case 3:
               ossia::logger().error(
-                  "{}: input {} (midi)[{}]: {} {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1], val.data[2]);
+                  "{}|{}: input {} (midi)[{}]: {} {} {}", typeid(n).name(), n.label(), i,
+                  val.timestamp, val.data[0], val.data[1], val.data[2]);
               break;
             case 4:
               ossia::logger().error(
-                  "{}: input {} (midi)[{}]: {} {} {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1], val.data[2], val.data[3]);
+                  "{}|{}: input {} (midi)[{}]: {} {} {} {}", typeid(n).name(), n.label(),
+                  i, val.timestamp, val.data[0], val.data[1], val.data[2], val.data[3]);
               break;
             default:
               break;
@@ -347,8 +357,8 @@ void graph_util::check_outputs(
         if(val.timestamp < 0 || val.timestamp >= bs)
         {
           ossia::logger().error(
-              "{}: output {} (value)[{}]: {} ; {}", n.label(), i, val.timestamp,
-              val.value, req);
+              "{}|{}: output {} (value)[{}]: {} ; {}", typeid(n).name(), n.label(), i,
+              val.timestamp, val.value, req);
         }
       }
       i++;
@@ -357,17 +367,25 @@ void graph_util::check_outputs(
     {
       for(const auto& channel : p)
       {
-        if(channel.size() != bs)
+        if(channel.size() != bs && !channel.empty())
           ossia::logger().error(
-              "{}: output {} (audio): {} != {} ; {}", n.label(), i, channel.size(), bs,
-              req);
+              "{}|{}: output {} (audio): {} != {} ; {}", typeid(n).name(), n.label(), i,
+              channel.size(), bs, req);
         int k = 0;
         for(auto v : channel)
         {
           if(std::isnan(v))
-            ossia::logger().error("{}: output {} (audio)[{}]: NaN", n.label(), i, k);
+          {
+            ossia::logger().error(
+                "{}|{}: output {} (audio)[{}]: NaN", typeid(n).name(), n.label(), i, k);
+            return;
+          }
           else if(std::isinf(v))
-            ossia::logger().error("{}: output {} (audio)[{}]: Inf", n.label(), i, k);
+          {
+            ossia::logger().error(
+                "{}|{}: output {} (audio)[{}]: Inf", typeid(n).name(), n.label(), i, k);
+            return;
+          }
         }
       }
       i++;
@@ -382,23 +400,24 @@ void graph_util::check_outputs(
           {
             case 1:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {}", n.label(), i, val.timestamp,
-                  val.data[0]);
+                  "{}|{}: output {} (midi)[{}]: {}", typeid(n).name(), n.label(), i,
+                  val.timestamp, val.data[0]);
               break;
             case 2:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1]);
+                  "{}|{}: output {} (midi)[{}]: {} {}", typeid(n).name(), n.label(), i,
+                  val.timestamp, val.data[0], val.data[1]);
               break;
             case 3:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1], val.data[2]);
+                  "{}|{}: output {} (midi)[{}]: {} {} {}", typeid(n).name(), n.label(),
+                  i, val.timestamp, val.data[0], val.data[1], val.data[2]);
               break;
             case 4:
               ossia::logger().error(
-                  "{}: output {} (midi)[{}]: {} {} {} {}", n.label(), i, val.timestamp,
-                  val.data[0], val.data[1], val.data[2], val.data[3]);
+                  "{}|{}: output {} (midi)[{}]: {} {} {} {}", typeid(n).name(),
+                  n.label(), i, val.timestamp, val.data[0], val.data[1], val.data[2],
+                  val.data[3]);
               break;
             default:
               break;
