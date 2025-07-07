@@ -56,6 +56,30 @@ struct egur_hash
   }
 };
 
+template <std::size_t ApproximateObjectSizeof>
+struct unknown_pointer_hash
+{
+  using is_transparent = std::true_type;
+
+  template <typename T>
+  OSSIA_INLINE OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK std::size_t
+  operator()(const T* val) const noexcept
+  {
+    static const constexpr std::size_t shift
+        = constexpr_log2(1 + ApproximateObjectSizeof);
+    return (size_t)(val) >> shift;
+  }
+
+  template <typename T>
+  OSSIA_INLINE OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK std::size_t
+  operator()(const std::shared_ptr<T>& val) const noexcept
+  {
+    static const constexpr std::size_t shift
+        = constexpr_log2(1 + ApproximateObjectSizeof);
+    return (size_t)(val.get()) >> shift;
+  }
+};
+
 template<typename T> struct is_shared_ptr : std::false_type {};
 template<typename T> struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
