@@ -160,7 +160,7 @@ public:
             if constexpr(requires { proto.get_osc_port(); })
             {
               ossia::net::udp_server_configuration conf;
-              conf.bind = "";
+              conf.bind = "0.0.0.0";
               conf.port = proto.get_osc_port();
               return {conf};
             }

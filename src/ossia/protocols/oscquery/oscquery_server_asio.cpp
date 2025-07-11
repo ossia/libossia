@@ -788,7 +788,7 @@ ossia::net::server_reply oscquery_server_protocol_base::on_binary_ws_message(
 oscquery_server_protocol::oscquery_server_protocol(
     ossia::net::network_context_ptr ctx, uint16_t osc_port, uint16_t ws_port,
     bool forceWS)
-    : oscquery_server_protocol_base{ctx, {ossia::net::udp_server_configuration{{{}, osc_port}}}, ws_port, forceWS}
+    : oscquery_server_protocol_base{ctx, {ossia::net::udp_server_configuration{{{"0.0.0.0"}, osc_port}}}, ws_port, forceWS}
     , m_oscPort{osc_port}
     , m_oscServer{std::make_unique<osc_receiver_impl>(
           ossia::net::inbound_socket_configuration{"0.0.0.0", osc_port},

@@ -33,7 +33,7 @@ struct outbound_socket_configuration
 };
 struct inbound_socket_configuration
 {
-  std::string bind;
+  std::string bind{"0.0.0.0"};
   uint16_t port{};
 };
 
