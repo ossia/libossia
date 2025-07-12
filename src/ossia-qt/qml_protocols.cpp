@@ -2,6 +2,9 @@
 
 #include <ossia-qt/protocols/qml_http_request.hpp>
 #include <ossia-qt/protocols/qml_midi_inbound_socket.hpp>
+#include <ossia-qt/protocols/qml_midi_outbound_socket.hpp>
+#include <ossia-qt/protocols/qml_ump_inbound_socket.hpp>
+#include <ossia-qt/protocols/qml_ump_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_tcp_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_tcp_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_udp_inbound_socket.hpp>
@@ -81,6 +84,9 @@ W_OBJECT_IMPL(ossia::qt::qml_unix_stream_connection)
 W_OBJECT_IMPL(ossia::qt::qml_unix_stream_inbound_socket)
 #endif
 W_OBJECT_IMPL(ossia::qt::qml_midi_inbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
 
 namespace ossia::qt
 {
@@ -594,17 +600,60 @@ QObject* qml_protocols::inboundMIDI(QJSValue config)
 
 QObject* qml_protocols::inboundUMP(QJSValue config)
 {
-  return nullptr;
+  auto transport = config.property("Transport");
+  auto port = qjs_to_midi_port_information(transport);
+
+  auto sock = new qml_ump_inbound_socket{};
+  qjsEngine(this)->newQObject(sock);
+
+  // Set callbacks
+  sock->onOpen = config.property("onOpen");
+  sock->onClose = config.property("onClose");
+  sock->onError = config.property("onError");
+  sock->onMessage = config.property("onMessage");
+
+  // Open the UMP port
+  sock->open(port);
+
+  return sock;
 }
 
 QObject* qml_protocols::outboundMIDI(QJSValue config)
 {
-  return nullptr;
+  auto transport = config.property("Transport");
+  auto port = qjs_to_midi_port_information(transport);
+
+  auto sock = new qml_midi_outbound_socket{};
+  qjsEngine(this)->newQObject(sock);
+
+  // Set callbacks
+  sock->onOpen = config.property("onOpen");
+  sock->onClose = config.property("onClose");
+  sock->onError = config.property("onError");
+
+  // Open the MIDI port
+  sock->open(port);
+
+  return sock;
 }
 
 QObject* qml_protocols::outboundUMP(QJSValue config)
 {
-  return nullptr;
+  auto transport = config.property("Transport");
+  auto port = qjs_to_midi_port_information(transport);
+
+  auto sock = new qml_ump_outbound_socket{};
+  qjsEngine(this)->newQObject(sock);
+
+  // Set callbacks
+  sock->onOpen = config.property("onOpen");
+  sock->onClose = config.property("onClose");
+  sock->onError = config.property("onError");
+
+  // Open the UMP port
+  sock->open(port);
+
+  return sock;
 }
 
 QObject* qml_protocols::serial(QVariant config)
