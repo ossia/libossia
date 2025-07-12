@@ -75,14 +75,24 @@ public:
   void http(QUrl url, QJSValue func, QString verb);
   W_SLOT(http);
 
-  QObject* inboundMIDI(QVariant config);
+  QJSValue inboundMIDIDevices();
+  W_SLOT(inboundMIDIDevices)
+  QJSValue inboundUMPDevices();
+  W_SLOT(inboundUMPDevices)
+
+  QObject* inboundMIDI(QJSValue config);
   W_SLOT(inboundMIDI)
-  QObject* inboundUMP(QVariant config);
+  QObject* inboundUMP(QJSValue config);
   W_SLOT(inboundUMP)
 
-  QObject* outboundMIDI(QVariant config);
+  QJSValue outboundMIDIDevices();
+  W_SLOT(outboundMIDIDevices)
+  QJSValue outboundUMPDevices();
+  W_SLOT(outboundUMPDevices)
+
+  QObject* outboundMIDI(QJSValue config);
   W_SLOT(outboundMIDI)
-  QObject* outboundUMP(QVariant config);
+  QObject* outboundUMP(QJSValue config);
   W_SLOT(outboundUMP)
 
   QObject* serial(QVariant config);
