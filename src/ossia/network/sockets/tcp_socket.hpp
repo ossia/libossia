@@ -30,9 +30,17 @@ public:
   {
   }
 
-  void close() { m_socket.close(); }
+  void close()
+  {
+    m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+    m_socket.close();
+  }
 
-  void write(const boost::asio::const_buffer& buf) { boost::asio::write(m_socket, buf); }
+  void write(const boost::asio::const_buffer& buf)
+  {
+    boost::system::error_code ec;
+    boost::asio::write(m_socket, buf, ec);
+  }
 
   void on_close() { }
 
@@ -81,8 +89,24 @@ public:
 
   void connect()
   {
-    m_socket.connect(m_endpoint);
-    on_open();
+    boost::system::error_code ec;
+    m_socket.set_option(boost::asio::ip::tcp::no_delay{true}, ec);
+    m_socket.set_option(boost::asio::socket_base::reuse_address{true}, ec);
+
+    m_socket.async_connect(
+        m_endpoint, [this](const boost::system::error_code& ec, auto&&...) {
+      if(m_socket.is_open() && !ec)
+      {
+        m_connected = true;
+        on_open();
+      }
+      else
+      {
+        m_connected = false;
+        puts(ec.message().c_str());
+        on_fail();
+      }
+    });
   }
 
   bool connected() const { return m_connected; }
@@ -90,6 +114,7 @@ public:
   void close()
   {
     boost::asio::post(m_context, [this] {
+      m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
       m_socket.close();
       on_close();
     });
@@ -97,7 +122,8 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    boost::asio::write(m_socket, boost::asio::buffer(data, sz));
+    boost::system::error_code ec;
+    boost::asio::write(m_socket, boost::asio::const_buffer(data, sz), ec);
   }
 
   Nano::Signal<void()> on_open;

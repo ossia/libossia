@@ -227,6 +227,8 @@ public:
     }
   }
 
+  boost::asio::io_context& context() noexcept { return *m_ctx; }
+
 protected:
   using client_t = websocketpp::client<websocketpp::config::asio_client>;
   using scoped_lock = websocketpp::lib::lock_guard<websocketpp::lib::mutex>;

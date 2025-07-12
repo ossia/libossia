@@ -2,8 +2,9 @@
 
 #include <ossia/detail/config.hpp>
 
-#include <boost/asio/io_context.hpp>
+#include <ossia/network/context_functions.hpp>
 
+#include <QJSValue>
 #include <QObject>
 #include <QVariant>
 
@@ -16,7 +17,7 @@ class OSSIA_EXPORT qml_protocols : public QObject
 {
   W_OBJECT(qml_protocols)
 public:
-  explicit qml_protocols(QObject* parent);
+  explicit qml_protocols(ossia::net::network_context_ptr ctx, QObject* parent);
   ~qml_protocols() override;
 
   // All sockets have:
@@ -71,16 +72,24 @@ public:
   QObject* inboundWS(QVariant config);
   W_SLOT(inboundWS)
 
-  QObject* file(QVariant config);
-  W_SLOT(file)
+  void http(QUrl url, QJSValue func, QString verb);
+  W_SLOT(http);
 
-  QObject* midi(QVariant config);
-  W_SLOT(midi)
+  QObject* inboundMIDI(QVariant config);
+  W_SLOT(inboundMIDI)
+  QObject* inboundUMP(QVariant config);
+  W_SLOT(inboundUMP)
+
+  QObject* outboundMIDI(QVariant config);
+  W_SLOT(outboundMIDI)
+  QObject* outboundUMP(QVariant config);
+  W_SLOT(outboundUMP)
 
   QObject* serial(QVariant config);
   W_SLOT(serial)
 
-  boost::asio::io_context context;
+private:
+  ossia::net::network_context_ptr context;
 };
 
 }

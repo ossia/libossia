@@ -595,14 +595,25 @@ set(OSSIA_QT_SRCS
 set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_protocols.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp"
-    )
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_http_request.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_tcp_inbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_tcp_outbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_udp_inbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_udp_outbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_unix_inbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_unix_outbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_ws_inbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_ws_outbound_socket.hpp"
+)
 
 set(OSSIA_QTQML_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_protocols.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.cpp"
-    )
+)
 set(OSSIA_QML_SRCS
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Binding.qml"
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/Ossia/Callback.qml"

@@ -23,7 +23,7 @@ public:
   using std::enable_shared_from_this<http_get_request<Fun, Err>>::shared_from_this;
   http_get_request(
       Fun f, Err err, boost::asio::io_context& ctx, const std::string& server,
-      const std::string& path)
+      const std::string& path, std::string_view verb = "GET")
       : m_resolver(ctx)
       , m_socket(ctx)
       , m_fun{std::move(f)}
@@ -31,7 +31,7 @@ public:
   {
     m_request.reserve(100 + server.size() + path.size());
     m_response.prepare(Fun::reserve_expect);
-    fmt::format_to(fmt::appender(m_request), "GET ");
+    fmt::format_to(fmt::appender(m_request), "{} ", verb);
     // Technically other characters should be encoded... but
     // they aren't legal in OSC address patterns.
     for(auto c : path)
@@ -43,8 +43,7 @@ public:
     fmt::format_to(
         fmt::appender(m_request),
         " HTTP/1.1\r\n"
-        "Host: {}"
-        "\r\n"
+        "Host: {}\r\n"
         "Accept: */*\r\n"
         "Connection: close\r\n\r\n",
         server);
