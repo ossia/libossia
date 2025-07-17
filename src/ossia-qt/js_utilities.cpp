@@ -582,6 +582,11 @@ value value_from_js(const QJSValue& v)
     }
     return t;
   }
+  // OPTIMIZEME
+  // else if(v.isObject())
+  // {
+  //   return qt_to_ossia{}(v.toVariant());
+  // }
   else
   {
     return qt_to_ossia{}(v.toVariant());

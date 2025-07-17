@@ -18,6 +18,7 @@ namespace ossia::qt
 class qml_websocket_outbound_socket
     : public QObject
     , public Nano::Observer
+    , public protocols_sender
 {
   W_OBJECT(qml_websocket_outbound_socket)
 public:
@@ -85,6 +86,10 @@ public:
       onClose.call();
   }
   W_SLOT(close)
+
+  // FIXME
+  // void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  // W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;

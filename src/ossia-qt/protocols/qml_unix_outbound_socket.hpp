@@ -18,6 +18,7 @@ namespace ossia::qt
 class qml_unix_datagram_outbound_socket
     : public QObject
     , public Nano::Observer
+    , public protocols_sender
 {
   W_OBJECT(qml_unix_datagram_outbound_socket)
 public:
@@ -54,6 +55,9 @@ public:
   }
   W_SLOT(write)
 
+  void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  W_SLOT(osc)
+
   QJSValue onOpen;
   QJSValue onClose;
   QJSValue onError;
@@ -64,6 +68,7 @@ public:
 class qml_unix_stream_outbound_socket
     : public QObject
     , public Nano::Observer
+    , public protocols_sender
 {
   W_OBJECT(qml_unix_stream_outbound_socket)
 public:
@@ -116,6 +121,9 @@ public:
   {
     run_on_qt_thread({ onClose.call(); });
   }
+
+  void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;

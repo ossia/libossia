@@ -17,6 +17,7 @@ namespace ossia::qt
 class qml_tcp_outbound_socket
     : public QObject
     , public Nano::Observer
+    , public protocols_sender
 {
   W_OBJECT(qml_tcp_outbound_socket)
 public:
@@ -70,6 +71,9 @@ public:
   {
     run_on_qt_thread({ onClose.call(); });
   }
+
+  void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;

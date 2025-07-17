@@ -94,7 +94,30 @@ struct osc_extended_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
     }
   }
 
-  void operator()(const value_map_type& t) const { }
+  void operator()(const value_map_type& t) const
+  {
+    if(m_depth > 0)
+    {
+      p << oscpack::BeginArray();
+    }
+    m_depth++;
+
+    for(const auto& [k, v] : t)
+    {
+      p << oscpack::BeginArray();
+      m_depth++;
+      (*this)(k);
+      v.apply(*this);
+      m_depth--;
+      p << oscpack::EndArray();
+    }
+
+    m_depth--;
+    if(m_depth > 0)
+    {
+      p << oscpack::EndArray();
+    }
+  }
 };
 
 struct osc_extended_outbound_static_policy : osc_common_outbound_static_policy

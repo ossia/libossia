@@ -33,7 +33,14 @@ struct osc_1_0_outbound_dynamic_policy : osc_common_outbound_dynamic_policy
     }
   }
 
-  void operator()(const value_map_type& t) const { }
+  void operator()(const value_map_type& t) const
+  {
+    for(const auto& [k, v] : t)
+    {
+      (*this)(k);
+      v.apply(*this);
+    }
+  }
 };
 
 struct osc_1_0_outbound_stream_visitor : osc_1_0_outbound_dynamic_policy

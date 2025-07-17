@@ -14,9 +14,11 @@
 
 namespace ossia::qt
 {
+
 class qml_udp_outbound_socket
     : public QObject
     , public Nano::Observer
+    , public protocols_sender
 {
   W_OBJECT(qml_udp_outbound_socket)
 public:
@@ -52,6 +54,9 @@ public:
     run_on_asio_thread({ socket.write(buffer.data(), buffer.size()); });
   }
   W_SLOT(write)
+
+  void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;
