@@ -11,6 +11,7 @@
 #include <future>
 #include <memory>
 #include <vector>
+#include <atomic>
 
 namespace ossia
 {
