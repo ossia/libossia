@@ -1,7 +1,12 @@
 #pragma once
 #include <ossia/editor/scenario/time_value.hpp>
 
+// clang-format off
+// QtCore/qdatastream.h:313:34: error: no member named 'distance' in namespace 'std'
+//                              const qint64 last = std::distance(rangeStart, it) - 1;
+#include <iterator>
 #include <QDataStream>
+// clang-format on
 
 #include <verdigris>
 
