@@ -272,10 +272,19 @@ static const ossia::small_vector<cpu_pin, 128>& parse_pins()
   return p;
 }
 
+static thread_local thread_type g_current_thread_type{thread_type::Ui};
+
+thread_type get_current_thread_type()
+{
+  return g_current_thread_type;
+}
+
 void set_thread_pinned(thread_type spec, int thread_index)
 {
   static const auto& pins = parse_pins();
   // A string such as "N,M,A,Uu,uN,uN,,a"
+
+  g_current_thread_type = spec;
 
   int k = 0;
   for(std::size_t c = 0; c < pins.size(); c++)

@@ -40,6 +40,9 @@ using thread_specs = ossia::flat_map<thread_type, thread_spec>;
 OSSIA_EXPORT
 const thread_specs& get_thread_specs() noexcept;
 
+OSSIA_EXPORT
+thread_type get_current_thread_type();
+
 // Schedule e.g. the third net thread on the appropriate CPU
 OSSIA_EXPORT
 void set_thread_pinned(thread_type kind, int thread_index);
