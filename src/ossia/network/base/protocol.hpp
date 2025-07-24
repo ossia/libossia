@@ -4,7 +4,10 @@
 #include <ossia/network/base/message_origin_identifier.hpp>
 #include <ossia/network/common/network_logger.hpp>
 
+// clang-format off
+#include <exception>
 #include <tcb/span.hpp>
+// clang-format on
 
 #include <nano_signal_slot.hpp>
 
