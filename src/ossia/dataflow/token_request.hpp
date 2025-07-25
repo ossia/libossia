@@ -7,6 +7,11 @@
 #include <cassert>
 #include <optional>
 
+#if defined(_LIBCPP_CONSTEXPR_SINCE_CXX23) || defined(_GLIBCXX23_CONSTEXPR)
+#define ossia_constexpr_msvc_workaround constexpr
+#else
+#define ossia_constexpr_msvc_workaround
+#endif
 namespace ossia
 {
 using quarter_note = double;
@@ -180,7 +185,7 @@ struct token_request
   //! Does the tick go backward (e.g. speed < 0)
   [[nodiscard]] constexpr bool backward() const noexcept { return date < prev_date; }
 
-  [[nodiscard]] constexpr std::optional<time_value>
+  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
   get_quantification_date_for_bars_or_longer(double rate) const noexcept
   {
     std::optional<time_value> quantification_date;
@@ -238,7 +243,7 @@ struct token_request
     return quantification_date;
   }
 
-  [[nodiscard]] constexpr std::optional<time_value>
+  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
   get_quantification_date_for_shorter_than_bars(double rate) const noexcept
   {
     // Quantize relative to quarter divisions
@@ -283,7 +288,7 @@ struct token_request
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
   //! return the next occurring quantification date, if such date is in the tick
   //! defined by this token_request.
-  [[nodiscard]] constexpr std::optional<time_value>
+  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
   get_quantification_date(double rate) const noexcept
   {
     if(prev_date == date)
@@ -307,7 +312,7 @@ struct token_request
   }
 
   //! Like physical_quantification_date, but returns a date mapped to this tick
-  [[nodiscard]] constexpr std::optional<physical_time>
+  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<physical_time>
   get_physical_quantification_date(double rate, double modelToSamples) const noexcept
   {
     if(auto d = get_quantification_date(rate))
