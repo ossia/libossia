@@ -193,8 +193,8 @@ void audio_protocol::setup_buffers(ossia::audio_tick_state state)
 {
   setup_tree(state.n_in, state.n_out);
 
-  // using idx_t = tcb::span<float>::index_type;
-  const tcb::span<float>::size_type fc = state.frames;
+  // using idx_t = std::span<float>::index_type;
+  const std::span<float>::size_type fc = state.frames;
 
   // Prepare virtual audio inputs
   for(auto virt : virtaudio)

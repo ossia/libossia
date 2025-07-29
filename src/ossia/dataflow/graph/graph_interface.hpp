@@ -5,7 +5,7 @@
 #include <ossia/detail/audio_spin_mutex.hpp>
 #include <ossia/detail/logger_fwd.hpp>
 
-#include <tcb/span.hpp>
+#include <span>
 
 #include <smallfun.hpp>
 
@@ -37,7 +37,7 @@ public:
 
   virtual void print(std::ostream&) = 0;
 
-  [[nodiscard]] virtual tcb::span<ossia::graph_node* const> get_nodes() const noexcept
+  [[nodiscard]] virtual std::span<ossia::graph_node* const> get_nodes() const noexcept
       = 0;
 
   std::shared_ptr<edge_pool> pool;

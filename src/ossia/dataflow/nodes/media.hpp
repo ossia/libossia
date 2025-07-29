@@ -1,7 +1,7 @@
 #pragma once
 
 #include <ossia/detail/small_vector.hpp>
-#include <ossia/detail/span.hpp>
+#include <span>
 
 #include <memory>
 #include <string>
@@ -16,9 +16,9 @@ using audio_vector = ossia::small_vector<audio_channel, 2>;
 using audio_sample = float;
 using audio_array = ossia::small_vector<ossia::pod_vector<audio_sample>, 2>;
 template <typename T>
-using audio_span = ossia::small_vector<tcb::span<const T>, 8>;
+using audio_span = ossia::small_vector<std::span<const T>, 8>;
 template <typename T>
-using mutable_audio_span = ossia::small_vector<tcb::span<T>, 8>;
+using mutable_audio_span = ossia::small_vector<std::span<T>, 8>;
 
 struct audio_data
 {
@@ -107,8 +107,8 @@ inline QDebug operator<<(QDebug s, const ossia::audio_vector& v)
   return q;
 }
 
-#include <tcb/span.hpp>
-inline QDebug operator<<(QDebug s, const tcb::span<float>& v)
+#include <span>
+inline QDebug operator<<(QDebug s, const std::span<float>& v)
 {
   auto& q = s.noquote().nospace();
   q << v.size() << ": ";
@@ -149,7 +149,7 @@ inline QDebug operator<<(QDebug s, const tcb::span<float>& v)
   }
   return q;
 }
-inline QDebug operator<<(QDebug s, const ossia::small_vector<tcb::span<float>, 8>& v)
+inline QDebug operator<<(QDebug s, const ossia::small_vector<std::span<float>, 8>& v)
 {
   auto& q = s.noquote().nospace();
   q << v.size() << ": \n";

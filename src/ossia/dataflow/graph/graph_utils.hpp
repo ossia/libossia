@@ -723,10 +723,10 @@ struct OSSIA_EXPORT graph_base : graph_interface
     m_edges.reserve(1024);
 #endif
   }
-  [[nodiscard]] tcb::span<ossia::graph_node* const>
+  [[nodiscard]] std::span<ossia::graph_node* const>
   get_nodes() const noexcept final override
   {
-    return tcb::span{m_node_list};
+    return std::span{m_node_list};
   }
 
   void recompute_maps()

@@ -1,5 +1,5 @@
 #pragma once
 
-#include <tcb/span.hpp>
+#include <span>
 
-namespace gsl = tcb;
+namespace tcb = std;

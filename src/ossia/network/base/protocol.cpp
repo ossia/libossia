@@ -41,7 +41,7 @@ bool protocol_base::push_bundle(const std::vector<const ossia::net::parameter_ba
   return b;
 }
 
-bool protocol_base::push_bundle(tcb::span<ossia::bundle_element> v)
+bool protocol_base::push_bundle(std::span<ossia::bundle_element> v)
 {
   bool b = !v.empty();
   for(auto& [addr, val] : v)
@@ -51,7 +51,7 @@ bool protocol_base::push_bundle(tcb::span<ossia::bundle_element> v)
   return b;
 }
 
-bool protocol_base::push_bundle_bounded(tcb::span<ossia::bundle_element> v)
+bool protocol_base::push_bundle_bounded(std::span<ossia::bundle_element> v)
 {
   return push_bundle(v);
 }

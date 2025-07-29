@@ -1,7 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
 
-#include <ossia/detail/span.hpp>
+#include <span>
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -50,7 +50,7 @@ struct dmx_buffer
     dirty.resize(universes);
   }
 
-  tcb::span<uint8_t> write_channels(int start, int count) noexcept
+  std::span<uint8_t> write_channels(int start, int count) noexcept
   {
     int first_universe = start / universe_size;
     int last_universe = (start + count) / universe_size;
@@ -64,7 +64,7 @@ struct dmx_buffer
     return {data.data() + start, std::size_t(count)};
   }
 
-  tcb::span<uint8_t> write_universe(int u) noexcept
+  std::span<uint8_t> write_universe(int u) noexcept
   {
     if(std::ssize(data) < (u + 1) * universe_size)
       return {};
@@ -72,7 +72,7 @@ struct dmx_buffer
     return {data.data() + u * universe_size, (std::size_t)universe_size};
   }
 
-  tcb::span<const uint8_t> read_universe(int u) const noexcept
+  std::span<const uint8_t> read_universe(int u) const noexcept
   {
     if(std::ssize(data) < (u + 1) * universe_size)
       return {};

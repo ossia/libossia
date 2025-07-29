@@ -2,7 +2,7 @@
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
-#include <tcb/span.hpp>
+#include <span>
 
 namespace ossia
 {
@@ -11,5 +11,5 @@ struct bundle_element
   ossia::net::parameter_base* parameter{};
   value values;
 };
-using bundle = tcb::span<bundle_element>;
+using bundle = std::span<bundle_element>;
 }

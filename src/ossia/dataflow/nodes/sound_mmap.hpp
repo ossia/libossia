@@ -135,7 +135,7 @@ public:
         if(count >= 0)
         {
           for(int i = 0; i < channels; i++)
-            source[i] = tcb::span(audio_array[i] + k, count);
+            source[i] = std::span(audio_array[i] + k, count);
           m_converter(source, frame_data, count);
         }
         else
@@ -149,7 +149,7 @@ public:
     {
       for(int i = 0; i < channels; i++)
       {
-        source[i] = tcb::span(audio_array[i], samples_to_write);
+        source[i] = std::span(audio_array[i], samples_to_write);
       }
 
       bool ok = start + m_start_offset_samples < file_duration;
@@ -224,7 +224,7 @@ public:
         if(count >= 0)
         {
           for(int i = 0; i < channels; i++)
-            source[i] = tcb::span(audio_array[i] + k, count);
+            source[i] = std::span(audio_array[i] + k, count);
           m_converter(source, frame_data, count);
         }
         else
@@ -238,7 +238,7 @@ public:
     {
       for(int i = 0; i < channels; i++)
       {
-        source[i] = tcb::span(audio_array[i], samples_to_write);
+        source[i] = std::span(audio_array[i], samples_to_write);
       }
 
       const bool ok = this->m_handle.seek_to_pcm_frame(start + m_start_offset_samples);

@@ -74,7 +74,7 @@ void ossia_domain_set_max(ossia_domain_t domain, ossia_value_t value)
 ossia_domain_t ossia_domain_make_string_set(const char** strings, size_t n)
 {
   return safe_function(__func__, [=]() -> ossia_domain_t {
-    return convert(ossia::make_domain(tcb::span<const char*>(strings, n)));
+    return convert(ossia::make_domain(std::span<const char*>(strings, n)));
   });
 }
 

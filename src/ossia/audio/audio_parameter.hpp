@@ -3,7 +3,7 @@
 #include <ossia/dataflow/audio_port.hpp>
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/detail/pod_vector.hpp>
-#include <ossia/detail/span.hpp>
+#include <span>
 #include <ossia/network/base/parameter.hpp>
 #include <ossia/network/value/value.hpp>
 
@@ -13,7 +13,7 @@ class OSSIA_EXPORT audio_parameter : public ossia::net::parameter_base
 {
 
 public:
-  ossia::small_vector<tcb::span<float>, 8> audio;
+  ossia::small_vector<std::span<float>, 8> audio;
   double m_gain{1.};
 
   explicit audio_parameter(ossia::net::node_base& n);

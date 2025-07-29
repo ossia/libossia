@@ -278,13 +278,13 @@ public:
     return false;
   }
 
-  bool push_bundle(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle(std::span<ossia::bundle_element> addresses) override
   {
     // Store locally
     return false;
   }
 
-  bool push_bundle_bounded(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle_bounded(std::span<ossia::bundle_element> addresses) override
   {
     // Store locally
     return false;

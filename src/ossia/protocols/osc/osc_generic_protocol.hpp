@@ -223,7 +223,7 @@ public:
     }
   }
 
-  bool push_bundle(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle(std::span<ossia::bundle_element> addresses) override
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
@@ -235,7 +235,7 @@ public:
     }
   }
 
-  bool push_bundle_bounded(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle_bounded(std::span<ossia::bundle_element> addresses) override
   {
     if constexpr(!std::is_same_v<SendSocket, ossia::net::null_socket>)
     {
@@ -363,12 +363,12 @@ public:
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_bundle(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle(std::span<ossia::bundle_element> addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_bundle_bounded(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle_bounded(std::span<ossia::bundle_element> addresses) override
   {
     return OscMode::push_bundle_bounded(*this, writer(), addresses);
   }
@@ -482,12 +482,12 @@ public:
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_bundle(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle(std::span<ossia::bundle_element> addresses) override
   {
     return OscMode::push_bundle(*this, writer(), addresses);
   }
 
-  bool push_bundle_bounded(tcb::span<ossia::bundle_element> addresses) override
+  bool push_bundle_bounded(std::span<ossia::bundle_element> addresses) override
   {
     return OscMode::push_bundle_bounded(*this, writer(), addresses);
   }

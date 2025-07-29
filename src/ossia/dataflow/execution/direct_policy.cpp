@@ -77,7 +77,7 @@ void direct_execution_state_policy::process_messages()
         else
         {
           // submit bundle
-          p.push_bundle_bounded(tcb::span(m + start_index, i - start_index));
+          p.push_bundle_bounded(std::span(m + start_index, i - start_index));
 
           start_index = i;
           current_protocol = &p;
@@ -86,7 +86,7 @@ void direct_execution_state_policy::process_messages()
 
       // !!! FIXME make sure that this does not contain the Control Messages
       m[n - 1].parameter->get_protocol().push_bundle_bounded(
-          tcb::span(m + start_index, n - start_index));
+          std::span(m + start_index, n - start_index));
     }
   }
 }
@@ -114,7 +114,7 @@ void direct_execution_state_policy::process_midi()
         else
         {
           // submit bundle
-          p.push_bundle_bounded(tcb::span(m + start_index, i - start_index));
+          p.push_bundle_bounded(std::span(m + start_index, i - start_index));
 
           start_index = i;
           current_protocol = &p;
@@ -123,7 +123,7 @@ void direct_execution_state_policy::process_midi()
 
       // !!! FIXME make sure that this does not contain the Control Messages
       m[n - 1].parameter->get_protocol().push_bundle_bounded(
-          tcb::span(m + start_index, n - start_index));
+          std::span(m + start_index, n - start_index));
     }
   }
 }

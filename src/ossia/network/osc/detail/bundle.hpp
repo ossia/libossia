@@ -225,7 +225,7 @@ catch(...)
 template <typename NetworkPolicy>
 std::optional<bundle> make_bundle(
     NetworkPolicy add_element_to_bundle,
-    const tcb::span<ossia::bundle_element>& addresses)
+    const std::span<ossia::bundle_element>& addresses)
 try
 {
   bundle ret{ossia::buffer_pool::instance().acquire(max_osc_message_size), false};
@@ -268,7 +268,7 @@ catch(...)
 template <typename NetworkPolicy>
 bool make_bundle_bounded(
     NetworkPolicy add_element_to_bundle,
-    const tcb::span<ossia::bundle_element>& addresses, auto callback)
+    const std::span<ossia::bundle_element>& addresses, auto callback)
 {
   bundle ret{ossia::buffer_pool::instance().acquire(max_osc_message_size), false};
   try
