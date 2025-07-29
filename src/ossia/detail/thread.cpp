@@ -121,6 +121,10 @@ std::string get_exe_path()
 {
   return "";
 }
+std::string get_exe_folder()
+{
+  return "";
+}
 std::string get_module_path()
 {
   return "";
