@@ -2,6 +2,7 @@
 
 namespace ossia::gfx
 {
+static const ossia::domain dummy_domain;
 texture_parameter::~texture_parameter() = default;
 
 void texture_parameter::pull_texture(ossia::gfx::port_index idx) { }
@@ -59,7 +60,7 @@ net::parameter_base& texture_parameter::set_access(access_mode)
 
 const domain& texture_parameter::get_domain() const noexcept
 {
-  throw;
+  return dummy_domain;
 }
 
 net::parameter_base& texture_parameter::set_domain(const domain&)
@@ -133,7 +134,7 @@ net::parameter_base& geometry_parameter::set_access(access_mode)
 
 const domain& geometry_parameter::get_domain() const noexcept
 {
-  throw;
+  return dummy_domain;
 }
 
 net::parameter_base& geometry_parameter::set_domain(const domain&)
