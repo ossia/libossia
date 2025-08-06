@@ -98,6 +98,7 @@ public:
 
   ~dummy_engine() override
   {
+    stop();
     m_active = false;
     if(m_runThread.joinable())
       m_runThread.join();
