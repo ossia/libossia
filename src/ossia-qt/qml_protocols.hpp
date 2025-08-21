@@ -98,6 +98,9 @@ public:
   QObject* serial(QVariant config);
   W_SLOT(serial)
 
+  QObject* osc(QVariant config);
+  W_SLOT(osc)
+
 private:
   ossia::net::network_context_ptr context;
 };

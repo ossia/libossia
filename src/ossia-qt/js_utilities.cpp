@@ -813,13 +813,31 @@ value qt_to_ossia::operator()(const QVariant& v)
     case QMetaType::QDate:
       return operator()(v.toDate());
 
+    default: {
 #if __has_include(<QJSValue>)
-    case 1024: // QJSValue -> seems to crash
-      return value_from_js(v.value<QJSValue>());
+      const auto tid = v.typeId();
+      static const auto qjsvalue_tid = qMetaTypeId<QJSValue>();
+      static const auto qjsvaluelist_tid = qMetaTypeId<QJSValueList>();
+      if(tid == qjsvalue_tid)
+      {
+        return value_from_js(v.value<QJSValue>());
+      }
+      else if(tid == qjsvaluelist_tid)
+      {
+        auto in_values = v.value<QList<QJSValue>>();
+        std::vector<ossia::value> out_values;
+        for(auto& in_val : in_values)
+          out_values.push_back(value_from_js(in_val));
+        return out_values;
+      }
+      else
+      {
+        qDebug() << "QVariant -> ossia::value: Unknown typeid! " << v.typeId()
+                 << v.typeName();
+      }
 #endif
-
-    default:
       return operator()();
+    }
   }
 }
 }

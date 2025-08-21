@@ -34,14 +34,13 @@ public:
 
     socket.open();
     if(onOpen.isCallable())
-
       onOpen.call({qjsEngine(this)->newQObject(this)});
 
     socket.receive([this](const char* data, std::size_t sz) {
-      ossia::qt::run_async(this, [this, arg = QString::fromUtf8(data, sz)] {
+      ossia::qt::run_async(this, [this, arg = QByteArray(data, sz)] {
         if(onMessage.isCallable())
         {
-          onMessage.call({arg});
+          onMessage.call({qjsEngine(this)->toScriptValue(arg)});
         }
       }, Qt::AutoConnection);
     });

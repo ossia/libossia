@@ -87,6 +87,7 @@ W_OBJECT_IMPL(ossia::qt::qml_midi_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
 
 namespace ossia::qt
 {
@@ -138,6 +139,14 @@ QObject* qml_protocols::inboundUDP(QVariant config)
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->open();
+  return sock;
+}
+
+QObject* qml_protocols::osc(QVariant config)
+{
+  auto conf = config.toMap();
+  auto sock = new qml_osc_processor{};
+  sock->onOsc = conf["onOsc"].value<QJSValue>();
   return sock;
 }
 

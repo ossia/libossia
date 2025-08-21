@@ -116,8 +116,10 @@ void qml_engine_functions::write(const QString& address, const QVariant& value)
 {
   if(const auto& addr = find_address(address))
   {
-    m_port_cache.get_data().clear();
-    m_port_cache.get_data().emplace_back(ossia::qt::qt_to_ossia{}(value));
+    auto& cache = m_port_cache.get_data();
+    cache.clear();
+    auto converter = ossia::qt::qt_to_ossia{};
+    cache.emplace_back(converter(value));
 
     ossia::apply_to_destination(
         addr, devices, [&](ossia::net::parameter_base* addr, bool unique) {
