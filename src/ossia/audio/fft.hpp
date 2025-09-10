@@ -77,6 +77,7 @@ public:
 private:
   fft_plan m_fw = {};
   std::size_t m_size = 0;
+  std::size_t m_storage_size = 0;
   fft_real* m_input{};
   fft_complex* m_output{};
   fft_temp_storage m_storage;
@@ -100,6 +101,7 @@ public:
 private:
   fft_plan m_fw = {};
   std::size_t m_size = 0;
+  std::size_t m_storage_size = 0;
   fft_complex* m_input{};
   fft_real* m_output{};
   fft_temp_storage m_storage;

@@ -65,9 +65,21 @@ auto run_plan_c2r(fft_plan, void*, void*)
 fft::fft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = alloc_real(newSize);
-  m_output = reinterpret_cast<fft_complex*>(alloc_complex(newSize / 2 + 1));
-  m_fw = create_plan_r2c(newSize, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
+  m_input = alloc_real(m_storage_size);
+  m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
+  m_fw = create_plan_r2c(
+      m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 fft::~fft()
@@ -102,7 +114,7 @@ fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   else
   {
     std::copy_n(input, sz, m_input);
-    for(int i = sz; sz < m_size; i++)
+    for(int i = sz; i < m_size; i++)
     {
       m_input[i] = 0.f;
     }
@@ -117,7 +129,7 @@ fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   else
   {
     std::copy_n(input, sz, m_input);
-    for(int i = sz; sz < m_size; i++)
+    for(int i = sz; i < m_size; i++)
     {
       m_input[i] = 0.;
     }
@@ -138,9 +150,21 @@ fft_complex* fft::execute() noexcept
 rfft::rfft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = reinterpret_cast<fft_complex*>(alloc_complex(newSize / 2 + 1));
-  m_output = alloc_real(newSize);
-  m_fw = create_plan_c2r(newSize, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
+  m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
+  m_output = alloc_real(m_storage_size);
+  m_fw = create_plan_c2r(
+      m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
 }
 
 rfft::~rfft()
@@ -221,9 +245,21 @@ static const constexpr auto FFTW_MEASURE = 0;
 fft::fft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = alloc_real(newSize);
-  m_output = reinterpret_cast<fft_complex*>(alloc_complex(newSize / 2 + 1));
-  m_fw = create_plan_r2c(newSize, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
+  m_input = alloc_real(m_storage_size + 1);
+  m_output = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
+  m_fw = create_plan_r2c(
+      m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
   m_storage.resize(((fftw_plan_s*)m_fw)->temp_size);
 }
 
@@ -253,7 +289,7 @@ fft_complex* fft::execute(float* input, std::size_t sz) noexcept
   else
   {
     std::copy_n(input, sz, m_input);
-    for(int i = sz; sz < m_size; i++)
+    for(int i = sz; i < m_size; i++)
     {
       m_input[i] = 0.;
     }
@@ -273,9 +309,21 @@ fft_complex* fft::execute() noexcept
 rfft::rfft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = reinterpret_cast<fft_complex*>(alloc_complex(newSize / 2 + 1));
-  m_output = alloc_real(newSize);
-  m_fw = create_plan_c2r(newSize, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
+  m_input = reinterpret_cast<fft_complex*>(alloc_complex(m_storage_size / 2 + 1));
+  m_output = alloc_real(m_storage_size + 1);
+  m_fw = create_plan_c2r(
+      m_storage_size, m_input, m_output, FFTW_DESTROY_INPUT | FFTW_MEASURE);
   m_storage.resize(((fftw_plan_s*)m_fw)->temp_size);
 }
 
@@ -367,8 +415,19 @@ static void do_fft(FP* x_in, std::complex<FP>* x_out, int N)
 fft::fft(std::size_t newSize) noexcept
 {
   m_size = newSize;
-  m_input = (ossia::fft_real*)calloc(newSize + 1, sizeof(ossia::fft_real));
-  m_output = (ossia::fft_complex*)calloc(newSize + 1, sizeof(ossia::fft_complex));
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
+  m_input = (ossia::fft_real*)calloc(m_storage_size + 1, sizeof(ossia::fft_real));
+  m_output = (ossia::fft_complex*)calloc(m_storage_size + 1, sizeof(ossia::fft_complex));
 }
 
 fft::~fft()
@@ -399,6 +458,17 @@ fft_complex* fft::execute() noexcept
 rfft::rfft(std::size_t newSize) noexcept
 {
   m_size = newSize;
+  if(std::popcount(newSize) == 1)
+  {
+    m_storage_size = m_size;
+  }
+  else
+  {
+    int power = 1;
+    while(power < newSize)
+      power *= 2;
+    m_storage_size = power;
+  }
   m_input = (ossia::fft_complex*)calloc(newSize + 1, sizeof(ossia::fft_complex));
   m_output = (ossia::fft_real*)calloc(newSize + 1, sizeof(ossia::fft_real));
 }
