@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/detail/small_vector.hpp>
+#include <ossia/detail/variant.hpp>
 
 #include <memory>
 #include <string>
@@ -10,10 +11,19 @@ namespace ossia
 {
 struct geometry
 {
+  struct cpu_buffer
+  {
+    std::shared_ptr<void> data;
+    int64_t size{};
+  };
+
+  struct gpu_buffer
+  {
+    void* handle{}; // Can be casted to e.g. a QRhiBuffer
+  };
   struct buffer
   {
-    std::shared_ptr<void> data{};
-    int64_t size{};
+    ossia::variant<cpu_buffer, gpu_buffer> data;
     bool dirty{};
   };
 
