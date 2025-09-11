@@ -548,10 +548,31 @@ auto exec_state_facade::timings(const token_request& t) const noexcept -> sample
 
     tm.length = std::min(tick_dur, max_dur);
   }
-  assert(tm.start_sample >= 0);
-  assert(tm.start_sample < impl->bufferSize);
-  assert(tm.length >= 0);
-  assert(tm.start_sample + tm.length <= impl->bufferSize);
+
+  if(tm.start_sample < 0)
+  {
+    [[unlikely]];
+    assert(false);
+    return {};
+  }
+  if(tm.start_sample >= impl->bufferSize)
+  {
+    [[unlikely]];
+    assert(false);
+    return {};
+  }
+  if(tm.length < 0)
+  {
+    [[unlikely]];
+    assert(false);
+    return {};
+  }
+  if(tm.start_sample + tm.length > impl->bufferSize)
+  {
+    [[unlikely]];
+    assert(false);
+    return {};
+  }
   return tm;
 }
 
