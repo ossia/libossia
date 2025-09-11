@@ -55,12 +55,12 @@ void time_event::remove_time_process(time_process* timeProcess)
   }
 }
 
-void time_event::tick(ossia::time_value date, ossia::time_value offset)
+void time_event::tick(ossia::time_value date, ossia::time_value offset, double speed)
 {
   for(auto& proc : m_processes)
   {
     proc->start();
-    proc->state(ossia::token_request{0_tv, date, 0_tv, offset, 1., {}, {}});
+    proc->state(ossia::token_request{0_tv, date, 0_tv, offset, speed, {}, {}});
     proc->stop();
   }
 }

@@ -51,7 +51,7 @@ void scenario::make_happen(
     stopped.erase(timeInterval.get());
   }
 
-  event.tick(0_tv, tick_offset);
+  event.tick(0_tv, tick_offset, tok.speed);
 
   // setup next TimeIntervals
   for(const std::shared_ptr<ossia::time_interval>& timeInterval :

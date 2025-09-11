@@ -78,7 +78,7 @@ public:
   void remove_time_process(time_process*);
   [[nodiscard]] const auto& get_time_processes() const { return m_processes; }
 
-  void tick(ossia::time_value date, ossia::time_value offset);
+  void tick(ossia::time_value date, ossia::time_value offset, double speed);
 
   /*! get the #time_sync where the event is
    \return std::shared_ptr<#time_sync> */
