@@ -32,7 +32,14 @@ public:
 
   void close()
   {
-    m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+    // FIXME async?
+    try
+    {
+      m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+    }
+    catch(...)
+    {
+    }
     m_socket.close();
   }
 
@@ -114,7 +121,13 @@ public:
   void close()
   {
     boost::asio::post(m_context, [this] {
-      m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+      try
+      {
+        m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+      }
+      catch(...)
+      {
+      }
       m_socket.close();
       on_close();
     });

@@ -46,7 +46,14 @@ public:
     if(m_socket.is_open())
     {
       boost::asio::post(m_context, [this] {
-        m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+        try
+        {
+          m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+        }
+        catch(...)
+        {
+        }
+
         m_socket.close();
         on_close();
       });
@@ -127,7 +134,13 @@ public:
     if(m_socket.is_open())
     {
       boost::asio::post(m_context, [this] {
-        m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+        try
+        {
+          m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+        }
+        catch(...)
+        {
+        }
         m_socket.close();
         on_close();
       });
