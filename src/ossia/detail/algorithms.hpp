@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <array>
 #include <iterator>
+#include <ranges>
 #include <type_traits>
 #include <utility>
 
@@ -25,13 +26,21 @@ using iterator_t = typename std::remove_reference<Vector>::type::iterator;
 template <typename Vector, typename Value>
 auto find(Vector&& v, const Value& val) noexcept
 {
-  return std::find(std::begin(v), std::end(v), val);
+  auto end = std::end(v);
+  for(auto it = std::begin(v); it != end; ++it)
+    if(*it == val)
+      return it;
+  return end;
 }
 
 template <typename Vector, typename Fun>
-auto find_if(Vector&& v, Fun fun)
+auto find_if(Vector&& v, Fun&& fun)
 {
-  return std::find_if(std::begin(v), std::end(v), fun);
+  auto end = std::end(v);
+  for(auto it = std::begin(v); it != end; ++it)
+    if(fun(*it))
+      return it;
+  return end;
 }
 
 template <typename Vector, typename Value>
@@ -44,28 +53,28 @@ auto* ptr_find(Vector&& v, const Value& val) noexcept
   }
   else
   {
-    auto it = std::find(std::begin(v), std::end(v), val);
+    auto it = ossia::find(v, val);
     return it != std::end(v) ? &*it : nullptr;
   }
 }
 
 template <typename Vector, typename Fun>
-auto* ptr_find_if(Vector&& v, Fun fun)
+auto* ptr_find_if(Vector&& v, Fun&& fun)
 {
-  auto it = std::find_if(std::begin(v), std::end(v), fun);
+  auto it = ossia::find_if(v, fun);
   return it != std::end(v) ? &*it : nullptr;
 }
 
 template <typename Vector, typename Value>
 bool contains(Vector&& v, const Value& val) noexcept
 {
-  return find(v, val) != std::end(v);
+  return ossia::find(v, val) != std::end(v);
 }
 
 template <typename Vector, typename Value>
 void remove_one(Vector&& v, const Value& val)
 {
-  auto it = find(v, val);
+  auto it = ossia::find(v, val);
   if(it != v.end())
   {
     v.erase(it);
@@ -75,7 +84,7 @@ void remove_one(Vector&& v, const Value& val)
 template <typename Vector, typename Function>
 void remove_one_if(Vector& v, const Function& val)
 {
-  auto it = find_if(v, val);
+  auto it = ossia::find_if(v, val);
   if(it != v.end())
   {
     v.erase(it);
@@ -104,45 +113,61 @@ void erase_if(Vector& r, Fun f)
 }
 
 template <typename Vector, typename Fun>
-bool any_of(Vector&& v, Fun fun) noexcept
+bool any_of(Vector&& v, Fun&& fun) noexcept
 {
-  return std::any_of(std::begin(v), std::end(v), fun);
+  for(auto it = std::begin(v); it != std::end(v); ++it)
+    if(fun(*it))
+      return true;
+  return false;
 }
 
 template <typename Vector, typename Fun>
-auto all_of(Vector&& v, Fun fun) noexcept
+auto all_of(Vector&& v, Fun&& fun) noexcept
 {
-  return std::all_of(std::begin(v), std::end(v), fun);
+  for(auto it = std::begin(v); it != std::end(v); ++it)
+    if(!fun(*it))
+      return false;
+  return true;
 }
 
 template <typename Vector, typename Fun>
-bool none_of(Vector&& v, Fun fun) noexcept
+bool none_of(Vector&& v, Fun&& fun) noexcept
 {
-  return std::none_of(std::begin(v), std::end(v), fun);
+  for(auto it = std::begin(v); it != std::end(v); ++it)
+    if(fun(*it))
+      return false;
+  return true;
 }
 
 template <typename Vector, typename Fun>
-auto remove_if(Vector&& v, Fun fun)
+auto remove_if(Vector&& v, Fun&& fun)
 {
-  return std::remove_if(std::begin(v), std::end(v), fun);
+  return std::remove_if(std::begin(v), std::end(v), std::forward<Fun>(fun));
 }
 
 template <typename Vector, typename Fun>
-auto count_if(Vector&& v, Fun fun)
+auto count_if(Vector&& v, Fun&& fun)
 {
-  return std::count_if(std::begin(v), std::end(v), fun);
+  std::size_t count = 0;
+
+  for(auto it = std::begin(v); it != std::end(v); ++it)
+    if(fun(*it))
+      ++count;
+
+  return count;
 }
 
 template <typename Vector, typename Fun>
-auto max_element(Vector&& v, Fun fun)
+auto max_element(Vector&& v, Fun&& fun)
 {
-  return std::max_element(std::begin(v), std::end(v), fun);
+  return std::max_element(std::begin(v), std::end(v), std::forward<Fun>(fun));
 }
 
 template <typename Vector>
 auto sort(Vector&& v)
 {
-  return std::sort(std::begin(v), std::end(v));
+  using value_type = typename std::remove_cvref_t<Vector>::value_type;
+  return std::ranges::sort(v, std::less<value_type>{});
 }
 
 template <typename Vector, typename T>
@@ -158,9 +183,9 @@ auto unique(Vector&& v)
 }
 
 template <typename Vector, typename Fun>
-auto sort(Vector&& v, Fun fun)
+auto sort(Vector&& v, Fun&& fun)
 {
-  return std::sort(std::begin(v), std::end(v), fun);
+  return std::ranges::sort(v, std::forward<Fun>(fun));
 }
 
 template <typename Vector, typename OutputIterator, typename Fun>
