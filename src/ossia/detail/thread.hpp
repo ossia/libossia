@@ -48,6 +48,18 @@ OSSIA_EXPORT
 void set_thread_pinned(thread_type kind, int thread_index);
 
 OSSIA_EXPORT
+void ensure_current_thread(thread_type kind);
+
+#if defined(NDEBUG)
+#define OSSIA_ENSURE_CURRENT_THREAD(a) \
+  do                                   \
+  {                                    \
+  } while(0)
+#else
+#define OSSIA_ENSURE_CURRENT_THREAD(a) ::ossia::ensure_current_thread(a)
+#endif
+
+OSSIA_EXPORT
 std::string get_exe_path();
 
 OSSIA_EXPORT

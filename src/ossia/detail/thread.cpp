@@ -210,6 +210,8 @@ std::string get_module_path()
 }
 #endif
 
+#include <boost/unordered/concurrent_flat_map.hpp>
+
 #include <bitset>
 namespace ossia
 {
@@ -276,11 +278,36 @@ static const ossia::small_vector<cpu_pin, 128>& parse_pins()
   return p;
 }
 
-static thread_local thread_type g_current_thread_type{thread_type::Ui};
+static thread_local thread_type g_current_thread_type{255};
 
 thread_type get_current_thread_type()
 {
   return g_current_thread_type;
+}
+
+boost::unordered::concurrent_flat_map<
+    std::thread::id, thread_type, std::hash<std::thread::id>>
+    g_thread_types;
+
+void ensure_current_thread(thread_type kind)
+{
+  assert((unsigned char)g_current_thread_type != 255);
+  if((unsigned char)kind != (unsigned char)g_current_thread_type)
+  {
+    if((kind == thread_type::Audio || kind == thread_type::AudioTask)
+       && g_current_thread_type != thread_type::Audio
+       && g_current_thread_type != thread_type::AudioTask)
+      if((kind == thread_type::Gpu || kind == thread_type::GpuTask)
+         && g_current_thread_type != thread_type::Gpu
+         && g_current_thread_type != thread_type::GpuTask)
+        if((kind == thread_type::Ui || kind == thread_type::UiTask)
+           && g_current_thread_type != thread_type::Ui
+           && g_current_thread_type != thread_type::UiTask)
+          fprintf(
+              stderr, "!! Expected thread type %c, got %c\n",
+              (char)g_current_thread_type, (char)kind);
+    std::terminate();
+  }
 }
 
 void set_thread_pinned(thread_type spec, int thread_index)
@@ -288,6 +315,7 @@ void set_thread_pinned(thread_type spec, int thread_index)
   static const auto& pins = parse_pins();
   // A string such as "N,M,A,Uu,uN,uN,,a"
 
+  g_thread_types.emplace(std::this_thread::get_id(), spec);
   g_current_thread_type = spec;
 
   int k = 0;
