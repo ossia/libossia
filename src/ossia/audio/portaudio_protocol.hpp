@@ -159,9 +159,9 @@ public:
     return s && Pa_IsStreamActive(m_stream);
   }
 
-  ~portaudio_engine() override
+  void stop() override
   {
-    stop();
+    audio_engine::stop();
 
     if(auto stream = m_stream.load())
     {
@@ -173,7 +173,13 @@ public:
         std::cerr << "Error while stopping audio stream: " << Pa_GetErrorText(ec)
                   << std::endl;
       }
+      m_stream = {};
     }
+  }
+
+  ~portaudio_engine() override
+  {
+    stop();
     Pa_Terminate();
   }
 

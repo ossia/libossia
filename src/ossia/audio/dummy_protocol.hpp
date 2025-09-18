@@ -96,13 +96,15 @@ public:
     }};
   }
 
-  ~dummy_engine() override
+  void stop() override
   {
-    stop();
+    audio_engine::stop();
     m_active = false;
     if(m_runThread.joinable())
       m_runThread.join();
   }
+
+  ~dummy_engine() override { stop(); }
 
 private:
   std::thread m_runThread;

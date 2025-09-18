@@ -767,8 +767,16 @@ public:
     return activated;
   }
 
-  ~pipewire_audio_protocol()
+  void stop() override
   {
+    audio_engine::stop();
+
+    if(!this->loop)
+      return;
+
+    if(!activated)
+      return;
+
     auto& pw = libpipewire::instance();
 
     for(auto link : this->links)
@@ -777,7 +785,10 @@ public:
     pw.filter_destroy(this->filter);
 
     loop->synchronize();
+    activated = false;
   }
+
+  ~pipewire_audio_protocol() { stop(); }
 
   static void
   clear_buffers(pipewire_audio_protocol& self, uint32_t nframes, std::size_t outputs)

@@ -19,7 +19,7 @@ public:
 
   virtual bool running() const = 0;
   virtual void wait(int milliseconds);
-  void stop();
+  virtual void stop();
 
   void gc();
   void sync();

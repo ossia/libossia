@@ -118,20 +118,27 @@ public:
 
     if(ma_device_start(&m_stream) != MA_SUCCESS)
       throw std::runtime_error("Cannot start miniaudio");
+    m_active = true;
   }
 
   bool running() const override
   {
-    return ma_device_get_state(&m_stream) == ma_device_state_started;
+    return m_active && ma_device_get_state(&m_stream) == ma_device_state_started;
   }
 
-  ~miniaudio_engine() override
+  void stop() override
   {
-    stop();
+    audio_engine::stop();
 
-    ma_device_stop(&m_stream);
-    ma_device_uninit(&m_stream);
+    if(m_active)
+    {
+      ma_device_stop(&m_stream);
+      ma_device_uninit(&m_stream);
+    }
+    m_active = false;
   }
+
+  ~miniaudio_engine() override { stop(); }
 
 private:
   static void
@@ -192,6 +199,8 @@ private:
   boost::container::vector<float*> ins;
   boost::container::vector<float> outs_data;
   boost::container::vector<float*> outs;
+
+  bool m_active{};
 };
 }
 

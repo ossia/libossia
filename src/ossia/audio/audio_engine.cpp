@@ -64,14 +64,17 @@ void audio_engine::sync()
     buffer_length_in_ms
         = std::ceil(this->effective_buffer_size * 1000. / this->effective_sample_rate);
 
-  while(this->reply.load() < req)
+  if(running())
   {
-    if(k++ > 20)
+    while(this->reply.load() < req)
     {
-      ossia::logger().error("Audio engine seems stuck?");
-      break;
+      if(k++ > 20)
+      {
+        ossia::logger().error("Audio engine seems stuck?");
+        break;
+      }
+      this->wait(2 * buffer_length_in_ms);
     }
-    this->wait(2 * buffer_length_in_ms);
   }
 }
 

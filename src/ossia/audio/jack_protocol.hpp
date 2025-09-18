@@ -225,26 +225,30 @@ public:
     activated = true;
   }
 
-  ~jack_engine() override
-  {
-    stop();
-
-    if(m_client)
-    {
-      jack_client_t* client = *m_client;
-      jack_deactivate(client);
-      for(auto port : this->input_ports)
-        jack_port_unregister(client, port);
-      for(auto port : this->output_ports)
-        jack_port_unregister(client, port);
-    }
-  }
+  ~jack_engine() override { stop(); }
 
   bool running() const override
   {
     if(!m_client)
       return false;
     return activated;
+  }
+
+  void stop() override
+  {
+    audio_engine::stop();
+
+    if(m_client)
+    {
+      jack_client_t* client = *m_client;
+      activated = false;
+      jack_deactivate(client);
+      for(auto port : this->input_ports)
+        jack_port_unregister(client, port);
+      for(auto port : this->output_ports)
+        jack_port_unregister(client, port);
+      m_client.reset();
+    }
   }
 
 private:

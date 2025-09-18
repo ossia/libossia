@@ -45,14 +45,18 @@ public:
     effective_buffer_size = bs;
     effective_inputs = std::min(inputs, (int)m_client->ncapt());
     effective_outputs = std::min(outputs, (int)m_client->nplay());
-    m_thread = std::thread{[this] { thread_duplex(); }};
+    m_thread = std::thread{[this] {
+      init_thread();
+      thread_duplex();
+    }};
+    set_thread_realtime(m_thread);
 
     m_activated = true;
   }
 
-  ~alsa_engine() override
+  void stop() override
   {
-    stop();
+    audio_engine::stop();
 
     if(m_client)
     {
@@ -62,7 +66,11 @@ public:
 
       m_client.reset();
     }
+
+    m_activated = false;
   }
+
+  ~alsa_engine() override { stop(); }
 
   bool running() const override
   {

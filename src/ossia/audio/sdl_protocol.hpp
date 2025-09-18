@@ -45,18 +45,25 @@ public:
     this->effective_outputs = m_obtained.channels;
 
     SDL_PauseAudioDevice(m_deviceId, 0);
+    m_activated = true;
   }
 
-  ~sdl_protocol() override
-  {
-    stop();
-    SDL_CloseAudioDevice(m_deviceId);
-    SDL_Quit();
-  }
+  ~sdl_protocol() override { stop(); }
 
   bool running() const override
   {
-    return SDL_GetAudioDeviceStatus(m_deviceId) == SDL_AUDIO_PLAYING;
+    return m_activated && SDL_GetAudioDeviceStatus(m_deviceId) == SDL_AUDIO_PLAYING;
+  }
+
+  void stop() override
+  {
+    audio_engine::stop();
+    if(m_activated)
+    {
+      SDL_CloseAudioDevice(m_deviceId);
+      m_activated = false;
+    }
+    SDL_Quit();
   }
 
 private:
@@ -125,6 +132,7 @@ private:
   SDL_AudioSpec m_desired, m_obtained;
   uint64_t m_total_frames{};
   std::optional<std::chrono::steady_clock::time_point> m_start;
+  bool m_activated{};
 };
 }
 
