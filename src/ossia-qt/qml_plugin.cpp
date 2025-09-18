@@ -53,12 +53,19 @@ void qml_plugin::reg(const char* uri)
 #endif
   // See ossia_global_init
   qmlRegisterUncreatableType<qt::qml_val_type>(uri, 1, 0, "Type", "Value type");
+  qmlRegisterUncreatableType<qt::qml_val_type>(uri, 1, 0, "type", "Value type");
   qmlRegisterUncreatableType<qt::qml_access_mode>(uri, 1, 0, "Access", "Access mode");
+  qmlRegisterUncreatableType<qt::qml_access_mode>(uri, 1, 0, "access", "Access mode");
   qmlRegisterUncreatableType<qt::qml_bounding_mode>(
       uri, 1, 0, "Bounding", "Bounding mode");
+  qmlRegisterUncreatableType<qt::qml_bounding_mode>(
+      uri, 1, 0, "bounding", "Bounding mode");
   qmlRegisterUncreatableType<qt::qml_rep_filter>(
       uri, 1, 0, "Repetitions", "Repetition filter");
+  qmlRegisterUncreatableType<qt::qml_rep_filter>(
+      uri, 1, 0, "repetitions", "Repetition filter");
   qmlRegisterUncreatableType<qt::qml_duration>(uri, 1, 0, "Duration", "Duration");
+  qmlRegisterUncreatableType<qt::qml_duration>(uri, 1, 0, "duration", "Duration");
 
 #if !defined(__EMSCRIPTEN__)
 
