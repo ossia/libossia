@@ -93,8 +93,8 @@ struct rubberband_stretcher
       // input
       const int max_chan = std::max(chan, m_rubberBand->getChannelCount());
       const int frames = std::max((int64_t)16, samples_to_read);
-      float** const input = (float**)alloca(sizeof(float*) * chan);
-      float** const output = (float**)alloca(sizeof(float*) * chan);
+      float** const input = (float**)alloca(sizeof(float*) * max_chan);
+      float** const output = (float**)alloca(sizeof(float*) * max_chan);
       for(std::size_t i = 0; i < chan; i++)
       {
         input[i] = (float*)alloca(sizeof(float) * frames);
