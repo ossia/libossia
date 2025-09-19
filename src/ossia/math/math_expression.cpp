@@ -62,7 +62,12 @@ struct rand_gen : public exprtk::ifunction<T>
 
   T operator()(const T& min, const T& max) noexcept override
   {
-    return std::uniform_real_distribution<>{min, max}(engine);
+    if(min < max)
+      return std::uniform_real_distribution<>{min, max}(engine);
+    else if(max < min)
+      return std::uniform_real_distribution<>{max, min}(engine);
+    else
+      return min;
   }
 };
 
