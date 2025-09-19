@@ -91,12 +91,19 @@ struct rubberband_stretcher
     {
       // TODO : if T::sample_type == float we could leverage it directly as
       // input
+      const int max_chan = std::max(chan, m_rubberBand->getChannelCount());
+      const int frames = std::max((int64_t)16, samples_to_read);
       float** const input = (float**)alloca(sizeof(float*) * chan);
       float** const output = (float**)alloca(sizeof(float*) * chan);
       for(std::size_t i = 0; i < chan; i++)
       {
-        input[i]
-            = (float*)alloca(sizeof(float) * std::max((int64_t)16, samples_to_read));
+        input[i] = (float*)alloca(sizeof(float) * frames);
+        output[i] = (float*)alloca(sizeof(float) * samples_to_write);
+      }
+      for(std::size_t i = chan; i < m_rubberBand->getChannelCount(); i++)
+      {
+        input[i] = (float*)alloca(sizeof(float) * frames);
+        std::fill_n(input[i], frames, 0.f);
         output[i] = (float*)alloca(sizeof(float) * samples_to_write);
       }
 
