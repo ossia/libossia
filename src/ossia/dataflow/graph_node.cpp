@@ -8,6 +8,7 @@
 #include <ossia/dataflow/graph_node.hpp>
 #include <ossia/dataflow/node_process.hpp>
 #include <ossia/detail/algorithms.hpp>
+#include <ossia/detail/logger.hpp>
 
 namespace ossia
 {
@@ -123,8 +124,17 @@ std::size_t graph_edge::size_of_allocated_memory_by_make_shared() noexcept
 
 void graph_edge::init() noexcept
 {
-  if(in && out)
+  if(in && out && in_node && out_node)
   {
+    bool found_in = false;
+    bool found_out = false;
+    ossia::for_each_inlet(*in_node, [&](ossia::inlet& e) { found_in |= &e == in; });
+    ossia::for_each_outlet(*out_node, [&](ossia::outlet& e) { found_out |= &e == out; });
+    if(!found_in || !found_out)
+    {
+      ossia::logger().error("Trying to connect missing inlets / outlets");
+      return;
+    }
     out->connect(this);
     in->connect(this);
 
@@ -136,6 +146,10 @@ void graph_edge::init() noexcept
     {
       out->visit(init_delay_line{sdelay->buffer});
     }
+  }
+  else
+  {
+    ossia::logger().error("Missing in_node / out_node");
   }
 }
 

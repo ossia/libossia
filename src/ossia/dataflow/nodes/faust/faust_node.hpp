@@ -12,6 +12,7 @@ public:
   std::shared_ptr<dsp> m_dsp{};
   faust_port_array controls;
   faust_port_array displays;
+  int generation{};
 
   struct clone
   {
@@ -103,6 +104,11 @@ public:
   [[nodiscard]] std::string label() const noexcept override { return "Faust"; }
 
   void all_notes_off() noexcept override { }
+  void clear() noexcept override
+  {
+    ossia::graph_node::clear();
+    generation = -1;
+  }
 
   ~faust_mono_fx()
   {
@@ -119,6 +125,7 @@ class faust_fx final : public ossia::graph_node
 public:
   faust_port_array controls;
   faust_port_array displays;
+  int generation{};
   faust_fx(std::shared_ptr<dsp> dsp)
       : m_dsp{std::move(dsp)}
   {
@@ -137,6 +144,11 @@ public:
   [[nodiscard]] std::string label() const noexcept override { return "Faust"; }
 
   void all_notes_off() noexcept override { }
+  void clear() noexcept override
+  {
+    ossia::graph_node::clear();
+    generation = -1;
+  }
 };
 
 class faust_synth final : public ossia::graph_node
@@ -146,6 +158,7 @@ class faust_synth final : public ossia::graph_node
 public:
   faust_port_array controls;
   faust_port_array displays;
+  int generation{};
 
   void set_control(int i, float v) noexcept { *controls[i].second = v; }
   std::array<int8_t, 128> in_flight{};
@@ -169,6 +182,11 @@ public:
   void all_notes_off() noexcept override
   {
     faust_node_utils{}.all_notes_off(*this, *m_dsp);
+  }
+  void clear() noexcept override
+  {
+    ossia::graph_node::clear();
+    generation = -1;
   }
 };
 

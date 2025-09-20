@@ -73,7 +73,8 @@ public:
 
   void transport(time_value date) override
   {
-    m_resampler.transport(to_sample(date, m_handle.sampleRate()));
+    if(m_handle)
+      m_resampler.transport(to_sample(date, m_handle.sampleRate()));
   }
 
   void fetch_audio(
