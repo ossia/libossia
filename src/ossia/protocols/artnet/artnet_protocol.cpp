@@ -7,8 +7,6 @@
 #include <ossia/detail/fmt.hpp>
 #include <ossia/protocols/artnet/dmx_parameter.hpp>
 
-#include <boost/asio/use_future.hpp>
-
 #include <chrono>
 namespace ossia::net
 {
