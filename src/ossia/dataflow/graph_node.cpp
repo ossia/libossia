@@ -160,10 +160,21 @@ graph_edge::~graph_edge()
 
 void graph_edge::clear() noexcept
 {
-  if(in && out)
+  if(in && out && in_node && out_node)
   {
-    out->disconnect(this);
-    in->disconnect(this);
+    bool found_in = false;
+    bool found_out = false;
+    ossia::for_each_inlet(*in_node, [&](ossia::inlet& e) { found_in |= &e == in; });
+    ossia::for_each_outlet(*out_node, [&](ossia::outlet& e) { found_out |= &e == out; });
+    if(found_in && found_out)
+    {
+      out->disconnect(this);
+      in->disconnect(this);
+    }
+    else
+    {
+      ossia::logger().error("Trying to disconnect missing inlets / outlets");
+    }
   }
 
   con = connection{};
