@@ -49,6 +49,151 @@
 #include <fmt/ranges.h>
 namespace ossia
 {
+namespace
+{
+template <typename T>
+struct bit_shiftl
+{
+  template <typename _Tp, typename _Up>
+  constexpr auto operator()(_Tp&& __t, _Up&& __u) const noexcept
+  {
+    return __t << __u;
+  }
+};
+
+template <typename T>
+struct bit_shiftr
+{
+  template <typename _Tp, typename _Up>
+  constexpr auto operator()(_Tp&& __t, _Up&& __u) const noexcept
+  {
+    return __t >> __u;
+  }
+};
+
+template <typename Op, typename T>
+struct bit_unop : public exprtk::ifunction<T>
+{
+  bit_unop()
+      : exprtk::ifunction<T>{1}
+  {
+  }
+  T operator()(const T& rhs) noexcept override { return Op{}((int64_t)rhs); }
+};
+
+template <typename Op, typename T>
+struct bit_binop : public exprtk::ifunction<T>
+{
+  bit_binop()
+      : exprtk::ifunction<T>{2}
+  {
+  }
+
+  T operator()(const T& lhs, const T& rhs) noexcept override
+  {
+    return Op{}((int64_t)lhs, (int64_t)rhs);
+  }
+};
+
+template <typename T>
+struct rescale : public exprtk::ifunction<T>
+{
+  rescale()
+      : exprtk::ifunction<T>{5}
+  {
+  }
+
+  T operator()(
+      const T& value, const T& inMin, const T& inMax, const T& outMin,
+      const T& outMax) noexcept override
+  {
+    if((inMax - inMin) == T(0.0))
+      return outMin;
+
+    return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+  }
+};
+
+template <typename T>
+struct normalize : public exprtk::ifunction<T>
+{
+  normalize()
+      : exprtk::ifunction<T>{3}
+  {
+  }
+
+  T operator()(const T& value, const T& inMin, const T& inMax) noexcept override
+  {
+    if((inMax - inMin) <= T(0.0))
+      return 0.0;
+
+    return (value - inMin) / (inMax - inMin);
+  }
+};
+
+template <typename T>
+struct lerp : public exprtk::ifunction<T>
+{
+  lerp()
+      : exprtk::ifunction<T>{3}
+  {
+  }
+
+  T operator()(const T& value, const T& start, const T& stop) noexcept override
+  {
+    return start * (1. - value) + stop * value;
+  }
+};
+
+template <typename T>
+struct step : public exprtk::ifunction<T>
+{
+  step()
+      : exprtk::ifunction<T>{2}
+  {
+  }
+
+  T operator()(const T& value, const T& edge) noexcept override
+  {
+    return value < edge ? 0. : 1.;
+  }
+};
+
+template <typename T>
+struct smoothstep : public exprtk::ifunction<T>
+{
+  smoothstep()
+      : exprtk::ifunction<T>{3}
+  {
+  }
+
+  T operator()(const T& value, const T& start, const T& stop) noexcept override
+  {
+    if((stop - start) <= T(0.0))
+      return 0.;
+
+    auto x = std::clamp((value - start) / (stop - start), (T)0.0, (T)1.0);
+    return x * x * (3 - 2 * x);
+  }
+};
+
+template <typename T>
+struct smoothstep5 : public exprtk::ifunction<T>
+{
+  smoothstep5()
+      : exprtk::ifunction<T>{3}
+  {
+  }
+
+  T operator()(const T& value, const T& start, const T& stop) noexcept override
+  {
+    if((stop - start) <= T(0.0))
+      return 0.;
+
+    auto x = std::clamp((value - start) / (stop - start), (T)0.0, (T)1.0);
+    return x * x * x * (x * (x * 6 - 15) + 10);
+  }
+};
 
 template <typename T>
 struct rand_gen : public exprtk::ifunction<T>
@@ -93,6 +238,7 @@ struct perlin<T, 1> : public exprtk::ifunction<T>
 
 static thread_local exprtk::parser<double> g_exprtk_parser
     = exprtk::parser<double>{exprtk::parser<double>::settings_store{}};
+}
 struct math_expression::impl
 {
   rand_gen<double> random;
@@ -105,6 +251,19 @@ struct math_expression::impl
   std::optional<std::vector<std::string>> variables;
   std::vector<std::string> missing_variables;
   bool valid{};
+
+  [[no_unique_address]] bit_binop<std::bit_and<>, double> f_bit_and;
+  [[no_unique_address]] bit_binop<std::bit_or<>, double> f_bit_or;
+  [[no_unique_address]] bit_binop<std::bit_xor<>, double> f_bit_xor;
+  [[no_unique_address]] bit_unop<std::bit_not<>, double> f_bit_not;
+  [[no_unique_address]] bit_binop<bit_shiftl<double>, double> f_bit_shiftl;
+  [[no_unique_address]] bit_binop<bit_shiftr<double>, double> f_bit_shiftr;
+  [[no_unique_address]] rescale<double> f_rescale;
+  [[no_unique_address]] normalize<double> f_norm;
+  [[no_unique_address]] step<double> f_step;
+  [[no_unique_address]] lerp<double> f_lerp;
+  [[no_unique_address]] smoothstep<double> f_smoothstep;
+  [[no_unique_address]] smoothstep5<double> f_smoothstep5;
 };
 
 math_expression::math_expression()
@@ -112,6 +271,18 @@ math_expression::math_expression()
 {
   impl->syms.add_function("random", impl->random);
   impl->syms.add_function("noise", impl->noise1d);
+  impl->syms.add_function("bitwise_and", impl->f_bit_and);
+  impl->syms.add_function("bitwise_or", impl->f_bit_or);
+  impl->syms.add_function("bitwise_xor", impl->f_bit_xor);
+  impl->syms.add_function("bitwise_not", impl->f_bit_not);
+  impl->syms.add_function("bitwise_shiftl", impl->f_bit_shiftl);
+  impl->syms.add_function("bitwise_shiftr", impl->f_bit_shiftr);
+  impl->syms.add_function("map", impl->f_rescale);
+  impl->syms.add_function("norm", impl->f_norm);
+  impl->syms.add_function("step", impl->f_step);
+  impl->syms.add_function("lerp", impl->f_lerp);
+  impl->syms.add_function("smoothstep", impl->f_smoothstep);
+  impl->syms.add_function("smoothstep5", impl->f_smoothstep5);
 }
 
 math_expression::~math_expression()

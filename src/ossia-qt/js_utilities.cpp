@@ -778,6 +778,8 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toByteArray());
     case QMetaType::Double:
       return operator()(v.toDouble());
+    case QMetaType::Float:
+      return operator()(v.toFloat());
     case QMetaType::QColor:
       return operator()(v.value<QColor>());
     case QMetaType::QPoint:
