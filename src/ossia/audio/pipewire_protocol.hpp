@@ -805,6 +805,46 @@ public:
     return;
   }
 
+  void do_process(uint32_t nframes, double secs)
+  {
+    const auto& pw = libpipewire::instance();
+
+    tick_start();
+
+    const auto inputs = input_ports.size();
+    const auto outputs = output_ports.size();
+    if(stop_processing)
+    {
+      tick_clear();
+      clear_buffers(*this, nframes, outputs);
+      return;
+    }
+
+    auto dummy = (float*)alloca(sizeof(float) * nframes);
+    memset(dummy, 0, sizeof(float) * nframes);
+
+    auto float_input = (float**)alloca(sizeof(float*) * inputs);
+    auto float_output = (float**)alloca(sizeof(float*) * outputs);
+    for(std::size_t i = 0; i < inputs; i++)
+    {
+      float_input[i] = (float*)pw.filter_get_dsp_buffer(input_ports[i], nframes);
+      if(float_input[i] == nullptr)
+        float_input[i] = dummy;
+    }
+    for(std::size_t i = 0; i < outputs; i++)
+    {
+      float_output[i] = (float*)pw.filter_get_dsp_buffer(output_ports[i], nframes);
+      if(float_output[i] == nullptr)
+        float_output[i] = dummy;
+    }
+
+    // Actual execution
+    ossia::audio_tick_state ts{float_input,  float_output, (int)inputs,
+                               (int)outputs, nframes,      secs};
+    audio_tick(ts);
+    tick_end();
+  }
+
   static void on_process(void* userdata, struct spa_io_position* position)
   {
     [[maybe_unused]]
@@ -818,44 +858,20 @@ public:
     if(!userdata)
       return;
 
-    const auto& pw = libpipewire::instance();
     auto& self = *(pipewire_audio_protocol*)userdata;
-    const uint32_t nframes = position->clock.duration;
-
-    self.tick_start();
-
-    const auto inputs = self.input_ports.size();
-    const auto outputs = self.output_ports.size();
-    if(self.stop_processing)
+    uint32_t nframes = position->clock.duration;
+    double current_time_ns = position->clock.nsec * 1e-9;
+    while(nframes >= self.effective_buffer_size)
     {
-      self.tick_clear();
-      clear_buffers(self, nframes, outputs);
-      return;
+      self.do_process(self.effective_buffer_size, current_time_ns);
+      nframes -= self.effective_buffer_size;
+      current_time_ns += double(self.effective_buffer_size) / self.effective_sample_rate;
     }
 
-    auto dummy = (float*)alloca(sizeof(float) * nframes);
-    memset(dummy, 0, sizeof(float) * nframes);
-
-    auto float_input = (float**)alloca(sizeof(float*) * inputs);
-    auto float_output = (float**)alloca(sizeof(float*) * outputs);
-    for(std::size_t i = 0; i < inputs; i++)
+    if(nframes > 0)
     {
-      float_input[i] = (float*)pw.filter_get_dsp_buffer(self.input_ports[i], nframes);
-      if(float_input[i] == nullptr)
-        float_input[i] = dummy;
+      self.do_process(self.effective_buffer_size, current_time_ns);
     }
-    for(std::size_t i = 0; i < outputs; i++)
-    {
-      float_output[i] = (float*)pw.filter_get_dsp_buffer(self.output_ports[i], nframes);
-      if(float_output[i] == nullptr)
-        float_output[i] = dummy;
-    }
-
-    // Actual execution
-    ossia::audio_tick_state ts{float_input,  float_output, (int)inputs,
-                               (int)outputs, nframes,      position->clock.nsec * 1e-9};
-    self.audio_tick(ts);
-    self.tick_end();
   }
 
   std::vector<port*> input_ports;
