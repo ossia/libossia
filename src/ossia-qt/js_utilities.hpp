@@ -155,9 +155,22 @@ struct OSSIA_EXPORT qt_to_ossia
   ossia::value operator()(qint64 v) { return (int)v; }
   ossia::value operator()(quint64 v) { return (int)v; }
   ossia::value operator()(char v) { return v; }
+  ossia::value operator()(unsigned char v) { return (char)v; }
+  ossia::value operator()(signed char v) { return (char)v; }
   ossia::value operator()(QChar v) { return v.toLatin1(); }
   ossia::value operator()(const QString& v) { return v.toStdString(); }
   ossia::value operator()(const QByteArray& v) { return v.toStdString(); }
+  ossia::value operator()(const QByteArrayList& v)
+  {
+    std::vector<ossia::value> tpl;
+    tpl.reserve(v.size());
+    for(auto& val : v)
+    {
+      tpl.push_back(val.toStdString());
+    }
+    return tpl;
+  }
+  ossia::value operator()(float v) { return v; }
   ossia::value operator()(double v) { return v; }
   ossia::value operator()(QColor v)
   {
@@ -201,6 +214,16 @@ struct OSSIA_EXPORT qt_to_ossia
     return tpl;
   }
   auto operator()(const QVariantMap& v)
+  {
+    value_map_type tpl;
+    tpl.reserve(v.size());
+    for(auto it = v.cbegin(); it != v.cend(); ++it)
+    {
+      tpl.emplace_back(it.key().toStdString(), qt_to_ossia{}(it.value()));
+    }
+    return tpl;
+  }
+  auto operator()(const QVariantHash& v)
   {
     value_map_type tpl;
     tpl.reserve(v.size());

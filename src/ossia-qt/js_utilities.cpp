@@ -6,6 +6,10 @@
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/common/complex_type.hpp>
 #include <ossia/network/value/value_conversion.hpp>
+
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QJsonValue>
 #if __has_include(<QJSValue>)
 #include <QJSValue>
 #endif
@@ -604,14 +608,23 @@ void set_parameter_type(QMetaType::Type type, net::parameter_base& addr)
     case QMetaType::QTime:
     case QMetaType::Int:
     case QMetaType::UInt:
+    case QMetaType::Short:
+    case QMetaType::UShort:
+    case QMetaType::Long:
+    case QMetaType::ULong:
+    case QMetaType::LongLong:
     case QMetaType::ULongLong:
     case QMetaType::Char:
+    case QMetaType::UChar:
+    case QMetaType::SChar:
       addr.set_value_type(ossia::val_type::INT);
       break;
     case QMetaType::QString:
     case QMetaType::QByteArray:
+    case QMetaType::QUrl:
       addr.set_value_type(ossia::val_type::STRING);
       break;
+    case QMetaType::Float:
     case QMetaType::Double:
       addr.set_value_type(ossia::val_type::FLOAT);
       break;
@@ -640,8 +653,17 @@ void set_parameter_type(QMetaType::Type type, net::parameter_base& addr)
     case QMetaType::QRectF:
       addr.set_value_type(ossia::val_type::VEC4F);
       break;
+
+    case QMetaType::QVariantMap:
+    case QMetaType::QVariantHash:
+    case QMetaType::QJsonObject:
+      addr.set_value_type(ossia::val_type::MAP);
+      break;
+
     case QMetaType::QVariantList:
     case QMetaType::QStringList:
+    case QMetaType::QByteArrayList:
+    case QMetaType::QJsonArray:
     case QMetaType::QDate:
     default:
       addr.set_value_type(ossia::val_type::LIST);
@@ -657,20 +679,37 @@ QVariant ossia_to_qvariant::operator()(QMetaType::Type type, const value& ossia_
       return QVariant::fromValue(convert<bool>(ossia_val));
     case QMetaType::QTime:
       return QVariant::fromValue(QTime().addMSecs(convert<int>(ossia_val)));
+    case QMetaType::Short:
+      return QVariant::fromValue((qint16)convert<int>(ossia_val));
+    case QMetaType::UShort:
+      return QVariant::fromValue((quint16)convert<int>(ossia_val));
     case QMetaType::Int:
-      return QVariant::fromValue(convert<int>(ossia_val));
+      return QVariant::fromValue((qint32)convert<int>(ossia_val));
     case QMetaType::UInt:
       return QVariant::fromValue((quint32)convert<int>(ossia_val));
-    case QMetaType::ULongLong:
+    case QMetaType::LongLong:
       return QVariant::fromValue((qlonglong)convert<int>(ossia_val));
-    case QMetaType::Char:
+    case QMetaType::ULongLong:
+      return QVariant::fromValue((qulonglong)convert<int>(ossia_val));
+    case QMetaType::QChar:
       return QVariant::fromValue(QChar::fromLatin1(convert<int>(ossia_val)));
+    case QMetaType::Char:
+      return QVariant::fromValue(char(convert<int>(ossia_val)));
+    case QMetaType::UChar:
+      return QVariant::fromValue((unsigned char)(convert<int>(ossia_val)));
+    case QMetaType::SChar:
+      return QVariant::fromValue((signed char)(convert<int>(ossia_val)));
     case QMetaType::QString:
       return QVariant::fromValue(
           QString::fromStdString(convert<std::string>(ossia_val)));
+    case QMetaType::QUrl:
+      return QVariant::fromValue(
+          QUrl{QString::fromStdString(convert<std::string>(ossia_val))});
     case QMetaType::QByteArray:
       return QVariant::fromValue(
           QByteArray::fromStdString(convert<std::string>(ossia_val)));
+    case QMetaType::Float:
+      return QVariant::fromValue(convert<float>(ossia_val));
     case QMetaType::Double:
       return QVariant::fromValue(convert<double>(ossia_val));
     case QMetaType::QColor: {
@@ -746,6 +785,16 @@ QVariant ossia_to_qvariant::operator()(QMetaType::Type type, const value& ossia_
       }
       return vars;
     }
+    case QMetaType::QByteArrayList: {
+      auto val = convert<std::vector<ossia::value>>(ossia_val);
+      QByteArrayList vars;
+      vars.reserve(val.size());
+      for(auto& v : val)
+      {
+        vars.push_back(QByteArray::fromStdString(convert<std::string>(v)));
+      }
+      return QVariant::fromValue(std::move(vars));
+    }
     case QMetaType::QDate:
     // TODO double ?
     default: {
@@ -760,24 +809,45 @@ value qt_to_ossia::operator()(const QVariant& v)
 {
   switch(v.typeId())
   {
-    case QMetaType::Bool:
-      return operator()(v.toBool());
     case QMetaType::QTime:
       return operator()(v.toTime());
+    case QMetaType::Bool:
+      return operator()(v.toBool());
     case QMetaType::Int:
       return operator()(v.toInt());
     case QMetaType::UInt:
       return operator()(v.toUInt());
+    case QMetaType::LongLong:
+      return operator()(v.toLongLong());
     case QMetaType::ULongLong:
       return operator()(v.toLongLong());
+    case QMetaType::Double:
+      return operator()(v.toDouble());
+    case QMetaType::Long:
+      return operator()(v.toLongLong());
+    case QMetaType::Short:
+      return operator()(v.toInt());
+    case QMetaType::ULong:
+      return operator()(v.toLongLong());
+    case QMetaType::UShort:
+      return operator()(v.toInt());
     case QMetaType::Char:
+      return operator()((char)v.value<char>());
+    case QMetaType::UChar:
+      return operator()((char)v.value<uchar>());
+    case QMetaType::SChar:
+      return operator()((char)v.value<signed char>());
+    case QMetaType::Nullptr:
+    case QMetaType::Void:
+      return {};
+    case QMetaType::QChar:
       return operator()(v.toChar());
+    case QMetaType::QUrl:
+      return operator()(v.toString());
     case QMetaType::QString:
       return operator()(v.toString());
     case QMetaType::QByteArray:
       return operator()(v.toByteArray());
-    case QMetaType::Double:
-      return operator()(v.toDouble());
     case QMetaType::Float:
       return operator()(v.toFloat());
     case QMetaType::QColor:
@@ -810,8 +880,18 @@ value qt_to_ossia::operator()(const QVariant& v)
       return operator()(v.toList());
     case QMetaType::QVariantMap:
       return operator()(v.toMap());
+    case QMetaType::QVariantHash:
+      return operator()(v.toHash());
+    case QMetaType::QJsonArray:
+      return operator()(v.value<QJsonArray>().toVariantList());
+    case QMetaType::QJsonObject:
+      return operator()(v.value<QJsonObject>().toVariantMap());
+    case QMetaType::QJsonValue:
+      return operator()(v.value<QJsonValue>().toVariant());
     case QMetaType::QStringList:
       return operator()(v.toStringList());
+    case QMetaType::QByteArrayList:
+      return operator()(v.value<QByteArrayList>());
     case QMetaType::QDate:
       return operator()(v.toDate());
 
