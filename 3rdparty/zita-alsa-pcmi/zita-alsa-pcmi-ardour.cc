@@ -20,7 +20,7 @@
 #if defined(__NetBSD__)
 #include <sys/endian.h>
 #else
-#include <endian.h>
+#include <sys/types.h>
 #endif
 #include "zita-alsa-pcmi-ardour.h"
 
