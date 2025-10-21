@@ -1,5 +1,7 @@
 #pragma once
 #include <ossia/detail/config.hpp>
+#include <cstdint>
+#include <optional>
 
 namespace ossia
 {
@@ -67,4 +69,8 @@ struct render_target_spec
   bool operator!=(const render_target_spec& other) const noexcept = default;
 };
 
+struct buffer_spec
+{
+
+};
 }
