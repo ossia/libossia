@@ -18,6 +18,7 @@ endif()
 
 if(NOT TARGET kfr)
   block()
+    set(CMAKE_CXX_STANDARD 20)
     if(NOT MSVC)
       add_compile_options(-w)
     endif()
