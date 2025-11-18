@@ -174,7 +174,13 @@ public:
 
   //! enable observation of the ossia::expression
   void observe_expression(bool);
-  void observe_expression(bool, ossia::expressions::expression_result_callback cb);
+  inline void observe_expression(bool b, auto&& cb)
+  {
+    if(!m_expression || m_expression->target<ossia::expressions::expression_bool>())
+      return;
+    return observe_expression_impl(b, std::move(cb));
+  }
+  void observe_expression_impl(bool, ossia::expressions::expression_result_callback cb);
 
   //! Resets the internal state. Necessary when restarting an execution.
   void reset();

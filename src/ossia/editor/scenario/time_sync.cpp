@@ -136,15 +136,12 @@ void time_sync::observe_expression(bool observe)
 {
   // start expression observation; dummy callback used.
   // Do not remove it : else the expressions will stop listening.
-  return observe_expression(observe, [](bool) {});
+  return observe_expression(observe, [](bool) { });
 }
 
-void time_sync::observe_expression(
+void time_sync::observe_expression_impl(
     bool observe, ossia::expressions::expression_result_callback cb)
 {
-  if(!m_expression || m_expression->target<ossia::expressions::expression_bool>())
-    return;
-
   if(observe != m_observe)
   {
     bool wasObserving = m_observe;
@@ -157,7 +154,7 @@ void time_sync::observe_expression(
         ossia::logger().error("Warning: time_sync can only have one callback\n");
         expressions::remove_callback(*m_expression, *m_callback);
       }
-      m_callback = expressions::add_callback(*m_expression, cb);
+      m_callback = expressions::add_callback(*m_expression, std::move(cb));
     }
     else
     {
