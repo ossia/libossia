@@ -7,6 +7,10 @@
 
 #include <libremidi/ump.hpp>
 
+#if defined(OSSIA_NO_FAST_CONTAINERS)
+#include <ossia/dataflow/audio_port.hpp>
+#endif
+
 namespace ossia
 {
 
