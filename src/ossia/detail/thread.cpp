@@ -295,19 +295,28 @@ void ensure_current_thread(thread_type kind)
   if((unsigned char)kind != (unsigned char)g_current_thread_type)
   {
     if((kind == thread_type::Audio || kind == thread_type::AudioTask)
-       && g_current_thread_type != thread_type::Audio
-       && g_current_thread_type != thread_type::AudioTask)
-      if((kind == thread_type::Gpu || kind == thread_type::GpuTask)
-         && g_current_thread_type != thread_type::Gpu
-         && g_current_thread_type != thread_type::GpuTask)
-        if((kind == thread_type::Ui || kind == thread_type::UiTask)
-           && g_current_thread_type != thread_type::Ui
-           && g_current_thread_type != thread_type::UiTask)
-          fprintf(
-              stderr, "!! Expected thread type %c, got %c\n",
-              (char)g_current_thread_type, (char)kind);
-    std::terminate();
+       && (g_current_thread_type == thread_type::Audio
+           || g_current_thread_type == thread_type::AudioTask))
+      return;
+    else if(
+        (kind == thread_type::Gpu || kind == thread_type::GpuTask)
+        && (g_current_thread_type == thread_type::Gpu
+            || g_current_thread_type == thread_type::GpuTask))
+      return;
+    else if(
+        (kind == thread_type::Ui || kind == thread_type::UiTask)
+        && (g_current_thread_type == thread_type::Ui
+            || g_current_thread_type == thread_type::UiTask))
+      return;
+    else
+    {
+      fprintf(
+          stderr, "!! Current thread type: %c, requires: %c\n",
+          (char)g_current_thread_type, (char)kind);
+      std::terminate();
+    }
   }
+  return;
 }
 
 void set_thread_pinned(thread_type spec, int thread_index)
