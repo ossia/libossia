@@ -13,14 +13,16 @@ struct geometry
 {
   struct cpu_buffer
   {
-    std::shared_ptr<void> data;
-    int64_t size{};
+    std::shared_ptr<void> raw_data;
+    int64_t byte_size{};
   };
 
   struct gpu_buffer
   {
     void* handle{}; // Can be casted to e.g. a QRhiBuffer
+    int64_t byte_size{};
   };
+
   struct buffer
   {
     ossia::variant<cpu_buffer, gpu_buffer> data;
@@ -29,7 +31,7 @@ struct geometry
 
   struct binding
   {
-    uint32_t stride{};
+    uint32_t byte_stride{};
     enum
     {
       per_vertex,
@@ -45,23 +47,43 @@ struct geometry
 
     enum
     {
-      fp4,
-      fp3,
-      fp2,
-      fp1,
-      unsigned4,
-      unsigned2,
-      unsigned1
+      float4,
+      float3,
+      float2,
+      float1,
+      unormbyte4,
+      unormbyte2,
+      unormbyte1,
+      uint4,
+      uint3,
+      uint2,
+      uint1,
+      sint4,
+      sint3,
+      sint2,
+      sint1,
+      half4,
+      half3,
+      half2,
+      half1,
+      ushort4,
+      ushort3,
+      ushort2,
+      ushort1,
+      sshort4,
+      sshort3,
+      sshort2,
+      sshort1,
     } format
-        = fp4;
+        = float4;
 
-    uint32_t offset = 0;
+    uint32_t byte_offset = 0;
   };
 
   struct input
   {
     int buffer{};
-    int64_t offset{};
+    int64_t byte_offset{};
   };
 
   ossia::small_vector<buffer, 2> buffers;
@@ -69,7 +91,7 @@ struct geometry
   ossia::small_vector<attribute, 2> attributes;
   ossia::small_vector<input, 2> input;
 
-  int vertices{}, indices{};
+  int vertices{}, indices{}, instances{1};
   enum
   {
     triangles,
@@ -94,7 +116,7 @@ struct geometry
   struct
   {
     int buffer{-1};
-    int64_t offset{};
+    int64_t byte_offset{};
     enum
     {
       uint16,
