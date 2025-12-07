@@ -47,15 +47,25 @@ thread_type get_current_thread_type();
 OSSIA_EXPORT
 void set_thread_pinned(thread_type kind, int thread_index);
 
+// Allows e.g. Audio and AudioTask
+OSSIA_EXPORT
+void ensure_current_thread_kind(thread_type kind);
+
+// Request explicitly Audio
 OSSIA_EXPORT
 void ensure_current_thread(thread_type kind);
 
 #if defined(NDEBUG)
+#define OSSIA_ENSURE_CURRENT_THREAD_KIND(a) \
+  do                                        \
+  {                                         \
+  } while(0)
 #define OSSIA_ENSURE_CURRENT_THREAD(a) \
   do                                   \
   {                                    \
   } while(0)
 #else
+#define OSSIA_ENSURE_CURRENT_THREAD_KIND(a) ::ossia::ensure_current_thread_kind(a)
 #define OSSIA_ENSURE_CURRENT_THREAD(a) ::ossia::ensure_current_thread(a)
 #endif
 
