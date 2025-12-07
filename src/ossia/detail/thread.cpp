@@ -294,6 +294,18 @@ void ensure_current_thread(thread_type kind)
   assert((unsigned char)g_current_thread_type != 255);
   if((unsigned char)kind != (unsigned char)g_current_thread_type)
   {
+    fprintf(
+        stderr, "!! Current thread type: %c, requires: %c\n",
+        (char)g_current_thread_type, (char)kind);
+    std::terminate();
+  }
+}
+
+void ensure_current_thread_kind(thread_type kind)
+{
+  assert((unsigned char)g_current_thread_type != 255);
+  if((unsigned char)kind != (unsigned char)g_current_thread_type)
+  {
     if((kind == thread_type::Audio || kind == thread_type::AudioTask)
        && (g_current_thread_type == thread_type::Audio
            || g_current_thread_type == thread_type::AudioTask))
