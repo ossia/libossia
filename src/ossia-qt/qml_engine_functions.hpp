@@ -67,6 +67,7 @@ public:
   const ossia::destination_t& find_address(const QString&);
 
   qml_device_cache devices;
+  void clearCache() { m_address_cache.clear(); }
 
 private:
   qml_device_push_function on_push;

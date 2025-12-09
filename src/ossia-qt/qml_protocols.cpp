@@ -117,8 +117,13 @@ QObject* qml_protocols::outboundUDP(QVariant config)
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(...) {
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::inboundUDP(QVariant config)
@@ -132,14 +137,25 @@ QObject* qml_protocols::inboundUDP(QVariant config)
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
+  qDebug()<<"Opening"<<bind<<port;
   auto sock = new qml_udp_inbound_socket{ossia_conf, context->context};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::osc(QVariant config)
@@ -163,8 +179,18 @@ QObject* qml_protocols::outboundUnixDatagram(QVariant config)
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 #else
   return nullptr;
 #endif
@@ -184,8 +210,18 @@ QObject* qml_protocols::inboundUnixDatagram(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 #else
   return nullptr;
 #endif
@@ -204,8 +240,18 @@ QObject* qml_protocols::outboundUnixStream(QVariant config)
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 #else
   return nullptr;
 #endif
@@ -225,8 +271,19 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onConnection = conf["onConnection"].value<QJSValue>();
-  sock->open();
-  return sock;
+
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 #else
   return nullptr;
 #endif
@@ -247,8 +304,18 @@ QObject* qml_protocols::outboundTCP(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::inboundTCP(QVariant config)
@@ -268,8 +335,18 @@ QObject* qml_protocols::inboundTCP(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onConnection = conf["onConnection"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::outboundWS(QVariant config)
@@ -288,8 +365,18 @@ QObject* qml_protocols::outboundWS(QVariant config)
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onTextMessage = conf["onTextMessage"].value<QJSValue>();
   sock->onBinaryMessage = conf["onBinaryMessage"].value<QJSValue>();
-  sock->open();
-  return sock;
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::inboundWS(QVariant config)
@@ -309,8 +396,19 @@ QObject* qml_protocols::inboundWS(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onConnection = conf["onConnection"].value<QJSValue>();
-  sock->open();
-  return sock;
+
+  try {
+    sock->open();
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 void qml_protocols::http(QUrl qurl, QJSValue val, QString verb)
@@ -321,8 +419,15 @@ void qml_protocols::http(QUrl qurl, QJSValue val, QString verb)
   auto hrq = std::make_shared<request_type>(
       a, e, this->context->context, "ossia score", path.toStdString(),
       verb.toStdString());
+  try {
   hrq->resolve(qurl.host().toStdString(), std::to_string(qurl.port(80)));
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+  } catch(...) {
+    qDebug() << "Error while sending HTTP request";
+  }
 }
+
 
 static void midi_port_information(
     QJSEngine* qjs, const libremidi::port_information& port, QJSValue& portInfo)
@@ -602,9 +707,18 @@ QObject* qml_protocols::inboundMIDI(QJSValue config)
   sock->onMessage = config.property("onMessage");
 
   // Open the MIDI port
-  sock->open(port);
-
-  return sock;
+  try {
+    sock->open(port);
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::inboundUMP(QJSValue config)
@@ -622,9 +736,18 @@ QObject* qml_protocols::inboundUMP(QJSValue config)
   sock->onMessage = config.property("onMessage");
 
   // Open the UMP port
-  sock->open(port);
-
-  return sock;
+  try {
+    sock->open(port);
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::outboundMIDI(QJSValue config)
@@ -641,9 +764,18 @@ QObject* qml_protocols::outboundMIDI(QJSValue config)
   sock->onError = config.property("onError");
 
   // Open the MIDI port
-  sock->open(port);
-
-  return sock;
+  try {
+    sock->open(port);
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::outboundUMP(QJSValue config)
@@ -660,9 +792,18 @@ QObject* qml_protocols::outboundUMP(QJSValue config)
   sock->onError = config.property("onError");
 
   // Open the UMP port
-  sock->open(port);
-
-  return sock;
+  try {
+    sock->open(port);
+    return sock;
+  } catch(const std::exception& e) {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  } catch(...) {
+    qDebug() << "Error while creating device";
+    delete sock;
+    return nullptr;
+  }
 }
 
 QObject* qml_protocols::serial(QVariant config)

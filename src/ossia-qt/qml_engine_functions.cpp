@@ -123,7 +123,8 @@ void qml_engine_functions::write(const QString& address, const QVariant& value)
 
     ossia::apply_to_destination(
         addr, devices, [&](ossia::net::parameter_base* addr, bool unique) {
-      on_push(*addr, m_port_cache);
+      if(addr)
+        on_push(*addr, m_port_cache);
     }, ossia::do_nothing_for_nodes{});
   }
 }
