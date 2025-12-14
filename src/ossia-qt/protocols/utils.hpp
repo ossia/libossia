@@ -28,17 +28,18 @@ struct protocols_sender
         ossia::net::full_parameter_data, ossia::net::osc_1_0_policy, writer_type>;
 
     ossia::net::full_parameter_data p;
+    const std::string addr = address.toStdString();
 
     switch(values.size())
     {
       case 0: {
         ossia::value{ossia::impulse{}}.apply(
-            send_visitor{p, address.toStdString(), writer_type{self.socket}});
+            send_visitor{p, addr, writer_type{self.socket}});
         break;
       }
       case 1: {
         auto v = ossia::qt::value_from_js(values[0]);
-        v.apply(send_visitor{p, address.toStdString(), writer_type{self.socket}});
+        v.apply(send_visitor{p, addr, writer_type{self.socket}});
         break;
       }
       default: {
@@ -47,7 +48,7 @@ struct protocols_sender
         for(const auto& v : values)
           vec.push_back(ossia::qt::value_from_js(v));
         ossia::value vvec(std::move(vec));
-        vvec.apply(send_visitor{p, address.toStdString(), writer_type{self.socket}});
+        vvec.apply(send_visitor{p, addr, writer_type{self.socket}});
       }
     }
   }

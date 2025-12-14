@@ -496,7 +496,8 @@ void serial_protocol::do_write_osc_impl(
   using send_visitor = ossia::net::osc_value_send_visitor<
       ossia::net::parameter_base, ossia::net::osc_1_1_policy, Writer>;
 
-  send_visitor vis{addr, addr.data().osc_address.toStdString(), w};
+  const std::string addr_str = addr.data().osc_address.toStdString();
+  send_visitor vis{addr, addr_str, w};
   v.apply(vis);
 }
 
