@@ -1,5 +1,5 @@
 set(BOOST_MINOR_MINIMAL 87)
-set(BOOST_MINOR_LATEST 88)
+set(BOOST_MINOR_LATEST 90)
 
 find_package(Boost 1.${BOOST_MINOR_MINIMAL} EXACT QUIET GLOBAL)
 if (NOT Boost_FOUND)
@@ -26,7 +26,9 @@ if (NOT Boost_FOUND)
 
   find_package(Boost 1.${BOOST_MINOR_LATEST} REQUIRED GLOBAL)
 endif()
-
+if(BOOST_ROOT)
+  set(Boost_INCLUDE_DIR "${BOOST_ROOT}" CACHE INTERNAL "")
+endif()
 add_library(boost INTERFACE IMPORTED GLOBAL)
 set_property(TARGET boost PROPERTY
              INTERFACE_INCLUDE_DIRECTORIES "${Boost_INCLUDE_DIR}")
