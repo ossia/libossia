@@ -41,4 +41,14 @@ void do_fade(
   }
 }
 
+void do_zero(audio_channel& ap, std::size_t start, std::size_t end)
+{
+  using namespace std;
+  if(end < start)
+    swap(start, end);
+  for(std::size_t j = start; j < end; j++)
+  {
+    ap[j] = 0.;
+  }
+}
 }

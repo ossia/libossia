@@ -59,13 +59,19 @@ struct sound_sampler
         info->m_loop_duration_samples, info->m_loops, audio_array);
   }
 
+  template <typename T>
+  void fetch_audio_backward(
+      const int64_t start, const int64_t samples_to_write,
+      T** const audio_array) const noexcept
+  {
+    read_audio_from_buffer_backward(
+        m_data, start, samples_to_write, info->m_start_offset_samples,
+        info->m_loop_duration_samples, info->m_loops, audio_array);
+  }
+
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept
   {
     if(m_data.empty())
-      return;
-
-    // TODO do the backwards play head
-    if(!t.forward())
       return;
 
     const std::size_t chan = m_data.size();
@@ -83,7 +89,9 @@ struct sound_sampler
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if(t.tempo > 0)
+
+    // Handle transport for both forward and backward playback
+    if(t.forward())
     {
       if(t.prev_date < info->m_prev_date)
       {
@@ -105,31 +113,63 @@ struct sound_sampler
           transport(t.prev_date);
         }
       }
-
-      for(std::size_t i = 0; i < chan; ++i)
+    }
+    else
+    {
+      // Backward playback transport handling
+      if(t.prev_date > info->m_prev_date)
       {
-        ap.channel(i).resize(e.bufferSize());
+        // Sentinel: we never played.
+        if(info->m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
+        {
+          transport(t.prev_date);
+        }
+        else
+        {
+          transport(t.prev_date);
+        }
       }
+    }
 
-      double stretch_ratio = info->update_stretch(t, e);
+    for(std::size_t i = 0; i < chan; ++i)
+    {
+      ap.channel(i).resize(e.bufferSize());
+    }
 
-      // Resample
-      info->m_resampler.run(
-          *this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write,
-          samples_offset, ap);
+    const double stretch_ratio = info->update_stretch(t, e);
+    const double abs_stretch_ratio = std::abs(stretch_ratio);
 
+    // Resample (handles both forward and backward internally)
+    info->m_resampler.run(
+        *this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write,
+        samples_offset, ap);
+
+    const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
+    const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);
+    if(abs_stretch_ratio > 70. && m_last_stretch > 70.)
+    {
+      [[unlikely]];
+      for(std::size_t i = 0; i < chan; i++)
+      {
+        ossia::snd::do_zero(ap.channel(i), samples_offset, samples_to_write);
+      }
+    }
+    else
+    {
+      [[likely]];
       for(std::size_t i = 0; i < chan; i++)
       {
         ossia::snd::do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.channel(i), samples_offset,
+            start_discontinuous, end_discontinuous, ap.channel(i), samples_offset,
             samples_to_write);
       }
-
-      ossia::snd::perform_upmix(this->upmix, chan, ap);
-      ossia::snd::perform_start_offset(this->start, ap);
-
-      info->m_prev_date = t.date;
     }
+
+    ossia::snd::perform_upmix(this->upmix, chan, ap);
+    ossia::snd::perform_start_offset(this->start, ap);
+
+    info->m_prev_date = t.date;
+    m_last_stretch = abs_stretch_ratio;
   }
 
   sound_processing_info* info{};
@@ -142,5 +182,6 @@ struct sound_sampler
 
   std::size_t m_dataSampleRate{};
   audio_handle m_handle{};
+  double m_last_stretch{1.0};
 };
 }

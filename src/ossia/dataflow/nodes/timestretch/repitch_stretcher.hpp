@@ -14,6 +14,7 @@
 #include <samplerate.h>
 
 #include <cinttypes>
+#include <cmath>
 namespace ossia
 {
 static constexpr auto get_samplerate_preset(ossia::audio_stretch_mode mode)
@@ -102,56 +103,89 @@ struct repitch_stretcher
 
     int64_t num_samples_available = repitchers[0].data.size();
 
-    while(num_samples_available < samples_to_write)
+    if(t.forward())
     {
-      audio_fetcher.fetch_audio(
-          next_sample_to_read, samples_to_read, input_channels.data());
+      while(num_samples_available < samples_to_write)
+      {
+        audio_fetcher.fetch_audio(
+            next_sample_to_read, samples_to_read, input_channels.data());
 
-      SRC_DATA data;
+        SRC_DATA data;
+        for(std::size_t i = 0; i < chan; ++i)
+        {
+          data.data_in = repitchers[i].input_buffer.data();
+          data.data_out = output;
+          data.input_frames = samples_to_read;
+          data.output_frames = samples_to_write - num_samples_available;
+          data.input_frames_used = 0;
+          data.output_frames_gen = 0;
+          data.src_ratio = std::min(70., tempo_ratio);
+          data.end_of_input = 0;
+
+          // Resample
+          src_process(repitchers[i].resampler, &data);
+
+          for(int j = 0; j < data.output_frames_gen; j++)
+            repitchers[i].data.push_back(output[j]);
+        }
+        next_sample_to_read += data.input_frames_used;
+        samples_to_read = 16;
+        num_samples_available = repitchers[0].data.size();
+      }
+
       for(std::size_t i = 0; i < chan; ++i)
       {
-        data.data_in = repitchers[i].input_buffer.data();
-        data.data_out = output;
-        data.input_frames = samples_to_read;
-        data.output_frames = samples_to_write - num_samples_available;
-        data.input_frames_used = 0;
-        data.output_frames_gen = 0;
-        data.src_ratio = tempo_ratio;
-        data.end_of_input = 0;
-
-        // Resample
-        src_process(repitchers[i].resampler, &data);
-
-        // Put output in circular buffer
-        /*
-        if(data.output_frames_gen == 0)
+        auto it = repitchers[i].data.begin();
+        for(int j = 0; j < samples_to_write; j++)
         {
-          std::cerr << "we did not write anything new "
-                    << data.input_frames  << " "
-                    << data.output_frames << " "
-                    << data.input_frames_used  << " "
-                    << data.output_frames_gen << " "
-                    << num_samples_written << std::endl;
+          ap[i][j + samples_offset] = double(*it);
+          ++it;
         }
-        */
-        for(int j = 0; j < data.output_frames_gen; j++)
-          repitchers[i].data.push_back(output[j]);
+
+        repitchers[i].data.erase_begin(samples_to_write);
       }
-      next_sample_to_read += data.input_frames_used;
-      samples_to_read = 16;
-      num_samples_available = repitchers[0].data.size();
     }
-
-    for(std::size_t i = 0; i < chan; ++i)
+    else
     {
-      auto it = repitchers[i].data.begin();
-      for(int j = 0; j < samples_to_write; j++)
+      // Backward playback
+      while(num_samples_available < samples_to_write)
       {
-        ap[i][j + samples_offset] = double(*it);
-        ++it;
+        audio_fetcher.fetch_audio_backward(
+            next_sample_to_read, samples_to_read, input_channels.data());
+
+        SRC_DATA data;
+        for(std::size_t i = 0; i < chan; ++i)
+        {
+          data.data_in = repitchers[i].input_buffer.data();
+          data.data_out = output;
+          data.input_frames = samples_to_read;
+          data.output_frames = samples_to_write - num_samples_available;
+          data.input_frames_used = 0;
+          data.output_frames_gen = 0;
+          data.src_ratio = std::min(70., std::abs(tempo_ratio));
+          data.end_of_input = 0;
+
+          src_process(repitchers[i].resampler, &data);
+
+          for(int j = 0; j < data.output_frames_gen; j++)
+            repitchers[i].data.push_back(output[j]);
+        }
+        next_sample_to_read -= data.input_frames_used;
+        samples_to_read = 16;
+        num_samples_available = repitchers[0].data.size();
       }
 
-      repitchers[i].data.erase_begin(samples_to_write);
+      for(std::size_t i = 0; i < chan; ++i)
+      {
+        auto it = repitchers[i].data.begin();
+        for(int j = 0; j < samples_to_write; j++)
+        {
+          ap[i][j + samples_offset] = double(*it);
+          ++it;
+        }
+
+        repitchers[i].data.erase_begin(samples_to_write);
+      }
     }
   }
 };
