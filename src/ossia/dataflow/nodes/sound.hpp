@@ -32,9 +32,7 @@ sample_info(int64_t bufferSize, double durationRatio, const ossia::token_request
     return _;
 
   _.samples_to_read = t.physical_read_duration(durationRatio);
-  _.samples_to_write = std::min(
-      t.physical_write_duration(durationRatio),
-      t.safe_physical_write_duration(durationRatio, bufferSize));
+  _.samples_to_write = t.safe_physical_write_duration(durationRatio, bufferSize);
 
   return _;
 }
@@ -232,6 +230,7 @@ struct sound_processing_info
   int64_t m_loop_duration_samples{};
   int64_t m_start_offset_samples{};
 
+  double m_last_stretch{1.0};
   ossia::resampler m_resampler{};
 
   bool m_loops{};

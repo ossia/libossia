@@ -259,13 +259,218 @@ public:
     }
   }
 
+  // Backward audio fetching - reads samples going backwards from 'start'
+  void fetch_audio_backward(
+      int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
+  {
+    const int channels = this->channels();
+    const int file_duration = this->duration();
+
+    m_resampleBuffer.resize(channels);
+    for(auto& buf : m_resampleBuffer)
+      buf.resize(samples_to_write);
+
+    float** audio_array = (float**)alloca(sizeof(float*) * channels);
+    for(int i = 0; i < channels; i++)
+    {
+      m_resampleBuffer[i].resize(samples_to_write);
+      audio_array[i] = m_resampleBuffer[i].data();
+    }
+
+    ossia::mutable_audio_span<float> source(channels);
+
+    double* frame_data{};
+    if(samples_to_write * channels > 10000)
+    {
+      m_safetyBuffer.resize(samples_to_write * channels);
+      frame_data = m_safetyBuffer.data();
+    }
+    else
+    {
+      frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
+    }
+
+    if(m_loops && m_loop_duration_samples > 0)
+    {
+      // Looping backward: when we hit 0, wrap to loop_duration
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        int64_t raw_pos = start - k;
+        int64_t wrapped_pos
+            = ((raw_pos % m_loop_duration_samples) + m_loop_duration_samples)
+              % m_loop_duration_samples;
+        int64_t pos = m_start_offset_samples + wrapped_pos;
+
+        if(pos < 0 || pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const auto count = this->m_handle.read_pcm_frames(1, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = std::span(audio_array[i] + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
+    }
+    else
+    {
+      // Non-looping backward: read sample by sample going backwards
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        int64_t pos = m_start_offset_samples + start - k;
+
+        if(pos < 0 || pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const auto count = this->m_handle.read_pcm_frames(1, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = std::span(audio_array[i] + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
+    }
+
+    for(int i = 0; i < channels; i++)
+      std::copy_n(audio_array[i], samples_to_write, audio_array_base[i]);
+  }
+
+  void
+  fetch_audio_backward(int64_t start, int64_t samples_to_write, float** audio_array) noexcept
+  {
+    const int channels = this->channels();
+    const int file_duration = this->duration();
+
+    ossia::mutable_audio_span<float> source(channels);
+
+    double* frame_data{};
+    if(samples_to_write * channels > 10000)
+    {
+      m_safetyBuffer.resize(samples_to_write * channels);
+      frame_data = m_safetyBuffer.data();
+    }
+    else
+    {
+      frame_data = (double*)alloca(sizeof(double) * samples_to_write * channels);
+    }
+
+    if(m_loops && m_loop_duration_samples > 0)
+    {
+      // Looping backward
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        int64_t raw_pos = start - k;
+        int64_t wrapped_pos
+            = ((raw_pos % m_loop_duration_samples) + m_loop_duration_samples)
+              % m_loop_duration_samples;
+        int64_t pos = m_start_offset_samples + wrapped_pos;
+
+        if(pos < 0 || pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const auto count = this->m_handle.read_pcm_frames(1, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = std::span(audio_array[i] + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
+    }
+    else
+    {
+      // Non-looping backward
+      for(int k = 0; k < samples_to_write; k++)
+      {
+        int64_t pos = m_start_offset_samples + start - k;
+
+        if(pos < 0 || pos >= file_duration)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const bool ok = this->m_handle.seek_to_pcm_frame(pos);
+        if(!ok)
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+          continue;
+        }
+
+        const auto count = this->m_handle.read_pcm_frames(1, frame_data);
+        if(count >= 0)
+        {
+          for(int i = 0; i < channels; i++)
+            source[i] = std::span(audio_array[i] + k, count);
+          m_converter(source, frame_data, count);
+        }
+        else
+        {
+          for(int i = 0; i < channels; i++)
+            audio_array[i][k] = 0;
+        }
+      }
+    }
+  }
+
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     if(!m_handle || !m_converter)
-      return;
-
-    // TODO do the backwards play head
-    if(!t.forward())
       return;
 
     const auto channels = m_handle.channels();
@@ -282,7 +487,9 @@ public:
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if(t.tempo > 0)
+
+    // Handle transport for both forward and backward playback
+    if(t.forward())
     {
       if(t.prev_date < m_prev_date)
       {
@@ -304,36 +511,64 @@ public:
           transport(t.prev_date);
         }
       }
-
-      for(std::size_t chan = 0; chan < channels; chan++)
+    }
+    else
+    {
+      // Backward playback transport handling
+      if(t.prev_date > m_prev_date)
       {
-        ap.channel(chan).resize(e.bufferSize());
+        // Sentinel: we never played.
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
+        {
+          transport(t.prev_date);
+        }
+        else
+        {
+          transport(t.prev_date);
+        }
       }
+    }
 
-      double stretch_ratio = update_stretch(t, e);
+    for(std::size_t chan = 0; chan < channels; chan++)
+    {
+      ap.channel(chan).resize(e.bufferSize());
+    }
 
-      // Resample
-      m_resampler.run(
-          *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
-          samples_offset, ap);
+    const double stretch_ratio = update_stretch(t, e);
+    const double abs_stretch_ratio = std::abs(stretch_ratio);
 
+    // Resample (handles both forward and backward internally)
+    m_resampler.run(
+        *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
+        samples_offset, ap);
+
+    const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
+    const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);
+    if(abs_stretch_ratio > 70. && m_last_stretch > 70.)
+    {
+      [[unlikely]];
+      for(std::size_t i = 0; i < channels; i++)
+      {
+        ossia::snd::do_zero(ap.channel(i), samples_offset, samples_to_write);
+      }
+    }
+    else
+    {
+      [[likely]];
       for(std::size_t chan = 0; chan < channels; chan++)
       {
         // fade
         snd::do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.channel(chan), samples_offset,
+            start_discontinuous, end_discontinuous, ap.channel(chan), samples_offset,
             samples_to_write);
       }
-
-      ossia::snd::perform_upmix(this->upmix, channels, ap);
-      ossia::snd::perform_start_offset(this->start, ap);
-
-      m_prev_date = t.date;
     }
-    else
-    {
-      /* TODO */
-    }
+
+    ossia::snd::perform_upmix(this->upmix, channels, ap);
+    ossia::snd::perform_start_offset(this->start, ap);
+
+    m_prev_date = t.date;
+    m_last_stretch = abs_stretch_ratio;
   }
 
   [[nodiscard]] std::size_t channels() const

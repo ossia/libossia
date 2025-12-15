@@ -40,7 +40,13 @@ struct raw_stretcher
     }
     else
     {
-      // TODO
+      // Backward playback
+      double** output = (double**)alloca(sizeof(double*) * chan);
+      for(std::size_t i = 0; i < chan; i++)
+        output[i] = ap[i].data() + samples_offset;
+
+      audio_fetcher.fetch_audio_backward(next_sample_to_read, samples_to_write, output);
+      next_sample_to_read -= samples_to_write;
     }
   }
 };

@@ -10,6 +10,7 @@
 #include <ossia/detail/libav.hpp>
 #include <ossia/detail/pod_vector.hpp>
 
+#include <algorithm>
 #include <type_traits>
 
 extern "C" {
@@ -155,13 +156,69 @@ public:
     }
   }
 
+  template <typename T>
+  void fetch_audio_backward(
+      int64_t start, int64_t samples_to_write, T** audio_array_base) noexcept
+  {
+    const std::size_t channels = this->channels();
+    if(channels == 0)
+      return;
+
+    // For backward playback with libav:
+    // 1. Calculate the position we need to start reading from (going backwards)
+    // 2. Seek to that earlier position
+    // 3. Read forward
+    // 4. Reverse the samples
+
+    // Calculate backward start position
+    int64_t backward_start = start - samples_to_write + 1;
+    if(backward_start < 0)
+      backward_start = 0;
+
+    // Seek to the backward position
+    // Convert sample position to flicks for seeking
+    const int64_t sample_rate = m_handle.stream->codecpar->sample_rate;
+    if(sample_rate > 0)
+    {
+      // flicks = samples * flicks_per_second / sample_rate
+      constexpr int64_t flicks_per_second = 705600000LL;
+      int64_t flicks_pos = backward_start * flicks_per_second / sample_rate;
+
+      m_channel_q.clear();
+      ossia::seek_to_flick(
+          m_handle.format, m_handle.codec, m_handle.stream, flicks_pos, AVSEEK_FLAG_BACKWARD);
+    }
+
+    // Fetch the audio forward
+    fetch_from_libav(samples_to_write);
+
+    // Read into output, then reverse
+    for(int64_t k = 0; k < samples_to_write; k++)
+    {
+      for(std::size_t chan = 0; chan < channels; chan++)
+      {
+        if(m_channel_q.size() > 0)
+        {
+          audio_array_base[chan][k] = m_channel_q.front();
+          m_channel_q.pop_front();
+        }
+        else
+        {
+          audio_array_base[chan][k] = 0.;
+        }
+      }
+    }
+
+    // Reverse each channel in-place
+    for(std::size_t chan = 0; chan < channels; chan++)
+    {
+      std::reverse(audio_array_base[chan], audio_array_base[chan] + samples_to_write);
+    }
+  }
+
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
     if(!m_handle)
-      return;
-
-    // TODO do the backwards play head
-    if(!t.forward())
       return;
 
     const auto channels = m_handle.channels();
@@ -178,7 +235,9 @@ public:
     assert(samples_to_write > 0);
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
-    if(t.tempo > 0)
+
+    // Handle transport for both forward and backward playback
+    if(t.forward())
     {
       if(t.prev_date < m_prev_date)
       {
@@ -200,36 +259,64 @@ public:
           transport(t.prev_date);
         }
       }
-
-      for(int chan = 0; chan < channels; chan++)
+    }
+    else
+    {
+      // Backward playback transport handling
+      if(t.prev_date > m_prev_date)
       {
-        ap.channel(chan).resize(e.bufferSize());
+        // Sentinel: we never played.
+        if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
+        {
+          transport(t.prev_date);
+        }
+        else
+        {
+          transport(t.prev_date);
+        }
       }
+    }
 
-      double stretch_ratio = update_stretch(t, e);
+    for(int chan = 0; chan < channels; chan++)
+    {
+      ap.channel(chan).resize(e.bufferSize());
+    }
 
-      // Resample
-      m_resampler.run(
-          *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
-          samples_offset, ap);
+    const double stretch_ratio = update_stretch(t, e);
+    const double abs_stretch_ratio = std::abs(stretch_ratio);
 
+    // Resample (handles both forward and backward internally)
+    m_resampler.run(
+        *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
+        samples_offset, ap);
+
+    const bool start_discontinuous = t.start_discontinuous || (m_last_stretch > 70.);
+    const bool end_discontinuous = t.end_discontinuous || (abs_stretch_ratio > 70.);
+    if(abs_stretch_ratio > 70. && m_last_stretch > 70.)
+    {
+      [[unlikely]];
+      for(std::size_t i = 0; i < channels; i++)
+      {
+        ossia::snd::do_zero(ap.channel(i), samples_offset, samples_to_write);
+      }
+    }
+    else
+    {
+      [[likely]];
       for(int chan = 0; chan < channels; chan++)
       {
         // fade
         snd::do_fade(
-            t.start_discontinuous, t.end_discontinuous, ap.channel(chan), samples_offset,
+            start_discontinuous, end_discontinuous, ap.channel(chan), samples_offset,
             samples_to_write);
       }
-
-      ossia::snd::perform_upmix(this->upmix, channels, ap);
-      ossia::snd::perform_start_offset(this->start, ap);
-
-      m_prev_date = t.date;
     }
-    else
-    {
-      /* TODO */
-    }
+
+    ossia::snd::perform_upmix(this->upmix, channels, ap);
+    ossia::snd::perform_start_offset(this->start, ap);
+
+    m_prev_date = t.date;
+    m_last_stretch = abs_stretch_ratio;
   }
 
   [[nodiscard]] std::size_t channels() const
