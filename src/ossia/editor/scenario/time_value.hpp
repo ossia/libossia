@@ -142,13 +142,11 @@ struct OSSIA_EXPORT time_value
     }
     else if(lhs.impl >= 0 && rhs.impl < 0)
     {
-      uint64_t l = lhs.impl;
-      return l + rhs.impl >= infinite_min;
+      return false;
     }
     else if(lhs.impl < 0 && rhs.impl >= 0)
     {
-      uint64_t r = rhs.impl;
-      return lhs.impl + r >= infinite_min;
+      return false;
     }
     else if(lhs.impl < 0 && rhs.impl < 0)
     {
