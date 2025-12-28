@@ -795,6 +795,24 @@ QVariant ossia_to_qvariant::operator()(QMetaType::Type type, const value& ossia_
       }
       return QVariant::fromValue(std::move(vars));
     }
+    case QMetaType::QVariantMap: {
+      auto val = convert<ossia::value_map_type>(ossia_val);
+      QVariantMap vars;
+      for(auto& [k, v] : val)
+      {
+        vars.insert(QString::fromStdString(k), v.apply(ossia_to_qvariant{}));
+      }
+      return QVariant::fromValue(std::move(vars));
+    }
+    case QMetaType::QVariantHash: {
+      auto val = convert<ossia::value_map_type>(ossia_val);
+      QVariantHash vars;
+      for(auto& [k, v] : val)
+      {
+        vars.insert(QString::fromStdString(k), v.apply(ossia_to_qvariant{}));
+      }
+      return QVariant::fromValue(std::move(vars));
+    }
     case QMetaType::QDate:
     // TODO double ?
     default: {
@@ -922,6 +940,316 @@ value qt_to_ossia::operator()(const QVariant& v)
     }
   }
 }
+
+void registerQVariantConverters()
+{
+  // ossia -> qvariant
+  QMetaType::registerConverter<ossia::value, bool>([](const ossia::value& ossia_val) -> bool {
+    return ossia::convert<bool>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, QTime>([](const ossia::value& ossia_val) -> QTime {
+    return QTime().addMSecs(convert<int>(ossia_val));
+  });
+  QMetaType::registerConverter<ossia::value, int>([](const ossia::value& ossia_val) -> int {
+    return ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, qint16>([](const ossia::value& ossia_val) -> qint16 {
+    return (qint16)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, quint16>([](const ossia::value& ossia_val) -> quint16 {
+    return (quint16)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, quint32>([](const ossia::value& ossia_val) -> quint32 {
+    return (quint32)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, qlonglong>([](const ossia::value& ossia_val) -> qlonglong {
+    return (qlonglong)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, qulonglong>([](const ossia::value& ossia_val) -> qulonglong {
+    return (qulonglong)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, QChar>([](const ossia::value& ossia_val) -> QChar {
+    return QChar::fromLatin1(ossia::convert<int>(ossia_val));
+  });
+  QMetaType::registerConverter<ossia::value, char>([](const ossia::value& ossia_val) -> char {
+    return char(ossia::convert<int>(ossia_val));
+  });
+  QMetaType::registerConverter<ossia::value, unsigned char>([](const ossia::value& ossia_val) -> unsigned char {
+    return (unsigned char)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, signed char>([](const ossia::value& ossia_val) -> signed char {
+    return (signed char)ossia::convert<int>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, QString>([](const ossia::value& ossia_val) -> QString {
+    return QString::fromStdString(ossia::convert<std::string>(ossia_val));
+  });
+  QMetaType::registerConverter<ossia::value, QUrl>([](const ossia::value& ossia_val) -> QUrl {
+    return QUrl{QString::fromStdString(ossia::convert<std::string>(ossia_val))};
+  });
+  QMetaType::registerConverter<ossia::value, QByteArray>([](const ossia::value& ossia_val) -> QByteArray {
+    return QByteArray::fromStdString(ossia::convert<std::string>(ossia_val));
+  });
+  QMetaType::registerConverter<ossia::value, float>([](const ossia::value& ossia_val) -> float {
+    return ossia::convert<float>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, double>([](const ossia::value& ossia_val) -> double {
+    return ossia::convert<double>(ossia_val);
+  });
+  QMetaType::registerConverter<ossia::value, QColor>([](const ossia::value& ossia_val) -> QColor {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QColor::fromRgbF(val[1], val[2], val[3], val[0]);
+  });
+  QMetaType::registerConverter<ossia::value, QPoint>([](const ossia::value& ossia_val) -> QPoint {
+    auto val = ossia::convert<ossia::vec2f>(ossia_val);
+    return QPoint(val[0], val[1]);
+  });
+  QMetaType::registerConverter<ossia::value, QPointF>([](const ossia::value& ossia_val) -> QPointF {
+    auto val = ossia::convert<ossia::vec2f>(ossia_val);
+    return QPointF(val[0], val[1]);
+  });
+  QMetaType::registerConverter<ossia::value, QVector2D>([](const ossia::value& ossia_val) -> QVector2D {
+    auto val = ossia::convert<ossia::vec2f>(ossia_val);
+    return QVector2D(val[0], val[1]);
+  });
+  QMetaType::registerConverter<ossia::value, QVector3D>([](const ossia::value& ossia_val) -> QVector3D {
+    auto val = ossia::convert<ossia::vec3f>(ossia_val);
+    return QVector3D(val[0], val[1], val[2]);
+  });
+  QMetaType::registerConverter<ossia::value, QVector4D>([](const ossia::value& ossia_val) -> QVector4D {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QVector4D(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QQuaternion>([](const ossia::value& ossia_val) -> QQuaternion {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QQuaternion(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QLine>([](const ossia::value& ossia_val) -> QLine {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QLine(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QLineF>([](const ossia::value& ossia_val) -> QLineF {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QLineF(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QRect>([](const ossia::value& ossia_val) -> QRect {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QRect(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QRectF>([](const ossia::value& ossia_val) -> QRectF {
+    auto val = ossia::convert<ossia::vec4f>(ossia_val);
+    return QRectF(val[0], val[1], val[2], val[3]);
+  });
+  QMetaType::registerConverter<ossia::value, QSize>([](const ossia::value& ossia_val) -> QSize {
+    auto val = ossia::convert<ossia::vec2f>(ossia_val);
+    return QSize(val[0], val[1]);
+  });
+  QMetaType::registerConverter<ossia::value, QSizeF>([](const ossia::value& ossia_val) -> QSizeF {
+    auto val = ossia::convert<ossia::vec2f>(ossia_val);
+    return QSizeF(val[0], val[1]);
+  });
+  QMetaType::registerConverter<ossia::value, QVariantList>([](const ossia::value& ossia_val) -> QVariantList {
+    auto val = ossia::convert<std::vector<ossia::value>>(ossia_val);
+    QVariantList vars;
+    vars.reserve(val.size());
+    for(auto& v : val)
+    {
+      vars.push_back(v.apply(ossia_to_qvariant{}));
+    }
+    return vars;
+  });
+  QMetaType::registerConverter<ossia::value, QStringList>([](const ossia::value& ossia_val) -> QStringList {
+    auto val = ossia::convert<std::vector<ossia::value>>(ossia_val);
+    QStringList vars;
+    vars.reserve(val.size());
+    for(auto& v : val)
+    {
+      vars.push_back(QString::fromStdString(ossia::convert<std::string>(v)));
+    }
+    return vars;
+  });
+  QMetaType::registerConverter<ossia::value, QByteArrayList>([](const ossia::value& ossia_val) -> QByteArrayList {
+    auto val = ossia::convert<std::vector<ossia::value>>(ossia_val);
+    QByteArrayList vars;
+    vars.reserve(val.size());
+    for(auto& v : val)
+    {
+      vars.push_back(QByteArray::fromStdString(ossia::convert<std::string>(v)));
+    }
+    return vars;
+  });
+  QMetaType::registerConverter<ossia::value, QVariantMap>([](const ossia::value& ossia_val) -> QVariantMap {
+    auto val = ossia::convert<ossia::value_map_type>(ossia_val);
+    QVariantMap vars;
+    for(auto& [k, v] : val)
+    {
+      vars.insert(QString::fromStdString(k), v.apply(ossia_to_qvariant{}));
+    }
+    return vars;
+  });
+  QMetaType::registerConverter<ossia::value, QVariantHash>([](const ossia::value& ossia_val) -> QVariantHash {
+    auto val = ossia::convert<ossia::value_map_type>(ossia_val);
+    QVariantHash vars;
+    for(auto& [k, v] : val)
+    {
+      vars.insert(QString::fromStdString(k), v.apply(ossia_to_qvariant{}));
+    }
+    return vars;
+  });
+
+
+  // Qt -> ossia
+  // qvariant -> ossia
+  QMetaType::registerConverter<QTime, ossia::value>([](const QTime& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<bool, ossia::value>([](const bool& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<int, ossia::value>([](const int& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<uint, ossia::value>([](const uint& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<qlonglong, ossia::value>([](const qlonglong& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<qulonglong, ossia::value>([](const qulonglong& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<double, ossia::value>([](const double& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<long, ossia::value>([](const long& v) -> ossia::value {
+    return qt_to_ossia{}((qlonglong)v);
+  });
+  QMetaType::registerConverter<short, ossia::value>([](const short& v) -> ossia::value {
+    return qt_to_ossia{}((int)v);
+  });
+  QMetaType::registerConverter<ulong, ossia::value>([](const ulong& v) -> ossia::value {
+    return qt_to_ossia{}((qlonglong)v);
+  });
+  QMetaType::registerConverter<ushort, ossia::value>([](const ushort& v) -> ossia::value {
+    return qt_to_ossia{}((int)v);
+  });
+  QMetaType::registerConverter<char, ossia::value>([](const char& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<uchar, ossia::value>([](const uchar& v) -> ossia::value {
+    return qt_to_ossia{}((char)v);
+  });
+  QMetaType::registerConverter<signed char, ossia::value>([](const signed char& v) -> ossia::value {
+    return qt_to_ossia{}((char)v);
+  });
+  QMetaType::registerConverter<std::nullptr_t, ossia::value>([](const std::nullptr_t&) -> ossia::value {
+    return ossia::value{};
+  });
+  QMetaType::registerConverter<QChar, ossia::value>([](const QChar& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QUrl, ossia::value>([](const QUrl& v) -> ossia::value {
+    return qt_to_ossia{}(v.toString());
+  });
+  QMetaType::registerConverter<QString, ossia::value>([](const QString& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QByteArray, ossia::value>([](const QByteArray& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<float, ossia::value>([](const float& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QColor, ossia::value>([](const QColor& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QPoint, ossia::value>([](const QPoint& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QPointF, ossia::value>([](const QPointF& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVector2D, ossia::value>([](const QVector2D& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QSize, ossia::value>([](const QSize& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QSizeF, ossia::value>([](const QSizeF& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVector3D, ossia::value>([](const QVector3D& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVector4D, ossia::value>([](const QVector4D& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QQuaternion, ossia::value>([](const QQuaternion& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QLine, ossia::value>([](const QLine& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QLineF, ossia::value>([](const QLineF& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QRect, ossia::value>([](const QRect& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QRectF, ossia::value>([](const QRectF& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVariantList, ossia::value>([](const QVariantList& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVariantMap, ossia::value>([](const QVariantMap& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QVariantHash, ossia::value>([](const QVariantHash& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QJsonArray, ossia::value>([](const QJsonArray& v) -> ossia::value {
+    return qt_to_ossia{}(v.toVariantList());
+  });
+  QMetaType::registerConverter<QJsonObject, ossia::value>([](const QJsonObject& v) -> ossia::value {
+    return qt_to_ossia{}(v.toVariantMap());
+  });
+  QMetaType::registerConverter<QJsonValue, ossia::value>([](const QJsonValue& v) -> ossia::value {
+    return qt_to_ossia{}(v.toVariant());
+  });
+  QMetaType::registerConverter<QStringList, ossia::value>([](const QStringList& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QByteArrayList, ossia::value>([](const QByteArrayList& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+  QMetaType::registerConverter<QDate, ossia::value>([](const QDate& v) -> ossia::value {
+    return qt_to_ossia{}(v);
+  });
+
+#if __has_include(<QJSValue>)
+  QMetaType::registerConverter<QJSValue, ossia::value>([](const QJSValue& v) -> ossia::value {
+    return value_from_js(v);
+  });
+  QMetaType::registerConverter<QJSValueList, ossia::value>([](const QJSValueList& in_values) -> ossia::value {
+    std::vector<ossia::value> out_values;
+    out_values.reserve(in_values.size());
+    for(const auto& in_val : in_values)
+      out_values.push_back(value_from_js(in_val));
+    return out_values;
+  });
+#endif
+
+
+  // Generic cases
+  QMetaType::registerConverter<ossia::value, QVariant>([](const ossia::value& ossia_val) -> QVariant {
+    return ossia_val.apply(ossia_to_qvariant{});
+  });
+  QMetaType::registerConverter<QVariant, ossia::value>([](const QVariant& qval) -> ossia::value {
+    return qt_to_ossia{}(qval);
+  });
+
+}
+
 }
 #endif
 

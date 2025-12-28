@@ -20,7 +20,7 @@ namespace ossia::qt
 {
 struct protocols_sender
 {
-  void send_osc(this auto&& self, QByteArray address, QJSValueList values)
+  void send_osc(this auto&& self, QByteArray address, const QJSValueList& values)
   {
     using socket_type = std::remove_cvref_t<decltype(self.socket)>;
     using writer_type = ossia::net::socket_writer<socket_type>;

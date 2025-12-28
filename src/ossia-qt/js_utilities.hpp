@@ -304,6 +304,8 @@ struct ossia_to_qvariant
   }
 };
 
+OSSIA_EXPORT void registerQVariantConverters();
+
 #if defined(QT_QML_LIB)
 /**
  * @brief The js_value_outbound_visitor struct

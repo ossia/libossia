@@ -214,6 +214,7 @@ public:
 };
 
 template <typename T, typename... Args>
+  requires std::is_constructible_v<T, Args...>
 auto make_node(const execution_state& st, Args&&... args)
 {
   auto n = std::make_shared<T>(std::forward<Args>(args)...);
