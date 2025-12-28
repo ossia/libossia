@@ -26,7 +26,9 @@ enum class thread_type : unsigned char
   Audio = 'A',
   AudioTask = 'a',
   Ui = 'U',
-  UiTask = 'u'
+  UiTask = 'u',
+  Render = 'R',
+  RenderTask = 'r',
 };
 
 struct thread_spec

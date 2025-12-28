@@ -243,7 +243,6 @@ std::string get_module_path()
 
 #include <boost/unordered/concurrent_flat_map.hpp>
 
-#include <bitset>
 namespace ossia
 {
 struct cpu_pin
@@ -255,13 +254,15 @@ struct cpu_pin
   uint8_t Audio : 1 = 0;     // 'A',
   uint8_t AudioTask : 1 = 0; // = 'a',
   uint8_t Ui : 1 = 0;        // = 'U',
-  uint8_t UiTask : 1 = 0;    // = 'u'
+  uint8_t UiTask : 1 = 0;    // = 'u',
+  uint8_t Render: 1 = 0;        // = 'R',
+  uint8_t RenderTask : 1 = 0;    // = 'r'
 };
 
-static const ossia::small_vector<cpu_pin, 128>& parse_pins()
+static const ossia::small_vector<cpu_pin, 32>& parse_pins()
 {
   static const auto p = [] {
-    ossia::small_vector<cpu_pin, 128> vec;
+    ossia::small_vector<cpu_pin, 32> vec;
     auto pins = getenv("SCORE_THREAD_PINS");
     if(!pins)
       return vec;
@@ -299,6 +300,12 @@ static const ossia::small_vector<cpu_pin, 128>& parse_pins()
           break;
         case 'u':
           core.UiTask = 1;
+          break;
+        case 'R':
+          core.Render = 1;
+          break;
+        case 'r':
+          core.RenderTask = 1;
           break;
       }
     }
@@ -350,6 +357,11 @@ void ensure_current_thread_kind(thread_type kind)
         (kind == thread_type::Ui || kind == thread_type::UiTask)
         && (g_current_thread_type == thread_type::Ui
             || g_current_thread_type == thread_type::UiTask))
+      return;
+    else if(
+        (kind == thread_type::Render || kind == thread_type::RenderTask)
+        && (g_current_thread_type == thread_type::Render
+            || g_current_thread_type == thread_type::RenderTask))
       return;
     else
     {
@@ -414,6 +426,12 @@ void set_thread_pinned(thread_type spec, int thread_index)
       case 'u':
         try_pin(core.UiTask);
         break;
+      case 'R':
+        try_pin(core.Render);
+        break;
+      case 'r':
+        try_pin(core.RenderTask);
+        break;
     }
 #undef try_pin
   }
@@ -445,6 +463,11 @@ const thread_specs& get_thread_specs() noexcept
         map[thread_type::Ui].num_threads = 1;
       if(map[thread_type::UiTask].num_threads == 0)
         map[thread_type::UiTask].num_threads = 1;
+
+      if(map[thread_type::Render].num_threads == 0)
+        map[thread_type::Render].num_threads = 1;
+      if(map[thread_type::RenderTask].num_threads == 0)
+        map[thread_type::RenderTask].num_threads = 1;
     };
     if(!pins)
     {
@@ -483,6 +506,12 @@ const thread_specs& get_thread_specs() noexcept
           break;
         case 'u':
           map[thread_type::UiTask].num_threads++;
+          break;
+        case 'R':
+          map[thread_type::Render].num_threads++;
+          break;
+        case 'r':
+          map[thread_type::RenderTask].num_threads++;
           break;
       }
     }
@@ -530,6 +559,12 @@ const thread_specs& get_thread_specs() noexcept
             break;
           case 'u':
             cur = thread_type::UiTask;
+            break;
+          case 'R':
+            cur = thread_type::Render;
+            break;
+          case 'r':
+            cur = thread_type::RenderTask;
             break;
           default:
             cur_num += c;
