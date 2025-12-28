@@ -34,6 +34,7 @@ public:
     m_runThread = std::thread{[this, us_per_buffer] {
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
+      ossia::set_thread_realtime(m_runThread, 99);
 
       using clk = std::chrono::high_resolution_clock;
 

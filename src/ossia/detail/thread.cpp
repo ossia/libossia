@@ -20,12 +20,43 @@ void set_thread_realtime(std::thread& t, int prio, bool algo_fifo)
 {
   auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
 
-  SetPriorityClass(hdl, REALTIME_PRIORITY_CLASS);
-  SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
+  auto err = SetThreadPriority(hdl, THREAD_PRIORITY_TIME_CRITICAL);
+  if(err == 0)
+    SetThreadPriority(hdl, THREAD_PRIORITY_HIGHEST);
 }
 
-void set_thread_name(std::thread& t, std::string_view name) { }
-void set_thread_name(std::string_view name) { }
+void set_thread_name(std::thread& t, std::string_view name)
+{
+  auto hdl = reinterpret_cast<HANDLE>(t.native_handle());
+  std::wstring wname;
+  if (!name.empty())
+  {
+    const int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), nullptr, 0);
+    if(sizeNeeded > 0) {
+      wname.resize(sizeNeeded);
+      MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), wname.data(), sizeNeeded);
+    }
+  }
+  SetThreadDescription(hdl, wname.data());
+}
+
+void set_thread_name(std::string_view name)
+{
+  auto hdl = GetCurrentThread();
+  if(!hdl)
+    return;
+
+  std::wstring wname;
+  if (!name.empty())
+  {
+    const int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), nullptr, 0);
+    if(sizeNeeded > 0) {
+      wname.resize(sizeNeeded);
+      MultiByteToWideChar(CP_UTF8, 0, name.data(), name.size(), wname.data(), sizeNeeded);
+    }
+  }
+  SetThreadDescription(hdl, wname.data());
+}
 void set_thread_pinned(std::thread& t, int cpu) { }
 void set_thread_pinned(int cpu) { }
 
