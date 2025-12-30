@@ -439,7 +439,7 @@ static void midi_port_information(
 
   // Port type flags
   auto typeObj = qjs->newArray();
-  using pflags = libremidi::port_information;
+  using pflags = libremidi::transport_type;
   auto pushy = typeObj.property("push");
   if(static_cast<bool>(port.type & pflags::software))
     pushy.call({"Software"});
@@ -515,8 +515,8 @@ static libremidi::port_information qjs_to_midi_port_information(const QJSValue& 
       for(int i = 0; i < length; ++i)
       {
         auto typeStr = typeArr.property(i).toString();
-        using pflags = libremidi::port_information;
-        using pftype = libremidi::port_information::port_type;
+        using pftype = libremidi::transport_type;
+        using pflags = libremidi::transport_type;
         if(typeStr == "Software")
           port.type = pftype((uint8_t)port.type | (uint8_t)pflags::software);
         else if(typeStr == "Loopback")

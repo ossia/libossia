@@ -22,6 +22,7 @@ midi_protocol::midi_protocol(
 {
   conf.on_message = [this](const libremidi::message& m) { midi_callback(m); };
 
+  conf.ignore_timing = false;
   m_input = std::make_unique<libremidi::midi_in>(conf, api);
 }
 
@@ -564,10 +565,6 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
     return;
   }
 
-  const auto chan = mess.get_channel();
-  if(chan == 0)
-    return;
-
   if(m_registers)
   {
     this->to_midi2.convert(
@@ -582,6 +579,10 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       return stdx::error{};
     });
   }
+
+  const auto chan = mess.get_channel();
+  if(chan == 0)
+    return;
 
   midi_channel& c = m_channels[chan - 1];
   switch(mess.get_message_type())
