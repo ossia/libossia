@@ -335,7 +335,7 @@ void ensure_current_thread(thread_type kind)
     fprintf(
         stderr, "!! Current thread type: %c, requires: %c\n",
         (char)g_current_thread_type, (char)kind);
-    std::terminate();
+    //std::terminate();
   }
 }
 
@@ -368,7 +368,7 @@ void ensure_current_thread_kind(thread_type kind)
       fprintf(
           stderr, "!! Current thread type: %c, requires: %c\n",
           (char)g_current_thread_type, (char)kind);
-      std::terminate();
+      //std::terminate();
     }
   }
   return;
