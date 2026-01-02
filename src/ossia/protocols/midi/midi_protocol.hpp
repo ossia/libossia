@@ -64,20 +64,23 @@ struct OSSIA_EXPORT midi_info
   bool is_virtual{};
 };
 
+struct midi_protocol_configuration
+{
+  std::string device_name;
+  bool velocity_zero_is_note_off{};
+};
+
 class OSSIA_EXPORT midi_protocol final
     : public ossia::net::protocol_base
     , public Nano::Observer
 {
 public:
   explicit midi_protocol(
-      ossia::net::network_context_ptr, std::string device_name,
+      ossia::net::network_context_ptr, midi_protocol_configuration,
       libremidi::input_configuration&, libremidi::input_api_configuration midi_api);
   explicit midi_protocol(
-      ossia::net::network_context_ptr, std::string device_name,
+      ossia::net::network_context_ptr, midi_protocol_configuration,
       libremidi::output_configuration&, libremidi::output_api_configuration midi_api);
-  explicit midi_protocol(
-      ossia::net::network_context_ptr, midi_info,
-      libremidi::API api = libremidi::API::UNSPECIFIED);
   ~midi_protocol();
 
   bool set_info(midi_info);
@@ -109,6 +112,7 @@ private:
 
   std::array<midi_channel, 16> m_channels;
 
+  midi_protocol_configuration m_config{};
   midi_info m_info{};
   midi_device* m_dev{};
   bool m_registers{};
@@ -132,7 +136,7 @@ private:
   void value_callback(
       bool observed, ossia::net::parameter_base& param, const ossia::value& val);
 
-  void midi_callback(const libremidi::message&);
+  void midi_callback(libremidi::message&&);
   void on_learn(const libremidi::message& m);
 
   libremidi::midi1_to_midi2 to_midi2;

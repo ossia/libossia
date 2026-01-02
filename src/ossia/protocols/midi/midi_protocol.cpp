@@ -15,22 +15,24 @@ static constexpr auto midi_api(libremidi::API api)
   return (api == libremidi::API::UNSPECIFIED) ? libremidi::midi1::default_api() : api;
 }
 midi_protocol::midi_protocol(
-    ossia::net::network_context_ptr ctx, std::string device_name,
+    ossia::net::network_context_ptr ctx, midi_protocol_configuration config,
     libremidi::input_configuration& conf, libremidi::input_api_configuration api)
     : protocol_base{flags{}}
     , m_context{ctx}
+    , m_config{std::move(config)}
 {
-  conf.on_message = [this](const libremidi::message& m) { midi_callback(m); };
+  conf.on_message = [this](libremidi::message&& m) { midi_callback(std::move(m)); };
 
   conf.ignore_timing = false;
   m_input = std::make_unique<libremidi::midi_in>(conf, api);
 }
 
 midi_protocol::midi_protocol(
-    ossia::net::network_context_ptr ctx, std::string device_name,
+    ossia::net::network_context_ptr ctx, midi_protocol_configuration config,
     libremidi::output_configuration& conf, libremidi::output_api_configuration api)
     : protocol_base{flags{}}
     , m_context{ctx}
+    , m_config{std::move(config)}
 {
   m_output = std::make_unique<libremidi::midi_out>(conf, api);
 }
@@ -162,16 +164,34 @@ bool midi_protocol::pull(parameter_base& address)
 
     case address_info::Type::NoteOff_N: {
       const midi_channel& chan = m_channels[adrinfo.channel - 1];
-      int32_t val{chan.note_off_N[adrinfo.note]};
-      address.set_value(val);
+      if(m_config.velocity_zero_is_note_off)
+      {
+        int32_t val{chan.note_on_N[adrinfo.note]};
+        address.set_value(0);
+      }
+      else
+      {
+        int32_t val{chan.note_off_N[adrinfo.note]};
+        address.set_value(val);
+      }
       return true;
     }
 
     case address_info::Type::NoteOff: {
       const midi_channel& chan = m_channels[adrinfo.channel - 1];
-      std::vector<ossia::value> val{
-          int32_t{chan.note_off.first}, int32_t{chan.note_off.second}};
-      address.set_value(ossia::value{std::move(val)});
+
+      if(m_config.velocity_zero_is_note_off)
+      {
+        std::vector<ossia::value> val{
+                                      int32_t{chan.note_on.first}, int32_t{0}};
+        address.set_value(ossia::value{std::move(val)});
+      }
+      else
+      {
+        std::vector<ossia::value> val{
+                                      int32_t{chan.note_off.first}, int32_t{chan.note_off.second}};
+        address.set_value(ossia::value{std::move(val)});
+      }
       return true;
     }
 
@@ -233,15 +253,23 @@ bool midi_protocol::push(const parameter_base& address, const ossia::value& v)
       }
 
       case address_info::Type::NoteOff_N: {
-        m_output->send_message(libremidi::channel_events::note_off(
-            adrinfo.channel, adrinfo.note, to_int(v)));
+        if(m_config.velocity_zero_is_note_off)
+          m_output->send_message(libremidi::channel_events::note_on(
+              adrinfo.channel, adrinfo.note, 0));
+        else
+          m_output->send_message(libremidi::channel_events::note_off(
+              adrinfo.channel, adrinfo.note, to_int(v)));
         return true;
       }
 
       case address_info::Type::NoteOff: {
         auto& val = v.get<std::vector<ossia::value>>();
-        m_output->send_message(libremidi::channel_events::note_off(
-            adrinfo.channel, to_int(val[0]), to_int(val[1])));
+        if(m_config.velocity_zero_is_note_off)
+          m_output->send_message(libremidi::channel_events::note_on(
+              adrinfo.channel, to_int(val[0]), 0));
+        else
+          m_output->send_message(libremidi::channel_events::note_off(
+              adrinfo.channel, to_int(val[0]), to_int(val[1])));
         return true;
       }
 
@@ -328,7 +356,10 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
     }
     case address_info::Type::NoteOff: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_note_off = enable;
+      if(m_config.velocity_zero_is_note_off)
+        chan.callback_note_on = enable;
+      else
+        chan.callback_note_off = enable;
       return true;
     }
     case address_info::Type::CC: {
@@ -348,7 +379,10 @@ bool midi_protocol::observe(parameter_base& address, bool enable)
     }
     case address_info::Type::NoteOff_N: {
       midi_channel& chan = m_channels[adrinfo.channel - 1];
-      chan.callback_note_off_N[adrinfo.note] = enable;
+      if(m_config.velocity_zero_is_note_off)
+        chan.callback_note_on_N[adrinfo.note] = enable;
+      else
+        chan.callback_note_off_N[adrinfo.note] = enable;
       return true;
     }
     case address_info::Type::CC_N: {
@@ -546,7 +580,7 @@ void midi_protocol::value_callback(
   m_dev->on_message(param);
 }
 
-void midi_protocol::midi_callback(const libremidi::message& mess)
+void midi_protocol::midi_callback(libremidi::message&& mess)
 {
   if(m_logger.inbound_logger)
   {
@@ -557,6 +591,16 @@ void midi_protocol::midi_callback(const libremidi::message& mess)
       m_logger.inbound_logger->info("MIDI in: {0} {1}", mess.bytes[0], mess.bytes[1]);
     else if(mess.bytes.size() == 1)
       m_logger.inbound_logger->info("MIDI in: {0}", mess.bytes[0]);
+  }
+
+  if(this->m_config.velocity_zero_is_note_off) {
+    if(mess.get_message_type() == libremidi::message_type::NOTE_ON) {
+      const auto status = mess.bytes[0];
+      const auto note = mess.bytes[1];
+      const auto vel = mess.bytes[2];
+      if(vel == 0)
+        mess.bytes[0] = (status & 0x0F) | 0x80;
+    }
   }
 
   if(m_learning)
