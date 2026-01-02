@@ -2,44 +2,14 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/detail/mutex.hpp>
+#include <ossia/detail/yield.hpp>
 
 #include <array>
 #include <atomic>
 #include <thread>
 
-// Adapted from bind9:
-// https://gitlab.isc.org/isc-projects/bind9/-/blob/main/lib/isc/rwlock.c
-#if defined(__EMSCRIPTEN__)
-// TODO once we support asyncify
-#define ossia_rwlock_pause()
-#elif defined(__x86_64__) || defined(_M_X64)
-#include <immintrin.h>
-#define ossia_rwlock_pause() _mm_pause()
-#elif defined(__i386__)
-#define ossia_rwlock_pause() __asm__ __volatile__("rep; nop")
-#elif defined(__ia64__)
-#define ossia_rwlock_pause() __asm__ __volatile__("hint @pause")
-#elif defined(__aarch64__)
-#define ossia_rwlock_pause() __asm__ __volatile__("dmb ishst\n\tyield" ::: "memory")
-#elif defined(__arm__)
-#define ossia_rwlock_pause() __asm__ __volatile__("yield")
-#elif defined(__sparc) || defined(__sparc__)
-#define ossia_rwlock_pause() __asm__ __volatile__("pause")
-#elif defined(__ppc__) || defined(_ARCH_PPC) || defined(_ARCH_PWR) \
-    || defined(_ARCH_PWR2) || defined(_POWER)
-#define ossia_rwlock_pause() __asm__ __volatile__("or 27,27,27")
-#elif defined(#elif defined(__riscv)
-#define ossia_rwlock_pause() __asm__ __volatile__("pause"))
-#elif defined(_MSC_VER)
-#include <windows.h>
-#define ossia_rwlock_pause() YieldProcessor()
-#else
-#define ossia_rwlock_pause()
-#endif
-
 namespace ossia
 {
-
 // Code adapted from Timur Doumler's great article:
 // https://timur.audio/using-locks-in-real-time-audio-processing-safely
 struct TS_CAPABILITY("mutex") audio_spin_mutex
@@ -96,8 +66,6 @@ struct TS_CAPABILITY("mutex") audio_spin_mutex
   }
 
   void unlock() TS_RELEASE() { locked.store(false, std::memory_order_release); }
-
-  const auto& operator!() const { return *this; }
 
 private:
   std::atomic<bool> locked{false};
