@@ -66,7 +66,7 @@ static void coarse_sleep(int64_t ns)
   Sleep(static_cast<DWORD>(ns / 1'000'000));
 #elif defined(__APPLE__)
   uint64_t now = mach_absolute_time();
-  uint64_t deltaMach = static_cast<uint64_t>(ns) * g_timebase_info.denom / g_timebase_info.numer;
+  uint64_t deltaMach = static_cast<uint64_t>(ns) * detail::g_timebase_info.denom / detail::g_timebase_info.numer;
   mach_wait_until(now + deltaMach);
 #else
   struct timespec ts;

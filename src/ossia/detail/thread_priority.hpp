@@ -1,6 +1,10 @@
 #pragma once
 
 #include <ossia/detail/sleep.hpp>
+#if defined(_WIN32)
+#include <mmsystem.h>
+#include <avrt.h>
+#endif
 
 namespace ossia
 {
@@ -10,7 +14,7 @@ struct priority_boost_handle
 public:
   explicit priority_boost_handle(double frequencyHz)
   {
-#ifdef HRT_PLATFORM_WINDOWS
+#if defined(_WIN32)
     // Timer resolution already increased in main()
 
     // MMCSS priority boost
@@ -20,16 +24,14 @@ public:
     {
       AvSetMmThreadPriority(m_mmcss, AVRT_PRIORITY_CRITICAL);
     }
-#endif
-
-#ifdef HRT_PLATFORM_MACOS
+#elif defined(__APPLE__)
     // Set real-time thread policy with time constraint
     // This tells the scheduler we need periodic execution
     mach_port_t threadPort = pthread_mach_thread_np(pthread_self());
 
     // Convert frequency to period in mach absolute time units
     double periodNs = 1'000'000'000.0 / frequencyHz;
-    uint32_t periodMach = static_cast<uint32_t>(periodNs * g_timebase_info.denom / g_timebase_info.numer);
+    uint32_t periodMach = static_cast<uint32_t>(periodNs * detail::g_timebase_info.denom / detail::g_timebase_info.numer);
 
     thread_time_constraint_policy_data_t policy;
     policy.period = periodMach;                          // Nominal period
@@ -51,9 +53,7 @@ public:
       // Fallback: at least set high QoS
       pthread_set_qos_class_self_np(QOS_CLASS_USER_INTERACTIVE, 0);
     }
-#endif
-
-#ifdef HRT_PLATFORM_LINUX
+#else
     // Save original scheduling policy
     pthread_getschedparam(pthread_self(), &m_original_policy, &m_original_param);
 
@@ -75,15 +75,13 @@ public:
 
   ~priority_boost_handle()
   {
-#ifdef HRT_PLATFORM_WINDOWS
+#if defined(_WIN32)
     if (m_mmcss)
     {
       AvRevertMmThreadCharacteristics(m_mmcss);
       m_mmcss = nullptr;
     }
-#endif
-
-#ifdef HRT_PLATFORM_MACOS
+#elif defined(__APPLE__)
     if (m_policy_set)
     {
       // Revert to default policy
@@ -97,9 +95,7 @@ public:
           );
       m_policy_set = false;
     }
-#endif
-
-#ifdef HRT_PLATFORM_LINUX
+#else
     if (m_elevated)
     {
       pthread_setschedparam(pthread_self(), m_original_policy, &m_original_param);
