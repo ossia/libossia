@@ -4,6 +4,7 @@
 
 #if defined(_WIN32)
 #include <Windows.h>
+#include <timeapi.h>
 #elif defined(__APPLE__)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
@@ -134,4 +135,157 @@ private:
   int64_t m_count = 1;
 };
 
+class frame_pacing_sleep
+{
+  static constexpr int64_t max_count = 500;
+  static constexpr double min_margin_ns = 500'000.0;   // 0.5ms floor
+  static constexpr double max_margin_ns = 5'000'000.0; // 5ms ceiling
+  static constexpr double target_error_ns = -500'000.0; // Target waking 0.5ms early
+  static constexpr double correction_rate = 0.1;
+
+public:
+  void sleep_until(uint64_t target_ns)
+  {
+    const int64_t to_sleep = static_cast<int64_t>(target_ns - now_ns()) - static_cast<int64_t>(m_margin_ns);
+
+    if (to_sleep > 0)
+      coarse_sleep(to_sleep);
+
+    // Spin for final precision
+    while (now_ns() < target_ns)
+    {
+      ossia_rwlock_pause();
+    }
+
+    // Measure error: negative = early (good), positive = late (bad)
+    const int64_t error_ns = static_cast<int64_t>(now_ns() - target_ns);
+    update(static_cast<double>(error_ns));
+  }
+
+private:
+  void update(double error_ns)
+  {
+    if (m_count >= max_count)
+    {
+      m_count = max_count / 2;
+      m_m2 /= 2.0;
+    }
+
+    ++m_count;
+    const double delta = error_ns - m_mean_error_ns;
+    m_mean_error_ns += delta / static_cast<double>(m_count);
+    m_m2 += delta * (error_ns - m_mean_error_ns);
+
+    // Adjust margin to push mean error toward target (slightly early)
+    const double correction = (m_mean_error_ns - target_error_ns) * correction_rate;
+    m_margin_ns = std::clamp(m_margin_ns + correction, min_margin_ns, max_margin_ns);
+  }
+
+  double m_margin_ns = 2'000'000.0;
+  double m_mean_error_ns = 0.0;
+  double m_m2 = 0.0;
+  int64_t m_count = 0;
+};
+
+#if defined(_WIN32)
+class windows_timer_sleep
+{
+  static constexpr int64_t max_count = 500;
+  static constexpr double min_margin_ns = 100'000.0;    // 0.1ms floor (high-res timer is good)
+  static constexpr double max_margin_ns = 2'000'000.0;  // 2ms ceiling
+  static constexpr double target_error_ns = -100'000.0; // Target waking 0.1ms early
+  static constexpr double correction_rate = 0.1;
+
+public:
+  windows_timer_sleep()
+  {
+    // Request 1ms system timer resolution
+    timeBeginPeriod(1);
+
+    // High-resolution waitable timer
+    m_timer = CreateWaitableTimerExW(
+        nullptr, nullptr,
+        CREATE_WAITABLE_TIMER_HIGH_RESOLUTION,
+        TIMER_ALL_ACCESS
+        );
+
+    if (m_timer)
+    {
+      m_high_resolution = true;
+    }
+    else
+    {
+      // Fallback to standard waitable timer
+      m_timer = CreateWaitableTimerW(nullptr, TRUE, nullptr);
+      m_high_resolution = false;
+      m_margin_ns = 1'500'000.0; // Need more margin without high-res
+    }
+  }
+
+  ~windows_timer_sleep()
+  {
+    if (m_timer)
+      CloseHandle(m_timer);
+    timeEndPeriod(1);
+  }
+
+  windows_timer_sleep(const windows_timer_sleep&) = delete;
+  windows_timer_sleep& operator=(const windows_timer_sleep&) = delete;
+
+  void sleep_until(uint64_t target_ns)
+  {
+    const uint64_t now = ossia::now_ns();
+    if (target_ns <= now)
+      return;
+
+    const int64_t remaining_ns = static_cast<int64_t>(target_ns - now);
+    const int64_t sleep_ns = remaining_ns - static_cast<int64_t>(m_margin_ns);
+
+    if (sleep_ns > 0)
+    {
+      // Negative value = relative time, in 100ns units
+      LARGE_INTEGER due_time;
+      due_time.QuadPart = -(sleep_ns / 100);
+
+      SetWaitableTimerEx(m_timer, &due_time, 0, nullptr, nullptr, nullptr, 0);
+      WaitForSingleObject(m_timer, INFINITE);
+    }
+
+    // Spin for final precision
+    while (ossia::now_ns() < target_ns)
+    {
+      YieldProcessor();
+    }
+
+    // Measure actual error and adapt
+    const int64_t error_ns = static_cast<int64_t>(ossia::now_ns() - target_ns);
+    update(static_cast<double>(error_ns));
+  }
+
+private:
+  void update(double error_ns)
+  {
+    if (m_count >= max_count)
+    {
+      m_count = max_count / 2;
+      m_m2 /= 2.0;
+    }
+
+    ++m_count;
+    const double delta = error_ns - m_mean_error_ns;
+    m_mean_error_ns += delta / static_cast<double>(m_count);
+    m_m2 += delta * (error_ns - m_mean_error_ns);
+
+    const double correction = (m_mean_error_ns - target_error_ns) * correction_rate;
+    m_margin_ns = std::clamp(m_margin_ns + correction, min_margin_ns, max_margin_ns);
+  }
+
+  HANDLE m_timer = nullptr;
+  bool m_high_resolution = false;
+  double m_margin_ns = 500'000.0;
+  double m_mean_error_ns = 0.0;
+  double m_m2 = 0.0;
+  int64_t m_count = 0;
+};
+#endif
 }
