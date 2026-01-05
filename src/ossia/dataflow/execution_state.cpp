@@ -519,7 +519,8 @@ ossia::net::node_base* exec_state_facade::find_node(std::string_view name) const
 auto exec_state_facade::timings(const token_request& t) const noexcept -> sample_timings
 {
   sample_timings tm;
-  if(t.speed > 0.)
+  static constexpr double speed_epsilon = 0.01;
+  if(t.speed > speed_epsilon)
   {
     [[likely]];
     tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
@@ -531,13 +532,7 @@ auto exec_state_facade::timings(const token_request& t) const noexcept -> sample
 
     tm.length = std::min(tick_dur, max_dur);
   }
-  else if(t.speed == 0.)
-  {
-    tm.start_sample = 0;
-    tm.length = 0;
-    return tm;
-  }
-  else
+  else if(t.speed < -speed_epsilon)
   {
     tm.start_sample = -t.physical_start(impl->modelToSamplesRatio);
 
@@ -548,29 +543,38 @@ auto exec_state_facade::timings(const token_request& t) const noexcept -> sample
 
     tm.length = std::min(tick_dur, max_dur);
   }
-
+  else
+  {
+    tm.start_sample = 0;
+    tm.length = 0;
+    return tm;
+  }
   if(tm.start_sample < 0)
   {
     [[unlikely]];
-    assert(false);
+    ossia::logger().error("tm.start_sample < 0: {}", tm.start_sample);
     return {};
   }
   if(tm.start_sample >= impl->bufferSize)
   {
     [[unlikely]];
-    assert(false);
+    ossia::logger().error(
+        "tm.start_sample >= impl->bufferSize: {} >= {}", tm.start_sample,
+        impl->bufferSize);
     return {};
   }
   if(tm.length < 0)
   {
     [[unlikely]];
-    assert(false);
+    ossia::logger().error("tm.length < 0: {}", tm.length);
     return {};
   }
   if(tm.start_sample + tm.length > impl->bufferSize)
   {
     [[unlikely]];
-    assert(false);
+    ossia::logger().error(
+        "tm.start_sample + tm.length > impl->bufferSize: {} + {} > {}", tm.start_sample,
+        tm.length, impl->bufferSize);
     return {};
   }
   return tm;

@@ -84,7 +84,7 @@ struct rubberband_stretcher
       int64_t samples_to_read, const int64_t samples_to_write,
       const int64_t samples_offset, const ossia::mutable_audio_span<double>& ap) noexcept
   {
-    const double abs_tempo_ratio = std::abs(tempo_ratio);
+    const double abs_tempo_ratio = std::min(70., std::abs(tempo_ratio));
     if(abs_tempo_ratio != m_rubberBand->getTimeRatio())
     {
       m_rubberBand->setTimeRatio(abs_tempo_ratio);
