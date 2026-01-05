@@ -14,6 +14,7 @@
 #include <ossia/dataflow/execution/pull_visitors.hpp>
 #include <ossia/dataflow/port.hpp>
 #include <ossia/dataflow/token_request.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/base/message_queue.hpp>
 
 #include <libremidi/libremidi.hpp>
