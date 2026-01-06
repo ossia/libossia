@@ -8,6 +8,7 @@
 #include <libremidi/backends/alsa_seq/config.hpp>
 #include <libremidi/libremidi.hpp>
 #include <libremidi/message.hpp>
+
 namespace ossia::net::midi
 {
 static constexpr auto midi_api(libremidi::API api)
@@ -97,7 +98,7 @@ bool midi_protocol::set_info(midi_info m)
         m_output->close_port();
     }
 
-    m_info = m;
+    m_info = std::move(m);
     if(m_info.type == midi_info::Type::Input)
     {
       if(m_info.is_virtual)

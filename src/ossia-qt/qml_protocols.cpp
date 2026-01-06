@@ -466,15 +466,15 @@ static void midi_port_information(
   portInfo.setProperty("ClientHandle", QString::number(port.client));
 
   // Container identifier (convert variant to string if possible)
-  if(auto str = std::get_if<std::string>(&port.container))
+  if(auto str = get_if<std::string>(&port.container))
   {
     portInfo.setProperty("ContainerID", QString::fromStdString(*str));
   }
-  else if(auto num = std::get_if<std::uint64_t>(&port.container))
+  else if(auto num = get_if<std::uint64_t>(&port.container))
   {
     portInfo.setProperty("ContainerID", QString::number(*num));
   }
-  else if(auto uid = std::get_if<libremidi::uuid>(&port.container))
+  else if(auto uid = get_if<libremidi::uuid>(&port.container))
   {
     auto uuidArr = qjs->newArray(16);
     for(int j = 0; j < 16; ++j)
@@ -484,11 +484,11 @@ static void midi_port_information(
     portInfo.setProperty("ContainerID", uuidArr);
   }
   // Device identifier (convert variant to string if possible)
-  if(auto str = std::get_if<std::string>(&port.device))
+  if(auto str = get_if<std::string>(&port.device))
   {
     portInfo.setProperty("DeviceID", QString::fromStdString(*str));
   }
-  else if(auto num = std::get_if<std::uint64_t>(&port.device))
+  else if(auto num = get_if<std::uint64_t>(&port.device))
   {
     portInfo.setProperty("DeviceID", QString::number(*num));
   }
