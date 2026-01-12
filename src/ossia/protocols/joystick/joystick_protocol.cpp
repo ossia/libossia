@@ -136,6 +136,15 @@ bool joystick_info::get_joystick_is_gamepad(const int index)
   return SDL_IsGameController(index);
 }
 
+bool joystick_info::get_joystick_is_available(const int index)
+{
+  sdl_joystick_context::instance();
+  const auto id = SDL_JoystickGetDeviceInstanceID(index);
+  if(id != -1)
+    return joystick_protocol_manager::instance().joystick_is_registered(id);
+  return false;
+}
+
 int32_t joystick_info::get_joystick_id(const int index)
 {
   sdl_joystick_context::instance();
