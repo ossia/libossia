@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <new>
+#include <bit>
 
 #if defined(OSSIA_FFT_FFTW)
 #include <fftw3.h>
