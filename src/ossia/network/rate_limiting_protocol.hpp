@@ -4,22 +4,29 @@
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/parameter_data.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/rate_limiter_configuration.hpp>
 
 #include <readerwriterqueue.h>
 
 #include <chrono>
 #include <thread>
-#include <vector>
 
 namespace ossia::net
 {
 struct rate_limiter;
+
+template <bool Bundle, bool Repeat, bool SendAll>
+struct rate_limiter_impl;
+template <bool Bundle, bool Repeat, bool SendAll>
+struct rate_limiter_concrete;
+
 class OSSIA_EXPORT rate_limiting_protocol final : public ossia::net::protocol_base
 {
 public:
-  using clock = std::chrono::high_resolution_clock;
+  using clock = std::chrono::steady_clock;
   using duration = clock::duration;
-  rate_limiting_protocol(duration d, std::unique_ptr<protocol_base> arg);
+  rate_limiting_protocol(
+      rate_limiter_configuration conf, std::unique_ptr<protocol_base> arg);
   ~rate_limiting_protocol() override;
 
   void set_duration(duration d);
@@ -46,8 +53,15 @@ private:
   rate_limiting_protocol& operator=(rate_limiting_protocol&&) = delete;
 
   friend struct rate_limiter;
+  template <bool Bundle, bool Repeat, bool SendAll>
+  friend struct rate_limiter_impl;
+  template <bool Bundle, bool Repeat, bool SendAll>
+  friend struct rate_limiter_concrete;
 
   std::atomic<duration> m_duration{};
+  bool m_bundle{};
+  bool m_send_all{};
+  bool m_repeat{};
   std::unique_ptr<ossia::net::protocol_base> m_protocol;
   ossia::net::device_base* m_device{};
 
