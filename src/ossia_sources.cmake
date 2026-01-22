@@ -634,6 +634,7 @@ set(OSSIA_QTQML_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_http_request.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_midi_inbound_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_midi_outbound_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_oauth.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_tcp_inbound_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_tcp_outbound_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_udp_inbound_socket.hpp"

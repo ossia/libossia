@@ -1,6 +1,7 @@
 #include "qml_protocols.hpp"
 
 #include <ossia-qt/protocols/qml_http_request.hpp>
+#include <ossia-qt/protocols/qml_oauth.hpp>
 #include <ossia-qt/protocols/qml_midi_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ump_inbound_socket.hpp>
@@ -88,6 +89,12 @@ W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
+
+#if QT_VERSION > QT_VERSION_CHECK(6, 10, 0)
+#if QT_NETWORKAUTH_LIB
+W_OBJECT_IMPL(ossia::qt::qml_oauth)
+#endif
+#endif
 
 namespace ossia::qt
 {

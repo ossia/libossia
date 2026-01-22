@@ -12,6 +12,7 @@
 
 namespace ossia::qt
 {
+class qml_oauth;
 
 class OSSIA_EXPORT qml_protocols : public QObject
 {

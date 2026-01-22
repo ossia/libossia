@@ -203,13 +203,18 @@ if(OSSIA_QT)
   target_sources(ossia PRIVATE ${OSSIA_QT_HEADERS} ${OSSIA_QT_SRCS})
 
   if(OSSIA_QML)
-    if(TARGET Qt::Core)
+    if(TARGET "${QT_PREFIX}::Core")
       qt_wrap_cpp(cur_moc "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_plugin.hpp" TARGET ossia)
     endif()
     target_sources(ossia PRIVATE ${cur_moc})
 
     target_sources(ossia PRIVATE ${OSSIA_QTQML_HEADERS} ${OSSIA_QTQML_SRCS})
+
     target_link_libraries(ossia PUBLIC ${QT_PREFIX}::Gui ${QT_PREFIX}::Qml)
+    if(TARGET "${QT_PREFIX}::NetworkAuth")
+      target_link_libraries(ossia PUBLIC "${QT_PREFIX}::NetworkAuth")
+    endif()
+
     add_custom_target(ossia-qml-sources SOURCES ${OSSIA_QML_SRCS})
     if(OSSIA_DISABLE_QT_PLUGIN)
       target_compile_definitions(ossia PRIVATE OSSIA_DISABLE_QT_PLUGIN)

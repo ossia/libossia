@@ -18,7 +18,7 @@ endif()
 
 if(OSSIA_QT)
   find_package(${QT_VERSION} QUIET ${OSSIA_QT_REQUIRED} COMPONENTS Core)
-  find_package(${QT_VERSION} QUIET OPTIONAL_COMPONENTS Gui Qml)
+  find_package(${QT_VERSION} QUIET OPTIONAL_COMPONENTS Gui Qml NetworkAuth)
 
   if(TARGET Qt::Core)
     set(QT_VERSION_MAJOR "")
