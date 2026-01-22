@@ -184,6 +184,63 @@ QVariant qml_engine_functions::asVec4(QVariant v) const noexcept
   }
 }
 
+QJSValue qml_engine_functions::toValue(QJSValue v) const noexcept
+{
+  if (!v.isObject())
+    return v;
+
+  if (v.hasProperty("type") && v.hasProperty("value"))
+  {
+    auto type = (ossia::val_type)v.property("type").toInt();
+    QJSValue value = v.property("value");
+
+    switch (type)
+    {
+      case ossia::val_type::FLOAT:
+      case ossia::val_type::INT:
+      case ossia::val_type::VEC2F:
+      case ossia::val_type::VEC3F:
+      case ossia::val_type::VEC4F:
+      case ossia::val_type::BOOL:
+      case ossia::val_type::STRING:
+      {
+        return value;
+      }
+      case ossia::val_type::IMPULSE:
+      {
+        return QJSValue::UndefinedValue;
+      }
+      case ossia::val_type::LIST:
+      {
+        int length = value.property("length").toInt();
+        QJSValue unpackedList = m_engine.newArray(length); // Assuming m_engine is available
+
+        for (int i = 0; i < length; ++i)
+        {
+          unpackedList.setProperty(i, toValue(value.property(i)));
+        }
+        return unpackedList;
+        break;
+      }
+      case ossia::val_type::MAP:
+      {
+        QJSValue unpackedMap = m_engine.newObject();
+        QJSValueIterator it(value);
+        while (it.next())
+        {
+          unpackedMap.setProperty(it.name(), toValue(it.value()));
+        }
+        return unpackedMap;
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
+  return v;
+}
+
 QVariant qml_engine_functions::asArray(QVariant v) const noexcept
 {
   switch(v.userType())

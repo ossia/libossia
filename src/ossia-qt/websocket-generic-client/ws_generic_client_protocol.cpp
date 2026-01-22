@@ -32,7 +32,7 @@ ws_generic_client_protocol::ws_generic_client_protocol(
       return;
     auto& last = v.get_data().back().value;
     param.push_value(last);
-  }, m_engine};
+  }, *m_engine, m_engine};
   m_engine->rootContext()->setContextProperty("Device", obj);
 
   QObject::connect(

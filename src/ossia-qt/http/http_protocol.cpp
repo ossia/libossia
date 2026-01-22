@@ -30,7 +30,7 @@ http_protocol::http_protocol(QByteArray code)
       return;
     auto& last = v.get_data().back().value;
     param.push_value(last);
-  }, m_engine};
+  }, *m_engine, m_engine};
   m_engine->rootContext()->setContextProperty("Device", obj);
 
   QObject::connect(m_access, &QNetworkAccessManager::finished, this, [this](auto reply) {

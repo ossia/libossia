@@ -33,10 +33,11 @@ class OSSIA_EXPORT qml_engine_functions : public QObject
   W_OBJECT(qml_engine_functions)
 public:
   qml_engine_functions(
-      const qml_device_cache& state, qml_device_push_function push, QObject* parent)
+      const qml_device_cache& state, qml_device_push_function push, QQmlEngine& engine, QObject* parent)
       : QObject{parent}
       , devices{state}
       , on_push{std::move(push)}
+      , m_engine{engine}
   {
   }
 
@@ -62,6 +63,9 @@ public:
   QVariant asVec4(QVariant) const noexcept;
   W_SLOT(asVec4)
 
+  QJSValue toValue(QJSValue) const noexcept;
+  W_SLOT(toValue)
+
   static ossia::net::node_base*
   find_node(qml_device_cache& devices, std::string_view name);
   const ossia::destination_t& find_address(const QString&);
@@ -71,6 +75,7 @@ public:
 
 private:
   qml_device_push_function on_push;
+  QQmlEngine& m_engine;
 
   ossia::hash_map<QString, ossia::destination_t> m_address_cache;
   ossia::value_port m_port_cache;

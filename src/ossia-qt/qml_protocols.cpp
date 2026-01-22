@@ -137,7 +137,6 @@ QObject* qml_protocols::inboundUDP(QVariant config)
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
-  qDebug()<<"Opening"<<bind<<port;
   auto sock = new qml_udp_inbound_socket{ossia_conf, context->context};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
@@ -427,7 +426,6 @@ void qml_protocols::http(QUrl qurl, QJSValue val, QString verb)
     qDebug() << "Error while sending HTTP request";
   }
 }
-
 
 static void midi_port_information(
     QJSEngine* qjs, const libremidi::port_information& port, QJSValue& portInfo)

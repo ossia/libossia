@@ -353,7 +353,7 @@ void serial_protocol::startup_engine()
       return;
     auto& last = v.get_data().back().value;
     param.push_value(last);
-  }, m_engine};
+  }, *m_engine, m_engine};
   obj->setDevice(m_device);
   m_engine->rootContext()->setContextProperty("Device", obj);
 
