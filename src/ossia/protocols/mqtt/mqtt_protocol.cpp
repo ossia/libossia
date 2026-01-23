@@ -11,13 +11,18 @@
 #include <boost/beast.hpp>
 
 // clang-format off
+#if __has_include(<boost/mqtt5.hpp>)
 #include <boost/mqtt5.hpp>
 #include <boost/mqtt5/websocket.hpp>
+namespace async_mqtt5 = boost::mqtt5;
+#else
+#include <async_mqtt5.hpp>
+#include <async_mqtt5/websocket.hpp>
+#endif
 // clang-format on
 
 #include <coroutine>
 
-namespace async_mqtt5 = boost::mqtt5;
 namespace ossia::net
 {
 using topics_type
