@@ -649,6 +649,7 @@ set(OSSIA_QTQML_HEADERS
 )
 
 set(OSSIA_QTQML_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/protocols/qml_oauth.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_context.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_engine_functions.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia-qt/qml_protocols.cpp"
