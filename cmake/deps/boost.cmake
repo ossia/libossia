@@ -1,7 +1,20 @@
 set(BOOST_MINOR_MINIMAL 87)
 set(BOOST_MINOR_LATEST 90)
 
-find_package(Boost 1.${BOOST_MINOR_MINIMAL} EXACT QUIET GLOBAL)
+unset(BOOST_VERSIONS_LIST)
+set(current_val ${BOOST_MINOR_LATEST})
+while("${current_val}" GREATER_EQUAL "${BOOST_MINOR_MINIMAL}")
+    list(APPEND BOOST_VERSIONS_LIST ${current_val})
+    math(EXPR current_val "${current_val} - 1")
+endwhile()
+
+foreach(boost_version ${BOOST_VERSIONS_LIST})
+  find_package(Boost 1.${boost_version} EXACT GLOBAL QUIET)
+  if(Boost_FOUND)
+    break()
+  endif()
+endforeach()
+
 if (NOT Boost_FOUND)
   set(OSSIA_MUST_INSTALL_BOOST 1 CACHE INTERNAL "")
   set(BOOST_VERSION "boost_1_${BOOST_MINOR_LATEST}_0" CACHE INTERNAL "")
