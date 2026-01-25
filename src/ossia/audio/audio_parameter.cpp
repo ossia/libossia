@@ -57,8 +57,7 @@ void audio_parameter::push_value(const audio_port& port)
     const auto N = std::min(src.size(), (std::size_t)dst.size());
     for(std::size_t i = 0; i < N; i++)
     {
-      // Important: here we must not mix
-      dst[i] = float(src[i] * m_gain);
+      dst[i] += float(src[i] * m_gain);
     }
   }
 }
@@ -152,6 +151,22 @@ virtual_audio_parameter::virtual_audio_parameter(int num_channels, net::node_bas
   set_buffer_size(512);
   auto& proto = static_cast<ossia::audio_protocol&>(n.get_device().get_protocol());
   proto.register_parameter(*this);
+}
+
+void virtual_audio_parameter::push_value(const audio_port& port)
+{
+  auto min_chan = std::min(port.channels(), (std::size_t)audio.size());
+  for(std::size_t chan = 0; chan < min_chan; chan++)
+  {
+    auto& src = port.channel(chan);
+    auto& dst = audio[chan];
+    const auto N = std::min(src.size(), (std::size_t)dst.size());
+    for(std::size_t i = 0; i < N; i++)
+    {
+      // Important: here we must not mix
+      dst[i] = float(src[i] * m_gain);
+    }
+  }
 }
 
 virtual_audio_parameter::~virtual_audio_parameter()

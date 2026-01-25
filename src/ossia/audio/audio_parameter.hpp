@@ -59,6 +59,8 @@ public:
     }
   }
 
+  void push_value(const audio_port& port) override;
+
   virtual ~virtual_audio_parameter();
 };
 
