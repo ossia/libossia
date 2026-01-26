@@ -15,7 +15,6 @@
 #endif
 #include <QHttpMultiPart>
 
-#include <nano_observer.hpp>
 namespace ossia::qt
 {
 

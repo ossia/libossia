@@ -11,6 +11,7 @@
 #include <QVariant>
 
 #include <verdigris>
+#include <nano_observer.hpp>
 
 class QNetworkAccessManager;
 class QOAuthHttpServerReplyHandler;
