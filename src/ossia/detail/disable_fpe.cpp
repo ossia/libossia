@@ -2,97 +2,181 @@
 
 #include <boost/predef.h>
 
+#include <cfenv>
+#include <cfloat>
+#include <cstdint>
+
+// -----------------------------------------------------------------------------
+// 1. Header Selection based on Architecture & Compiler
+// -----------------------------------------------------------------------------
+
+// We skip hardware headers for WebAssembly (Emscripten)
+#if !defined(__EMSCRIPTEN__)
+
+// --- x86 / x64 ---
 #if BOOST_ARCH_X86
+#if BOOST_COMP_MSVC
+#include <float.h>
+#include <intrin.h>
+#else
+#include <pmmintrin.h>
 #include <xmmintrin.h>
+#if BOOST_COMP_GNUC
+#include <cpuid.h>
+#endif
 #endif
 
-#include <cfenv>
-#include <cstdint>
+// --- ARM 64-bit ---
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+#if !BOOST_COMP_MSVC
+#include <arm_neon.h>
+#endif
+// On MSVC ARM64, intrinsic headers are usually automatic or included via <intrin.h>
+// but <float.h> is needed for _controlfp_s
+
+// --- ARM 32-bit ---
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
+// No specific headers needed for the inline ASM we use
+
+#endif
+#endif
+
+// Apple Target Conditionals for specific OS checks if needed beyond Boost
+#if BOOST_OS_MACOS || BOOST_OS_IOS
+#include <TargetConditionals.h>
+#endif
+
+#pragma STDC FENV_ACCESS ON
 
 namespace ossia
 {
-#if defined(__APPLE__)
-static void disable_fpe_impl()
+
+#if !defined(__EMSCRIPTEN__)
+static inline void helper_x87_mask_exceptions()
 {
+#if BOOST_ARCH_X86 && !BOOST_COMP_MSVC
+  uint16_t control;
+
+  // 1. Store x87 Control Word
+  __asm volatile("fnstcw %0" : "=m"(control));
+
+  // 2. Set Exception Masks (Bits 0-5)
+  // 0x3F = Masks: Invalid, Denormal, DivByZero, Overflow, Underflow, Precision
+  control |= 0x3F;
+
+  // 3. Load x87 Control Word back
+  __asm volatile("fldcw %0" ::"m"(control));
+#endif
+}
+
+static inline void set_fast_math_mode()
+{
+  std::fesetround(FE_TONEAREST);
+
+#if BOOST_COMP_MSVC
+  unsigned int current_word = 0;
+  _controlfp_s(&current_word, _DN_FLUSH, _MCW_DN);
+
+#elif BOOST_ARCH_X86
+  _mm_setcsr(_mm_getcsr() | 0x8040);
+
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+  uint64_t fpcr = __builtin_aarch64_get_fpcr();
+  fpcr |= (1ULL << 24); // FZ (Flush-to-Zero)
+  fpcr |= (1ULL << 25); // DN (Default NaN)
+  __builtin_aarch64_set_fpcr(fpcr);
+
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
+  uint32_t fpscr;
+  asm volatile("vmrs %0, fpscr" : "=r"(fpscr));
+  fpscr |= (1 << 24); // FZ (Enable Flush-to-Zero)
+  fpscr |= (1 << 25); // DN (Default NaN)
+  asm volatile("vmsr fpscr, %0" ::"r"(fpscr));
+
+#elif BOOST_ARCH_RISCV
+  unsigned int fcsr;
+  asm volatile("frcsr %0" : "=r"(fcsr));
+  fcsr &= ~(0b111 << 5); // Force Round-to-Nearest
+  asm volatile("fscsr %0" ::"r"(fcsr));
+#endif
+}
+
+static inline void mask_fpu_exceptions()
+{
+  std::feclearexcept(FE_ALL_EXCEPT);
+
+#if BOOST_OS_LINUX && defined(__GLIBC__)
+  fedisableexcept(FE_ALL_EXCEPT);
+#endif
+
+#if BOOST_COMP_MSVC
+  unsigned int current_word = 0;
+  _controlfp_s(&current_word, _MCW_EM, _MCW_EM);
+#elif BOOST_OS_MACOS
   fenv_t env;
   fegetenv(&env);
-
 #if BOOST_ARCH_ARM
   env.__fpcr = env.__fpcr & ~(FE_ALL_EXCEPT << 8);
 #else
   env.__control = env.__control | FE_ALL_EXCEPT;
   env.__mxcsr = env.__mxcsr | (FE_ALL_EXCEPT << 7);
 #endif
-
   fesetenv(&env);
-}
 #elif BOOST_ARCH_X86
-static void disable_fpe_impl()
-{
-#if defined(_MSC_VER)
-#else
-  uint32_t mxcsr;
-  uint16_t control;
-  __asm volatile("fnstcw %0" : "=m"(*(&control)));
-  __asm volatile("stmxcsr %0" : "=m"(*(&mxcsr)));
+  unsigned int mxcsr = _mm_getcsr();
+  mxcsr |= (0x3F << 7); // Mask bits 7-12
+  _mm_setcsr(mxcsr);
 
-  control |= FE_ALL_EXCEPT;
-  __asm volatile("fldcw %0" : : "m"(control));
-
-  mxcsr |= FE_ALL_EXCEPT << 7;
-  __asm volatile("ldmxcsr %0" : : "m"(mxcsr));
+  helper_x87_mask_exceptions();
 #endif
 }
-#else
-static void disable_fpe_impl() { }
-#endif
 
 void disable_fpe()
 {
-#if defined(__EMSCRIPTEN__)
-  // do nothing
-#elif defined(__APPLE__)
-#pragma STDC FENV_ACCESS ON
-#if BOOST_ARCH_ARM
-  fesetenv(FE_DFL_DISABLE_DENORMS_ENV);
+  set_fast_math_mode();
+  mask_fpu_exceptions();
+}
+#else
+void disable_fpe() { }
+#endif
+
+void reset_default_fpu_state()
+{
+  std::fesetenv(FE_DFL_ENV);
+
+#if BOOST_COMP_MSVC
+  unsigned int current_word = 0;
+  _controlfp_s(&current_word, _DN_SAVE, _MCW_DN); // Denormals: process normally
+  _controlfp_s(&current_word, _MCW_EM, _MCW_EM);  // All exceptions masked
+
 #elif BOOST_ARCH_X86
-  // Apple Docs:
-  // It is not possible to disable denormal stalls for calculations performed on the x87 FPU
-  fesetenv(FE_DFL_DISABLE_SSE_DENORMS_ENV);
-  _mm_setcsr(_MM_MASK_MASK | _MM_FLUSH_ZERO_ON | (1 << 6));
-#endif
-#else
+  // Default MXCSR: 0x1F80
+  //   - FTZ (bit 15) = 0, DAZ (bit 6) = 0
+  //   - Exception masks (bits 7-12) = all set
+  //   - Rounding (bits 13-14) = 00 (round-to-nearest)
+  _mm_setcsr(0x1F80);
 
-#if BOOST_ARCH_X86
-  // See https://en.wikipedia.org/wiki/Denormal_number
-  // and
-  // http://stackoverflow.com/questions/9314534/why-does-changing-0-1f-to-0-slow-down-performance-by-10x
-  _mm_setcsr(_MM_MASK_MASK | _MM_FLUSH_ZERO_ON | (1 << 6));
+  // FNINIT resets x87 to power-on state
+  __asm volatile("fninit");
 
-#elif BOOST_ARCH_ARM
-#if BOOST_ARCH_WORD_BITS_64
-#if !defined(_MSC_VER)
-  uint64_t fpcr;
-  asm("mrs %0,   fpcr" : "=r"(fpcr));          //Load the FPCR register
-  asm("msr fpcr, %0" ::"r"(fpcr | (1 << 24))); //Set the 24th bit (FTZ) to 1
-#endif
-#else
-  int x;
-  asm("vmrs %[result],FPSCR \r\n"
-      "bic %[result],%[result],#16777216 \r\n"
-      "vmsr FPSCR,%[result]"
-      : [result] "=r"(x)
-      :
-      :);
-#endif
-#endif
-#endif
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+  __builtin_aarch64_set_fpcr(0); // Clear FZ, DN, rounding, trap enables
+  __builtin_aarch64_set_fpsr(0); // Clear cumulative exception flags
 
-  ::feclearexcept(FE_ALL_EXCEPT);
-#if defined(__linux__)
-  fedisableexcept(FE_ALL_EXCEPT);
-#else
-  disable_fpe_impl();
+#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
+  uint32_t fpscr;
+  asm volatile("vmrs %0, fpscr" : "=r"(fpscr));
+  fpscr &= ~(1 << 25);                 // Clear DN
+  fpscr &= ~(1 << 24);                 // Clear FZ
+  fpscr &= ~(0b11 << 22);              // Clear RMode → Round-to-Nearest
+  fpscr &= ~((0x1F << 8) | (1 << 15)); // Clear trap enables (bits 8-12, 15)
+  fpscr &= ~0x9F;                      // Clear exception flags (bits 0-4, 7)
+  // Note: bits 28-31 (NZCV condition flags) are preserved
+  asm volatile("vmsr fpscr, %0" ::"r"(fpscr));
+
+#elif BOOST_ARCH_RISCV
+  unsigned int fcsr = 0; // Round-to-nearest, all flags cleared
+  asm volatile("fscsr %0" ::"r"(fcsr));
 #endif
 }
 }
