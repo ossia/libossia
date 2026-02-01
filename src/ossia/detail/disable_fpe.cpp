@@ -139,12 +139,22 @@ static inline void mask_fpu_exceptions()
   helper_x87_mask_exceptions();
 #elif BOOST_ARCH_ARM
 #if BOOST_ARCH_WORD_BITS == 64
+#if defined(__clang__)
+  uint64_t fpcr;
+  asm volatile("mrs %0, fpcr" : "=r"(fpcr));
+  fpcr &= ~(
+      (1ULL << 8) | (1ULL << 9) | (1ULL << 10) | (1ULL << 11)
+      | (1ULL << 12));   // Standard Traps
+  fpcr &= ~(1ULL << 15); // Input Denormal Trap (IDE)
+  asm volatile("msr fpcr, %0" ::"r"(fpcr));
+#else
   uint64_t fpcr = __builtin_aarch64_get_fpcr();
   fpcr &= ~(
       (1ULL << 8) | (1ULL << 9) | (1ULL << 10) | (1ULL << 11)
       | (1ULL << 12));   // Standard Traps
   fpcr &= ~(1ULL << 15); // Input Denormal Trap (IDE)
   __builtin_aarch64_set_fpcr(fpcr);
+#endif
 #else
   uint32_t fpscr;
   asm volatile("vmrs %0, fpscr" : "=r"(fpscr));
