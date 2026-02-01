@@ -6,14 +6,8 @@
 #include <cfloat>
 #include <cstdint>
 
-// -----------------------------------------------------------------------------
-// 1. Header Selection based on Architecture & Compiler
-// -----------------------------------------------------------------------------
-
-// We skip hardware headers for WebAssembly (Emscripten)
 #if !defined(__EMSCRIPTEN__)
 
-// --- x86 / x64 ---
 #if BOOST_ARCH_X86
 #if BOOST_COMP_MSVC
 #include <float.h>
@@ -26,24 +20,16 @@
 #endif
 #endif
 
-// --- ARM 64-bit ---
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
 #if !BOOST_COMP_MSVC
 #include <arm_neon.h>
 #endif
-// On MSVC ARM64, intrinsic headers are usually automatic or included via <intrin.h>
-// but <float.h> is needed for _controlfp_s
-
-// --- ARM 32-bit ---
-#elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
-// No specific headers needed for the inline ASM we use
-
-#endif
 #endif
 
-// Apple Target Conditionals for specific OS checks if needed beyond Boost
 #if BOOST_OS_MACOS || BOOST_OS_IOS
 #include <TargetConditionals.h>
+#endif
+
 #endif
 
 #pragma STDC FENV_ACCESS ON
@@ -73,10 +59,23 @@ static inline void set_fast_math_mode()
 {
   std::fesetround(FE_TONEAREST);
 
+// Delicate little flowers first
 #if BOOST_COMP_MSVC
   unsigned int current_word = 0;
   _controlfp_s(&current_word, _DN_FLUSH, _MCW_DN);
 
+#elif BOOST_OS_MACOS || BOOST_OS_IOS
+#if BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+  uint64_t fpcr;
+  asm volatile("mrs %0, fpcr" : "=r"(fpcr));
+  fpcr |= (1ULL << 24); // FZ (Flush-to-Zero)
+  fpcr |= (1ULL << 25); // DN (Default NaN)
+  asm volatile("msr fpcr, %0" ::"r"(fpcr));
+#elif BOOST_ARCH_X86
+  _mm_setcsr(_mm_getcsr() | 0x8040);
+#endif
+
+// Then real systems
 #elif BOOST_ARCH_X86
   _mm_setcsr(_mm_getcsr() | 0x8040);
 
@@ -112,6 +111,7 @@ static inline void mask_fpu_exceptions()
 #if BOOST_COMP_MSVC
   unsigned int current_word = 0;
   _controlfp_s(&current_word, _MCW_EM, _MCW_EM);
+
 #elif BOOST_OS_MACOS
   fenv_t env;
   fegetenv(&env);
@@ -122,12 +122,28 @@ static inline void mask_fpu_exceptions()
   env.__mxcsr = env.__mxcsr | (FE_ALL_EXCEPT << 7);
 #endif
   fesetenv(&env);
+
 #elif BOOST_ARCH_X86
   unsigned int mxcsr = _mm_getcsr();
   mxcsr |= (0x3F << 7); // Mask bits 7-12
   _mm_setcsr(mxcsr);
 
   helper_x87_mask_exceptions();
+#elif BOOST_ARCH_ARM
+#if BOOST_ARCH_WORD_BITS == 64
+  uint64_t fpcr = __builtin_aarch64_get_fpcr();
+  fpcr &= ~(
+      (1ULL << 8) | (1ULL << 9) | (1ULL << 10) | (1ULL << 11)
+      | (1ULL << 12));   // Standard Traps
+  fpcr &= ~(1ULL << 15); // Input Denormal Trap (IDE)
+  __builtin_aarch64_set_fpcr(fpcr);
+#else
+  uint32_t fpscr;
+  asm volatile("vmrs %0, fpscr" : "=r"(fpscr));
+  fpscr &= ~((1 << 8) | (1 << 9) | (1 << 10) | (1 << 11) | (1 << 12)); // Standard Traps
+  fpscr &= ~(1 << 15); // Input Denormal Trap
+  asm volatile("vmsr fpscr, %0" ::"r"(fpscr));
+#endif
 #endif
 }
 
@@ -160,8 +176,15 @@ void reset_default_fpu_state()
   __asm volatile("fninit");
 
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+#if BOOST_OS_MACOS || BOOST_OS_IOS
+  asm volatile(
+      "msr fpcr, xzr \n\t"
+      "msr fpsr, xzr" ::
+          : "memory");
+#else
   __builtin_aarch64_set_fpcr(0); // Clear FZ, DN, rounding, trap enables
   __builtin_aarch64_set_fpsr(0); // Clear cumulative exception flags
+#endif
 
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
   uint32_t fpscr;
