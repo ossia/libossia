@@ -80,10 +80,18 @@ static inline void set_fast_math_mode()
   _mm_setcsr(_mm_getcsr() | 0x8040);
 
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
+#if defined(__clang__)
+  uint64_t fpcr;
+  asm volatile("mrs %0, fpcr" : "=r"(fpcr));
+  fpcr |= (1ULL << 24); // FZ (Flush-to-Zero)
+  fpcr |= (1ULL << 25); // DN (Default NaN)
+  asm volatile("msr fpcr, %0" ::"r"(fpcr));
+#else
   uint64_t fpcr = __builtin_aarch64_get_fpcr();
   fpcr |= (1ULL << 24); // FZ (Flush-to-Zero)
   fpcr |= (1ULL << 25); // DN (Default NaN)
   __builtin_aarch64_set_fpcr(fpcr);
+#endif
 
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 32)
   uint32_t fpscr;
@@ -176,7 +184,7 @@ void reset_default_fpu_state()
   __asm volatile("fninit");
 
 #elif BOOST_ARCH_ARM && (BOOST_ARCH_WORD_BITS == 64)
-#if BOOST_OS_MACOS || BOOST_OS_IOS
+#if BOOST_OS_MACOS || BOOST_OS_IOS || defined(__clang__)
   asm volatile(
       "msr fpcr, xzr \n\t"
       "msr fpsr, xzr" ::
