@@ -211,18 +211,24 @@ namespace ossia
 {
 static_assert(sizeof(kfr::c64) == sizeof(fft_complex));
 static const constexpr auto fft_real_allocator = pod_allocator_avx2<kfr::f64>{};
+static const constexpr auto fft_complex_allocator = pod_allocator_avx2<_Complex double>{};
 
 static const constexpr auto alloc_real
     = [](std::size_t sz) { return fft_real_allocator.allocate(sz); };
 // FIXME KFR 6: no more pod
 static const constexpr auto alloc_complex
-    = [](std::size_t sz) { return std::allocator<kfr::c64>{}.allocate(sz); };
+    = [](std::size_t sz) {
+  return fft_complex_allocator.allocate(sz);
+};
 static const constexpr struct
 {
+  // FIXME we should pass the actual size allocated, not zero.
+  // It only works because pod_allocator_avx2 does not care, but modern std::allocator
+  // cares
   void operator()(fft_real* p) const noexcept { fft_real_allocator.deallocate(p, 0); }
   void operator()(fft_complex* p) const noexcept
   {
-    std::allocator<kfr::c64>{}.deallocate(reinterpret_cast<kfr::c64*>(p), 0);
+    fft_complex_allocator.deallocate(reinterpret_cast<_Complex double*>(p), 0);
   }
 } fft_free;
 static const constexpr auto create_plan_r2c
