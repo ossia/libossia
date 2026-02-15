@@ -16,16 +16,41 @@ if(OSSIA_USE_SYSTEM_LIBRARIES)
   endif()
 endif()
 
+function(ossia_disable_unity_on_targets)
+  foreach(_libname ${ARGN})
+    if(TARGET ${_libname})
+      set_target_properties(${_libname} PROPERTIES UNITY_BUILD 0)
+    endif()
+  endforeach()
+endfunction()
+
 if(NOT TARGET kfr)
   block()
+    set(CMAKE_CXX_STANDARD 20)
     if(NOT MSVC)
       add_compile_options(-w)
     endif()
+
+    set(KFR_ENABLE_TESTS OFF)
+    set(KFR_ENABLE_TESTS OFF CACHE INTERNAL "")
+    set(KFR_ENABLE_EXAMPLES OFF)
+    set(KFR_ENABLE_EXAMPLES OFF CACHE INTERNAL "")
+    set(KFR_ENABLE_AUDIO OFF)
+    set(KFR_ENABLE_AUDIO OFF CACHE INTERNAL "")
+    set(KFR_ENABLE_IO OFF)
+    set(KFR_ENABLE_IO OFF CACHE INTERNAL "")
+    set(KFR_USE_BOOST_MATH OFF)
+    set(KFR_USE_BOOST_MATH OFF CACHE INTERNAL "")
+    set(KFR_USE_BOOST OFF)
+    set(KFR_USE_BOOST OFF CACHE INTERNAL "")
     add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/kfr" "${CMAKE_CURRENT_BINARY_DIR}/kfr_build" SYSTEM)
-    set_target_properties(kfr PROPERTIES UNITY_BUILD 0)
-    if(TARGET kfr_dft)
-      set_target_properties(kfr_dft PROPERTIES UNITY_BUILD 0)
-    endif()
+    ossia_disable_unity_on_targets(
+      kfr
+      kfr_dft kfr_dft_sse2 kfr_dft_sse41 kfr_dft_sse42 kfr_dft_avx kfr_dft_avx2 kfr_dft_avx512 kfr_dft_neon kfr_dft_neon64 kfr_dft_rvv
+      kfr_dsp kfr_dsp_sse2 kfr_dsp_sse41 kfr_dsp_sse42 kfr_dsp_avx kfr_dsp_avx2 kfr_dsp_avx512 kfr_dsp_neon kfr_dsp_neon64 kfr_dsp_rvv
+      kfr_io
+      kfr_audio
+    )
   endblock()
 endif()
 
