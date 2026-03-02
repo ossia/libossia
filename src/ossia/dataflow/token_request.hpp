@@ -58,29 +58,71 @@ struct token_request
     ossia::time_value orig_from = other.prev_date;
     ossia::time_value tick_amount = other.date - other.prev_date;
 
-    while(tick_amount > 0_tv)
+    if(tick_amount >= 0_tv)
     {
-      const time_value cur_from{orig_from % loop_duration};
-      if(cur_from + tick_amount < loop_duration)
+      // Forward playback
+      while(tick_amount > 0_tv)
       {
-        other.prev_date = cur_from + start_offset;
-        other.date = other.prev_date + tick_amount;
-        f(other);
-        break;
+        const time_value cur_from{orig_from % loop_duration};
+        if(cur_from + tick_amount < loop_duration)
+        {
+          other.prev_date = cur_from + start_offset;
+          other.date = other.prev_date + tick_amount;
+          f(other);
+          break;
+        }
+        else
+        {
+          auto this_tick = loop_duration - cur_from;
+
+          tick_amount -= this_tick;
+          orig_from += this_tick;
+          other.prev_date = cur_from + start_offset;
+          other.date = other.prev_date + this_tick;
+
+          f(other);
+
+          transport(start_offset);
+          other.offset += this_tick;
+        }
       }
-      else
+    }
+    else
+    {
+      // Backward playback (tick_amount < 0)
+      while(tick_amount < 0_tv)
       {
-        auto this_tick = loop_duration - cur_from;
+        time_value cur_from{orig_from % loop_duration};
+        // Handle negative modulo: ensure cur_from is in [0, loop_duration)
+        if(cur_from.impl < 0)
+          cur_from.impl += loop_duration.impl;
 
-        tick_amount -= this_tick;
-        orig_from += this_tick;
-        other.prev_date = cur_from + start_offset;
-        other.date = other.prev_date + this_tick;
+        if(cur_from + tick_amount >= 0_tv)
+        {
+          // The backward tick fits within the current loop iteration
+          other.prev_date = cur_from + start_offset;
+          other.date = other.prev_date + tick_amount;
+          f(other);
+          break;
+        }
+        else
+        {
+          // Go back to the start of the loop, then wrap around
+          auto this_tick = -cur_from; // negative: go from cur_from back to 0
+          if(this_tick == 0_tv)
+            this_tick = -loop_duration; // already at 0, go back a full loop
 
-        f(other);
+          tick_amount -= this_tick; // tick_amount becomes less negative
+          orig_from += this_tick;
+          other.prev_date = cur_from + start_offset;
+          other.date = other.prev_date + this_tick;
 
-        transport(start_offset);
-        other.offset += this_tick;
+          f(other);
+
+          // Wrap to end of loop
+          transport(start_offset + loop_duration);
+          other.offset -= this_tick; // this_tick is negative, so offset increases
+        }
       }
     }
   }
