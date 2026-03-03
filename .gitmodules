@@ -121,3 +121,6 @@
 [submodule "3rdparty/libcoap"]
 	path = 3rdparty/libcoap
 	url = https://github.com/obgm/libcoap
+[submodule "3rdparty/asio"]
+	path = 3rdparty/asio
+	url = https://github.com/jcelerier/asio-2
