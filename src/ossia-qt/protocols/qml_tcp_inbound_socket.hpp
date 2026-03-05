@@ -20,71 +20,101 @@ class qml_tcp_connection
 {
   W_OBJECT(qml_tcp_connection)
 public:
+  struct state
+  {
+    boost::asio::io_context& context;
+    ossia::net::tcp_listener listener;
+    char data[4096];
+    std::atomic_bool alive{true};
+
+    state(ossia::net::tcp_listener l, boost::asio::io_context& ctx)
+        : context{ctx}
+        , listener{std::move(l)}
+    {
+    }
+  };
+
   explicit qml_tcp_connection(
       ossia::net::tcp_listener listener, boost::asio::io_context& ctx)
-      : m_context{ctx}
-      , m_listener{std::move(listener)}
+      : m_state{std::make_shared<state>(std::move(listener), ctx)}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return m_context; }
+
+  ~qml_tcp_connection() { m_state->alive = false; }
+  inline boost::asio::io_context& context() noexcept { return m_state->context; }
 
   void write(QByteArray buffer)
   {
-    run_on_asio_thread(
-        { m_listener.write(boost::asio::const_buffer(buffer.data(), buffer.size())); });
+    auto st = m_state;
+    boost::asio::dispatch(st->context, [st, buffer] {
+      if(st->alive)
+        st->listener.write(boost::asio::const_buffer(buffer.data(), buffer.size()));
+    });
   }
   W_SLOT(write)
 
-  void close(QByteArray buffer)
+  void close(QByteArray)
   {
-    run_on_asio_thread({ m_listener.close(); });
+    auto st = m_state;
+    boost::asio::dispatch(st->context, [st] {
+      if(st->alive)
+        st->listener.close();
+    });
   }
   W_SLOT(close)
 
   void receive(QJSValue v)
   {
     onBytes = v;
-    do_receive();
+    receive_impl(m_state, QPointer{this});
   }
   W_SLOT(receive)
-  void do_receive()
-  {
-    auto& socket = m_listener.m_socket;
-    socket.async_read_some(
-        boost::asio::buffer(m_data, sizeof(m_data)),
-        [self
-         = QPointer{this}](boost::system::error_code ec, std::size_t bytes_transferred) {
-      if(!ec)
-      {
-        auto buf = QByteArray(self->m_data, bytes_transferred);
-        ossia::qt::run_async(self.get(), [self, buf] {
-          if(!self.get())
-            return;
-          if(self->onBytes.isCallable())
-          {
-            self->onBytes.call({qjsEngine(self.get())->toScriptValue(buf)});
-          }
-        }, Qt::AutoConnection);
-        self->do_receive();
-      }
-      else
-      {
-        ossia::qt::run_async(self.get(), [self] {
-          if(self && self->onClose.isCallable())
-            self->onClose.call();
-        });
-      }
-    });
-  }
 
   QJSValue onBytes;
   QJSValue onClose;
   W_PROPERTY(QJSValue, onClose W_MEMBER onClose);
 
 private:
-  boost::asio::io_context& m_context;
-  ossia::net::tcp_listener m_listener;
-  char m_data[4096];
+  static void receive_impl(
+      std::shared_ptr<state> st, QPointer<qml_tcp_connection> self)
+  {
+    st->listener.m_socket.async_read_some(
+        boost::asio::buffer(st->data, sizeof(st->data)),
+        [self, st](boost::system::error_code ec, std::size_t bytes_transferred) {
+      if(!st->alive)
+        return;
+      if(!ec)
+      {
+        auto buf = QByteArray(st->data, bytes_transferred);
+        ossia::qt::run_async(
+            self.get(),
+            [self, buf] {
+          if(!self.get())
+            return;
+          if(self->onBytes.isCallable())
+          {
+            auto engine = qjsEngine(self.get());
+            if(engine)
+              self->onBytes.call({engine->toScriptValue(buf)});
+          }
+        },
+            Qt::AutoConnection);
+        receive_impl(st, self);
+      }
+      else
+      {
+        ossia::qt::run_async(
+            self.get(),
+            [self] {
+          if(self && self->onClose.isCallable())
+            self->onClose.call();
+        },
+            Qt::AutoConnection);
+      }
+    });
+  }
+
+  std::shared_ptr<state> m_state;
 };
 
 class qml_tcp_inbound_socket
@@ -93,26 +123,42 @@ class qml_tcp_inbound_socket
 {
   W_OBJECT(qml_tcp_inbound_socket)
 public:
+  struct state
+  {
+    ossia::net::tcp_server server;
+    std::atomic_bool alive{true};
+    std::atomic_bool open{false};
+
+    state(
+        const ossia::net::inbound_socket_configuration& conf,
+        boost::asio::io_context& ctx)
+        : server{conf, ctx}
+    {
+    }
+  };
+
   qml_tcp_inbound_socket(
       const ossia::net::inbound_socket_configuration& conf, boost::asio::io_context& ctx)
-      : server{conf, ctx}
+      : m_state{std::make_shared<state>(conf, ctx)}
   {
   }
 
-  inline boost::asio::io_context& context() noexcept { return server.m_context; }
+  ~qml_tcp_inbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->server.m_context; }
 
   void open()
   {
-    m_open = true;
-    accept();
+    m_state->open = true;
+    accept_impl(m_state, QPointer{this});
     if(onOpen.isCallable())
       onOpen.call({qjsEngine(this)->newQObject(this)});
   }
 
   void close()
   {
-    m_open = false;
-    server.m_acceptor.close();
+    m_state->open = false;
+    m_state->server.m_acceptor.close();
     if(onClose.isCallable())
       onClose.call();
   }
@@ -120,41 +166,46 @@ public:
 
   void on_close()
   {
-    m_open = false;
-    run_on_qt_thread({ onClose.call(); });
+    m_state->open = false;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   QJSValue onOpen;
   QJSValue onClose;
   QJSValue onError;
   QJSValue onConnection;
-  ossia::net::tcp_server server;
 
 private:
-  void accept()
+  static void accept_impl(
+      std::shared_ptr<state> st, QPointer<qml_tcp_inbound_socket> self)
   {
-    server.m_acceptor.async_accept(
-        [self = QPointer{this}](
+    st->server.m_acceptor.async_accept(
+        [self, st](
             boost::system::error_code ec, ossia::net::tcp_server::proto::socket socket) {
-      if(!self->m_open)
+      if(!st->alive || !st->open)
         return;
       if(!ec)
       {
-        ossia::qt::run_async(self.get(), [self, socket = std::move(socket)]() mutable {
+        ossia::qt::run_async(
+            self.get(),
+            [self, st, socket = std::move(socket)]() mutable {
+          if(!self.get())
+            return;
           auto conn = new qml_tcp_connection{
-              ossia::net::tcp_listener{std::move(socket)}, self->server.m_context};
+              ossia::net::tcp_listener{std::move(socket)}, st->server.m_context};
 
           if(self->onConnection.isCallable())
           {
             self->onConnection.call({qjsEngine(self.get())->newQObject(conn)});
           }
-        });
-        self->accept();
+        },
+            Qt::AutoConnection);
+        accept_impl(st, self);
       }
     });
   }
 
-  std::atomic_bool m_open{};
+  std::shared_ptr<state> m_state;
 };
 
 }

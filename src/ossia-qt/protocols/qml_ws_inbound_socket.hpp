@@ -20,14 +20,28 @@ class qml_websocket_inbound_socket
 {
   W_OBJECT(qml_websocket_inbound_socket)
 public:
+  struct state
+  {
+    boost::asio::io_context& context;
+    std::atomic_bool alive{true};
+
+    state(boost::asio::io_context& ctx)
+        : context{ctx}
+    {
+    }
+  };
+
   qml_websocket_inbound_socket(
       const ossia::net::inbound_socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_context{ctx}
+      : m_state{std::make_shared<state>(ctx)}
   {
     // FIXME
     // WebSocket server implementation simplified for now
   }
-  inline boost::asio::io_context& context() noexcept { return m_context; }
+
+  ~qml_websocket_inbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->context; }
 
   void open()
   {
@@ -38,11 +52,11 @@ public:
 
   void close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
   W_SLOT(close)
-
-  boost::asio::io_context& m_context;
 
   QJSValue onOpen;
   QJSValue onClose;
@@ -51,5 +65,8 @@ public:
   QJSValue onBytes;
   QJSValue onTextMessage;
   QJSValue onBinaryMessage;
+
+private:
+  std::shared_ptr<state> m_state;
 };
 }

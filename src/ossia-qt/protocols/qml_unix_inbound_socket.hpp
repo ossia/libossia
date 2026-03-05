@@ -21,41 +21,64 @@ class qml_unix_datagram_inbound_socket
 {
   W_OBJECT(qml_unix_datagram_inbound_socket)
 public:
+  struct state
+  {
+    ossia::net::unix_datagram_socket socket;
+    std::atomic_bool alive{true};
+
+    state(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+        : socket{conf, ctx}
+    {
+    }
+  };
+
   qml_unix_datagram_inbound_socket(
       const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
-      : socket{conf, ctx}
+      : m_state{std::make_shared<state>(conf, ctx)}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return socket.m_context; }
+
+  ~qml_unix_datagram_inbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->socket.m_context; }
 
   void open()
   {
     if(onClose.isCallable())
-      socket.on_close.connect<&qml_unix_datagram_inbound_socket::on_close>(this);
+      m_state->socket.on_close.connect<&qml_unix_datagram_inbound_socket::on_close>(this);
 
-    socket.open();
+    m_state->socket.open();
     if(onOpen.isCallable())
 
       onOpen.call({qjsEngine(this)->newQObject(this)});
 
-    socket.receive([self = QPointer{this}](const char* data, std::size_t sz) {
-      ossia::qt::run_async(self.data(), [self, arg = QByteArray(data, sz)] {
-        if(!self)
+    auto st = m_state;
+    auto self = QPointer{this};
+    st->socket.receive([st, self](const char* data, std::size_t sz) {
+      if(!st->alive)
+        return;
+      ossia::qt::run_async(
+          self.get(),
+          [self, arg = QByteArray(data, sz)] {
+        if(!self.get())
           return;
         if(self->onMessage.isCallable())
         {
-          self->onMessage.call({qjsEngine(self)->toScriptValue(arg)});
+          self->onMessage.call({qjsEngine(self.get())->toScriptValue(arg)});
         }
-      }, Qt::AutoConnection);
+      },
+          Qt::AutoConnection);
     });
   }
 
-  void close() { socket.close(); }
+  void close() { m_state->socket.close(); }
   W_SLOT(close)
 
   void on_close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   QJSValue onOpen;
@@ -63,61 +86,82 @@ public:
   QJSValue onError;
   QJSValue onMessage;
 
-  ossia::net::unix_datagram_socket socket;
+private:
+  std::shared_ptr<state> m_state;
 };
 
-// FIXME apply same logic than tcp inbound
 class qml_unix_stream_connection
     : public QObject
     , public Nano::Observer
 {
   W_OBJECT(qml_unix_stream_connection)
 public:
+  struct state
+  {
+    boost::asio::io_context& context;
+    ossia::net::unix_stream_listener listener;
+    char data[4096];
+    std::atomic_bool alive{true};
+
+    state(ossia::net::unix_stream_listener l, boost::asio::io_context& ctx)
+        : context{ctx}
+        , listener{std::move(l)}
+    {
+    }
+  };
+
   qml_unix_stream_connection(
       ossia::net::unix_stream_listener listener, boost::asio::io_context& ctx)
-      : m_context{ctx}
-      , m_listener{std::move(listener)}
+      : m_state{std::make_shared<state>(std::move(listener), ctx)}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return m_context; }
+
+  ~qml_unix_stream_connection() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->context; }
 
   void write(QByteArray buffer)
   {
-    run_on_asio_thread(
-        { m_listener.write(boost::asio::buffer(buffer.data(), buffer.size())); });
+    auto st = m_state;
+    boost::asio::dispatch(st->context, [st, buffer] {
+      if(st->alive)
+        st->listener.write(boost::asio::buffer(buffer.data(), buffer.size()));
+    });
   }
   W_SLOT(write)
 
-  void startReceive()
+  void startReceive() { receive_impl(m_state, QPointer{this}); }
+
+  QJSValue onMessage;
+
+private:
+  static void receive_impl(
+      std::shared_ptr<state> st, QPointer<qml_unix_stream_connection> self)
   {
-    auto& socket = m_listener.m_socket;
-    socket.async_read_some(
-        boost::asio::buffer(m_data, sizeof(m_data)),
-        [self
-         = QPointer{this}](boost::system::error_code ec, std::size_t bytes_transferred) {
+    st->listener.m_socket.async_read_some(
+        boost::asio::buffer(st->data, sizeof(st->data)),
+        [self, st](boost::system::error_code ec, std::size_t bytes_transferred) {
+      if(!st->alive)
+        return;
       if(!ec)
       {
         ossia::qt::run_async(
             self.get(),
-            [self, arg = QString::fromUtf8(self->m_data, bytes_transferred)] {
-          if(!self)
+            [self, arg = QString::fromUtf8(st->data, bytes_transferred)] {
+          if(!self.get())
             return;
           if(self->onMessage.isCallable())
           {
             self->onMessage.call({arg});
           }
-        });
-        self->startReceive();
+        },
+            Qt::AutoConnection);
+        receive_impl(st, self);
       }
     });
   }
 
-  QJSValue onMessage;
-
-private:
-  boost::asio::io_context& m_context;
-  ossia::net::unix_stream_listener m_listener;
-  char m_data[4096];
+  std::shared_ptr<state> m_state;
 };
 
 class qml_unix_stream_inbound_socket
@@ -126,16 +170,30 @@ class qml_unix_stream_inbound_socket
 {
   W_OBJECT(qml_unix_stream_inbound_socket)
 public:
+  struct state
+  {
+    ossia::net::unix_stream_server server;
+    std::atomic_bool alive{true};
+
+    state(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+        : server{conf, ctx}
+    {
+    }
+  };
+
   qml_unix_stream_inbound_socket(
       const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
-      : server{conf, ctx}
+      : m_state{std::make_shared<state>(conf, ctx)}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return server.m_context; }
+
+  ~qml_unix_stream_inbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->server.m_context; }
 
   void open()
   {
-    accept();
+    accept_impl(m_state, QPointer{this});
     if(onOpen.isCallable())
 
       onOpen.call({qjsEngine(this)->newQObject(this)});
@@ -143,7 +201,7 @@ public:
 
   void close()
   {
-    server.m_acceptor.close();
+    m_state->server.m_acceptor.close();
     if(onClose.isCallable())
       onClose.call();
   }
@@ -151,7 +209,9 @@ public:
 
   void on_close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   QJSValue onOpen;
@@ -159,34 +219,42 @@ public:
   QJSValue onError;
   QJSValue onConnection;
 
-  ossia::net::unix_stream_server server;
-
 private:
-  void accept()
+  static void accept_impl(
+      std::shared_ptr<state> st, QPointer<qml_unix_stream_inbound_socket> self)
   {
-    server.m_acceptor.async_accept(
-        [self = QPointer{this}](
+    st->server.m_acceptor.async_accept(
+        [self, st](
             boost::system::error_code ec,
             ossia::net::unix_stream_server::proto::socket socket) {
+      if(!st->alive)
+        return;
       if(!ec)
       {
-        ossia::qt::run_async(self.get(), [self, socket = std::move(socket)]() mutable {
+        ossia::qt::run_async(
+            self.get(),
+            [self, st, socket = std::move(socket)]() mutable {
+          if(!self.get())
+            return;
           auto conn = new qml_unix_stream_connection{
               ossia::net::unix_stream_listener{std::move(socket)},
-              self->server.m_context};
+              st->server.m_context};
           conn->onMessage = self->onConnection;
           conn->startReceive();
 
           if(self->onConnection.isCallable())
           {
             self->onConnection.call(
-                {qjsEngine(self)->newQObject(static_cast<QObject*>(conn))});
+                {qjsEngine(self.get())->newQObject(static_cast<QObject*>(conn))});
           }
-        });
-        self->accept();
+        },
+            Qt::AutoConnection);
+        accept_impl(st, self);
       }
     });
   }
+
+  std::shared_ptr<state> m_state;
 };
 }
 #endif

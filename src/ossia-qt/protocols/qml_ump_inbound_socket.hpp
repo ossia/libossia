@@ -38,18 +38,61 @@ class qml_ump_inbound_socket
 {
   W_OBJECT(qml_ump_inbound_socket)
 public:
-  qml_ump_inbound_socket() { }
+  struct state
+  {
+    std::atomic_bool alive{true};
+  };
 
-  ~qml_ump_inbound_socket() { close(); }
+  qml_ump_inbound_socket()
+      : m_state{std::make_shared<state>()}
+  {
+  }
+
+  ~qml_ump_inbound_socket()
+  {
+    m_state->alive = false;
+    close();
+  }
 
   void open(const libremidi::port_information& pi)
   {
     try
     {
       // Configure UMP input
+      auto st = m_state;
+      auto self = QPointer{this};
+
       libremidi::ump_input_configuration config;
       config.on_message
-          = [this](const libremidi::ump& message) { handleUMPMessage(message); };
+          = [st, self](const libremidi::ump& message) {
+        if(!st->alive)
+          return;
+
+        // Convert UMP message to QVariantMap for QML
+        QVariantMap msg;
+        msg["timestamp"] = QVariant::fromValue(message.timestamp);
+
+        // Convert UMP data (4 32-bit words)
+        QVariantList words;
+        for(int i = 0; i < 4; ++i)
+        {
+          words.append(static_cast<quint32>(message.data[i]));
+        }
+        msg["words"] = words;
+
+        // Send to QML in Qt thread
+        ossia::qt::run_async(
+            self.get(),
+            [self, msg]() {
+          if(!self.get())
+            return;
+          if(self->onMessage.isCallable())
+          {
+            self->onMessage.call({qjsEngine(self.get())->toScriptValue(msg)});
+          }
+        },
+            Qt::AutoConnection);
+      };
 
       // Create UMP input with MIDI 2.0 API
       m_ump_in = std::make_unique<libremidi::midi_in>(
@@ -62,8 +105,7 @@ public:
         if(onError.isCallable())
         {
           const auto& msg = err.message();
-          run_on_qt_thread(
-              { onError.call({QString::fromUtf8(msg.data(), msg.size())}); });
+          onError.call({QString::fromUtf8(msg.data(), msg.size())});
         }
         return;
       }
@@ -73,14 +115,14 @@ public:
       // Call onOpen callback
       if(onOpen.isCallable())
       {
-        run_on_qt_thread({ onOpen.call({qjsEngine(this)->newQObject(this)}); });
+        onOpen.call({qjsEngine(this)->newQObject(this)});
       }
     }
     catch(const std::exception& e)
     {
       if(onError.isCallable())
       {
-        run_on_qt_thread({ onError.call({QString::fromUtf8(e.what())}); });
+        onError.call({QString::fromUtf8(e.what())});
       }
     }
   }
@@ -100,7 +142,7 @@ public:
       {
         if(onError.isCallable())
         {
-          run_on_qt_thread({ onError.call({"No UMP input ports available"}); });
+          onError.call({"No UMP input ports available"});
         }
         return;
       }
@@ -112,7 +154,7 @@ public:
     {
       if(onError.isCallable())
       {
-        run_on_qt_thread({ onError.call({QString::fromUtf8(e.what())}); });
+        onError.call({QString::fromUtf8(e.what())});
       }
     }
   }
@@ -127,7 +169,7 @@ public:
 
       if(onClose.isCallable())
       {
-        run_on_qt_thread({ onClose.call(); });
+        onClose.call();
       }
     }
   }
@@ -140,32 +182,7 @@ public:
   QJSValue onMessage;
 
 private:
-  void handleUMPMessage(const libremidi::ump& message)
-  {
-    if(!onMessage.isCallable())
-      return;
-
-    // Convert UMP message to QVariantMap for QML
-    QVariantMap msg;
-    msg["timestamp"] = QVariant::fromValue(message.timestamp);
-
-    // Convert UMP data (4 32-bit words)
-    QVariantList words;
-    for(int i = 0; i < 4; ++i)
-    {
-      words.append(static_cast<quint32>(message.data[i]));
-    }
-    msg["words"] = words;
-
-    // Send to QML in Qt thread
-    ossia::qt::run_async(this, [this, msg]() {
-      if(onMessage.isCallable())
-      {
-        onMessage.call({qjsEngine(this)->toScriptValue(msg)});
-      }
-    }, Qt::AutoConnection);
-  }
-
+  std::shared_ptr<state> m_state;
   std::unique_ptr<libremidi::observer> m_observer;
   std::unique_ptr<libremidi::midi_in> m_ump_in;
   std::atomic_bool m_is_open{false};

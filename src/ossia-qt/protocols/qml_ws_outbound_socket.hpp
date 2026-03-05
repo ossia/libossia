@@ -22,22 +22,45 @@ class qml_websocket_outbound_socket
 {
   W_OBJECT(qml_websocket_outbound_socket)
 public:
+  struct state
+  {
+    std::string url;
+    std::unique_ptr<ossia::net::websocket_client> client;
+    std::atomic_bool alive{true};
+  };
+
   qml_websocket_outbound_socket(
       const ossia::net::outbound_socket_configuration& conf,
       boost::asio::io_context& ctx)
-      : m_url{"ws://" + conf.host + ":" + std::to_string(conf.port)} // FIXME wss
-      , m_client{ctx, [this](auto&&... args) { on_message(args...); }}
+      : m_state{std::make_shared<state>()}
   {
-    if(onOpen.isCallable())
-      m_client.on_open.connect<&qml_websocket_outbound_socket::on_open>(this);
-    if(onClose.isCallable())
-      m_client.on_close.connect<&qml_websocket_outbound_socket::on_close>(this);
-    if(onError.isCallable())
-      m_client.on_fail.connect<&qml_websocket_outbound_socket::on_fail>(this);
-  }
-  inline boost::asio::io_context& context() noexcept { return m_client.context(); }
+    m_state->url = "ws://" + conf.host + ":" + std::to_string(conf.port); // FIXME wss
+    auto st = m_state;
+    auto self = QPointer{this};
+    m_state->client = std::make_unique<ossia::net::websocket_client>(
+        ctx, [st, self](auto hdl, auto opcode, const std::string& msg) {
+      if(!st->alive)
+        return;
+      if(auto* ptr = self.get())
+        ptr->on_message(hdl, opcode, msg);
+    });
 
-  void open() { m_client.connect(m_url); }
+    if(onOpen.isCallable())
+      m_state->client->on_open.connect<&qml_websocket_outbound_socket::on_open>(this);
+    if(onClose.isCallable())
+      m_state->client->on_close.connect<&qml_websocket_outbound_socket::on_close>(this);
+    if(onError.isCallable())
+      m_state->client->on_fail.connect<&qml_websocket_outbound_socket::on_fail>(this);
+  }
+
+  ~qml_websocket_outbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept
+  {
+    return m_state->client->context();
+  }
+
+  void open() { m_state->client->connect(m_state->url); }
 
   void on_message(auto hdl, auto opcode, const std::string& msg)
   {
@@ -54,34 +77,52 @@ public:
 
   void on_open()
   {
-    run_on_qt_thread({ onOpen.call({qjsEngine(this)->newQObject(this)}); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(
+        this, [=, this] { onOpen.call({qjsEngine(this)->newQObject(this)}); },
+        Qt::AutoConnection);
   }
   void on_fail()
   {
-    run_on_qt_thread({ onError.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onError.call(); }, Qt::AutoConnection);
   }
   void on_close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   void write(QString message)
   {
-    run_on_asio_thread({ m_client.send_message(message.toStdString()); });
+    auto st = m_state;
+    boost::asio::dispatch(
+        st->client->context(),
+        [st, msg = message.toStdString()] {
+      if(st->alive)
+        st->client->send_message(msg);
+    });
   }
   W_SLOT(write)
 
   void writeBinary(QByteArray buffer)
   {
-    run_on_asio_thread({
-      m_client.send_binary_message(std::string_view(buffer.data(), buffer.size()));
+    auto st = m_state;
+    boost::asio::dispatch(
+        st->client->context(),
+        [st, buf = std::string(buffer.data(), buffer.size())] {
+      if(st->alive)
+        st->client->send_binary_message(buf);
     });
   }
   W_SLOT(writeBinary)
 
   void close()
   {
-    m_client.stop();
+    m_state->client->stop();
     if(onClose.isCallable())
       onClose.call();
   }
@@ -98,8 +139,7 @@ public:
   QJSValue onBinaryMessage;
 
 private:
-  std::string m_url;
-  ossia::net::websocket_client m_client;
+  std::shared_ptr<state> m_state;
 };
 
 }

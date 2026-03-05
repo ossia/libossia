@@ -38,18 +38,61 @@ class qml_midi_inbound_socket
 {
   W_OBJECT(qml_midi_inbound_socket)
 public:
-  qml_midi_inbound_socket() { }
+  struct state
+  {
+    std::atomic_bool alive{true};
+  };
 
-  ~qml_midi_inbound_socket() { close(); }
+  qml_midi_inbound_socket()
+      : m_state{std::make_shared<state>()}
+  {
+  }
+
+  ~qml_midi_inbound_socket()
+  {
+    m_state->alive = false;
+    close();
+  }
 
   void open(const libremidi::port_information& pi)
   {
     try
     {
       // Configure MIDI input
+      auto st = m_state;
+      auto self = QPointer{this};
+
       libremidi::input_configuration config;
       config.on_message
-          = [this](const libremidi::message& message) { handleMidiMessage(message); };
+          = [st, self](const libremidi::message& message) {
+        if(!st->alive)
+          return;
+
+        // Convert MIDI message to QVariantMap for QML
+        QVariantMap msg;
+        msg["timestamp"] = QVariant::fromValue(message.timestamp);
+
+        // Convert bytes to QVariantList
+        QVariantList bytes;
+        for(const auto& byte : message.bytes)
+        {
+          bytes.append(static_cast<int>(byte));
+        }
+        msg["bytes"] = bytes;
+
+        // Send to QML in Qt thread
+        ossia::qt::run_async(
+            self.get(),
+            [self, msg]() {
+          if(!self.get())
+            return;
+          if(self->onMessage.isCallable())
+          {
+            self->onMessage.call({qjsEngine(self.get())->toScriptValue(msg)});
+          }
+        },
+            Qt::AutoConnection);
+      };
       config.ignore_sysex = false;
       config.ignore_timing = false;
       config.ignore_sensing = true;
@@ -64,8 +107,7 @@ public:
         if(onError.isCallable())
         {
           const auto& msg = err.message();
-          run_on_qt_thread(
-              { onError.call({QString::fromUtf8(msg.data(), msg.size())}); });
+          onError.call({QString::fromUtf8(msg.data(), msg.size())});
         }
         return;
       }
@@ -75,14 +117,14 @@ public:
       // Call onOpen callback
       if(onOpen.isCallable())
       {
-        run_on_qt_thread({ onOpen.call({qjsEngine(this)->newQObject(this)}); });
+        onOpen.call({qjsEngine(this)->newQObject(this)});
       }
     }
     catch(const std::exception& e)
     {
       if(onError.isCallable())
       {
-        run_on_qt_thread({ onError.call({QString::fromUtf8(e.what())}); });
+        onError.call({QString::fromUtf8(e.what())});
       }
     }
   }
@@ -101,7 +143,7 @@ public:
       {
         if(onError.isCallable())
         {
-          run_on_qt_thread({ onError.call({"No MIDI input ports available"}); });
+          onError.call({"No MIDI input ports available"});
         }
         return;
       }
@@ -113,7 +155,7 @@ public:
     {
       if(onError.isCallable())
       {
-        run_on_qt_thread({ onError.call({QString::fromUtf8(e.what())}); });
+        onError.call({QString::fromUtf8(e.what())});
       }
     }
   }
@@ -128,7 +170,7 @@ public:
 
       if(onClose.isCallable())
       {
-        run_on_qt_thread({ onClose.call(); });
+        onClose.call();
       }
     }
   }
@@ -141,32 +183,7 @@ public:
   QJSValue onMessage;
 
 private:
-  void handleMidiMessage(const libremidi::message& message)
-  {
-    if(!onMessage.isCallable())
-      return;
-
-    // Convert MIDI message to QVariantMap for QML
-    QVariantMap msg;
-    msg["timestamp"] = QVariant::fromValue(message.timestamp);
-
-    // Convert bytes to QVariantList
-    QVariantList bytes;
-    for(const auto& byte : message.bytes)
-    {
-      bytes.append(static_cast<int>(byte));
-    }
-    msg["bytes"] = bytes;
-
-    // Send to QML in Qt thread
-    ossia::qt::run_async(this, [this, msg]() {
-      if(onMessage.isCallable())
-      {
-        onMessage.call({qjsEngine(this)->toScriptValue(msg)});
-      }
-    }, Qt::AutoConnection);
-  }
-
+  std::shared_ptr<state> m_state;
   std::unique_ptr<libremidi::observer> m_observer;
   std::unique_ptr<libremidi::midi_in> m_midi_in;
   std::atomic_bool m_is_open{false};

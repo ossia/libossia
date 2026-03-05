@@ -22,36 +22,65 @@ class qml_udp_outbound_socket
 {
   W_OBJECT(qml_udp_outbound_socket)
 public:
+  struct state
+  {
+    ossia::net::udp_send_socket socket;
+    std::atomic_bool alive{true};
+
+    state(
+        const ossia::net::outbound_socket_configuration& conf,
+        boost::asio::io_context& ctx)
+        : socket{conf, ctx}
+    {
+    }
+  };
+
+private:
+  std::shared_ptr<state> m_state;
+
+public:
+  ossia::net::udp_send_socket& socket;
+
   qml_udp_outbound_socket(
       const ossia::net::outbound_socket_configuration& conf,
       boost::asio::io_context& ctx)
-      : socket{conf, ctx}
+      : m_state{std::make_shared<state>(conf, ctx)}
+      , socket{m_state->socket}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return socket.m_context; }
+
+  ~qml_udp_outbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->socket.m_context; }
 
   void open()
   {
     if(onClose.isCallable())
-      socket.on_close.connect<&qml_udp_outbound_socket::on_close>(*this);
+      m_state->socket.on_close.connect<&qml_udp_outbound_socket::on_close>(*this);
 
-    socket.connect();
+    m_state->socket.connect();
 
     if(onOpen.isCallable())
       onOpen.call({qjsEngine(this)->newQObject(this)});
   }
 
-  void close() { socket.close(); }
+  void close() { m_state->socket.close(); }
   W_SLOT(close)
 
   void on_close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   void write(QByteArray buffer)
   {
-    run_on_asio_thread({ socket.write(buffer.data(), buffer.size()); });
+    auto st = m_state;
+    boost::asio::dispatch(st->socket.m_context, [st, buffer] {
+      if(st->alive)
+        st->socket.write(buffer.data(), buffer.size());
+    });
   }
   W_SLOT(write)
 
@@ -61,7 +90,5 @@ public:
   QJSValue onOpen;
   QJSValue onClose;
   QJSValue onError;
-
-  ossia::net::udp_send_socket socket;
 };
 }

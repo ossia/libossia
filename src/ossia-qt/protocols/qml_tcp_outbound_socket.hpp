@@ -21,25 +21,48 @@ class qml_tcp_outbound_socket
 {
   W_OBJECT(qml_tcp_outbound_socket)
 public:
+  struct state
+  {
+    ossia::net::tcp_client socket;
+    std::atomic_bool alive{true};
+
+    state(
+        const ossia::net::outbound_socket_configuration& conf,
+        boost::asio::io_context& ctx)
+        : socket{conf, ctx}
+    {
+    }
+  };
+
+private:
+  std::shared_ptr<state> m_state;
+
+public:
+  ossia::net::tcp_client& socket;
+
   qml_tcp_outbound_socket(
       const ossia::net::outbound_socket_configuration& conf,
       boost::asio::io_context& ctx)
-      : socket{conf, ctx}
+      : m_state{std::make_shared<state>(conf, ctx)}
+      , socket{m_state->socket}
   {
   }
-  inline boost::asio::io_context& context() noexcept { return socket.m_context; }
+
+  ~qml_tcp_outbound_socket() { m_state->alive = false; }
+
+  inline boost::asio::io_context& context() noexcept { return m_state->socket.m_context; }
 
   void open()
   {
     try
     {
       if(onOpen.isCallable())
-        socket.on_open.connect<&qml_tcp_outbound_socket::on_open>(this);
+        m_state->socket.on_open.connect<&qml_tcp_outbound_socket::on_open>(this);
       if(onClose.isCallable())
-        socket.on_close.connect<&qml_tcp_outbound_socket::on_close>(this);
+        m_state->socket.on_close.connect<&qml_tcp_outbound_socket::on_close>(this);
       if(onError.isCallable())
-        socket.on_fail.connect<&qml_tcp_outbound_socket::on_fail>(this);
-      socket.connect();
+        m_state->socket.on_fail.connect<&qml_tcp_outbound_socket::on_fail>(this);
+      m_state->socket.connect();
     }
     catch(const std::exception& e)
     {
@@ -52,24 +75,36 @@ public:
 
   void write(QByteArray buffer)
   {
-    run_on_asio_thread({ socket.write(buffer.data(), buffer.size()); });
+    auto st = m_state;
+    boost::asio::dispatch(st->socket.m_context, [st, buffer] {
+      if(st->alive)
+        st->socket.write(buffer.data(), buffer.size());
+    });
   }
   W_SLOT(write)
 
-  void close() { socket.close(); }
+  void close() { m_state->socket.close(); }
   W_SLOT(close)
 
   void on_open()
   {
-    run_on_qt_thread({ onOpen.call({qjsEngine(this)->newQObject(this)}); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(
+        this, [=, this] { onOpen.call({qjsEngine(this)->newQObject(this)}); },
+        Qt::AutoConnection);
   }
   void on_fail()
   {
-    run_on_qt_thread({ onError.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onError.call(); }, Qt::AutoConnection);
   }
   void on_close()
   {
-    run_on_qt_thread({ onClose.call(); });
+    if(!m_state->alive)
+      return;
+    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
@@ -79,8 +114,6 @@ public:
   QJSValue onClose;
   QJSValue onError;
   QJSValue onBytes;
-
-  ossia::net::tcp_client socket;
 };
 
 }
