@@ -74,19 +74,36 @@ tick_transport_info time_interval::current_transport_info() const noexcept
   return t;
 }
 
+static void tvcheck(ossia::time_value tv)
+{
+  if(tv.impl >= tv.infinite_min)
+    std::raise(SIGTRAP);
+}
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset,
     const ossia::token_request& parent_request)
 {
   m_tick_offset = offset;
-  m_date = new_date;
+  {
+    tvcheck(m_date);
+    tvcheck(new_date);
+    m_date = new_date;
+    tvcheck(new_date);
+  }
 
 #if defined(OSSIA_EXECUTION_LOG)
   auto log = g_exec_log.interval_start_run_tick(name, old_date, new_date, offset);
 #endif
 
-  if(old_date < 0_tv || new_date < 0_tv)
-    return;
+  // Clamp at zero: if speed is negative and we'd go below 0,
+  // stay at 0 so we can resume instantly when speed becomes positive.
+  if(new_date < 0_tv)
+  {
+    new_date = 0_tv;
+    m_date = 0_tv;
+  }
+  if(old_date < 0_tv)
+    old_date = 0_tv;
 
   m_current_signature = signature(old_date, parent_request);
   m_current_tempo = m_speed * tempo(old_date, parent_request);

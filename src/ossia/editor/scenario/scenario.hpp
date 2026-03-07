@@ -172,6 +172,10 @@ private:
   ossia::flat_map<time_interval*, time_value> m_itv_end_map;
   sync_set m_retry_syncs; // used as cache
   sync_set m_endNodes;    // used as cache
+
+  // Backward playback support
+  overtick_map m_backward_overticks;
+  sync_set m_startNodes;
   // scenario_graph m_sg;    // used as cache
 
   sync_set m_component_visit_cache;
@@ -227,5 +231,10 @@ private:
   void stop_interval(ossia::time_interval& itv);
   void reset_component(ossia::time_sync& n);
   void reset_all_components_except(ossia::time_sync& n);
+
+  void state_impl_backward(const ossia::token_request& tk, time_value tick_amount);
+  void run_interval_backward(
+      ossia::time_interval& interval, const ossia::token_request& tk,
+      const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset);
 };
 }

@@ -13,6 +13,8 @@
 #include <ossia/editor/scenario/time_interval.hpp>
 #include <ossia/editor/scenario/time_sync.hpp>
 
+#include <cmath>
+
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/connected_components.hpp>
 #include <boost/graph/labeled_graph.hpp>
@@ -188,21 +190,22 @@ void scenario::run_interval(
     }
     else
     {
-      if(tick * s < cst_old_date)
+      // s < 0: interval has negative own speed (playing backwards locally)
+      auto backward_disp = int64_t(std::ceil(-tick.impl * s));
+      if(backward_disp <= cst_old_date.impl)
       {
         if(tick != 0_tv)
           interval.tick_offset(tick, offset, tk);
       }
       else
       {
-        if(tick != 0_tv)
+        // Clamp at zero
+        if(cst_old_date != 0_tv)
         {
           interval.tick_offset_speed_precomputed(
               ossia::time_value{-cst_old_date.impl}, offset, tk);
         }
       }
-      // no overtick support for running backwards for now - we just stop at
-      // zero
     }
   }
   else
@@ -246,6 +249,18 @@ void scenario::state_impl(const ossia::token_request& tk)
     // Duration of this tick.
     time_value tick_ms
         = (prev_last_date == Infinite) ? tk.date : (tk.date - prev_last_date);
+
+    // Backward playback: simplified path with no interactivity
+    if(tick_ms < 0_tv)
+    {
+      state_impl_backward(tk, time_value{-tick_ms.impl});
+
+      // Clamp so that going below time=0 doesn't cause a time jump
+      // when switching back to forward
+      if(m_last_date < 0_tv)
+        m_last_date = 0_tv;
+      return;
+    }
 
     m_overticks.clear();
     m_endNodes.clear();
@@ -541,4 +556,156 @@ void scenario_graph::reset_component(time_sync& sync) const
 
   scenar.reset_subgraph(to_disable_sync, to_disable_itv, sync);
 }*/
+
+void scenario::run_interval_backward(
+    ossia::time_interval& interval, const ossia::token_request& tk,
+    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset)
+{
+  const auto cst_old_date = interval.get_date();
+
+  // Nothing to do if already at 0
+  if(cst_old_date == 0_tv)
+    return;
+
+  interval.set_parent_speed(tk.speed);
+
+  auto s = std::abs(interval.get_speed(interval.get_date()));
+  if(s == 0.)
+    s = 1.0;
+
+  // How far backward do we move (positive amount)
+  auto displacement = int64_t(std::ceil(tick.impl * s));
+
+  if(displacement < cst_old_date.impl)
+  {
+    // Normal backward tick - stays within bounds, date stays > 0
+    if(tick != 0_tv)
+    {
+      interval.tick_offset_speed_precomputed(
+          ossia::time_value{-displacement}, offset, tk);
+    }
+  }
+  else
+  {
+    // Would go past 0 - clamp at 0
+    if(cst_old_date != 0_tv)
+    {
+      interval.tick_offset_speed_precomputed(
+          ossia::time_value{-cst_old_date.impl}, offset, tk);
+    }
+
+    // Compute backward overtick (including start syncs, so the cascade
+    // can reset the scenario to its initial state when rewinding to 0)
+    const auto start_node = &interval.get_start_event().get_time_sync();
+    {
+      const auto ot = ossia::time_value{displacement - cst_old_date.impl};
+
+      const auto node_it = m_backward_overticks.lower_bound(start_node);
+      if(node_it != m_backward_overticks.end() && (start_node == node_it->first))
+      {
+        auto& cur = const_cast<overtick&>(node_it->second);
+        if(ot < cur.min)
+          cur.min = ot;
+        if(ot > cur.max)
+        {
+          cur.max = ot;
+          cur.offset = offset;
+        }
+      }
+      else
+      {
+        m_backward_overticks.insert(
+            node_it, {start_node, overtick{ot, ot, offset}});
+      }
+
+      m_startNodes.insert(start_node);
+    }
+  }
+}
+
+void scenario::state_impl_backward(
+    const ossia::token_request& tk, time_value tick_amount)
+{
+  // tick_amount is positive (the magnitude of backward movement)
+  m_backward_overticks.clear();
+  m_startNodes.clear();
+
+  m_backward_overticks.reserve(m_nodes.size());
+
+  // Tick all running intervals backward
+  for(time_interval* interval : m_runningIntervals)
+  {
+    run_interval_backward(*interval, tk, tick_amount, tick_amount, tk.offset);
+  }
+
+  // Backward cascade: when intervals reach date=0, transition to previous intervals
+  while(!m_startNodes.empty())
+  {
+    // Copy and clear to allow re-population during iteration
+    auto nodes_to_process = std::move(m_startNodes);
+    m_startNodes.clear();
+
+    for(auto* sync_node : nodes_to_process)
+    {
+      // Reset this sync's events to NONE (undoing the forward play state)
+      // so that forward replay can re-trigger them
+      sync_node->reset();
+
+      // If this is a start sync, re-add it to the waiting nodes
+      // so the forward path will re-evaluate and trigger it
+      if(sync_node->is_start())
+        m_waitingNodes.insert(sync_node);
+
+      auto ot_it = m_backward_overticks.find(sync_node);
+      if(ot_it == m_backward_overticks.end())
+        continue;
+
+      const time_value remaining_tick
+          = (mode == PROGRESS_MAX) ? ot_it->second.max : ot_it->second.min;
+      const auto ot_offset = ot_it->second.offset;
+
+      for(const auto& ev : sync_node->get_time_events())
+      {
+        // Stop next intervals that reached 0 (remove from running set)
+        for(const auto& next_itv : ev->next_time_intervals())
+        {
+          auto running_it = m_runningIntervals.find(next_itv.get());
+          if(running_it != m_runningIntervals.end())
+          {
+            next_itv->stop();
+            mark_end_discontinuous{}(*next_itv);
+            m_runningIntervals.erase(running_it);
+          }
+        }
+
+        // Start previous intervals at their nominal duration (playing backward)
+        for(const auto& prev_itv : ev->previous_time_intervals())
+        {
+          if(prev_itv->graphal)
+            continue;
+
+          // Don't re-start an already running interval
+          if(m_runningIntervals.find(prev_itv.get()) != m_runningIntervals.end())
+            continue;
+
+          prev_itv->set_offset(0_tv);
+          prev_itv->set_parent_speed(tk.speed);
+          prev_itv->start();
+          prev_itv->transport(prev_itv->get_nominal_duration());
+
+          // Reset end event so the interval doesn't get cleaned up by
+          // the forward path's cleanup logic
+          prev_itv->get_end_event().set_status(time_event::status::NONE);
+
+          mark_start_discontinuous{}(*prev_itv);
+          m_runningIntervals.insert(prev_itv.get());
+
+          // Tick the newly started interval with the remaining backward time
+          run_interval_backward(*prev_itv, tk, tick_amount, remaining_tick, ot_offset);
+        }
+      }
+    }
+  }
+}
+
 }

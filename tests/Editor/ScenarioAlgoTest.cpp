@@ -1635,3 +1635,197 @@ TEST_CASE("test_exec_chain_loop", "test_exec_chain_loop")
   REQUIRE(c0->get_date() == 5_tv);
   REQUIRE(c1->get_date() == 0_tv);
 }
+
+/*           Backward playback tests          */
+
+TEST_CASE("test_exec_reverse_simple", "test_exec_reverse_simple")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  auto se = start_event(*s.scenario);
+  auto e1 = create_event(*s.scenario);
+
+  // e0 ---[c0: 3000]--- e1
+  auto c0 = create_interval({}, *se, *e1, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c0);
+
+  // Play forward to 1500
+  start_and_tick(s.interval);
+  s.interval->tick(1500_tv, default_request());
+  REQUIRE(c0->get_date() == 1500_tv);
+
+  // Switch to backward
+  s.interval->set_speed(-1.);
+
+  // Play backward by 500
+  s.interval->tick(500_tv, default_request());
+  REQUIRE(c0->get_date() == 1000_tv);
+
+  // Play backward by another 500
+  s.interval->tick(500_tv, default_request());
+  REQUIRE(c0->get_date() == 500_tv);
+
+  // Play backward to 0
+  s.interval->tick(500_tv, default_request());
+  REQUIRE(c0->get_date() == 0_tv);
+}
+
+TEST_CASE("test_exec_reverse_chain", "test_exec_reverse_chain")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  auto se = start_event(*s.scenario);
+  auto e1 = create_event(*s.scenario);
+  auto e2 = create_event(*s.scenario);
+
+  // e0 ---[c0: 3000]--- e1 ---[c1: 3000]--- e2
+  auto c0 = create_interval({}, *se, *e1, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c0);
+  auto c1 = create_interval({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c1);
+
+  // Play forward: c0 completes, c1 starts and advances
+  start_and_tick(s.interval);
+  s.interval->tick(4500_tv, default_request());
+  REQUIRE(c1->get_date() == 1500_tv);
+
+  // Switch to backward
+  s.interval->set_speed(-1.);
+
+  // Play backward by 500 (still within c1)
+  s.interval->tick(500_tv, default_request());
+  REQUIRE(c1->get_date() == 1000_tv);
+
+  // Play backward: c1 reaches 0, should transition to c0 at nominal
+  s.interval->tick(1000_tv, default_request());
+  REQUIRE(c0->get_date() == 3000_tv);
+
+  // Play backward within c0
+  s.interval->tick(500_tv, default_request());
+  REQUIRE(c0->get_date() == 2500_tv);
+}
+
+TEST_CASE("test_exec_reverse_chain_overtick", "test_exec_reverse_chain_overtick")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  auto se = start_event(*s.scenario);
+  auto e1 = create_event(*s.scenario);
+  auto e2 = create_event(*s.scenario);
+
+  // e0 ---[c0: 3000]--- e1 ---[c1: 3000]--- e2
+  auto c0 = create_interval({}, *se, *e1, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c0);
+  auto c1 = create_interval({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c1);
+
+  // Play forward to c1 at 1500
+  start_and_tick(s.interval);
+  s.interval->tick(4500_tv, default_request());
+  REQUIRE(c1->get_date() == 1500_tv);
+
+  // Switch to backward
+  s.interval->set_speed(-1.);
+
+  // Play backward by 2000: c1 goes from 1500 to 0 (uses 1500),
+  // remaining 500 should cascade into c0 starting at 3000 and going to 2500
+  s.interval->tick(2000_tv, default_request());
+  REQUIRE(c0->get_date() == 2500_tv);
+}
+
+TEST_CASE("test_exec_reverse_two_branch", "test_exec_reverse_two_branch")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  auto se = start_event(*s.scenario);
+  auto e3 = create_event(*s.scenario);
+
+  // Two parallel intervals from start, converging on a single sync,
+  // then a single interval after convergence:
+  //
+  // e0 ---[c0: 2000]--- e_c1 \
+  //                             --- [c2: 2000] --- e3
+  // e0 ---[c1: 2000]--- e_c2 /
+
+  auto en_converge = std::make_shared<ossia::time_sync>();
+  en_converge->set_expression(ossia::expressions::make_expression_true());
+  auto e_c1 = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *en_converge,
+      ossia::expressions::make_expression_true());
+  auto e_c2 = std::make_shared<ossia::time_event>(
+      ossia::time_event::exec_callback{}, *en_converge,
+      ossia::expressions::make_expression_true());
+  en_converge->insert(en_converge->get_time_events().end(), e_c1);
+  en_converge->insert(en_converge->get_time_events().end(), e_c2);
+  s.scenario->add_time_sync(en_converge);
+
+  auto c0 = create_interval({}, *se, *e_c1, 2000_tv, 2000_tv, 2000_tv);
+  s.scenario->add_time_interval(c0);
+  auto c1 = create_interval({}, *se, *e_c2, 2000_tv, 2000_tv, 2000_tv);
+  s.scenario->add_time_interval(c1);
+
+  auto c2 = create_interval({}, *e_c1, *e3, 2000_tv, 2000_tv, 2000_tv);
+  s.scenario->add_time_interval(c2);
+
+  // Play forward: both c0 and c1 complete, then c2 starts
+  start_and_tick(s.interval);
+  s.interval->tick(2000_tv, default_request());
+  s.interval->tick(1000_tv, default_request());
+  REQUIRE(c2->get_date() == 1000_tv);
+
+  // Switch to backward
+  s.interval->set_speed(-1.);
+
+  // Play backward: c2 goes to 0, should transition to BOTH c0 and c1
+  s.interval->tick(1000_tv, default_request());
+  REQUIRE(c0->get_date() == 2000_tv);
+  REQUIRE(c1->get_date() == 2000_tv);
+}
+
+TEST_CASE("test_exec_reverse_restart", "test_exec_reverse_restart")
+{
+  using namespace ossia;
+
+  root_scenario s;
+  auto se = start_event(*s.scenario);
+  auto e1 = create_event(*s.scenario);
+  auto e2 = create_event(*s.scenario);
+
+  // e0 ---[c0: 3000]--- e1 ---[c1: 3000]--- e2
+  auto c0 = create_interval({}, *se, *e1, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c0);
+  auto c1 = create_interval({}, *e1, *e2, 3000_tv, 3000_tv, 3000_tv);
+  s.scenario->add_time_interval(c1);
+
+  // Play forward: c0 completes, c1 advances
+  start_and_tick(s.interval);
+  s.interval->tick(4500_tv, default_request());
+  REQUIRE(c1->get_date() == 1500_tv);
+
+  // Play backward all the way to start
+  s.interval->set_speed(-1.);
+  s.interval->tick(1500_tv, default_request());
+  REQUIRE(c1->get_date() == 0_tv);
+
+  s.interval->tick(3000_tv, default_request());
+  REQUIRE(c0->get_date() == 0_tv);
+
+  // Continue backward past time=0 (root interval clamps at 0)
+  s.interval->tick(500_tv, default_request());
+  // c0 was stopped by the backward cascade when it reached the start sync.
+  // The zero tick triggers the start sync again, so c0 is re-started at date=0.
+  REQUIRE(c0->get_date() == 0_tv);
+
+  // Now play forward again: root is at 0, tick(1500) brings it to 1500.
+  s.interval->set_speed(1.);
+  s.interval->tick(1500_tv, default_request());
+  REQUIRE(c0->get_date() == 1500_tv);
+
+  // Continue forward: c0 completes (needs 1500 more), c1 starts with overtick
+  s.interval->tick(3000_tv, default_request());
+  REQUIRE(c1->get_date() == 1500_tv);
+}
