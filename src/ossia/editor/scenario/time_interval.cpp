@@ -74,22 +74,12 @@ tick_transport_info time_interval::current_transport_info() const noexcept
   return t;
 }
 
-static void tvcheck(ossia::time_value tv)
-{
-  if(tv.impl >= tv.infinite_min)
-    std::raise(SIGTRAP);
-}
 void time_interval::tick_impl(
     ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset,
     const ossia::token_request& parent_request)
 {
   m_tick_offset = offset;
-  {
-    tvcheck(m_date);
-    tvcheck(new_date);
-    m_date = new_date;
-    tvcheck(new_date);
-  }
+  m_date = new_date;
 
 #if defined(OSSIA_EXECUTION_LOG)
   auto log = g_exec_log.interval_start_run_tick(name, old_date, new_date, offset);
