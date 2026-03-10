@@ -395,22 +395,5 @@ struct geometry_spec
 struct OSSIA_EXPORT geometry_port
 {
   static const constexpr int which = 4;
-  enum dirt_flags
-  {
-    dirty_transform = 0x1,
-    dirty_meshes = 0x2
-  };
-
-  void clear();
-
-  geometry_spec geometry;
-  transform3d transform;
-  uint8_t flags{};
 };
-
-struct geometry_delay_line
-{
-  std::vector<geometry_spec> geometries;
-};
-
 }

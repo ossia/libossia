@@ -96,10 +96,6 @@ struct init_node_visitor
           return copy_data_pos{pos}(
               *reinterpret_cast<const ossia::value_delay_line*>(out.target()),
               in.cast<ossia::value_port>());
-        case delay_line_type::index_of<ossia::geometry_delay_line>().index():
-          return copy_data_pos{pos}(
-              *reinterpret_cast<const ossia::geometry_delay_line*>(out.target()),
-              in.cast<ossia::geometry_port>());
       }
     }
     return false;
@@ -120,9 +116,6 @@ struct init_node_visitor
           break;
         case ossia::value_port::which:
           move_data{}(out.cast<ossia::value_port>(), in.cast<ossia::value_port>());
-          break;
-        case ossia::geometry_port::which:
-          move_data{}(out.cast<ossia::geometry_port>(), in.cast<ossia::geometry_port>());
           break;
       }
     }
@@ -149,10 +142,6 @@ struct init_node_visitor
             break;
           case ossia::value_port::which:
             copy_data{}(out.cast<ossia::value_port>(), in.cast<ossia::value_port>());
-            break;
-          case ossia::geometry_port::which:
-            copy_data{}(
-                out.cast<ossia::geometry_port>(), in.cast<ossia::geometry_port>());
             break;
         }
       }
