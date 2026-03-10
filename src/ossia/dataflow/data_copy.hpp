@@ -19,8 +19,6 @@ struct clear_data
 
   void operator()(audio_port& p) const { p.set_channels(0); }
 
-  void operator()(geometry_port& p) const { p.clear(); }
-
   void operator()() const { }
 };
 
@@ -31,11 +29,6 @@ struct data_size
   std::size_t operator()(const midi_delay_line& p) const { return p.messages.size(); }
 
   std::size_t operator()(const audio_delay_line& p) const { return p.samples.size(); }
-
-  std::size_t operator()(const geometry_delay_line& p) const
-  {
-    return p.geometries.size();
-  }
 
   std::size_t operator()(const ossia::monostate&) const { return 0; }
   std::size_t operator()() const { return 0; }
@@ -60,17 +53,6 @@ struct move_data
     auto tmp = std::move(in.messages);
     in.messages = std::move(out.messages);
     out.messages = std::move(tmp);
-  }
-
-  void operator()(geometry_port& out, geometry_port& in)
-  {
-    // OPTIMIZEME
-    // if(out.flags & geometry_port::dirty_meshes)
-    in.geometry = out.geometry; //std::move(out.meshes);
-    // if(out.flags & geometry_port::dirty_transform)
-    in.transform = out.transform;
-    in.flags = out.flags;
-    out.flags = {};
   }
 };
 
@@ -157,30 +139,6 @@ struct copy_data
     // Called in env_writer, when copying from a node to a delay line
     in.messages.push_back(out.messages);
   }
-
-  /// Geometry ///
-  void operator()(const geometry_port& out, geometry_port& in)
-  {
-    // Called in init_node_visitor::copy, when copying from a node to another
-    //if(out.flags & geometry_port::dirty_meshes)
-    in.geometry = out.geometry;
-    //if(out.flags & geometry_port::dirty_transform)
-    in.transform = out.transform;
-    in.flags = out.flags;
-  }
-
-  void operator()(const geometry_spec& out, geometry_port& in)
-  {
-    // Called in copy_data_pos below
-    in.geometry = out;
-  }
-
-  void operator()(const geometry_port& out, geometry_delay_line& in)
-  {
-    // Called in env_writer, when copying from a node to a delay line
-    // if(out.flags & geometry_port::dirty_meshes)
-    in.geometries.push_back(out.geometry);
-  }
 };
 
 struct copy_data_pos
@@ -188,39 +146,39 @@ struct copy_data_pos
   const std::size_t pos;
 
   template <typename T, typename U>
-  void operator()(const T&, const U&) const
+  bool operator()(const T&, const U&) const
   {
+    return false;
   }
 
-  void operator()(const value_delay_line& out, value_port& in)
+  bool operator()(const value_delay_line& out, value_port& in)
   {
     if(pos < out.data.size())
     {
       copy_data{}(out.data[pos], in);
+      return true;
     }
+    return false;
   }
 
-  void operator()(const audio_delay_line& out, audio_port& in)
+  bool operator()(const audio_delay_line& out, audio_port& in)
   {
     if(pos < out.samples.size())
     {
       mix(out.samples[pos], in.get());
+      return true;
     }
+    return false;
   }
 
-  void operator()(const midi_delay_line& out, midi_port& in)
+  bool operator()(const midi_delay_line& out, midi_port& in)
   {
     if(pos < out.messages.size())
     {
       copy_data{}(out.messages[pos], in);
+      return true;
     }
-  }
-  void operator()(const geometry_delay_line& out, geometry_port& in)
-  {
-    if(pos < out.geometries.size())
-    {
-      copy_data{}(out.geometries[pos], in);
-    }
+    return false;
   }
 };
 }
