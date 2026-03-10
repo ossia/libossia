@@ -188,39 +188,49 @@ struct copy_data_pos
   const std::size_t pos;
 
   template <typename T, typename U>
-  void operator()(const T&, const U&) const
+  bool operator()(const T&, const U&) const
   {
+    return false;
   }
 
-  void operator()(const value_delay_line& out, value_port& in)
+  bool operator()(const value_delay_line& out, value_port& in)
   {
     if(pos < out.data.size())
     {
       copy_data{}(out.data[pos], in);
+      return true;
     }
+    return false;
   }
 
-  void operator()(const audio_delay_line& out, audio_port& in)
+  bool operator()(const audio_delay_line& out, audio_port& in)
   {
     if(pos < out.samples.size())
     {
       mix(out.samples[pos], in.get());
+      return true;
     }
+    return false;
   }
 
-  void operator()(const midi_delay_line& out, midi_port& in)
+  bool operator()(const midi_delay_line& out, midi_port& in)
   {
     if(pos < out.messages.size())
     {
       copy_data{}(out.messages[pos], in);
+      return true;
     }
+    return false;
   }
+
   void operator()(const geometry_delay_line& out, geometry_port& in)
   {
     if(pos < out.geometries.size())
     {
       copy_data{}(out.geometries[pos], in);
+      return true;
     }
+    return false;
   }
 };
 }
