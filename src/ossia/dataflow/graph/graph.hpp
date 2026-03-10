@@ -230,7 +230,8 @@ public:
       const auto N = boost::num_vertices(impl);
       m_topo_order_cache.clear();
       m_topo_order_cache.reserve(N);
-      boost::topological_sort(gr, std::back_inserter(m_topo_order_cache));
+      auto view = boost::filtered_graph(gr, no_delay_edges{&gr});
+      boost::topological_sort(view, std::back_inserter(m_topo_order_cache));
 
       nodes.clear();
       nodes.reserve(N);
