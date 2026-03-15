@@ -16,6 +16,8 @@
 
 namespace ossia
 {
+using filtered_graph_t = std::decay_t<decltype(boost::filtered_graph(
+    std::declval<graph_t>(), no_delay_edges{nullptr}))>;
 template <typename UpdateImpl, typename TickImpl>
 struct graph_static final
     : public graph_util
@@ -25,7 +27,7 @@ public:
   UpdateImpl update_fun;
   TickImpl tick_fun{*this};
   std::vector<boost::default_color_type> m_color_map_cache;
-  std::vector<boost::detail::DFSVertexInfo<graph_t>> m_stack_cache;
+  std::vector<boost::detail::DFSVertexInfo<graph_t, filtered_graph_t>> m_stack_cache;
   explicit graph_static(const ossia::graph_setup_options& opt = {})
       : update_fun{*this, opt}
   {
@@ -50,8 +52,10 @@ public:
       // TODO this should be doable with a single vector
       m_topo_order_cache.clear();
       m_topo_order_cache.reserve(m_nodes.size());
-      custom_topological_sort(
-          gr, std::back_inserter(m_topo_order_cache), m_color_map_cache, m_stack_cache);
+      auto view = boost::filtered_graph{gr, no_delay_edges{&gr}};
+      custom_topological_sort<graph_t>(
+          view, std::back_inserter(m_topo_order_cache), m_color_map_cache,
+          m_stack_cache);
 
       // First put the ones without any I/O (most likely states)
       for(auto vtx : m_topo_order_cache)
