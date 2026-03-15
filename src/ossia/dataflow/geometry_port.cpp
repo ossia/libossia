@@ -34,6 +34,7 @@ static constexpr std::array semantic_table = {
 
     // Basic materials
     semantic_entry{attribute_semantic::texcoord0, "texcoord0"},
+    semantic_entry{attribute_semantic::texcoord0, "texcoord"},  // alias
     semantic_entry{attribute_semantic::texcoord1, "texcoord1"},
     semantic_entry{attribute_semantic::texcoord2, "texcoord2"},
     semantic_entry{attribute_semantic::texcoord3, "texcoord3"},
@@ -43,6 +44,7 @@ static constexpr std::array semantic_table = {
     semantic_entry{attribute_semantic::texcoord7, "texcoord7"},
 
     semantic_entry{attribute_semantic::color0, "color0"},
+    semantic_entry{attribute_semantic::color0, "color"},     // alias
     semantic_entry{attribute_semantic::color1, "color1"},
     semantic_entry{attribute_semantic::color2, "color2"},
     semantic_entry{attribute_semantic::color3, "color3"},
