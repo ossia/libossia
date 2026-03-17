@@ -26,6 +26,7 @@ include(ProcessorCount)
 include(CheckCXXCompilerFlag)
 check_cxx_compiler_flag("-Wmisleading-indentation" SUPPORTS_MISLEADING_INDENT_FLAG)
 check_cxx_compiler_flag("-Wl,-z,defs" WL_ZDEFS_SUPPORTED)
+check_cxx_compiler_flag("-Wc2y-extensions" WC2Y_EXTENSIONS_SUPPORTED)
 
 # iOS
 include(${OSSIA_3RDPARTY_FOLDER}/ios-cmake/helper-macros.cmake)
@@ -217,7 +218,12 @@ else()
       -Wno-unused-local-typedef
       #-Wweak-vtables
     )
+  if(WC2Y_EXTENSIONS_SUPPORTED)
+    set(OSSIA_COMPILE_OPTIONS ${OSSIA_COMPILE_OPTIONS}
+      -Wno-c2y-extensions # prevents warning on __COUNTER__
+    )
   endif()
+endif()
   set(OSSIA_COMPILE_OPTIONS
       ${OSSIA_COMPILE_OPTIONS}
       -Wall
