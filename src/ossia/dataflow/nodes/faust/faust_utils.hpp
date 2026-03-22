@@ -7,6 +7,8 @@
 #include <libremidi/message.hpp>
 #include <libremidi/ump_events.hpp>
 
+#include <iostream>
+
 #include <faust/dsp/poly-llvm-dsp.h>
 
 namespace ossia::nodes
@@ -616,6 +618,20 @@ struct custom_dsp_poly_factory : public dsp_factory
   }
 
   virtual ~custom_dsp_poly_factory() = default;
+
+  virtual std::string getJSON()
+  {
+    // Needed because API was not updated on the exact
+    // commit where this was introduced, so there's multiple
+    // 2.83.10 commits which don't have this method, and multiple
+    // which do, thus version check is not enough
+    return [](auto ptr) -> std::string {
+      if constexpr(requires { ptr->getJSON(); })
+        return ptr->getJSON();
+      else
+        return {};
+    }(fProcessFactory);
+  }
 
   virtual std::string getName() { return fProcessFactory->getName(); }
   virtual std::string getSHAKey() { return fProcessFactory->getSHAKey(); }
