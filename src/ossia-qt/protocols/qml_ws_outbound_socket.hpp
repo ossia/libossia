@@ -1,7 +1,8 @@
 #pragma once
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
-#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/sockets/websocket_client_beast.hpp>
+#include <ossia/network/sockets/websocket_common.hpp>
 
 #include <ossia-qt/protocols/utils.hpp>
 
@@ -25,7 +26,7 @@ public:
   struct state
   {
     std::string url;
-    std::unique_ptr<ossia::net::websocket_client> client;
+    std::unique_ptr<ossia::net::websocket_client_beast> client;
     std::atomic_bool alive{true};
   };
 
@@ -50,13 +51,14 @@ public:
     m_state->url = "ws://" + conf.host + ":" + std::to_string(conf.port); // FIXME wss
     auto st = m_state;
     auto self = QPointer{this};
-    m_state->client = std::make_unique<ossia::net::websocket_client>(
-        ctx, [st, self](auto hdl, auto opcode, const std::string& msg) {
+    m_state->client = std::make_unique<ossia::net::websocket_client_beast>(
+        ctx, ossia::net::ws_client_message_handler{
+            [st, self](const ossia::net::ws_connection_handle&, ossia::net::ws_opcode opcode, std::string& msg) {
       if(!st->alive)
         return;
       if(auto* ptr = self.get())
-        ptr->on_message(hdl, opcode, msg);
-    });
+        ptr->on_message(opcode, msg);
+    }});
 
     if(onOpen.isCallable())
       m_state->client->on_open.connect<&qml_websocket_outbound_socket::on_open>(this);
@@ -67,14 +69,24 @@ public:
 
     m_state->client->connect(m_state->url);
   }
+  ~qml_websocket_outbound_socket() { m_state->alive = false; }
+  ~qml_websocket_outbound_socket() { m_state->alive = false; }
 
-  void on_message(auto hdl, auto opcode, const std::string& msg)
+  void open() { m_state->client->connect(m_state->url); }
+  void open() { m_state->client->connect(m_state->url); }
+
+  inline boost::asio::io_context& context() noexcept
   {
-    if(opcode == websocketpp::frame::opcode::text && onTextMessage.isCallable())
+    return m_state->client->context();
+  }
+  
+  void on_message(ossia::net::ws_opcode opcode, const std::string& msg)
+  {
+    if(opcode == ossia::net::ws_opcode::text && onTextMessage.isCallable())
     {
       onTextMessage.call({QString::fromStdString(msg)});
     }
-    else if(opcode == websocketpp::frame::opcode::binary && onBinaryMessage.isCallable())
+    else if(opcode == ossia::net::ws_opcode::binary && onBinaryMessage.isCallable())
     {
       onBinaryMessage.call(
           {qjsEngine(this)->toScriptValue(QByteArray(msg.data(), msg.size()))});
@@ -107,12 +119,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
-    boost::asio::dispatch(
-        st->client->context(),
-        [st, msg = message.toStdString()] {
-      if(st->alive)
-        st->client->send_message(msg);
-    });
+    if(st->alive)
+      st->client->send_message(message.toStdString());
   }
   W_SLOT(write)
 
@@ -121,12 +129,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
-    boost::asio::dispatch(
-        st->client->context(),
-        [st, buf = std::string(buffer.data(), buffer.size())] {
-      if(st->alive)
-        st->client->send_binary_message(buf);
-    });
+    if(st->alive)
+      st->client->send_binary_message(std::string_view(buffer.data(), buffer.size()));
   }
   W_SLOT(writeBinary)
 
@@ -139,10 +143,6 @@ public:
       onClose.call();
   }
   W_SLOT(close)
-
-  // FIXME
-  // void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
-  // W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;

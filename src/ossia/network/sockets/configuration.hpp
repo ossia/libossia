@@ -44,7 +44,7 @@ struct outbound_socket_configuration
 };
 struct inbound_socket_configuration
 {
-  std::string bind{"0.0.0.0"};
+  std::string bind{"::"};
   uint16_t port{};
   std::string multicast_group{};
   std::string multicast_interface{"0.0.0.0"};
