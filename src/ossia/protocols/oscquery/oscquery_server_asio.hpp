@@ -6,6 +6,7 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/context_functions.hpp>
 #include <ossia/network/generic/generic_device.hpp>
+#include <ossia/network/sockets/websocket_common.hpp>
 #include <ossia/network/sockets/websocket_reply.hpp>
 #include <ossia/network/zeroconf/zeroconf.hpp>
 #include <ossia/protocols/osc/osc_factory.hpp>
@@ -28,7 +29,7 @@ namespace ossia
 {
 namespace net
 {
-class websocket_server;
+class websocket_server_interface;
 }
 namespace oscquery
 {
@@ -134,7 +135,7 @@ protected:
 
   ossia::net::network_context_ptr m_context;
 
-  std::unique_ptr<ossia::net::websocket_server> m_websocketServer;
+  std::unique_ptr<ossia::net::websocket_server_interface> m_websocketServer;
 
   net::zeroconf_server m_zeroconfServerWS;
 

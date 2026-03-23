@@ -86,7 +86,7 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:oscpack::oscpack>)
-  target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:websocketpp::websocketpp>)
+  # websocketpp removed - now using boost.beast for websocket support
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
 endif()
 
@@ -253,8 +253,6 @@ if(OSSIA_DATAFLOW)
   target_link_libraries(ossia
     PUBLIC
       $<BUILD_INTERFACE:libremidi::libremidi>
-    PRIVATE
-      $<BUILD_INTERFACE:websocketpp::websocketpp>
   )
 
   # JACK support
