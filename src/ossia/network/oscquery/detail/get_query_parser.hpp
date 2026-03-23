@@ -150,17 +150,13 @@ public:
         }
         else
         {
-          websocketpp::connection<websocketpp::config::asio>& sockets
-              = *proto.m_websocketServer->impl().get_con_from_hdl(hdl);
-          auto& socket = sockets.get_socket();
-
-          std::string local_client_ip = socket.local_endpoint().address().to_string();
+          std::string local_client_ip = proto.m_websocketServer->get_local_ip(hdl);
 
           auto transports = [&]() -> std::vector<ossia::net::osc_server_configuration> {
             if constexpr(requires { proto.get_osc_port(); })
             {
               ossia::net::udp_server_configuration conf;
-              conf.bind = "0.0.0.0";
+              conf.bind = "::";
               conf.port = proto.get_osc_port();
               return {conf};
             }

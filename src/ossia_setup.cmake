@@ -169,7 +169,6 @@ target_link_libraries(ossia
     $<BUILD_INTERFACE:tuplet::tuplet>
     $<BUILD_INTERFACE:readerwriterqueue::readerwriterqueue>
     $<BUILD_INTERFACE:concurrentqueue::concurrentqueue>
-    $<BUILD_INTERFACE:websocketpp::websocketpp>
     $<BUILD_INTERFACE:rapidjson::rapidjson>
     $<BUILD_INTERFACE:re2::re2>
     $<BUILD_INTERFACE:smallfun::smallfun>

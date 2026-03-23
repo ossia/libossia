@@ -21,7 +21,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
-#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/sockets/websocket_client_beast.hpp>
 #include <ossia/protocols/dense/dense_protocol_configuration.hpp>
 #include <ossia/protocols/oscquery/http_requests.hpp>
 
@@ -353,7 +353,7 @@ void oscquery_mirror_asio_protocol_dense::start_http()
 void oscquery_mirror_asio_protocol_dense::start_osc()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>(
-      ossia::net::inbound_socket_configuration{"0.0.0.0", (uint16_t)m_osc_port},
+      ossia::net::inbound_socket_configuration{"::", (uint16_t)m_osc_port},
       this->m_ctx->context);
   m_oscServer->open();
   m_osc_port = m_oscServer->m_socket.local_endpoint().port();
