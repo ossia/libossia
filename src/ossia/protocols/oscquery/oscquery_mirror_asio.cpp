@@ -430,7 +430,7 @@ void oscquery_mirror_asio_protocol::start_websockets()
 void oscquery_mirror_asio_protocol::start_osc()
 {
   m_oscServer = std::make_unique<osc_receiver_impl>(
-      ossia::net::inbound_socket_configuration{"::", (uint16_t)m_osc_port},
+      ossia::net::inbound_socket_configuration{"0.0.0.0", (uint16_t)m_osc_port},
       this->m_ctx->context);
   m_oscServer->open();
   m_osc_port = m_oscServer->m_socket.local_endpoint().port();
