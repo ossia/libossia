@@ -517,6 +517,10 @@ set(OSSIA_OSCQUERY_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol_configuration.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_session.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_server.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
@@ -542,6 +546,10 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_client.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_server.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/boost_json_impl.cpp"
     )
 
 set(OSSIA_HTTP_HEADERS
