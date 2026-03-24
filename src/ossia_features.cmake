@@ -86,7 +86,9 @@ endif()
 if(OSSIA_PROTOCOL_OSCQUERY)
   target_sources(ossia PRIVATE ${OSSIA_OSCQUERY_SRCS} ${OSSIA_OSCQUERY_HEADERS})
   target_link_libraries(ossia PUBLIC $<BUILD_INTERFACE:oscpack::oscpack>)
-  # websocketpp removed - now using boost.beast for websocket support
+  set_source_files_properties(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/boost_json_impl.cpp"
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
 endif()
 
