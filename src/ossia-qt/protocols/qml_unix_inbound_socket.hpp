@@ -1,6 +1,12 @@
 #pragma once
 #include <ossia/network/context.hpp>
 #if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
+#include <ossia/detail/variant.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/line_framing.hpp>
+#include <ossia/network/sockets/no_framing.hpp>
+#include <ossia/network/sockets/size_prefix_framing.hpp>
+#include <ossia/network/sockets/slip_framing.hpp>
 #include <ossia/network/sockets/unix_socket.hpp>
 
 #include <ossia-qt/protocols/utils.hpp>
@@ -118,23 +124,123 @@ class qml_unix_stream_connection
 {
   W_OBJECT(qml_unix_stream_connection)
 public:
+  using socket_t = boost::asio::local::stream_protocol::socket;
+  using decoder_type = ossia::slow_variant<
+      ossia::net::no_framing::decoder<socket_t>,
+      ossia::net::slip_decoder<socket_t>,
+      ossia::net::size_prefix_decoder<socket_t>,
+      ossia::net::line_framing_decoder<socket_t>>;
+
   struct state
   {
     boost::asio::io_context& context;
     ossia::net::unix_stream_listener listener;
-    char data[4096];
     std::atomic_bool alive{true};
+    ossia::net::framing framing{ossia::net::framing::none};
+    char line_delimiter[8] = {};
+    decoder_type decoder;
 
-    state(ossia::net::unix_stream_listener l, boost::asio::io_context& ctx)
+    state(
+        ossia::net::unix_stream_listener l, boost::asio::io_context& ctx,
+        ossia::net::framing f = ossia::net::framing::none,
+        const std::string& delim = {})
         : context{ctx}
         , listener{std::move(l)}
+        , decoder{ossia::in_place_index<0>, listener.m_socket}
     {
+      framing = f;
+      if(!delim.empty())
+      {
+        auto sz = std::min(delim.size(), (size_t)7);
+        std::copy_n(delim.begin(), sz, line_delimiter);
+      }
+      switch(f)
+      {
+        default:
+        case ossia::net::framing::none:
+          break;
+        case ossia::net::framing::slip:
+          decoder.template emplace<1>(listener.m_socket);
+          break;
+        case ossia::net::framing::size_prefix:
+          decoder.template emplace<2>(listener.m_socket);
+          break;
+        case ossia::net::framing::line_delimiter:
+          decoder.template emplace<3>(listener.m_socket);
+          {
+            auto& dec = ossia::get<3>(decoder);
+            std::copy_n(line_delimiter, 8, dec.delimiter);
+          }
+          break;
+      }
+    }
+
+    void write_encoded(const char* data, std::size_t sz)
+    {
+      switch(framing)
+      {
+        default:
+        case ossia::net::framing::none:
+          listener.write(boost::asio::const_buffer(data, sz));
+          break;
+        case ossia::net::framing::slip: {
+          ossia::net::slip_encoder<socket_t> enc{listener.m_socket};
+          enc.write(data, sz);
+          break;
+        }
+        case ossia::net::framing::size_prefix: {
+          ossia::net::size_prefix_encoder<socket_t> enc{listener.m_socket};
+          enc.write(data, sz);
+          break;
+        }
+        case ossia::net::framing::line_delimiter: {
+          ossia::net::line_framing_encoder<socket_t> enc{listener.m_socket};
+          std::copy_n(line_delimiter, 8, enc.delimiter);
+          enc.write(data, sz);
+          break;
+        }
+      }
+    }
+  };
+
+  struct receive_callback
+  {
+    std::shared_ptr<state> st;
+    QPointer<qml_unix_stream_connection> self;
+
+    void operator()(const unsigned char* data, std::size_t sz) const
+    {
+      if(!st->alive)
+        return;
+      auto buf = QByteArray((const char*)data, sz);
+      ossia::qt::run_async(
+          self.get(),
+          [self = self, buf] {
+        if(!self.get())
+          return;
+        if(self->onMessage.isCallable())
+        {
+          self->onMessage.call({qjsEngine(self.get())->toScriptValue(buf)});
+        }
+      },
+          Qt::AutoConnection);
+    }
+
+    bool validate_stream(boost::system::error_code ec) const
+    {
+      if(ec == boost::asio::error::operation_aborted)
+        return false;
+      if(ec == boost::asio::error::eof)
+        return false;
+      return true;
     }
   };
 
   qml_unix_stream_connection(
-      ossia::net::unix_stream_listener listener, boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>(std::move(listener), ctx)}
+      ossia::net::unix_stream_listener listener, boost::asio::io_context& ctx,
+      ossia::net::framing f = ossia::net::framing::none,
+      const std::string& delim = {})
+      : m_state{std::make_shared<state>(std::move(listener), ctx, f, delim)}
   {
   }
 
@@ -153,52 +259,39 @@ public:
 
   void write(QByteArray buffer)
   {
+    if(!m_state)
+      return;
     auto st = m_state;
     boost::asio::dispatch(st->context, [st, buffer] {
       if(st->alive)
-        st->listener.write(boost::asio::buffer(buffer.data(), buffer.size()));
+        st->write_encoded(buffer.data(), buffer.size());
     });
   }
   W_SLOT(write)
 
   void close(QByteArray)
   {
+    if(!m_state)
+      return;
     auto st = m_state;
     boost::asio::dispatch(st->context, [st] { st->listener.close(); });
   }
   W_SLOT(close)
 
-  void startReceive() { receive_impl(m_state, QPointer{this}); }
+  void startReceive()
+  {
+    auto st = m_state;
+    auto self = QPointer{this};
+    ossia::visit(
+        [cb = receive_callback{st, self}](auto& decoder) mutable {
+      decoder.receive(std::move(cb));
+    },
+        st->decoder);
+  }
 
   QJSValue onMessage;
 
 private:
-  static void receive_impl(
-      std::shared_ptr<state> st, QPointer<qml_unix_stream_connection> self)
-  {
-    st->listener.m_socket.async_read_some(
-        boost::asio::buffer(st->data, sizeof(st->data)),
-        [self, st](boost::system::error_code ec, std::size_t bytes_transferred) {
-      if(!st->alive)
-        return;
-      if(!ec)
-      {
-        ossia::qt::run_async(
-            self.get(),
-            [self, arg = QString::fromUtf8(st->data, bytes_transferred)] {
-          if(!self.get())
-            return;
-          if(self->onMessage.isCallable())
-          {
-            self->onMessage.call({arg});
-          }
-        },
-            Qt::AutoConnection);
-        receive_impl(st, self);
-      }
-    });
-  }
-
   std::shared_ptr<state> m_state;
 };
 
@@ -212,9 +305,16 @@ public:
   {
     ossia::net::unix_stream_server server;
     std::atomic_bool alive{true};
+    ossia::net::framing framing{ossia::net::framing::none};
+    std::string framing_delimiter;
 
-    state(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+    state(
+        const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
+        ossia::net::framing f = ossia::net::framing::none,
+        std::string delim = {})
         : server{conf, ctx}
+        , framing{f}
+        , framing_delimiter{std::move(delim)}
     {
     }
   };
@@ -232,9 +332,12 @@ public:
 
   bool isOpen() const noexcept { return m_state != nullptr; }
 
-  void open(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+  void open(
+      const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
+      ossia::net::framing f = ossia::net::framing::none,
+      const std::string& delim = {})
   {
-    m_state = std::make_shared<state>(conf, ctx);
+    m_state = std::make_shared<state>(conf, ctx, f, delim);
 
     accept_impl(m_state, QPointer{this});
     if(onOpen.isCallable())
@@ -282,7 +385,7 @@ private:
             return;
           auto conn = new qml_unix_stream_connection{
               ossia::net::unix_stream_listener{std::move(socket)},
-              st->server.m_context};
+              st->server.m_context, st->framing, st->framing_delimiter};
           conn->onMessage = self->onConnection;
           conn->startReceive();
 

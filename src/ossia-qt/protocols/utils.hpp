@@ -18,6 +18,15 @@
 
 namespace ossia::qt
 {
+struct buffer_writer
+{
+  QByteArray& buffer;
+  void operator()(const char* data, std::size_t sz) const
+  {
+    buffer.append(data, sz);
+  }
+};
+
 struct protocols_sender
 {
   void send_osc(this auto&& self, QByteArray address, const QJSValueList& values)
