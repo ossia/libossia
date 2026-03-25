@@ -27,11 +27,16 @@ public:
   void setup_thread()
   {
     m_active = true;
-
     int us_per_buffer
         = 1e6 * double(effective_buffer_size) / double(effective_sample_rate);
 
-    m_runThread = std::thread{[this, us_per_buffer] {
+    auto started = std::make_shared<std::atomic_bool>(false);
+    m_runThread = std::thread{[this, started, us_per_buffer] {
+      while(!*started)
+      {
+        std::this_thread::yield();
+      }
+      std::atomic_thread_fence(std::memory_order_seq_cst);
       ossia::set_thread_name("ossia audio 0");
       ossia::set_thread_pinned(thread_type::Audio, 0);
       ossia::set_thread_realtime(m_runThread, 99);
@@ -95,6 +100,10 @@ public:
         tick_end();
       }
     }};
+
+    std::atomic_thread_fence(std::memory_order_seq_cst);
+
+    *started = true;
   }
 
   void stop() override
