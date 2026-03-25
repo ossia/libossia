@@ -34,26 +34,28 @@ public:
     }
   };
 
-private:
-  std::shared_ptr<state> m_state;
+  ossia::net::tcp_client* socket = nullptr;
 
-public:
-  ossia::net::tcp_client& socket;
+  qml_tcp_outbound_socket() { }
 
-  qml_tcp_outbound_socket(
-      const ossia::net::outbound_socket_configuration& conf,
-      boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>(conf, ctx)}
-      , socket{m_state->socket}
+  ~qml_tcp_outbound_socket()
   {
+    if(m_state)
+    {
+      m_state->alive = false;
+      close();
+    }
   }
 
-  ~qml_tcp_outbound_socket() { m_state->alive = false; }
+  bool isOpen() const noexcept { return m_state != nullptr; }
 
-  inline boost::asio::io_context& context() noexcept { return m_state->socket.m_context; }
-
-  void open()
+  void open(
+      const ossia::net::outbound_socket_configuration& conf,
+      boost::asio::io_context& ctx)
   {
+    m_state = std::make_shared<state>(conf, ctx);
+    socket = &m_state->socket;
+
     try
     {
       if(onOpen.isCallable())
@@ -75,6 +77,8 @@ public:
 
   void write(QByteArray buffer)
   {
+    if(!m_state)
+      return;
     auto st = m_state;
     boost::asio::dispatch(st->socket.m_context, [st, buffer] {
       if(st->alive)
@@ -83,12 +87,28 @@ public:
   }
   W_SLOT(write)
 
-  void close() { m_state->socket.close(); }
+  void close()
+  {
+    if(!m_state)
+      return;
+    auto st = m_state;
+    boost::asio::post(st->socket.m_context, [st] {
+      try
+      {
+        st->socket.m_socket.shutdown(boost::asio::ip::tcp::socket::shutdown_both);
+      }
+      catch(...)
+      {
+      }
+      st->socket.m_socket.close();
+      st->socket.on_close();
+    });
+  }
   W_SLOT(close)
 
   void on_open()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(
         this, [=, this] { onOpen.call({qjsEngine(this)->newQObject(this)}); },
@@ -96,24 +116,31 @@ public:
   }
   void on_fail()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(this, [=, this] { onError.call(); }, Qt::AutoConnection);
   }
   void on_close()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
-  void osc(QByteArray address, QJSValueList values) { this->send_osc(address, values); }
+  void osc(QByteArray address, QJSValueList values)
+  {
+    if(socket)
+      this->send_osc(address, values);
+  }
   W_SLOT(osc)
 
   QJSValue onOpen;
   QJSValue onClose;
   QJSValue onError;
   QJSValue onBytes;
+
+private:
+  std::shared_ptr<state> m_state;
 };
 
 }

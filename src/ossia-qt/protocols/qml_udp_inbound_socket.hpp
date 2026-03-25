@@ -33,18 +33,25 @@ public:
     }
   };
 
-  qml_udp_inbound_socket(
-      const ossia::net::inbound_socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>(conf, ctx)}
+  qml_udp_inbound_socket() { }
+
+  ~qml_udp_inbound_socket()
   {
+    if(m_state)
+    {
+      m_state->alive = false;
+      close();
+    }
   }
 
-  ~qml_udp_inbound_socket() { m_state->alive = false; }
+  bool isOpen() const noexcept { return m_state != nullptr; }
 
-  inline boost::asio::io_context& context() noexcept { return m_state->socket.m_context; }
-
-  void open()
+  void open(
+      const ossia::net::inbound_socket_configuration& conf,
+      boost::asio::io_context& ctx)
   {
+    m_state = std::make_shared<state>(conf, ctx);
+
     if(onClose.isCallable())
       m_state->socket.on_close.connect<&qml_udp_inbound_socket::on_close>(*this);
 
@@ -73,12 +80,30 @@ public:
 
   void on_close()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
-  void close() { m_state->socket.close(); }
+  void close()
+  {
+    if(!m_state)
+      return;
+    if(!m_state->socket.m_socket.is_open())
+      return;
+    auto st = m_state;
+    boost::asio::post(st->socket.m_context, [st] {
+      try
+      {
+        st->socket.m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
+      }
+      catch(...)
+      {
+      }
+      st->socket.m_socket.close();
+      st->socket.on_close();
+    });
+  }
   W_SLOT(close)
 
   QJSValue onOpen;

@@ -22,7 +22,8 @@ struct protocols_sender
 {
   void send_osc(this auto&& self, QByteArray address, const QJSValueList& values)
   {
-    using socket_type = std::remove_cvref_t<decltype(self.socket)>;
+    auto& sock = *self.socket;
+    using socket_type = std::remove_cvref_t<decltype(sock)>;
     using writer_type = ossia::net::socket_writer<socket_type>;
     using send_visitor = ossia::net::osc_value_send_visitor<
         ossia::net::full_parameter_data, ossia::net::osc_1_0_policy, writer_type>;
@@ -34,12 +35,12 @@ struct protocols_sender
     {
       case 0: {
         ossia::value{ossia::impulse{}}.apply(
-            send_visitor{p, addr, writer_type{self.socket}});
+            send_visitor{p, addr, writer_type{sock}});
         break;
       }
       case 1: {
         auto v = ossia::qt::value_from_js(values[0]);
-        v.apply(send_visitor{p, addr, writer_type{self.socket}});
+        v.apply(send_visitor{p, addr, writer_type{sock}});
         break;
       }
       default: {
@@ -48,7 +49,7 @@ struct protocols_sender
         for(const auto& v : values)
           vec.push_back(ossia::qt::value_from_js(v));
         ossia::value vvec(std::move(vec));
-        vvec.apply(send_visitor{p, addr, writer_type{self.socket}});
+        vvec.apply(send_visitor{p, addr, writer_type{sock}});
       }
     }
   }

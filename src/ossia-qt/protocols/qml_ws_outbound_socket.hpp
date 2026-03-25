@@ -29,11 +29,24 @@ public:
     std::atomic_bool alive{true};
   };
 
-  qml_websocket_outbound_socket(
+  qml_websocket_outbound_socket() { }
+
+  ~qml_websocket_outbound_socket()
+  {
+    if(m_state)
+    {
+      m_state->alive = false;
+      close();
+    }
+  }
+
+  bool isOpen() const noexcept { return m_state && m_state->client; }
+
+  void open(
       const ossia::net::outbound_socket_configuration& conf,
       boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>()}
   {
+    m_state = std::make_shared<state>();
     m_state->url = "ws://" + conf.host + ":" + std::to_string(conf.port); // FIXME wss
     auto st = m_state;
     auto self = QPointer{this};
@@ -51,16 +64,9 @@ public:
       m_state->client->on_close.connect<&qml_websocket_outbound_socket::on_close>(this);
     if(onError.isCallable())
       m_state->client->on_fail.connect<&qml_websocket_outbound_socket::on_fail>(this);
+
+    m_state->client->connect(m_state->url);
   }
-
-  ~qml_websocket_outbound_socket() { m_state->alive = false; }
-
-  inline boost::asio::io_context& context() noexcept
-  {
-    return m_state->client->context();
-  }
-
-  void open() { m_state->client->connect(m_state->url); }
 
   void on_message(auto hdl, auto opcode, const std::string& msg)
   {
@@ -77,7 +83,7 @@ public:
 
   void on_open()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(
         this, [=, this] { onOpen.call({qjsEngine(this)->newQObject(this)}); },
@@ -85,19 +91,21 @@ public:
   }
   void on_fail()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(this, [=, this] { onError.call(); }, Qt::AutoConnection);
   }
   void on_close()
   {
-    if(!m_state->alive)
+    if(!m_state || !m_state->alive)
       return;
     ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }
 
   void write(QString message)
   {
+    if(!m_state)
+      return;
     auto st = m_state;
     boost::asio::dispatch(
         st->client->context(),
@@ -110,6 +118,8 @@ public:
 
   void writeBinary(QByteArray buffer)
   {
+    if(!m_state)
+      return;
     auto st = m_state;
     boost::asio::dispatch(
         st->client->context(),
@@ -122,6 +132,8 @@ public:
 
   void close()
   {
+    if(!m_state)
+      return;
     m_state->client->stop();
     if(onClose.isCallable())
       onClose.call();

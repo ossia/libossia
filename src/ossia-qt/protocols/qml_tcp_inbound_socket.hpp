@@ -40,7 +40,17 @@ public:
   {
   }
 
-  ~qml_tcp_connection() { m_state->alive = false; }
+  ~qml_tcp_connection()
+  {
+    if(m_state)
+    {
+      m_state->alive = false;
+      close({});
+    }
+  }
+
+  bool isOpen() const noexcept { return m_state && m_state->alive; }
+
   inline boost::asio::io_context& context() noexcept { return m_state->context; }
 
   void write(QByteArray buffer)
@@ -56,10 +66,7 @@ public:
   void close(QByteArray)
   {
     auto st = m_state;
-    boost::asio::dispatch(st->context, [st] {
-      if(st->alive)
-        st->listener.close();
-    });
+    boost::asio::dispatch(st->context, [st] { st->listener.close(); });
   }
   W_SLOT(close)
 
@@ -137,18 +144,24 @@ public:
     }
   };
 
-  qml_tcp_inbound_socket(
-      const ossia::net::inbound_socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>(conf, ctx)}
+  qml_tcp_inbound_socket() { }
+
+  ~qml_tcp_inbound_socket()
   {
+    if(m_state)
+    {
+      m_state->alive = false;
+      close();
+    }
   }
 
-  ~qml_tcp_inbound_socket() { m_state->alive = false; }
+  bool isOpen() const noexcept { return m_state && m_state->open; }
 
-  inline boost::asio::io_context& context() noexcept { return m_state->server.m_context; }
-
-  void open()
+  void open(
+      const ossia::net::inbound_socket_configuration& conf,
+      boost::asio::io_context& ctx)
   {
+    m_state = std::make_shared<state>(conf, ctx);
     m_state->open = true;
     accept_impl(m_state, QPointer{this});
     if(onOpen.isCallable())
@@ -157,6 +170,8 @@ public:
 
   void close()
   {
+    if(!m_state)
+      return;
     m_state->open = false;
     m_state->server.m_acceptor.close();
     if(onClose.isCallable())
@@ -166,6 +181,8 @@ public:
 
   void on_close()
   {
+    if(!m_state)
+      return;
     m_state->open = false;
     ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
   }

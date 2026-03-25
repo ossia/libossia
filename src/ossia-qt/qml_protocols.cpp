@@ -118,14 +118,14 @@ QObject* qml_protocols::outboundUDP(QVariant config)
       .host = host.toStdString(),
       .port = (uint16_t)port.toInt(),
       .broadcast = broadcast};
-  auto sock = new qml_udp_outbound_socket{ossia_conf, context->context};
+  auto sock = new qml_udp_outbound_socket{};
   // Doing this ensures that we can call qjsEngine(the_object) afterwards in open() callbacks:
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(...) {
     delete sock;
@@ -144,14 +144,14 @@ QObject* qml_protocols::inboundUDP(QVariant config)
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
-  auto sock = new qml_udp_inbound_socket{ossia_conf, context->context};
+  auto sock = new qml_udp_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -180,13 +180,13 @@ QObject* qml_protocols::outboundUnixDatagram(QVariant config)
   QString path = transport["Path"].toString();
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
-  auto sock = new qml_unix_datagram_outbound_socket{ossia_conf, context->context};
+  auto sock = new qml_unix_datagram_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -210,14 +210,14 @@ QObject* qml_protocols::inboundUnixDatagram(QVariant config)
   QString path = transport["Path"].toString();
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
-  auto sock = new qml_unix_datagram_inbound_socket{ossia_conf, context->context};
+  auto sock = new qml_unix_datagram_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -241,13 +241,13 @@ QObject* qml_protocols::outboundUnixStream(QVariant config)
   QString path = transport["Path"].toString();
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
-  auto sock = new qml_unix_stream_outbound_socket{ossia_conf, context->context};
+  auto sock = new qml_unix_stream_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -271,7 +271,7 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   QString path = transport["Path"].toString();
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
-  auto sock = new qml_unix_stream_inbound_socket{ossia_conf, context->context};
+  auto sock = new qml_unix_stream_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
@@ -279,7 +279,7 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   sock->onConnection = conf["onConnection"].value<QJSValue>();
 
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -304,14 +304,14 @@ QObject* qml_protocols::outboundTCP(QVariant config)
 
   ossia::net::outbound_socket_configuration ossia_conf{
       .host = host.toStdString(), .port = (uint16_t)port.toInt()};
-  auto sock = new qml_tcp_outbound_socket{ossia_conf, context->context};
+  auto sock = new qml_tcp_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -335,14 +335,14 @@ QObject* qml_protocols::inboundTCP(QVariant config)
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
-  auto sock = new qml_tcp_inbound_socket{ossia_conf, context->context};
+  auto sock = new qml_tcp_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onConnection = conf["onConnection"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -364,7 +364,7 @@ QObject* qml_protocols::outboundWS(QVariant config)
 
   ossia::net::outbound_socket_configuration ossia_conf{
       .host = host.toStdString(), .port = (uint16_t)port.toInt()};
-  auto sock = new qml_websocket_outbound_socket{ossia_conf, context->context};
+  auto sock = new qml_websocket_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
@@ -372,7 +372,7 @@ QObject* qml_protocols::outboundWS(QVariant config)
   sock->onTextMessage = conf["onTextMessage"].value<QJSValue>();
   sock->onBinaryMessage = conf["onBinaryMessage"].value<QJSValue>();
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -396,7 +396,7 @@ QObject* qml_protocols::inboundWS(QVariant config)
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
-  auto sock = new qml_websocket_inbound_socket{ossia_conf, context->context};
+  auto sock = new qml_websocket_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
   sock->onOpen = conf["onOpen"].value<QJSValue>();
   sock->onClose = conf["onClose"].value<QJSValue>();
@@ -404,7 +404,7 @@ QObject* qml_protocols::inboundWS(QVariant config)
   sock->onConnection = conf["onConnection"].value<QJSValue>();
 
   try {
-    sock->open();
+    sock->open(ossia_conf, context->context);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();

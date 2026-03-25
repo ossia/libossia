@@ -31,30 +31,37 @@ public:
     }
   };
 
-  qml_websocket_inbound_socket(
-      const ossia::net::inbound_socket_configuration& conf, boost::asio::io_context& ctx)
-      : m_state{std::make_shared<state>(ctx)}
+  qml_websocket_inbound_socket() { }
+
+  ~qml_websocket_inbound_socket()
   {
-    // FIXME
-    // WebSocket server implementation simplified for now
+    if(m_state)
+    {
+      m_state->alive = false;
+      close();
+    }
   }
 
-  ~qml_websocket_inbound_socket() { m_state->alive = false; }
+  bool isOpen() const noexcept { return m_state != nullptr; }
 
-  inline boost::asio::io_context& context() noexcept { return m_state->context; }
-
-  void open()
+  void open(
+      const ossia::net::inbound_socket_configuration& conf,
+      boost::asio::io_context& ctx)
   {
-    if(onOpen.isCallable())
+    m_state = std::make_shared<state>(ctx);
 
+    // FIXME
+    // WebSocket server implementation simplified for now
+    if(onOpen.isCallable())
       onOpen.call({qjsEngine(this)->newQObject(this)});
   }
 
   void close()
   {
-    if(!m_state->alive)
+    if(!m_state)
       return;
-    ossia::qt::run_async(this, [=, this] { onClose.call(); }, Qt::AutoConnection);
+    if(onClose.isCallable())
+      onClose.call();
   }
   W_SLOT(close)
 
