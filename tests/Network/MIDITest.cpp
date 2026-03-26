@@ -32,7 +32,7 @@ TEST_CASE("test_midi", "test_midi")
           auto api_conf = libremidi::midi_in_configuration_for(midi_api);
 
           auto proto
-              = std::make_unique<midi_protocol>(ctx, port.display_name, conf, api_conf);
+              = std::make_unique<midi_protocol>(ctx, midi_protocol_configuration{port.display_name}, conf, api_conf);
           proto->set_info(midi_info{midi_info::Type::Input, port, false});
 
           midi_device dev("test", std::move(proto));
@@ -44,7 +44,7 @@ TEST_CASE("test_midi", "test_midi")
           auto api_conf = libremidi::midi_out_configuration_for(midi_api);
 
           auto proto
-              = std::make_unique<midi_protocol>(ctx, port.display_name, conf, api_conf);
+              = std::make_unique<midi_protocol>(ctx, midi_protocol_configuration{port.display_name}, conf, api_conf);
           proto->set_info(midi_info{midi_info::Type::Output, port, false});
 
           midi_device dev("test", std::move(proto));
