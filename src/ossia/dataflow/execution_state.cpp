@@ -386,6 +386,10 @@ void execution_state::begin_tick()
   m_policy->clear_local_state();
   get_new_values();
   apply_device_changes();
+
+  // Allow non-audio-protocol devices to refresh their audio buffers
+  for(auto& dev : m_devices_exec)
+    dev->get_protocol().pre_tick(bufferSize);
 }
 
 void execution_state::reset()

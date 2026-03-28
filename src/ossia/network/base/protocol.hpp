@@ -181,6 +181,10 @@ public:
   virtual void stop_execution() { }
   virtual void stop() { }
 
+  // Called at the beginning of each audio tick, before the graph executes.
+  // Use this to refresh audio buffers for non-audio-protocol devices.
+  virtual void pre_tick(std::size_t buffer_size) { }
+
   // By default feedback is enabled. Disabling it means that the protocol
   // won't send any data, just apply the incoming messages - useful for preventing feedback loops while
   // loading things
