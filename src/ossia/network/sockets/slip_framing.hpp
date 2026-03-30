@@ -2,9 +2,8 @@
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/network/sockets/writers.hpp>
 
+#include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/read.hpp>
-#include <boost/asio/streambuf.hpp>
 #include <boost/asio/write.hpp>
 
 namespace ossia::net
@@ -21,7 +20,7 @@ template <typename Socket>
 struct slip_decoder
 {
   Socket& socket;
-  boost::asio::streambuf m_data;
+  alignas(64) uint8_t m_readbuf[4096];
   ossia::pod_vector<char> m_decoded;
   enum
   {
@@ -33,37 +32,59 @@ struct slip_decoder
   explicit slip_decoder(Socket& socket)
       : socket{socket}
   {
+    m_decoded.reserve(1024);
   }
 
   template <typename F>
   void receive(F f)
   {
     socket.async_read_some(
-        boost::asio::mutable_buffer(m_data.prepare(1024)),
+        boost::asio::buffer(m_readbuf),
         [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
       if(!f.validate_stream(ec))
         return;
 
       if(sz > 0)
-      {
-        process_bytes(f, sz);
-      }
+        process_bytes(f, m_readbuf, sz);
 
       receive(std::move(f));
         });
   }
 
   template <typename F>
-  void process_bytes(const F& f, std::size_t sz)
+  void process_bytes(const F& f, const uint8_t* data, std::size_t sz)
   {
-    auto begin = (const uint8_t*)m_data.data().data();
-    for(std::size_t i = 0; i < sz; i++)
+    const uint8_t* ptr = data;
+    const uint8_t* end = data + sz;
+
+    while(ptr < end)
     {
-      const uint8_t next_char = *begin;
-      process_byte(f, next_char);
-      ++begin;
+      if(m_status == reading_char)
+      {
+        // Scan for next special byte
+        const uint8_t* run_end = ptr;
+        while(run_end < end && *run_end != slip::eot && *run_end != slip::esc)
+          ++run_end;
+
+        // Bulk append normal bytes
+        if(run_end > ptr)
+        {
+          m_decoded.insert(
+              m_decoded.end(), reinterpret_cast<const char*>(ptr),
+              reinterpret_cast<const char*>(run_end));
+          ptr = run_end;
+        }
+
+        // Process the special byte if any
+        if(ptr < end)
+          process_byte(f, *ptr++);
+      }
+      else
+      {
+        // waiting or reading_esc: one byte at a time
+        process_byte(f, *ptr++);
+      }
     }
-    m_data.consume(sz);
   }
 
   template <typename F>
@@ -143,56 +164,46 @@ template <typename Socket>
 struct slip_encoder
 {
   Socket& socket;
+  ossia::pod_vector<uint8_t> m_buf;
 
-  // This is tailored for OSC which uses double-ended encoding
+  // Encodes entire SLIP frame into a buffer, then writes once.
   void write(const char* data, std::size_t sz)
   {
-    this->write(socket, boost::asio::buffer(&slip::eot, 1));
+    m_buf.clear();
+    m_buf.reserve(sz * 2 + 2);
+    m_buf.push_back(slip::eot);
 
-    const uint8_t* begin = reinterpret_cast<const uint8_t*>(data);
-    const uint8_t* end = begin + sz;
-    while(begin < end)
+    auto* src = reinterpret_cast<const uint8_t*>(data);
+    for(std::size_t i = 0; i < sz; ++i)
     {
-      std::size_t written = this->write(begin, end);
-      begin += written;
-    }
-    this->write(socket, boost::asio::buffer(&slip::eot, 1));
-  }
-
-  std::size_t write(const uint8_t* begin, const uint8_t* end)
-  {
-    const uint8_t byte = *begin;
-    switch(byte)
-    {
-      case slip::eot: {
-        const uint8_t data[2] = {slip::esc, slip::esc_end};
-        this->write(socket, boost::asio::buffer(data, 2));
-        return 1;
-      }
-      case slip::esc: {
-        const uint8_t data[2] = {slip::esc, slip::esc_esc};
-        this->write(socket, boost::asio::buffer(data, 2));
-        return 1;
-      }
-      default: {
-        auto sub_end = begin + 1;
-        while(sub_end != end && *sub_end != slip::eot && *sub_end != slip::esc)
-          ++sub_end;
-
-        this->write(socket, boost::asio::buffer(begin, sub_end - begin));
-        return sub_end - begin;
+      switch(src[i])
+      {
+        case slip::eot:
+          m_buf.push_back(slip::esc);
+          m_buf.push_back(slip::esc_end);
+          break;
+        case slip::esc:
+          m_buf.push_back(slip::esc);
+          m_buf.push_back(slip::esc_esc);
+          break;
+        default:
+          m_buf.push_back(src[i]);
+          break;
       }
     }
+    m_buf.push_back(slip::eot);
+
+    this->do_write(socket, boost::asio::buffer(m_buf.data(), m_buf.size()));
   }
 
   template <typename T>
-  void write(T& sock, const boost::asio::const_buffer& buf)
+  void do_write(T& sock, const boost::asio::const_buffer& buf)
   {
     boost::asio::write(sock, buf);
   }
 
   template <typename T>
-  void write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
+  void do_write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
   {
     sock.write(buf);
   }

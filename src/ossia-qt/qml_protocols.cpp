@@ -113,10 +113,37 @@ static std::pair<ossia::net::framing, std::string> parse_framing(const QVariantM
 
   if(type_str == "slip")
     return {ossia::net::framing::slip, {}};
-  else if(type_str == "size_prefix")
-    return {ossia::net::framing::size_prefix, {}};
+  else if(type_str == "cobs")
+    return {ossia::net::framing::cobs, {}};
+  else if(type_str == "stx_etx")
+    return {ossia::net::framing::stx_etx, {}};
   else if(type_str == "line")
     return {ossia::net::framing::line_delimiter, delimiter.empty() ? "\n" : delimiter};
+  else if(type_str == "size_prefix")
+  {
+    int bytes = framing_conf["bytes"].toInt();
+    auto endian = framing_conf["endian"].toString();
+    bool le = (endian == "little");
+
+    switch(bytes)
+    {
+      case 1:
+        return {ossia::net::framing::size_prefix_1byte, {}};
+      case 2:
+        return {le ? ossia::net::framing::size_prefix_2byte_le
+                   : ossia::net::framing::size_prefix_2byte_be,
+                {}};
+      default: // 0 (unset) or 4
+        return {le ? ossia::net::framing::size_prefix_4byte_le
+                   : ossia::net::framing::size_prefix,
+                {}};
+    }
+  }
+  else if(type_str == "fixed_length")
+  {
+    int size = framing_conf["size"].toInt();
+    return {ossia::net::framing::fixed_length, std::to_string(size > 0 ? size : 64)};
+  }
   else
     return {ossia::net::framing::none, {}};
 }

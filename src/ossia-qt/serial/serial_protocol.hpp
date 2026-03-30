@@ -5,11 +5,15 @@
 #include <ossia/network/base/protocol.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
+#include <ossia/network/sockets/cobs_framing.hpp>
+#include <ossia/network/sockets/fixed_length_framing.hpp>
 #include <ossia/network/sockets/line_framing.hpp>
 #include <ossia/network/sockets/no_framing.hpp>
 #include <ossia/network/sockets/serial_socket.hpp>
 #include <ossia/network/sockets/size_prefix_framing.hpp>
 #include <ossia/network/sockets/slip_framing.hpp>
+#include <ossia/network/sockets/stx_etx_framing.hpp>
+#include <ossia/network/sockets/var_size_prefix_framing.hpp>
 
 #include <ossia-qt/js_utilities.hpp>
 
@@ -97,14 +101,46 @@ struct line_framing_socket : ossia::net::serial_socket<line_framing>
 {
   using serial_socket::serial_socket;
 };
+struct cobs_framing_socket : ossia::net::serial_socket<cobs_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct stx_etx_framing_socket : ossia::net::serial_socket<stx_etx_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct size_prefix_1byte_socket : ossia::net::serial_socket<size_prefix_1byte_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct size_prefix_2byte_be_socket : ossia::net::serial_socket<size_prefix_2byte_be_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct size_prefix_2byte_le_socket : ossia::net::serial_socket<size_prefix_2byte_le_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct size_prefix_4byte_le_socket : ossia::net::serial_socket<size_prefix_4byte_le_framing>
+{
+  using serial_socket::serial_socket;
+};
+struct fixed_length_socket : ossia::net::serial_socket<fixed_length_framing>
+{
+  using serial_socket::serial_socket;
+};
 
 using framed_serial_socket = ossia::slow_variant<
-    no_framing_socket, size_framing_socket, slip_framing_socket, line_framing_socket>;
+    no_framing_socket, size_framing_socket, slip_framing_socket, line_framing_socket,
+    cobs_framing_socket, stx_etx_framing_socket, size_prefix_1byte_socket,
+    size_prefix_2byte_be_socket, size_prefix_2byte_le_socket,
+    size_prefix_4byte_le_socket, fixed_length_socket>;
 
 struct serial_protocol_configuration
 {
   ossia::net::framing framing;
   std::string line_framing_delimiter;
+  std::size_t fixed_frame_size{64};
 
   serial_configuration transport;
 };

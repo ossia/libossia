@@ -1,9 +1,13 @@
 ﻿#pragma once
+#include <ossia/network/sockets/cobs_framing.hpp>
+#include <ossia/network/sockets/fixed_length_framing.hpp>
 #include <ossia/network/sockets/size_prefix_framing.hpp>
 #include <ossia/network/sockets/slip_framing.hpp>
+#include <ossia/network/sockets/stx_etx_framing.hpp>
 #include <ossia/network/sockets/tcp_socket.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/unix_socket.hpp>
+#include <ossia/network/sockets/var_size_prefix_framing.hpp>
 #include <ossia/network/sockets/writers.hpp>
 
 namespace ossia::net
@@ -41,6 +45,8 @@ public:
   template <typename... Args>
   framed_server(Args&&... args)
       : Base{std::forward<Args>(args)...}
+      , m_writer{m_sockets}
+      , m_encoder{m_writer}
   {
   }
 
@@ -72,11 +78,12 @@ public:
 
   void write(const char* data, std::size_t sz)
   {
-    multi_socket_writer<std::unique_ptr<listener>> wr{this->m_sockets};
-    encoder{wr}.write(data, sz);
+    m_encoder.write(data, sz);
   }
 
   std::vector<std::unique_ptr<listener>> m_sockets;
+  multi_socket_writer<std::unique_ptr<listener>> m_writer;
+  encoder m_encoder;
 };
 
 template <typename Base, typename Framing>
@@ -89,6 +96,7 @@ struct framed_client : Base
   template <typename... Args>
   framed_client(Args&&... args)
       : Base{std::forward<Args>(args)...}
+      , m_encoder{this->m_socket}
       , m_decoder{this->m_socket}
   {
   }
@@ -101,9 +109,10 @@ struct framed_client : Base
 
   void write(const char* data, std::size_t sz)
   {
-    encoder{this->m_socket}.write(data, sz);
+    m_encoder.write(data, sz);
   }
 
+  encoder m_encoder;
   decoder m_decoder;
 };
 
@@ -117,6 +126,7 @@ struct framed_socket : Base
   template <typename... Args>
   framed_socket(Args&&... args)
       : Base{std::forward<Args>(args)...}
+      , m_encoder{this->m_socket}
       , m_decoder{this->m_socket}
   {
   }
@@ -136,9 +146,10 @@ struct framed_socket : Base
 
   void write(const char* data, std::size_t sz)
   {
-    encoder{this->m_socket}.write(data, sz);
+    m_encoder.write(data, sz);
   }
 
+  encoder m_encoder;
   decoder m_decoder;
 };
 
@@ -159,6 +170,14 @@ struct tcp_slip_client : framed_client<tcp_client, slip_framing>
 {
   using framed_client::framed_client;
 };
+struct tcp_cobs_client : framed_client<tcp_client, cobs_framing>
+{
+  using framed_client::framed_client;
+};
+struct tcp_cobs_server : framed_server<tcp_server, cobs_framing>
+{
+  using framed_server::framed_server;
+};
 
 #if defined(BOOST_ASIO_HAS_LOCAL_SOCKETS)
 struct unix_stream_size_prefix_server
@@ -170,6 +189,10 @@ struct unix_stream_slip_server : framed_server<unix_stream_server, slip_framing>
 {
   using framed_server::framed_server;
 };
+struct unix_stream_cobs_server : framed_server<unix_stream_server, cobs_framing>
+{
+  using framed_server::framed_server;
+};
 
 struct unix_stream_size_prefix_client
     : framed_socket<unix_stream_client, size_prefix_framing>
@@ -177,6 +200,10 @@ struct unix_stream_size_prefix_client
   using framed_socket::framed_socket;
 };
 struct unix_stream_slip_client : framed_socket<unix_stream_client, slip_framing>
+{
+  using framed_socket::framed_socket;
+};
+struct unix_stream_cobs_client : framed_socket<unix_stream_client, cobs_framing>
 {
   using framed_socket::framed_socket;
 };

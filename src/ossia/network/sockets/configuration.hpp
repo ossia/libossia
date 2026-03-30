@@ -8,9 +8,16 @@ namespace ossia::net
 enum class framing
 {
   none,
-  size_prefix,
+  size_prefix, // 4-byte big-endian (backward compatible)
   slip,
-  line_delimiter
+  line_delimiter,
+  cobs,
+  stx_etx,
+  size_prefix_1byte,
+  size_prefix_2byte_be,
+  size_prefix_2byte_le,
+  size_prefix_4byte_le,
+  fixed_length
 };
 
 struct fd_configuration

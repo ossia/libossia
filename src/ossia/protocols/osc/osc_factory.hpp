@@ -37,7 +37,8 @@ struct osc_protocol_configuration
   enum
   {
     SIZE_PREFIX,
-    SLIP
+    SLIP,
+    COBS
   } framing{SLIP};
 
   enum

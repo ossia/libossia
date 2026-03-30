@@ -1,3 +1,4 @@
+#include <ossia/network/sockets/cobs_framing.hpp>
 #include <ossia/network/sockets/framing.hpp>
 #include <ossia/network/sockets/null_socket.hpp>
 #include <ossia/network/sockets/serial_socket.hpp>
@@ -50,6 +51,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             return std::make_unique<
                 osc_generic_client_protocol<client_type, tcp_size_prefix_client>>(
                 std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_client_protocol<client_type, tcp_cobs_client>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_client_protocol<client_type, tcp_slip_client>>(
@@ -91,6 +96,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
           if(config.framing == conf::SIZE_PREFIX)
             return std::make_unique<osc_generic_client_protocol<
                 client_type, unix_stream_size_prefix_client>>(std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_client_protocol<client_type, unix_stream_cobs_client>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_client_protocol<client_type, unix_stream_slip_client>>(
@@ -105,6 +114,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
           if(config.framing == conf::SIZE_PREFIX)
             return std::make_unique<osc_generic_client_protocol<
                 client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_client_protocol<client_type, serial_socket<cobs_framing>>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_client_protocol<client_type, serial_socket<slip_framing>>>(
@@ -167,6 +180,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             return std::make_unique<
                 osc_generic_server_protocol<client_type, tcp_size_prefix_server>>(
                 std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_server_protocol<client_type, tcp_cobs_server>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_server_protocol<client_type, tcp_slip_server>>(
@@ -202,6 +219,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
           if(config.framing == conf::SIZE_PREFIX)
             return std::make_unique<osc_generic_server_protocol<
                 client_type, unix_stream_size_prefix_server>>(std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_server_protocol<client_type, unix_stream_cobs_server>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_server_protocol<client_type, unix_stream_slip_server>>(
@@ -216,6 +237,10 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
           if(config.framing == conf::SIZE_PREFIX)
             return std::make_unique<osc_generic_client_protocol<
                 client_type, serial_socket<size_prefix_framing>>>(std::move(ctx), conf);
+          else if(config.framing == conf::COBS)
+            return std::make_unique<
+                osc_generic_client_protocol<client_type, serial_socket<cobs_framing>>>(
+                std::move(ctx), conf);
           else
             return std::make_unique<
                 osc_generic_client_protocol<client_type, serial_socket<slip_framing>>>(

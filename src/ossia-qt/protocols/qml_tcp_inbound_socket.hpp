@@ -2,11 +2,15 @@
 #include <ossia/detail/variant.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/cobs_framing.hpp>
+#include <ossia/network/sockets/fixed_length_framing.hpp>
 #include <ossia/network/sockets/line_framing.hpp>
 #include <ossia/network/sockets/no_framing.hpp>
 #include <ossia/network/sockets/size_prefix_framing.hpp>
 #include <ossia/network/sockets/slip_framing.hpp>
+#include <ossia/network/sockets/stx_etx_framing.hpp>
 #include <ossia/network/sockets/tcp_socket.hpp>
+#include <ossia/network/sockets/var_size_prefix_framing.hpp>
 
 #include <ossia-qt/protocols/utils.hpp>
 
@@ -31,7 +35,14 @@ public:
       ossia::net::no_framing::decoder<socket_t>,
       ossia::net::slip_decoder<socket_t>,
       ossia::net::size_prefix_decoder<socket_t>,
-      ossia::net::line_framing_decoder<socket_t>>;
+      ossia::net::line_framing_decoder<socket_t>,
+      ossia::net::cobs_decoder<socket_t>,
+      ossia::net::stx_etx_framing::decoder<socket_t>,
+      ossia::net::size_prefix_1byte_framing::decoder<socket_t>,
+      ossia::net::size_prefix_2byte_be_framing::decoder<socket_t>,
+      ossia::net::size_prefix_2byte_le_framing::decoder<socket_t>,
+      ossia::net::size_prefix_4byte_le_framing::decoder<socket_t>,
+      ossia::net::fixed_length_decoder<socket_t>>;
 
   struct state
   {
@@ -75,6 +86,29 @@ public:
             std::copy_n(line_delimiter, 8, dec.delimiter);
           }
           break;
+        case ossia::net::framing::cobs:
+          decoder.template emplace<4>(listener.m_socket);
+          break;
+        case ossia::net::framing::stx_etx:
+          decoder.template emplace<5>(listener.m_socket);
+          break;
+        case ossia::net::framing::size_prefix_1byte:
+          decoder.template emplace<6>(listener.m_socket);
+          break;
+        case ossia::net::framing::size_prefix_2byte_be:
+          decoder.template emplace<7>(listener.m_socket);
+          break;
+        case ossia::net::framing::size_prefix_2byte_le:
+          decoder.template emplace<8>(listener.m_socket);
+          break;
+        case ossia::net::framing::size_prefix_4byte_le:
+          decoder.template emplace<9>(listener.m_socket);
+          break;
+        case ossia::net::framing::fixed_length:
+          decoder.template emplace<10>(listener.m_socket);
+          if(!delim.empty())
+            ossia::get<10>(decoder).frame_size = std::stoul(delim);
+          break;
       }
     }
 
@@ -86,22 +120,44 @@ public:
         case ossia::net::framing::none:
           listener.write(boost::asio::const_buffer(data, sz));
           break;
-        case ossia::net::framing::slip: {
-          ossia::net::slip_encoder<socket_t> enc{listener.m_socket};
-          enc.write(data, sz);
+        case ossia::net::framing::slip:
+          ossia::net::slip_encoder<socket_t>{listener.m_socket}.write(data, sz);
           break;
-        }
-        case ossia::net::framing::size_prefix: {
-          ossia::net::size_prefix_encoder<socket_t> enc{listener.m_socket};
-          enc.write(data, sz);
+        case ossia::net::framing::size_prefix:
+          ossia::net::size_prefix_encoder<socket_t>{listener.m_socket}.write(data, sz);
           break;
-        }
         case ossia::net::framing::line_delimiter: {
           ossia::net::line_framing_encoder<socket_t> enc{listener.m_socket};
           std::copy_n(line_delimiter, 8, enc.delimiter);
           enc.write(data, sz);
           break;
         }
+        case ossia::net::framing::cobs:
+          ossia::net::cobs_encoder<socket_t>{listener.m_socket}.write(data, sz);
+          break;
+        case ossia::net::framing::stx_etx:
+          ossia::net::stx_etx_framing::encoder<socket_t>{listener.m_socket}.write(
+              data, sz);
+          break;
+        case ossia::net::framing::size_prefix_1byte:
+          ossia::net::size_prefix_1byte_framing::encoder<socket_t>{listener.m_socket}
+              .write(data, sz);
+          break;
+        case ossia::net::framing::size_prefix_2byte_be:
+          ossia::net::size_prefix_2byte_be_framing::encoder<socket_t>{listener.m_socket}
+              .write(data, sz);
+          break;
+        case ossia::net::framing::size_prefix_2byte_le:
+          ossia::net::size_prefix_2byte_le_framing::encoder<socket_t>{listener.m_socket}
+              .write(data, sz);
+          break;
+        case ossia::net::framing::size_prefix_4byte_le:
+          ossia::net::size_prefix_4byte_le_framing::encoder<socket_t>{listener.m_socket}
+              .write(data, sz);
+          break;
+        case ossia::net::framing::fixed_length:
+          ossia::net::fixed_length_encoder<socket_t>{listener.m_socket}.write(data, sz);
+          break;
       }
     }
   };
@@ -176,7 +232,7 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
-    boost::asio::dispatch(st->context, [st, buffer] {
+    boost::asio::dispatch(st->context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->write_encoded(buffer.data(), buffer.size());
     });

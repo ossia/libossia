@@ -20,6 +20,7 @@ struct line_framing_decoder
   char delimiter[8] = {0};
   int32_t m_next_packet_size{};
   std::vector<char, ossia::pod_allocator_avx2<char>> m_data;
+  uint8_t m_delimiter_len = 0;
 
   explicit line_framing_decoder(Socket& socket)
       : socket{socket}
@@ -30,9 +31,11 @@ struct line_framing_decoder
   template <typename F>
   void receive(F f)
   {
+    if(m_delimiter_len == 0)
+      m_delimiter_len = strnlen(delimiter, 8);
     m_data.clear();
 
-    // Receive the size prefix
+    // Receive until delimiter
     boost::asio::async_read_until(
         socket, boost::asio::dynamic_buffer(m_data), (const char*)delimiter,
         [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
@@ -40,7 +43,7 @@ struct line_framing_decoder
         return;
 
       int new_sz = sz;
-      new_sz -= strlen(delimiter);
+      new_sz -= m_delimiter_len;
       if(new_sz > 0)
         read_data(std::move(f), ec, new_sz);
       else
@@ -74,23 +77,35 @@ struct line_framing_encoder
 {
   Socket& socket;
   char delimiter[8] = {0};
+  uint8_t delimiter_len = 0;
 
   void write(const char* data, std::size_t sz)
   {
-    this->write(socket, boost::asio::buffer(data, sz));
-    this->write(socket, boost::asio::buffer(delimiter, strlen(delimiter)));
+    if(delimiter_len == 0)
+      delimiter_len = strnlen(delimiter, 8);
+
+    // Scatter-gather: data + delimiter in single write
+    std::array<boost::asio::const_buffer, 2> bufs = {
+        boost::asio::buffer(data, sz),
+        boost::asio::buffer(delimiter, delimiter_len)};
+    this->do_write(socket, bufs);
   }
 
-  template <typename T>
-  void write(T& sock, const boost::asio::const_buffer& buf)
+  // Regular socket: scatter-gather (single syscall)
+  template <typename T, std::size_t N>
+  void do_write(T& sock, const std::array<boost::asio::const_buffer, N>& bufs)
   {
-    boost::asio::write(sock, buf);
+    boost::asio::write(sock, bufs);
   }
 
-  template <typename T>
-  void write(multi_socket_writer<T>& sock, const boost::asio::const_buffer& buf)
+  // Multi socket: write each buffer to each socket
+  template <typename T, std::size_t N>
+  void do_write(
+      multi_socket_writer<T>& sock,
+      const std::array<boost::asio::const_buffer, N>& bufs)
   {
-    sock.write(buf);
+    for(const auto& buf : bufs)
+      sock.write(buf);
   }
 };
 

@@ -99,7 +99,7 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
-    boost::asio::dispatch(st->socket.m_context, [st, buffer] {
+    boost::asio::dispatch(st->socket.m_context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->socket.write(buffer.data(), buffer.size());
     });

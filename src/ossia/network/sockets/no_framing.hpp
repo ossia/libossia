@@ -3,8 +3,6 @@
 
 #include <boost/asio/buffer.hpp>
 #include <boost/asio/error.hpp>
-#include <boost/asio/read.hpp>
-#include <boost/asio/streambuf.hpp>
 #include <boost/asio/write.hpp>
 
 namespace ossia::net
@@ -38,7 +36,7 @@ struct no_framing
   struct decoder
   {
     Socket& socket;
-    boost::asio::streambuf m_data;
+    alignas(64) uint8_t m_readbuf[4096];
 
     explicit decoder(Socket& s)
         : socket{s}
@@ -50,18 +48,18 @@ struct no_framing
     decoder(decoder&&) = delete;
     decoder& operator=(const decoder&) = delete;
     decoder& operator=(decoder&&) = delete;
+
     template <typename F>
     void receive(F f)
     {
       socket.async_read_some(
-          boost::asio::mutable_buffer(m_data.prepare(1024)),
+          boost::asio::buffer(m_readbuf),
           [this,
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
         if(!f.validate_stream(ec))
           return;
 
-        auto data = (const uint8_t*)m_data.data().data();
-        f(data, sz);
+        f(m_readbuf, sz);
         receive(std::move(f));
           });
     }

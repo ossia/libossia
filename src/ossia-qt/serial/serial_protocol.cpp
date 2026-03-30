@@ -93,6 +93,12 @@ struct serial_wrapper_init
     std::copy_n(port.line_framing_delimiter.begin(), sz, sock.m_decoder.delimiter);
     common_init(sock);
   }
+
+  void operator()(fixed_length_socket& sock)
+  {
+    sock.m_decoder.frame_size = port.fixed_frame_size;
+    common_init(sock);
+  }
 };
 
 serial_wrapper::serial_wrapper(
@@ -136,6 +142,27 @@ framed_serial_socket serial_wrapper::make_socket(
     case ossia::net::framing::line_delimiter:
       return framed_serial_socket{
           ossia::in_place_index<3>, port.transport, ctx->context};
+    case ossia::net::framing::cobs:
+      return framed_serial_socket{
+          ossia::in_place_index<4>, port.transport, ctx->context};
+    case ossia::net::framing::stx_etx:
+      return framed_serial_socket{
+          ossia::in_place_index<5>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix_1byte:
+      return framed_serial_socket{
+          ossia::in_place_index<6>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix_2byte_be:
+      return framed_serial_socket{
+          ossia::in_place_index<7>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix_2byte_le:
+      return framed_serial_socket{
+          ossia::in_place_index<8>, port.transport, ctx->context};
+    case ossia::net::framing::size_prefix_4byte_le:
+      return framed_serial_socket{
+          ossia::in_place_index<9>, port.transport, ctx->context};
+    case ossia::net::framing::fixed_length:
+      return framed_serial_socket{
+          ossia::in_place_index<10>, port.transport, ctx->context};
   }
 }
 

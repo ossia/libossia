@@ -125,11 +125,15 @@ public:
           return;
 
         // Update cached sender object (Qt thread, no race)
-        self->m_sender.m_endpoint = sender_ep;
+        // Only rebuild host string if endpoint changed
+        if(self->m_sender.m_endpoint != sender_ep)
+        {
+          self->m_sender.m_endpoint = sender_ep;
+          self->m_sender.m_host
+              = QString::fromStdString(sender_ep.address().to_string());
+          self->m_sender.m_port = sender_ep.port();
+        }
         self->m_sender.m_state = st;
-        self->m_sender.m_host
-            = QString::fromStdString(sender_ep.address().to_string());
-        self->m_sender.m_port = sender_ep.port();
 
         if(self->onMessage.isCallable())
         {
