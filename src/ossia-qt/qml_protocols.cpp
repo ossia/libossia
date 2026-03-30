@@ -73,6 +73,7 @@ namespace ossia::qt
 }
 
 W_OBJECT_IMPL(ossia::qt::qml_udp_outbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_udp_sender)
 W_OBJECT_IMPL(ossia::qt::qml_udp_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_tcp_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_tcp_connection)
