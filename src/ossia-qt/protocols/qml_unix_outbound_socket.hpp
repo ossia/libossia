@@ -36,10 +36,14 @@ public:
   {
     ossia::net::unix_datagram_socket socket;
     std::atomic_bool alive{true};
+    ossia::net::encoding enc{ossia::net::encoding::none};
 
-    state(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+    state(
+        const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
+        ossia::net::encoding e = ossia::net::encoding::none)
         : socket{conf, ctx}
     {
+      enc = e;
     }
   };
 
@@ -58,9 +62,11 @@ public:
 
   bool isOpen() const noexcept { return m_state != nullptr; }
 
-  void open(const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx)
+  void open(
+      const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx);
+    m_state = std::make_shared<state>(conf, ctx, e);
     socket = &m_state->socket;
 
     if(onClose.isCallable())
@@ -105,6 +111,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      buffer = apply_encoding(st->enc, buffer);
     boost::asio::dispatch(st->socket.m_context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->socket.write(buffer.data(), buffer.size());
@@ -152,17 +160,20 @@ public:
     ossia::net::unix_stream_client socket;
     std::atomic_bool alive{true};
     ossia::net::framing framing{ossia::net::framing::none};
+    ossia::net::encoding enc{ossia::net::encoding::none};
     char line_delimiter[8] = {};
     decoder_type decoder;
 
     state(
         const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
         ossia::net::framing f = ossia::net::framing::none,
-        const std::string& delim = {})
+        const std::string& delim = {},
+        ossia::net::encoding e = ossia::net::encoding::none)
         : socket{conf, ctx}
         , decoder{ossia::in_place_index<0>, socket.m_socket}
     {
       framing = f;
+      enc = e;
       if(!delim.empty())
       {
         auto sz = std::min(delim.size(), (size_t)7);
@@ -271,7 +282,7 @@ public:
     {
       if(!st->alive)
         return;
-      auto buf = QByteArray((const char*)data, sz);
+      auto buf = apply_decoding(st->enc, data, sz);
       auto cb = target;
       ossia::qt::run_async(
           self.get(),
@@ -314,9 +325,10 @@ public:
   void open(
       const ossia::net::fd_configuration& conf, boost::asio::io_context& ctx,
       ossia::net::framing f = ossia::net::framing::none,
-      const std::string& delim = {})
+      const std::string& delim = {},
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx, f, delim);
+    m_state = std::make_shared<state>(conf, ctx, f, delim, e);
 
     try
     {
@@ -343,6 +355,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      buffer = apply_encoding(st->enc, buffer);
     boost::asio::dispatch(st->socket.m_context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->write_encoded(buffer.data(), buffer.size());

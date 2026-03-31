@@ -2,6 +2,7 @@
 #include <ossia/detail/variant.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/encoding.hpp>
 #include <ossia/network/sockets/cobs_framing.hpp>
 #include <ossia/network/sockets/fixed_length_framing.hpp>
 #include <ossia/network/sockets/line_framing.hpp>
@@ -49,6 +50,7 @@ public:
     ossia::net::tcp_client socket;
     std::atomic_bool alive{true};
     ossia::net::framing framing{ossia::net::framing::none};
+    ossia::net::encoding enc{ossia::net::encoding::none};
     char line_delimiter[8] = {};
     decoder_type decoder;
 
@@ -56,11 +58,13 @@ public:
         const ossia::net::outbound_socket_configuration& conf,
         boost::asio::io_context& ctx,
         ossia::net::framing f = ossia::net::framing::none,
-        const std::string& delim = {})
+        const std::string& delim = {},
+        ossia::net::encoding e = ossia::net::encoding::none)
         : socket{conf, ctx}
         , decoder{ossia::in_place_index<0>, socket.m_socket}
     {
       framing = f;
+      enc = e;
       if(!delim.empty())
       {
         auto sz = std::min(delim.size(), (size_t)7);
@@ -170,7 +174,7 @@ public:
     {
       if(!st->alive)
         return;
-      auto buf = QByteArray((const char*)data, sz);
+      auto buf = apply_decoding(st->enc, data, sz);
       auto cb = target;
       ossia::qt::run_async(
           self.get(),
@@ -214,9 +218,10 @@ public:
       const ossia::net::outbound_socket_configuration& conf,
       boost::asio::io_context& ctx,
       ossia::net::framing f = ossia::net::framing::none,
-      const std::string& delim = {})
+      const std::string& delim = {},
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx, f, delim);
+    m_state = std::make_shared<state>(conf, ctx, f, delim, e);
 
     try
     {
@@ -242,6 +247,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      buffer = apply_encoding(st->enc, buffer);
     boost::asio::dispatch(st->socket.m_context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->write_encoded(buffer.data(), buffer.size());

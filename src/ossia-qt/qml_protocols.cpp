@@ -16,6 +16,7 @@
 #include <ossia-qt/protocols/qml_ws_outbound_socket.hpp>
 
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/encoding.hpp>
 
 #include <boost/asio/io_context.hpp>
 
@@ -62,7 +63,28 @@
    onFail: function() { console.log("fail!"); },
  });
 
+  // Legacy HTTP (GET only, no headers/body):
   Protocols.http("http://127.0.0.1:1234/toto", function(x){console.log(x);},"GET");
+
+  // Full HTTP client (any method, custom headers, request body):
+  Protocols.http({
+    url: "http://127.0.0.1:8080/api/resource",
+    verb: "POST",
+    headers: { "Content-Type": "application/json", "Authorization": "Bearer token123" },
+    body: JSON.stringify({ action: "start", num: 1 }),
+    onResponse: function(status, body) { console.log("HTTP", status, body); },
+    onError: function(err) { console.log("HTTP error:", err); }
+  });
+
+ // Encoding: optional, applies a binary-to-text encoding to the data
+ // Supported types: "base64", "ascii85", "hex", "intel_hex"/"ihex", "srec"/"s_record"/"motorola"
+ var sock = Protocols.outboundTCP({
+   Transport: { Host: "127.0.0.1", Port: 1234 },
+   Framing: { type: "line" },
+   Encoding: { type: "base64" },
+   onOpen: function(socket) { socket.write("binary data here"); },
+ });
+
  */
 W_OBJECT_IMPL(ossia::qt::qml_protocols)
 namespace ossia::qt
@@ -148,6 +170,27 @@ static std::pair<ossia::net::framing, std::string> parse_framing(const QVariantM
     return {ossia::net::framing::none, {}};
 }
 
+static ossia::net::encoding parse_encoding(const QVariantMap& conf)
+{
+  auto encoding_conf = conf["Encoding"].toMap();
+  if(encoding_conf.isEmpty())
+    return ossia::net::encoding::none;
+
+  auto type_str = encoding_conf["type"].toString();
+  if(type_str == "base64")
+    return ossia::net::encoding::base64;
+  else if(type_str == "ascii85")
+    return ossia::net::encoding::ascii85;
+  else if(type_str == "hex")
+    return ossia::net::encoding::hex;
+  else if(type_str == "intel_hex" || type_str == "ihex")
+    return ossia::net::encoding::intel_hex;
+  else if(type_str == "srec" || type_str == "s_record" || type_str == "motorola")
+    return ossia::net::encoding::srec;
+  else
+    return ossia::net::encoding::none;
+}
+
 qml_protocols::qml_protocols(ossia::net::network_context_ptr ctx, QObject* parent)
     : QObject{parent}
     , context{ctx}
@@ -163,6 +206,7 @@ QObject* qml_protocols::outboundUDP(QVariant config)
   QString host = transport["Host"].toString();
   QString port = transport["Port"].toString();
   bool broadcast = transport["Broadcast"].toBool();
+  auto enc = parse_encoding(conf);
 
   ossia::net::outbound_socket_configuration ossia_conf{
       .host = host.toStdString(),
@@ -175,7 +219,7 @@ QObject* qml_protocols::outboundUDP(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context);
+    sock->open(ossia_conf, context->context, enc);
     return sock;
   } catch(...) {
     delete sock;
@@ -191,6 +235,7 @@ QObject* qml_protocols::inboundUDP(QVariant config)
   if(bind.isEmpty())
     bind = "0.0.0.0";
   QString port = transport["Port"].toString();
+  auto enc = parse_encoding(conf);
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
@@ -201,7 +246,7 @@ QObject* qml_protocols::inboundUDP(QVariant config)
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context);
+    sock->open(ossia_conf, context->context, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -229,6 +274,7 @@ QObject* qml_protocols::outboundUnixDatagram(QVariant config)
   auto transport = conf["Transport"].toMap();
   QString path = transport["Path"].toString();
 
+  auto enc = parse_encoding(conf);
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
   auto sock = new qml_unix_datagram_outbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -236,7 +282,7 @@ QObject* qml_protocols::outboundUnixDatagram(QVariant config)
   sock->onClose = conf["onClose"].value<QJSValue>();
   sock->onError = conf["onError"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context);
+    sock->open(ossia_conf, context->context, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -259,6 +305,7 @@ QObject* qml_protocols::inboundUnixDatagram(QVariant config)
   auto transport = conf["Transport"].toMap();
   QString path = transport["Path"].toString();
 
+  auto enc = parse_encoding(conf);
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
   auto sock = new qml_unix_datagram_inbound_socket{};
   qjsEngine(this)->newQObject(sock);
@@ -267,7 +314,7 @@ QObject* qml_protocols::inboundUnixDatagram(QVariant config)
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context);
+    sock->open(ossia_conf, context->context, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -290,6 +337,7 @@ QObject* qml_protocols::outboundUnixStream(QVariant config)
   auto transport = conf["Transport"].toMap();
   QString path = transport["Path"].toString();
   auto [framing, delimiter] = parse_framing(conf);
+  auto enc = parse_encoding(conf);
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
   auto sock = new qml_unix_stream_outbound_socket{};
@@ -300,7 +348,7 @@ QObject* qml_protocols::outboundUnixStream(QVariant config)
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context, framing, delimiter);
+    sock->open(ossia_conf, context->context, framing, delimiter, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -323,6 +371,7 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   auto transport = conf["Transport"].toMap();
   QString path = transport["Path"].toString();
   auto [framing, delimiter] = parse_framing(conf);
+  auto enc = parse_encoding(conf);
 
   ossia::net::fd_configuration ossia_conf{.fd = path.toStdString()};
   auto sock = new qml_unix_stream_inbound_socket{};
@@ -333,7 +382,7 @@ QObject* qml_protocols::inboundUnixStream(QVariant config)
   sock->onConnection = conf["onConnection"].value<QJSValue>();
 
   try {
-    sock->open(ossia_conf, context->context, framing, delimiter);
+    sock->open(ossia_conf, context->context, framing, delimiter, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -356,6 +405,7 @@ QObject* qml_protocols::outboundTCP(QVariant config)
   QString host = transport["Host"].toString();
   QString port = transport["Port"].toString();
   auto [framing, delimiter] = parse_framing(conf);
+  auto enc = parse_encoding(conf);
 
   ossia::net::outbound_socket_configuration ossia_conf{
       .host = host.toStdString(), .port = (uint16_t)port.toInt()};
@@ -367,7 +417,7 @@ QObject* qml_protocols::outboundTCP(QVariant config)
   sock->onMessage = conf["onMessage"].value<QJSValue>();
   sock->onBytes = conf["onBytes"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context, framing, delimiter);
+    sock->open(ossia_conf, context->context, framing, delimiter, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -389,6 +439,7 @@ QObject* qml_protocols::inboundTCP(QVariant config)
     bind = "0.0.0.0";
   QString port = transport["Port"].toString();
   auto [framing, delimiter] = parse_framing(conf);
+  auto enc = parse_encoding(conf);
 
   ossia::net::inbound_socket_configuration ossia_conf{
       .bind = bind.toStdString(), .port = (uint16_t)port.toInt()};
@@ -399,7 +450,7 @@ QObject* qml_protocols::inboundTCP(QVariant config)
   sock->onError = conf["onError"].value<QJSValue>();
   sock->onConnection = conf["onConnection"].value<QJSValue>();
   try {
-    sock->open(ossia_conf, context->context, framing, delimiter);
+    sock->open(ossia_conf, context->context, framing, delimiter, enc);
     return sock;
   } catch(const std::exception& e) {
     qDebug() << e.what();
@@ -487,6 +538,57 @@ void qml_protocols::http(QUrl qurl, QJSValue val, QString verb)
   } catch(const std::exception& e) {
     qDebug() << e.what();
   } catch(...) {
+    qDebug() << "Error while sending HTTP request";
+  }
+}
+
+void qml_protocols::http(QVariant config)
+{
+  auto conf = config.toMap();
+  QUrl qurl = conf["url"].toUrl();
+  if(qurl.isEmpty())
+    qurl = QUrl(conf["url"].toString());
+  if(!qurl.isValid())
+    return;
+
+  QString verb = conf["verb"].toString();
+  if(verb.isEmpty())
+    verb = "GET";
+
+  QString body = conf["body"].toString();
+
+  // Build path with query string
+  QString path = qurl.path(QUrl::FullyEncoded);
+  if(qurl.hasQuery())
+    path += "?" + qurl.query(QUrl::FullyEncoded);
+  if(path.isEmpty())
+    path = "/";
+
+  auto host = qurl.host();
+
+  // Parse custom headers from QVariantMap
+  std::vector<std::pair<std::string, std::string>> headers;
+  auto headersMap = conf["headers"].toMap();
+  for(auto it = headersMap.begin(); it != headersMap.end(); ++it)
+    headers.emplace_back(it.key().toStdString(), it.value().toString().toStdString());
+
+  qml_protocols_fetch_answer a{this, conf["onResponse"].value<QJSValue>()};
+  qml_protocols_fetch_error e{this, conf["onError"].value<QJSValue>()};
+
+  auto hrq = std::make_shared<fetch_request_type>(
+      std::move(a), std::move(e), this->context->context, verb.toStdString(),
+      host.toStdString(), path.toStdString(), headers, body.toStdString());
+
+  try
+  {
+    hrq->resolve(host.toStdString(), std::to_string(qurl.port(80)));
+  }
+  catch(const std::exception& e)
+  {
+    qDebug() << e.what();
+  }
+  catch(...)
+  {
     qDebug() << "Error while sending HTTP request";
   }
 }

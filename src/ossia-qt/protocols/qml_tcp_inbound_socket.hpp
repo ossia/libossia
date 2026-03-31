@@ -2,6 +2,7 @@
 #include <ossia/detail/variant.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/encoding.hpp>
 #include <ossia/network/sockets/cobs_framing.hpp>
 #include <ossia/network/sockets/fixed_length_framing.hpp>
 #include <ossia/network/sockets/line_framing.hpp>
@@ -50,18 +51,21 @@ public:
     ossia::net::tcp_listener listener;
     std::atomic_bool alive{true};
     ossia::net::framing framing{ossia::net::framing::none};
+    ossia::net::encoding enc{ossia::net::encoding::none};
     char line_delimiter[8] = {};
     decoder_type decoder;
 
     state(
         ossia::net::tcp_listener l, boost::asio::io_context& ctx,
         ossia::net::framing f = ossia::net::framing::none,
-        const std::string& delim = {})
+        const std::string& delim = {},
+        ossia::net::encoding e = ossia::net::encoding::none)
         : context{ctx}
         , listener{std::move(l)}
         , decoder{ossia::in_place_index<0>, listener.m_socket}
     {
       framing = f;
+      enc = e;
       if(!delim.empty())
       {
         auto sz = std::min(delim.size(), (size_t)7);
@@ -171,7 +175,7 @@ public:
     {
       if(!st->alive)
         return;
-      auto buf = QByteArray((const char*)data, sz);
+      auto buf = apply_decoding(st->enc, data, sz);
       ossia::qt::run_async(
           self.get(),
           [self = self, buf] {
@@ -209,8 +213,9 @@ public:
   explicit qml_tcp_connection(
       ossia::net::tcp_listener listener, boost::asio::io_context& ctx,
       ossia::net::framing f = ossia::net::framing::none,
-      const std::string& delim = {})
-      : m_state{std::make_shared<state>(std::move(listener), ctx, f, delim)}
+      const std::string& delim = {},
+      ossia::net::encoding e = ossia::net::encoding::none)
+      : m_state{std::make_shared<state>(std::move(listener), ctx, f, delim, e)}
   {
   }
 
@@ -232,6 +237,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      buffer = apply_encoding(st->enc, buffer);
     boost::asio::dispatch(st->context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->write_encoded(buffer.data(), buffer.size());
@@ -282,15 +289,18 @@ public:
     std::atomic_bool open{false};
     ossia::net::framing framing{ossia::net::framing::none};
     std::string framing_delimiter;
+    ossia::net::encoding enc{ossia::net::encoding::none};
 
     state(
         const ossia::net::inbound_socket_configuration& conf,
         boost::asio::io_context& ctx,
         ossia::net::framing f = ossia::net::framing::none,
-        std::string delim = {})
+        std::string delim = {},
+        ossia::net::encoding e = ossia::net::encoding::none)
         : server{conf, ctx}
         , framing{f}
         , framing_delimiter{std::move(delim)}
+        , enc{e}
     {
     }
   };
@@ -312,9 +322,10 @@ public:
       const ossia::net::inbound_socket_configuration& conf,
       boost::asio::io_context& ctx,
       ossia::net::framing f = ossia::net::framing::none,
-      const std::string& delim = {})
+      const std::string& delim = {},
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx, f, delim);
+    m_state = std::make_shared<state>(conf, ctx, f, delim, e);
     m_state->open = true;
     accept_impl(m_state, QPointer{this});
     if(onOpen.isCallable())
@@ -363,7 +374,7 @@ private:
             return;
           auto conn = new qml_tcp_connection{
               ossia::net::tcp_listener{std::move(socket)}, st->server.m_context,
-              st->framing, st->framing_delimiter};
+              st->framing, st->framing_delimiter, st->enc};
 
           if(self->onConnection.isCallable())
           {

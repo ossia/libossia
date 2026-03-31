@@ -1,5 +1,6 @@
 #pragma once
 #include <ossia/network/osc/detail/osc_value_write_visitor.hpp>
+#include <ossia/network/sockets/encoding.hpp>
 #include <ossia/network/osc/detail/osc_packet_processor.hpp>
 #include <ossia/network/sockets/writers.hpp>
 
@@ -26,6 +27,39 @@ struct buffer_writer
     buffer.append(data, sz);
   }
 };
+
+inline QByteArray
+apply_encoding(ossia::net::encoding enc, const QByteArray& data)
+{
+  if(enc == ossia::net::encoding::none)
+    return data;
+  QByteArray out(int(ossia::net::max_encoded_size(enc, data.size())), '\0');
+  auto actual = ossia::net::encode_to(enc, data.data(), data.size(), out.data());
+  out.resize(int(actual));
+  return out;
+}
+
+inline QByteArray
+apply_decoding(ossia::net::encoding enc, const unsigned char* data, std::size_t sz)
+{
+  if(enc == ossia::net::encoding::none)
+    return QByteArray((const char*)data, sz);
+  QByteArray out(int(ossia::net::max_decoded_size(enc, sz)), '\0');
+  auto actual = ossia::net::decode_to(enc, (const char*)data, sz, out.data());
+  out.resize(int(actual));
+  return out;
+}
+
+inline QByteArray
+apply_decoding(ossia::net::encoding enc, const char* data, std::size_t sz)
+{
+  if(enc == ossia::net::encoding::none)
+    return QByteArray(data, sz);
+  QByteArray out(int(ossia::net::max_decoded_size(enc, sz)), '\0');
+  auto actual = ossia::net::decode_to(enc, data, sz, out.data());
+  out.resize(int(actual));
+  return out;
+}
 
 struct protocols_sender
 {

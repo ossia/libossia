@@ -20,12 +20,15 @@ struct qml_udp_inbound_state
 {
   ossia::net::udp_receive_socket socket;
   std::atomic_bool alive{true};
+  ossia::net::encoding enc{ossia::net::encoding::none};
 
   qml_udp_inbound_state(
       const ossia::net::inbound_socket_configuration& conf,
-      boost::asio::io_context& ctx)
+      boost::asio::io_context& ctx,
+      ossia::net::encoding e = ossia::net::encoding::none)
       : socket{conf, ctx}
   {
+    enc = e;
   }
 };
 
@@ -53,6 +56,8 @@ public:
     if(!m_state || !m_state->alive)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      data = apply_encoding(st->enc, data);
     auto ep = m_endpoint;
     boost::asio::dispatch(st->socket.m_context, [st, ep, data] {
       if(st->alive)
@@ -99,9 +104,10 @@ public:
 
   void open(
       const ossia::net::inbound_socket_configuration& conf,
-      boost::asio::io_context& ctx)
+      boost::asio::io_context& ctx,
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx);
+    m_state = std::make_shared<state>(conf, ctx, e);
 
     if(onClose.isCallable())
       m_state->socket.on_close.connect<&qml_udp_inbound_socket::on_close>(*this);
@@ -120,7 +126,7 @@ public:
       auto sender_ep = st->socket.m_endpoint;
       ossia::qt::run_async(
           self.get(),
-          [self, st, arg = QByteArray(data, sz), sender_ep] {
+          [self, st, arg = apply_decoding(st->enc, data, sz), sender_ep] {
         if(!self.get())
           return;
 

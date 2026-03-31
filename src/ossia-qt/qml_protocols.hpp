@@ -74,7 +74,12 @@ public:
   W_SLOT(inboundWS)
 
   void http(QUrl url, QJSValue func, QString verb);
-  W_SLOT(http);
+  W_SLOT(http, (QUrl, QJSValue, QString))
+
+  // Full HTTP client: supports all methods, custom headers, request body.
+  // Config: { url, verb, headers: {}, body, onResponse(status, body), onError(msg) }
+  void http(QVariant config);
+  W_SLOT(http, (QVariant))
 
   QJSValue inboundMIDIDevices();
   W_SLOT(inboundMIDIDevices)

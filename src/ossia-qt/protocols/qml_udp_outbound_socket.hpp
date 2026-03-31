@@ -26,12 +26,15 @@ public:
   {
     ossia::net::udp_send_socket socket;
     std::atomic_bool alive{true};
+    ossia::net::encoding enc{ossia::net::encoding::none};
 
     state(
         const ossia::net::outbound_socket_configuration& conf,
-        boost::asio::io_context& ctx)
+        boost::asio::io_context& ctx,
+        ossia::net::encoding e = ossia::net::encoding::none)
         : socket{conf, ctx}
     {
+      enc = e;
     }
   };
 
@@ -52,9 +55,10 @@ public:
 
   void open(
       const ossia::net::outbound_socket_configuration& conf,
-      boost::asio::io_context& ctx)
+      boost::asio::io_context& ctx,
+      ossia::net::encoding e = ossia::net::encoding::none)
   {
-    m_state = std::make_shared<state>(conf, ctx);
+    m_state = std::make_shared<state>(conf, ctx, e);
     socket = &m_state->socket;
 
     if(onClose.isCallable())
@@ -99,6 +103,8 @@ public:
     if(!m_state)
       return;
     auto st = m_state;
+    if(st->enc != ossia::net::encoding::none)
+      buffer = apply_encoding(st->enc, buffer);
     boost::asio::dispatch(st->socket.m_context, [st, buffer = std::move(buffer)] {
       if(st->alive)
         st->socket.write(buffer.data(), buffer.size());
