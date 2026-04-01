@@ -296,7 +296,20 @@ public:
       if(ec == boost::asio::error::operation_aborted)
         return false;
       if(ec == boost::asio::error::eof)
+      {
+        ossia::qt::run_async(
+            self.get(),
+            [self = self] {
+          if(self)
+          {
+            if(self->onClose.isCallable())
+              self->onClose.call();
+            self->deleteLater();
+          }
+        },
+            Qt::AutoConnection);
         return false;
+      }
       return true;
     }
   };
@@ -358,6 +371,8 @@ public:
   }
 
   QJSValue onMessage;
+  QJSValue onClose;
+  W_PROPERTY(QJSValue, onClose MEMBER onClose);
 
 private:
   std::shared_ptr<state> m_state;
@@ -458,6 +473,7 @@ private:
           auto conn = new qml_unix_stream_connection{
               ossia::net::unix_stream_listener{std::move(socket)},
               st->server.m_context, st->framing, st->framing_delimiter, st->enc};
+          conn->setParent(self.get());
           conn->onMessage = self->onConnection;
           conn->startReceive();
 

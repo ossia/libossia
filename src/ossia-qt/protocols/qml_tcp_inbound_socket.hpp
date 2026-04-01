@@ -200,8 +200,14 @@ public:
         ossia::qt::run_async(
             self.get(),
             [self = self] {
-          if(self && self->onClose.isCallable())
-            self->onClose.call();
+          if(self)
+          {
+            if(self->onClose.isCallable())
+              self->onClose.call();
+            // Connection is dead — schedule cleanup.
+            // Parent (server) child list is updated automatically by Qt.
+            self->deleteLater();
+          }
         },
             Qt::AutoConnection);
         return false;
@@ -375,6 +381,10 @@ private:
           auto conn = new qml_tcp_connection{
               ossia::net::tcp_listener{std::move(socket)}, st->server.m_context,
               st->framing, st->framing_delimiter, st->enc};
+
+          // Parent to the server so Qt uses CppOwnership (prevents QML GC)
+          // and automatically deletes all connections when the server is destroyed.
+          conn->setParent(self.get());
 
           if(self->onConnection.isCallable())
           {
