@@ -5,6 +5,7 @@
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
 #include <boost/asio/ip/udp.hpp>
+#include <boost/asio/ip/v6_only.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/strand.hpp>
@@ -65,10 +66,19 @@ public:
 
   tcp_server(const inbound_socket_configuration& conf, boost::asio::io_context& ctx)
       : m_context{ctx}
-      , m_acceptor{
-            boost::asio::make_strand(ctx),
-            proto::endpoint{boost::asio::ip::make_address(conf.bind), conf.port}}
+      , m_acceptor{boost::asio::make_strand(ctx)}
   {
+    auto addr = boost::asio::ip::make_address(conf.bind);
+    proto::endpoint ep{addr, conf.port};
+    m_acceptor.open(ep.protocol());
+    m_acceptor.set_option(boost::asio::socket_base::reuse_address(true));
+    if(addr.is_v6())
+    {
+      boost::system::error_code ec;
+      m_acceptor.set_option(boost::asio::ip::v6_only(false), ec);
+    }
+    m_acceptor.bind(ep);
+    m_acceptor.listen();
   }
 
   tcp_server(
@@ -97,6 +107,12 @@ public:
   void connect()
   {
     boost::system::error_code ec;
+    m_socket.open(m_endpoint.protocol(), ec);
+    if(ec)
+    {
+      on_fail();
+      return;
+    }
     m_socket.set_option(boost::asio::ip::tcp::no_delay{true}, ec);
     m_socket.set_option(boost::asio::socket_base::reuse_address{true}, ec);
 

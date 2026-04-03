@@ -6,7 +6,7 @@
 #include <ossia/context.hpp>
 #include <ossia/detail/thread.hpp>
 #include <ossia/network/common/websocket_log_sink.hpp>
-#include <ossia/network/sockets/websocket_server.hpp>
+#include <ossia/network/sockets/websocket_server_beast.hpp>
 
 #include "include_catch.hpp"
 using namespace ossia;
@@ -30,7 +30,7 @@ TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
   bool message = false;
   bool closed = false;
   auto ctx = std::make_shared<ossia::net::network_context>();
-  ossia::net::websocket_server srv{ctx};
+  ossia::net::websocket_server_beast srv{ctx};
   srv.set_open_handler([&](auto&&...) { opened = true; });
   srv.set_message_handler([&](auto&&...) {
     message = true;

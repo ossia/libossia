@@ -22,7 +22,6 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
       tuplet
       unordered_dense
       verdigris
-      websocketpp
       whereami
       ../cmake/cmake-modules
       ios-cmake
@@ -99,7 +98,6 @@ include(deps/spdlog)
 include(deps/tuplet)
 include(deps/unordered_dense)
 include(deps/verdigris)
-include(deps/websocketpp)
 
 if(OSSIA_PROTOCOL_COAP)
   include(deps/coap)

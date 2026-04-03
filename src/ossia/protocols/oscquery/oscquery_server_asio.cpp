@@ -27,7 +27,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/query_parser.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
-#include <ossia/network/sockets/websocket_server.hpp>
+#include <ossia/network/sockets/websocket_server_beast.hpp>
 #include <ossia/protocols/oscquery/oscquery_client_asio.hpp>
 namespace ossia::oscquery_asio
 {
@@ -63,22 +63,22 @@ oscquery_server_protocol_base::oscquery_server_protocol_base(
     bool forceWS)
     : protocol_base{flags{SupportsMultiplex}}
     , m_context{std::move(ctx)}
-    , m_websocketServer{std::make_unique<ossia::net::websocket_server>(m_context)}
+    , m_websocketServer{std::make_unique<ossia::net::websocket_server_beast>(m_context)}
     , m_oscConf{conf}
     , m_wsPort{ws_port}
     , m_forceWS{forceWS}
 {
   m_clients.reserve(2);
   m_websocketServer->set_open_handler(
-      [&](connection_handler hdl) { on_connectionOpen(hdl); });
+      [&](ossia::net::ws_connection_handle hdl) { on_connectionOpen(hdl); });
   m_websocketServer->set_close_handler(
-      [&](connection_handler hdl) { on_connectionClosed(hdl); });
+      [&](ossia::net::ws_connection_handle hdl) { on_connectionClosed(hdl); });
   m_websocketServer->set_message_handler(
-      [&](const connection_handler& hdl, websocketpp::frame::opcode::value op,
+      [&](const ossia::net::ws_connection_handle& hdl, ossia::net::ws_opcode op,
           const std::string& str) {
     switch(op)
     {
-      case websocketpp::frame::opcode::value::TEXT: {
+      case ossia::net::ws_opcode::text: {
         auto res = on_text_ws_message(hdl, str);
 
         if(!res.data.empty() && res.type != ossia::net::server_reply::data_type::binary
@@ -87,7 +87,7 @@ oscquery_server_protocol_base::oscquery_server_protocol_base(
 
         return res;
       }
-      case websocketpp::frame::opcode::value::BINARY: {
+      case ossia::net::ws_opcode::binary: {
         return on_binary_ws_message(hdl, str);
       }
       default:
@@ -134,8 +134,8 @@ void oscquery_server_protocol_base::request(net::parameter_base&)
 
 struct ws_client_socket
 {
-  ossia::net::websocket_server& server;
-  ossia::net::websocket_server::connection_handler& connection;
+  ossia::net::websocket_server_interface& server;
+  ossia::net::ws_connection_handle& connection;
 
   void send_binary_message(std::string_view s)
   {
@@ -431,8 +431,7 @@ void oscquery_server_protocol_base::stop()
       auto it = m_clients.begin();
       while(it != m_clients.end())
       {
-        auto con = m_websocketServer->impl().get_con_from_hdl((*it)->connection);
-        con->close(websocketpp::close::status::going_away, "Server shutdown");
+        m_websocketServer->close((*it)->connection);
         it = m_clients.erase(it);
       }
       m_clientCount = 0;
@@ -574,10 +573,7 @@ catch(...)
 void oscquery_server_protocol_base::on_connectionOpen(const connection_handler& hdl)
 try
 {
-  auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
-
-  boost::asio::ip::tcp::socket& sock = con->get_raw_socket();
-  auto ip = sock.remote_endpoint().address().to_string();
+  auto ip = m_websocketServer->get_remote_ip(hdl);
   if(ip.substr(0, 7) == "::ffff:")
     ip = ip.substr(7);
 
@@ -589,7 +585,7 @@ try
     m_clientCount++;
   }
 
-  onClientConnected(con->get_remote_endpoint());
+  onClientConnected(m_websocketServer->get_remote_endpoint(hdl));
 }
 catch(const std::exception& e)
 {
@@ -612,8 +608,7 @@ void oscquery_server_protocol_base::on_connectionClosed(const connection_handler
     }
   }
 
-  auto con = m_websocketServer->impl().get_con_from_hdl(hdl);
-  onClientDisconnected(con->get_remote_endpoint());
+  onClientDisconnected(m_websocketServer->get_remote_endpoint(hdl));
 }
 
 void oscquery_server_protocol_base::on_nodeCreated(const net::node_base& n)
