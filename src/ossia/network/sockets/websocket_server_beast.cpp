@@ -2,6 +2,8 @@
 
 #include <ossia/detail/json.hpp>
 
+#include <boost/asio/ip/v6_only.hpp>
+
 namespace ossia::net
 {
 
