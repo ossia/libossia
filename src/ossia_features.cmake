@@ -272,6 +272,11 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:pipewire::pipewire>)
   endif()
 
+  # ASIO SDK support
+  if(OSSIA_ENABLE_ASIO AND TARGET asio::sdk)
+    target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:asio::sdk>)
+  endif()
+
   #SDL support
   if(OSSIA_ENABLE_SDL)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)

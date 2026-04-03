@@ -194,6 +194,14 @@ if(OSSIA_ENABLE_PIPEWIRE)
   endif()
 endif()
 
+if(OSSIA_ENABLE_ASIO)
+  include(deps/asio-sdk)
+
+  if(NOT TARGET asio::sdk)
+    set(OSSIA_ENABLE_ASIO FALSE CACHE INTERNAL "" FORCE)
+  endif()
+endif()
+
 if(OSSIA_ENABLE_SDL)
   include(deps/sdl)
 
