@@ -865,8 +865,7 @@ inline auto inlet::visit(const T& t)
     case 2:
       return t(static_cast<value_inlet*>(this)->data);
     // case 3: return t(static_cast<texture_inlet&>(*this));
-    case 4:
-      return t(static_cast<geometry_inlet*>(this)->data);
+      // case 4: return t(static_cast<geometry_inlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -885,8 +884,7 @@ inline auto outlet::visit(const T& t)
     case 2:
       return t(static_cast<value_outlet*>(this)->data);
     // case 3: return t(static_cast<texture_outlet&>(*this));
-    case 4:
-      return t(static_cast<geometry_outlet*>(this)->data);
+      // case 4: return t(static_cast<geometry_outlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -904,8 +902,7 @@ inline auto inlet::visit(const T& t) const
     case 2:
       return t(static_cast<const value_inlet*>(this)->data);
     // case 3: return t(static_cast<const texture_inlet&>(*this));
-    case 4:
-      return t(static_cast<const geometry_inlet*>(this)->data);
+      // case 4: return t(static_cast<const geometry_inlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
@@ -923,8 +920,7 @@ inline auto outlet::visit(const T& t) const
     case 2:
       return t(static_cast<const value_outlet*>(this)->data);
     // case 3: return t(static_cast<const texture_outlet&>(*this));
-    case 4:
-      return t(static_cast<const geometry_outlet*>(this)->data);
+      // case 4: return t(static_cast<const geometry_outlet*>(this)->data);
   }
 
   if constexpr(std::is_invocable_v<T>)
