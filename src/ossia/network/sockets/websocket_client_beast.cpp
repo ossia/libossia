@@ -45,6 +45,10 @@ void websocket_client_beast::parse_uri(
     sv.remove_prefix(5);
   else if(sv.starts_with("wss://"))
     sv.remove_prefix(6);
+  else if(sv.starts_with("http://"))
+    sv.remove_prefix(7);
+  else if(sv.starts_with("https://"))
+    sv.remove_prefix(8);
 
   // Find path
   auto path_pos = sv.find('/');
