@@ -100,25 +100,32 @@ void websocket_client_beast::connect_and_run(const std::string& uri)
 {
   connect(uri);
   m_context.run();
+  m_context.restart();
   m_connected = false;
 }
 
 void websocket_client_beast::stop()
 {
-  if(!m_open)
+  m_connected = false;
+  m_open = false;
+
+  // Forcefully close the underlying TCP socket.
+  // A synchronous WebSocket close handshake would deadlock if the
+  // peer's io_context is not running.
   {
-    m_connected = false;
-    return;
+    std::lock_guard lock{m_mutex};
+    if(m_ws)
+    {
+      boost::beast::error_code ec;
+      boost::beast::get_lowest_layer(*m_ws).socket().shutdown(
+          boost::asio::ip::tcp::socket::shutdown_both, ec);
+      boost::beast::get_lowest_layer(*m_ws).socket().close(ec);
+    }
   }
 
-  std::lock_guard lock{m_mutex};
-  if(m_ws && m_ws->is_open())
-  {
-    boost::beast::error_code ec;
-    m_ws->close(boost::beast::websocket::close_code::normal, ec);
-  }
-  m_open = false;
-  m_connected = false;
+  // If we own the io_context, stop it so that run() returns in connect_and_run().
+  if(m_owned_context)
+    m_owned_context->stop();
 }
 
 bool websocket_client_beast::connected() const
