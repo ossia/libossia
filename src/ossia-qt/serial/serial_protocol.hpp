@@ -22,7 +22,6 @@
 
 #include <QObject>
 #include <QQmlComponent>
-#include <QSerialPort>
 #include <QThread>
 
 #include <span>

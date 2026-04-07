@@ -71,6 +71,12 @@ struct render_target_spec
 
 struct buffer_spec
 {
-
+  enum class usage : uint8_t
+  {
+    direct = 0,
+    indirect_draw = 1,
+    indirect_draw_indexed = 2
+  };
+  usage buffer_usage{usage::direct};
 };
 }
