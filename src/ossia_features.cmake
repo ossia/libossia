@@ -277,6 +277,13 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
   endif()
 
+  # MiniAudio / Web Audio support
+  if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/miniaudio>)
+    target_compile_definitions(ossia PRIVATE MA_ENABLE_AUDIO_WORKLETS MA_ENABLE_WEBAUDIO)
+    target_link_options(ossia PUBLIC -sAUDIO_WORKLET=1 -sWASM_WORKERS=1)
+  endif()
+
   if(OSSIA_ENABLE_LIBSAMPLERATE)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:SampleRate::samplerate>)
   endif()
