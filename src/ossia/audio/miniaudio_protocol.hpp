@@ -8,8 +8,13 @@
 #define MA_NO_RUNTIME_LINKING 1
 #endif
 #define MA_ENABLE_ONLY_SPECIFIC_BACKENDS 1
+#if defined(__EMSCRIPTEN__)
+#define MA_ENABLE_WEBAUDIO 1
+#define MA_ENABLE_AUDIO_WORKLETS 1
+#else
 #define MA_ENABLE_COREAUDIO 1
 #define MA_ENABLE_ALSA 1
+#endif
 #define MA_NO_WAV 1
 #define MA_NO_FLAC 1
 #define MA_NO_MP3 1
@@ -22,7 +27,7 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/thread.hpp>
 
-#include <kfr/base/conversion.hpp>
+//#include <kfr/base/conversion.hpp>
 
 #include <miniaudio.h>
 
@@ -144,6 +149,7 @@ private:
   static void
   callback(ma_device* pDevice, void* output, const void* input, ma_uint32 nframes)
   {
+#if !defined(__EMSCRIPTEN__)
     [[maybe_unused]]
     static const thread_local auto _
         = [] {
@@ -151,11 +157,10 @@ private:
       ossia::set_thread_pinned(thread_type::Audio, 0);
       return 0;
     }();
+#endif
 
     auto& self = *static_cast<miniaudio_engine*>(pDevice->pUserData);
     self.tick_start();
-    if(!self.m_start)
-      self.m_start = std::chrono::steady_clock::now();
 
     if(self.stop_processing)
     {
@@ -167,7 +172,9 @@ private:
     auto ins_data = self.ins_data.data();
     for(int i = 0; i < self.effective_inputs; i++)
       ins[i] = ins_data + i * nframes;
+#if !defined(__EMSCRIPTEN__)
     kfr::deinterleave(ins, (float*)input, self.effective_inputs, nframes);
+#endif
 
     auto outs = self.outs.data();
     auto outs_data = self.outs_data.data();
@@ -175,11 +182,20 @@ private:
     for(int i = 0; i < self.effective_outputs; i++)
       outs[i] = outs_data + i * nframes;
 
+#if defined(__EMSCRIPTEN__)
+    // On WASM audio worklets, std::chrono::steady_clock is unavailable.
+    // Use the sample count to derive time instead.
+    self.m_frames_elapsed += nframes;
+    double nsecs = (double)self.m_frames_elapsed / self.effective_sample_rate;
+#else
+    if(!self.m_start)
+      self.m_start = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
     auto nsecs
         = std::chrono::duration_cast<std::chrono::nanoseconds>(now - *self.m_start)
               .count()
           / 1e9;
+#endif
 
     ossia::audio_tick_state ts{(float* const*)ins,     outs,    self.effective_inputs,
                                self.effective_outputs, nframes, nsecs};
@@ -187,13 +203,19 @@ private:
 
     self.tick_end();
 
+#if !defined(__EMSCRIPTEN__)
     kfr::interleave(
         (float*)output, (const float**)outs, self.effective_outputs, nframes);
+#endif
   }
 
   std::shared_ptr<miniaudio_context> m_ctx;
   ma_device m_stream;
+#if defined(__EMSCRIPTEN__)
+  uint64_t m_frames_elapsed{};
+#else
   std::optional<std::chrono::steady_clock::time_point> m_start;
+#endif
 
   boost::container::vector<float> ins_data;
   boost::container::vector<float*> ins;
