@@ -77,7 +77,7 @@ struct init_node_visitor
   const graph_edge& edge;
   execution_state& e;
 
-  static void copy(const delay_line_type& out, std::size_t pos, inlet& in)
+  static bool copy(const delay_line_type& out, std::size_t pos, inlet& in)
   {
     const auto w = out.which();
     if(w.to_std_index() == in.which() && w.valid())
@@ -85,27 +85,24 @@ struct init_node_visitor
       switch(w.index())
       {
         case delay_line_type::index_of<ossia::audio_delay_line>().index():
-          copy_data_pos{pos}(
+          return copy_data_pos{pos}(
               *reinterpret_cast<const ossia::audio_delay_line*>(out.target()),
               in.cast<ossia::audio_port>());
-          break;
         case delay_line_type::index_of<ossia::midi_delay_line>().index():
-          copy_data_pos{pos}(
+          return copy_data_pos{pos}(
               *reinterpret_cast<const ossia::midi_delay_line*>(out.target()),
               in.cast<ossia::midi_port>());
-          break;
         case delay_line_type::index_of<ossia::value_delay_line>().index():
-          copy_data_pos{pos}(
+          return copy_data_pos{pos}(
               *reinterpret_cast<const ossia::value_delay_line*>(out.target()),
               in.cast<ossia::value_port>());
-          break;
         case delay_line_type::index_of<ossia::geometry_delay_line>().index():
-          copy_data_pos{pos}(
+          return copy_data_pos{pos}(
               *reinterpret_cast<const ossia::geometry_delay_line*>(out.target()),
               in.cast<ossia::geometry_port>());
-          break;
       }
     }
+    return false;
   }
 
   static void move(outlet& out, inlet& in)
@@ -186,17 +183,15 @@ struct init_node_visitor
 
   bool operator()(delayed_glutton_connection& con) const
   {
-    // TODO If there is data...
-    // Else...
-    copy(con.buffer, con.pos, in);
-    con.pos++;
+    if(copy(con.buffer, con.pos, in))
+      con.pos++;
     return false;
   }
 
   bool operator()(delayed_strict_connection& con) const
   {
-    copy(con.buffer, con.pos, in);
-    con.pos++;
+    if(copy(con.buffer, con.pos, in))
+      con.pos++;
     return false;
   }
 
