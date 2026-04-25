@@ -423,6 +423,43 @@ struct bc_ab_graph : base_graph
   }
 };
 
+// n1 feeds n2 (forward edge) and n2 feeds back into n1 (feedback edge): the two
+// edges form a cycle. It is only sortable because the feedback edge is excluded
+// from the topological sort. debug_mock is used so that execution is observed
+// directly (which nodes ran, in which order) regardless of port data.
+struct feedback_cycle_graph : base_graph
+{
+  ossia::node_mock *n1, *n2;
+  feedback_cycle_graph(
+      ossia::TestDevice& test, ossia::connection forward, ossia::connection feedback)
+      : base_graph{test}
+  {
+    using namespace ossia;
+
+    auto n1_fb_in = new value_inlet; // only there to receive the feedback edge
+    auto n1_out = new value_outlet;
+    auto n1 = std::make_shared<node_mock>(inlets{n1_fb_in}, outlets{n1_out});
+    n1->fun = debug_mock{1, n1};
+    n1->lbl = "n1";
+
+    auto n2_in = new value_inlet;
+    auto n2_out = new value_outlet;
+    auto n2 = std::make_shared<node_mock>(inlets{n2_in}, outlets{n2_out});
+    n2->fun = debug_mock{10, n2};
+    n2->lbl = "n2";
+
+    g.add_node(n1);
+    g.add_node(n2);
+
+    // Forward edge n1 -> n2 then feedback edge n2 -> n1 close the cycle.
+    g.connect(g.allocate_edge(forward, n1_out, n2_in, n1, n2));
+    g.connect(g.allocate_edge(feedback, n2_out, n1_fb_in, n2, n1));
+
+    this->n1 = n1.get();
+    this->n2 = n2.get();
+  }
+};
+
 TEST_CASE("test_bfs", "test_bfs")
 {
   using namespace ossia;
@@ -864,6 +901,61 @@ TEST_CASE("delayed_relationship", "delayed_relationship")
       test.tuple_addr->value()
       == ossia::value(std::vector<ossia::value>{1 * 2, 10 * 2}));
   // 10 * 1 is not here because we start from {1 * 1} from the point of view of f1(t-1)
+}
+
+// Validates that graph_edge::delayed() — which decides whether an edge is
+// dropped from the topological sort — classifies every connection type
+// correctly. Only the two explicitly delayed (feedback) connections are
+// delayed; immediate and dependency edges must keep constraining the order.
+TEST_CASE("delayed_edge_classification", "delayed_edge_classification")
+{
+  using namespace ossia;
+  auto gg = std::make_unique<graph>();
+  auto& g = *gg;
+
+  auto n1
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  auto n2
+      = std::make_shared<node_mock>(inlets{new value_inlet}, outlets{new value_outlet});
+  g.add_node(n1);
+  g.add_node(n2);
+
+  auto out = n1->root_outputs()[0];
+  auto in = n2->root_inputs()[0];
+
+  REQUIRE_FALSE(g.allocate_edge(immediate_glutton_connection{}, out, in, n1, n2)->delayed());
+  REQUIRE_FALSE(g.allocate_edge(immediate_strict_connection{}, out, in, n1, n2)->delayed());
+  REQUIRE(g.allocate_edge(delayed_glutton_connection{}, out, in, n1, n2)->delayed());
+  REQUIRE(g.allocate_edge(delayed_strict_connection{}, out, in, n1, n2)->delayed());
+  REQUIRE_FALSE(
+      g.allocate_edge(dependency_connection{}, outlet_ptr{}, inlet_ptr{}, n1, n2)
+          ->delayed());
+}
+
+// A cycle made acyclic only by a feedback edge must still topologically sort
+// and execute. If the delayed edge were (wrongly) kept in the sort, the graph
+// would not be a DAG, the sort would abort, and neither node would run.
+//
+// A realistic feedback loop uses glutton connections: a strict delayed edge
+// would (correctly) disable its target on the first tick, as the delay buffer
+// is still empty, which combined with a strict forward edge deadlocks the
+// 2-cycle. Glutton edges impose no such data requirement, so both nodes run.
+TEST_CASE("feedback_cycle_executes", "feedback_cycle_executes")
+{
+  using namespace ossia;
+  TestDevice test;
+
+  feedback_cycle_graph g(
+      test, immediate_glutton_connection{}, delayed_glutton_connection{});
+  debug_mock::messages.clear();
+
+  g.n1->request(simple_token_request{0_tv, 0_tv});
+  g.n2->request(simple_token_request{0_tv, 0_tv});
+
+  g.state();
+
+  // Both nodes execute, and n1 runs before n2 (the forward edge orders them).
+  REQUIRE((debug_mock::messages == std::vector<std::pair<int, int>>{{1, 0}, {10, 0}}));
 }
 
 TEST_CASE("reduced_implicit_relationship", "reduced_implicit_relationship") { }

@@ -75,12 +75,19 @@ jobs:
       - uses: ./.github/actions/latest-msvc-toolchain
 
       - name: Build
-        shell: cmd
+        shell: bash
         env:
           STATIC: ${{ matrix.static }}
           BUILD_TYPE: ${{ matrix.build_type }}
         run: |
-          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PCH=0 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=%BUILD_TYPE% -DOSSIA_STATIC=%STATIC% -DOSSIA_CI=1 -DOSSIA_TESTING=1
+          cmake -B build -S "${GITHUB_WORKSPACE}" -GNinja \
+            -DOSSIA_PCH=0 \
+            -DCMAKE_SYSTEM_VERSION=7 \
+            -DCMAKE_INSTALL_PREFIX=install \
+            -DCMAKE_BUILD_TYPE=$BUILD_TYPE \
+            -DOSSIA_STATIC=$STATIC \
+            -DOSSIA_CI=1 \
+            -DOSSIA_TESTING=1
           cmake --build build
           cmake --build build --target test
           cmake --install build
