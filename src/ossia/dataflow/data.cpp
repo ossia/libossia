@@ -488,9 +488,4 @@ void value_port::clear()
   data.clear();
 }
 
-void geometry_port::clear()
-{
-  flags = {};
-}
-
 }
