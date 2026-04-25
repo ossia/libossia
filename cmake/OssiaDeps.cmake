@@ -11,6 +11,7 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
       mdspan
       nano-signal-slot
       rapidfuzz-cpp
+      rapidhash
       rapidjson
       readerwriterqueue
       re2
@@ -93,6 +94,7 @@ include(deps/magic_enum)
 include(deps/mdspan)
 include(deps/nano-signal-slot)
 include(deps/rapidfuzz)
+include(deps/rapidhash)
 include(deps/rapidjson)
 include(deps/re2)
 include(deps/readerwriterqueue)

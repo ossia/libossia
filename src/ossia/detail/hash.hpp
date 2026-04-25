@@ -2,16 +2,22 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/detail/math.hpp>
 
-#include <ankerl/unordered_dense.h>
+#include <rapidhash.h>
 
 #include <cinttypes>
 #include <cstdint>
 #include <memory>
 #include <string>
 #include <string_view>
+#include <type_traits>
 
 namespace ossia
 {
+
+OSSIA_INLINE uint64_t hash_bytes(const void* data, std::size_t size) noexcept;
+OSSIA_INLINE uint64_t hash_string(std::string_view sv) noexcept;
+template <typename T>
+OSSIA_INLINE uint64_t hash_trivial(const T& v) noexcept;
 
 struct string_hash
 {
@@ -19,18 +25,18 @@ struct string_hash
   using is_avalanching = std::true_type;
   std::size_t operator()(const std::string& s) const noexcept
   {
-    return ankerl::unordered_dense::hash<std::string>{}(s);
+    return hash_string(std::string_view{s});
   }
 
   std::size_t operator()(std::string_view s) const noexcept
   {
-    return ankerl::unordered_dense::hash<std::string_view>{}(s);
+    return hash_string(s);
   }
 
   template <std::size_t N>
   std::size_t operator()(const char (&s)[N]) const noexcept
   {
-    return ankerl::unordered_dense::hash<std::string_view>{}(std::string_view{s, N - 1});
+    return hash_string(std::string_view{s, N - 1});
   }
 };
 
@@ -83,17 +89,89 @@ struct unknown_pointer_hash
 template<typename T> struct is_shared_ptr : std::false_type {};
 template<typename T> struct is_shared_ptr<std::shared_ptr<T>> : std::true_type {};
 
+struct pointer_hash_rapid
+{
+  using is_transparent = std::true_type;
+  using is_avalanching = std::true_type;
+  template <typename T>
+  OSSIA_INLINE uint64_t operator()(const T* val) const noexcept
+  {
+    const uintptr_t p = reinterpret_cast<uintptr_t>(val);
+    return hash_trivial(p);
+  }
+
+  template <typename T>
+  OSSIA_INLINE uint64_t operator()(const std::shared_ptr<T>& val) const noexcept
+  {
+    const uintptr_t p = reinterpret_cast<uintptr_t>(val.get());
+    return hash_trivial(p);
+  }
+};
+
+namespace detail_hash
+{
+template <typename T>
+concept has_std_hash = requires(const T& v) {
+  { std::hash<T>{}(v) } -> std::convertible_to<std::size_t>;
+};
+template <typename T>
+concept has_std_hash_avalanching
+    = has_std_hash<T> && requires { typename std::hash<T>::is_avalanching; };
+}
+template <typename T>
+struct hash
+{
+  OSSIA_INLINE std::size_t operator()(const T& v) const
+      noexcept(noexcept(std::declval<std::hash<T>>()(std::declval<const T&>())))
+  {
+    static_assert(
+        detail_hash::has_std_hash<T>,
+        "ossia::hash<T>: T is not trivially copyable and has no "
+        "std::hash<T> specialization. Specialize ossia::hash<T> "
+        "(see string_hash / pointer_hash_rapid for reference) or "
+        "provide std::hash<T>.");
+    return std::hash<T>{}(v);
+  }
+};
+template <typename T>
+requires std::is_trivially_copyable_v<T>
+      && (!std::is_pointer_v<T>)
+      && (!is_shared_ptr<T>::value)
+struct hash<T>
+{
+  using is_transparent = std::true_type;
+  using is_avalanching = std::true_type;
+  OSSIA_INLINE uint64_t operator()(const T& v) const noexcept
+  {
+    return hash_trivial(v);
+  }
+};
 
 template <typename T>
-struct hash : ankerl::unordered_dense::hash<T> { };
+requires (!std::is_trivially_copyable_v<T>)
+      && (!std::is_pointer_v<T>)
+      && (!is_shared_ptr<T>::value)
+      && (!std::is_same_v<T, std::string>)
+      && (!std::is_same_v<T, std::string_view>)
+      && detail_hash::has_std_hash_avalanching<T>
+struct hash<T>
+{
+  using is_avalanching = std::true_type;
+
+  OSSIA_INLINE std::size_t operator()(const T& v) const
+      noexcept(noexcept(std::declval<std::hash<T>>()(std::declval<const T&>())))
+  {
+    return std::hash<T>{}(v);
+  }
+};
 
 template <typename T>
 requires std::is_pointer_v<T>
-struct hash<T> : egur_hash { };
+struct hash<T> : pointer_hash_rapid { };
 
 template <typename T>
 requires is_shared_ptr<T>::value
-struct hash<T> : egur_hash { };
+struct hash<T> : pointer_hash_rapid { };
 
 template <>
 struct hash<std::string> : string_hash { };
@@ -200,6 +278,26 @@ template <typename T>
 requires is_shared_ptr<T>::value
 struct equal_to<T> : pointer_equal { };
 
+OSSIA_INLINE uint64_t hash_bytes(const void* data, std::size_t size) noexcept
+{
+  return rapidhashMicro(data, size);
+}
+template <typename T>
+OSSIA_INLINE uint64_t hash_trivial(const T& v) noexcept
+{
+  static_assert(std::is_trivially_copyable_v<T>,
+                "hash_trivial requires trivially copyable T");
+  if constexpr(sizeof(T) <= 48)
+    return rapidhashNano(&v, sizeof(T));
+  else if constexpr(sizeof(T) <= 80)
+    return rapidhashMicro(&v, sizeof(T));
+  else
+    return rapidhash(&v, sizeof(T));
+}
+OSSIA_INLINE uint64_t hash_string(std::string_view sv) noexcept
+{
+  return rapidhashMicro(sv.data(), sv.size());
+}
 // hash_combine_impl taken from boost
 template <typename T>
 OSSIA_DISABLE_UBSAN_UNSIGNED_INTEGER_CHECK constexpr inline void

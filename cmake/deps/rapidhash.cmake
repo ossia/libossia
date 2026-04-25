@@ -1,0 +1,9 @@
+if(OSSIA_USE_SYSTEM_LIBRARIES)
+  find_package(rapidhash CONFIG GLOBAL)
+endif()
+
+if(NOT TARGET rapidhash::rapidhash)
+  add_library(rapidhash INTERFACE IMPORTED GLOBAL)
+  add_library(rapidhash::rapidhash ALIAS rapidhash)
+  target_include_directories(rapidhash INTERFACE "$<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/rapidhash>")
+endif()
