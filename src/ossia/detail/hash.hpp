@@ -14,10 +14,10 @@
 namespace ossia
 {
 
-OSSIA_INLINE inline uint64_t hash_bytes(const void* data, std::size_t size) noexcept;
-OSSIA_INLINE inline uint64_t hash_string(std::string_view sv) noexcept;
+OSSIA_INLINE uint64_t hash_bytes(const void* data, std::size_t size) noexcept;
+OSSIA_INLINE uint64_t hash_string(std::string_view sv) noexcept;
 template <typename T>
-OSSIA_INLINE inline uint64_t hash_trivial(const T& v) noexcept;
+OSSIA_INLINE uint64_t hash_trivial(const T& v) noexcept;
 
 struct string_hash
 {
@@ -110,12 +110,15 @@ struct pointer_hash_rapid
 
 namespace detail_hash
 {
+template <typename T>
 concept has_std_hash = requires(const T& v) {
   { std::hash<T>{}(v) } -> std::convertible_to<std::size_t>;
 };
+template <typename T>
 concept has_std_hash_avalanching
     = has_std_hash<T> && requires { typename std::hash<T>::is_avalanching; };
 }
+template <typename T>
 struct hash
 {
   OSSIA_INLINE std::size_t operator()(const T& v) const
@@ -144,6 +147,7 @@ struct hash<T>
   }
 };
 
+template <typename T>
 requires (!std::is_trivially_copyable_v<T>)
       && (!std::is_pointer_v<T>)
       && (!is_shared_ptr<T>::value)
@@ -274,12 +278,12 @@ template <typename T>
 requires is_shared_ptr<T>::value
 struct equal_to<T> : pointer_equal { };
 
-OSSIA_INLINE inline uint64_t hash_bytes(const void* data, std::size_t size) noexcept
+OSSIA_INLINE uint64_t hash_bytes(const void* data, std::size_t size) noexcept
 {
   return rapidhashMicro(data, size);
 }
 template <typename T>
-OSSIA_INLINE inline uint64_t hash_trivial(const T& v) noexcept
+OSSIA_INLINE uint64_t hash_trivial(const T& v) noexcept
 {
   static_assert(std::is_trivially_copyable_v<T>,
                 "hash_trivial requires trivially copyable T");
@@ -290,7 +294,7 @@ OSSIA_INLINE inline uint64_t hash_trivial(const T& v) noexcept
   else
     return rapidhash(&v, sizeof(T));
 }
-OSSIA_INLINE inline uint64_t hash_string(std::string_view sv) noexcept
+OSSIA_INLINE uint64_t hash_string(std::string_view sv) noexcept
 {
   return rapidhashMicro(sv.data(), sv.size());
 }

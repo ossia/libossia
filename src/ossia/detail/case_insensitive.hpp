@@ -50,7 +50,6 @@ struct case_insensitive_hash
 
   uint64_t operator()(std::string_view s1) const noexcept
   {
-    namespace wyhash = ankerl::unordered_dense::detail::wyhash;
 
     uint64_t res = UINT64_C(0xff51afd7ed558ccd);
     unsigned char buf[buffer_size + 1];
@@ -63,7 +62,7 @@ struct case_insensitive_hash
       {
         for(int i = 0; i < buffer_size; i++)
           buf[i] = ascii_tolower(ptr[i]);
-        res = wyhash::mix(res, wyhash::hash(buf, buffer_size));
+        res = rapidhash_withSeed(buf, buffer_size, res);
         remaining -= buffer_size;
         ptr += buffer_size;
       }
@@ -72,7 +71,7 @@ struct case_insensitive_hash
         [[likely]];
         for(uint64_t i = 0; i < remaining; i++)
           buf[i] = ascii_tolower(ptr[i]);
-        res = wyhash::mix(res, wyhash::hash(buf, remaining));
+        res = rapidhash_withSeed(buf, remaining, res);
         remaining = 0;
       }
     }
