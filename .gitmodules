@@ -121,3 +121,6 @@
 [submodule "3rdparty/libcoap"]
 	path = 3rdparty/libcoap
 	url = https://github.com/obgm/libcoap
+[submodule "3rdparty/rapidhash"]
+	path = 3rdparty/rapidhash
+	url = https://github.com/Nicoshev/rapidhash
