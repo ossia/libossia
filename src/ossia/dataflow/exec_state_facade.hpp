@@ -5,6 +5,7 @@
 
 #include <cinttypes>
 #include <string_view>
+#include <vector>
 
 namespace ossia
 {
