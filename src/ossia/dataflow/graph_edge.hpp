@@ -42,6 +42,12 @@ public:
   void init() noexcept;
   void clear() noexcept;
 
+  bool delayed() const noexcept
+  {
+    return con.target<delayed_glutton_connection>()
+           || con.target<delayed_strict_connection>();
+  }
+
   static std::size_t size_of_allocated_memory_by_make_shared() noexcept;
 
   connection con{};
