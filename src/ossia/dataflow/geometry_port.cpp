@@ -185,6 +185,19 @@ static constexpr std::array semantic_table = {
     // UI
     semantic_entry{attribute_semantic::selection, "selection"},
 
+    semantic_entry{attribute_semantic::instance_color0, "instance_color0"},
+    semantic_entry{attribute_semantic::instance_color1, "instance_color1"},
+    semantic_entry{attribute_semantic::instance_color2, "instance_color2"},
+    semantic_entry{attribute_semantic::instance_color3, "instance_color3"},
+    semantic_entry{attribute_semantic::instance_color0, "instance_color_0"},
+    semantic_entry{attribute_semantic::instance_color1, "instance_color_1"},
+    semantic_entry{attribute_semantic::instance_color2, "instance_color_2"},
+    semantic_entry{attribute_semantic::instance_color3, "instance_color_3"},
+    semantic_entry{attribute_semantic::instance_custom0, "instance_custom0"},
+    semantic_entry{attribute_semantic::instance_custom1, "instance_custom1"},
+    semantic_entry{attribute_semantic::instance_custom2, "instance_custom2"},
+    semantic_entry{attribute_semantic::instance_custom3, "instance_custom3"},
+    semantic_entry{attribute_semantic::instance_draw_id, "instance_draw_id"},
     // User / general purpose
     semantic_entry{attribute_semantic::fx0, "fx0"},
     semantic_entry{attribute_semantic::fx1, "fx1"},
