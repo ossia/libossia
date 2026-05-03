@@ -141,6 +141,15 @@ enum class attribute_semantic : uint16_t
   // UI
   selection         = 1700, // float. Soft selection weight [0-1].
 
+  instance_color0           = 1800, // vec4. Per-instance broadcast color, set 0.
+  instance_color1           = instance_color0 + 1, // vec4.
+  instance_color2           = instance_color0 + 2, // vec4.
+  instance_color3           = instance_color0 + 3, // vec4.
+  instance_custom0          = instance_color0 + 4, // vec4. Per-instance user data, set 0.
+  instance_custom1          = instance_color0 + 5, // vec4.
+  instance_custom2          = instance_color0 + 6, // vec4.
+  instance_custom3          = instance_color0 + 7, // vec4.
+  instance_draw_id          = instance_color0 + 8, // uint.
   // User / general purpose
   fx0               = 2000, // float. General-purpose effect control.
   fx1               = fx0 + 1, // float. General-purpose effect control.
@@ -626,6 +635,8 @@ struct mesh_primitive
   material_component_ptr material;
   aabb bounds{};
   float line_width{1.0f};
+  gpu_slot_ref raw_slot;
+  uint64_t stable_id{};
   ossia::small_vector<material_component_ptr, 0> material_variants;
 };
 
@@ -840,6 +851,7 @@ struct light_component
   } shadow{};
 
   int64_t dirty_index{};
+  gpu_slot_ref raw_slot;
   uint64_t stable_id{};
 };
 using light_component_ptr = std::shared_ptr<const light_component>;
@@ -1150,6 +1162,7 @@ struct scene_environment
   float ambient_intensity{1.0f};
   uint32_t render_target_size[2]{0, 0};
   gpu_slot_ref raw_slot;
+};
 struct shadow_cascades_info
 {
   static constexpr uint32_t max_cascades = 8;
