@@ -113,7 +113,6 @@ void beast_ws_connection::on_read_http(boost::beast::error_code ec, std::size_t)
       {
         case server_reply::data_type::json:
           res.set(http::field::content_type, "application/json; charset=utf-8");
-          reply.data += '\0';
           break;
         case server_reply::data_type::html:
           res.set(http::field::content_type, "text/html; charset=utf-8");
