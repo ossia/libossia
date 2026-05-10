@@ -236,6 +236,7 @@ struct geometry
       sshort3,
       sshort2,
       sshort1,
+      user_struct,
     } format
         = float4;
 
@@ -245,6 +246,13 @@ struct geometry
     // For custom semantics, name holds the user-defined attribute name.
     attribute_semantic semantic = attribute_semantic::custom;
     std::string name;
+
+    // Used only when format == user_struct: byte size of one element
+    // (sizeof of the user-defined struct) and its GLSL type name.
+    // element_byte_size doubles as the per-vertex stride when packed
+    // tightly with no padding.
+    uint32_t element_byte_size = 0;
+    std::string user_type_name;
   };
 
   struct input
@@ -543,7 +551,8 @@ enum class vertex_format : uint8_t
   sint8x1, sint8x2, sint8x4,
   sint16x1, sint16x2, sint16x4,
   sint32x1, sint32x2, sint32x3, sint32x4,
-  rgb10a2_unorm, rg11b10_float
+  rgb10a2_unorm, rg11b10_float,
+  user_struct
 };
 
 struct vertex_attribute
@@ -554,6 +563,13 @@ struct vertex_attribute
   uint32_t byte_offset{};
   uint32_t byte_stride{};
   enum class input_rate : uint8_t { per_vertex, per_instance } rate{};
+
+  // Used only when format == vertex_format::user_struct. element_byte_size
+  // equals sizeof of the user-defined struct (typically == byte_stride
+  // for tightly-packed per-vertex data); user_type_name is its GLSL
+  // type name.
+  uint32_t element_byte_size = 0;
+  std::string user_type_name;
 };
 
 enum class primitive_topology : uint8_t
@@ -1008,6 +1024,52 @@ struct voxel_field_component
 };
 using voxel_field_component_ptr = std::shared_ptr<const voxel_field_component>;
 
+// Generic, format-agnostic point-cloud / splat container.
+// Carries N primitives whose schema lives entirely in the consumer
+// shader — no fixed fields like positions / colors / SH coefficients
+// live here. The parser hands us the raw row data verbatim; the
+// consumer shader tells the GPU how to read it.
+struct primitive_cloud_component
+{
+  // Primary raw payload: the verbatim per-row data (PLY header stripped)
+  // for a .ply, or the post-decode bytes for binary formats.
+  buffer_resource_ptr raw_data;
+
+  // Stride in bytes between consecutive primitives in raw_data. 0 means
+  // raw_data isn't a flat row buffer (e.g. format with separate indexes).
+  uint32_t row_stride{};
+
+  // Optional named extra buffers for formats that need more than one
+  // CPU-side input array (e.g. quantized SH codebook + per-primitive
+  // indices).
+  struct named_buffer
+  {
+    std::string name;
+    buffer_resource_ptr data;
+  };
+  ossia::small_vector<named_buffer, 2> extra_buffers;
+
+  uint64_t primitive_count{};
+  primitive_topology topology{primitive_topology::points};
+
+  // Format identity. Empty = unrouted. When set (e.g. "3dgs.classic"),
+  // clouds with matching format_id can be batched together.
+  std::string format_id;
+  scene_property_map format_params;
+
+  // GLSL type name for the per-primitive row payload. When non-empty
+  // (e.g. "Splat3DGS"), raw_data is exposed as a per-vertex attribute
+  // of format=user_struct with this type name; when empty, it is
+  // exposed as a raw auxiliary block.
+  std::string struct_type_name;
+
+  aabb bounds{};
+
+  int64_t dirty_index{};
+  gpu_slot_ref raw_slot;
+};
+using primitive_cloud_component_ptr = std::shared_ptr<const primitive_cloud_component>;
+
 struct point_cloud_component
 {
   buffer_resource_ptr positions;
@@ -1099,6 +1161,7 @@ using scene_payload = ossia::variant<
     voxel_field_component_ptr,
     point_cloud_component_ptr,
     volume_component_ptr,
+    primitive_cloud_component_ptr, // Format-agnostic point-cloud / splat
     scene_transform              // Just a transform
     >;
 enum class scene_purpose : uint8_t
