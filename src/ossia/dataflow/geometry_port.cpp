@@ -1,5 +1,7 @@
 #include <ossia/dataflow/geometry_port.hpp>
 
+#include <ossia/detail/ptr_set.hpp>
+
 #include <array>
 #include <atomic>
 #include <cctype>
@@ -368,6 +370,17 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
 
   scene_environment merged_env{};  // start from defaults
 
+  // Pointer-keyed dedup sets shared across contributors. Identity-based
+  // (raw pointer) — two distinct shared_ptrs that wrap the same object
+  // collapse to one entry; structurally-equal but separately-allocated
+  // payloads keep their distinct identities (which is the right call for
+  // independent producers that just happen to publish similar data).
+  ossia::ptr_set<const scene_node*> seen_roots;
+  ossia::ptr_set<const material_component*> seen_materials;
+  ossia::ptr_set<const animation_component*> seen_animations;
+  ossia::ptr_set<const camera_component*> seen_cameras;
+  ossia::ptr_set<const scene_collection*> seen_collections;
+
   for(auto& s : scenes)
   {
     if(!s.state)
@@ -415,9 +428,16 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
       merged_env.params_set |= scene_environment::params_render_target_size;
     }
 
+    // Dedup roots by shared_ptr identity. Two contributors that share a
+    // root (Y-shaped wiring of the same upstream into multiple cables,
+    // or a SceneGroup that received the same scene on more than one of
+    // its input slots) would otherwise push the same root twice — and
+    // every primitive_cloud / mesh / light reachable through it would
+    // be visited and uploaded N times by the downstream preprocessor.
     if(s.state->roots)
       for(auto& root : *s.state->roots)
-        merged_roots->push_back(root);
+        if(root && seen_roots.insert(root.get()).second)
+          merged_roots->push_back(root);
 
     if(s.state->materials && !s.state->materials->empty())
     {
@@ -468,7 +488,8 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     for(auto& s : scenes)
       if(s.state && s.state->materials)
         for(auto& mat : *s.state->materials)
-          merged_materials->push_back(mat);
+          if(mat && seen_materials.insert(mat.get()).second)
+            merged_materials->push_back(mat);
     merged->materials = std::move(merged_materials);
   }
 
@@ -487,7 +508,8 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     for(auto& s : scenes)
       if(s.state && s.state->animations)
         for(auto& anim : *s.state->animations)
-          merged_animations->push_back(anim);
+          if(anim && seen_animations.insert(anim.get()).second)
+            merged_animations->push_back(anim);
     merged->animations = std::move(merged_animations);
   }
 
@@ -505,7 +527,8 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     for(auto& s : scenes)
       if(s.state && s.state->cameras)
         for(auto& cam : *s.state->cameras)
-          merged_cameras->push_back(cam);
+          if(cam && seen_cameras.insert(cam.get()).second)
+            merged_cameras->push_back(cam);
     merged->cameras = std::move(merged_cameras);
   }
 
@@ -524,7 +547,8 @@ scene_spec merge_scenes(std::span<const scene_spec> scenes)
     for(auto& s : scenes)
       if(s.state && s.state->collections)
         for(auto& c : *s.state->collections)
-          merged_collections->push_back(c);
+          if(c && seen_collections.insert(c.get()).second)
+            merged_collections->push_back(c);
     merged->collections = std::move(merged_collections);
   }
 
