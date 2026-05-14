@@ -1065,6 +1065,11 @@ struct primitive_cloud_component
 
   aabb bounds{};
 
+  // Producer-stamped identifier, stable across the producer's lifetime
+  // so delta upload tracking can identify the same cloud frame-to-frame
+  // even if raw_data is rebuilt.
+  uint64_t stable_id{};
+
   int64_t dirty_index{};
   gpu_slot_ref raw_slot;
 };
