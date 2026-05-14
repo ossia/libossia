@@ -909,7 +909,7 @@ struct camera_component
 };
 using camera_component_ptr = std::shared_ptr<const camera_component>;
 
-struct scene_node_id
+struct OSSIA_EXPORT scene_node_id
 {
   uint64_t value{};
 

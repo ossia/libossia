@@ -244,7 +244,6 @@ void scene_port::clear()
   flags = 0;
 }
 
-OSSIA_EXPORT
 scene_node_id scene_node_id::from_path(std::string_view path) noexcept
 {
   // FNV-1a 64-bit hash
@@ -257,7 +256,6 @@ scene_node_id scene_node_id::from_path(std::string_view path) noexcept
   return {h};
 }
 
-OSSIA_EXPORT
 scene_node_id scene_node_id::from_parent(scene_node_id parent, std::string_view name) noexcept
 {
   uint64_t h = parent.value;
