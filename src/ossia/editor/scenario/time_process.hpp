@@ -3,6 +3,7 @@
 #include <ossia/detail/config.hpp>
 
 #include <ossia/dataflow/token_request.hpp>
+#include <ossia/dataflow/transport.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <memory>
@@ -36,7 +37,12 @@ public:
    \param pos offset position (in [0;1] relative to parent nominal duration) */
   void offset(ossia::time_value date);
 
+  //! Seek the process. The transport_info overload is needed by sound
+  //! processes that must scale the file position by the timeline/file
+  //! tempo ratio; the no-arg form passes a zeroed info (legacy seek).
   void transport(ossia::time_value date);
+  void transport(
+      ossia::time_value date, const ossia::tick_transport_info& transport_info);
 
   /*! get a #StateElement from the process depending on its parent
    #time_interval date
@@ -124,6 +130,14 @@ protected:
   virtual void offset_impl(ossia::time_value date) = 0;
 
   virtual void transport_impl(ossia::time_value date) = 0;
+
+  // Tempo-aware overload; sound_process reimplements this.
+  virtual void transport_impl(
+      ossia::time_value date, const ossia::tick_transport_info& transport_info)
+  {
+    (void)transport_info;
+    transport_impl(date);
+  }
 
   time_value m_loop_duration{};
   time_value m_start_offset{};

@@ -17,6 +17,11 @@ public:
 
   void transport(time_value date) override { m_sampler.transport(date); }
 
+  void transport(time_value date, const ossia::tick_transport_info& info) override
+  {
+    m_sampler.transport(date, info);
+  }
+
   void set_start(std::size_t v) { m_sampler.set_start(v); }
 
   void set_upmix(std::size_t v) { m_sampler.set_upmix(v); }

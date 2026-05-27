@@ -56,7 +56,8 @@ struct token_request
   {
     if(loop_duration.impl <= 0)
     {
-      f(add_offset(start_offset));
+      token_request other = add_offset(start_offset);
+      f(other);
       return;
     }
 

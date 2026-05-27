@@ -20,6 +20,8 @@ struct raw_stretcher
   {
   }
 
+  [[nodiscard]] static constexpr int64_t start_delay() noexcept { return 0; }
+
   void transport(int64_t date) { next_sample_to_read = date; }
 
   template <typename T>
