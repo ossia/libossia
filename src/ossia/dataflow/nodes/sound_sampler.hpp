@@ -24,6 +24,12 @@ struct sound_sampler
     info->m_resampler.transport(to_sample(date, m_dataSampleRate));
   }
 
+  void transport(time_value date, const ossia::tick_transport_info& tinfo)
+  {
+    info->m_resampler.transport(info->file_sample_for_model_time(
+        date, tinfo.current_tempo, m_dataSampleRate));
+  }
+
   // Used for testing only
   void set_sound(audio_array data)
   {
@@ -90,44 +96,26 @@ struct sound_sampler
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
 
-    // Handle transport for both forward and backward playback
     if(t.forward())
     {
       if(t.prev_date < info->m_prev_date)
       {
-        // Sentinel: we never played.
+        // First run after add_time_process() left the stretcher already
+        // primed; calling transport() again would reset it.
         if(info->m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
-        {
-          if(t.prev_date != 0_tv)
-          {
-            transport(t.prev_date);
-          }
-          else
-          {
-            // Otherwise we don't need transport, everything is already at 0
-            info->m_prev_date = 0_tv;
-          }
-        }
+          info->m_prev_date = t.prev_date;
         else
-        {
           transport(t.prev_date);
-        }
       }
     }
     else
     {
-      // Backward playback transport handling
       if(t.prev_date > info->m_prev_date)
       {
-        // Sentinel: we never played.
         if(info->m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
-        {
-          transport(t.prev_date);
-        }
+          info->m_prev_date = t.prev_date;
         else
-        {
           transport(t.prev_date);
-        }
       }
     }
 
@@ -139,7 +127,6 @@ struct sound_sampler
     const double stretch_ratio = info->update_stretch(t, e);
     const double abs_stretch_ratio = std::abs(stretch_ratio);
 
-    // Resample (handles both forward and backward internally)
     info->m_resampler.run(
         *this, t, e, stretch_ratio, chan, len, samples_to_read, samples_to_write,
         samples_offset, ap);

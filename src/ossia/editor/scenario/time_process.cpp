@@ -16,7 +16,12 @@ void time_process::offset(time_value date)
 
 void time_process::transport(time_value date)
 {
-  transport_impl(date);
+  transport_impl(date, ossia::tick_transport_info{});
+}
+
+void time_process::transport(time_value date, const tick_transport_info& info)
+{
+  transport_impl(date, info);
 }
 
 void time_process::start() { }

@@ -377,7 +377,7 @@ void time_interval::transport(time_value date)
     {
       if(timeProcess->enabled())
       {
-        timeProcess->transport(m_date);
+        timeProcess->transport(m_date, current_transport_info());
       }
     }
   }
@@ -531,7 +531,7 @@ void time_interval::add_time_process(std::shared_ptr<time_process> timeProcess)
     timeProcess->start();
     if(m_date != 0_tv)
     {
-      timeProcess->transport(m_date);
+      timeProcess->transport(m_date, current_transport_info());
     }
   }
 

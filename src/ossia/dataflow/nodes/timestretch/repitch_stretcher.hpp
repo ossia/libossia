@@ -81,6 +81,9 @@ struct repitch_stretcher
   int64_t next_sample_to_read{};
   int preset{};
 
+  // libsamplerate auto-pads its FIR ring; see src_sinc.c:1175.
+  [[nodiscard]] static constexpr int64_t start_delay() noexcept { return 0; }
+
   void transport(int64_t date) { next_sample_to_read = date; }
 
   template <typename T>

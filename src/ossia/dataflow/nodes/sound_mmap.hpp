@@ -77,6 +77,13 @@ public:
       m_resampler.transport(to_sample(date, m_handle.sampleRate()));
   }
 
+  void transport(time_value date, const ossia::tick_transport_info& tinfo) override
+  {
+    if(m_handle)
+      m_resampler.transport(file_sample_for_model_time(
+          date, tinfo.current_tempo, m_handle.sampleRate()));
+  }
+
   void fetch_audio(
       int64_t start, int64_t samples_to_write, double** audio_array_base) noexcept
   {
@@ -488,44 +495,26 @@ public:
 
     const auto samples_offset = t.physical_start(e.modelToSamples());
 
-    // Handle transport for both forward and backward playback
     if(t.forward())
     {
       if(t.prev_date < m_prev_date)
       {
-        // Sentinel: we never played.
+        // First run after add_time_process() left the stretcher already
+        // primed; calling transport() again would reset it.
         if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
-        {
-          if(t.prev_date != 0_tv)
-          {
-            transport(t.prev_date);
-          }
-          else
-          {
-            // Otherwise we don't need transport, everything is already at 0
-            m_prev_date = 0_tv;
-          }
-        }
+          m_prev_date = t.prev_date;
         else
-        {
           transport(t.prev_date);
-        }
       }
     }
     else
     {
-      // Backward playback transport handling
       if(t.prev_date > m_prev_date)
       {
-        // Sentinel: we never played.
         if(m_prev_date == ossia::time_value{ossia::time_value::infinite_min})
-        {
-          transport(t.prev_date);
-        }
+          m_prev_date = t.prev_date;
         else
-        {
           transport(t.prev_date);
-        }
       }
     }
 
@@ -537,7 +526,6 @@ public:
     const double stretch_ratio = update_stretch(t, e);
     const double abs_stretch_ratio = std::abs(stretch_ratio);
 
-    // Resample (handles both forward and backward internally)
     m_resampler.run(
         *this, t, e, stretch_ratio, channels, len, samples_to_read, samples_to_write,
         samples_offset, ap);

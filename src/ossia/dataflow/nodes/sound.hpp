@@ -118,6 +118,14 @@ struct resampler
         m_stretch);
   }
 
+  // Warm-up input samples needed before stretcher output aligns with input.
+  [[nodiscard]] int64_t start_delay() const noexcept
+  {
+    return ossia::visit(
+        [](auto& stretcher) noexcept -> int64_t { return stretcher.start_delay(); },
+        m_stretch);
+  }
+
   void transport(int64_t date)
   {
     ossia::visit(
@@ -252,6 +260,21 @@ struct sound_processing_info
 
   void set_native_tempo(double v) { tempo = v; }
 
+  // File sample at which a dropped sound must seek to align with an
+  // identical sound already playing at the same model time. Scales by
+  // |timeline_tempo| / file_tempo when stretching; falls back to to_sample().
+  [[nodiscard]] int64_t file_sample_for_model_time(
+      time_value date, double timeline_tempo,
+      int file_sample_rate) const noexcept
+  {
+    const int64_t base = to_sample(date, file_sample_rate);
+    const double abs_tempo = std::abs(timeline_tempo);
+    if(!m_resampler.stretch() || tempo <= 0.0 || abs_tempo <= 0.0)
+      return base;
+
+    return int64_t(double(base) * abs_tempo / tempo);
+  }
+
   double update_stretch(
       const ossia::token_request& t, const ossia::exec_state_facade& e) noexcept
   {
@@ -282,6 +305,16 @@ class sound_node
 {
 public:
   virtual void transport(time_value date) = 0;
+
+  // Tempo-aware overload; resampling subclasses override to seek the file
+  // pointer correctly when file_tempo != timeline_tempo. current_tempo == 0
+  // means unknown and falls back to the non-stretch path.
+  virtual void transport(
+      time_value date, const ossia::tick_transport_info& transport_info)
+  {
+    (void)transport_info;
+    transport(date);
+  }
 };
 
 class dummy_sound_node final : public sound_node
@@ -331,6 +364,11 @@ protected:
   void transport_impl(time_value date) override
   {
     static_cast<sound_node&>(*this->node).transport(date);
+  }
+  void transport_impl(
+      time_value date, const ossia::tick_transport_info& info) override
+  {
+    static_cast<sound_node&>(*this->node).transport(date, info);
   }
 };
 #endif
