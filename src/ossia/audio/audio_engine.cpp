@@ -140,8 +140,8 @@ ossia::audio_engine* make_audio_engine(
     for(int i = 0; i < outputs; i++)
       setup.outputs.push_back("out_" + std::to_string(i));
 
-    auto client = std::make_shared<ossia::pipewire_context>();
-    p = new ossia::pipewire_audio_protocol{client, setup};
+    if (auto client = libremidi::pipewire::shared_context())
+      p = new ossia::pipewire_audio_protocol{std::move(client), setup};
   }
 #endif
 
