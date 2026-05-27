@@ -14,6 +14,8 @@
 #include <ossia-qt/protocols/qml_unix_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ws_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ws_outbound_socket.hpp>
+#include <ossia-qt/protocols/qml_bluetooth.hpp>
+#include <ossia-qt/protocols/qml_nfc.hpp>
 
 #include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/sockets/encoding.hpp>
@@ -114,6 +116,18 @@ W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
+
+#if defined(OSSIA_HAS_BLUETOOTH)
+W_OBJECT_IMPL(ossia::qt::qml_bluetooth_scanner)
+W_OBJECT_IMPL(ossia::qt::qml_bluetooth_socket)
+W_OBJECT_IMPL(ossia::qt::qml_ble_service)
+W_OBJECT_IMPL(ossia::qt::qml_ble_controller)
+#endif
+
+#if defined(OSSIA_HAS_NFC)
+W_OBJECT_IMPL(ossia::qt::qml_nfc_target)
+W_OBJECT_IMPL(ossia::qt::qml_nfc_scanner)
+#endif
 
 #if QT_VERSION > QT_VERSION_CHECK(6, 10, 0)
 #if QT_NETWORKAUTH_LIB
@@ -974,4 +988,147 @@ QObject* qml_protocols::serial(QVariant config)
 {
   return nullptr;
 }
+
+
+#if defined(OSSIA_HAS_BLUETOOTH)
+QObject* qml_protocols::bluetoothScanner(QJSValue config)
+{
+  auto scanner = new qml_bluetooth_scanner{};
+  qjsEngine(this)->newQObject(scanner);
+  scanner->onDeviceDiscovered = config.property("onDeviceDiscovered");
+  scanner->onFinished = config.property("onFinished");
+  scanner->onError = config.property("onError");
+  return scanner;
+}
+
+QObject* qml_protocols::bluetooth(QJSValue config)
+{
+  auto transport = config.property("Transport");
+  QString address = transport.property("Address").toString();
+  QString service = transport.property("Service").toString();
+
+  if(address.isEmpty() || service.isEmpty())
+  {
+    qDebug() << "Bluetooth: Address and Service are required";
+    return nullptr;
+  }
+
+  auto sock = new qml_bluetooth_socket{
+      QBluetoothAddress{address}, bleUuidFromString(service)};
+  qjsEngine(this)->newQObject(sock);
+  sock->onOpen = config.property("onOpen");
+  sock->onClose = config.property("onClose");
+  sock->onError = config.property("onError");
+  sock->onMessage = config.property("onMessage");
+
+  try
+  {
+    sock->open();
+    return sock;
+  }
+  catch(const std::exception& e)
+  {
+    qDebug() << e.what();
+    delete sock;
+    return nullptr;
+  }
+  catch(...)
+  {
+    qDebug() << "Error while creating Bluetooth socket";
+    delete sock;
+    return nullptr;
+  }
+}
+
+QObject* qml_protocols::ble(QJSValue config)
+{
+  auto transport = config.property("Transport");
+  QString address = transport.property("Address").toString();
+  QString name = transport.property("Name").toString();
+  QString deviceUuid = transport.property("DeviceUuid").toString();
+
+  QBluetoothDeviceInfo info;
+  if(!deviceUuid.isEmpty())
+  {
+    info = QBluetoothDeviceInfo{
+        QBluetoothUuid{QUuid::fromString(deviceUuid)}, name, 0};
+  }
+  else if(!address.isEmpty())
+  {
+    info = QBluetoothDeviceInfo{QBluetoothAddress{address}, name, 0};
+  }
+  else
+  {
+    qDebug() << "BLE: Address or DeviceUuid is required";
+    return nullptr;
+  }
+  info.setCoreConfigurations(
+      QBluetoothDeviceInfo::LowEnergyCoreConfiguration);
+
+  auto ctrl = new qml_ble_controller{info};
+  qjsEngine(this)->newQObject(ctrl);
+  ctrl->onConnected = config.property("onConnected");
+  ctrl->onDisconnected = config.property("onDisconnected");
+  ctrl->onServiceDiscovered = config.property("onServiceDiscovered");
+  ctrl->onDiscoveryFinished = config.property("onDiscoveryFinished");
+  ctrl->onMtuChanged = config.property("onMtuChanged");
+  ctrl->onError = config.property("onError");
+
+  try
+  {
+    ctrl->open();
+    return ctrl;
+  }
+  catch(const std::exception& e)
+  {
+    qDebug() << e.what();
+    delete ctrl;
+    return nullptr;
+  }
+  catch(...)
+  {
+    qDebug() << "Error while creating BLE controller";
+    delete ctrl;
+    return nullptr;
+  }
+}
+#else
+QObject* qml_protocols::bluetoothScanner(QJSValue) { return nullptr; }
+QObject* qml_protocols::bluetooth(QJSValue) { return nullptr; }
+QObject* qml_protocols::ble(QJSValue) { return nullptr; }
+#endif
+
+#if defined(OSSIA_HAS_NFC)
+QObject* qml_protocols::nfc(QJSValue config)
+{
+  auto scanner = new qml_nfc_scanner{};
+  qjsEngine(this)->newQObject(scanner);
+  scanner->onTargetDetected = config.property("onTargetDetected");
+  scanner->onTargetLost = config.property("onTargetLost");
+  scanner->onNdefMessage = config.property("onNdefMessage");
+  scanner->onAdapterStateChanged = config.property("onAdapterStateChanged");
+  scanner->onError = config.property("onError");
+
+  try
+  {
+    scanner->start();
+    return scanner;
+  }
+  catch(const std::exception& e)
+  {
+    qDebug() << e.what();
+    delete scanner;
+    return nullptr;
+  }
+  catch(...)
+  {
+    qDebug() << "Error while creating NFC scanner";
+    delete scanner;
+    return nullptr;
+  }
+}
+#else
+QObject* qml_protocols::nfc(QJSValue) { return nullptr; }
+#endif
+
 }
