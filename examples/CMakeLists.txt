@@ -56,6 +56,7 @@ if(OSSIA_PROTOCOL_OSC)
 
   ossia_add_example(network_osc_serial_send "${CMAKE_CURRENT_SOURCE_DIR}/Network/serial/OSC_send.cpp")
   ossia_add_example(network_osc_udp_send_receive "${CMAKE_CURRENT_SOURCE_DIR}/Network/udp/OSC_send_receive.cpp")
+  ossia_add_example(network_osc_udp_multicast "${CMAKE_CURRENT_SOURCE_DIR}/Network/udp/OSC_multicast.cpp")
 endif()
 
 add_subdirectory("Qt/DeviceBuilder")
