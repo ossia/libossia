@@ -3,11 +3,16 @@
 #include <ossia/network/sockets/configuration.hpp>
 
 #include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/multicast.hpp>
 #include <boost/asio/ip/udp.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/strand.hpp>
 #include <boost/asio/write.hpp>
+
+#if !defined(_WIN32)
+#include <sys/socket.h>
+#endif
 
 #include <nano_signal_slot.hpp>
 
@@ -29,6 +34,8 @@ public:
       : m_context{ctx}
       , m_endpoint{boost::asio::ip::make_address(conf.bind), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}
+      , m_multicast_group{conf.multicast_group}
+      , m_multicast_interface{conf.multicast_interface}
   {
   }
 
@@ -38,7 +45,26 @@ public:
   void open()
   {
     m_socket.open(boost::asio::ip::udp::v4());
+    if(!m_multicast_group.empty())
+    {
+      m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+#if defined(SO_REUSEPORT)
+      // macOS / *BSD require SO_REUSEPORT in addition to SO_REUSEADDR for
+      // multiple processes to share a multicast port. On Linux it's harmless
+      // (kernel allows it for multicast). Windows has no SO_REUSEPORT.
+      using reuse_port
+          = boost::asio::detail::socket_option::boolean<SOL_SOCKET, SO_REUSEPORT>;
+      boost::system::error_code ec;
+      m_socket.set_option(reuse_port(true), ec);
+#endif
+    }
     m_socket.bind(m_endpoint);
+    if(!m_multicast_group.empty())
+    {
+      const auto group = boost::asio::ip::make_address_v4(m_multicast_group);
+      const auto iface = boost::asio::ip::make_address_v4(m_multicast_interface);
+      m_socket.set_option(boost::asio::ip::multicast::join_group(group, iface));
+    }
   }
 
   void close()
@@ -94,6 +120,8 @@ public:
   boost::asio::io_context& m_context;
   proto::endpoint m_endpoint;
   proto::socket m_socket;
+  std::string m_multicast_group;
+  std::string m_multicast_interface;
   alignas(16) char m_data[65535];
 };
 
@@ -107,6 +135,9 @@ public:
       , m_endpoint{boost::asio::ip::make_address(conf.host), conf.port}
       , m_socket{boost::asio::make_strand(ctx)}
       , m_broadcast{conf.broadcast}
+      , m_multicast_ttl{conf.multicast_ttl}
+      , m_multicast_interface{conf.multicast_interface}
+      , m_multicast_loopback{conf.multicast_loopback}
   {
   }
 
@@ -127,6 +158,22 @@ public:
 
     if(m_broadcast)
       m_socket.set_option(boost::asio::socket_base::broadcast(true));
+
+    if(m_endpoint.address().is_multicast())
+    {
+      if(m_multicast_ttl)
+        m_socket.set_option(boost::asio::ip::multicast::hops(*m_multicast_ttl));
+      if(!m_multicast_interface.empty())
+      {
+        m_socket.set_option(boost::asio::ip::multicast::outbound_interface(
+            boost::asio::ip::make_address_v4(m_multicast_interface)));
+      }
+      if(m_multicast_loopback)
+      {
+        m_socket.set_option(
+            boost::asio::ip::multicast::enable_loopback(*m_multicast_loopback));
+      }
+    }
   }
 
   void close()
@@ -161,6 +208,9 @@ public:
   proto::endpoint m_endpoint;
   proto::socket m_socket;
   bool m_broadcast{};
+  std::optional<int> m_multicast_ttl;
+  std::string m_multicast_interface;
+  std::optional<bool> m_multicast_loopback;
 };
 
 }
