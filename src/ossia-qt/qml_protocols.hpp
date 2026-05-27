@@ -107,6 +107,20 @@ public:
   QObject* osc(QVariant config);
   W_SLOT(osc)
 
+  // Bluetooth
+  QObject* bluetoothScanner(QJSValue config);
+  W_SLOT(bluetoothScanner)
+
+  QObject* bluetooth(QJSValue config);
+  W_SLOT(bluetooth)
+
+  QObject* ble(QJSValue config);
+  W_SLOT(ble)
+
+  // NFC
+  QObject* nfc(QJSValue config);
+  W_SLOT(nfc)
+
 private:
   ossia::net::network_context_ptr context;
 };
