@@ -42,7 +42,10 @@ if(NOT (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
   message(FATAL_ERROR "Coverage only implemented for GCC 9+")
 endif()
 
-find_program(GCOV_PATH NAMES gcov-15 gcov-14 gcov-13 gcov-12 gcov-11 gcov-10 gcov-9 gcov)
+find_program(GCOV_PATH NAMES
+  gcov-20 gcov-19 gcov-18 gcov-17 gcov-16
+  gcov-15 gcov-14 gcov-13 gcov-12 gcov-11 gcov-10 gcov-9
+  gcov)
 if(NOT GCOV_PATH)
   message(FATAL_ERROR "gcov not found")
 endif()
