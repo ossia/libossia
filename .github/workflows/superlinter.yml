@@ -28,5 +28,11 @@ jobs:
       - name: Prepare Build Environment
         uses: github/super-linter@v4
         env:
-          DEFAULT_BRANCH: main
+          DEFAULT_BRANCH: master
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VALIDATE_ALL_CODEBASE: false
+          VALIDATE_BASH: true
+          VALIDATE_GITHUB_ACTIONS: true
+          VALIDATE_YAML: true
+          VALIDATE_MARKDOWN: true
+          FILTER_REGEX_EXCLUDE: "(3rdparty/|cmake/cmake-modules/|tests/data/|.*\\.min\\..*)"

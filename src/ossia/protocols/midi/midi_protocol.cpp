@@ -38,6 +38,26 @@ midi_protocol::midi_protocol(
   m_output = std::make_unique<libremidi::midi_out>(conf, api);
 }
 
+midi_protocol::midi_protocol(ossia::net::network_context_ptr ctx, midi_info info)
+    : protocol_base{flags{}}
+    , m_context{ctx}
+{
+  if(info.type == midi_info::Type::Input)
+  {
+    libremidi::input_configuration conf;
+    conf.on_message
+        = [this](libremidi::message&& m) { midi_callback(std::move(m)); };
+    conf.ignore_timing = false;
+    m_input = std::make_unique<libremidi::midi_in>(conf, libremidi::API::UNSPECIFIED);
+  }
+  else
+  {
+    libremidi::output_configuration conf;
+    m_output = std::make_unique<libremidi::midi_out>(conf, libremidi::API::UNSPECIFIED);
+  }
+  set_info(std::move(info));
+}
+
 midi_protocol::~midi_protocol()
 {
   if(m_input)

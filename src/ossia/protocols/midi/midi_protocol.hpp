@@ -81,6 +81,9 @@ public:
   explicit midi_protocol(
       ossia::net::network_context_ptr, midi_protocol_configuration,
       libremidi::output_configuration&, libremidi::output_api_configuration midi_api);
+  // Convenience overload: builds a midi_protocol from a midi_info
+  // and immediately opens the described port.
+  explicit midi_protocol(ossia::net::network_context_ptr, midi_info);
   ~midi_protocol();
 
   bool set_info(midi_info);

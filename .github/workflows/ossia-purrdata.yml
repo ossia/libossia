@@ -24,6 +24,7 @@ jobs:
           cmake -B build -S ${GITHUB_WORKSPACE} \
             -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DOSSIA_CI=1 \
             -DOSSIA_PD_ONLY=1 \
             -DOSSIA_PURR_DATA=1 \

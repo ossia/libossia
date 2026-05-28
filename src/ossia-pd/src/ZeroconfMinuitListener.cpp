@@ -5,6 +5,7 @@
 #include <ossia/network/minuit/minuit.hpp>
 #include <ossia/network/resolve.hpp>
 
+#include <boost/asio/ip/tcp.hpp>
 #include <boost/lexical_cast.hpp>
 
 namespace ossia::pd
@@ -55,7 +56,7 @@ void ZeroconfMinuitListener::process_new_devices(const std::string& instance)
     ip = service.get(instance, "servus_host");
   }
 
-  resolve_sync_v4(ip, port);
+  resolve_sync_v4<boost::asio::ip::tcp>(ip, port);
   if(ip.empty() || port.empty())
     return;
 
