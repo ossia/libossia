@@ -91,6 +91,71 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
       file(GLOB_RECURSE FOUND_PDLIB "${CMAKE_CURRENT_BINARY_DIR}/purr-install/*pd.lib")
       message(FATAL_ERROR "PurrData installer did not produce a usable pd.lib at the expected paths. Found: ${FOUND_PDLIB}")
     endif()
+
+    # The installed bin/pd.lib is mingw's pd.a renamed: it carries function
+    # imports but mingw doesn't emit data-symbol entries usable by MSVC, so
+    # linking externals against it fails with unresolved s_float / s_symbol /
+    # s_bang / s_list / s_signal / s_pointer / s__X. Regenerate a proper MSVC
+    # import library from pd.dll: dump the full export table with dumpbin,
+    # synthesize a .def listing data symbols with the `DATA` annotation, then
+    # run lib.exe /def to produce the new pd.lib.
+    set(PD_DLL "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.dll")
+    set(PD_LIB "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
+    if(NOT EXISTS "${PD_DLL}")
+      message(FATAL_ERROR "Expected pd.dll at ${PD_DLL} after PurrData install")
+    endif()
+
+    find_program(DUMPBIN_EXE dumpbin)
+    find_program(LIB_EXE NAMES lib)
+    if(NOT DUMPBIN_EXE OR NOT LIB_EXE)
+      message(FATAL_ERROR "MSVC dumpbin/lib not found in PATH; needed to rebuild pd.lib from pd.dll")
+    endif()
+
+    execute_process(
+        COMMAND "${DUMPBIN_EXE}" /EXPORTS "${PD_DLL}"
+        OUTPUT_VARIABLE PD_EXPORTS
+        RESULT_VARIABLE PD_DUMP_RC
+        COMMAND_ERROR_IS_FATAL ANY)
+
+    # dumpbin output: each export is on a line like
+    #   "    1    0 00001000 s_float"
+    # The four columns are ordinal, hint, RVA, name. Capture names only.
+    string(REGEX MATCHALL "[ \t]+[0-9]+[ \t]+[0-9A-Fa-f]+[ \t]+[0-9A-Fa-f]+[ \t]+[A-Za-z_][A-Za-z0-9_]*"
+           PD_EXPORT_LINES "${PD_EXPORTS}")
+    set(PD_DEF_BODY "EXPORTS\n")
+    # Data symbols pd's headers declare with EXTERN dllimport. Annotate these
+    # with `DATA` so lib.exe emits the right kind of import entry.
+    set(PD_DATA_SYMBOLS
+        s_pointer s_float s_symbol s_blob s_bang s_list s_anything s_signal
+        s__N s__X s_x s_y s_
+        pd_objectmaker pd_canvasmaker)
+    foreach(line ${PD_EXPORT_LINES})
+      string(REGEX REPLACE "^[ \t]+[0-9]+[ \t]+[0-9A-Fa-f]+[ \t]+[0-9A-Fa-f]+[ \t]+"
+             "" sym "${line}")
+      if(NOT sym)
+        continue()
+      endif()
+      list(FIND PD_DATA_SYMBOLS "${sym}" _is_data)
+      if(NOT _is_data EQUAL -1)
+        string(APPEND PD_DEF_BODY "${sym} DATA\n")
+      else()
+        string(APPEND PD_DEF_BODY "${sym}\n")
+      endif()
+    endforeach()
+
+    set(PD_DEF "${CMAKE_CURRENT_BINARY_DIR}/pd.def")
+    file(WRITE "${PD_DEF}" "${PD_DEF_BODY}")
+
+    file(REMOVE "${PD_LIB}")
+    execute_process(
+        COMMAND "${LIB_EXE}" "/DEF:${PD_DEF}" "/OUT:${PD_LIB}"
+                /MACHINE:X64 /NAME:pd.dll
+        RESULT_VARIABLE PD_LIB_RC
+        OUTPUT_VARIABLE PD_LIB_OUT
+        ERROR_VARIABLE  PD_LIB_ERR)
+    if(NOT PD_LIB_RC EQUAL 0)
+      message(FATAL_ERROR "lib /DEF failed (rc=${PD_LIB_RC}):\n${PD_LIB_OUT}\n${PD_LIB_ERR}")
+    endif()
   else()
     message("Downloading and extracting PureData windows binary")
     set(PD_VERSION "0.49-0")
