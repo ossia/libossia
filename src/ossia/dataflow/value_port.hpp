@@ -38,8 +38,11 @@ struct OSSIA_EXPORT value_port
 
   void clear();
 
-  [[nodiscard]] const value_vector<ossia::timed_value>& get_data() const;
-  value_vector<ossia::timed_value>& get_data();
+  [[nodiscard]] const value_vector<ossia::timed_value>& get_data() const noexcept
+  {
+    return data;
+  }
+  value_vector<ossia::timed_value>& get_data() noexcept { return data; }
 
   ossia::domain domain;
   ossia::complex_type type;
