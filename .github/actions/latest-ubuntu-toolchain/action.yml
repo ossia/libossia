@@ -6,6 +6,7 @@ runs:
     - name: Install Dependencies
       shell: bash
       run: |
+        # Freshest CMake from Kitware, matched to the runner's distro codename.
         wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
         sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
 
@@ -13,14 +14,14 @@ runs:
         sudo apt-get install -yqq kitware-archive-keyring
         sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
 
-        echo 'deb http://apt.llvm.org/jammy/ llvm-toolchain-jammy-18 main' | sudo tee /etc/apt/sources.list.d/llvm.list
-        sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 1397BC53640DB551 15CF4D18AF4F7421 42D5A192B819C5DA
-        sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
         sudo apt-get update -qq
         sudo apt purge --auto-remove cmake
+
+        # gcc-14 / clang-19 are in the noble main repo; both ship full C++23
+        # support including deducing-this (P0847). No PPA / LLVM repo needed.
         sudo apt-get install -yqq \
-            build-essential g++ binutils ninja-build cmake \
-            clang-18 lld-18 \
+            build-essential gcc-14 g++-14 binutils ninja-build cmake \
+            clang-19 lld-19 \
             qt6-base-dev qt6-base-dev-tools qt6-base-private-dev \
             qt6-declarative-dev qt6-declarative-dev-tools qt6-declarative-private-dev \
             libqt6websockets6-dev libqt6websockets6-dev \
@@ -28,3 +29,9 @@ runs:
             mesa-common-dev libgl1-mesa-dev \
             libbluetooth-dev \
             libavahi-client-dev
+
+        # Make gcc-14 / g++-14 the default for this job.
+        sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 100
+        sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 100
+        echo "CC=gcc-14"  >> "$GITHUB_ENV"
+        echo "CXX=g++-14" >> "$GITHUB_ENV"

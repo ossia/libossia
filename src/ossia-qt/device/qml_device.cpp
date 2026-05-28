@@ -257,13 +257,15 @@ bool qml_device::openMIDIInputDevice(int port)
   try
   {
     using namespace ossia::net::midi;
-    auto proto
-        = new midi_protocol{m_context, midi_info{midi_info::Type::Input, {}, port}};
+    auto scanned = midi_protocol::scan();
+    if(port < 0 || static_cast<std::size_t>(port) >= scanned.size())
+      return false;
+    auto proto = new midi_protocol{m_context, scanned[port]};
     auto dev = std::make_unique<midi_device>(
+        m_name.toUtf8().toStdString(),
         std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->create_full_tree();
     m_device = std::move(dev);
-    m_device->set_name(m_name.toUtf8().toStdString());
     return true;
   }
   catch(std::exception& e)
@@ -288,13 +290,15 @@ bool qml_device::openMIDIOutputDevice(int port)
   try
   {
     using namespace ossia::net::midi;
-    auto proto
-        = new midi_protocol{m_context, midi_info{midi_info::Type::Output, {}, port}};
+    auto scanned = midi_protocol::scan();
+    if(port < 0 || static_cast<std::size_t>(port) >= scanned.size())
+      return false;
+    auto proto = new midi_protocol{m_context, scanned[port]};
     auto dev = std::make_unique<midi_device>(
+        m_name.toUtf8().toStdString(),
         std::unique_ptr<ossia::net::protocol_base>(proto));
     dev->create_full_tree();
     m_device = std::move(dev);
-    m_device->set_name(m_name.toUtf8().toStdString());
 
     return true;
   }
@@ -319,10 +323,12 @@ QVariantMap qml_device::getMIDIInputDevices() const
 #if defined(OSSIA_PROTOCOL_MIDI)
   using namespace ossia::net::midi;
 
+  int index = 0;
   for(const auto& info : midi_protocol::scan())
   {
     if(info.type == midi_info::Type::Input)
-      lst.insert(QString::fromStdString(info.device), info.port);
+      lst.insert(QString::fromStdString(info.handle.display_name), index);
+    ++index;
   }
 #endif
 
@@ -336,10 +342,12 @@ QVariantMap qml_device::getMIDIOutputDevices() const
 #if defined(OSSIA_PROTOCOL_MIDI)
   using namespace ossia::net::midi;
 
+  int index = 0;
   for(const auto& info : midi_protocol::scan())
   {
     if(info.type == midi_info::Type::Output)
-      lst.insert(QString::fromStdString(info.device), info.port);
+      lst.insert(QString::fromStdString(info.handle.display_name), index);
+    ++index;
   }
 #endif
 

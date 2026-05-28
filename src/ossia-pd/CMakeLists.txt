@@ -37,29 +37,79 @@ endif()
 
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
-  # Purr-data Windows releases ship only an installer .exe inside the zip, no
-  # raw bin/pd.lib usable at link time. Pd externals link against pd.lib for
-  # the import symbols only; those symbols are ABI-compatible with PureData,
-  # so the resulting .m_amd64 also loads in purr-data at runtime. Always pull
-  # PureData's binary for the link step regardless of OSSIA_PURR_DATA.
-  message("Downloading and extracting PureData windows binary")
-  set(PD_VERSION "0.49-0")
-  # First download Pd.
-  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-    file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
-  else()
-    file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}-i386.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
-  endif()
+  if(OSSIA_PURR_DATA)
+    # Purr-data's Windows release is an Inno Setup installer wrapped in a zip;
+    # the raw zip never contained bin/pd.lib usable at link time. The MinGW
+    # build (packages/win64_inno/Makefile.nmake -> pd/src/makefile.mingw)
+    # produces pd.dll plus a renamed `pd.a` import library installed as
+    # bin/pd.lib -- which the MSVC linker can consume for purr-data-specific
+    # symbols (sys_vguid, s__X, ...) absent from vanilla PureData's pd.lib.
+    # So: download the installer and run it silently to extract its tree.
+    set(PURR_VERSION "2.20.1")
+    set(PURR_URL "https://github.com/agraef/purr-data/releases/download/${PURR_VERSION}/purr-data-${PURR_VERSION}-mingw-x86_64.zip")
+    message("Downloading PurrData windows installer (${PURR_VERSION})")
+    file(DOWNLOAD "${PURR_URL}" "${CMAKE_CURRENT_BINARY_DIR}/purr.zip" SHOW_PROGRESS)
 
-  # Extract Pd.
-  execute_process(
-      COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
-      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/purr.zip"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 
-  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    # The zip extracts to a single Purr-Data-*-x86_64.exe installer alongside
+    # the zip itself. Locate it (the rev hash varies between releases).
+    file(GLOB PURR_INSTALLER "${CMAKE_CURRENT_BINARY_DIR}/Purr-Data-*x86_64.exe")
+    list(GET PURR_INSTALLER 0 PURR_INSTALLER)
+    if(NOT PURR_INSTALLER)
+      message(FATAL_ERROR "Could not locate Purr Data installer in ${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+
+    # Inno Setup silent install: /VERYSILENT no UI, /SUPPRESSMSGBOXES no boxes,
+    # /CURRENTUSER no admin elevation, /DIR= install destination,
+    # /NORESTART skip reboot. Windows-native because of cmd quoting; use
+    # CMake's native generator to convert the path.
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/purr-install" PURR_INSTALL_NATIVE)
+    message("Running PurrData installer silently into ${PURR_INSTALL_NATIVE}")
+    execute_process(
+        COMMAND "${PURR_INSTALLER}"
+                /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NORESTART
+                "/DIR=${PURR_INSTALL_NATIVE}"
+        TIMEOUT 300
+        RESULT_VARIABLE PURR_RC
+        OUTPUT_VARIABLE PURR_OUT
+        ERROR_VARIABLE  PURR_ERR)
+    if(NOT PURR_RC EQUAL 0)
+      message(FATAL_ERROR "PurrData installer failed (rc=${PURR_RC}):\n${PURR_OUT}\n${PURR_ERR}")
+    endif()
+
+    # The installer drops the Pd tree directly under DIR. Move it into the
+    # `pd/` directory the build expects.
+    if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/purr-install/bin/pd.lib")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/purr-install" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    elseif(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/purr-install/pd/bin/pd.lib")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/purr-install/pd" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    else()
+      file(GLOB_RECURSE FOUND_PDLIB "${CMAKE_CURRENT_BINARY_DIR}/purr-install/*pd.lib")
+      message(FATAL_ERROR "PurrData installer did not produce a usable pd.lib at the expected paths. Found: ${FOUND_PDLIB}")
+    endif()
   else()
-    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}-i386" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    message("Downloading and extracting PureData windows binary")
+    set(PD_VERSION "0.49-0")
+    # First download Pd.
+    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    else()
+      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}-i386.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    endif()
+
+    # Extract Pd.
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
+        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+
+    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    else()
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}-i386" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    endif()
   endif()
 endif()
 endif()
