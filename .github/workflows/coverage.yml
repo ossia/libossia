@@ -26,8 +26,11 @@ jobs:
           # setuptools >= 81 dropped pkg_resources, which fastcov's setup.py
           # still imports; pin below 81. Same for wheel: --ignore-installed lets
           # pip override the dpkg-managed python3-wheel on Ubuntu 24.04.
+          # --no-build-isolation makes pip use this pinned setuptools when
+          # building fastcov below; otherwise PEP 517 spins up a fresh build
+          # env with current (>=81) setuptools and pkg_resources disappears.
           sudo pip3 install --break-system-packages --ignore-installed --upgrade wheel "setuptools<81"
-          sudo pip3 install --break-system-packages git+https://github.com/rpgillespie6/fastcov.git
+          sudo pip3 install --break-system-packages --no-build-isolation git+https://github.com/rpgillespie6/fastcov.git
 
       - name: Build
         run: |
