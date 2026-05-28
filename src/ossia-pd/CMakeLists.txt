@@ -62,15 +62,16 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
       message(FATAL_ERROR "Could not locate Purr Data installer in ${CMAKE_CURRENT_BINARY_DIR}")
     endif()
 
-    # Inno Setup silent install: /VERYSILENT no UI, /SUPPRESSMSGBOXES no boxes,
-    # /CURRENTUSER no admin elevation, /DIR= install destination,
-    # /NORESTART skip reboot. Windows-native because of cmd quoting; use
-    # CMake's native generator to convert the path.
+    # Inno Setup silent install. The installer declares
+    # PrivilegesRequired=admin, but GitHub Actions Windows runners already
+    # run as admin so this is fine.
+    # /VERYSILENT no UI, /SUPPRESSMSGBOXES no boxes, /NORESTART skip reboot,
+    # /DIR= install destination. Use a Windows-native path.
     file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/purr-install" PURR_INSTALL_NATIVE)
     message("Running PurrData installer silently into ${PURR_INSTALL_NATIVE}")
     execute_process(
         COMMAND "${PURR_INSTALLER}"
-                /VERYSILENT /SUPPRESSMSGBOXES /CURRENTUSER /NORESTART
+                /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
                 "/DIR=${PURR_INSTALL_NATIVE}"
         TIMEOUT 300
         RESULT_VARIABLE PURR_RC
