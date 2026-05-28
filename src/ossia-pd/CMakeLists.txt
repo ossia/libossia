@@ -37,33 +37,29 @@ endif()
 
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
-  if(OSSIA_PURR_DATA)
-    message("Downloading and extracting PurrData windows binary")
-    file(DOWNLOAD "https://github.com/agraef/purr-data/releases/download/2.9.0/pd-l2ork-2.9.0-windows-i386.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
-
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+  # Purr-data Windows releases ship only an installer .exe inside the zip, no
+  # raw bin/pd.lib usable at link time. Pd externals link against pd.lib for
+  # the import symbols only; those symbols are ABI-compatible with PureData,
+  # so the resulting .m_amd64 also loads in purr-data at runtime. Always pull
+  # PureData's binary for the link step regardless of OSSIA_PURR_DATA.
+  message("Downloading and extracting PureData windows binary")
+  set(PD_VERSION "0.49-0")
+  # First download Pd.
+  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+    file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
   else()
-    message("Downloading and extracting PureData windows binary")
-    set(PD_VERSION "0.49-0")
-    # First download Pd.
-    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
-    else()
-      file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}-i386.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
-    endif()
+    file(DOWNLOAD "http://msp.ucsd.edu/Software/pd-${PD_VERSION}-i386.msw.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+  endif()
 
-    # Extract Pd.
-    execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
-        WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+  # Extract Pd.
+  execute_process(
+      COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
+      WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
 
-    if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
-      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/pd")
-    else()
-      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}-i386" "${CMAKE_CURRENT_BINARY_DIR}/pd")
-    endif()
+  if("${CMAKE_SIZEOF_VOID_P}" MATCHES "8")
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+  else()
+    file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/pd-${PD_VERSION}-i386" "${CMAKE_CURRENT_BINARY_DIR}/pd")
   endif()
 endif()
 endif()
