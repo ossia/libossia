@@ -183,6 +183,14 @@ endif()
 if(OSSIA_PURR_DATA)
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/purr-data/pd")
   add_definitions(-DPURR_DATA)
+  # purr-data's m_pd.h gates the Windows __declspec(dllimport) EXTERN macro
+  # behind `#ifdef MSW` (pure-data uses `#ifdef _WIN32` which MSVC always
+  # defines, but the purr-data fork kept the older MSW name). Without it the
+  # linker looks for plain `s_float` instead of `__imp_s_float` and fails to
+  # match the import-library entries.
+  if(WIN32)
+    add_definitions(-DMSW)
+  endif()
 else()
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
 endif()
