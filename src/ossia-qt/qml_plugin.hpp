@@ -19,7 +19,7 @@ public:
 class OSSIA_EXPORT qml_plugin : public QQmlExtensionPlugin
 {
   Q_OBJECT
-  Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
+  Q_PLUGIN_METADATA(IID "org.qt-project.Qt.QQmlExtensionInterface")
 
 public:
   static void reg(const char* uri);

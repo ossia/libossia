@@ -86,6 +86,24 @@ public:
     m_socket.send_to(boost::asio::buffer(data, sz), m_endpoint);
   }
 
+  ~unix_datagram_socket()
+  {
+    // Cancel pending async_receive_from + drain so the recv_op's stored
+    // completion handler runs (with operation_aborted) and gets cleanly
+    // freed *before* `this` and m_data go out of scope. Otherwise the
+    // op outlives this object, and when its captured handler is later
+    // destroyed by the io_context the dangling layout corrupts libc++'s
+    // std::function vtable pointer (SIGBUS / EXC_ARM_DA_ALIGN @ 0x2 on
+    // macos-15 arm64 Debug shared).
+    if(m_socket.is_open())
+    {
+      boost::system::error_code ec;
+      m_socket.cancel(ec);
+      m_socket.close(ec);
+    }
+    while(m_context.poll() > 0) { }
+  }
+
   Nano::Signal<void()> on_close;
 
   boost::asio::io_context& m_context;

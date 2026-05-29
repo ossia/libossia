@@ -6,7 +6,9 @@ runs:
     - uses: maxim-lobanov/setup-xcode@v1
       if: runner.os == 'macOS'
       with:
-        xcode-version: latest-stable
+        # >=16 gives Apple Clang 17 (LLVM 19), which has C++23 deducing-this
+        # (P0847). latest-stable on macos-15 resolves to Xcode 16.4 today.
+        xcode-version: '>=16'
 
     - name: Install Dependencies
       run: brew install ninja

@@ -37,7 +37,7 @@ jobs:
 
   qml-mac:
     name: QML (macOS)
-    runs-on: macos-14
+    runs-on: macos-15
     environment: "Apple Certificate"
     steps:
       - uses: actions/checkout@v4

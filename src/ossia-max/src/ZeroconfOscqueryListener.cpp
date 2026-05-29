@@ -5,6 +5,8 @@
 #include <ossia/network/oscquery/oscquery_mirror.hpp>
 #include <ossia/network/resolve.hpp>
 
+#include <boost/asio/ip/tcp.hpp>
+
 namespace ossia
 {
 namespace max_binding
@@ -104,7 +106,7 @@ void ZeroconfOscqueryListener::addInstance(const std::string& instance)
     ip = service.get(instance, "servus_host");
   }
 
-  resolve_sync_v4(ip, port);
+  resolve_sync_v4<boost::asio::ip::tcp>(ip, port);
   if(ip.empty() || port.empty())
     return;
 

@@ -83,8 +83,8 @@ TEST_CASE("test_comm_osc_tcp_big", "test_comm_osc_tcp_big")
   ossia::net::generic_device server{make_server(ctx), "a"};
   ossia::net::generic_device client{make_client(ctx), "b"};
 
-  // Connect is async, it runs there
-  ctx->context.poll_one();
+  // Connect is async, drive the io context until the TCP handshake completes.
+  ctx->context.run_for(std::chrono::milliseconds(200));
 
   ossia::value received_from_client;
   ossia::value received_from_server;
@@ -101,7 +101,9 @@ TEST_CASE("test_comm_osc_tcp_big", "test_comm_osc_tcp_big")
   server.get_protocol().push_raw({"/from_server", long_str});
   client.get_protocol().push_raw({"/from_client", long_str});
 
-  ctx->context.run_for(std::chrono::milliseconds(100));
+  // 64KB round-trip through asio + the local TCP stack: 100ms is too tight on
+  // the macOS-15 ARM runner; give it some slack.
+  ctx->context.run_for(std::chrono::milliseconds(1000));
 
   REQUIRE(received_from_client == ossia::value{long_str});
   REQUIRE(received_from_server == ossia::value{long_str});

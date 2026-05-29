@@ -33,7 +33,7 @@ jobs:
 
   Unity3DMac:
     name: Unity3D (macOS)
-    runs-on: macos-14
+    runs-on: macos-15
     environment: "Apple Certificate"
     steps:
       - uses: actions/checkout@v4
@@ -64,7 +64,7 @@ jobs:
 
   Unity3DIOs:
     name: Unity3D (iOS)
-    runs-on: macos-14
+    runs-on: macos-15
     if: false
     environment: "Apple Certificate"
     steps:

@@ -38,12 +38,124 @@ endif()
 if(MSVC)
 if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
   if(OSSIA_PURR_DATA)
-    message("Downloading and extracting PurrData windows binary")
-    file(DOWNLOAD "https://github.com/agraef/purr-data/releases/download/2.9.0/pd-l2ork-2.9.0-windows-i386.zip" "${CMAKE_CURRENT_BINARY_DIR}/pd.zip")
+    # Purr-data's Windows release is an Inno Setup installer wrapped in a zip;
+    # the raw zip never contained bin/pd.lib usable at link time. The MinGW
+    # build (packages/win64_inno/Makefile.nmake -> pd/src/makefile.mingw)
+    # produces pd.dll plus a renamed `pd.a` import library installed as
+    # bin/pd.lib -- which the MSVC linker can consume for purr-data-specific
+    # symbols (sys_vguid, s__X, ...) absent from vanilla PureData's pd.lib.
+    # So: download the installer and run it silently to extract its tree.
+    set(PURR_VERSION "2.20.1")
+    set(PURR_URL "https://github.com/agraef/purr-data/releases/download/${PURR_VERSION}/purr-data-${PURR_VERSION}-mingw-x86_64.zip")
+    message("Downloading PurrData windows installer (${PURR_VERSION})")
+    file(DOWNLOAD "${PURR_URL}" "${CMAKE_CURRENT_BINARY_DIR}/purr.zip" SHOW_PROGRESS)
 
     execute_process(
-        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/pd.zip"
+        COMMAND ${CMAKE_COMMAND} -E tar xzf "${CMAKE_CURRENT_BINARY_DIR}/purr.zip"
         WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/")
+
+    # The zip extracts to a single Purr-Data-*-x86_64.exe installer alongside
+    # the zip itself. Locate it (the rev hash varies between releases).
+    file(GLOB PURR_INSTALLER "${CMAKE_CURRENT_BINARY_DIR}/Purr-Data-*x86_64.exe")
+    list(GET PURR_INSTALLER 0 PURR_INSTALLER)
+    if(NOT PURR_INSTALLER)
+      message(FATAL_ERROR "Could not locate Purr Data installer in ${CMAKE_CURRENT_BINARY_DIR}")
+    endif()
+
+    # Inno Setup silent install. The installer declares
+    # PrivilegesRequired=admin, but GitHub Actions Windows runners already
+    # run as admin so this is fine.
+    # /VERYSILENT no UI, /SUPPRESSMSGBOXES no boxes, /NORESTART skip reboot,
+    # /DIR= install destination. Use a Windows-native path.
+    file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/purr-install" PURR_INSTALL_NATIVE)
+    message("Running PurrData installer silently into ${PURR_INSTALL_NATIVE}")
+    execute_process(
+        COMMAND "${PURR_INSTALLER}"
+                /VERYSILENT /SUPPRESSMSGBOXES /NORESTART
+                "/DIR=${PURR_INSTALL_NATIVE}"
+        TIMEOUT 300
+        RESULT_VARIABLE PURR_RC
+        OUTPUT_VARIABLE PURR_OUT
+        ERROR_VARIABLE  PURR_ERR)
+    if(NOT PURR_RC EQUAL 0)
+      message(FATAL_ERROR "PurrData installer failed (rc=${PURR_RC}):\n${PURR_OUT}\n${PURR_ERR}")
+    endif()
+
+    # The installer drops the Pd tree directly under DIR. Move it into the
+    # `pd/` directory the build expects.
+    if(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/purr-install/bin/pd.lib")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/purr-install" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    elseif(EXISTS "${CMAKE_CURRENT_BINARY_DIR}/purr-install/pd/bin/pd.lib")
+      file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/purr-install/pd" "${CMAKE_CURRENT_BINARY_DIR}/pd")
+    else()
+      file(GLOB_RECURSE FOUND_PDLIB "${CMAKE_CURRENT_BINARY_DIR}/purr-install/*pd.lib")
+      message(FATAL_ERROR "PurrData installer did not produce a usable pd.lib at the expected paths. Found: ${FOUND_PDLIB}")
+    endif()
+
+    # Mingw's pd.a (renamed pd.lib here) exposes pd's function imports but
+    # NOT its data-symbol globals (s_float, s_symbol, s_bang, s_list,
+    # s_signal, s_pointer, s__X, ...): mingw's import-library generator
+    # doesn't synthesize those entries usable by MSVC. CicmWrapper.lib needs
+    # them via __declspec(dllimport) extern t_symbol, hence LNK2019.
+    #
+    # Build a supplementary import library that contains just the data
+    # symbols, and arrange for it to be linked alongside the existing
+    # pd.lib. We don't have to enumerate functions: mingw's pd.lib already
+    # provides those.
+    set(PD_DATA_DEF "${CMAKE_CURRENT_BINARY_DIR}/pd_data.def")
+    set(PD_DATA_LIB "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd_data.lib")
+    file(WRITE "${PD_DATA_DEF}"
+"LIBRARY pd.dll
+EXPORTS
+s_pointer DATA
+s_float DATA
+s_symbol DATA
+s_blob DATA
+s_bang DATA
+s_list DATA
+s_anything DATA
+s_signal DATA
+s__N DATA
+s__X DATA
+s_x DATA
+s_y DATA
+s_ DATA
+pd_objectmaker DATA
+pd_canvasmaker DATA
+")
+
+    find_program(LIB_EXE NAMES lib)
+    find_program(DUMPBIN_EXE NAMES dumpbin)
+    if(NOT LIB_EXE)
+      message(FATAL_ERROR "MSVC lib.exe not found in PATH; needed to synthesize pd_data.lib")
+    endif()
+
+    message("Synthesising ${PD_DATA_LIB} from ${PD_DATA_DEF}")
+    execute_process(
+        COMMAND "${LIB_EXE}" "/DEF:${PD_DATA_DEF}" "/OUT:${PD_DATA_LIB}"
+                /MACHINE:X64 /NAME:pd.dll
+        RESULT_VARIABLE PD_LIB_RC
+        OUTPUT_VARIABLE PD_LIB_OUT
+        ERROR_VARIABLE  PD_LIB_ERR)
+    message("lib /DEF stdout: ${PD_LIB_OUT}")
+    message("lib /DEF stderr: ${PD_LIB_ERR}")
+    if(NOT PD_LIB_RC EQUAL 0)
+      message(FATAL_ERROR "lib /DEF failed (rc=${PD_LIB_RC}):\n${PD_LIB_OUT}\n${PD_LIB_ERR}")
+    endif()
+
+    # Debug: show what's actually inside the synthesised import library so
+    # we can verify __imp_s_float et al landed where expected.
+    if(DUMPBIN_EXE AND EXISTS "${PD_DATA_LIB}")
+      execute_process(
+          COMMAND "${DUMPBIN_EXE}" /ARCHIVEMEMBERS /SYMBOLS "${PD_DATA_LIB}"
+          OUTPUT_VARIABLE PD_DATA_DUMP
+          ERROR_VARIABLE  PD_DATA_DUMP_ERR)
+      message("--- pd_data.lib dumpbin /ARCHIVEMEMBERS /SYMBOLS ---")
+      message("${PD_DATA_DUMP}")
+      message("--- end dump (stderr: ${PD_DATA_DUMP_ERR}) ---")
+    endif()
+
+    set(OSSIA_PD_EXTRA_IMPORT_LIB "${PD_DATA_LIB}")
   else()
     message("Downloading and extracting PureData windows binary")
     set(PD_VERSION "0.49-0")
@@ -71,6 +183,14 @@ endif()
 if(OSSIA_PURR_DATA)
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/purr-data/pd")
   add_definitions(-DPURR_DATA)
+  # purr-data's m_pd.h gates the Windows __declspec(dllimport) EXTERN macro
+  # behind `#ifdef MSW` (pure-data uses `#ifdef _WIN32` which MSVC always
+  # defines, but the purr-data fork kept the older MSW name). Without it the
+  # linker looks for plain `s_float` instead of `__imp_s_float` and fails to
+  # match the import-library entries.
+  if(WIN32)
+    add_definitions(-DMSW)
+  endif()
 else()
   set(OSSIA_PD_PATH "${OSSIA_3RDPARTY_FOLDER}/pure-data")
 endif()
@@ -141,6 +261,11 @@ add_custom_target(pd_qml_examples SOURCES ${QMLS})
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia Servus_iface)
 if(MSVC)
   target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
+  if(OSSIA_PD_EXTRA_IMPORT_LIB)
+    # Supplements pd.lib with data-symbol imports that mingw's renamed pd.a
+    # doesn't carry. See the OSSIA_PURR_DATA block at the top of this file.
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${OSSIA_PD_EXTRA_IMPORT_LIB}")
+  endif()
 endif()
 
 add_linker_warnings_external(${PROJECT_NAME})

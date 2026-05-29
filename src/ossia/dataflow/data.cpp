@@ -488,16 +488,6 @@ void value_port::clear()
   data.clear();
 }
 
-const value_vector<ossia::timed_value>& value_port::get_data() const
-{
-  return data;
-}
-
-value_vector<ossia::timed_value>& value_port::get_data()
-{
-  return data;
-}
-
 void geometry_port::clear()
 {
   flags = {};
