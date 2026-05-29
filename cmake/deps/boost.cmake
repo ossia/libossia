@@ -1,11 +1,5 @@
 set(BOOST_MINOR_MINIMAL 87)
-# Cap at 1.87: 1.88+ changed parts of Boost.Asio's reactor / handler-tracking
-# bookkeeping in a way that interacts badly with the bundled websocketpp on
-# macOS arm64 + libc++ Debug, producing SIGBUS in
-# reactive_socket_recv_op_base::do_perform when destroying the std::function
-# completion handler. websocketpp was last patched for 1.87 (3b86173af, "Fix
-# boost 1.87 support") so stay there until websocketpp gets newer asio love.
-set(BOOST_MINOR_LATEST 87)
+set(BOOST_MINOR_LATEST 90)
 
 unset(BOOST_VERSIONS_LIST)
 set(current_val ${BOOST_MINOR_LATEST})
