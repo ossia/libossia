@@ -92,70 +92,54 @@ if(NOT EXISTS "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
       message(FATAL_ERROR "PurrData installer did not produce a usable pd.lib at the expected paths. Found: ${FOUND_PDLIB}")
     endif()
 
-    # The installed bin/pd.lib is mingw's pd.a renamed: it carries function
-    # imports but mingw doesn't emit data-symbol entries usable by MSVC, so
-    # linking externals against it fails with unresolved s_float / s_symbol /
-    # s_bang / s_list / s_signal / s_pointer / s__X. Regenerate a proper MSVC
-    # import library from pd.dll: dump the full export table with dumpbin,
-    # synthesize a .def listing data symbols with the `DATA` annotation, then
-    # run lib.exe /def to produce the new pd.lib.
-    set(PD_DLL "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.dll")
-    set(PD_LIB "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd.lib")
-    if(NOT EXISTS "${PD_DLL}")
-      message(FATAL_ERROR "Expected pd.dll at ${PD_DLL} after PurrData install")
-    endif()
+    # Mingw's pd.a (renamed pd.lib here) exposes pd's function imports but
+    # NOT its data-symbol globals (s_float, s_symbol, s_bang, s_list,
+    # s_signal, s_pointer, s__X, ...): mingw's import-library generator
+    # doesn't synthesize those entries usable by MSVC. CicmWrapper.lib needs
+    # them via __declspec(dllimport) extern t_symbol, hence LNK2019.
+    #
+    # Build a supplementary import library that contains just the data
+    # symbols, and arrange for it to be linked alongside the existing
+    # pd.lib. We don't have to enumerate functions: mingw's pd.lib already
+    # provides those.
+    set(PD_DATA_DEF "${CMAKE_CURRENT_BINARY_DIR}/pd_data.def")
+    set(PD_DATA_LIB "${CMAKE_CURRENT_BINARY_DIR}/pd/bin/pd_data.lib")
+    file(WRITE "${PD_DATA_DEF}"
+"LIBRARY pd.dll
+EXPORTS
+s_pointer DATA
+s_float DATA
+s_symbol DATA
+s_blob DATA
+s_bang DATA
+s_list DATA
+s_anything DATA
+s_signal DATA
+s__N DATA
+s__X DATA
+s_x DATA
+s_y DATA
+s_ DATA
+pd_objectmaker DATA
+pd_canvasmaker DATA
+")
 
-    find_program(DUMPBIN_EXE dumpbin)
     find_program(LIB_EXE NAMES lib)
-    if(NOT DUMPBIN_EXE OR NOT LIB_EXE)
-      message(FATAL_ERROR "MSVC dumpbin/lib not found in PATH; needed to rebuild pd.lib from pd.dll")
+    if(NOT LIB_EXE)
+      message(FATAL_ERROR "MSVC lib.exe not found in PATH; needed to synthesize pd_data.lib")
     endif()
 
+    message("Synthesising ${PD_DATA_LIB} from ${PD_DATA_DEF}")
     execute_process(
-        COMMAND "${DUMPBIN_EXE}" /EXPORTS "${PD_DLL}"
-        OUTPUT_VARIABLE PD_EXPORTS
-        RESULT_VARIABLE PD_DUMP_RC
-        COMMAND_ERROR_IS_FATAL ANY)
-
-    # dumpbin output: each export is on a line like
-    #   "    1    0 00001000 s_float"
-    # The four columns are ordinal, hint, RVA, name. Capture names only.
-    string(REGEX MATCHALL "[ \t]+[0-9]+[ \t]+[0-9A-Fa-f]+[ \t]+[0-9A-Fa-f]+[ \t]+[A-Za-z_][A-Za-z0-9_]*"
-           PD_EXPORT_LINES "${PD_EXPORTS}")
-    set(PD_DEF_BODY "EXPORTS\n")
-    # Data symbols pd's headers declare with EXTERN dllimport. Annotate these
-    # with `DATA` so lib.exe emits the right kind of import entry.
-    set(PD_DATA_SYMBOLS
-        s_pointer s_float s_symbol s_blob s_bang s_list s_anything s_signal
-        s__N s__X s_x s_y s_
-        pd_objectmaker pd_canvasmaker)
-    foreach(line ${PD_EXPORT_LINES})
-      string(REGEX REPLACE "^[ \t]+[0-9]+[ \t]+[0-9A-Fa-f]+[ \t]+[0-9A-Fa-f]+[ \t]+"
-             "" sym "${line}")
-      if(NOT sym)
-        continue()
-      endif()
-      list(FIND PD_DATA_SYMBOLS "${sym}" _is_data)
-      if(NOT _is_data EQUAL -1)
-        string(APPEND PD_DEF_BODY "${sym} DATA\n")
-      else()
-        string(APPEND PD_DEF_BODY "${sym}\n")
-      endif()
-    endforeach()
-
-    set(PD_DEF "${CMAKE_CURRENT_BINARY_DIR}/pd.def")
-    file(WRITE "${PD_DEF}" "${PD_DEF_BODY}")
-
-    file(REMOVE "${PD_LIB}")
-    execute_process(
-        COMMAND "${LIB_EXE}" "/DEF:${PD_DEF}" "/OUT:${PD_LIB}"
-                /MACHINE:X64 /NAME:pd.dll
+        COMMAND "${LIB_EXE}" "/DEF:${PD_DATA_DEF}" "/OUT:${PD_DATA_LIB}"
+                /MACHINE:X64
         RESULT_VARIABLE PD_LIB_RC
         OUTPUT_VARIABLE PD_LIB_OUT
         ERROR_VARIABLE  PD_LIB_ERR)
     if(NOT PD_LIB_RC EQUAL 0)
       message(FATAL_ERROR "lib /DEF failed (rc=${PD_LIB_RC}):\n${PD_LIB_OUT}\n${PD_LIB_ERR}")
     endif()
+    set(OSSIA_PD_EXTRA_IMPORT_LIB "${PD_DATA_LIB}")
   else()
     message("Downloading and extracting PureData windows binary")
     set(PD_VERSION "0.49-0")
@@ -253,6 +237,11 @@ add_custom_target(pd_qml_examples SOURCES ${QMLS})
 target_link_libraries(${PROJECT_NAME} PRIVATE CicmWrapper ossia Servus_iface)
 if(MSVC)
   target_link_libraries(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}\\pd\\bin\\pd.lib")
+  if(OSSIA_PD_EXTRA_IMPORT_LIB)
+    # Supplements pd.lib with data-symbol imports that mingw's renamed pd.a
+    # doesn't carry. See the OSSIA_PURR_DATA block at the top of this file.
+    target_link_libraries(${PROJECT_NAME} PRIVATE "${OSSIA_PD_EXTRA_IMPORT_LIB}")
+  endif()
 endif()
 
 add_linker_warnings_external(${PROJECT_NAME})
