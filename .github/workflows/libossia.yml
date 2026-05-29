@@ -37,12 +37,18 @@ jobs:
             -DOSSIA_CI=1
 
           cmake --build build
-          # TODO: 11/55 OSC-network tests bus-error on macos-15 arm64 in
-          # shared+Debug only; tracked separately. Don't gate the matrix on
-          # them while we untangle the root cause.
-          cmake --build build --target test || \
-            ( [ "$BUILD_TYPE" = "Debug" ] && [ "$STATIC" = "0" ] && \
-              echo "::warning::ctest failures on macOS shared+Debug ignored, see workflow TODO" )
+          # Get verbose output + crash reports so we can diagnose the
+          # macos-15 arm64 shared+Debug bus-errors that previously hid behind
+          # the libcoap submodule configure failure.
+          ctest --test-dir build --output-on-failure --no-tests=error || (
+            echo "===== ctest failed; gathering crash reports ====="
+            ls -la "$HOME/Library/Logs/DiagnosticReports" 2>/dev/null || true
+            find "$HOME/Library/Logs/DiagnosticReports" -mmin -30 -type f 2>/dev/null | while read f; do
+              echo "--- $f ---"
+              cat "$f"
+            done
+            exit 1
+          )
           cmake --build build --target install
 
       - uses: ./.github/actions/mac-codesign
