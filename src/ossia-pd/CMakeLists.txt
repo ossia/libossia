@@ -125,6 +125,7 @@ pd_canvasmaker DATA
 ")
 
     find_program(LIB_EXE NAMES lib)
+    find_program(DUMPBIN_EXE NAMES dumpbin)
     if(NOT LIB_EXE)
       message(FATAL_ERROR "MSVC lib.exe not found in PATH; needed to synthesize pd_data.lib")
     endif()
@@ -132,13 +133,28 @@ pd_canvasmaker DATA
     message("Synthesising ${PD_DATA_LIB} from ${PD_DATA_DEF}")
     execute_process(
         COMMAND "${LIB_EXE}" "/DEF:${PD_DATA_DEF}" "/OUT:${PD_DATA_LIB}"
-                /MACHINE:X64
+                /MACHINE:X64 /NAME:pd.dll
         RESULT_VARIABLE PD_LIB_RC
         OUTPUT_VARIABLE PD_LIB_OUT
         ERROR_VARIABLE  PD_LIB_ERR)
+    message("lib /DEF stdout: ${PD_LIB_OUT}")
+    message("lib /DEF stderr: ${PD_LIB_ERR}")
     if(NOT PD_LIB_RC EQUAL 0)
       message(FATAL_ERROR "lib /DEF failed (rc=${PD_LIB_RC}):\n${PD_LIB_OUT}\n${PD_LIB_ERR}")
     endif()
+
+    # Debug: show what's actually inside the synthesised import library so
+    # we can verify __imp_s_float et al landed where expected.
+    if(DUMPBIN_EXE AND EXISTS "${PD_DATA_LIB}")
+      execute_process(
+          COMMAND "${DUMPBIN_EXE}" /ARCHIVEMEMBERS /SYMBOLS "${PD_DATA_LIB}"
+          OUTPUT_VARIABLE PD_DATA_DUMP
+          ERROR_VARIABLE  PD_DATA_DUMP_ERR)
+      message("--- pd_data.lib dumpbin /ARCHIVEMEMBERS /SYMBOLS ---")
+      message("${PD_DATA_DUMP}")
+      message("--- end dump (stderr: ${PD_DATA_DUMP_ERR}) ---")
+    endif()
+
     set(OSSIA_PD_EXTRA_IMPORT_LIB "${PD_DATA_LIB}")
   else()
     message("Downloading and extracting PureData windows binary")
