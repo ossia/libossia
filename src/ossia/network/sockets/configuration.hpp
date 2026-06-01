@@ -37,11 +37,17 @@ struct outbound_socket_configuration
   std::string host;
   uint16_t port{};
   bool broadcast{};
+
+  std::optional<int> multicast_ttl;
+  std::string multicast_interface{};
+  std::optional<bool> multicast_loopback;
 };
 struct inbound_socket_configuration
 {
   std::string bind{"0.0.0.0"};
   uint16_t port{};
+  std::string multicast_group{};
+  std::string multicast_interface{"0.0.0.0"};
 };
 
 struct double_fd_configuration
