@@ -54,6 +54,12 @@ struct token_request
       ossia::time_value start_offset, ossia::time_value loop_duration, Exec f,
       Transport transport) const noexcept
   {
+    if(loop_duration.impl <= 0)
+    {
+      f(add_offset(start_offset));
+      return;
+    }
+
     ossia::token_request other = *this;
     ossia::time_value orig_from = other.prev_date;
     ossia::time_value tick_amount = other.date - other.prev_date;
