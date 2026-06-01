@@ -2,6 +2,7 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/audio/dummy_protocol.hpp>
 #include <ossia/audio/jack_protocol.hpp>
+//#include <ossia/audio/miniaudio_protocol.hpp>
 #include <ossia/audio/pipewire_protocol.hpp>
 #include <ossia/audio/portaudio_protocol.hpp>
 #include <ossia/audio/pulseaudio_protocol.hpp>
@@ -55,6 +56,13 @@ void audio_engine::sync()
   int64_t req = request.load();
   req++;
   request.store(req);
+
+#if defined(__EMSCRIPTEN__)
+  // On WASM, the audio runs in a worklet thread. We cannot spin-wait
+  // on the main thread as it blocks the browser event loop entirely.
+  // The tick will pick up the new request on its next callback.
+  return;
+#endif
 
   // The engine has started running, we wait for a couple iterations
   // to leave some time for the ticks to be updated
@@ -120,7 +128,22 @@ ossia::audio_engine* make_audio_engine(
   bs = 1024;
   inputs = 0;
   outputs = 2;
+#if OSSIA_ENABLE_MINIAUDIO
+  {
+    static auto ctx = std::make_shared<ossia::miniaudio_context>();
+    static bool ctx_init = false;
+    if(!ctx_init)
+    {
+      auto cfg = ma_context_config_init();
+      ma_context_init(nullptr, 0, &cfg, &ctx->context);
+      ctx_init = true;
+    }
+    ma_device_id in_id{}, out_id{};
+    return new ossia::miniaudio_engine{ctx, name, in_id, out_id, inputs, outputs, rate, bs};
+  }
+#else
   return new ossia::sdl_protocol{rate, bs};
+#endif
 #endif
 
   if(0)
