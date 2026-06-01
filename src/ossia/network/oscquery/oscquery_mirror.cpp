@@ -16,7 +16,7 @@
 #include <ossia/network/oscquery/detail/osc_writer.hpp>
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
-#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/sockets/websocket_client_beast.hpp>
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/erase.hpp>
@@ -564,22 +564,22 @@ void oscquery_mirror_protocol::init()
     this->on_OSCMessage(m, ip);
       });
 
-  m_websocketClient = std::make_unique<ossia::net::websocket_client>(
-      [this](
-          connection_handler hdl, websocketpp::frame::opcode::value op,
+  m_websocketClient = std::make_unique<ossia::net::websocket_client_beast>(
+      ossia::net::ws_client_message_handler{[this](
+          const ossia::net::ws_connection_handle& hdl, ossia::net::ws_opcode op,
           std::string& msg) {
     switch(op)
     {
-      case websocketpp::frame::opcode::value::TEXT:
+      case ossia::net::ws_opcode::text:
         this->on_WSMessage(hdl, msg);
         break;
-      case websocketpp::frame::opcode::value::BINARY:
+      case ossia::net::ws_opcode::binary:
         this->on_BinaryWSMessage(hdl, msg);
         break;
       default:
         break;
     }
-  });
+  }});
   m_id.identifier = (uintptr_t)m_websocketClient.get();
 
   m_websocketClient->on_close.connect<&oscquery_mirror_protocol::on_ws_disconnected>(

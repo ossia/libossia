@@ -4,6 +4,7 @@
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
+#include <boost/asio/ip/v6_only.hpp>
 #include <boost/asio/local/datagram_protocol.hpp>
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/strand.hpp>
@@ -34,10 +35,15 @@ public:
 
   ~udp_receive_socket() = default;
 
-  void assign(int sock) { m_socket.assign(boost::asio::ip::udp::v4(), sock); }
+  void assign(int sock) { m_socket.assign(m_endpoint.protocol(), sock); }
   void open()
   {
-    m_socket.open(boost::asio::ip::udp::v4());
+    m_socket.open(m_endpoint.protocol());
+    if(m_endpoint.address().is_v6())
+    {
+      boost::system::error_code ec;
+      m_socket.set_option(boost::asio::ip::v6_only(false), ec);
+    }
     m_socket.bind(m_endpoint);
   }
 
@@ -121,9 +127,15 @@ public:
 
   void connect()
   {
-    m_socket.open(boost::asio::ip::udp::v4());
+    m_socket.open(m_endpoint.protocol());
 
     m_socket.set_option(boost::asio::ip::udp::socket::reuse_address(true));
+
+    if(m_endpoint.address().is_v6())
+    {
+      boost::system::error_code ec;
+      m_socket.set_option(boost::asio::ip::v6_only(false), ec);
+    }
 
     if(m_broadcast)
       m_socket.set_option(boost::asio::socket_base::broadcast(true));

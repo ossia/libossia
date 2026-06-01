@@ -6,6 +6,7 @@
 #include <ossia/network/sockets/udp_socket.hpp>
 #include <ossia/network/sockets/unix_socket.hpp>
 #include <ossia/network/sockets/websocket.hpp>
+#include <ossia/network/sockets/websocket_simple_beast.hpp>
 #include <ossia/protocols/osc/osc_factory.hpp>
 #include <ossia/protocols/osc/osc_generic_protocol.hpp>
 
@@ -128,7 +129,7 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             -> std::unique_ptr<osc_protocol_base>
         {
           return std::make_unique<
-              osc_generic_client_protocol<client_type, websocket_simple_client>>(
+              osc_generic_client_protocol<client_type, websocket_simple_client_beast>>(
               std::move(ctx), conf);
         }
 
@@ -257,7 +258,7 @@ make_osc_protocol_impl(network_context_ptr&& ctx, osc_protocol_configuration&& c
             -> std::unique_ptr<osc_protocol_base>
         {
           return std::make_unique<
-              osc_generic_server_protocol<client_type, websocket_simple_server>>(
+              osc_generic_server_protocol<client_type, websocket_simple_server_beast>>(
               std::move(ctx), conf);
         }
       } vis{std::move(ctx), config};

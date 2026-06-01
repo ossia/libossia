@@ -214,9 +214,13 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_beast.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_interface.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
-    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_interface.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_simple_beast.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/writers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/destination.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/value/detail/value_conversion_impl.hpp"
@@ -491,9 +495,18 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_client_asio.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.hpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_session.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_server.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_beast.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_interface.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_interface.cpp"
+
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_mirror.cpp"
 
@@ -511,6 +524,10 @@ set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.cpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.cpp"
+
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_client.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/socketio_server.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/boost_json_impl.cpp"
     )
 
 set(OSSIA_HTTP_HEADERS
