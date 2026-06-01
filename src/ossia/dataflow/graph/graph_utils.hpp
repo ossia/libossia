@@ -18,6 +18,7 @@
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/filtered_graph.hpp>
 #include <boost/predef.h>
 // broken due to dynamic_property_map requiring rtti...
 // #include <boost/graph/graphviz.hpp>
@@ -96,19 +97,26 @@ namespace boost
 {
 namespace detail
 {
+
 template <typename G>
+using VertexDescriptor = typename graph_traits<G>::vertex_descriptor;
+template <typename G, typename FilteredG>
+using OutEdgeIterator = std::decay_t<decltype(std::get<0>(
+    out_edges(std::declval<VertexDescriptor<G>>(), std::declval<FilteredG>())))>;
+
+template <typename G, typename FilteredG>
 using DFSVertexInfo = std::pair<
     typename graph_traits<G>::vertex_descriptor,
     std::pair<
         boost::optional<typename graph_traits<G>::edge_descriptor>,
-        std::pair<
-            typename graph_traits<G>::out_edge_iterator,
-            typename graph_traits<G>::out_edge_iterator>>>;
+        std::pair<OutEdgeIterator<G, FilteredG>, OutEdgeIterator<G, FilteredG>>>>;
 
-template <class IncidenceGraph, class DFSVisitor, class ColorMap>
+template <
+    typename IncidenceGraph, typename FilteredGraph, class DFSVisitor, class ColorMap>
 void custom_depth_first_visit_impl(
-    const IncidenceGraph& g, typename graph_traits<IncidenceGraph>::vertex_descriptor u,
-    DFSVisitor& vis, ColorMap color, std::vector<DFSVertexInfo<IncidenceGraph>>& stack)
+    const FilteredGraph& g, typename graph_traits<IncidenceGraph>::vertex_descriptor u,
+    DFSVisitor& vis, ColorMap color,
+    std::vector<DFSVertexInfo<IncidenceGraph, FilteredGraph>>& stack)
 {
   constexpr detail::nontruth2 func;
   BOOST_CONCEPT_ASSERT((IncidenceGraphConcept<IncidenceGraph>));
@@ -124,7 +132,6 @@ void custom_depth_first_visit_impl(
       VertexInfo;
 
   boost::optional<Edge> src_e;
-  Iter ei, ei_end;
 
   // Possible optimization for vector
   stack.clear();
@@ -132,7 +139,8 @@ void custom_depth_first_visit_impl(
 
   put(color, u, Color::gray());
   vis.discover_vertex(u, g);
-  boost::tie(ei, ei_end) = out_edges(u, g);
+  auto [ei, ei_end] = out_edges(u, g);
+
   if(func(u, g))
   {
     // If this vertex terminates the search, we push empty range
@@ -146,7 +154,7 @@ void custom_depth_first_visit_impl(
   }
   while(!stack.empty())
   {
-    VertexInfo& back = stack.back();
+    auto& back = stack.back();
     u = back.first;
     src_e = back.second.first;
     boost::tie(ei, ei_end) = back.second.second;
@@ -197,19 +205,19 @@ void custom_depth_first_visit_impl(
 }
 }
 
-template <class VertexListGraph, class DFSVisitor, class ColorMap>
+template <
+    typename VertexListGraph, typename FilteredGraph, class DFSVisitor, class ColorMap>
 void custom_depth_first_search(
-    const VertexListGraph& g, DFSVisitor vis, ColorMap color,
+    const FilteredGraph& g, DFSVisitor vis, ColorMap color,
     typename graph_traits<VertexListGraph>::vertex_descriptor start_vertex,
-    std::vector<boost::detail::DFSVertexInfo<VertexListGraph>>& stack)
+    std::vector<boost::detail::DFSVertexInfo<VertexListGraph, FilteredGraph>>& stack)
 {
   typedef typename graph_traits<VertexListGraph>::vertex_descriptor Vertex;
   BOOST_CONCEPT_ASSERT((DFSVisitorConcept<DFSVisitor, VertexListGraph>));
   typedef typename property_traits<ColorMap>::value_type ColorValue;
   typedef color_traits<ColorValue> Color;
 
-  typename graph_traits<VertexListGraph>::vertex_iterator ui, ui_end;
-  for(boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
+  for(auto [ui, ui_end] = vertices(g); ui != ui_end; ++ui)
   {
     Vertex u = implicit_cast<Vertex>(*ui);
     put(color, u, Color::white());
@@ -219,17 +227,18 @@ void custom_depth_first_search(
   if(start_vertex != detail::get_default_starting_vertex(g))
   {
     vis.start_vertex(start_vertex, g);
-    detail::custom_depth_first_visit_impl(g, start_vertex, vis, color, stack);
+    detail::custom_depth_first_visit_impl<VertexListGraph>(
+        g, start_vertex, vis, color, stack);
   }
 
-  for(boost::tie(ui, ui_end) = vertices(g); ui != ui_end; ++ui)
+  for(auto [ui, ui_end] = vertices(g); ui != ui_end; ++ui)
   {
     Vertex u = implicit_cast<Vertex>(*ui);
     ColorValue u_color = get(color, u);
     if(u_color == Color::white())
     {
       vis.start_vertex(u, g);
-      detail::custom_depth_first_visit_impl(g, u, vis, color, stack);
+      detail::custom_depth_first_visit_impl<VertexListGraph>(g, u, vis, color, stack);
     }
   }
 }
@@ -244,11 +253,11 @@ inline void remove_vertex(typename graph_t::vertex_descriptor v, graph_t& g)
   boost::detail::remove_vertex_dispatch(g, v, Cat());
 }
 
-template <typename VertexListGraph, typename OutputIterator>
+template <typename VertexListGraph, typename FilteredGraph, typename OutputIterator>
 void custom_topological_sort(
-    VertexListGraph& g, OutputIterator result,
+    FilteredGraph& g, OutputIterator result,
     std::vector<boost::default_color_type>& color_map,
-    std::vector<boost::detail::DFSVertexInfo<VertexListGraph>>& stack)
+    std::vector<boost::detail::DFSVertexInfo<VertexListGraph, FilteredGraph>>& stack)
 {
   color_map.clear();
   color_map.resize(boost::num_vertices(g));
@@ -256,7 +265,7 @@ void custom_topological_sort(
   auto map = boost::make_iterator_property_map(
       color_map.begin(), boost::get(boost::vertex_index, g), color_map[0]);
 
-  boost::custom_depth_first_search(
+  boost::custom_depth_first_search<VertexListGraph>(
       g, boost::topo_sort_visitor<OutputIterator>(result), map,
       boost::detail::get_default_starting_vertex(g), stack);
 
@@ -363,6 +372,24 @@ void print_graph(Graph_T& g, IO& stream)
   stream << s.str() << "\n";
 #endif
 }
+
+struct no_delay_edges
+{
+  const graph_t* g{};
+
+  bool operator()(const boost::graph_traits<graph_t>::edge_descriptor& e) const
+  {
+    switch((*g)[e]->con.index())
+    {
+      case 0:
+      case 1:
+      case 4:
+        return true;
+      default:
+        return false;
+    }
+  }
+};
 
 struct OSSIA_EXPORT graph_util
 {
@@ -669,7 +696,8 @@ struct OSSIA_EXPORT graph_util
       bool previous_nodes_executed = ossia::all_of(inlet.sources, [&](graph_edge* edge) {
         return edge->out_node->executed()
                || (!edge->out_node->enabled() /* && bool(inlet->address) */
-                   /* TODO check that it's in scope */);
+                   /* TODO check that it's in scope */)
+               || edge->delayed();
       });
 
       // it does not have source ports ; we have to check for variables :
@@ -837,6 +865,7 @@ struct OSSIA_EXPORT graph_base : graph_interface
 
       // TODO check that two edges can be added
       boost::add_edge(in_vtx, out_vtx, edge, m_graph);
+
       recompute_maps();
       m_dirty = true;
     }
