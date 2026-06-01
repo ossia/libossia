@@ -771,6 +771,7 @@ set(OSSIA_DATAFLOW_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/pull_visitors.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/to_state_element.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/exec_pool.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/float_to_sample.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/for_each_port.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/fx_node.hpp"
