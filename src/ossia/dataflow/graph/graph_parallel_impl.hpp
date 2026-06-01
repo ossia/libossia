@@ -1,63 +1,53 @@
 #pragma once
+#include <ossia/dataflow/exec_pool.hpp>
 #include <ossia/dataflow/graph_node.hpp>
-#include <ossia/detail/disable_fpe.hpp>
 #include <ossia/detail/fmt.hpp>
-#include <ossia/detail/lockfree_queue.hpp>
-#include <ossia/detail/thread.hpp>
 
-#include <boost/container/static_vector.hpp>
-
-#include <blockingconcurrentqueue.h>
-#include <concurrentqueue.h>
 #include <smallfun.hpp>
 
-#include <thread>
+#include <atomic>
 #include <vector>
-#define DISABLE_DONE_TASKS
-//#define CHECK_FOLLOWS
-//#define CHECK_EXEC_COUNTS
-//#define memory_order_relaxed memory_order_seq_cst
-//#define memory_order_acquire memory_order_seq_cst
-//#define memory_order_release memory_order_seq_cst
+
 namespace ossia
 {
 using task_function = smallfun::function<void(ossia::graph_node&), sizeof(void*) * 4>;
 
 class taskflow;
 class executor;
-class task
+
+// A graph node wrapped as a DAG task. Readiness is tracked by
+// m_remaining_dependencies: when it reaches zero the task is submitted to the
+// shared pool (or run inline). Memory ordering is carried entirely by the
+// acq_rel RMW chain on that counter, so no explicit fences are needed: the
+// thread observing the 1->0 transition happens-after every predecessor's
+// decrement, hence sees all predecessor buffer writes.
+class task : public ossia::pool_task
 {
 public:
   task() = default;
   task(const task&) = delete;
   task(task&& other) noexcept
-      : m_taskId{other.m_taskId}
+      : pool_task{other}
+      , m_taskId{other.m_taskId}
       , m_dependencies{other.m_dependencies}
       , m_remaining_dependencies{other.m_remaining_dependencies.load()}
       , m_node{other.m_node}
+      , m_exec{other.m_exec}
       , m_precedes{std::move(other.m_precedes)}
-#if defined(CHECK_FOLLOWS)
-      , m_follows{std::move(other.m_follows)}
-#endif
   {
     other.m_precedes.clear();
-#if defined(CHECK_FOLLOWS)
-    other.m_follows.clear();
-#endif
   }
   task& operator=(const task&) = delete;
   task& operator=(task&& other) noexcept
   {
+    static_cast<pool_task&>(*this) = other;
     m_taskId = other.m_taskId;
     m_dependencies = other.m_dependencies;
     m_remaining_dependencies = other.m_remaining_dependencies.load();
     m_node = other.m_node;
+    m_exec = other.m_exec;
     m_precedes = std::move(other.m_precedes);
     other.m_precedes.clear();
-#if defined(CHECK_FOLLOWS)
-    m_follows = std::move(other.m_follows);
-    other.m_follows.clear();
-#endif
     return *this;
   }
 
@@ -69,9 +59,6 @@ public:
   void precede(task& other)
   {
     m_precedes.push_back(other.m_taskId);
-#if defined(CHECK_FOLLOWS)
-    other.m_follows.push_back(m_taskId);
-#endif
     other.m_dependencies++;
   }
 
@@ -82,13 +69,10 @@ private:
   int m_taskId{};
   int m_dependencies{0};
   std::atomic_int m_remaining_dependencies{};
-  std::atomic_bool m_executed{};
 
   ossia::graph_node* m_node{};
+  executor* m_exec{};
   ossia::small_pod_vector<int, 4> m_precedes;
-#if defined(CHECK_FOLLOWS)
-  ossia::small_pod_vector<int, 4> m_follows;
-#endif
 };
 
 class taskflow
@@ -112,256 +96,101 @@ private:
   std::vector<task> m_tasks;
 };
 
+// Drives a taskflow over the process-wide ossia::task_pool. Holds no threads of
+// its own; rebuilding the graph no longer churns the worker set.
 class executor
 {
 public:
-  explicit executor(int nthreads)
-  {
-    m_running = true;
-    m_threads.resize(nthreads);
-    int k = 0;
-    for(auto& t : m_threads)
-    {
-      t = std::thread{[this, k = k++] {
-        while(!m_startFlag.test())
-          std::this_thread::yield();
-
-        ossia::set_thread_name(m_threads[k], "ossia exec " + std::to_string(k));
-        ossia::set_thread_realtime(m_threads[k], 95);
-        ossia::set_thread_pinned(ossia::thread_type::AudioTask, k);
-
-        ossia::disable_fpe();
-        while(m_running)
-        {
-          task* t{};
-          if(m_tasks.wait_dequeue_timed(t, 100))
-          {
-            execute(*t);
-          }
-        }
-      }};
-    }
-
-    m_startFlag.test_and_set();
-  }
-
-  ~executor()
-  {
-    m_running = false;
-    for(auto& t : m_threads)
-    {
-      t.join();
-    }
-  }
+  executor() = default;
 
   void set_task_executor(task_function f) { m_func = std::move(f); }
-
-  void enqueue_task(task& task)
-  {
-    if(task.m_node->not_threadable())
-    {
-      [[unlikely]];
-      m_not_threadsafe_tasks.enqueue(&task);
-    }
-    else
-    {
-      [[likely]];
-      m_tasks.enqueue(&task);
-    }
-  }
 
   void run(taskflow& tf)
   {
     m_tf = &tf;
     if(tf.m_tasks.empty())
-    {
       return;
-    }
 
-    m_toDoTasks = tf.m_tasks.size();
-    m_doneTasks.store(0, std::memory_order_relaxed);
+    auto& pool = ossia::task_pool::instance();
+
+    m_batch.remaining.store(
+        static_cast<int>(tf.m_tasks.size()), std::memory_order_relaxed);
 
     for(auto& task : tf.m_tasks)
     {
+      task.execute = &executor::run_task;
+      task.m_exec = this;
       task.m_remaining_dependencies.store(
           task.m_dependencies, std::memory_order_relaxed);
-      task.m_executed.store(false, std::memory_order_relaxed);
-#if defined(CHECK_EXEC_COUNTS)
-      m_checkVec[task.m_taskId] = 0;
-#endif
     }
 
-    std::atomic_thread_fence(std::memory_order_seq_cst);
-#if defined(DISABLE_DONE_TASKS)
-    thread_local ossia::small_pod_vector<ossia::task*, 8> toCleanup;
-#endif
     for(auto& task : tf.m_tasks)
     {
       if(task.m_dependencies == 0)
-      {
-#if defined(DISABLE_DONE_TASKS)
-        if(task.m_node->enabled())
-#endif
-        {
-#if defined(CHECK_EXEC_COUNTS)
-          m_checkVec[task.m_taskId]++;
-          if(m_checkVec[task.m_taskId] != 1)
-          {
-            fmt::print(
-                stderr, "!!! task {} enqueued {}\n", task.m_taskId,
-                m_checkVec[task.m_taskId]);
-            std::abort();
-          }
-          assert(task.m_dependencies == 0);
-#endif
-          std::atomic_thread_fence(std::memory_order_release);
-          enqueue_task(task);
-        }
-#if defined(DISABLE_DONE_TASKS)
-        else
-        {
-          toCleanup.push_back(&task);
-        }
-#endif
-      }
+        enqueue(task);
     }
 
-#if defined(DISABLE_DONE_TASKS)
-    for(auto& task : toCleanup)
-    {
-      process_done(*task);
-    }
-    toCleanup.clear();
-#endif
-
-    while(m_doneTasks.load(std::memory_order_relaxed) != m_toDoTasks)
-    {
-      task* t{};
-      if(m_not_threadsafe_tasks.wait_dequeue_timed(t, 1))
-      {
-        execute(*t);
-      }
-
-      if(m_tasks.wait_dequeue_timed(t, 1))
-      {
-        execute(*t);
-      }
-    }
-
-    std::atomic_thread_fence(std::memory_order_seq_cst);
+    pool.corun_until(m_batch);
   }
 
 private:
-  void process_done(ossia::task& task)
+  // pool_task entry point: recover the owning executor from the task itself.
+  static void run_task(ossia::pool_task* pt) noexcept
   {
-    if(task.m_executed.exchange(true))
-      return;
-    assert(this->m_doneTasks != m_tf->m_tasks.size());
-
-#if defined(DISABLE_DONE_TASKS)
-    ossia::small_pod_vector<ossia::task*, 8> toCleanup;
-#endif
-    for(int taskId : task.m_precedes)
-    {
-      auto& nextTask = m_tf->m_tasks[taskId];
-      assert(!nextTask.m_executed);
-
-      std::atomic_int& remaining = nextTask.m_remaining_dependencies;
-      assert(remaining > 0);
-      const int rem = remaining.fetch_sub(1, std::memory_order_relaxed) - 1;
-      assert(rem >= 0);
-      if(rem == 0)
-      {
-#if defined(DISABLE_DONE_TASKS)
-        if(nextTask.m_node->enabled())
-#endif
-        {
-#if defined(CHECK_EXEC_COUNTS)
-          m_checkVec[nextTask.m_taskId]++;
-          if(m_checkVec[nextTask.m_taskId] != 1)
-          {
-            fmt::print(
-                stderr, "!!! task {} enqueued {}\n", nextTask.m_taskId,
-                m_checkVec[nextTask.m_taskId]);
-            std::abort();
-          }
-#endif
-          std::atomic_thread_fence(std::memory_order_release);
-          enqueue_task(nextTask);
-        }
-#if defined(DISABLE_DONE_TASKS)
-        else
-        {
-          toCleanup.push_back(&nextTask);
-        }
-#endif
-      }
-    }
-
-#if defined(DISABLE_DONE_TASKS)
-    for(auto& clean : toCleanup)
-    {
-      process_done(*clean);
-    }
-#endif
-
-    this->m_doneTasks.fetch_add(1, std::memory_order_relaxed);
+    auto* t = static_cast<task*>(pt);
+    t->m_exec->execute(*t);
   }
 
-  void execute(task& task)
+  void enqueue(task& t)
   {
-    std::atomic_thread_fence(std::memory_order_acquire);
+    auto& pool = ossia::task_pool::instance();
+    if(t.m_node->not_threadable())
+      pool.submit_owner_only(&t);
+    else
+      pool.submit(&t);
+  }
+
+  void execute(task& t) noexcept
+  {
     try
     {
-      assert(!task.m_executed);
-#if defined(CHECK_FOLLOWS)
-      for(auto& prev : task.m_follows)
-      {
-        auto& t = m_tf->m_tasks[prev];
-        assert(t.m_executed);
-      }
-#endif
-
-#if defined(CHECK_EXEC_COUNTS)
-      assert(m_checkVec[task.m_taskId] == 1);
-#endif
-      m_func(*task.m_node);
-
-#if defined(CHECK_EXEC_COUNTS)
-      assert(m_checkVec[task.m_taskId] == 1);
-#endif
+      m_func(*t.m_node);
+    }
+    catch(const std::exception& e)
+    {
+      fmt::print(
+          stderr, "ossia: error executing node '{}': {}\n", t.m_node->label(),
+          e.what());
     }
     catch(...)
     {
-      fmt::print(stderr, "error !\n");
+      fmt::print(
+          stderr, "ossia: error executing node '{}'\n", t.m_node->label());
     }
-    std::atomic_thread_fence(std::memory_order_release);
 
-    process_done(task);
-#if defined(CHECK_EXEC_COUNTS)
-    assert(m_checkVec[task.m_taskId] == 1);
-#endif
+    process_done(t);
+  }
 
-    std::atomic_thread_fence(std::memory_order_release);
+  void process_done(task& t) noexcept
+  {
+    auto& pool = ossia::task_pool::instance();
+    for(int taskId : t.m_precedes)
+    {
+      auto& next = m_tf->m_tasks[taskId];
+      // acq_rel: the decrement that observes 1->0 happens-after all sibling
+      // decrements, so `next` sees every predecessor's writes when it runs.
+      if(next.m_remaining_dependencies.fetch_sub(1, std::memory_order_acq_rel)
+         == 1)
+      {
+        enqueue(next);
+      }
+    }
+    pool.finish(m_batch);
   }
 
   task_function m_func;
-
-  std::atomic_bool m_running{};
-
-  ossia::small_vector<std::thread, 8> m_threads;
-  std::atomic_flag m_startFlag = ATOMIC_FLAG_INIT;
-
   taskflow* m_tf{};
-  std::atomic_size_t m_doneTasks = 0;
-  std::size_t m_toDoTasks = 0;
-
-  moodycamel::BlockingConcurrentQueue<task*> m_tasks;
-  moodycamel::BlockingConcurrentQueue<task*> m_not_threadsafe_tasks;
-
-#if defined(CHECK_EXEC_COUNTS)
-  std::array<std::atomic_int, 5000> m_checkVec;
-#endif
+  ossia::task_batch m_batch;
 };
 }
 
@@ -380,7 +209,6 @@ public:
   template <typename Graph_T>
   custom_parallel_update(Graph_T& g, const ossia::graph_setup_options& opt)
       : impl{g, opt}
-      , executor{opt.parallel_threads}
   {
   }
 
@@ -473,7 +301,3 @@ struct custom_parallel_exec
 using custom_parallel_tc_graph
     = graph_static<custom_parallel_update<tc_update<fast_tc>>, custom_parallel_exec>;
 }
-
-//#undef memory_order_relaxed
-//#undef memory_order_acquire
-//#undef memory_order_release
