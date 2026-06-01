@@ -1,18 +1,22 @@
 #include <ossia/detail/config.hpp>
 
+#include <ossia/detail/base64.hpp>
 #include <ossia/network/base/parameter_data.hpp>
+#include <ossia/network/context.hpp>
 #include <ossia/network/generic/generic_device.hpp>
 #include <ossia/network/local/local.hpp>
 #include <ossia/network/oscquery/oscquery_server.hpp>
+#include <ossia/network/sockets/websocket_server_beast.hpp>
 
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 #include <spdlog/sinks/stdout_sinks.h>
-#include <websocketpp/base64/base64.hpp>
-#include <websocketpp/config/asio_no_tls.hpp>
-#include <websocketpp/server.hpp>
 
+#include <boost/asio/post.hpp>
+
+#include <atomic>
+#include <iostream>
 #include <set>
 
 // double websocket server test
@@ -20,14 +24,6 @@
 // you can get the namespace in a browser with : ws://127.0.0.1:5678
 // and it also creates a second web socket server to stream a webcam in JPEG on port 9003
 // to see it, open the file double_ws_server-test.html (next to this one) in a browser
-// KNOWN issue : as soon as you start the second ws server, the first one doesn't respond anymore
-
-typedef websocketpp::server<websocketpp::config::asio> server;
-
-using websocketpp::connection_hdl;
-using websocketpp::lib::bind;
-using websocketpp::lib::placeholders::_1;
-using websocketpp::lib::placeholders::_2;
 
 using namespace std;
 using namespace ossia;
@@ -35,19 +31,21 @@ using namespace ossia;
 class broadcast_server
 {
 public:
-  broadcast_server()
+  explicit broadcast_server(ossia::net::network_context_ptr ctx)
+      : m_ctx{std::move(ctx)}
+      , m_server{m_ctx}
   {
-    m_server.init_asio();
+    using namespace ossia::net;
+    m_server.set_open_handler(
+        [this](ws_connection_handle hdl) { m_connections.insert(hdl); });
+    m_server.set_close_handler(
+        [this](ws_connection_handle hdl) { m_connections.erase(hdl); });
+    m_server.set_message_handler(
+        [](const ws_connection_handle&, ws_opcode, const std::string&) {
+      return server_reply{};
+    });
 
-    m_server.set_open_handler(bind(&broadcast_server::on_open, this, ::_1));
-    m_server.set_close_handler(bind(&broadcast_server::on_close, this, ::_1));
-    m_server.set_message_handler(bind(&broadcast_server::on_message, this, ::_1, ::_2));
-
-    m_server.clear_access_channels(
-        websocketpp::log::alevel::frame_header
-        | websocketpp::log::alevel::frame_payload);
-
-    m_cap_thread = std::thread([&]() {
+    m_cap_thread = std::thread([this]() {
       std::vector<int> compression_params;
       compression_params.push_back(cv::IMWRITE_JPEG_QUALITY);
       compression_params.push_back(20);
@@ -68,13 +66,15 @@ public:
           if(cv::imencode(".jpg", small, jpeg_buf, compression_params))
           {
             std::string encoded
-                = websocketpp::base64_encode(jpeg_buf.data(), jpeg_buf.size());
+                = ossia::base64_encode(jpeg_buf.data(), jpeg_buf.size());
 
-            con_list::iterator it;
-            for(it = m_connections.begin(); it != m_connections.end(); ++it)
-            {
-              m_server.send(*it, encoded, websocketpp::frame::opcode::text);
-            }
+            // The connection list and the actual writes are handled on the
+            // server's io_context thread so we don't race with the strand
+            // that runs accept / read / close handlers.
+            boost::asio::post(m_ctx->context, [this, msg = std::move(encoded)] {
+              for(auto& hdl : m_connections)
+                m_server.send_message(hdl, msg);
+            });
           }
           usleep(30000);
         }
@@ -82,31 +82,29 @@ public:
     });
   }
 
-  void on_open(connection_hdl hdl) { m_connections.insert(hdl); }
-
-  void on_close(connection_hdl hdl) { m_connections.erase(hdl); }
-
-  void on_message(connection_hdl hdl, server::message_ptr msg)
+  ~broadcast_server()
   {
-    //for (auto it : m_connections) {
-    //    m_server.send(it,msg);
-    // }
+    m_quit = true;
+    if(m_cap_thread.joinable())
+      m_cap_thread.join();
   }
 
   void run(uint16_t port)
   {
     m_server.listen(port);
-    m_server.start_accept();
     m_server.run();
   }
 
 private:
-  typedef std::set<connection_hdl, std::owner_less<connection_hdl>> con_list;
+  using con_list = std::set<
+      ossia::net::ws_connection_handle,
+      std::owner_less<ossia::net::ws_connection_handle>>;
 
-  server m_server;
+  ossia::net::network_context_ptr m_ctx;
+  ossia::net::websocket_server_beast m_server;
   con_list m_connections;
 
-  bool m_quit = false;
+  std::atomic_bool m_quit{false};
   std::thread m_cap_thread;
 };
 
@@ -151,10 +149,7 @@ int main()
   });
   push_thread.detach();
 
-  broadcast_server server;
-  // comment the following to make ossia ws server work again
+  auto ctx = std::make_shared<ossia::net::network_context>();
+  broadcast_server server{ctx};
   server.run(9003);
-
-  while(true)
-    ;
 }

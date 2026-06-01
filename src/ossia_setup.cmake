@@ -11,6 +11,9 @@ target_compile_definitions(ossia
     RAPIDJSON_HAS_STDSTRING=1
     TINYSPLINE_DOUBLE_PRECISION
     BOOST_NO_RTTI=1
+    # Never let Boost emit MSVC auto-link `#pragma comment(lib, ...)` directives:
+    # we use Boost entirely header-only (json via src.hpp, container/etc. inline).
+    BOOST_ALL_NO_LIB=1
     BOOST_MATH_DISABLE_FLOAT128=1
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_INVARIANT_CHECKING>
     $<$<CONFIG:Debug>:BOOST_MULTI_INDEX_ENABLE_SAFE_MODE>

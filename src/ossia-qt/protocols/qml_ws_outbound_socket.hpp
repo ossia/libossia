@@ -69,17 +69,7 @@ public:
 
     m_state->client->connect(m_state->url);
   }
-  ~qml_websocket_outbound_socket() { m_state->alive = false; }
-  ~qml_websocket_outbound_socket() { m_state->alive = false; }
 
-  void open() { m_state->client->connect(m_state->url); }
-  void open() { m_state->client->connect(m_state->url); }
-
-  inline boost::asio::io_context& context() noexcept
-  {
-    return m_state->client->context();
-  }
-  
   void on_message(ossia::net::ws_opcode opcode, const std::string& msg)
   {
     if(opcode == ossia::net::ws_opcode::text && onTextMessage.isCallable())

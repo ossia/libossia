@@ -100,4 +100,9 @@ struct websocket_simple_server_beast
   int m_port{};
 };
 
+// Backwards-compatibility aliases for the old websocketpp-based names, so that
+// downstream code (e.g. score puppets) keeps building during the transition.
+using websocket_simple_client = websocket_simple_client_beast;
+using websocket_simple_server = websocket_simple_server_beast;
+
 }
