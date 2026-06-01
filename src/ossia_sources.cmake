@@ -858,6 +858,7 @@ set(OSSIA_DATAFLOW_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/ordered_policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution/priorized_policy.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/data.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/geometry_port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/port.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/graph_node.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/dataflow/execution_state.cpp"

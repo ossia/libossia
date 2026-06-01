@@ -493,4 +493,13 @@ void geometry_port::clear()
   flags = {};
 }
 
+const value_vector<ossia::timed_value>& value_port::get_data() const
+{
+  return data;
+}
+
+value_vector<ossia::timed_value>& value_port::get_data()
+{
+  return data;
+}
 }
