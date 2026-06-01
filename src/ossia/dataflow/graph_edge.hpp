@@ -42,6 +42,21 @@ public:
   void init() noexcept;
   void clear() noexcept;
 
+  bool delayed() const noexcept
+  {
+    switch(con.index())
+    {
+      default:
+      case 0:
+      case 1:
+      case 4:
+        return false;
+      case 2:
+      case 3:
+        return true;
+    }
+  }
+
   static std::size_t size_of_allocated_memory_by_make_shared() noexcept;
 
   connection con{};
