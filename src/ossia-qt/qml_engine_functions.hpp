@@ -47,9 +47,10 @@ public:
   W_SLOT(read);
   void write(const QString& address, const QVariant& value);
   W_SLOT(write);
-  void exec(const QString& code) W_SIGNAL(exec, code);
-  void compute(const QString& code, const QString& cb) W_SIGNAL(compute, code, cb);
-  void system(const QString& code) W_SIGNAL(system, code);
+  void exec(const QString& code) E_SIGNAL(OSSIA_EXPORT, exec, code);
+  void compute(const QString& code, const QString& cb)
+      E_SIGNAL(OSSIA_EXPORT, compute, code, cb);
+  void system(const QString& code) E_SIGNAL(OSSIA_EXPORT, system, code);
 
   /// Conversions ///
   QVariant asArray(QVariant) const noexcept;
