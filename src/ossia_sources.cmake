@@ -293,6 +293,8 @@ set(SRCS
 set_source_files_properties(
   "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/disable_fpe.cpp"
   PROPERTIES
+    SKIP_UNITY_BUILD_INCLUSION ON
+    SKIP_PRECOMPILE_HEADERS ON
     COMPILE_OPTIONS
       "$<$<CXX_COMPILER_ID:GNU,Clang,AppleClang>:-fno-fast-math>;$<$<CXX_COMPILER_ID:MSVC>:/fp:precise>"
 )
