@@ -54,10 +54,6 @@ private:
   void do_read();
   void on_read(boost::beast::error_code ec, std::size_t bytes);
 
-  void parse_uri(
-      const std::string& uri, std::string& host, std::string& port,
-      std::string& path);
-
   std::unique_ptr<boost::asio::io_context> m_owned_context;
   boost::asio::io_context& m_context;
   boost::asio::ip::tcp::resolver m_resolver;

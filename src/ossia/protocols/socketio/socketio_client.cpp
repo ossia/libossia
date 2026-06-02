@@ -25,52 +25,14 @@ socketio_client::~socketio_client()
     stop();
 }
 
-void socketio_client::parse_uri(
-    const std::string& uri, std::string& host, std::string& port,
-    std::string& path)
-{
-  std::string_view sv = uri;
-  if(sv.starts_with("ws://"))
-    sv.remove_prefix(5);
-  else if(sv.starts_with("wss://"))
-    sv.remove_prefix(6);
-  else if(sv.starts_with("http://"))
-    sv.remove_prefix(7);
-  else if(sv.starts_with("https://"))
-    sv.remove_prefix(8);
-
-  auto path_pos = sv.find('/');
-  if(path_pos != std::string_view::npos)
-  {
-    path = std::string(sv.substr(path_pos));
-    sv = sv.substr(0, path_pos);
-  }
-  else
-  {
-    path = "/";
-  }
-
-  auto port_pos = sv.find(':');
-  if(port_pos != std::string_view::npos)
-  {
-    host = std::string(sv.substr(0, port_pos));
-    port = std::string(sv.substr(port_pos + 1));
-  }
-  else
-  {
-    host = std::string(sv);
-    port = "80";
-  }
-}
-
 void socketio_client::connect(const std::string& uri)
 {
-  std::string host, port, path;
-  parse_uri(uri, host, port, path);
-  m_host = host;
+  auto parsed = parse_websocket_uri(uri);
+  m_host = parsed.host;
   m_connected = true;
 
-  co_spawn_detached(run_session(std::move(host), std::move(port), std::move(path)));
+  co_spawn_detached(run_session(
+      std::move(parsed.host), std::move(parsed.port), std::move(parsed.path)));
 }
 
 void socketio_client::connect_and_run(const std::string& uri)

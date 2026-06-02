@@ -1,3 +1,4 @@
+#if !defined(__EMSCRIPTEN__)
 #include <ossia/network/sockets/websocket_client_beast.hpp>
 
 #include <ossia/detail/json.hpp>
@@ -33,53 +34,12 @@ websocket_client_beast::~websocket_client_beast()
     stop();
 }
 
-void websocket_client_beast::parse_uri(
-    const std::string& uri, std::string& host, std::string& port,
-    std::string& path)
-{
-  // Parse ws://host:port/path or ws://host/path
-  std::string_view sv = uri;
-
-  // Remove scheme
-  if(sv.starts_with("ws://"))
-    sv.remove_prefix(5);
-  else if(sv.starts_with("wss://"))
-    sv.remove_prefix(6);
-  else if(sv.starts_with("http://"))
-    sv.remove_prefix(7);
-  else if(sv.starts_with("https://"))
-    sv.remove_prefix(8);
-
-  // Find path
-  auto path_pos = sv.find('/');
-  if(path_pos != std::string_view::npos)
-  {
-    path = std::string(sv.substr(path_pos));
-    sv = sv.substr(0, path_pos);
-  }
-  else
-  {
-    path = "/";
-  }
-
-  // Find port
-  auto port_pos = sv.find(':');
-  if(port_pos != std::string_view::npos)
-  {
-    host = std::string(sv.substr(0, port_pos));
-    port = std::string(sv.substr(port_pos + 1));
-  }
-  else
-  {
-    host = std::string(sv);
-    port = "80";
-  }
-}
-
 void websocket_client_beast::connect(const std::string& uri)
 {
-  std::string host, port, path;
-  parse_uri(uri, host, port, path);
+  auto parsed = parse_websocket_uri(uri);
+  const auto& host = parsed.host;
+  const auto& port = parsed.port;
+  const auto& path = parsed.path;
 
   m_host = host;
   m_ws = std::make_unique<
@@ -286,3 +246,4 @@ void websocket_client_beast::on_read(boost::beast::error_code ec, std::size_t)
 }
 
 }
+#endif

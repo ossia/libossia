@@ -2,8 +2,11 @@
 #include <ossia/detail/algorithms.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
-#include <ossia/network/sockets/websocket_client_beast.hpp>
+#include <ossia/network/sockets/websocket_client_interface.hpp>
+#include <ossia/network/sockets/websocket_factory.hpp>
+#if !defined(__EMSCRIPTEN__)
 #include <ossia/network/sockets/websocket_server_beast.hpp>
+#endif
 
 namespace ossia::net
 {
@@ -24,7 +27,7 @@ struct websocket_simple_client_beast
   template <typename F>
   void receive(F onMessage)
   {
-    m_client = std::make_unique<websocket_client_beast>(
+    m_client = make_websocket_client(
         m_context,
         [handler = std::move(onMessage)](
             const ws_connection_handle&, ws_opcode, std::string& data) {

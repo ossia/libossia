@@ -226,8 +226,10 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/var_size_prefix_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_beast.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_emscripten.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_interface.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_common.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_factory.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_interface.hpp"
@@ -526,7 +528,9 @@ set(OSSIA_OSCQUERY_HEADERS
 
 set(OSSIA_OSCQUERY_SRCS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_beast.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_emscripten.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_interface.cpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_factory.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.cpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_interface.cpp"
 

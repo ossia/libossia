@@ -47,10 +47,6 @@ private:
   template <typename T>
   using awaitable = boost::asio::awaitable<T>;
 
-  void parse_uri(
-      const std::string& uri, std::string& host, std::string& port,
-      std::string& path);
-
   // Coroutine-based session management
   awaitable<void> run_session(std::string host, std::string port, std::string path);
 

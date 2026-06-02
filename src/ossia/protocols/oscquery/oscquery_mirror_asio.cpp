@@ -20,7 +20,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
-#include <ossia/network/sockets/websocket_client_beast.hpp>
+#include <ossia/network/sockets/websocket_factory.hpp>
 #include <ossia/protocols/oscquery/http_requests.hpp>
 
 namespace ossia::oscquery_asio
@@ -383,10 +383,11 @@ void oscquery_mirror_asio_protocol::start_websockets()
   if(m_protocol_to_use == http)
     return;
 
-  m_websocketClient = std::make_unique<ossia::net::websocket_client_beast>(
-      m_ctx->context, [this](
-                          const ossia::net::ws_connection_handle& hdl,
-                          ossia::net::ws_opcode op, std::string& msg) {
+  m_websocketClient = ossia::net::make_websocket_client(
+      m_ctx->context,
+      [this](
+          const ossia::net::ws_connection_handle& hdl, ossia::net::ws_opcode op,
+          std::string& msg) {
     switch(op)
     {
       case ossia::net::ws_opcode::text:

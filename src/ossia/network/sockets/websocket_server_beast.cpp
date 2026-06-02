@@ -1,3 +1,4 @@
+#if !defined(__EMSCRIPTEN__)
 #include <ossia/network/sockets/websocket_server_beast.hpp>
 
 #include <ossia/detail/json.hpp>
@@ -468,3 +469,4 @@ websocket_server_beast::find_connection(const ws_connection_handle& hdl)
 }
 
 }
+#endif

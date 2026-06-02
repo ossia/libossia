@@ -89,6 +89,12 @@ if(OSSIA_PROTOCOL_OSCQUERY)
   set_source_files_properties(
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/socketio/boost_json_impl.cpp"
     PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+  if(EMSCRIPTEN)
+    # Use the browser's native WebSocket API for the OSCQuery client.
+    # The server side and the OSCQuery HTTP fallback are not available
+    # in the browser sandbox.
+    target_link_options(ossia PUBLIC "-lwebsocket.js")
+  endif()
   set(OSSIA_PROTOCOLS ${OSSIA_PROTOCOLS} OSCQuery)
 endif()
 
