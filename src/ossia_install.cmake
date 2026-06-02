@@ -227,6 +227,13 @@ if(EXISTS "${OSSIA_3RDPARTY_FOLDER}/dr_libs/dr_wav.h")
           COMPONENT Devel)
 endif()
 
+install(
+  FILES
+    "${OSSIA_3RDPARTY_FOLDER}/rapidhash/rapidhash.h"
+    "${OSSIA_3RDPARTY_FOLDER}/rapidhash/secret.h"
+  DESTINATION include/
+  COMPONENT Devel
+)
 
 install(
   FILES
