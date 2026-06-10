@@ -3,6 +3,7 @@ find_package(Git)
 if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
   message(STATUS "Update general libossia dependencies :")
   set(OSSIA_SUBMODULES
+      abseil-cpp
       concurrentqueue
       compile-time-regular-expressions
       Flicks
@@ -85,6 +86,7 @@ if(Git_FOUND AND OSSIA_SUBMODULE_AUTOUPDATE)
 endif()
 
 # Download various dependencies
+include(deps/abseil)
 include(deps/boost)
 include(deps/concurrentqueue)
 include(deps/ctre)

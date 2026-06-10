@@ -32,7 +32,6 @@ else()
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/regexp.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/set.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/simplify.cc
-    ${OSSIA_3RDPARTY_FOLDER}/re2/re2/stringpiece.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/tostring.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/unicode_casefold.cc
     ${OSSIA_3RDPARTY_FOLDER}/re2/re2/unicode_groups.cc
@@ -54,6 +53,27 @@ else()
   endif()
 
   target_include_directories(re2 SYSTEM PUBLIC $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/re2>)
+
+  # Since 2023-07-01, re2 depends on Abseil (see deps/abseil.cmake which is
+  # included before this file). This is the set of targets listed in re2's own
+  # CMakeLists.txt (ABSL_DEPS).
+  target_link_libraries(re2 PUBLIC
+    absl::absl_check
+    absl::absl_log
+    absl::base
+    absl::core_headers
+    absl::fixed_array
+    absl::flags
+    absl::flat_hash_map
+    absl::flat_hash_set
+    absl::hash
+    absl::inlined_vector
+    absl::optional
+    absl::span
+    absl::str_format
+    absl::strings
+    absl::synchronization
+  )
 
   if(UNIX)
     target_link_libraries(re2 PUBLIC Threads::Threads)
