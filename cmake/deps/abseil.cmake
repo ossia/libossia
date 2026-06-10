@@ -15,6 +15,17 @@ if(NOT TARGET absl::strings)
     # get flooded with warnings coming from them.
     set(ABSL_USE_SYSTEM_INCLUDES ON CACHE INTERNAL "")
 
+    # Abseil's CMakeLists forcibly overrides CMAKE_MSVC_RUNTIME_LIBRARY from its
+    # own ABSL_MSVC_STATIC_RUNTIME option (default OFF -> /MD), ignoring what the
+    # rest of the build selected. Static ossia builds (Max/PD/Python/Unity, ...)
+    # use the static /MT runtime, which then mismatches Abseil's /MD at link
+    # time. Mirror ossia's choice so the runtimes agree.
+    if(MSVC AND CMAKE_MSVC_RUNTIME_LIBRARY AND NOT CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "DLL")
+      set(ABSL_MSVC_STATIC_RUNTIME ON CACHE INTERNAL "")
+    else()
+      set(ABSL_MSVC_STATIC_RUNTIME OFF CACHE INTERNAL "")
+    endif()
+
     # When we install our static dependencies, re2 links Abseil publicly, so its
     # targets must be installable/exportable too.
     if(OSSIA_INSTALL_STATIC_DEPENDENCIES)
