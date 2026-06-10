@@ -19,9 +19,17 @@ if(NOT TARGET absl::strings)
     # targets must be installable/exportable too.
     if(OSSIA_INSTALL_STATIC_DEPENDENCIES)
       set(ABSL_ENABLE_INSTALL ON CACHE INTERNAL "")
-    endif()
 
-    add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/abseil-cpp" EXCLUDE_FROM_ALL)
+      # NB: no EXCLUDE_FROM_ALL here. CMake skips the install() rules of a
+      # subdirectory added with EXCLUDE_FROM_ALL, so Abseil's libraries,
+      # headers and CMake package (abslConfig / abslTargets) would never be
+      # installed - leaving the installed re2 export (which links Abseil
+      # publicly) dangling for downstream consumers. Building all of Abseil is
+      # acceptable here as this branch is only taken for static packaging builds.
+      add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/abseil-cpp")
+    else()
+      add_subdirectory("${OSSIA_3RDPARTY_FOLDER}/abseil-cpp" EXCLUDE_FROM_ALL)
+    endif()
   endblock()
 endif()
 

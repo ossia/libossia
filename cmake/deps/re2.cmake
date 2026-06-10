@@ -88,7 +88,10 @@ else()
 
     install(EXPORT re2-exports
             DESTINATION lib/cmake/re2)
-    export(EXPORT re2-exports)
+    # NB: no build-tree export() here. re2 links Abseil publicly and Abseil only
+    # provides install(EXPORT) rules, not a build-tree export(), so a build-tree
+    # export() of re2 fails at generate time ("target ... not in any export
+    # set"). Only the installed re2 export is consumed (see ossiaConfig.cmake.in).
   endif()
 endif()
 
