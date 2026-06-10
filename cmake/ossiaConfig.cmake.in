@@ -7,6 +7,9 @@ find_dependency(Boost 1.83 REQUIRED)
 
 if(@OSSIA_STATIC@)
   if(EXISTS "${OSSIA_CMAKE_DIR}/../re2/re2-exports.cmake")
+    # re2 links Abseil publicly, so its targets must be resolved before the re2
+    # export (which references absl::*) is pulled in.
+    find_dependency(absl)
     include("${OSSIA_CMAKE_DIR}/../re2/re2-exports.cmake")
   endif()
 endif()
