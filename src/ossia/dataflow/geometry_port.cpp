@@ -32,8 +32,9 @@ static bool icase_equal(std::string_view a, std::string_view b) noexcept
   return true;
 }
 
-// Sorted by enum value for binary search in semantic_to_name.
-// Sorted by name for binary search in name_to_semantic (separate array below).
+// NOTE: this table is intentionally not sorted: semantic_to_name and
+// name_to_semantic below do a linear scan (see the FIXMEs there). Reordering
+// it to enable a binary search would silently break those lookups.
 static constexpr std::array semantic_table = {
     // Core geometry
     semantic_entry{attribute_semantic::position, "position"},
