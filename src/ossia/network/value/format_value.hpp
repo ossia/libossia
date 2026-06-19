@@ -10,7 +10,14 @@
 
 #include <fmt/ranges.h>
 FMT_BEGIN_NAMESPACE
-#if FMT_VERSION >= 100000
+#if FMT_VERSION >= 120200
+// fmt 12 renamed detail::is_container_adaptor_like -> is_container_adaptor and
+// promoted it out of the detail namespace into fmt itself.
+template <typename T> struct is_container_adaptor<boost::container::flat_set<T>>
+    : std::false_type {
+
+};
+#elif FMT_VERSION >= 100000
 namespace detail {
 template <typename T> class is_container_adaptor_like<boost::container::flat_set<T>>
     : public std::false_type {
