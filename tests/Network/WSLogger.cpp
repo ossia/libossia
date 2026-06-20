@@ -26,6 +26,7 @@ TEST_CASE("test_websockets_log_no_connection", "test_websockets_log_no_connectio
 
 TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
 {
+  using namespace std::chrono;
   bool opened = false;
   bool message = false;
   bool closed = false;
@@ -39,6 +40,24 @@ TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
   srv.set_close_handler([&](auto&&...) { closed = true; });
   srv.listen(5567);
 
+  // The client connects from its own thread (websocket_threaded_connection)
+  // while the server's io_context is pumped from here. On slow or loaded CI
+  // machines - especially the static Debug Windows build - the cross-thread
+  // handshake routinely takes longer than the fixed 100ms windows this test
+  // used to rely on, which led to spurious "opened == false" failures. Pump
+  // the context until each step is actually observed instead, with a generous
+  // upper bound so a genuine regression still fails in reasonable time.
+  auto& io = ctx->context;
+  auto pump_until = [&](auto&& predicate) {
+    const auto deadline = steady_clock::now() + seconds(15);
+    while(!predicate() && steady_clock::now() < deadline)
+    {
+      if(io.stopped())
+        io.restart();
+      io.run_for(milliseconds(20));
+    }
+  };
+
   {
     ossia::string_view host = "ws://127.0.0.1:5567";
     std::string appname = "foo";
@@ -46,11 +65,12 @@ TEST_CASE("test_websockets_log_connection", "test_websockets_log_connection")
     auto con = std::make_shared<ossia::websocket_threaded_connection>(std::string(host));
     auto sink = std::make_shared<websocket_log_sink>(con, appname);
     auto log = std::make_shared<spdlog::logger>("max_logger", sink);
-    ctx->context.run_for(std::chrono::milliseconds(100));
+
+    pump_until([&] { return opened; });
     log->info("helo");
-    ctx->context.run_for(std::chrono::milliseconds(100));
+    pump_until([&] { return message; });
   }
-  ctx->context.run_for(std::chrono::milliseconds(100));
+  pump_until([&] { return closed; });
 
   REQUIRE(opened);
   REQUIRE(message);

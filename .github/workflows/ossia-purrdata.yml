@@ -56,7 +56,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PD_ONLY=1 -DOSSIA_PURR_DATA=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOSSIA_PD_ONLY=1 -DOSSIA_PURR_DATA=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
           cmake --build build
           cmake --install build
 
@@ -75,6 +75,7 @@ jobs:
         run: |
           cmake -B build -S ${GITHUB_WORKSPACE} \
             -GNinja \
+            -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
             -DOSSIA_PURR_DATA=1 \
             -DOSSIA_CI=1 \
             -DCMAKE_BUILD_TYPE=Release \
