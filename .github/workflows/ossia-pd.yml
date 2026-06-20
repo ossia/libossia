@@ -55,7 +55,7 @@ jobs:
       - name: Build
         shell: cmd
         run: |
-          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DOSSIA_PD_ONLY=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
+          cmake -B build -S %GITHUB_WORKSPACE% -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOSSIA_PD_ONLY=1 -DOSSIA_CI=1 -DCMAKE_SYSTEM_VERSION=7 -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=Release
           cmake --build build
           cmake --install build
 
@@ -72,7 +72,7 @@ jobs:
       - uses: ./.github/actions/latest-ubuntu-toolchain
       - name: Build
         run: |
-          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DOSSIA_CI=1 -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
+          cmake -B build -S ${GITHUB_WORKSPACE} -GNinja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DOSSIA_CI=1 -DCMAKE_BUILD_TYPE=Release -DOSSIA_PD_ONLY=1 -DCMAKE_INSTALL_PREFIX=install
           cmake --build build
           cmake --build build --target install
       - name: Archive Package
