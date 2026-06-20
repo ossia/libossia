@@ -54,6 +54,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/regex_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/safe_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/size.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/sleep.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_flat_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/small_vector.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/span.hpp"
@@ -63,6 +64,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_map.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/string_view.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/thread_priority.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timed_vec.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/timer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/to_string.hpp"
@@ -70,7 +72,9 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/triple_buffer.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/type_if.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/typelist.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/unique_instance.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/variant.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/yield.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/math/safe_math.hpp"
 #    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/detail/instantiations.hpp"
@@ -154,6 +158,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/generic_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/generic/wrapped_parameter.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client_request.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_query_parser.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/local/local.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/minuit/detail/minuit_common.hpp"
@@ -202,7 +207,10 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/rate_limiting_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/resolve.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/resolve_transport.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/cobs_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/configuration.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/encoding.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/fixed_length_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/line_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/no_framing.hpp"
@@ -210,9 +218,11 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/serial_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/size_prefix_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/slip_framing.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/stx_etx_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/tcp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/udp_socket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/unix_socket.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/var_size_prefix_framing.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
@@ -469,6 +479,7 @@ set(OSSIA_MIDI_SRCS
 set(OSSIA_OSCQUERY_HEADERS
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_client_request.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/http/http_query_parser.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/oscquery_server.hpp"
@@ -493,12 +504,15 @@ set(OSSIA_OSCQUERY_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/oscquery_protocol_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/oscquery/detail/osc_writer.hpp"
 
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/http_requests.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_fwd.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_mirror_asio_dense.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_server_asio.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/oscquery/oscquery_client_asio.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/dense/dense_protocol_configuration.hpp"
     )
 
 set(OSSIA_OSCQUERY_SRCS
@@ -535,6 +549,7 @@ set(OSSIA_SERIAL_SRCS
 )
 
 set(OSSIA_PHIDGETS_HEADERS
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/detail/phidgetspp.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/detail/sensors.hpp"
 
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/protocols/phidgets/phidgets_protocol.hpp"
@@ -740,6 +755,7 @@ set(OSSIA_QT_SCORE_SRCS
 set(OSSIA_DATAFLOW_HEADERS
     
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/alsa_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/asio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_parameter.hpp"
