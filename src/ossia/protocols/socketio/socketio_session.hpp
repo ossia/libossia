@@ -67,7 +67,10 @@ inline bool parse_engineio_open(std::string_view str, engineio_config& config)
     return false;
 
   str = str.substr(1);
-  auto json = boost::json::parse(str);
+  boost::system::error_code ec;
+  auto json = boost::json::parse(str, ec);
+  if(ec)
+    return false;
   if(auto obj = json.try_as_object())
   {
     auto& o = *obj;
@@ -104,7 +107,10 @@ inline bool parse_socketio_connect(std::string_view str, engineio_config& config
     str = str.substr(0, end);
 
   str = str.substr(2);
-  auto json = boost::json::parse(str);
+  boost::system::error_code ec;
+  auto json = boost::json::parse(str, ec);
+  if(ec)
+    return false;
   if(auto obj = json.try_as_object())
   {
     if(auto k = obj->find("sid"))

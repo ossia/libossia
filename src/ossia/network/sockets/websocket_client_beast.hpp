@@ -9,8 +9,10 @@
 #include <boost/beast/websocket.hpp>
 
 #include <atomic>
+#include <deque>
 #include <mutex>
 #include <string>
+#include <utility>
 
 namespace ossia::net
 {
@@ -54,6 +56,11 @@ private:
   void do_read();
   void on_read(boost::beast::error_code ec, std::size_t bytes);
 
+  // Marshal a send onto the stream strand and serialize writes.
+  void enqueue_write(bool text, std::string data);
+  void do_write();
+  void on_write(boost::beast::error_code ec, std::size_t bytes);
+
   std::unique_ptr<boost::asio::io_context> m_owned_context;
   boost::asio::io_context& m_context;
   boost::asio::ip::tcp::resolver m_resolver;
@@ -65,6 +72,9 @@ private:
   std::mutex m_mutex;
   std::atomic_bool m_open{false};
   std::atomic_bool m_connected{false};
+
+  // Outbound queue, only touched on the stream strand. {is_text, payload}.
+  std::deque<std::pair<bool, std::string>> m_write_queue;
 };
 
 }

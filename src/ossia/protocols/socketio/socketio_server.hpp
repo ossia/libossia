@@ -11,10 +11,13 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/websocket.hpp>
 
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <set>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace ossia::net
 {
@@ -59,8 +62,7 @@ private:
       const std::string& body, const std::string& content_type = "text/plain");
 
   // WebSocket mode
-  void do_accept_ws(
-      boost::beast::http::request<boost::beast::http::string_body> req);
+  void do_accept_ws();
   void on_accept_ws(boost::beast::error_code ec);
   void do_read_ws();
   void on_read_ws(boost::beast::error_code ec, std::size_t bytes);
@@ -68,6 +70,11 @@ private:
   // Ping timer
   void start_ping_timer();
   void on_ping_timer(boost::beast::error_code ec);
+
+  // Outbound writes, serialized on the strand (see beast server).
+  void enqueue_write(bool text, std::string data);
+  void do_write();
+  void on_write(boost::beast::error_code ec, std::size_t bytes);
 
   // Engine.IO / Socket.IO processing
   void process_engineio_message(std::string_view data);
@@ -84,6 +91,9 @@ private:
 
   // Buffered messages for long-polling GET
   std::vector<std::string> m_poll_buffer;
+
+  // Outbound WebSocket queue, only touched on the strand. {is_text, payload}.
+  std::deque<std::pair<bool, std::string>> m_write_queue;
 
   bool m_is_websocket{false};
   bool m_handshake_done{false};

@@ -3,6 +3,8 @@
 
 #include <ossia/detail/json.hpp>
 
+#include <boost/asio/dispatch.hpp>
+
 namespace ossia::net
 {
 
@@ -37,6 +39,21 @@ websocket_client_beast::~websocket_client_beast()
 void websocket_client_beast::connect(const std::string& uri)
 {
   auto parsed = parse_websocket_uri(uri);
+
+  // TLS is not implemented in the beast backend yet. Rather than silently
+  // connecting in plaintext to a wss:// endpoint (a security downgrade), fail
+  // loudly so the caller knows the secure expectation could not be met.
+  if(parsed.secure)
+  {
+    ossia::logger().error(
+        "wss:// / https:// requested but TLS is not supported by this "
+        "WebSocket backend: {}",
+        uri);
+    m_connected = false;
+    on_fail();
+    return;
+  }
+
   const auto& host = parsed.host;
   const auto& port = parsed.port;
   const auto& path = parsed.path;
@@ -99,41 +116,62 @@ bool websocket_client_beast::connected() const
 
 void websocket_client_beast::send_message(const std::string& request)
 {
-  if(!m_open || !m_ws)
-    return;
-
-  std::lock_guard lock{m_mutex};
-  boost::beast::error_code ec;
-  m_ws->text(true);
-  m_ws->write(boost::asio::buffer(request), ec);
-  if(ec)
-    ossia::logger().error("WS send error: {}", ec.message());
+  enqueue_write(true, request);
 }
 
 void websocket_client_beast::send_message(const rapidjson::StringBuffer& request)
 {
-  if(!m_open || !m_ws)
-    return;
-
-  std::lock_guard lock{m_mutex};
-  boost::beast::error_code ec;
-  m_ws->text(true);
-  m_ws->write(boost::asio::buffer(request.GetString(), request.GetSize()), ec);
-  if(ec)
-    ossia::logger().error("WS send error: {}", ec.message());
+  enqueue_write(true, std::string(request.GetString(), request.GetSize()));
 }
 
 void websocket_client_beast::send_binary_message(std::string_view request)
 {
+  enqueue_write(false, std::string(request));
+}
+
+void websocket_client_beast::enqueue_write(bool text, std::string data)
+{
   if(!m_open || !m_ws)
     return;
 
-  std::lock_guard lock{m_mutex};
-  boost::beast::error_code ec;
-  m_ws->binary(true);
-  m_ws->write(boost::asio::buffer(request.data(), request.size()), ec);
+  // A beast websocket::stream is not thread-safe. send_*() is called from the
+  // producer thread, so marshal the write onto the stream strand and serialize
+  // through a queue (one async_write in flight at a time, payload copied here
+  // so it outlives the operation). This never runs concurrently with the read.
+  boost::asio::dispatch(
+      m_ws->get_executor(),
+      [this, text, data = std::move(data)]() mutable {
+    if(!m_ws)
+      return;
+    const bool idle = m_write_queue.empty();
+    m_write_queue.emplace_back(text, std::move(data));
+    if(idle)
+      do_write();
+  });
+}
+
+void websocket_client_beast::do_write()
+{
+  m_ws->text(m_write_queue.front().first);
+  m_ws->async_write(
+      boost::asio::buffer(m_write_queue.front().second),
+      [this](boost::beast::error_code ec, std::size_t bytes) {
+    on_write(ec, bytes);
+  });
+}
+
+void websocket_client_beast::on_write(boost::beast::error_code ec, std::size_t)
+{
   if(ec)
+  {
     ossia::logger().error("WS send error: {}", ec.message());
+    m_write_queue.clear();
+    return;
+  }
+
+  m_write_queue.pop_front();
+  if(!m_write_queue.empty())
+    do_write();
 }
 
 void websocket_client_beast::do_resolve(
@@ -190,9 +228,17 @@ void websocket_client_beast::on_connect(
   {
   }
 
-  // Use host:port for the Host header
-  auto host = m_host + ":" + std::to_string(
-      boost::beast::get_lowest_layer(*m_ws).socket().remote_endpoint().port());
+  // Use host:port for the Host header. remote_endpoint() can throw if the
+  // peer disconnected meanwhile; this runs inside an io_context handler, where
+  // an exception would propagate out of run() and stop all networking, so use
+  // the non-throwing overload.
+  auto host = m_host;
+  {
+    boost::beast::error_code ep_ec;
+    auto ep = boost::beast::get_lowest_layer(*m_ws).socket().remote_endpoint(ep_ec);
+    if(!ep_ec)
+      host += ":" + std::to_string(ep.port());
+  }
 
   m_ws->async_handshake(
       host, path,

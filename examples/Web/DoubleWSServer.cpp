@@ -16,8 +16,10 @@
 #include <boost/asio/post.hpp>
 
 #include <atomic>
+#include <chrono>
 #include <iostream>
 #include <set>
+#include <thread>
 
 // double websocket server test
 // this example create a simple oscquery server that exposes its parameter through port 5678
@@ -76,7 +78,7 @@ public:
                 m_server.send_message(hdl, msg);
             });
           }
-          usleep(30000);
+          std::this_thread::sleep_for(std::chrono::milliseconds(30));
         }
       }
     });

@@ -3,6 +3,7 @@
 
 #include <ossia/detail/json.hpp>
 
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/ip/v6_only.hpp>
 
 namespace ossia::net
@@ -38,30 +39,72 @@ void beast_ws_connection::run()
 
 void beast_ws_connection::send_text(const std::string& msg)
 {
-  m_ws.text(true);
-  boost::beast::error_code ec;
-  m_ws.write(boost::asio::buffer(msg), ec);
+  enqueue_write(true, msg);
 }
 
 void beast_ws_connection::send_text(const char* data, std::size_t sz)
 {
-  m_ws.text(true);
-  boost::beast::error_code ec;
-  m_ws.write(boost::asio::buffer(data, sz), ec);
+  enqueue_write(true, std::string(data, sz));
 }
 
 void beast_ws_connection::send_binary(std::string_view msg)
 {
-  m_ws.binary(true);
-  boost::beast::error_code ec;
-  m_ws.write(boost::asio::buffer(msg.data(), msg.size()), ec);
+  enqueue_write(false, std::string(msg));
+}
+
+void beast_ws_connection::enqueue_write(bool text, std::string data)
+{
+  // Sends originate on the producer thread (device/score), but a beast
+  // websocket::stream is not thread-safe: it must never be written from a
+  // thread other than the one running its strand, and never concurrently
+  // with the in-flight async_read. Marshal every send onto the connection
+  // strand and serialize them through a queue so that only one async_write
+  // is ever in flight, and the payload (copied here) outlives the operation.
+  boost::asio::dispatch(
+      m_ws.get_executor(),
+      [self = shared_from_this(), text, data = std::move(data)]() mutable {
+    const bool idle = self->m_write_queue.empty();
+    self->m_write_queue.emplace_back(text, std::move(data));
+    if(idle)
+      self->do_write();
+  });
+}
+
+void beast_ws_connection::do_write()
+{
+  m_ws.text(m_write_queue.front().first);
+  m_ws.async_write(
+      boost::asio::buffer(m_write_queue.front().second),
+      [self = shared_from_this()](boost::beast::error_code ec, std::size_t bytes) {
+    self->on_write(ec, bytes);
+  });
+}
+
+void beast_ws_connection::on_write(boost::beast::error_code ec, std::size_t)
+{
+  if(ec)
+  {
+    m_server.remove_connection(shared_from_this());
+    return;
+  }
+
+  m_write_queue.pop_front();
+  if(!m_write_queue.empty())
+    do_write();
 }
 
 void beast_ws_connection::close()
 {
-  boost::beast::error_code ec;
-  if(m_ws.is_open())
-    m_ws.close(boost::beast::websocket::close_code::going_away, ec);
+  // close() is called from the producer thread (server teardown). The stream
+  // is shared with the in-flight async_read, so do the actual close on the
+  // strand. Shutting the socket down aborts the pending read, which tears the
+  // connection down through on_read_ws.
+  boost::asio::dispatch(m_ws.get_executor(), [self = shared_from_this()] {
+    boost::beast::error_code ec;
+    auto& tcp = boost::beast::get_lowest_layer(self->m_ws);
+    tcp.socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    tcp.socket().close(ec);
+  });
 }
 
 boost::asio::ip::tcp::socket& beast_ws_connection::tcp_socket()
@@ -418,7 +461,15 @@ void websocket_server_beast::on_accept(
     boost::beast::error_code ec, boost::asio::ip::tcp::socket socket)
 {
   if(ec)
-    return; // Acceptor was closed
+  {
+    // The acceptor was closed: stop the loop. Any other (transient) error
+    // must not kill the listener — keep accepting.
+    if(ec == boost::asio::error::operation_aborted)
+      return;
+    ossia::logger().error("WS accept error: {}", ec.message());
+    do_accept();
+    return;
+  }
 
   // Create connection and start reading
   auto conn = std::make_shared<beast_ws_connection>(std::move(socket), *this);
@@ -453,18 +504,21 @@ void websocket_server_beast::remove_connection(std::shared_ptr<beast_ws_connecti
     m_on_close(hdl);
 }
 
-beast_ws_connection*
+std::shared_ptr<beast_ws_connection>
 websocket_server_beast::find_connection(const ws_connection_handle& hdl)
 {
   auto sp = hdl.lock();
   if(!sp)
     return nullptr;
 
+  // Return a shared_ptr (not a raw pointer): the caller dereferences the
+  // connection on the producer thread while the io thread may concurrently
+  // remove and destroy it. Holding a strong ref keeps it alive for the call.
   std::lock_guard lock{m_connections_mutex};
   auto it = m_connections.find(
       std::static_pointer_cast<beast_ws_connection>(sp));
   if(it != m_connections.end())
-    return it->get();
+    return *it;
   return nullptr;
 }
 

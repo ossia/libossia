@@ -1,7 +1,11 @@
+// Socket.IO uses Boost.Beast TCP acceptors / coroutines which are not
+// available in the Emscripten/browser sandbox.
+#if !defined(__EMSCRIPTEN__)
 #include <ossia/protocols/socketio/socketio_server.hpp>
 
 #include <ossia/detail/json.hpp>
 
+#include <boost/asio/dispatch.hpp>
 #include <boost/asio/ip/v6_only.hpp>
 
 #include <random>
@@ -56,47 +60,73 @@ void socketio_server_connection::run()
 
 void socketio_server_connection::send_text(const std::string& msg)
 {
-  if(m_is_websocket)
-  {
-    m_ws.text(true);
-    boost::beast::error_code ec;
-    m_ws.write(boost::asio::buffer(msg), ec);
-  }
-  else
-  {
-    m_poll_buffer.push_back(msg);
-  }
+  enqueue_write(true, msg);
 }
 
 void socketio_server_connection::send_text(const char* data, std::size_t sz)
 {
-  send_text(std::string(data, sz));
+  enqueue_write(true, std::string(data, sz));
 }
 
 void socketio_server_connection::send_binary(std::string_view msg)
 {
-  if(m_is_websocket)
+  enqueue_write(false, std::string(msg));
+}
+
+void socketio_server_connection::enqueue_write(bool text, std::string data)
+{
+  // Sends originate on the producer thread. A beast websocket::stream is not
+  // thread-safe, so marshal every send onto the connection strand: the poll
+  // buffer and the write queue then become strand-confined, and only one
+  // async_write is ever in flight.
+  boost::asio::dispatch(
+      m_ws.get_executor(),
+      [self = shared_from_this(), text, data = std::move(data)]() mutable {
+    if(!self->m_is_websocket)
+    {
+      self->m_poll_buffer.push_back(std::move(data));
+      return;
+    }
+    const bool idle = self->m_write_queue.empty();
+    self->m_write_queue.emplace_back(text, std::move(data));
+    if(idle)
+      self->do_write();
+  });
+}
+
+void socketio_server_connection::do_write()
+{
+  m_ws.text(m_write_queue.front().first);
+  m_ws.async_write(
+      boost::asio::buffer(m_write_queue.front().second),
+      [self = shared_from_this()](boost::beast::error_code ec, std::size_t bytes) {
+    self->on_write(ec, bytes);
+  });
+}
+
+void socketio_server_connection::on_write(boost::beast::error_code ec, std::size_t)
+{
+  if(ec)
   {
-    m_ws.binary(true);
-    boost::beast::error_code ec;
-    m_ws.write(boost::asio::buffer(msg.data(), msg.size()), ec);
+    m_write_queue.clear();
+    return;
   }
-  else
-  {
-    // For polling, binary is base64-encoded with 'b' prefix
-    // Not commonly used in practice since we upgrade to WS
-    m_poll_buffer.push_back(std::string(msg));
-  }
+  m_write_queue.pop_front();
+  if(!m_write_queue.empty())
+    do_write();
 }
 
 void socketio_server_connection::close()
 {
-  m_ping_timer.cancel();
-  boost::beast::error_code ec;
-  if(m_is_websocket && m_ws.is_open())
-    m_ws.close(boost::beast::websocket::close_code::going_away, ec);
-  else
-    boost::beast::get_lowest_layer(m_ws).socket().close(ec);
+  // Run the close on the strand: the timer and stream are shared with the
+  // in-flight async_read/async_wait on the io thread.
+  boost::asio::dispatch(m_ws.get_executor(), [self = shared_from_this()] {
+    self->m_ping_timer.cancel();
+    boost::beast::error_code ec;
+    auto& tcp = boost::beast::get_lowest_layer(self->m_ws);
+    tcp.socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both, ec);
+    tcp.socket().close(ec);
+  });
 }
 
 boost::asio::ip::tcp::socket& socketio_server_connection::tcp_socket()
@@ -132,7 +162,7 @@ void socketio_server_connection::on_read_http(boost::beast::error_code ec, std::
   if(boost::beast::websocket::is_upgrade(m_http_req))
   {
     m_is_websocket = true;
-    do_accept_ws(std::move(m_http_req));
+    do_accept_ws();
     return;
   }
 
@@ -242,14 +272,18 @@ void socketio_server_connection::send_http_response(
   http::write(boost::beast::get_lowest_layer(m_ws), res, ec);
 }
 
-void socketio_server_connection::do_accept_ws(
-    boost::beast::http::request<boost::beast::http::string_body> req)
+void socketio_server_connection::do_accept_ws()
 {
   m_ws.set_option(boost::beast::websocket::stream_base::timeout::suggested(
       boost::beast::role_type::server));
 
+  // async_accept does not take ownership of the request; it holds a reference
+  // for the duration of the operation. Pass the member m_http_req (which lives
+  // as long as this connection via the captured shared_from_this), never a
+  // local/temporary, otherwise the borrowed request is destroyed before the
+  // handshake completes.
   m_ws.async_accept(
-      req,
+      m_http_req,
       [self = shared_from_this()](boost::beast::error_code ec) {
     self->on_accept_ws(ec);
   });
@@ -289,10 +323,9 @@ void socketio_server_connection::on_read_ws(boost::beast::error_code ec, std::si
   // Handle probe sequence
   if(data == "2probe")
   {
-    // Respond with pong probe
-    m_ws.text(true);
-    boost::beast::error_code wec;
-    m_ws.write(boost::asio::buffer("3probe", 6), wec);
+    // Respond with pong probe through the write queue so it cannot overlap
+    // another in-flight async_write on the same stream.
+    enqueue_write(true, "3probe");
     do_read_ws();
     return;
   }
@@ -331,14 +364,11 @@ void socketio_server_connection::on_ping_timer(boost::beast::error_code ec)
   if(ec)
     return; // Timer cancelled
 
-  // Send ping
+  // Send ping through the write queue (never overlap another async_write).
   if(m_is_websocket && m_ws.is_open())
   {
-    m_ws.text(true);
-    boost::beast::error_code wec;
-    m_ws.write(boost::asio::buffer("2", 1), wec);
-    if(!wec)
-      start_ping_timer();
+    enqueue_write(true, "2");
+    start_ping_timer();
   }
 }
 
@@ -706,3 +736,4 @@ socketio_server::find_connection(const ws_connection_handle& hdl)
 }
 
 }
+#endif

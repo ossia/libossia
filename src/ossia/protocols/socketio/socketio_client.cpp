@@ -1,3 +1,6 @@
+// Socket.IO uses Boost.Beast TCP streams / coroutines which are not available
+// in the Emscripten/browser sandbox.
+#if !defined(__EMSCRIPTEN__)
 #include <ossia/protocols/socketio/socketio_client.hpp>
 
 #include <ossia/detail/json.hpp>
@@ -372,3 +375,4 @@ void socketio_client::dispatch_socketio_message(std::string_view data)
 }
 
 }
+#endif

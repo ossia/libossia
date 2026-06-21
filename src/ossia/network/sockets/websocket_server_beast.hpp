@@ -9,10 +9,12 @@
 #include <boost/beast/http.hpp>
 #include <boost/beast/websocket.hpp>
 
+#include <deque>
 #include <memory>
 #include <mutex>
 #include <set>
 #include <string>
+#include <utility>
 
 namespace ossia::net
 {
@@ -46,11 +48,19 @@ private:
   void do_read_ws();
   void on_read_ws(boost::beast::error_code ec, std::size_t bytes);
 
+  // Marshal a send onto the connection strand and serialize writes.
+  void enqueue_write(bool text, std::string data);
+  void do_write();
+  void on_write(boost::beast::error_code ec, std::size_t bytes);
+
   boost::beast::websocket::stream<boost::beast::tcp_stream> m_ws;
   boost::beast::flat_buffer m_buffer;
   boost::beast::http::request<boost::beast::http::string_body> m_http_req;
   websocket_server_beast& m_server;
   bool m_is_websocket{false};
+
+  // Outbound queue, only touched on the strand. {is_text, payload}.
+  std::deque<std::pair<bool, std::string>> m_write_queue;
 };
 
 /// Beast-based WebSocket + HTTP server implementing websocket_server_interface.
@@ -87,7 +97,7 @@ private:
   void add_connection(std::shared_ptr<beast_ws_connection> conn);
   void remove_connection(std::shared_ptr<beast_ws_connection> conn);
 
-  beast_ws_connection* find_connection(const ws_connection_handle& hdl);
+  std::shared_ptr<beast_ws_connection> find_connection(const ws_connection_handle& hdl);
 
   ossia::net::network_context_ptr m_context;
   boost::asio::ip::tcp::acceptor m_acceptor;

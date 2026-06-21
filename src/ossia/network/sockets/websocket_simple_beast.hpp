@@ -8,6 +8,8 @@
 #include <ossia/network/sockets/websocket_server_beast.hpp>
 #endif
 
+#include <mutex>
+
 namespace ossia::net
 {
 
@@ -69,9 +71,12 @@ struct websocket_simple_server_beast
       : m_server{std::move(ctx)}
       , m_port{conf.port}
   {
-    m_server.set_open_handler(
-        [this](ws_connection_handle hdl) { m_listeners.push_back(hdl.lock()); });
+    m_server.set_open_handler([this](ws_connection_handle hdl) {
+      std::lock_guard lock{m_listeners_mutex};
+      m_listeners.push_back(hdl.lock());
+    });
     m_server.set_close_handler([this](ws_connection_handle hdl) {
+      std::lock_guard lock{m_listeners_mutex};
       ossia::remove_erase(m_listeners, hdl.lock());
     });
   }
@@ -92,6 +97,9 @@ struct websocket_simple_server_beast
   void write(const char* data, std::size_t sz)
   {
     std::string_view dat{data, sz};
+    // The listener list is mutated by the open/close handlers on the io
+    // thread; this runs on the producer thread, so guard the iteration.
+    std::lock_guard lock{m_listeners_mutex};
     for(auto& listener : m_listeners)
       m_server.send_binary_message(listener, dat);
   }
@@ -99,6 +107,7 @@ struct websocket_simple_server_beast
   void close() { m_server.stop(); }
 
   websocket_server_beast m_server;
+  std::mutex m_listeners_mutex;
   std::vector<std::shared_ptr<void>> m_listeners;
   int m_port{};
 };
