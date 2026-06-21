@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys re2)
+if(use_sys)
   find_package(re2 QUIET CONFIG)
   if(NOT TARGET re2::re2)
     find_library(RE2_LIBRARY NAMES re2)

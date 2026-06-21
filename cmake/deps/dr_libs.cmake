@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys dr_libs)
+if(use_sys)
   find_path(DR_LIBS_INCLUDE_DIR dr_wav.h)
 endif()
 

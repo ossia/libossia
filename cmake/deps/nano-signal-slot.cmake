@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys nanosignal)
+if(use_sys)
   find_path(NANOSIGNAL_INCLUDE_DIR nano_observer.hpp)
 endif()
 

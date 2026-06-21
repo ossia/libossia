@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys zita-alsa-pcmi)
+if(use_sys)
   find_path(ZITA_ALSA_PCMI_INCLUDE_DIR zita-alsa-pcmi.h)
   find_library(ZITA_ALSA_PCMI_LIBRARY zita-alsa-pcmi)
 

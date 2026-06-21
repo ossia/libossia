@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys perlinnoise)
+if(use_sys)
   find_path(PERLINNOISE_INCLUDE_DIR PerlinNoise.hpp)
 endif()
 

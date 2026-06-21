@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys fmt)
+if(use_sys)
   find_package(fmt CONFIG GLOBAL)
 endif()
 

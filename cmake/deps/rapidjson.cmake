@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys RapidJSON)
+if(use_sys)
   find_package(RapidJSON 1.2 CONFIG GLOBAL)
 endif()
 

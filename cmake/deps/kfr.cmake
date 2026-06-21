@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys KFR)
+if(use_sys)
   # KFR
   if(OSSIA_ENABLE_KFR)
     find_package(KFR)

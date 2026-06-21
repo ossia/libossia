@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys readerwriterqueue)
+if(use_sys)
   find_path(READERWRITERQUEUE_INCLUDE_DIR readerwriterqueue.h)
 endif()
 
