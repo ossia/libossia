@@ -52,6 +52,14 @@ public:
 
     m_req.method(v);
     m_req.version(11);
+
+    // A response to a HEAD request never has a message body, even when it
+    // advertises a Content-Length. Tell the parser to stop after the headers,
+    // otherwise it waits for a body that never arrives and fails with
+    // "partial message" when the connection closes.
+    if(v == http::verb::head)
+      m_parser.skip(true);
+
     m_req.target(percent_encode_spaces(path));
     m_req.set(http::field::host, std::string{host});
 

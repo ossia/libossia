@@ -57,7 +57,7 @@ struct websocket_simple_client_beast
 
   boost::asio::io_context& m_context;
   std::string m_host;
-  std::unique_ptr<websocket_client_beast> m_client;
+  std::unique_ptr<websocket_client_interface> m_client;
 };
 
 /// Duck-typed simple websocket server for use with osc_generic_server_protocol.
