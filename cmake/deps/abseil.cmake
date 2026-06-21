@@ -7,6 +7,12 @@ endif()
 # add_subdirectory-based dependencies (rubberband, libremidi, ...).
 if(NOT TARGET absl::strings)
   block()
+    # A parent project (e.g. score) may have CMAKE_INCLUDE_CURRENT_DIR ON.
+    # That would add each Abseil target's own source/binary dir to its include
+    # path, and `absl/time/time.h` would then shadow the system <time.h>,
+    # breaking libstdc++'s <ctime>/<chrono>. Keep it off for Abseil's build.
+    # (Scoped to this block(), so the parent setting is untouched afterwards.)
+    set(CMAKE_INCLUDE_CURRENT_DIR OFF)
     set(BUILD_SHARED_LIBS 0)
     set(BUILD_TESTING 0)
     set(ABSL_BUILD_TESTING OFF CACHE INTERNAL "")
