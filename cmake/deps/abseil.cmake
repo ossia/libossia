@@ -15,6 +15,14 @@ if(NOT TARGET absl::strings)
     # get flooded with warnings coming from them.
     set(ABSL_USE_SYSTEM_INCLUDES ON CACHE INTERNAL "")
 
+    # A consumer with CMAKE_INCLUDE_CURRENT_DIR enabled would otherwise add each
+    # Abseil target's own source/binary dir as a plain -I. For the absl/time
+    # target that injects -I.../absl/time, whose time.h then shadows the system
+    # C <time.h> (e.g. when pthread.h does #include <time.h>), breaking the
+    # build with "no member named 'clock_t' in the global namespace" errors.
+    # Abseil includes its own headers as absl/... so it does not need this.
+    set(CMAKE_INCLUDE_CURRENT_DIR OFF)
+
     # Abseil's CMakeLists forcibly overrides CMAKE_MSVC_RUNTIME_LIBRARY from its
     # own ABSL_MSVC_STATIC_RUNTIME option (default OFF -> /MD), ignoring what the
     # rest of the build selected. Static ossia builds (Max/PD/Python/Unity, ...)
