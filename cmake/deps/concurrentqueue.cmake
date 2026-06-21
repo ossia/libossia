@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys concurrentqueue)
+if(use_sys)
   find_package(concurrentqueue 1.0 CONFIG GLOBAL)
   if(TARGET concurrentqueue::concurrentqueue)
     get_target_property(cq_include_dirs concurrentqueue::concurrentqueue  INTERFACE_INCLUDE_DIRECTORIES)

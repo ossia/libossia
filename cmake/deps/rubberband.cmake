@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys rubberband)
+if(use_sys)
   find_library(RUBBERBAND_LIBRARY NAMES rubberband)
   find_path(RUBBERBAND_INCLUDE_DIR rubberband/RubberBandStretcher.h)
 

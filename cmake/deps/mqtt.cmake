@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys async-mqtt5)
+if(use_sys)
   find_package(async-mqtt5 CONFIG GLOBAL)
 endif()
 

@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys websocketpp)
+if(use_sys)
   find_package(websocketpp CONFIG GLOBAL)
 endif()
 

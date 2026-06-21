@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys smallfun)
+if(use_sys)
   find_path(SMALLFUN_INCLUDE_DIR smallfun.hpp)
 endif()
 

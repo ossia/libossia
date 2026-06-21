@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys wiiuse)
+if(use_sys)
   find_library(WIIUSE_LIBRARY NAMES wiiuse)
   find_path(WIIUSE_INCLUDE_DIR wiiuse.h)
 

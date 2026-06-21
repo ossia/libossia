@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys libcoap)
+if(use_sys)
     find_path(LIBCOAP_INCLUDEDIR coap3/libcoap.h)
     find_library(LIBCOAP_GNUTLS_LIBRARIES coap-3-gnutls)
     find_library(LIBCOAP_LIBRARIES coap-3)

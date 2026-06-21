@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys exprtk)
+if(use_sys)
   find_path(EXPRTK_INCLUDE_DIR exprtk.hpp)
 endif()
 

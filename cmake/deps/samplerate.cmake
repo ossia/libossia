@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys SampleRate)
+if(use_sys)
   find_package(SampleRate CONFIG GLOBAL)
 
   if(NOT TARGET SampleRate::samplerate)

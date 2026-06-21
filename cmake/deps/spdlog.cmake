@@ -1,4 +1,5 @@
-if(OSSIA_USE_SYSTEM_LIBRARIES)
+ossia_use_system(use_sys spdlog)
+if(use_sys)
   if(NOT OSSIA_FMT_INTERNAL)
     find_package(spdlog CONFIG REQUIRED GLOBAL)
   endif()

@@ -1,5 +1,16 @@
 # Build settings :
 option(OSSIA_USE_SYSTEM_LIBRARIES "Use system versions of the third-party libraries if possible")
+
+function(ossia_use_system out pkg)
+  if(NOT DEFINED OSSIA_USE_SYSTEM_${pkg})
+    set(OSSIA_USE_SYSTEM_${pkg} "" CACHE STRING "")
+  endif()
+  if(NOT "${OSSIA_USE_SYSTEM_${pkg}}" STREQUAL "")
+    set(${out} "${OSSIA_USE_SYSTEM_${pkg}}" PARENT_SCOPE)
+  else()
+    set(${out} "${OSSIA_USE_SYSTEM_LIBRARIES}" PARENT_SCOPE)
+  endif()
+endfunction()
 option(OSSIA_STATIC "Make a static build" OFF)
 option(OSSIA_INSTALL_STATIC_DEPENDENCIES "Generate install rules for wiiuse, etc" OFF)
 option(OSSIA_FAST_DEVELOPER_BUILD "Create shared libraries for some third-party libraries" OFF)
