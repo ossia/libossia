@@ -230,6 +230,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_client_interface.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_common.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_factory.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_header_client.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_reply.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_beast.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/sockets/websocket_server_interface.hpp"
