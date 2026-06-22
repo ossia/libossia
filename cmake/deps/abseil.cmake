@@ -13,6 +13,11 @@ if(NOT TARGET absl::strings)
     # breaking libstdc++'s <ctime>/<chrono>. Keep it off for Abseil's build.
     # (Scoped to this block(), so the parent setting is untouched afterwards.)
     set(CMAKE_INCLUDE_CURRENT_DIR OFF)
+    # A parent project (e.g. score) may build with CMAKE_UNITY_BUILD ON. Abseil's
+    # cctz sources are not unity-safe: time_zone_posix.cc and time_zone_fixed.cc
+    # each define a namespace-scope `kDigits`, so a merged TU fails with a
+    # redefinition. Build Abseil one TU at a time. (Scoped to this block().)
+    set(CMAKE_UNITY_BUILD OFF)
     set(BUILD_SHARED_LIBS 0)
     set(BUILD_TESTING 0)
     set(ABSL_BUILD_TESTING OFF CACHE INTERNAL "")
