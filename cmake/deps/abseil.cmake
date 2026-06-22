@@ -9,6 +9,9 @@ if(NOT TARGET absl::strings)
   block()
     set(BUILD_SHARED_LIBS 0)
     set(BUILD_TESTING 0)
+    # Abseil's .cc files have file-scope statics (kAsciiToInt, ...) that clash
+    # when batched, so it must not be unity-built.
+    set(CMAKE_UNITY_BUILD OFF)
     set(ABSL_BUILD_TESTING OFF CACHE INTERNAL "")
     set(ABSL_PROPAGATE_CXX_STD ON CACHE INTERNAL "")
     # Treat Abseil's headers as system headers so that re2 (and ossia) do not
