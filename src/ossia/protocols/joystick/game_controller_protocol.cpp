@@ -107,9 +107,12 @@ void game_controller_protocol::set_device(ossia::net::device_base& dev)
     if(SDL_GameControllerHasAxis(m_joystick, static_cast<SDL_GameControllerAxis>(i))
        == SDL_TRUE)
     {
+      // Triggers range from 0 to 1, while sticks range from -1 to 1.
+      const bool is_trigger = (i == SDL_CONTROLLER_AXIS_TRIGGERLEFT
+                               || i == SDL_CONTROLLER_AXIS_TRIGGERRIGHT);
       m_axis_parameters[i] = device_parameter::create_device_parameter(
           root, axes[i], 0.0, val_type::FLOAT, bounding_mode::CLIP, access_mode::GET,
-          make_domain(-1.0f, 1.0f));
+          is_trigger ? make_domain(0.0f, 1.0f) : make_domain(-1.0f, 1.0f));
     }
   }
 
