@@ -143,6 +143,7 @@ if(OSSIA_PROTOCOL_OSCQUERY)
     ossia_add_test(OSCQueryValueCallbackTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSCQueryValueCallbackTest.cpp")
   endif()
   ossia_add_test(MultiplexTest            "${CMAKE_CURRENT_SOURCE_DIR}/Network/MultiplexTest.cpp")
+  ossia_add_test(NetworkThreadSafetyTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/NetworkThreadSafetyTest.cpp")
   ossia_add_test(OSCQueryRename "Network/OSCQuery_rename.cpp")
 endif()
 
