@@ -90,6 +90,7 @@ struct tick_all_nodes
   {
     ossia::disable_fpe();
     std::atomic_thread_fence(std::memory_order_seq_cst);
+    e.bufferSize = (int)samples;
     e.begin_tick();
     const time_value old_date{e.samples_since_start};
     e.samples_since_start += samples;
@@ -125,9 +126,9 @@ struct buffer_tick
 
     ossia::disable_fpe();
     std::atomic_thread_fence(std::memory_order_seq_cst);
+    st.bufferSize = (int)frameCount;
     st.begin_tick();
     st.samples_since_start += frameCount;
-    st.bufferSize = (int)frameCount;
     // we could run a syscall and call now() but that's a bit more costly.
     st.cur_date = seconds * 1e9;
 
