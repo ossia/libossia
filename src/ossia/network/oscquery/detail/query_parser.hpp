@@ -31,7 +31,9 @@ public:
     if(idx != std::string::npos)
     {
       path = std::string_view(request.data(), idx);
-      queries = std::string_view(request.data() + idx + 1, request.size() - idx);
+      // Everything after the '?': length is size - (idx + 1), not size - idx,
+      // which would read one byte past the query string.
+      queries = std::string_view(request.data() + idx + 1, request.size() - idx - 1);
     }
     else
     {
