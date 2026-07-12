@@ -276,11 +276,29 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
   endif()
 
-  # MiniAudio / Web Audio support
-  if(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+  # MiniAudio (CoreAudio on macOS, ALSA on Linux, Web Audio on wasm).
+  # The single-header implementation is compiled here, once, in miniaudio.cpp;
+  # consumers (score-plugin-audio) only see declarations and link the exported
+  # API, so there is no duplicate ma_* symbol when everything is statically
+  # linked into one binary. Not used on Windows (WASAPI/PortAudio there).
+  if(NOT WIN32)
+    target_sources(ossia PRIVATE
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp")
+    # Keep it its own TU: it is the only place MINIAUDIO_IMPLEMENTATION is
+    # defined, and unity-merging could reorder it past a declarations-only
+    # include and drop the implementation.
+    set_source_files_properties(
+      "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp"
+      PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
     target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/miniaudio>)
-    target_compile_definitions(ossia PRIVATE MA_ENABLE_AUDIO_WORKLETS MA_ENABLE_WEBAUDIO)
-    target_link_options(ossia PUBLIC -sAUDIO_WORKLET=1 -sWASM_WORKERS=1)
+    if(APPLE)
+      # miniaudio's CoreAudio backend, built with MA_NO_RUNTIME_LINKING.
+      target_link_libraries(ossia PRIVATE
+        "-framework CoreAudio" "-framework AudioToolbox"
+        "-framework AudioUnit" "-framework CoreFoundation")
+    elseif(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+      target_link_options(ossia PUBLIC -sAUDIO_WORKLET=1 -sWASM_WORKERS=1)
+    endif()
   endif()
 
   if(OSSIA_ENABLE_LIBSAMPLERATE)
