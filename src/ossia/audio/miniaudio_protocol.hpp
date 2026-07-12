@@ -27,8 +27,6 @@
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/thread.hpp>
 
-//#include <kfr/base/conversion.hpp>
-
 #include <miniaudio.h>
 
 #define OSSIA_AUDIO_MINIAUDIO 1
@@ -172,9 +170,11 @@ private:
     auto ins_data = self.ins_data.data();
     for(int i = 0; i < self.effective_inputs; i++)
       ins[i] = ins_data + i * nframes;
-#if !defined(__EMSCRIPTEN__)
-    kfr::deinterleave(ins, (float*)input, self.effective_inputs, nframes);
-#endif
+
+    const float* in_samples = static_cast<const float*>(input);
+    for(int c = 0; c < self.effective_inputs; c++)
+      for(ma_uint32 f = 0; f < nframes; f++)
+        ins[c][f] = in_samples[f * self.effective_inputs + c];
 
     auto outs = self.outs.data();
     auto outs_data = self.outs_data.data();
@@ -203,10 +203,10 @@ private:
 
     self.tick_end();
 
-#if !defined(__EMSCRIPTEN__)
-    kfr::interleave(
-        (float*)output, (const float**)outs, self.effective_outputs, nframes);
-#endif
+    float* out_samples = static_cast<float*>(output);
+    for(int c = 0; c < self.effective_outputs; c++)
+      for(ma_uint32 f = 0; f < nframes; f++)
+        out_samples[f * self.effective_outputs + c] = outs[c][f];
   }
 
   std::shared_ptr<miniaudio_context> m_ctx;
