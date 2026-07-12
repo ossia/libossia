@@ -3,7 +3,10 @@
 
 #if __has_include(<miniaudio.h>)
 #define OSSIA_ENABLE_MINIAUDIO 1
-#define MINIAUDIO_IMPLEMENTATION
+// The single-header implementation is compiled exactly once, in miniaudio.cpp.
+// Every other includer of this header only sees declarations, so there is no
+// duplicate-symbol clash when libossia and score-plugin-audio are statically
+// linked into the same binary (e.g. wasm).
 #if defined(__APPLE__)
 #define MA_NO_RUNTIME_LINKING 1
 #endif
@@ -22,7 +25,11 @@
 #define MA_NO_NODE_GRAPH 1
 #define MA_NO_GENERATION 1
 #define MA_MAX_CHANNELS 1024
-#define MA_API
+// Export the miniaudio API from libossia so consumers (score-plugin-audio)
+// link against this one copy instead of compiling their own. OSSIA_EXPORT is
+// empty in static builds, dllexport/visibility when building the ossia shared
+// lib, and dllimport when compiling against it.
+#define MA_API OSSIA_EXPORT
 
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/thread.hpp>
