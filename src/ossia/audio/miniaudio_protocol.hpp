@@ -206,7 +206,8 @@ private:
 
     ossia::audio_tick_state ts{(float* const*)ins,     outs,    self.effective_inputs,
                                self.effective_outputs, nframes, nsecs};
-    self.audio_tick(ts);
+    if(self.audio_tick)
+      self.audio_tick(ts);
 
     self.tick_end();
 
