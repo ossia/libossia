@@ -14,6 +14,13 @@
 #if defined(__EMSCRIPTEN__)
 #define MA_ENABLE_WEBAUDIO 1
 #define MA_ENABLE_AUDIO_WORKLETS 1
+// The AudioWorklet thread runs the whole ossia execution tick (every node,
+// including deep gfx/ISF exec-node call chains). miniaudio allocates a fixed
+// heap buffer for that thread's stack; its 128KB default is far too small and
+// a deep tick silently overruns it, corrupting adjacent heap allocations
+// (manifesting much later as OOB / null-function crashes on the main thread).
+// Give it a desktop-sized stack instead.
+#define MA_AUDIO_WORKLETS_THREAD_STACK_SIZE 4194304
 #else
 #define MA_ENABLE_COREAUDIO 1
 #define MA_ENABLE_ALSA 1
