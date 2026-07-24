@@ -276,12 +276,12 @@ if(OSSIA_DATAFLOW)
     target_link_libraries(ossia PRIVATE $<BUILD_INTERFACE:ossia::sdl2>)
   endif()
 
-  # MiniAudio (CoreAudio on macOS, ALSA on Linux, Web Audio on wasm).
-  # The single-header implementation is compiled here, once, in miniaudio.cpp;
-  # consumers (score-plugin-audio) only see declarations and link the exported
-  # API, so there is no duplicate ma_* symbol when everything is statically
-  # linked into one binary. Not used on Windows (WASAPI/PortAudio there).
-  if(NOT WIN32)
+  # MiniAudio (WASAPI on Windows, CoreAudio on macOS, ALSA on Linux, Web Audio
+  # on wasm). The single-header implementation is compiled here, once, in
+  # miniaudio.cpp; consumers (score-plugin-audio) only see declarations and
+  # link the exported API, so there is no duplicate ma_* symbol when everything
+  # is statically linked into one binary.
+  if(TRUE)
     target_sources(ossia PRIVATE
       "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp")
     # Keep it its own TU: it is the only place MINIAUDIO_IMPLEMENTATION is

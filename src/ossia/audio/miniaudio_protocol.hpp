@@ -21,6 +21,8 @@
 // (manifesting much later as OOB / null-function crashes on the main thread).
 // Give it a desktop-sized stack instead.
 #define MA_AUDIO_WORKLETS_THREAD_STACK_SIZE 4194304
+#elif defined(_WIN32)
+#define MA_ENABLE_WASAPI 1
 #else
 #define MA_ENABLE_COREAUDIO 1
 #define MA_ENABLE_ALSA 1
@@ -87,10 +89,18 @@ public:
 
     config.sampleRate = rate;
     config.periodSizeInFrames = bs;
+    // A zeroed device id means "system default device". Passing NULL as the
+    // pDeviceID makes miniaudio open the OS default device and, on backends
+    // that support it (WASAPI in particular), automatically follow the OS
+    // default output/input when the user changes it while the stream runs.
+    auto is_default_id = [](const ma_device_id& id) {
+      ma_device_id zero{};
+      return memcmp(&id, &zero, sizeof(ma_device_id)) == 0;
+    };
 
     if(outputs > 0)
     {
-      config.playback.pDeviceID = &card_out;
+      config.playback.pDeviceID = is_default_id(card_out) ? nullptr : &card_out;
       config.playback.channels = outputs;
       config.playback.format = ma_format_f32;
       // config.playback.shareMode = ma_share_mode_exclusive;
@@ -98,7 +108,7 @@ public:
 
     if(inputs > 0)
     {
-      config.capture.pDeviceID = &card_in;
+      config.capture.pDeviceID = is_default_id(card_in) ? nullptr : &card_in;
       config.capture.channels = inputs;
       config.capture.format = ma_format_f32;
       // config.capture.shareMode = ma_share_mode_exclusive;
