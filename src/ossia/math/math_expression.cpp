@@ -342,6 +342,7 @@ bool math_expression::set_expression(const std::string& expr)
   {
     impl->cur_expr_txt = expr;
     recompile();
+    impl->missing_variables.clear();
   }
 
   return impl->valid;
