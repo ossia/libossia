@@ -56,6 +56,28 @@ struct network_context
 #endif
     context.restart();
   }
+
+  void poll()
+  {
+    auto wg = boost::asio::make_work_guard(context);
+    context.restart();
+#if defined(__cpp_exceptions)
+    try
+    {
+      context.poll();
+    }
+    catch(std::exception& e)
+    {
+      ossia::logger().error("Error while processing network events: {}", e.what());
+    }
+    catch(...)
+    {
+      ossia::logger().error("Error while processing network events.");
+    }
+#else
+    context.poll();
+#endif
+  }
 };
 using network_context_ptr = std::shared_ptr<network_context>;
 }
