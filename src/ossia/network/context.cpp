@@ -10,7 +10,7 @@ std::shared_ptr<ossia::net::network_context> create_network_context()
 
 void poll_network_context(ossia::net::network_context& ctx)
 {
-  ctx.context.poll();
+  ctx.poll();
 }
 
 void run_network_context(ossia::net::network_context& ctx)
