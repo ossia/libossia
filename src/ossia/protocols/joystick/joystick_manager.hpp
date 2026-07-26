@@ -25,11 +25,14 @@ struct sdl_joystick_context
     //  Prevent SDL from setting SIGINT handler on Posix Systems
     SDL_SetHint(SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS, "1");
 
-    if(int ret = SDL_Init(
-           SDL_INIT_JOYSTICK | SDL_INIT_HAPTIC | SDL_INIT_SENSOR
-           | SDL_INIT_GAMECONTROLLER);
-       ret < 0)
+    if(int ret = SDL_Init(SDL_INIT_JOYSTICK | SDL_INIT_GAMECONTROLLER); ret < 0)
       throw std::runtime_error(fmt::format("SDL Init failure: {}", SDL_GetError()));
+
+    // Optional: absent from some SDL builds (the Emscripten port has no haptic
+    // support at all), and no joystick API here needs them to be up. Sensors
+    // are read through SDL_GameControllerHasSensor, which simply reports none.
+    SDL_InitSubSystem(SDL_INIT_HAPTIC);
+    SDL_InitSubSystem(SDL_INIT_SENSOR);
 
     SDL_JoystickEventState(SDL_ENABLE);
     SDL_GameControllerEventState(SDL_ENABLE);
