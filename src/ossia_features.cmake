@@ -281,24 +281,22 @@ if(OSSIA_DATAFLOW)
   # miniaudio.cpp; consumers (score-plugin-audio) only see declarations and
   # link the exported API, so there is no duplicate ma_* symbol when everything
   # is statically linked into one binary.
-  if(TRUE)
-    target_sources(ossia PRIVATE
-      "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp")
-    # Keep it its own TU: it is the only place MINIAUDIO_IMPLEMENTATION is
-    # defined, and unity-merging could reorder it past a declarations-only
-    # include and drop the implementation.
-    set_source_files_properties(
-      "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp"
-      PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
-    target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/miniaudio>)
-    if(APPLE)
-      # miniaudio's CoreAudio backend, built with MA_NO_RUNTIME_LINKING.
-      target_link_libraries(ossia PRIVATE
-        "-framework CoreAudio" "-framework AudioToolbox"
-        "-framework AudioUnit" "-framework CoreFoundation")
-    elseif(CMAKE_SYSTEM_NAME MATCHES Emscripten)
-      target_link_options(ossia PUBLIC -sAUDIO_WORKLET=1 -sWASM_WORKERS=1)
-    endif()
+  target_sources(ossia PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp")
+  # Keep it its own TU: it is the only place MINIAUDIO_IMPLEMENTATION is
+  # defined, and unity-merging could reorder it past a declarations-only
+  # include and drop the implementation.
+  set_source_files_properties(
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/miniaudio.cpp"
+    PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+  target_include_directories(ossia PRIVATE $<BUILD_INTERFACE:${OSSIA_3RDPARTY_FOLDER}/miniaudio>)
+  if(APPLE)
+    # miniaudio's CoreAudio backend, built with MA_NO_RUNTIME_LINKING.
+    target_link_libraries(ossia PRIVATE
+      "-framework CoreAudio" "-framework AudioToolbox"
+      "-framework AudioUnit" "-framework CoreFoundation")
+  elseif(CMAKE_SYSTEM_NAME MATCHES Emscripten)
+    target_link_options(ossia PUBLIC -sAUDIO_WORKLET=1 -sWASM_WORKERS=1)
   endif()
 
   if(OSSIA_ENABLE_LIBSAMPLERATE)
