@@ -252,12 +252,12 @@ void value_port::write_value(const value& v, int64_t timestamp)
       }
       else
       {
-        data.emplace_back(v);
+        data.emplace_back(v, timestamp);
       }
       break;
     }
     case data_mix_method::mix_append: {
-      this->data.emplace_back(v);
+      this->data.emplace_back(v, timestamp);
       break;
     }
     case data_mix_method::mix_merge: {
@@ -281,12 +281,12 @@ void value_port::write_value(value&& v, int64_t timestamp)
       }
       else
       {
-        data.emplace_back(std::move(v));
+        data.emplace_back(std::move(v), timestamp);
       }
       break;
     }
     case data_mix_method::mix_append: {
-      this->data.emplace_back(std::move(v));
+      this->data.emplace_back(std::move(v), timestamp);
       break;
     }
     case data_mix_method::mix_merge: {
