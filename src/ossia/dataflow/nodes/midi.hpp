@@ -6,6 +6,8 @@
 
 #include <libremidi/ump_events.hpp>
 
+#include <algorithm>
+
 namespace ossia::nodes
 {
 
@@ -18,6 +20,11 @@ struct note_data
   midi_size_t pitch{};
   midi_size_t velocity{};
 };
+
+inline bool is_note_off(const libremidi::ump& m) noexcept
+{
+  return (m.get_status_code() & 0xF0) == 0x80;
+}
 
 struct note_comparator
 {
@@ -63,16 +70,28 @@ public:
     }
   }
 
+  // note_comparator only orders on the start date: erasing by key would remove
+  // every note of a chord, and find() could return a note of another pitch.
+  static bool erase_exact(note_set& set, const note_data& nd)
+  {
+    auto [first, last] = set.equal_range(nd);
+    for(auto it = first; it != last; ++it)
+    {
+      if(it->pitch == nd.pitch)
+      {
+        set.erase(it);
+        return true;
+      }
+    }
+    return false;
+  }
+
   void remove_note(note_data nd)
   {
-    m_orig_notes.erase(nd);
-    m_notes.erase(nd);
-    auto it = m_playing_notes.find(nd);
-    if(it != m_playing_notes.end())
-    {
+    erase_exact(m_orig_notes, nd);
+    erase_exact(m_notes, nd);
+    if(erase_exact(m_playing_notes, nd))
       m_to_stop.insert(nd);
-      m_playing_notes.erase(it);
-    }
   }
 
   void replace_notes(note_set&& notes)
@@ -166,14 +185,56 @@ public:
   bool doTransport{};
 
 private:
+  //! Note-offs for every note whose end date has been reached.
+  //! Overdue ends (the note both started and finished inside a single tick, or
+  //! a tick was skipped) are stamped at the beginning of the tick instead of
+  //! being dropped: t.in_range() can never become true for them again.
+  void stop_finished_notes(
+      const ossia::token_request& t, ossia::midi_port& mp, double samplesratio,
+      int64_t tick_start)
+  {
+    for(auto it = m_playing_notes.begin(); it != m_playing_notes.end();)
+    {
+      const note_data& note = *it;
+      const auto end_time = note.start + note.duration;
+
+      if(end_time < t.date)
+      {
+        mp.messages.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
+        mp.messages.back().timestamp
+            = std::max(tick_start, t.to_physical_time_in_tick(end_time, samplesratio));
+
+        it = m_playing_notes.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+  }
+
   void run(const ossia::token_request& t, ossia::exec_state_facade e) noexcept override
   {
+    ossia::midi_port& mp = *midi_out;
+
     struct scope_guard
     {
       midi& self;
       const ossia::token_request& t;
+      ossia::midi_port& mp;
+      std::size_t first_message;
       ~scope_guard()
       {
+        // Consumers (VST3 event lists, MIDI outputs...) expect events in
+        // chronological order, and a note-off must win over a note-on sharing
+        // its timestamp, else back-to-back notes on the same pitch cancel out.
+        auto begin = mp.messages.begin() + first_message;
+        std::stable_sort(begin, mp.messages.end(), [](const auto& lhs, const auto& rhs) {
+          if(lhs.timestamp != rhs.timestamp)
+            return lhs.timestamp < rhs.timestamp;
+          return is_note_off(lhs) && !is_note_off(rhs);
+        });
+
         self.m_prev_date = t.date;
 
         if(self.requestTransport)
@@ -182,9 +243,8 @@ private:
           self.requestTransport = false;
         }
       }
-    } guard{*this, t};
+    } guard{*this, t, mp, mp.messages.size()};
 
-    ossia::midi_port& mp = *midi_out;
     const auto samplesratio = e.modelToSamples();
     const auto tick_start = t.physical_start(samplesratio);
 
@@ -194,12 +254,12 @@ private:
       for(auto note : m_playing_notes)
       {
         mess.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
-        mess.back().timestamp = 0;
+        mess.back().timestamp = tick_start;
       }
       for(auto note : m_to_stop)
       {
         mess.push_back(libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
-        mess.back().timestamp = 0;
+        mess.back().timestamp = tick_start;
       }
       m_playing_notes.clear();
       m_to_stop.clear();
@@ -249,26 +309,7 @@ private:
 
       if(t.forward())
       {
-        // First send note offs
-        for(auto it = m_playing_notes.begin(); it != m_playing_notes.end();)
-        {
-          note_data& note = const_cast<note_data&>(*it);
-          auto end_time = note.start + note.duration;
-
-          if(t.in_range({end_time}))
-          {
-            mp.messages.push_back(
-                libremidi::from_midi1::note_off(m_channel, note.pitch, 0));
-            mp.messages.back().timestamp
-                = t.to_physical_time_in_tick(end_time, samplesratio);
-
-            it = m_playing_notes.erase(it);
-          }
-          else
-          {
-            ++it;
-          }
-        }
+        stop_finished_notes(t, mp, samplesratio, tick_start);
 
         // Look for all the messages
         auto max_it = m_notes.lower_bound({t.date});
@@ -294,6 +335,10 @@ private:
             ++it;
           }
         }
+
+        // Notes short enough to begin and end inside this tick were not in
+        // m_playing_notes when the first pass ran: stop them here.
+        stop_finished_notes(t, mp, samplesratio, tick_start);
       }
     }
   }
