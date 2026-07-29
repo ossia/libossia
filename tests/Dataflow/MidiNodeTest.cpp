@@ -385,7 +385,7 @@ TEST_CASE("midi node: transport into the middle of a note resumes it", "[midi][n
   fixture f;
   f.set({note(0, 1000, 60), note(2000, 100, 72)});
 
-  f.node.transport_impl(500);
+  f.node.transport_impl(ossia::time_value{500});
   auto msgs = f.tick(500, 600);
 
   REQUIRE(msgs.size() == 1);
@@ -408,7 +408,7 @@ TEST_CASE("midi node: transporting releases what was playing", "[midi][node]")
 
   REQUIRE(f.tick(0, 50).size() == 1);
 
-  f.node.transport_impl(4000);
+  f.node.transport_impl(ossia::time_value{4000});
   auto msgs = f.tick(4000, 4100);
 
   REQUIRE(msgs.size() == 1);
@@ -423,7 +423,7 @@ TEST_CASE("midi node: transporting back replays what follows", "[midi][node]")
 
   REQUIRE(f.tick(0, 200).size() == 2); // played and released
 
-  f.node.transport_impl(0);
+  f.node.transport_impl(ossia::time_value{0});
   auto msgs = f.tick(0, 200);
 
   REQUIRE(msgs.size() == 2);
@@ -463,19 +463,29 @@ TEST_CASE("midi node: rewinding keeps a note the playhead is still inside", "[mi
   CHECK(off[0].status == note_off);
 }
 
-TEST_CASE("midi node: a note rewound over plays again going forward", "[midi][node]")
+TEST_CASE("midi node: rewinding over a note sounds it in reverse", "[midi][node]")
 {
+  // The mirror of forward playback: the end is crossed first, so the note is
+  // entered there and left at its start. It sounds over the same span of the
+  // timeline in both directions.
   fixture f;
-  f.set({note(100, 50, 60)});
+  f.set({note(100, 50, 60)}); // sounds over [100; 150[
 
-  REQUIRE(f.tick(0, 300).size() == 2); // played and released
+  REQUIRE(f.tick(0, 300).size() == 2); // played and released going forward
 
-  CHECK(f.tick(300, 0, 0, -1.).empty()); // rewound over it, nothing was held
+  auto back = f.tick(300, 0, 0, -1.);
+  REQUIRE(back.size() == 2);
+  CHECK(back[0].status == note_on);
+  CHECK(back[0].note == 60);
+  CHECK(back[0].timestamp == 150); // 300 -> 150 is 150 frames of rewinding
+  CHECK(back[1].status == note_off);
+  CHECK(back[1].note == 60);
+  CHECK(back[1].timestamp == 200); // and 300 -> 100 is 200
 
+  // and it is playable again going forward
   auto msgs = f.tick(0, 300);
   REQUIRE(msgs.size() == 2);
   CHECK(msgs[0].status == note_on);
-  CHECK(msgs[0].note == 60);
   CHECK(msgs[1].status == note_off);
 }
 
@@ -488,14 +498,28 @@ TEST_CASE("midi node: rewinding re-arms a note exactly once", "[midi][node]")
 
   for(int pass = 0; pass < 3; pass++)
   {
-    auto msgs = f.tick(0, 300);
     INFO("pass " << pass);
-    REQUIRE(msgs.size() == 2);
-    CHECK(msgs[0].status == note_on);
-    CHECK(msgs[1].status == note_off);
 
-    CHECK(f.tick(300, 0, 0, -1.).empty());
+    auto forward = f.tick(0, 300);
+    REQUIRE(forward.size() == 2);
+    CHECK(forward[0].status == note_on);
+    CHECK(forward[1].status == note_off);
+
+    auto back = f.tick(300, 0, 0, -1.);
+    REQUIRE(back.size() == 2);
+    CHECK(back[0].status == note_on);
+    CHECK(back[1].status == note_off);
   }
+}
+
+TEST_CASE("midi node: rewinding does not re-enter a note it is inside", "[midi][node]")
+{
+  // Only crossing the end enters a note. Landing inside one going backwards
+  // leaves it silent, the same way it does going forwards.
+  fixture f;
+  f.set({note(0, 1000, 60)});
+
+  CHECK(f.tick(900, 500, 0, -1.).empty());
 }
 
 TEST_CASE("midi node: transport() only applies after the next tick", "[midi][node]")
@@ -505,7 +529,7 @@ TEST_CASE("midi node: transport() only applies after the next tick", "[midi][nod
   fixture f;
   f.set({note(0, 50, 60)});
 
-  f.node.transport(1000);
+  f.node.transport(ossia::time_value{1000});
 
   auto during = f.tick(0, 100); // still the old position
   REQUIRE(during.size() == 2);
