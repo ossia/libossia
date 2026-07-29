@@ -340,3 +340,108 @@ TEMPLATE_TEST_CASE(
     }
   }
 }
+
+TEST_CASE("test_write_value_timestamp", "test_write_value_timestamp")
+{
+  GIVEN("A default value port")
+  {
+    ossia::value_port p;
+    REQUIRE(p.mix_method == ossia::data_mix_method::mix_append);
+
+    WHEN("A value is written with a timestamp")
+    {
+      p.write_value(123, 64);
+
+      THEN("The timestamp is kept")
+      {
+        REQUIRE(p.get_data().size() == 1);
+        REQUIRE(p.get_data()[0].value == 123);
+        REQUIRE(p.get_data()[0].timestamp == 64);
+      }
+    }
+
+    WHEN("A moved-from value is written with a timestamp")
+    {
+      ossia::value v{456};
+      p.write_value(std::move(v), 128);
+
+      THEN("The timestamp is kept")
+      {
+        REQUIRE(p.get_data().size() == 1);
+        REQUIRE(p.get_data()[0].value == 456);
+        REQUIRE(p.get_data()[0].timestamp == 128);
+      }
+    }
+
+    WHEN("Several values are written at increasing timestamps")
+    {
+      p.write_value(1, 0);
+      p.write_value(2, 10);
+      p.write_value(3, 20);
+
+      THEN("They are all kept, in order, with their own timestamp")
+      {
+        REQUIRE(p.get_data().size() == 3);
+        for(int i = 0; i < 3; i++)
+        {
+          REQUIRE(p.get_data()[i].value == i + 1);
+          REQUIRE(p.get_data()[i].timestamp == i * 10);
+        }
+      }
+    }
+
+    WHEN("Two values share a timestamp")
+    {
+      // A MIDI-to-array stream writes the note-off and the note-on of a step at
+      // the same sample: appending must not collapse them.
+      p.write_value(1, 42);
+      p.write_value(2, 42);
+
+      THEN("Both are kept, in order")
+      {
+        REQUIRE(p.get_data().size() == 2);
+        REQUIRE(p.get_data()[0].value == 1);
+        REQUIRE(p.get_data()[1].value == 2);
+        REQUIRE(p.get_data()[0].timestamp == 42);
+        REQUIRE(p.get_data()[1].timestamp == 42);
+      }
+    }
+  }
+
+  GIVEN("A value port that replaces")
+  {
+    ossia::value_port p;
+    p.mix_method = ossia::data_mix_method::mix_replace;
+
+    WHEN("Two values are written at the same timestamp")
+    {
+      p.write_value(1, 42);
+      p.write_value(2, 42);
+
+      THEN("The last one wins")
+      {
+        REQUIRE(p.get_data().size() == 1);
+        REQUIRE(p.get_data()[0].value == 2);
+        REQUIRE(p.get_data()[0].timestamp == 42);
+      }
+    }
+
+    WHEN("Values are written at distinct timestamps")
+    {
+      // Only reachable once the timestamp is actually stored: comparing against
+      // entries that were all stamped 0 never matched anything else than 0.
+      p.write_value(1, 0);
+      p.write_value(2, 10);
+      p.write_value(3, 10);
+
+      THEN("Only the matching one is replaced")
+      {
+        REQUIRE(p.get_data().size() == 2);
+        REQUIRE(p.get_data()[0].value == 1);
+        REQUIRE(p.get_data()[0].timestamp == 0);
+        REQUIRE(p.get_data()[1].value == 3);
+        REQUIRE(p.get_data()[1].timestamp == 10);
+      }
+    }
+  }
+}
