@@ -140,7 +140,7 @@ using date_list = std::vector<std::pair<int64_t, int64_t>>;
 
 //! A tick covering [prev; date[ in model time and [mstart; mend[ in quarters.
 ossia::token_request musical_tick(
-    int64_t prev, int64_t date, double mstart, double mend, int num = 4, int denom = 4)
+    int64_t prev, int64_t date, double mstart, double mend, uint16_t num = 4, uint16_t denom = 4)
 {
   ossia::token_request t;
   t.prev_date = ossia::time_value{prev};
