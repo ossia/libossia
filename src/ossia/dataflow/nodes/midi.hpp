@@ -53,6 +53,7 @@ public:
     m_orig_notes.reserve(to_reserve);
     m_playing_notes.reserve(to_reserve);
     m_to_stop.reserve(64);
+    m_to_resume.reserve(64);
   }
 
   ~midi() override = default;
@@ -103,6 +104,8 @@ public:
       m_to_stop.insert(note);
     m_playing_notes.clear();
 
+    m_to_resume.clear();
+
     using namespace std;
     swap(m_orig_notes, notes);
     m_notes.clear();
@@ -122,45 +125,23 @@ public:
 
   void transport_impl(ossia::time_value date)
   {
-    // 1. Send note-offs
+    // Whatever was playing has to be released: the playhead no longer follows
+    // from it.
     m_to_stop.insert(m_playing_notes.begin(), m_playing_notes.end());
     m_playing_notes.clear();
+    m_to_resume.clear();
 
-    // 2. Re-add following notes
-    if(date < m_prev_date)
+    // Everything starting at or after the new position is to be played again,
+    // and a note the position lands inside of is resumed from its middle -
+    // the note-on scan can never pick those up, since it only matches notes
+    // starting at or after the beginning of a tick.
+    m_notes.clear();
+    for(const note_data& n : m_orig_notes)
     {
-      if(date == 0_tv)
-      {
-        m_notes = m_orig_notes;
-      }
-      else
-      {
-        auto min_it = m_orig_notes.lower_bound({date});
-        auto max_it = m_orig_notes.lower_bound({m_prev_date});
-
-        if(min_it != m_orig_notes.end())
-          m_notes.insert(min_it, max_it);
-
-        // all of these will have it->start < date
-        for(auto it = m_orig_notes.begin(); it != min_it; ++it)
-        {
-          if((it->start + it->duration) > date)
-          {
-            m_notes.insert(*it);
-          }
-        }
-      }
-    }
-    else if(date > m_prev_date)
-    {
-      // remove previous notes
-      auto min_it = m_notes.lower_bound({date});
-      if(min_it != m_notes.begin() && min_it != m_notes.end())
-      {
-        std::advance(min_it, -1);
-        m_notes.erase(m_notes.begin(), min_it);
-      }
-      // todo resume current notes
+      if(n.start >= date)
+        m_notes.insert(n);
+      else if((n.start + n.duration) > date)
+        m_to_resume.insert(n);
     }
 
     m_prev_date = date;
@@ -185,9 +166,66 @@ public:
 
   bool mustStop{};
   bool requestTransport{};
-  bool doTransport{};
 
 private:
+  //! Notes the playhead landed inside of after a transport: they are entered
+  //! from the beginning of the tick rather than from their own start date.
+  void resume_notes(ossia::midi_port& mp, int64_t tick_start)
+  {
+    for(const note_data& note : m_to_resume)
+    {
+      mp.messages.push_back(
+          libremidi::from_midi1::note_on(m_channel, note.pitch, note.velocity));
+      mp.messages.back().timestamp = tick_start;
+      m_playing_notes.insert(note);
+    }
+    m_to_resume.clear();
+  }
+
+  //! Reverse playback: rewinding past the start of a note unwinds it, so it is
+  //! released and becomes playable again. Notes are deliberately not entered
+  //! from their tail - a note beginning at its own end is not a useful sound.
+  void rewind(
+      const ossia::token_request& t, ossia::midi_port& mp, double samplesratio,
+      int64_t tick_start)
+  {
+    // physical_write_duration divides an absolute duration by a signed speed,
+    // so it comes out negative when rewinding.
+    const auto tick_end
+        = tick_start + std::abs(t.physical_write_duration(samplesratio));
+    const auto stamp = [&](time_value at) {
+      return std::clamp(
+          t.to_physical_time_in_tick(at, samplesratio), tick_start,
+          std::max(tick_start, tick_end - 1));
+    };
+
+    for(auto it = m_playing_notes.begin(); it != m_playing_notes.end();)
+    {
+      if(it->start > t.date)
+      {
+        mp.messages.push_back(
+            libremidi::from_midi1::note_off(m_channel, it->pitch, 0));
+        mp.messages.back().timestamp = stamp(it->start);
+        it = m_playing_notes.erase(it);
+      }
+      else
+      {
+        ++it;
+      }
+    }
+
+    // Every note whose start the playhead went back over must be playable
+    // again. Exactly once: m_notes is a multiset, and the ones that had not
+    // been played yet are still in it.
+    const auto first = m_orig_notes.upper_bound({t.date});
+    const auto last = m_orig_notes.upper_bound({t.prev_date});
+    for(auto it = first; it != last; ++it)
+    {
+      erase_exact(m_notes, *it);
+      m_notes.insert(*it);
+    }
+  }
+
   //! Note-offs for every note whose end date has been reached.
   //! Overdue ends (the note both started and finished inside a single tick, or
   //! a tick was skipped) are stamped at the beginning of the tick instead of
@@ -286,31 +324,22 @@ private:
 
       m_notes = m_orig_notes;
       m_playing_notes.clear();
+      m_to_resume.clear();
 
       mustStop = false;
     }
     else
     {
-      if(m_notes.empty() && m_playing_notes.empty())
+      if(m_notes.empty() && m_playing_notes.empty() && m_to_resume.empty())
         return;
-      if(doTransport)
+
+      resume_notes(mp, tick_start);
+
+      if(t.backward())
       {
-        auto it = m_notes.begin();
-
-        while(it != m_notes.end() && it->start < t.date)
-        {
-          auto& note = *it;
-          mp.messages.push_back(
-              libremidi::from_midi1::note_on(m_channel, note.pitch, note.velocity));
-          mp.messages.back().timestamp = tick_start;
-          m_playing_notes.insert(note);
-          it = m_notes.erase(it);
-        }
-
-        doTransport = false;
+        rewind(t, mp, samplesratio, tick_start);
       }
-
-      if(t.forward())
+      else if(t.forward())
       {
         stop_finished_notes(t, mp, samplesratio, tick_start);
 
@@ -350,6 +379,7 @@ private:
   note_set m_orig_notes;
   note_set m_playing_notes;
   note_set m_to_stop;
+  note_set m_to_resume;
   time_value m_prev_date{};
   time_value m_transport_date{};
 

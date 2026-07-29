@@ -376,3 +376,140 @@ TEST_CASE("midi node: a note added during playback plays on the next tick", "[mi
   CHECK(msgs[3].note == 74);
   CHECK(msgs[3].timestamp == 70);
 }
+
+TEST_CASE("midi node: transport into the middle of a note resumes it", "[midi][node]")
+{
+  // The note-on scan only matches notes starting at or after the beginning of
+  // a tick, so a note the playhead lands inside of can never be picked up by
+  // it. It is entered from the start of the tick instead.
+  fixture f;
+  f.set({note(0, 1000, 60), note(2000, 100, 72)});
+
+  f.node.transport_impl(500);
+  auto msgs = f.tick(500, 600);
+
+  REQUIRE(msgs.size() == 1);
+  CHECK(msgs[0].status == note_on);
+  CHECK(msgs[0].note == 60);
+  CHECK(msgs[0].timestamp == 0);
+
+  // and it ends at its own end date, not later
+  auto off = f.tick(900, 1100);
+  REQUIRE(off.size() == 1);
+  CHECK(off[0].status == note_off);
+  CHECK(off[0].note == 60);
+  CHECK(off[0].timestamp == 100); // 1000 - 900
+}
+
+TEST_CASE("midi node: transporting releases what was playing", "[midi][node]")
+{
+  fixture f;
+  f.set({note(0, 100, 60), note(5000, 100, 72)});
+
+  REQUIRE(f.tick(0, 50).size() == 1);
+
+  f.node.transport_impl(4000);
+  auto msgs = f.tick(4000, 4100);
+
+  REQUIRE(msgs.size() == 1);
+  CHECK(msgs[0].status == note_off);
+  CHECK(msgs[0].note == 60);
+}
+
+TEST_CASE("midi node: transporting back replays what follows", "[midi][node]")
+{
+  fixture f;
+  f.set({note(100, 50, 60)});
+
+  REQUIRE(f.tick(0, 200).size() == 2); // played and released
+
+  f.node.transport_impl(0);
+  auto msgs = f.tick(0, 200);
+
+  REQUIRE(msgs.size() == 2);
+  CHECK(msgs[0].status == note_on);
+  CHECK(msgs[0].note == 60);
+  CHECK(msgs[1].status == note_off);
+}
+
+TEST_CASE("midi node: rewinding past a note releases it", "[midi][node]")
+{
+  // Backward playback used to do nothing at all: the whole play/stop block was
+  // behind t.forward(), so held notes stayed held.
+  fixture f;
+  f.set({note(100, 1000, 60)});
+
+  REQUIRE(f.tick(0, 200).size() == 1); // note starts at 100
+
+  auto msgs = f.tick(200, 50, 0, -1.); // rewind before its start
+
+  REQUIRE(msgs.size() == 1);
+  CHECK(msgs[0].status == note_off);
+  CHECK(msgs[0].note == 60);
+}
+
+TEST_CASE("midi node: rewinding keeps a note the playhead is still inside", "[midi][node]")
+{
+  fixture f;
+  f.set({note(100, 1000, 60)});
+
+  REQUIRE(f.tick(0, 500).size() == 1);
+
+  CHECK(f.tick(500, 200, 0, -1.).empty()); // still after its start
+
+  // and it is released normally once time moves forward past its end
+  auto off = f.tick(200, 1200);
+  REQUIRE(off.size() == 1);
+  CHECK(off[0].status == note_off);
+}
+
+TEST_CASE("midi node: a note rewound over plays again going forward", "[midi][node]")
+{
+  fixture f;
+  f.set({note(100, 50, 60)});
+
+  REQUIRE(f.tick(0, 300).size() == 2); // played and released
+
+  CHECK(f.tick(300, 0, 0, -1.).empty()); // rewound over it, nothing was held
+
+  auto msgs = f.tick(0, 300);
+  REQUIRE(msgs.size() == 2);
+  CHECK(msgs[0].status == note_on);
+  CHECK(msgs[0].note == 60);
+  CHECK(msgs[1].status == note_off);
+}
+
+TEST_CASE("midi node: rewinding re-arms a note exactly once", "[midi][node]")
+{
+  // m_notes is a multiset: re-arming a note already in it would duplicate the
+  // entry and produce two note-ons for one note.
+  fixture f;
+  f.set({note(100, 50, 60)});
+
+  for(int pass = 0; pass < 3; pass++)
+  {
+    auto msgs = f.tick(0, 300);
+    INFO("pass " << pass);
+    REQUIRE(msgs.size() == 2);
+    CHECK(msgs[0].status == note_on);
+    CHECK(msgs[1].status == note_off);
+
+    CHECK(f.tick(300, 0, 0, -1.).empty());
+  }
+}
+
+TEST_CASE("midi node: transport() only applies after the next tick", "[midi][node]")
+{
+  // The request is deferred to the end of run(), so that a transport asked for
+  // from another thread cannot rearrange the notes under a tick in flight.
+  fixture f;
+  f.set({note(0, 50, 60)});
+
+  f.node.transport(1000);
+
+  auto during = f.tick(0, 100); // still the old position
+  REQUIRE(during.size() == 2);
+  CHECK(during[0].status == note_on);
+
+  CHECK(f.tick(1000, 1100).empty()); // nothing there
+}
