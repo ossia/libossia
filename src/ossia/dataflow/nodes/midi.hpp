@@ -26,6 +26,11 @@ inline bool is_note_off(const libremidi::ump& m) noexcept
   return (m.get_status_code() & 0xF0) == 0x80;
 }
 
+inline time_value note_end(const note_data& n) noexcept
+{
+  return n.start + n.duration;
+}
+
 struct note_comparator
 {
   using is_transparent = std::true_type;
@@ -39,18 +44,35 @@ struct note_comparator
   }
 };
 
+//! Forward playback finds the notes to start by their start date; going
+//! backwards it is their end date that is crossed first, hence a second index.
+struct note_end_comparator
+{
+  using is_transparent = std::true_type;
+  bool operator()(const note_data& lhs, const note_data& rhs) const
+  {
+    return note_end(lhs) < note_end(rhs);
+  }
+  bool operator()(const note_data& lhs, int64_t rhs) const
+  {
+    return note_end(lhs).impl < rhs;
+  }
+};
+
 class midi final : public ossia::nonowning_graph_node
 {
   ossia::midi_outlet midi_out;
 
 public:
   using note_set = ossia::flat_multiset<note_data, note_comparator>;
+  using note_end_set = ossia::flat_multiset<note_data, note_end_comparator>;
   explicit midi(int64_t notes)
   {
     m_outlets.push_back(&midi_out);
     int64_t to_reserve = std::max(notes * 1.1, 128.);
     m_notes.reserve(to_reserve);
     m_orig_notes.reserve(to_reserve);
+    m_by_end.reserve(to_reserve);
     m_playing_notes.reserve(to_reserve);
     m_to_stop.reserve(64);
     m_to_resume.reserve(64);
@@ -65,6 +87,7 @@ public:
   void add_note(note_data nd)
   {
     m_orig_notes.insert(nd);
+    m_by_end.insert(nd);
     // The playing scan takes start >= t.prev_date, and m_prev_date is where the
     // next tick starts: a note landing exactly there is still to be played.
     // With a strict comparison it was dropped, and every note at date 0 with it.
@@ -74,9 +97,10 @@ public:
     }
   }
 
-  // note_comparator only orders on the start date: erasing by key would remove
-  // every note of a chord, and find() could return a note of another pitch.
-  static bool erase_exact(note_set& set, const note_data& nd)
+  // The comparators only order on one date: erasing by key would remove every
+  // note sharing it, and find() could return a note of another pitch.
+  template <typename Set>
+  static bool erase_exact(Set& set, const note_data& nd)
   {
     auto [first, last] = set.equal_range(nd);
     for(auto it = first; it != last; ++it)
@@ -90,9 +114,20 @@ public:
     return false;
   }
 
+  template <typename Set>
+  static bool contains_exact(const Set& set, const note_data& nd)
+  {
+    auto [first, last] = set.equal_range(nd);
+    for(auto it = first; it != last; ++it)
+      if(it->pitch == nd.pitch)
+        return true;
+    return false;
+  }
+
   void remove_note(note_data nd)
   {
     erase_exact(m_orig_notes, nd);
+    erase_exact(m_by_end, nd);
     erase_exact(m_notes, nd);
     if(erase_exact(m_playing_notes, nd))
       m_to_stop.insert(nd);
@@ -108,6 +143,7 @@ public:
 
     using namespace std;
     swap(m_orig_notes, notes);
+    rebuild_end_index();
     m_notes.clear();
 
     auto start_it = m_orig_notes.lower_bound(m_prev_date.impl);
@@ -158,6 +194,7 @@ public:
   {
     m_notes = std::move(notes);
     m_orig_notes = m_notes;
+    rebuild_end_index();
 
     auto max_it = m_notes.lower_bound({m_prev_date});
     if(max_it != m_notes.begin()) // TODO handle the begin case correctly
@@ -168,6 +205,12 @@ public:
   bool requestTransport{};
 
 private:
+  void rebuild_end_index()
+  {
+    m_by_end.clear();
+    m_by_end.insert(m_orig_notes.begin(), m_orig_notes.end());
+  }
+
   //! Notes the playhead landed inside of after a transport: they are entered
   //! from the beginning of the tick rather than from their own start date.
   void resume_notes(ossia::midi_port& mp, int64_t tick_start)
@@ -182,9 +225,9 @@ private:
     m_to_resume.clear();
   }
 
-  //! Reverse playback: rewinding past the start of a note unwinds it, so it is
-  //! released and becomes playable again. Notes are deliberately not entered
-  //! from their tail - a note beginning at its own end is not a useful sound.
+  //! Reverse playback, the mirror of the forward pass: going backwards a note
+  //! is entered when its end date is crossed and left when its start date is,
+  //! so it sounds over the same span of the timeline in both directions.
   void rewind(
       const ossia::token_request& t, ossia::midi_port& mp, double samplesratio,
       int64_t tick_start)
@@ -199,6 +242,30 @@ private:
           std::max(tick_start, tick_end - 1));
     };
 
+    // Enter the notes whose end the playhead went back over, from their tail.
+    // ]date; prev_date] : an end landing exactly on prev_date was not sounding
+    // there, the interval of a note being [start; end[.
+    {
+      const note_data lo{t.date, 0_tv};
+      const note_data hi{t.prev_date, 0_tv};
+      for(auto it = m_by_end.upper_bound(lo), last = m_by_end.upper_bound(hi);
+          it != last; ++it)
+      {
+        if(contains_exact(m_playing_notes, *it))
+          continue;
+
+        mp.messages.push_back(
+            libremidi::from_midi1::note_on(m_channel, it->pitch, it->velocity));
+        mp.messages.back().timestamp = stamp(note_end(*it));
+
+        m_playing_notes.insert(*it);
+        erase_exact(m_notes, *it);
+      }
+    }
+
+    // Leave the ones whose start it went back over. After entering, so that a
+    // note falling entirely inside this tick is played then released, the same
+    // way the forward pass handles a note shorter than its tick.
     for(auto it = m_playing_notes.begin(); it != m_playing_notes.end();)
     {
       if(it->start > t.date)
@@ -214,9 +281,9 @@ private:
       }
     }
 
-    // Every note whose start the playhead went back over must be playable
-    // again. Exactly once: m_notes is a multiset, and the ones that had not
-    // been played yet are still in it.
+    // Everything the playhead went back over the start of has to be playable
+    // again. Exactly once: m_notes is a multiset, and a note that had not been
+    // played yet is still in it.
     const auto first = m_orig_notes.upper_bound({t.date});
     const auto last = m_orig_notes.upper_bound({t.prev_date});
     for(auto it = first; it != last; ++it)
@@ -330,7 +397,10 @@ private:
     }
     else
     {
-      if(m_notes.empty() && m_playing_notes.empty() && m_to_resume.empty())
+      // Not when rewinding: everything may well have been played already, and
+      // going back over it is exactly what has to bring it back.
+      if(!t.backward() && m_notes.empty() && m_playing_notes.empty()
+         && m_to_resume.empty())
         return;
 
       resume_notes(mp, tick_start);
@@ -380,6 +450,7 @@ private:
   note_set m_playing_notes;
   note_set m_to_stop;
   note_set m_to_resume;
+  note_end_set m_by_end;
   time_value m_prev_date{};
   time_value m_transport_date{};
 
