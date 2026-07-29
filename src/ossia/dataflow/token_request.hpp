@@ -1,10 +1,12 @@
 #pragma once
 #include <ossia/detail/flicks.hpp>
 #include <ossia/detail/math.hpp>
+#include <ossia/detail/small_vector.hpp>
 #include <ossia/editor/scenario/time_signature.hpp>
 #include <ossia/editor/scenario/time_value.hpp>
 
 #include <cassert>
+#include <cmath>
 #include <optional>
 
 #if defined(_LIBCPP_CONSTEXPR_SINCE_CXX23) || defined(_GLIBCXX23_CONSTEXPR)
@@ -15,6 +17,19 @@
 namespace ossia
 {
 using quarter_note = double;
+
+//! One quantification point inside a tick: when it happens, and which
+//! subdivision it is.
+struct quantification_point
+{
+  ossia::time_value date{};
+  int64_t index{};
+
+  friend bool
+  operator==(const quantification_point&, const quantification_point&) noexcept
+      = default;
+};
+using quantification_points = ossia::small_vector<quantification_point, 8>;
 
 struct token_request
 {
@@ -358,6 +373,79 @@ struct token_request
     {
       return get_quantification_date_for_shorter_than_bars(rate);
     }
+  }
+
+  //! Every quantification date occurring in this tick, in order.
+  //!
+  //! get_quantification_date only reports the first one, which silently drops
+  //! steps whenever a tick spans more than one - a small division, a large
+  //! buffer or a fast tempo are enough. Nodes that must not miss a step
+  //! iterate this instead. `index` counts the point from the last bar, or from
+  //! the last signature change for rates of a bar or longer.
+  [[nodiscard]] quantification_points
+  get_quantification_dates(double rate) const noexcept
+  {
+    quantification_points res;
+
+    if(prev_date == date)
+      return res;
+
+    const double musical_tick_duration = musical_end_position - musical_start_position;
+    if(rate <= 0. || musical_tick_duration <= 0.)
+    {
+      res.push_back({prev_date, 0});
+      return res;
+    }
+
+    // Distance in quarter notes between two consecutive points, and the musical
+    // position their count is relative to.
+    double unit{};
+    double origin{};
+    if(rate <= 1.)
+    {
+      // A bar or longer: the rate is a fraction of a bar.
+      const bool valid_sig = signature.upper > 0 && signature.lower > 0;
+      const double bar = valid_sig ? 4. * signature.upper / signature.lower : 4.;
+      unit = bar / rate;
+      origin = musical_start_last_signature;
+    }
+    else
+    {
+      // Shorter: a subdivision of the quarter note.
+      unit = 4. / rate;
+      origin = musical_start_last_bar;
+    }
+
+    if(!(unit > 0.))
+      return res;
+
+    // A point falling exactly on the end of the tick belongs to the next one,
+    // so the interval is [start; end[ - which is also what makes the first
+    // element agree with get_quantification_date().
+    constexpr double eps = 1e-9;
+    const double start = (musical_start_position - origin) / unit;
+    const double end = (musical_end_position - origin) / unit;
+
+    const time_value tick_duration = date - prev_date;
+    for(int64_t k = int64_t(std::ceil(start - eps)); k < end - eps; k++)
+    {
+      const double ratio
+          = (k * unit + origin - musical_start_position) / musical_tick_duration;
+      time_value d = prev_date + tick_duration * ratio;
+
+      if(d < prev_date)
+        d = prev_date;
+      if(d >= date)
+        break;
+
+      res.push_back({d, k});
+
+      // A tick spanning this many points means the rate is nonsense: stop
+      // rather than fill memory.
+      if(res.size() >= 1024)
+        break;
+    }
+    return res;
   }
 
   //! Like physical_quantification_date, but returns a date mapped to this tick
