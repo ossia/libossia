@@ -45,6 +45,15 @@ struct fixture
   ossia::execution_state st; // modelToSamplesRatio == 1: model time == samples
   ossia::midi_port& port{*node.root_outputs()[0]->target<ossia::midi_port>()};
 
+  //! Populates the node the way the executor does for the initial content.
+  void set(std::initializer_list<ossia::nodes::note_data> notes)
+  {
+    ossia::nodes::midi::note_set s;
+    for(const auto& n : notes)
+      s.insert(n);
+    node.set_notes(std::move(s));
+  }
+
   std::vector<decoded> run(ossia::token_request tk)
   {
     port.messages.clear();
@@ -90,7 +99,7 @@ TEST_CASE("midi node: a note shorter than the tick is still released", "[midi][n
   // scan below it could not be released in that same tick, and in_range() made
   // the miss permanent, its end date being in the past from then on.
   fixture f;
-  f.node.add_note(note(10, 10, 60)); // [10, 20), entirely inside the first tick
+  f.set({note(10, 10, 60)}); // [10, 20), entirely inside the first tick
 
   auto msgs = f.tick(0, 100);
 
@@ -109,8 +118,7 @@ TEST_CASE("midi node: a note shorter than the tick is still released", "[midi][n
 TEST_CASE("midi node: several notes inside one tick", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(0, 40, 60));
-  f.node.add_note(note(50, 40, 62));
+  f.set({note(0, 40, 60), note(50, 40, 62)});
 
   auto msgs = f.tick(0, 100);
 
@@ -135,8 +143,8 @@ TEST_CASE("midi node: a tick comes out in chronological order", "[midi][node]")
   // happens earlier in it: consumers such as VST3 event lists require ordered
   // events, and an out-of-order pair silently cancels a note.
   fixture f;
-  f.node.add_note(note(0, 90, 60));  // ends at 90, during the second tick
-  f.node.add_note(note(60, 40, 62)); // starts at 60, during the second tick
+  // 60 ends at 90 and 62 starts at 60: both fall in the second tick
+  f.set({note(0, 90, 60), note(60, 40, 62)});
 
   REQUIRE(f.tick(0, 50).size() == 1); // note 60 starts
 
@@ -156,8 +164,7 @@ TEST_CASE("midi node: back-to-back notes on the same pitch", "[midi][node]")
   // The note-off of the first and the note-on of the second share a timestamp:
   // the note-off has to win the tie, else the second note is cut immediately.
   fixture f;
-  f.node.add_note(note(0, 100, 60));
-  f.node.add_note(note(100, 100, 60));
+  f.set({note(0, 100, 60), note(100, 100, 60)});
 
   REQUIRE(f.tick(0, 100).size() == 1);
 
@@ -178,7 +185,7 @@ TEST_CASE("midi node: an overdue note-off is flushed, not lost", "[midi][node]")
   // become true again. The release is emitted at the start of the next tick
   // instead of being dropped.
   fixture f;
-  f.node.add_note(note(0, 50, 60));
+  f.set({note(0, 50, 60)});
 
   auto first = f.tick(0, 10); // starts here, would end at 50
   REQUIRE(first.size() == 1);
@@ -199,8 +206,7 @@ TEST_CASE("midi node: end_discontinuous releases inside the tick", "[midi][node]
   // [tick_start; tick_start + frames[ then drop it, and the notes are cleared
   // here, so they would never be released again.
   fixture f;
-  f.node.add_note(note(0, 1000, 60));
-  f.node.add_note(note(0, 1000, 64));
+  f.set({note(0, 1000, 60), note(0, 1000, 64)});
 
   REQUIRE(f.tick(0, 100).size() == 2);
 
@@ -223,9 +229,7 @@ TEST_CASE("midi node: removing one note of a chord", "[midi][node]")
   // remove every note of the chord, and find() could return a note of another
   // pitch - stopping the wrong one and leaving the edited one held forever.
   fixture f;
-  f.node.add_note(note(0, 1000, 60));
-  f.node.add_note(note(0, 1000, 64));
-  f.node.add_note(note(0, 1000, 67));
+  f.set({note(0, 1000, 60), note(0, 1000, 64), note(0, 1000, 67)});
 
   REQUIRE(f.tick(0, 100).size() == 3);
 
@@ -248,8 +252,7 @@ TEST_CASE("midi node: removing one note of a chord", "[midi][node]")
 TEST_CASE("midi node: mustStop releases everything held", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(0, 10000, 60));
-  f.node.add_note(note(0, 10000, 64));
+  f.set({note(0, 10000, 60), note(0, 10000, 64)});
 
   REQUIRE(f.tick(0, 100).size() == 2);
 
@@ -265,7 +268,7 @@ TEST_CASE("midi node: channel is stored zero-based", "[midi][node]")
 {
   fixture f;
   f.node.set_channel(10); // 1-based in the model
-  f.node.add_note(note(0, 50, 60));
+  f.set({note(0, 50, 60)});
 
   auto msgs = f.tick(0, 100);
 
@@ -277,9 +280,7 @@ TEST_CASE("midi node: channel is stored zero-based", "[midi][node]")
 TEST_CASE("midi node: velocity survives the MIDI 2 round-trip", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(0, 50, 60, 1));
-  f.node.add_note(note(0, 50, 62, 64));
-  f.node.add_note(note(0, 50, 64, 127));
+  f.set({note(0, 50, 60, 1), note(0, 50, 62, 64), note(0, 50, 64, 127)});
 
   auto msgs = f.tick(0, 10);
 
@@ -292,7 +293,7 @@ TEST_CASE("midi node: velocity survives the MIDI 2 round-trip", "[midi][node]")
 TEST_CASE("midi node: a paused tick emits nothing", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(0, 50, 60));
+  f.set({note(0, 50, 60)});
 
   CHECK(f.tick(50, 50).empty());
 }
@@ -300,7 +301,7 @@ TEST_CASE("midi node: a paused tick emits nothing", "[midi][node]")
 TEST_CASE("midi node: replace_notes stops what was playing", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(0, 10000, 60));
+  f.set({note(0, 10000, 60)});
   REQUIRE(f.tick(0, 100).size() == 1);
 
   ossia::nodes::midi::note_set fresh;
@@ -321,7 +322,7 @@ TEST_CASE("midi node: replace_notes stops what was playing", "[midi][node]")
 TEST_CASE("midi node: update_note moves a note without stranding it", "[midi][node]")
 {
   fixture f;
-  f.node.add_note(note(100, 100, 60));
+  f.set({note(100, 100, 60)});
   f.node.update_note(note(100, 100, 60), note(100, 100, 62));
 
   auto msgs = f.tick(0, 150);
@@ -333,4 +334,45 @@ TEST_CASE("midi node: update_note moves a note without stranding it", "[midi][no
   REQUIRE(off.size() == 1);
   CHECK(off[0].status == note_off);
   CHECK(off[0].note == 62);
+}
+
+TEST_CASE("midi node: add_note schedules a note landing on the current date", "[midi][node]")
+{
+  // m_prev_date is where the next tick starts, and the playing scan takes
+  // start >= t.prev_date: a note landing exactly there is still to be played.
+  // A strict comparison dropped it, and every note at date 0 with it.
+  fixture f;
+  f.node.add_note(note(0, 50, 60)); // m_prev_date is still 0
+
+  auto msgs = f.tick(0, 100);
+
+  REQUIRE(msgs.size() == 2);
+  CHECK(msgs[0].status == note_on);
+  CHECK(msgs[0].note == 60);
+  CHECK(msgs[1].status == note_off);
+}
+
+TEST_CASE("midi node: a note added during playback plays on the next tick", "[midi][node]")
+{
+  fixture f;
+  f.tick(0, 100); // m_prev_date becomes 100
+
+  f.node.add_note(note(100, 50, 72)); // exactly on the boundary
+  f.node.add_note(note(120, 50, 74));
+
+  auto msgs = f.tick(100, 200);
+
+  REQUIRE(msgs.size() == 4);
+  CHECK(msgs[0].status == note_on);
+  CHECK(msgs[0].note == 72);
+  CHECK(msgs[0].timestamp == 0);
+  CHECK(msgs[1].status == note_on);
+  CHECK(msgs[1].note == 74);
+  CHECK(msgs[1].timestamp == 20);
+  CHECK(msgs[2].status == note_off);
+  CHECK(msgs[2].note == 72);
+  CHECK(msgs[2].timestamp == 50);
+  CHECK(msgs[3].status == note_off);
+  CHECK(msgs[3].note == 74);
+  CHECK(msgs[3].timestamp == 70);
 }

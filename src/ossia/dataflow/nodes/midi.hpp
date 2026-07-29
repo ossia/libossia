@@ -64,7 +64,10 @@ public:
   void add_note(note_data nd)
   {
     m_orig_notes.insert(nd);
-    if(nd.start > m_prev_date)
+    // The playing scan takes start >= t.prev_date, and m_prev_date is where the
+    // next tick starts: a note landing exactly there is still to be played.
+    // With a strict comparison it was dropped, and every note at date 0 with it.
+    if(nd.start >= m_prev_date)
     {
       m_notes.insert(nd);
     }
