@@ -400,7 +400,7 @@ struct faust_node_utils
       Node& self, Dsp& dsp, const ossia::token_request& tk,
       const ossia::exec_state_facade& e)
   {
-    if(tk.forward())
+    if(!tk.paused())
     {
       const auto [st, d] = e.timings(tk);
       copy_controls(self);
@@ -504,7 +504,7 @@ struct faust_node_utils
       Node& self, Dsp& dsp, const ossia::token_request& tk,
       const ossia::exec_state_facade& e)
   {
-    if(tk.forward())
+    if(!tk.paused())
     {
       const auto [st, d] = e.timings(tk);
 
@@ -521,7 +521,7 @@ struct faust_node_utils
       Node& self, DspPoly& dsp, const ossia::token_request& tk,
       const ossia::exec_state_facade& e)
   {
-    if(tk.forward())
+    if(!tk.paused())
     {
       const auto [st, d] = e.timings(tk);
 
