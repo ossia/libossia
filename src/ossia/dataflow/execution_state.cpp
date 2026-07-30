@@ -525,23 +525,13 @@ auto exec_state_facade::timings(const token_request& t) const noexcept -> sample
 {
   sample_timings tm;
   static constexpr double speed_epsilon = 0.01;
-  if(t.speed > speed_epsilon)
+
+  if(t.speed > speed_epsilon || t.speed < -speed_epsilon)
   {
     [[likely]];
     tm.start_sample = t.physical_start(impl->modelToSamplesRatio);
 
     const auto tick_dur = t.physical_write_duration(impl->modelToSamplesRatio);
-    auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
-    if(max_dur < 0)
-      max_dur = 0;
-
-    tm.length = std::min(tick_dur, max_dur);
-  }
-  else if(t.speed < -speed_epsilon)
-  {
-    tm.start_sample = -t.physical_start(impl->modelToSamplesRatio);
-
-    const auto tick_dur = -t.physical_write_duration(impl->modelToSamplesRatio);
     auto max_dur = int64_t(impl->bufferSize - tm.start_sample);
     if(max_dur < 0)
       max_dur = 0;

@@ -111,40 +111,32 @@ struct token_request
     }
     else
     {
-      // Backward playback (tick_amount < 0)
-      while(tick_amount < 0_tv)
+      // Backward playback
+      const int64_t loop_dur = loop_duration.impl;
+      int64_t remaining = -tick_amount.impl;
+
+      while(remaining > 0)
       {
-        time_value cur_from{orig_from % loop_duration};
-        // Handle negative modulo: ensure cur_from is in [0, loop_duration)
-        if(cur_from.impl < 0)
-          cur_from.impl += loop_duration.impl;
+        int64_t cur_from = orig_from.impl % loop_dur;
+        if(cur_from < 0)
+          cur_from += loop_dur;
 
-        if(cur_from + tick_amount >= 0_tv)
+        if(cur_from == 0)
         {
-          // The backward tick fits within the current loop iteration
-          other.prev_date = cur_from + start_offset;
-          other.date = other.prev_date + tick_amount;
-          f(other);
-          break;
-        }
-        else
-        {
-          // Go back to the start of the loop, then wrap around
-          auto this_tick = -cur_from; // negative: go from cur_from back to 0
-          if(this_tick == 0_tv)
-            this_tick = -loop_duration; // already at 0, go back a full loop
-
-          tick_amount -= this_tick; // tick_amount becomes less negative
-          orig_from += this_tick;
-          other.prev_date = cur_from + start_offset;
-          other.date = other.prev_date + this_tick;
-
-          f(other);
-
-          // Wrap to end of loop
           transport(start_offset + loop_duration);
-          other.offset -= this_tick; // this_tick is negative, so offset increases
+          cur_from = loop_dur;
         }
+
+        const int64_t this_tick = remaining < cur_from ? remaining : cur_from;
+
+        other.prev_date = time_value{cur_from} + start_offset;
+        other.date = other.prev_date - time_value{this_tick};
+
+        f(other);
+
+        remaining -= this_tick;
+        orig_from -= time_value{this_tick};
+        other.offset += time_value{this_tick};
       }
     }
   }
@@ -155,6 +147,11 @@ struct token_request
     return date - prev_date;
   }
 
+  [[nodiscard]] static constexpr double abs_speed(double s) noexcept
+  {
+    return s < 0. ? -s : s;
+  }
+
   //! The date of the first sample in the context of the parent.
   //! e.g. if we're at the start of our third buffer of 256 samples for
   //! a given time_interval, this will give 768.
@@ -163,7 +160,7 @@ struct token_request
   // C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
-    return this->prev_date.impl * ratio / speed;
+    return this->prev_date.impl * ratio / abs_speed(speed);
   }
 
   //! Where we must start to read / write in our physical buffers
@@ -171,7 +168,7 @@ struct token_request
   // C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
-    return this->offset.impl * ratio / speed;
+    return this->offset.impl * ratio / abs_speed(speed);
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
@@ -190,7 +187,7 @@ struct token_request
   // C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
-    return constexpr_ceil(abs(date - prev_date).impl * ratio / speed);
+    return constexpr_ceil(abs(date - prev_date).impl * ratio / abs_speed(speed));
   }
 
   //! This is an upper bound on what we can write to a buffer.
@@ -199,7 +196,7 @@ struct token_request
   // C++23: [[ expects: speed != 0. ]]
   {
     assert(speed != 0.);
-    return constexpr_floor(bufferSize - offset.impl * ratio / speed);
+    return constexpr_floor(bufferSize - offset.impl * ratio / abs_speed(speed));
   }
 
   //! Is the given value in the tick defined by this token_request
@@ -213,7 +210,9 @@ struct token_request
   [[nodiscard]] constexpr physical_time
   to_physical_time_in_tick(ossia::time_value global_time, double ratio) const noexcept
   {
-    return (global_time - prev_date + offset).impl * ratio / speed;
+    assert(speed != 0.);
+    return offset.impl * ratio / abs_speed(speed)
+           + (global_time - prev_date).impl * ratio / speed;
   }
 
   //! Maps a time value in the frame of reference of this tick's node to a time
@@ -229,8 +228,9 @@ struct token_request
   [[nodiscard]] constexpr time_value
   from_physical_time_in_tick(ossia::physical_time phys_time, double ratio) const noexcept
   {
-    return time_value{
-        constexpr_floor(phys_time * (speed / ratio) + prev_date.impl - offset.impl)};
+    assert(speed != 0.);
+    const double in_tick = phys_time - offset.impl * ratio / abs_speed(speed);
+    return time_value{constexpr_floor(in_tick * (speed / ratio) + prev_date.impl)};
   }
 
   //! If we are in a kind of hierarchical object, return where we are at the
