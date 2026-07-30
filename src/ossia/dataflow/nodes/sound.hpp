@@ -285,17 +285,10 @@ struct sound_processing_info
   {
     double stretch_ratio = 1.;
     double model_ratio = 1.;
-    if(tempo != 0.)
+    if(tempo != 0. && m_resampler.stretch())
     {
-      if(m_resampler.stretch())
-      {
-        model_ratio = ossia::root_tempo / this->tempo;
-        stretch_ratio = this->tempo / t.tempo;
-      }
-      else
-      {
-        model_ratio = ossia::root_tempo / t.tempo;
-      }
+      model_ratio = ossia::root_tempo / this->tempo;
+      stretch_ratio = this->tempo / t.tempo;
     }
 
     m_loop_duration_samples = m_loop_duration.impl * e.modelToSamples() * model_ratio;
