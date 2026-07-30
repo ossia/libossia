@@ -92,12 +92,9 @@ struct OSSIA_EXPORT time_value
     return *this;
   }
 
-  constexpr time_value& operator-() noexcept
+  [[nodiscard]] constexpr time_value operator-() const noexcept
   {
-    if(!infinite())
-      impl = -impl;
-
-    return *this;
+    return infinite() ? time_value{impl} : time_value{-impl};
   }
 
   /*! addition operator */
