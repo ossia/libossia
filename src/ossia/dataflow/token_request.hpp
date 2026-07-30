@@ -358,6 +358,9 @@ struct token_request
     if(prev_date == date)
       return std::nullopt;
 
+    if(backward())
+      return std::nullopt;
+
     if(rate <= 0.)
       return prev_date;
 
@@ -391,7 +394,12 @@ struct token_request
       return res;
 
     const double musical_tick_duration = musical_end_position - musical_start_position;
-    if(rate <= 0. || musical_tick_duration <= 0.)
+    const bool rewinding = date < prev_date;
+
+    // A musical duration that disagrees with the direction of the tick did not
+    // come from it - subdividing it would place every point at prev_date.
+    if(rate <= 0. || musical_tick_duration == 0.
+       || (musical_tick_duration < 0.) != rewinding)
     {
       res.push_back({prev_date, 0});
       return res;
@@ -427,16 +435,31 @@ struct token_request
     const double end = (musical_end_position - origin) / unit;
 
     const time_value tick_duration = date - prev_date;
-    for(int64_t k = int64_t(std::ceil(start - eps)); k < end - eps; k++)
+
+    const int64_t first = rewinding ? int64_t(std::floor(start + eps))
+                                    : int64_t(std::ceil(start - eps));
+
+    for(int64_t k = first; rewinding ? (k > end + eps) : (k < end - eps);
+        k += rewinding ? -1 : 1)
     {
       const double ratio
           = (k * unit + origin - musical_start_position) / musical_tick_duration;
       time_value d = prev_date + tick_duration * ratio;
 
-      if(d < prev_date)
-        d = prev_date;
-      if(d >= date)
-        break;
+      if(rewinding)
+      {
+        if(d > prev_date)
+          d = prev_date;
+        if(d <= date)
+          break;
+      }
+      else
+      {
+        if(d < prev_date)
+          d = prev_date;
+        if(d >= date)
+          break;
+      }
 
       res.push_back({d, k});
 
@@ -461,11 +484,14 @@ struct token_request
   constexpr void
   metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
   {
+    if(!forward())
+      return;
+
     if((musical_end_last_bar != musical_start_last_bar) || musical_start_position == 0.)
     {
       // There is a bar change in this tick, start the up tick
       const double musical_tick_duration = musical_end_position - musical_start_position;
-      if(musical_tick_duration != 0)
+      if(musical_tick_duration > 0)
       {
         const double musical_bar_start = musical_end_last_bar - musical_start_position;
         const int64_t samples_tick_duration
@@ -491,7 +517,7 @@ struct token_request
         // end_position is date
         const double musical_tick_duration
             = musical_end_position - musical_start_position;
-        if(musical_tick_duration != 0)
+        if(musical_tick_duration > 0)
         {
           const double musical_bar_start
               = (end_quarter + musical_start_last_bar) - musical_start_position;
@@ -518,6 +544,9 @@ struct token_request
       // e.g. start = 4 -> end = 8  ; signature = 4/4 : good
       // e.g. start = 4 -> end = 8  ; signature = 6/8 : bad
       // e.g. start = 4 -> end = 7  ; signature = 6/8 : good
+
+      if(bar_difference < 0.)
+        bar_difference = -bar_difference;
 
       double quarters_sig = 4. * double(signature.upper) / signature.lower;
       double div = bar_difference / quarters_sig;
