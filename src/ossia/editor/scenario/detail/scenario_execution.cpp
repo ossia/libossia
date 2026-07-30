@@ -600,6 +600,8 @@ void scenario::run_interval_backward(
     {
       const auto ot = ossia::time_value{displacement - cst_old_date.impl};
 
+      const auto ot_offset = tk.offset + tick_ms - ot;
+
       const auto node_it = m_backward_overticks.lower_bound(start_node);
       if(node_it != m_backward_overticks.end() && (start_node == node_it->first))
       {
@@ -609,13 +611,13 @@ void scenario::run_interval_backward(
         if(ot > cur.max)
         {
           cur.max = ot;
-          cur.offset = offset;
+          cur.offset = ot_offset;
         }
       }
       else
       {
         m_backward_overticks.insert(
-            node_it, {start_node, overtick{ot, ot, offset}});
+            node_it, {start_node, overtick{ot, ot, ot_offset}});
       }
 
       m_startNodes.insert(start_node);
