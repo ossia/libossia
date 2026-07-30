@@ -11,6 +11,8 @@
 #include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/variant.hpp>
 
+#include <algorithm>
+
 namespace ossia
 {
 namespace snd
@@ -32,7 +34,10 @@ sample_info(int64_t bufferSize, double durationRatio, const ossia::token_request
     return _;
 
   _.samples_to_read = t.physical_read_duration(durationRatio);
-  _.samples_to_write = t.safe_physical_write_duration(durationRatio, bufferSize);
+
+  const auto room = t.safe_physical_write_duration(durationRatio, bufferSize);
+  const auto tick_dur = t.physical_write_duration(durationRatio);
+  _.samples_to_write = std::min(tick_dur, std::max<int64_t>(0, room));
 
   return _;
 }
