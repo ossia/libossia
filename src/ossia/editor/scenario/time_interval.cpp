@@ -137,7 +137,7 @@ void time_interval::tick_impl(
       m_musical_start_position = num_quarters;
     }
 
-    if(new_date.impl > old_date.impl)
+    if(new_date.impl != old_date.impl)
     {
       auto d = ossia::time_value{new_date.impl};
       const double num_quarters = d.impl / m_quarter_duration;
