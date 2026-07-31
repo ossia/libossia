@@ -2,6 +2,7 @@
 #include <ossia/detail/config.hpp>
 
 #if defined(OSSIA_ENABLE_ASIO)
+#include <ossia/audio/asio_diagnostics.hpp>
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/thread.hpp>
 
@@ -255,15 +256,32 @@ public:
     std::vector<asio_card> cards;
 
     AsioDrivers drivers;
-    long numDrivers = drivers.asioGetNumDev();
+    const long numDrivers = drivers.asioGetNumDev();
+    if(asio_diagnostics::verbose())
+      asio_diagnostics::log() << "asioGetNumDev() = " << numDrivers << '\n';
+
     for(long i = 0; i < numDrivers; i++)
     {
       char name[128]{};
-      if(drivers.asioGetDriverName(i, name, sizeof(name)) == 0)
+      const long rc = drivers.asioGetDriverName(i, name, sizeof(name));
+      if(rc == 0)
       {
+        if(asio_diagnostics::verbose())
+          asio_diagnostics::log() << "  [" << i << "] \"" << name << "\"\n";
         cards.push_back({name, (int)i});
       }
+      else
+      {
+        // Should not happen: the index came from asioGetNumDev().
+        asio_diagnostics::log() << "asioGetDriverName(" << i << ") failed, rc=" << rc
+                                << " -- driver skipped\n";
+      }
     }
+
+    // The SDK drops unresolvable drivers without a word. Compare against the
+    // registry so an empty or short list is explained rather than mysterious.
+    asio_diagnostics::report(cards.size());
+
     return cards;
   }
 
