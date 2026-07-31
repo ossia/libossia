@@ -759,6 +759,7 @@ set(OSSIA_QT_SCORE_SRCS
 set(OSSIA_DATAFLOW_HEADERS
     
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/alsa_protocol.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/asio_diagnostics.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/asio_protocol.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_device.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/audio/audio_engine.hpp"
