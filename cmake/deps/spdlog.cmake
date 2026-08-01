@@ -1,7 +1,7 @@
 ossia_use_system(use_sys spdlog)
 if(use_sys)
   if(NOT OSSIA_FMT_INTERNAL)
-    find_package(spdlog CONFIG REQUIRED GLOBAL)
+    find_package(spdlog CONFIG GLOBAL)
   endif()
 endif()
 

@@ -1,6 +1,6 @@
 ossia_use_system(use_sys rapidfuzz)
 if(use_sys)
-  find_package(rapidfuzz CONFIG REQUIRED GLOBAL)
+  find_package(rapidfuzz CONFIG GLOBAL)
 endif()
 
 if(NOT TARGET rapidfuzz::rapidfuzz)
