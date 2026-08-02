@@ -8,6 +8,7 @@
 
 #include "include_catch.hpp"
 
+#include <optional>
 #include <tuple>
 #include <vector>
 
@@ -487,16 +488,127 @@ TEST_CASE("test_quantification_date_backward_is_none",
   REQUIRE(fwd.get_quantification_date(16.).has_value());
 }
 
-TEST_CASE("test_metronome_and_bar_change_backward",
-          "test_metronome_and_bar_change_backward")
+namespace
 {
-  // metronome() interpolates a position inside the tick: forward only.
-  const auto bwd = musical_tick(1000, 0, 4., 3.);
-  bool ticked = false;
-  bwd.metronome(
-      unit_ratio, [&](int64_t) { ticked = true; }, [&](int64_t) { ticked = true; });
-  REQUIRE(!ticked);
+struct metro_result
+{
+  std::optional<int64_t> hi;
+  std::optional<int64_t> lo;
+};
 
+metro_result run_metronome(const ossia::token_request& t)
+{
+  metro_result r;
+  t.metronome(
+      unit_ratio, [&](int64_t s) { r.hi = s; }, [&](int64_t s) { r.lo = s; });
+  return r;
+}
+}
+
+TEST_CASE("test_metronome_both_directions", "test_metronome_both_directions")
+{
+  // A bar line halfway through the tick, crossed forwards then backwards: the
+  // click lands on the same sample either way, because rewinding plays that
+  // half of the buffer in reverse.
+  {
+    auto fwd = musical_tick(0, 1000, 3.5, 4.5);
+    fwd.musical_start_last_bar = 0.;
+    fwd.musical_end_last_bar = 4.;
+    const auto r = run_metronome(fwd);
+    REQUIRE(r.hi.has_value());
+    REQUIRE(*r.hi == 500);
+    REQUIRE(!r.lo.has_value());
+  }
+  {
+    auto bwd = musical_tick(1000, 0, 4.5, 3.5);
+    bwd.musical_start_last_bar = 4.;
+    bwd.musical_end_last_bar = 0.;
+    const auto r = run_metronome(bwd);
+    REQUIRE(r.hi.has_value());
+    REQUIRE(*r.hi == 500);
+    REQUIRE(!r.lo.has_value());
+  }
+
+  // Same for a quarter inside the bar.
+  {
+    const auto fwd = musical_tick(0, 1000, 0.5, 1.5);
+    const auto r = run_metronome(fwd);
+    REQUIRE(r.lo.has_value());
+    REQUIRE(*r.lo == 500);
+    REQUIRE(!r.hi.has_value());
+  }
+  {
+    const auto bwd = musical_tick(1000, 0, 1.5, 0.5);
+    const auto r = run_metronome(bwd);
+    REQUIRE(r.lo.has_value());
+    REQUIRE(*r.lo == 500);
+    REQUIRE(!r.hi.has_value());
+  }
+
+  // A tick that crosses nothing is silent, both ways.
+  for(const auto& t :
+      {musical_tick(0, 1000, 0.1, 0.4), musical_tick(1000, 0, 0.4, 0.1)})
+  {
+    const auto r = run_metronome(t);
+    REQUIRE(!r.hi.has_value());
+    REQUIRE(!r.lo.has_value());
+  }
+}
+
+TEST_CASE("test_metronome_stays_inside_the_tick", "test_metronome_stays_inside_the_tick")
+{
+  // A bar line landing exactly on the end of the tick used to give a ratio of
+  // 1, i.e. the one-past-the-end sample: the metro node then computed
+  // `count = d - start_sample == 0` and dropped the click entirely.
+  auto fwd = musical_tick(0, 1000, 3.5, 4.0);
+  fwd.musical_start_last_bar = 0.;
+  fwd.musical_end_last_bar = 4.;
+  const auto r = run_metronome(fwd);
+  REQUIRE(r.hi.has_value());
+  REQUIRE(*r.hi == 999);
+
+  // Every crossing, whatever the geometry, reports a sample inside the tick.
+  for(double start : {0.0, 0.3, 1.0, 3.5, 3.99})
+  {
+    for(double span : {0.25, 1., 2., 4.5})
+    {
+      for(bool rewind : {false, true})
+      {
+        auto t = rewind ? musical_tick(1000, 0, start + span, start)
+                        : musical_tick(0, 1000, start, start + span);
+        t.musical_start_last_bar = rewind ? 4. : 0.;
+        t.musical_end_last_bar = rewind ? 0. : 4.;
+        CAPTURE(start, span, rewind);
+
+        const auto res = run_metronome(t);
+        for(auto s : {res.hi, res.lo})
+        {
+          if(s)
+          {
+            REQUIRE(*s >= 0);
+            REQUIRE(*s < 1000);
+          }
+        }
+      }
+    }
+  }
+}
+
+TEST_CASE("test_metronome_direction_mismatch", "test_metronome_direction_mismatch")
+{
+  // Musical positions that disagree with the tick's direction: nothing to
+  // interpolate, and interpolating anyway would land outside the buffer.
+  auto t = musical_tick(0, 1000, 4.5, 3.5);
+  t.speed = 1.;
+  t.musical_start_last_bar = 4.;
+  t.musical_end_last_bar = 0.;
+  const auto r = run_metronome(t);
+  REQUIRE(!r.hi.has_value());
+  REQUIRE(!r.lo.has_value());
+}
+
+TEST_CASE("test_bar_change_backward", "test_bar_change_backward")
+{
   // A bar change is a bar change in both directions.
   auto b = musical_tick(1000, 0, 4., 2.);
   b.musical_start_last_bar = 4.;
