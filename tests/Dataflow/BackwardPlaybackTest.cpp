@@ -700,3 +700,30 @@ TEST_CASE("test_timings_direction_symmetric", "test_timings_direction_symmetric"
     REQUIRE(z.length == 0);
   }
 }
+
+TEST_CASE("metronome_reports_a_bar_line_from_a_signature_change", "metronome_reports_a_bar_line_from_a_signature_change")
+{
+  // A bar line created by a signature change mid-tick: the bar restarts at
+  // quarter 6 although the previous bar started at 4 (4/4). The old code used
+  // musical_end_last_bar and fired the downbeat; the walk-from-start-bar code
+  // only knows bars at start_last_bar + k*quarters_in_bar.
+  {
+    auto t = musical_tick(5500, 6500, 5.5, 6.5);
+    t.musical_start_last_signature = 0.;
+    t.musical_start_last_bar = 4.;
+    t.musical_end_last_bar = 6.;
+    const auto r = run_metronome(t);
+    CAPTURE(r.hi.has_value(), r.lo.has_value());
+    CHECK(r.hi.has_value()); // downbeat at quarter 6, sample 500
+  }
+  // Same, with the change on a half-quarter so no stale grid point coincides.
+  {
+    auto t = musical_tick(6200, 6800, 6.2, 6.8);
+    t.musical_start_last_signature = 0.;
+    t.musical_start_last_bar = 4.;
+    t.musical_end_last_bar = 6.5;
+    const auto r = run_metronome(t);
+    CAPTURE(r.hi.has_value(), r.lo.has_value());
+    CHECK((r.hi.has_value() || r.lo.has_value())); // downbeat at 6.5 dropped entirely?
+  }
+}

@@ -265,133 +265,68 @@ struct token_request
   //! Does the tick go backward (e.g. speed < 0)
   [[nodiscard]] constexpr bool backward() const noexcept { return date < prev_date; }
 
-  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
-  get_quantification_date_for_bars_or_longer(double rate) const noexcept
+
+  //! Calls fn(bar_line, next_bar_line) for every bar segment the tick touches,
+  //! in increasing musical order.
+  //!
+  //! Bar lines come from two places and both matter: the ones the signature
+  //! implies, and the one the interval reported for the far end of the tick.
+  //! A signature change puts a bar line where the arithmetic alone would not,
+  //! so the grid restarts there.
+  template <typename F>
+  void for_each_bar_segment(double lo, double hi, F&& fn) const noexcept
   {
-    std::optional<time_value> quantification_date;
-    const double bars_per_quantization = 1.0 / rate;
+    const bool valid_sig = signature.upper > 0 && signature.lower > 0;
+    const double quarters_in_bar
+        = valid_sig ? 4. * signature.upper / signature.lower : 4.;
+    if(!(quarters_in_bar > 0.))
+      return;
 
-    // Convert positions to bar numbers from the last signature
-    const double start_bar_position
-        = (musical_start_position - musical_start_last_signature)
-          / (4.0 * signature.upper / signature.lower);
-    const double end_bar_position = (musical_end_position - musical_start_last_signature)
-                                    / (4.0 * signature.upper / signature.lower);
+    constexpr double eps = 1e-9;
+    const bool rewinding = date < prev_date;
+    const double near_bar = rewinding ? musical_end_last_bar : musical_start_last_bar;
+    const double far_bar = rewinding ? musical_start_last_bar : musical_end_last_bar;
 
-    // Check if we're exactly on a quantization point at the start
-    const double start_remainder = std::fmod(start_bar_position, bars_per_quantization);
-    if(std::abs(start_remainder) < 0.0001 && musical_start_position >= 0)
+    // Up to the reported far bar, on the grid the near bar defines.
+    double b = near_bar;
+    for(int i = 0; i < 1024 && b < far_bar - eps; i++)
     {
-      quantification_date = prev_date;
+      const double next = (b + quarters_in_bar < far_bar) ? b + quarters_in_bar : far_bar;
+      if(next > lo + eps && b < hi + eps)
+        fn(b, next);
+      b += quarters_in_bar;
     }
-    else
+
+    // From the far bar on, on the grid it defines.
+    b = (far_bar > near_bar) ? far_bar : near_bar;
+    for(int i = 0; i < 1024 && b < hi + eps; i++)
     {
-      // Find the next quantization bar after start
-      const double start_quant_bar
-          = std::floor(start_bar_position / bars_per_quantization);
-      const double next_quant_bar_number = (start_quant_bar + 1) * bars_per_quantization;
-
-      // Check if this quantization point falls within our tick (but NOT at the end)
-      if(next_quant_bar_number > start_bar_position
-         && next_quant_bar_number < end_bar_position)
-      {
-        // Calculate the musical position of this quantization point
-        const double quant_musical_position
-            = musical_start_last_signature
-              + next_quant_bar_number * (4.0 * signature.upper / signature.lower);
-
-        // Map this to a time value
-        const double musical_tick_duration
-            = musical_end_position - musical_start_position;
-        const double ratio
-            = (quant_musical_position - musical_start_position) / musical_tick_duration;
-        const time_value dt = date - prev_date;
-
-        time_value potential_date = prev_date + dt * ratio;
-
-        // Extra safety check: ensure we're not at the boundary
-        if(potential_date < date)
-        {
-          quantification_date = potential_date;
-        }
-        else
-        {
-          return std::nullopt;
-        }
-      }
-    }
-    return quantification_date;
-  }
-
-  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
-  get_quantification_date_for_shorter_than_bars(double rate) const noexcept
-  {
-    // Quantize relative to quarter divisions
-    // TODO ! if there is a bar change,
-    // and no prior quantization date before that, we have to quantize to the
-    // bar change
-    const double start_quarter = (musical_start_position - musical_start_last_bar);
-    const double end_quarter = (musical_end_position - musical_start_last_bar);
-
-    // duration of what we quantify in terms of quarters
-    const double musical_quant_dur = rate / 4.;
-    const double start_quant = std::floor(start_quarter * musical_quant_dur);
-    const double end_quant = std::floor(end_quarter * musical_quant_dur);
-
-    if(start_quant != end_quant)
-    {
-      if(end_quant == end_quarter * musical_quant_dur)
-      {
-        // We want quantization on start, not on end
-        return std::nullopt;
-      }
-      // Date to quantify is the next one :
-      const double musical_tick_duration = musical_end_position - musical_start_position;
-      const double quantified_duration
-          = (musical_start_last_bar + (start_quant + 1) * 4. / rate)
-            - musical_start_position;
-      const double ratio = (date - prev_date).impl / musical_tick_duration;
-
-      return prev_date + quantified_duration * ratio;
-    }
-    else if(start_quant == start_quarter * musical_quant_dur)
-    {
-      // We start on a signature change
-      return prev_date;
-    }
-    else
-    {
-      return std::nullopt;
+      fn(b, b + quarters_in_bar);
+      b += quarters_in_bar;
     }
   }
 
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
   //! return the next occurring quantification date, if such date is in the tick
   //! defined by this token_request.
-  [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<time_value>
+  //!
+  //! This is the first of get_quantification_dates(), not a second
+  //! implementation of it: a node that takes one point and a node that takes
+  //! them all have to agree about where the grid is.
+  [[nodiscard]] std::optional<time_value>
   get_quantification_date(double rate) const noexcept
   {
     if(prev_date == date)
       return std::nullopt;
 
+    // Quantized triggers are not interactive while rewinding.
     if(backward())
       return std::nullopt;
 
-    if(rate <= 0.)
-      return prev_date;
-
-    const double musical_tick_duration = musical_end_position - musical_start_position;
-    if(musical_tick_duration <= 0.)
-      return prev_date;
-
-    if(rate <= 1.)
-    {
-      return get_quantification_date_for_bars_or_longer(rate);
-    }
-    else
-    {
-      return get_quantification_date_for_shorter_than_bars(rate);
-    }
+    const auto pts = get_quantification_dates(rate);
+    if(pts.empty())
+      return std::nullopt;
+    return pts[0].date;
   }
 
   //! Every quantification date occurring in this tick, in order.
@@ -432,12 +367,24 @@ struct token_request
     // A point is kept if it lands inside the tick; false means we walked past
     // the end and can stop.
     const auto try_push = [&](double musical_position, int64_t index) {
-      const double ratio
-          = (musical_position - musical_start_position) / musical_tick_duration;
-      time_value d = prev_date + tick_duration * ratio;
+      // Scale the musical distance to this point by the tick, rather than
+      // scaling the tick by a normalised position. The two associate
+      // differently in floating point and the result is truncated to a whole
+      // flick, so the other order lands a flick short on dates that come out
+      // exact in this one.
+      const double scale = double(tick_duration.impl) / musical_tick_duration;
+      time_value d
+          = prev_date + (musical_position - musical_start_position) * scale;
 
+      // The tick owns [start; end[ in musical positions as well as in dates:
+      // a point sitting musically on the far end belongs to the next tick,
+      // even when truncating its date to a whole flick pulls it inside this
+      // one. Without this, the point fires here at the last flick AND in the
+      // next tick at its first one.
       if(rewinding)
       {
+        if(musical_position <= musical_end_position)
+          return false;
         if(d > prev_date)
           d = prev_date;
         if(d <= date)
@@ -445,6 +392,8 @@ struct token_request
       }
       else
       {
+        if(musical_position >= musical_end_position)
+          return false;
         if(d < prev_date)
           d = prev_date;
         if(d >= date)
@@ -491,22 +440,25 @@ struct token_request
 
     const double lo = rewinding ? musical_end_position : musical_start_position;
     const double hi = rewinding ? musical_start_position : musical_end_position;
-    const double bar0 = rewinding ? musical_end_last_bar : musical_start_last_bar;
 
-    int n_bars = int((hi - bar0) / quarters_in_bar) + 1;
-    if(n_bars > 1024)
-      n_bars = 1024;
-    const int divs = int(std::ceil(quarters_in_bar / unit));
+    // Collect the segments first so a rewinding walk can take them in reverse:
+    // the points inside a segment are monotone in k, and so are the segments.
+    ossia::small_vector<std::pair<double, double>, 8> segments;
+    for_each_bar_segment(lo, hi, [&](double bar_line, double next_bar) {
+      if(segments.size() < 1024)
+        segments.push_back({bar_line, next_bar});
+    });
 
-    const auto walk_bar = [&](double bar_line) {
+    const auto walk_segment = [&](double bar_line, double next_bar) {
+      const int divs = int(std::ceil((next_bar - bar_line) / unit)) + 1;
       if(!rewinding)
       {
         for(int64_t k = 0; k <= divs; k++)
         {
           const double p = bar_line + k * unit;
-          if(p >= bar_line + quarters_in_bar - eps || p > hi + eps)
+          if(p >= next_bar - eps || p > hi + eps)
             return true;
-          if(p < lo - eps)
+          if(p < lo)
             continue;
           if(!try_push(p, k))
             return false;
@@ -517,9 +469,9 @@ struct token_request
         for(int64_t k = divs; k >= 0; k--)
         {
           const double p = bar_line + k * unit;
-          if(p >= bar_line + quarters_in_bar - eps || p > hi + eps)
+          if(p >= next_bar - eps || p > hi + eps)
             continue;
-          if(p < lo - eps)
+          if(p < lo)
             return true;
           if(!try_push(p, k))
             return false;
@@ -530,22 +482,15 @@ struct token_request
 
     if(!rewinding)
     {
-      for(int b = 0; b <= n_bars; b++)
-      {
-        const double bar_line = bar0 + b * quarters_in_bar;
-        if(bar_line > hi + eps)
+      for(const auto& [b, n] : segments)
+        if(!walk_segment(b, n))
           break;
-        if(!walk_bar(bar_line))
-          break;
-      }
     }
     else
     {
-      for(int b = n_bars; b >= 0; b--)
-      {
-        if(!walk_bar(bar0 + b * quarters_in_bar))
+      for(auto it = segments.rbegin(); it != segments.rend(); ++it)
+        if(!walk_segment(it->first, it->second))
           break;
-      }
     }
     return res;
   }
@@ -616,32 +561,44 @@ struct token_request
         tock(sample_of(p));
     };
 
-    int n_bars = int((hi - bar0) / quarters_in_bar) + 1;
-    if(n_bars > 1024)
-      n_bars = 1024;
+    // The same bar segments the quantification grid uses, so a click and a
+    // quantized event at the same bar line land on the same sample.
+    double seg_lo[64]{};
+    double seg_hi[64]{};
+    int n_seg = 0;
+    for_each_bar_segment(lo, hi, [&](double bar_line, double next_bar) {
+      if(n_seg < 64)
+      {
+        seg_lo[n_seg] = bar_line;
+        seg_hi[n_seg] = next_bar;
+        n_seg++;
+      }
+    });
+
+    const auto walk_segment = [&](double bar_line, double next_bar) {
+      if(!rewinding)
+      {
+        emit(bar_line, true);
+        for(double q = bar_line + 1.; q < next_bar - 1e-9; q += 1.)
+          emit(q, false);
+      }
+      else
+      {
+        double last = bar_line;
+        for(double q = bar_line + 1.; q < next_bar - 1e-9; q += 1.)
+          last = q;
+        for(double q = last; q > bar_line + 1e-9; q -= 1.)
+          emit(q, false);
+        emit(bar_line, true);
+      }
+    };
 
     if(!rewinding)
-    {
-      for(int b = 0; b <= n_bars; b++)
-      {
-        const double bar_line = bar0 + b * quarters_in_bar;
-        if(bar_line > hi)
-          break;
-        emit(bar_line, true);
-        for(int q = 1; q < quarters_in_bar; q++)
-          emit(bar_line + q, false);
-      }
-    }
+      for(int i = 0; i < n_seg; i++)
+        walk_segment(seg_lo[i], seg_hi[i]);
     else
-    {
-      for(int b = n_bars; b >= 0; b--)
-      {
-        const double bar_line = bar0 + b * quarters_in_bar;
-        for(int q = int(std::ceil(quarters_in_bar)) - 1; q >= 1; q--)
-          emit(bar_line + q, false);
-        emit(bar_line, true);
-      }
-    }
+      for(int i = n_seg - 1; i >= 0; i--)
+        walk_segment(seg_lo[i], seg_hi[i]);
   }
 
   [[nodiscard]] constexpr bool unexpected_bar_change() const noexcept
