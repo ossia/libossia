@@ -614,6 +614,45 @@ TEST_CASE(
   }
 }
 
+TEST_CASE(
+    "quantification_singular_agrees_with_plural",
+    "quantification_singular_agrees_with_plural")
+{
+  // get_quantification_dates documents that its first element is what
+  // get_quantification_date returns. Quantized triggers use the singular one
+  // and pattern quantization the plural, so if they disagree the same score
+  // fires notes and events on different grids.
+  for(auto sig : {ossia::time_signature{4, 4}, ossia::time_signature{7, 8},
+                  ossia::time_signature{5, 4}})
+  {
+    for(double rate : {1., 2., 4.})
+    {
+      for(int step = 0; step < 40; step++)
+      {
+        const double start = step * 0.35;
+        const double end = start + 0.4;
+
+        auto t = tick(int64_t(start * 1000), int64_t(end * 1000), 0, 1.);
+        t.signature = sig;
+        t.musical_start_last_signature = 0.;
+        const double qpb = 4. * sig.upper / sig.lower;
+        t.musical_start_last_bar = std::floor(start / qpb) * qpb;
+        t.musical_start_position = start;
+        t.musical_end_last_bar = std::floor(end / qpb) * qpb;
+        t.musical_end_position = end;
+
+        CAPTURE(sig.upper, sig.lower, rate, start, end);
+        const auto plural = t.get_quantification_dates(rate);
+        const auto singular = t.get_quantification_date(rate);
+
+        REQUIRE(singular.has_value() == !plural.empty());
+        if(singular && !plural.empty())
+          REQUIRE(singular->impl == plural[0].date.impl);
+      }
+    }
+  }
+}
+
 TEST_CASE("interval_date_accumulates_exactly", "interval_date_accumulates_exactly")
 {
   // Awkward speeds do not multiply out to whole flicks. Rounding each tick up

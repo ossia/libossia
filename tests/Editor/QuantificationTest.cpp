@@ -6,6 +6,7 @@
 
 #include <ossia/editor/scenario/time_interval.hpp>
 
+#include <map>
 #include <utility>
 using namespace ossia;
 using namespace std::placeholders;
@@ -269,4 +270,84 @@ TEST_CASE("test_quant", "test_quant")
       ossia::time_value{15000})};
 
   //
+}
+
+// Every musical grid point must be reported by exactly one tick: the tick
+// owns [prev_date; date[ and the next one starts where it ended. A grid point
+// sitting musically on the very end of a tick used to fire twice - once at
+// the tick's last flick, because truncating its date to a whole flick pulled
+// it inside, and once more at the next tick's first flick. A quantized
+// trigger or a step sequencer then executed the same point twice, one sample
+// apart. This sweep reproduces the exact tick streams that exposed it.
+TEST_CASE("quantification_points_fire_exactly_once", "[quantification]")
+{
+  constexpr double Q = 352800000.0; // flicks per quarter through model time
+  constexpr double FPS48 = 705600000.0 / 48000.0;
+
+  for(double rate : {1., 1.5, 2., 3., 4., 8.})
+  {
+    for(double speed : {1.0, 0.5, 1.37, 2.0})
+    {
+      for(int L : {128, 512})
+      {
+        // Count the reported points per musical position, over a long run of
+        // consecutive ticks advanced with floor + carried residue like
+        // time_interval::take_step.
+        std::map<long long, int> seen;
+        double residue = 0.;
+        int64_t d = 0;
+        double last_end = 0.;
+        for(int t = 0; t < 6000; t++)
+        {
+          const double exact = L * FPS48 * speed + residue;
+          const double step = std::floor(exact);
+          residue = exact - step;
+          const int64_t nd = d + int64_t(step);
+
+          ossia::token_request tok;
+          tok.prev_date = ossia::time_value{d};
+          tok.date = ossia::time_value{nd};
+          tok.speed = 1.;
+          tok.tempo = 120.;
+          tok.signature = ossia::time_signature{4, 4};
+          tok.start_sample = 0;
+          tok.length_sample = L;
+          tok.musical_start_last_signature = 0.;
+          tok.musical_start_position = d / Q;
+          tok.musical_start_last_bar
+              = std::floor(tok.musical_start_position / 4.) * 4.;
+          tok.musical_end_position = nd / Q;
+          tok.musical_end_last_bar = std::floor(tok.musical_end_position / 4.) * 4.;
+
+          for(const auto& p : tok.get_quantification_dates(rate))
+          {
+            // Key each point by its musical position on an eighth-of-a-quarter
+            // lattice: reporting noise is < 1e-6 quarters, distinct points of
+            // these rates are >= 1/3 quarter apart.
+            const double frac = double(p.date.impl - d) / double(nd - d);
+            const double mus = tok.musical_start_position
+                               + frac
+                                     * (tok.musical_end_position
+                                        - tok.musical_start_position);
+            seen[llround(mus * 8.)]++;
+          }
+          last_end = nd / Q;
+          d = nd;
+        }
+
+        for(const auto& [key, count] : seen)
+        {
+          // Ignore the last partial bar: those points may legitimately still
+          // be waiting for the tick that owns them.
+          if(key / 8. < last_end - 4.)
+          {
+            INFO(
+                "rate " << rate << " speed " << speed << " L " << L << " point "
+                        << key / 8. << " fired " << count << " times");
+            REQUIRE(count == 1);
+          }
+        }
+      }
+    }
+  }
 }
