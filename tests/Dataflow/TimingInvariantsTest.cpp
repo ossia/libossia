@@ -1138,8 +1138,10 @@ TEST_CASE("sweep_metronome_exactly_once", "sweep_metronome_exactly_once")
             // A tick covering no whole sample still fires, at offset 0.
             REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               });
-          // Never both a bar and a quarter in the same tick.
-          REQUIRE(fired_this_tick <= 1);
+          // A tick shorter than the gap between two grid points can only
+          // reach one of them; a longer one reports each it crosses.
+          if(strict)
+            REQUIRE(fired_this_tick <= 1);
         }
       }
 
@@ -1159,21 +1161,11 @@ TEST_CASE("sweep_metronome_exactly_once", "sweep_metronome_exactly_once")
       }
 
       CAPTURE(bars_f, quarters_f, expected_bars, expected_quarters);
-      if(strict)
-      {
-        // Every bar crossed exactly once (incl. the initial downbeat), every
-        // quarter exactly once.
-        REQUIRE(bars_f == expected_bars);
-        REQUIRE(quarters_f == expected_quarters);
-      }
-      else
-      {
-        // Ticks of a quarter or longer can span several grid points but fire
-        // at most once per tick: clicks are dropped, never invented.
-        REQUIRE(bars_f >= expected_bars - 1);
-        REQUIRE(bars_f <= expected_bars + 1);
-        REQUIRE(bars_f + quarters_f <= expected_bars + expected_quarters + 1);
-      }
+      // Every bar crossed exactly once (incl. the initial downbeat), every
+      // quarter exactly once, whether or not a single tick covers more than one
+      // of them.
+      REQUIRE(bars_f == expected_bars);
+      REQUIRE(quarters_f == expected_quarters);
 
       // ---- Backward: same clicks while rewinding over the same ground.
       ms.s.interval->set_speed(-1.);
@@ -1204,7 +1196,8 @@ TEST_CASE("sweep_metronome_exactly_once", "sweep_metronome_exactly_once")
             // A tick covering no whole sample still fires, at offset 0.
             REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               });
-          REQUIRE(fired_this_tick <= 1);
+          if(strict)
+            REQUIRE(fired_this_tick <= 1);
         }
       }
 
