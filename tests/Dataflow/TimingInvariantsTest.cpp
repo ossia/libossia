@@ -551,6 +551,69 @@ TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_sc
   }
 }
 
+TEST_CASE(
+    "quantification_grid_restarts_at_each_bar",
+    "quantification_grid_restarts_at_each_bar")
+{
+  // 7/8 is 3.5 quarters, which a half-note grid (rate 2, a point every two
+  // quarters) does not divide. Computing the grid once from the bar the tick
+  // started in carries that bar's phase across the bar line: it invents points
+  // off the grid and skips the bar lines, which are always grid points.
+  // 1000 flicks per quarter here, so a date reads as its musical position.
+  auto t = tick(0, 8000, 0, 1.);
+  t.signature = {7, 8};
+  t.musical_start_last_signature = 0.;
+  t.musical_start_last_bar = 0.;
+  t.musical_start_position = 0.;
+  t.musical_end_last_bar = 7.;
+  t.musical_end_position = 8.;
+
+  // Bar lines at 0, 3.5 and 7; one half-note into each of them at 2 and 5.5.
+  // 9 would be the next, past the end of the tick.
+  const std::vector<double> expected{0., 2., 3.5, 5.5, 7.};
+  const std::vector<int64_t> expected_index{0, 1, 0, 1, 0};
+
+  const auto pts = t.get_quantification_dates(2.);
+  REQUIRE(pts.size() == expected.size());
+  for(std::size_t i = 0; i < expected.size(); i++)
+  {
+    CAPTURE(i, pts[i].date.impl, pts[i].index);
+    REQUIRE(std::abs(double(pts[i].date.impl) / 1000. - expected[i]) < 0.001);
+    // The index counts divisions from the bar the point falls in, so it
+    // restarts at every bar line too.
+    REQUIRE(pts[i].index == expected_index[i]);
+  }
+
+  // Rewinding over the same ground reports the same points, in reverse.
+  auto b = tick(8000, 0, 0, -1.);
+  b.signature = {7, 8};
+  b.musical_start_last_signature = 0.;
+  b.musical_start_last_bar = 7.;
+  b.musical_start_position = 8.;
+  b.musical_end_last_bar = 0.;
+  b.musical_end_position = 0.;
+
+  const auto rpts = b.get_quantification_dates(2.);
+  std::vector<double> rgot;
+  for(const auto& p : rpts)
+    rgot.push_back(double(p.date.impl) / 1000.);
+  CAPTURE(rgot.size());
+  // Same grid, walked downwards; the point on the tick's own end is excluded
+  // the same way the forward walk excludes the one on its end.
+  REQUIRE(rgot.size() >= 4);
+  for(std::size_t i = 1; i < rgot.size(); i++)
+    REQUIRE(rgot[i] < rgot[i - 1]);
+  for(double g : rgot)
+  {
+    const bool on_grid
+        = std::any_of(expected.begin(), expected.end(), [&](double e) {
+            return std::abs(e - g) < 0.001;
+          });
+    CAPTURE(g);
+    REQUIRE(on_grid);
+  }
+}
+
 TEST_CASE("interval_date_accumulates_exactly", "interval_date_accumulates_exactly")
 {
   // Awkward speeds do not multiply out to whole flicks. Rounding each tick up
