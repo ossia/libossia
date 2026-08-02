@@ -421,45 +421,19 @@ struct token_request
       return res;
     }
 
-    // Distance in quarter notes between two consecutive points, and the musical
-    // position their count is relative to.
-    double unit{};
-    double origin{};
-    if(rate <= 1.)
-    {
-      // A bar or longer: the rate is a fraction of a bar.
-      const bool valid_sig = signature.upper > 0 && signature.lower > 0;
-      const double bar = valid_sig ? 4. * signature.upper / signature.lower : 4.;
-      unit = bar / rate;
-      origin = musical_start_last_signature;
-    }
-    else
-    {
-      // Shorter: a subdivision of the quarter note.
-      unit = 4. / rate;
-      origin = musical_start_last_bar;
-    }
-
-    if(!(unit > 0.))
-      return res;
-
     // A point falling exactly on the end of the tick belongs to the next one,
     // so the interval is [start; end[ - which is also what makes the first
     // element agree with get_quantification_date().
     constexpr double eps = 1e-9;
-    const double start = (musical_start_position - origin) / unit;
-    const double end = (musical_end_position - origin) / unit;
-
     const time_value tick_duration = date - prev_date;
+    const bool valid_sig = signature.upper > 0 && signature.lower > 0;
+    const double quarters_in_bar = valid_sig ? 4. * signature.upper / signature.lower : 4.;
 
-    const int64_t first = rewinding ? int64_t(std::floor(start + eps))
-                                    : int64_t(std::ceil(start - eps));
-
-    for(int64_t k = first; rewinding ? (k > end + eps) : (k < end - eps);
-        k += rewinding ? -1 : 1)
-    {
+    // A point is kept if it lands inside the tick; false means we walked past
+    // the end and can stop.
+    const auto try_push = [&](double musical_position, int64_t index) {
       const double ratio
-          = (k * unit + origin - musical_start_position) / musical_tick_duration;
+          = (musical_position - musical_start_position) / musical_tick_duration;
       time_value d = prev_date + tick_duration * ratio;
 
       if(rewinding)
@@ -467,22 +441,111 @@ struct token_request
         if(d > prev_date)
           d = prev_date;
         if(d <= date)
-          break;
+          return false;
       }
       else
       {
         if(d < prev_date)
           d = prev_date;
         if(d >= date)
-          break;
+          return false;
       }
 
-      res.push_back({d, k});
-
+      res.push_back({d, index});
       // A tick spanning this many points means the rate is nonsense: stop
       // rather than fill memory.
-      if(res.size() >= 1024)
-        break;
+      return res.size() < 1024;
+    };
+
+    if(rate <= 1.)
+    {
+      // A bar or longer: the rate is a fraction of a bar, counted from the last
+      // signature change, and no bar line subdivides it.
+      const double unit = quarters_in_bar / rate;
+      if(!(unit > 0.))
+        return res;
+
+      const double origin = musical_start_last_signature;
+      const double start = (musical_start_position - origin) / unit;
+      const double end = (musical_end_position - origin) / unit;
+      const int64_t first = rewinding ? int64_t(std::floor(start + eps))
+                                      : int64_t(std::ceil(start - eps));
+
+      for(int64_t k = first; rewinding ? (k > end + eps) : (k < end - eps);
+          k += rewinding ? -1 : 1)
+      {
+        if(!try_push(k * unit + origin, k))
+          break;
+      }
+      return res;
+    }
+
+    // Shorter than a bar: a subdivision of the quarter note, counted from the
+    // bar it falls in. The grid restarts at every bar line, so a bar whose
+    // length is not a whole number of divisions (7/8 against a half-note grid)
+    // does not carry a stale phase into the next one, and the bar line itself
+    // is always a point.
+    const double unit = 4. / rate;
+    if(!(unit > 0.) || !(quarters_in_bar > 0.))
+      return res;
+
+    const double lo = rewinding ? musical_end_position : musical_start_position;
+    const double hi = rewinding ? musical_start_position : musical_end_position;
+    const double bar0 = rewinding ? musical_end_last_bar : musical_start_last_bar;
+
+    int n_bars = int((hi - bar0) / quarters_in_bar) + 1;
+    if(n_bars > 1024)
+      n_bars = 1024;
+    const int divs = int(std::ceil(quarters_in_bar / unit));
+
+    const auto walk_bar = [&](double bar_line) {
+      if(!rewinding)
+      {
+        for(int64_t k = 0; k <= divs; k++)
+        {
+          const double p = bar_line + k * unit;
+          if(p >= bar_line + quarters_in_bar - eps || p > hi + eps)
+            return true;
+          if(p < lo - eps)
+            continue;
+          if(!try_push(p, k))
+            return false;
+        }
+      }
+      else
+      {
+        for(int64_t k = divs; k >= 0; k--)
+        {
+          const double p = bar_line + k * unit;
+          if(p >= bar_line + quarters_in_bar - eps || p > hi + eps)
+            continue;
+          if(p < lo - eps)
+            return true;
+          if(!try_push(p, k))
+            return false;
+        }
+      }
+      return true;
+    };
+
+    if(!rewinding)
+    {
+      for(int b = 0; b <= n_bars; b++)
+      {
+        const double bar_line = bar0 + b * quarters_in_bar;
+        if(bar_line > hi + eps)
+          break;
+        if(!walk_bar(bar_line))
+          break;
+      }
+    }
+    else
+    {
+      for(int b = n_bars; b >= 0; b--)
+      {
+        if(!walk_bar(bar0 + b * quarters_in_bar))
+          break;
+      }
     }
     return res;
   }
