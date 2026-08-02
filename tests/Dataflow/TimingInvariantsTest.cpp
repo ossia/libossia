@@ -324,6 +324,7 @@ struct tiling_setup
   ossia::execution_state e;
   root_scenario s;
   std::vector<std::shared_ptr<probe_node>> probes;
+  std::vector<std::shared_ptr<ossia::time_interval>> intervals;
   int64_t buffer_flicks{};
 
   tiling_setup(int bs, const std::vector<int64_t>& durations_in_buffer_8ths)
@@ -342,6 +343,7 @@ struct tiling_setup
           = ossia::time_value{durations_in_buffer_8ths[i] * buffer_flicks / 8};
       auto itv = create_interval(*evs[i], *evs[i + 1], dur);
       s.scenario->add_time_interval(itv);
+      intervals.push_back(itv);
       auto p = std::make_shared<probe_node>();
       probes.push_back(p);
       itv->add_time_process(std::make_shared<ossia::node_process>(p));
@@ -503,6 +505,52 @@ TEST_CASE("scenario_tiling_root_speed_scaling", "scenario_tiling_root_speed_scal
     const auto expected
         = ossia::time_value{int64_t(std::ceil(ts.buffer_flicks * c.speed))};
     REQUIRE(ts.s.interval->get_date() == expected);
+  }
+}
+
+TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_scaling")
+{
+  // |speed| != 1 on the intervals themselves, with the root transport at 1.
+  // An interval's own speed changes how fast it consumes its own duration; it
+  // must not change where in the audio buffer the interval writes. Distinct
+  // from scenario_tiling_root_speed_scaling, which only varies the root.
+  const int bs = 64;
+
+  // Every boundary here falls on a whole sample, so this isolates the frame
+  // question. Boundaries that land between two samples are a separate matter
+  // (the tick length rounds up while the next start rounds down) and are swept
+  // by the rounding tests; at speed 3 only the 12-eighth layout is exact.
+  const struct
+  {
+    double speed;
+    std::vector<int64_t> layout;
+  } cases[] = {
+      {2., {8, 8, 8, 512}},      {2., {12, 12, 12, 512}}, {2., {5, 11, 7, 512}},
+      {0.5, {8, 8, 8, 512}},     {0.5, {12, 12, 12, 512}}, {0.5, {5, 11, 7, 512}},
+      {0.25, {8, 8, 8, 512}},    {0.25, {5, 11, 7, 512}},
+      {3., {12, 12, 12, 512}},
+  };
+
+  for(const auto& c : cases)
+  {
+    CAPTURE(c.speed, c.layout[0], c.layout[1], c.layout[2]);
+    tiling_setup ts(bs, c.layout);
+    for(auto& itv : ts.intervals)
+      itv->set_speed(c.speed);
+
+    for(int i = 0; i < 6; i++)
+    {
+      CAPTURE("forward", i);
+      require_exact_coverage(ts.do_tick(), bs);
+    }
+
+    // And back out through the same boundaries.
+    ts.s.interval->set_speed(-1.);
+    for(int i = 0; i + 1 < 6; i++)
+    {
+      CAPTURE("backward", i);
+      require_exact_coverage(ts.do_tick(), bs);
+    }
   }
 }
 
