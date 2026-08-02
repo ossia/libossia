@@ -52,6 +52,51 @@ TEST_CASE("test_sound_ref", "test_sound_ref")
   REQUIRE(op == expected);
 }
 
+TEST_CASE(
+    "sound_writes_a_span_that_reads_no_new_sample",
+    "sound_writes_a_span_that_reads_no_new_sample")
+{
+  using namespace ossia;
+  nodes::sound_ref snd;
+  ossia::audio_array data;
+  data.resize(1);
+  data[0].assign(128, 1.0f);
+  snd.set_sound(std::move(data));
+
+  execution_state e;
+  e.bufferSize = 64;
+  e.sampleRate = 44100;
+  e.modelToSamplesRatio = 1. / 16000.;
+  e.samplesToModelRatio = 16000.;
+
+  // 1020000 flicks is 63.75 samples into the buffer and the tick ends exactly
+  // on sample 64, so the span is the single sample 63. It consumes a quarter
+  // of a source sample, so the read count floors to zero while the write count
+  // is one: the two are floors of differently phased quantities and a region
+  // starting off a sample boundary hits this on its first tick.
+  ossia::token_request tk;
+  tk.prev_date = 0_tv;
+  tk.date = ossia::time_value{4000};
+  tk.offset = ossia::time_value{1020000};
+  tk.speed = 1.;
+  tk.signature = {4, 4};
+  tk.tempo = 120.;
+
+  const auto si = ossia::snd::sample_info(e.bufferSize, e.modelToSamplesRatio, tk);
+  REQUIRE(si.samples_to_read == 0);
+  REQUIRE(si.samples_to_write == 1);
+
+  snd.run(tk, {&e});
+
+  // Reading nothing new is not a reason to write nothing: skipping the span
+  // leaves a sample of silence at the start of every region that does not
+  // begin on a sample boundary.
+  auto& op = *snd.root_outputs()[0]->target<audio_port>();
+  REQUIRE(op.channels() >= 1);
+  REQUIRE(op.channel(0).size() >= 64);
+  REQUIRE(op.channel(0)[63] != 0.);
+}
+
 #if defined(__GNUC__) || defined(__clang__)
 // http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
 // https://gist.github.com/Jon-Schneider/8b7c53d27a7a13346a643dac9c19d34f

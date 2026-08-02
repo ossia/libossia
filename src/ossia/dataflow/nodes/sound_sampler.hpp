@@ -87,8 +87,11 @@ struct sound_sampler
 
     const auto [samples_to_read, samples_to_write]
         = snd::sample_info(e.bufferSize(), e.modelToSamples(), t);
-    if(samples_to_read == 0)
-      return;
+    // Only the write count decides whether there is anything to do, as in
+    // sound_mmap and sound_libav. The read count is a floor over absolute model
+    // time while the write count is a floor over the offset into the buffer, so
+    // a tick can legitimately cover a sample without consuming a whole new one;
+    // bailing here left a hole and a stale m_prev_date.
     if(samples_to_write <= 0)
       return;
 
