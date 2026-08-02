@@ -484,25 +484,36 @@ struct token_request
   constexpr void
   metronome(double modelToSamplesRatio, Tick tick, Tock tock) const noexcept
   {
-    if(!forward())
+    const double musical_tick_duration = musical_end_position - musical_start_position;
+    const bool rewinding = backward();
+
+    // A musical duration that disagrees with the direction of the tick did not
+    // come from it, and interpolating in it would land outside the buffer.
+    if(musical_tick_duration == 0. || (musical_tick_duration < 0.) != rewinding)
       return;
 
-    if((musical_end_last_bar != musical_start_last_bar) || musical_start_position == 0.)
+    const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
+    if(samples_tick_duration <= 0)
+      return;
+
+    // Where a musical date the tick crosses falls in the samples it covers. The
+    // ratio is positive in both directions: rewinding, both the distance to the
+    // date and the tick duration are negative. A date sitting exactly on the end
+    // of the tick would give the one-past-the-end sample.
+    const auto sample_of = [&](double musical_position) {
+      const double ratio
+          = (musical_position - musical_start_position) / musical_tick_duration;
+      const int64_t s = samples_tick_duration * ratio;
+      return s < 0 ? int64_t(0)
+                   : (s >= samples_tick_duration ? samples_tick_duration - 1 : s);
+    };
+
+    if((musical_end_last_bar != musical_start_last_bar)
+       || (!rewinding && musical_start_position == 0.))
     {
-      // There is a bar change in this tick, start the up tick
-      const double musical_tick_duration = musical_end_position - musical_start_position;
-      if(musical_tick_duration > 0)
-      {
-        const double musical_bar_start = musical_end_last_bar - musical_start_position;
-        const int64_t samples_tick_duration
-            = physical_write_duration(modelToSamplesRatio);
-        if(samples_tick_duration > 0)
-        {
-          const double ratio = musical_bar_start / musical_tick_duration;
-          const int64_t hi_start_sample = samples_tick_duration * ratio;
-          tick(hi_start_sample);
-        }
-      }
+      // Going forward we enter the bar at musical_end_last_bar; rewinding we go
+      // back over the start of the one we are in, at musical_start_last_bar.
+      tick(sample_of(rewinding ? musical_start_last_bar : musical_end_last_bar));
     }
     else
     {
@@ -512,24 +523,10 @@ struct token_request
           = std::floor(musical_end_position - musical_start_last_bar);
       if(start_quarter != end_quarter)
       {
-        // There is a quarter change in this tick, start the down tick
-        // start_position is prev_date
-        // end_position is date
-        const double musical_tick_duration
-            = musical_end_position - musical_start_position;
-        if(musical_tick_duration > 0)
-        {
-          const double musical_bar_start
-              = (end_quarter + musical_start_last_bar) - musical_start_position;
-          const int64_t samples_tick_duration
-              = physical_write_duration(modelToSamplesRatio);
-          if(samples_tick_duration > 0)
-          {
-            const double ratio = musical_bar_start / musical_tick_duration;
-            const int64_t lo_start_sample = samples_tick_duration * ratio;
-            tock(lo_start_sample);
-          }
-        }
+        // Same mirror: forward we reach end_quarter, rewinding we go back over
+        // the start of the quarter we are in.
+        const int64_t crossed = rewinding ? start_quarter : end_quarter;
+        tock(sample_of(crossed + musical_start_last_bar));
       }
     }
   }
