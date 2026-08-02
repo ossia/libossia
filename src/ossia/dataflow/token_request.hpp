@@ -163,12 +163,22 @@ struct token_request
     return this->prev_date.impl * ratio / abs_speed(speed);
   }
 
+  //! The sample a position in this tick's model time maps to, measured from
+  //! the start of the buffer. Non-decreasing, so spans taken as differences of
+  //! it can neither overlap nor leave a hole: the end of one is the start of
+  //! the next by construction, not by agreement.
+  [[nodiscard]] constexpr physical_time
+  sample_at(ossia::time_value tick_position, double ratio) const noexcept
+  {
+    assert(speed != 0.);
+    return constexpr_floor(tick_position.impl * ratio / abs_speed(speed));
+  }
+
   //! Where we must start to read / write in our physical buffers
   [[nodiscard]] constexpr physical_time physical_start(double ratio) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
-    assert(speed != 0.);
-    return this->offset.impl * ratio / abs_speed(speed);
+    return sample_at(this->offset, ratio);
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
@@ -177,7 +187,11 @@ struct token_request
   [[nodiscard]] constexpr physical_time
   physical_read_duration(double ratio) const noexcept
   {
-    return constexpr_ceil(abs(date - prev_date).impl * ratio);
+    // A difference of one map over absolute model time, so consecutive ticks
+    // read consecutive samples with neither a gap nor an overlap.
+    const auto a = prev_date.impl < date.impl ? prev_date.impl : date.impl;
+    const auto b = prev_date.impl < date.impl ? date.impl : prev_date.impl;
+    return constexpr_floor(b * ratio) - constexpr_floor(a * ratio);
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
@@ -186,8 +200,8 @@ struct token_request
   physical_write_duration(double ratio) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
-    assert(speed != 0.);
-    return constexpr_ceil(abs(date - prev_date).impl * ratio / abs_speed(speed));
+    return sample_at(this->offset + abs(date - prev_date), ratio)
+           - sample_at(this->offset, ratio);
   }
 
   //! This is an upper bound on what we can write to a buffer.
@@ -195,8 +209,7 @@ struct token_request
   safe_physical_write_duration(double ratio, int bufferSize) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
-    assert(speed != 0.);
-    return constexpr_floor(bufferSize - offset.impl * ratio / abs_speed(speed));
+    return bufferSize - sample_at(this->offset, ratio);
   }
 
   //! Is the given value in the tick defined by this token_request
@@ -211,8 +224,11 @@ struct token_request
   to_physical_time_in_tick(ossia::time_value global_time, double ratio) const noexcept
   {
     assert(speed != 0.);
-    return offset.impl * ratio / abs_speed(speed)
-           + (global_time - prev_date).impl * ratio / speed;
+    // How far into the tick this date sits, counted forwards in both
+    // directions, then through the same map the span endpoints use.
+    const int64_t in_tick
+        = speed < 0. ? (prev_date - global_time).impl : (global_time - prev_date).impl;
+    return sample_at(this->offset + ossia::time_value{in_tick}, ratio);
   }
 
   //! Maps a time value in the frame of reference of this tick's node to a time
@@ -229,7 +245,7 @@ struct token_request
   from_physical_time_in_tick(ossia::physical_time phys_time, double ratio) const noexcept
   {
     assert(speed != 0.);
-    const double in_tick = phys_time - offset.impl * ratio / abs_speed(speed);
+    const double in_tick = phys_time - physical_start(ratio);
     return time_value{constexpr_floor(in_tick * (speed / ratio) + prev_date.impl)};
   }
 
@@ -492,8 +508,11 @@ struct token_request
     if(musical_tick_duration == 0. || (musical_tick_duration < 0.) != rewinding)
       return;
 
+    // A tick shorter than a sample covers no whole sample, but the grid point
+    // in it still belongs to one: the sample its span starts on, which is
+    // offset 0. Placement depends on the length, emission must not.
     const int64_t samples_tick_duration = physical_write_duration(modelToSamplesRatio);
-    if(samples_tick_duration <= 0)
+    if(samples_tick_duration < 0)
       return;
 
     // Where a musical date the tick crosses falls in the samples it covers. The
@@ -501,6 +520,8 @@ struct token_request
     // date and the tick duration are negative. A date sitting exactly on the end
     // of the tick would give the one-past-the-end sample.
     const auto sample_of = [&](double musical_position) {
+      if(samples_tick_duration == 0)
+        return int64_t(0);
       const double ratio
           = (musical_position - musical_start_position) / musical_tick_duration;
       const int64_t s = samples_tick_duration * ratio;
