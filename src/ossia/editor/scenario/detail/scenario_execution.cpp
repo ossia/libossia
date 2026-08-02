@@ -167,7 +167,11 @@ void scenario::run_interval(
           interval.tick_offset_speed_precomputed(max_tick, offset, tk);
         }
 
-        const auto ot = ossia::time_value{int64_t(diff)};
+        // diff and max_tick are in the interval's frame, the cascade in ours.
+        const double sf = (s > 0.) ? s : 1.;
+        const auto ot = ossia::time_value{int64_t(diff / sf)};
+        const auto next_offset = offset + ossia::time_value{int64_t(max_tick.impl / sf)};
+
         const auto node_it = m_overticks.lower_bound(end_node);
         if(node_it != m_overticks.end() && (end_node == node_it->first))
         {
@@ -178,13 +182,12 @@ void scenario::run_interval(
           if(ot > cur.max)
           {
             cur.max = ot;
-            cur.offset = tk.offset + tick_ms - cur.max;
+            cur.offset = next_offset;
           }
         }
         else
         {
-          m_overticks.insert(
-              node_it, {end_node, overtick{ot, ot, tk.offset + tick_ms - ot}});
+          m_overticks.insert(node_it, {end_node, overtick{ot, ot, next_offset}});
         }
       }
     }
@@ -594,9 +597,9 @@ void scenario::run_interval_backward(
     // can reset the scenario to its initial state when rewinding to 0)
     const auto start_node = &interval.get_start_event().get_time_sync();
     {
-      const auto ot = ossia::time_value{displacement - cst_old_date.impl};
+      const auto ot = ossia::time_value{int64_t((displacement - cst_old_date.impl) / s)};
 
-      const auto ot_offset = tk.offset + tick_ms - ot;
+      const auto ot_offset = offset + ossia::time_value{int64_t(cst_old_date.impl / s)};
 
       const auto node_it = m_backward_overticks.lower_bound(start_node);
       if(node_it != m_backward_overticks.end() && (start_node == node_it->first))

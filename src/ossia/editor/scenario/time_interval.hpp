@@ -230,6 +230,14 @@ private:
       ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset,
       const ossia::token_request& parent_request);
 
+  //! The factor between the parent's model time and ours for this tick: the
+  //! same one the tick duration is scaled by.
+  double local_time_factor(const ossia::token_request& parent_request) const noexcept;
+
+  //! An offset is produced in the parent's frame but consumed in ours.
+  ossia::time_value
+  to_local_offset(ossia::time_value offset, double factor) const noexcept;
+
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
 

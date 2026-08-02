@@ -188,6 +188,22 @@ void time_interval::tick(
       parent_request);
 }
 
+double time_interval::local_time_factor(
+    const ossia::token_request& parent_request) const noexcept
+{
+  if(BOOST_UNLIKELY(m_hasTempo && parent_request.speed != 0))
+    return (m_speed * tempo(m_date) / ossia::root_tempo) / parent_request.speed;
+  return m_speed;
+}
+
+ossia::time_value
+time_interval::to_local_offset(ossia::time_value offset, double factor) const noexcept
+{
+  if(offset.impl == 0)
+    return offset;
+  return ossia::time_value{int64_t(offset.impl * std::abs(factor))};
+}
+
 void time_interval::tick_offset(
     time_value date, ossia::time_value offset,
     const ossia::token_request& parent_request)
@@ -216,11 +232,15 @@ void time_interval::tick_offset(
     // todo : this should be done outside for the scenario
     double speed = (m_speed * t0 / ossia::root_tempo) / parent_request.speed;
 
-    tick_impl(m_date, m_date + std::ceil(date.impl * speed), offset, parent_request);
+    tick_impl(
+        m_date, m_date + std::ceil(date.impl * speed), to_local_offset(offset, speed),
+        parent_request);
   }
   else
   {
-    tick_impl(m_date, m_date + std::ceil(date.impl * m_speed), offset, parent_request);
+    tick_impl(
+        m_date, m_date + std::ceil(date.impl * m_speed),
+        to_local_offset(offset, m_speed), parent_request);
   }
 }
 
@@ -228,7 +248,9 @@ void time_interval::tick_offset_speed_precomputed(
     time_value date, ossia::time_value offset,
     const ossia::token_request& parent_request)
 {
-  tick_impl(m_date, m_date + date.impl, offset, parent_request);
+  tick_impl(
+      m_date, m_date + date.impl,
+      to_local_offset(offset, local_time_factor(parent_request)), parent_request);
 }
 
 time_signature time_interval::signature(
