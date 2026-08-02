@@ -63,6 +63,18 @@ public:
   //! its tempo whatever the transport does, hence the parent-speed division.
   double local_time_factor(const ossia::token_request& parent_request) const noexcept;
 
+  //! How far a tick of this length would move us, in our own model time,
+  //! carried fraction included. This is what the tick actually advances by, so
+  //! anything deciding whether the tick fits must ask this and not recompute.
+  int64_t
+  advance_for(ossia::time_value, const ossia::token_request& parent_request) const noexcept;
+
+  //! How far back a rewinding scenario moves us, as a positive magnitude, the
+  //! carried fraction consumed the same way a forward tick consumes it so that
+  //! going out and back lands on the date we started from.
+  int64_t take_backward_step(
+      ossia::time_value, const ossia::token_request& parent_request) noexcept;
+
   void set_offset(ossia::time_value g) noexcept { m_offset = g; }
 
   void set_speed(double g) noexcept { m_speed = g; }
@@ -240,6 +252,9 @@ private:
   ossia::time_value
   to_local_offset(ossia::time_value offset, double factor) const noexcept;
 
+  //! Consume the accumulated fraction and return the whole flicks to advance.
+  int64_t take_step(double exact) noexcept;
+
   std::vector<std::shared_ptr<time_process>> m_processes;
   time_interval::exec_callback m_callback;
 
@@ -271,6 +286,7 @@ private:
   ossia::quarter_note m_musical_end_position{};
 
   double m_speed{1.}; /// tick length is multiplied by this
+  double m_date_residue{}; /// sub-flick part of the advance, carried to the next tick
   double m_globalSpeed{1.};
   double m_parentSpeed{1.};
   time_signature m_current_signature{};

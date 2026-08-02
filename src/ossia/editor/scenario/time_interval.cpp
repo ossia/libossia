@@ -184,7 +184,7 @@ void time_interval::tick(
     time_value date, const ossia::token_request& parent_request, double ratio)
 {
   tick_impl(
-      m_date, m_date + std::ceil(date.impl * get_speed(m_date) / ratio), m_tick_offset,
+      m_date, m_date + take_step(date.impl * get_speed(m_date) / ratio), m_tick_offset,
       parent_request);
 }
 
@@ -202,6 +202,30 @@ time_interval::to_local_offset(ossia::time_value offset, double factor) const no
   if(offset.impl == 0)
     return offset;
   return ossia::time_value{int64_t(offset.impl * std::abs(factor))};
+}
+
+int64_t time_interval::take_step(double exact) noexcept
+{
+  const double want = exact + m_date_residue;
+  const double step = std::floor(want);
+  m_date_residue = want - step;
+  return int64_t(step);
+}
+
+int64_t time_interval::advance_for(
+    ossia::time_value date, const ossia::token_request& parent_request) const noexcept
+{
+  return int64_t(
+      std::floor(date.impl * local_time_factor(parent_request) + m_date_residue));
+}
+
+int64_t time_interval::take_backward_step(
+    ossia::time_value date, const ossia::token_request& parent_request) noexcept
+{
+  double f = std::abs(local_time_factor(parent_request));
+  if(f == 0.)
+    f = 1.;
+  return -take_step(-double(date.impl) * f);
 }
 
 void time_interval::tick_offset(
@@ -233,13 +257,13 @@ void time_interval::tick_offset(
     double speed = (m_speed * t0 / ossia::root_tempo) / parent_request.speed;
 
     tick_impl(
-        m_date, m_date + std::ceil(date.impl * speed), to_local_offset(offset, speed),
+        m_date, m_date + take_step(date.impl * speed), to_local_offset(offset, speed),
         parent_request);
   }
   else
   {
     tick_impl(
-        m_date, m_date + std::ceil(date.impl * m_speed),
+        m_date, m_date + take_step(date.impl * m_speed),
         to_local_offset(offset, m_speed), parent_request);
   }
 }
@@ -344,6 +368,7 @@ void time_interval::start()
   // set clock at a tick
   m_running = true;
   m_date = m_offset;
+  m_date_residue = 0.;
 
   if(m_callback)
     (*m_callback)(true, m_date);
@@ -358,6 +383,7 @@ void time_interval::stop()
   }
 
   m_date = Zero;
+  m_date_residue = 0.;
   m_running = false;
   if(m_callback)
     (*m_callback)(false, m_date);
@@ -367,6 +393,7 @@ void time_interval::offset(ossia::time_value date)
 {
   m_offset = date;
   m_date = date;
+  m_date_residue = 0.;
 
   const auto& processes = get_time_processes();
   const auto N = processes.size();
@@ -389,6 +416,7 @@ void time_interval::transport(time_value date)
 {
   m_offset = date;
   m_date = date;
+  m_date_residue = 0.;
 
   const auto& processes = get_time_processes();
   const auto N = processes.size();
