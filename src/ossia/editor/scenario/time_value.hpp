@@ -52,11 +52,7 @@ struct OSSIA_EXPORT time_value
 
   constexpr time_value& operator+=(int64_t d) noexcept
   {
-    if(infinite())
-      impl = 0;
-    else
-      impl += d;
-
+    *this = *this + time_value{d};
     return *this;
   }
 
@@ -212,35 +208,36 @@ struct OSSIA_EXPORT time_value
     return time_value{impl - t.impl};
   }
 
-  /*! multiplication operator */
+  /*! multiplication operator. An infinite duration scaled by anything is still
+      infinite; without this it wraps to an arbitrary finite value. */
   constexpr time_value operator*(float d) const noexcept
   {
-    return time_value{int64_t(impl * d)};
+    return infinite() ? time_value{impl} : time_value{int64_t(impl * d)};
   }
 
   constexpr time_value operator*(double d) const noexcept
   {
-    return time_value{int64_t(impl * d)};
+    return infinite() ? time_value{impl} : time_value{int64_t(impl * d)};
   }
 
   constexpr time_value operator*(int32_t d) const noexcept
   {
-    return time_value{impl * d};
+    return infinite() ? time_value{impl} : time_value{impl * d};
   }
 
   constexpr time_value operator*(int64_t d) const noexcept
   {
-    return time_value{impl * d};
+    return infinite() ? time_value{impl} : time_value{impl * d};
   }
 
   constexpr time_value operator*(uint32_t d) const noexcept
   {
-    return time_value{impl * d};
+    return infinite() ? time_value{impl} : time_value{impl * d};
   }
 
   constexpr time_value operator*(uint64_t d) const noexcept
   {
-    return time_value{int64_t(impl * d)};
+    return infinite() ? time_value{impl} : time_value{int64_t(impl * d)};
   }
 
   friend constexpr double operator/(time_value lhs, time_value rhs) noexcept
@@ -271,13 +268,15 @@ struct OSSIA_EXPORT time_value
   {
     return !(infinite() && rhs.infinite()) && (impl > rhs.impl);
   }
+  // Two infinities compare equal, so they are also <= and >= each other;
+  // strict < and > stay false for them.
   constexpr bool operator<=(ossia::time_value rhs) const noexcept
   {
-    return !(infinite() && rhs.infinite()) && (impl <= rhs.impl);
+    return (infinite() && rhs.infinite()) || (impl <= rhs.impl);
   }
   constexpr bool operator>=(ossia::time_value rhs) const noexcept
   {
-    return !(infinite() && rhs.infinite()) && (impl >= rhs.impl);
+    return (infinite() && rhs.infinite()) || (impl >= rhs.impl);
   }
 
   int64_t impl;
