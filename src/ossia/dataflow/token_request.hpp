@@ -529,25 +529,54 @@ struct token_request
                    : (s >= samples_tick_duration ? samples_tick_duration - 1 : s);
     };
 
-    if((musical_end_last_bar != musical_start_last_bar)
-       || (!rewinding && musical_start_position == 0.))
+    const double quarters_in_bar = 4. * signature.upper / signature.lower;
+    if(!(quarters_in_bar > 0.))
+      return;
+
+    // Walk every grid point the tick covers rather than only the last one: in
+    // 7/8 the third beat and the following bar line are half a quarter apart,
+    // so a tick of a moderate length steps over both.
+    const double lo = rewinding ? musical_end_position : musical_start_position;
+    const double hi = rewinding ? musical_start_position : musical_end_position;
+    const double bar0 = rewinding ? musical_end_last_bar : musical_start_last_bar;
+
+    // A grid point sitting exactly on a tick boundary belongs to the tick that
+    // starts on it, where it is sample 0, not to the one that ends on it, where
+    // it would be the last sample and so a sample early. Half-open at the end
+    // the tick is heading towards, in both directions.
+    const auto emit = [&](double p, bool is_bar) {
+      if(rewinding ? (p > hi || p <= lo) : (p < lo || p >= hi))
+        return;
+      if(is_bar)
+        tick(sample_of(p));
+      else
+        tock(sample_of(p));
+    };
+
+    int n_bars = int((hi - bar0) / quarters_in_bar) + 1;
+    if(n_bars > 1024)
+      n_bars = 1024;
+
+    if(!rewinding)
     {
-      // Going forward we enter the bar at musical_end_last_bar; rewinding we go
-      // back over the start of the one we are in, at musical_start_last_bar.
-      tick(sample_of(rewinding ? musical_start_last_bar : musical_end_last_bar));
+      for(int b = 0; b <= n_bars; b++)
+      {
+        const double bar_line = bar0 + b * quarters_in_bar;
+        if(bar_line > hi)
+          break;
+        emit(bar_line, true);
+        for(int q = 1; q < quarters_in_bar; q++)
+          emit(bar_line + q, false);
+      }
     }
     else
     {
-      const int64_t start_quarter
-          = std::floor(musical_start_position - musical_start_last_bar);
-      const int64_t end_quarter
-          = std::floor(musical_end_position - musical_start_last_bar);
-      if(start_quarter != end_quarter)
+      for(int b = n_bars; b >= 0; b--)
       {
-        // Same mirror: forward we reach end_quarter, rewinding we go back over
-        // the start of the quarter we are in.
-        const int64_t crossed = rewinding ? start_quarter : end_quarter;
-        tock(sample_of(crossed + musical_start_last_bar));
+        const double bar_line = bar0 + b * quarters_in_bar;
+        for(int q = int(std::ceil(quarters_in_bar)) - 1; q >= 1; q--)
+          emit(bar_line + q, false);
+        emit(bar_line, true);
       }
     }
   }

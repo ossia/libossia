@@ -557,15 +557,23 @@ TEST_CASE("test_metronome_both_directions", "test_metronome_both_directions")
 
 TEST_CASE("test_metronome_stays_inside_the_tick", "test_metronome_stays_inside_the_tick")
 {
-  // A bar line landing exactly on the end of the tick used to give a ratio of
-  // 1, i.e. the one-past-the-end sample: the metro node then computed
-  // `count = d - start_sample == 0` and dropped the click entirely.
-  auto fwd = musical_tick(0, 1000, 3.5, 4.0);
-  fwd.musical_start_last_bar = 0.;
-  fwd.musical_end_last_bar = 4.;
-  const auto r = run_metronome(fwd);
-  REQUIRE(r.hi.has_value());
-  REQUIRE(*r.hi == 999);
+  // A bar line landing exactly on a tick boundary belongs to the tick that
+  // starts on it, where it is sample 0, not to the one that ends on it, where
+  // it could only be the last sample and so a sample early.
+  {
+    auto ends_on_it = musical_tick(0, 1000, 3.5, 4.0);
+    ends_on_it.musical_start_last_bar = 0.;
+    ends_on_it.musical_end_last_bar = 4.;
+    const auto r = run_metronome(ends_on_it);
+    REQUIRE(!r.hi.has_value());
+
+    auto starts_on_it = musical_tick(1000, 2000, 4.0, 4.5);
+    starts_on_it.musical_start_last_bar = 4.;
+    starts_on_it.musical_end_last_bar = 4.;
+    const auto r2 = run_metronome(starts_on_it);
+    REQUIRE(r2.hi.has_value());
+    REQUIRE(*r2.hi == 0);
+  }
 
   // Every crossing, whatever the geometry, reports a sample inside the tick.
   for(double start : {0.0, 0.3, 1.0, 3.5, 3.99})
