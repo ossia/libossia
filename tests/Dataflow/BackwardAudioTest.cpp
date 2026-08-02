@@ -169,6 +169,74 @@ void require_exact_coverage(std::vector<probe_node::span> spans, int64_t bufferS
 }
 }
 
+TEST_CASE("test_backward_after_score_end_is_silent",
+          "test_backward_after_score_end_is_silent")
+{
+  using namespace ossia;
+
+  // Intended behaviour: once the score has played to its end nothing is
+  // running any more, so there is nothing for the backward cascade to start
+  // from and rewinding does nothing. Pinned here so that widening the cascade
+  // - which now also handles intervals sitting at date 0 - cannot bring it
+  // back to life by accident.
+  constexpr int bs = 256;
+  execution_state e;
+  setup_state(e, bs);
+  const int64_t buffer_flicks = int64_t(bs * e.samplesToModelRatio);
+  const auto dur = ossia::time_value{2 * buffer_flicks};
+
+  root_scenario s;
+  std::vector<std::shared_ptr<time_event>> evs;
+  evs.push_back(start_event(*s.scenario));
+  for(int i = 0; i < 3; i++)
+    evs.push_back(create_event(*s.scenario));
+
+  std::vector<std::shared_ptr<probe_node>> probes;
+  for(int i = 0; i < 3; i++)
+  {
+    auto itv = create_interval(*evs[i], *evs[i + 1], dur);
+    s.scenario->add_time_interval(itv);
+    auto p = std::make_shared<probe_node>();
+    probes.push_back(p);
+    itv->add_time_process(std::make_shared<ossia::node_process>(p));
+  }
+
+  s.interval->start();
+  s.interval->tick_current(ossia::time_value{}, {});
+
+  auto tick = [&] {
+    int active = 0;
+    for(auto& p : probes)
+    {
+      p->requested_tokens.clear();
+      p->spans.clear();
+    }
+    s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+    for(auto& p : probes)
+    {
+      for(auto& tk : p->requested_tokens)
+        p->run(tk, {&e});
+      active += !p->spans.empty();
+    }
+    return active;
+  };
+
+  // Play the whole thing: 3 intervals of 2 buffers each.
+  for(int i = 0; i < 6; i++)
+  {
+    CAPTURE(i);
+    REQUIRE(tick() > 0);
+  }
+
+  // The score is over; rewinding does not restart it.
+  s.interval->set_speed(-1.);
+  for(int i = 0; i < 4; i++)
+  {
+    CAPTURE(i);
+    REQUIRE(tick() == 0);
+  }
+}
+
 TEST_CASE("test_backward_steady_state_timings", "test_backward_steady_state_timings")
 {
   using namespace ossia;
