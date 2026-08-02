@@ -150,7 +150,7 @@ void scenario::run_interval(
     if(auto s = interval.local_time_factor(tk); BOOST_LIKELY(s >= 0.))
     {
       auto max_tick = time_value{cst_max_dur - cst_old_date};
-      double diff = s * tick.impl - max_tick.impl;
+      double diff = interval.advance_for(tick, tk) - max_tick.impl;
       if(diff <= 0.)
       {
         if(tick != 0_tv)
@@ -194,7 +194,7 @@ void scenario::run_interval(
     else
     {
       // s < 0: interval has negative own speed (playing backwards locally)
-      auto backward_disp = int64_t(std::ceil(-tick.impl * s));
+      auto backward_disp = -interval.advance_for(tick, tk);
       if(backward_disp <= cst_old_date.impl)
       {
         if(tick != 0_tv)
@@ -573,7 +573,7 @@ void scenario::run_interval_backward(
     s = 1.0;
 
   // How far backward do we move (positive amount)
-  auto displacement = int64_t(std::ceil(tick.impl * s));
+  auto displacement = interval.take_backward_step(tick, tk);
 
   if(displacement < cst_old_date.impl)
   {

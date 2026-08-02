@@ -551,6 +551,81 @@ TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_sc
   }
 }
 
+TEST_CASE("interval_date_accumulates_exactly", "interval_date_accumulates_exactly")
+{
+  // Awkward speeds do not multiply out to whole flicks. Rounding each tick up
+  // put the date up to 2.16M flicks (147 samples) ahead over an hour; carrying
+  // the fraction keeps it on the exact value.
+  const int64_t buffer_flicks = int64_t(64 / flicks_ratio_48k);
+
+  for(double speed : {1., 0.5, 2., 1. / 3., 0.7, 1.234, 0.987654, 1.5849})
+  {
+    CAPTURE(speed);
+    ossia::execution_state e;
+    setup_state(e, 64);
+    root_scenario s;
+    auto itv = create_interval(
+        *start_event(*s.scenario), *create_event(*s.scenario), ossia::Infinite);
+    s.scenario->add_time_interval(itv);
+    itv->set_speed(speed);
+    s.interval->start();
+    s.interval->tick_current(ossia::time_value{}, {});
+
+    const int n = 2000;
+    for(int i = 0; i < n; i++)
+      s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+
+    // Never more than the one flick the final floor can shave off.
+    const double exact = double(buffer_flicks) * n * speed;
+    CAPTURE(exact, itv->get_date().impl);
+    REQUIRE(std::abs(double(itv->get_date().impl) - exact) <= 1.);
+  }
+}
+
+TEST_CASE("interval_progress_at_extreme_speeds", "interval_progress_at_extreme_speeds")
+{
+  const int64_t buffer_flicks = int64_t(64 / flicks_ratio_48k);
+
+  // Far below one flick per tick: no single tick can advance, but the carried
+  // fraction has to make it move eventually rather than stall forever.
+  {
+    ossia::execution_state e;
+    setup_state(e, 64);
+    root_scenario s;
+    auto itv = create_interval(
+        *start_event(*s.scenario), *create_event(*s.scenario), ossia::Infinite);
+    s.scenario->add_time_interval(itv);
+    itv->set_speed(1e-9);
+    s.interval->start();
+    s.interval->tick_current(ossia::time_value{}, {});
+
+    for(int i = 0; i < 2000; i++)
+      s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+
+    REQUIRE(itv->get_date() > ossia::time_value{0});
+    // And it did not run a million times too fast, as rounding up did.
+    REQUIRE(itv->get_date() < ossia::time_value{100});
+  }
+
+  // Speed 0 is the one case that must not move at all.
+  {
+    ossia::execution_state e;
+    setup_state(e, 64);
+    root_scenario s;
+    auto itv = create_interval(
+        *start_event(*s.scenario), *create_event(*s.scenario), ossia::Infinite);
+    s.scenario->add_time_interval(itv);
+    itv->set_speed(0.);
+    s.interval->start();
+    s.interval->tick_current(ossia::time_value{}, {});
+
+    for(int i = 0; i < 100; i++)
+      s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+
+    REQUIRE(itv->get_date() == ossia::time_value{0});
+  }
+}
+
 TEST_CASE(
     "scenario_tiling_tempo_under_parent_speed",
     "scenario_tiling_tempo_under_parent_speed")
