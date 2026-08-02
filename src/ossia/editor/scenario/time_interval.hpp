@@ -57,6 +57,12 @@ public:
   double get_internal_speed() const noexcept { return m_speed; }
 
   double get_speed(time_value date) const noexcept;
+
+  //! The factor between the parent's model time and ours for this tick: the
+  //! same one the tick duration is scaled by. A tempo-locked interval runs at
+  //! its tempo whatever the transport does, hence the parent-speed division.
+  double local_time_factor(const ossia::token_request& parent_request) const noexcept;
+
   void set_offset(ossia::time_value g) noexcept { m_offset = g; }
 
   void set_speed(double g) noexcept { m_speed = g; }
@@ -229,10 +235,6 @@ private:
   void tick_impl(
       ossia::time_value old_date, ossia::time_value new_date, ossia::time_value offset,
       const ossia::token_request& parent_request);
-
-  //! The factor between the parent's model time and ours for this tick: the
-  //! same one the tick duration is scaled by.
-  double local_time_factor(const ossia::token_request& parent_request) const noexcept;
 
   //! An offset is produced in the parent's frame but consumed in ours.
   ossia::time_value

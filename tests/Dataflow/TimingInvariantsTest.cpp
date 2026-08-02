@@ -554,6 +554,31 @@ TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_sc
   }
 }
 
+TEST_CASE(
+    "scenario_tiling_tempo_under_parent_speed",
+    "scenario_tiling_tempo_under_parent_speed")
+{
+  // A tempo-locked interval advances at its own tempo whatever the transport
+  // does: tick_offset divides by the parent speed. The max-duration clamp has
+  // to use that same factor, or it fires early and hands whatever follows a
+  // spurious overtick.
+  const int bs = 64;
+  tiling_setup ts(bs, {12, 12, 512});
+
+  ossia::tempo_curve flat;
+  flat.set_x0(0);
+  flat.set_y0(ossia::root_tempo);
+  for(auto& itv : ts.intervals)
+    itv->set_tempo_curve(flat);
+
+  ts.s.interval->set_speed(2.);
+  for(int i = 0; i < 6; i++)
+  {
+    CAPTURE("forward", i);
+    require_exact_coverage(ts.do_tick(), bs);
+  }
+}
+
 TEST_CASE("scenario_nested_tiling", "scenario_nested_tiling")
 {
   // A scenario inside an interval inside a scenario: the inner intervals must

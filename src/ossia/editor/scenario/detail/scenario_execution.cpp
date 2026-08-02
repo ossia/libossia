@@ -147,7 +147,7 @@ void scenario::run_interval(
   // so that the state is not 1.01*automation for instance.
   if(!cst_max_dur.infinite())
   {
-    if(auto s = interval.get_speed(interval.get_date()); BOOST_LIKELY(s >= 0.))
+    if(auto s = interval.local_time_factor(tk); BOOST_LIKELY(s >= 0.))
     {
       auto max_tick = time_value{cst_max_dur - cst_old_date};
       double diff = s * tick.impl - max_tick.impl;
@@ -568,7 +568,7 @@ void scenario::run_interval_backward(
 
   interval.set_parent_speed(tk.speed);
 
-  auto s = std::abs(interval.get_speed(interval.get_date()));
+  auto s = std::abs(interval.local_time_factor(tk));
   if(s == 0.)
     s = 1.0;
 
