@@ -516,40 +516,37 @@ TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_sc
   // from scenario_tiling_root_speed_scaling, which only varies the root.
   const int bs = 64;
 
-  // Every boundary here falls on a whole sample, so this isolates the frame
-  // question. Boundaries that land between two samples are a separate matter
-  // (the tick length rounds up while the next start rounds down) and are swept
-  // by the rounding tests; at speed 3 only the 12-eighth layout is exact.
-  const struct
-  {
-    double speed;
-    std::vector<int64_t> layout;
-  } cases[] = {
-      {2., {8, 8, 8, 512}},      {2., {12, 12, 12, 512}}, {2., {5, 11, 7, 512}},
-      {0.5, {8, 8, 8, 512}},     {0.5, {12, 12, 12, 512}}, {0.5, {5, 11, 7, 512}},
-      {0.25, {8, 8, 8, 512}},    {0.25, {5, 11, 7, 512}},
-      {3., {12, 12, 12, 512}},
+  // Speed 3 puts boundaries between two samples (a 1-buffer interval ends at
+  // sample 21.33), which only tiles once every span is a difference of the
+  // same map.
+  const std::vector<std::vector<int64_t>> layouts = {
+      {8, 8, 8, 512},
+      {12, 12, 12, 512},
+      {5, 11, 7, 512},
   };
 
-  for(const auto& c : cases)
+  for(double speed : {2., 0.5, 0.25, 3.})
   {
-    CAPTURE(c.speed, c.layout[0], c.layout[1], c.layout[2]);
-    tiling_setup ts(bs, c.layout);
-    for(auto& itv : ts.intervals)
-      itv->set_speed(c.speed);
-
-    for(int i = 0; i < 6; i++)
+    for(const auto& layout : layouts)
     {
-      CAPTURE("forward", i);
-      require_exact_coverage(ts.do_tick(), bs);
-    }
+      CAPTURE(speed, layout[0], layout[1], layout[2]);
+      tiling_setup ts(bs, layout);
+      for(auto& itv : ts.intervals)
+        itv->set_speed(speed);
 
-    // And back out through the same boundaries.
-    ts.s.interval->set_speed(-1.);
-    for(int i = 0; i + 1 < 6; i++)
-    {
-      CAPTURE("backward", i);
-      require_exact_coverage(ts.do_tick(), bs);
+      for(int i = 0; i < 6; i++)
+      {
+        CAPTURE("forward", i);
+        require_exact_coverage(ts.do_tick(), bs);
+      }
+
+      // And back out through the same boundaries.
+      ts.s.interval->set_speed(-1.);
+      for(int i = 0; i + 1 < 6; i++)
+      {
+        CAPTURE("backward", i);
+        require_exact_coverage(ts.do_tick(), bs);
+      }
     }
   }
 }
@@ -1055,14 +1052,16 @@ TEST_CASE("sweep_metronome_exactly_once", "sweep_metronome_exactly_once")
             fired_this_tick++;
             CAPTURE(i, s, wdur);
             REQUIRE(s >= 0);
-            REQUIRE(s < wdur);
+            // A tick covering no whole sample still fires, at offset 0.
+            REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               },
               [&](int64_t s) {
             quarters_f++;
             fired_this_tick++;
             CAPTURE(i, s, wdur);
             REQUIRE(s >= 0);
-            REQUIRE(s < wdur);
+            // A tick covering no whole sample still fires, at offset 0.
+            REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               });
           // Never both a bar and a quarter in the same tick.
           REQUIRE(fired_this_tick <= 1);
@@ -1119,14 +1118,16 @@ TEST_CASE("sweep_metronome_exactly_once", "sweep_metronome_exactly_once")
             fired_this_tick++;
             CAPTURE(i, s, wdur);
             REQUIRE(s >= 0);
-            REQUIRE(s < wdur);
+            // A tick covering no whole sample still fires, at offset 0.
+            REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               },
               [&](int64_t s) {
             quarters_b++;
             fired_this_tick++;
             CAPTURE(i, s, wdur);
             REQUIRE(s >= 0);
-            REQUIRE(s < wdur);
+            // A tick covering no whole sample still fires, at offset 0.
+            REQUIRE(s <= std::max<int64_t>(0, wdur - 1));
               });
           REQUIRE(fired_this_tick <= 1);
         }
