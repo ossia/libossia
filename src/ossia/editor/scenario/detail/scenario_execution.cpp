@@ -563,10 +563,6 @@ void scenario::run_interval_backward(
 {
   const auto cst_old_date = interval.get_date();
 
-  // Nothing to do if already at 0
-  if(cst_old_date == 0_tv)
-    return;
-
   interval.set_parent_speed(tk.speed);
 
   auto s = std::abs(interval.get_speed(interval.get_date()));
