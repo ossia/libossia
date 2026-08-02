@@ -1255,6 +1255,37 @@ TEST_CASE("time_value_infinity_arithmetic", "time_value_infinity_arithmetic")
   const ossia::time_value neg{-(ossia::time_value::infinite_min - 10)};
   REQUIRE((half - neg).infinite());
 
+  // The ordering operators agree with ==: if two values are equal they are
+  // also <= and >= each other, and neither is strictly less or greater.
+  REQUIRE(inf == big);
+  REQUIRE(inf <= big);
+  REQUIRE(inf >= big);
+  REQUIRE(!(inf < big));
+  REQUIRE(!(inf > big));
+  REQUIRE(inf <= inf);
+  REQUIRE(inf >= inf);
+
+  // += saturates the way + does, rather than collapsing to zero.
+  {
+    ossia::time_value acc = inf;
+    acc += int64_t(5);
+    REQUIRE(acc.infinite());
+
+    ossia::time_value acc2 = inf;
+    acc2 += x;
+    REQUIRE(acc2.infinite());
+
+    ossia::time_value acc3{1000};
+    acc3 += int64_t(234);
+    REQUIRE(acc3.impl == 1234);
+  }
+
+  // Scaling an infinite duration keeps it infinite.
+  REQUIRE((inf * 2.).infinite());
+  REQUIRE((inf * 0.5).infinite());
+  REQUIRE((inf * int64_t(3)).infinite());
+  REQUIRE((x * 2.).impl == 2000);
+
   // Finite arithmetic is exact.
   REQUIRE((x + ossia::time_value{234}).impl == 1234);
   REQUIRE((x - ossia::time_value{234}).impl == 766);
