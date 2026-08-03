@@ -526,6 +526,34 @@ auto exec_state_facade::timings(const token_request& t) const noexcept -> sample
   sample_timings tm;
   static constexpr double speed_epsilon = 0.01;
 
+  if(t.start_sample >= 0 && t.length_sample >= 0)
+  {
+    [[likely]];
+    // The producer of the token knew which samples of the buffer it stands
+    // for, and that knowledge cannot be reconstructed from the flick-quantised
+    // model dates - carrying it is the point. Clamp defensively: a span must
+    // never reach outside the buffer.
+    tm.start_sample = t.start_sample;
+    tm.length = t.length_sample;
+    if(tm.start_sample > impl->bufferSize)
+    {
+      [[unlikely]];
+      ossia::logger().error(
+          "token start_sample > bufferSize: {} > {}", tm.start_sample,
+          impl->bufferSize);
+      return {};
+    }
+    if(tm.start_sample + tm.length > impl->bufferSize)
+    {
+      [[unlikely]];
+      ossia::logger().error(
+          "token start_sample + length_sample > bufferSize: {} + {} > {}",
+          tm.start_sample, tm.length, impl->bufferSize);
+      tm.length = impl->bufferSize - tm.start_sample;
+    }
+    return tm;
+  }
+
   if(t.speed > speed_epsilon || t.speed < -speed_epsilon)
   {
     [[likely]];
