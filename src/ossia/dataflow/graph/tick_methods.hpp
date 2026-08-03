@@ -97,9 +97,11 @@ struct tick_all_nodes
     const time_value new_date{e.samples_since_start};
 
     // TODO tempo / sig ?
+    token_request tok{old_date, new_date, 0_tv, 0_tv, 1.0, {}, ossia::root_tempo};
+    tok.start_sample = 0;
+    tok.length_sample = int32_t(samples);
     for(auto& node : g.get_nodes())
-      node->request(
-          token_request{old_date, new_date, 0_tv, 0_tv, 1.0, {}, ossia::root_tempo});
+      node->request(tok);
 
     g.state(e);
     std::atomic_thread_fence(std::memory_order_seq_cst);
@@ -142,6 +144,12 @@ struct buffer_tick
       tok.prev_date = 0_tv;
 
     tok.date = tok.prev_date + flicks;
+
+    // This is the one thing the audio callback knows for certain: the buffer
+    // is frameCount samples. Everything downstream carries cuts of this span
+    // rather than reconstructing them from the flick-quantised model dates.
+    tok.start_sample = 0;
+    tok.length_sample = int32_t(frameCount);
 
     // Notify the current transport state
     if(transport.allocated())
@@ -208,7 +216,7 @@ struct precise_score_tick
       st.begin_tick();
       st.samples_since_start++;
       const ossia::token_request tok{};
-      itv.tick_offset(ossia::time_value{1}, 0_tv, tok);
+      itv.tick_offset(ossia::time_value{1}, 0_tv, tok, 0, 1);
       g.state(st);
       std::atomic_thread_fence(std::memory_order_seq_cst);
       st.commit();

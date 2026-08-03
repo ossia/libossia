@@ -85,14 +85,23 @@ public:
   void
   tick_current(ossia::time_value offset, const ossia::token_request& parent_request);
 
+  //! Root driver tick: covers the parent request's whole carried sample span.
   void tick(
       ossia::time_value, const ossia::token_request& parent_request, double ratio = 1.0);
+
+  //! The span parameters are the samples of the audio buffer this tick stands
+  //! for, decided by the caller (the scenario cutting the buffer on interval
+  //! boundaries, or the root callback handing the whole buffer): they are
+  //! carried into the tokens verbatim, precisely because they cannot be
+  //! reconstructed from the flick-quantised model dates. -1 means unknown.
   void tick_offset(
       ossia::time_value, ossia::time_value offset,
-      const ossia::token_request& parent_request);
+      const ossia::token_request& parent_request, int32_t start_sample = -1,
+      int32_t length_sample = -1);
   void tick_offset_speed_precomputed(
       ossia::time_value, ossia::time_value offset,
-      const ossia::token_request& parent_request);
+      const ossia::token_request& parent_request, int32_t start_sample = -1,
+      int32_t length_sample = -1);
 
   /*! to get the interval execution back
    \param const #TimeValue position
@@ -269,6 +278,11 @@ private:
   time_value m_offset{}; /// the date the clock will run from
 
   time_value m_tick_offset{}; /// offset in the current tick
+
+  /// The samples of the audio buffer the current tick covers, as decided by
+  /// the caller of the tick; forwarded into the tokens handed to processes.
+  int32_t m_tick_start_sample{-1};
+  int32_t m_tick_length_sample{-1};
 
   double m_current_tempo{};
 

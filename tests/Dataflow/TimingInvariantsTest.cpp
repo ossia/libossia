@@ -73,6 +73,16 @@ ossia::token_request default_request()
   return req;
 }
 
+//! What the audio callback hands the root of the tick tree: this tick stands
+//! for `frames` samples of the buffer, starting at 0.
+ossia::token_request root_request(int frames)
+{
+  ossia::token_request req = default_request();
+  req.start_sample = 0;
+  req.length_sample = frames;
+  return req;
+}
+
 void setup_state(ossia::execution_state& e, int bufferSize)
 {
   e.bufferSize = bufferSize;
@@ -326,10 +336,12 @@ struct tiling_setup
   std::vector<std::shared_ptr<probe_node>> probes;
   std::vector<std::shared_ptr<ossia::time_interval>> intervals;
   int64_t buffer_flicks{};
+  int frames{};
 
   tiling_setup(int bs, const std::vector<int64_t>& durations_in_buffer_8ths)
   {
     setup_state(e, bs);
+    frames = bs;
     buffer_flicks = int64_t(bs / flicks_ratio_48k);
 
     std::vector<std::shared_ptr<ossia::time_event>> evs;
@@ -361,7 +373,7 @@ struct tiling_setup
       p->requested_tokens.clear();
       p->spans.clear();
     }
-    s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+    s.interval->tick(ossia::time_value{buffer_flicks}, root_request(frames));
     for(auto& p : probes)
     {
       for(auto& tk : p->requested_tokens)
@@ -471,40 +483,48 @@ TEST_CASE("scenario_tiling_root_speed_scaling", "scenario_tiling_root_speed_scal
 {
   // |speed| != 1 on the root transport: the scenario covers more (or less)
   // model time per callback, but every audio buffer must still be tiled
-  // exactly, including on ticks where an interval boundary is crossed.
-  const int bs = 64;
-
+  // exactly, including on ticks where an interval boundary is crossed. The
+  // awkward speeds are the point: their product with the buffer length is
+  // not a whole number of flicks, so any reconstruction of the span from the
+  // flick-quantised model dates comes out a sample short.
   struct
   {
     double speed;
     int fwd_ticks; // chosen so no direction change lands exactly on a boundary
-  } cases[] = {{2., 2}, {0.5, 5}};
+  } cases[] = {{2., 2},      {0.5, 5},     {1.234, 2},    {0.987654, 3},
+               {1.5849, 2},  {1. / 3., 8}, {0.777777, 3}, {2.718281828, 2},
+               {1.000001, 2}};
 
-  for(auto c : cases)
+  for(int bs : {16, 64, 256, 512})
   {
-    CAPTURE(c.speed, c.fwd_ticks);
-    // Boundaries at 12, 24, 36, 48 eighths, i.e. 1.5, 3, 4.5, 6 buffers:
-    // mid-buffer at every speed used here.
-    tiling_setup ts(bs, {12, 12, 12, 12, 128});
-
-    ts.s.interval->set_speed(c.speed);
-    for(int i = 0; i < c.fwd_ticks; i++)
+    for(auto c : cases)
     {
-      CAPTURE("forward", i);
-      require_exact_coverage(ts.do_tick(), bs);
-    }
+      CAPTURE(bs, c.speed, c.fwd_ticks);
+      // Boundaries at 12, 24, 36, 48 eighths, i.e. 1.5, 3, 4.5, 6 buffers:
+      // mid-buffer at every speed used here.
+      tiling_setup ts(bs, {12, 12, 12, 12, 128});
 
-    ts.s.interval->set_speed(-c.speed);
-    for(int i = 0; i + 1 < c.fwd_ticks; i++)
-    {
-      CAPTURE("backward", i);
-      require_exact_coverage(ts.do_tick(), bs);
-    }
+      ts.s.interval->set_speed(c.speed);
+      for(int i = 0; i < c.fwd_ticks; i++)
+      {
+        CAPTURE("forward", i);
+        require_exact_coverage(ts.do_tick(), bs);
+      }
 
-    // The playhead came back exactly to one tick's worth from the start.
-    const auto expected
-        = ossia::time_value{int64_t(std::ceil(ts.buffer_flicks * c.speed))};
-    REQUIRE(ts.s.interval->get_date() == expected);
+      ts.s.interval->set_speed(-c.speed);
+      for(int i = 0; i + 1 < c.fwd_ticks; i++)
+      {
+        CAPTURE("backward", i);
+        require_exact_coverage(ts.do_tick(), bs);
+      }
+
+      // The playhead came back to one tick's worth from the start: the
+      // out-and-back must not drift by more than the one flick the final
+      // floor can shave off the carried fraction.
+      const double exact = double(ts.buffer_flicks) * c.speed;
+      CAPTURE(exact, ts.s.interval->get_date().impl);
+      REQUIRE(std::abs(double(ts.s.interval->get_date().impl) - exact) <= 1.);
+    }
   }
 }
 
@@ -525,7 +545,10 @@ TEST_CASE("scenario_tiling_child_speed_scaling", "scenario_tiling_child_speed_sc
       {5, 11, 7, 512},
   };
 
-  for(double speed : {2., 0.5, 0.25, 3.})
+  // 1.234 and 0.987654 are the awkward ones: a child interval consuming its
+  // own duration at a rate whose product with the buffer is not a whole
+  // number of flicks must still hand over at the exact sample it stops at.
+  for(double speed : {2., 0.5, 0.25, 3., 1.234, 0.987654})
   {
     for(const auto& layout : layouts)
     {
@@ -858,7 +881,7 @@ TEST_CASE("scenario_nested_tiling", "scenario_nested_tiling")
       p->requested_tokens.clear();
       p->spans.clear();
     }
-    s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+    s.interval->tick(ossia::time_value{buffer_flicks}, root_request(bs));
     for(auto& p : probes)
     {
       for(auto& tk : p->requested_tokens)
@@ -910,7 +933,7 @@ TEST_CASE("scenario_rewind_to_zero_partial_buffer", "scenario_rewind_to_zero_par
   // full one: the playhead sits at 1.5 buffers, all inside the first interval.
   {
     ts.s.interval->tick(
-        ossia::time_value{ts.buffer_flicks / 2}, default_request());
+        ossia::time_value{ts.buffer_flicks / 2}, root_request(bs / 2));
     require_exact_coverage(ts.do_tick(), bs);
   }
   ts.s.interval->set_speed(-1.);
@@ -1466,7 +1489,7 @@ TEST_CASE("scenario_zero_length_interval_in_chain", "scenario_zero_length_interv
       p->requested_tokens.clear();
       p->spans.clear();
     }
-    s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+    s.interval->tick(ossia::time_value{buffer_flicks}, root_request(bs));
     for(auto& p : {p0, p2})
     {
       for(auto& tk : p->requested_tokens)
@@ -1538,7 +1561,7 @@ TEST_CASE(
       p->requested_tokens.clear();
       p->spans.clear();
     }
-    s.interval->tick(ossia::time_value{buffer_flicks}, default_request());
+    s.interval->tick(ossia::time_value{buffer_flicks}, root_request(bs));
     for(auto& p : {p0, p2})
     {
       for(auto& tk : p->requested_tokens)
