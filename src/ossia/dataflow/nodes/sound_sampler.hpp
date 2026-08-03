@@ -21,7 +21,10 @@ struct sound_sampler
 
   void transport(time_value date)
   {
-    info->m_resampler.transport(to_sample(date, m_dataSampleRate));
+    // No transport info: the live tempo is unknown, but the stretching seek
+    // only needs the file's own tempo (see file_sample_for_model_time).
+    info->m_resampler.transport(
+        info->file_sample_for_model_time(date, 0., m_dataSampleRate));
   }
 
   void transport(time_value date, const ossia::tick_transport_info& tinfo)

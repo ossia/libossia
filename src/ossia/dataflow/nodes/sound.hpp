@@ -265,19 +265,35 @@ struct sound_processing_info
 
   void set_native_tempo(double v) { tempo = v; }
 
-  // File sample at which a dropped sound must seek to align with an
-  // identical sound already playing at the same model time. Scales by
-  // |timeline_tempo| / file_tempo when stretching; falls back to to_sample().
+  // File sample an already-playing sound has reached at a given model date,
+  // i.e. where a sound dropped in mid-playback must seek to align with it.
+  //
+  // When stretching, both the model clock and the file consumption scale
+  // with the live tempo: the interval advances its date by
+  // tempo / root_tempo model samples per physical sample, and the stretcher
+  // consumes tempo / file_tempo file samples per physical sample. Their
+  // ratio is root_tempo / file_tempo whatever the transport tempo, tempo
+  // curve or speed are doing, so the file position is a pure function of
+  // the model date and the file's own tempo. Scaling by the *live* tempo
+  // here - as this used to do - lands wrong by a factor of
+  // live_tempo / root_tempo, i.e. it is only right at 120 BPM.
+  //
+  // In raw mode the file advances at one sample per physical sample while
+  // the model still runs at tempo / root_tempo, so there the live tempo is
+  // exactly what is needed to unscale the date; when it is not known
+  // (timeline_tempo == 0), the date is used as-is.
   [[nodiscard]] int64_t file_sample_for_model_time(
       time_value date, double timeline_tempo,
       int file_sample_rate) const noexcept
   {
     const int64_t base = to_sample(date, file_sample_rate);
-    const double abs_tempo = std::abs(timeline_tempo);
-    if(!m_resampler.stretch() || tempo <= 0.0 || abs_tempo <= 0.0)
-      return base;
+    if(m_resampler.stretch() && tempo > 0.0)
+      return int64_t(std::llround(double(base) * ossia::root_tempo / tempo));
 
-    return int64_t(double(base) * abs_tempo / tempo);
+    const double abs_tempo = std::abs(timeline_tempo);
+    if(abs_tempo > 0.0)
+      return int64_t(std::llround(double(base) * ossia::root_tempo / abs_tempo));
+    return base;
   }
 
   double update_stretch(
