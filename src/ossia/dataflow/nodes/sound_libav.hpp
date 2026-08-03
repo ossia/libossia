@@ -62,21 +62,31 @@ public:
 
   void transport(time_value flicks) override
   {
-    m_channel_q.clear();
-    ossia::seek_to_flick(
-        m_handle.format, m_handle.codec, m_handle.stream, flicks.impl, AVSEEK_FLAG_ANY);
+    transport_scaled(flicks, 0.);
   }
 
   void transport(time_value flicks, const ossia::tick_transport_info& tinfo) override
   {
+    transport_scaled(flicks, tinfo.current_tempo);
+  }
+
+  // Same mapping as file_sample_for_model_time, in flicks: when stretching
+  // the file position is model_time * root_tempo / file_tempo whatever the
+  // transport is doing; in raw mode it is the model time unscaled by the
+  // live tempo when that is known.
+  void transport_scaled(time_value flicks, double timeline_tempo)
+  {
     m_channel_q.clear();
-    // Scale flicks by |timeline_tempo| / file_tempo when stretching; otherwise
-    // seek at the raw model time. See file_sample_for_model_time.
     int64_t target_flicks = flicks.impl;
-    const double abs_tempo = std::abs(tinfo.current_tempo);
-    if(m_resampler.stretch() && tempo > 0.0 && abs_tempo > 0.0)
+    if(m_resampler.stretch() && tempo > 0.0)
     {
-      target_flicks = int64_t(double(flicks.impl) * abs_tempo / tempo);
+      target_flicks
+          = int64_t(std::llround(double(flicks.impl) * ossia::root_tempo / tempo));
+    }
+    else if(const double abs_tempo = std::abs(timeline_tempo); abs_tempo > 0.0)
+    {
+      target_flicks
+          = int64_t(std::llround(double(flicks.impl) * ossia::root_tempo / abs_tempo));
     }
     ossia::seek_to_flick(
         m_handle.format, m_handle.codec, m_handle.stream, target_flicks,

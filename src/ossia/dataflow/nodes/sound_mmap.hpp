@@ -73,8 +73,11 @@ public:
 
   void transport(time_value date) override
   {
+    // No transport info: the live tempo is unknown, but the stretching seek
+    // only needs the file's own tempo (see file_sample_for_model_time).
     if(m_handle)
-      m_resampler.transport(to_sample(date, m_handle.sampleRate()));
+      m_resampler.transport(
+          file_sample_for_model_time(date, 0., m_handle.sampleRate()));
   }
 
   void transport(time_value date, const ossia::tick_transport_info& tinfo) override
