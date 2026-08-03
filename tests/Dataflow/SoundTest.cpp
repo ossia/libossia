@@ -444,7 +444,7 @@ TEST_CASE("rubberband_drop_sync_unit_ratio", "[rubberband][sync]")
       best.best_lag_samples,
       1000.0 * best.best_lag_samples / sampleRate);
 
-  rubberband_stretcher::s_prime_strategy = ps::ZeroPadOnly;
+  rubberband_stretcher::s_prime_strategy = ps::BareRecipe;
 
   // CHECK not REQUIRE so failure still prints measurements.
   CHECK(best.best_correlation > 0.9);
@@ -581,7 +581,7 @@ TEST_CASE("rubberband_drop_sync_tempo_shift", "[rubberband][sync]")
 #endif
   run_strategies(seek_mode::stretch_aware);
 
-  rubberband_stretcher::s_prime_strategy = ps::ZeroPadOnly;
+  rubberband_stretcher::s_prime_strategy = ps::BareRecipe;
 }
 
 TEST_CASE("rubberband_drop_then_paste_sync", "[rubberband][sync]")
@@ -697,6 +697,6 @@ TEST_CASE("rubberband_drop_then_paste_sync", "[rubberband][sync]")
     run_case(v.name, audio_stretch_mode::RubberBandStandard);
   }
 
-  rubberband_stretcher::s_prime_strategy = ps::ZeroPadOnly;
+  rubberband_stretcher::s_prime_strategy = ps::BareRecipe;
 }
 #endif

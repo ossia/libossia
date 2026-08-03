@@ -54,7 +54,14 @@ static constexpr auto get_rubberband_preset(ossia::audio_stretch_mode mode)
 
 struct rubberband_stretcher
 {
-  // Priming variants exposed for SoundTest sweeps; production uses ZeroPadOnly.
+  // Priming variants exposed for the sound sync test sweeps; production uses
+  // BareRecipe, the recipe the RubberBand documentation prescribes for
+  // real-time mode: pad the input with getPreferredStartPad() zeros and trim
+  // getStartDelay() samples from the output. ZeroPadOnly, the previous
+  // default, skips the trim and therefore plays every stretched sound
+  // getStartDelay() samples (~23 ms at 44.1 kHz) late - late relative to raw
+  // and repitched sounds, and late by a ratio-dependent amount, so two
+  // stretched files at different source tempos flam against each other too.
   enum class prime_strategy : uint8_t
   {
     NoPrime,
@@ -63,7 +70,7 @@ struct rubberband_stretcher
     ExtendedDrain,
     PreRollRealAudio,
   };
-  static inline prime_strategy s_prime_strategy{prime_strategy::ZeroPadOnly};
+  static inline prime_strategy s_prime_strategy{prime_strategy::BareRecipe};
 
   rubberband_stretcher(
       uint32_t opt, std::size_t channels, std::size_t sampleRate, int64_t pos)
@@ -299,9 +306,30 @@ private:
        || strategy == prime_strategy::PreRollRealAudio)
       return;
 
-    const int64_t drain_target
-        = (strategy == prime_strategy::ExtendedDrain) ? 2 * toPad
-                                                      : int64_t(m_rubberBand->getStartDelay());
+    int64_t drain_target;
+    if(strategy == prime_strategy::ExtendedDrain)
+    {
+      drain_target = 2 * toPad;
+    }
+    else
+    {
+      drain_target = int64_t(m_rubberBand->getStartDelay());
+
+      // The R2 engine reports aWindowSize/2 scaled only by the pitch, never
+      // by the time ratio, but the sample where input 0 actually surfaces in
+      // the output moves with the ratio. Measured with the click-track
+      // harness (SoundSyncTest) over ratios 0.52..1.17, the position is
+      // startDelay + ~0.375 * pad * (1 - ratio) within R2's own transient
+      // jitter, so trim that much more (or less). R3 accounts for the ratio
+      // itself.
+      if(!(options & RubberBand::RubberBandStretcher::OptionEngineFiner))
+      {
+        drain_target += int64_t(std::llround(
+            0.375 * double(toPad) * (1.0 - m_rubberBand->getTimeRatio())));
+      }
+      if(drain_target < 0)
+        drain_target = 0;
+    }
     if(drain_target <= 0)
       return;
 
