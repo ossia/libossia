@@ -319,6 +319,12 @@ void graph_node::process_time(
 {
   auto [s, d] = exec_state_facade{&st}.timings(req);
   this->m_processed_frames += d;
+
+  // A span length is never negative, so the counter above cannot follow a
+  // rewind. The playhead can: map the date of the tick's first sample through
+  // the same model -> sample map the spans are taken from.
+  if(req.speed != 0.)
+    this->m_transport_frames = req.start_date_to_physical(st.modelToSamplesRatio);
 }
 
 void graph_node::all_notes_off() noexcept { }

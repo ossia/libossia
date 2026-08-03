@@ -653,6 +653,46 @@ TEST_CASE(
   }
 }
 
+TEST_CASE("transport_frames_follow_the_transport", "transport_frames_follow_the_transport")
+{
+  // processed_frames counts audio through the node and only rises, which is
+  // right for a steady counter. The position handed to plug-ins is not that: it
+  // has to come back down when the timeline does, or a rewind leaves every
+  // tempo-synced plug-in believing the playhead is somewhere it is not.
+  ossia::execution_state e;
+  setup_state(e, 64);
+  probe_node n;
+
+  const int64_t buffer_flicks = int64_t(64 / flicks_ratio_48k);
+  const int n_fwd = 8;
+
+  for(int i = 0; i < n_fwd; i++)
+    n.process_time(tick(i * buffer_flicks, (i + 1) * buffer_flicks, 0, 1.), e);
+
+  // Reported for the first sample of each tick, so the last one starts a buffer
+  // short of where it ends.
+  REQUIRE(n.transport_frames() == int64_t(n_fwd - 1) * 64);
+  REQUIRE(n.processed_frames() == int64_t(n_fwd) * 64);
+
+  // Rewind over the same ground: the playhead retraces its steps. It starts
+  // from where the forward run ended, which is a buffer past the last tick's
+  // own start.
+  int64_t prev = int64_t(n_fwd) * 64;
+  for(int i = n_fwd - 1; i >= 0; i--)
+  {
+    n.process_time(tick((i + 1) * buffer_flicks, i * buffer_flicks, 0, -1.), e);
+    CAPTURE(i, n.transport_frames(), prev);
+    REQUIRE(n.transport_frames() <= prev);
+    prev = n.transport_frames();
+  }
+
+  // Back to the buffer it started from - the first tick of the rewind began one
+  // buffer past the end, and the last one begins one buffer past zero.
+  REQUIRE(n.transport_frames() == 64);
+  // Meanwhile the steady counter kept counting the audio it rendered.
+  REQUIRE(n.processed_frames() == int64_t(2 * n_fwd) * 64);
+}
+
 TEST_CASE("interval_date_accumulates_exactly", "interval_date_accumulates_exactly")
 {
   // Awkward speeds do not multiply out to whole flicks. Rounding each tick up
