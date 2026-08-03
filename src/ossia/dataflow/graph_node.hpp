@@ -185,6 +185,21 @@ public:
     return m_processed_frames;
   }
 
+  /**
+   * Where the playhead sits on the timeline, in frames, at the first sample of
+   * the current tick.
+   *
+   * Distinct from processed_frames(): that counts audio pushed through the node
+   * and only ever rises, which is what a steady counter should do. This one
+   * follows the transport and goes back down when the timeline runs backwards.
+   * A plug-in wants the transport position, not the counter.
+   */
+  [[nodiscard]]
+  int64_t transport_frames() const noexcept
+  {
+    return m_transport_frames;
+  }
+
   virtual void all_notes_off() noexcept;
   token_request_vec requested_tokens;
 
@@ -192,6 +207,7 @@ protected:
   inlets m_inlets;
   outlets m_outlets;
   int64_t m_processed_frames{};
+  int64_t m_transport_frames{};
 
   bool m_executed{};
   bool m_not_threadable{};
