@@ -108,6 +108,13 @@ if(OSSIA_DATAFLOW)
   endif()
 endif()
 
+if(OSSIA_DATAFLOW)
+  ossia_add_test(SoundSyncTest               "${CMAKE_CURRENT_SOURCE_DIR}/Dataflow/SoundSyncTest.cpp")
+  if(TARGET rubberband AND TARGET samplerate)
+    target_link_libraries(ossia_SoundSyncTest PRIVATE rubberband samplerate)
+  endif()
+endif()
+
 if(OSSIA_QML)
   # The following lines are used to display the QMLs in the project view of IDEs
   SET(QMLS
