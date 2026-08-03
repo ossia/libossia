@@ -19,12 +19,21 @@ namespace ossia
 {
 using quarter_note = double;
 
-//! One quantification point inside a tick: when it happens, and which
-//! subdivision it is.
+//! One quantification point inside a tick: when it happens, where it happens
+//! musically, and which subdivision it is.
 struct quantification_point
 {
   ossia::time_value date{};
   int64_t index{};
+
+  //! Where the point sits in musical time, in quarters.
+  //!
+  //! Kept alongside the date because the date is truncated to a whole flick: a
+  //! consumer that needs the sample the point lands on maps this through
+  //! token_request::physical_position rather than re-deriving it from the
+  //! date, which would round twice and land a sample early wherever the flick
+  //! truncation crosses a sample boundary.
+  double position{};
 
   friend bool
   operator==(const quantification_point&, const quantification_point&) noexcept
@@ -249,6 +258,42 @@ struct token_request
     return bufferSize - physical_start(ratio);
   }
 
+  //! Where a musical position this tick crosses falls in the samples it
+  //! covers, as an offset from the start of the tick's span.
+  //!
+  //! The single map from musical time to a sample, for every consumer of the
+  //! grid: the metronome and the quantification points both go through it, so
+  //! a click and a quantized event on the same bar line cannot land on
+  //! different frames. It also matches halp::tick_musical, so a native node
+  //! and an avendish plug-in on one score snap to the same sample.
+  //!
+  //! Do not reconstruct this from a point's date: the date is truncated to a
+  //! whole flick, and flooring that into a sample rounds a second time.
+  [[nodiscard]] constexpr physical_time
+  physical_position(double musical_position, double ratio) const noexcept
+  {
+    // A tick with no speed advances through no samples, so everything in it
+    // belongs to the first one. Reconstructing the span below would divide by
+    // that speed - a span the producer carried needs no such thing.
+    if(speed == 0. && length_sample < 0)
+      return 0;
+
+    const int64_t len = physical_write_duration(ratio);
+    if(len <= 0)
+      return 0;
+
+    const double musical_tick_duration = musical_end_position - musical_start_position;
+    if(musical_tick_duration == 0.)
+      return 0;
+
+    // Positive in both directions: rewinding, the distance to the position and
+    // the duration of the tick are both negative.
+    const double r
+        = (musical_position - musical_start_position) / musical_tick_duration;
+    const int64_t s = constexpr_floor(r * len);
+    return s < 0 ? int64_t(0) : (s >= len ? len - 1 : s);
+  }
+
   //! Is the given value in the tick defined by this token_request
   [[nodiscard]] constexpr bool in_range(ossia::time_value global_time) const noexcept
   {
@@ -361,14 +406,14 @@ struct token_request
   }
 
   //! Given a quantification rate (1 for bars, 2 for half, 4 for quarters...)
-  //! return the next occurring quantification date, if such date is in the tick
+  //! return the next occurring quantification point, if it is in the tick
   //! defined by this token_request.
   //!
   //! This is the first of get_quantification_dates(), not a second
   //! implementation of it: a node that takes one point and a node that takes
   //! them all have to agree about where the grid is.
-  [[nodiscard]] std::optional<time_value>
-  get_quantification_date(double rate) const noexcept
+  [[nodiscard]] std::optional<quantification_point>
+  get_quantification_point(double rate) const noexcept
   {
     if(prev_date == date)
       return std::nullopt;
@@ -380,7 +425,21 @@ struct token_request
     const auto pts = get_quantification_dates(rate);
     if(pts.empty())
       return std::nullopt;
-    return pts[0].date;
+    return pts[0];
+  }
+
+  //! The date of the next occurring quantification point.
+  //!
+  //! For consumers that schedule in model time. A consumer that needs the
+  //! sample the point lands on takes get_quantification_point() and maps its
+  //! position through physical_position(): the date here is truncated to a
+  //! whole flick, and flooring it into a sample rounds a second time.
+  [[nodiscard]] std::optional<time_value>
+  get_quantification_date(double rate) const noexcept
+  {
+    if(const auto pt = get_quantification_point(rate))
+      return pt->date;
+    return std::nullopt;
   }
 
   //! Every quantification date occurring in this tick, in order.
@@ -406,7 +465,7 @@ struct token_request
     if(rate <= 0. || musical_tick_duration == 0.
        || (musical_tick_duration < 0.) != rewinding)
     {
-      res.push_back({prev_date, 0});
+      res.push_back({prev_date, 0, musical_start_position});
       return res;
     }
 
@@ -454,7 +513,7 @@ struct token_request
           return false;
       }
 
-      res.push_back({d, index});
+      res.push_back({d, index, musical_position});
       // A tick spanning this many points means the rate is nonsense: stop
       // rather than fill memory.
       return res.size() < 1024;
@@ -549,12 +608,17 @@ struct token_request
     return res;
   }
 
-  //! Like physical_quantification_date, but returns a date mapped to this tick
+  //! The next quantification point, as a sample offset into the buffer.
+  //!
+  //! Mapped through physical_position, the same map the metronome and every
+  //! grid consumer use, so a click and a quantized event on one bar line land
+  //! on one sample.
   [[nodiscard]] ossia_constexpr_msvc_workaround std::optional<physical_time>
   get_physical_quantification_date(double rate, double modelToSamples) const noexcept
   {
-    if(auto d = get_quantification_date(rate))
-      return to_physical_time_in_tick(*d, modelToSamples);
+    if(auto pt = get_quantification_point(rate))
+      return physical_start(modelToSamples)
+             + physical_position(pt->position, modelToSamples);
     return {};
   }
 
@@ -577,18 +641,10 @@ struct token_request
     if(samples_tick_duration < 0)
       return;
 
-    // Where a musical date the tick crosses falls in the samples it covers. The
-    // ratio is positive in both directions: rewinding, both the distance to the
-    // date and the tick duration are negative. A date sitting exactly on the end
-    // of the tick would give the one-past-the-end sample.
+    // The same map the quantification points use, so a click and a quantized
+    // event on one bar line land on one sample.
     const auto sample_of = [&](double musical_position) {
-      if(samples_tick_duration == 0)
-        return int64_t(0);
-      const double ratio
-          = (musical_position - musical_start_position) / musical_tick_duration;
-      const int64_t s = samples_tick_duration * ratio;
-      return s < 0 ? int64_t(0)
-                   : (s >= samples_tick_duration ? samples_tick_duration - 1 : s);
+      return physical_position(musical_position, modelToSamplesRatio);
     };
 
     const double quarters_in_bar = 4. * signature.upper / signature.lower;
