@@ -260,11 +260,28 @@ struct token_request
   [[nodiscard]] constexpr physical_time
   to_physical_time_in_tick(ossia::time_value global_time, double ratio) const noexcept
   {
-    assert(speed != 0.);
-    // How far into the tick this date sits, counted forwards in both
-    // directions, then through the same map the span endpoints use.
+    // How far into the tick this date sits, counted forwards in both directions.
     const int64_t in_tick
         = speed < 0. ? (prev_date - global_time).impl : (global_time - prev_date).impl;
+
+    // Place it inside the span this tick was actually handed, so an event and
+    // the audio it belongs to cannot end up on different samples. Reconstructing
+    // the position from the model dates can miss the span by one.
+    if(start_sample >= 0 && length_sample >= 0)
+    {
+      const int64_t dt = abs(date - prev_date).impl;
+      if(dt <= 0)
+        return start_sample;
+      int64_t s = start_sample
+                  + constexpr_floor(double(in_tick) / double(dt) * length_sample);
+      if(s < start_sample)
+        s = start_sample;
+      else if(s > int64_t(start_sample) + length_sample)
+        s = int64_t(start_sample) + length_sample;
+      return s;
+    }
+
+    assert(speed != 0.);
     return sample_at(this->offset + ossia::time_value{in_tick}, ratio);
   }
 
