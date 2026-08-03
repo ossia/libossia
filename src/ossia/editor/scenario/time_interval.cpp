@@ -87,13 +87,48 @@ void time_interval::tick_impl(
 
   // Clamp at zero: if speed is negative and we'd go below 0,
   // stay at 0 so we can resume instantly when speed becomes positive.
+  // The tick then only stands for the part of its samples that maps to
+  // t >= 0, so the carried span shrinks with the model dates.
   if(new_date < 0_tv)
   {
+    if(m_tick_length_sample > 0)
+    {
+      if(old_date > 0_tv)
+      {
+        const double covered
+            = double(old_date.impl) / double(old_date.impl - new_date.impl);
+        m_tick_length_sample = int32_t(m_tick_length_sample * covered + 0.5);
+      }
+      else
+      {
+        m_tick_length_sample = 0;
+      }
+    }
     new_date = 0_tv;
     m_date = 0_tv;
   }
   if(old_date < 0_tv)
+  {
+    // Mirror case, running forward out of negative territory: only the tail
+    // of the samples maps to t >= 0.
+    if(m_tick_length_sample > 0)
+    {
+      if(new_date > 0_tv)
+      {
+        const double covered
+            = double(new_date.impl) / double(new_date.impl - old_date.impl);
+        const auto kept = int32_t(m_tick_length_sample * covered + 0.5);
+        m_tick_start_sample += m_tick_length_sample - kept;
+        m_tick_length_sample = kept;
+      }
+      else
+      {
+        m_tick_start_sample += m_tick_length_sample;
+        m_tick_length_sample = 0;
+      }
+    }
     old_date = 0_tv;
+  }
 
   m_current_signature = signature(old_date, parent_request);
   m_current_tempo = m_speed * tempo(old_date, parent_request);
@@ -177,12 +212,18 @@ void time_interval::tick_impl(
 void time_interval::tick_current(
     ossia::time_value offset, const ossia::token_request& parent_request)
 {
+  // A zero-length tick: it stands where the parent says, and for no samples.
+  m_tick_start_sample = parent_request.start_sample;
+  m_tick_length_sample = parent_request.length_sample >= 0 ? 0 : -1;
   tick_impl(m_date, m_date, offset, parent_request);
 }
 
 void time_interval::tick(
     time_value date, const ossia::token_request& parent_request, double ratio)
 {
+  // Driven directly (root of the tick tree): the whole of the parent's span.
+  m_tick_start_sample = parent_request.start_sample;
+  m_tick_length_sample = parent_request.length_sample;
   tick_impl(
       m_date, m_date + take_step(date.impl * get_speed(m_date) / ratio), m_tick_offset,
       parent_request);
@@ -230,8 +271,11 @@ int64_t time_interval::take_backward_step(
 
 void time_interval::tick_offset(
     time_value date, ossia::time_value offset,
-    const ossia::token_request& parent_request)
+    const ossia::token_request& parent_request, int32_t start_sample,
+    int32_t length_sample)
 {
+  m_tick_start_sample = start_sample;
+  m_tick_length_sample = length_sample;
 #if defined(OSSIA_SCENARIO_DATAFLOW)
   auto itv_node = static_cast<ossia::nodes::interval*>(node.get());
   int64_t seek_request = itv_node->seek;
@@ -270,8 +314,11 @@ void time_interval::tick_offset(
 
 void time_interval::tick_offset_speed_precomputed(
     time_value date, ossia::time_value offset,
-    const ossia::token_request& parent_request)
+    const ossia::token_request& parent_request, int32_t start_sample,
+    int32_t length_sample)
 {
+  m_tick_start_sample = start_sample;
+  m_tick_length_sample = length_sample;
   tick_impl(
       m_date, m_date + date.impl,
       to_local_offset(offset, local_time_factor(parent_request)), parent_request);
@@ -448,6 +495,8 @@ void time_interval::state(ossia::time_value from, ossia::time_value to)
     ossia::token_request tok{
         from,           to, m_nominal, m_tick_offset, m_globalSpeed, m_current_signature,
         m_current_tempo};
+    tok.start_sample = m_tick_start_sample;
+    tok.length_sample = m_tick_length_sample;
     tok.musical_start_last_signature = this->m_musical_start_last_signature;
     tok.musical_start_last_bar = this->m_musical_start_last_bar;
     tok.musical_start_position = this->m_musical_start_position;

@@ -29,6 +29,10 @@ struct overtick
   ossia::time_value min;
   ossia::time_value max;
   ossia::time_value offset;
+
+  //! The sample of the audio buffer the cut was taken at: whatever follows
+  //! the sync starts writing there. -1 when the tick carried no sample span.
+  int32_t start_sample{-1};
 };
 using overtick_map = ossia::flat_map<time_sync*, overtick>;
 
@@ -224,9 +228,13 @@ private:
   sync_status
   trigger_quantified_time_sync(time_sync& sync, bool& maximalDurationReached) noexcept;
 
+  //! [start_sample; end_sample[ is the window of the audio buffer this
+  //! dispatch stands for; when the interval ends inside it, the cut is
+  //! decided here, in samples, and everything after the sync starts from it.
   void run_interval(
       ossia::time_interval& interval, const ossia::token_request& tk,
-      const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset);
+      const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset,
+      int32_t start_sample, int32_t end_sample);
 
   void stop_interval(ossia::time_interval& itv);
   void reset_component(ossia::time_sync& n);
@@ -235,6 +243,7 @@ private:
   void state_impl_backward(const ossia::token_request& tk, time_value tick_amount);
   void run_interval_backward(
       ossia::time_interval& interval, const ossia::token_request& tk,
-      const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset);
+      const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset,
+      int32_t start_sample, int32_t end_sample);
 };
 }

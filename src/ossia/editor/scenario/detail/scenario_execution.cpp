@@ -129,7 +129,8 @@ static const constexpr progress_mode mode{PROGRESS_MAX};
 
 void scenario::run_interval(
     ossia::time_interval& interval, const ossia::token_request& tk,
-    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset)
+    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset,
+    int32_t start_sample, int32_t end_sample)
 {
   const auto& cst_old_date = interval.get_date();
   auto cst_max_dur = interval.get_max_duration();
@@ -143,6 +144,27 @@ void scenario::run_interval(
 
   interval.set_parent_speed(tk.speed);
 
+  // [start_sample; end_sample[ is the window of the audio buffer this
+  // dispatch stands for. When the interval ends inside it, the cut is decided
+  // here, in samples: the interval takes the samples up to the cut and the
+  // overtick hands the rest to whatever the sync starts. Deciding the cut in
+  // model time and dividing back by the speed - what used to happen - loses
+  // the sub-flick remainders and leaves buffer tails written by nobody.
+  const bool has_span = start_sample >= 0 && end_sample >= start_sample;
+  const int32_t window = has_span ? end_sample - start_sample : -1;
+  const auto cut_at = [&](double parent_time) -> int32_t {
+    if(!has_span)
+      return -1;
+    if(tick.impl <= 0 || parent_time <= 0.)
+      return start_sample;
+    if(parent_time >= double(tick.impl))
+      return end_sample;
+    const auto c
+        = start_sample
+          + int32_t(std::llround(window * (parent_time / double(tick.impl))));
+    return c < start_sample ? start_sample : (c > end_sample ? end_sample : c);
+  };
+
   // Tick without going over the max
   // so that the state is not 1.01*automation for instance.
   if(!cst_max_dur.infinite())
@@ -154,21 +176,25 @@ void scenario::run_interval(
       if(diff <= 0.)
       {
         if(tick != 0_tv)
-          interval.tick_offset(tick, offset, tk);
+          interval.tick_offset(tick, offset, tk, start_sample, window);
       }
       else
       {
+        // diff and max_tick are in the interval's frame, the cascade in ours.
+        const double sf = (s > 0.) ? s : 1.;
+        const int32_t cut = cut_at(max_tick.impl / sf);
+
         if(max_tick != 0_tv)
         {
-          interval.tick_offset_speed_precomputed(max_tick, offset, tk);
+          interval.tick_offset_speed_precomputed(
+              max_tick, offset, tk, start_sample, has_span ? cut - start_sample : -1);
         }
         else if(cst_max_dur == 0_tv)
         {
-          interval.tick_offset_speed_precomputed(max_tick, offset, tk);
+          interval.tick_offset_speed_precomputed(
+              max_tick, offset, tk, start_sample, has_span ? cut - start_sample : -1);
         }
 
-        // diff and max_tick are in the interval's frame, the cascade in ours.
-        const double sf = (s > 0.) ? s : 1.;
         const auto ot = ossia::time_value{int64_t(diff / sf)};
         const auto next_offset = offset + ossia::time_value{int64_t(max_tick.impl / sf)};
 
@@ -183,11 +209,12 @@ void scenario::run_interval(
           {
             cur.max = ot;
             cur.offset = next_offset;
+            cur.start_sample = cut;
           }
         }
         else
         {
-          m_overticks.insert(node_it, {end_node, overtick{ot, ot, next_offset}});
+          m_overticks.insert(node_it, {end_node, overtick{ot, ot, next_offset, cut}});
         }
       }
     }
@@ -198,22 +225,24 @@ void scenario::run_interval(
       if(backward_disp <= cst_old_date.impl)
       {
         if(tick != 0_tv)
-          interval.tick_offset(tick, offset, tk);
+          interval.tick_offset(tick, offset, tk, start_sample, window);
       }
       else
       {
-        // Clamp at zero
+        // Clamp at zero: only the samples that map to t >= 0 are covered.
         if(cst_old_date != 0_tv)
         {
+          const int32_t cut = cut_at(cst_old_date.impl / ((-s > 0.) ? -s : 1.));
           interval.tick_offset_speed_precomputed(
-              ossia::time_value{-cst_old_date.impl}, offset, tk);
+              ossia::time_value{-cst_old_date.impl}, offset, tk, start_sample,
+              has_span ? cut - start_sample : -1);
         }
       }
     }
   }
   else
   {
-    interval.tick_offset(tick, offset, tk);
+    interval.tick_offset(tick, offset, tk, start_sample, window);
   }
   if(interval.get_date() >= interval.get_min_duration())
   {
@@ -433,9 +462,17 @@ void scenario::state_impl(const ossia::token_request& tk)
       }
     }
 
+    // The window of the audio buffer this tick stands for, when known.
+    int32_t span_begin = -1, span_end = -1;
+    if(tk.start_sample >= 0 && tk.length_sample >= 0)
+    {
+      span_begin = tk.start_sample;
+      span_end = tk.start_sample + tk.length_sample;
+    }
+
     for(time_interval* interval : m_runningIntervals)
     {
-      run_interval(*interval, tk, tick_ms, tick_ms, tk.offset);
+      run_interval(*interval, tk, tick_ms, tick_ms, tk.offset, span_begin, span_end);
     }
 
     // Handle time syncs / events... if they are not finished, intervals in
@@ -461,9 +498,14 @@ void scenario::state_impl(const ossia::token_request& tk)
 
           const auto offset = tk.offset + tick_ms - remaining_tick;
           const_cast<overtick&>(it->second).offset = offset;
+
+          // What follows the sync starts writing at the sample the cut was
+          // taken at, and runs to the end of the parent's window.
+          const int32_t cut = it->second.start_sample;
+          const int32_t cut_end = cut >= 0 ? span_end : -1;
           for(const auto& interval : ev.next_time_intervals())
           {
-            run_interval(*interval, tk, tick_ms, remaining_tick, offset);
+            run_interval(*interval, tk, tick_ms, remaining_tick, offset, cut, cut_end);
           }
         }
       }
@@ -562,7 +604,8 @@ void scenario_graph::reset_component(time_sync& sync) const
 
 void scenario::run_interval_backward(
     ossia::time_interval& interval, const ossia::token_request& tk,
-    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset)
+    const time_value& tick_ms, ossia::time_value tick, ossia::time_value offset,
+    int32_t start_sample, int32_t end_sample)
 {
   const auto cst_old_date = interval.get_date();
 
@@ -571,6 +614,12 @@ void scenario::run_interval_backward(
   auto s = std::abs(interval.local_time_factor(tk));
   if(s == 0.)
     s = 1.0;
+
+  // The same inversion as forward: [start_sample; end_sample[ is the window
+  // of the audio buffer, and a cascade through an interval's start decides
+  // its cut in samples.
+  const bool has_span = start_sample >= 0 && end_sample >= start_sample;
+  const int32_t window = has_span ? end_sample - start_sample : -1;
 
   // How far backward do we move (positive amount)
   auto displacement = interval.take_backward_step(tick, tk);
@@ -581,16 +630,33 @@ void scenario::run_interval_backward(
     if(tick != 0_tv)
     {
       interval.tick_offset_speed_precomputed(
-          ossia::time_value{-displacement}, offset, tk);
+          ossia::time_value{-displacement}, offset, tk, start_sample, window);
     }
   }
   else
   {
-    // Would go past 0 - clamp at 0
+    // Would go past 0 - clamp at 0. The interval only stands for the part of
+    // the window it covers before reaching its start; the cascade continues
+    // from that sample.
+    int32_t cut = start_sample;
+    if(has_span && tick.impl > 0)
+    {
+      const double parent_time = cst_old_date.impl / s;
+      const auto c
+          = start_sample
+            + int32_t(std::llround(window * (parent_time / double(tick.impl))));
+      cut = c < start_sample ? start_sample : (c > end_sample ? end_sample : c);
+    }
+    else if(!has_span)
+    {
+      cut = -1;
+    }
+
     if(cst_old_date != 0_tv)
     {
       interval.tick_offset_speed_precomputed(
-          ossia::time_value{-cst_old_date.impl}, offset, tk);
+          ossia::time_value{-cst_old_date.impl}, offset, tk, start_sample,
+          has_span ? cut - start_sample : -1);
     }
 
     // Compute backward overtick (including start syncs, so the cascade
@@ -611,12 +677,13 @@ void scenario::run_interval_backward(
         {
           cur.max = ot;
           cur.offset = ot_offset;
+          cur.start_sample = cut;
         }
       }
       else
       {
         m_backward_overticks.insert(
-            node_it, {start_node, overtick{ot, ot, ot_offset}});
+            node_it, {start_node, overtick{ot, ot, ot_offset, cut}});
       }
 
       m_startNodes.insert(start_node);
@@ -633,10 +700,19 @@ void scenario::state_impl_backward(
 
   m_backward_overticks.reserve(m_nodes.size());
 
+  // The window of the audio buffer this tick stands for, when known.
+  int32_t span_begin = -1, span_end = -1;
+  if(tk.start_sample >= 0 && tk.length_sample >= 0)
+  {
+    span_begin = tk.start_sample;
+    span_end = tk.start_sample + tk.length_sample;
+  }
+
   // Tick all running intervals backward
   for(time_interval* interval : m_runningIntervals)
   {
-    run_interval_backward(*interval, tk, tick_amount, tick_amount, tk.offset);
+    run_interval_backward(
+        *interval, tk, tick_amount, tick_amount, tk.offset, span_begin, span_end);
   }
 
   // Backward cascade: when intervals reach date=0, transition to previous intervals
@@ -664,6 +740,8 @@ void scenario::state_impl_backward(
       const time_value remaining_tick
           = (mode == PROGRESS_MAX) ? ot_it->second.max : ot_it->second.min;
       const auto ot_offset = ot_it->second.offset;
+      const int32_t cut = ot_it->second.start_sample;
+      const int32_t cut_end = cut >= 0 ? span_end : -1;
 
       for(const auto& ev : sync_node->get_time_events())
       {
@@ -702,7 +780,8 @@ void scenario::state_impl_backward(
           m_runningIntervals.insert(prev_itv.get());
 
           // Tick the newly started interval with the remaining backward time
-          run_interval_backward(*prev_itv, tk, tick_amount, remaining_tick, ot_offset);
+          run_interval_backward(
+              *prev_itv, tk, tick_amount, remaining_tick, ot_offset, cut, cut_end);
         }
       }
     }
