@@ -130,7 +130,9 @@ std::unique_ptr<ossia::nodes::sound_ref> make_click_node(
 {
   auto n = std::make_unique<ossia::nodes::sound_ref>();
   n->set_sound(data);
-  // The testing set_sound() forces stretch mode None; override it.
+  // The testing set_sound() forces stretch mode None and a 44100 data rate;
+  // override both so the click positions mean what the harness thinks.
+  n->m_sampler.m_dataSampleRate = sampleRate;
   n->m_resampler.reset(0, mode, 1, sampleRate);
   n->set_native_tempo(file_tempo);
   return n;
@@ -257,6 +259,8 @@ const char* mode_name(ossia::audio_stretch_mode m)
       return "repitch ";
     case ossia::audio_stretch_mode::RubberBandStandard:
       return "rubber  ";
+    case ossia::audio_stretch_mode::RubberBandStandardHQ:
+      return "rubberHQ";
     default:
       return "?       ";
   }
@@ -269,6 +273,7 @@ struct sync_case
   double transport_tempo{};
   double speed{1.0};
   int bufferSize{512};
+  int sampleRate{44100};
 };
 
 struct sync_result
@@ -285,7 +290,7 @@ struct sync_result
 // Both outputs are measured against the absolute expected click positions.
 sync_result run_sync_case(const sync_case& c)
 {
-  constexpr int sampleRate = 44100;
+  const int sampleRate = c.sampleRate;
   const int N = c.bufferSize;
 
   const double phys_seconds = 12.0;
@@ -601,6 +606,310 @@ TEST_CASE("sound_sync_drop_seek_invariant", "[sound][sync]")
                           << " seek=" << seek << " want=" << want);
     CHECK(std::llabs(seek - want) <= 1);
   }
+}
+
+// Adversarial extension of the sweep: ratios far outside the 0.52..1.17 range
+// the R2 start-delay correction was fitted on, the R3 (HQ) engine which must
+// not receive that correction, and a 48 kHz rate. The stretch-mode tolerances
+// scale with the stretcher's own transient jitter, which grows with the
+// stretch factor; what these cases pin down is that the start trim does not
+// misplace the whole stream (an error of the order of the start delay, i.e.
+// hundreds to thousands of samples).
+TEST_CASE("sound_sync_extreme_ratios", "[sound][sync]")
+{
+  ossia::set_thread_pinned(ossia::thread_type::Ui, 0);
+
+  using m = ossia::audio_stretch_mode;
+  std::vector<sync_case> cases = {
+      // Repitch tracks any ratio exactly.
+      {m::Repitch, 200., 60., 1.0, 512},
+      {m::Repitch, 60., 200., 1.0, 512},
+      // R3 in the moderate range the R2 correction was fitted on: the
+      // correction must not leak into the finer engine.
+      {m::RubberBandStandardHQ, 90., 140., 1.0, 512},
+      {m::RubberBandStandardHQ, 128., 140., 1.0, 512},
+      // 48 kHz: the pad/delay values change with the rate.
+      {m::RubberBandStandard, 90., 140., 1.0, 512, 48000},
+      {m::RubberBandStandard, 128., 140., 1.0, 512, 48000},
+      {m::RubberBandStandardHQ, 128., 140., 1.0, 512, 48000},
+      {m::Repitch, 128., 140., 1.0, 512, 48000},
+  };
+
+  print_result_header();
+  for(const auto& c : cases)
+  {
+    const auto r = run_sync_case(c);
+    print_result(r);
+
+    INFO(
+        mode_name(r.c.mode) << " fT=" << r.c.file_tempo << " tT="
+                            << r.c.transport_tempo << " s=" << r.c.speed
+                            << " rate=" << r.c.sampleRate);
+
+    const bool rb = c.mode == m::RubberBandStandard
+                    || c.mode == m::RubberBandStandardHQ;
+    // A misapplied start trim shows up as a median offset of ~startDelay
+    // (>= 1024 at these rates), far beyond these.
+    const double med_tol = rb ? 64. : 2.;
+    const double max_tol = rb ? 192. : 4.;
+    CHECK(r.started.missing == 0);
+    CHECK(std::abs(r.started.median_err) < med_tol);
+    CHECK(r.started.max_abs_err < max_tol);
+    CHECK(r.dropped.missing == 0);
+    CHECK(std::abs(r.dropped.median_err) < med_tol);
+    CHECK(std::abs(r.dropped.median_err - r.started.median_err) < med_tol);
+    CHECK(std::llabs(r.seek_actual - r.seek_expected) <= 1);
+  }
+}
+
+// The rubberband engines outside the ratio range the R2 start-delay
+// correction was fitted on (0.52..1.17). Measured today at 44.1 kHz:
+//   R2 at time ratio 3.33 (fT 200 -> tT 60): whole stream ~+1880 samples
+//     late - the 0.375*pad*(1-ratio) term goes far negative and is clamped
+//     to zero, so nothing is trimmed while the true start delay grew.
+//   R3 at 3.33: ~-570 samples early.
+//   R2/R3 at ratio 0.3 (fT 60 -> tT 200): ~15-20 of ~180 clicks missing and
+//     medians of -130/+90: transients are crushed and misplaced.
+// Kept [!mayfail]: these bounds state what correct behaviour would be, the
+// run records how far the stretchers currently are from it.
+TEST_CASE("sound_sync_extreme_ratio_stretchers", "[sound][sync][!mayfail]")
+{
+  ossia::set_thread_pinned(ossia::thread_type::Ui, 0);
+
+  using m = ossia::audio_stretch_mode;
+  std::vector<sync_case> cases = {
+      {m::RubberBandStandard, 200., 60., 1.0, 512},
+      {m::RubberBandStandardHQ, 200., 60., 1.0, 512},
+      {m::RubberBandStandard, 60., 200., 1.0, 512},
+      {m::RubberBandStandardHQ, 60., 200., 1.0, 512},
+  };
+
+  print_result_header();
+  for(const auto& c : cases)
+  {
+    const auto r = run_sync_case(c);
+    print_result(r);
+
+    INFO(
+        mode_name(r.c.mode) << " fT=" << r.c.file_tempo
+                            << " tT=" << r.c.transport_tempo);
+    const double stretch = c.file_tempo / c.transport_tempo;
+    const double med_tol = 64. * std::max(1.0, stretch);
+    const double max_tol = 192. * std::max(1.0, stretch);
+    CHECK(r.started.missing == 0);
+    CHECK(std::abs(r.started.median_err) < med_tol);
+    CHECK(r.started.max_abs_err < max_tol);
+    CHECK(r.dropped.missing == 0);
+    CHECK(std::abs(r.dropped.median_err) < med_tol);
+    CHECK(std::llabs(r.seek_actual - r.seek_expected) <= 1);
+  }
+}
+
+// The drop-in seek claims to be independent of the transport tempo *history*:
+// when stretching, the file position is a pure function of the model date.
+// Play a running copy through a stepped tempo curve (90 BPM for two seconds,
+// then 180), drop a second copy in two seconds after the step, and measure
+// both against the click grid the tempo curve implies. The comparison is on
+// the audible output, not on next_sample_to_read(): a stretcher's input-side
+// position leads its output by its internal buffering, which is not a sync
+// error.
+namespace
+{
+struct curve_run
+{
+  click_stats started;
+  click_stats dropped;
+};
+
+curve_run run_tempo_curve_case(ossia::audio_stretch_mode mode)
+{
+  constexpr int sampleRate = 44100;
+  constexpr int N = 512;
+  const double fT = 128.;
+  const double phys_seconds = 10.0;
+  const std::size_t n_ticks = std::size_t(phys_seconds * sampleRate) / N;
+  const std::size_t drop_tick = std::size_t(4.0 * sampleRate) / N;
+  const int64_t P0 = int64_t(drop_tick) * N;
+
+  const auto tempo_at = [&](std::size_t tick) {
+    return tick < std::size_t(2.0 * sampleRate) / N ? 90. : 180.;
+  };
+
+  const auto file_frames
+      = int64_t(phys_seconds * sampleRate * (180. / fT)) + 8 * 65536;
+  const auto data = make_click_track(fT, sampleRate, file_frames);
+
+  ossia::execution_state e;
+  e.bufferSize = N;
+  e.sampleRate = sampleRate;
+  e.modelToSamplesRatio = double(sampleRate) / double(fps);
+  e.samplesToModelRatio = double(fps) / double(sampleRate);
+
+  // Variable-tempo production tokens: same floor+residue advance, with the
+  // tempo (and so the speed) changing between ticks; and the physical -> file
+  // consumption integral the token stream implies.
+  const bool stretching = mode != ossia::audio_stretch_mode::None;
+  int64_t model_date = 0;
+  double residue = 0.;
+  std::vector<ossia::token_request> tokens;
+  std::vector<double> file_at_tick_start(n_ticks + 1, 0.);
+  for(std::size_t k = 0; k < n_ticks; k++)
+  {
+    const double T = tempo_at(k);
+    const double gspeed = T / ossia::root_tempo;
+    const int64_t buf_flicks = int64_t(N) * (fps / sampleRate);
+    const double want = double(buf_flicks) * gspeed + residue;
+    const double step = std::floor(want);
+    residue = want - step;
+    ossia::token_request tk{
+        ossia::time_value{model_date},
+        ossia::time_value{model_date + int64_t(step)},
+        ossia::time_value{fps * int64_t(3600)},
+        ossia::time_value{0},
+        gspeed,
+        {4, 4},
+        T};
+    tk.start_sample = 0;
+    tk.length_sample = N;
+    tokens.push_back(tk);
+    model_date += int64_t(step);
+
+    const double cons = stretching ? T / fT : 1.0;
+    file_at_tick_start[k + 1] = file_at_tick_start[k] + cons * N;
+  }
+
+  // Physical position at which file sample F comes out, inverting the
+  // per-tick consumption integral.
+  const auto physical_of_file = [&](double F) -> double {
+    for(std::size_t k = 0; k < n_ticks; k++)
+    {
+      if(file_at_tick_start[k + 1] >= F)
+      {
+        const double cons = stretching ? tempo_at(k) / fT : 1.0;
+        return double(k) * N + (F - file_at_tick_start[k]) / cons;
+      }
+    }
+    return -1.;
+  };
+
+  auto A = make_click_node(data, mode, sampleRate, fT);
+  const auto outA = run_node(*A, e, tokens, 0, n_ticks, N);
+
+  auto B = make_click_node(data, mode, sampleRate, fT);
+  ossia::tick_transport_info tinfo{};
+  tinfo.date = tokens[drop_tick].prev_date;
+  tinfo.current_tempo = tempo_at(drop_tick);
+  B->transport(tokens[drop_tick].prev_date, tinfo);
+  const auto outB = run_node(*B, e, tokens, drop_tick, n_ticks - drop_tick, N);
+
+  const double period = 60.0 / fT * sampleRate;
+  const double out_spacing = period / (stretching ? 180. / fT : 1.0);
+  const double radius = std::min(0.45 * out_spacing, 4096.);
+
+  std::vector<double> expectA, expectB;
+  for(int64_t k = 0;; k++)
+  {
+    const double F = double(int64_t(std::llround(double(k) * period)));
+    const double P = physical_of_file(F);
+    if(P < 0.)
+      break;
+    if(P > double(P0) + 2.5 * out_spacing)
+    {
+      expectA.push_back(P);
+      expectB.push_back(P - double(P0));
+    }
+  }
+
+  curve_run r;
+  r.started = measure_clicks(outA, expectA, radius, sampleRate);
+  r.dropped = measure_clicks(outB, expectB, radius, sampleRate);
+  return r;
+}
+}
+
+// What the drop-in commit claims, verified under a tempo curve: the dropped
+// copy seeks to the file position the model date implies and lands on the
+// ideal grid the curve defines. This part holds: repitch is sample-exact,
+// rubberband within its jitter.
+TEST_CASE("sound_sync_drop_tempo_curve_stretch", "[sound][sync]")
+{
+  ossia::set_thread_pinned(ossia::thread_type::Ui, 0);
+  using m = ossia::audio_stretch_mode;
+
+  for(auto mode : {m::Repitch, m::RubberBandStandard})
+  {
+    const auto r = run_tempo_curve_case(mode);
+    std::fprintf(
+        stderr,
+        "[tempo curve %s] started med=%.1f max=%.1f miss=%d | dropped med=%.1f "
+        "max=%.1f miss=%d\n",
+        mode_name(mode), r.started.median_err, r.started.max_abs_err,
+        r.started.missing, r.dropped.median_err, r.dropped.max_abs_err,
+        r.dropped.missing);
+
+    INFO(mode_name(mode));
+    const bool rb = mode == m::RubberBandStandard;
+    const double med_tol = rb ? 48. : 2.;
+    CHECK(r.dropped.missing == 0);
+    CHECK(std::abs(r.dropped.median_err) < med_tol);
+  }
+}
+
+// The counterpart that does not hold: a running copy that lives *through* a
+// tempo step is permanently off the ideal grid afterwards, because the
+// resampler's buffered input crosses the ratio change at the old ratio and
+// the loss is never repaid. Measured with the 90 -> 180 step: repitch stays
+// +158 samples late for the rest of the run, R2 rubberband ~+640. The dropped
+// copy, which never saw the step, sits at 0 - so the two flam by exactly that
+// much despite the seek being correct. Recorded as a measured limitation: the
+// fix would be inside the stretchers' ratio-change handling, not in the seek.
+TEST_CASE(
+    "sound_sync_running_copy_offset_after_tempo_step", "[sound][sync][!mayfail]")
+{
+  ossia::set_thread_pinned(ossia::thread_type::Ui, 0);
+  using m = ossia::audio_stretch_mode;
+
+  for(auto mode : {m::Repitch, m::RubberBandStandard})
+  {
+    const auto r = run_tempo_curve_case(mode);
+    INFO(
+        mode_name(mode) << " started med=" << r.started.median_err
+                        << " dropped med=" << r.dropped.median_err);
+    const bool rb = mode == m::RubberBandStandard;
+    const double med_tol = rb ? 48. : 2.;
+    CHECK(r.started.missing == 0);
+    CHECK(std::abs(r.started.median_err) < med_tol);
+    CHECK(std::abs(r.dropped.median_err - r.started.median_err) < med_tol);
+  }
+}
+
+// Raw playback cannot reconstruct the physical position from the model date
+// once the tempo has changed: the date is the integral of the live tempo while
+// raw consumption is one file sample per physical sample, so dividing the date
+// by the *current* tempo mistakes the whole tempo history for the present.
+// Measured here: after 2 s at 90 BPM and 2 s at 180, the dropped copy seeks
+// 44032 samples (a full second) before the running one - the click matcher
+// reports it as +2688 because 44032 aliases to 2 click periods + 2688. Kept
+// as a measured, documented limitation of the raw drop-in seek rather than a
+// regression: the previous code got the same scenario wrong by a different
+// amount.
+TEST_CASE("sound_sync_drop_tempo_curve_raw", "[sound][sync][!mayfail]")
+{
+  ossia::set_thread_pinned(ossia::thread_type::Ui, 0);
+
+  const auto r = run_tempo_curve_case(ossia::audio_stretch_mode::None);
+  std::fprintf(
+      stderr,
+      "[tempo curve raw] started med=%.1f max=%.1f miss=%d | dropped med=%.1f "
+      "max=%.1f miss=%d\n",
+      r.started.median_err, r.started.max_abs_err, r.started.missing,
+      r.dropped.median_err, r.dropped.max_abs_err, r.dropped.missing);
+
+  CHECK(r.started.missing == 0);
+  CHECK(std::abs(r.started.median_err) < 2.);
+  // The dropped copy: |error| ~= 44100 samples with this curve today.
+  CHECK(r.dropped.missing == 0);
+  CHECK(std::abs(r.dropped.median_err) < 2.);
 }
 
 #endif
