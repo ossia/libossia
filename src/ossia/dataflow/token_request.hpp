@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cmath>
 #include <optional>
+#include <type_traits>
 
 #if defined(_LIBCPP_CONSTEXPR_SINCE_CXX23) || defined(_GLIBCXX23_CONSTEXPR)
 #define ossia_constexpr_msvc_workaround constexpr
@@ -80,6 +81,31 @@ struct token_request
     ossia::time_value orig_from = other.prev_date;
     ossia::time_value tick_amount = other.date - other.prev_date;
 
+    // The pieces of a looped tick must tile the parent's carried sample span
+    // the way the parent tiles the buffer. Cutting on the accumulated model
+    // amount with a single rounding keeps the cuts monotone, so consecutive
+    // pieces share their boundary sample by construction.
+    const int64_t total_amount
+        = tick_amount.impl >= 0 ? tick_amount.impl : -tick_amount.impl;
+    const bool has_span
+        = start_sample >= 0 && length_sample >= 0 && total_amount > 0;
+    int64_t consumed = 0;
+    const auto set_piece_span = [&](int64_t piece) constexpr {
+      if(has_span)
+      {
+        const int64_t s0 = start_sample
+                           + (int64_t{length_sample} * consumed + total_amount / 2)
+                                 / total_amount;
+        const int64_t s1
+            = start_sample
+              + (int64_t{length_sample} * (consumed + piece) + total_amount / 2)
+                    / total_amount;
+        other.start_sample = int32_t(s0);
+        other.length_sample = int32_t(s1 - s0);
+      }
+      consumed += piece;
+    };
+
     if(tick_amount >= 0_tv)
     {
       // Forward playback
@@ -90,6 +116,7 @@ struct token_request
         {
           other.prev_date = cur_from + start_offset;
           other.date = other.prev_date + tick_amount;
+          set_piece_span(tick_amount.impl);
           f(other);
           break;
         }
@@ -102,6 +129,7 @@ struct token_request
           other.prev_date = cur_from + start_offset;
           other.date = other.prev_date + this_tick;
 
+          set_piece_span(this_tick.impl);
           f(other);
 
           transport(start_offset);
@@ -132,6 +160,7 @@ struct token_request
         other.prev_date = time_value{cur_from} + start_offset;
         other.date = other.prev_date - time_value{this_tick};
 
+        set_piece_span(this_tick);
         f(other);
 
         remaining -= this_tick;
@@ -174,10 +203,14 @@ struct token_request
     return constexpr_floor(tick_position.impl * ratio / abs_speed(speed));
   }
 
-  //! Where we must start to read / write in our physical buffers
+  //! Where we must start to read / write in our physical buffers.
+  //! The producer's word is taken when it gave one: reconstructing the sample
+  //! from the flick-quantised offset can land one sample off the actual cut.
   [[nodiscard]] constexpr physical_time physical_start(double ratio) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
+    if(start_sample >= 0)
+      return start_sample;
     return sample_at(this->offset, ratio);
   }
 
@@ -195,11 +228,15 @@ struct token_request
   }
 
   //! Given a sound file at 44100 and a system rate at 44100,
-  //! this is the amount of samples that we must write in the audio buffer
+  //! this is the amount of samples that we must write in the audio buffer.
+  //! As with physical_start, the span the producer carried wins over the
+  //! flick-rounded reconstruction.
   [[nodiscard]] constexpr physical_time
   physical_write_duration(double ratio) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
+    if(length_sample >= 0)
+      return length_sample;
     return sample_at(this->offset + abs(date - prev_date), ratio)
            - sample_at(this->offset, ratio);
   }
@@ -209,7 +246,7 @@ struct token_request
   safe_physical_write_duration(double ratio, int bufferSize) const noexcept
   // C++23: [[ expects: speed != 0. ]]
   {
-    return bufferSize - sample_at(this->offset, ratio);
+    return bufferSize - physical_start(ratio);
   }
 
   //! Is the given value in the tick defined by this token_request
@@ -623,9 +660,28 @@ struct token_request
     return false;
   }
 
+  //! The fraction of the tick [prev_date; t] represents, in [0; 1], correct
+  //! in both playback directions. Used to split the carried sample span the
+  //! same way the model dates are split.
+  [[nodiscard]] constexpr double tick_fraction_at(time_value t) const noexcept
+  {
+    const double total = double(date.impl - prev_date.impl);
+    if(total == 0.)
+      return 0.;
+    double f = double(t.impl - prev_date.impl) / total;
+    if(f < 0.)
+      f = 0.;
+    else if(f > 1.)
+      f = 1.;
+    return f;
+  }
+
   constexpr void set_end_time(time_value t) noexcept
   // C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
+    if(length_sample > 0)
+      length_sample = int32_t(length_sample * tick_fraction_at(t) + 0.5);
+
     const auto old_date = date;
     date = t;
 
@@ -641,6 +697,13 @@ struct token_request
   constexpr void set_start_time(time_value t) noexcept
   // C++23: [[ expects: t <= this->date && t > this->prev_date ]]
   {
+    if(length_sample > 0)
+    {
+      const auto skipped = int32_t(length_sample * tick_fraction_at(t) + 0.5);
+      start_sample += skipped;
+      length_sample -= skipped;
+    }
+
     const auto old_date = prev_date;
     prev_date = t;
 
@@ -677,6 +740,23 @@ struct token_request
   double tempo{ossia::root_tempo};
   time_signature signature{}; // Time signature at start
 
+  //! The span of the audio buffer this token covers, in samples: this token's
+  //! node must write samples [start_sample; start_sample + length_sample[.
+  //!
+  //! Decided by whoever cut the tick (the root audio callback, or a scenario
+  //! splitting it on an interval boundary) and carried verbatim, because it
+  //! cannot be reconstructed: the model dates are quantised to whole flicks,
+  //! so dividing them back by the speed lands next to the sample the cut was
+  //! actually taken at, and the last sample of the buffer ends up written by
+  //! nobody. -1 means the producer did not know the buffer (hand-made tokens,
+  //! non-audio drivers); consumers then fall back to deriving the span from
+  //! the model dates.
+  int32_t start_sample{-1};
+  int32_t length_sample{-1};
+
+  bool start_discontinuous{};
+  bool end_discontinuous{};
+
   ossia::quarter_note musical_start_last_signature{}; // Position of the last bar
                                                       // signature change in quarter
                                                       // notes (at prev_date)
@@ -686,9 +766,13 @@ struct token_request
   ossia::quarter_note musical_end_last_bar{};   // Position of the last bar start in
                                                 // quarter notes (at date)
   ossia::quarter_note musical_end_position{};   // Current position in quarter notes
-  bool start_discontinuous{};
-  bool end_discontinuous{};
 };
+
+// Copied per node per tick on the audio thread: it has to stay a POD that
+// memcpys, and it should not grow carelessly.
+static_assert(std::is_trivially_copyable_v<token_request>);
+static_assert(std::is_standard_layout_v<token_request>);
+static_assert(sizeof(token_request) == 104);
 
 inline bool operator==(const token_request& lhs, const token_request& rhs)
 {
