@@ -16,19 +16,9 @@
 #include <string>
 #include <vector>
 
-// Diagnostics for ASIO driver discovery.
-//
-// Driver enumeration goes through the Steinberg SDK host helper
-// (AsioDriverList in host/pc/asiolist.cpp), which walks HKLM\SOFTWARE\ASIO and
-// silently drops any driver it cannot fully resolve. When that happens the user
-// sees an empty device list with no explanation whatsoever.
-//
-// This header provides the ground truth -- a direct, self-contained read of the
-// registry that does not go through the SDK at all -- so a mismatch between
-// "what is installed" and "what the SDK returned" is reported instead of being
-// invisible. Every registry call here is an explicit -A call operating on char
-// buffers, so it stays correct regardless of how UNICODE is defined for the
-// including translation unit.
+// Reads HKLM\SOFTWARE\ASIO directly, bypassing the SDK host helper, which drops
+// drivers it cannot resolve without saying so. Explicit -A calls throughout, so
+// this stays correct however UNICODE is defined for the including TU.
 namespace ossia::asio_diagnostics
 {
 // Verbose per-driver tracing, enabled with OSSIA_ASIO_DEBUG=1.
@@ -41,11 +31,7 @@ inline bool verbose() noexcept
   return enabled;
 }
 
-// All ASIO diagnostics go to stderr rather than through ossia::logger() or
-// qDebug(): enumeration runs while the audio factories are being constructed,
-// which on Windows is before the log sinks are usable, and score's Qt message
-// handler redirects qDebug() to score.log on MSVC builds. stderr is the only
-// channel that reliably reaches a console.
+// stderr: enumeration runs before the log sinks are usable.
 inline std::ostream& log()
 {
   return std::cerr << "[asio] ";
@@ -78,11 +64,7 @@ inline std::string read_sz(HKEY key, const char* value)
 }
 }
 
-// Enumerates HKLM\SOFTWARE\ASIO without involving the ASIO SDK.
-//
-// Note on bitness: a 64-bit process sees the 64-bit view, so 32-bit-only
-// drivers registered under WOW6432Node are invisible here -- and equally
-// invisible to the SDK, which is correct, as they cannot be loaded in-process.
+// 64-bit view only; WOW6432Node drivers are equally invisible to the SDK.
 inline std::vector<registry_entry> installed_drivers_from_registry()
 {
   std::vector<registry_entry> out;
@@ -131,9 +113,7 @@ inline std::vector<registry_entry> installed_drivers_from_registry()
   return out;
 }
 
-// Compares what the SDK returned against what is actually installed and reports
-// anything unexplained. Called once per enumeration; cheap (a few registry
-// reads).
+// Reports any mismatch between what the SDK returned and what is installed.
 inline void report(std::size_t sdk_count)
 {
   const auto installed = installed_drivers_from_registry();
@@ -159,8 +139,7 @@ inline void report(std::size_t sdk_count)
   if(sdk_count == usable)
     return;
 
-  // The interesting case: the registry says a driver should be loadable but the
-  // SDK dropped it (or vice versa).
+  // Registry says loadable but the SDK disagrees, or vice versa.
   log() << "WARNING: the ASIO SDK returned " << sdk_count << " driver(s) but "
         << usable << " of " << installed.size()
         << " registry entries look loadable.\n";
