@@ -263,7 +263,7 @@ public:
 
     for(long i = 0; i < numDrivers; i++)
     {
-      char name[128]{};
+      char name[MAXDRVNAMELEN]{};
       const long rc = drivers.asioGetDriverName(i, name, sizeof(name));
       if(rc == 0)
       {
