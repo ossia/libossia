@@ -2,8 +2,9 @@
 #include <ossia/detail/config.hpp>
 
 #if defined(OSSIA_ENABLE_ASIO)
-#include <ossia/audio/asio_diagnostics.hpp>
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/fmt.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/thread.hpp>
 
 #if !defined(WIN32_LEAN_AND_MEAN)
@@ -24,7 +25,6 @@ extern AsioDrivers* asioDrivers;
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -259,8 +259,7 @@ public:
 
     AsioDrivers drivers;
     const long numDrivers = drivers.asioGetNumDev();
-    if(asio_diagnostics::verbose())
-      asio_diagnostics::log() << "asioGetNumDev() = " << numDrivers << '\n';
+    ossia::logger().info(fmt::format("ASIO: {} driver(s) installed", numDrivers));
 
     for(long i = 0; i < numDrivers; i++)
     {
@@ -268,20 +267,16 @@ public:
       const long rc = drivers.asioGetDriverName(i, name, sizeof(name));
       if(rc == 0)
       {
-        if(asio_diagnostics::verbose())
-          asio_diagnostics::log() << "  [" << i << "] \"" << name << "\"\n";
+        ossia::logger().info(fmt::format("ASIO: [{}] '{}'", i, name));
         cards.push_back({name, (int)i});
       }
       else
       {
         // Should not happen: the index came from asioGetNumDev().
-        asio_diagnostics::log() << "asioGetDriverName(" << i << ") failed, rc=" << rc
-                                << " -- driver skipped\n";
+        ossia::logger().warn(
+            fmt::format("ASIO: asioGetDriverName({}) failed, rc={}, driver skipped", i, rc));
       }
     }
-
-    // Explains an empty or short list instead of leaving it mysterious.
-    asio_diagnostics::report(cards.size());
 
     return cards;
   }
@@ -311,9 +306,9 @@ public:
     {
       if(engine->m_driver_name != driver_name)
       {
-        asio_diagnostics::log()
-            << "cannot open the control panel of \"" << driver_name << "\": \""
-            << engine->m_driver_name << "\" is currently streaming\n";
+        ossia::logger().warn(fmt::format(
+            "ASIO: cannot open the control panel of '{}': '{}' is currently streaming",
+            driver_name, engine->m_driver_name));
         return control_panel_result::other_driver_active;
       }
 
@@ -324,8 +319,8 @@ public:
     // Nothing running: load the requested driver just long enough to show it.
     if(!loadAsioDriver(const_cast<char*>(driver_name.c_str())))
     {
-      asio_diagnostics::log() << "could not load \"" << driver_name
-                              << "\" to show its control panel\n";
+      ossia::logger().warn(
+          fmt::format("ASIO: could not load '{}' to show its control panel", driver_name));
       return control_panel_result::load_failed;
     }
 
@@ -335,10 +330,9 @@ public:
     {
       if(asioDrivers)
         asioDrivers->removeCurrentDriver();
-      asio_diagnostics::log() << "ASIOInit failed for \"" << driver_name
-                              << "\", cannot show its control panel ("
-                              << (info.errorMessage[0] ? info.errorMessage : "no message")
-                              << ")\n";
+      ossia::logger().warn(fmt::format(
+          "ASIO: ASIOInit failed for '{}', cannot show its control panel ({})",
+          driver_name, info.errorMessage[0] ? info.errorMessage : "no message"));
       return control_panel_result::init_failed;
     }
 
