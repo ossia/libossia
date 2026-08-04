@@ -55,9 +55,6 @@ public:
   {
     if(detail::current_asio_engine)
     {
-      // ASIO allows a single loaded driver per process. Name the incumbent:
-      // hitting this means a previous engine was not released, which surfaces
-      // to the user as "the desired audio settings could not be applied".
       throw std::runtime_error(
           "ASIO error: driver '" + detail::current_asio_engine->m_driver_name
           + "' is still active, cannot open '" + driver_name + "'");
@@ -246,19 +243,11 @@ public:
   {
     audio_engine::stop();
 
-    // Release the driver here rather than in the destructor. Hosts routinely
-    // defer destruction of a stopped engine (score parks it in a list and reaps
-    // it from a timer), but ASIO only allows one loaded driver per process, so
-    // holding it until destruction makes the *next* engine fail to construct --
-    // and the late destructor would then tear down the driver the new engine
-    // just claimed. cleanup() is idempotent and only acts while we still own
-    // the driver, so both hazards go away.
+    // Released here, not in the destructor: hosts defer destruction and ASIO
+    // allows a single loaded driver per process.
     cleanup();
 
-    // ASIOStop() (in cleanup()) guarantees no further bufferSwitch callbacks,
-    // so the audio thread will never observe stop_processing and acknowledge
-    // via tick_clear(). Acknowledge here, otherwise the host waits forever for
-    // a callback that cannot come and never reaps this engine.
+    // No further callbacks after ASIOStop(), so acknowledge the stop ourselves.
     stop_received = true;
   }
 
@@ -291,8 +280,7 @@ public:
       }
     }
 
-    // The SDK drops unresolvable drivers without a word. Compare against the
-    // registry so an empty or short list is explained rather than mysterious.
+    // Explains an empty or short list instead of leaving it mysterious.
     asio_diagnostics::report(cards.size());
 
     return cards;
@@ -309,21 +297,14 @@ public:
   enum class control_panel_result
   {
     ok,
-    //! Another driver is loaded by the running engine. ASIO permits a single
-    //! loaded driver per process, so this one's panel cannot be reached until
-    //! the engine switches to it.
+    //! Another driver is loaded; ASIO permits only one per process.
     other_driver_active,
     load_failed,
     init_failed
   };
 
-  // Opens the control panel of `driver_name` specifically.
-  //
-  // Note this cannot simply call ASIOControlPanel() when an engine is running:
-  // that talks to whichever driver is loaded, which is the running engine's, not
-  // necessarily the one asked for. Nor can we load another driver to get at it,
-  // because AsioDrivers::loadDriver() calls removeCurrentDriver() first and
-  // would release the streaming driver out from under the running engine.
+  // Targets driver_name specifically: ASIOControlPanel() talks to whichever
+  // driver happens to be loaded, and loading another would release that one.
   static control_panel_result open_control_panel(const std::string& driver_name)
   {
     if(auto* engine = detail::current_asio_engine)
@@ -363,10 +344,7 @@ public:
 
     ASIOControlPanel();
 
-    // Unload again. ASIOControlPanel() is modal in every driver we know of, so
-    // it has been dismissed by now. Leaving the driver initialized instead
-    // would strand it: the next request for a *different* driver would find a
-    // loaded one and the SDK would silently release it mid-flight.
+    // Unload, so a later request for a different driver still works.
     ASIOExit();
     if(asioDrivers)
       asioDrivers->removeCurrentDriver();
@@ -375,10 +353,7 @@ public:
   }
 
 private:
-  // Releases the process-wide ASIO state this engine claimed. Idempotent, and a
-  // no-op unless this engine still owns the driver -- so a destructor running
-  // late (after stop() already released, and possibly after another engine has
-  // claimed the driver) can never tear down someone else's driver.
+  // Idempotent, and a no-op unless this engine still owns the driver.
   void cleanup()
   {
     if(detail::current_asio_engine != this)
@@ -405,8 +380,7 @@ private:
     if(asioDrivers)
       asioDrivers->removeCurrentDriver();
 
-    // Cleared last: the callbacks reach the engine through this pointer, and
-    // ASIOStop() above is what guarantees they have ceased.
+    // Cleared last: the callbacks reach the engine through this pointer.
     detail::current_asio_engine = nullptr;
   }
 
