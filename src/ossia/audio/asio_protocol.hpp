@@ -14,6 +14,10 @@
 #define NOMINMAX
 #endif
 
+// iasiodrv.h uses IUnknown without including unknwn.h, and WIN32_LEAN_AND_MEAN
+// stops windows.h from pulling it in.
+#include <windows.h>
+#include <unknwn.h>
 
 #include <asiodrivers.h>
 #include <asio.h>
