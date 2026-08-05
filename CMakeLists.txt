@@ -32,6 +32,39 @@ find_package(${QT_VERSION} COMPONENTS Core)
 ## at least with CMake 15.2
 set(OSSIA_SOURCE_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}" CACHE INTERNAL "")
 set(OSSIA_3RDPARTY_FOLDER "${CMAKE_CURRENT_SOURCE_DIR}/3rdparty" CACHE INTERNAL "")
+
+if(WIN32)
+  # Pin the Windows target for every translation unit, whatever the compiler.
+  #
+  # <windows.h> defines _WIN32_WINNT itself, through <sdkddkver.h>, whenever it
+  # is not already set, so leaving it alone does not mean "no minimum" - it
+  # means each translation unit gets one depending on whether it reached
+  # <windows.h> at all. Headers that branch on it, Boost.Asio among them, then
+  # configure themselves differently from one file to the next: Asio reads it
+  # to decide BOOST_ASIO_HAS_STD_ATOMIC_WAIT, which changes the wait primitive
+  # it uses. That is an ODR violation, and nothing reports it because both
+  # spellings mangle the same.
+  #
+  # The defaults also disagree between toolchains: the Windows Kits header
+  # picks 0x0A00 while mingw-w64 picks _WIN32_WINNT_WS03, so a mingw build has
+  # been configuring itself for Server 2003 wherever this was left alone.
+  #
+  # Here rather than on the ossia target, and before any add_subdirectory: the
+  # dependencies we add as subdirectories compile Asio too - libremidi builds
+  # its own translation units on MSVC - and they are siblings of ossia rather
+  # than consumers of it, so a PUBLIC definition never reaches them. It is
+  # repeated in src/ossia_setup.cmake as PUBLIC so that projects consuming an
+  # installed ossia get it too.
+  #
+  # WINVER and NTDDI_VERSION are deliberately not set: sdkddkver.h derives
+  # WINVER from _WIN32_WINNT and NTDDI_VERSION from the SDK, in both
+  # toolchains, so setting them by hand only creates a way for them to
+  # disagree.
+  add_definitions(
+    -D_WIN32_WINNT=0x0A00
+  )
+endif()
+
 include(OssiaOptions)
 
 # Dependencies

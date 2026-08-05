@@ -55,6 +55,43 @@ if(WIN32)
     )
   endif()
 
+  target_compile_definitions(ossia PUBLIC
+    # Pin the Windows target for every translation unit, whatever the compiler.
+    #
+    # <windows.h> defines _WIN32_WINNT itself, through <sdkddkver.h>, whenever
+    # it is not already set, so leaving it alone does not mean "no minimum" - it
+    # means each TU gets one depending on whether it reached <windows.h> first.
+    # Asio reads it to decide BOOST_ASIO_HAS_STD_ATOMIC_WAIT, so two TUs here
+    # can disagree about which wait primitive it uses: an ODR violation that
+    # nothing reports, because both spellings mangle the same.
+    #
+    # The defaults also disagree between toolchains - the Windows Kits header
+    # picks 0x0A00, mingw-w64 picks _WIN32_WINNT_WS03 - so a mingw build has
+    # been configuring itself for Server 2003 wherever this was left alone.
+    #
+    # WINVER and NTDDI_VERSION are deliberately not set: sdkddkver.h derives
+    # WINVER from _WIN32_WINNT and NTDDI_VERSION from the SDK, so setting them
+    # by hand only creates a way for them to disagree.
+    _WIN32_WINNT=0x0A00
+  )
+
+  # Not BOOST_ASIO_ENABLE_VERSION_NAMESPACE, tempting as it looks.
+  #
+  # Since Boost 1.91, Asio's global symbols are named through
+  # BOOST_ASIO_VERSIONED_NAME, which with no version namespace expands to the
+  # bare asio_ prefix - the names standalone Asio uses - so a link that carries
+  # both, as score does through its LSL addon, gets a duplicate
+  # asio_signal_handler. Enabling the version namespace renames ours and
+  # settles that.
+  #
+  # It cannot be used here: the namespace is an inline namespace, and anything
+  # that forward-declares an Asio type declares it in plain boost::asio, which
+  # is then ambiguous against the real one. libremidi does exactly that in
+  # backends/net/config.hpp, and every translation unit including it fails with
+  # C2872 'io_context': ambiguous symbol. Making it work would mean every
+  # forward declaration reachable from here, in our own code and in our
+  # dependencies, going through BOOST_ASIO_INLINE_NAMESPACE_BEGIN/END.
+
   if(NOT OSSIA_STATIC)
     target_compile_definitions(ossia
       PUBLIC
