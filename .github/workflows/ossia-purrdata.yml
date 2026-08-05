@@ -67,7 +67,8 @@ jobs:
           path: install/ossia-pd-package/ossia
 
   build-linux:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/latest-ubuntu-toolchain
@@ -90,7 +91,8 @@ jobs:
           path: install/ossia-pd-package/ossia
 
   upload_release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     needs: [build-macos, build-windows, build-linux]
     steps:
       - uses: actions/download-artifact@v4.1.7

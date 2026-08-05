@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   qml-linux:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     name: QML (Linux)
 
     steps:
@@ -91,7 +92,8 @@ jobs:
           path: install
 
   upload_release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     needs: [qml-linux, qml-mac, qml-windows]
     steps:
       - uses: actions/download-artifact@v4.1.7

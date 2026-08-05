@@ -71,7 +71,8 @@ jobs:
           path: "*.log"
 
   upload_release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     needs: [build-macos, build-windows]
     if: startsWith(github.ref, 'refs/tags/')
     steps:
