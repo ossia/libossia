@@ -73,24 +73,18 @@ if(WIN32)
     # WINVER from _WIN32_WINNT and NTDDI_VERSION from the SDK, so setting them
     # by hand only creates a way for them to disagree.
     _WIN32_WINNT=0x0A00
-  )
 
-  # Not BOOST_ASIO_ENABLE_VERSION_NAMESPACE, tempting as it looks.
-  #
-  # Since Boost 1.91, Asio's global symbols are named through
-  # BOOST_ASIO_VERSIONED_NAME, which with no version namespace expands to the
-  # bare asio_ prefix - the names standalone Asio uses - so a link that carries
-  # both, as score does through its LSL addon, gets a duplicate
-  # asio_signal_handler. Enabling the version namespace renames ours and
-  # settles that.
-  #
-  # It cannot be used here: the namespace is an inline namespace, and anything
-  # that forward-declares an Asio type declares it in plain boost::asio, which
-  # is then ambiguous against the real one. libremidi does exactly that in
-  # backends/net/config.hpp, and every translation unit including it fails with
-  # C2872 'io_context': ambiguous symbol. Making it work would mean every
-  # forward declaration reachable from here, in our own code and in our
-  # dependencies, going through BOOST_ASIO_INLINE_NAMESPACE_BEGIN/END.
+    # And the version namespace, for the reasons in the top-level CMakeLists.
+    #
+    # PUBLIC because it is part of our ABI, not just of how we are built: the
+    # namespace is an inline namespace, so it is baked into the mangled name of
+    # every Asio type we expose. resolve_sync_v4 is explicitly instantiated
+    # here for boost::asio::ip::udp and ::tcp, and a consumer that does not
+    # agree about the namespace names a different specialisation and fails to
+    # link. Anything including our headers has to be configured the way we
+    # were.
+    BOOST_ASIO_ENABLE_VERSION_NAMESPACE=1
+  )
 
   if(NOT OSSIA_STATIC)
     target_compile_definitions(ossia
