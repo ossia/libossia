@@ -60,8 +60,27 @@ if(WIN32)
   # WINVER from _WIN32_WINNT and NTDDI_VERSION from the SDK, in both
   # toolchains, so setting them by hand only creates a way for them to
   # disagree.
+  # And give Boost.Asio's global symbols a version-tagged name.
+  #
+  # Since 1.91 they are named through BOOST_ASIO_VERSIONED_NAME, which with no
+  # version namespace expands to the bare asio_ prefix - the names standalone
+  # Asio uses. Where Asio is compiled separately we emit strong definitions of
+  # them, so anything else in the link carrying its own standalone Asio
+  # collides: score's LSL addon compiles asio/impl/src.hpp, and the two meet as
+  # a duplicate asio_signal_handler.
+  #
+  # The tag encodes the Asio configuration, which is why this only holds
+  # together with the pin above; without it the namespace varies per TU and the
+  # duplicate symbol merely becomes an undefined one. It also requires that
+  # nothing forward-declares an Asio type in plain boost::asio, which would be
+  # ambiguous against the real one - see libremidi's backends/net/config.hpp,
+  # which declares io_context inside the same inline namespace we do.
+  #
+  # Standalone Asio has no equivalent knob, still hardcoding the bare names as
+  # of 1.36, so the versioning has to come from our side. A no-op before 1.91.
   add_definitions(
     -D_WIN32_WINNT=0x0A00
+    -DBOOST_ASIO_ENABLE_VERSION_NAMESPACE=1
   )
 endif()
 
