@@ -5,7 +5,9 @@ set(ASIO_SDK_DIR "${OSSIA_3RDPARTY_FOLDER}/asio")
 if(EXISTS "${ASIO_SDK_DIR}/common/asio.h" AND WIN32)
   add_library(asio_sdk STATIC)
   add_library(asio::sdk ALIAS asio_sdk)
-  target_compile_definitions(asio_sdk PRIVATE UNICODE=1 _UNICODE=1)
+
+  # Must not be built with UNICODE/_UNICODE: asiolist.cpp is ANSI-only and
+  # enumerates zero drivers if the TCHAR registry calls resolve to -W.
 
   target_include_directories(asio_sdk SYSTEM PUBLIC
     $<BUILD_INTERFACE:${ASIO_SDK_DIR}/common>

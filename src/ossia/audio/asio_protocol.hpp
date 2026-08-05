@@ -3,6 +3,8 @@
 
 #if defined(OSSIA_ENABLE_ASIO)
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/detail/fmt.hpp>
+#include <ossia/detail/logger.hpp>
 #include <ossia/detail/thread.hpp>
 
 #if !defined(WIN32_LEAN_AND_MEAN)
@@ -12,6 +14,10 @@
 #define NOMINMAX
 #endif
 
+// iasiodrv.h uses IUnknown without including unknwn.h, and WIN32_LEAN_AND_MEAN
+// stops windows.h from pulling it in.
+#include <windows.h>
+#include <unknwn.h>
 
 #include <asiodrivers.h>
 #include <asio.h>
@@ -23,7 +29,6 @@ extern AsioDrivers* asioDrivers;
 #include <algorithm>
 #include <cmath>
 #include <cstring>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -53,14 +58,19 @@ public:
       std::string driver_name, int inputs, int outputs, int rate, int bs)
   {
     if(detail::current_asio_engine)
-      throw std::runtime_error("ASIO error: only one ASIO engine can be active at a time");
+    {
+      throw std::runtime_error(
+          "ASIO error: driver '" + detail::current_asio_engine->m_driver_name
+          + "' is still active, cannot open '" + driver_name + "'");
+    }
 
     detail::current_asio_engine = this;
+    m_driver_name = driver_name;
 
     // Load the ASIO driver
     if(!loadAsioDriver(const_cast<char*>(driver_name.c_str())))
     {
-      detail::current_asio_engine = nullptr;
+      cleanup();
       throw std::runtime_error("ASIO error: could not load driver '" + driver_name + "'");
     }
 
@@ -71,7 +81,7 @@ public:
 
     if(ASIOInit(&driverInfo) != ASE_OK)
     {
-      unload_driver();
+      cleanup();
       throw std::runtime_error(
           std::string("ASIO error: ASIOInit failed: ") + driverInfo.errorMessage);
     }
@@ -237,67 +247,116 @@ public:
   {
     audio_engine::stop();
 
-    if(m_started)
-    {
-      ASIOStop();
-      m_started = false;
-    }
+    // Released here, not in the destructor: hosts defer destruction and ASIO
+    // allows a single loaded driver per process.
+    cleanup();
+
+    // No further callbacks after ASIOStop(), so acknowledge the stop ourselves.
+    stop_received = true;
   }
 
-  ~asio_engine() override
-  {
-    stop();
-    cleanup();
-  }
+  ~asio_engine() override { stop(); }
 
   static std::vector<asio_card> enumerate_drivers()
   {
     std::vector<asio_card> cards;
 
     AsioDrivers drivers;
-    long numDrivers = drivers.asioGetNumDev();
+    const long numDrivers = drivers.asioGetNumDev();
+    ossia::logger().info(fmt::format("ASIO: {} driver(s) installed", numDrivers));
+
     for(long i = 0; i < numDrivers; i++)
     {
-      char name[128]{};
-      if(drivers.asioGetDriverName(i, name, sizeof(name)) == 0)
+      char name[MAXDRVNAMELEN]{};
+      const long rc = drivers.asioGetDriverName(i, name, sizeof(name));
+      if(rc == 0)
       {
+        ossia::logger().info(fmt::format("ASIO: [{}] '{}'", i, name));
         cards.push_back({name, (int)i});
       }
+      else
+      {
+        // Should not happen: the index came from asioGetNumDev().
+        ossia::logger().warn(
+            fmt::format("ASIO: asioGetDriverName({}) failed, rc={}, driver skipped", i, rc));
+      }
     }
+
     return cards;
   }
 
-  // Open the ASIO control panel for a given driver.
-  // If the engine is currently running with that driver, calls ASIOControlPanel() directly.
-  // Otherwise, temporarily loads the driver to show the panel.
-  static void open_control_panel(const std::string& driver_name)
+  // Name of the driver currently loaded by an active engine, empty if none.
+  static std::string active_driver()
   {
-    // If the engine is active and running this driver, just call the API directly
-    if(detail::current_asio_engine)
+    if(auto* e = detail::current_asio_engine)
+      return e->m_driver_name;
+    return {};
+  }
+
+  enum class control_panel_result
+  {
+    ok,
+    //! Another driver is loaded; ASIO permits only one per process.
+    other_driver_active,
+    load_failed,
+    init_failed
+  };
+
+  // Targets driver_name specifically: ASIOControlPanel() talks to whichever
+  // driver happens to be loaded, and loading another would release that one.
+  static control_panel_result open_control_panel(const std::string& driver_name)
+  {
+    if(auto* engine = detail::current_asio_engine)
     {
+      if(engine->m_driver_name != driver_name)
+      {
+        ossia::logger().warn(fmt::format(
+            "ASIO: cannot open the control panel of '{}': '{}' is currently streaming",
+            driver_name, engine->m_driver_name));
+        return control_panel_result::other_driver_active;
+      }
+
       ASIOControlPanel();
-      return;
+      return control_panel_result::ok;
     }
 
-    // No engine running — load driver temporarily
+    // Nothing running: load the requested driver just long enough to show it.
     if(!loadAsioDriver(const_cast<char*>(driver_name.c_str())))
-      return;
+    {
+      ossia::logger().warn(
+          fmt::format("ASIO: could not load '{}' to show its control panel", driver_name));
+      return control_panel_result::load_failed;
+    }
 
     ASIODriverInfo info{};
     info.asioVersion = 2;
-    if(ASIOInit(&info) == ASE_OK)
+    if(ASIOInit(&info) != ASE_OK)
     {
-      ASIOControlPanel();
-      // Note: we do NOT call ASIOExit() here. Most ASIO control panels are
-      // modal dialogs that block until dismissed, but some are not. Either way
-      // the driver stays loaded while the panel is up. The next rescan or
-      // engine creation will removeCurrentDriver() and reload as needed.
+      if(asioDrivers)
+        asioDrivers->removeCurrentDriver();
+      ossia::logger().warn(fmt::format(
+          "ASIO: ASIOInit failed for '{}', cannot show its control panel ({})",
+          driver_name, info.errorMessage[0] ? info.errorMessage : "no message"));
+      return control_panel_result::init_failed;
     }
+
+    ASIOControlPanel();
+
+    // Unload, so a later request for a different driver still works.
+    ASIOExit();
+    if(asioDrivers)
+      asioDrivers->removeCurrentDriver();
+
+    return control_panel_result::ok;
   }
 
 private:
+  // Idempotent, and a no-op unless this engine still owns the driver.
   void cleanup()
   {
+    if(detail::current_asio_engine != this)
+      return;
+
     if(m_started)
     {
       ASIOStop();
@@ -316,15 +375,10 @@ private:
       m_initialized = false;
     }
 
-    unload_driver();
-  }
-
-  void unload_driver()
-  {
     if(asioDrivers)
-    {
       asioDrivers->removeCurrentDriver();
-    }
+
+    // Cleared last: the callbacks reach the engine through this pointer.
     detail::current_asio_engine = nullptr;
   }
 
@@ -816,6 +870,8 @@ private:
   std::vector<std::vector<float>> m_floatOutputs;
   std::vector<float*> m_inputPtrs;
   std::vector<float*> m_outputPtrs;
+
+  std::string m_driver_name;
 
   int m_bufferSize{};
   int m_inputCount{};
