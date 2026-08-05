@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   Unity3DLinux:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     name: Unity3D (Linux)
 
     steps:
@@ -128,7 +129,8 @@ jobs:
           path: install
 
   upload_release:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, linux, x64, sat-builder]
+    container: ubuntu:noble
     needs: [Unity3DLinux, Unity3DMac, Unity3DWin32]
     steps:
       - uses: actions/download-artifact@v4.1.7
