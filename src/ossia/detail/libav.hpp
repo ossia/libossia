@@ -68,12 +68,24 @@ static inline int avstream_get_audio_channels(AVStream& stream) noexcept
 #endif
 }
 
+// Opens path over custom IO; returns nullptr if it does not handle that path.
+// io_owner/io_free hand back the streaming resources for cleanup() to release.
+using libav_open_hook
+    = AVFormatContext* (*)(const char* path, void*& io_owner, void (*&io_free)(void*));
+inline libav_open_hook& libav_custom_open() noexcept
+{
+  static libav_open_hook hook = nullptr;
+  return hook;
+}
+
 struct libav_handle
 {
   AVFormatContext* format{};
   AVStream* stream{};
   AVCodecContext* codec{};
   SwrContext* resample{};
+  void* io_owner{};
+  void (*io_free)(void*){};
 
   libav_handle() = default;
   libav_handle(const libav_handle& other) = delete;
@@ -87,6 +99,10 @@ struct libav_handle
     other.codec = nullptr;
     resample = other.resample;
     other.resample = nullptr;
+    io_owner = other.io_owner;
+    other.io_owner = nullptr;
+    io_free = other.io_free;
+    other.io_free = nullptr;
   }
   libav_handle& operator=(const libav_handle& other) = delete;
   libav_handle& operator=(libav_handle&& other)
@@ -99,6 +115,10 @@ struct libav_handle
     other.codec = nullptr;
     resample = other.resample;
     other.resample = nullptr;
+    io_owner = other.io_owner;
+    other.io_owner = nullptr;
+    io_free = other.io_free;
+    other.io_free = nullptr;
     return *this;
   }
   ~libav_handle()
@@ -122,11 +142,21 @@ struct libav_handle
       avformat_free_context(format);
       format = nullptr;
     }
+    if(io_owner)
+    {
+      io_free(io_owner);
+      io_owner = nullptr;
+      io_free = nullptr;
+    }
   }
 
   void open(const std::string& path, int stream_index, int target_rate) noexcept
   {
-    if(avformat_open_input(&format, path.c_str(), nullptr, nullptr) != 0)
+    if(auto hook = libav_custom_open())
+      format = hook(path.c_str(), io_owner, io_free);
+
+    if(!format
+       && avformat_open_input(&format, path.c_str(), nullptr, nullptr) != 0)
     {
       cleanup();
       return;
