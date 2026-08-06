@@ -233,12 +233,31 @@ void execution_state::register_port(const inlet& port)
       }
     }
   }
+  else if(port.target<ossia::audio_port>())
+  {
+    // Fixme prealloate the audio_port here
+    /*
+    if(auto addr = port.address.target<ossia::net::parameter_base*>())
+    {
+      if(auto p = dynamic_cast<ossia::audio_parameter*>(*addr))
+      {
+      }
+    }*/
+  }
 #endif
 }
 
 void execution_state::register_port(const outlet& port)
-{
-  // nothing to do
+{ /*
+  if(port.target<ossia::audio_port>())
+  {
+    if(auto addr = port.address.target<ossia::net::parameter_base*>())
+    {
+      if(auto p = dynamic_cast<ossia::audio_parameter*>(*addr))
+      {
+      }
+    }
+  }*/
 }
 
 void execution_state::unregister_port(const inlet& port)
