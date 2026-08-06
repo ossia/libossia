@@ -213,7 +213,7 @@ endif()
 if(OSSIA_ENABLE_SDL)
   include(deps/sdl)
 
-  if(NOT TARGET ossia::sdl2)
+  if(NOT TARGET ossia::sdl3)
     set(OSSIA_ENABLE_SDL FALSE CACHE "" INTERNAL FORCE)
     set(OSSIA_PROTOCOL_JOYSTICK FALSE CACHE "" INTERNAL FORCE)
   endif()
