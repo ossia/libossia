@@ -2,14 +2,16 @@
 #include <ossia/detail/config.hpp>
 
 #if defined(OSSIA_ENABLE_SDL)
-#if __has_include(<SDL2/SDL_audio.h>)
-#include <SDL2/SDL_config.h>
-#if !defined(SDL_AUDIO_DISABLED)
+#if __has_include(<SDL3/SDL_audio.h>)
 #include <ossia/audio/audio_engine.hpp>
 #include <ossia/detail/thread.hpp>
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_audio.h>
+#include <SDL3/SDL.h>
+#include <SDL3/SDL_audio.h>
+
+#include <algorithm>
+#include <string>
+#include <vector>
 
 #define OSSIA_AUDIO_SDL 1
 
@@ -24,27 +26,32 @@ public:
   sdl_protocol(int rate, int bs)
   {
     SDL_Init(SDL_INIT_AUDIO);
-    m_desired.freq = rate;
-    m_desired.format = AUDIO_F32SYS;
-    m_desired.channels = outputs;
-    m_desired.samples = bs;
-    m_desired.callback = SDLCallback;
-    m_desired.userdata = this;
 
-    m_deviceId = SDL_OpenAudioDevice(nullptr, 0, &m_desired, &m_obtained, 0);
+    SDL_SetHint(SDL_HINT_AUDIO_DEVICE_SAMPLE_FRAMES, std::to_string(bs).c_str());
 
-    if(m_deviceId < 2)
+    m_spec.freq = rate;
+    m_spec.format = SDL_AUDIO_F32;
+    m_spec.channels = outputs;
+
+    m_stream = SDL_OpenAudioDeviceStream(
+        SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &m_spec, SDLCallback, this);
+
+    if(!m_stream)
     {
       using namespace std::literals;
       throw std::runtime_error("SDL: Couldn't open audio: "s + SDL_GetError());
     }
 
-    this->effective_sample_rate = m_obtained.freq;
-    this->effective_buffer_size = m_obtained.samples;
+    this->effective_sample_rate = m_spec.freq;
+    this->effective_buffer_size = bs;
     this->effective_inputs = 0;
-    this->effective_outputs = m_obtained.channels;
+    this->effective_outputs = m_spec.channels;
 
-    SDL_PauseAudioDevice(m_deviceId, 0);
+    m_interleaved.resize(std::size_t(bs) * m_spec.channels);
+    m_planar.resize(std::size_t(bs) * m_spec.channels);
+    m_channels.resize(m_spec.channels);
+
+    SDL_ResumeAudioStreamDevice(m_stream);
     m_activated = true;
   }
 
@@ -52,7 +59,7 @@ public:
 
   bool running() const override
   {
-    return m_activated && SDL_GetAudioDeviceStatus(m_deviceId) == SDL_AUDIO_PLAYING;
+    return m_activated && !SDL_AudioStreamDevicePaused(m_stream);
   }
 
   void stop() override
@@ -60,14 +67,16 @@ public:
     audio_engine::stop();
     if(m_activated)
     {
-      SDL_CloseAudioDevice(m_deviceId);
+      SDL_DestroyAudioStream(m_stream);
+      m_stream = nullptr;
       m_activated = false;
     }
     SDL_Quit();
   }
 
 private:
-  static void SDLCallback(void* userData, Uint8* data, int bytes)
+  static void SDLCallback(
+      void* userData, SDL_AudioStream* stream, int additional_amount, int total_amount)
   {
     [[maybe_unused]]
     static const thread_local auto _
@@ -77,35 +86,37 @@ private:
       return 0;
     }();
 
-    auto& self = *static_cast<sdl_protocol*>(userData);
-    self.tick_start();
-    if(!self.m_start)
-      self.m_start = std::chrono::steady_clock::now();
+    if(additional_amount <= 0)
+      return;
 
-    auto audio_out = reinterpret_cast<float*>(data);
-    const int out_chan = self.m_obtained.channels;
-    const int frames = self.m_obtained.samples;
+    auto& self = *static_cast<sdl_protocol*>(userData);
+    const int out_chan = self.m_spec.channels;
+    const int frames = self.effective_buffer_size;
     assert(out_chan > 0);
     assert(frames > 0);
-    assert(frames * out_chan * sizeof(float) == bytes);
 
-    if(self.stop_processing)
+    const int block_bytes = int(frames * out_chan * sizeof(float));
+
+    while(additional_amount > 0)
     {
-      self.tick_clear();
-      memset(data, 0, bytes);
-      return;
-    }
+      self.tick_start();
+      if(!self.m_start)
+        self.m_start = std::chrono::steady_clock::now();
 
-    {
-      auto float_data = (float*)alloca(sizeof(float) * frames * out_chan);
-      memset(float_data, 0, sizeof(sizeof(float) * frames * out_chan));
+      if(self.stop_processing)
+      {
+        self.tick_clear();
+        std::fill(self.m_interleaved.begin(), self.m_interleaved.end(), 0.f);
+        SDL_PutAudioStreamData(stream, self.m_interleaved.data(), block_bytes);
+        return;
+      }
 
-      auto float_output = (float**)alloca(sizeof(float*) * out_chan);
+      float* const float_data = self.m_planar.data();
+      float** const float_output = self.m_channels.data();
+      std::fill_n(float_data, std::size_t(frames) * out_chan, 0.f);
 
       for(int c = 0; c < out_chan; c++)
-      {
         float_output[c] = float_data + c * frames;
-      }
 
       // if one day there's input... samples[j++] / 32768.;
 
@@ -119,23 +130,30 @@ private:
                                  out_chan, (uint64_t)frames, nsecs};
       self.audio_tick(ts);
 
+      float* audio_out = self.m_interleaved.data();
       for(int j = 0; j < frames; j++)
         for(int c = 0; c < out_chan; c++)
           *audio_out++ = float_output[c][j];
 
+      SDL_PutAudioStreamData(stream, self.m_interleaved.data(), block_bytes);
+
       self.tick_end();
       self.m_total_frames += frames;
+
+      additional_amount -= block_bytes;
     }
   }
 
-  SDL_AudioDeviceID m_deviceId{};
-  SDL_AudioSpec m_desired, m_obtained;
+  SDL_AudioStream* m_stream{};
+  SDL_AudioSpec m_spec{};
+  std::vector<float> m_interleaved;
+  std::vector<float> m_planar;
+  std::vector<float*> m_channels;
   uint64_t m_total_frames{};
   std::optional<std::chrono::steady_clock::time_point> m_start;
   bool m_activated{};
 };
 }
 
-#endif
 #endif
 #endif
