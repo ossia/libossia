@@ -9,6 +9,41 @@
 namespace ossia
 {
 
+#if defined(_WIN32)
+namespace detail
+{
+struct mmcss_api
+{
+  using set_characteristics_t = HANDLE(WINAPI*)(LPCWSTR, LPDWORD);
+  using set_priority_t = BOOL(WINAPI*)(HANDLE, AVRT_PRIORITY);
+  using revert_t = BOOL(WINAPI*)(HANDLE);
+
+  set_characteristics_t set_characteristics{};
+  set_priority_t set_priority{};
+  revert_t revert{};
+
+  mmcss_api() noexcept
+  {
+    if(HMODULE lib = LoadLibraryW(L"avrt.dll"))
+    {
+      set_characteristics = reinterpret_cast<set_characteristics_t>(
+          reinterpret_cast<void*>(GetProcAddress(lib, "AvSetMmThreadCharacteristicsW")));
+      set_priority = reinterpret_cast<set_priority_t>(
+          reinterpret_cast<void*>(GetProcAddress(lib, "AvSetMmThreadPriority")));
+      revert = reinterpret_cast<revert_t>(
+          reinterpret_cast<void*>(GetProcAddress(lib, "AvRevertMmThreadCharacteristics")));
+    }
+  }
+};
+
+inline const mmcss_api& mmcss() noexcept
+{
+  static const mmcss_api api;
+  return api;
+}
+}
+#endif
+
 struct priority_boost_handle
 {
 public:
@@ -19,10 +54,12 @@ public:
 
     // MMCSS priority boost
     DWORD taskIndex = 0;
-    m_mmcss = AvSetMmThreadCharacteristicsW(L"Pro Audio", &taskIndex);
-    if (m_mmcss)
+    const auto& mmcss = detail::mmcss();
+    if (mmcss.set_characteristics)
+      m_mmcss = mmcss.set_characteristics(L"Pro Audio", &taskIndex);
+    if (m_mmcss && mmcss.set_priority)
     {
-      AvSetMmThreadPriority(m_mmcss, AVRT_PRIORITY_CRITICAL);
+      mmcss.set_priority(m_mmcss, AVRT_PRIORITY_CRITICAL);
     }
 #elif defined(__APPLE__)
     // Set real-time thread policy with time constraint
@@ -78,7 +115,8 @@ public:
 #if defined(_WIN32)
     if (m_mmcss)
     {
-      AvRevertMmThreadCharacteristics(m_mmcss);
+      if (const auto& mmcss = detail::mmcss(); mmcss.revert)
+        mmcss.revert(m_mmcss);
       m_mmcss = nullptr;
     }
 #elif defined(__APPLE__)
