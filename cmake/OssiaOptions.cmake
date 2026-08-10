@@ -276,12 +276,12 @@ endif()
 
 if(OSSIA_OVERRIDE_PROTOCOLS)
   foreach(protocol ${OSSIA_AVAILABLE_PROTOCOLS})
-    set(OSSIA_PROTOCOL_${protocol} OFF)
+    set(OSSIA_PROTOCOL_${protocol} OFF CACHE INTERNAL "" FORCE)
   endforeach()
 
   foreach(protocol ${OSSIA_OVERRIDE_PROTOCOLS})
     string(TOUPPER ${protocol} protocol)
-    set(OSSIA_PROTOCOL_${protocol} ON)
+    set(OSSIA_PROTOCOL_${protocol} ON CACHE INTERNAL "" FORCE)
   endforeach()
 endif()
 
