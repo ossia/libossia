@@ -7,15 +7,25 @@ runs:
       shell: bash
       run: |
         # Freshest CMake from Kitware, matched to the runner's distro codename.
-        wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
-        sudo apt-add-repository "deb https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main"
-
-        sudo apt-get update -yqq
-        sudo apt-get install -yqq kitware-archive-keyring
-        sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
+        #
+        # The bootstrap key goes to the exact path kitware-archive-keyring owns,
+        # and the repo is tied to it with signed-by=, so removing the bootstrap
+        # copy below leaves the entry verifiable. The list file is written
+        # directly rather than through apt-add-repository, which rewrites any
+        # pre-existing kitware entry -- the runner image ships one -- and drops
+        # its signed-by in the process.
+        sudo install -d -m 0755 /usr/share/keyrings
+        wget -qO - https://apt.kitware.com/keys/kitware-archive-latest.asc \
+          | gpg --dearmor - \
+          | sudo tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null
+        echo "deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ $(lsb_release -cs) main" \
+          | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
 
         sudo apt-get update -qq
-        sudo apt-get purge -yqq --auto-remove cmake
+        # Hand the keyring over to the package so future key rotations arrive as
+        # an ordinary upgrade. It owns the path, so the bootstrap copy goes first.
+        sudo rm -f /usr/share/keyrings/kitware-archive-keyring.gpg
+        sudo apt-get install -yqq kitware-archive-keyring
 
         # gcc-14 / clang-19 are in the noble main repo; both ship full C++23
         # support including deducing-this (P0847). No PPA / LLVM repo needed.
