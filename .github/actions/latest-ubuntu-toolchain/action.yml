@@ -15,7 +15,7 @@ runs:
         sudo rm /etc/apt/trusted.gpg.d/kitware.gpg
 
         sudo apt-get update -qq
-        sudo apt purge --auto-remove cmake
+        sudo apt-get purge -yqq --auto-remove cmake
 
         # gcc-14 / clang-19 are in the noble main repo; both ship full C++23
         # support including deducing-this (P0847). No PPA / LLVM repo needed.
