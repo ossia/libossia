@@ -53,6 +53,25 @@ struct audio_setup
   int buffer_size{};
 };
 
+// Validated against the PipeWire sources at 0.3.48 (Ubuntu 22.04),
+// 0.3.65 (Debian 12), 1.0.5 (Ubuntu 24.04), 1.2.8, 1.4.2/1.4.9
+// (Debian 13), 1.6.2 (Ubuntu 26.04) and 1.6.8. Every mechanism this file
+// relies on holds across that range; version differences that matter:
+//  - 0.3.48/0.3.65 round a forced quantum down to a power of two
+//    (clock.power-of-two-quantum defaults true there and the forced path
+//    is not exempt) and let any follower's max-latency shrink it, so on
+//    those servers the granted quantum diverges from the request even
+//    more often — the per-cycle adaptation below is what absorbs it.
+//  - 0.3.48/0.3.65 have no clock.target_duration: a quantum change is
+//    visible only as clock.duration differing between two cycles, with
+//    no advance notice. Never assume the previous cycle's size.
+//  - DSP buffers are 8192 floats fixed before 1.0.5, and sized from the
+//    *client* context's clock.quantum-limit from 1.0.5 on; no version
+//    checks n_samples against the capacity, so the clamp in
+//    fetch_cycle_buffers is required everywhere.
+//  - pw_filter_disconnect/connect reuse is legal on all versions;
+//    1.0.5+ adds -EBUSY guards, which the watchdog's return-code
+//    handling covers.
 class pipewire_audio_protocol : public audio_engine
 {
 public:
