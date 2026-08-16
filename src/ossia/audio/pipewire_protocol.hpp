@@ -284,6 +284,15 @@ public:
     }
 
     activated = true;
+
+    // A node can end up scheduled by nothing, silently: if no active
+    // driver with priority exists (Dummy-Driver missing or a session
+    // manager race), pw_context_recalc_graph's unassigned-node pass calls
+    // remove_from_driver and the node just stops — no error reaches the
+    // client, playback simply never starts. Watch for the absence of
+    // process cycles and re-export the node, which re-runs activation and
+    // driver assignment.
+    m_watchdog = std::thread{[this] { watchdog_main(); }};
   }
 
   std::uint32_t filter_node_id() const noexcept
@@ -406,9 +415,18 @@ public:
 
   bool running() const override { return loop && activated; }
 
+  // Must not be called from the pipewire loop thread: joining the
+  // watchdog while it waits for the loop lock held by the caller would
+  // deadlock.
   void stop() override
   {
     audio_engine::stop();
+
+    // The watchdog reconnects the filter from its own thread; it must be
+    // gone before the teardown below starts destroying what it touches.
+    m_watchdog_quit.store(true, std::memory_order_release);
+    if (m_watchdog.joinable())
+      m_watchdog.join();
     // Tear down whenever a filter exists, not just when fully activated:
     // the constructor's failure paths after a successful filter_connect
     // leave a connected filter whose process callback keeps firing, and
@@ -626,6 +644,7 @@ public:
       return;
 
     auto& self = *static_cast<pipewire_audio_protocol*>(userdata);
+    self.m_cycles.fetch_add(1, std::memory_order_relaxed);
     const std::uint32_t nframes = position->clock.duration;
     const std::uint32_t rate = position->clock.rate.denom;
     const double current_time = position->clock.nsec * 1e-9;
@@ -691,7 +710,98 @@ public:
         nframes, current_time, rate != 0 ? rate : self.m_rate.expected);
   }
 
+  // Stall watchdog state, public so hosts and tests can observe it.
+  // stall_timeout_ms may be lowered at runtime (tests) or raised by hosts
+  // that expect long scheduling gaps.
+  std::atomic<int> stall_timeout_ms{3000};
+  std::atomic<std::uint32_t> stalls_detected{};
+  std::atomic<std::uint32_t> recover_attempts{};
+  static constexpr std::uint32_t max_recover_attempts = 5;
+
 private:
+  void watchdog_main()
+  {
+    ossia::set_thread_name("ossia pw wdog");
+    auto& pw = libremidi::pipewire::load();
+
+    std::uint64_t last = m_cycles.load(std::memory_order_relaxed);
+    auto last_progress = std::chrono::steady_clock::now();
+    while (!m_watchdog_quit.load(std::memory_order_acquire))
+    {
+      std::this_thread::sleep_for(std::chrono::milliseconds(100));
+      const auto now = std::chrono::steady_clock::now();
+      const auto cur = m_cycles.load(std::memory_order_relaxed);
+      if (cur != last)
+      {
+        last = cur;
+        last_progress = now;
+        // The graph resumed: this outage is over, a future one gets a
+        // fresh set of recovery attempts.
+        recover_attempts.store(0, std::memory_order_relaxed);
+        continue;
+      }
+      const auto stalled_ms
+          = std::chrono::duration_cast<std::chrono::milliseconds>(
+                now - last_progress)
+                .count();
+      if (stalled_ms < stall_timeout_ms.load(std::memory_order_relaxed))
+        continue;
+
+      stalls_detected.fetch_add(1, std::memory_order_relaxed);
+      const auto attempt
+          = recover_attempts.fetch_add(1, std::memory_order_relaxed) + 1;
+      if (attempt > max_recover_attempts)
+      {
+        ossia::logger().error(
+            "PipeWire: still no process cycles after {} reconnections; "
+            "giving up. The daemon is likely not scheduling any audio "
+            "(no usable driver); restarting PipeWire may help",
+            max_recover_attempts);
+        return;
+      }
+
+      ossia::logger().warn(
+          "PipeWire: no process cycles for {} ms; re-exporting the node "
+          "(attempt {}/{}). This happens when the graph has no usable "
+          "driver or the node was left unscheduled",
+          stalled_ms, attempt, max_recover_attempts);
+
+      bool connect_failed = false;
+      loop->with_lock([&] {
+        if (!this->filter)
+          return;
+        if (int res = pw.filter_disconnect(this->filter); res < 0)
+          ossia::logger().warn(
+              "PipeWire: watchdog filter_disconnect failed: {}",
+              spa_strerror(res));
+        if (int res = pw.filter_connect(
+                this->filter, PW_FILTER_FLAG_RT_PROCESS, nullptr, 0);
+            res < 0)
+        {
+          // A failed connect leaves the filter in the CONNECTING state
+          // (only a successful proxy teardown resets it), so every later
+          // connect would return -EBUSY: retrying is pointless.
+          connect_failed = true;
+          ossia::logger().error(
+              "PipeWire: watchdog filter_connect failed: {}; automatic "
+              "recovery is not possible, restart the audio engine",
+              spa_strerror(res));
+        }
+      });
+      if (connect_failed)
+        return;
+      (void)loop->synchronize();
+
+      // Give the re-exported node a full timeout window to come up.
+      last = m_cycles.load(std::memory_order_relaxed);
+      last_progress = std::chrono::steady_clock::now();
+    }
+  }
+
+  std::atomic<std::uint64_t> m_cycles{};
+  std::thread m_watchdog;
+  std::atomic_bool m_watchdog_quit{};
+
   ossia::pipewire::quantum_tracker m_quantum{};
   ossia::pipewire::quantum_tracker m_rate{};
 
