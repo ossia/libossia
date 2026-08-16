@@ -8,7 +8,9 @@
 #define OSSIA_AUDIO_PIPEWIRE 1
 
 #include <ossia/audio/audio_engine.hpp>
+#include <ossia/audio/pipewire_quantum.hpp>
 #include <ossia/detail/logger.hpp>
+#include <ossia/detail/pod_vector.hpp>
 #include <ossia/detail/thread.hpp>
 
 #include <libremidi/backends/linux/pipewire/context.hpp>
@@ -25,6 +27,7 @@
 
 #include <fmt/format.h>
 
+#include <atomic>
 #include <chrono>
 #include <cstdint>
 #include <cstring>
@@ -78,6 +81,27 @@ public:
     if (!pw.filter_available)
       return;
 
+    if (setup.buffer_size <= 0 || setup.rate <= 0)
+      throw std::runtime_error("PipeWire: invalid buffer size or sample rate");
+
+    // Everything the process callback reads must be in place before
+    // filter_connect: cycles start arriving while this constructor is
+    // still waiting on the sync loops below.
+    this->effective_buffer_size = setup.buffer_size;
+    this->effective_sample_rate = setup.rate;
+    this->effective_inputs = setup.inputs.size();
+    this->effective_outputs = setup.outputs.size();
+    m_quantum.expected = setup.buffer_size;
+    m_rate.expected = setup.rate;
+    m_silence.assign(setup.buffer_size, 0.f);
+    m_scratch.assign(setup.buffer_size, 0.f);
+    m_cycle_in.resize(setup.inputs.size());
+    m_cycle_out.resize(setup.outputs.size());
+    m_chunk_in.resize(setup.inputs.size());
+    m_chunk_out.resize(setup.outputs.size());
+    m_buf_in.resize(setup.inputs.size());
+    m_buf_out.resize(setup.outputs.size());
+
     // static: pw_filter_new_simple stores the pointer, not the table.
     static constexpr const struct pw_filter_events filter_events = {
         .version = PW_VERSION_FILTER_EVENTS,
@@ -115,6 +139,12 @@ public:
           PW_KEY_NODE_FORCE_QUANTUM,
           fmt::format("{}", setup.buffer_size).c_str(),
           PW_KEY_NODE_FORCE_RATE, fmt::format("{}", setup.rate).c_str(),
+          // Note: node.lock-rate / node.lock-quantum would be inert here —
+          // the driver cancels the lock whenever any follower forces the
+          // value (pipewire context.c), and this node always forces both.
+          // force-* is last-write-wins between clients and loses to the
+          // global clock.force-* settings, so the process callback must
+          // (and does) cope with any quantum or rate.
           PW_KEY_NODE_LOCK_RATE, "true",
           PW_KEY_NODE_TRANSPORT_SYNC, "true",
           PW_KEY_NODE_ALWAYS_PROCESS, "true",
@@ -168,7 +198,14 @@ public:
     if (!this->filter)
       throw std::runtime_error("PipeWire: could not create filter instance");
     if (!created)
+    {
+      // The destructor does not run when the constructor throws.
+      loop->with_lock([&] {
+        pw.filter_destroy(this->filter);
+        this->filter = nullptr;
+      });
       throw std::runtime_error("PipeWire: cannot connect");
+    }
 
     if (!loop->synchronize())
     {
@@ -223,11 +260,30 @@ public:
       }
     }
 
+    // The graph may refuse our rate (global clock.force-rate, or a
+    // competing client's newer force-rate stamp): the DSP ports then carry
+    // audio at the graph rate, not ours. Report the real rate so the host
+    // resamples its material for what will actually be played.
+    {
+      std::uint32_t seen = 0;
+      for (int j = 0; j < 100; ++j)
+      {
+        seen = m_observed_rate.load(std::memory_order_relaxed);
+        if (seen != 0)
+          break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+      }
+      if (seen != 0 && seen != static_cast<std::uint32_t>(setup.rate))
+      {
+        ossia::logger().warn(
+            "PipeWire: the graph runs at {} Hz, not the requested {} Hz; "
+            "the engine will use {} Hz",
+            seen, setup.rate, seen);
+        this->effective_sample_rate = seen;
+      }
+    }
+
     activated = true;
-    this->effective_buffer_size = setup.buffer_size;
-    this->effective_sample_rate = setup.rate;
-    this->effective_inputs = setup.inputs.size();
-    this->effective_outputs = setup.outputs.size();
   }
 
   std::uint32_t filter_node_id() const noexcept
@@ -353,7 +409,12 @@ public:
   void stop() override
   {
     audio_engine::stop();
-    if (!loop || !activated)
+    // Tear down whenever a filter exists, not just when fully activated:
+    // the constructor's failure paths after a successful filter_connect
+    // leave a connected filter whose process callback keeps firing, and
+    // destroying this object without disconnecting it first would let the
+    // RT thread run over freed members.
+    if (!loop)
       return;
 
     auto& pw = libremidi::pipewire::load();
@@ -391,22 +452,123 @@ public:
   ~pipewire_audio_protocol() override { stop(); }
 
   // RT thread: no locks, no allocation, no logging.
+  //
+  // The buffers are mmapped with a capacity taken from *this client's*
+  // clock.quantum-limit while clock.duration is bounded by the *daemon's*
+  // clock.quantum-limit; the two can be configured apart, and
+  // pw_filter_get_dsp_buffer would then stamp and let us write past
+  // maxsize. So dequeue ourselves, take the capacity into account, and
+  // requeue — exactly once per port per cycle, since a second dequeue in
+  // the same cycle hands out a different buffer.
+
+  // Dequeues one port buffer; caps `safe` to its capacity. The buffer is
+  // NOT requeued yet: outputs are stamped with the final safe count first.
+  static pw_buffer* dequeue_cycle_buffer(
+      const auto& pw, void* port, float*& data, std::uint32_t& safe) noexcept
+  {
+    pw_buffer* b = pw.filter_dequeue_buffer(port);
+    if (!b || !b->buffer || b->buffer->n_datas < 1
+        || !b->buffer->datas[0].data)
+    {
+      data = nullptr;
+      return b;
+    }
+    auto& d = b->buffer->datas[0];
+    data = static_cast<float*>(d.data);
+    const std::uint32_t cap = d.maxsize / sizeof(float);
+    if (cap < safe)
+      safe = cap;
+    return b;
+  }
+
+  static void requeue_cycle_buffer(
+      const auto& pw, void* port, pw_buffer* b, bool output,
+      std::uint32_t frames) noexcept
+  {
+    if (!b)
+      return;
+    if (output && b->buffer && b->buffer->n_datas >= 1)
+    {
+      if (auto* chunk = b->buffer->datas[0].chunk)
+      {
+        chunk->offset = 0;
+        chunk->size = frames * sizeof(float);
+        chunk->stride = sizeof(float);
+        chunk->flags = 0;
+      }
+    }
+    pw.filter_queue_buffer(port, b);
+  }
+
+  static bool can_dequeue(const auto& pw) noexcept
+  {
+    return pw.filter_dequeue_buffer && pw.filter_queue_buffer;
+  }
+
+  // Fetches every port's buffer for the cycle into m_cycle_in/out and
+  // returns the frame count that is safe to read and write everywhere.
+  std::uint32_t fetch_cycle_buffers(const auto& pw, std::uint32_t nframes)
+  {
+    const auto inputs = input_ports.size();
+    const auto outputs = output_ports.size();
+
+    if (!can_dequeue(pw))
+    {
+      // Old libpipewire without the dequeue API: keep the historical
+      // behaviour (no capacity check).
+      for (std::size_t i = 0; i < inputs; i++)
+        m_cycle_in[i] = static_cast<float*>(
+            pw.filter_get_dsp_buffer(input_ports[i], nframes));
+      for (std::size_t i = 0; i < outputs; i++)
+        m_cycle_out[i] = static_cast<float*>(
+            pw.filter_get_dsp_buffer(output_ports[i], nframes));
+      return nframes;
+    }
+
+    std::uint32_t safe = nframes;
+    for (std::size_t i = 0; i < inputs; i++)
+      m_buf_in[i] = dequeue_cycle_buffer(pw, input_ports[i], m_cycle_in[i], safe);
+    for (std::size_t i = 0; i < outputs; i++)
+      m_buf_out[i] = dequeue_cycle_buffer(pw, output_ports[i], m_cycle_out[i], safe);
+
+    for (std::size_t i = 0; i < inputs; i++)
+      requeue_cycle_buffer(pw, input_ports[i], m_buf_in[i], false, safe);
+    for (std::size_t i = 0; i < outputs; i++)
+      requeue_cycle_buffer(pw, output_ports[i], m_buf_out[i], true, safe);
+    return safe;
+  }
+
   static void
   clear_buffers(pipewire_audio_protocol& self, std::uint32_t nframes,
                 std::size_t outputs)
   {
     auto& pw = libremidi::pipewire::load();
+    if (!can_dequeue(pw))
+    {
+      for (std::size_t i = 0; i < outputs; i++)
+      {
+        auto* chan = static_cast<float*>(
+            pw.filter_get_dsp_buffer(self.output_ports[i], nframes));
+        if (chan)
+          for (std::size_t j = 0; j < nframes; j++)
+            chan[j] = 0.f;
+      }
+      return;
+    }
+
     for (std::size_t i = 0; i < outputs; i++)
     {
-      auto* chan
-          = static_cast<float*>(pw.filter_get_dsp_buffer(self.output_ports[i], nframes));
-      if (chan)
-        for (std::size_t j = 0; j < nframes; j++)
-          chan[j] = 0.f;
+      float* data{};
+      std::uint32_t safe = nframes;
+      auto* b = dequeue_cycle_buffer(pw, self.output_ports[i], data, safe);
+      if (data)
+        for (std::size_t j = 0; j < safe; j++)
+          data[j] = 0.f;
+      requeue_cycle_buffer(pw, self.output_ports[i], b, true, data ? safe : 0);
     }
   }
 
-  void do_process(std::uint32_t nframes, double secs)
+  void do_process(std::uint32_t nframes, double secs, double rate)
   {
     auto& pw = libremidi::pipewire::load();
 
@@ -421,29 +583,34 @@ public:
       return;
     }
 
-    auto* dummy = static_cast<float*>(alloca(sizeof(float) * nframes));
-    std::memset(dummy, 0, sizeof(float) * nframes);
+    const std::uint32_t frames = fetch_cycle_buffers(pw, nframes);
 
-    auto** float_input = static_cast<float**>(alloca(sizeof(float*) * inputs));
-    auto** float_output = static_cast<float**>(alloca(sizeof(float*) * outputs));
+    bool missing_input = false;
     for (std::size_t i = 0; i < inputs; i++)
-    {
-      float_input[i]
-          = static_cast<float*>(pw.filter_get_dsp_buffer(input_ports[i], nframes));
-      if (float_input[i] == nullptr)
-        float_input[i] = dummy;
-    }
-    for (std::size_t i = 0; i < outputs; i++)
-    {
-      float_output[i]
-          = static_cast<float*>(pw.filter_get_dsp_buffer(output_ports[i], nframes));
-      if (float_output[i] == nullptr)
-        float_output[i] = dummy;
-    }
+      missing_input |= !m_cycle_in[i];
+    if (missing_input)
+      std::memset(m_silence.data(), 0, m_silence.size() * sizeof(float));
 
-    ossia::audio_tick_state ts{
-        float_input, float_output, (int)inputs, (int)outputs, nframes, secs};
-    audio_tick(ts);
+    // The graph quantum tracks what we forced only eventually (and not at
+    // all under a global clock.force-quantum or a competing client); the
+    // engine's buffers are sized for effective_buffer_size, so process any
+    // larger cycle in slices of it rather than skipping the cycle, which
+    // would leave the outputs in NEED_DATA — i.e. permanent silence.
+    const auto block = static_cast<std::uint32_t>(effective_buffer_size);
+    ossia::pipewire::for_each_chunk(
+        frames, block, [&](std::uint32_t offset, std::uint32_t n) {
+      ossia::pipewire::assign_chunk_pointers(
+          m_cycle_in.data(), m_chunk_in.data(), inputs, offset,
+          m_silence.data());
+      ossia::pipewire::assign_chunk_pointers(
+          m_cycle_out.data(), m_chunk_out.data(), outputs, offset,
+          m_scratch.data());
+
+      ossia::audio_tick_state ts{
+          m_chunk_in.data(), m_chunk_out.data(), (int)inputs, (int)outputs,
+          n, secs + offset / rate};
+      audio_tick(ts);
+    });
     tick_end();
   }
 
@@ -455,23 +622,112 @@ public:
       return 0;
     }();
 
-    if (!userdata)
+    if (!userdata || !position)
       return;
 
     auto& self = *static_cast<pipewire_audio_protocol*>(userdata);
     const std::uint32_t nframes = position->clock.duration;
-    const double current_time_ns = position->clock.nsec * 1e-9;
+    const std::uint32_t rate = position->clock.rate.denom;
+    const double current_time = position->clock.nsec * 1e-9;
 
-    if (nframes != static_cast<std::uint32_t>(self.effective_buffer_size))
+    // Logging from the process callback is not realtime-safe; these fire
+    // only when the graph reconfigures (rare), which beats both per-cycle
+    // spam and silent misbehaviour — and a pathologically flapping graph
+    // is cut off after a few transitions. A zero duration/rate is an idle
+    // or reconfiguring cycle, not a value: it must not disturb the
+    // trackers (observe(0) would reset the first-cycle sentinel and eat
+    // the next 'restored' notification).
+    using event = ossia::pipewire::quantum_tracker::event;
+    if (nframes != 0)
     {
-      ossia::logger().warn(
-          "PipeWire: unexpected block size {} (expected {}), skipping cycle",
-          nframes, self.effective_buffer_size);
-      return;
+      switch (self.m_quantum.observe(nframes))
+      {
+        case event::mismatch:
+          if (may_log(self.m_quantum_logs))
+            ossia::logger().warn(
+                "PipeWire: graph quantum is {} but {} was requested; "
+                "adapting by processing in chunks",
+                nframes, self.effective_buffer_size);
+          break;
+        case event::recovered:
+          if (may_log(self.m_quantum_logs))
+            ossia::logger().info(
+                "PipeWire: graph quantum restored to {}", nframes);
+          break;
+        default:
+          break;
+      }
+    }
+    if (rate != 0)
+    {
+      switch (self.m_rate.observe(rate))
+      {
+        case event::mismatch:
+          if (may_log(self.m_rate_logs))
+            ossia::logger().warn(
+                "PipeWire: graph sample rate is {} but {} was requested; "
+                "audio will play at the wrong speed until it is restored",
+                rate, self.m_rate.expected);
+          break;
+        case event::recovered:
+          if (may_log(self.m_rate_logs))
+            ossia::logger().info(
+                "PipeWire: graph sample rate restored to {}", rate);
+          break;
+        default:
+          break;
+      }
     }
 
-    self.do_process(nframes, current_time_ns);
+    if (rate != 0)
+      self.m_observed_rate.store(rate, std::memory_order_relaxed);
+
+    if (nframes == 0)
+      return;
+
+    // Chunk offsets are in graph-rate samples; use the cycle's actual rate
+    // for the time math (m_rate.expected as a fallback for a zero clock).
+    self.do_process(
+        nframes, current_time, rate != 0 ? rate : self.m_rate.expected);
   }
+
+private:
+  ossia::pipewire::quantum_tracker m_quantum{};
+  ossia::pipewire::quantum_tracker m_rate{};
+
+  // Written by the process callback, read by the constructor to learn the
+  // rate the graph actually granted us.
+  std::atomic<std::uint32_t> m_observed_rate{};
+
+  // A graph flapping between quantums/rates every cycle would otherwise
+  // turn the transition logs back into per-cycle RT logging.
+  std::uint32_t m_quantum_logs{};
+  std::uint32_t m_rate_logs{};
+
+  static bool may_log(std::uint32_t& n) noexcept
+  {
+    if (n >= 16)
+      return false;
+    if (++n == 16)
+      ossia::logger().warn(
+          "PipeWire: the graph configuration keeps changing; further "
+          "changes will not be logged");
+    return true;
+  }
+
+  // Cycle-wide buffer starts (one entry per port; null when pipewire had
+  // no buffer for the port this cycle) and the per-chunk views handed to
+  // the tick. Sized in the constructor, touched only by the process
+  // callback afterwards.
+  ossia::pod_vector<float*> m_cycle_in, m_cycle_out;
+  ossia::pod_vector<float*> m_chunk_in, m_chunk_out;
+  ossia::pod_vector<pw_buffer*> m_buf_in, m_buf_out;
+
+  // Missing inputs read zeroes, missing outputs write into a discard
+  // buffer. Keep them distinct: one shared dummy would feed the previous
+  // chunk's discarded output back into the missing inputs.
+  ossia::pod_vector<float> m_silence;
+  ossia::pod_vector<float> m_scratch;
 };
 
 } // namespace ossia
