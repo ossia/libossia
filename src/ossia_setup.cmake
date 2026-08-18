@@ -51,8 +51,20 @@ if(WIN32)
 
       # Boost.Asio separate compilation only enabled on windows due to
       # https://github.com/chriskohlhoff/asio/issues/820
+      #
+      # Both this and BOOST_ASIO_DYN_LINK below stay inside the MSVC branch:
+      # the only translation unit providing the implementation,
+      # src/ossia/context.cpp, includes <boost/asio/impl/src.hpp> under
+      # _MSC_VER.
       BOOST_ASIO_SEPARATE_COMPILATION=1
     )
+
+    if(NOT OSSIA_STATIC)
+      target_compile_definitions(ossia
+        PUBLIC
+          BOOST_ASIO_DYN_LINK=1
+      )
+    endif()
   endif()
 
   target_compile_definitions(ossia PUBLIC
@@ -85,13 +97,6 @@ if(WIN32)
     # were.
     BOOST_ASIO_ENABLE_VERSION_NAMESPACE=1
   )
-
-  if(NOT OSSIA_STATIC)
-    target_compile_definitions(ossia
-      PUBLIC
-        BOOST_ASIO_DYN_LINK=1
-    )
-  endif()
 
   target_compile_definitions(ossia PUBLIC
     NOMINMAX
