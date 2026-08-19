@@ -2,6 +2,14 @@
 #include <ossia/detail/config.hpp>
 #include <ossia/network/http/http_client_request.hpp>
 
+#include <boost/asio/buffers_iterator.hpp>
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/read.hpp>
+#include <boost/asio/read_until.hpp>
+#include <boost/asio/streambuf.hpp>
+#include <boost/asio/write.hpp>
+
 #include "include_catch.hpp"
 
 #include <atomic>

@@ -7,6 +7,17 @@ endif()
 # add_subdirectory-based dependencies (rubberband, libremidi, ...).
 if(NOT TARGET absl::strings)
   block()
+    # A parent project (e.g. score) may have CMAKE_INCLUDE_CURRENT_DIR ON.
+    # That would add each Abseil target's own source/binary dir to its include
+    # path, and `absl/time/time.h` would then shadow the system <time.h>,
+    # breaking libstdc++'s <ctime>/<chrono>. Keep it off for Abseil's build.
+    # (Scoped to this block(), so the parent setting is untouched afterwards.)
+    set(CMAKE_INCLUDE_CURRENT_DIR OFF)
+    # A parent project (e.g. score) may build with CMAKE_UNITY_BUILD ON. Abseil's
+    # cctz sources are not unity-safe: time_zone_posix.cc and time_zone_fixed.cc
+    # each define a namespace-scope `kDigits`, so a merged TU fails with a
+    # redefinition. Build Abseil one TU at a time. (Scoped to this block().)
+    set(CMAKE_UNITY_BUILD OFF)
     set(BUILD_SHARED_LIBS 0)
     set(BUILD_TESTING 0)
     # Abseil's .cc files have file-scope statics (kAsciiToInt, ...) that clash

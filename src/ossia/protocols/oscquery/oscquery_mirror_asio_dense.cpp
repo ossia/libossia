@@ -21,7 +21,7 @@
 #include <ossia/network/oscquery/detail/outbound_visitor.hpp>
 #include <ossia/network/oscquery/detail/value_to_json.hpp>
 #include <ossia/network/sockets/udp_socket.hpp>
-#include <ossia/network/sockets/websocket_client.hpp>
+#include <ossia/network/sockets/websocket_client_beast.hpp>
 #include <ossia/protocols/dense/dense_protocol_configuration.hpp>
 #include <ossia/protocols/oscquery/http_requests.hpp>
 
