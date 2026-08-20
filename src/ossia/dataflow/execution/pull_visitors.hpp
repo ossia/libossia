@@ -6,9 +6,11 @@
 #include <ossia/dataflow/execution_state.hpp>
 #include <ossia/protocols/midi/detail/midi_impl.hpp>
 #include <ossia/protocols/midi/midi_node.hpp>
+
 namespace ossia
 {
-
+struct texture_port;
+struct geometry_port;
 struct local_pull_visitor
 {
   local_state_execution_policy& st;
@@ -53,11 +55,8 @@ struct local_pull_visitor
     return false;
   }
 
-  [[noreturn]] bool operator()(geometry_port& val) const
-  {
-    assert(false);
-    return false;
-  }
+  [[noreturn]] bool operator()(texture_port& val) const = delete;
+  [[noreturn]] bool operator()(geometry_port& val) const = delete;
 
   bool operator()() const { return false; }
 };
@@ -122,7 +121,8 @@ struct global_pull_visitor
 #endif
   }
 
-  [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
+  [[noreturn]] void operator()(texture_port& val) const = delete;
+  [[noreturn]] void operator()(geometry_port& val) const = delete;
 
   void operator()() const { }
 };
@@ -183,7 +183,8 @@ struct global_pull_node_visitor
 #endif
   }
 
-  [[noreturn]] void operator()(geometry_port& val) const { assert(false); }
+  [[noreturn]] void operator()(texture_port& val) const = delete;
+  [[noreturn]] void operator()(geometry_port& val) const = delete;
 
   void operator()() const { }
 };
