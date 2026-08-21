@@ -43,6 +43,11 @@ if(NOT WIN32)
   ossia_add_test(HttpClientRequestTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpClientRequestTest.cpp")
 endif()
 
+if(UNIX AND NOT APPLE)
+  # SocketCAN. Skips itself at run-time if there is no vcan0 interface.
+  ossia_add_test(CanSocketTest       "${CMAKE_CURRENT_SOURCE_DIR}/Network/CanSocketTest.cpp")
+endif()
+
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
 ossia_add_test(WrappedNodeTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/WrappedNodeTest.cpp")
 ossia_add_test(DeviceParameterIndexTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/DeviceParameterIndexTest.cpp")
@@ -140,6 +145,8 @@ if(OSSIA_QML)
   if(UNIX AND NOT APPLE)
     # Uses a pseudo-terminal as a stand-in for a serial port
     ossia_add_test(QmlSerialTest           "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlSerialTest.cpp")
+    # SocketCAN. Skips itself at run-time if there is no vcan0 interface.
+    ossia_add_test(QmlCanTest              "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlCanTest.cpp")
   endif()
 
   if(OSSIA_PROTOCOL_WEBSOCKETS)

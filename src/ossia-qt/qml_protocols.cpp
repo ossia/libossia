@@ -1,5 +1,6 @@
 #include "qml_protocols.hpp"
 
+#include <ossia-qt/protocols/qml_can_socket.hpp>
 #include <ossia-qt/protocols/qml_http_request.hpp>
 #include <ossia-qt/protocols/qml_oauth.hpp>
 #include <ossia-qt/protocols/qml_serial_socket.hpp>
@@ -24,11 +25,18 @@
 
 #include <boost/asio/io_context.hpp>
 
+#include <QFile>
 #include <QJSValue>
 #include <QJSValueList>
 #include <QQmlEngine>
 
 #include <libremidi/libremidi.hpp>
+
+#if defined(__linux__)
+// for the CAN interface enumeration
+#include <net/if.h>
+#include <net/if_arp.h>
+#endif
 
 #include <wobjectimpl.h>
 /**
@@ -118,6 +126,9 @@ W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_serial_socket)
+#if defined(__linux__)
+W_OBJECT_IMPL(ossia::qt::qml_can_socket)
+#endif
 W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
 
 #if defined(OSSIA_HAS_BLUETOOTH)
@@ -1067,6 +1078,157 @@ QObject* qml_protocols::serial(QVariant config)
   }
 }
 
+#if defined(__linux__)
+static ossia::net::can_configuration
+parse_can(const QVariantMap& transport, const QVariantList& filters)
+{
+  ossia::net::can_configuration conf;
+  conf.interface_name = transport["Interface"].toString().toStdString();
+
+  if(auto fd = transport["FD"]; fd.isValid())
+    conf.fd = fd.toBool();
+  if(auto lo = transport["Loopback"]; lo.isValid())
+    conf.loopback = lo.toBool();
+  if(auto own = transport["ReceiveOwnMessages"]; own.isValid())
+    conf.receive_own_messages = own.toBool();
+  if(auto err = transport["ErrorFrames"]; err.isValid())
+    conf.error_frames = err.toBool();
+
+  for(const auto& f : filters)
+  {
+    const auto filter = f.toMap();
+    ossia::net::can_filter_configuration cf;
+    cf.id = filter["id"].toUInt();
+    if(filter["extended"].toBool())
+      cf.id |= CAN_EFF_FLAG;
+    if(filter["invert"].toBool())
+      cf.id |= CAN_INV_FILTER;
+    // Defaulting the mask to "all the identifier bits" makes the common
+    // { id: 0x123 } filter mean "exactly 0x123" instead of "everything".
+    if(auto mask = filter["mask"]; mask.isValid())
+      cf.mask = mask.toUInt();
+    else
+      cf.mask = filter["extended"].toBool() ? CAN_EFF_MASK : CAN_SFF_MASK;
+    conf.filters.push_back(cf);
+  }
+
+  return conf;
+}
+
+QObject* qml_protocols::can(QVariant config)
+{
+  auto conf = config.toMap();
+  auto onError = conf["onError"].value<QJSValue>();
+
+  auto fail = [&](const QString& err) -> QObject* {
+    ossia::logger().error("Protocols.can: {}", err.toStdString());
+    qDebug() << "Protocols.can:" << err;
+    if(onError.isCallable())
+      onError.call({err});
+    return nullptr;
+  };
+
+  auto ossia_conf = parse_can(conf["Transport"].toMap(), conf["Filters"].toList());
+  if(ossia_conf.interface_name.empty())
+    return fail("Transport.Interface is required");
+
+  auto sock = new qml_can_socket{};
+  qjsEngine(this)->newQObject(sock);
+  sock->onOpen = conf["onOpen"].value<QJSValue>();
+  sock->onClose = conf["onClose"].value<QJSValue>();
+  sock->onError = onError;
+  sock->onMessage = conf["onMessage"].value<QJSValue>();
+  try
+  {
+    sock->open(ossia_conf, context->context);
+    return sock;
+  }
+  catch(const std::exception& e)
+  {
+    delete sock;
+    return fail(QString::fromStdString(e.what()));
+  }
+  catch(...)
+  {
+    delete sock;
+    return fail("could not open " + QString::fromStdString(ossia_conf.interface_name));
+  }
+}
+
+QJSValue qml_protocols::canInterfaces()
+{
+  auto qjs = qjsEngine(this);
+  if(!qjs)
+    return {};
+
+  auto result = qjs->newArray();
+  int count = 0;
+
+  // if_nameindex() lists every netdev; SocketCAN interfaces are the ones whose
+  // link type is ARPHRD_CAN, which sysfs exposes as /sys/class/net/<if>/type.
+  auto* list = ::if_nameindex();
+  if(!list)
+    return result;
+
+  for(auto* it = list; it->if_index != 0 || it->if_name != nullptr; ++it)
+  {
+    const QString name = QString::fromUtf8(it->if_name);
+    QFile type{QStringLiteral("/sys/class/net/%1/type").arg(name)};
+    if(!type.open(QIODevice::ReadOnly))
+      continue;
+    if(type.readAll().trimmed().toInt() != ARPHRD_CAN)
+      continue;
+
+    auto obj = qjs->newObject();
+    obj.setProperty("name", name);
+    obj.setProperty("index", int(it->if_index));
+
+    // An interface is CAN FD capable when its MTU is at least CANFD_MTU; on a
+    // classic-only controller the MTU stays at CAN_MTU (16).
+    QFile mtu{QStringLiteral("/sys/class/net/%1/mtu").arg(name)};
+    if(mtu.open(QIODevice::ReadOnly))
+    {
+      const int m = mtu.readAll().trimmed().toInt();
+      obj.setProperty("mtu", m);
+      obj.setProperty("fd", m >= CANFD_MTU);
+    }
+
+    result.setProperty(count++, obj);
+  }
+  ::if_freenameindex(list);
+
+  return result;
+}
+#else
+// CAN is implemented on top of SocketCAN, which only exists on Linux. The slots
+// still have to be defined everywhere -- they are registered on the QML type
+// whatever the platform, so a missing definition would be a link error rather
+// than a script that simply does not work. Failing loudly is the point: a script
+// that calls Protocols.can() on macOS or Windows is not going to work, and the
+// user needs to be told why instead of getting a null back with no explanation.
+QObject* qml_protocols::can(QVariant config)
+{
+  const auto err = QStringLiteral(
+      "CAN is only supported on Linux (SocketCAN); this build has no CAN backend");
+  ossia::logger().error("Protocols.can: {}", err.toStdString());
+  qDebug() << "Protocols.can:" << err;
+
+  auto onError = config.toMap()["onError"].value<QJSValue>();
+  if(onError.isCallable())
+    onError.call({err});
+  return nullptr;
+}
+
+QJSValue qml_protocols::canInterfaces()
+{
+  // An empty array, not undefined: enumerating the CAN interfaces of a machine
+  // that has none is not an error, and callers can iterate the result without
+  // having to special-case the platform.
+  if(auto qjs = qjsEngine(this))
+    return qjs->newArray();
+  return {};
+}
+#endif
 
 #if defined(OSSIA_HAS_BLUETOOTH)
 QObject* qml_protocols::bluetoothScanner(QJSValue config)
