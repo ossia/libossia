@@ -99,6 +99,7 @@ set(API_HEADERS
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/debug.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/destination_qualifiers.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter.hpp"
+    "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter_index.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/device_parameter_t.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/extended_types.hpp"
     "${CMAKE_CURRENT_SOURCE_DIR}/ossia/network/common/network_logger.hpp"

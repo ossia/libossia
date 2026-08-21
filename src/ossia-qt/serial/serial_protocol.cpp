@@ -435,25 +435,21 @@ void serial_protocol::on_read(const QString& txt, const QByteArray& a)
     if(!addr.isString())
       continue;
 
-    // FIXME since this executes in a separate thread we have to be super
-    // confident that the user cannot remove nodes while read operations are
-    // taking place
-    auto addr_txt = addr.toString().toStdString();
-    auto n = find_node(m_device->get_root_node(), addr_txt);
-    if(!n)
-      continue;
-
     auto v = val.property("value");
     if(v.isNull())
       continue;
 
-    if(auto addr = n->get_parameter())
-    {
-      // qDebug() << "Applied value"
-      //          << QString::fromStdString(value_to_pretty_string(
-      //                                      qt::value_from_js(addr->value(), v)));
-      addr->set_value(qt::value_from_js(addr->value(), v));
-    }
+    // This runs in the serial thread while the tree belongs to the main one:
+    // walking it with find_node would hand us a node that can be destroyed
+    // before we get to use it, so go through the index, which keeps the
+    // parameter alive for the duration of the callback.
+    if(!m_index)
+      continue;
+
+    const auto addr_txt = addr.toString().toStdString();
+    m_index->apply(addr_txt, [&](ossia::net::parameter_base& param) {
+      param.set_value(qt::value_from_js(param.value(), v));
+    });
   }
 }
 
@@ -668,6 +664,8 @@ bool serial_protocol::update(ossia::net::node_base& node_base)
 void serial_protocol::set_device(device_base& dev)
 {
   m_device = &dev;
+  m_index = std::make_unique<ossia::net::device_parameter_index>(dev);
+
   // run in the engine thread
   ossia::qt::run_async(m_threadWorker, [this] {
     startup_engine();
@@ -678,6 +676,12 @@ void serial_protocol::set_device(device_base& dev)
 
 void serial_protocol::stop()
 {
+  // stop() is the last thing that happens on the tree while it is still whole:
+  // wrapped_device frees its children afterwards without signalling their
+  // removal, so this is where the serial thread has to lose its references.
+  if(m_index)
+    m_index->clear();
+
   // run in the engine thread
   ossia::qt::run_async(m_threadWorker, [port = m_port] {
     if(port)

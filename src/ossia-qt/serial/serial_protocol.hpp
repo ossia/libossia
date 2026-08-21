@@ -3,6 +3,7 @@
 #include <ossia/detail/variant.hpp>
 #include <ossia/network/base/message_queue.hpp>
 #include <ossia/network/base/protocol.hpp>
+#include <ossia/network/common/device_parameter_index.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
 #include <ossia/network/sockets/cobs_framing.hpp>
@@ -227,6 +228,10 @@ private:
   QQmlComponent* m_component{};
 
   ossia::net::device_base* m_device{};
+
+  // The QML engine runs in m_thread: incoming addresses are resolved through
+  // this index instead of walking the tree from there. See on_read.
+  std::unique_ptr<ossia::net::device_parameter_index> m_index;
   QObject* m_object{};
   QJSValue m_jsObj{};
   QJSValue m_onTextMessage{};
