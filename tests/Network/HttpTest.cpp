@@ -24,30 +24,30 @@ TEST_CASE("test_http", "test_http")
     auto res = ossia::net::parse_http_methods_encoded("foo=bar");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("foo") != res.end());
-    REQUIRE(res.find("foo").value() == "bar");
+    REQUIRE(res.find("foo")->second == "bar");
   }
 
   {
     auto res = ossia::net::parse_http_methods_encoded("LISTEN=1");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("LISTEN") != res.end());
-    REQUIRE(res.find("LISTEN").value() == "1");
+    REQUIRE(res.find("LISTEN")->second == "1");
   }
 
   {
     auto res = ossia::net::parse_http_methods_encoded("VALUE");
     REQUIRE(res.size() == 1);
     REQUIRE(res.find("VALUE") != res.end());
-    REQUIRE(res.find("VALUE").value() == "");
+    REQUIRE(res.find("VALUE")->second == "");
   }
 
   {
     auto res = ossia::net::parse_http_methods_encoded("foo=bar&baz=blu");
     REQUIRE(res.size() == 2);
     REQUIRE(res.find("foo") != res.end());
-    REQUIRE(res.find("foo").value() == "bar");
+    REQUIRE(res.find("foo")->second == "bar");
     REQUIRE(res.find("baz") != res.end());
-    REQUIRE(res.find("baz").value() == "blu");
+    REQUIRE(res.find("baz")->second == "blu");
   }
 }
 
