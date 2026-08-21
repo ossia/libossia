@@ -23,9 +23,16 @@ jobs:
       - uses: ./.github/actions/latest-ubuntu-toolchain
       - name: Build
         run: |
+          # OSSIA_TESTING is here to *compile* the tests, not to run them: this
+          # is the only job that builds with OSSIA_QML, and without it nothing
+          # in tests/Qt/ is ever compiled by CI. That blind spot is how
+          # HttpTest.cpp came to sit broken against an API that had changed
+          # under it while every workflow stayed green.
+          # No ctest step yet, deliberately -- see the PR description.
           cmake  -B build -S ${GITHUB_WORKSPACE} -GNinja \
             -DOSSIA_CI=1 \
             -DOSSIA_QML_ONLY=1 \
+            -DOSSIA_TESTING=1 \
             -DCMAKE_INSTALL_PREFIX=install \
             -DCMAKE_BUILD_TYPE=Release
           cmake --build build
