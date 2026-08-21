@@ -10,8 +10,28 @@
 #include <boost/asio/write.hpp>
 #include <boost/endian/conversion.hpp>
 
+#include <algorithm>
+#include <cstring>
+#include <string_view>
+
 namespace ossia::net
 {
+
+//! Store a line-framing delimiter in a fixed-size, NUL-terminated buffer.
+//!
+//! The buffer is scanned with strnlen(), so at most N - 1 bytes may be stored:
+//! the trailing NUL must survive. Longer delimiters are truncated instead of
+//! overflowing the buffer, and the unused tail is always zeroed so that a
+//! shorter delimiter never inherits bytes from a previous one.
+template <std::size_t N>
+inline std::size_t set_line_delimiter(char (&buffer)[N], std::string_view delim) noexcept
+{
+  static_assert(N >= 1);
+  const std::size_t sz = std::min(delim.size(), N - 1);
+  std::copy_n(delim.data(), sz, buffer);
+  std::fill(buffer + sz, buffer + N, '\0');
+  return sz;
+}
 
 template <typename Socket>
 struct line_framing_decoder
@@ -26,6 +46,11 @@ struct line_framing_decoder
       : socket{socket}
   {
     m_data.reserve(65535);
+  }
+
+  void set_delimiter(std::string_view delim) noexcept
+  {
+    m_delimiter_len = uint8_t(set_line_delimiter(delimiter, delim));
   }
 
   template <typename F>
@@ -78,6 +103,11 @@ struct line_framing_encoder
   Socket& socket;
   char delimiter[8] = {0};
   uint8_t delimiter_len = 0;
+
+  void set_delimiter(std::string_view delim) noexcept
+  {
+    delimiter_len = uint8_t(set_line_delimiter(delimiter, delim));
+  }
 
   void write(const char* data, std::size_t sz)
   {

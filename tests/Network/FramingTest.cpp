@@ -218,6 +218,116 @@ TEST_CASE("line_framing_encoder", "line_framing_encoder")
   REQUIRE(wire[6] == '\n');
 }
 
+// ---- Line framing: delimiter buffer handling ----
+//
+// The delimiter lives in a fixed-size char[8] which is read back with
+// strnlen(), so at most 7 bytes may be stored. set_line_delimiter() must
+// clamp to the *smaller* of the delimiter length and the buffer capacity:
+// clamping upwards (std::max) both read past the end of the source string and
+// wrote past the end of the destination buffer for user-supplied delimiters
+// longer than 7 bytes.
+
+TEST_CASE("set_line_delimiter_shorter_than_buffer", "set_line_delimiter")
+{
+  char buf[8];
+  std::memset(buf, 'X', sizeof(buf));
+
+  auto n = ossia::net::set_line_delimiter(buf, "\r\n");
+  REQUIRE(n == 2);
+  REQUIRE(buf[0] == '\r');
+  REQUIRE(buf[1] == '\n');
+  // The tail must be zeroed: strnlen() has to find the terminator
+  for(std::size_t i = 2; i < sizeof(buf); i++)
+    REQUIRE(buf[i] == '\0');
+  REQUIRE(strnlen(buf, 8) == 2);
+}
+
+TEST_CASE("set_line_delimiter_single_char", "set_line_delimiter")
+{
+  // A 1-char delimiter must not read 7 bytes out of a 1-char string
+  char buf[8];
+  std::memset(buf, 'X', sizeof(buf));
+
+  auto n = ossia::net::set_line_delimiter(buf, std::string("\n"));
+  REQUIRE(n == 1);
+  REQUIRE(buf[0] == '\n');
+  REQUIRE(strnlen(buf, 8) == 1);
+}
+
+TEST_CASE("set_line_delimiter_truncates", "set_line_delimiter")
+{
+  // Longer than the buffer: must truncate to 7 and stay NUL-terminated
+  // instead of writing out of bounds.
+  char buf[8];
+  std::memset(buf, 'X', sizeof(buf));
+
+  auto n = ossia::net::set_line_delimiter(buf, "END-OF-FRAME-MARKER");
+  REQUIRE(n == 7);
+  REQUIRE(std::string(buf, 7) == "END-OF-");
+  REQUIRE(buf[7] == '\0');
+  REQUIRE(strnlen(buf, 8) == 7);
+}
+
+TEST_CASE("set_line_delimiter_exactly_capacity", "set_line_delimiter")
+{
+  char buf[8];
+  std::memset(buf, 'X', sizeof(buf));
+
+  auto n = ossia::net::set_line_delimiter(buf, "1234567");
+  REQUIRE(n == 7);
+  REQUIRE(std::string(buf, 7) == "1234567");
+  REQUIRE(buf[7] == '\0');
+}
+
+TEST_CASE("set_line_delimiter_empty", "set_line_delimiter")
+{
+  char buf[8];
+  std::memset(buf, 'X', sizeof(buf));
+
+  auto n = ossia::net::set_line_delimiter(buf, "");
+  REQUIRE(n == 0);
+  REQUIRE(strnlen(buf, 8) == 0);
+}
+
+TEST_CASE("set_line_delimiter_resets_previous", "set_line_delimiter")
+{
+  // Setting a shorter delimiter must not leave the previous one's tail behind
+  char buf[8] = {0};
+  ossia::net::set_line_delimiter(buf, "1234567");
+  ossia::net::set_line_delimiter(buf, "\n");
+  REQUIRE(strnlen(buf, 8) == 1);
+  REQUIRE(buf[0] == '\n');
+}
+
+TEST_CASE("line_framing_encoder_long_delimiter", "line_framing_encoder")
+{
+  // Same thing through the encoder's public setter: an over-long,
+  // user-supplied delimiter must be truncated, not overflow the socket.
+  fake_socket sock;
+  ossia::net::line_framing_encoder<fake_socket> enc{sock};
+  enc.set_delimiter("END-OF-FRAME-MARKER");
+  REQUIRE(enc.delimiter_len == 7);
+
+  enc.write("hello", 5);
+  auto& wire = sock.written;
+  REQUIRE(wire.size() == 12); // "hello" + 7 delimiter bytes
+  REQUIRE(std::string((const char*)wire.data() + 5, 7) == "END-OF-");
+}
+
+TEST_CASE("line_framing_encoder_set_delimiter", "line_framing_encoder")
+{
+  fake_socket sock;
+  ossia::net::line_framing_encoder<fake_socket> enc{sock};
+  enc.set_delimiter("\r\n");
+  REQUIRE(enc.delimiter_len == 2);
+
+  enc.write("hello", 5);
+  auto& wire = sock.written;
+  REQUIRE(wire.size() == 7);
+  REQUIRE(wire[5] == '\r');
+  REQUIRE(wire[6] == '\n');
+}
+
 // ---- Fixed-length (encoder is pass-through) ----
 
 TEST_CASE("fixed_length_encoder", "fixed_length_encoder")
