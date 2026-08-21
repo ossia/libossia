@@ -64,7 +64,7 @@ create_nodes(node_base& dev, std::string_view pattern);
 OSSIA_EXPORT node_base&
 find_or_create_node(node_base& dev, std::string_view parameter_base);
 
-parameter_base* find_or_create_parameter(
+OSSIA_EXPORT parameter_base* find_or_create_parameter(
     node_base& node, std::string_view address, std::string_view type);
 /**
  * @brief Find a parameter and create it if it does not exist.

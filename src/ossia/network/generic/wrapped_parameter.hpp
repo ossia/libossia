@@ -56,9 +56,26 @@ public:
 
   parameter_base* get_parameter() const final override { return m_parameter.get(); }
 
-  parameter_base* create_parameter(val_type = val_type::IMPULSE) final override
+  parameter_base* create_parameter(val_type type = val_type::IMPULSE) final override
   {
-    return nullptr;
+    // Same contract as generic_node: creating a parameter on a node that
+    // already has one only retypes it.
+    if(m_parameter)
+    {
+      m_parameter->set_value_type(type);
+      return m_parameter.get();
+    }
+
+    // The protocols that use this class downcast every parameter of their tree
+    // to Parameter_T without checking, so a parameter created from the generic
+    // APIs has to be a Parameter_T too - see make_child below.
+    T data{m_name};
+    data.type = type;
+    data.value = ossia::init_value(type);
+    m_parameter = std::make_unique<Parameter_T>(std::move(data), *this);
+
+    m_device.on_parameter_created(*m_parameter);
+    return m_parameter.get();
   }
 
   bool remove_parameter() final override { return false; }
@@ -75,8 +92,14 @@ public:
 private:
   std::unique_ptr<node_base> make_child(const std::string& name) final override
   {
-    return std::make_unique<generic_node>(name, m_device, *this);
-    return nullptr;
+    // Every node of a wrapped device has to be a wrapped_node: the protocols
+    // built on top of this (serial, http, websocket, score's mapper) recover
+    // their own node and parameter types from the tree with an unchecked
+    // static_cast. Returning a generic_node here - as this used to - meant that
+    // any node created through the generic APIs, e.g. the `Device.addNode()`
+    // binding exposed to the protocols' own QML scripts, carried a
+    // generic_parameter that those casts would then reinterpret.
+    return std::make_unique<wrapped_node>(T{name}, m_device, *this);
   }
 
   void removing_child(node_base& node_base) final override { }

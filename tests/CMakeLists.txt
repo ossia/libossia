@@ -44,6 +44,7 @@ if(NOT WIN32)
 endif()
 
 ossia_add_test(NodeTest     "${CMAKE_CURRENT_SOURCE_DIR}/Network/NodeTest.cpp")
+ossia_add_test(WrappedNodeTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/WrappedNodeTest.cpp")
 
 
 ossia_add_test(ValueTest                   "${CMAKE_CURRENT_SOURCE_DIR}/Editor/ValueTest.cpp")
