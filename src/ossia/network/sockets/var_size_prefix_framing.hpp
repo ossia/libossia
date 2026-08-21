@@ -38,6 +38,7 @@ struct var_size_prefix_framing
         = HeaderBytes == 1   ? std::size_t(255)
           : HeaderBytes == 2 ? std::size_t(65535)
                              : std::size_t(0x7FFFFFFF);
+    lifetime_token m_lifetime;
 
     explicit decoder(Socket& socket)
         : socket{socket}
@@ -54,8 +55,12 @@ struct var_size_prefix_framing
       boost::asio::async_read(
           socket, boost::asio::mutable_buffer(&m_header, sizeof(header_type)),
           boost::asio::transfer_exactly(sizeof(header_type)),
-          [this,
+          [this, alive = m_lifetime.watch(),
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        // The socket may be gone since this read was armed; see lifetime_token.
+        if(alive.expired())
+          return;
+
         read_size(std::move(f), ec, sz);
           });
     }
@@ -82,8 +87,12 @@ struct var_size_prefix_framing
       boost::asio::async_read(
           socket, boost::asio::mutable_buffer(m_data.data(), packet_size),
           boost::asio::transfer_exactly(packet_size),
-          [this,
+          [this, alive = m_lifetime.watch(),
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        // The socket may be gone since this read was armed; see lifetime_token.
+        if(alive.expired())
+          return;
+
         read_data(std::move(f), ec, sz);
           });
     }

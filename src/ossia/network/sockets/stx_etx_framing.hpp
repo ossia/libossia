@@ -28,6 +28,7 @@ struct delimiter_framing
       reading_data,
       reading_escape
     } m_status{waiting_start};
+    lifetime_token m_lifetime;
 
     explicit decoder(Socket& socket)
         : socket{socket}
@@ -40,8 +41,12 @@ struct delimiter_framing
     {
       socket.async_read_some(
           boost::asio::buffer(m_readbuf),
-          [this,
+          [this, alive = m_lifetime.watch(),
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        // The socket may be gone since this read was armed; see lifetime_token.
+        if(alive.expired())
+          return;
+
         if(!f.validate_stream(ec))
           return;
 

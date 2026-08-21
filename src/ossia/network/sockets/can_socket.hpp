@@ -238,13 +238,11 @@ public:
   socket m_socket;
 
 private:
-  // Closing a descriptor does not make asio forget the operations that were
-  // pending on it: they are queued for completion with operation_aborted and
-  // run on the next poll(), which can very well be after the socket has been
-  // destroyed. Every handler therefore holds a weak reference to this token and
-  // gives up if it has expired.
-  std::shared_ptr<char> m_lifetime{std::make_shared<char>()};
-  std::weak_ptr<char> watch() const noexcept { return m_lifetime; }
+  // Every handler below holds a weak reference to this token and gives up if it
+  // has expired: closing a descriptor does not make asio forget the operations
+  // that were pending on it. See lifetime_token.
+  lifetime_token m_lifetime;
+  std::weak_ptr<void> watch() const noexcept { return m_lifetime.watch(); }
 
   // CANFD_MTU (72) is the largest datagram that can be received here, as we
   // never enable CAN_RAW_XL_FRAMES; the buffer is sized for a CAN XL frame

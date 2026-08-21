@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/writers.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -101,7 +102,14 @@ public:
     m_socket.set_option(boost::asio::socket_base::reuse_address{true}, ec);
 
     m_socket.async_connect(
-        m_endpoint, [this](const boost::system::error_code& ec, auto&&...) {
+        m_endpoint,
+        [this, alive = m_lifetime.watch()](
+            const boost::system::error_code& ec, auto&&...) {
+      // The client may have been destroyed while the connect was in flight;
+      // see lifetime_token.
+      if(alive.expired())
+        return;
+
       if(m_socket.is_open() && !ec)
       {
         m_connected = true;
@@ -120,7 +128,10 @@ public:
 
   void close()
   {
-    boost::asio::post(m_context, [this] {
+    boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+      if(alive.expired())
+        return;
+
       try
       {
         m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
@@ -147,5 +158,9 @@ public:
   proto::endpoint m_endpoint;
   proto::socket m_socket;
   bool m_connected{false};
+
+  // Guards the handlers of connect() and close(); the pending reads of a framed
+  // client are guarded by the decoder's own token. See lifetime_token.
+  lifetime_token m_lifetime;
 };
 }

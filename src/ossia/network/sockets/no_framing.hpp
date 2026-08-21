@@ -37,6 +37,7 @@ struct no_framing
   {
     Socket& socket;
     alignas(64) uint8_t m_readbuf[4096];
+    lifetime_token m_lifetime;
 
     explicit decoder(Socket& s)
         : socket{s}
@@ -54,8 +55,12 @@ struct no_framing
     {
       socket.async_read_some(
           boost::asio::buffer(m_readbuf),
-          [this,
+          [this, alive = m_lifetime.watch(),
            f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        // The socket may be gone since this read was armed; see lifetime_token.
+        if(alive.expired())
+          return;
+
         if(!f.validate_stream(ec))
           return;
 
