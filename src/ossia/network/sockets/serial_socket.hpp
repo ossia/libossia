@@ -119,7 +119,11 @@ public:
     m_port.set_option(
         proto::stop_bits(static_cast<proto::stop_bits::type>(m_conf.stop_bits)));
 
-    boost::asio::post(m_context, [this] { on_open(); });
+    boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+      if(alive.expired())
+        return;
+      on_open();
+    });
   }
 
   template <typename F>
@@ -136,7 +140,9 @@ public:
     if(m_port.is_open())
     {
       m_port.cancel();
-      boost::asio::post(m_context, [this] {
+      boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+        if(alive.expired())
+          return;
         m_port.close();
         on_close();
       });
@@ -156,5 +162,10 @@ public:
   boost::asio::serial_port m_port;
   encoder m_encoder;
   decoder m_decoder;
+
+  // Guards the handlers posted by connect() and close(), which would otherwise
+  // run on a destroyed socket. The pending *reads* are guarded by the decoder's
+  // own token. See lifetime_token.
+  lifetime_token m_lifetime;
 };
 }

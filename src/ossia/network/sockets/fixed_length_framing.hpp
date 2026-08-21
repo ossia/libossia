@@ -16,6 +16,7 @@ struct fixed_length_decoder
   Socket& socket;
   std::size_t frame_size{64};
   ossia::pod_vector<char> m_data;
+  lifetime_token m_lifetime;
 
   explicit fixed_length_decoder(Socket& socket)
       : socket{socket}
@@ -29,7 +30,12 @@ struct fixed_length_decoder
     boost::asio::async_read(
         socket, boost::asio::mutable_buffer(m_data.data(), frame_size),
         boost::asio::transfer_exactly(frame_size),
-        [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        [this, alive = m_lifetime.watch(),
+         f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+      // The socket may be gone since this read was armed; see lifetime_token.
+      if(alive.expired())
+        return;
+
       if(!f.validate_stream(ec))
         return;
 

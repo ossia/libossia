@@ -28,6 +28,7 @@ struct slip_decoder
     reading_char,
     reading_esc
   } m_status{waiting};
+  lifetime_token m_lifetime;
 
   explicit slip_decoder(Socket& socket)
       : socket{socket}
@@ -40,7 +41,12 @@ struct slip_decoder
   {
     socket.async_read_some(
         boost::asio::buffer(m_readbuf),
-        [this, f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+        [this, alive = m_lifetime.watch(),
+         f = std::move(f)](boost::system::error_code ec, std::size_t sz) mutable {
+      // The socket may be gone since this read was armed; see lifetime_token.
+      if(alive.expired())
+        return;
+
       if(!f.validate_stream(ec))
         return;
 

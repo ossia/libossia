@@ -2,6 +2,7 @@
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/context.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/writers.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/udp.hpp>
@@ -200,7 +201,10 @@ public:
 
   void close()
   {
-    boost::asio::post(m_context, [this] {
+    boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+      if(alive.expired())
+        return;
+
       try
       {
         m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
@@ -226,6 +230,10 @@ public:
   proto::endpoint m_endpoint;
   proto::socket m_socket;
   bool m_connected{false};
+
+  // Guards the handler posted by close(); the pending reads of a framed client
+  // are guarded by the decoder's own token. See lifetime_token.
+  lifetime_token m_lifetime;
 };
 #endif
 }

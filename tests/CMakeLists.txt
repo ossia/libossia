@@ -39,6 +39,8 @@ if(NOT WIN32)
   ossia_add_test(OSC_TCP_CobsTest   "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_TCP_CobsTest.cpp")
   ossia_add_test(OSC_Unix_CobsTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/OSC_Unix_CobsTest.cpp")
   ossia_add_test(FramingTest         "${CMAKE_CURRENT_SOURCE_DIR}/Network/FramingTest.cpp")
+  # Destroying a socket with a read still pending. Meant to be run under ASan.
+  ossia_add_test(SocketLifetimeTest  "${CMAKE_CURRENT_SOURCE_DIR}/Network/SocketLifetimeTest.cpp")
   ossia_add_test(EncodingTest        "${CMAKE_CURRENT_SOURCE_DIR}/Network/EncodingTest.cpp")
   ossia_add_test(HttpClientRequestTest "${CMAKE_CURRENT_SOURCE_DIR}/Network/HttpClientRequestTest.cpp")
 endif()

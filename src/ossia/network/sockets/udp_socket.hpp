@@ -1,6 +1,7 @@
 #pragma once
 #include <ossia/detail/logger.hpp>
 #include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/writers.hpp>
 
 #include <boost/asio/io_context.hpp>
 #include <boost/asio/ip/multicast.hpp>
@@ -69,9 +70,15 @@ public:
 
   void close()
   {
+    // close() does not close anything itself: it posts a lambda that does, and
+    // that lambda can very well run after the socket is gone -- the usual
+    // shutdown is close() immediately followed by dropping the owner.
     if(m_socket.is_open())
     {
-      boost::asio::post(m_context, [this] {
+      boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+        if(alive.expired())
+          return;
+
         try
         {
           m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
@@ -86,6 +93,15 @@ public:
     }
   }
 
+  //! No lifetime token here, unlike the framed sockets.
+  /**
+   * This handler is careful to return on operation_aborted *before* touching
+   * anything, and it hands the callback a buffer rather than a stream_processor
+   * holding a reference back to the socket, so an aborted completion running
+   * after the socket is gone reads nothing but its own copy of `ec`. Verified
+   * under ASan by SocketLifetimeTest. The early return is load-bearing: it is
+   * the only thing keeping this path safe.
+   */
   template <typename F>
   void receive(F f)
   {
@@ -123,6 +139,7 @@ public:
   std::string m_multicast_group;
   std::string m_multicast_interface;
   alignas(16) char m_data[65535];
+  lifetime_token m_lifetime;
 };
 
 class udp_send_socket
@@ -178,9 +195,13 @@ public:
 
   void close()
   {
+    // Same as udp_receive_socket::close(): the posted lambda outlives us.
     if(m_socket.is_open())
     {
-      boost::asio::post(m_context, [this] {
+      boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
+        if(alive.expired())
+          return;
+
         try
         {
           m_socket.shutdown(boost::asio::ip::udp::socket::shutdown_both);
@@ -211,6 +232,7 @@ public:
   std::optional<int> m_multicast_ttl;
   std::string m_multicast_interface;
   std::optional<bool> m_multicast_loopback;
+  lifetime_token m_lifetime;
 };
 
 }
