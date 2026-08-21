@@ -88,9 +88,10 @@ struct serial_wrapper_init
 
   void operator()(line_framing_socket& sock)
   {
-    int sz = std::max((int)7, (int)port.line_framing_delimiter.size());
-    std::copy_n(port.line_framing_delimiter.begin(), sz, sock.m_encoder.delimiter);
-    std::copy_n(port.line_framing_delimiter.begin(), sz, sock.m_decoder.delimiter);
+    // Note: the delimiter buffers are fixed-size and NUL-terminated ;
+    // set_delimiter truncates instead of overflowing them.
+    sock.m_encoder.set_delimiter(port.line_framing_delimiter);
+    sock.m_decoder.set_delimiter(port.line_framing_delimiter);
     common_init(sock);
   }
 
