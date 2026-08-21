@@ -154,6 +154,76 @@ TEST_CASE("ascii85_roundtrip_binary", "ascii85_roundtrip_binary")
   REQUIRE(roundtrip(E::ascii85, bin) == bin);
 }
 
+// Runs of zero bytes are encoded with the 'z' shorthand: one character stands
+// for four zero bytes. Decoding therefore *expands* by 4x, and the decode
+// buffer must be sized for that -- sizing it at 4/5 of the input (as if
+// ascii85 always shrank) overflowed the output buffer on the way back.
+TEST_CASE("ascii85_zero_runs_roundtrip", "ascii85_zero_runs_roundtrip")
+{
+  using E = ossia::net::encoding;
+  for(std::size_t n : {4u, 8u, 12u, 16u, 20u, 64u, 100u, 1024u})
+  {
+    std::string zeros(n, '\0');
+    auto encoded = enc(E::ascii85, zeros);
+    // Every full zero group must have collapsed to a single 'z'
+    REQUIRE(encoded == std::string(n / 4, 'z'));
+    REQUIRE(dec(E::ascii85, encoded) == zeros);
+    REQUIRE(roundtrip(E::ascii85, zeros) == zeros);
+  }
+}
+
+TEST_CASE("ascii85_decode_all_z", "ascii85_decode_all_z")
+{
+  using E = ossia::net::encoding;
+  // Hand-written worst case: an input made only of the 'z' shorthand, which
+  // is the maximum possible expansion (4 output bytes per input character).
+  for(std::size_t n : {1u, 2u, 3u, 17u, 256u})
+  {
+    auto decoded = dec(E::ascii85, std::string(n, 'z'));
+    REQUIRE(decoded == std::string(4 * n, '\0'));
+    // The advertised bound must actually cover it
+    REQUIRE(ossia::net::max_decoded_size(E::ascii85, n) >= decoded.size());
+  }
+}
+
+TEST_CASE("ascii85_zero_runs_mixed", "ascii85_zero_runs_mixed")
+{
+  using E = ossia::net::encoding;
+  // Zero runs interleaved with data, and lengths that are not a multiple of 4
+  std::string mixed;
+  mixed += std::string(16, '\0');
+  mixed += "abc";
+  mixed += std::string(8, '\0');
+  mixed += "\xFF\x01";
+  mixed += std::string(12, '\0');
+  REQUIRE(roundtrip(E::ascii85, mixed) == mixed);
+
+  // Same payload shifted by 1..3 bytes so that the zero runs land on every
+  // possible alignment relative to the 4-byte grouping.
+  for(int shift = 1; shift <= 3; shift++)
+  {
+    std::string shifted = std::string(shift, 'A') + mixed;
+    REQUIRE(roundtrip(E::ascii85, shifted) == shifted);
+  }
+}
+
+TEST_CASE("ascii85_roundtrip_all_lengths", "ascii85_roundtrip_all_lengths")
+{
+  using E = ossia::net::encoding;
+  // Every length from 0 to 64, for three payload shapes: all-zero (max
+  // expansion on decode), all-0xFF (max expansion on encode), and a pattern.
+  for(std::size_t n = 0; n <= 64; n++)
+  {
+    REQUIRE(roundtrip(E::ascii85, std::string(n, '\0')) == std::string(n, '\0'));
+    REQUIRE(roundtrip(E::ascii85, std::string(n, '\xFF')) == std::string(n, '\xFF'));
+
+    std::string pattern;
+    for(std::size_t i = 0; i < n; i++)
+      pattern.push_back(char(i * 37 + (i % 5 == 0 ? 0 : 1)));
+    REQUIRE(roundtrip(E::ascii85, pattern) == pattern);
+  }
+}
+
 // ---- Intel HEX ----
 
 TEST_CASE("intel_hex_encode_basic", "intel_hex_encode_basic")
