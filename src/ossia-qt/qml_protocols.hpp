@@ -104,6 +104,17 @@ public:
   QObject* serial(QVariant config);
   W_SLOT(serial)
 
+  // CAN bus. Implemented on top of SocketCAN, so it only works on Linux:
+  // elsewhere can() reports "no CAN backend" through onError and returns null,
+  // and canInterfaces() returns an empty array.
+  // write
+  // onMessage
+  QObject* can(QVariant config);
+  W_SLOT(can)
+
+  QJSValue canInterfaces();
+  W_SLOT(canInterfaces)
+
   QObject* osc(QVariant config);
   W_SLOT(osc)
 
