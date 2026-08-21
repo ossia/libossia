@@ -2,6 +2,7 @@
 
 #include <ossia-qt/protocols/qml_http_request.hpp>
 #include <ossia-qt/protocols/qml_oauth.hpp>
+#include <ossia-qt/protocols/qml_serial_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ump_inbound_socket.hpp>
@@ -17,6 +18,7 @@
 #include <ossia-qt/protocols/qml_bluetooth.hpp>
 #include <ossia-qt/protocols/qml_nfc.hpp>
 
+#include <ossia/detail/logger.hpp>
 #include <ossia/network/sockets/configuration.hpp>
 #include <ossia/network/sockets/encoding.hpp>
 
@@ -115,6 +117,7 @@ W_OBJECT_IMPL(ossia::qt::qml_midi_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_midi_outbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_inbound_socket)
 W_OBJECT_IMPL(ossia::qt::qml_ump_outbound_socket)
+W_OBJECT_IMPL(ossia::qt::qml_serial_socket)
 W_OBJECT_IMPL(ossia::qt::qml_osc_processor)
 
 #if defined(OSSIA_HAS_BLUETOOTH)
@@ -984,9 +987,84 @@ QObject* qml_protocols::outboundUMP(QJSValue config)
   }
 }
 
+static ossia::net::serial_configuration parse_serial(const QVariantMap& transport)
+{
+  ossia::net::serial_configuration conf;
+  conf.port = transport["Port"].toString().toStdString();
+
+  if(auto baud = transport["Baud"]; baud.isValid())
+    conf.baud_rate = baud.toInt();
+  if(auto bits = transport["DataBits"]; bits.isValid())
+    conf.character_size = bits.toInt();
+
+  const auto flow = transport["FlowControl"].toString().toLower();
+  if(flow == "software")
+    conf.flow_control = ossia::net::serial_configuration::software;
+  else if(flow == "hardware")
+    conf.flow_control = ossia::net::serial_configuration::hardware;
+
+  const auto parity = transport["Parity"].toString().toLower();
+  if(parity == "odd")
+    conf.parity = ossia::net::serial_configuration::odd;
+  else if(parity == "even")
+    conf.parity = ossia::net::serial_configuration::even;
+
+  const auto stop = transport["StopBits"].toString().toLower();
+  if(stop == "onepointfive" || stop == "1.5")
+    conf.stop_bits = ossia::net::serial_configuration::onepointfive;
+  else if(stop == "two" || stop == "2")
+    conf.stop_bits = ossia::net::serial_configuration::two;
+
+  return conf;
+}
+
 QObject* qml_protocols::serial(QVariant config)
 {
-  return nullptr;
+  auto conf = config.toMap();
+  auto onError = conf["onError"].value<QJSValue>();
+
+  auto fail = [&](const QString& err) -> QObject* {
+    ossia::logger().error("Protocols.serial: {}", err.toStdString());
+    qDebug() << "Protocols.serial:" << err;
+    if(onError.isCallable())
+      onError.call({err});
+    return nullptr;
+  };
+
+  auto ossia_conf = parse_serial(conf["Transport"].toMap());
+  if(ossia_conf.port.empty())
+    return fail("Transport.Port is required");
+
+  auto [framing, delimiter] = parse_framing(conf);
+  auto enc = parse_encoding(conf);
+
+  // parse_framing packs the fixed_length frame size in the delimiter string
+  std::size_t frame_size = 0;
+  if(framing == ossia::net::framing::fixed_length && !delimiter.empty())
+    frame_size = std::stoul(delimiter);
+
+  auto sock = new qml_serial_socket{};
+  qjsEngine(this)->newQObject(sock);
+  sock->onOpen = conf["onOpen"].value<QJSValue>();
+  sock->onClose = conf["onClose"].value<QJSValue>();
+  sock->onError = onError;
+  sock->onMessage = conf["onMessage"].value<QJSValue>();
+  sock->onBytes = conf["onBytes"].value<QJSValue>();
+  try
+  {
+    sock->open(ossia_conf, context->context, framing, delimiter, frame_size, enc);
+    return sock;
+  }
+  catch(const std::exception& e)
+  {
+    delete sock;
+    return fail(QString::fromStdString(e.what()));
+  }
+  catch(...)
+  {
+    delete sock;
+    return fail("could not open " + QString::fromStdString(ossia_conf.port));
+  }
 }
 
 

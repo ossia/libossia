@@ -137,6 +137,11 @@ if(OSSIA_QML)
     ossia_add_test(JSTest                  "${CMAKE_CURRENT_SOURCE_DIR}/Qt/JSTest.cpp")
   endif()
 
+  if(UNIX AND NOT APPLE)
+    # Uses a pseudo-terminal as a stand-in for a serial port
+    ossia_add_test(QmlSerialTest           "${CMAKE_CURRENT_SOURCE_DIR}/Qt/QmlSerialTest.cpp")
+  endif()
+
   if(OSSIA_PROTOCOL_WEBSOCKETS)
     ossia_add_test(WebSocketTest         "${CMAKE_CURRENT_SOURCE_DIR}/Network/WebSocketTest.cpp")
   endif()
