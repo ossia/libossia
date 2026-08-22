@@ -19,11 +19,8 @@ namespace ossia::net
 {
 
 //! Store a line-framing delimiter in a fixed-size, NUL-terminated buffer.
-//!
-//! The buffer is scanned with strnlen(), so at most N - 1 bytes may be stored:
-//! the trailing NUL must survive. Longer delimiters are truncated instead of
-//! overflowing the buffer, and the unused tail is always zeroed so that a
-//! shorter delimiter never inherits bytes from a previous one.
+//! Scanned with strnlen(), so at most N - 1 bytes fit; longer delimiters are
+//! truncated and the tail zeroed so a shorter one inherits nothing.
 template <std::size_t N>
 inline std::size_t set_line_delimiter(char (&buffer)[N], std::string_view delim) noexcept
 {

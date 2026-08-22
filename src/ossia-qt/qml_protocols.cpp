@@ -1200,12 +1200,9 @@ QJSValue qml_protocols::canInterfaces()
   return result;
 }
 #else
-// CAN is implemented on top of SocketCAN, which only exists on Linux. The slots
-// still have to be defined everywhere -- they are registered on the QML type
-// whatever the platform, so a missing definition would be a link error rather
-// than a script that simply does not work. Failing loudly is the point: a script
-// that calls Protocols.can() on macOS or Windows is not going to work, and the
-// user needs to be told why instead of getting a null back with no explanation.
+// SocketCAN is Linux-only, but the slots are registered on the QML type
+// everywhere, so they must still be defined. They throw rather than return null:
+// a script calling Protocols.can() elsewhere deserves to be told why.
 QObject* qml_protocols::can(QVariant config)
 {
   const auto err = QStringLiteral(

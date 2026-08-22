@@ -20,21 +20,13 @@
 /**
  * Destroying a socket that still has a read outstanding.
  *
- * Closing a descriptor -- or letting asio's own socket destructor close it --
- * does not make asio forget the operations that were pending on it. They are
- * queued for completion with operation_aborted and run on the *next* poll(),
- * which is very often after the owning object is gone: the completion handlers
- * capture `this`, and the stream_processor they carry holds a reference to the
- * socket so that it can call on_fail() / on_close().
+ * Closing a descriptor does not make asio forget the operations pending on it:
+ * they complete with operation_aborted on the next poll(), usually after the
+ * owner is gone, and the handlers capture `this`.
  *
- * That is exactly the shape of the crash CanSocketTest first tripped over, and
- * every socket here is used that way in practice: a protocol object owns the
- * socket, the user deletes the protocol, and the io_context keeps running.
- *
- * Each test below arms a read, destroys the socket, and then pumps the context,
- * which is the minimum needed to make the aborted completion actually run. They
- * are meant to be run under ASan -- without it a use-after-free on a
- * just-freed allocation usually goes unnoticed, so they would pass either way.
+ * Each test arms a read, destroys the socket and pumps the context. Run them
+ * under ASan - otherwise a use-after-free on a just-freed allocation goes
+ * unnoticed and they pass either way.
  */
 
 #if !defined(_WIN32)
