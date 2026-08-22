@@ -66,9 +66,8 @@ public:
       return m_parameter.get();
     }
 
-    // The protocols that use this class downcast every parameter of their tree
-    // to Parameter_T without checking, so a parameter created from the generic
-    // APIs has to be a Parameter_T too - see make_child below.
+    // The protocols using this downcast every parameter to Parameter_T
+    // unchecked, so one created through the generic API must be one too.
     T data{m_name};
     data.type = type;
     data.value = ossia::init_value(type);
@@ -92,13 +91,10 @@ public:
 private:
   std::unique_ptr<node_base> make_child(const std::string& name) final override
   {
-    // Every node of a wrapped device has to be a wrapped_node: the protocols
-    // built on top of this (serial, http, websocket, score's mapper) recover
-    // their own node and parameter types from the tree with an unchecked
-    // static_cast. Returning a generic_node here - as this used to - meant that
-    // any node created through the generic APIs, e.g. the `Device.addNode()`
-    // binding exposed to the protocols' own QML scripts, carried a
-    // generic_parameter that those casts would then reinterpret.
+    // Must be a wrapped_node: serial, http, websocket and score's mapper
+    // static_cast their nodes back unchecked. Returning a generic_node here -
+    // as this used to - gave Device.addNode() a generic_parameter for those
+    // casts to reinterpret.
     return std::make_unique<wrapped_node>(T{name}, m_device, *this);
   }
 

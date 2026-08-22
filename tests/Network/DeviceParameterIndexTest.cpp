@@ -85,10 +85,8 @@ TEST_CASE("test_device_parameter_index_clear", "test_device_parameter_index")
   REQUIRE(!index.apply("/a", [](parameter_base&) { }));
 }
 
-// The serial protocol resolves incoming addresses from its own thread while the
-// tree is owned by another one. Doing that with ossia::net::find_node reads a
-// node that the other thread may already have destroyed; going through the
-// index must not.
+// The serial protocol resolves addresses from its own thread while another owns
+// the tree. find_node() there can read an already-destroyed node; this must not.
 TEST_CASE("test_device_parameter_index_concurrent_removal", "test_device_parameter_index")
 {
   constexpr int iterations = 3000;
@@ -121,9 +119,8 @@ TEST_CASE("test_device_parameter_index_concurrent_removal", "test_device_paramet
   done = true;
   reader.join();
 
-  // The point of the test is that it runs to completion without touching freed
-  // memory; this only checks that the reader did see the node at least once, so
-  // that the test does not silently stop exercising anything.
+  // The test is that it completes without touching freed memory; this just
+  // checks the reader saw the node at all, so it cannot go vacuous.
   INFO("applied: " << applied.load());
   REQUIRE(index.size() == 0);
 }

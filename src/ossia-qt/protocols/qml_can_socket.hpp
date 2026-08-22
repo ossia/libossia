@@ -87,13 +87,9 @@ public:
       frame["brs"] = msg.bitrate_switch;
       frame["esi"] = msg.error_state;
 
-      // A QByteArray reaches the script as an ArrayBuffer, the way the serial
-      // protocol passes its payloads: one allocation instead of a QVariant per
-      // byte, which matters at bus rates with 64-byte FD frames. Scripts read
-      // it with `new Uint8Array(frame.bytes)`.
-      //
-      // An RTR frame requests data, it does not carry any: leave it empty
-      // rather than exposing `size` bytes of zeroes.
+      // Reaches the script as an ArrayBuffer, like the serial protocol's
+      // payloads: `new Uint8Array(frame.bytes)`. RTR frames carry no data, so
+      // leave it empty rather than exposing `size` zeroes.
       frame["bytes"] = msg.remote
                            ? QByteArray{}
                            : QByteArray{

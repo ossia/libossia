@@ -26,13 +26,8 @@
 namespace ossia::net
 {
 
-//! A single CAN frame, in the union of the classic and FD layouts.
-/**
- * The kernel has two on-the-wire structures (can_frame, canfd_frame) that only
- * differ by their payload size and by a couple of flags; exposing both to the
- * users of the socket would leak SocketCAN into every caller for no gain, so
- * they are normalized into this one struct on both directions.
- */
+//! A CAN frame, normalizing the kernel's can_frame and canfd_frame - they
+//! differ only by payload size and a couple of flags.
 struct can_message
 {
   //! Identifier, *without* the SocketCAN flag bits: 11 bits when
@@ -70,21 +65,16 @@ struct can_message
   uint8_t data[CANFD_MAX_DLEN]{};
 };
 
-//! A raw SocketCAN socket (PF_CAN / SOCK_RAW / CAN_RAW).
 /**
- * Unlike the other sockets in this folder this one is *not* a
- * `framed_socket<..., Framing>`: a CAN_RAW socket is message-oriented, so there
- * is nothing to frame -- the kernel delimits the messages for us and one read
- * always returns exactly one frame, never a partial one and never two. Any
- * completion condition (`transfer_exactly`, `transfer_at_least`...) would
- * happily splice N consecutive frames into a single buffer, which is why the
- * receive path below does a bare `async_read_some` and dispatches on the number
- * of bytes read. It is the shape of `no_framing::decoder::receive`, minus the
- * framing machinery and with the byte buffer decoded into a can_message.
+ * A raw SocketCAN socket (PF_CAN / SOCK_RAW / CAN_RAW).
  *
- * Several can_sockets may be bound to the same interface at the same time:
- * SocketCAN delivers every frame to every socket, each applying its own
- * filters. N devices sharing one bus therefore need no shared socket.
+ * Not a framed_socket: CAN_RAW is message-oriented, one read is exactly one
+ * frame. A completion condition would splice consecutive frames into one
+ * buffer, so the receive path uses a bare async_read_some and dispatches on the
+ * size read.
+ *
+ * Several can_sockets may share an interface: the kernel delivers every frame
+ * to every socket, each applying its own filters.
  */
 class can_socket
 {
@@ -105,13 +95,10 @@ public:
 
   ~can_socket()
   {
-    // Expire the watches before touching the socket. close() posts a lambda
-    // that calls close_impl() on the io_context thread, and the usual shutdown
-    // is close() immediately followed by dropping the owner -- so without this
-    // that lambda and this destructor can both be inside
-    // basic_descriptor::close() on one impl, on two threads. The observed
-    // outcome is a SIGSEGV in epoll_reactor::deregister_descriptor, reading a
-    // reactor_data_ the other thread has just nulled.
+    // Before touching the socket: close() posts close_impl() to the io_context
+    // thread, and the usual shutdown is close() then dropping the owner. Both
+    // inside basic_descriptor::close() on one impl segfaults in
+    // epoll_reactor::deregister_descriptor.
     m_lifetime.reset();
     close_impl();
   }
@@ -181,15 +168,9 @@ public:
 
   bool connected() const noexcept { return m_socket.is_open(); }
 
-  //! Send a frame.
-  /**
-   * Returns the error, if any, instead of throwing: the interesting failure
-   * here is ENOBUFS, which is *not* exceptional. CAN netdevs commonly ship with
-   * `txqueuelen 10`, so a burst of a dozen frames is enough to fill the queue,
-   * and unlike EAGAIN on a stream socket asio does not retry it -- the write
-   * simply did not happen. Reporting it lets the caller decide (retry, drop and
-   * count, warn the user) rather than losing the frame silently.
-   */
+  //! Send a frame. Returns the error rather than throwing: ENOBUFS is routine
+  //! (txqueuelen is often 10) and asio does not retry it, so the caller has to
+  //! decide what to do instead of losing the frame silently.
   boost::system::error_code write(const can_message& msg)
   {
     boost::system::error_code ec;

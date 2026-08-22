@@ -16,22 +16,16 @@ namespace ossia::net
 /**
  * @brief A thread-safe index of a device's parameters, by OSC address.
  *
- * Protocols that receive on a thread of their own - the serial and CAN ones run
- * their QML engine in a dedicated thread - have to turn an incoming address
- * into a parameter. ossia::net::find_node cannot do that from another thread:
- * it locks each node only while reading that node's children, so nothing keeps
+ * For protocols that receive on their own thread. find_node() cannot be used
+ * there: it locks each node only while reading its children, so nothing keeps
  * the node it returns alive afterwards.
  *
- * The lifetime guarantee here is that apply() holds a lock on the entry for the
- * duration of the callback, and that a removal has to take that same lock; the
- * device signals a node's removal before destroying it, so a parameter cannot
- * be destroyed under a running callback.
+ * apply() holds a lock on the entry while the callback runs, and removals take
+ * the same lock - the device signals a removal before destroying the node, so a
+ * parameter cannot die under a running callback. The lock is per bucket group,
+ * not per map.
  *
- * Locking is per bucket group, not per map, so a tree edit on the UI thread
- * only ever waits on a receive thread that is inside the same group.
- *
- * The callback must not itself add or remove nodes on the device: it runs with
- * the entry locked, and re-entering the index from it deadlocks.
+ * The callback must not add or remove nodes: re-entering the index deadlocks.
  */
 class device_parameter_index : public Nano::Observer
 {
@@ -65,25 +59,15 @@ public:
            > 0;
   }
 
-  /**
-   * @brief Drop every entry.
-   *
-   * The owning protocol must call this before the device tears its tree down: a
-   * device destroying itself frees its children without signalling their
-   * removal.
-   */
+  //! Drop every entry. The owning protocol must call this before the device
+  //! tears its tree down: it frees its children without signalling them.
   void clear() { m_index.clear(); }
 
   std::size_t size() const { return m_index.size(); }
 
 private:
-  /**
-   * Addresses are stored the way osc_parameter_string() spells them: `/foo/bar`.
-   *
-   * Returns a view into `address` where it can, and only borrows `buf` when a
-   * leading slash has to be added - so the common case of an already-normal
-   * address costs no allocation.
-   */
+  //! Addresses are stored as osc_parameter_string() spells them: `/foo/bar`.
+  //! Borrows `buf` only when a leading slash has to be added.
   static std::string_view normalize(std::string_view address, std::string& buf)
   {
     while(address.size() > 1 && address.back() == '/')
@@ -98,14 +82,8 @@ private:
     return buf;
   }
 
-  /**
-   * The address of a node, computed rather than read from node_base::
-   * osc_address().
-   *
-   * That cache is filled by the node subclass, and only generic_node and
-   * wrapped_node do it: midi_node and phidgets_node leave it empty, which would
-   * file every parameter of such a device under "".
-   */
+  //! Computed, not node_base::osc_address(): that cache is filled by the node
+  //! subclass and midi_node / phidgets_node leave it empty.
   static std::string address_of(const ossia::net::node_base& node)
   {
     return ossia::net::osc_parameter_string(node);

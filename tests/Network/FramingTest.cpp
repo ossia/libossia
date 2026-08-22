@@ -220,12 +220,9 @@ TEST_CASE("line_framing_encoder", "line_framing_encoder")
 
 // ---- Line framing: delimiter buffer handling ----
 //
-// The delimiter lives in a fixed-size char[8] which is read back with
-// strnlen(), so at most 7 bytes may be stored. set_line_delimiter() must
-// clamp to the *smaller* of the delimiter length and the buffer capacity:
-// clamping upwards (std::max) both read past the end of the source string and
-// wrote past the end of the destination buffer for user-supplied delimiters
-// longer than 7 bytes.
+// The delimiter lives in a char[8] read back with strnlen(), so at most 7 bytes
+// fit. Clamping upwards (std::max) read past the end of the source and wrote
+// past the end of the buffer for delimiters longer than that.
 
 TEST_CASE("set_line_delimiter_shorter_than_buffer", "set_line_delimiter")
 {

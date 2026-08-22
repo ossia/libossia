@@ -70,9 +70,8 @@ public:
 
   void close()
   {
-    // close() does not close anything itself: it posts a lambda that does, and
-    // that lambda can very well run after the socket is gone -- the usual
-    // shutdown is close() immediately followed by dropping the owner.
+    // Posts a lambda that can run after the socket is gone: the usual shutdown
+    // is close() followed by dropping the owner.
     if(m_socket.is_open())
     {
       boost::asio::post(m_context, [this, alive = m_lifetime.watch()] {
@@ -93,15 +92,10 @@ public:
     }
   }
 
-  //! No lifetime token here, unlike the framed sockets.
-  /**
-   * This handler is careful to return on operation_aborted *before* touching
-   * anything, and it hands the callback a buffer rather than a stream_processor
-   * holding a reference back to the socket, so an aborted completion running
-   * after the socket is gone reads nothing but its own copy of `ec`. Verified
-   * under ASan by SocketLifetimeTest. The early return is load-bearing: it is
-   * the only thing keeping this path safe.
-   */
+  //! The receive handler returns on operation_aborted before touching anything,
+  //! and hands the callback a buffer rather than something referencing the
+  //! socket - so it is safe after the socket is gone. That early return is the
+  //! only thing making it so; SocketLifetimeTest checks it under ASan.
   template <typename F>
   void receive(F f)
   {

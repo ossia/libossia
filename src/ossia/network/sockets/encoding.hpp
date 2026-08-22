@@ -46,12 +46,9 @@ inline std::size_t max_decoded_size(encoding enc, std::size_t sz)
     case encoding::base64:
       return 3 * sz / 4 + 3;
     case encoding::ascii85:
-      // Careful: ascii85 is *not* bounded by 4/5 of the input on the way back.
-      // The 'z' shorthand stands for a whole all-zero group, so a single input
-      // character decodes to four output bytes. An input made only of 'z'
-      // (which is exactly what encoding a run of zero bytes produces) expands
-      // by a factor of four. Every other construct is at most 4 bytes per 5
-      // characters, so 4 * sz is the tight upper bound.
+      // Not bounded by 4/5 of the input: the 'z' shorthand decodes one
+      // character into four zero bytes, so an all-'z' input - what a run of
+      // zeroes encodes to - expands fourfold. 4 * sz is the tight bound.
       return sz * 4;
     case encoding::hex:
     case encoding::intel_hex:
