@@ -64,9 +64,10 @@ const char* invalid_callback_error::what() const noexcept
 
 static void ossia_global_init()
 {
-  static bool init = false;
-  if(!init)
-  {
+  // The guard is the initialization of the static itself: it runs once, and is
+  // thread-safe. The `static bool init = false; if(!init)` this replaces was
+  // never assigned to, so the body ran again for every context constructed.
+  [[maybe_unused]] static const bool init = [] {
     // Create a logger for the library.
     logger();
 
@@ -81,7 +82,8 @@ static void ossia_global_init()
 #endif
 
     ossia::set_thread_pinned(thread_type::Ui, 0);
-  }
+    return true;
+  }();
 }
 
 context::context()
