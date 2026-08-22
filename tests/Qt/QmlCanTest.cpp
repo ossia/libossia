@@ -242,7 +242,15 @@ TEST_CASE("test_qml_can_read", "test_qml_can")
       var received = [];
       var s = Protocols.can({
         Transport: { Interface: "%1" },
-        onMessage: function(frame) { received.push(frame); }
+        onMessage: function(frame) {
+          // The payload is an ArrayBuffer, not an array of numbers. Recorded
+          // explicitly: new Uint8Array() accepts either, so converting first
+          // and checking the bytes would pass for both.
+          frame.isBuffer = (frame.bytes instanceof ArrayBuffer);
+          frame.byteLength = frame.bytes.byteLength;
+          frame.bytes = Array.from(new Uint8Array(frame.bytes));
+          received.push(frame);
+        }
       });
       return { socket: s, received: received };
     })()
@@ -263,6 +271,8 @@ TEST_CASE("test_qml_can_read", "test_qml_can")
   REQUIRE(frame.property("extended").toBool() == false);
   REQUIRE(frame.property("rtr").toBool() == false);
   REQUIRE(frame.property("fd").toBool() == false);
+  REQUIRE(frame.property("isBuffer").toBool());
+  REQUIRE(frame.property("byteLength").toInt() == 4);
   REQUIRE(frame.property("bytes").property("length").toInt() == 4);
   REQUIRE(frame.property("bytes").property(0).toUInt() == 0xDE);
   REQUIRE(frame.property("bytes").property(3).toUInt() == 0xEF);
