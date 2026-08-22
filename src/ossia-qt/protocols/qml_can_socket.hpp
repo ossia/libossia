@@ -10,6 +10,7 @@
 #include <QJSValue>
 #include <QObject>
 #include <QQmlEngine>
+#include <QByteArray>
 #include <QVariant>
 
 #include <nano_observer.hpp>
@@ -86,14 +87,18 @@ public:
       frame["brs"] = msg.bitrate_switch;
       frame["esi"] = msg.error_state;
 
-      QVariantList bytes;
-      bytes.reserve(msg.size);
-      // An RTR frame requests data, it does not carry any: leave the array
-      // empty rather than exposing `size` bytes of zeroes.
-      if(!msg.remote)
-        for(int i = 0; i < msg.size; i++)
-          bytes.append(int(msg.data[i]));
-      frame["bytes"] = bytes;
+      // A QByteArray reaches the script as an ArrayBuffer, the way the serial
+      // protocol passes its payloads: one allocation instead of a QVariant per
+      // byte, which matters at bus rates with 64-byte FD frames. Scripts read
+      // it with `new Uint8Array(frame.bytes)`.
+      //
+      // An RTR frame requests data, it does not carry any: leave it empty
+      // rather than exposing `size` bytes of zeroes.
+      frame["bytes"] = msg.remote
+                           ? QByteArray{}
+                           : QByteArray{
+                                 reinterpret_cast<const char*>(msg.data),
+                                 qsizetype(msg.size)};
       frame["length"] = int(msg.size);
 
       ossia::qt::run_async(self.get(), [self = self, frame] {
