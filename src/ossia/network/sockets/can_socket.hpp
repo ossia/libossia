@@ -119,7 +119,8 @@ public:
         throw std::system_error{
             std::make_error_code(std::errc::filename_too_long),
             "CAN interface name too long: " + m_conf.interface_name};
-      std::strncpy(ifr.ifr_name, m_conf.interface_name.c_str(), sizeof(ifr.ifr_name) - 1);
+      std::strncpy(
+          ifr.ifr_name, m_conf.interface_name.c_str(), sizeof(ifr.ifr_name) - 1);
       if(::ioctl(fd, SIOCGIFINDEX, &ifr) < 0)
         throw_errno("no such CAN interface: " + m_conf.interface_name);
 

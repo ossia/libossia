@@ -1,12 +1,12 @@
 // This is an open source non-commercial project. Dear PVS-Studio, please check it.
 // PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 
+#include "include_catch.hpp"
+
 #include <ossia/detail/config.hpp>
 
 #include <ossia/network/base/node_functions.hpp>
 #include <ossia/network/generic/wrapped_parameter.hpp>
-
-#include "include_catch.hpp"
 
 using namespace ossia;
 using namespace ossia::net;
@@ -82,7 +82,8 @@ TEST_CASE("test_wrapped_node_make_child", "test_wrapped_node")
   // This is the path taken by the `Device.addNode(address, type)` binding
   // exposed to the QML scripts of the serial / http / websocket / mapper
   // protocols.
-  auto param = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
+  auto param
+      = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
   REQUIRE(param != nullptr);
   REQUIRE(param->get_value_type() == ossia::val_type::FLOAT);
   REQUIRE(param->value() == ossia::value{0.f});
@@ -119,7 +120,8 @@ TEST_CASE("test_wrapped_node_push_created_parameter", "test_wrapped_node")
   test_device dev{std::make_unique<test_protocol>(), "test"};
   auto& proto = static_cast<test_protocol&>(dev.get_protocol());
 
-  auto param = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
+  auto param
+      = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
   REQUIRE(param != nullptr);
 
   // Before the fix this reinterpreted a generic_parameter as a test_parameter.
@@ -144,7 +146,8 @@ TEST_CASE("test_wrapped_node_parameter_created_notified", "test_wrapped_node")
   dev.on_parameter_created.connect<&param_counter::on_parameter_created>(&counter);
   auto& created = counter.created;
 
-  auto param = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
+  auto param
+      = ossia::net::find_or_create_parameter(dev.get_root_node(), "/foo", "float");
   REQUIRE(param != nullptr);
   REQUIRE(created == 1);
 

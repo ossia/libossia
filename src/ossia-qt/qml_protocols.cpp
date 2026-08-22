@@ -1,27 +1,27 @@
 #include "qml_protocols.hpp"
 
+#include <ossia/detail/logger.hpp>
+#include <ossia/network/sockets/configuration.hpp>
+#include <ossia/network/sockets/encoding.hpp>
+
+#include <ossia-qt/protocols/qml_bluetooth.hpp>
 #include <ossia-qt/protocols/qml_can_socket.hpp>
 #include <ossia-qt/protocols/qml_http_request.hpp>
-#include <ossia-qt/protocols/qml_oauth.hpp>
-#include <ossia-qt/protocols/qml_serial_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_midi_outbound_socket.hpp>
-#include <ossia-qt/protocols/qml_ump_inbound_socket.hpp>
-#include <ossia-qt/protocols/qml_ump_outbound_socket.hpp>
+#include <ossia-qt/protocols/qml_nfc.hpp>
+#include <ossia-qt/protocols/qml_oauth.hpp>
+#include <ossia-qt/protocols/qml_serial_socket.hpp>
 #include <ossia-qt/protocols/qml_tcp_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_tcp_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_udp_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_udp_outbound_socket.hpp>
+#include <ossia-qt/protocols/qml_ump_inbound_socket.hpp>
+#include <ossia-qt/protocols/qml_ump_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_unix_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_unix_outbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ws_inbound_socket.hpp>
 #include <ossia-qt/protocols/qml_ws_outbound_socket.hpp>
-#include <ossia-qt/protocols/qml_bluetooth.hpp>
-#include <ossia-qt/protocols/qml_nfc.hpp>
-
-#include <ossia/detail/logger.hpp>
-#include <ossia/network/sockets/configuration.hpp>
-#include <ossia/network/sockets/encoding.hpp>
 
 #include <boost/asio/io_context.hpp>
 

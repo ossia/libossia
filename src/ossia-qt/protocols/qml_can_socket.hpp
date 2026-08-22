@@ -7,10 +7,10 @@
 
 #include <boost/asio/dispatch.hpp>
 
+#include <QByteArray>
 #include <QJSValue>
 #include <QObject>
 #include <QQmlEngine>
-#include <QByteArray>
 #include <QVariant>
 
 #include <nano_observer.hpp>
@@ -90,11 +90,10 @@ public:
       // Reaches the script as an ArrayBuffer, like the serial protocol's
       // payloads: `new Uint8Array(frame.bytes)`. RTR frames carry no data, so
       // leave it empty rather than exposing `size` zeroes.
-      frame["bytes"] = msg.remote
-                           ? QByteArray{}
-                           : QByteArray{
-                                 reinterpret_cast<const char*>(msg.data),
-                                 qsizetype(msg.size)};
+      frame["bytes"] = msg.remote ? QByteArray{}
+                                  : QByteArray{
+                                        reinterpret_cast<const char*>(msg.data),
+                                        qsizetype(msg.size)};
       frame["length"] = int(msg.size);
 
       ossia::qt::run_async(self.get(), [self = self, frame] {

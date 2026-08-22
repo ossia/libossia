@@ -51,7 +51,7 @@ struct fixed_length_decoder
       }
 
       this->receive(std::move(f));
-        });
+    });
   }
 };
 

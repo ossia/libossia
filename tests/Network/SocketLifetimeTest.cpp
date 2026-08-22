@@ -182,20 +182,21 @@ TEST_CASE("test_tcp_client_destroyed_with_pending_read", "test_socket_lifetime")
   boost::asio::io_context ctx;
 
   boost::asio::ip::tcp::acceptor acceptor{
-      ctx, boost::asio::ip::tcp::endpoint{
-               boost::asio::ip::make_address("127.0.0.1"), 0}};
+      ctx,
+      boost::asio::ip::tcp::endpoint{boost::asio::ip::make_address("127.0.0.1"), 0}};
   const auto port = acceptor.local_endpoint().port();
 
   // The accepted socket has to stay alive, otherwise the client's read would
   // complete with eof instead of staying pending.
   boost::asio::ip::tcp::socket peer{ctx};
-  acceptor.async_accept(peer, [](boost::system::error_code) {});
+  acceptor.async_accept(peer, [](boost::system::error_code) { });
 
   ossia::net::outbound_socket_configuration conf;
   conf.host = "127.0.0.1";
   conf.port = port;
 
-  using client = ossia::net::framed_client<ossia::net::tcp_client, ossia::net::slip_framing>;
+  using client
+      = ossia::net::framed_client<ossia::net::tcp_client, ossia::net::slip_framing>;
   auto sock = std::make_unique<client>(conf, ctx);
 
   flag connected;
@@ -222,8 +223,8 @@ TEST_CASE("test_tcp_client_destroyed_with_pending_connect", "test_socket_lifetim
   boost::asio::io_context ctx;
 
   boost::asio::ip::tcp::acceptor acceptor{
-      ctx, boost::asio::ip::tcp::endpoint{
-               boost::asio::ip::make_address("127.0.0.1"), 0}};
+      ctx,
+      boost::asio::ip::tcp::endpoint{boost::asio::ip::make_address("127.0.0.1"), 0}};
   const auto port = acceptor.local_endpoint().port();
 
   ossia::net::outbound_socket_configuration conf;
@@ -262,8 +263,8 @@ TEST_CASE("test_tcp_client_destroyed_after_close", "test_socket_lifetime")
   boost::asio::io_context ctx;
 
   boost::asio::ip::tcp::acceptor acceptor{
-      ctx, boost::asio::ip::tcp::endpoint{
-               boost::asio::ip::make_address("127.0.0.1"), 0}};
+      ctx,
+      boost::asio::ip::tcp::endpoint{boost::asio::ip::make_address("127.0.0.1"), 0}};
 
   ossia::net::outbound_socket_configuration conf;
   conf.host = "127.0.0.1";
@@ -291,7 +292,7 @@ TEST_CASE("test_unix_stream_client_destroyed_with_pending_read", "test_socket_li
       ctx, boost::asio::local::stream_protocol::endpoint{path}};
 
   boost::asio::local::stream_protocol::socket peer{ctx};
-  acceptor.async_accept(peer, [](boost::system::error_code) {});
+  acceptor.async_accept(peer, [](boost::system::error_code) { });
 
   ossia::net::fd_configuration conf;
   conf.fd = path;
@@ -313,7 +314,8 @@ TEST_CASE("test_unix_stream_client_destroyed_with_pending_read", "test_socket_li
   REQUIRE(!got_message);
 }
 
-TEST_CASE("test_unix_datagram_socket_destroyed_with_pending_read", "test_socket_lifetime")
+TEST_CASE(
+    "test_unix_datagram_socket_destroyed_with_pending_read", "test_socket_lifetime")
 {
   // This one is expected to have been safe all along: unix_datagram_socket
   // already cancels and drains in its destructor -- see the comment there, it

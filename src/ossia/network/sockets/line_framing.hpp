@@ -91,7 +91,7 @@ struct line_framing_decoder
         read_data(std::move(f), ec, new_sz);
       else
         this->receive(std::move(f));
-        });
+    });
   }
 
   template <typename F>
